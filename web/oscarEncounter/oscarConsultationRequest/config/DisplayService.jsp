@@ -101,7 +101,7 @@ function BackToOscar()
             <!----Start new rows here-->
                <tr>
                   <td>
-                     <%oscar.oscarEncounter.oscarConsultationRequest.config.pageUtil.EctConTitlebar titlebar = new oscar.oscarEncounter.oscarConsultationRequest.config.pageUtil.EctConTitlebar();
+                     <%oscar.oscarEncounter.oscarConsultationRequest.config.pageUtil.EctConTitlebar titlebar = new oscar.oscarEncounter.oscarConsultationRequest.config.pageUtil.EctConTitlebar(request);
                         out.print(titlebar.estBar(request));
                      %>
                   </td>

@@ -78,9 +78,9 @@ function BackToOscar()
 <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="100%" id="AutoNumber1" height="100%">
     <tr>
         <td width="100%" style="padding-left: 3; padding-right: 3; padding-top: 2; padding-bottom: 2" height="0%" colspan="2">
-        <p class="HelpAboutLogout"><span class="FakeLink"><a href="Help.htm">Help</a></span> |
-        <span class="FakeLink"><a href="About.htm">About</a></span> | <span class="FakeLink">
-        <a href="Disclaimer.htm">Disclaimer</a></span></p>
+        <p class="HelpAboutLogout"><span class="FakeLink"><a href="Help.htm"><bean:message key="global.help"/></a></span> |
+        <span class="FakeLink"><a href="About.htm"><bean:message key="global.about"/></a></span> | <span class="FakeLink">
+        <a href="Disclaimer.htm"><bean:message key="global.disclaimer"/></a></span></p>
         </td>
     </tr>
     <tr>

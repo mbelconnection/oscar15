@@ -39,7 +39,7 @@
 <%@ include file="../admin/dbconnection.jsp" %>
 <% 
   String [][] dbQueries=new String[][] { 
-{"search_msg_attach", "select attachment from messagetbl m, messagelisttbl l where m.messageid = l.message and m.messageid = ? and l.provider_no =" + user_no}, 
+{"search_msg_attach", "select attachment from messagetbl m, messagelisttbl l where m.messageid = l.message and m.messageid = ? and l.provider_no = '" + user_no + "'"}, 
   };
   myDBBean.doConfigure(dbParams,dbQueries);
 %>

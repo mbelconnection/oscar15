@@ -18,7 +18,9 @@
   
   ResultSet rs = myFormBean.queryResults("search_deleted");
 %>
-<html>
+<%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
+<%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
+<html:html locale="true">
 <head>
 <meta http-equiv="Cache-Control" content="no-cache" />
 <title>CallDeletedForm</title>
@@ -35,24 +37,24 @@ function newWindow(file,window) {
 <body topmargin="0" leftmargin="0" rightmargin="0">
 <center>
 <table border="0" cellspacing="0" cellpadding="0" width="100%" >
-  <tr bgcolor=<%=deepColor%> ><th><font face="Helvetica">DELETED FORM</font></th></tr>
+  <tr bgcolor="<%=deepColor%>" ><th><font face="Helvetica"><bean:message key="eform.calldeletedform.title"/></font></th></tr>
 </table>
 
 <table border="0" cellspacing="0" cellpadding="2" width="98%">
   <tr bgcolor=<%=weakColor%>>
-    <td>Deleted Forms: </td>
-    <td align='right'><a href="uploadhtml.jsp">Go to Current Form Library</a> | 
-      <a href="../admin/admin.jsp"> Back to Admin Page</a>
+    <td><bean:message key="eform.calldeletedform.msgtitle"/>: </td>
+    <td align='right'><a href="uploadhtml.jsp"><bean:message key="eform.calldeletedformdata.btnGoToForm"/></a> | 
+      <a href="../admin/admin.jsp"><bean:message key="eform.uploadhtml.btnBack"/></a>
     </td> 
   </tr>
 </table>
   
 <table border="0" cellspacing="2" cellpadding="2" width="98%">
   <tr bgcolor=<%=deepColor%> >
-  <th width=20%><a href="calldeletedform.jsp?orderby=form_name">Form Name</a></th>
-  <th width=40%><a href="calldeletedform.jsp?orderby=subject">Subject</a></th>
-  <th><a href="calldeletedform.jsp">Form Date</a></th>
-  <th><a href="calldeletedform.jsp">Form Time</a></th> 
+  <th width=20%><a href="calldeletedform.jsp?orderby=form_name"><bean:message key="eform.showmyform.btnFormName"/></a></th>
+  <th width=40%><a href="calldeletedform.jsp?orderby=subject"><bean:message key="eform.showmyform.btnSubject"/></a></th>
+  <th><a href="calldeletedform.jsp"><bean:message key="eform.showmyform.formDate"/></a></th>
+  <th><a href="calldeletedform.jsp"><bean:message key="eform.showmyform.formTime"/></a></th> 
   <th>Action</th>
   </tr> 
 <%
@@ -67,18 +69,19 @@ function newWindow(file,window) {
   <td><%=rs.getString("subject")%></td>
   <td nowrap align='center'><%=rs.getString("form_date")%></td>
   <td nowrap align='center'><%=rs.getString("form_time")%></td>
-  <td nowrap align='center'><a href="undeleteform.jsp?fid=<%=rs.getInt("fid")%>">UnDelete</a></td>
+  <td nowrap align='center'><a href="undeleteform.jsp?fid=<%=rs.getInt("fid")%>"><bean:message key="eform.calldeletedformdata.btnUndelete"/></a></td>
   </tr>
 <%
     }  
   }else {
-    out.print("<tr><td>No Data!!!</td></tr>");
-  }
+%>
+    <tr><td><bean:message key="eform.showmyform.msgNoData"/></td></tr>
+<%  }
   myFormBean.closePstmtConn();
 %>               
 </table>
 </center>
 
 </body>
-</html>
+</html:html>
  

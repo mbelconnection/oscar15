@@ -427,14 +427,6 @@
                input="/oscarMessenger/CreateMessage.jsp">
        <forward name="success" path="/oscarMessenger/CreateMessage.jsp"/>
    </action>
-   
-  <action     path="/oscarMessenger/WriteToEncounter"
-               type="oscar.oscarMessenger.pageUtil.MsgWriteToEncounterAction"
-               name=""
-               scope="request"
-               input="/oscarMessenger/ViewMessage.jsp">
-       <forward name="success" path="/oscarEncounter/IncomingEncounter.do"/>
-   </action>
 
     <!-- Edit oscarRx -->
     <action     path="/oscarRx/choosePatient"
@@ -990,7 +982,7 @@
                 type="oscar.oscarEncounter.immunization.config.pageUtil.EctImmCreateImmunizationSetInitAction"
                 name="EctImmCreateImmunizationSetInitForm"
                 scope="request"
-                input="/immunization/config/CreateImmunizationSetInit.jsp">
+		input="/oscarEncounter/immunization/config/CreateImmunizationSetInit.jsp">
         <forward name="success" path="/oscarEncounter/immunization/config/CreateImmunizationSetConfig.jsp"/>
     </action>
     <action     path="/oscarEncounter/immunization/config/CreateImmunizationSetConfig"

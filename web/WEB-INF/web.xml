@@ -52,7 +52,14 @@
 	   <servlet-class>oscar.DocumentMgtUploadServlet</servlet-class>
 	   <load-on-startup>0</load-on-startup>
    </servlet>
-					       
+
+	<!-- form pdf print -->
+	<servlet>
+		<servlet-name>pdfCreator</servlet-name>
+		<servlet-class>oscar.form.pdfservlet.FrmPDFServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
   <!-- Action Servlet Mapping -->
   <servlet-mapping>
     <servlet-name>action</servlet-name>
@@ -76,6 +83,11 @@
 	  <servlet-name>UploadDocument</servlet-name>
 	  <url-pattern>/servlet/oscar.DocumentMgtUploadServlet</url-pattern>
   </servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>pdfCreator</servlet-name>
+		<url-pattern>/form/createpdf</url-pattern>
+	</servlet-mapping>
 
   <!-- The Welcome File List -->
   <welcome-file-list>

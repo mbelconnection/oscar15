@@ -104,8 +104,10 @@ function setfocus() {
             param0[2] = "%"; // doctype;
     
           
+System.out.println(getClass().getName() + ": aqui1");
         ResultSet rslocal2 = null;
  	rslocal2 = apptMainBean.queryResults(param0, "match_document");
+System.out.println(getClass().getName() + ": aqui1");
  	  while(rslocal2.next()){
  	  dispDesc = rslocal2.getString("docdesc");
  	   dispFilename = rslocal2.getString("docfilename");
@@ -129,6 +131,7 @@ function setfocus() {
             proLast = rslocal.getString("last_name");
   //   proOHIP = rslocal.getString("provider_no");
   }
+System.out.println(getClass().getName() + ": aqui");
 //  }
 %>
   <tr>
@@ -143,6 +146,7 @@ function setfocus() {
 
 }
 
+System.out.println(getClass().getName() + ": aqui");
 if (count0 == 0) {
   %>
     <tr><td colspan='5'><bean:message key="dms.documentReport.msgNoMatch"/></td></tr>
@@ -175,6 +179,7 @@ if (count0 == 0) {
 
 
 
+System.out.println(getClass().getName() + ": aqui");
        int count = 0;
              String[] param1 = new String[1];
                    param1[0] = function;
@@ -204,6 +209,7 @@ if (count0 == 0) {
 	    //   proOHIP = rslocal.getString("provider_no");
   }
   
+System.out.println(getClass().getName() + ": aqui");
   %>
     <tr>
             <td width="34%"><a href=# onClick="javascript:rs('new','documentGetFile.jsp?document=<%=dispFilename%>&type=<%=dispStatus%>&doc_no=<%=dispDocNo%>', 480,480,1)"><%=dispDesc%></td>
@@ -227,6 +233,7 @@ if (count0 == 0) {
 <%
 } 
 apptMainBean.closePstmtConn();
+System.out.println(getClass().getName() + ": aqui");
 %>
 
 <br>

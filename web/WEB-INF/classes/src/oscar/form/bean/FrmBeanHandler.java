@@ -52,7 +52,7 @@ public class FrmBeanHandler {
             for(rs = db.GetSQL(sql); rs.next(); )
             {
                 FrmBean frmBean = new FrmBean(rs.getString("form_name"));
-                if(rs.getInt("hidden")==1)
+                if( Integer.parseInt(rs.getString("hidden").trim())==1)
                     formShownVector.add(frmBean);
                 else
                     formHiddenVector.add(frmBean);

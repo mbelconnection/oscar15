@@ -375,7 +375,16 @@ DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:ss:mm.SSS", request.
 <TD width="20%" ROWSPAN="1" class="<%=bodd?"lilacRed":"whiteRed"%>"><a href=# onClick="popupPage(600,800,'../demographic/demographiccontrol.jsp?demographic_no=<%=rs.getString("demographic_no")%>&displaymode=edit&dboperation=search_detail')"><%=rs.getString("last_name")%>,<%=rs.getString("first_name")%></a></TD>
 <TD width="20%" ROWSPAN="1" class="<%=bodd?"lilacRed":"whiteRed"%>"><%=provider%></TD>
 <TD width="20%" ROWSPAN="1" class="<%=bodd?"lilacRed":"whiteRed"%>"><%=rs.getString("service_date")%> </TD>
-<TD width="10%" ROWSPAN="1" class="<%=bodd?"lilacRed":"whiteRed"%>"><%=rs.getString("status").equals("A")?"Active":rs.getString("status").equals("C")?"Completed":rs.getString("status").equals("D")?"Deleted":rs.getString("status")%></TD>
+<TD width="10%" ROWSPAN="1" class="<%=bodd?"lilacRed":"whiteRed"%>">
+<% String rsStatus = rs.getString("status");
+   if (rsStatus.equals("A")) { %>
+<bean:message key="tickler.ticklerDemoMain.formActive"/>
+<% } else if (rsStatus.equals("C")) { %>
+<bean:message key="tickler.ticklerDemoMain.formCompleted"/>
+<% } else if (rsStatus.equals("D")) { %>
+<bean:message key="tickler.ticklerDemoMain.formDeleted"/>
+<% } else { %>
+<%= rs.getString("status")%><% } %></TD>
 <TD width="30%" ROWSPAN="1" class="<%=bodd?"lilacRed":"whiteRed"%>"><%=rs.getString("message")%></TD>
  </tr>
 <%
@@ -386,7 +395,16 @@ DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:ss:mm.SSS", request.
 <TD width="20%" ROWSPAN="1" class="<%=bodd?"lilac":"white"%>"><a href=# onClick="popupPage(600,800,'../demographic/demographiccontrol.jsp?demographic_no=<%=rs.getString("demographic_no")%>&displaymode=edit&dboperation=search_detail')"><%=rs.getString("last_name")%>,<%=rs.getString("first_name")%></a></TD>
 <TD width="20%" ROWSPAN="1" class="<%=bodd?"lilac":"white"%>"><%=provider%></TD>
 <TD width="20%" ROWSPAN="1" class="<%=bodd?"lilac":"white"%>"><%=rs.getString("service_date")%> </TD>
-<TD width="10%" ROWSPAN="1" class="<%=bodd?"lilac":"white"%>"><%=rs.getString("status").equals("A")?"Active":rs.getString("status").equals("C")?"Completed":rs.getString("status").equals("D")?"Deleted":rs.getString("status")%></TD>
+<TD width="10%" ROWSPAN="1" class="<%=bodd?"lilac":"white"%>">
+<% String rsStatus = rs.getString("status");
+   if (rsStatus.equals("A")) { %>
+<bean:message key="tickler.ticklerDemoMain.formActive"/>
+<% } else if (rsStatus.equals("C")) { %>
+<bean:message key="tickler.ticklerDemoMain.formCompleted"/>
+<% } else if (rsStatus.equals("D")) { %>
+<bean:message key="tickler.ticklerDemoMain.formDeleted"/>
+<% } else { %>
+<%= rs.getString("status")%><% } %></TD>
 <TD width="30%" ROWSPAN="1" class="<%=bodd?"lilac":"white"%>"><%=rs.getString("message")%></TD>
  </tr>
 <%

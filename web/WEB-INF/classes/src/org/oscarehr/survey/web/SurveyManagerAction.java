@@ -200,6 +200,8 @@ public class SurveyManagerAction extends AbstractSurveyAction {
 		SurveyManagerFormBean formBean = (SurveyManagerFormBean)surveyForm.get("web");
 		
 		String id = request.getParameter("id");
+		if(id==null)
+			id = (String)request.getAttribute("id");
 		
 		if(id == null) {
 			this.postMessage(request,"survey.noid");
@@ -229,6 +231,7 @@ public class SurveyManagerAction extends AbstractSurveyAction {
         	postMessage(request,"survey.edit_error",e.getMessage());
         	return list(mapping,form,request,response);
         }
+        
         formBean.setPage("1");
 		
         return form(mapping,form,request,response);
@@ -262,15 +265,18 @@ public class SurveyManagerAction extends AbstractSurveyAction {
 		request.setAttribute("pages",pages);
 					
 		String pageName = formBean.getPage();
+		
 		if(pageName.equalsIgnoreCase("Introduction")) {
 			
 		}
 		else if(pageName.equals("Closing")) {
 			
-		} else {
+		} else {	
+			
 			if(pageName == null || pageName.length()==0) {
 				pageName = "1";
 	    	    }
+	    	    
 			if(pageName.startsWith("Page")) {
 				pageName = pageName.substring(5);
 			}
@@ -285,14 +291,15 @@ public class SurveyManagerAction extends AbstractSurveyAction {
 		
 		request.setAttribute("QuestionTypes", questionTypes);
 		
-		setSectionProperties(request,survey,formBean);
+        setSectionProperties(request,survey,formBean);
         
 		return mapping.findForward("edit");
 	}
 		
 	public ActionForward navigate(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-		DynaActionForm surveyForm = (DynaActionForm)form;
+		//DynaActionForm surveyForm = (DynaActionForm)form;		
 		return form(mapping,form,request,response);
+		
 	}
 	
 	public ActionForward add_introduction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
@@ -417,6 +424,11 @@ public class SurveyManagerAction extends AbstractSurveyAction {
 		}
 		
 		formBean.setPage("1");
+		return form(mapping,form,request,response);
+	}
+	
+	public ActionForward update_section(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+		request.setAttribute("updateSection", "true");
 		return form(mapping,form,request,response);
 	}
 	
@@ -693,8 +705,9 @@ public class SurveyManagerAction extends AbstractSurveyAction {
 		return list(mapping,form,request,response);
 	}
 	
+	
 	public ActionForward save(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-		if(!userManager.isAdmin(request)) {
+	if(!userManager.isAdmin(request)) {
     		postMessage(request,"survey.auth");
     		return mapping.findForward("auth");
     	}
@@ -895,10 +908,11 @@ public class SurveyManagerAction extends AbstractSurveyAction {
         		
         		if(!(pageName.equalsIgnoreCase("Introduction")) && !(pageName.equalsIgnoreCase("Closing"))) {
         		Section section = SurveyModelManager.findSection(survey,formBean.getPage(),Integer.valueOf(sectionId).intValue());
-        		if(section != null) {
+        		if( section != null && request.getAttribute("updateSection")=="true") {
         			section.setDescription(description);
         			//log.debug("setting description for section " + sectionId);
         		}
+        		
         		}
         	}
         }

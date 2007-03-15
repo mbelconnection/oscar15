@@ -160,7 +160,7 @@ public class TicklerAction extends DispatchAction {
         		for(int k=0;k<providerProgram.size();k++)
             	{
         			String programId = Long.toString(((ProgramProvider)(providerProgram.get(k))).getProgramId());
-        			String ticklerDemoProgramId= Integer.toString(((Integer)ticklerDemoProgram.get(j)));
+        			String ticklerDemoProgramId= Long.toString(((Long)ticklerDemoProgram.get(j)));
         			
         			//if (((ProgramProvider)(providerProgram.get(k))).getProgramId().equals(ticklerDemoProgram.get(j))){
         			if(programId.equals(ticklerDemoProgramId)){
@@ -242,7 +242,7 @@ public class TicklerAction extends DispatchAction {
 		DynaActionForm ticklerForm = (DynaActionForm)form;
         CustomFilter filter = (CustomFilter)ticklerForm.get("filter");
         String name = filter.getName();
-        CustomFilter newFilter = ticklerMgr.getCustomFilter(name);
+        CustomFilter newFilter = ticklerMgr.getCustomFilter(name,this.getProviderNo(request));
         
         /*String filterId = Long.toString(filter.getId());
         CustomFilter newFilter = ticklerMgr.getCustomFilterById(Integer.valueOf(filterId));

@@ -189,7 +189,7 @@ public class TicklerAction extends DispatchAction {
 			CustomFilter myfilter = new CustomFilter();
 			myfilter.setName("*Myticklers*");
 			myfilter.setStartDate("");
-			myfilter.setEnd_date(new Date(System.currentTimeMillis()));
+			myfilter.setEndDate("");
 			myfilter.setProvider_no(this.getProviderNo(request));
 			myfilter.setStatus("A");
 			myfilter.setPriority("");

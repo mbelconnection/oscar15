@@ -46,6 +46,7 @@ Record Immunization
 }
 </style>
 <%
+System.out.println("we are here ....");
 oscar.oscarEncounter.pageUtil.EctSessionBean bean = (oscar.oscarEncounter.pageUtil.EctSessionBean)request.getSession().getAttribute("EctSessionBean");
 String node = request.getParameter("node").toString();
 String immName = request.getParameter("name").toString();

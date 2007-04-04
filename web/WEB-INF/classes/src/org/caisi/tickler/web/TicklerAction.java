@@ -160,7 +160,7 @@ public class TicklerAction extends DispatchAction {
         		for(int k=0;k<providerProgram.size();k++)
             	{
         			String programId = Long.toString(((ProgramProvider)(providerProgram.get(k))).getProgramId());
-        			String ticklerDemoProgramId= Long.toString(((Long)ticklerDemoProgram.get(j)));
+        			String ticklerDemoProgramId= Integer.toString((Integer)ticklerDemoProgram.get(j));
         			        			
         			//if (((ProgramProvider)(providerProgram.get(k))).getProgramId().equals(ticklerDemoProgram.get(j))){
         			if(programId.equals(ticklerDemoProgramId)){
@@ -195,7 +195,7 @@ public class TicklerAction extends DispatchAction {
 			myfilter.setStatus("A");
 			myfilter.setPriority("");
 			myfilter.setClient("");
-			myfilter.setAssignee((String)request.getSession().getAttribute("user"));
+			myfilter.setAssignee((String)request.getSession().getAttribute("user"));			
 			myfilter.setDemographic_webName("");
 			myfilter.setDemographic_no("");
 			ticklerMgr.saveCustomFilter(myfilter);

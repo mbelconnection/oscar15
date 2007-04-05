@@ -324,6 +324,10 @@ function IsPopupBlocker() {
 }
 
 </SCRIPT>
+<font color=purple><b>Please fill out this 20 minute CAISI system user and client impact survey.</b></font><a target="_blank"
+href="/oscar/PMmodule/Forms/SurveyExecute.do?method=survey&formId=6&clientId=0&type=provider">
+<font color=red>Click here to begin.</font></a>
+
 <%if (org.caisi.common.IsPropertiesOn.isCaisiEnable()){%>
 <body bgcolor="#EEEEFF" onload="load();" topmargin="0" leftmargin="0" rightmargin="0">
 <c:import url="/SystemMessage.do?method=view" />

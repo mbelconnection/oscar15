@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <!--
 Copyright (C) 2007.
@@ -69,7 +68,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		
 		thead th {
 			background: #4682B4 none repeat scroll 0%;
-			color: #FFFFFF;
 		}
 		
 		thead td {
@@ -137,7 +135,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <br />
     <br />
     <!-- Shelter Population -->
-    <table class="data">
+    <table>
         <caption>Homeless Shelter Population</caption>
         <tbody>
             <tr>
@@ -152,7 +150,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     </table>
     <br />
     <!-- Shelter Usage -->
-    <table class="data">
+    <table>
         <caption>Intensity of Shelter Use</caption>
         <tbody>
             <tr>
@@ -171,7 +169,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     </table>
     <br />
     <!-- Mortality -->
-    <table class="data">
+    <table>
         <caption>Mortality In Shelters</caption>
         <tbody>
             <tr>
@@ -186,7 +184,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     </table>
     <br />
     <!-- Major Medical Condition -->
-    <table class="data">
+    <table>
         <caption>Major Medical Condition</caption>
         <thead>
             <tr>
@@ -207,7 +205,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     </table>
     <br />
     <!-- Major Mental Illness -->
-    <table class="data">
+    <table>
         <caption>Major Mental Illness</caption>
         <thead>
             <tr>
@@ -228,7 +226,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     </table>
     <br />
     <!-- Serious Medical Conditions -->
-    <table class="data">
+    <table>
         <caption>Incidence in the past year of Serious Medical Conditions</caption>
         <thead>
             <tr>

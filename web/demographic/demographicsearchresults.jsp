@@ -186,7 +186,7 @@ function checkTypeIn() {
       <td align="center"><%=rs.getString("patient_status")==null||rs.getString("patient_status").equals("")?"&nbsp;":rs.getString("patient_status")%></td>
       <td align="center" nowrap><%=rs.getString("phone")==null||rs.getString("phone").equals("")?"&nbsp;":(rs.getString("phone").length()==10?(rs.getString("phone").substring(0,3)+"-"+rs.getString("phone").substring(3)):rs.getString("phone"))%></td>
 </tr>
-<%
+<%	
 		}
 	}
 	apptMainBean.closePstmtConn();

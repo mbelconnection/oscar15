@@ -43,6 +43,7 @@ public class PopulationReportAction extends DispatchAction {
 		Map<String, PopulationReportStatistic> majorMedicalConditions = populationReportManager.getMajorMedicalConditions();
 		Map<String, PopulationReportStatistic> majorMentalIllnesses = populationReportManager.getMajorMentalIllnesses();
 		Map<String, PopulationReportStatistic> seriousMedicalConditions = populationReportManager.getSeriousMedicalConditions();
+		Map<String, Map<String, String>> categoryCodeDescriptions = populationReportManager.getCategoryCodeDescriptions();
 		 
 		// set report attributes
 		request.setAttribute("date", DateTimeFormatUtils.getStringFromDate(currentDateTime));
@@ -53,6 +54,7 @@ public class PopulationReportAction extends DispatchAction {
 		request.setAttribute("majorMedicalConditions", majorMedicalConditions);
 		request.setAttribute("majorMentalIllnesses", majorMentalIllnesses);
 		request.setAttribute("seriousMedicalConditions", seriousMedicalConditions);
+		request.setAttribute("categoryCodeDescriptions", categoryCodeDescriptions);
 		
 		// forward to view page
 		return mapping.findForward(REPORT);

@@ -53,7 +53,11 @@ public class PopulationReportDAOHibernate extends HibernateDaoSupport implements
 				clientIdToStayMap.put(clientId, new HashSet<Stay>());
 			}
 
-			clientIdToStayMap.get(clientId).add(new Stay(admission, discharge, start, end));
+			try {
+				clientIdToStayMap.get(clientId).add(new Stay(admission, discharge, start, end));
+			} catch (IllegalArgumentException e) {
+				System.err.println("client id: " + clientId);
+			}
 		}
 		
 		for (Entry<Integer, Set<Stay>> entry : clientIdToStayMap.entrySet()) {

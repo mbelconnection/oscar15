@@ -10,10 +10,15 @@ public class Stay {
 	private Interval interval;
 
 	public Stay(Date admission, Date discharge, Date start, Date end) {
-		DateTime admissionDateTine = admission.after(start) ? new DateTime(admission) : new DateTime(start);
+		DateTime admissionDateTime = admission.after(start) ? new DateTime(admission) : new DateTime(start);
 		DateTime dischargeDateTime = (discharge != null) ? new DateTime(discharge) : new DateTime(end);
 		
-		interval = new Interval(admissionDateTine, dischargeDateTime);
+		try {
+			interval = new Interval(admissionDateTime, dischargeDateTime);
+		} catch (IllegalArgumentException e) {
+			System.err.println("admission: " + admissionDateTime + " discharge: " + dischargeDateTime);
+			throw e;
+		}
 	}
 	
 	public Interval getInterval() {

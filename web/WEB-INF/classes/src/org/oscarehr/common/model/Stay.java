@@ -16,7 +16,8 @@ public class Stay {
 		try {
 			interval = new Interval(admissionDateTime, dischargeDateTime);
 		} catch (IllegalArgumentException e) {
-			System.err.println("admission: " + admissionDateTime + " discharge: " + dischargeDateTime);
+			System.err.println("admission: " + admission + " discharge: " + discharge);
+			System.err.println("admission datetime: " + admissionDateTime + " discharge datetime: " + dischargeDateTime);
 			throw e;
 		}
 	}

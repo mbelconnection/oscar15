@@ -86,7 +86,7 @@ public boolean patientHasOutstandingPrivateBills(String demographicNo){
     int endHour=Integer.parseInt(((String) session.getAttribute("endhour")).trim());
     int everyMin=Integer.parseInt(((String) session.getAttribute("everymin")).trim());
     String newticklerwarningwindow=null;
-if (org.caisi.common.IsPropertiesOn.isCaisiEnable() && org.caisi.common.IsPropertiesOn.isTicklerPlusEnable()){
+if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable()){
 	newticklerwarningwindow = (String) session.getAttribute("newticklerwarningwindow");
 }   
     int lenLimitedL=11, lenLimitedS=3; //L - long, S - short
@@ -275,7 +275,7 @@ function changeGroup(s) {
         }else{
           newGroupNo = s.options[s.selectedIndex].value;
         }
-        <%if (org.caisi.common.IsPropertiesOn.isCaisiEnable() && org.caisi.common.IsPropertiesOn.isTicklerPlusEnable()){%>
+        <%if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable()){%>
 	  popupPage(10,10, "providercontrol.jsp?provider_no=<%=curUser_no%>&start_hour=<%=startHour%>&end_hour=<%=endHour%>&every_min=<%=everyMin%>&new_tickler_warning_window=<%=newticklerwarningwindow%>&color_template=deepblue&dboperation=updatepreference&displaymode=updatepreference&mygroup_no="+newGroupNo);
         <%}else {%>
           popupPage(10,10, "providercontrol.jsp?provider_no=<%=curUser_no%>&start_hour=<%=startHour%>&end_hour=<%=endHour%>&every_min=<%=everyMin%>&color_template=deepblue&dboperation=updatepreference&displaymode=updatepreference&mygroup_no="+newGroupNo);
@@ -324,7 +324,7 @@ function IsPopupBlocker() {
 }
 
 </SCRIPT>
-<%if (org.caisi.common.IsPropertiesOn.isCaisiEnable()){%>
+<%if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable()){%>
 <body bgcolor="#EEEEFF" onload="load();" topmargin="0" leftmargin="0" rightmargin="0">
 <c:import url="/SystemMessage.do?method=view" />
 <%}else{%>

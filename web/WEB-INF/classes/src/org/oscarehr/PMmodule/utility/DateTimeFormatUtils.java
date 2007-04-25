@@ -42,9 +42,12 @@ public final class DateTimeFormatUtils {
 	// Public methods
 	
 	// Timestamp
-	
+
 	public static final Timestamp getPast(int numYears) {
-		Calendar calendar = Calendar.getInstance();
+		return getPast(Calendar.getInstance(), numYears);
+	}
+
+	public static final Timestamp getPast(Calendar calendar, int numYears) {
 		calendar.add(Calendar.YEAR, -numYears);
 		
 		return new Timestamp(calendar.getTimeInMillis());		

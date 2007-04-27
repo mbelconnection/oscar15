@@ -336,10 +336,12 @@
 		<!-- case managment --></div>
 		</td>
 	</tr>
+	<!-- 
 	<tr>
 		<td width="5%"><html:checkbox property="intake.cboxPreferredLanguageUnknown" /></td>
 		<td colspan="3" class="style76">Unknown or Service Recipient Declined</td>
 	</tr>
+	 -->
 	<tr>
 		<td colspan="4" class="style76"></td>
 	</tr>

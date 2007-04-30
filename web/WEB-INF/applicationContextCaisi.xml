@@ -974,7 +974,7 @@
     
 	<bean id="version" class="org.caisi.service.impl.VersionImpl">
 		<property name="version">
-			<value>2.0.0</value>
+			<value>3.0.0</value>
 		</property>
 	</bean>
 </beans>

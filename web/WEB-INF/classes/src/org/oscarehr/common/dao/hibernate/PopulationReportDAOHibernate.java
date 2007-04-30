@@ -72,8 +72,8 @@ public class PopulationReportDAOHibernate extends HibernateDaoSupport implements
 		Map<Integer, Set<Stay>> clientIdToStayMap = new HashMap<Integer, Set<Stay>>();
 		
 		Calendar instant = Calendar.getInstance();
-		Date start = DateTimeFormatUtils.getPast(instant, numYears);
 		Date end = instant.getTime();
+		Date start = DateTimeFormatUtils.getPast(instant, numYears);
 		
 		for (Object o : getHibernateTemplate().find(HQL_GET_USAGES, start)) {
 			Object[] tuple = (Object[]) o;

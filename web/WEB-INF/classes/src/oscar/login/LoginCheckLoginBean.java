@@ -81,7 +81,16 @@ public class LoginCheckLoginBean {
         if (secBean.getB_ExpireSet().intValue() == 1 && secBean.getDate_ExpireDate().before(UtilDateUtilities.now())) {
             return cleanNullObjExpire(LOG_PRE + "Expired: " + username);
         }
-
+        
+        //Give warning if the password will be expired in 10 days.
+        long date_expireDate = secBean.getDate_ExpireDate().getTime();
+       	long date_now = UtilDateUtilities.now().getTime();
+        long date_diff = (date_expireDate - date_now)/(24*3600*1000);
+        String expired_days = "";        
+        if (secBean.getB_ExpireSet().intValue() == 1 && date_diff < 11) {
+        	expired_days = String.valueOf(date_diff);        	
+        }
+        
         StringBuffer sbTemp = new StringBuffer();
         byte[] btTypeInPasswd = md.digest(password.getBytes());
         for (int i = 0; i < btTypeInPasswd.length; i++)
@@ -97,13 +106,14 @@ public class LoginCheckLoginBean {
             userpassword = sbTemp.toString();
         }
 
-        if (password.equals(userpassword)) { // login successfully
-            String[] strAuth = new String[5];
+        if (password.equals(userpassword)) { // login successfully           
+        	String[] strAuth = new String[6];
             strAuth[0] = secBean.getProvider_no();
             strAuth[1] = firstname;
             strAuth[2] = lastname;
             strAuth[3] = profession;
             strAuth[4] = rolename;
+            strAuth[5] = expired_days;            
             return strAuth;
         } else { // login failed
             return cleanNullObj(LOG_PRE + "password failed: " + username);

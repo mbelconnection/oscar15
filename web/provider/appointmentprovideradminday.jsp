@@ -210,7 +210,26 @@ function popupPage(vheight,vwidth,varpage) {
     popup.focus();
   }
 }
-
+function popupPageOfChangePassword(){
+	<% 	
+		Integer ed;
+		String expired_days="";
+		if(session.getAttribute("expired_days")!=null){
+			expired_days = (String)session.getAttribute("expired_days");
+		}	
+		System.out.println("***** expired days???"+expired_days);
+		//ed = Integer.valueOf(expired_days);
+		if(!(expired_days.equals(" ")||expired_days.equals("")||expired_days==null)) {
+		//if(ed >= 0) {
+			System.out.println("***** inside ***** ");
+	%>
+		
+	window.open("changePassword.jsp","changePassword","resizable=yes,scrollbars=yes,width=400,height=300");
+	changePassword.moveTo(0,0);
+	<%
+		}		
+	%>
+}
 function popupPage2(varpage) {
     popupPage2(varpage, "apptProviderSearch");
 }
@@ -311,6 +330,7 @@ pu.focus();
 
 }
 
+	popupPageOfChangePassword();
 }
 
 function IsPopupBlocker() {

@@ -22,8 +22,8 @@ public class PopulationReportTask extends TimerTask {
 	
 	private static String getUrl() {
 		if (URL == null) {
-			URL = new StringBuilder("http://").append(OscarProperties.getInstance().getProperty("host")).append("/oscar/PopulationReport.do").toString();
-			LOG.debug("url: " + URL);
+			URL = new StringBuilder("https://").append(OscarProperties.getInstance().getProperty("host")).append("/oscar/PopulationReport.do").toString();
+			LOG.warn("url: " + URL);
 		}
 		
 		return URL;
@@ -32,7 +32,7 @@ public class PopulationReportTask extends TimerTask {
 	private static String getFile() {
 		if (FILE == null) {
 			FILE = new StringBuilder().append(System.getProperty("user.home")).append("/reports/report/populationReport.html").toString();
-			LOG.debug("file: " + FILE);
+			LOG.warn("file: " + FILE);
 		}
 		
 		return FILE;

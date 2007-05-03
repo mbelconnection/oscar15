@@ -28,6 +28,12 @@ Intake intake = intakeEditForm.getIntake();
 			// -->
 		</script>
 		<script type="text/javascript" src="<html:rewrite page="/js/genericIntake.js" />"></script>
+		<script type="text/javascript">
+			function printPreview() {
+				url = '<html:rewrite page="/PMmodule/GenericIntake/Edit.do?method=printPreview"/>';
+				window.open(url, 'intakePrintPreview', 'width=1024,height=768,scrollbars=1');
+			}
+		</script>
 		<html:base />
 	</head>
 	<body>
@@ -135,7 +141,7 @@ Intake intake = intakeEditForm.getIntake();
                                 <html:reset>Reset</html:reset>
                             </td>
 							<td align="right">
-                                <input type="button" value="Print" onclick="javascript:window.print()"/>&nbsp;
+								<input type="button" value="Print Preview" onclick="printPreview()" />&nbsp;
                                 <html:cancel>Close</html:cancel>
                             </td>
 						</tr>

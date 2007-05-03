@@ -35,6 +35,10 @@ public class Intake extends BaseIntake {
 	
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd kk:mm");
 
+	public static final String QUICK = "quick";
+	public static final String INDEPTH = "indepth";
+	public static final String PROGRAM = "program";
+	
 	public static Intake create(IntakeNode node, Integer clientId, Integer programId, String staffId) {
 		Intake intake = new Intake();
 		intake.setNode(node);

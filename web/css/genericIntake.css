@@ -5,12 +5,14 @@ html,body {
 	overflow: hidden;
 }
 
+.printBody {
+	padding: 10px;
+	overflow: scroll;
+}
+
 .intakeLayoutContainer {
-	width: 95%;
+	width: 100%;
 	height: 100%;
-	left: 0%;
-	top: 0%;
-	position: relative;
 	overflow: auto;
 }
 

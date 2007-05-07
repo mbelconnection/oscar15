@@ -3,11 +3,12 @@ function validateForm(form,tab,submit) {
 	
 	
 	if(tab  == 'Page 1') {		
-		var reference = form.elements['data.value(1_2_1)'].value;
-		if(reference == '') {
-			alert('Please provide a reference number');
-			return false;
-		}
+		//var reference = form.elements['data.value(1_2_1)'].value;
+		
+		//if(reference == '') {
+		//	alert('Please provide a reference number');
+		//	return false;
+		//}
 	}
 
 	if(tab == 'Page 4') {

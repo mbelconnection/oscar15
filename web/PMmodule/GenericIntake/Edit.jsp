@@ -28,15 +28,9 @@ Intake intake = intakeEditForm.getIntake();
 			// -->
 		</script>
 		<script type="text/javascript" src="<html:rewrite page="/js/genericIntake.js" />"></script>
-		<script type="text/javascript">
-			function printPreview() {
-				url = '<html:rewrite page="/PMmodule/GenericIntake/Edit.do?method=printPreview"/>';
-				window.open(url, 'intakePrintPreview', 'width=1024,height=768,scrollbars=1');
-			}
-		</script>
 		<html:base />
 	</head>
-	<body>
+	<body class="edit">
 		<html:form action="/PMmodule/GenericIntake/Edit" onsubmit="return validateEdit()">
 			<html:hidden property="method" />
 			
@@ -134,31 +128,29 @@ Intake intake = intakeEditForm.getIntake();
 				
 				<div id="bottomPane" dojoType="ContentPane" layoutAlign="bottom" class="intakeBottomPane">
 					<table class="intakeTable">
+                        <logic:messagesPresent>
+	                        <html:messages id="error" bundle="pmm">
+		                        <tr>
+		                            <td class="error"><c:out value="${error}" /></td>
+		                        </tr>
+	                        </html:messages>
+                        </logic:messagesPresent>
+                        <logic:messagesPresent message="true">
+	                        <html:messages id="message" message="true" bundle="pmm">
+		                        <tr>
+		                            <td class="message"><c:out value="${message}" /></td>
+		                        </tr>
+	                        </html:messages>
+                        </logic:messagesPresent>
 						<tr>
 							<td>
                                 <html:submit onclick="save()">Save</html:submit>&nbsp;
-                                <input type="button" value="Back" onclick="javascript:history.back()" />&nbsp;
                                 <html:reset>Reset</html:reset>
                             </td>
 							<td align="right">
-								<input type="button" value="Print Preview" onclick="printPreview()" />&nbsp;
-                                <html:cancel>Close</html:cancel>
+                                <input type="button" value="Close" onclick="history.go(-1)" />
                             </td>
 						</tr>
-                        <logic:messagesPresent>
-                        <html:messages id="error" bundle="pmm">
-                        <tr>
-                            <td class="error"><c:out value="${error}" /></td>
-                        </tr>
-                        </html:messages>
-                        </logic:messagesPresent>
-                        <logic:messagesPresent message="true">
-                        <html:messages id="message" message="true" bundle="pmm">
-                        <tr>
-                            <td class="message"><c:out value="${message}" /></td>
-                        </tr>
-                        </html:messages>
-                        </logic:messagesPresent>
 					</table>
 				</div>
 			</div>

@@ -29,7 +29,7 @@ Intake intake = intakeEditForm.getIntake();
 		</script>
 		<html:base />
 	</head>
-	<body class="printBody">
+	<body>
 		<table class="intakeTable">
 			<tr>
 				<td>

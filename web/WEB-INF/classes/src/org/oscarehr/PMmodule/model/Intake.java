@@ -168,6 +168,18 @@ public class Intake extends BaseIntake {
 	public String getCreatedOnStr() {
 		return DATE_FORMAT.format(getCreatedOn().getTime());
 	}
+	
+	public String getType() {
+		String type = PROGRAM;
+		
+		if (getNode().getId().equals(1)) {
+			type = QUICK;
+		} else if (getNode().getId().equals(2)) {
+			type = INDEPTH;
+		}
+		
+		return type;
+	}
 
 	@Override
 	public String toString() {

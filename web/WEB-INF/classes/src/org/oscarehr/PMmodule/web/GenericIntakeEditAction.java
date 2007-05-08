@@ -211,13 +211,11 @@ public class GenericIntakeEditAction extends BaseAction {
 		return bedPrograms;
 	}
 
-	private List<Program> getCommunityPrograms(Set<Program> providerPrograms) {
+	private List<Program> getCommunityPrograms() {
 		List<Program> communityPrograms = new ArrayList<Program>();
 		
 		for (Program program : programManager.getCommunityPrograms()) {
-			if (providerPrograms.contains(program)) {
-				communityPrograms.add(program);
-			}
+			communityPrograms.add(program);
 		}
 
 		return communityPrograms;
@@ -348,7 +346,7 @@ public class GenericIntakeEditAction extends BaseAction {
 			Set<Program> providerPrograms = getActiveProviderPrograms(providerNo);
 			
 			if (bedCommunityProgramsVisible) {
-				formBean.setBedCommunityPrograms(getBedPrograms(providerPrograms), getCommunityPrograms(providerPrograms));
+				formBean.setBedCommunityPrograms(getBedPrograms(providerPrograms), getCommunityPrograms());
 				formBean.setSelectedBedCommunityProgramId(currentBedCommunityProgramId);
 			}
 			

@@ -36,7 +36,7 @@ Intake intake = intakeEditForm.getIntake();
 					<input type="button" value="Print" onclick="window.print()">
 				</td>
 				<td align="right">
-					<input type="button" value="Close" onclick="self.close()" />
+					<input type="button" value="Close" onclick="window.close()" />
 				</td>
 			</tr>
 		</table>

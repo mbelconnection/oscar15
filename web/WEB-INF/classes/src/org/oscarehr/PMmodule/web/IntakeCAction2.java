@@ -459,6 +459,14 @@ public class IntakeCAction2 extends BaseAction {
 		IntakeCFormBean formBean = (IntakeCFormBean) intakeForm.get("view2");
 		Formintakec intakec = (Formintakec) intakeForm.get("intake");
 
+		//resolve the issue: after checked, never unchecked.
+		if (request.getParameter("intake.cboxCaseFile") == null) {
+			intakec.setCboxCaseFile("");
+		}
+		if (request.getParameter("intake.cboxPreAdmission") == null) {
+			intakec.setCboxPreAdmission("");
+		}
+		
 		boolean update = (intakec.getId() != null && intakec.getId() > 0);
 		
 		// handle past addresses

@@ -42,18 +42,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <thead>
             <tr>
                 <th>&nbsp;</th>
-                <c:forEach var="statistic" items="${question.value}"><td scope="col"><c:out value="${statistic.label}"></c:out></td></c:forEach>
+                <td scope="col">Count / Total</td>
+                <td scope="col">Percent</td>
             </tr>
         </thead>
         <tbody>
+            <c:forEach var="statistic" items="${question.value}">
             <tr>
-                <th scope="row">Count / Total</th>
-                <c:forEach var="statistic" items="${question.value}"><td><c:out value="${statistic.count}"></c:out> / <c:out value="${statistic.size}"></c:out></td></c:forEach>
+                <th><c:out value="${statistic.label}"></c:out></th>
+                <td><c:out value="${statistic.count}"></c:out> / <c:out value="${statistic.size}"></c:out></td>
+                <td><c:out value="${statistic.percent}"></c:out></td>
             </tr>
-            <tr>
-                <th scope="row">Percent</th>
-                <c:forEach var="statistic" items="${question.value}"><td><c:out value="${statistic.percent}"></c:out></td></c:forEach>
-            </tr>
+            </c:forEach>
         </tbody>
     </table>
     <br />

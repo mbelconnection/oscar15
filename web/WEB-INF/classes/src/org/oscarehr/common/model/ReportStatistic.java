@@ -37,7 +37,6 @@ public class ReportStatistic implements Comparable<ReportStatistic> {
 		this.label = label;
 	}
 
-	@Override
 	public int compareTo(ReportStatistic rhs) {
 		int compareTo = 0;
 		

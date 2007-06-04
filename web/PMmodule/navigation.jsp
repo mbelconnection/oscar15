@@ -22,6 +22,8 @@ function getIntakeReport(type) {
         return false;
     }
     
+    alert("Generating report from " + startDate + " to " + endDate + "." + " " + "Please note: it is normal for the generation process to take up to a few minutes to complete, be patient.");
+    
     location.href='<html:rewrite action="/PMmodule/GenericIntake/Report"/>?' + 'method=report' + '&type=' + type + '&startDate=' + startDate + '&endDate=' + endDate;
     
     return false;

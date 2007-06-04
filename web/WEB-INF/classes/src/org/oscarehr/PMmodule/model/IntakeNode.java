@@ -19,7 +19,10 @@
 package org.oscarehr.PMmodule.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.oscarehr.PMmodule.model.base.BaseIntakeNode;
@@ -33,7 +36,7 @@ public class IntakeNode extends BaseIntakeNode {
 	public IntakeNode(IntakeNodeTemplate nodeTemplate) {
 		super(null, nodeTemplate);
 	}
-	
+
 	/* [CONSTRUCTOR MARKER BEGIN] */
 
 	public IntakeNode() {
@@ -70,7 +73,7 @@ public class IntakeNode extends BaseIntakeNode {
 		child.setParent(this);
 		super.addTochildren(child);
 	}
-	
+
 	public boolean isIntake() {
 		return getParent() == null && getNodeTemplate().isIntake();
 	}
@@ -94,7 +97,7 @@ public class IntakeNode extends BaseIntakeNode {
 	public boolean isAnswerScalar() {
 		return getNodeTemplate().isAnswerScalar();
 	}
-	
+
 	public boolean isAnswerChoice() {
 		return getNodeTemplate().isAnswerChoice();
 	}
@@ -118,15 +121,15 @@ public class IntakeNode extends BaseIntakeNode {
 
 		return false;
 	}
-	
+
 	public IntakeNode getGrandParent() {
 		return getParent() != null ? getParent().getParent() : null;
 	}
-	
+
 	public String getType() {
 		return getNodeTemplate().getType().getType();
-    }
-	
+	}
+
 	public String getIdStr() {
 		return getId() != null ? getId().toString() : "";
 	}
@@ -150,6 +153,18 @@ public class IntakeNode extends BaseIntakeNode {
 
 		return 0;
 	}
+	
+	public Set<IntakeNode> getChoiceAnswers() {
+		Set<IntakeNode> choiceAnswers = new HashSet<IntakeNode>();
+		
+		for (IntakeNode child : getChildren()) {
+			if (child.isAnswerChoice()) {
+				choiceAnswers.add(child);
+			}
+		}
+		
+		return choiceAnswers;
+	}
 
 	public int getLevel() {
 		return walker.getLevel();
@@ -162,7 +177,15 @@ public class IntakeNode extends BaseIntakeNode {
 	public int getNumLevels() {
 		return walker.getNumLevels();
 	}
-
+	
+	public Set<IntakeNode> getQuestionsWithChoiceAnswers() {
+		return walker.getQuestionsWithChoiceAnswers();
+	}
+	
+	public SortedSet<Integer> getChoiceAnswerIds() {
+		return walker.getChoiceAnswerIds();
+	}
+	
 	@Override
 	public String toString() {
 		return new StringBuilder(REF).append("(").append(getId()).append(", ").append(getLabel()).append(", ").append(getNodeTemplate()).append(")").toString();

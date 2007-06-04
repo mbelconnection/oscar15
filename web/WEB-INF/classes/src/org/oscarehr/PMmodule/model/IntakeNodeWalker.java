@@ -19,7 +19,9 @@
 package org.oscarehr.PMmodule.model;
 
 import java.io.Serializable;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -31,7 +33,7 @@ public class IntakeNodeWalker implements Serializable {
 	
 	private static final Closure NULL_CLOSURE = new Closure() { public void execute(Object o) {} };
 	
-	private class GetLevelClosure implements Closure {
+	private class LevelClosure implements Closure {
 		private int level = 0;
 		
 		public void execute(Object o) {
@@ -43,7 +45,7 @@ public class IntakeNodeWalker implements Serializable {
         }
 	}
 	
-	private class GetQuestionLevelClosure implements Closure {
+	private class QuestionLevelClosure implements Closure {
 		private int questionLevel = 0;
 		
 		public void execute(Object o) {
@@ -60,7 +62,7 @@ public class IntakeNodeWalker implements Serializable {
 		}
 	}
 	
-	private class GetNumLevelsClosure implements Closure {
+	private class NumLevelsClosure implements Closure {
 		private SortedSet<Integer> levels = new TreeSet<Integer>();
 
 		public void execute(Object o) {
@@ -77,6 +79,41 @@ public class IntakeNodeWalker implements Serializable {
 		}
 	}
 	
+	private class QuestionsWithChoiceAnswersClosure implements Closure {
+		private Set<IntakeNode> questionsWithChoiceAnswers = new LinkedHashSet<IntakeNode>();
+
+		public void execute(Object o) {
+			IntakeNode parent = (IntakeNode) o;
+			
+			for (IntakeNode child : parent.getChildren()) {
+				if (child.isAnswerChoice()) {
+					questionsWithChoiceAnswers.add(parent);
+					break;
+				}
+			}
+		}
+		
+		public Set<IntakeNode> getQuestionsWithChoiceAnswers() {
+			return questionsWithChoiceAnswers;
+		}
+	}
+	
+	private class ChoiceAnswerIdsClosure implements Closure {
+		private SortedSet<Integer> choiceAnswerIds = new TreeSet<Integer>();
+
+		public void execute(Object o) {
+			IntakeNode node = (IntakeNode) o;
+			
+			if (node.isAnswerChoice()) {
+				choiceAnswerIds.add(node.getId());
+			}
+		}
+		
+		public SortedSet<Integer> getChoiceAnswerIds() {
+			return choiceAnswerIds;
+		}
+	}
+	
 	private IntakeNode node;
 	
 	public IntakeNodeWalker(IntakeNode node) {
@@ -88,24 +125,38 @@ public class IntakeNodeWalker implements Serializable {
 	}
 	
 	public int getLevel() {
-		GetLevelClosure closure = new GetLevelClosure();		
+		LevelClosure closure = new LevelClosure();		
 		up(node, closure);
 		
 		return closure.getLevel();
 	}
 	
 	public int getQuestionLevel() {
-		GetQuestionLevelClosure closure = new GetQuestionLevelClosure();
+		QuestionLevelClosure closure = new QuestionLevelClosure();
 		down(getRoot().getChildren(), closure);
 		
 		return closure.getQuestionLevel();
 	}
 	
 	public int getNumLevels() {
-		GetNumLevelsClosure closure = new GetNumLevelsClosure();
+		NumLevelsClosure closure = new NumLevelsClosure();
 		down(getRoot().getChildren(), closure);
 		
 		return closure.getNumLevels();
+	}
+	
+	public Set<IntakeNode> getQuestionsWithChoiceAnswers() {
+		QuestionsWithChoiceAnswersClosure closure = new QuestionsWithChoiceAnswersClosure();
+		down(getRoot().getChildren(), closure);
+		
+		return closure.getQuestionsWithChoiceAnswers();
+	}
+	
+	public SortedSet<Integer> getChoiceAnswerIds() {
+		ChoiceAnswerIdsClosure closure = new ChoiceAnswerIdsClosure();
+		down(getRoot().getChildren(), closure);
+		
+		return closure.getChoiceAnswerIds();
 	}
 	
 	private IntakeNode up(IntakeNode node, Closure closure) {

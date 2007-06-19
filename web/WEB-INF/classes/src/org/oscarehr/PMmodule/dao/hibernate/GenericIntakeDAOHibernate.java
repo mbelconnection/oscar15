@@ -95,7 +95,7 @@ public class GenericIntakeDAOHibernate extends HibernateDaoSupport implements Ge
 			throw new IllegalArgumentException("Parameters node, startDate and endDate must be non-null");
 		}
 
-		List<?> results = getHibernateTemplate().find("select i.id from Intake i where i.createdOn in (select max(i.createdOn) from Intake i where i.node.id = ? and i.createdOn >= ? and i.createdOn <= ? group by i.clientId)", new Object[] { nodeId, startDate, endDate });
+		List<?> results = getHibernateTemplate().find("select i.id, max(i.createdOn) from Intake i where i.node.id = ? and i.createdOn between ? and ? group by i.clientId", new Object[] { nodeId, startDate, endDate });
 		SortedSet<Integer> intakeIds = convertToIntegers(results);
 
 		LOG.info("get latest intake ids: " + intakeIds.size());
@@ -152,7 +152,10 @@ public class GenericIntakeDAOHibernate extends HibernateDaoSupport implements Ge
 
 		if (results != null) {
 			for (Object o : results) {
-				intakeIds.add((Integer) o);
+				Object[] tuple = (Object[]) o;
+				Integer intakeId = (Integer) tuple[0];
+				
+				intakeIds.add(intakeId);
 			}
 		}
 

@@ -31,7 +31,7 @@ public class FrmDischargeSummaryRecord extends FrmRecord {
             
             /**************will delete this section later *****************************/
             /* For Client Report in Seaton House */
-            /* ******************            
+            /* ******************           
             
             String sql_cr1 = "SELECT demographic_no, last_name, first_name, CONCAT(date_of_birth,'/',month_of_birth,'/',year_of_birth) as dob from demographic";
             ResultSet rs_cr1 = db.GetSQL(sql_cr1);
@@ -47,8 +47,13 @@ public class FrmDischargeSummaryRecord extends FrmRecord {
             	String demographic_no = rs_cr1.getString("demographic_no");
             	String last_name = rs_cr1.getString("last_name");
             	String first_name = rs_cr1.getString("first_name");
-            	String dob = rs_cr1.getString("dob");            	
+            	String dob = rs_cr1.getString("dob");  
             	
+            	String issue_code = "";
+    			String issue_description = "";
+    			String casemgmt_issue_resolved = "";
+    			String casemgmt_issue_type = "";
+    			
             	String sql_cr2 = "select program_id from admission where client_id="+demographic_no+" and admission_status='current' ";
             	ResultSet rs_cr2 = db.GetSQL(sql_cr2);
         		while(rs_cr2.next()) {
@@ -91,18 +96,22 @@ public class FrmDischargeSummaryRecord extends FrmRecord {
         		
         		String sql_cr5 = "select i.code as code ,i.description as descr, ci.resolved as resolved,ci.type as type from casemgmt_issue ci, issue i where ci.demographic_no="+demographic_no+" and ci.issue_id=i.issue_id";
         		ResultSet rs_cr5 = db.GetSQL(sql_cr5);
-        		while(rs_cr5.next()) {
-        			String issue_code = rs_cr5.getString("code");
-        			String issue_description = rs_cr5.getString("descr");
-        			String casemgmt_issue_resolved = rs_cr5.getString("resolved");
-        			String casemgmt_issue_type = rs_cr5.getString("type");
-        			//issue_description.replace("'","'\'");
-        			//UtilMisc.charEscape(issue_description,'\'');
-        			//String sql_insert = "insert into clientReport values('"+program_name+"','"+demographic_no+"','"+last_name+"','"+first_name+"','"+dob+"','"+issue_code+"','"+issue_desription+"','"+casemgmt_issue_resolved+"','"+casemgmt_issue_type+"','"+fusion47_yn+"','"+rotary12_yn+"')";
+        		if(rs_cr5.next()){
+        			 do {
+        				 issue_code = rs_cr5.getString("code");
+        				 issue_description = rs_cr5.getString("descr");
+        				 casemgmt_issue_resolved = rs_cr5.getString("resolved");
+        				 casemgmt_issue_type = rs_cr5.getString("type");
+        				 String sql_insert = "insert into clientReport values('"+UtilMisc.charEscape(program_name,'\'')+"','"+UtilMisc.charEscape(demographic_no,'\'')+"','"+UtilMisc.charEscape(last_name,'\'')+"','"+UtilMisc.charEscape(first_name,'\'')+"','"+dob+"','"+UtilMisc.charEscape(issue_code,'\'')+"','"+UtilMisc.charEscape(issue_description,'\'')+"','"+casemgmt_issue_resolved+"','"+casemgmt_issue_type+"','"+fusion47_yn+"','"+rotary12_yn+"')";
+        				 System.out.println(sql_insert);
+        				 db.RunSQL(sql_insert);
+        			 }
+        			while(rs_cr5.next());        		
+        		}
+        		else {
         			String sql_insert = "insert into clientReport values('"+UtilMisc.charEscape(program_name,'\'')+"','"+UtilMisc.charEscape(demographic_no,'\'')+"','"+UtilMisc.charEscape(last_name,'\'')+"','"+UtilMisc.charEscape(first_name,'\'')+"','"+dob+"','"+UtilMisc.charEscape(issue_code,'\'')+"','"+UtilMisc.charEscape(issue_description,'\'')+"','"+casemgmt_issue_resolved+"','"+casemgmt_issue_type+"','"+fusion47_yn+"','"+rotary12_yn+"')";
         			System.out.println(sql_insert);
         			db.RunSQL(sql_insert);
-        			
         		}
         		rs_cr5.close();		
         		

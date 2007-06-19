@@ -116,7 +116,19 @@ public class IntakeNode extends BaseIntakeNode {
 
 	public boolean hasPages() {
 		for (IntakeNode child : getChildren()) {
-			return child.isPage();
+			if (child.isPage()) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public boolean hasSections() {
+		for (IntakeNode child : getChildren()) {
+			if (child.isSection()) {
+				return true;
+			}
 		}
 
 		return false;

@@ -1230,7 +1230,7 @@
             <forward name="print" path="/PMmodule/GenericIntake/Print.jsp" redirect="true" />
         </action>
         <action path="/PMmodule/GenericIntake/Report" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method" scope="request">
-            <forward name="report" path="/PMmodule/GenericIntake/Report.jsp"/>
+            <forward name="report" path="/PMmodule/GenericIntake/Report.jsp" />
         </action>
         <!-- Generic Intake -->
         <!-- FORMS -->

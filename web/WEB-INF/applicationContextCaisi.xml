@@ -597,7 +597,8 @@
 				<property name="clientReferralDAO" ref="clientReferralDAO" />
 				<property name="programQueueManager" ref="programQueueManager" />
 				<property name="integratorManager" ref="integratorManager" />
-				<property name="admissionManager" ref="admissionManager" />				
+				<property name="admissionManager" ref="admissionManager" />	
+				<property name="outsideOfDomainEnabled" value="${pmm.client.search.outside.of.domain.enabled}" />			
 			</bean>
 		</property>
 	</bean>

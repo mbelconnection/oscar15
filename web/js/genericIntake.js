@@ -39,14 +39,9 @@ function validateEdit() {
 		document.forms[0].elements['client.hin'].focus();
 		return false;
     }
-	if(healthCardVersion.value!="" && !isNaN(healthCardVersion.value) )
-    {
-    	alert("Please enter only alpha characters in the \"Version\" field.");
-		document.forms[0].elements['client.ver'].focus();
-		return false;
-    }
+	
 	if(!checkChar(healthCardVersion)){
-		return error(healthCardVersion, "P!!lease enter only alpha characters in the \"Version\" field.");
+		return error(healthCardVersion, "Please enter only alpha characters in the \"Version\" field.");
 		
 	}
 	document.forms[0].elements['client.ver'].value = healthCardVersion.value.toUpperCase();

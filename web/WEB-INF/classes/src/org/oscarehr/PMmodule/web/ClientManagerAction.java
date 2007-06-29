@@ -503,12 +503,15 @@ public class ClientManagerAction extends BaseAction {
         ClientReferral referral = clientManager.getClientReferral(referralId);
         Agency agency = agencyManager.getAgency("" + referral.getAgencyId());
         Demographic client = clientManager.getClientByDemographicNo("" + referral.getClientId());
-
+        Long providerNo = referral.getProviderNo();
+        Provider provider = providerManager.getProvider("" + providerNo);
         DynaActionForm clientForm = (DynaActionForm) form;
+
         clientForm.set("referral", referral);
         clientForm.set("agency", agency);
         clientForm.set("client", client);
-
+        clientForm.set("provider", provider);
+        
         return mapping.findForward("view_referral");
     }
 
@@ -517,11 +520,15 @@ public class ClientManagerAction extends BaseAction {
         Admission admission = admissionManager.getAdmission(Long.valueOf(admissionId));
         Agency agency = agencyManager.getAgency("" + admission.getAgencyId());        
         Demographic client = clientManager.getClientByDemographicNo("" + admission.getClientId());
+        Long providerNo = admission.getProviderNo();
+        Provider provider = providerManager.getProvider("" + providerNo);
 
         DynaActionForm clientForm = (DynaActionForm) form;
         clientForm.set("admission", admission);
         clientForm.set("client", client);
         clientForm.set("agency", agency);
+        clientForm.set("provider", provider);
+
         
         return mapping.findForward("view_admission");
     }

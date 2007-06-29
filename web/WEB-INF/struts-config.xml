@@ -296,6 +296,7 @@
             <form-property name="unreservedBeds" type="org.oscarehr.PMmodule.model.Bed[]"/>
             <form-property name="bedDemographicStatuses" type="org.oscarehr.PMmodule.model.BedDemographicStatus[]"/>
             <form-property name="agency" type="org.oscarehr.PMmodule.model.Agency"/>
+            <form-property name="provider" type="org.oscarehr.PMmodule.model.Provider"/>
             <form-property name="programWithIntakeId" type="java.lang.String"/>
         </form-bean>
         <form-bean name="staffManagerForm" type="org.apache.struts.validator.DynaValidatorForm">

@@ -43,6 +43,10 @@
                 <td><bean:write name="clientManagerForm" property="client.formattedName"/></td>
             </tr>
             <tr class="b">
+                <td width="20%">Provider name:</td>
+                <td><bean:write name="clientManagerForm" property="provider.formattedName"/></td>
+            </tr>
+            <tr class="b">
                 <td width="20%">Program name:</td>
                 <td><bean:write name="clientManagerForm" property="referral.programName"/></td>
             </tr>

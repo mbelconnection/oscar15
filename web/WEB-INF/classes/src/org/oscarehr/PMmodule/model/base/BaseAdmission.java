@@ -13,8 +13,8 @@ import java.io.Serializable;
  */
 
 public abstract class BaseAdmission  implements Serializable {
-
-	public static String REF = "Admission";
+    
+    public static String REF = "Admission";
 	public static String PROP_CLIENT = "client";
 	public static String PROP_PROGRAM_NAME = "programName";
 	public static String PROP_TEMP_ADMIT_DISCHARGE = "TempAdmitDischarge";

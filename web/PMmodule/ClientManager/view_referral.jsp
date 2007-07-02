@@ -50,11 +50,12 @@
                 <td width="20%">Program name:</td>
                 <td><bean:write name="clientManagerForm" property="referral.programName"/></td>
             </tr>
+          
             <tr class="b">
                 <td width="20%">Agency:</td>
-                <td><bean:write name="clientManagerForm" property="agency.name"/></td>
-            </tr>
-
+                <td><c:out value="${agency.name}" /></td>              
+            </tr> 
+            
             <tr class="b">
                 <td width="20%">Provider:</td>
                 <td><bean:write name="clientManagerForm" property="referral.providerFormattedName"/></td>

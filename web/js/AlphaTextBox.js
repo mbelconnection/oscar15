@@ -1,5 +1,7 @@
-dojo.require("dojo.widget.validate");
-dojo.provide("dojo.widget.validate.AlphaTextBox");
+dojo.require("dojo.widget.ValidationTextbox");
+dojo.require("dojo.validate.common");
+dojo.provide("dojo.widget.AlphaTextBox");
+
 
 /*
  	  ****** AlphaTextBox *
@@ -7,17 +9,29 @@ dojo.provide("dojo.widget.validate.AlphaTextBox");
  	  A subclass of ValidationTextbox.
  	  Over-rides isValid to test if input is alpha characters only, no numbers allowed.
 */
-dojo.widget.validate.AlphaTextBox = function(node) {}
 
-dojo.inherits(dojo.widget.validate.ValidationTextBox);
+dojo.widget.defineWidget(
+        "dojo.widget.AlphaTextBox",
+        dojo.widget.ValidationTextbox,
+{
+    mixInProperties: function(localProperties, frag){
+        // First initialize properties in super-class.
+        dojo.widget.AlphaTextBox.superclass.mixInProperties.apply(this, arguments);
 
-dojo.lang.extend(dojo.widget.validate.ValidationTextBox, {
-// new subclass properties
-    widgetType: "AlphaTextBox",
+        if (localProperties.length){
+            this.flags.length = parseInt(localProperties.length);
+        }
+        if (localProperties.maxlength){
+            this.flags.maxlength = parseInt(localProperties.maxlength);
+        }
+        if (localProperties.minlength){
+            this.flags.minlength = parseInt(localProperties.minlength);
+        }
+    },
 
-    isValid: function() {
-        return dojo.validate.us.isText(this.textbox.value);
+    isValid: function(){
+        // summary: Over-ride for integer validation
+        return dojo.validate.isText(this.textbox.value, this.flags) && this.textbox.value.match('[^0-9]');
     }
-});
+})
 
-dojo.widget.tags.addParseTreeHandler("dojo:AlphaTextBox");

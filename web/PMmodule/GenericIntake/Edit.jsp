@@ -21,6 +21,7 @@
         // -->
     </script>
     <script type="text/javascript" src="<html:rewrite page="/dojoAjax/dojo.js" />"></script>
+    <script type="text/javascript" src="<html:rewrite page="/js/AlphaTextBox.js" />"></script>
     <script type="text/javascript">
         <!--
         dojo.require("dojo.widget.*");
@@ -28,7 +29,6 @@
         // -->
     </script>
     <script type="text/javascript" src="<html:rewrite page="/js/genericIntake.js" />"></script>
-    <script type="text/javascript" src="<html:rewrite page="/js/AlphaTextBox.js" />"></script>
     <html:base />
 </head>
 <body class="edit">

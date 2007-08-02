@@ -42,7 +42,7 @@ public class GenericIntakeNodeDAOHibernate extends HibernateDaoSupport implement
 		if (intakeNodeId == null || intakeNodeId < 1) {
 			throw new IllegalArgumentException("intakeNodeId must be non-null and greater than 0");
 		}
-		
+		System.out.println("----------intake node = "+ intakeNodeId);
 		IntakeNode intakeNode = (IntakeNode) getHibernateTemplate().load(IntakeNode.class, intakeNodeId);
 		getChildren(intakeNode);
 		

@@ -119,7 +119,8 @@
 			column="clientstatus_id"
 			name="ClientStatusId"
 			not-null="false"
-			type="integer" />	
+			type="integer"
+			length="20" />			
 		<many-to-one
 			name="clientStatus"
 			class="org.oscarehr.PMmodule.model.ProgramClientStatus"

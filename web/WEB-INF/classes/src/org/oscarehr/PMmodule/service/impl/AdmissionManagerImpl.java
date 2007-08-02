@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.oscarehr.PMmodule.dao.AdmissionDao;
 import org.oscarehr.PMmodule.dao.ClientReferralDAO;
+import org.oscarehr.PMmodule.dao.ProgramClientStatusDAO;
 import org.oscarehr.PMmodule.dao.ProgramDao;
 import org.oscarehr.PMmodule.dao.ProgramQueueDao;
 import org.oscarehr.PMmodule.exception.AdmissionException;
@@ -49,6 +50,7 @@ public class AdmissionManagerImpl implements AdmissionManager {
 	private ProgramQueueDao programQueueDao;
 	private ClientReferralDAO clientReferralDAO;
 	private BedDemographicManager bedDemographicManager;
+	private ProgramClientStatusDAO programClientStatusDAO;
 	
 	public void setAdmissionDao(AdmissionDao dao) {
 		this.dao = dao;
@@ -69,7 +71,12 @@ public class AdmissionManagerImpl implements AdmissionManager {
 	public void setBedDemographicManager(BedDemographicManager bedDemographicManager) {
 	    this.bedDemographicManager = bedDemographicManager;
     }
-	
+		
+	public void setProgramClientStatusDAO(
+			ProgramClientStatusDAO programClientStatusDAO) {
+		this.programClientStatusDAO = programClientStatusDAO;
+	}
+
 	public List getAdmissions_archiveView(String programId, Integer demographicNo) {
 		return dao.getAdmissions_archiveView(Integer.valueOf(programId), demographicNo);
 	}
@@ -89,7 +96,7 @@ public class AdmissionManagerImpl implements AdmissionManager {
 	public List getAdmissions(Integer demographicNo) {
 		return dao.getAdmissions(demographicNo);
 	}
-
+	
 	public List getCurrentAdmissions(Integer demographicNo) {
 		return dao.getCurrentAdmissions(demographicNo);
 	}
@@ -172,6 +179,15 @@ public class AdmissionManagerImpl implements AdmissionManager {
 		newAdmission.setTeamId(0);
 		newAdmission.setAgencyId(new Long(0));
 		newAdmission.setTemporaryAdmission(tempAdmission);
+		
+		//keep the client status if he was in the same program with it.
+		Integer clientStatusId = dao.getLastClientStatusFromAdmissionByProgramIdAndClientId(Integer.valueOf(program.getId()),demographicNo);
+		
+		//check if the client status is valid/existed in program_clientStatus
+		if("".equals(programClientStatusDAO.getProgramClientStatus(clientStatusId.toString())))
+				clientStatusId = 0;
+		
+		newAdmission.setClientStatusId(clientStatusId);		
 		
 		saveAdmission(newAdmission);
 
@@ -294,6 +310,8 @@ public class AdmissionManagerImpl implements AdmissionManager {
 		admission.setAgencyId(0L);
 		admission.setTemporaryAdmission(false);
 		admission.setRadioDischargeReason(radioDischargeReason);
+		admission.setClientStatusId(0);
 		saveAdmission(admission);
 	}
+	
 }

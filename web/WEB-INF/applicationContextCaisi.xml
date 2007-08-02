@@ -683,6 +683,7 @@
 				<property name="programQueueDao" ref="programQueueDao" />
 				<property name="clientReferralDAO" ref="clientReferralDAO" />
 				<property name="bedDemographicManager" ref="bedDemographicManager" />
+				<property name="programClientStatusDAO" ref="programClientStatusDAO" />
 			</bean>
 		</property>
 	</bean>

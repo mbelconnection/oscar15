@@ -18,24 +18,20 @@
  */
 package org.oscarehr.PMmodule.web;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionMessage;
-import org.apache.struts.action.ActionMessages;
+import org.apache.struts.action.*;
 import org.oscarehr.PMmodule.exception.IntegratorException;
 import org.oscarehr.PMmodule.model.Demographic;
 import org.oscarehr.PMmodule.model.Intake;
 import org.oscarehr.PMmodule.web.formbean.ClientSearchFormBean;
 import org.oscarehr.PMmodule.web.formbean.GenericIntakeSearchFormBean;
 import org.oscarehr.PMmodule.web.utils.UserRoleUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
+import java.util.List;
 
 public class GenericIntakeSearchAction extends BaseGenericIntakeAction {
 	
@@ -54,13 +50,13 @@ public class GenericIntakeSearchAction extends BaseGenericIntakeAction {
 		GenericIntakeSearchFormBean intakeSearchBean = (GenericIntakeSearchFormBean) form;
 		
 		// search for remote matches
-		Demographic[] remoteMatches = remoteSearch(intakeSearchBean);
+		Collection<Demographic> remoteMatches = remoteSearch(intakeSearchBean);
 		intakeSearchBean.setRemoteMatches(remoteMatches);
 		
 		// if no remote matches, search for local matches
 		if (!intakeSearchBean.isRemoteMatch()) {
 			boolean allowOnlyOptins=UserRoleUtils.hasRole(request, UserRoleUtils.Roles.external);
-			List<?> localMatches = localSearch(intakeSearchBean, allowOnlyOptins);
+			List<Demographic> localMatches = localSearch(intakeSearchBean, allowOnlyOptins);
 			intakeSearchBean.setLocalMatches(localMatches);
 		}
 		
@@ -100,8 +96,8 @@ public class GenericIntakeSearchAction extends BaseGenericIntakeAction {
         }
     }
 	
-	private Demographic[] remoteSearch(GenericIntakeSearchFormBean intakeSearchBean) {
-		Demographic[] matches = null;
+	private Collection<Demographic> remoteSearch(GenericIntakeSearchFormBean intakeSearchBean) {
+		Collection<Demographic> matches = null;
 		
 		try {
 			matches = integratorManager.matchClient(createClient(intakeSearchBean));
@@ -112,7 +108,7 @@ public class GenericIntakeSearchAction extends BaseGenericIntakeAction {
 		return matches;
 	}
 
-	private List<?> localSearch(GenericIntakeSearchFormBean intakeSearchBean, boolean allowOnlyOptins) {
+	private List<Demographic> localSearch(GenericIntakeSearchFormBean intakeSearchBean, boolean allowOnlyOptins) {
 		ClientSearchFormBean clientSearchBean = new ClientSearchFormBean();
 		clientSearchBean.setFirstName(intakeSearchBean.getFirstName());
 		clientSearchBean.setLastName(intakeSearchBean.getLastName());

@@ -22,7 +22,7 @@
 
 package org.oscarehr.PMmodule.exception;
 
-public class IntegratorException extends Exception {
+public class IntegratorException extends RuntimeException {
 
 	public IntegratorException() {
 		super();
@@ -31,5 +31,12 @@ public class IntegratorException extends Exception {
 	public IntegratorException(String msg) {
 		super(msg);
 	}
-	
+
+    public IntegratorException(String s, Throwable throwable) {
+        super(s, throwable);    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
+    public IntegratorException(Throwable throwable) {
+        super(throwable);    //To change body of overridden methods use File | Settings | File Templates.
+    }
 }

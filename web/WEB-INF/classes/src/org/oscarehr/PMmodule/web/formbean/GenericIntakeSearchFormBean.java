@@ -18,11 +18,12 @@
  */
 package org.oscarehr.PMmodule.web.formbean;
 
-import java.util.List;
-
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.util.LabelValueBean;
 import org.oscarehr.PMmodule.model.Demographic;
+
+import java.util.Collection;
+import java.util.List;
 
 public class GenericIntakeSearchFormBean extends ActionForm {
 
@@ -43,7 +44,7 @@ public class GenericIntakeSearchFormBean extends ActionForm {
 
 	private boolean localMatch;
 	private boolean remoteMatch;
-	private Demographic[] matches;
+	private Collection<Demographic> matches;
 
 	private Integer clientId;
 	private Long agencyId;
@@ -141,7 +142,7 @@ public class GenericIntakeSearchFormBean extends ActionForm {
 		return remoteMatch;
 	}
 
-	public Demographic[] getMatches() {
+	public Collection<Demographic> getMatches() {
 		return matches;
 	}
 
@@ -149,19 +150,16 @@ public class GenericIntakeSearchFormBean extends ActionForm {
 		return isRemoteMatch() ? "Integrator" : "Agency";
 	}
 
-	public void setLocalMatches(List<?> matches) {
+	public void setLocalMatches(List<Demographic> matches) {
 		if (matches != null && matches.size() > 0) {
 			this.localMatch = true;
 
-			this.matches = new Demographic[matches.size()];
-			for (int i = 0; i < matches.size(); i++) {
-				this.matches[i] = ((Demographic) matches.get(i));
-			}
+			this.matches = matches;
 		}
 	}
 
-	public void setRemoteMatches(Demographic[] matches) {
-		if (matches != null && matches.length > 0) {
+	public void setRemoteMatches(Collection<Demographic> matches) {
+		if (matches != null && matches.size() > 0) {
 			this.remoteMatch = true;
 			this.matches = matches;
 		}

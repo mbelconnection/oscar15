@@ -22,10 +22,12 @@
 
 package org.oscarehr.PMmodule.service;
 
+import org.caisi.integrator.model.Client;
 import org.oscarehr.PMmodule.exception.IntegratorException;
 import org.oscarehr.PMmodule.exception.IntegratorNotEnabledException;
 import org.oscarehr.PMmodule.model.*;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface IntegratorManager {
@@ -42,9 +44,8 @@ public interface IntegratorManager {
     /* agency */
     public long getLocalAgencyId();
 
-    public String register(Agency agencyInfo, String key);
+    public Long register(Agency agencyInfo, String key);
 	public List getAgencies();
-	public Agency getAgency(String id);
 
     /* program */
 	public void updateProgramData(List<Program> programs);
@@ -56,11 +57,10 @@ public interface IntegratorManager {
 	
 	/* client linking */
 	public Demographic getDemographic(long agencyId, long demographicNo) throws IntegratorException;
-	public Demographic[] matchClient(Demographic client) throws IntegratorException;
+	public Collection<Demographic> matchClient(Demographic client) throws IntegratorException;
 	public void saveClient(Demographic client) throws IntegratorException;
 	public void mergeClient(Demographic localClient, long remoteAgency, long remoteClientId) throws IntegratorException;
-	public long getLocalClientId(long agencyId, long demographicNo) throws IntegratorException;
-	
+
 	/* refreshing */
 	public void refreshPrograms(List<Program> programs) throws IntegratorException;
 	public void refreshAdmissions(List<Admission> admissions) throws IntegratorException;
@@ -71,8 +71,8 @@ public interface IntegratorManager {
 	public List getCurrentAdmissions(long clientId) throws IntegratorException;
 	public List getCurrentReferrals(long clientId) throws IntegratorException;
 	
-	public boolean notifyUpdate(short dataType, String id);
-	public Demographic getClient(String demographicNo);
+	public boolean notifyUpdate(short dataType, long id);
+	public Demographic getClient(long demographicNo);
 	
 	public String getIntegratorVersion();
 }

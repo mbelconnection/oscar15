@@ -22,6 +22,9 @@
 
 package org.oscarehr.PMmodule.exception;
 
+/**
+ *
+ */
 public class IntegratorNotEnabledException extends IntegratorException {
 	
 	public IntegratorNotEnabledException() {
@@ -31,4 +34,12 @@ public class IntegratorNotEnabledException extends IntegratorException {
 	public IntegratorNotEnabledException(String msg) {
 		super(msg);
 	}
+
+    public IntegratorNotEnabledException(String s, Throwable throwable) {
+        super(s, throwable);    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
+    public IntegratorNotEnabledException(Throwable throwable) {
+        super(throwable);    //To change body of overridden methods use File | Settings | File Templates.
+    }
 }

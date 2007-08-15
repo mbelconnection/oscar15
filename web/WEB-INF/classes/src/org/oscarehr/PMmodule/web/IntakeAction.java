@@ -22,11 +22,6 @@
 
 package org.oscarehr.PMmodule.web;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
@@ -39,6 +34,12 @@ import org.oscarehr.PMmodule.model.Demographic;
 import org.oscarehr.PMmodule.web.formbean.ClientSearchFormBean;
 import org.oscarehr.PMmodule.web.formbean.PreIntakeForm;
 import org.oscarehr.PMmodule.web.utils.UserRoleUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class IntakeAction extends BaseAction {
 
@@ -58,8 +59,8 @@ public class IntakeAction extends BaseAction {
 		boolean doLocalSearch=false;
 		
 		
-		Demographic[] results = new Demographic[0];
-				
+		Collection<Demographic> results = new ArrayList<Demographic>();
+
 		/* here we want to switch to the integrator, if available */
 		Demographic d = new Demographic();		
 		d.setFirstName(formBean.getFirstName());
@@ -69,18 +70,18 @@ public class IntakeAction extends BaseAction {
 		d.setDateOfBirth(String.valueOf(formBean.getDayOfBirth()));
 		d.setHin(formBean.getHealthCardNumber());
 		d.setVer(formBean.getHealthCardVersion());
-		
+
 		try {
 			results  = integratorManager.matchClient(d);
-			log.debug("integrator found " + results.length + " match(es)");		
-		}catch(IntegratorNotEnabledException e) {
+			log.debug("integrator found " + results.size() + " match(es)");
+		} catch(IntegratorNotEnabledException e) {
 			log.info(e);
 			doLocalSearch=true;
 		} catch(Throwable e) {
 			log.error(e);
 			doLocalSearch=true;
 		}
-		if(doLocalSearch) {
+		if (doLocalSearch) {
 			ClientSearchFormBean searchBean = new ClientSearchFormBean();
 			searchBean.setFirstName(formBean.getFirstName());
 			searchBean.setLastName(formBean.getLastName());
@@ -89,14 +90,13 @@ public class IntakeAction extends BaseAction {
 			
 			boolean allowOnlyOptins=UserRoleUtils.hasRole(request, UserRoleUtils.Roles.external);
 
-			List resultList = clientManager.search(searchBean,allowOnlyOptins);
-			results = (Demographic[])resultList.toArray(new Demographic[resultList.size()]);
-			log.debug("local search found " + results.length + " match(es)");		
-			
-		}
+			results = clientManager.search(searchBean,allowOnlyOptins);
+            log.debug("local search found " + results.size() + " match(es)");
+
+        }
 		
-		if(results != null && results.length>0) {
-			request.setAttribute("localSearch", new Boolean(doLocalSearch));
+		if(results != null && results.size() > 0) {
+			request.setAttribute("localSearch", doLocalSearch);
 			request.setAttribute("clients",results);			
 			return mapping.findForward("pre-intake");
 		}
@@ -126,7 +126,7 @@ public class IntakeAction extends BaseAction {
 		if(formBean.getAgencyId() != 0) {
 			//integrator
 			try {
-				demographic = integratorManager.getDemographic(formBean.getAgencyId(),Long.valueOf(formBean.getClientId()).longValue());
+				demographic = integratorManager.getDemographic(formBean.getAgencyId(), Long.valueOf(formBean.getClientId()));
 			}catch(IntegratorException e) {
 				log.error(e);
 			}

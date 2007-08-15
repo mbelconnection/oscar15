@@ -144,7 +144,7 @@ public abstract class BaseAction extends DispatchAction {
 		return (RatePageManager) getAppContext().getBean("ratePageManager");
 	}
 
-	public void notifyIntegrator(short dataType, String id) {
+	public void notifyIntegrator(short dataType, long id) {
 		IntegratorManager mgr = (IntegratorManager) getAppContext().getBean("integratorManager");
 		mgr.notifyUpdate(dataType, id);
 	}

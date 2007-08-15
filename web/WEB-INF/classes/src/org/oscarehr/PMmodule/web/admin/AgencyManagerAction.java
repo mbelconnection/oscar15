@@ -218,12 +218,12 @@ public class AgencyManagerAction extends BaseAction {
 	public ActionForward enable_integrator(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
 		Agency agency = agencyManager.getLocalAgency();
 
-		if (agency.getId().longValue() == 0) {
+		if (agency.getId() == 0) {
 			try {
-				if (agency.getId().longValue() == 0) {
-					String id = integratorManager.register(agency, agency.getIntegratorUsername());
+				if (agency.getId() == 0) {
+					Long id = integratorManager.register(agency, agency.getIntegratorUsername());
 					if (id != null) {
-						agency.setId(Long.valueOf(id));
+						agency.setId(id);
 						agencyManager.saveLocalAgency(agency);
 					} else {
 						throw new Exception("Unable to register agency");
@@ -238,7 +238,7 @@ public class AgencyManagerAction extends BaseAction {
 				messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("integrator.registered.failed", e.getMessage()));
 				saveMessages(request, messages);
 				request.setAttribute("id", agency.getId());
-				request.setAttribute("integratorEnabled", new Boolean(agency.isIntegratorEnabled()));
+				request.setAttribute("integratorEnabled", agency.isIntegratorEnabled());
 
 				return mapping.findForward(FORWARD_EDIT);
 			}
@@ -261,7 +261,7 @@ public class AgencyManagerAction extends BaseAction {
 		integratorManager.refresh();
 
 		request.setAttribute("id", agency.getId());
-		request.setAttribute("integratorEnabled", new Boolean(agency.isIntegratorEnabled()));
+		request.setAttribute("integratorEnabled", agency.isIntegratorEnabled());
 
 		return mapping.findForward(FORWARD_EDIT);
 	}
@@ -271,10 +271,10 @@ public class AgencyManagerAction extends BaseAction {
 			Agency agency = agencyManager.getLocalAgency();
 			
 			if (agency.getId() == 0) {
-				String id = integratorManager.register(agency, agency.getIntegratorUsername());
+				Long id = integratorManager.register(agency, agency.getIntegratorUsername());
 				
 				if (id != null) {
-					agency.setId(Long.valueOf(id));
+					agency.setId(id);
 					agencyManager.saveLocalAgency(agency);
 				} else {
 					log.error("error");

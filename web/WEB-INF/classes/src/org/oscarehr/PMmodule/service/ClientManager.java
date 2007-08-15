@@ -87,7 +87,11 @@ public class ClientManager {
 		this.integratorManager = mgr;
 	}
 
-	public Demographic getClientByDemographicNo(String demographicNo) {
+    public Demographic getClientByDemographicNo(long demographicNo) {
+		return dao.getClientByDemographicNo((int)demographicNo);
+    }
+
+    public Demographic getClientByDemographicNo(String demographicNo) {
 		if (demographicNo == null || demographicNo.length() == 0) {
 			return null;
 		}
@@ -238,7 +242,7 @@ public class ClientManager {
 		return dao.getDemographicExt(Integer.valueOf(id));
 	}
 
-	public List getDemographicExtByDemographicNo(Integer demographicNo) {
+	public List<DemographicExt> getDemographicExtByDemographicNo(Integer demographicNo) {
 		return dao.getDemographicExtByDemographicNo(demographicNo);
 	}
 

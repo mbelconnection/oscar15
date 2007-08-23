@@ -41,7 +41,6 @@ import org.caisi.integrator.model.transfer.DemographicTransfer;
 import org.caisi.integrator.service.IntegratorService;
 import org.codehaus.xfire.XFire;
 import org.codehaus.xfire.XFireFactory;
-import org.codehaus.xfire.XFireRuntimeException;
 import org.codehaus.xfire.client.XFireProxy;
 import org.codehaus.xfire.client.XFireProxyFactory;
 import org.codehaus.xfire.service.Service;
@@ -58,7 +57,6 @@ import org.oscarehr.PMmodule.model.Provider;
 import org.oscarehr.PMmodule.model.Agency;
 import org.oscarehr.PMmodule.service.ClientManager;
 import org.oscarehr.PMmodule.service.IntegratorManager;
-import org.springframework.beans.BeanUtils;
 import org.springframework.jms.core.JmsTemplate;
 
 import java.lang.reflect.Proxy;
@@ -189,6 +187,9 @@ public class IntegratorManagerImpl implements IntegratorManager {
             return integratorService;
     }
 
+    /**
+     * @return a list of all agencies
+     */
     public List<Agency> getAgencies() {
         FindAgenciesResponse response = getIntegratorService().findAgencies(new FindAgenciesRequest( new Date() ), authenticationToken);
         List<Agency> agencies = new ArrayList<Agency>();
@@ -210,11 +211,20 @@ public class IntegratorManagerImpl implements IntegratorManager {
         init();
     }
 
+    /**
+     * @return the id of the local agency
+     */
     public long getLocalAgencyId() {
         return localAgency.getId();
     }
 
-    public Long register(Agency agencyInfo, String key) {
+    /**
+     * Register an agency (presumably the local agency) with the integrator
+     *
+     * @param agencyInfo the agency to register
+     * @return the agency's id
+     */
+    public Long register(Agency agencyInfo) {
         RegisterAgencyResponse response = getIntegratorService().registerAgency(
                 new RegisterAgencyRequest(
                         new Date(),
@@ -316,6 +326,7 @@ public class IntegratorManagerImpl implements IntegratorManager {
     }
 
     public void mergeClient(Demographic localClient, long remoteAgency, long remoteClientId) throws IntegratorException {
+        // TODO change integration-side to allow this form instead
 //        if (!isEnabled() || agencyService == null) {
 //            throw new IntegratorNotEnabledException();
 //        }
@@ -478,7 +489,7 @@ public class IntegratorManagerImpl implements IntegratorManager {
         throw new OperationNotImplementedException("program registry not yet implemented");
     }
 
-    public List searchPrograms(Program criteria) {
+    public List<Program> searchPrograms(Program criteria) {
         throw new OperationNotImplementedException("program registry not yet implemented");
     }
 

@@ -41,16 +41,47 @@ public interface IntegratorManager {
 
 	public void refresh();
 
-    /* agency */
+    /**
+     * @return the id of the local agency
+     */
     public long getLocalAgencyId();
 
-    public Long register(Agency agencyInfo, String key);
-	public List getAgencies();
+    /**
+     * Register an agency (presumably the local agency) with the integrator
+     *
+     * @param agencyInfo the agency to register
+     * @return the agency's id
+     */
+    public Long register(Agency agencyInfo);
 
-    /* program */
-	public void updateProgramData(List<Program> programs);
-	public List searchPrograms(Program criteria);
-	public Program getProgram(Long agencyId, Long programId) throws IntegratorNotEnabledException;
+    /**
+     * @return a list of all agencies
+     */
+    public List getAgencies();
+
+	/**
+     * Synchronize the program registry
+     *
+     * @param programs of type List<Program>
+     */
+    public void updateProgramData(List<Program> programs);
+	/**
+     * Search for a program in the program registry
+     *
+     * @param criteria a program object filled out with the critera to search with
+     * @return programs which satisfy the critera
+     */
+    public List<Program> searchPrograms(Program criteria);
+
+    /**
+     * Get information on a specific program
+     *
+     * @param agencyId the id of the agency the program belongs to
+     * @param programId the id of the program
+     * @return the program if found, null otherwise
+     * @throws IntegratorNotEnabledException when
+     */
+    public Program getProgram(Long agencyId, Long programId) throws IntegratorNotEnabledException;
 	
 	/* asynchronous messaging for referrals */
 	public void sendReferral(Long agencyId, ClientReferral referral);

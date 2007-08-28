@@ -70,8 +70,12 @@ public class BedManager {
 		this.bedDemographicManager = bedDemographicManager;
 	}
 
-	/**
-	 * @see org.oscarehr.PMmodule.service.BedManager#getBed(java.lang.Integer)
+/**
+	 * Get bed
+	 *
+	 * @param bedId
+	 *            bed identifier
+	 * @return bed
 	 */
 	public Bed getBed(Integer bedId) {
 		if (bedId == null) {
@@ -85,7 +89,13 @@ public class BedManager {
 	}
 
 	/**
-	 * @see org.oscarehr.PMmodule.service.BedManager#getBedsByProgram(java.lang.Integer, boolean)
+	 * Get beds by program
+	 *
+	 * @param programId
+	 *            program identifier
+	 * @param reserved
+	 *            reserved flag
+	 * @return array of beds
 	 */
 	public Bed[] getBedsByProgram(Integer programId, boolean reserved) {
 		if (programId == null) {
@@ -108,7 +118,9 @@ public class BedManager {
 	}
 
 	/**
-	 * @see org.oscarehr.PMmodule.service.BedManager#getBeds()
+	 * Get beds
+	 *
+	 * @return array of beds
 	 */
 	public Bed[] getBeds() {
 		Bed[] beds = bedDAO.getBeds(null, null);
@@ -128,7 +140,12 @@ public class BedManager {
 	}
 
 	/**
-	 * @see org.oscarehr.PMmodule.service.BedManager#addBeds(int)
+	 * Add new beds
+	 *
+	 * @param numBeds
+	 *            number of beds
+	 * @throws BedReservedException
+	 *             bed is inactive and reserved
 	 */
 	public void addBeds(int numBeds) throws BedReservedException {
 		if (numBeds < 1) {
@@ -143,6 +160,12 @@ public class BedManager {
 	}
 	
 	/**
+	 * Save beds
+	 *
+	 * @param beds
+	 *            beds to save
+	 * @throws BedReservedException
+	 *             bed is inactive and reserved
 	 */
 	public void saveBeds(Bed[] beds) throws BedReservedException {
 		if (beds == null) {
@@ -155,7 +178,12 @@ public class BedManager {
 	}
 	
 	/**
-	 * @see org.oscarehr.PMmodule.service.BedManager#saveBed(org.oscarehr.PMmodule.model.Bed)
+	 * Save bed
+	 *
+	 * @param bed
+	 *            bed to save
+	 * @throws BedReservedException
+	 *             bed is inactive and reserved
 	 */
 	public void saveBed(Bed bed) throws BedReservedException {
 		validate(bed);

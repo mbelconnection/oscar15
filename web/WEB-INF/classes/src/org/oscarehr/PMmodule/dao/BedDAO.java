@@ -38,21 +38,22 @@ public class BedDAO extends HibernateDaoSupport {
 
 	private static final Log log = LogFactory.getLog(BedDAO.class);
 
-	/**
-	 * @see org.oscarehr.PMmodule.dao.BedDAO#bedExists(java.lang.Integer)
-	 */
-	public boolean bedExists(Integer bedId) {
-		boolean exists = (((Integer) getHibernateTemplate().iterate("select count(*) from Bed where id = " + bedId).next()) == 1);
-		log.debug("bedExists: " + exists);
+    /**
+     * Check for the existence of a bed with this ID.
+     * @param bedId
+     * @return
+     */
+    public boolean bedExists(Integer bedId) {
 
-		return exists;
+        return (((Integer) getHibernateTemplate().iterate("select count(*) from Bed where id = " + bedId).next()) == 1);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.oscarehr.PMmodule.dao.BedDAO#bedTypeExists(java.lang.Integer)
-	 */
+	/**
+     * Return if this is a valid bed type
+     *
+     * @param bedTypeId type of bed
+     * @return boolean
+     */
 	public boolean bedTypeExists(Integer bedTypeId) {
 		boolean exists = (((Integer) getHibernateTemplate().iterate("select count(*) from BedType where id = " + bedTypeId).next()) == 1);
 		log.debug("bedTypeExists: " + exists);
@@ -61,7 +62,7 @@ public class BedDAO extends HibernateDaoSupport {
 	}
 
 	/*
-	 * (non-Javadoc)
+	 * (non-Javadoc)               
 	 * 
 	 * @see org.oscarehr.PMmodule.dao.BedDAO#getBed(java.lang.Integer)
 	 */

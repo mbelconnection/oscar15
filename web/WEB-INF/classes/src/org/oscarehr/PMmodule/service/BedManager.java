@@ -114,7 +114,7 @@ public class BedManager {
 			}
 		}
 
-		return (Bed[]) beds.toArray(new Bed[beds.size()]);
+		return beds.toArray(new Bed[beds.size()]);
 	}
 
 	/**

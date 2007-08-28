@@ -117,12 +117,13 @@ function getIntakeReport(type) {
 		<div>
 			<span>Agency Management</span>
 			<div>
-				<html:link action="/PMmodule/AgencyManager.do">Summary</html:link>
+				<html:link action="/PMmodule/MultiAgencyManager.do">Agency list</html:link>
 			</div>
 			<div>
-				<html:link action="/PMmodule/AgencyManager.do?method=edit">Update Info</html:link>
+				<html:link action="/PMmodule/MultiAgencyManager.do?method=add">Add agency</html:link>
 			</div>
-		</div>
+
+        </div>
 		<div>
 			<span>Staff Management</span>
 			<div>

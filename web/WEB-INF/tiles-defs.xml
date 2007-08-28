@@ -53,7 +53,27 @@
 			name="body"
 			value="/PMmodule/Admin/AgencyManagerForm.jsp" />
 	</definition>
+    <definition
+		name="page.pmm.admin.multiagency.list"
+		path="/PMmodule/layout.jsp">
+		<put
+			name="navigation"
+			value="/PMmodule/navigation.jsp" />
+		<put
+			name="body"
+			value="/PMmodule/Admin/Agency/ListAgencies.jsp" />
+	</definition>
 	<definition
+		name="page.pmm.admin.multiagency.edit"
+		path="/PMmodule/layout.jsp">
+		<put
+			name="navigation"
+			value="/PMmodule/navigation.jsp" />
+		<put
+			name="body"
+			value="/PMmodule/Admin/Agency/EditAgency.jsp" />
+	</definition>
+    <definition
 		name="page.pmm.client.searchform"
 		path="/PMmodule/layout.jsp">
 		<put

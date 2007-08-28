@@ -228,7 +228,7 @@
 			<ref local="sessionFactory" />
 		</property>
 	</bean>
-	<bean id="agencyDao" class="org.oscarehr.PMmodule.dao.hibernate.AgencyDaoHibernate">
+	<bean id="agencyDao" class="org.oscarehr.PMmodule.dao.AgencyDao">
 		<property name="sessionFactory">
 			<ref local="sessionFactory" />
 		</property>
@@ -693,7 +693,7 @@
 	</bean>
 	<bean id="agencyManager" parent="baseTransactionProxy">
 		<property name="target">
-			<bean class="org.oscarehr.PMmodule.service.impl.AgencyManagerImpl">
+			<bean class="org.oscarehr.PMmodule.service.AgencyManager">
 				<property name="agencyDao" ref="agencyDao" />
 			</bean>
 		</property>

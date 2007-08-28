@@ -66,14 +66,16 @@ public class AgencyManagerAction extends BaseAction {
 		DynaActionForm agencyForm = (DynaActionForm) form;
 		
 		AgencyManagerViewFormBean tabBean = (AgencyManagerViewFormBean) agencyForm.get("view");
-		
-		if (tabBean.getTab() != null && tabBean.getTab().equalsIgnoreCase("community")) {
+
+        // if integrator is enabled and the community tab is selected, get the list of remote
+        // agencies from the integrator
+        if (tabBean.getTab() != null && tabBean.getTab().equalsIgnoreCase("community")) {
 			if (integratorManager.isEnabled() && integratorManager.isRegistered()) {
 				request.setAttribute("agencies", integratorManager.getAgencies());
 			}
 		}
 
-		request.setAttribute(BEAN_AGENCY, agencyManager.getLocalAgency());
+        request.setAttribute(BEAN_AGENCY, agencyManager.getLocalAgency());
 		request.setAttribute(BEAN_ROOMS, roomManager.getRooms());
 		request.setAttribute(BEAN_BEDS, bedManager.getBeds());
 		

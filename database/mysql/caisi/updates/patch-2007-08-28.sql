@@ -1,0 +1,3 @@
+ALTER TABLE agency MODIFY id BIGINT(20) NOT NULL AUTO_INCREMENT FIRST;
+ALTER TABLE agency ADD COLUMN disabled tinyint(1) NOT NULL default '0';
+

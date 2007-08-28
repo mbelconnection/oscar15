@@ -90,7 +90,7 @@
 			<ref bean="sessionFactory" />
 		</property>
     </bean>
-    <bean id="agencyDao" class="org.oscarehr.PMmodule.dao.hibernate.AgencyDaoHibernate">
+    <bean id="agencyDao" class="org.oscarehr.PMmodule.dao.AgencyDao">
 		<property name="sessionFactory">
 			<ref bean="sessionFactory" />
 		</property>

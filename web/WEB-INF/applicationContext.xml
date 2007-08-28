@@ -110,7 +110,7 @@
                         <ref bean="sessionFactory" />
                 </property>
     </bean>
-    <bean id="bedDAO" class="org.oscarehr.PMmodule.dao.hibernate.BedDAOHibernate">
+    <bean id="bedDAO" class="org.oscarehr.PMmodule.dao.BedDAO">
 		<property name="sessionFactory">
 			<ref bean="sessionFactory" />
 		</property>
@@ -120,7 +120,7 @@
 			<ref bean="sessionFactory" />
 		</property>
     </bean>
-    <bean id="roomDAO" class="org.oscarehr.PMmodule.dao.hibernate.RoomDAOHibernate">
+    <bean id="roomDAO" class="org.oscarehr.PMmodule.dao.RoomDAO">
 		<property name="sessionFactory">
 			<ref bean="sessionFactory" />
 		</property>

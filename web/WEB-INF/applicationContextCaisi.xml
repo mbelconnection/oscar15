@@ -151,12 +151,12 @@
 			<ref local="sessionFactory" />
 		</property>
 	</bean>
-	<bean id="roomDAO" class="org.oscarehr.PMmodule.dao.hibernate.RoomDAOHibernate">
+	<bean id="roomDAO" class="org.oscarehr.PMmodule.dao.RoomDAO">
 		<property name="sessionFactory">
 			<ref local="sessionFactory" />
 		</property>
 	</bean>
-	<bean id="bedDAO" class="org.oscarehr.PMmodule.dao.hibernate.BedDAOHibernate">
+	<bean id="bedDAO" class="org.oscarehr.PMmodule.dao.BedDAO">
 		<property name="sessionFactory">
 			<ref local="sessionFactory" />
 		</property>
@@ -558,7 +558,7 @@
 	</bean>
 	<bean id="bedManager" parent="baseTransactionProxy">
 		<property name="target">
-			<bean class="org.oscarehr.PMmodule.service.impl.BedManagerImpl">
+			<bean class="org.oscarehr.PMmodule.service.BedManager">
 				<property name="bedDAO" ref="bedDAO" />
 				<property name="roomDAO" ref="roomDAO" />
 				<property name="teamDAO" ref="programTeamDAO" />

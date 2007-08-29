@@ -41,7 +41,7 @@ CREATE TABLE `admission` (
 --
 DROP TABLE IF EXISTS `agency`;
 CREATE TABLE `agency` (
-  `id` id BIGINT(20) NOT NULL AUTO_INCREMENT FIRST,
+  `id` bigint(20) NOT NULL auto_increment,
   `intake_quick` integer unsigned NOT NULL DEFAULT 1,
   `intake_quick_state` char(2) NOT NULL DEFAULT 'HS',
   `intake_indepth` integer unsigned DEFAULT 2,
@@ -58,7 +58,7 @@ CREATE TABLE `agency` (
   `integrator_username` varchar(255) default NULL,
   `integrator_password` varchar(255) default NULL,
   `hic` tinyint(1) default NULL,
-  `disabled` tinyint(1) NOT NULL default '0'
+  `disabled` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 

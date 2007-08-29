@@ -19,7 +19,18 @@ public class BedManagerAction extends BaseAction {
 
 
     public ActionForward unspecified(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-        return manage(mapping, form, request, response);
+
+        // dispatch to correct method based on which submit button was selected
+        if (request.getParameter("submit.saveRooms") != null)
+            return saveRooms(mapping, form, request, response);
+        else if (request.getParameter("submit.addRooms") != null)
+            return addRooms(mapping, form, request, response);
+        else if (request.getParameter("submit.saveBeds") != null)
+            return saveBeds(mapping, form, request, response);
+        else if (request.getParameter("submit.addBeds") != null)
+            return addBeds(mapping, form, request, response);
+        else
+            return manage(mapping, form, request, response);
     }
 
     private ActionForward manage(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {

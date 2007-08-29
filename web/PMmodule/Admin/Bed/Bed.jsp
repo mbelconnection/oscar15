@@ -3,10 +3,7 @@
 <script>
     function ConfirmDelete(name)
     {
-        if(confirm("Are you sure you want to delete " + name + " ?")) {
-            return true;
-        }
-        return false;
+        return confirm("Are you sure you want to delete " + name + " ?");        
     }
 </script>
 <%@ include file="/common/messages.jsp"%>
@@ -87,13 +84,13 @@
     </td>
     <td width="20%">
         <br />
-        <html:submit onclick="bedManagerForm.method.value='saveRooms';">Save Rooms</html:submit>
+        <html:submit property="submit.saveRooms">Save Rooms</html:submit>
     </td>
 </tr>
 <tr>
     <td>
         <html:text property="numRooms" />
-        <html:submit onclick="bedManagerForm.method.value='addRooms';">Add Rooms</html:submit>
+        <html:submit property="submit.addRooms">Add Rooms</html:submit>
     </td>
 </tr>
 <tr>
@@ -165,7 +162,7 @@
     </td>
     <td width="20%">
         <br />
-        <html:submit onclick="bedManagerForm.method.value='saveBeds';">Save Beds</html:submit>
+        <html:submit property="submit.saveBeds">Save Beds</html:submit>
     </td>
 </tr>
 <tr>
@@ -173,10 +170,10 @@
         <c:choose>
             <c:when test="${not empty bedManagerForm.rooms}">
                 <html:text property="numBeds" />
-                <html:submit onclick="bedManagerForm.method.value='addBeds';">Add Beds</html:submit>
+                <html:submit  property="submit.addBeds" onclick="bedManagerForm.method.value='addBeds';">Add Beds</html:submit>
             </c:when>
             <c:otherwise>
-                <html:submit disabled="true">Add Beds</html:submit>
+                <html:submit property="submit.addBeds"  disabled="true">Add Beds</html:submit>
             </c:otherwise>
         </c:choose>
     </td>

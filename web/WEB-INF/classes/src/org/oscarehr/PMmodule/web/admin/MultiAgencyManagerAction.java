@@ -19,6 +19,7 @@ public class MultiAgencyManagerAction extends BaseAction {
 
     private static final String FORWARD_EDIT = "edit";
     private static final String FORWARD_LIST = "list";
+    private static final String BEAN_AGENCIES = "agencies";
 
     public ActionForward unspecified(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
         return list(mapping, form, request, response);
@@ -26,7 +27,7 @@ public class MultiAgencyManagerAction extends BaseAction {
 
     public ActionForward list(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
         List<Agency> filteredAgencies = getAgencies();
-        request.setAttribute("agencies", filteredAgencies);
+        request.setAttribute(BEAN_AGENCIES, filteredAgencies);
         return mapping.findForward(FORWARD_LIST);
     }
 

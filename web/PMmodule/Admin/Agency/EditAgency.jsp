@@ -13,7 +13,7 @@
 <div class="tabs" id="tabs">
     <table cellpadding="3" cellspacing="0" border="0">
         <tr>
-            <th title="Agencies">Edit agency</th>
+            <th title="Agencies">Edit / save agency</th>
         </tr>
     </table>
 </div>

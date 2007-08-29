@@ -224,6 +224,35 @@
             <ref bean="roomManager" />
         </property>
     </bean>
+    <bean name="/PMmodule/BedManager" class="org.oscarehr.PMmodule.web.admin.BedManagerAction" singleton="false">
+        <property name="admissionManager">
+            <ref bean="admissionManager" />
+        </property>
+        <property name="agencyManager">
+            <ref bean="agencyManager" />
+        </property>
+        <property name="bedManager">
+            <ref bean="bedManager" />
+        </property>
+        <property name="clientManager">
+            <ref bean="clientManager" />
+        </property>
+        <property name="integratorManager">
+            <ref bean="integratorManager" />
+        </property>
+        <property name="logManager">
+            <ref bean="logManager" />
+        </property>
+        <property name="programManager">
+            <ref bean="programManager" />
+        </property>
+        <property name="providerManager">
+            <ref bean="providerManager" />
+        </property>
+        <property name="roomManager">
+            <ref bean="roomManager" />
+        </property>
+    </bean>
     <bean name="/PMmodule/ProviderSearch" class="org.oscarehr.PMmodule.web.ProviderSearchAction" singleton="false">
         <property name="providerManager">
             <ref bean="providerManager" />

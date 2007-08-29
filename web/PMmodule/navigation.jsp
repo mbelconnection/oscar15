@@ -124,6 +124,12 @@ function getIntakeReport(type) {
 			</div>
 
         </div>
+        <div>
+            <span>Bed Management</span>
+            <div>
+                <html:link action="/PMmodule/BedManager.do">Manage beds</html:link>
+            </div>
+        </div>
 		<div>
 			<span>Staff Management</span>
 			<div>

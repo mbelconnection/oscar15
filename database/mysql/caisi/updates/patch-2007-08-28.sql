@@ -13,4 +13,8 @@ INSERT INTO facility (agency_id, name, description) VALUES (0, 'Default Facility
 
 ALTER TABLE room ADD COLUMN facility_id int(10) NOT NULL default 0;
 ALTER TABLE room ADD CONSTRAINT `FK_room_facility` FOREIGN KEY (`facility_id`) REFERENCES `facility` (`id`);
+ALTER TABLE bed ADD COLUMN facility_id int(10) NOT NULL default 0;
+ALTER TABLE bed MODIFY room_id  int(10) unsigned default NULL;
+
+
 

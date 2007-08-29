@@ -70,7 +70,8 @@ DROP TABLE IF EXISTS `bed`;
 CREATE TABLE `bed` (
   `bed_id` int(10) unsigned NOT NULL auto_increment,
   `bed_type_id` int(10) unsigned NOT NULL default '1',
-  `room_id` int(10) unsigned NOT NULL,
+  `room_id` int(10) unsigned default NULL,
+  `facility_id` int(10) unsigned NOT NULL default 0,
   `room_start` date NOT NULL,
   `team_id` int(10) unsigned default NULL,
   `name` varchar(45) NOT NULL,

@@ -189,7 +189,7 @@ public class RoomManager {
                 handleException(new IllegalStateException("no room with id : " + roomId));
             }
 
-            if (!room.isActive() && bedDAO.getBeds(roomId, true).length > 0) {
+            if (!room.isActive() && bedDAO.getBedsByRoom(roomId, true).length > 0) {
                 handleException(new RoomHasActiveBedsException("room with id : " + roomId + " has active beds"));
             }
         }

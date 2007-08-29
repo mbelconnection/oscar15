@@ -36,7 +36,7 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
  */
 public class BedDAO extends HibernateDaoSupport {
 
-	private static final Log log = LogFactory.getLog(BedDAO.class);
+    private static final Log log = LogFactory.getLog(BedDAO.class);
 
     /**
      * Check for the existence of a bed with this ID.
@@ -46,129 +46,140 @@ public class BedDAO extends HibernateDaoSupport {
     public boolean bedExists(Integer bedId) {
 
         return (((Integer) getHibernateTemplate().iterate("select count(*) from Bed where id = " + bedId).next()) == 1);
-	}
+    }
 
-	/**
+    /**
      * Return if this is a valid bed type
      *
      * @param bedTypeId type of bed
      * @return boolean
      */
-	public boolean bedTypeExists(Integer bedTypeId) {
-		boolean exists = (((Integer) getHibernateTemplate().iterate("select count(*) from BedType where id = " + bedTypeId).next()) == 1);
-		log.debug("bedTypeExists: " + exists);
+    public boolean bedTypeExists(Integer bedTypeId) {
+        boolean exists = (((Integer) getHibernateTemplate().iterate("select count(*) from BedType where id = " + bedTypeId).next()) == 1);
+        log.debug("bedTypeExists: " + exists);
 
-		return exists;
-	}
+        return exists;
+    }
 
-	/*
-	 * (non-Javadoc)               
-	 * 
-	 * @see org.oscarehr.PMmodule.dao.BedDAO#getBed(java.lang.Integer)
-	 */
-	public Bed getBed(Integer bedId) {
-		Bed bed = (Bed) getHibernateTemplate().get(Bed.class, bedId);
-		log.debug("getBed: id " + bedId);
+    /**
+     * Return the bed associated with an id
+     * @param bedId bed id to look up
+     * @return the bed
+     */
+    public Bed getBed(Integer bedId) {
+        Bed bed = (Bed) getHibernateTemplate().get(Bed.class, bedId);
+        log.debug("getBed: id " + bedId);
 
-		return bed;
-	}
+        return bed;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.oscarehr.PMmodule.dao.BedDAO#getBedType(java.lang.Integer)
-	 */
-	public BedType getBedType(Integer bedTypeId) {
-		BedType bedType = (BedType) getHibernateTemplate().get(BedType.class, bedTypeId);
-		log.debug("getBedType: id " + bedTypeId);
+    public BedType getBedType(Integer bedTypeId) {
+        BedType bedType = (BedType) getHibernateTemplate().get(BedType.class, bedTypeId);
+        log.debug("getBedType: id " + bedTypeId);
 
-		return bedType;
-	}
+        return bedType;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.oscarehr.PMmodule.dao.BedDAO#getBeds(java.lang.Integer, java.lang.Boolean)
-	 */
-	@SuppressWarnings("unchecked")
-	public Bed[] getBeds(Integer roomId, Boolean active) {
-		String query = getBedsQuery(roomId, active);
-		Object[] values = getBedsValues(roomId, active);
-		List beds = getBeds(query, values);
-		log.debug("getBeds: size " + beds.size());
+    /**
+     * All beds for a given room
+     * @param roomId the room id to look up
+     * @param active activity flag
+     * @return an array of beds
+     */
+    @SuppressWarnings("unchecked")
+    public Bed[] getBedsByRoom(Integer roomId, Boolean active) {
+        String query = getBedsQuery(null, roomId, active);
+        Object[] values = getBedsValues(null, roomId, active);
+        List beds = getBeds(query, values);
+        log.debug("getBedsByRoom: size " + beds.size());
 
-		return (Bed[]) beds.toArray(new Bed[beds.size()]);
-	}
+        return (Bed[]) beds.toArray(new Bed[beds.size()]);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.oscarehr.PMmodule.dao.BedDAO#getBedTypes()
-	 */
-	@SuppressWarnings("unchecked")
-	public BedType[] getBedTypes() {
-		List bedTypes = getHibernateTemplate().find("from BedType bt");
-		log.debug("getRooms: size: " + bedTypes.size());
+    @SuppressWarnings("unchecked")
+    public List<Bed> getBedsByFacility(Integer facilityId, Boolean active) {
+        String query = getBedsQuery(facilityId, null, active);
+        Object[] values = getBedsValues(facilityId, null, active);
 
-		return (BedType[]) bedTypes.toArray(new BedType[bedTypes.size()]);
-	}
+        return getBeds(query, values);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.oscarehr.PMmodule.dao.BedDAO#saveBed(org.oscarehr.PMmodule.model.Bed)
-	 */
-	public void saveBed(Bed bed) {
-		updateHistory(bed);
-		getHibernateTemplate().saveOrUpdate(bed);
-		getHibernateTemplate().flush();
-		getHibernateTemplate().refresh(bed);
+    /**
+     * @return all bed types
+     */
+    @SuppressWarnings("unchecked")
+    public BedType[] getBedTypes() {
+        List bedTypes = getHibernateTemplate().find("from BedType bt");
+        log.debug("getRooms: size: " + bedTypes.size());
 
-		log.debug("saveBed: id " + bed.getId());
-	}
+        return (BedType[]) bedTypes.toArray(new BedType[bedTypes.size()]);
+    }
 
-	String getBedsQuery(Integer roomId, Boolean active) {
-		StringBuilder queryBuilder = new StringBuilder("from Bed b");
+    /*
+      * (non-Javadoc)
+      *
+      * @see org.oscarehr.PMmodule.dao.BedDAO#saveBed(org.oscarehr.PMmodule.model.Bed)
+      */
+    public void saveBed(Bed bed) {
+        updateHistory(bed);
+        getHibernateTemplate().saveOrUpdate(bed);
+        getHibernateTemplate().flush();
+        getHibernateTemplate().refresh(bed);
 
-		if (roomId != null || active != null) {
-			queryBuilder.append(" where ");
-		}
+        log.debug("saveBed: id " + bed.getId());
+    }
 
-		if (roomId != null) {
-			queryBuilder.append("b.roomId = ?");
-		}
 
-		if (roomId != null && active != null) {
-			queryBuilder.append(" and ");
-		}
 
-		if (active != null) {
-			queryBuilder.append("b.active = ?");
-		}
 
-		return queryBuilder.toString();
-	}
+    String getBedsQuery(Integer facilityId, Integer roomId, Boolean active) {
+        StringBuilder queryBuilder = new StringBuilder("from Bed b");
 
-	Object[] getBedsValues(Integer roomId, Boolean active) {
-		List<Object> values = new ArrayList<Object>();
+        queryBuilder.append(" where ");
 
-		if (roomId != null) {
-			values.add(roomId);
-		}
+        boolean andClause = false;
+        if (facilityId != null) {
+            queryBuilder.append("b.facilityId = ?");
+            andClause = true;
+        }
 
-		if (active != null) {
-			values.add(active);
-		}
+        if (roomId!= null) {
+            if (andClause) queryBuilder.append(" and ");
+            queryBuilder.append("b.roomId = ?");
+        }
 
-		return (Object[]) values.toArray(new Object[values.size()]);
-	}
+        if (active != null) {
+            if (andClause) queryBuilder.append(" and ");
+            queryBuilder.append("b.active = ?");
+        }
 
-	List<Bed> getBeds(String query, Object[] values) {
-		return (values.length > 0) ? getHibernateTemplate().find(query, values) : getHibernateTemplate().find(query);
-	}
+        return queryBuilder.toString();
+    }
 
-	void updateHistory(Bed bed) {
-		// TODO IC Bedlog Historical - if room to bed association has changed, create historical record
-	}
+    Object[] getBedsValues(Integer facilityId, Integer roomId, Boolean active) {
+        List<Object> values = new ArrayList<Object>();
+
+        if (facilityId != null) {
+            values.add(facilityId);
+        }
+
+        if (roomId != null) {
+            values.add(roomId);
+        }
+
+        if (active != null) {
+            values.add(active);
+        }
+
+        return (Object[]) values.toArray(new Object[values.size()]);
+    }
+
+    List<Bed> getBeds(String query, Object[] values) {
+        return (values.length > 0) ? getHibernateTemplate().find(query, values) : getHibernateTemplate().find(query);
+    }
+
+    void updateHistory(Bed bed) {
+        // TODO IC Bedlog Historical - if room to bed association has changed, create historical record
+    }
 
 }

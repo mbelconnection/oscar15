@@ -41,81 +41,109 @@ import org.oscarehr.PMmodule.service.BedDemographicManager;
  * Implementation of BedManager interface
  */
 public class BedManager {
-	
-	private static final Log log = LogFactory.getLog(BedManager.class);
-	
-	private static <T extends Exception> void handleException(T e) throws T {
-		log.error(e);
-		throw e;
-	}
 
-	private BedDAO bedDAO;
-	private RoomDAO roomDAO;
-	private ProgramTeamDAO teamDAO;
-	private BedDemographicManager bedDemographicManager;
+    private static final Log log = LogFactory.getLog(BedManager.class);
 
-	public void setBedDAO(BedDAO bedDAO) {
-		this.bedDAO = bedDAO;
-	}
+    private static <T extends Exception> void handleException(T e) throws T {
+        log.error(e);
+        throw e;
+    }
 
-	public void setRoomDAO(RoomDAO roomDAO) {
-		this.roomDAO = roomDAO;
-	}
+    private BedDAO bedDAO;
+    private RoomDAO roomDAO;
+    private ProgramTeamDAO teamDAO;
+    private BedDemographicManager bedDemographicManager;
 
-	public void setTeamDAO(ProgramTeamDAO teamDAO) {
-		this.teamDAO = teamDAO;
-	}
+    public void setBedDAO(BedDAO bedDAO) {
+        this.bedDAO = bedDAO;
+    }
 
-	public void setBedDemographicManager(BedDemographicManager bedDemographicManager) {
-		this.bedDemographicManager = bedDemographicManager;
-	}
+    public void setRoomDAO(RoomDAO roomDAO) {
+        this.roomDAO = roomDAO;
+    }
 
-/**
-	 * Get bed
-	 *
-	 * @param bedId
-	 *            bed identifier
-	 * @return bed
-	 */
-	public Bed getBed(Integer bedId) {
-		if (bedId == null) {
-			handleException(new IllegalArgumentException("bedId must not be null"));
-		}
-		
-		Bed bed = bedDAO.getBed(bedId);
-		setAttributes(bed);
-		
-		return bed;
-	}
+    public void setTeamDAO(ProgramTeamDAO teamDAO) {
+        this.teamDAO = teamDAO;
+    }
 
-	/**
-	 * Get beds by program
-	 *
-	 * @param programId
-	 *            program identifier
-	 * @param reserved
-	 *            reserved flag
-	 * @return array of beds
-	 */
-	public Bed[] getBedsByProgram( Integer programId, boolean reserved) {
-		if (programId == null) {
-			return new Bed[] {};
-		}
+    public void setBedDemographicManager(BedDemographicManager bedDemographicManager) {
+        this.bedDemographicManager = bedDemographicManager;
+    }
 
-		List<Bed> beds = new ArrayList<Bed>();
+    /**
+     * Get bed
+     *
+     * @param bedId
+     *            bed identifier
+     * @return bed
+     */
+    public Bed getBed(Integer bedId) {
+        if (bedId == null) {
+            handleException(new IllegalArgumentException("bedId must not be null"));
+        }
 
-		for (Room room : roomDAO.getRooms(null, programId, Boolean.TRUE)) {
-			for (Bed bed : bedDAO.getBeds(room.getId(), Boolean.TRUE)) {
-				setAttributes(bed);
+        Bed bed = bedDAO.getBed(bedId);
+        setAttributes(bed);
 
-				if (!filterBed(bed, reserved)) {
-					beds.add(bed);
-				}
-			}
-		}
+        return bed;
+    }
 
-		return beds.toArray(new Bed[beds.size()]);
-	}
+    /**
+     * Get beds by program
+     *
+     * @param programId
+     *            program identifier
+     * @param reserved
+     *            reserved flag
+     * @return array of beds
+     */
+    public Bed[] getBedsByProgram( Integer programId, boolean reserved) {
+        if (programId == null) {
+            return new Bed[] {};
+        }
+
+        List<Bed> beds = new ArrayList<Bed>();
+
+        for (Room room : roomDAO.getRooms(null, programId, Boolean.TRUE)) {
+            for (Bed bed : bedDAO.getBedsByRoom(room.getId(), Boolean.TRUE)) {
+                setAttributes(bed);
+
+                if (!filterBed(bed, reserved)) {
+                    beds.add(bed);
+                }
+            }
+        }
+
+        return beds.toArray(new Bed[beds.size()]);
+    }
+
+    /**
+     * Get beds by facility
+     *
+     * @param facilityId
+     *            facility identifier
+     * @param reserved
+     *            reserved flag
+     * @return array of beds
+     */
+    public Bed[] getBedsByFacility( Integer facilityId, boolean reserved) {
+        if (facilityId == null) {
+            return new Bed[] {};
+        }
+
+        List<Bed> beds = new ArrayList<Bed>();
+
+
+        for (Bed bed : bedDAO.getBedsByFacility(facilityId, Boolean.TRUE)) {
+            setAttributes(bed);
+
+            if (!filterBed(bed, reserved)) {
+                beds.add(bed);
+            }
+        }
+
+        return beds.toArray(new Bed[beds.size()]);
+    }
 
     /**
      * Get beds by facility
@@ -129,7 +157,7 @@ public class BedManager {
         List<Bed> beds = new ArrayList<Bed>();
 
         for (Room room : roomDAO.getRooms(facilityId, null, Boolean.TRUE)) {
-            for (Bed bed : bedDAO.getBeds(room.getId(), Boolean.TRUE)) {
+            for (Bed bed : bedDAO.getBedsByRoom(room.getId(), Boolean.TRUE)) {
                 setAttributes(bed);
 
                 if (!filterBed(bed, reserved)) {
@@ -142,154 +170,155 @@ public class BedManager {
     }
 
     /**
-	 * Get beds
-	 *
-	 * @return array of beds
-	 */
-	public Bed[] getBeds() {
-		Bed[] beds = bedDAO.getBeds(null, null);
+     * Get beds
+     *
+     * @return array of beds
+     */
+    public Bed[] getBeds() {
+        Bed[] beds = bedDAO.getBedsByRoom(null, null);
 
-		for (Bed bed : beds) {
-			setAttributes(bed);
-		}
-
-		return beds;
-	}
-	
-	/**
-	 * @see org.oscarehr.PMmodule.service.BedManager#getBedTypes()
-	 */
-	public BedType[] getBedTypes() {
-		return bedDAO.getBedTypes();
-	}
-
-	/**
-	 * Add new beds
-	 *
-	 * @param numBeds
-	 *            number of beds
-	 * @throws BedReservedException
-	 *             bed is inactive and reserved
-	 */
-	public void addBeds(int numBeds) throws BedReservedException {
-		if (numBeds < 1) {
-			handleException(new IllegalArgumentException("numBeds must be greater than or equal to 1"));
-		}
-		
-		BedType defaultBedType = getDefaultBedType();
-		
-		for (int i = 0; i < numBeds; i++) {
-			saveBed(Bed.create(defaultBedType));
+        for (Bed bed : beds) {
+            setAttributes(bed);
         }
-	}
-	
-	/**
-	 * Save beds
-	 *
-	 * @param beds
-	 *            beds to save
-	 * @throws BedReservedException
-	 *             bed is inactive and reserved
-	 */
-	public void saveBeds(Bed[] beds) throws BedReservedException {
-		if (beds == null) {
-			handleException(new IllegalArgumentException("beds must not be null"));
-		}
 
-		for (Bed bed : beds) {
-			saveBed(bed);
-		}
-	}
-	
-	/**
-	 * Save bed
-	 *
-	 * @param bed
-	 *            bed to save
-	 * @throws BedReservedException
-	 *             bed is inactive and reserved
-	 */
-	public void saveBed(Bed bed) throws BedReservedException {
-		validate(bed);
-		bedDAO.saveBed(bed);
-	}
-
-	BedType getDefaultBedType() {
-    	for (BedType bedType : getBedTypes()) {
-    		if (bedType.isDefault()) {
-    			return bedType;
-    		}
-    	}
-    
-		handleException(new IllegalStateException("no default bed type"));
-		
-		return null;
+        return beds;
     }
 
-	boolean filterBed(Bed bed, Boolean reserved) {
-    	if (reserved == null) {
-    		return false;
-    	}
-    	
-    	return reserved != bed.isReserved();
+    /**
+     * @see org.oscarehr.PMmodule.service.BedManager#getBedTypes()
+     */
+    public BedType[] getBedTypes() {
+        return bedDAO.getBedTypes();
     }
 
-	void setAttributes(Bed bed) {
-		bed.setBedType(bedDAO.getBedType(bed.getBedTypeId()));
-		bed.setRoom(roomDAO.getRoom(bed.getRoomId()));
+    /**
+     * Add new beds
+     *
+     * @param numBeds
+     *            number of beds
+     * @throws BedReservedException
+     *             bed is inactive and reserved
+     */
+    public void addBeds(Integer facilityId, int numBeds) throws BedReservedException {
+        if (numBeds < 1) {
+            handleException(new IllegalArgumentException("numBeds must be greater than or equal to 1"));
+        }
 
-		Integer teamId = bed.getTeamId();
+        BedType defaultBedType = getDefaultBedType();
 
-		if (teamId != null) {
-			bed.setTeam(teamDAO.getProgramTeam(teamId));
-		}
+        for (int i = 0; i < numBeds; i++) {
+            saveBed(Bed.create(facilityId, defaultBedType));
+        }
+    }
 
-		BedDemographic bedDemographic = bedDemographicManager.getBedDemographicByBed(bed.getId());
+    /**
+     * Save beds
+     *
+     * @param beds
+     *            beds to save
+     * @throws BedReservedException
+     *             bed is inactive and reserved
+     */
+    public void saveBeds(Bed[] beds) throws BedReservedException {
+        if (beds == null) {
+            handleException(new IllegalArgumentException("beds must not be null"));
+        }
 
-		if (bedDemographic != null) {
-			bed.setBedDemographic(bedDemographic);
-		}
-	}
+        for (Bed bed : beds) {
+            saveBed(bed);
+        }
+    }
 
-	void validate(Bed bed) throws BedReservedException {
-		if (bed == null) {
-			handleException(new IllegalStateException("bed must not be null"));
-		}
+    /**
+     * Save bed
+     *
+     * @param bed
+     *            bed to save
+     * @throws BedReservedException
+     *             bed is inactive and reserved
+     */
+    public void saveBed(Bed bed) throws BedReservedException {
+        validate(bed);
+        bedDAO.saveBed(bed);
+    }
 
-		validateBed(bed.getId(), bed);
-		validateBedType(bed.getBedTypeId());
-		validateRoom(bed.getRoomId());
-		validateTeam(bed.getTeamId());
-	}
+    BedType getDefaultBedType() {
+        for (BedType bedType : getBedTypes()) {
+            if (bedType.isDefault()) {
+                return bedType;
+            }
+        }
 
-	void validateBed(Integer bedId, Bed bed) throws BedReservedException {
-		if (bedId != null) {
-			if (!bedDAO.bedExists(bedId)) {
-				handleException(new IllegalStateException("no bed with id : " + bedId));
-			}
-			
-			if (!bed.isActive() && bedDemographicManager.demographicExists(bed.getId())) {
-				handleException(new BedReservedException("bed with id : " + bedId + " has a reservation"));
-			}
-		}
-	}
+        handleException(new IllegalStateException("no default bed type"));
 
-	void validateBedType(Integer bedTypeId) {
-		if (!bedDAO.bedTypeExists(bedTypeId)) {
-			handleException(new IllegalStateException("no bed type with id : " + bedTypeId));
-		}
-	}
+        return null;
+    }
 
-	void validateRoom(Integer roomId) {
-		if (!roomDAO.roomExists(roomId)) {
-			handleException(new IllegalStateException("no room with id : " + roomId));
-		}
-	}
+    boolean filterBed(Bed bed, Boolean reserved) {
+        if (reserved == null) {
+            return false;
+        }
 
-	void validateTeam(Integer teamId) {
-		if (teamId != null && !teamDAO.teamExists(teamId)) {
-			handleException(new IllegalStateException("no team with id : " + teamId));
-		}
-	}
+        return reserved != bed.isReserved();
+    }
+
+    void setAttributes(Bed bed) {
+        bed.setBedType(bedDAO.getBedType(bed.getBedTypeId()));
+        if (bed.getRoomId() != null)
+            bed.setRoom(roomDAO.getRoom(bed.getRoomId()));
+
+        Integer teamId = bed.getTeamId();
+
+        if (teamId != null) {
+            bed.setTeam(teamDAO.getProgramTeam(teamId));
+        }
+
+        BedDemographic bedDemographic = bedDemographicManager.getBedDemographicByBed(bed.getId());
+
+        if (bedDemographic != null) {
+            bed.setBedDemographic(bedDemographic);
+        }
+    }
+
+    void validate(Bed bed) throws BedReservedException {
+        if (bed == null) {
+            handleException(new IllegalStateException("bed must not be null"));
+        }
+
+        validateBed(bed.getId(), bed);
+        validateBedType(bed.getBedTypeId());
+        validateRoom(bed.getRoomId());
+        validateTeam(bed.getTeamId());
+    }
+
+    void validateBed(Integer bedId, Bed bed) throws BedReservedException {
+        if (bedId != null) {
+            if (!bedDAO.bedExists(bedId)) {
+                handleException(new IllegalStateException("no bed with id : " + bedId));
+            }
+
+            if (!bed.isActive() && bedDemographicManager.demographicExists(bed.getId())) {
+                handleException(new BedReservedException("bed with id : " + bedId + " has a reservation"));
+            }
+        }
+    }
+
+    void validateBedType(Integer bedTypeId) {
+        if (!bedDAO.bedTypeExists(bedTypeId)) {
+            handleException(new IllegalStateException("no bed type with id : " + bedTypeId));
+        }
+    }
+
+    void validateRoom(Integer roomId) {
+        if (roomId != null && !roomDAO.roomExists(roomId)) {
+            handleException(new IllegalStateException("no room with id : " + roomId));
+        }
+    }
+
+    void validateTeam(Integer teamId) {
+        if (teamId != null && !teamDAO.teamExists(teamId)) {
+            handleException(new IllegalStateException("no team with id : " + teamId));
+        }
+    }
 
 }

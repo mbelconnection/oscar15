@@ -48,7 +48,7 @@ public class BedManagerAction extends BaseAction {
         bForm.setRooms(roomManager.getRooms(facilityId));
         bForm.setRoomTypes(roomManager.getRoomTypes());
         bForm.setNumRooms(1);
-        bForm.setBeds(bedManager.getBeds());
+        bForm.setBeds(bedManager.getBedsByFacility(facilityId, false));
         bForm.setBedTypes(bedManager.getBedTypes());
         bForm.setNumBeds(1);
         bForm.setPrograms(programManager.getBedPrograms());
@@ -104,7 +104,6 @@ public class BedManagerAction extends BaseAction {
     }
 
 	public ActionForward addRooms(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-        Integer facilityId = Integer.valueOf(request.getParameter("facilityId"));
         BedManagerForm bForm = (BedManagerForm) form;
 		Integer numRooms = bForm.getNumRooms();
 
@@ -122,12 +121,13 @@ public class BedManagerAction extends BaseAction {
     }
 
 	public ActionForward addBeds(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+        Integer facilityId = Integer.valueOf(request.getParameter("facilityId"));
         BedManagerForm bForm = (BedManagerForm) form;
 		Integer numBeds = bForm.getNumBeds();
 
 		if (numBeds != null && numBeds > 0) {
 			try {
-	            bedManager.addBeds(numBeds);
+	            bedManager.addBeds(facilityId, numBeds);
             } catch (BedReservedException e) {
     			ActionMessages messages = new ActionMessages();
     			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("bed.reserved.error", e.getMessage()));

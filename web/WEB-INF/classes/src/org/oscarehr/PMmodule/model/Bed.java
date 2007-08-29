@@ -32,7 +32,7 @@ public class Bed implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Integer DEFAULT_ROOM_ID = 1;
+    private static final Integer DEFAULT_ROOM_ID = null;
     private static final String DEFAULT_NAME = "";
     private static final boolean DEFAULT_ACTIVE = true;
     public static String REF = "Bed";
@@ -49,6 +49,7 @@ public class Bed implements Serializable {
     private Integer id;// fields
     private Integer bedTypeId;
     private Integer roomId;
+    private Integer facilityId;
     private Date roomStart;
     private Integer teamId;
     private String name;
@@ -68,7 +69,7 @@ public class Bed implements Serializable {
     /**
      * Constructor for primary key
      */
-    public Bed (java.lang.Integer id) {
+    public Bed (Integer id) {
         this.setId(id);
         initialize();
     }
@@ -77,16 +78,18 @@ public class Bed implements Serializable {
      * Constructor for required fields
      */
     public Bed (
-            java.lang.Integer id,
-            java.lang.Integer bedTypeId,
-            java.lang.Integer roomId,
+            Integer id,
+            Integer bedTypeId,
+            Integer roomId,
+            Integer facilityId,
             java.util.Date roomStart,
-            java.lang.String name,
+            String name,
             boolean active) {
 
         this.setId(id);
         this.setBedTypeId(bedTypeId);
         this.setRoomId(roomId);
+        this.setFacilityId(facilityId);
         this.setRoomStart(roomStart);
         this.setName(name);
         this.setActive(active);
@@ -94,14 +97,14 @@ public class Bed implements Serializable {
     }
 
 
-    public static Bed create(BedType bedType) {
+    public static Bed create(Integer facilityId, BedType bedType) {
         Bed bed = new Bed();
         bed.setBedTypeId(bedType.getId());
         bed.setRoomId(DEFAULT_ROOM_ID);
         bed.setRoomStart(Calendar.getInstance().getTime());
         bed.setName(DEFAULT_NAME);
         bed.setActive(DEFAULT_ACTIVE);
-
+        bed.setFacilityId(facilityId);
         return bed;
     }
 
@@ -319,6 +322,14 @@ public class Bed implements Serializable {
      */
     public void setActive (boolean active) {
         this.active = active;
+    }
+
+    public Integer getFacilityId() {
+        return facilityId;
+    }
+
+    public void setFacilityId(Integer facilityId) {
+        this.facilityId = facilityId;
     }
 
     public boolean equals (Object obj) {

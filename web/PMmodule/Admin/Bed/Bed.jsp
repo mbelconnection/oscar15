@@ -10,7 +10,7 @@
 <div class="tabs" id="tabs">
     <table cellpadding="3" cellspacing="0" border="0">
         <tr>
-            <th title="Agencies">Managed beds and rooms</th>
+            <th title="Manage beds">Manage beds and rooms for <c:out value="${sessionScope.bedManagerForm.facility.name}"/></th>
         </tr>
     </table>
 </div>
@@ -18,6 +18,8 @@
 <html:form action="/PMmodule/BedManager.do">
 
 <table width="100%" summary="Create and edit rooms, and beds">
+
+<html:hidden property="facilityId" />
 <tr>
     <td width="80%">
         <div class="tabs">

@@ -7,6 +7,8 @@ import org.oscarehr.PMmodule.model.*;
  */
 public class BedManagerForm extends ActionForm {
 
+    private Integer facilityId;
+    private Facility facility;
     private Integer numRooms;
     private Integer numBeds;
     private Room[] rooms;
@@ -14,6 +16,22 @@ public class BedManagerForm extends ActionForm {
     private Bed[] beds;
     private BedType[] bedTypes;
     private Program[] programs;
+
+    public Integer getFacilityId() {
+        return facilityId;
+    }
+
+    public void setFacilityId(Integer facilityId) {
+        this.facilityId = facilityId;
+    }
+
+    public Facility getFacility() {
+        return facility;
+    }
+
+    public void setFacility(Facility facility) {
+        this.facility = facility;
+    }
 
     public Integer getNumRooms() {
         return numRooms;

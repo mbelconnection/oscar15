@@ -26,7 +26,7 @@
         <display:setProperty name="basic.msg.empty_list" value="No agencies found." />
 
         <display:column sortable="false" title="">
-            <a onclick="return ConfirmDelete('<c:out value="${agency.name}"/>')" href="<html:rewrite action="/PMmodule/MultiAgencyManager.do"/>?method=delete&id=<c:out value="${agency.id}"/>&name=<c:out value="${program.name}"/>"> Delete </a>
+            <a onclick="return ConfirmDelete('<c:out value="${agency.name}"/>')" href="<html:rewrite action="/PMmodule/MultiAgencyManager.do"/>?method=delete&id=<c:out value="${agency.id}"/>&name=<c:out value="${facility.name}"/>"> Delete </a>
         </display:column>
         <display:column sortable="false" title="">
             <a href="<html:rewrite action="/PMmodule/MultiAgencyManager.do"/>?method=edit&id=<c:out value="${agency.id}" />"> Edit </a>
@@ -38,7 +38,7 @@
         <display:column property="contactEmail" sortable="true" title="Contact email" />
         <display:column property="hic" sortable="true" title="Is HIC?" />
         <display:column sortable="false" title="">
-            <a href="<html:rewrite action="/PMmodule/MultiAgencyManager.do"/>?method=displayPrograms&id=<c:out value="${agency.id}" />"> Show/Assign Bed Programs </a>
+            <a href="<html:rewrite action="/PMmodule/FacilityManager.do"/>?method=list&agencyId=<c:out value="${agency.id}"/>" />Manage Facilities </a>
         </display:column>
     </display:table>
 </html:form>

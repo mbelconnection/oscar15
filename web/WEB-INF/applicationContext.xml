@@ -125,6 +125,11 @@
 			<ref bean="sessionFactory" />
 		</property>
     </bean>
+    <bean id="facilityDAO" class="org.oscarehr.PMmodule.dao.FacilityDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+    </bean>
      <bean id="CaseManagementIssueDAO" class="org.oscarehr.casemgmt.dao.hibernate.CaseManagementIssueDAOHibernate">
 		<property name="sessionFactory">
 			<ref bean="sessionFactory" />

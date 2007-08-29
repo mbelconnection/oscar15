@@ -165,36 +165,7 @@
         <property name="clientManager">
             <ref bean="clientManager" />
         </property>
-    </bean>
-    <bean name="/PMmodule/AgencyManager" class="org.oscarehr.PMmodule.web.admin.AgencyManagerAction" singleton="false">
-        <property name="admissionManager">
-            <ref bean="admissionManager" />
-        </property>
-        <property name="agencyManager">
-            <ref bean="agencyManager" />
-        </property>
-        <property name="bedManager">
-            <ref bean="bedManager" />
-        </property>
-        <property name="clientManager">
-            <ref bean="clientManager" />
-        </property>
-        <property name="integratorManager">
-            <ref bean="integratorManager" />
-        </property>
-        <property name="logManager">
-            <ref bean="logManager" />
-        </property>
-        <property name="programManager">
-            <ref bean="programManager" />
-        </property>
-        <property name="providerManager">
-            <ref bean="providerManager" />
-        </property>
-        <property name="roomManager">
-            <ref bean="roomManager" />
-        </property>
-    </bean>
+    </bean>   
     <bean name="/PMmodule/MultiAgencyManager" class="org.oscarehr.PMmodule.web.admin.MultiAgencyManagerAction" singleton="false">
         <property name="admissionManager">
             <ref bean="admissionManager" />
@@ -224,33 +195,33 @@
             <ref bean="roomManager" />
         </property>
     </bean>
-    <bean name="/PMmodule/BedManager" class="org.oscarehr.PMmodule.web.admin.BedManagerAction" singleton="false">
-        <property name="admissionManager">
-            <ref bean="admissionManager" />
-        </property>
-        <property name="agencyManager">
-            <ref bean="agencyManager" />
-        </property>
+    <bean name="/PMmodule/BedManager" class="org.oscarehr.PMmodule.web.admin.BedManagerAction" singleton="false" >
         <property name="bedManager">
             <ref bean="bedManager" />
         </property>
-        <property name="clientManager">
-            <ref bean="clientManager" />
+        <property name="roomManager">
+            <ref bean="roomManager" />
         </property>
-        <property name="integratorManager">
-            <ref bean="integratorManager" />
-        </property>
-        <property name="logManager">
-            <ref bean="logManager" />
+        <property name="facilityManager">
+            <ref bean="facilityManager"/>
         </property>
         <property name="programManager">
-            <ref bean="programManager" />
+            <ref bean="programManager"/>
         </property>
-        <property name="providerManager">
-            <ref bean="providerManager" />
+
+    </bean>
+    <bean name="/PMmodule/FacilityManager" class="org.oscarehr.PMmodule.web.admin.FacilityManagerAction" singleton="false">
+        <property name="bedManager">
+            <ref bean="bedManager" />
         </property>
         <property name="roomManager">
             <ref bean="roomManager" />
+        </property>
+        <property name="facilityManager">
+            <ref bean="facilityManager"/>
+        </property>
+        <property name="logManager">
+            <ref bean="logManager" />
         </property>
     </bean>
     <bean name="/PMmodule/ProviderSearch" class="org.oscarehr.PMmodule.web.ProviderSearchAction" singleton="false">

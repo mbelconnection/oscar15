@@ -32,6 +32,7 @@ public class Room implements Serializable {
 
     private static final String DEFAULT_NAME = "";
     private static final boolean DEFAULT_ACTIVE = true;
+
     public static String REF = "Room";
     public static String PROP_ROOM_TYPE_ID = "roomTypeId";
     public static String PROP_ACTIVE = "active";
@@ -48,9 +49,11 @@ public class Room implements Serializable {
     private String name;
     private String floor;
     private boolean active;
+    private Integer facilityId;
 
     private RoomType roomType;
     private Program program;
+    private Facility facility;
 
     // constructors
     public Room() {
@@ -60,7 +63,7 @@ public class Room implements Serializable {
     /**
      * Constructor for primary key
      */
-    public Room(java.lang.Integer id) {
+    public Room(Integer id) {
         this.setId(id);
         initialize();
     }
@@ -69,20 +72,24 @@ public class Room implements Serializable {
      * Constructor for required fields
      */
     public Room(
-            java.lang.Integer id,
-            java.lang.Integer roomTypeId,
-            java.lang.String name,
-            boolean active) {
+            Integer id,
+            Integer roomTypeId,
+            String name,
+            boolean active,
+            Integer facilityId) {
 
         this.setId(id);
         this.setRoomTypeId(roomTypeId);
         this.setName(name);
         this.setActive(active);
+        this.setFacilityId(facilityId);
         initialize();
     }
 
-    public static final Room create(RoomType roomType) {
+    public static final Room create(Integer facilityId, RoomType roomType) {
         Room room = new Room();
+
+        room.setFacilityId(facilityId);
         room.setRoomTypeId(roomType.getId());
         room.setName(DEFAULT_NAME);
         room.setActive(DEFAULT_ACTIVE);
@@ -215,6 +222,10 @@ public class Room implements Serializable {
         return active;
     }
 
+    public Facility getFacility() {
+        return facility;
+    }
+    
     /**
      * Set the value related to the column: active
      *
@@ -222,6 +233,14 @@ public class Room implements Serializable {
      */
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public Integer getFacilityId() {
+        return facilityId;
+    }
+
+    public void setFacilityId(Integer facilityId) {
+        this.facilityId = facilityId;
     }
 
     public boolean equals(Object obj) {
@@ -243,5 +262,10 @@ public class Room implements Serializable {
             }
         }
         return this.hashCode;
+    }
+
+
+    public void setFacility(Facility facility) {
+        this.facility = facility;
     }
 }

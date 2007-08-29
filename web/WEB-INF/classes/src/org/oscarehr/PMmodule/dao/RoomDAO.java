@@ -104,11 +104,11 @@ public class RoomDAO extends HibernateDaoSupport {
 	 * @return list of rooms
 	 */
     @SuppressWarnings("unchecked")
-    public Room[] getRooms(Integer programId, Boolean active) {
-		String queryString = getRoomsQueryString(programId, active);
-		Object[] values = getRoomsValues(programId, active);
+    public Room[] getRooms(Integer facilityId, Integer programId, Boolean active) {
+		String queryString = getRoomsQueryString(facilityId, programId, active);
+		Object[] values = getRoomsValues(facilityId, programId, active);
 
-		List rooms = (programId != null || active != null) ? getHibernateTemplate().find(queryString, values) : getHibernateTemplate().find(queryString);
+		List rooms = (facilityId != null || programId != null || active != null) ? getHibernateTemplate().find(queryString, values) : getHibernateTemplate().find(queryString);
 		log.debug("getRooms: size: " + rooms.size());
 
 		return (Room[]) rooms.toArray(new Room[rooms.size()]);
@@ -144,32 +144,39 @@ public class RoomDAO extends HibernateDaoSupport {
 		log.debug("saveRoom: id: " + room.getId());
 	}
 
-	String getRoomsQueryString(Integer programId, Boolean active) {
+	String getRoomsQueryString(Integer facilityId, Integer programId, Boolean active) {
 		StringBuilder queryBuilder = new StringBuilder("from Room r");
 
-		if (programId != null || active != null) {
-			queryBuilder.append(" where ");
-		}
+        queryBuilder.append(" where ");
 
-		if (programId != null) {
-			queryBuilder.append("r.programId = ?");
-		}
+        boolean andClause = false;
+        if (facilityId != null) {
+            queryBuilder.append("r.facilityId = ?");
+            andClause = true;
+        }
 
-		if (programId != null && active != null) {
-			queryBuilder.append(" and ");
-		}
+        if (programId != null) {
+            if (andClause) queryBuilder.append(" and ");
+            queryBuilder.append("r.programId = ?");
+        }
 
-		if (active != null) {
-			queryBuilder.append("r.active = ?");
-		}
 
-		return queryBuilder.toString();
+        if (active != null) {
+            if (andClause) queryBuilder.append(" and ");
+            queryBuilder.append("r.active = ?");
+        }
+
+        return queryBuilder.toString();
 	}
 	
-	Object[] getRoomsValues(Integer programId, Boolean active) {
+	Object[] getRoomsValues(Integer facilityId, Integer programId, Boolean active) {
 		List<Object> values = new ArrayList<Object>();
 		
-		if (programId != null) {
+        if (facilityId != null) {
+            values.add(facilityId);
+        }
+        
+        if (programId != null) {
 			values.add(programId);
 		}
 		
@@ -177,7 +184,7 @@ public class RoomDAO extends HibernateDaoSupport {
 			values.add(active);
 		}
 		
-		return (Object[]) values.toArray(new Object[values.size()]);
+		return values.toArray(new Object[values.size()]);
 	}
 
 	void updateHistory(Room room) {

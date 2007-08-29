@@ -1,5 +1,5 @@
 -- default agency
-insert into agency (id, name, description, local, hic) values (0, 'Default Agency', 'Default Agency', 1, 0);
+insert into agency (name, description, local, hic) values ('Default Agency', 'Default Agency', 1, 0);
 
 -- default roles
 INSERT INTO `caisi_role` VALUES (1,'doctor','',now()),(2,'nurse','',now()),(3,'counsellor','',now()),(4,'csw','',now());
@@ -16179,5 +16179,5 @@ INSERT INTO issue (code, description, role, update_date)
 insert into encounterForm values("Discharge Summary","../form/formDischargeSummary.jsp?demographic_no=","formDischargeSummary",1);
 
 
-
-
+--
+INSERT INTO facility (name, description, disabled) VALUES ('Default Facility', 'Default facility, please modify with a more appropriate name and description', 0);

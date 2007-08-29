@@ -221,20 +221,9 @@
             <form-property name="queue" type="org.oscarehr.PMmodule.model.ProgramQueue" />
             <form-property name="client_status" type="org.oscarehr.PMmodule.model.ProgramClientStatus" />
         </form-bean>
-        <form-bean name="agencyManagerForm" type="org.apache.struts.validator.DynaValidatorForm">
-            <form-property name="view" type="org.oscarehr.PMmodule.web.formbean.AgencyManagerViewFormBean" />
-            <form-property name="agency" type="org.oscarehr.PMmodule.model.Agency" />
-            <form-property name="numRooms" type="java.lang.Integer" />
-            <form-property name="numBeds" type="java.lang.Integer" />
-            <form-property name="rooms" type="org.oscarehr.PMmodule.model.Room[]" />
-            <form-property name="roomTypes" type="org.oscarehr.PMmodule.model.RoomType[]" />
-            <form-property name="beds" type="org.oscarehr.PMmodule.model.Bed[]" />
-            <form-property name="bedTypes" type="org.oscarehr.PMmodule.model.BedType[]" />
-            <form-property name="programs" type="org.oscarehr.PMmodule.model.Program[]" />
-        </form-bean>
         <form-bean name="multiAgencyManagerForm" type="org.oscarehr.PMmodule.web.admin.MultiAgencyManagerForm"/>
         <form-bean name="bedManagerForm" type="org.oscarehr.PMmodule.web.admin.BedManagerForm"/>
-
+        <form-bean name="facilityManagerForm" type="org.oscarehr.PMmodule.web.admin.FacilityManagerForm"/>
         <form-bean name="clientSearchForm2" type="org.apache.struts.validator.DynaValidatorForm">
             <form-property name="criteria" type="org.oscarehr.PMmodule.web.formbean.ClientSearchFormBean" />
         </form-bean>
@@ -1249,16 +1238,16 @@
             <forward name="viewBedReservationChangeReport" path="/PMmodule/Admin/ProgramView/bed_reservation_change_report.jsp" />
             <forward name="viewBedCheckReport" path="/PMmodule/Admin/ProgramView/bed_check_report.jsp" />
         </action>
-        <action path="/PMmodule/AgencyManager" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method" name="agencyManagerForm" scope="session">
-            <forward name="view" path="page.pmm.admin.agency.view" />
-            <forward name="edit" path="page.pmm.admin.agency.edit" />
-        </action>
         <action path="/PMmodule/MultiAgencyManager" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method" name="multiAgencyManagerForm" scope="session">
             <forward name="list" path="page.pmm.admin.multiagency.list"/>
             <forward name="edit" path="page.pmm.admin.multiagency.edit"/>
         </action>
         <action path="/PMmodule/BedManager" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method" name="bedManagerForm" scope="session">
             <forward name="manage" path="page.pmm.admin.beds.manage"/>
+        </action>
+        <action path="/PMmodule/FacilityManager" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method" name="facilityManagerForm" scope="session">
+            <forward name="list" path="page.pmm.admin.facility.list"/>
+            <forward name="edit" path="page.pmm.admin.facility.edit"/>
         </action>
         <action path="/PMmodule/ProviderSearch" type="org.springframework.web.struts.DelegatingActionProxy">
             <forward name="results" path="/PMmodule/ProviderSearch.jsp" />

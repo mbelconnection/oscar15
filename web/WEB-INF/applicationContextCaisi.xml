@@ -549,14 +549,22 @@
 	</bean>
 	<bean id="roomManager" parent="baseTransactionProxy">
 		<property name="target">
-			<bean class="org.oscarehr.PMmodule.service.impl.RoomManagerImpl">
+			<bean class="org.oscarehr.PMmodule.service.RoomManager">
 				<property name="roomDAO" ref="roomDAO" />
 				<property name="programDAO" ref="programDao" />
 				<property name="bedDAO" ref="bedDAO" />
-			</bean>
+                <property name="facilityDAO" ref="facilityDAO"/>
+            </bean>
 		</property>
 	</bean>
-	<bean id="bedManager" parent="baseTransactionProxy">
+	<bean id="facilityManager" parent="baseTransactionProxy">
+		<property name="target">
+			<bean class="org.oscarehr.PMmodule.service.FacilityManager">
+                <property name="facilityDAO" ref="facilityDAO"/>
+            </bean>
+		</property>
+	</bean>
+    <bean id="bedManager" parent="baseTransactionProxy">
 		<property name="target">
 			<bean class="org.oscarehr.PMmodule.service.BedManager">
 				<property name="bedDAO" ref="bedDAO" />

@@ -1764,6 +1764,8 @@ CREATE TABLE `room` (
   `name` varchar(45) NOT NULL,
   `floor` varchar(45) default NULL,
   `active` tinyint(1) NOT NULL default '1',
+  `facility_id` int(10) NOT NULL,
+  CONSTRAINT `FK_room_facility` FOREIGN KEY (`facility_id`) REFERENCES `facility` (`id`),      
   PRIMARY KEY  (`room_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -2007,4 +2009,17 @@ create table programSignature (
 
 -- Caisi Alter Oscar
 alter table preference add `new_tickler_warning_window` varchar(10) NOT NULL default '' after color_template;
+
+-- Facility table, added to CAISI to support RFQ requirement of facilities.
+drop table if exists `facility`;
+create table facility (
+    `id` bigint(22) NOT NULL auto_increment,
+    `agency_id` bigint(22) NOT NULL,
+    `name` varchar(32) NOT NULL default '',
+    `description` VARCHAR(70) NOT NULL default '',
+    `disabled` tinyint(1) NOT NULL default '0',
+    PRIMARY KEY (`id`),
+    CONSTRAINT `FK_facility_agency` FOREIGN KEY (`agency_id`) REFERENCES `agency` (`id`),
+    UNIQUE KEY `idx_facility_name` USING HASH (`name`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 

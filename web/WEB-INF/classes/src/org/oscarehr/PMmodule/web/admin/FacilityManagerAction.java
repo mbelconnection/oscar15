@@ -22,8 +22,10 @@ public class FacilityManagerAction extends BaseAction {
 
     private static final String FORWARD_EDIT = "edit";
     private static final String FORWARD_LIST = "list";
+
     private static final String BEAN_FACILITIES = "facilities";
     private static final String BEAN_AGENCY_ID = "agencyId";
+    private static final String BEAN_AGENCY = "agency";
 
     public ActionForward unspecified(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
         return list(mapping, form, request, response);
@@ -41,7 +43,9 @@ public class FacilityManagerAction extends BaseAction {
         request.setAttribute(BEAN_FACILITIES, filteredFacilities);
 
         request.setAttribute(BEAN_AGENCY_ID, agencyId);
-        
+
+        request.setAttribute(BEAN_AGENCY, agencyManager.getAgency("" + agencyId));
+
         return mapping.findForward(FORWARD_LIST);
     }
 
@@ -55,6 +59,8 @@ public class FacilityManagerAction extends BaseAction {
 
         request.setAttribute("id", facility.getId());
 
+        request.setAttribute(BEAN_AGENCY, agencyManager.getAgency("" + agencyId));
+        
         return mapping.findForward(FORWARD_EDIT);
     }
 

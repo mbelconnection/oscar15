@@ -223,6 +223,7 @@
         <property name="logManager">
             <ref bean="logManager" />
         </property>
+        <property name="agencyManager" ref="agencyManager"/>
     </bean>
     <bean name="/PMmodule/ProviderSearch" class="org.oscarehr.PMmodule.web.ProviderSearchAction" singleton="false">
         <property name="providerManager">

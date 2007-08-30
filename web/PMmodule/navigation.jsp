@@ -117,7 +117,7 @@ function getIntakeReport(type) {
 		<div>
 			<span>Agency Management</span>
 			<div>
-				<html:link action="/PMmodule/MultiAgencyManager.do">Agency list</html:link>
+				<html:link action="/PMmodule/MultiAgencyManager.do">Manage agencies, facilities, and beds</html:link>
 			</div>
 			<div>
 				<html:link action="/PMmodule/MultiAgencyManager.do?method=add">Add agency</html:link>

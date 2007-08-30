@@ -13,7 +13,7 @@
 <div class="tabs" id="tabs">
     <table cellpadding="3" cellspacing="0" border="0">
         <tr>
-            <th title="Facilities">Facilities</th>
+            <th title="Facilities">Facilities management for agency "<c:out value="${agency.name}"/>"</th>
         </tr>
     </table>
 </div>
@@ -39,5 +39,6 @@
     </display:table>
 </html:form>
 <div>
-    <a href="<html:rewrite action="/PMmodule/FacilityManager.do"/>?method=add&agencyId=<c:out value="${agencyId}" />"> Add new facility </a>
+    <p><a href="<html:rewrite action="/PMmodule/FacilityManager.do"/>?method=add&agencyId=<c:out value="${agencyId}" />"> Add new facility </a></p>
+    <p><html:link action="/PMmodule/MultiAgencyManager.do">Return to agency list</html:link></p>
 </div>

@@ -10,14 +10,14 @@
 <div class="tabs" id="tabs">
     <table cellpadding="3" cellspacing="0" border="0">
         <tr>
-            <th title="Manage beds">Manage beds and rooms for <c:out value="${sessionScope.bedManagerForm.facility.name}"/></th>
+            <th title="Manage beds">Manage beds and rooms for facility "<c:out value="${sessionScope.bedManagerForm.facility.name}"/>" in agency "<c:out value="${agency.name}"/>"</th>
         </tr>
     </table>
 </div>
 
 <html:form action="/PMmodule/BedManager.do">
 
-<table width="100%" summary="Create and edit rooms, and beds">
+<table width="100%" summary="Manage rooms and beds">
 
 <html:hidden property="facilityId" />
 <tr>
@@ -181,4 +181,9 @@
     </td>
 </tr>
 </table>
+<div>
+    <p><a href="<html:rewrite action="/PMmodule/FacilityManager.do"/>?method=list&agencyId=<c:out value="${agency.id}"/>" />Return to facilities list</a></p>
+    <p><html:link action="/PMmodule/MultiAgencyManager.do">Return to agency list</html:link></p>
+</div>
+
 </html:form>

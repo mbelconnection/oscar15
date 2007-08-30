@@ -114,11 +114,7 @@
 </div>
 <html:hidden property="program.agencyId" />
 <html:hidden property="program.id" />
-<table width="100%" border="1" cellspacing="2" cellpadding="3">
-	<tr class="b">
-		<td width="20%">Agency</td>
-		<td><%=Agency.getLocalAgency().getName()%></td>
-	</tr>
+<table width="100%" border="1" cellspacing="2" cellpadding="3">	
 	<tr class="b">
 		<td width="20%">Program Name</td>
 		<td><html:text property="program.name" /></td>

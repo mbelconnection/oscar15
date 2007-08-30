@@ -58,7 +58,7 @@ public class ConsentManagerImpl implements ConsentManager
 
 		clientDao.saveDemographicExt(consent.getDemographicNo().intValue(), "consent_st",consent.getStatus());
 		clientDao.saveDemographicExt(consent.getDemographicNo().intValue(), "consent_ex",consent.getExclusionString());
-		clientDao.saveDemographicExt(consent.getDemographicNo().intValue(), "consent_ag",String.valueOf(Agency.getLocalAgency().getId()));
+//		clientDao.saveDemographicExt(consent.getDemographicNo().intValue(), "consent_ag",String.valueOf(Agency.getLocalAgency().getId()));
 		clientDao.saveDemographicExt(consent.getDemographicNo().intValue(), "consent_dt",formatter.format(new Date()));
 				
 		dao.saveConsent(consent);

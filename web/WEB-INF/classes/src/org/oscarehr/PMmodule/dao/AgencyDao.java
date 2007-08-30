@@ -87,4 +87,7 @@ public class AgencyDao extends HibernateDaoSupport {
 
 	}
 
+    public List<Agency> findAgenciesForProgram(Integer id) {
+        return this.getHibernateTemplate().find("SELECT distinct(a) FROM Program p,  Room r, Facility f, Agency a WHERE f.agencyId = a.id AND r.facilityId = f.id AND r.programId = p.id");
+    }
 }

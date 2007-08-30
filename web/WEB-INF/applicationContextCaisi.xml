@@ -675,8 +675,9 @@
 				<property name="defaultRoleAccessDAO" ref="defaultRoleAccessDAO" />
 				<property name="programClientStatusDAO" ref="programClientStatusDAO" />	
 				<property name="enabled" value="${pmm.refer.temporaryAdmission.enabled}" />
-				<property name="programSignatureDao" ref="programSignatureDao" />				
-			</bean>
+				<property name="programSignatureDao" ref="programSignatureDao" />
+                <property name="agencyDao" ref="agencyDao"/>
+            </bean>
 		</property>
 	</bean>
 	<bean id="programQueueManager" parent="baseTransactionProxy">

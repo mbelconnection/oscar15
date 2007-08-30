@@ -22,35 +22,17 @@
 
 package org.oscarehr.PMmodule.service;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts.util.LabelValueBean;
 import org.codehaus.xfire.XFireRuntimeException;
-import org.oscarehr.PMmodule.dao.AdmissionDao;
-import org.oscarehr.PMmodule.dao.DefaultRoleAccessDAO;
-import org.oscarehr.PMmodule.dao.ProgramAccessDAO;
-import org.oscarehr.PMmodule.dao.ProgramClientStatusDAO;
-import org.oscarehr.PMmodule.dao.ProgramDao;
-import org.oscarehr.PMmodule.dao.ProgramFunctionalUserDAO;
-import org.oscarehr.PMmodule.dao.ProgramProviderDAO;
-import org.oscarehr.PMmodule.dao.ProgramSignatureDao;
-import org.oscarehr.PMmodule.dao.ProgramTeamDAO;
+import org.oscarehr.PMmodule.dao.*;
 import org.oscarehr.PMmodule.exception.IntegratorNotEnabledException;
-import org.oscarehr.PMmodule.model.AccessType;
-import org.oscarehr.PMmodule.model.Agency;
-import org.oscarehr.PMmodule.model.DefaultRoleAccess;
-import org.oscarehr.PMmodule.model.FunctionalUserType;
-import org.oscarehr.PMmodule.model.Program;
-import org.oscarehr.PMmodule.model.ProgramAccess;
-import org.oscarehr.PMmodule.model.ProgramClientStatus;
-import org.oscarehr.PMmodule.model.ProgramFunctionalUser;
-import org.oscarehr.PMmodule.model.ProgramProvider;
-import org.oscarehr.PMmodule.model.ProgramSignature;
-import org.oscarehr.PMmodule.model.ProgramTeam;
+import org.oscarehr.PMmodule.model.*;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class ProgramManager {
 	
@@ -66,8 +48,9 @@ public class ProgramManager {
 	private DefaultRoleAccessDAO defaultRoleAccessDAO;
 	private ProgramClientStatusDAO clientStatusDAO;
 	private ProgramSignatureDao programSignatureDao;
-	
-	private boolean enabled;
+	private AgencyDao agencyDao;
+
+    private boolean enabled;
 	
 	public boolean getEnabled() {
 		return enabled;
@@ -432,4 +415,16 @@ public class ProgramManager {
 	public void saveProgramSignature(ProgramSignature programSignature) {
 		programSignatureDao.saveProgramSignature(programSignature);
 	}
+
+    public List<Agency> getAgenciesForProgram(Integer id) {
+        return agencyDao.findAgenciesForProgram(id);
+    }
+
+    public AgencyDao getAgencyDao() {
+        return agencyDao;
+    }
+
+    public void setAgencyDao(AgencyDao agencyDao) {
+        this.agencyDao = agencyDao;
+    }
 }

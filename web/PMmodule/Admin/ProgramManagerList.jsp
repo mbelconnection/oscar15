@@ -1,3 +1,5 @@
+<%@ page import="org.oscarehr.PMmodule.model.Program" %>
+<%@ page import="java.util.Map" %>
 <%@ include file="/taglibs.jsp"%>
 <script>
 	function ConfirmDelete(name)
@@ -43,7 +45,15 @@
 		<a href="<html:rewrite action="/PMmodule/ProgramManagerView.do"/>?id=<c:out value="${program.id}" />"> <c:out value="${program.name}" /> </a>
 	</display:column>
 	<display:column property="descr" sortable="true" title="Description" />
-	<display:column property="type" sortable="true" title="Type" />
+    <display:column title="Agencies" sortable="true">
+        <%
+            Map<Integer, String> agenciesForPrograms = (Map<Integer, String>) request.getAttribute("agenciesForPrograms");
+            Integer programId = ((Program) pageContext.getAttribute("program")).getId();
+            if (agenciesForPrograms.containsKey(programId))
+                out.write(agenciesForPrograms.get(programId));
+        %>
+    </display:column>
+    <display:column property="type" sortable="true" title="Type" />
 	<display:column property="programStatus" sortable="true" title="Status" />
 	<display:column property="location" sortable="true" title="Location" />
 	<display:column sortable="true" title="Participation">

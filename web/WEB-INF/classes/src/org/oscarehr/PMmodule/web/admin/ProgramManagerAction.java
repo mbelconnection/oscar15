@@ -22,43 +22,52 @@
 
 package org.oscarehr.PMmodule.web.admin;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import org.apache.struts.action.*;
+import org.oscarehr.PMmodule.model.*;
+import org.oscarehr.PMmodule.web.BaseAction;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionMessage;
-import org.apache.struts.action.ActionMessages;
-import org.apache.struts.action.DynaActionForm;
-import org.oscarehr.PMmodule.model.Admission;
-import org.oscarehr.PMmodule.model.Bed;
-import org.oscarehr.PMmodule.model.BedCheckTime;
-import org.oscarehr.PMmodule.model.Program;
-import org.oscarehr.PMmodule.model.ProgramAccess;
-import org.oscarehr.PMmodule.model.ProgramClientStatus;
-import org.oscarehr.PMmodule.model.ProgramFunctionalUser;
-import org.oscarehr.PMmodule.model.ProgramProvider;
-import org.oscarehr.PMmodule.model.ProgramQueue;
-import org.oscarehr.PMmodule.model.ProgramSignature;
-import org.oscarehr.PMmodule.model.ProgramTeam;
-import org.oscarehr.PMmodule.web.BaseAction;
+import java.util.*;
 
 public class ProgramManagerAction extends BaseAction {
 
-	public ActionForward unspecified(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+    public ActionForward unspecified(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
 		return list(mapping, form, request, response);
 	}
 
 	public ActionForward list(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-		request.setAttribute("programs", programManager.getAllPrograms());
-		
-		logManager.log("read", "full program list", "", request);
+        List<Program> programs = programManager.getAllPrograms();
+        request.setAttribute("programs", programs);
+
+        Map<Integer, String> agenciesForPrograms = new HashMap<Integer, String>();
+        for (Program program : programs) {
+            // get list of agencies for the program
+            List<Agency> agencies = programManager.getAgenciesForProgram(program.getId());
+
+            // now sort by agency name
+            Collections.sort(agencies, new Comparator<Agency>() {
+
+                public int compare(Agency agency, Agency agency1) {
+                    return agency.getName().compareTo(agency1.getName());
+                }
+            });
+
+            // now just make a list of the agency names, comma separated
+            StringBuffer agencyNames = new StringBuffer();
+            for (Iterator<Agency> iterator = agencies.iterator(); iterator.hasNext();) {
+                Agency agency = iterator.next();
+                agencyNames.append(agency.getName());
+                if (iterator.hasNext())
+                    agencyNames.append(", ");
+            }
+            agenciesForPrograms.put(program.getId(), agencyNames.toString());
+        }
+
+        // put agency associations into the page
+        request.setAttribute("agenciesForPrograms", agenciesForPrograms);
+
+        logManager.log("read", "full program list", "", request);
 
 		return mapping.findForward("list");
 	}

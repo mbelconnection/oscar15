@@ -381,7 +381,7 @@ public class ProgramManagerAction extends BaseAction {
 		return mapping.findForward("edit");
 	}
 
-	public ActionForward edit_provider(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+    public ActionForward edit_provider(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
 		DynaActionForm programForm = (DynaActionForm) form;
 		Program program = (Program) programForm.get("program");
 		ProgramProvider provider = (ProgramProvider) programForm.get("provider");
@@ -826,7 +826,8 @@ public class ProgramManagerAction extends BaseAction {
 
 		ProgramClientStatus pt = programManager.getProgramClientStatus(String.valueOf(status.getId()));
 
-		if (pt == null) {
+
+        if (pt == null) {
 			ActionMessages messages = new ActionMessages();
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("program_status.missing"));
 			saveMessages(request, messages);
@@ -834,7 +835,8 @@ public class ProgramManagerAction extends BaseAction {
 			return edit(mapping, form, request, response);
 		}
 		programForm.set("client_status", pt);
-		setEditAttributes(request, String.valueOf(program.getId()));
+        
+        setEditAttributes(request, String.valueOf(program.getId()));
 
 		return mapping.findForward("edit");
 	}
@@ -844,12 +846,15 @@ public class ProgramManagerAction extends BaseAction {
 		Program program = (Program) programForm.get("program");
 		ProgramClientStatus status = (ProgramClientStatus) programForm.get("client_status");
 
-		if (this.isCancelled(request)) {
+        if (request.getParameter("client_status.blockReferral") == null)
+            status.setBlockReferral(false);
+        
+        if (this.isCancelled(request)) {
 			return list(mapping, form, request, response);
 		}
 		status.setProgramId(program.getId());
 
-		if (programManager.clientStatusNameExists(program.getId(), status.getName())) {
+		if (status.getId() == null && programManager.clientStatusNameExists(program.getId(), status.getName())) {
 			ActionMessages messages = new ActionMessages();
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("program_status.duplicate", status.getName()));
 			saveMessages(request, messages);

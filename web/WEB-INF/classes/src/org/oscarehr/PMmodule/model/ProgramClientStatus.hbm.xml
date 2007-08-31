@@ -24,5 +24,7 @@
 		</id>
 		<property name="name" column="name" type="string" not-null="false" length="255" />
 		<property name="programId" column="program_id" type="integer" not-null="false" length="10" />
-	</class>
+        <property name="description" column="description" type="string" not-null="false" length="255" />
+        <property name="blockReferral" column="block_referral" type="boolean" not-null="true" />
+    </class>
 </hibernate-mapping>

@@ -19,5 +19,5 @@ ALTER TABLE room ADD CONSTRAINT `FK_room_facility` FOREIGN KEY (`facility_id`) R
 ALTER TABLE bed ADD COLUMN facility_id int(10) NOT NULL default 0;
 ALTER TABLE bed MODIFY room_id  int(10) unsigned default NULL;
 
-
-
+ALTER TABLE program_clientstatus ADD COLUMN description varchar(255) default NULL;
+ALTER TABLE program_clientstatus ADD COLUMN block_referral tinyint(1) NOT NULL DEFAULT 0;

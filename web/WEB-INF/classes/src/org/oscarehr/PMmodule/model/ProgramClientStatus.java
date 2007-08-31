@@ -17,7 +17,8 @@ public class ProgramClientStatus implements Serializable {
     private Integer id;// fields
     private String name;
     private Integer programId;
-
+    private String description;
+    private boolean blockReferral;
 
     // constructors
     public ProgramClientStatus () {
@@ -82,6 +83,44 @@ public class ProgramClientStatus implements Serializable {
      */
     public void setProgramId (Integer programId) {
         this.programId = programId;
+    }
+
+    /**
+     * Method getDescription returns the description of this ProgramClientStatus object.
+     *
+     * @return the description (type String) of this ProgramClientStatus object.
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * Method setDescription sets the description of this ProgramClientStatus object.
+     *
+     * @param description the description of this ProgramClientStatus object.
+     *
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
+     * Method isBlockReferral returns the blockReferral of this ProgramClientStatus object.
+     *
+     * @return the blockReferral (type boolean) of this ProgramClientStatus object.
+     */
+    public boolean isBlockReferral() {
+        return blockReferral;
+    }
+
+    /**
+     * Method setBlockReferral sets the blockReferral of this ProgramClientStatus object.
+     *
+     * @param blockReferral the blockReferral of this ProgramClientStatus object.
+     *
+     */
+    public void setBlockReferral(boolean blockReferral) {
+        this.blockReferral = blockReferral;
     }
 
     public boolean equals (Object obj) {

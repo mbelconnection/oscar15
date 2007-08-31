@@ -30,9 +30,11 @@
 	</tr>
 </table>
 </div>
-<!--  show current staff -->
+<!--  show current statuses -->
 <display:table class="simple" cellspacing="2" cellpadding="3" id="status" name="client_statuses" export="false" pagesize="0" requestURI="/PMmodule/ProgramManagerView.do">
-	<display:setProperty name="paging.banner.placement" value="bottom" />
-	<display:setProperty name="basic.msg.empty_list" value="No statuses are currently defined for this program." />
-	<display:column property="name" sortable="true" title="Name" />
+    <display:setProperty name="paging.banner.placement" value="bottom" />
+    <display:setProperty name="basic.msg.empty_list" value="No statuses are currently defined for this program." />
+    <display:column property="name" sortable="true" title="Name" />
+    <display:column property="description" sortable="true" title="Description" />
+    <display:column property="blockReferral" sortable="true" title="Block referrals?" />
 </display:table>

@@ -1914,6 +1914,8 @@ CREATE TABLE `program_clientstatus` (
   `clientstatus_id` bigint(20) NOT NULL auto_increment,
   `name` varchar(255) default NULL,
   `program_id` bigint(20) default NULL,
+  `description` varchar(255) default NULL,
+  `block_referral` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`clientstatus_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 

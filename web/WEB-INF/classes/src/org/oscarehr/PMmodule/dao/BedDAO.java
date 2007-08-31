@@ -144,7 +144,7 @@ public class BedDAO extends HibernateDaoSupport {
         }
 
         if (roomId!= null) {
-            if (andClause) queryBuilder.append(" and ");
+            if (andClause) queryBuilder.append(" and "); else andClause = true;
             queryBuilder.append("b.roomId = ?");
         }
 

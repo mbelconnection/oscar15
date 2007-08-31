@@ -156,7 +156,7 @@ public class RoomDAO extends HibernateDaoSupport {
         }
 
         if (programId != null) {
-            if (andClause) queryBuilder.append(" and ");
+            if (andClause) queryBuilder.append(" and "); else andClause = true;
             queryBuilder.append("r.programId = ?");
         }
 

@@ -22,6 +22,7 @@ package org.oscarehr.common.web;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.oscarehr.util.SpringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -95,6 +96,8 @@ public class OscarSpringContextLoader extends ContextLoader {
 		wac.setConfigLocations(configLocations);
 		wac.refresh();
 		
+        if (SpringUtils.beanFactory==null) SpringUtils.beanFactory=wac;
+        
 		return wac;
 	}
 }

@@ -25,6 +25,15 @@ CREATE TABLE PROVIDER (
 	PROVIDER_ACTIVITY CHAR(3)
 );
 
+INSERT INTO PROVIDER VALUES ('999997','oscaradmin','admin','admin',' ',' ',' ','01-JAN-0001',' ',' ',' ',' ',' ',' ',' ','1',' ',' ');
+INSERT INTO PROVIDER VALUES ('999998','oscardoc','doctor','doctor',' ',' ',' ','01-JAN-0001',' ',' ',' ',' ',' ',' ',' ','1',' ',' ');
+INSERT INTO PROVIDER VALUES ('999999','oscarrep','receptionist','receptionist',' ',' ',' ','01-JAN-0001',' ',' ',' ',' ',' ',' ',' ','1',' ',' ');
+INSERT INTO PROVIDER VALUES ('88888','Support','IT','receptionist',' ','Admin',' ','01-JAN-0001',' ',' ',' ',' ',' ',' ',' ','1',' ',' ');
+INSERT INTO PROVIDER VALUES ('174','Chan','David','doctor','Family Medicine','TEAM A','M','01-JAN-0001',' ','H 905-','058081',' ',' ','BAAP','1','1',' ',' ');
+
+
+
+
 CREATE TABLE SECURITY (
 	SECURITY_NO NUMBER(10) NOT NULL,
 	CONSTRAINT  SECURITY_PK PRIMARY KEY (SECURITY_NO),
@@ -40,5 +49,10 @@ CREATE TABLE SECURITY (
 );
 
 ALTER TABLE SECURITY ADD CONSTRAINT SECURITY_UK1 UNIQUE (USER_NAME);
+
+INSERT INTO SECURITY VALUES (127,'oscarrep','-51-282443-97-5-9410489-60-1021-45-127-12435464-32','999999','1117',1,'01-JAN-0001',1,1);
+INSERT INTO SECURITY VALUES (128,'oscardoc','-51-282443-97-5-9410489-60-1021-45-127-12435464-32','999998','1117',1,'01-JAN-0001',1,1);
+INSERT INTO SECURITY VALUES (129,'oscaradmin','-51-282443-97-5-9410489-60-1021-45-127-12435464-32','999997','1117',1,'01-JAN-0001',1,1);
+
 
 COMMIT;

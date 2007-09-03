@@ -210,6 +210,7 @@ public class LoginCheckLoginBean {
             }
             rs.close();
         } catch (SQLException e) {
+            e.printStackTrace();
         } finally {
             if (temp[0] == null) { //no preference for the useid
                 temp[0] = "8"; //default value
@@ -235,6 +236,7 @@ public class LoginCheckLoginBean {
             }
             rs.close();
         } catch (SQLException e) {
+            e.printStackTrace();
         } finally {
             if (temp[0] == null) { //no preference for the useid
                 temp[0] = "8"; //default value

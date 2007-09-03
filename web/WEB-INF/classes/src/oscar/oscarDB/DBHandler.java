@@ -65,7 +65,7 @@ public class DBHandler {
 		this("", dbName);
 	}
 	public DBHandler(String host, String dbName) throws SQLException {
-		if (dbName.compareTo(IDDF_DATA) == 0) {
+		if (dbName!=null && dbName.compareTo(IDDF_DATA) == 0) {
 			pool = DBIddfPool.getInstance(connDriver, connURL + host + dbName,
 					connUser, connPwd, connInitialConnections,
 					connMaxConnections, connWaitIfBusy);

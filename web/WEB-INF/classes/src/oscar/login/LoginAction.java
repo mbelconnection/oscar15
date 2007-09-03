@@ -78,6 +78,7 @@ public final class LoginAction
       strAuth = cl.auth(userName, password, pin, ip);
     }
     catch (Exception e) {
+        e.printStackTrace();
       String newURL = mapping.findForward("error").getPath();
       if (e.getMessage() != null &&  e.getMessage().startsWith("java.lang.ClassNotFoundException")) {
         newURL = newURL + "?errormsg=Database driver "

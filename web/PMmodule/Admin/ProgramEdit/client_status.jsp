@@ -82,7 +82,7 @@
 <table width="100%" border="1" cellspacing="2" cellpadding="3">
     <tr class="b">
         <td width="33%">Name:</td>
-        <td><html:text property="client_status.name" size="32"/></td>
+        <td><html:text property="client_status.name" size="32" maxlength="255"/></td>
     </tr>
     <tr class="b">
         <td width="33%">Description:</td>

@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import oscar.util.SqlUtils;
 
 public class IdGenerator {
-    public static final String GENERIC_SEQUENCE="global_id_generator";
+    public static final String GENERIC_SEQUENCE="HIBERNATE_SEQUENCE";
     
     public static int getNextIdFromGenericSequence(Connection c) throws SQLException
     {

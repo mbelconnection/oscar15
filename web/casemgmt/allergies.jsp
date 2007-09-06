@@ -23,9 +23,11 @@
  -->
 
 <%@ include file="/casemgmt/taglibs.jsp" %>
+<%@ taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi" %>
 <%@ page import="org.oscarehr.casemgmt.model.*" %>
 <%@ page import="org.oscarehr.casemgmt.web.formbeans.*" %>
 
+<caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">
 <table width="100%" border="0"  cellpadding="0" cellspacing="1" bgcolor="#C0C0C0">
 <tr class="title">
 	<td>Update date</td>
@@ -34,9 +36,20 @@
 </tr>
 <c:forEach var="allergy" items="${Allergies}">
 	<tr>
-		<td bgcolor="white"><fmt:formatDate pattern="MM/dd/yy" value="${allergy.entry_date}"/></td>
+		<td bgcolor="white"><fmt:formatDate pattern="MM/dd/yy" value="${allergy.entry_date}"/></td>	
 		<td bgcolor="white"><c:out value="${allergy.description}"/></td>
 		<td bgcolor="white"><c:out value="${allergy.reaction}"/></td>
-	</tr>
+	</tr>	 
 </c:forEach>
 </table>
+</caisi:isModuleLoad>
+
+<caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="false">
+<table width="100%" border="0"  cellpadding="0" cellspacing="1" bgcolor="#C0C0C0">
+<tr class="title"><td>Allergy Description</td></tr>
+<tr width="100%">	
+	<td bgcolor="white"><html:textarea property="allergy.reaction" rows="4" cols="90"/></td>
+</tr>
+</table>
+<html:submit value="Save" onclick="this.form.method.value='allergy_RFQ_save'"/>
+</caisi:isModuleLoad>

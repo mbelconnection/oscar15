@@ -29,6 +29,7 @@
 <%@page import="org.springframework.web.context.WebApplicationContext"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.caisi.service.Version"%>
+<%@ page import="oscar.OscarProperties" %>
 
 <html:form action="/CaseManagementView" method="get">
 <html:hidden property="demographicNo"/>
@@ -112,8 +113,17 @@ Version version = (Version) ctx.getBean("version");
 <table cellpadding="0" cellspacing="0" border="0">
 
 	<tr>
-		<% for(int x=0;x<CaseManagementViewFormBean.tabs.length;x++) {%>
+		<% for(int x=0;x<CaseManagementViewFormBean.tabs.length;x++) {%>		
 			<%
+				String rfq =OscarProperties.getInstance().getProperty("TORONTO_RFQ");
+				if("".equals(rfq)) {
+					rfq = "no";
+				}
+				if(rfq.equalsIgnoreCase("yes") || rfq.equalsIgnoreCase("true")) {
+					if(CaseManagementViewFormBean.tabs[x].equals("Prescriptions")) {
+						continue;
+					}
+				}
 				String extra = "";
 				if((allergies && CaseManagementViewFormBean.tabs[x].equals("Allergies"))||(reminders && CaseManagementViewFormBean.tabs[x].equals("Reminders")) ) {
 					extra="color:red;";

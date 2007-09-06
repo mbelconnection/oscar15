@@ -23,7 +23,7 @@
  -->
 
 <%@ include file="/casemgmt/taglibs.jsp" %>
-
+<%@ taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi" %>
 <html>
 <head>
 <title>Case Management</title>
@@ -285,10 +285,10 @@ if (pId==null) pId="";
 		bgcolor="#C0C0C0">
 		<tr class="title">
 			<td></td>
-			<td>Issue</td>
+			<td>Issue</td>			
 			<td>Acute</td>
 			<td>Certain</td>
-			<td>Major</td>
+			<td>Major</td>			
 			<td>Resolved</td>
 			<td>Type</td>
 			<td></td>
@@ -310,9 +310,6 @@ if (pId==null) pId="";
 				<td>
 					<nested:checkbox indexed="true" name="issueCheckList" property="checked" onchange="setChangeFlag(true);" disabled="<%=disabled%>"></nested:checkbox>
 				</td>
-				<td>
-				
-				</td>				
 					<logic:equal name="issueCheckList" property="issue.issue.priority" value="allergy">
 						<td bgcolor="yellow">
 							<nested:write name="issueCheckList"	property="issue.issue.description" />
@@ -323,6 +320,7 @@ if (pId==null) pId="";
 							<nested:write name="issueCheckList"	property="issue.issue.description" />
 						</td>
 					</logic:notEqual>
+				
 				<td>
 					<nested:select indexed="true" name="issueCheckList"	property="issue.acute" disabled="<%=disabled%>">
 						<html:option value="true">acute</html:option>
@@ -340,7 +338,7 @@ if (pId==null) pId="";
 						<html:option value="true">major</html:option>
 						<html:option value="false">not major</html:option>
 					</nested:select>
-				</td>				
+				</td>								
 				<td>
 					<!-- removed onchange="<%=submitString%>" before disabled="<%=disabled %>" FOR THE ABOVE LINEs in this table -->
 					 <nested:select indexed="true" name="issueCheckList" property="issue.resolved"  disabled="<%=disabled%>">										 	
@@ -349,7 +347,7 @@ if (pId==null) pId="";
 					</nested:select>
 				</td>
 				<td>
-					<nested:text indexed="true" name="issueCheckList" property="issue.type" disabled="<%=disabled%>"/>
+					<nested:text indexed="true" name="issueCheckList" property="issue.type" disabled="<%=disabled%>" size="20" maxlength="100"/>
 				</td>
 				<td><nested:equal name="issueCheckList" property="used"
 					value="false">

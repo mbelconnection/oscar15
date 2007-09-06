@@ -23,22 +23,34 @@
  -->
 
 <%@ include file="/casemgmt/taglibs.jsp" %>
+<%@ taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi" %>
 <%@ page import="org.oscarehr.casemgmt.model.*" %>
 <%@ page import="org.oscarehr.casemgmt.web.formbeans.*" %>
+<%@ page import="oscar.OscarProperties" %>
+
+<% 
+	String toronto_RFQ=OscarProperties.getInstance().getProperty("TORONTO_RFQ");
+	if("".equals(toronto_RFQ)) {
+		toronto_RFQ = "no";
+	}
+%>
 
 <table width="100%" border="0"  cellpadding="0" cellspacing="1" bgcolor="#C0C0C0">
+
+<%if("no".equalsIgnoreCase(toronto_RFQ) || "false".equalsIgnoreCase(toronto_RFQ)) { %>
 <tr>
 	<td bgcolor="white">Primary Health Care Provider</td>
-	<td bgcolor="white"><html:text property="cpp.primaryPhysician"/></td>
+	<td bgcolor="white"><html:text property="cpp.primaryPhysician" size="50" maxlength="255"/></td>
 </tr>
+<%} %>
 
 <tr>
 	<td bgcolor="white" >Primary Counsellor/Caseworker</td>
-	<td bgcolor="white"><html:text property="cpp.primaryCounsellor"/>
+	<td bgcolor="white"><html:text property="cpp.primaryCounsellor" size="50" maxlength="255"/>
 </tr>
 <tr>
 	<td bgcolor="white" >Other File Number</td>
-	<td bgcolor="white"><html:text property="cpp.otherFileNumber"/>
+	<td bgcolor="white"><html:text property="cpp.otherFileNumber" size="50" maxlength="100"/>
 </tr>
 <tr height="10">
 	<td  bgcolor="white" colspan="2">&nbsp;</td>

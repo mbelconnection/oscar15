@@ -88,11 +88,13 @@ function submitStatus(ctrl) {
   	</c:forEach>
   </select>
   <caisi:ProgramExclusiveView providerNo="<%=curUser_no%>" value="no">
+    <caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">
     <a href='providercontrol.jsp?infirmaryView_isOscar=true&<%=session.getAttribute("infirmaryView_OscarQue") %>'>| Oscar View</a>
+  	</caisi:isModuleLoad>
   </caisi:ProgramExclusiveView>
 </logic:notEqual>
   
-<logic:equal name="infirmaryView_isOscar" value="true">
+<logic:equal name="infirmaryView_isOscar" value="true">	
     <caisi:ProgramExclusiveView providerNo="<%=curUser_no%>" value="no">
 	<div align="right"><a href='providercontrol.jsp?infirmaryView_isOscar=false&<%=session.getAttribute("infirmaryView_OscarQue") %>'>| Case Management View</a></div>
     </caisi:ProgramExclusiveView>

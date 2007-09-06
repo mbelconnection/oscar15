@@ -199,15 +199,19 @@ if ((k/2)*2==k){ %>
     	title="<bean:message key="provider.appointmentProviderAdminDay.msgMasterFile"/>">|<bean:message key="provider.appointmentProviderAdminDay.btnM"/></a>
     <%}%>
     </security:oscarSec>
-
+    
+  <caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">
     <% if (!vLocale.getCountry().equals("BR")) { %>
     <!-- doctor code block -->
+  
 	    <security:oscarSec roleName="<%=roleName$%>" objectName="_appointment.doctorLink" rights="r">
 	    <a href=# onClick="popupOscarRx(700,960,'../oscarRx/choosePatient.do?providerNo=<%=curUser_no%>&demographicNo=<%=demographic_no%>')">|<bean:message key="global.rx"/></a><oscar:oscarPropertiesCheck property="SHOW_APPT_REASON" value="yes">| <b><%=reason%></b></oscar:oscarPropertiesCheck>
-	    </security:oscarSec>
+	    </security:oscarSec>	 
     <% } %>
     <!-- doctor code block -->  
+  </caisi:isModuleLoad>
 <%}%>
+
 <% if(isBirthday(monthDay,demBday)){%> | <img src="../images/cake.gif" height="20" /> <%}%>
 														
     <td width='1'></td>

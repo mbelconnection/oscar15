@@ -35,6 +35,8 @@ public class Allergy extends BaseObject {
 	private String description;
 	private String reaction;
 	
+	public Allergy() {		
+	}
 	
 	public Long getAllergyid() {
 		return allergyid;

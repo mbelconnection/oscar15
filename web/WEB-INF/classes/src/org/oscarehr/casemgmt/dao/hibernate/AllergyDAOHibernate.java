@@ -23,6 +23,7 @@
 
 package org.oscarehr.casemgmt.dao.hibernate;
 
+import java.util.Date;
 import java.util.List;
 
 import org.oscarehr.casemgmt.dao.AllergyDAO;
@@ -35,9 +36,24 @@ public class AllergyDAOHibernate extends HibernateDaoSupport implements
 	public Allergy getAllergy(Long allergyid) {
 		return (Allergy)this.getHibernateTemplate().get(Allergy.class,allergyid);
 	}
-
+	
 	public List getAllergies(String demographic_no) {
 		return this.getHibernateTemplate().find("from Allergy a where a.demographic_no = ?",new Object[] {demographic_no});
 	}
 
+	public void saveAllergy(Allergy allergy) {
+		/*find the old allergy record for client*/
+		Allergy tempAllergy;
+		String demographicNo=allergy.getDemographic_no();
+		List allergies = getAllergies(demographicNo);
+		if(allergies.size()==0) {
+			tempAllergy = allergy;
+		} else {
+			tempAllergy = (Allergy) allergies.get(0);
+			tempAllergy.setReaction(allergy.getReaction());		
+			tempAllergy.setEntry_date(new Date());
+		}		
+		
+		this.getHibernateTemplate().saveOrUpdate(tempAllergy);
+	}
 }

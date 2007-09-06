@@ -40,6 +40,7 @@ import org.oscarehr.PMmodule.model.Demographic;
 import org.oscarehr.PMmodule.model.ProgramAccess;
 import org.oscarehr.PMmodule.model.ProgramProvider;
 import org.oscarehr.PMmodule.model.Provider;
+import org.oscarehr.casemgmt.model.Allergy;
 import org.oscarehr.casemgmt.model.CaseManagementCPP;
 import org.oscarehr.casemgmt.model.CaseManagementIssue;
 import org.oscarehr.casemgmt.model.CaseManagementNote;
@@ -280,6 +281,10 @@ public class CaseManagementManager extends BaseCaseManagementManager {
 		//echartDAO.saveCPPIntoEchart(cpp, providerNo);
 	}
 
+	public void saveAllergy(Allergy allergy) {
+		allergyDAO.saveAllergy(allergy);
+	}
+	
 	public List getIssueInfoBySearch(String providerNo, String search,
 			List accessRight)
 	{

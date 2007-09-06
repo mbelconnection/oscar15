@@ -48,10 +48,13 @@ import org.caisi.model.Role;
 import org.oscarehr.PMmodule.model.Admission;
 import org.oscarehr.PMmodule.model.ProgramProvider;
 import org.oscarehr.PMmodule.model.ProgramTeam;
+import org.oscarehr.casemgmt.model.Allergy;
 import org.oscarehr.casemgmt.model.CaseManagementCPP;
 import org.oscarehr.casemgmt.model.CaseManagementNote;
 import org.oscarehr.casemgmt.model.CaseManagementSearchBean;
 import org.oscarehr.casemgmt.web.formbeans.CaseManagementViewFormBean;
+
+import oscar.OscarProperties;
 
 
 
@@ -99,6 +102,16 @@ public class CaseManagementViewAction extends BaseCaseManagementViewAction {
 		String providerNo = getProviderNo(request);
 		caseManagementMgr.saveCPP(cpp,providerNo);
 		addMessage(request,"cpp.saved");
+		
+		return view(mapping,form,request,response);
+	}
+	
+	public ActionForward allergy_RFQ_save(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+		log.debug("allergy_RFQ_save");
+		CaseManagementViewFormBean caseForm = (CaseManagementViewFormBean)form;
+		Allergy allergy=caseForm.getAllergy();
+		allergy.setDescription("default");
+		caseManagementMgr.saveAllergy(allergy);		
 		
 		return view(mapping,form,request,response);
 	}
@@ -263,8 +276,25 @@ public class CaseManagementViewAction extends BaseCaseManagementViewAction {
 		caseForm.setCpp(cpp);
 		
 		/* get allergies */
-		List allergies = this.caseManagementMgr.getAllergies(this.getDemographicNo(request));
-		request.setAttribute("Allergies",allergies);
+		String toronto_RFQ=OscarProperties.getInstance().getProperty("TORONTO_RFQ");
+		if("".equals(toronto_RFQ)) {
+			toronto_RFQ = "no";
+		}
+		if("yes".equalsIgnoreCase(toronto_RFQ) || "true".equalsIgnoreCase(toronto_RFQ)) {
+			List allergies = this.caseManagementMgr.getAllergies(this.getDemographicNo(request));
+			Allergy allergy;
+			if(allergies.size()==0) {
+				allergy = new Allergy();
+				allergy.setDemographic_no(getDemographicNo(request));
+			} else {
+				allergy = (Allergy)allergies.get(0);			
+			}
+			request.setAttribute("allergy",allergy);
+			caseForm.setAllergy(allergy);
+		} else {
+			List allergies = this.caseManagementMgr.getAllergies(this.getDemographicNo(request));
+			request.setAttribute("Allergies",allergies);
+		}
 		
 		/* get prescriptions */
 		if(tab.equals("Prescriptions")) {

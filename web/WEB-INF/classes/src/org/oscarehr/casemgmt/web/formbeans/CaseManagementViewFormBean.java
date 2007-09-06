@@ -24,6 +24,7 @@ package org.oscarehr.casemgmt.web.formbeans;
 
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.upload.FormFile;
+import org.oscarehr.casemgmt.model.Allergy;
 import org.oscarehr.casemgmt.model.CaseManagementCPP;
 
 public class CaseManagementViewFormBean extends ActionForm {
@@ -37,7 +38,11 @@ public class CaseManagementViewFormBean extends ActionForm {
 	private String rootCompURL="";
 	private String hideActiveIssue="true"; 
 	private CaseManagementCPP cpp=new CaseManagementCPP();
-	public static final String[] tabs = {"Current Issues","Patient History","Allergies","Prescriptions","Reminders","Ticklers","Search"};
+	private Allergy allergy = new Allergy();
+	
+	//public static final String[] tabs = {"Current Issues","Patient History","Allergies","Prescriptions","Reminders","Ticklers","Search"};
+	public static final String[] tabs = {"Current Issues","Client History","Allergies","Prescriptions","Reminders","Ticklers","Search"};
+	
 	private FormFile imageFile;
 	
 	private String searchStartDate;
@@ -94,7 +99,15 @@ public class CaseManagementViewFormBean extends ActionForm {
 	public void setCpp(CaseManagementCPP cpp){
 		this.cpp=cpp;
 	}
-	
+		
+	public Allergy getAllergy() {
+		return allergy;
+	}
+
+	public void setAllergy(Allergy allergy) {
+		this.allergy = allergy;
+	}
+
 	public String getVlCountry() {
 		return vlCountry;
 	}
@@ -253,4 +266,6 @@ public class CaseManagementViewFormBean extends ActionForm {
 	public void setFormId(long formId) {
 		this.formId = formId;
 	}
+
+	
 }

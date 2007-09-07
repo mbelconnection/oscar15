@@ -5,3 +5,5 @@ alter table admission modify admission_notes text default null;
 alter table client_referral modify notes text default null;
 alter table client_referral modify present_problems text default null;
 alter table client_referral modify completion_notes text default null;
+alter table casemgmt_cpp modify pastMedications text default null;
+alter table casemgmt_cpp modify otherSupportSystems text default null;

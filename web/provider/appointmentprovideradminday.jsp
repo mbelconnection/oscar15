@@ -507,10 +507,25 @@ if(providerBean.get(mygroupno) != null) { //single appointed provider view
    	rst=apptMainBean.queryResultsCaisi("search_timecode");
 	 rsgroup = (ResultSet)rst[0];
    while (rsgroup.next()) {
-     dateTimeCodeBean.put("description"+rsgroup.getString("code"), rsgroup.getString("description"));
-     dateTimeCodeBean.put("duration"+rsgroup.getString("code"), rsgroup.getString("duration"));
-     dateTimeCodeBean.put("color"+rsgroup.getString("code"), (rsgroup.getString("color")==null || rsgroup.getString("color").equals(""))?bgcolordef:rsgroup.getString("color") );
-     dateTimeCodeBean.put("confirm" + rsgroup.getString("code"), rsgroup.getString("confirm"));
+
+	 String tempCode=null;
+	 String tempValue=null;
+	 tempCode=rsgroup.getString("code");
+	 
+	 tempValue=rsgroup.getString("description");
+	 if (tempValue==null)  tempValue="";
+	 dateTimeCodeBean.put("description"+tempCode, tempValue);
+	 
+	 tempValue=rsgroup.getString("duration");
+	 if (tempValue==null)  tempValue="";
+     dateTimeCodeBean.put("duration"+tempCode, tempValue);
+     
+     // WTF? who wrote this? *sigh*
+     dateTimeCodeBean.put("color"+tempCode, (rsgroup.getString("color")==null || rsgroup.getString("color").equals(""))?bgcolordef:rsgroup.getString("color") );
+          
+	 tempValue=rsgroup.getString("confirm");
+	 if (tempValue==null)  tempValue="";
+     dateTimeCodeBean.put("confirm" + tempCode, tempValue);
    }
    ((Statement)rst[1]).close();
 

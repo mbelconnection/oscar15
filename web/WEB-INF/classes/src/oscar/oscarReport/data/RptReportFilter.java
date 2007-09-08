@@ -3,11 +3,13 @@
  */
 package oscar.oscarReport.data;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.oscarehr.util.SpringUtils;
 
 import oscar.login.DBHelp;
 
@@ -27,22 +29,7 @@ public class RptReportFilter {
 
     public boolean insertRecord() throws SQLException {
         boolean ret = false;
-        String sql = "insert into reportFilter (report_id, description, value, position, status,order_no,javascript,date_format) values ("
-                + report_id
-                + ", '"
-                + StringEscapeUtils.escapeSql(description)
-                + "','"
-                + StringEscapeUtils.escapeSql(value)
-                + "','"
-                + StringEscapeUtils.escapeSql(position)
-                + "', "
-                + status
-                + " , "
-                + order_no
-                + ",'"
-                + StringEscapeUtils.escapeSql(javascript)
-                + "','"
-                + StringEscapeUtils.escapeSql(date_format) + "')";
+        String sql = "insert into reportFilter (report_id, description, value, position, status,order_no,javascript,date_format) values (" + report_id + ", '" + StringEscapeUtils.escapeSql(description) + "','" + StringEscapeUtils.escapeSql(value) + "','" + StringEscapeUtils.escapeSql(position) + "', " + status + " , " + order_no + ",'" + StringEscapeUtils.escapeSql(javascript) + "','" + StringEscapeUtils.escapeSql(date_format) + "')";
         ret = dbObj.updateDBRecord(sql);
         return ret;
     }
@@ -63,42 +50,53 @@ public class RptReportFilter {
 
     // 1 - name list, 0 - deleted name list, 0-`description` 1-value 2-javascript 3-dateformat
     public Vector getNameList(int n) throws SQLException {
-        Vector ret = new Vector();
-        String[] str = null;
-        String sql = "select * from reportFilter where status = " + n + " order by order_no";
-        ResultSet rs = dbObj.searchDBRecord(sql);
-        while (rs.next()) {
-            str = new String[6];
-            str[0] = rs.getString("description");
-            str[1] = rs.getString("value");
-            str[2] = rs.getString("position");
-            str[3] = "" + rs.getInt("order_no");
-            str[4] = rs.getString("javascript");
-            str[5] = rs.getString("date_format");
-            ret.add(str);
+        Connection c = SpringUtils.getDbConnection();
+        try {
+            Vector ret = new Vector();
+            String[] str = null;
+            String sql = "select * from reportFilter where status = " + n + " order by order_no";
+            ResultSet rs = dbObj.searchDBRecord(c, sql);
+            while (rs.next()) {
+                str = new String[6];
+                str[0] = rs.getString("description");
+                str[1] = rs.getString("value");
+                str[2] = rs.getString("position");
+                str[3] = "" + rs.getInt("order_no");
+                str[4] = rs.getString("javascript");
+                str[5] = rs.getString("date_format");
+                ret.add(str);
+            }
+            rs.close();
+            return ret;
         }
-        rs.close();
-        return ret;
+        finally {
+            c.close();
+        }
     }
 
     public Vector getNameList(String recordId, int n) throws SQLException {
-        Vector ret = new Vector();
-        String[] str = null;
-        String sql = "select * from reportFilter where report_id=" + recordId + " and status = " + n
-                + " order by order_no";
-        ResultSet rs = dbObj.searchDBRecord(sql);
-        while (rs.next()) {
-            str = new String[6];
-            str[0] = rs.getString("description");
-            str[1] = rs.getString("value");
-            str[2] = rs.getString("position");
-            str[3] = "" + rs.getInt("order_no");
-            str[4] = rs.getString("javascript");
-            str[5] = rs.getString("date_format");
-            ret.add(str);
+        Connection c = SpringUtils.getDbConnection();
+        try {
+            Vector ret = new Vector();
+            String[] str = null;
+            String sql = "select * from reportFilter where report_id=" + recordId + " and status = " + n + " order by order_no";
+            ResultSet rs = dbObj.searchDBRecord(c, sql);
+            while (rs.next()) {
+                str = new String[6];
+                str[0] = rs.getString("description");
+                str[1] = rs.getString("value");
+                str[2] = rs.getString("position");
+                str[3] = "" + rs.getInt("order_no");
+                str[4] = rs.getString("javascript");
+                str[5] = rs.getString("date_format");
+                ret.add(str);
+            }
+            rs.close();
+            return ret;
         }
-        rs.close();
-        return ret;
+        finally {
+            c.close();
+        }
     }
 
 }

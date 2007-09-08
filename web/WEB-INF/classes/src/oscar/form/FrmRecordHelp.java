@@ -13,12 +13,14 @@
  */
 package oscar.form;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.Properties;
 
+import org.oscarehr.util.SpringUtils;
 import org.w3c.dom.Document;
 
 import oscar.OscarProperties;
@@ -27,7 +29,7 @@ import oscar.util.JDBCUtil;
 import oscar.util.UtilDateUtilities;
 
 public class FrmRecordHelp {
-    private String _dateFormat = "yyyy/MM/dd";  
+    private String _dateFormat = "yyyy/MM/dd";
     private String _newDateFormat = "yyyy-MM-dd"; //handles both date formats, but yyyy/MM/dd is displayed to avoid deprecation
 
     public void setDateFormat(String s) {// "dd/MM/yyyy"
@@ -39,133 +41,135 @@ public class FrmRecordHelp {
         Properties props = new Properties();
         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
-        ResultSet rs = db.GetSQL(sql);
-        if (rs.next()) {
-            ResultSetMetaData md = rs.getMetaData();
-            for (int i = 1; i <= md.getColumnCount(); i++) {
-                String name = md.getColumnName(i);
-                String value;
+        Connection c = SpringUtils.getDbConnection();
+        try {
+            ResultSet rs = db.GetSQL(c, sql);
+            if (rs.next()) {
+                ResultSetMetaData md = rs.getMetaData();
+                for (int i = 1; i <= md.getColumnCount(); i++) {
+                    String name = md.getColumnName(i);
+                    String value;
 
-                if (md.getColumnTypeName(i).startsWith("TINY")) {
-                    if (rs.getInt(i) == 1)
-                        value = "checked='checked'";
-                    else
-                        value = "";
-                } else if (md.getColumnTypeName(i).equalsIgnoreCase("date"))
-                    value = UtilDateUtilities.DateToString(rs.getDate(i), _dateFormat);
-                else if (md.getColumnTypeName(i).equalsIgnoreCase("timestamp"))
-                    value = UtilDateUtilities.DateToString(rs.getTimestamp(i), "yyyy/MM/dd HH:mm:ss");
-                else
-                    value = rs.getString(i);
+                    if (md.getColumnTypeName(i).startsWith("TINY")) {
+                        if (rs.getInt(i) == 1) value = "checked='checked'";
+                        else value = "";
+                    }
+                    else if (md.getColumnTypeName(i).equalsIgnoreCase("date")) value = UtilDateUtilities.DateToString(rs.getDate(i), _dateFormat);
+                    else if (md.getColumnTypeName(i).equalsIgnoreCase("timestamp")) value = UtilDateUtilities.DateToString(rs.getTimestamp(i), "yyyy/MM/dd HH:mm:ss");
+                    else value = rs.getString(i);
 
-                if (value != null)
-                    props.setProperty(name, value);
+                    if (value != null) props.setProperty(name, value);
+                }
             }
-        }
-        rs.close();
-        db.CloseConn();
+            rs.close();
 
-        return props;
+            return props;
+        }
+        finally {
+            c.close();
+        }
     }
 
     public synchronized int saveFormRecord(Properties props, String sql) throws SQLException {
         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
-        ResultSet rs = db.GetSQL(sql, true);
-        rs.moveToInsertRow();
-        rs = updateResultSet(props, rs, true);
-        rs.insertRow();
-        String saveAsXml = OscarProperties.getInstance().getProperty("save_as_xml", "false");
-        //System.out.println("the value of save_as_xml is: " + saveAsXml);
+        Connection c = SpringUtils.getDbConnection();
+        try {
+            ResultSet rs = db.GetSQL(c, sql, true);
+            rs.moveToInsertRow();
+            rs = updateResultSet(props, rs, true);
+            rs.insertRow();
+            String saveAsXml = OscarProperties.getInstance().getProperty("save_as_xml", "false");
+            //System.out.println("the value of save_as_xml is: " + saveAsXml);
 
-        if (saveAsXml.equalsIgnoreCase("true")) {
-            //System.out.println("savs as XML");
-            String demographicNo = props.getProperty("demographic_no");
-            int index = sql.indexOf("form");
-            int spaceIndex = sql.indexOf(" ", index);
-            ;
-            String formClass = sql.substring(index, spaceIndex);
-            Date d = UtilDateUtilities.now();
-            String now = UtilDateUtilities.DateToString(d, "yyyyMMddHHmmss");
-            String place = OscarProperties.getInstance().getProperty("form_record_path", "/root");
+            if (saveAsXml.equalsIgnoreCase("true")) {
+                //System.out.println("savs as XML");
+                String demographicNo = props.getProperty("demographic_no");
+                int index = sql.indexOf("form");
+                int spaceIndex = sql.indexOf(" ", index);;
+                String formClass = sql.substring(index, spaceIndex);
+                Date d = UtilDateUtilities.now();
+                String now = UtilDateUtilities.DateToString(d, "yyyyMMddHHmmss");
+                String place = OscarProperties.getInstance().getProperty("form_record_path", "/root");
 
-            if (!place.endsWith(System.getProperty("file.separator")))
-                place = place + System.getProperty("file.separator");
-            String fileName = place + formClass + "_" + demographicNo + "_" + now + ".xml";
+                if (!place.endsWith(System.getProperty("file.separator"))) place = place + System.getProperty("file.separator");
+                String fileName = place + formClass + "_" + demographicNo + "_" + now + ".xml";
 
-            try {
-                Document doc = JDBCUtil.toDocument(rs);
-                JDBCUtil.saveAsXML(doc, fileName);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
+                try {
+                    Document doc = JDBCUtil.toDocument(rs);
+                    JDBCUtil.saveAsXML(doc, fileName);
+                }
+                catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
             }
-        }
-        rs.close();
+            rs.close();
 
-        int ret = 0;
-        /*
-         * if db_type = mysql return LAST_INSERT_ID() but if db_type = postgresql, return a prepared
-         * statement, since here we dont know which sequence will be used
-         */
-        String db_type = OscarProperties.getInstance() != null ? OscarProperties.getInstance().getProperty("db_type",
-                "") : "";
-        if (db_type.equals("") || db_type.equalsIgnoreCase("mysql")) {
-            sql = "SELECT LAST_INSERT_ID()";
-        } else if (db_type.equalsIgnoreCase("postgresql")) {
-            sql = "SELECT CURRVAL('?')";
-        } else {
-            throw new SQLException("ERROR: Database " + db_type + " unrecognized.");
-        }
-        rs = db.GetSQL(sql);
-        if (rs.next())
-            ret = rs.getInt(1);
-        rs.close();
-        db.CloseConn();
+            int ret = 0;
+            /*
+             * if db_type = mysql return LAST_INSERT_ID() but if db_type = postgresql, return a prepared
+             * statement, since here we dont know which sequence will be used
+             */
+            String db_type = OscarProperties.getInstance() != null?OscarProperties.getInstance().getProperty("db_type", ""):"";
+            if (db_type.equals("") || db_type.equalsIgnoreCase("mysql")) {
+                sql = "SELECT LAST_INSERT_ID()";
+            }
+            else if (db_type.equalsIgnoreCase("postgresql")) {
+                sql = "SELECT CURRVAL('?')";
+            }
+            else {
+                throw new SQLException("ERROR: Database " + db_type + " unrecognized.");
+            }
+            rs = db.GetSQL(c, sql);
+            if (rs.next()) ret = rs.getInt(1);
+            rs.close();
 
-        return ret;
+            return ret;
+        }
+        finally {
+            c.close();
+        }
     }
 
     public ResultSet updateResultSet(Properties props, ResultSet rs, boolean bInsert) throws SQLException {
         ResultSetMetaData md = rs.getMetaData();
-        
+
         for (int i = 1; i <= md.getColumnCount(); i++) {
             String name = md.getColumnName(i);
             if (name.equalsIgnoreCase("ID")) {
-                if (bInsert)
-                    rs.updateInt(name, 0);
+                if (bInsert) rs.updateInt(name, 0);
                 continue;
             }
 
             String value = props.getProperty(name, null);
-            
-            if (md.getColumnTypeName(i).startsWith("TINY")) {                
+
+            if (md.getColumnTypeName(i).startsWith("TINY")) {
                 if (value != null) {
                     if (value.equalsIgnoreCase("on") || value.equalsIgnoreCase("checked='checked'")) {
-                        rs.updateInt(name, 1);   
+                        rs.updateInt(name, 1);
                         //System.out.println(name + "   - " + md.getColumnTypeName(i) + value);
-                    } else {
+                    }
+                    else {
                         rs.updateInt(name, 0);
                     }
-                } else {
+                }
+                else {
                     rs.updateInt(name, 0);
                 }
                 continue;
             }
 
             if (md.getColumnTypeName(i).equalsIgnoreCase("date")) {
-            java.util.Date d;
+                java.util.Date d;
                 if (md.getColumnName(i).equalsIgnoreCase("formEdited")) {
                     d = UtilDateUtilities.Today();
-                } else {
-                    if ((value == null) || (value.indexOf('/') != -1))
-                        d = UtilDateUtilities.StringToDate(value, _dateFormat);
-                    else
-                        d = UtilDateUtilities.StringToDate(value, _newDateFormat);
                 }
-                if (d == null)
-                    rs.updateNull(name);
-                else
-                    rs.updateDate(name, new java.sql.Date(d.getTime()));
+                else {
+                    if ((value == null) || (value.indexOf('/') != -1)) d = UtilDateUtilities.StringToDate(value, _dateFormat);
+                    else d = UtilDateUtilities.StringToDate(value, _newDateFormat);
+                }
+                if (d == null) rs.updateNull(name);
+                else rs.updateDate(name, new java.sql.Date(d.getTime()));
                 continue;
             }
 
@@ -173,22 +177,19 @@ public class FrmRecordHelp {
                 Date d;
                 if (md.getColumnName(i).equalsIgnoreCase("formEdited")) {
                     d = UtilDateUtilities.Today();
-                } else {
+                }
+                else {
                     d = UtilDateUtilities.StringToDate(value, "yyyyMMddHHmmss");
                 }
-                if (d == null)
-                    rs.updateNull(name);
-                else
-                    rs.updateTimestamp(name, new java.sql.Timestamp(d.getTime()));
+                if (d == null) rs.updateNull(name);
+                else rs.updateTimestamp(name, new java.sql.Timestamp(d.getTime()));
                 continue;
             }
 
-            if (value == null)
-                rs.updateNull(name);
-            else
-                rs.updateString(name, value);
+            if (value == null) rs.updateNull(name);
+            else rs.updateString(name, value);
         }
-        
+
         return rs;
     }
 
@@ -196,61 +197,73 @@ public class FrmRecordHelp {
     public void updateFormRecord(Properties props, String sql) throws SQLException {
         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
-        ResultSet rs = db.GetSQL(sql, true);
-        //rs.relative(0);
+        Connection c = SpringUtils.getDbConnection();
+        try {
+            ResultSet rs = db.GetSQL(c, sql, true);
+            //rs.relative(0);
 
-        rs = updateResultSet(props, rs, false);
-        rs.updateRow();
+            rs = updateResultSet(props, rs, false);
+            rs.updateRow();
 
-        rs.close();
-        db.CloseConn();
+            rs.close();
+        }
+        finally {
+            c.close();
+        }
     }
 
     public Properties getPrintRecord(String sql) throws SQLException {
         Properties props = new Properties();
         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
-        ResultSet rs = db.GetSQL(sql);
-        if (rs.next()) {
-            ResultSetMetaData md = rs.getMetaData();
-            for (int i = 1; i <= md.getColumnCount(); i++) {
-                String name = md.getColumnName(i);
-                String value;
+        Connection c = SpringUtils.getDbConnection();
+        try {
+            ResultSet rs = db.GetSQL(c, sql);
+            if (rs.next()) {
+                ResultSetMetaData md = rs.getMetaData();
+                for (int i = 1; i <= md.getColumnCount(); i++) {
+                    String name = md.getColumnName(i);
+                    String value;
 
-                if (md.getColumnTypeName(i).startsWith("TINY") && md.getScale(i) == 1) {
-                    if (rs.getInt(i) == 1)
-                        value = "on";
-                    else
-                        value = "off";
-                } else if (md.getColumnTypeName(i).equalsIgnoreCase("date"))
-                    value = UtilDateUtilities.DateToString(rs.getDate(i), _dateFormat);
-                else
-                    value = rs.getString(i);
+                    if (md.getColumnTypeName(i).startsWith("TINY") && md.getScale(i) == 1) {
+                        if (rs.getInt(i) == 1) value = "on";
+                        else value = "off";
+                    }
+                    else if (md.getColumnTypeName(i).equalsIgnoreCase("date")) value = UtilDateUtilities.DateToString(rs.getDate(i), _dateFormat);
+                    else value = rs.getString(i);
 
-                if (value != null)
-                    props.setProperty(name, value);
+                    if (value != null) props.setProperty(name, value);
+                }
             }
-        }
-        rs.close();
-        db.CloseConn();
+            rs.close();
 
-        return props;
+            return props;
+        }
+        finally {
+            c.close();
+        }
     }
 
     public String findActionValue(String submit) throws SQLException {
         if (submit != null && submit.equalsIgnoreCase("print")) {
             return "print";
-        } else if (submit != null && submit.equalsIgnoreCase("save")) {
+        }
+        else if (submit != null && submit.equalsIgnoreCase("save")) {
             return "save";
-        } else if (submit != null && submit.equalsIgnoreCase("exit")) {
+        }
+        else if (submit != null && submit.equalsIgnoreCase("exit")) {
             return "exit";
-        } else if (submit != null && submit.equalsIgnoreCase("graph")) {
+        }
+        else if (submit != null && submit.equalsIgnoreCase("graph")) {
             return "graph";
-        } else if (submit != null && submit.equalsIgnoreCase("printall")) {
+        }
+        else if (submit != null && submit.equalsIgnoreCase("printall")) {
             return "printAll";
-        } else if (submit != null && submit.equalsIgnoreCase("printLabReq")) {
+        }
+        else if (submit != null && submit.equalsIgnoreCase("printLabReq")) {
             return "printLabReq";
-        } else {
+        }
+        else {
             return "failure";
         }
     }
@@ -261,14 +274,17 @@ public class FrmRecordHelp {
         if (action.equalsIgnoreCase("print")) {
             temp = where + "?demoNo=" + demoId + "&formId=" + formId; // + "&study_no=" + studyId +
             // "&study_link" + studyLink;
-        } else if (action.equalsIgnoreCase("save")) {
+        }
+        else if (action.equalsIgnoreCase("save")) {
             temp = where + "?demographic_no=" + demoId + "&formId=" + formId; // "&study_no=" +
             // studyId +
             // "&study_link" +
             // studyLink; //+
-        } else if (action.equalsIgnoreCase("exit")) {
+        }
+        else if (action.equalsIgnoreCase("exit")) {
             temp = where;
-        } else {
+        }
+        else {
             temp = where;
         }
 

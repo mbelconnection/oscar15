@@ -3,6 +3,7 @@
  */
 package oscar.oscarReport.data;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -11,6 +12,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
+import org.oscarehr.util.SpringUtils;
 
 import oscar.login.DBHelp;
 
@@ -25,22 +27,29 @@ public class RptTableFieldNameCaption {
     String caption;
     DBHelp dbObj = new DBHelp();
 
-    public boolean insertOrUpdateRecord() {
-        boolean ret = false;
-        String sql = "select id from reportTableFieldCaption where table_name = '"
-                + StringEscapeUtils.escapeSql(table_name) + "' and name='" + StringEscapeUtils.escapeSql(name) + "'";
+    public boolean insertOrUpdateRecord() throws SQLException {
+        Connection c = SpringUtils.getDbConnection();
         try {
-            ResultSet rs = dbObj.searchDBRecord(sql);
-            if (rs.next()) {
-                ret = insertRecord();
-            } else {
-                ret = updateRecord();
+            boolean ret = false;
+            String sql = "select id from reportTableFieldCaption where table_name = '" + StringEscapeUtils.escapeSql(table_name) + "' and name='" + StringEscapeUtils.escapeSql(name) + "'";
+            try {
+                ResultSet rs = dbObj.searchDBRecord(c, sql);
+                if (rs.next()) {
+                    ret = insertRecord();
+                }
+                else {
+                    ret = updateRecord();
+                }
+                rs.close();
             }
-            rs.close();
-        } catch (SQLException e) {
-            _logger.error("insertOrUpdateRecord() : sql = " + sql);
+            catch (SQLException e) {
+                _logger.error("insertOrUpdateRecord() : sql = " + sql);
+            }
+            return false;
         }
-        return false;
+        finally {
+            c.close();
+        }
     }
 
     //`id` int(7) NOT NULL auto_increment,
@@ -50,12 +59,11 @@ public class RptTableFieldNameCaption {
 
     public boolean insertRecord() {
         boolean ret = false;
-        String sql = "insert into reportTableFieldCaption (table_name, name, caption) values ('"
-                + StringEscapeUtils.escapeSql(table_name) + "', '" + StringEscapeUtils.escapeSql(name) + "', '"
-                + StringEscapeUtils.escapeSql(caption) + "')";
+        String sql = "insert into reportTableFieldCaption (table_name, name, caption) values ('" + StringEscapeUtils.escapeSql(table_name) + "', '" + StringEscapeUtils.escapeSql(name) + "', '" + StringEscapeUtils.escapeSql(caption) + "')";
         try {
             ret = dbObj.updateDBRecord(sql);
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             _logger.error("insertRecord() : sql = " + sql);
         }
         return ret;
@@ -63,12 +71,11 @@ public class RptTableFieldNameCaption {
 
     public boolean updateRecord() {
         boolean ret = false;
-        String sql = "update reportTableFieldCaption set caption = '" + StringEscapeUtils.escapeSql(caption)
-                + "' where table_name='" + StringEscapeUtils.escapeSql(table_name) + "' and name = '"
-                + StringEscapeUtils.escapeSql(name) + "'";
+        String sql = "update reportTableFieldCaption set caption = '" + StringEscapeUtils.escapeSql(caption) + "' where table_name='" + StringEscapeUtils.escapeSql(table_name) + "' and name = '" + StringEscapeUtils.escapeSql(name) + "'";
         try {
             ret = dbObj.updateDBRecord(sql);
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             _logger.error("updateRecord() : sql = " + sql);
         }
         return ret;
@@ -82,7 +89,7 @@ public class RptTableFieldNameCaption {
         String temp = "";
         String tempName = "";
         for (int i = 0; i < vec.size(); i++) {
-            tempName = (String) vec.get(i);
+            tempName = (String)vec.get(i);
             if (tempName.matches(RptTableShadowFieldConst.fieldName)) {
                 //System.out.println(rs.getString("name"));
                 continue;
@@ -94,48 +101,67 @@ public class RptTableFieldNameCaption {
         return ret;
     }
 
-    public Properties getNameCaptionProp(String tableName) {
-        Properties ret = new Properties();
-        String sql = "select name, caption from reportTableFieldCaption where table_name = '"
-                + StringEscapeUtils.escapeSql(tableName) + "'";
+    public Properties getNameCaptionProp(String tableName) throws SQLException {
+        Connection c = SpringUtils.getDbConnection();
         try {
-            ResultSet rs = dbObj.searchDBRecord(sql);
-            while (rs.next()) {
-                ret.setProperty(rs.getString("name"), rs.getString("caption"));
+            Properties ret = new Properties();
+            String sql = "select name, caption from reportTableFieldCaption where table_name = '" + StringEscapeUtils.escapeSql(tableName) + "'";
+            try {
+                ResultSet rs = dbObj.searchDBRecord(c, sql);
+                while (rs.next()) {
+                    ret.setProperty(rs.getString("name"), rs.getString("caption"));
+                }
+                rs.close();
             }
-            rs.close();
-        } catch (SQLException e) {
-            _logger.error("getNameCaptionProp() : sql = " + sql);
+            catch (SQLException e) {
+                _logger.error("getNameCaptionProp() : sql = " + sql);
+            }
+            return ret;
         }
-        return ret;
+        finally {
+            c.close();
+        }
     }
 
-    public Vector getMetaNameList(String tableName) {
-        Vector ret = new Vector();
-        String sql = "select * from " + tableName + " limit 1";
+    public Vector getMetaNameList(String tableName) throws SQLException {
+        Connection c = SpringUtils.getDbConnection();
         try {
-            ResultSet rs = dbObj.searchDBRecord(sql);
-            ResultSetMetaData md = rs.getMetaData();
-            for (int i = 1; i <= md.getColumnCount(); i++) {
-                ret.add(md.getColumnName(i));
+            Vector ret = new Vector();
+            String sql = "select * from " + tableName + " limit 1";
+            try {
+                ResultSet rs = dbObj.searchDBRecord(c, sql);
+                ResultSetMetaData md = rs.getMetaData();
+                for (int i = 1; i <= md.getColumnCount(); i++) {
+                    ret.add(md.getColumnName(i));
+                }
+                rs.close();
             }
-            rs.close();
-        } catch (SQLException e) {
-            _logger.error("getMetaNameList() : sql = " + sql);
+            catch (SQLException e) {
+                _logger.error("getMetaNameList() : sql = " + sql);
+            }
+            return ret;
         }
-        return ret;
+        finally {
+            c.close();
+        }
     }
 
     public Vector getFormTableNameList() throws SQLException {
-        Vector ret = new Vector();
-        String sql = "select * from encounterForm where hidden != 0 order by form_name";
-        ResultSet rs = dbObj.searchDBRecord(sql);
-        while (rs.next()) {
-            ret.add(rs.getString("form_name"));
-            ret.add(rs.getString("form_table"));
+        Connection c = SpringUtils.getDbConnection();
+        try {
+            Vector ret = new Vector();
+            String sql = "select * from encounterForm where hidden != 0 order by form_name";
+            ResultSet rs = dbObj.searchDBRecord(c, sql);
+            while (rs.next()) {
+                ret.add(rs.getString("form_name"));
+                ret.add(rs.getString("form_table"));
+            }
+            rs.close();
+            return ret;
         }
-        rs.close();
-        return ret;
+        finally {
+            c.close();
+        }
     }
 
     public String getCaption() {

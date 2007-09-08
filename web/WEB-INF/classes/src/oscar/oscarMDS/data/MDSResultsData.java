@@ -651,10 +651,10 @@ public class MDSResultsData {
         try {
             DBPreparedHandler db = new DBPreparedHandler( props.getProperty("db_driver"), props.getProperty("db_uri")+props.getProperty("db_name"), props.getProperty("db_username"), props.getProperty("db_password") );
             // handles the case where this provider/lab combination is not already in providerLabRouting table
-            String sql = "insert ignore into providerLabRouting (provider_no, lab_no, status, comment) values ('"+providerNo+"', '"+labNo+"', '"+status+"', ?)";
+            String sql = "insert ignore into providerLabRouting (provider_no, lab_no, status, comment1) values ('"+providerNo+"', '"+labNo+"', '"+status+"', ?)";
             if ( db.queryExecuteUpdate(sql, new String[] { comment }) == 0 ) {
                 // handles the case where it is
-                sql = "update providerLabRouting set status='"+status+"', comment=? where provider_no='"+providerNo+"' and lab_no='"+labNo+"'";
+                sql = "update providerLabRouting set status='"+status+"', comment1=? where provider_no='"+providerNo+"' and lab_no='"+labNo+"'";
                 db.queryExecute(sql, new String[] { comment });
             } else {
                 sql = "delete from providerLabRouting where provider_no='0' and lab_no=?";

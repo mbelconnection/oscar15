@@ -29,13 +29,17 @@
 package oscar.oscarTickler.tld;
 
 import java.io.PrintStream;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.TagSupport;
 import org.apache.struts.util.*;
+import org.oscarehr.util.SpringUtils;
+
 import oscar.oscarDB.DBHandler;
+import oscar.util.SqlUtils;
 
 /**
  *
@@ -43,59 +47,59 @@ import oscar.oscarDB.DBHandler;
  */
 public class TicklerTag extends TagSupport {
 
+    public TicklerTag() {
+        numNewLabs = 0;
+    }
 
-   public TicklerTag() {
-	numNewLabs = 0;
-   }
-
-   public int doStartTag() throws JspException    {
+    public int doStartTag() throws JspException {
+        Connection c=null;
+        ResultSet rs=null;
         try {
+            c=SpringUtils.getDbConnection();
             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
-            String sql = new String("select count(*) from tickler where status = 'A' and TO_DAYS(service_date) <= TO_DAYS(now()) and task_assigned_to  = '"+ providerNo +"' ");
-            ResultSet rs = db.GetSQL(sql);
+            String sql = new String("select count(*) from tickler where status = 'A' and service_date <= sysdate and task_assigned_to  = '" + providerNo + "' ");
+            rs = db.GetSQL(c, sql);
             while (rs.next()) {
-               numNewLabs = (rs.getInt(1));
+                numNewLabs = (rs.getInt(1));
             }
-
-            rs.close();
-            db.CloseConn();
-        }      catch(SQLException e)        {
+        }
+        catch (SQLException e) {
             e.printStackTrace(System.out);
         }
-        try        {
+        finally
+        {
+            SqlUtils.closeResources(c, null, rs);
+        }
+        try {
             JspWriter out = super.pageContext.getOut();
-            if(numNewLabs > 0) 
-                out.print("<span class='tabalert'>  ");
-            else
-                out.print("<span>  ");
-        } catch(Exception p) {
+            if (numNewLabs > 0) out.print("<span class='tabalert'>  ");
+            else out.print("<span>  ");
+        }
+        catch (Exception p) {
             p.printStackTrace(System.out);
         }
         return(EVAL_BODY_INCLUDE);
     }
 
-
-    public void setProviderNo(String providerNo1)    {
-       providerNo = providerNo1;
+    public void setProviderNo(String providerNo1) {
+        providerNo = providerNo1;
     }
 
-    public String getProviderNo()    {
+    public String getProviderNo() {
         return providerNo;
     }
 
-
-    public int doEndTag()        throws JspException    {
-       try{
-          JspWriter out = super.pageContext.getOut();
-          if (numNewLabs>0)
-              out.print("<sup>"+numNewLabs+"</sup></span>");
-          else
-              out.print("</span>");
-       }catch(Exception p) {
+    public int doEndTag() throws JspException {
+        try {
+            JspWriter out = super.pageContext.getOut();
+            if (numNewLabs > 0) out.print("<sup>" + numNewLabs + "</sup></span>");
+            else out.print("</span>");
+        }
+        catch (Exception p) {
             p.printStackTrace(System.out);
-       }
-       return EVAL_PAGE;
+        }
+        return EVAL_PAGE;
     }
 
     private String providerNo;

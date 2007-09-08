@@ -103,11 +103,11 @@ public class MDSSegmentData {
             
             // Get the lab status
             
-            sql = "select provider.first_name, provider.last_name, provider.provider_no, providerLabRouting.status, providerLabRouting.comment, providerLabRouting.timestamp from provider, providerLabRouting where provider.provider_no = providerLabRouting.provider_no and providerLabRouting.lab_no='"+this.segmentID+"' and providerLabRouting.lab_type='MDS'";
+            sql = "select provider.first_name, provider.last_name, provider.provider_no, providerLabRouting.status, providerLabRouting.comment1, providerLabRouting.timestamp from provider, providerLabRouting where provider.provider_no = providerLabRouting.provider_no and providerLabRouting.lab_no='"+this.segmentID+"' and providerLabRouting.lab_type='MDS'";
             
             rs = db.GetSQL(sql);
             while(rs.next()){
-                statusArray.add( new ReportStatus(rs.getString("first_name")+" "+rs.getString("last_name"), rs.getString("provider_no"), descriptiveStatus(rs.getString("status")), rs.getString("comment"), rs.getString("timestamp"), this.segmentID ) );
+                statusArray.add( new ReportStatus(rs.getString("first_name")+" "+rs.getString("last_name"), rs.getString("provider_no"), descriptiveStatus(rs.getString("status")), rs.getString("comment1"), rs.getString("timestamp"), this.segmentID ) );
             }
             rs.close();
             

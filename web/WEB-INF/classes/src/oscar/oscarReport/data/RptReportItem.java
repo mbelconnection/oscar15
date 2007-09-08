@@ -3,12 +3,14 @@
  */
 package oscar.oscarReport.data;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.oscarehr.util.SpringUtils;
 
 import oscar.login.DBHelp;
 
@@ -22,8 +24,7 @@ public class RptReportItem {
 
     public boolean insertRecord() throws SQLException {
         boolean ret = false;
-        String sql = "insert into reportItem (report_name, status) values ('"
-                + StringEscapeUtils.escapeSql(report_name) + "', " + status + ")";
+        String sql = "insert into reportItem (report_name, status) values ('" + StringEscapeUtils.escapeSql(report_name) + "', " + status + ")";
         ret = dbObj.updateDBRecord(sql);
         return ret;
     }
@@ -44,30 +45,43 @@ public class RptReportItem {
 
     // id
     public String getReportName(String recordId) throws SQLException {
-        String ret = null;
-        String sql = "select report_name from reportItem where id = " + recordId;
-        ResultSet rs = dbObj.searchDBRecord(sql);
-        while (rs.next()) {
-            ret = rs.getString("report_name");
+        Connection c = SpringUtils.getDbConnection();
+        try {
+            String ret = null;
+            String sql = "select report_name from reportItem where id = " + recordId;
+            ResultSet rs = dbObj.searchDBRecord(c, sql);
+            while (rs.next()) {
+                ret = rs.getString("report_name");
+            }
+            rs.close();
+            return ret;
         }
-        rs.close();
-        return ret;
+        finally {
+            c.close();
+        }
     }
 
     // 1 - name list, 0 - deleted name list
     public Vector getNameList(int n) throws SQLException {
-        Vector ret = new Vector();
-        Properties prop = null;
-        String sql = "select * from reportItem where status = " + n + " order by id";
-        ResultSet rs = dbObj.searchDBRecord(sql);
-        while (rs.next()) {
-            prop = new Properties();
-            prop.setProperty("id", "" + rs.getInt("id"));
-            prop.setProperty("" + rs.getInt("id"), rs.getString("report_name"));
-            ret.add(prop);
+        Connection c = SpringUtils.getDbConnection();
+        try {
+
+            Vector ret = new Vector();
+            Properties prop = null;
+            String sql = "select * from reportItem where status = " + n + " order by id";
+            ResultSet rs = dbObj.searchDBRecord(c, sql);
+            while (rs.next()) {
+                prop = new Properties();
+                prop.setProperty("id", "" + rs.getInt("id"));
+                prop.setProperty("" + rs.getInt("id"), rs.getString("report_name"));
+                ret.add(prop);
+            }
+            rs.close();
+            return ret;
         }
-        rs.close();
-        return ret;
+        finally {
+            c.close();
+        }
     }
 
     public String getReport_name() {

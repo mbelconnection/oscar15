@@ -23,9 +23,12 @@
  */
 package oscar.form;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
+
+import org.oscarehr.util.SpringUtils;
 
 import oscar.SxmlMisc;
 import oscar.login.DBHelp;
@@ -36,6 +39,8 @@ public class FrmBCARRecord extends FrmRecord {
     private String _dateFormat = "dd/MM/yyyy";
 
     public Properties getFormRecord(int demographicNo, int existingID) throws SQLException {
+        Connection c = SpringUtils.getDbConnection();
+        try {
         Properties props = new Properties();
 
         if (existingID <= 0) {
@@ -73,7 +78,6 @@ public class FrmBCARRecord extends FrmRecord {
                 props.setProperty("pg1_famPhy", rd);
             }
             rs.close();
-            db.CloseConn();
         } else {
             String sql = "SELECT * FROM formBCAR WHERE demographic_no = " + demographicNo + " AND ID = " + existingID;
             FrmRecordHelp frh = new FrmRecordHelp();
@@ -82,7 +86,7 @@ public class FrmBCARRecord extends FrmRecord {
 
             sql = "SELECT last_name, first_name, address, city, province, postal, phone,phone2, hin FROM demographic WHERE demographic_no = "
                     + demographicNo;
-            ResultSet rs = (new DBHelp()).searchDBRecord(sql);
+            ResultSet rs = (new DBHelp()).searchDBRecord(c, sql);
             if (rs.next()) {
                 props.setProperty("c_surname_cur", rs.getString("last_name"));
                 props.setProperty("c_givenName_cur", rs.getString("first_name"));
@@ -95,6 +99,11 @@ public class FrmBCARRecord extends FrmRecord {
             }
         }
         return props;
+        }
+        finally
+        {
+            c.close();
+        }
     }
 
     public int saveFormRecord(Properties props) throws SQLException {

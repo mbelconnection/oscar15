@@ -59,7 +59,13 @@ public class PATHL7Handler implements MessageHandler  {
             }catch(Exception e){
                 logger.error("Could not upload PATHL7 message", e);
                 e.printStackTrace();
-                uploader.clean(i+1);
+                try {
+                    uploader.clean(i+1);
+                }
+                catch (SQLException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
                 return null;
             }
             return("success");

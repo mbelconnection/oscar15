@@ -174,7 +174,7 @@ public class LoginCheckLogin {
         return pvar;
     }
 
-    public String[] getPreferences() {
+    public String[] getPreferences() throws SQLException {
         return lb.getPreferences();
     }
 

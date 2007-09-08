@@ -3,6 +3,7 @@
  */
 package oscar.oscarReport.data;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -10,6 +11,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
+import org.oscarehr.util.SpringUtils;
 
 import oscar.login.DBHelp;
 
@@ -30,25 +32,29 @@ public class RptReportConfigData {
     DBHelp dbObj = new DBHelp();
 
     public boolean insertRecordWithOrder() throws SQLException {
-        boolean ret = false;
-        String sql = "select max(order_no) from reportConfig where report_id=" + report_id;
-        ResultSet rs = dbObj.searchDBRecord(sql);
-        while (rs.next()) {
-            order = rs.getInt(1) + 1;
+        Connection c = SpringUtils.getDbConnection();
+        try {
+            boolean ret = false;
+            String sql = "select max(order_no) from reportConfig where report_id=" + report_id;
+            ResultSet rs = dbObj.searchDBRecord(c, sql);
+            while (rs.next()) {
+                order = rs.getInt(1) + 1;
+            }
+            insertRecord();
+            return ret;
         }
-        insertRecord();
-        return ret;
+        finally {
+            c.close();
+        }
     }
 
     public boolean insertRecord() {
         boolean ret = false;
-        String sql = "insert into reportConfig (report_id, name, caption, order_no, table_name, save) values ("
-                + report_id + ", '" + StringEscapeUtils.escapeSql(name) + "', '"
-                + StringEscapeUtils.escapeSql(caption) + "', " + order + ", '"
-                + StringEscapeUtils.escapeSql(table_name) + "', '" + StringEscapeUtils.escapeSql(save) + "')";
+        String sql = "insert into reportConfig (report_id, name, caption, order_no, table_name, save) values (" + report_id + ", '" + StringEscapeUtils.escapeSql(name) + "', '" + StringEscapeUtils.escapeSql(caption) + "', " + order + ", '" + StringEscapeUtils.escapeSql(table_name) + "', '" + StringEscapeUtils.escapeSql(save) + "')";
         try {
             ret = dbObj.updateDBRecord(sql);
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             _logger.error("insertRecord() : sql = " + sql);
         }
         return ret;
@@ -56,18 +62,14 @@ public class RptReportConfigData {
 
     public boolean deleteRecord() throws SQLException {
         boolean ret = false;
-        String sql = "delete from reportConfig where report_id=" + report_id + " and name='"
-                + StringEscapeUtils.escapeSql(name) + "' and caption='" + StringEscapeUtils.escapeSql(caption)
-                + "' and table_name='" + StringEscapeUtils.escapeSql(table_name) + "' and save='"
-                + StringEscapeUtils.escapeSql(save) + "'";
+        String sql = "delete from reportConfig where report_id=" + report_id + " and name='" + StringEscapeUtils.escapeSql(name) + "' and caption='" + StringEscapeUtils.escapeSql(caption) + "' and table_name='" + StringEscapeUtils.escapeSql(table_name) + "' and save='" + StringEscapeUtils.escapeSql(save) + "'";
         ret = dbObj.updateDBRecord(sql);
         return ret;
     }
 
     public boolean updateRecordOrder(String saveAs, String reportId, String id, String newPos) throws SQLException {
         boolean ret = false;
-        String sql = "update reportConfig set order_no=order_no+1 where report_id=" + reportId + " and save='"
-                + StringEscapeUtils.escapeSql(saveAs) + "' and order_no >=" + newPos + " order by order_no desc";
+        String sql = "update reportConfig set order_no=order_no+1 where report_id=" + reportId + " and save='" + StringEscapeUtils.escapeSql(saveAs) + "' and order_no >=" + newPos + " order by order_no desc";
         //System.out.println("updateRecordOrder() : sql = " + sql);
         if (dbObj.updateDBRecord(sql)) {
             sql = "update reportConfig set order_no=" + newPos + " where id=" + id;
@@ -82,7 +84,8 @@ public class RptReportConfigData {
         String sql = "delete from reportConfig where id=" + recordId;
         try {
             ret = dbObj.updateDBRecord(sql);
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             _logger.error("deleteRecord() : sql = " + sql);
         }
         return ret;
@@ -90,75 +93,96 @@ public class RptReportConfigData {
 
     // 0 - name; 1 - caption
     public Vector[] getConfigFieldName(String saveAs, String reportId) throws SQLException {
-        Vector[] ret = new Vector[2];
-        ret[0] = new Vector();
-        ret[1] = new Vector();
-        String sql = "select * from reportConfig where report_id=" + reportId + " and save = '" + saveAs
-                + "' order by order_no, id";
-        ResultSet rs = dbObj.searchDBRecord(sql);
-        while (rs.next()) {
-            //System.out.println(rs.getString("name"));
-            if (rs.getString("name").matches(RptTableShadowFieldConst.fieldName)) {
+        Connection c = SpringUtils.getDbConnection();
+        try {
+            Vector[] ret = new Vector[2];
+            ret[0] = new Vector();
+            ret[1] = new Vector();
+            String sql = "select * from reportConfig where report_id=" + reportId + " and save = '" + saveAs + "' order by order_no, id";
+            ResultSet rs = dbObj.searchDBRecord(c, sql);
+            while (rs.next()) {
                 //System.out.println(rs.getString("name"));
-                continue;
+                if (rs.getString("name").matches(RptTableShadowFieldConst.fieldName)) {
+                    //System.out.println(rs.getString("name"));
+                    continue;
+                }
+                ret[0].add(rs.getString("table_name") + "." + rs.getString("name"));
+                if ("".equals(rs.getString("caption"))) {
+                    ret[1].add(rs.getString("name"));
+                }
+                else {
+                    ret[1].add(rs.getString("caption"));
+                }
             }
-            ret[0].add(rs.getString("table_name") + "." + rs.getString("name"));
-            if ("".equals(rs.getString("caption"))) {
-                ret[1].add(rs.getString("name"));
-            } else {
-                ret[1].add(rs.getString("caption"));
-            }
+            rs.close();
+            return ret;
         }
-        rs.close();
-        return ret;
+        finally {
+            c.close();
+        }
     }
 
     public Vector getConfigNameList(String saveAs, String reportId) throws SQLException {
-        Vector ret = new Vector();
-        String sql = "select * from reportConfig where report_id=" + reportId + " and save = '" + saveAs
-                + "' order by order_no, id";
-        ResultSet rs = dbObj.searchDBRecord(sql);
-        while (rs.next()) {
-            //System.out.println(rs.getString("name"));
-            if (rs.getString("name").matches(RptTableShadowFieldConst.fieldName)) {
+        Connection c = SpringUtils.getDbConnection();
+        try {
+            Vector ret = new Vector();
+            String sql = "select * from reportConfig where report_id=" + reportId + " and save = '" + saveAs + "' order by order_no, id";
+            ResultSet rs = dbObj.searchDBRecord(c, sql);
+            while (rs.next()) {
                 //System.out.println(rs.getString("name"));
-                continue;
+                if (rs.getString("name").matches(RptTableShadowFieldConst.fieldName)) {
+                    //System.out.println(rs.getString("name"));
+                    continue;
+                }
+                ret.add(rs.getString("caption") + " |" + rs.getString("name"));
             }
-            ret.add(rs.getString("caption") + " |" + rs.getString("name"));
+            rs.close();
+            return ret;
         }
-        rs.close();
-        return ret;
+        finally {
+            c.close();
+        }
     }
 
     public Vector getConfigObj(String saveAs, String reportId) throws SQLException {
-        Vector ret = new Vector();
-        Properties prop = null;
-        String sql = "select * from reportConfig where report_id=" + reportId + " and save = '" + saveAs
-                + "' order by order_no, id";
-        ResultSet rs = dbObj.searchDBRecord(sql);
-        while (rs.next()) {
-            prop = new Properties();
-            prop.setProperty("name", rs.getString("name"));
-            prop.setProperty("caption", rs.getString("caption"));
-            prop.setProperty("id", "" + rs.getInt("id"));
-            prop.setProperty("order_no", "" + rs.getInt("order_no"));
-            ret.add(prop);
+        Connection c = SpringUtils.getDbConnection();
+        try {
+            Vector ret = new Vector();
+            Properties prop = null;
+            String sql = "select * from reportConfig where report_id=" + reportId + " and save = '" + saveAs + "' order by order_no, id";
+            ResultSet rs = dbObj.searchDBRecord(c, sql);
+            while (rs.next()) {
+                prop = new Properties();
+                prop.setProperty("name", rs.getString("name"));
+                prop.setProperty("caption", rs.getString("caption"));
+                prop.setProperty("id", "" + rs.getInt("id"));
+                prop.setProperty("order_no", "" + rs.getInt("order_no"));
+                ret.add(prop);
+            }
+            rs.close();
+            return ret;
         }
-        rs.close();
-        return ret;
+        finally {
+            c.close();
+        }
     }
 
     // get form..., demographic;
     public Vector getReportTableNameList(String reportId) throws SQLException {
-        Vector ret = new Vector();
-        String sql = "select distinct(table_name) from reportConfig where report_id=" + reportId
-                + " and table_name like 'form%'" + " order by table_name";
-        ResultSet rs = dbObj.searchDBRecord(sql);
-        while (rs.next()) {
-            ret.add(rs.getString("table_name"));
+        Connection c = SpringUtils.getDbConnection();
+        try {
+            Vector ret = new Vector();
+            String sql = "select distinct(table_name) from reportConfig where report_id=" + reportId + " and table_name like 'form%'" + " order by table_name";
+            ResultSet rs = dbObj.searchDBRecord(c, sql);
+            while (rs.next()) {
+                ret.add(rs.getString("table_name"));
+            }
+            rs.close();
+            return ret;
         }
-        rs.close();
-        return ret;
+        finally {
+            c.close();
+        }
     }
 
     // 0 - name; 1 - caption

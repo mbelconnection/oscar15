@@ -8,6 +8,7 @@
  */
 package oscar.oscarLab.ca.all.upload.handlers;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.io.*;
 import org.apache.log4j.Logger;
@@ -37,7 +38,13 @@ public class CMLHandler implements MessageHandler  {
                 
             }            
         } catch (Exception e) {
-            uploader.clean(i+1);
+            try {
+                uploader.clean(i+1);
+            }
+            catch (SQLException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
             logger.error("Could not upload message: ", e);
             e.printStackTrace();
             return null;

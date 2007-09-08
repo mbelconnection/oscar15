@@ -29,6 +29,7 @@
 package oscar.oscarDemographic.pageUtil;
 
 import java.lang.reflect.*;
+import java.sql.SQLException;
 import java.util.*;
 import javax.servlet.http.*;
 import noNamespace.*;
@@ -48,7 +49,7 @@ import oscar.util.*;
  */
 public class DemographicExportAction extends Action {
 
-   public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)  {
+   public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws SQLException  {
       String setName = request.getParameter("patientSet");      
        
       //System.out.println("setName "+setName);

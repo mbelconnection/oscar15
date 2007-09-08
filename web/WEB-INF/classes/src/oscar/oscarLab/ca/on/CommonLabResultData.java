@@ -128,11 +128,11 @@ public class CommonLabResultData {
             
             if(rs.next()){  //
                 String id = rs.getString("id");
-                sql = "update providerLabRouting set status='"+status+"', comment=? where id = '"+id+"'";
+                sql = "update providerLabRouting set status='"+status+"', comment1=? where id = '"+id+"'";
                 if (!rs.getString("status").equals("A"))
                     db.queryExecute(sql, new String[] { comment });
             }else{
-                sql = "insert ignore into providerLabRouting (provider_no, lab_no, status, comment,lab_type) values ('"+providerNo+"', '"+labNo+"', '"+status+"', ?,'"+labType+"')";
+                sql = "insert ignore into providerLabRouting (provider_no, lab_no, status, comment1,lab_type) values ('"+providerNo+"', '"+labNo+"', '"+status+"', ?,'"+labType+"')";
                 db.queryExecute(sql, new String[] { comment });
             }
             
@@ -159,13 +159,13 @@ public class CommonLabResultData {
         
         ArrayList statusArray = new ArrayList();
         
-        String sql = "select provider.first_name, provider.last_name, provider.provider_no, providerLabRouting.status, providerLabRouting.comment, providerLabRouting.timestamp from provider, providerLabRouting where provider.provider_no = providerLabRouting.provider_no and providerLabRouting.lab_no='"+labId+"' and providerLabRouting.lab_type = '"+labType+"'";
+        String sql = "select provider.first_name, provider.last_name, provider.provider_no, providerLabRouting.status, providerLabRouting.comment1, providerLabRouting.timestamp from provider, providerLabRouting where provider.provider_no = providerLabRouting.provider_no and providerLabRouting.lab_no='"+labId+"' and providerLabRouting.lab_type = '"+labType+"'";
         try{
             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs = db.GetSQL(sql);
             logger.info(sql);
             while(rs.next()){
-                statusArray.add( new ReportStatus(rs.getString("first_name")+" "+rs.getString("last_name"), rs.getString("provider_no"), descriptiveStatus(rs.getString("status")), rs.getString("comment"), rs.getString("timestamp"), labId ) );
+                statusArray.add( new ReportStatus(rs.getString("first_name")+" "+rs.getString("last_name"), rs.getString("provider_no"), descriptiveStatus(rs.getString("status")), rs.getString("comment1"), rs.getString("timestamp"), labId ) );
                 //statusArray.add( new ReportStatus(rs.getString("first_name")+" "+rs.getString("last_name"), rs.getString("provider_no"), descriptiveStatus(rs.getString("status")), rs.getString("comment"), rs.getTimestamp("timestamp").getTime(), labId ) );
             }
             rs.close();
@@ -396,7 +396,13 @@ public class CommonLabResultData {
     public static void populateMeasurementsTable(String labId, String demographicNo, String labType){
         if (labType.equals(LabResultData.HL7TEXT)){
             Hl7textResultsData rd = new Hl7textResultsData();
-            rd.populateMeasurementsTable(labId, demographicNo);
+            try {
+                rd.populateMeasurementsTable(labId, demographicNo);
+            }
+            catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
     

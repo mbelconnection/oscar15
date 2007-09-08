@@ -24,6 +24,7 @@
  */
 -->
 <%@page  import="oscar.oscarDemographic.data.*,java.util.*,java.sql.Connection,oscar.oscarPrevention.*,oscar.oscarLab.ca.on.*,oscar.util.*,oscar.oscarLab.*,oscar.oscarLab.ca.all.util.CumulativeLabValuesComparator,org.jdom.*,oscar.oscarDB.*,org.jdom.input.*,java.io.InputStream"%>
+<%@page import="org.oscarehr.util.*" %>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %>
@@ -57,65 +58,69 @@ try{
 *   dateList: (dateIdHash)
 *   dateIdHash: (date, lab_no)
     */
-    DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
-    Connection conn = db.GetConnection();
-    for (int i = 0; i < items.size(); i++){
-        Element e = (Element) items.get(i);
-        String loinc_code = e.getAttributeValue("loinc_code");
-        String name = e.getAttributeValue("name");
-        if (!loinc_code.equalsIgnoreCase("NULL")){
-            LinkedHashMap IdMap = new LinkedHashMap();
-            ArrayList labList = labTests.findValuesByLoinc(demographic_no, loinc_code, conn);
-            for (int j=0; j < labList.size(); j++){
-                Hashtable h = (Hashtable) labList.get(j);
-                String date = ( (String) h.get("date") );
-                String id = (String) h.get("lab_no");
-                IdMap.put(id, h);
-                
-                // check if this lab has already been added
-                if (!idList.contains(id)){
-                    idList.add(id);
-                    Hashtable dateIdHash = new Hashtable();
-                    dateIdHash.put("date", date);
-                    dateIdHash.put("id", id);
-                    dateList.add(dateIdHash);
-                }
-            }
-            
-            // add the test only if there are results for it
-            if (labList.size() > 0){
-                measIdMap.put(loinc_code, IdMap);
-                nameMap.put(loinc_code, name);
-            }
-            
-        // If the first element to be displayed is a header
-        }else if(nameMap.size() == 0 && !name.equals("NULL")){
-            nameMap.put("NULL"+i, name);
-        // Do not allow the first element displayed to be a space
-        }else if(nameMap.size() != 0){
-
-            String[] nameMapKeys = new String[nameMap.size()];
-            nameMap.keySet().toArray(nameMapKeys);
-            String lastKey = nameMapKeys[nameMapKeys.length-1];
-            
-            // Do not allow more than one space or more than one header in a row
-            // A space is allowed to be followed by a header
-            if ( lastKey.startsWith("NULL") && (name.equalsIgnoreCase("NULL") || !((String) nameMap.get(lastKey)).equalsIgnoreCase("NULL"))){
-                nameMap.remove(lastKey);
-                
-                if (nameMapKeys.length > 1){
-                    lastKey = nameMapKeys[nameMapKeys.length-2];
-                    // if a header has been removed by a space remove the space before the header too
-                    if (((String) nameMap.get(lastKey)).equalsIgnoreCase("NULL") && name.equalsIgnoreCase("NULL"))
-                        nameMap.remove(lastKey);
-                }
-            }
-            nameMap.put("NULL"+i, name);
-        }
-        
+    Connection conn = SpringUtils.getDbConnection();
+    try
+    {
+	    for (int i = 0; i < items.size(); i++){
+	        Element e = (Element) items.get(i);
+	        String loinc_code = e.getAttributeValue("loinc_code");
+	        String name = e.getAttributeValue("name");
+	        if (!loinc_code.equalsIgnoreCase("NULL")){
+	            LinkedHashMap IdMap = new LinkedHashMap();
+	            ArrayList labList = labTests.findValuesByLoinc(demographic_no, loinc_code, conn);
+	            for (int j=0; j < labList.size(); j++){
+	                Hashtable h = (Hashtable) labList.get(j);
+	                String date = ( (String) h.get("date") );
+	                String id = (String) h.get("lab_no");
+	                IdMap.put(id, h);
+	                
+	                // check if this lab has already been added
+	                if (!idList.contains(id)){
+	                    idList.add(id);
+	                    Hashtable dateIdHash = new Hashtable();
+	                    dateIdHash.put("date", date);
+	                    dateIdHash.put("id", id);
+	                    dateList.add(dateIdHash);
+	                }
+	            }
+	            
+	            // add the test only if there are results for it
+	            if (labList.size() > 0){
+	                measIdMap.put(loinc_code, IdMap);
+	                nameMap.put(loinc_code, name);
+	            }
+	            
+	        // If the first element to be displayed is a header
+	        }else if(nameMap.size() == 0 && !name.equals("NULL")){
+	            nameMap.put("NULL"+i, name);
+	        // Do not allow the first element displayed to be a space
+	        }else if(nameMap.size() != 0){
+	
+	            String[] nameMapKeys = new String[nameMap.size()];
+	            nameMap.keySet().toArray(nameMapKeys);
+	            String lastKey = nameMapKeys[nameMapKeys.length-1];
+	            
+	            // Do not allow more than one space or more than one header in a row
+	            // A space is allowed to be followed by a header
+	            if ( lastKey.startsWith("NULL") && (name.equalsIgnoreCase("NULL") || !((String) nameMap.get(lastKey)).equalsIgnoreCase("NULL"))){
+	                nameMap.remove(lastKey);
+	                
+	                if (nameMapKeys.length > 1){
+	                    lastKey = nameMapKeys[nameMapKeys.length-2];
+	                    // if a header has been removed by a space remove the space before the header too
+	                    if (((String) nameMap.get(lastKey)).equalsIgnoreCase("NULL") && name.equalsIgnoreCase("NULL"))
+	                        nameMap.remove(lastKey);
+	                }
+	            }
+	            nameMap.put("NULL"+i, name);
+	        }
+	        
+	    }
     }
-
-    db.CloseConn();
+    finally
+    {
+    	conn.close();
+    }
 // if the last item in the name list is a space or header remove it
     String[] nameMapKeys = new String[nameMap.size()];
     nameMap.keySet().toArray(nameMapKeys);

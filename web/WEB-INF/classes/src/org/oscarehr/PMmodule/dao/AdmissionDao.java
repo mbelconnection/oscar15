@@ -344,7 +344,7 @@ public class AdmissionDao extends HibernateDaoSupport {
             throw new IllegalArgumentException();
         }
 
-        List results = this.getHibernateTemplate().find("from Admission a where a.TemporaryAdmission = true and a.AdmissionStatus='current' and a.ClientId = ?", demographicNo);
+        List results = this.getHibernateTemplate().find("from Admission a where a.TemporaryAdmission = 1 and a.AdmissionStatus='current' and a.ClientId = ?", demographicNo);
 
         if (!results.isEmpty()) {
             result = (Admission) results.get(0);

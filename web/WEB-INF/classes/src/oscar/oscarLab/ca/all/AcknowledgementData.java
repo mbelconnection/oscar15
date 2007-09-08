@@ -33,10 +33,10 @@ public class AcknowledgementData {
             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             
             acknowledgements = new ArrayList();
-            String sql = "select provider.first_name, provider.last_name, provider.provider_no, providerLabRouting.status, providerLabRouting.comment, providerLabRouting.timestamp from provider, providerLabRouting where provider.provider_no = providerLabRouting.provider_no and providerLabRouting.lab_no='"+segmentID+"' and providerLabRouting.lab_type='HL7'";
+            String sql = "select provider.first_name, provider.last_name, provider.provider_no, providerLabRouting.status, providerLabRouting.comment1, providerLabRouting.timestamp from provider, providerLabRouting where provider.provider_no = providerLabRouting.provider_no and providerLabRouting.lab_no='"+segmentID+"' and providerLabRouting.lab_type='HL7'";
             ResultSet rs = db.GetSQL(sql);
             while(rs.next()){
-                acknowledgements.add( new ReportStatus(rs.getString("first_name")+" "+rs.getString("last_name"), rs.getString("provider_no"), rs.getString("status"), rs.getString("comment"), rs.getString("timestamp"), segmentID ) );
+                acknowledgements.add( new ReportStatus(rs.getString("first_name")+" "+rs.getString("last_name"), rs.getString("provider_no"), rs.getString("status"), rs.getString("comment1"), rs.getString("timestamp"), segmentID ) );
             }
             rs.close();
             db.CloseConn();

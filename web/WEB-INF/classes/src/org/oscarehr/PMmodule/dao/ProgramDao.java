@@ -300,7 +300,7 @@ public class ProgramDao extends HibernateDaoSupport {
 	}
 
 	public void resetHoldingTank() {
-		Query q = getSession().createQuery("update Program set holdingTank = false");
+		Query q = getSession().createQuery("update Program set holdingTank = 0");
 		q.executeUpdate();
 
 		if (log.isDebugEnabled()) {
@@ -311,7 +311,7 @@ public class ProgramDao extends HibernateDaoSupport {
 	public Program getHoldingTankProgram() {
 		Program result = null;
 
-		List results = this.getHibernateTemplate().find("from Program p where p.holdingTank = true");
+		List results = this.getHibernateTemplate().find("from Program p where p.holdingTank = 1");
 
 		if (!results.isEmpty()) {
 			result = (Program) results.get(0);

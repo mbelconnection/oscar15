@@ -32,6 +32,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.oscarehr.util.SpringUtils;
+
 public class DBHandler {
     public static String IDDF_DATA = "iddf";
     public static String OSCAR_DATA = "oscar_sfhc";
@@ -44,7 +46,6 @@ public class DBHandler {
     private int connMaxConnections = 100;
     private boolean connWaitIfBusy = true;
     private Connection conn;
-    private DBConnectionPool pool;
 
     public static boolean isInit() {
         boolean initd = true;
@@ -68,22 +69,34 @@ public class DBHandler {
     }
 
     public DBHandler(String host, String dbName) throws SQLException {
-        if (dbName != null && dbName.compareTo(IDDF_DATA) == 0) {
-            pool = DBIddfPool.getInstance(connDriver, connURL + (host != null?host:"") + (dbName != null?dbName:""), connUser, connPwd, connInitialConnections, connMaxConnections, connWaitIfBusy);
-            conn = pool.getConnection();
-        }
-        else {
-            pool = DBOscarPool.getInstance(connDriver, connURL + (host != null?host:"") + (dbName != null?dbName:""), connUser, connPwd, connInitialConnections, connMaxConnections, connWaitIfBusy);
-            conn = pool.getConnection();
-        }
+        conn = SpringUtils.getDbConnection();
     }
 
     synchronized public Connection GetConnection() throws SQLException {
         return conn;
     }
 
+    synchronized public java.sql.ResultSet GetSQL(Connection c, String SQLStatement) throws SQLException {
+        return this.GetSQL(c, SQLStatement, false);
+    }
+
     synchronized public java.sql.ResultSet GetSQL(String SQLStatement) throws SQLException {
         return this.GetSQL(SQLStatement, false);
+    }
+
+    synchronized public java.sql.ResultSet GetSQL(Connection c, String SQLStatement, boolean updatable) throws SQLException {
+        Statement stmt;
+        ResultSet rs = null;
+        if (updatable) {
+            stmt = c.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        }
+        else {
+            stmt = c.createStatement();
+        }
+        //        System.err.println(stmt.getResultSetConcurrency());
+        rs = stmt.executeQuery(SQLStatement);
+        //        System.err.println(rs.getConcurrency());
+        return rs;
     }
 
     synchronized public java.sql.ResultSet GetSQL(String SQLStatement, boolean updatable) throws SQLException {
@@ -110,9 +123,7 @@ public class DBHandler {
     }
 
     public void CloseConn() throws SQLException {
-        if (!conn.isClosed()) {
-            pool.free(conn);
-        }
+        if (conn != null && !conn.isClosed()) conn.close();
     }
 
     /**
@@ -120,9 +131,7 @@ public class DBHandler {
      **/
     protected void finalize() throws Throwable {
         try {
-            if (conn != null) {
-                CloseConn();
-            }
+            CloseConn();
         }
         catch (SQLException e) {
             System.out.println("Problem finalizing DBHandler");

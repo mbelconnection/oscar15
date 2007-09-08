@@ -4,10 +4,11 @@
  */
 package oscar.login;
 
-import org.apache.log4j.Logger;
-
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import org.apache.log4j.Logger;
 
 import oscar.oscarDB.DBHandler;
 
@@ -25,6 +26,7 @@ public class DBHelp {
             ret = db.RunSQL(sql);
             ret = true;
         } catch (SQLException e) {
+            e.printStackTrace();
             ret = false;
             System.out.println(e.getMessage());
         } finally {
@@ -33,18 +35,14 @@ public class DBHelp {
         return ret;
     }
 
-    public synchronized ResultSet searchDBRecord(String sql) throws SQLException {
+    public synchronized ResultSet searchDBRecord(Connection c, String sql) throws SQLException {
         ResultSet ret = null;
         DBHandler db = null;
-        try {
-            db = new DBHandler(DBHandler.OSCAR_DATA);
-            ret = db.GetSQL(sql);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        } finally {
-            db.CloseConn();
-        }
-        return ret;
+
+        db = new DBHandler(DBHandler.OSCAR_DATA);
+           ret = db.GetSQL(c, sql);
+
+           return ret;
     }
 
     public synchronized boolean updateDBRecord(String sql, String userId) throws SQLException {
@@ -56,6 +54,7 @@ public class DBHelp {
             ret = true;
             _logger.info("updateDBRecord(sql = " + sql + ", userId = " + userId + ")");
         } catch (SQLException e) {
+            e.printStackTrace();
             ret = false;
             _logger.error("updateDBRecord(sql = " + sql + ", userId = " + userId + ")");
         } finally {
@@ -64,14 +63,15 @@ public class DBHelp {
         return ret;
     }
 
-    public synchronized ResultSet searchDBRecord(String sql, String userId) throws SQLException {
+    public synchronized ResultSet searchDBRecord(Connection c, String sql, String userId) throws SQLException {
         ResultSet ret = null;
         DBHandler db = null;
         try {
             db = new DBHandler(DBHandler.OSCAR_DATA);
-            ret = db.GetSQL(sql);
+            ret = db.GetSQL(c, sql);
             _logger.info("searchDBRecord(sql = " + sql + ", userId = " + userId + ")");
         } catch (SQLException e) {
+            e.printStackTrace();
             _logger.error("searchDBRecord(sql = " + sql + ", userId = " + userId + ")");
         } finally {
             db.CloseConn();

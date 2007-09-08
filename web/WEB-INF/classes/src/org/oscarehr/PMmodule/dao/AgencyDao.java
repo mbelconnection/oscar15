@@ -50,7 +50,7 @@ public class AgencyDao extends HibernateDaoSupport {
 	public Agency getLocalAgency() {
 		Agency agency = null;
 
-		List results = getHibernateTemplate().find("from Agency a where a.local = true");
+		List results = getHibernateTemplate().find("from Agency a where a.local = 1");
 
 		if (!results.isEmpty()) {
 			agency = (Agency) results.get(0);

@@ -132,11 +132,11 @@ public class ClientDao extends HibernateDaoSupport {
 		else { // soundex variation
 			String sql;
 			if (firstName.length() > 0) {
-				sql = "((LEFT(SOUNDEX(first_name),4) = LEFT(SOUNDEX('" + firstName + "'),4))" + " OR (first_name like '" + firstName + "%'))";
+				sql = "((SOUNDEX(first_name) = SOUNDEX('" + firstName + "'))" + " OR (first_name like '" + firstName + "%'))";
 				criteria.add(Restrictions.sqlRestriction(sql));
 			}
 			if (lastName.length() > 0) {
-				sql = "((LEFT(SOUNDEX(last_name),4) = LEFT(SOUNDEX('" + lastName + "'),4))" + " OR (last_name like '" + lastName + "%'))";
+				sql = "((SOUNDEX(last_name) = SOUNDEX('" + lastName + "'))" + " OR (last_name like '" + lastName + "%'))";
 				criteria.add(Restrictions.sqlRestriction(sql));
 			}
 		}

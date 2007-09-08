@@ -15,12 +15,14 @@ package oscar.login;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
+import org.oscarehr.util.SpringUtils;
 
 import oscar.log.LogAction;
 import oscar.log.LogConst;
@@ -69,30 +71,29 @@ public class LoginCheckLoginBean {
             return cleanNullObj(LOG_PRE + "No Such User: " + username);
         }
         // check pin if needed
-        if (isWAN() && secBean.getB_RemoteLockSet().intValue() == 1
-                && (!pin.equals(secBean.getPin()) || pin.length() < 3)) {
+        if (isWAN() && secBean.getB_RemoteLockSet().intValue() == 1 && (!pin.equals(secBean.getPin()) || pin.length() < 3)) {
             return cleanNullObj(LOG_PRE + "Pin-remote needed: " + username);
-        } else if (!isWAN() && secBean.getB_LocalLockSet().intValue() == 1
-                && (!pin.equals(secBean.getPin()) || pin.length() < 3)) {
+        }
+        else if (!isWAN() && secBean.getB_LocalLockSet().intValue() == 1 && (!pin.equals(secBean.getPin()) || pin.length() < 3)) {
             return cleanNullObj(LOG_PRE + "Pin-local needed: " + username);
         }
 
-        if (secBean.getB_ExpireSet().intValue() == 1 && ( secBean.getDate_ExpireDate() == null || secBean.getDate_ExpireDate().before(UtilDateUtilities.now() ))) {
+        if (secBean.getB_ExpireSet().intValue() == 1 && (secBean.getDate_ExpireDate() == null || secBean.getDate_ExpireDate().before(UtilDateUtilities.now()))) {
             return cleanNullObjExpire(LOG_PRE + "Expired: " + username);
         }
-        String expired_days = "";  
-        if (secBean.getB_ExpireSet().intValue() == 1 ){
-        //Give warning if the password will be expired in 10 days.
-            
-                long date_expireDate = secBean.getDate_ExpireDate().getTime();
-                long date_now = UtilDateUtilities.now().getTime();
-                long date_diff = (date_expireDate - date_now)/(24*3600*1000);
+        String expired_days = "";
+        if (secBean.getB_ExpireSet().intValue() == 1) {
+            //Give warning if the password will be expired in 10 days.
 
-                if (secBean.getB_ExpireSet().intValue() == 1 && date_diff < 11) {
-                        expired_days = String.valueOf(date_diff);        	
-                }
+            long date_expireDate = secBean.getDate_ExpireDate().getTime();
+            long date_now = UtilDateUtilities.now().getTime();
+            long date_diff = (date_expireDate - date_now) / (24 * 3600 * 1000);
+
+            if (secBean.getB_ExpireSet().intValue() == 1 && date_diff < 11) {
+                expired_days = String.valueOf(date_diff);
+            }
         }
-        
+
         StringBuffer sbTemp = new StringBuffer();
         byte[] btTypeInPasswd = md.digest(password.getBytes());
         for (int i = 0; i < btTypeInPasswd.length; i++)
@@ -109,15 +110,16 @@ public class LoginCheckLoginBean {
         }
 
         if (password.equals(userpassword)) { // login successfully           
-        	String[] strAuth = new String[6];
+            String[] strAuth = new String[6];
             strAuth[0] = secBean.getProvider_no();
             strAuth[1] = firstname;
             strAuth[2] = lastname;
             strAuth[3] = profession;
             strAuth[4] = rolename;
-            strAuth[5] = expired_days;            
+            strAuth[5] = expired_days;
             return strAuth;
-        } else { // login failed
+        }
+        else { // login failed
             return cleanNullObj(LOG_PRE + "password failed: " + username);
         }
     }
@@ -135,23 +137,24 @@ public class LoginCheckLoginBean {
         LogAction.addALog("", "expired", LogConst.CON_LOGIN, username, ip);
         userpassword = null;
         password = null;
-        return new String[] { "expired" };
+        return new String[] {"expired"};
     }
 
     private LoginSecurityBean getUserID() throws SQLException {
         LoginSecurityBean secBean = null;
         //try {
-            //if (!DBHandler.isInit())
-            //    DBHandler.init(oscarVariables.getProperty("db_name"), oscarVariables.getProperty("db_driver"),
-            //            oscarVariables.getProperty("db_uri"), oscarVariables.getProperty("db_username"),
-            //            oscarVariables.getProperty("db_password"));
+        //if (!DBHandler.isInit())
+        //    DBHandler.init(oscarVariables.getProperty("db_name"), oscarVariables.getProperty("db_driver"),
+        //            oscarVariables.getProperty("db_uri"), oscarVariables.getProperty("db_username"),
+        //            oscarVariables.getProperty("db_password"));
 
+        Connection c = SpringUtils.getDbConnection();
+        try {
             accessDB = new DBHelp();
             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
-           
-            
+
             String sql = "select * from security where user_name = '" + StringEscapeUtils.escapeSql(username) + "'";
-            ResultSet rs =  db.GetSQL(sql);
+            ResultSet rs = db.GetSQL(c, sql);
             while (rs.next()) {
                 secBean = new LoginSecurityBean();
                 secBean.setUser_name(rs.getString("user_name"));
@@ -165,94 +168,108 @@ public class LoginCheckLoginBean {
             }
             rs.close();
 
-            if (secBean == null)
-                return null;
+            if (secBean == null) return null;
 
             // find the detail of the user
-            sql = "select first_name, last_name, provider_type from provider where provider_no = '"
-                    + secBean.getProvider_no() + "'";
-            rs = accessDB.searchDBRecord(sql);
+
+            sql = "select first_name, last_name, provider_type from provider where provider_no = '" + secBean.getProvider_no() + "'";
+            rs = accessDB.searchDBRecord(c, sql);
             while (rs.next()) {
                 firstname = rs.getString("first_name");
                 lastname = rs.getString("last_name");
                 profession = rs.getString("provider_type");
             }
             sql = "select * from secUserRole where provider_no = '" + secBean.getProvider_no() + "'";
-            rs = accessDB.searchDBRecord(sql);
+            rs = accessDB.searchDBRecord(c, sql);
             while (rs.next()) {
                 if (rolename == null) {
                     rolename = rs.getString("role_name");
-                } else {
+                }
+                else {
                     rolename += "," + rs.getString("role_name");
                 }
             }
-            return secBean;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            c.close();
+        }
+        return secBean;
         //} catch (SQLException e) {
         // e.printStackTrace();
         //    return null;
         //}
     }
 
-    public String[] getPreferences() {
-    	if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable()){
-        String[] temp =  new String[] { "8", "18", "15", "a" ,"disabled"};
-        ResultSet rs = null;
-        try {
-            String strSQL = "select start_hour, end_hour, every_min, mygroup_no,new_tickler_warning_window from preference where provider_no = '"
-                    + secBean.getProvider_no() + "'";
-            rs = accessDB.searchDBRecord(strSQL);
-            while (rs.next()) {
-                temp[0] = rs.getString("start_hour");
-                temp[1] = rs.getString("end_hour");
-                temp[2] = rs.getString("every_min");
-                temp[3] = rs.getString("mygroup_no");
-                temp[4] = rs.getString("new_tickler_warning_window");
+    public String[] getPreferences() throws SQLException {
+        if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable()) {
+            String[] temp = new String[] {"8", "18", "15", "a", "disabled"};
+            ResultSet rs = null;
+            Connection c = SpringUtils.getDbConnection();
+            try {
+                String strSQL = "select start_hour, end_hour, every_min, mygroup_no,new_tickler_warning_window from preference where provider_no = '" + secBean.getProvider_no() + "'";
+                rs = accessDB.searchDBRecord(c, strSQL);
+                while (rs.next()) {
+                    temp[0] = rs.getString("start_hour");
+                    temp[1] = rs.getString("end_hour");
+                    temp[2] = rs.getString("every_min");
+                    temp[3] = rs.getString("mygroup_no");
+                    temp[4] = rs.getString("new_tickler_warning_window");
+                }
+                rs.close();
             }
-            rs.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (temp[0] == null) { //no preference for the useid
-                temp[0] = "8"; //default value
-                temp[1] = "18";
-                temp[2] = "15";
-                temp[3] = "a";
-                temp[4] = "disabled";
+            catch (SQLException e) {
+                e.printStackTrace();
             }
+            finally {
+                c.close();
+                if (temp[0] == null) { //no preference for the useid
+                    temp[0] = "8"; //default value
+                    temp[1] = "18";
+                    temp[2] = "15";
+                    temp[3] = "a";
+                    temp[4] = "disabled";
+                }
+            }
+            return temp;
         }
-        return temp;
-    	}else{
-        String[] temp = new String[] { "8", "18", "15", "a" };
-        ResultSet rs = null;
-        try {
-            String strSQL = "select start_hour, end_hour, every_min, mygroup_no from preference where provider_no = '"
-                    + secBean.getProvider_no() + "'";
-            rs = accessDB.searchDBRecord(strSQL);
-            while (rs.next()) {
-                temp[0] = rs.getString("start_hour");
-                temp[1] = rs.getString("end_hour");
-                temp[2] = rs.getString("every_min");
-                temp[3] = rs.getString("mygroup_no");
+        else {
+            String[] temp = new String[] {"8", "18", "15", "a"};
+            ResultSet rs = null;
+            Connection c = SpringUtils.getDbConnection();
+            try {
+                String strSQL = "select start_hour, end_hour, every_min, mygroup_no from preference where provider_no = '" + secBean.getProvider_no() + "'";
+                rs = accessDB.searchDBRecord(c, strSQL);
+                while (rs.next()) {
+                    temp[0] = rs.getString("start_hour");
+                    temp[1] = rs.getString("end_hour");
+                    temp[2] = rs.getString("every_min");
+                    temp[3] = rs.getString("mygroup_no");
+                }
+                rs.close();
             }
-            rs.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (temp[0] == null) { //no preference for the useid
-                temp[0] = "8"; //default value
-                temp[1] = "18";
-                temp[2] = "15";
-                temp[3] = "a";
+            catch (SQLException e) {
+                e.printStackTrace();
             }
+            finally {
+                c.close();
+                if (temp[0] == null) { //no preference for the useid
+                    temp[0] = "8"; //default value
+                    temp[1] = "18";
+                    temp[2] = "15";
+                    temp[3] = "a";
+                }
+            }
+            return temp;
         }
-        return temp;
-    	}
     }
 
     public boolean isWAN() {
         boolean bWAN = true;
-        if (ip.startsWith(oscarVariables.getProperty("login_local_ip")))
-            bWAN = false;
+        if (ip.startsWith(oscarVariables.getProperty("login_local_ip"))) bWAN = false;
         return bWAN;
     }
 
@@ -276,7 +293,8 @@ public class LoginCheckLoginBean {
         this.oscarVariables = variables;
         try {
             md = MessageDigest.getInstance("SHA"); //may get from prop file, e.g. MD5
-        } catch (NoSuchAlgorithmException foo) {
+        }
+        catch (NoSuchAlgorithmException foo) {
             _logger.error(LOG_PRE + "NoSuchAlgorithmException - SHA");
         }
     }

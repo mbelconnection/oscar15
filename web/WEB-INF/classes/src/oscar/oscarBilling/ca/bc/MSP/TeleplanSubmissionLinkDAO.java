@@ -29,48 +29,48 @@
 
 package oscar.oscarBilling.ca.bc.MSP;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import oscar.oscarDB.DBHandler;
+
+import org.oscarehr.util.SpringUtils;
+
+import oscar.util.SqlUtils;
 
 /**
-  CREATE TABLE `teleplan_submission_link` (
-     `id` int(10) NOT NULL auto_increment,
-     `bill_activity_id` int(10),
-     `billingmaster_no` int(10) default NULL,
-     PRIMARY KEY  (`id`),
-     KEY (`bill_activity_id`),
-     KEY (`billingmaster_no`)
-    ) 
+ CREATE TABLE `teleplan_submission_link` (
+ `id` int(10) NOT NULL auto_increment,
+ `bill_activity_id` int(10),
+ `billingmaster_no` int(10) default NULL,
+ PRIMARY KEY  (`id`),
+ KEY (`bill_activity_id`),
+ KEY (`billingmaster_no`)
+ ) 
  * @author jay
  */
 public class TeleplanSubmissionLinkDAO {
-    
-    /** Creates a new instance of TeleplanSubmissionLinkDAO */
-    public TeleplanSubmissionLinkDAO() {
-    }
-    
-    String nsql ="insert into teleplan_submission_link (bill_activity_id,billingmaster_no) values (?,?)";
-    public void save(int billActId,List billingMasterList ){
-         try {
-            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
-            PreparedStatement pstmt = db.GetConnection().prepareStatement(nsql);
-            for (int i =0; i < billingMasterList.size(); i++){
-               String bi = (String) billingMasterList.get(i);
-               int b = Integer.parseInt(bi);
-               executeUpdate(pstmt,billActId,b);
+
+    String nsql = "insert into teleplan_submission_link (bill_activity_id,billingmaster_no) values (?,?)";
+
+    public void save(int billActId, List billingMasterList) throws SQLException {
+        Connection c = SpringUtils.getDbConnection();
+        PreparedStatement ps = null;
+        try {
+            ps = c.prepareStatement(nsql);
+            for (int i = 0; i < billingMasterList.size(); i++) {
+                String bi = (String)billingMasterList.get(i);
+                int b = Integer.parseInt(bi);
+                ps.setInt(1, billActId);
+                ps.setInt(2, b);
+                ps.executeUpdate();
             }
-            pstmt.close();  
-            db.CloseConn();
-         }catch (SQLException e) {
+        }
+        catch (SQLException e) {
             e.printStackTrace();
-         }
-    }
-    
-    private void executeUpdate(PreparedStatement pstmt, int billActId, int billingmasterNo) throws SQLException{
-        pstmt.setInt(1,billActId);
-        pstmt.setInt(2,billingmasterNo);    
-        pstmt.executeUpdate();      
+        }
+        finally {
+            SqlUtils.closeResources(c, ps, null);
+        }
     }
 }

@@ -9,6 +9,7 @@
 package oscar.oscarLab.ca.all.upload.handlers;
 
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import oscar.oscarLab.ca.all.upload.MessageUploader;
@@ -43,7 +44,13 @@ public class MDSHandler implements MessageHandler  {
             return(audit);
             
         } catch (Exception e) {
-            uploader.clean(i+1);
+            try {
+                uploader.clean(i+1);
+            }
+            catch (SQLException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
             logger.error("Could not parse message", e);
             return null;
         }

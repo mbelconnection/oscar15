@@ -32,6 +32,8 @@
 package oscar.oscarBilling.ca.bc.pageUtil;
 
 import java.io.*;
+import java.sql.SQLException;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
 
@@ -63,7 +65,13 @@ public final class BillingUpdateBillingAction
     MSPReconcile msprec = new MSPReconcile();
     BillingViewBean bean = new BillingViewBean();
     bean.updateBill(frm.getBillingNo(),request.getParameter("billingProvider"));
-    msprec.saveOrUpdateBillRecipient(recip);
+    try {
+        msprec.saveOrUpdateBillRecipient(recip);
+    }
+    catch (SQLException e1) {
+        // TODO Auto-generated catch block
+        e1.printStackTrace();
+    }
     BillingNote n = new BillingNote();
     try {
       n.addNoteFromBillingNo(frm.getBillingNo(), creator, frm.getMessageNotes());

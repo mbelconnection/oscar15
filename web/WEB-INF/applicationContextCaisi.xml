@@ -17,6 +17,8 @@
 		<property name="url" value="${hibernate.connection.url}" />
 		<property name="username" value="${hibernate.connection.username}" />
 		<property name="password" value="${hibernate.connection.password}" />
+		<property name="testOnBorrow" value="true" />
+		<property name="validationQuery" value="select 1 from dual" />
 	</bean>
 	
 	<bean id="auditInterceptor" class="org.oscarehr.common.dao.hibernate.AuditInterceptor" />

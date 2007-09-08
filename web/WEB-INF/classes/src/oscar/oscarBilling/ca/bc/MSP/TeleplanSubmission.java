@@ -179,7 +179,13 @@ public class TeleplanSubmission {
     
     public void commitLog(){
         TeleplanLogDAO logDAO = new TeleplanLogDAO();
-        logDAO.save(logList);
+        try {
+            logDAO.save(logList);
+        }
+        catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         
     }
 

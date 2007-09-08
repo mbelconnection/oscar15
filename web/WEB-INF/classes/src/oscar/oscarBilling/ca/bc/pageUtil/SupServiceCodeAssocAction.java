@@ -24,6 +24,8 @@
 
 package oscar.oscarBilling.ca.bc.pageUtil;
 
+import java.sql.SQLException;
+
 import javax.servlet.http.*;
 
 import org.apache.struts.action.*;
@@ -51,8 +53,14 @@ public class SupServiceCodeAssocAction
           dao.deleteServiceCodeAssociation(frm.getId());
         }
         else if (frm.MODE_EDIT.equals(frm.getActionMode())) {
-          dao.saveOrUpdateServiceCodeAssociation(frm.getPrimaryCode(),
-                                                 frm.getSecondaryCode());
+          try {
+            dao.saveOrUpdateServiceCodeAssociation(frm.getPrimaryCode(),
+                                                     frm.getSecondaryCode());
+        }
+        catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         }
       }
     }

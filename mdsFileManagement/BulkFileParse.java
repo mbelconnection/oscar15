@@ -534,7 +534,7 @@ public class BulkFileParse {
                 
                 //Insert the NTETag info into the oBRSegment table
                 for(j=0;j<((MDSHL7Message)aList.get(i)).getNTEArrayListSize();j++) {
-                    sql ="insert into mdsNTE (segmentID,sourceOfComment,comment,associatedOBX) VALUES ("+insertID +",'"+es( ((MDSHL7Message)aList.get(i)).getNTENode(j).getSourceOfComment())+"','"+es( ((MDSHL7Message)aList.get(i)).getNTENode(j).getComment())+"','"+ ((MDSHL7Message)aList.get(i)).getNTENode(j).getAssociatedOBX()+"')";
+                    sql ="insert into mdsNTE (segmentID,sourceOfComment,comment1,associatedOBX) VALUES ("+insertID +",'"+es( ((MDSHL7Message)aList.get(i)).getNTENode(j).getSourceOfComment())+"','"+es( ((MDSHL7Message)aList.get(i)).getNTENode(j).getComment())+"','"+ ((MDSHL7Message)aList.get(i)).getNTENode(j).getAssociatedOBX()+"')";
                     db.RunSQL(sql);
                 }
                 

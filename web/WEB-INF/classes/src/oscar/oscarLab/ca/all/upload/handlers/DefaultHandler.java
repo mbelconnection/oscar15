@@ -12,6 +12,7 @@ import java.util.StringTokenizer;
 import java.util.ArrayList;
 import java.io.*;
 import java.sql.*;
+
 import org.apache.log4j.Logger;
 
 import org.w3c.dom.*;
@@ -51,7 +52,13 @@ public class DefaultHandler implements MessageHandler {
                     }
                 }
             }catch(Exception e){
-                uploader.clean(msgCount);
+                try {
+                    uploader.clean(msgCount);
+                }
+                catch (SQLException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
                 logger.error("ERROR:", e);
                 return null;
             }
@@ -65,7 +72,13 @@ public class DefaultHandler implements MessageHandler {
                     uploader.routeReport(null, msg);
                 }
             }catch(Exception e){
-                uploader.clean(i+1);
+                try {
+                    uploader.clean(i+1);
+                }
+                catch (SQLException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
                 logger.error("ERROR:", e);
                 return null;
             }

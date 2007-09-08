@@ -29,10 +29,15 @@
 
 package oscar.oscarBilling.ca.bc.MSP;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+
+import org.oscarehr.util.SpringUtils;
+
 import oscar.oscarDB.DBHandler;
+import oscar.util.SqlUtils;
 
 /**
  +------------------+---------+------+-----+---------+----------------+
@@ -48,47 +53,53 @@ import oscar.oscarDB.DBHandler;
  */
 
 public class TeleplanLogDAO {
-    
+
     /** Creates a new instance of TeleplanLogDAO */
     public TeleplanLogDAO() {
     }
-    String nsql ="insert into log_teleplantx (sequence_no, claim,billingmaster_no) values (?,?,?)";
-    
-    public void save(TeleplanLog tl){
-         try {
-            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
-            PreparedStatement pstmt = db.GetConnection().prepareStatement(nsql);
-            executeUpdate(pstmt,tl);
-            pstmt.close();  
-            db.CloseConn();
-         }catch (SQLException e) {
-            e.printStackTrace();
-         }
-    }
-    
-    private void executeUpdate(PreparedStatement pstmt, TeleplanLog tl) throws SQLException{
-        pstmt.setInt(1,tl.getSequenceNo());
-        pstmt.setString(2,tl.getClaim());
-        pstmt.setInt(3,tl.getBillingmasterNo());    
-        pstmt.executeUpdate();
-            
-    }
-    
-    public void save(List list){
+
+    String nsql = "insert into log_teleplantx (sequence_no, claim,billingmaster_no) values (?,?,?)";
+
+    public void save(TeleplanLog tl) throws SQLException {
+        Connection c = SpringUtils.getDbConnection();
+        PreparedStatement ps = null;
         try {
-            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
-            PreparedStatement pstmt = db.GetConnection().prepareStatement(nsql);
-            System.out.println("LOG LIST SIZE"+list.size());
-            for (int i = 0; i < list.size(); i++){
-                TeleplanLog tl = (TeleplanLog) list.get(i);
-                executeUpdate(pstmt,tl);
-            }
-            pstmt.close();  
-            db.CloseConn();
-         }catch (SQLException e) {
-            System.out.append("LOG LIST NULL?"+list); 
+            ps = c.prepareStatement(nsql);
+            ps.setInt(1, tl.getSequenceNo());
+            ps.setString(2, tl.getClaim());
+            ps.setInt(3, tl.getBillingmasterNo());
+            ps.executeUpdate();
+        }
+        catch (SQLException e) {
             e.printStackTrace();
-         }
-        
+        }
+        finally {
+            SqlUtils.closeResources(c, ps, null);
+        }
+
+    }
+
+    public void save(List list) throws SQLException {
+        Connection c = SpringUtils.getDbConnection();
+        PreparedStatement ps = null;
+        try {
+            ps = c.prepareStatement(nsql);
+            System.out.println("LOG LIST SIZE" + list.size());
+            for (int i = 0; i < list.size(); i++) {
+                TeleplanLog tl = (TeleplanLog)list.get(i);
+                ps.setInt(1, tl.getSequenceNo());
+                ps.setString(2, tl.getClaim());
+                ps.setInt(3, tl.getBillingmasterNo());
+                ps.executeUpdate();
+            }
+        }
+        catch (SQLException e) {
+            System.out.append("LOG LIST NULL?" + list);
+            e.printStackTrace();
+        }
+        finally {
+            SqlUtils.closeResources(c, ps, null);
+        }
+
     }
 }

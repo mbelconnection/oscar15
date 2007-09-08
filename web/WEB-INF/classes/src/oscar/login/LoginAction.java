@@ -14,6 +14,7 @@
 package oscar.login;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
@@ -42,7 +43,7 @@ public final class LoginAction
   public ActionForward execute(ActionMapping mapping, ActionForm form,
                                HttpServletRequest request,
                                HttpServletResponse response) throws
-      ServletException, IOException {
+      ServletException, IOException, SQLException {
     String ip = request.getRemoteAddr();
     String where = "failure";
     //String userName, password, pin, propName;
@@ -182,8 +183,6 @@ public final class LoginAction
       CRHelper.recordLoginFailure(userName,request);
       return mapping.findForward(where);
     }
-
-
 
     return mapping.findForward(where);
   }

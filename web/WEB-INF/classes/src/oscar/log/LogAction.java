@@ -39,7 +39,7 @@ public class LogAction {
     public static boolean addALog(String provider_no, String action, String content, String contentId, String ip) {
         boolean ret = false;
         DBHelp db = new DBHelp();
-        String sql = "insert into log (provider_no,action,content,contentId, ip) values('" + provider_no;
+        String sql = "insert into log values(sysdate,'" + provider_no;
         sql += "', '" + action + "','" + StringEscapeUtils.escapeSql(content) + "','" + contentId + "','" + ip + "')";
         try {
             ret = db.updateDBRecord(sql, provider_no);

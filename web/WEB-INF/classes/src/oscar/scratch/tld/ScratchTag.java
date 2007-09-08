@@ -24,55 +24,64 @@
 // -----------------------------------------------------------------------------------------------------------------------
 package oscar.scratch.tld;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.TagSupport;
+
+import org.oscarehr.util.SpringUtils;
+
 import oscar.oscarDB.DBHandler;
+import oscar.util.SqlUtils;
 
 public class ScratchTag extends TagSupport {
 
-    public ScratchTag()    {
+    public ScratchTag() {
         scratchFilled = false;
     }
 
-    public void setProviderNo(String providerNo1)    {
-       providerNo = providerNo1;
+    public void setProviderNo(String providerNo1) {
+        providerNo = providerNo1;
     }
 
-    public String getProviderNo()    {
+    public String getProviderNo() {
         return providerNo;
     }
 
-    public int doStartTag() throws JspException    {
+    public int doStartTag() throws JspException {
+        Connection c = null;
+        ResultSet rs =null;
         try {
+            c=SpringUtils.getDbConnection();
             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
-            String sql = new String("SELECT scratch_text FROM scratch_pad WHERE provider_no = '" + providerNo + "' order by id desc limit 1");
-            ResultSet rs = db.GetSQL(sql);
-	    while (rs.next()) {
-		if (rs.getString(1).trim().length()>0) scratchFilled = true;
-		else scratchFilled = false;
-	    }
-
-            rs.close();
-            db.CloseConn();
-        }      catch(SQLException e)        {
+            String sql = new String("SELECT scratch_text FROM scratch_pad WHERE provider_no = '" + providerNo + "' order by id desc");
+            rs = db.GetSQL(c, sql);
+            if (rs.next()) {
+                if (rs.getString(1).trim().length() > 0) scratchFilled = true;
+                else scratchFilled = false;
+            }
+        }
+        catch (SQLException e) {
             e.printStackTrace(System.out);
         }
-        try        {
+        finally
+        {
+            SqlUtils.closeResources(c, null, rs);
+        }
+        try {
             JspWriter out = super.pageContext.getOut();
-            if(scratchFilled)
-                out.print("../images/notepad.gif");
-            else
-                out.print("../images/notepad_blank.gif");
-        } catch(Exception p) {
+            if (scratchFilled) out.print("../images/notepad.gif");
+            else out.print("../images/notepad_blank.gif");
+        }
+        catch (Exception p) {
             p.printStackTrace(System.out);
         }
         return(EVAL_BODY_INCLUDE);
     }
 
     public int doEndTag() throws JspException {
-       return EVAL_PAGE;
+        return EVAL_PAGE;
     }
 
     private String providerNo;

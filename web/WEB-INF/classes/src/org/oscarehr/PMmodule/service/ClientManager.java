@@ -98,7 +98,7 @@ public class ClientManager {
 		return dao.getClientByDemographicNo(Integer.valueOf(demographicNo));
 	}
 
-	public List getClients() {
+	public List<Demographic> getClients() {
 		return dao.getClients();
 	}
 

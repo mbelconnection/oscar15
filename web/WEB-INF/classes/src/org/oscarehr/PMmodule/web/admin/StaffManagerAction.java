@@ -55,16 +55,7 @@ public class StaffManagerAction extends BaseAction {
 		request.setAttribute("providerName",provider.getFormattedName());
 		
 		/* programs the provider is already a staff member of */
-		List pp = programManager.getProgramProvidersByProvider(provider.getProviderNo());
-		for(Iterator iter=pp.iterator();iter.hasNext();) {
-			ProgramProvider p = (ProgramProvider)iter.next();
-			String name = programManager.getProgramName(String.valueOf(p.getProgramId()));
-			if(name == null) {
-				log.warn("Program doesn't have a name?");
-				name="";
-			}
-			p.setProgramName(name);
-		}
+		List pp = programManager.getProgramProvidersByProvider(provider.getProviderNo());		
 		request.setAttribute("programs",sortProgramProviders(pp));
 		
 		List allPrograms = programManager.getProgramsByAgencyId("0");

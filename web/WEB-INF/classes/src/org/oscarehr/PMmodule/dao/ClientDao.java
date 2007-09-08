@@ -91,7 +91,7 @@ public class ClientDao extends HibernateDaoSupport {
 		return result;
 	}
 
-	public List getClients() {
+	public List<Demographic> getClients() {
 
 		String queryStr = " FROM Demographic";
 		List rs = getHibernateTemplate().find(queryStr);

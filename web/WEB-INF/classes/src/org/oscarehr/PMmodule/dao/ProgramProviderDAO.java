@@ -28,9 +28,9 @@ import org.oscarehr.PMmodule.model.ProgramProvider;
 
 public interface ProgramProviderDAO {
 
-	public List getProgramProviders(Long programId);
+	public List<ProgramProvider> getProgramProviders(Long programId);
 
-	public List getProgramProvidersByProvider(Long providerNo);
+	public List<ProgramProvider> getProgramProvidersByProvider(Long providerNo);
 
 	public ProgramProvider getProgramProvider(Long id);
 
@@ -42,8 +42,8 @@ public interface ProgramProviderDAO {
 
 	public void deleteProgramProviderByProgramId(Long programId);
 	
-	public List getProgramProvidersInTeam(Integer programId, Integer teamId);
+	public List<ProgramProvider> getProgramProvidersInTeam(Integer programId, Integer teamId);
 
-	public List getProgramDomain(Long providerNo);
+	public List<ProgramProvider> getProgramDomain(Long providerNo);
 
 }

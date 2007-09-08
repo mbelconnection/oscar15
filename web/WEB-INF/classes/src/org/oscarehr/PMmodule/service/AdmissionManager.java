@@ -86,7 +86,11 @@ public class AdmissionManager {
 		return dao.getCurrentAdmission(Integer.valueOf(programId), demographicNo);
 	}
 
-	public List getAdmissions() {
+    public List<Admission> getAdmittedByDate(Integer programId, Date startDate, Date endDate) {
+        return dao.getAdmittedByDate(programId, startDate, endDate);
+    }
+
+    public List getAdmissions() {
 		return dao.getAdmissions();
 	}
 
@@ -110,7 +114,15 @@ public class AdmissionManager {
 		return dao.getCurrentCommunityProgramAdmission(programDao, demographicNo);
 	}
 
-	public List getCurrentAdmissionsByProgramId(String programId) {
+	public List<Admission> getCurrentDischargesByProgramId(String programId) {
+		return dao.getCurrentDischargesByProgramId(Integer.valueOf(programId));
+	}
+
+    public List<Admission> getDischargedByDate(int programId, Date startDate, Date endDate) {
+        return dao.getDischargedByDate(programId, startDate, endDate);
+    }
+
+    public List<Admission> getCurrentAdmissionsByProgramId(String programId) {
 		return dao.getCurrentAdmissionsByProgramId(Integer.valueOf(programId));
 	}
 
@@ -310,4 +322,5 @@ public class AdmissionManager {
 		admission.setClientStatusId(0);
 		saveAdmission(admission);
 	}
+
 }

@@ -119,7 +119,7 @@ Version version = (Version) ctx.getBean("version");
 				if("".equals(rfq)) {
 					rfq = "no";
 				}
-				if(rfq.equalsIgnoreCase("yes") || rfq.equalsIgnoreCase("true")) {
+				if("yes".equalsIgnoreCase(rfq) || rfq.equalsIgnoreCase("true")) {
 					if(CaseManagementViewFormBean.tabs[x].equals("Prescriptions")) {
 						continue;
 					}

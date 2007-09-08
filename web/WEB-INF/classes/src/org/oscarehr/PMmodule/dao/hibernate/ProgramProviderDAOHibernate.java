@@ -35,7 +35,7 @@ public class ProgramProviderDAOHibernate extends HibernateDaoSupport implements 
 
 	private Log log = LogFactory.getLog(ProgramProviderDAOHibernate.class);
 
-	public List getProgramProviders(Long programId) {
+	public List<ProgramProvider> getProgramProviders(Long programId) {
 		if (programId == null || programId.intValue() < 0) {
 			throw new IllegalArgumentException();
 		}
@@ -48,7 +48,7 @@ public class ProgramProviderDAOHibernate extends HibernateDaoSupport implements 
 		return results;
 	}
 
-	public List getProgramProvidersByProvider(Long providerNo) {
+	public List<ProgramProvider> getProgramProvidersByProvider(Long providerNo) {
 		if (providerNo == null || providerNo.intValue() <= 0) {
 			throw new IllegalArgumentException();
 		}
@@ -143,7 +143,7 @@ public class ProgramProviderDAOHibernate extends HibernateDaoSupport implements 
 		}
 	}
 	
-	public List getProgramProvidersInTeam(Integer programId, Integer teamId) {
+	public List<ProgramProvider> getProgramProvidersInTeam(Integer programId, Integer teamId) {
 		if (programId == null || programId.intValue() <= 0) {
 			throw new IllegalArgumentException();
 		}
@@ -160,7 +160,7 @@ public class ProgramProviderDAOHibernate extends HibernateDaoSupport implements 
 		return results;
 	}
 
-	public List getProgramDomain(Long providerId) {
+	public List<ProgramProvider> getProgramDomain(Long providerId) {
 		if (providerId == null || providerId.intValue() <= 0) {
 			throw new IllegalArgumentException();
 		}

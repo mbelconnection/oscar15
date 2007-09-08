@@ -65,6 +65,15 @@ public class AdmissionDao extends HibernateDaoSupport {
 
         return rs;
     }
+
+    public List<Admission> getAdmittedByDate(Integer programId, Date startDate, Date endDate) {
+        return getHibernateTemplate().find("SELECT Distinct(a) FROM Admission a WHERE a.ProgramId=? and a.AdmissionDate<=? and (a.DischargeDate>=? or (a.DischargeDate is null))", new Object[] { programId, endDate, startDate});
+    }
+
+    public List<Admission> getDischargedByDate(int programId, Date startDate, Date endDate) {
+        return getHibernateTemplate().find("SELECT Distinct(a) FROM Admission a WHERE a.ProgramId=? and a.AdmissionDate<=? and (a.DischargeDate>=?) and a.AdmissionStatus = 'discharged'", new Object[] { programId, endDate, startDate});
+    }
+
     public Admission getAdmission(Integer programId, Integer demographicNo) {
         Admission admission = null;
 
@@ -257,7 +266,20 @@ public class AdmissionDao extends HibernateDaoSupport {
         return null;
     }
 
-    public List getCurrentAdmissionsByProgramId(Integer programId) {
+    public List<Admission> getCurrentDischargesByProgramId(Integer programId) {
+        if (programId == null || programId <= 0) {
+            throw new IllegalArgumentException();
+        }
+
+        List results = this.getHibernateTemplate().find("from Admission a where a.ProgramId = ? and a.AdmissionStatus='discharged'", programId);
+
+        if (log.isDebugEnabled()) {
+            log.debug("getCurrentAdmissionsByProgramId for programId " + programId + ", # of admissions: " + results.size());
+        }
+        return results;
+    }
+        
+    public List<Admission> getCurrentAdmissionsByProgramId(Integer programId) {
         if (programId == null || programId <= 0) {
             throw new IllegalArgumentException();
         }
@@ -412,4 +434,5 @@ public class AdmissionDao extends HibernateDaoSupport {
 
         return 0;
     }
+
 }

@@ -247,5 +247,6 @@ public class Demographic extends BaseDemographic {
 		this.links = links;
 	}
 
+
 }
 

@@ -80,7 +80,7 @@
 				<display:column title="Until">
 					<input type="text" name="reservedBeds[<c:out value="${reservedBed_rowNum - 1}" />].strReservationEnd" id="strReservationEnd_<c:out value="${reservedBed_rowNum - 1}" />_field" readonly="readonly" value="<c:out value="${reservedBed.strReservationEnd}"/>" />
 					
-					<img align="top" src="<html:rewrite page="/images/calendar.gif" />" id="strReservationEnd_<c:out value="${reservedBed_rowNum - 1}" />_field-button" alt="Until Calendar" title="Until Calendar" />
+					<img align="top" src="<html:rewrite page="/images/calendar.gif" />" id="strReservationEnd_<c:out value="${reservedBed_rowNum - 1}" />_field-button" alt="Until tCalendar" title="Until Calendar" />
 					
 					<script type="text/javascript">
 						Calendar.setup(

@@ -50,16 +50,16 @@ public class ProviderInfoAction extends BaseAction {
 		request.setAttribute("agencyDomain", providerManager.getAgencyDomain(providerNo));
 
 		List<ProgramProvider> programDomain = new ArrayList<ProgramProvider>();
-		
-		for (Iterator<?> i = providerManager.getProgramDomain(providerNo).iterator(); i.hasNext();) {
-			ProgramProvider programProvider = (ProgramProvider) i.next();
-			Program program = programManager.getProgram(programProvider.getProgramId());
-			
-			if (program.getProgramStatus().equals("active")) {
-				programProvider.setProgram(program);
-				programDomain.add(programProvider);
-			}
-		}
+
+        for (Object o : providerManager.getProgramDomain(providerNo)) {
+            ProgramProvider programProvider = (ProgramProvider) o;
+            Program program = programManager.getProgram(programProvider.getProgramId());
+
+            if (program.getProgramStatus().equals("active")) {
+                programProvider.setProgram(program);
+                programDomain.add(programProvider);
+            }
+        }
 
 		request.setAttribute("programDomain", programDomain);
 

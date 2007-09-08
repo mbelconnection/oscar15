@@ -184,6 +184,8 @@
             <form-property name="demoNo" type="java.lang.String" />
             <form-property name="providerNo" type="java.lang.String" />
         </form-bean>
+        <form-bean name="caseManagementClientListForm" type="org.oscarehr.casemgmt.web.formbeans.ClientListFormBean"/>
+        
         <form-bean name="clientSearchForm" type="org.apache.struts.validator.LazyValidatorForm" />
         <form-bean name="intakeAForm" type="org.apache.struts.validator.DynaValidatorForm">
             <form-property name="intake" type="org.oscarehr.PMmodule.model.Formintakea" />
@@ -1272,6 +1274,10 @@
             <forward name="links" path="/PMmodule/ClientManager/links.jsp" />
             <forward name="view_referral" path="/PMmodule/ClientManager/view_referral.jsp"/>
             <forward name="view_admission" path="/PMmodule/ClientManager/view_admission.jsp"/>
+        </action>
+        <action path="/CaseManagementClientList" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method" name="caseManagementClientListForm" scope="request">
+            <forward name="list" path="page.cmm.clients.view" />
+            <forward name="archive" path="page.cmm.clients.archive" />            
         </action>
         <action path="/PMmodule/ProviderInfo" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method" scope="request">
             <forward name="view" path="page.pmm.provider.view" />

@@ -24,26 +24,20 @@
 package org.caisi.service.impl;
 
 
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.struts.util.LabelValueBean;
-import org.caisi.dao.AdmissionDao;
 import org.caisi.dao.BedProgramDao;
 import org.caisi.dao.DemographicDAO;
 import org.caisi.dao.ProviderDefaultProgramDao;
 import org.caisi.model.ProviderDefaultProgram;
 import org.caisi.service.InfirmBedProgramManager;
+import org.oscarehr.PMmodule.dao.AdmissionDao;
 import org.oscarehr.PMmodule.dao.ProgramDao;
 import org.oscarehr.PMmodule.dao.ProgramProviderDAO;
 import org.oscarehr.PMmodule.model.Demographic;
 import org.oscarehr.PMmodule.model.Program;
 import org.oscarehr.PMmodule.model.ProgramProvider;
+
+import java.util.*;
 
 public class InfirmBedProgramManagerImpl implements InfirmBedProgramManager{
 	private BedProgramDao bedProgramDao;

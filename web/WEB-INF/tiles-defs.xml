@@ -135,9 +135,31 @@
 			name="body"
 			value="/PMmodule/GenericIntake/Search.jsp" />
 	</definition>
-	<!-- Generic Intake -->
-	
-	<definition
+
+    <!-- client view -->
+    <definition
+		name="page.cmm.clients.view"
+		path="/PMmodule/layout.jsp">
+		<put
+			name="navigation"
+			value="/PMmodule/navigation.jsp" />
+		<put
+			name="body"
+			value="/casemgmt/CMView.jsp" />
+	</definition>
+    <definition
+		name="page.cmm.clients.archive"
+		path="/PMmodule/layout.jsp">
+		<put
+			name="navigation"
+			value="/PMmodule/navigation.jsp" />
+		<put
+			name="body"
+			value="/casemgmt/CMArchive.jsp" />
+	</definition>
+
+    <!-- provider view -->
+    <definition
 		name="page.pmm.provider.view"
 		path="/PMmodule/layout.jsp">
 		<put

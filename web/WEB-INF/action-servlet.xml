@@ -64,6 +64,11 @@
             <ref bean="logManager" />
         </property>
     </bean>
+    <bean name="/CaseManagementClientList" class="org.oscarehr.casemgmt.web.CaseManagementClientListAction" singleton="false">
+        <property name="clientManager" ref="clientManager"/>
+        <property name="programManager" ref="programManager"/>
+        <property name="admissionManager" ref="admissionManager"/>
+    </bean>
     <bean name="/PMmodule/ClientManager" class="org.oscarehr.PMmodule.web.ClientManagerAction" singleton="false">
         <property name="admissionManager">
             <ref bean="admissionManager" />

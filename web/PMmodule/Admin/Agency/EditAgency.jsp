@@ -26,11 +26,11 @@
         </tr>
         <tr class="b">
             <td width="20%">Name:</td>
-            <td><html:text property="agency.name" /></td>
+            <td><html:text property="agency.name" size="50" maxlength="50"/></td>
         </tr>
         <tr class="b">
             <td width="20%">Description:</td>
-            <td><html:text property="agency.description" /></td>
+            <td><html:text property="agency.description" size="50" maxlength="255"/></td>
         </tr>
         <tr class="b">
             <td width="20%">HIC:</td>
@@ -38,15 +38,15 @@
         </tr>
         <tr class="b">
             <td width="20%">Primary Contact Name:</td>
-            <td><html:text property="agency.contactName" /></td>
+            <td><html:text property="agency.contactName" size="50" maxlength="255"/></td>
         </tr>
         <tr class="b">
             <td width="20%">Primary Contact Email:</td>
-            <td><html:text property="agency.contactEmail" /></td>
+            <td><html:text property="agency.contactEmail" size="50" maxlength="255"/></td>
         </tr>
         <tr class="b">
             <td width="20%">Primary Contact Phone:</td>
-            <td><html:text property="agency.contactPhone" /></td>
+            <td><html:text property="agency.contactPhone" size="50" maxlength="255"/></td>
         </tr>
         <tr>
             <td colspan="2">

@@ -28,11 +28,11 @@
         </tr>
         <tr class="b">
             <td width="20%">Name:</td>
-            <td><html:text property="facility.name" size="32"/></td>
+            <td><html:text property="facility.name" size="32" maxlength="32"/></td>
         </tr>
         <tr class="b">
             <td width="20%">Description:</td>
-            <td><html:text property="facility.description" size="70" /></td>
+            <td><html:text property="facility.description" size="70" maxlength="70"/></td>
         </tr>
         <tr>
             <td colspan="2">

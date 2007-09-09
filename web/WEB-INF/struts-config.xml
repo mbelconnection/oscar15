@@ -329,6 +329,7 @@
             <forward name="receptionist" path="/receptionist/receptionistcontrol.jsp" redirect="true" />
             <forward name="provider" path="/provider/providercontrol.jsp" redirect="true" />
             <forward name="admin" path="/admin/admin.jsp" redirect="true" />
+            <forward name="caisiProvider" path="/CaseManagementClientList.do"/>
             <forward name="failure" path="/logout.jsp?login=failed" />
             <forward name="error" path="/loginfailed.jsp" />
         </action>

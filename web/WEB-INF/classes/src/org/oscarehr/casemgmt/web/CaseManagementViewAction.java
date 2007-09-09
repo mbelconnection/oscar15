@@ -276,11 +276,8 @@ public class CaseManagementViewAction extends BaseCaseManagementViewAction {
 		caseForm.setCpp(cpp);
 		
 		/* get allergies */
-		String toronto_RFQ=OscarProperties.getInstance().getProperty("TORONTO_RFQ");
-		if("".equals(toronto_RFQ)) {
-			toronto_RFQ = "no";
-		}
-		if("yes".equalsIgnoreCase(toronto_RFQ) || "true".equalsIgnoreCase(toronto_RFQ)) {
+        boolean torontoRFQ = OscarProperties.getInstance().isTorontoRFQ();       
+		if (torontoRFQ) {
 			List allergies = this.caseManagementMgr.getAllergies(this.getDemographicNo(request));
 			Allergy allergy;
 			if(allergies.size()==0) {

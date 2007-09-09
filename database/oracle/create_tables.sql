@@ -75,7 +75,11 @@ INSERT INTO SECUSERROLE VALUES('999997', 'receptionist');
 
 CREATE TABLE LOG (
 	DATETIME DATE,
-	PROVIDER_NO VARCHAR(10) NOT NULL,
+	-- This is 'not null' in the MySQL schema, but is pre-filled with an empty string constant, which Oracle
+	-- treats as null anyways.  This happens on login-failures, among other things.  I've made this nullable
+	-- until someone can clean up the logging code to either never insert null, or use some other log table
+	-- for this purpose
+	PROVIDER_NO VARCHAR(10),
 	CONSTRAINT LOG_PK PRIMARY KEY (DATETIME, PROVIDER_NO),
 	ACTION VARCHAR(20),
 	CONTENT VARCHAR(80) NOT NULL,

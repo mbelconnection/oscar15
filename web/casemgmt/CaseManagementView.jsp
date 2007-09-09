@@ -115,11 +115,7 @@ Version version = (Version) ctx.getBean("version");
 	<tr>
 		<% for(int x=0;x<CaseManagementViewFormBean.tabs.length;x++) {%>		
 			<%
-				String rfq =OscarProperties.getInstance().getProperty("TORONTO_RFQ");
-				if("".equals(rfq)) {
-					rfq = "no";
-				}
-				if("yes".equalsIgnoreCase(rfq) || rfq.equalsIgnoreCase("true")) {
+				if(OscarProperties.getInstance().isTorontoRFQ()) {
 					if(CaseManagementViewFormBean.tabs[x].equals("Prescriptions")) {
 						continue;
 					}

@@ -28,16 +28,9 @@
 <%@ page import="org.oscarehr.casemgmt.web.formbeans.*" %>
 <%@ page import="oscar.OscarProperties" %>
 
-<% 
-	String toronto_RFQ=OscarProperties.getInstance().getProperty("TORONTO_RFQ");
-	if("".equals(toronto_RFQ)) {
-		toronto_RFQ = "no";
-	}
-%>
-
 <table width="100%" border="0"  cellpadding="0" cellspacing="1" bgcolor="#C0C0C0">
 
-<%if("no".equalsIgnoreCase(toronto_RFQ) || "false".equalsIgnoreCase(toronto_RFQ)) { %>
+<%if (OscarProperties.getInstance().isTorontoRFQ()) { %>
 <tr>
 	<td bgcolor="white">Primary Health Care Provider</td>
 	<td bgcolor="white"><html:text property="cpp.primaryPhysician" size="50" maxlength="255"/></td>

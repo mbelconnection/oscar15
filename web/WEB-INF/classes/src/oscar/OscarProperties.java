@@ -92,5 +92,8 @@ public class OscarProperties extends Properties {
 
 		}
 	}
-	
+
+    public boolean isTorontoRFQ() {
+        return getBooleanProperty("TORONTO_RFQ", "yes") || getBooleanProperty("TORONTO_RFQ", "true");
+    }
 }

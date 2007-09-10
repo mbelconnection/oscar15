@@ -21,10 +21,12 @@
  */
 package org.oscarehr.PMmodule.model;
 
+import java.io.Serializable;
+
 /**
  * This is the object class that relates to the program table. Any customizations belong here.
  */
-public class Program {
+public class Program implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

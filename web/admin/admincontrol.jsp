@@ -43,13 +43,8 @@ if(session.getAttribute("user") == null ) //|| !((String) session.getValue("user
 <%@ include file="dbconnection.jsp" %>
 
 <%
-  String orderby="", limit="", limit1="", limit2="";
+  String orderby="";
   if(request.getParameter("orderby")!=null) orderby="order by "+request.getParameter("orderby");
-  if(request.getParameter("limit1")!=null) limit1=request.getParameter("limit1");
-  if(request.getParameter("limit2")!=null) {
-    limit2=request.getParameter("limit2");
-    limit="limit "+limit2 + " offset "+limit1;
-  }
 
   String fieldname="", regularexp="like"; // exactly search is not required by users, e.g. regularexp="=";
   if(request.getParameter("search_mode")!=null) {
@@ -104,12 +99,12 @@ if(session.getAttribute("user") == null ) //|| !((String) session.getValue("user
   if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable()){
   dbQueries=new String[][] {
     {"provider_add_record", "insert into provider (provider_no,last_name,first_name,provider_type,specialty,team,sex,dob,address,phone,work_phone,ohip_no,rma_no,billing_no,hso_no,status,comments,provider_activity) values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?, ?)" },
-    {"provider_search_titlename", "select provider_no,first_name,last_name,specialty,sex,team,phone,status from provider where "+fieldname+ " "+regularexp+" ? " +orderby + " "+limit},
+    {"provider_search_titlename", "select provider_no,first_name,last_name,specialty,sex,team,phone,status from provider where "+fieldname+ " "+regularexp+" ? " +orderby},
     {"provider_search_detail", "select * from provider where provider_no=?"},
     {"provider_delete", "delete from provider where provider_no=? and provider_no!='super'"},
     {"provider_update_record", "update provider set last_name=?,first_name=?, provider_type=?, specialty=?,team=?,sex =?,dob=?, address=?,phone=?,work_phone=?,ohip_no =?,rma_no=?,billing_no=?,hso_no=?,status=?, comments=?, provider_activity = ? where provider_no=? and provider_no!='super'"},
     
-    {"demographic_search_titlename", "select demographic_no,first_name,last_name,roster_status,sex,year_of_birth,month_of_birth,date_of_birth  from demographic where "+fieldname+ " "+regularexp+" ? " +orderby + " "+limit},
+    {"demographic_search_titlename", "select demographic_no,first_name,last_name,roster_status,sex,year_of_birth,month_of_birth,date_of_birth  from demographic where "+fieldname+ " "+regularexp+" ? " +orderby},
     {"demographic_search_detail", "select * from demographic where demographic_no=?"},
     {"demographic_update_record", "update demographic set last_name=?,first_name =?,address=?, city=?,province=?,postal=?,phone =?,phone2=?, year_of_birth=?,month_of_birth=?,date_of_birth=?,hin=?,ver=?, roster_status=?, patient_status=?, date_joined=?,  chart_no=?,provider_no=?,sex=? , end_date=?,eff_date=?, pcn_indicator=?,hc_type=? ,hc_renew_date=?, family_doctor=? where  demographic_no=?"},
     {"demographic_update_record_ptbr", "update demographic_ptbr set cpf=?,rg=?,chart_address=?,marriage_certificate=?,birth_certificate=?,marital_state=?,partner_name=?,father_name=?,mother_name=?,district=?,address_no=?,complementary_address=? where  demographic_no=?"},
@@ -120,13 +115,13 @@ if(session.getAttribute("user") == null ) //|| !((String) session.getValue("user
     {"search_lastfirstnamedob", "select demographic_no from demographic where last_name=? and first_name=? and year_of_birth=? and month_of_birth=? and date_of_birth=?"},
     
     {"security_add_record", "insert into security (user_name,password,provider_no,pin,b_ExpireSet,date_ExpireDate,b_LocalLockSet,b_RemoteLockSet) values(?,?,?,?,?,?,?,?)" },
-    {"security_search_titlename", "select * from security where "+fieldname+ " "+regularexp+" ? " +orderby + " "+limit},
+    {"security_search_titlename", "select * from security where "+fieldname+ " "+regularexp+" ? " +orderby},
     {"security_search_detail", "select * from security where security_no=?"},
     {"security_delete", "delete from security where security_no=? and provider_no!='super'"},
     {"security_update_record", "update security set user_name=?,password=?,provider_no=?,pin=?,b_ExpireSet=?,date_ExpireDate=?,b_LocalLockSet=?,b_RemoteLockSet=? where security_no=?" },
     
     {"preference_add_record", "insert into preference (provider_no,start_hour,end_hour,every_min,mygroup_no,default_servicetype,color_template,new_tickler_warning_window) values(?,?,?,?,?,?,?,?)" },
-    {"preference_search_titlename", "select * from preference where "+fieldname+ " "+regularexp+" ? " +orderby + " "+limit},
+    {"preference_search_titlename", "select * from preference where "+fieldname+ " "+regularexp+" ? " +orderby},
     {"preference_search_detail", "select * from preference where preference_no=?"},
     {"preference_list_servicetype", "select distinct servicetype, servicetype_name from ctl_billingservice where status='A'"},
     {"preference_delete", "delete from preference where preference_no=?"},
@@ -145,12 +140,12 @@ if(session.getAttribute("user") == null ) //|| !((String) session.getValue("user
 	}else{
 	dbQueries=new String[][] {
     {"provider_add_record", "insert into provider (provider_no,last_name,first_name,provider_type,specialty,team,sex,dob,address,phone,work_phone,ohip_no,rma_no,billing_no,hso_no,status,comments,provider_activity) values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?, ?)" },
-    {"provider_search_titlename", "select provider_no,first_name,last_name,specialty,sex,team,phone,status from provider where "+fieldname+ " "+regularexp+" ? " +orderby + " "+limit},
+    {"provider_search_titlename", "select provider_no,first_name,last_name,specialty,sex,team,phone,status from provider where "+fieldname+ " "+regularexp+" ? " +orderby},
     {"provider_search_detail", "select * from provider where provider_no=?"},
     {"provider_delete", "delete from provider where provider_no=? and provider_no!='super'"},
     {"provider_update_record", "update provider set last_name=?,first_name=?, provider_type=?, specialty=?,team=?,sex =?,dob=?, address=?,phone=?,work_phone=?,ohip_no =?,rma_no=?,billing_no=?,hso_no=?,status=?, comments=?, provider_activity = ? where provider_no=? and provider_no!='super'"},
     
-    {"demographic_search_titlename", "select demographic_no,first_name,last_name,roster_status,sex,year_of_birth,month_of_birth,date_of_birth  from demographic where "+fieldname+ " "+regularexp+" ? " +orderby + " "+limit},
+    {"demographic_search_titlename", "select demographic_no,first_name,last_name,roster_status,sex,year_of_birth,month_of_birth,date_of_birth  from demographic where "+fieldname+ " "+regularexp+" ? " +orderby},
     {"demographic_search_detail", "select * from demographic where demographic_no=?"},
     {"demographic_update_record", "update demographic set last_name=?,first_name =?,address=?, city=?,province=?,postal=?,phone =?,phone2=?, year_of_birth=?,month_of_birth=?,date_of_birth=?,hin=?,ver=?, roster_status=?, patient_status=?, date_joined=?,  chart_no=?,provider_no=?,sex=? , end_date=?,eff_date=?, pcn_indicator=?,hc_type=? ,hc_renew_date=?, family_doctor=? where  demographic_no=?"},
     {"demographic_update_record_ptbr", "update demographic_ptbr set cpf=?,rg=?,chart_address=?,marriage_certificate=?,birth_certificate=?,marital_state=?,partner_name=?,father_name=?,mother_name=?,district=?,address_no=?,complementary_address=? where  demographic_no=?"},
@@ -161,13 +156,13 @@ if(session.getAttribute("user") == null ) //|| !((String) session.getValue("user
     {"search_lastfirstnamedob", "select demographic_no from demographic where last_name=? and first_name=? and year_of_birth=? and month_of_birth=? and date_of_birth=?"},
     
     {"security_add_record", "insert into security (user_name,password,provider_no,pin,b_ExpireSet,date_ExpireDate,b_LocalLockSet,b_RemoteLockSet) values(?,?,?,?,?,?,?,?)" },
-    {"security_search_titlename", "select * from security where "+fieldname+ " "+regularexp+" ? " +orderby + " "+limit},
+    {"security_search_titlename", "select * from security where "+fieldname+ " "+regularexp+" ? " +orderby},
     {"security_search_detail", "select * from security where security_no=?"},
     {"security_delete", "delete from security where security_no=? and provider_no!='super'"},
     {"security_update_record", "update security set user_name=?,password=?,provider_no=?,pin=?,b_ExpireSet=?,date_ExpireDate=?,b_LocalLockSet=?,b_RemoteLockSet=? where security_no=?" },
     
     {"preference_add_record", "insert into preference (provider_no,start_hour,end_hour,every_min,mygroup_no,default_servicetype,color_template) values(?,?,?,?,?,?,?)" },
-    {"preference_search_titlename", "select * from preference where "+fieldname+ " "+regularexp+" ? " +orderby + " "+limit},
+    {"preference_search_titlename", "select * from preference where "+fieldname+ " "+regularexp+" ? " +orderby},
     {"preference_search_detail", "select * from preference where preference_no=?"},
     {"preference_list_servicetype", "select distinct servicetype, servicetype_name from ctl_billingservice where status='A'"},
     {"preference_delete", "delete from preference where preference_no=?"},

@@ -36,16 +36,29 @@
 
 package oscar.oscarBilling.ca.bc.MSP;
 
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Properties;
 
-import org.apache.struts.action.*;
-import oscar.*;
-import oscar.entities.*;
-import oscar.oscarBilling.ca.bc.MSP.MSPReconcile.*;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionForward;
+import org.apache.struts.action.ActionMapping;
+import org.oscarehr.util.SpringUtils;
+
+import oscar.OscarAction;
+import oscar.OscarDocumentCreator;
+import oscar.entities.MSPBill;
+import oscar.entities.S21;
+import oscar.oscarBilling.ca.bc.MSP.MSPReconcile.BillSearch;
 import oscar.oscarBilling.ca.bc.data.PayRefSummary;
+import oscar.util.SqlUtils;
 
 /**
  *
@@ -211,9 +224,20 @@ public class CreateBillingReportAction
                                                getProperty("MSGS"));
       reportParams.put("msgs", osc.getJasperReport(msgs));
 
-      osc.fillDocumentStream(reportParams, outputStream, docFmt, reportInstream,
-                             this.getDBConnection(request));
-
+      Connection c=null; 
+      try
+      {
+          c=SpringUtils.getDbConnection();
+          osc.fillDocumentStream(reportParams, outputStream, docFmt, reportInstream, c);
+      }
+      catch (SQLException e)
+      {
+          e.printStackTrace();
+      }
+      finally
+      {
+          SqlUtils.closeResources(c, null,null);
+      }
     }
 
     else if (repType.equals(msp.REP_PAYREF) ||

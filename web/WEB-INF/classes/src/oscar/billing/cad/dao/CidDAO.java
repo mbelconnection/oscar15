@@ -23,20 +23,20 @@
  */
 package oscar.billing.cad.dao;
 
-import oscar.billing.cad.model.CadCid;
-
-import oscar.oscarDB.DBHandler;
-import oscar.oscarDB.DBPreparedHandlerAdvanced;
-
-import oscar.util.DAO;
-
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
+import org.oscarehr.util.SpringUtils;
+
+import oscar.billing.cad.model.CadCid;
+import oscar.oscarDB.DBHandler;
+import oscar.util.DAO;
+import oscar.util.SqlUtils;
 
 
 public class CidDAO extends DAO {
@@ -82,11 +82,12 @@ public class CidDAO extends DAO {
 
 		sql = sql + " order by ds_cid";
 
-		DBPreparedHandlerAdvanced db = getDBPreparedHandlerAdvanced();
-		PreparedStatement pstmCid = db.getPrepareStatement(sql);
-
+		Connection c=SpringUtils.getDbConnection();
+        PreparedStatement ps=null;
+        ResultSet rs=null;
 		try {
-			ResultSet rs = db.executeQuery(pstmCid);
+            ps = c.prepareStatement(sql);
+			rs = ps.executeQuery();
 			beans = new ArrayList();
 
 			while (rs.next()) {
@@ -96,6 +97,7 @@ public class CidDAO extends DAO {
 				beans.add(bean);
 			}
 		} catch (Exception err) {
+            SqlUtils.closeResources(c, ps, rs);
 			err.printStackTrace();
 			throw new SQLException(err.getMessage());
 		}

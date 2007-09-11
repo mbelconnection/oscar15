@@ -28,23 +28,22 @@
  */
 package oscar.billing.cad.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import org.oscarehr.util.SpringUtils;
+
 import oscar.billing.cad.model.CadProcedimentos;
-
 import oscar.oscarDB.DBHandler;
-import oscar.oscarDB.DBPreparedHandlerAdvanced;
-
 import oscar.util.DAO;
 import oscar.util.FieldTypes;
 import oscar.util.SqlUtils;
 import oscar.util.StringUtils;
-
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
 
 
 /**
@@ -71,16 +70,17 @@ public class CadProcedimentoDAO extends DAO {
 
         sql = sql + " order by ds_procedimento";
 
-        DBPreparedHandlerAdvanced db = getDBPreparedHandlerAdvanced();
-        PreparedStatement pstmProc = db.getPrepareStatement(sql);
-
+        Connection c=SpringUtils.getDbConnection();
+        PreparedStatement ps = null;
+        ResultSet rs=null;
         try {
-            SqlUtils.fillPreparedStatement(pstmProc, 1,
+            ps = c.prepareStatement(sql);
+            SqlUtils.fillPreparedStatement(ps, 1,
                 CadProcedimentos.AMBULATORIAL, FieldTypes.CHAR);
-            SqlUtils.fillPreparedStatement(pstmProc, 2, CadProcedimentos.ATIVO,
+            SqlUtils.fillPreparedStatement(ps, 2, CadProcedimentos.ATIVO,
                 FieldTypes.CHAR);
 
-            ResultSet rs = db.executeQuery(pstmProc);
+            rs = ps.executeQuery();
             beans = new ArrayList();
 
             while (rs.next()) {
@@ -90,6 +90,7 @@ public class CadProcedimentoDAO extends DAO {
                 beans.add(bean);
             }
         } catch (Exception err) {
+            SqlUtils.closeResources(c, ps, rs);
             err.printStackTrace();
             throw new SQLException(err.getMessage());
         }

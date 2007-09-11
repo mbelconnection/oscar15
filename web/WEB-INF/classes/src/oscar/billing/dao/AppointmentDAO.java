@@ -23,26 +23,25 @@
  */
 package oscar.billing.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Properties;
+
+import org.oscarehr.util.SpringUtils;
+
 import oscar.billing.model.Appointment;
 import oscar.billing.model.Demographic;
 import oscar.billing.model.Diagnostico;
 import oscar.billing.model.ProcedimentoRealizado;
 import oscar.billing.model.Provider;
-
 import oscar.oscarDB.DBHandler;
-import oscar.oscarDB.DBPreparedHandlerAdvanced;
-
 import oscar.util.DAO;
 import oscar.util.DateUtils;
 import oscar.util.FieldTypes;
 import oscar.util.SqlUtils;
-
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import java.util.ArrayList;
-import java.util.Properties;
 
 
 public class AppointmentDAO extends DAO {
@@ -59,15 +58,17 @@ public class AppointmentDAO extends DAO {
         sqlDiag = "insert into cad_diagnostico (appointment_no, co_cid) values (?, ?)";
         sqlApp = "update appointment set billing = 'P' where appointment_no = ?";
 
-        DBPreparedHandlerAdvanced db = getDBPreparedHandlerAdvanced();
-        PreparedStatement pstmProc = db.getPrepareStatement(sqlProc);
-        PreparedStatement pstmDiag = db.getPrepareStatement(sqlDiag);
-		PreparedStatement pstmApp = db.getPrepareStatement(sqlApp);
-
-        db.setAutoCommit(false);
-
+        Connection c=SpringUtils.getDbConnection();
+        PreparedStatement pstmProc = null;
+        PreparedStatement pstmDiag = null;
+		PreparedStatement pstmApp = null;
         try {
-            unBilling(app, db);
+            c.setAutoCommit(false);
+            pstmProc = c.prepareStatement(sqlProc);
+            pstmDiag = c.prepareStatement(sqlDiag);
+            pstmApp = c.prepareStatement(sqlApp);
+
+            unBilling(app, c);
 
             for (int i = 0; i < app.getProcedimentoRealizado().size(); i++) {
                 ProcedimentoRealizado pr = (ProcedimentoRealizado) app.getProcedimentoRealizado()
@@ -83,7 +84,7 @@ public class AppointmentDAO extends DAO {
                 SqlUtils.fillPreparedStatement(pstmProc, 3,
                     DateUtils.formatDate(DateUtils.getDate(pr.getDtRealizacao()),
                         "dd/MM/yyyy"), FieldTypes.DATE);
-                db.execute(pstmProc);
+                pstmProc.execute();
             }
 
             for (int i = 0; i < app.getDiagnostico().size(); i++) {
@@ -95,22 +96,22 @@ public class AppointmentDAO extends DAO {
                     FieldTypes.LONG);
                 SqlUtils.fillPreparedStatement(pstmDiag, 2,
                     diag.getCadCid().getCoCid(), FieldTypes.CHAR);
-                db.execute(pstmDiag);
+                pstmDiag.execute();
             }
             
 			SqlUtils.fillPreparedStatement(pstmApp, 1,
 				String.valueOf(app.getAppointmentNo()), FieldTypes.LONG);
-			db.execute(pstmApp);
+            pstmApp.execute();
 
-            db.commit();
+            c.commit();
         } catch (Exception e) {
-            db.rollback();
+            c.rollback();
             e.printStackTrace();
             throw new SQLException(e.toString());
         } finally {
-            pstmDiag.close();
-            pstmProc.close();
-            db.closeConn();
+            SqlUtils.closeResources(c, pstmProc, null);
+            SqlUtils.closeResources(pstmDiag, null);
+            SqlUtils.closeResources(pstmApp, null);
         }
     }
 
@@ -121,34 +122,34 @@ public class AppointmentDAO extends DAO {
         sqlProc = "delete from cad_procedimento_realizado where appointment_no = ?";
         sqlDiag = "delete from cad_diagnostico where appointment_no = ?";
 
-        DBPreparedHandlerAdvanced db = getDBPreparedHandlerAdvanced();
-        PreparedStatement pstmProc = db.getPrepareStatement(sqlProc);
-        PreparedStatement pstmDiag = db.getPrepareStatement(sqlDiag);
-
-        db.setAutoCommit(false);
-
+        Connection c=SpringUtils.getDbConnection();
+        PreparedStatement pstmProc = null;
+        PreparedStatement pstmDiag = null;
         try {
+            c.setAutoCommit(false);
+            pstmProc = c.prepareStatement(sqlProc);
+            pstmDiag = c.prepareStatement(sqlDiag);
+
             SqlUtils.fillPreparedStatement(pstmProc, 1,
                 new Long(app.getAppointmentNo()), FieldTypes.LONG);
-            db.execute(pstmProc);
+            pstmProc.execute();
 
             SqlUtils.fillPreparedStatement(pstmDiag, 1,
                 new Long(app.getAppointmentNo()), FieldTypes.LONG);
-            db.execute(pstmDiag);
+            pstmDiag.execute();
 
-            db.commit();
+            c.commit();
         } catch (Exception e) {
-            db.rollback();
+            c.rollback();
             e.printStackTrace();
             throw new SQLException(e.toString());
         } finally {
-            pstmDiag.close();
-            pstmProc.close();
-            db.closeConn();
+            SqlUtils.closeResources(c, pstmDiag, null);
+            SqlUtils.closeResources(pstmProc, null);
         }
     }
 
-    public void unBilling(Appointment app, DBPreparedHandlerAdvanced db)
+    public void unBilling(Appointment app, Connection c)
         throws SQLException {
         String sqlProc;
         String sqlDiag;
@@ -156,17 +157,17 @@ public class AppointmentDAO extends DAO {
         sqlProc = "delete from cad_procedimento_realizado where appointment_no = ?";
         sqlDiag = "delete from cad_diagnostico where appointment_no = ?";
 
-        PreparedStatement pstmProc = db.getPrepareStatement(sqlProc);
-        PreparedStatement pstmDiag = db.getPrepareStatement(sqlDiag);
+        PreparedStatement pstmProc = c.prepareStatement(sqlProc);
+        PreparedStatement pstmDiag = c.prepareStatement(sqlDiag);
 
         try {
             SqlUtils.fillPreparedStatement(pstmProc, 1,
                 new Long(app.getAppointmentNo()), FieldTypes.LONG);
-            db.execute(pstmProc);
+            pstmProc.execute();
 
             SqlUtils.fillPreparedStatement(pstmDiag, 1,
                 new Long(app.getAppointmentNo()), FieldTypes.LONG);
-            db.execute(pstmDiag);
+            pstmDiag.execute();
         } catch (Exception e) {
             e.printStackTrace();
             throw new SQLException(e.toString());

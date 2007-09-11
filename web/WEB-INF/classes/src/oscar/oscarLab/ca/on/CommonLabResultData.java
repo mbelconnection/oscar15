@@ -29,14 +29,24 @@
 
 package oscar.oscarLab.ca.on;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Properties;
+
 import org.apache.log4j.Logger;
-import oscar.*;
-import oscar.oscarDB.*;
-import oscar.oscarLab.ca.bc.PathNet.*;
-import oscar.oscarMDS.data.*;
+import org.oscarehr.util.SpringUtils;
+
+import oscar.OscarProperties;
+import oscar.oscarDB.ArchiveDeletedRecords;
+import oscar.oscarDB.DBHandler;
+import oscar.oscarDB.DBPreparedHandler;
 import oscar.oscarLab.ca.all.Hl7textResultsData;
+import oscar.oscarLab.ca.bc.PathNet.PathnetResultsData;
+import oscar.oscarMDS.data.MDSResultsData;
+import oscar.oscarMDS.data.ReportStatus;
+import oscar.util.SqlUtils;
 /**
  *
  * @author Jay Gallagher
@@ -119,12 +129,15 @@ public class CommonLabResultData {
     
     public static boolean updateReportStatus(Properties props, int labNo, int providerNo, char status, String comment, String labType) {
         
+        Connection c=null;
+        ResultSet rs=null;
         try {
+            c=SpringUtils.getDbConnection();
             DBPreparedHandler db = new DBPreparedHandler( props.getProperty("db_driver"), props.getProperty("db_uri")+props.getProperty("db_name"), props.getProperty("db_username"), props.getProperty("db_password") );
             // handles the case where this provider/lab combination is not already in providerLabRouting table
             String sql = "select id, status from providerLabRouting where lab_type = '"+labType+"' and provider_no = '"+providerNo+"' and lab_no = '"+labNo+"'";
             
-            ResultSet rs = db.queryResults(sql);
+            rs = db.queryResults(c, sql);
             
             if(rs.next()){  //
                 String id = rs.getString("id");
@@ -149,6 +162,10 @@ public class CommonLabResultData {
             Logger l = Logger.getLogger(CommonLabResultData.class);
             l.error("exception in MDSResultsData.updateReportStatus()",e);
             return false;
+        }
+        finally
+        {
+            SqlUtils.closeResources(c, null, rs);
         }
     }
     

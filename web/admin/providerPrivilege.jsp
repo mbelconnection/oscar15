@@ -33,6 +33,8 @@
 <%@ page import="oscar.login.*" %>
 <%@ page import="oscar.log.*" %>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
+<%@ page import="oscar.util.*" %>
+<%@page import="org.oscarehr.util.SpringUtils"%>
 <%
 //if(session.getAttribute("user") == null )	response.sendRedirect("../logout.jsp");
 String curUser_no = (String)session.getAttribute("user");
@@ -40,171 +42,180 @@ String ip = request.getRemoteAddr();
 %>
 
 <%
-String msg = "";
-DBHelp dbObj = new DBHelp();
-// get role from database
-Vector vecRoleName = new Vector();
-String	sql   = "select * from secRole order by role_name";
-ResultSet rs = dbObj.searchDBRecord(sql);
-while (rs.next()) {
-	vecRoleName.add(rs.getString("role_name"));
-}
-// get rights from database
-Vector vecRightsName = new Vector();
-Vector vecRightsDesc = new Vector();
-sql   = "select * from secPrivilege order by id";
-rs = dbObj.searchDBRecord(sql);
-while (rs.next()) {
-	vecRightsName.add(rs.getString("privilege"));
-	vecRightsDesc.add(rs.getString("description"));
-}
-// get objId from database
-Vector vecObjectId = new Vector();
-sql   = "select objectName from secObjectName order by objectName";
-rs = dbObj.searchDBRecord(sql);
-while (rs.next()) {
-	vecObjectId.add(rs.getString("objectName"));
-}
-sql   = "select distinct(objectName) from secObjPrivilege order by objectName";
-rs = dbObj.searchDBRecord(sql);
-while (rs.next()) {
-	if(!vecObjectId.contains(rs.getString("objectName")))
+Connection c=SpringUtils.getDbConnection();
+ResultSet rs=null;
+try
+{
+	String msg = "";
+	DBHelp dbObj = new DBHelp();
+	// get role from database
+	Vector vecRoleName = new Vector();
+	String	sql   = "select * from secRole order by role_name";
+	rs = dbObj.searchDBRecord(c, sql);
+	while (rs.next()) {
+		vecRoleName.add(rs.getString("role_name"));
+	}
+	// get rights from database
+	Vector vecRightsName = new Vector();
+	Vector vecRightsDesc = new Vector();
+	sql   = "select * from secPrivilege order by id";
+	rs = dbObj.searchDBRecord(c, sql);
+	while (rs.next()) {
+		vecRightsName.add(rs.getString("privilege"));
+		vecRightsDesc.add(rs.getString("description"));
+	}
+	// get objId from database
+	Vector vecObjectId = new Vector();
+	sql   = "select objectName from secObjectName order by objectName";
+	rs = dbObj.searchDBRecord(c, sql);
+	while (rs.next()) {
 		vecObjectId.add(rs.getString("objectName"));
-}
-// get provider name from database
-Vector vecProviderName = new Vector();
-Vector vecProviderNo = new Vector();
-sql   = "select provider_no, last_name, first_name from provider order by last_name";
-rs = dbObj.searchDBRecord(sql);
-while (rs.next()) {
-	vecProviderNo.add(rs.getString("provider_no"));
-	vecProviderName.add(rs.getString("last_name") + "," + rs.getString("first_name"));
-}
-
-// add the role list
-if (request.getParameter("submit") != null && request.getParameter("submit").equals("Add")) {
-    String roleUserGroup   = request.getParameter("roleUserGroup");
-    if(roleUserGroup.equals("")) roleUserGroup   = request.getParameter("roleUserGroup1");
-
-    Vector vecObjRowNo = new Vector();
-	for (Enumeration e = request.getParameterNames() ; e.hasMoreElements() ;) {
-         String paraName = (String)e.nextElement();
-         if(paraName.startsWith("object$")) {
-         	vecObjRowNo.add(paraName.substring("object$".length()));
-         }
-    }
-
-	for(int i=0; i<vecObjRowNo.size(); i++) {
-	    String objectName = (String) vecObjRowNo.get(i);
-	    if(objectName.equals("Name1") && request.getParameter("object$Name1").trim().equals("") ) continue;
-
-	    String privilege = "|";
+	}
+	sql   = "select distinct(objectName) from secObjPrivilege order by objectName";
+	rs = dbObj.searchDBRecord(c, sql);
+	while (rs.next()) {
+		if(!vecObjectId.contains(rs.getString("objectName")))
+			vecObjectId.add(rs.getString("objectName"));
+	}
+	// get provider name from database
+	Vector vecProviderName = new Vector();
+	Vector vecProviderNo = new Vector();
+	sql   = "select provider_no, last_name, first_name from provider order by last_name";
+	rs = dbObj.searchDBRecord(c, sql);
+	while (rs.next()) {
+		vecProviderNo.add(rs.getString("provider_no"));
+		vecProviderName.add(rs.getString("last_name") + "," + rs.getString("first_name"));
+	}
+	
+	// add the role list
+	if (request.getParameter("submit") != null && request.getParameter("submit").equals("Add")) {
+	    String roleUserGroup   = request.getParameter("roleUserGroup");
+	    if(roleUserGroup.equals("")) roleUserGroup   = request.getParameter("roleUserGroup1");
+	
+	    Vector vecObjRowNo = new Vector();
 		for (Enumeration e = request.getParameterNames() ; e.hasMoreElements() ;) {
 	         String paraName = (String)e.nextElement();
-	         String prefix = "privilege$" + objectName + "$";
-	         if(paraName.startsWith(prefix)) {
-	         	privilege += paraName.substring( prefix.length() ) + "|";
+	         if(paraName.startsWith("object$")) {
+	         	vecObjRowNo.add(paraName.substring("object$".length()));
 	         }
 	    }
-		String prefix = "priority$" + objectName;
-	    String priority = request.getParameter(prefix);
-	    if(objectName.equals("Name1") )  objectName = request.getParameter("object$Name1").trim();
-	    sql = "insert into secObjPrivilege(roleUserGroup, objectName,privilege,priority,provider_no) values('";
-	    sql += StringEscapeUtils.escapeSql(roleUserGroup) + "', '" + StringEscapeUtils.escapeSql(objectName.trim()) + "','";
-	    sql += privilege + "', " + priority + ",'";
-	    sql += curUser_no + "')";
+	
+		for(int i=0; i<vecObjRowNo.size(); i++) {
+		    String objectName = (String) vecObjRowNo.get(i);
+		    if(objectName.equals("Name1") && request.getParameter("object$Name1").trim().equals("") ) continue;
+	
+		    String privilege = "|";
+			for (Enumeration e = request.getParameterNames() ; e.hasMoreElements() ;) {
+		         String paraName = (String)e.nextElement();
+		         String prefix = "privilege$" + objectName + "$";
+		         if(paraName.startsWith(prefix)) {
+		         	privilege += paraName.substring( prefix.length() ) + "|";
+		         }
+		    }
+			String prefix = "priority$" + objectName;
+		    String priority = request.getParameter(prefix);
+		    if(objectName.equals("Name1") )  objectName = request.getParameter("object$Name1").trim();
+		    sql = "insert into secObjPrivilege(roleUserGroup, objectName,privilege,priority,provider_no) values('";
+		    sql += StringEscapeUtils.escapeSql(roleUserGroup) + "', '" + StringEscapeUtils.escapeSql(objectName.trim()) + "','";
+		    sql += privilege + "', " + priority + ",'";
+		    sql += curUser_no + "')";
+		    if(dbObj.updateDBRecord(sql, curUser_no)){
+		    	msg += "Role/Obj/Rights " + roleUserGroup + "/" + objectName + "/" + privilege + " is added. ";
+			    LogAction.addLog(curUser_no, LogConst.ADD, LogConst.CON_PRIVILEGE, roleUserGroup +"|"+ objectName +"|"+privilege, ip);
+		    } else {
+		    	msg += "Role/Obj/Rights " + roleUserGroup + "/" + objectName + "/" + privilege + " is <font color='red'>NOT</font> added!!! ";
+		    }
+		}
+	}
+	
+	// update the role list
+	if (request.getParameter("buttonUpdate") != null && request.getParameter("buttonUpdate").length() > 0) {
+	    String roleUserGroup   = request.getParameter("roleUserGroup");
+	    String objectName   = request.getParameter("objectName");
+	
+	    String privilege = request.getParameter("privilege");
+	    String priority   = request.getParameter("priority");
+	    String provider_no   = request.getParameter("provider_no");
+	
+		sql = "select * from secObjPrivilege where roleUserGroup='" + roleUserGroup + "' and objectName='" + objectName + "'";
+		rs = dbObj.searchDBRecord(c, sql);
+		while (rs.next()) {
+			privilege = rs.getString("privilege");
+			priority = rs.getString("priority");
+			provider_no = rs.getString("provider_no");
+		}
+		sql = "insert into recyclebin (provider_no,updatedatetime,table_name,keyword,table_content) values(";
+		sql += "'" + curUser_no + "',";
+		sql += "'" + UtilDateUtilities.getToday("yyyy-MM-dd HH:mm:ss") + "',";
+		sql += "'" + "secObjPrivilege" + "',";
+		sql += "'" + roleUserGroup +"|"+ objectName + "',";
+		sql += "'" + "<roleUserGroup>" + roleUserGroup + "</roleUserGroup>" + "<objectName>" + objectName + "</objectName>";
+		sql += "<privilege>" + privilege + "</privilege>" + "<priority>" + priority + "</priority>";
+		sql += "<provider_no>" + provider_no + "</provider_no>" + "')";
+		dbObj.updateDBRecord(sql, curUser_no);
+	
+	
+	    //String privilege = request.getParameter("privilege");
+	    privilege = "|";
+		for (Enumeration e = request.getParameterNames() ; e.hasMoreElements() ;) {
+	         String paraName = (String)e.nextElement();
+	         if(paraName.startsWith("privilege")) {
+	         	privilege += paraName.substring("privilege".length()) + "|";
+	         }
+	    }
+	    priority   = request.getParameter("priority");
+	    provider_no   = curUser_no;
+	    //System.out.println(number + "  " + name);
+	    sql = "update secObjPrivilege set privilege='" + privilege + "', priority='" + priority + "',provider_no='" + provider_no + "'  where roleUserGroup='" + roleUserGroup + "' and objectName='" + objectName + "'";
 	    if(dbObj.updateDBRecord(sql, curUser_no)){
-	    	msg += "Role/Obj/Rights " + roleUserGroup + "/" + objectName + "/" + privilege + " is added. ";
-		    LogAction.addLog(curUser_no, LogConst.ADD, LogConst.CON_PRIVILEGE, roleUserGroup +"|"+ objectName +"|"+privilege, ip);
+	    	msg = "Role/Obj/Rights " + roleUserGroup + "/" + objectName + "/" + privilege + " is updated. ";
+		    LogAction.addLog(curUser_no, LogConst.UPDATE, LogConst.CON_PRIVILEGE, roleUserGroup +"|"+ objectName, ip);
 	    } else {
-	    	msg += "Role/Obj/Rights " + roleUserGroup + "/" + objectName + "/" + privilege + " is <font color='red'>NOT</font> added!!! ";
+	    	msg = "Role/Obj/Rights " + roleUserGroup + "/" + objectName + "/" + privilege + " is <font color='red'>NOT</font> updated!!! ";
+	    }
+	}
+	
+	
+	// delete the role list
+	if (request.getParameter("submit") != null && request.getParameter("submit").equals("Delete")) {
+	    String roleUserGroup   = request.getParameter("roleUserGroup");
+	    String objectName   = request.getParameter("objectName");
+	
+	    String privilege = request.getParameter("privilege");
+	    String priority   = request.getParameter("priority");
+	    String provider_no   = request.getParameter("provider_no");
+	
+		sql = "select * from secObjPrivilege where roleUserGroup='" + roleUserGroup + "' and objectName='" + objectName + "'";
+		rs = dbObj.searchDBRecord(c, sql);
+		while (rs.next()) {
+			privilege = rs.getString("privilege");
+			priority = rs.getString("priority");
+			provider_no = rs.getString("provider_no");
+		}
+	
+	    sql = "delete from secObjPrivilege where roleUserGroup='" + roleUserGroup + "' and objectName='" + objectName + "'";
+	    if(dbObj.updateDBRecord(sql, curUser_no)){
+	    	msg = "Role/Obj/Rights " + roleUserGroup + "/" + objectName + "/" + privilege + " is deleted. ";
+	    	sql = "insert into recyclebin (provider_no,updatedatetime,table_name,keyword,table_content) values(";
+	    	sql += "'" + curUser_no + "',";
+	    	sql += "'" + UtilDateUtilities.getToday("yyyy-MM-dd HH:mm:ss") + "',";
+	    	sql += "'" + "secObjPrivilege" + "',";
+	    	sql += "'" + roleUserGroup +"|"+ objectName + "',";
+	    	sql += "'" + "<roleUserGroup>" + roleUserGroup + "</roleUserGroup>" + "<objectName>" + objectName + "</objectName>";
+	    	sql += "<privilege>" + privilege + "</privilege>" + "<priority>" + priority + "</priority>";
+	    	sql += "<provider_no>" + provider_no + "</provider_no>" + "')";
+			dbObj.updateDBRecord(sql, curUser_no);
+		    LogAction.addLog(curUser_no, LogConst.DELETE, LogConst.CON_PRIVILEGE, roleUserGroup +"|"+ objectName, ip);
+	    } else {
+	    	msg = "Role/Obj/Rights " + roleUserGroup + "/" + objectName + "/" + privilege + " is <font color='red'>NOT</font> deleted!!! ";
 	    }
 	}
 }
-
-// update the role list
-if (request.getParameter("buttonUpdate") != null && request.getParameter("buttonUpdate").length() > 0) {
-    String roleUserGroup   = request.getParameter("roleUserGroup");
-    String objectName   = request.getParameter("objectName");
-
-    String privilege = request.getParameter("privilege");
-    String priority   = request.getParameter("priority");
-    String provider_no   = request.getParameter("provider_no");
-
-	sql = "select * from secObjPrivilege where roleUserGroup='" + roleUserGroup + "' and objectName='" + objectName + "'";
-	rs = dbObj.searchDBRecord(sql);
-	while (rs.next()) {
-		privilege = rs.getString("privilege");
-		priority = rs.getString("priority");
-		provider_no = rs.getString("provider_no");
-	}
-	sql = "insert into recyclebin (provider_no,updatedatetime,table_name,keyword,table_content) values(";
-	sql += "'" + curUser_no + "',";
-	sql += "'" + UtilDateUtilities.getToday("yyyy-MM-dd HH:mm:ss") + "',";
-	sql += "'" + "secObjPrivilege" + "',";
-	sql += "'" + roleUserGroup +"|"+ objectName + "',";
-	sql += "'" + "<roleUserGroup>" + roleUserGroup + "</roleUserGroup>" + "<objectName>" + objectName + "</objectName>";
-	sql += "<privilege>" + privilege + "</privilege>" + "<priority>" + priority + "</priority>";
-	sql += "<provider_no>" + provider_no + "</provider_no>" + "')";
-	dbObj.updateDBRecord(sql, curUser_no);
-
-
-    //String privilege = request.getParameter("privilege");
-    privilege = "|";
-	for (Enumeration e = request.getParameterNames() ; e.hasMoreElements() ;) {
-         String paraName = (String)e.nextElement();
-         if(paraName.startsWith("privilege")) {
-         	privilege += paraName.substring("privilege".length()) + "|";
-         }
-    }
-    priority   = request.getParameter("priority");
-    provider_no   = curUser_no;
-    //System.out.println(number + "  " + name);
-    sql = "update secObjPrivilege set privilege='" + privilege + "', priority='" + priority + "',provider_no='" + provider_no + "'  where roleUserGroup='" + roleUserGroup + "' and objectName='" + objectName + "'";
-    if(dbObj.updateDBRecord(sql, curUser_no)){
-    	msg = "Role/Obj/Rights " + roleUserGroup + "/" + objectName + "/" + privilege + " is updated. ";
-	    LogAction.addLog(curUser_no, LogConst.UPDATE, LogConst.CON_PRIVILEGE, roleUserGroup +"|"+ objectName, ip);
-    } else {
-    	msg = "Role/Obj/Rights " + roleUserGroup + "/" + objectName + "/" + privilege + " is <font color='red'>NOT</font> updated!!! ";
-    }
+finally
+{
+	SqlUtils.closeResources(c, null, rs);
 }
-
-
-// delete the role list
-if (request.getParameter("submit") != null && request.getParameter("submit").equals("Delete")) {
-    String roleUserGroup   = request.getParameter("roleUserGroup");
-    String objectName   = request.getParameter("objectName");
-
-    String privilege = request.getParameter("privilege");
-    String priority   = request.getParameter("priority");
-    String provider_no   = request.getParameter("provider_no");
-
-	sql = "select * from secObjPrivilege where roleUserGroup='" + roleUserGroup + "' and objectName='" + objectName + "'";
-	rs = dbObj.searchDBRecord(sql);
-	while (rs.next()) {
-		privilege = rs.getString("privilege");
-		priority = rs.getString("priority");
-		provider_no = rs.getString("provider_no");
-	}
-
-    sql = "delete from secObjPrivilege where roleUserGroup='" + roleUserGroup + "' and objectName='" + objectName + "'";
-    if(dbObj.updateDBRecord(sql, curUser_no)){
-    	msg = "Role/Obj/Rights " + roleUserGroup + "/" + objectName + "/" + privilege + " is deleted. ";
-    	sql = "insert into recyclebin (provider_no,updatedatetime,table_name,keyword,table_content) values(";
-    	sql += "'" + curUser_no + "',";
-    	sql += "'" + UtilDateUtilities.getToday("yyyy-MM-dd HH:mm:ss") + "',";
-    	sql += "'" + "secObjPrivilege" + "',";
-    	sql += "'" + roleUserGroup +"|"+ objectName + "',";
-    	sql += "'" + "<roleUserGroup>" + roleUserGroup + "</roleUserGroup>" + "<objectName>" + objectName + "</objectName>";
-    	sql += "<privilege>" + privilege + "</privilege>" + "<priority>" + priority + "</priority>";
-    	sql += "<provider_no>" + provider_no + "</provider_no>" + "')";
-		dbObj.updateDBRecord(sql, curUser_no);
-	    LogAction.addLog(curUser_no, LogConst.DELETE, LogConst.CON_PRIVILEGE, roleUserGroup +"|"+ objectName, ip);
-    } else {
-    	msg = "Role/Obj/Rights " + roleUserGroup + "/" + objectName + "/" + privilege + " is <font color='red'>NOT</font> deleted!!! ";
-    }
-}
-
+	
 String keyword = request.getParameter("keyword")!=null?request.getParameter("keyword"):"";
 
 %>
@@ -278,14 +289,23 @@ String nameValue = keyword + "%";
 String orderBy = nameWhere.equals("objectName")? "objectName, roleUserGroup" : "roleUserGroup, objectName";
 String query = "select * from secObjPrivilege where " + nameWhere + " like '" + nameValue + "' order by " + orderBy;
 System.out.println(query);
-rs = dbObj.searchDBRecord(query);
-while (rs.next()) {
-	prop = new Properties();
-	prop.setProperty("roleUserGroup", rs.getString("roleUserGroup"));
-	prop.setProperty("objectName", rs.getString("objectName"));
-	prop.setProperty("privilege", rs.getString("privilege"));
-	prop.setProperty("priority", rs.getString("priority"));
-	vec.add(prop);
+
+try
+{
+	c=SqlUtils.getConnection();
+	rs = dbObj.searchDBRecord(c, query);
+	while (rs.next()) {
+		prop = new Properties();
+		prop.setProperty("roleUserGroup", rs.getString("roleUserGroup"));
+		prop.setProperty("objectName", rs.getString("objectName"));
+		prop.setProperty("privilege", rs.getString("privilege"));
+		prop.setProperty("priority", rs.getString("priority"));
+		vec.add(prop);
+	}
+}
+finally
+{
+	SqlUtils.closeResources(c, null, rs);
 }
 %>
         <table width="100%" border="0" bgcolor="ivory" cellspacing="1" cellpadding="1">

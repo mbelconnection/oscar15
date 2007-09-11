@@ -1,12 +1,24 @@
 package oscar.oscarDemographic;
 
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashMap;
 
-import org.apache.struts.action.*;
-import oscar.*;
-import java.io.*;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionForward;
+import org.apache.struts.action.ActionMapping;
+import org.oscarehr.util.SpringUtils;
+
+import oscar.OscarAction;
+import oscar.OscarDocumentCreator;
+import oscar.util.SqlUtils;
 
 public class PrintDemoLabelAction
     extends OscarAction {
@@ -43,9 +55,22 @@ public class PrintDemoLabelAction
 
     response.setHeader("Content-disposition", getHeader(response).toString());
     OscarDocumentCreator osc = new OscarDocumentCreator();
-    osc.fillDocumentStream(parameters, sos, "pdf",ins,
-                           this.getDBConnection(request));
-
+    
+    Connection c=null;
+    try
+    {
+        c=SpringUtils.getDbConnection();
+        osc.fillDocumentStream(parameters, sos, "pdf",ins,c);
+    }
+    catch (SQLException e)
+    {
+        e.printStackTrace();
+    }
+    finally
+    {
+        SqlUtils.closeResources(c, null , null);
+    }
+    
     return actionMapping.findForward(this.target);
   }
 

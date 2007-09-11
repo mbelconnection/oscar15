@@ -25,7 +25,6 @@ package oscar.util;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarDB.DBPreparedHandler;
-import oscar.oscarDB.DBPreparedHandlerAdvanced;
 
 import java.sql.*;
 import java.util.Properties;
@@ -34,7 +33,6 @@ import java.util.Properties;
 public class DAO {
     private DBHandler dBHandler;
     private DBPreparedHandler dBPreparedHandler;
-	private DBPreparedHandlerAdvanced dBPreparedHandlerAdvanced;
     private Properties pvar;
 
     public DAO(Properties pvar) throws SQLException {
@@ -109,13 +107,6 @@ public class DAO {
     public DBPreparedHandler getDBPreparedHandler() throws SQLException {
         return new DBPreparedHandler(pvar.getProperty("db_driver"),pvar.getProperty("db_uri") + pvar.getProperty("db_name"),pvar.getProperty("db_username"),pvar.getProperty("db_password"));
     }
-
-	/**
-	 * @return
-	 */
-	public DBPreparedHandlerAdvanced getDBPreparedHandlerAdvanced() throws SQLException {
-		return new DBPreparedHandlerAdvanced(pvar.getProperty("db_driver"),pvar.getProperty("db_uri") + pvar.getProperty("db_name"),pvar.getProperty("db_username"),pvar.getProperty("db_password"));
-	}
 
     /**
      * @param handler

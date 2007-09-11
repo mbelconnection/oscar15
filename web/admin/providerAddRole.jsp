@@ -24,6 +24,8 @@
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 <%@ page import="oscar.login.*" %>
 <%@ page import="oscar.log.*" %>
+<%@ page import="oscar.util.*" %>
+<%@page import="org.oscarehr.util.SpringUtils"%>
 <%
 if(session.getAttribute("user") == null )
 	response.sendRedirect("../logout.jsp");
@@ -97,17 +99,27 @@ String curUser_no = (String)session.getAttribute("user");
     } else {
         String role_name = request.getParameter("role_name");
 		String	sql   = "select * from secRole where role_name='" + StringEscapeUtils.escapeSql(role_name) + "'";
-		ResultSet rs = dbObj.searchDBRecord(sql);
-		//System.out.println(sql);
-
-		if (rs.next()) {
-		    prop.setProperty("role_name", role_name);
-		    msg = "You can edit the role. (Please note: The change of the role may affect data in other tables.)";
-		    action = "edit" + role_name;
-		} else {
-		    prop.setProperty("role_name", role_name);
-		    msg = "It is a NEW role. You can add it.";
-		    action = "add" + role_name;
+		Connection c=null;
+		ResultSet rs = null;
+		try
+		{
+			c=SpringUtils.getDbConnection();
+			rs = dbObj.searchDBRecord(c, sql);
+			//System.out.println(sql);
+	
+			if (rs.next()) {
+			    prop.setProperty("role_name", role_name);
+			    msg = "You can edit the role. (Please note: The change of the role may affect data in other tables.)";
+			    action = "edit" + role_name;
+			} else {
+			    prop.setProperty("role_name", role_name);
+			    msg = "It is a NEW role. You can add it.";
+			    action = "add" + role_name;
+			}
+		}
+		finally
+		{
+			SqlUtils.closeResources(c, null, rs);
 		}
 	}
   }
@@ -116,7 +128,7 @@ String curUser_no = (String)session.getAttribute("user");
   <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-  <html:html locale="true">
+<html:html locale="true">
     <head>
       <title>
         Add/Edit Role
@@ -251,11 +263,23 @@ String curUser_no = (String)session.getAttribute("user");
 <tr><td>Role Name:</td></tr>
 <%
 String	sql   = "select * from secRole order by role_name";
-ResultSet rs = dbObj.searchDBRecord(sql);
-while (rs.next()) {
+Connection c=null;
+ResultSet rs = null;
+try
+{
+	c=SpringUtils.getDbConnection();
+	rs = dbObj.searchDBRecord(c, sql);
+	while (rs.next()) {
+	%>
+	<tr><td><%=rs.getString("role_name")%></td></tr>
+	<%
+	}
+}
+finally
+{
+	SqlUtils.closeResources(c, null, rs);
+}
 %>
-<tr><td><%=rs.getString("role_name")%></td></tr>
-<%}%>
 </table>
     </body>
   </html:html>

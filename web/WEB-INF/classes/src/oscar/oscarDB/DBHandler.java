@@ -85,6 +85,7 @@ public class DBHandler {
     }
 
     synchronized public java.sql.ResultSet GetSQL(Connection c, String SQLStatement, boolean updatable) throws SQLException {
+System.err.println(SQLStatement);
         Statement stmt;
         ResultSet rs = null;
         if (updatable) {
@@ -100,6 +101,7 @@ public class DBHandler {
     }
 
     synchronized public java.sql.ResultSet GetSQL(String SQLStatement, boolean updatable) throws SQLException {
+System.err.println(SQLStatement);
         Statement stmt;
         ResultSet rs = null;
         if (updatable) {
@@ -115,6 +117,7 @@ public class DBHandler {
     }
 
     synchronized public boolean RunSQL(String SQLStatement) throws SQLException {
+System.err.println(SQLStatement);
         boolean b = false;
         Statement stmt;
         stmt = conn.createStatement();

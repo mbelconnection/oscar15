@@ -81,15 +81,19 @@ public class EDocUtil extends SqlUtilBaseS {
     
     public static ArrayList getDoctypes(String module) {
         String sql = "SELECT * FROM ctl_doctype WHERE (status = 'A' OR status='H') AND module = '" + module + "'";
-        ResultSet rs = getSQL(sql);
+        Connection c=null;
+        ResultSet rs = null;
         ArrayList doctypes = new ArrayList();
         String doctype = "";
         try {
+            c=SpringUtils.getDbConnection();
+            rs = getSQL(c, sql);
             while (rs.next()) {
                 doctype = rs.getString("doctype");
                 doctypes.add(doctype);
             }
         } catch (SQLException sqe) {
+            SqlUtils.closeResources(c, null, rs);
             sqe.printStackTrace();
         }
         return doctypes;
@@ -186,8 +190,11 @@ public class EDocUtil extends SqlUtilBaseS {
         ArrayList resultDocs = new ArrayList(); 
         ArrayList attachedDocs = new ArrayList();
         
+        Connection c=null;
+        ResultSet rs = null;
         try {            
-            ResultSet rs = getSQL(attachQuery);
+            c=SpringUtils.getDbConnection();
+            rs = getSQL(c, attachQuery);
             while (rs.next()) {
                 EDoc currentdoc = new EDoc();
                 currentdoc.setDocId(rsGetString(rs, "document_no"));
@@ -203,7 +210,7 @@ public class EDocUtil extends SqlUtilBaseS {
             rs.close();
             
             if( !attached ) {
-                rs = getSQL(sql);
+                rs = getSQL(c, sql);
                 while (rs.next()) {
                     EDoc currentdoc = new EDoc();
                     currentdoc.setDocId(rsGetString(rs, "document_no"));
@@ -218,12 +225,12 @@ public class EDocUtil extends SqlUtilBaseS {
                     if( !attachedDocs.contains(currentdoc))
                         resultDocs.add(currentdoc);
                 }
-                rs.close();
             }
             else
                 resultDocs = attachedDocs;
             
         } catch (SQLException sqe) {
+            SqlUtils.closeResources(c, null, rs);
             sqe.printStackTrace();
         }
         
@@ -250,9 +257,12 @@ public class EDocUtil extends SqlUtilBaseS {
         }
         sql = sql + " ORDER BY " + sort;
         log.debug("sql list: " + sql);
-        ResultSet rs = getSQL(sql);
+        Connection c=null;
+        ResultSet rs = null;
         ArrayList resultDocs = new ArrayList();
         try {
+            c=SpringUtils.getDbConnection();
+            rs = getSQL(c, sql);
             while (rs.next()) {
                 EDoc currentdoc = new EDoc();
                 currentdoc.setModule(rsGetString(rs, "module"));
@@ -268,8 +278,8 @@ public class EDocUtil extends SqlUtilBaseS {
                 currentdoc.setObservationDate(rsGetString(rs, "observationdate"));
                 resultDocs.add(currentdoc);
             }
-            rs.close();
         } catch (SQLException sqe) {
+            SqlUtils.closeResources(c, null, rs);
             sqe.printStackTrace();
         }
 
@@ -279,13 +289,17 @@ public class EDocUtil extends SqlUtilBaseS {
     
     public static ArrayList listModules() {
         String sql = "SELECT DISTINCT module FROM ctl_doctype";
-        ResultSet rs = getSQL(sql);
+        Connection c=null;
+        ResultSet rs = null;
         ArrayList modules = new ArrayList();
         try {
+            c=SpringUtils.getDbConnection();
+            rs = getSQL(c, sql);
             while (rs.next()) {
                 modules.add(rsGetString(rs, "module"));
             }
         } catch (SQLException sqe) {
+            SqlUtils.closeResources(c, null, rs);
             sqe.printStackTrace();
         }
         return modules;
@@ -297,11 +311,14 @@ public class EDocUtil extends SqlUtilBaseS {
         
         String indivoSql = "SELECT indivoDocIdx FROM indivoDocs i WHERE i.oscarDocNo = ? and i.docType = 'document' limit 1";
         boolean myOscarEnabled = OscarProperties.getInstance().getProperty("MY_OSCAR", "").trim().equalsIgnoreCase("YES");
-        ResultSet rs2;
+        Connection c=null;
+        ResultSet rs = null;
+        ResultSet rs2=null;
         
-        ResultSet rs = getSQL(sql);
         EDoc currentdoc = new EDoc();
         try {
+            c=SpringUtils.getDbConnection();
+            rs = getSQL(c, sql);
             while (rs.next()) {
                 currentdoc.setModule(rsGetString(rs, "module"));
                 currentdoc.setModuleId(rsGetString(rs, "module_id"));
@@ -319,18 +336,18 @@ public class EDocUtil extends SqlUtilBaseS {
                 
                 if( myOscarEnabled ) {
                     String tmp = indivoSql.replaceFirst("\\?", rs.getString("document_no"));
-                    rs2 = getSQL(tmp);
+                    rs2 = getSQL(c, tmp);
 
                     if( rs2.next() ) { 
                        currentdoc.setIndivoIdx(rsGetString(rs2, "indivoDocIdx"));
                        if(currentdoc.getIndivoIdx().length() > 0 )
                             currentdoc.registerIndivo();
                     }
-                    rs2.close();
-                }                                
+                }
+                rs2.close();
             }
-            rs.close();
         } catch (SQLException sqe) {
+            SqlUtils.closeResources(c, null, rs);
             sqe.printStackTrace();
         }
         return currentdoc;
@@ -338,16 +355,17 @@ public class EDocUtil extends SqlUtilBaseS {
         
     public String getDocumentName(String id){
        String filename = null;
+       Connection c=null;
+       ResultSet rs = null;
        try {
-          DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
           String sql = "select docfilename from document where document_no = '"+id+"'";
-          ResultSet rs = db.GetSQL(sql);
+          c=SpringUtils.getDbConnection();
+          rs = getSQL(c, sql);
           if (rs.next()){
               filename = rs.getString("docfilename");
           }
-          rs.close();
-          db.CloseConn();
        }catch(SQLException e) { 
+           SqlUtils.closeResources(c, null, rs);
            e.printStackTrace(); 
        }
        return filename;

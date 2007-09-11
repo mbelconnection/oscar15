@@ -94,8 +94,9 @@ public class GenericIntakeDAOHibernate extends HibernateDaoSupport implements Ge
 		if (nodeId == null || startDate == null || endDate == null) {
 			throw new IllegalArgumentException("Parameters node, startDate and endDate must be non-null");
 		}
-
-		List<?> results = getHibernateTemplate().find("select i.id, max(i.createdOn) from Intake i where i.node.id = ? and i.createdOn between ? and ? group by i.clientId", new Object[] { nodeId, startDate, endDate });
+// who wrote this sql? in theory it should have never run... ever.
+//		List<?> results = getHibernateTemplate().find("select i.id, max(i.createdOn) from Intake i where i.node.id = ? and i.createdOn between ? and ? group by i.clientId", new Object[] { nodeId, startDate, endDate });
+        List<?> results = getHibernateTemplate().find("select i.id, max(i.createdOn) from Intake i where i.node.id = ? and i.createdOn between ? and ? group by i.id", new Object[] { nodeId, startDate, endDate });
 		SortedSet<Integer> intakeIds = convertToIntegers(results);
 
 		LOG.info("get latest intake ids: " + intakeIds.size());

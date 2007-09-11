@@ -32,6 +32,8 @@ import java.util.*;
 import java.sql.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.oscarehr.util.SpringUtils;
+
 import oscar.util.*;
 import oscar.OscarProperties;
 
@@ -60,13 +62,18 @@ public class EDocUtil extends SqlUtilBaseS {
     
     public static String getModuleName(String module, String moduleid) {
         String sql = "SELECT * FROM " + module + " WHERE " + module + "_no LIKE '" + moduleid + "'";
-        ResultSet rs = getSQL(sql);
+        Connection c=null;
+        ResultSet rs = null;
         String moduleName = "";
         try {
+            c=SpringUtils.getDbConnection();
+            rs = getSQL(c, sql);
+            
             if (rs.next()) {
                 moduleName = rs.getString("first_name") + ", " + rs.getString("last_name");
             }
         } catch (SQLException sqe) {
+            SqlUtils.closeResources(c, null, rs);
             sqe.printStackTrace();
         }
         return moduleName;

@@ -51,6 +51,17 @@ public class SqlUtilBaseS {
        return(rs);
    }
    
+   protected static ResultSet getSQL(Connection c, String sql) {
+       ResultSet rs = null;
+       try {
+           DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+           rs = db.GetSQL(c, sql);
+       } catch (SQLException sqe) {
+           sqe.printStackTrace();
+       }
+       return(rs);
+   }
+   
    protected static String rsGetString(ResultSet rs, String column) throws SQLException {
        //protects agianst null values;
        String thisStr = rs.getString(column);

@@ -32,6 +32,7 @@ import java.sql.Statement;
 
 import org.oscarehr.util.SpringUtils;
 
+import oscar.util.DbConnectionFilter;
 import oscar.util.SqlUtils;
 
 public class DBPreparedHandler {
@@ -63,7 +64,7 @@ public class DBPreparedHandler {
 
     private static Connection getConnection() throws SQLException
     {
-        return(SpringUtils.getDbConnection());
+        return(DbConnectionFilter.getThreadLocalDbConnection());
     }
     
 //    public void init(String dbDriver, String dbUrl, String dbUser, String dbPwd) throws Exception, SQLException {
@@ -188,10 +189,10 @@ System.err.println("Query:"+preparedSQL);
         }
     }
 
-    synchronized public ResultSet queryResults(Connection c, String preparedSQL, String[] param, int[] intparam) throws SQLException {
+    synchronized public ResultSet queryResults(String preparedSQL, String[] param, int[] intparam) throws SQLException {
 System.err.println("Query:"+preparedSQL);
         int i = 0;
-        PreparedStatement preparedStmt = c.prepareStatement(preparedSQL);
+        PreparedStatement preparedStmt = getConnection().prepareStatement(preparedSQL);
         for (i = 0; i < param.length; i++) {
             preparedStmt.setString((i + 1), param[i]);
         }
@@ -201,70 +202,70 @@ System.err.println("Query:"+preparedSQL);
         return preparedStmt.executeQuery();
     }
 
-    synchronized public ResultSet queryResults(Connection c, String preparedSQL, int param) throws SQLException {
+    synchronized public ResultSet queryResults( String preparedSQL, int param) throws SQLException {
 System.err.println("Query:"+preparedSQL);
-        PreparedStatement preparedStmt = c.prepareStatement(preparedSQL);
+        PreparedStatement preparedStmt = getConnection().prepareStatement(preparedSQL);
         preparedStmt.setInt(1, param);
         return preparedStmt.executeQuery();
     }
 
-    synchronized public ResultSet queryResults(Connection c, String preparedSQL, int[] param) throws SQLException {
+    synchronized public ResultSet queryResults( String preparedSQL, int[] param) throws SQLException {
 System.err.println("Query:"+preparedSQL);
-        PreparedStatement preparedStmt = c.prepareStatement(preparedSQL);
+        PreparedStatement preparedStmt = getConnection().prepareStatement(preparedSQL);
         for (int i = 0; i < param.length; i++) {
             preparedStmt.setInt((i + 1), param[i]);
         }
         return(preparedStmt.executeQuery());
     }
 
-    synchronized public ResultSet queryResults(Connection c, String preparedSQL, String param) throws SQLException {
+    synchronized public ResultSet queryResults( String preparedSQL, String param) throws SQLException {
 System.err.println("Query:"+preparedSQL);
-        PreparedStatement preparedStmt = c.prepareStatement(preparedSQL);
+        PreparedStatement preparedStmt = getConnection().prepareStatement(preparedSQL);
         preparedStmt.setString(1, param);
         return preparedStmt.executeQuery();
     }
 
-    synchronized public ResultSet queryResults(Connection c, String preparedSQL, String[] param) throws SQLException {
+    synchronized public ResultSet queryResults( String preparedSQL, String[] param) throws SQLException {
 System.err.println("Query:"+preparedSQL);
-        PreparedStatement preparedStmt = c.prepareStatement(preparedSQL);
+        PreparedStatement preparedStmt = getConnection().prepareStatement(preparedSQL);
         for (int i = 0; i < param.length; i++) {
             preparedStmt.setString((i + 1), param[i]);
         }
         return preparedStmt.executeQuery();
     }
 
-    synchronized public Object[] queryResultsCaisi(Connection c, String preparedSQL, int param) throws SQLException {
+    synchronized public Object[] queryResultsCaisi( String preparedSQL, int param) throws SQLException {
 System.err.println("Query:"+preparedSQL);
-        PreparedStatement preparedStmt = c.prepareStatement(preparedSQL);
+        PreparedStatement preparedStmt = getConnection().prepareStatement(preparedSQL);
         preparedStmt.setInt(1, param);
         return new Object[] {preparedStmt.executeQuery(), preparedStmt};
     }
 
-    synchronized public Object[] queryResultsCaisi(Connection c, String preparedSQL, String param) throws SQLException {
+    synchronized public Object[] queryResultsCaisi( String preparedSQL, String param) throws SQLException {
 System.err.println("Query:"+preparedSQL);
-        PreparedStatement preparedStmt = c.prepareStatement(preparedSQL);
+        PreparedStatement preparedStmt = getConnection().prepareStatement(preparedSQL);
         preparedStmt.setString(1, param);
         return new Object[] {preparedStmt.executeQuery(), preparedStmt};
     }
 
-    synchronized public Object[] queryResultsCaisi(Connection c, String preparedSQL, String[] param) throws SQLException {
+    synchronized public Object[] queryResultsCaisi( String preparedSQL, String[] param) throws SQLException {
 System.err.println("Query:"+preparedSQL);
-        PreparedStatement preparedStmt = c.prepareStatement(preparedSQL);
+        PreparedStatement preparedStmt = getConnection().prepareStatement(preparedSQL);
         for (int i = 0; i < param.length; i++) {
             preparedStmt.setString((i + 1), param[i]);
         }
         return new Object[] {preparedStmt.executeQuery(), preparedStmt};
     }
 
-    synchronized public Object[] queryResultsCaisi(Connection c, String preparedSQL) throws SQLException {
+    synchronized public Object[] queryResultsCaisi( String preparedSQL) throws SQLException {
 System.err.println("Query:"+preparedSQL);
-        Statement stmt = c.createStatement();
+        Statement stmt = getConnection().createStatement();
         return new Object[] {stmt.executeQuery(preparedSQL), stmt};
     }
 
-    synchronized public ResultSet queryResults(Connection c, String preparedSQL) throws SQLException {
+    synchronized public ResultSet queryResults( String preparedSQL) throws SQLException {
 System.err.println("Query:"+preparedSQL);
-        Statement stmt = c.createStatement();
+        Statement stmt = getConnection().createStatement();
         return stmt.executeQuery(preparedSQL);
     }
 

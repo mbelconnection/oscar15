@@ -25,13 +25,9 @@
 package oscar;
 
 import oscar.oscarDB.*;
-import oscar.util.SqlUtils;
-
 import java.sql.*;
 import java.util.*;
 import java.security.*;
-
-import org.oscarehr.util.SpringUtils;
 
 public class dbBillingData {
   private String username="";
@@ -75,14 +71,12 @@ public class dbBillingData {
 
   private void getService_code() { //if failed, username will be null
   	String [] temp=new String[4];
-    Connection c=null;
     try {
-      c=SpringUtils.getDbConnection();
       accessDB = new DBPreparedHandler(oscarVariables.getProperty("db_driver"),oscarVariables.getProperty("db_uri")+oscarVariables.getProperty("db_name")+"?user="+oscarVariables.getProperty("db_username")+"&password="+oscarVariables.getProperty("db_password"),oscarVariables.getProperty("db_username"),oscarVariables.getProperty("db_password"));
       String strSQL="select service_code, description, value, percentage from billingservice where service_code = '" + service_code +"'";
     //   System.out.println("SQL=" + strSQL);
 
-      temp = searchDB(c, strSQL, "service_code", "description", "value", "percentage" ); //use StringBuffer later
+      temp = searchDB(strSQL, "service_code", "description", "value", "percentage" ); //use StringBuffer later
       if(temp!=null) {
         db_service_code=temp[0];
         description = temp[1];
@@ -95,21 +89,14 @@ public class dbBillingData {
       }
 
         accessDB.closeConn();
-    }catch (SQLException e)
-    {
-        e.printStackTrace();
-    }
-    finally
-    {
-        SqlUtils.closeResources(c, null, null);
-    }
+    }catch (SQLException e) {return;}
   }
 
-  private String[] searchDB(Connection c, String dbSQL, String str1, String str2, String str3, String str4) {
+  private String[] searchDB(String dbSQL, String str1, String str2, String str3, String str4) {
   	String [] temp=new String[4];
     ResultSet rs=null;
     try {
-      rs = accessDB.queryResults(c, dbSQL);
+      rs = accessDB.queryResults(dbSQL);
       while (rs.next()) {
         temp[0] = rs.getString(str1);
         temp[1] = rs.getString(str2);

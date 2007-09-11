@@ -126,20 +126,7 @@ System.err.println(SQLStatement);
     }
 
     public void CloseConn() throws SQLException {
-        if (conn != null && !conn.isClosed()) conn.close();
-    }
-
-    /**
-     *Method makes sure connection to database is closed
-     **/
-    protected void finalize() throws Throwable {
-        try {
-            CloseConn();
-        }
-        catch (SQLException e) {
-            System.out.println("Problem finalizing DBHandler");
-            e.printStackTrace();
-        }
+//        if (conn != null && !conn.isClosed()) conn.close();
     }
 
 }

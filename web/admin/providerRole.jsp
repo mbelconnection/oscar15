@@ -24,7 +24,9 @@
 <%@ page import="oscar.util.*" %>
 <%@ page import="oscar.login.*" %>
 <%@ page import="oscar.log.*" %>
+<%@ page import="oscar.util.*" %>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
+<%@page import="org.oscarehr.util.SpringUtils"%>
 <%
 if(session.getAttribute("user") == null )
 	response.sendRedirect("../logout.jsp");
@@ -43,9 +45,19 @@ DBHelp dbObj = new DBHelp();
 // get role from database
 Vector vecRoleName = new Vector();
 String	sql   = "select * from secRole order by role_name";
-ResultSet rs = dbObj.searchDBRecord(sql);
-while (rs.next()) {
-	vecRoleName.add(rs.getString("role_name"));
+
+Connection c=SpringUtils.getDbConnection();
+ResultSet rs=null;
+try
+{
+	rs = dbObj.searchDBRecord(c, sql);
+	while (rs.next()) {
+		vecRoleName.add(rs.getString("role_name"));
+	}
+}
+finally
+{
+	SqlUtils.closeResources(c, null, rs);
 }
 
 // update the role list
@@ -109,7 +121,7 @@ if (request.getParameter("submit") != null && request.getParameter("submit").equ
 String keyword = request.getParameter("keyword")!=null?request.getParameter("keyword"):"";
 
 %>
-  <html>
+<html>
     <head>
       <title>
         PROVIDER
@@ -169,14 +181,25 @@ if(temp.length>1) {
 String query = "select u.*, p.provider_no, p.first_name, p.last_name from provider p LEFT JOIN secUserRole u ON ";
 query += " p.provider_no=u.provider_no where p.last_name like '" + lastName + "' and p.first_name like '" + firstName + "' and p.status='1' order by p.first_name, p.last_name, u.role_name";
 System.out.println(query);
-rs = dbObj.searchDBRecord(query);
-while (rs.next()) {
-	prop = new Properties();
-	prop.setProperty("provider_no", rs.getString("p.provider_no"));
-	prop.setProperty("first_name", rs.getString("p.first_name"));
-	prop.setProperty("last_name", rs.getString("p.last_name"));
-	prop.setProperty("role_name", rs.getString("u.role_name")!=null?rs.getString("u.role_name"):"");
-	vec.add(prop);
+c=SpringUtils.getDbConnection();
+try
+{
+	rs = dbObj.searchDBRecord(c, query);
+	while (rs.next()) {
+		prop = new Properties();
+//ResultSetMetaData rsmd=rs.getMetaData();
+//for (int i=0; i<rsmd.getColumnCount(); i++) System.err.println("XXXXX "+rsmd.getColumnName(i+1));
+
+		prop.setProperty("provider_no", rs.getString(3));
+		prop.setProperty("first_name", rs.getString(4));
+		prop.setProperty("last_name", rs.getString(5));
+		prop.setProperty("role_name", rs.getString(2)!=null?rs.getString(2):"");
+		vec.add(prop);
+	}
+}
+finally
+{
+	SqlUtils.closeResources(c, null, rs);
 }
 %>
         <table width="100%" border="0" bgcolor="ivory" cellspacing="1" cellpadding="1">

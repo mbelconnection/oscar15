@@ -105,90 +105,90 @@ public class AppointmentMainBean {
   	return (dbPH.queryExecuteUpdate(sqlExec, intparam));
   }
 
-  public ResultSet queryResults(Connection c, String[] aKeyword, String dboperation) throws Exception{
+  public ResultSet queryResults(String[] aKeyword, String dboperation) throws Exception{
 	 	String sqlQuery =null;
 
 	  ResultSet rs =null;
 	  if(aKeyword[0].equals("*")) {
 	  	sqlQuery = dbSQL.getDef("search*","");
-    	rs = dbPH.queryResults(c, sqlQuery);
+    	rs = dbPH.queryResults(sqlQuery);
 	  } else {
 	  	sqlQuery = dbSQL.getDef(dboperation,"");
-    	rs = dbPH.queryResults(c, sqlQuery, aKeyword);
+    	rs = dbPH.queryResults(sqlQuery, aKeyword);
 	  }
      // System.out.println("sqlQuery=" + sqlQuery);
   	return rs;
   }
 
-  public Object[] queryResultsCaisi(Connection c, String[] aKeyword, String dboperation) throws Exception{
+  public Object[] queryResultsCaisi(String[] aKeyword, String dboperation) throws Exception{
 	String sqlQuery =null;
 	Object[] rs =null;
 	  if(aKeyword[0].equals("*")) {
 	  	sqlQuery = dbSQL.getDef("search*","");
-	  	rs = dbPH.queryResultsCaisi(c, sqlQuery);
+	  	rs = dbPH.queryResultsCaisi(sqlQuery);
 	  } else {
 	  	sqlQuery = dbSQL.getDef(dboperation,"");
-	  	rs = dbPH.queryResultsCaisi(c, sqlQuery, aKeyword);
+	  	rs = dbPH.queryResultsCaisi(sqlQuery, aKeyword);
 	  }
 	return rs;
   }
-  public Object[] queryResultsCaisi(Connection c, String aKeyword, String dboperation) throws Exception{
+  public Object[] queryResultsCaisi(String aKeyword, String dboperation) throws Exception{
 	  String sqlQuery = null;
 	  Object[] rs =null;
 	  if(aKeyword.equals("*")) {
 	  	sqlQuery = dbSQL.getDef("search*","");
-    	rs = dbPH.queryResultsCaisi(c, sqlQuery);
+    	rs = dbPH.queryResultsCaisi(sqlQuery);
 	  } else {
 	  	sqlQuery = dbSQL.getDef(dboperation,"");
-    	rs = dbPH.queryResultsCaisi(c, sqlQuery, aKeyword);
+    	rs = dbPH.queryResultsCaisi(sqlQuery, aKeyword);
 	  }
   	return rs;
   }
-  public Object[] queryResultsCaisi(Connection c, int aKeyword, String dboperation) throws Exception{
+  public Object[] queryResultsCaisi(int aKeyword, String dboperation) throws Exception{
 	  String sqlQuery = null;
   	sqlQuery = dbSQL.getDef(dboperation,"");
-  	return dbPH.queryResultsCaisi(c, sqlQuery, aKeyword);
+  	return dbPH.queryResultsCaisi(sqlQuery, aKeyword);
   }
-  public Object[] queryResultsCaisi(Connection c, String dboperation) throws Exception {
+  public Object[] queryResultsCaisi(String dboperation) throws Exception {
       String sqlQuery = dbSQL.getDef(dboperation);
-      return dbPH.queryResultsCaisi(c, sqlQuery);
+      return dbPH.queryResultsCaisi(sqlQuery);
     }
   
-  public ResultSet queryResults(Connection c, String aKeyword, String dboperation) throws Exception{
+  public ResultSet queryResults(String aKeyword, String dboperation) throws Exception{
 	  String sqlQuery = null;
 	  ResultSet rs =null;
 	  if(aKeyword.equals("*")) {
 	  	sqlQuery = dbSQL.getDef("search*","");
-    	rs = dbPH.queryResults(c, sqlQuery);
+    	rs = dbPH.queryResults(sqlQuery);
 	  } else {
 	  	sqlQuery = dbSQL.getDef(dboperation,"");
-    	rs = dbPH.queryResults(c, sqlQuery, aKeyword);
+    	rs = dbPH.queryResults(sqlQuery, aKeyword);
 	  }
   	return rs;
   }
-  public ResultSet queryResults(Connection c, int aKeyword, String dboperation) throws Exception{
+  public ResultSet queryResults(int aKeyword, String dboperation) throws Exception{
 	  String sqlQuery = null;
 	  ResultSet rs =null;
   	sqlQuery = dbSQL.getDef(dboperation,"");
-   	rs = dbPH.queryResults(c, sqlQuery, aKeyword);
+   	rs = dbPH.queryResults(sqlQuery, aKeyword);
   	return rs;
   }
-  public ResultSet queryResults(Connection c, String[] aKeyword, int[] nKeyword, String dboperation) throws Exception{
+  public ResultSet queryResults(String[] aKeyword, int[] nKeyword, String dboperation) throws Exception{
     String sqlQuery = null;
     ResultSet rs =null;
   	sqlQuery = dbSQL.getDef(dboperation,"");
-   	rs = dbPH.queryResults(c, sqlQuery, aKeyword, nKeyword);
+   	rs = dbPH.queryResults(sqlQuery, aKeyword, nKeyword);
   	return rs;
   }
 
-    public ResultSet queryResults(Connection c, int[] parameters, String dboperation) throws Exception{
+    public ResultSet queryResults(int[] parameters, String dboperation) throws Exception{
       String sqlQuery = dbSQL.getDef(dboperation);
-      return dbPH.queryResults(c, sqlQuery, parameters);
+      return dbPH.queryResults(sqlQuery, parameters);
     }
     /* This method is called by querys that dont need to set a PreparedStatement */
-    public ResultSet queryResults(Connection c, String dboperation) throws Exception {
+    public ResultSet queryResults(String dboperation) throws Exception {
       String sqlQuery = dbSQL.getDef(dboperation);
-      return dbPH.queryResults(c, sqlQuery);
+      return dbPH.queryResults(sqlQuery);
     }
 
   // Don't forget to clean up!

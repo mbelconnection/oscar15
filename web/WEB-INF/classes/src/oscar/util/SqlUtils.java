@@ -810,4 +810,20 @@ public class SqlUtils {
             }
         }
     }
+    
+    public static String isoToOracleDate(String isoDate) throws ParseException
+    {
+        SimpleDateFormat isoFormat=new SimpleDateFormat("yyyy-MM-dd");
+        java.util.Date date=isoFormat.parse(isoDate);
+        
+        SimpleDateFormat oracleFormat=new SimpleDateFormat("dd-MMM-yyyy");
+        return(oracleFormat.format(date));
+    }
+    
+    public static void main(String... argv) throws Exception
+    {
+        String x="2006-05-04";
+        
+        System.err.println(isoToOracleDate(x));
+    }
 }

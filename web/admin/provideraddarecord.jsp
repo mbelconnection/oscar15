@@ -12,6 +12,7 @@
 <%@ page  import="java.sql.*, java.util.*, oscar.*" errorPage="errorpage.jsp" %>
 <%@ page import="oscar.login.*" %>
 <%@ page import="oscar.log.*" %>
+<%@ page import="oscar.util.*" %>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean" scope="session" />
 <!--
@@ -81,7 +82,7 @@ sql += "'" + StringEscapeUtils.escapeSql(param[3]) + "',";
 sql += "'" + param[4] + "',";
 sql += "'" + param[5] + "',";
 sql += "'" + param[6] + "',";
-sql += "'" + param[7].substring(8)+'-'+"jan"+'-'+param[7].substring(0,4)+ "',";
+sql += "'" + SqlUtils.isoToOracleDate(param[7]) + "',";
 sql += "'" + param[8] + "',";
 sql += "'" + param[9] + "',";
 sql += "'" + param[10] + "',";

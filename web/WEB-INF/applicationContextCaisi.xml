@@ -19,6 +19,7 @@
 		<property name="password" value="${hibernate.connection.password}" />
 		<property name="testOnBorrow" value="true" />
 		<property name="validationQuery" value="select 1 from dual" />
+		<property name="maxWait" value="4000" />
 	</bean>
 	
 	<bean id="auditInterceptor" class="org.oscarehr.common.dao.hibernate.AuditInterceptor" />

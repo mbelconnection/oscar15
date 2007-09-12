@@ -30,9 +30,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
-import oscar.util.DbConnectionFilter;
 import oscar.util.SqlUtils;
 
 public class DBPreparedHandler {

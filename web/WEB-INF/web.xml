@@ -80,7 +80,7 @@
 	</filter>
 	<filter>
 		<filter-name>DbConnectionFilter</filter-name>
-		<filter-class>oscar.util.DbConnectionFilter</filter-class>
+		<filter-class>org.oscarehr.util.DbConnectionFilter</filter-class>
 	</filter>
     
 	<filter-mapping>

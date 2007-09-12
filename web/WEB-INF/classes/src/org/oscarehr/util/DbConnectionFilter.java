@@ -1,4 +1,4 @@
-package oscar.util;
+package org.oscarehr.util;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -10,7 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.oscarehr.util.SpringUtils;
+import oscar.util.SqlUtils;
 
 public class DbConnectionFilter implements javax.servlet.Filter
 {

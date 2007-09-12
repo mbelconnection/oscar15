@@ -12,7 +12,6 @@
 
 package oscar.oscarReport.pageUtil;
 
-import com.Ostermiller.util.CSVPrinter;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,14 +30,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.OscarProperties;
 import oscar.login.DBHelp;
 import oscar.oscarReport.data.RptReportConfigData;
 import oscar.oscarReport.data.RptReportCreator;
 import oscar.oscarReport.data.RptReportItem;
-import oscar.util.UtilMisc;
+
+import com.Ostermiller.util.CSVPrinter;
 
 public class RptDownloadCSVServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -144,7 +144,7 @@ public class RptDownloadCSVServlet extends HttpServlet {
     }
 
     private String demoReport(HttpServletRequest request) throws Exception {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             reportName = "clientDatabaseReport";
             String in = "";

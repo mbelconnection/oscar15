@@ -16,7 +16,7 @@ public class SpringUtils {
 
     public static BeanFactory beanFactory = null;
 
-    public static Connection getDbConnection() throws SQLException {
+    protected static Connection getDbConnection() throws SQLException {
         BasicDataSource ds = (BasicDataSource)SpringUtils.beanFactory.getBean("dataSource");
         Connection c=ds.getConnection();
         c.setAutoCommit(true);

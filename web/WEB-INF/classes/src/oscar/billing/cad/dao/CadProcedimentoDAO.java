@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.billing.cad.model.CadProcedimentos;
 import oscar.oscarDB.DBHandler;
@@ -70,7 +70,7 @@ public class CadProcedimentoDAO extends DAO {
 
         sql = sql + " order by ds_procedimento";
 
-        Connection c=SpringUtils.getDbConnection();
+        Connection c=DbConnectionFilter.getThreadLocalDbConnection();
         PreparedStatement ps = null;
         ResultSet rs=null;
         try {

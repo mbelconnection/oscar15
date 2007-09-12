@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.OscarAction;
 import oscar.OscarDocumentCreator;
@@ -59,7 +59,7 @@ public class PrintDemoLabelAction
     Connection c=null;
     try
     {
-        c=SpringUtils.getDbConnection();
+        c=DbConnectionFilter.getThreadLocalDbConnection();
         osc.fillDocumentStream(parameters, sos, "pdf",ins,c);
     }
     catch (SQLException e)

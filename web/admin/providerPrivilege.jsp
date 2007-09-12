@@ -34,7 +34,7 @@
 <%@ page import="oscar.log.*" %>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 <%@ page import="oscar.util.*" %>
-<%@page import="org.oscarehr.util.SpringUtils"%>
+<%@page import="org.oscarehr.util.*"%>
 <%
 //if(session.getAttribute("user") == null )	response.sendRedirect("../logout.jsp");
 String curUser_no = (String)session.getAttribute("user");
@@ -42,7 +42,7 @@ String ip = request.getRemoteAddr();
 %>
 
 <%
-Connection c=SpringUtils.getDbConnection();
+Connection c=DbConnectionFilter.getThreadLocalDbConnection();
 ResultSet rs=null;
 try
 {

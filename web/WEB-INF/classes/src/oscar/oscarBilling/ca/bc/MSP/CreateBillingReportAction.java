@@ -50,7 +50,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.OscarAction;
 import oscar.OscarDocumentCreator;
@@ -227,7 +227,7 @@ public class CreateBillingReportAction
       Connection c=null; 
       try
       {
-          c=SpringUtils.getDbConnection();
+          c=DbConnectionFilter.getThreadLocalDbConnection();
           osc.fillDocumentStream(reportParams, outputStream, docFmt, reportInstream, c);
       }
       catch (SQLException e)

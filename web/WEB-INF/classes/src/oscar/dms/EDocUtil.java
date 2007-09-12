@@ -27,15 +27,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import oscar.oscarDB.DBHandler;
-import java.util.*;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
-import oscar.util.*;
 import oscar.OscarProperties;
+import oscar.util.SqlUtilBaseS;
+import oscar.util.SqlUtils;
+import oscar.util.UtilDateUtilities;
 
 //all SQL statements here
 public class EDocUtil extends SqlUtilBaseS {
@@ -66,7 +70,7 @@ public class EDocUtil extends SqlUtilBaseS {
         ResultSet rs = null;
         String moduleName = "";
         try {
-            c=SpringUtils.getDbConnection();
+            c=DbConnectionFilter.getThreadLocalDbConnection();
             rs = getSQL(c, sql);
             
             if (rs.next()) {
@@ -86,7 +90,7 @@ public class EDocUtil extends SqlUtilBaseS {
         ArrayList doctypes = new ArrayList();
         String doctype = "";
         try {
-            c=SpringUtils.getDbConnection();
+            c=DbConnectionFilter.getThreadLocalDbConnection();
             rs = getSQL(c, sql);
             while (rs.next()) {
                 doctype = rs.getString("doctype");
@@ -193,7 +197,7 @@ public class EDocUtil extends SqlUtilBaseS {
         Connection c=null;
         ResultSet rs = null;
         try {            
-            c=SpringUtils.getDbConnection();
+            c=DbConnectionFilter.getThreadLocalDbConnection();
             rs = getSQL(c, attachQuery);
             while (rs.next()) {
                 EDoc currentdoc = new EDoc();
@@ -261,7 +265,7 @@ public class EDocUtil extends SqlUtilBaseS {
         ResultSet rs = null;
         ArrayList resultDocs = new ArrayList();
         try {
-            c=SpringUtils.getDbConnection();
+            c=DbConnectionFilter.getThreadLocalDbConnection();
             rs = getSQL(c, sql);
             while (rs.next()) {
                 EDoc currentdoc = new EDoc();
@@ -293,7 +297,7 @@ public class EDocUtil extends SqlUtilBaseS {
         ResultSet rs = null;
         ArrayList modules = new ArrayList();
         try {
-            c=SpringUtils.getDbConnection();
+            c=DbConnectionFilter.getThreadLocalDbConnection();
             rs = getSQL(c, sql);
             while (rs.next()) {
                 modules.add(rsGetString(rs, "module"));
@@ -317,7 +321,7 @@ public class EDocUtil extends SqlUtilBaseS {
         
         EDoc currentdoc = new EDoc();
         try {
-            c=SpringUtils.getDbConnection();
+            c=DbConnectionFilter.getThreadLocalDbConnection();
             rs = getSQL(c, sql);
             while (rs.next()) {
                 currentdoc.setModule(rsGetString(rs, "module"));
@@ -359,7 +363,7 @@ public class EDocUtil extends SqlUtilBaseS {
        ResultSet rs = null;
        try {
           String sql = "select docfilename from document where document_no = '"+id+"'";
-          c=SpringUtils.getDbConnection();
+          c=DbConnectionFilter.getThreadLocalDbConnection();
           rs = getSQL(c, sql);
           if (rs.next()){
               filename = rs.getString("docfilename");

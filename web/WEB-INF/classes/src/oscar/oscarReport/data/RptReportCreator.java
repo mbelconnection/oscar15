@@ -13,7 +13,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.login.DBHelp;
 
@@ -25,7 +25,7 @@ public final class RptReportCreator {
 
     // select formBCAR.pg1_ethOrig as Ethnic Origin, ...
     public String getSelectField(String recordId) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             StringBuffer ret = new StringBuffer();
             String sql = "select * from reportConfig where report_id = " + recordId + " order by order_no";
@@ -47,7 +47,7 @@ public final class RptReportCreator {
 
     // from formBCAR
     public String getFromTableFirst(String recordId) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             String ret = "  ";
             String sql = "select distinct table_name from reportConfig where report_id = " + recordId + " order by table_name desc";
@@ -65,7 +65,7 @@ public final class RptReportCreator {
 
     // from formBCAR, demographic
     public String getFromTable(String recordId) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             String ret = "  ";
             Vector vec = new Vector();
@@ -146,7 +146,7 @@ public final class RptReportCreator {
 
     // get result of a SubQuery in ,,,,,,
     public String getRltSubQuery(String sql) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             String ret = "0";
 
@@ -169,7 +169,7 @@ public final class RptReportCreator {
 
     // from formBCAR, demographic
     public Vector query(String sql, Vector vecFieldName) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             Vector ret = new Vector();
             Properties prop = null;

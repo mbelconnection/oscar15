@@ -33,7 +33,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.oscarDB.DBHandler;
 import oscar.util.SqlUtils;
@@ -61,7 +61,7 @@ public class TeleplanResponseDAO {
     }
 
     public void save(TeleplanResponse tr) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         PreparedStatement ps = null;
         try {
             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);

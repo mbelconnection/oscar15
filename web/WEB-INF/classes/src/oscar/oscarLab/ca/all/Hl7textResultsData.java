@@ -9,18 +9,21 @@
 
 package oscar.oscarLab.ca.all;
 
-import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
-import org.apache.log4j.Logger;
-import org.oscarehr.util.SpringUtils;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 
-import oscar.oscarDB.*;
+import org.apache.log4j.Logger;
+import org.oscarehr.util.DbConnectionFilter;
+
+import oscar.oscarDB.DBHandler;
 import oscar.oscarLab.ca.all.parsers.Factory;
 import oscar.oscarLab.ca.all.parsers.MessageHandler;
-import oscar.oscarLab.ca.on.*;
+import oscar.oscarLab.ca.on.LabResultData;
 import oscar.util.SqlUtils;
 import oscar.util.UtilDateUtilities;
 
@@ -48,7 +51,7 @@ public class Hl7textResultsData {
         String second = Integer.toString(calender.get(java.util.Calendar.SECOND));
         String dateEntered = year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + second + ":";
 
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {

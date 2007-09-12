@@ -26,7 +26,7 @@
 <%@ page import="oscar.log.*" %>
 <%@ page import="oscar.util.*" %>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
-<%@page import="org.oscarehr.util.SpringUtils"%>
+<%@page import="org.oscarehr.util.*"%>
 <%
 if(session.getAttribute("user") == null )
 	response.sendRedirect("../logout.jsp");
@@ -46,7 +46,7 @@ DBHelp dbObj = new DBHelp();
 Vector vecRoleName = new Vector();
 String	sql   = "select * from secRole order by role_name";
 
-Connection c=SpringUtils.getDbConnection();
+Connection c=DbConnectionFilter.getThreadLocalDbConnection();
 ResultSet rs=null;
 try
 {
@@ -181,7 +181,7 @@ if(temp.length>1) {
 String query = "select u.*, p.provider_no, p.first_name, p.last_name from provider p LEFT JOIN secUserRole u ON ";
 query += " p.provider_no=u.provider_no where p.last_name like '" + lastName + "' and p.first_name like '" + firstName + "' and p.status='1' order by p.first_name, p.last_name, u.role_name";
 System.out.println(query);
-c=SpringUtils.getDbConnection();
+c=DbConnectionFilter.getThreadLocalDbConnection();
 try
 {
 	rs = dbObj.searchDBRecord(c, query);

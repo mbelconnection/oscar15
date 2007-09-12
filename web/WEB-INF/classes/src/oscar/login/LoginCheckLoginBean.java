@@ -22,7 +22,7 @@ import java.util.Properties;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.log.LogAction;
 import oscar.log.LogConst;
@@ -148,7 +148,7 @@ public class LoginCheckLoginBean {
         //            oscarVariables.getProperty("db_uri"), oscarVariables.getProperty("db_username"),
         //            oscarVariables.getProperty("db_password"));
 
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             accessDB = new DBHelp();
             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
@@ -208,7 +208,7 @@ public class LoginCheckLoginBean {
         if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable()) {
             String[] temp = new String[] {"8", "18", "15", "a", "disabled"};
             ResultSet rs = null;
-            Connection c = SpringUtils.getDbConnection();
+            Connection c = DbConnectionFilter.getThreadLocalDbConnection();
             try {
                 String strSQL = "select start_hour, end_hour, every_min, mygroup_no,new_tickler_warning_window from preference where provider_no = '" + secBean.getProvider_no() + "'";
                 rs = accessDB.searchDBRecord(c, strSQL);
@@ -239,7 +239,7 @@ public class LoginCheckLoginBean {
         else {
             String[] temp = new String[] {"8", "18", "15", "a"};
             ResultSet rs = null;
-            Connection c = SpringUtils.getDbConnection();
+            Connection c = DbConnectionFilter.getThreadLocalDbConnection();
             try {
                 String strSQL = "select start_hour, end_hour, every_min, mygroup_no from preference where provider_no = '" + secBean.getProvider_no() + "'";
                 rs = accessDB.searchDBRecord(c, strSQL);

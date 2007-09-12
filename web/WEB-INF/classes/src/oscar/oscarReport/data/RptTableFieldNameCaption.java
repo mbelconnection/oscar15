@@ -12,7 +12,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.login.DBHelp;
 
@@ -28,7 +28,7 @@ public class RptTableFieldNameCaption {
     DBHelp dbObj = new DBHelp();
 
     public boolean insertOrUpdateRecord() throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             boolean ret = false;
             String sql = "select id from reportTableFieldCaption where table_name = '" + StringEscapeUtils.escapeSql(table_name) + "' and name='" + StringEscapeUtils.escapeSql(name) + "'";
@@ -102,7 +102,7 @@ public class RptTableFieldNameCaption {
     }
 
     public Properties getNameCaptionProp(String tableName) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             Properties ret = new Properties();
             String sql = "select name, caption from reportTableFieldCaption where table_name = '" + StringEscapeUtils.escapeSql(tableName) + "'";
@@ -124,7 +124,7 @@ public class RptTableFieldNameCaption {
     }
 
     public Vector getMetaNameList(String tableName) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             Vector ret = new Vector();
             String sql = "select * from " + tableName + " limit 1";
@@ -147,7 +147,7 @@ public class RptTableFieldNameCaption {
     }
 
     public Vector getFormTableNameList() throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             Vector ret = new Vector();
             String sql = "select * from encounterForm where hidden != 0 order by form_name";

@@ -58,7 +58,7 @@ try{
 *   dateList: (dateIdHash)
 *   dateIdHash: (date, lab_no)
     */
-    Connection conn = SpringUtils.getDbConnection();
+    Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
     try
     {
 	    for (int i = 0; i < items.size(); i++){

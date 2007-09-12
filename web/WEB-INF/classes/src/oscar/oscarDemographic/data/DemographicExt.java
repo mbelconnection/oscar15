@@ -50,12 +50,16 @@
 
 package oscar.oscarDemographic.data;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
-import oscar.oscarDB.*;
 import oscar.util.SqlUtils;
 
 /**
@@ -79,7 +83,7 @@ public class DemographicExt {
 
     public String getValueForDemoKey(String demo, String key) throws SQLException {
         String retval = null;
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
@@ -107,7 +111,7 @@ public class DemographicExt {
 
     public Hashtable getAllValuesForDemo(String demo) throws SQLException {
         Hashtable retval = new Hashtable();
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
@@ -167,7 +171,7 @@ public class DemographicExt {
      * @throws SQLException 
      */
     public void addKey(String providerNo, String demo, String key, String value) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         PreparedStatement ps = null;
         try {
             String sql = "insert into demographicExt (provider_no,demographic_no,key_val,value,date_time) values (?,?,?,?,now())";
@@ -195,7 +199,7 @@ public class DemographicExt {
         }
         if (newValue != null && !oldValue.equalsIgnoreCase(newValue)) {
 
-            Connection c = SpringUtils.getDbConnection();
+            Connection c = DbConnectionFilter.getThreadLocalDbConnection();
             PreparedStatement ps = null;
             try {
                 String sql = "insert into demographicExt (provider_no,demographic_no,key_val,value,date_time) values (?,?,?,?,now())";

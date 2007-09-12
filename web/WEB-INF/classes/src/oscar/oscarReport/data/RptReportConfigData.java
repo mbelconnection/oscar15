@@ -11,7 +11,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.login.DBHelp;
 
@@ -32,7 +32,7 @@ public class RptReportConfigData {
     DBHelp dbObj = new DBHelp();
 
     public boolean insertRecordWithOrder() throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             boolean ret = false;
             String sql = "select max(order_no) from reportConfig where report_id=" + report_id;
@@ -93,7 +93,7 @@ public class RptReportConfigData {
 
     // 0 - name; 1 - caption
     public Vector[] getConfigFieldName(String saveAs, String reportId) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             Vector[] ret = new Vector[2];
             ret[0] = new Vector();
@@ -123,7 +123,7 @@ public class RptReportConfigData {
     }
 
     public Vector getConfigNameList(String saveAs, String reportId) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             Vector ret = new Vector();
             String sql = "select * from reportConfig where report_id=" + reportId + " and save = '" + saveAs + "' order by order_no, id";
@@ -145,7 +145,7 @@ public class RptReportConfigData {
     }
 
     public Vector getConfigObj(String saveAs, String reportId) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             Vector ret = new Vector();
             Properties prop = null;
@@ -169,7 +169,7 @@ public class RptReportConfigData {
 
     // get form..., demographic;
     public Vector getReportTableNameList(String reportId) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             Vector ret = new Vector();
             String sql = "select distinct(table_name) from reportConfig where report_id=" + reportId + " and table_name like 'form%'" + " order by table_name";

@@ -37,7 +37,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.oscarDB.DBHandler;
 import oscar.util.SqlUtils;
@@ -66,7 +66,7 @@ public class HSFODAO {
         String sqlstatement = "INSERT into hsfo_patient " + "(SiteCode,Patient_Id,FName,LName,BirthDate,Sex,PostalCode,Height,Height_unit,Ethnic_White,Ethnic_Black,Ethnic_EIndian,Ethnic_Pakistani,Ethnic_SriLankan,Ethnic_Bangladeshi,Ethnic_Chinese,Ethnic_Japanese,Ethnic_Korean,Ethnic_Hispanic,Ethnic_FirstNation,Ethnic_Other,Ethnic_Refused,Ethnic_Unknown,PharmacyName,PharmacyLocation,Sel_TimeAgoDx,EmrHCPId,ConsentDate)" + "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 
         System.out.println(sqlstatement);
-        Connection connect = SpringUtils.getDbConnection();
+        Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             st = connect.prepareStatement(sqlstatement);
 
@@ -148,7 +148,7 @@ public class HSFODAO {
                 ",ConsentDate = ? " + //28'" + new java.sql.Date(patientData.getConsentDate().getTime()) +
                 " WHERE Patient_Id= ? "; //29'" + patientData.getPatient_Id() +"'";
         System.out.println(sqlstatement);
-        Connection connect = SpringUtils.getDbConnection();
+        Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             st = connect.prepareStatement(sqlstatement);
 
@@ -207,7 +207,7 @@ public class HSFODAO {
         PreparedStatement st = null;
         String sqlstatement = "UPDATE form_hsfo_visit SET locked=true where ID=" + ID;
         System.out.println(sqlstatement);
-        Connection connect = SpringUtils.getDbConnection();
+        Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             st = connect.prepareStatement(sqlstatement);
             st.executeUpdate();
@@ -231,7 +231,7 @@ public class HSFODAO {
         int i = 0;
         System.out.println(sqlstatement);
         ResultSet rs = null;
-        Connection connect = SpringUtils.getDbConnection();
+        Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             st = connect.prepareStatement(sqlstatement);
             st.setString(1, demographic_no);
@@ -269,7 +269,7 @@ public class HSFODAO {
         String sqlstatement = "select * from form_hsfo_visit where locked=true and demographic_no = ?";
         System.out.println(sqlstatement);
         ResultSet rs = null;
-        Connection connect = SpringUtils.getDbConnection();
+        Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             st = connect.prepareStatement(sqlstatement);
             st.setString(1, demographic_no);
@@ -328,7 +328,7 @@ public class HSFODAO {
                 + "?,?,?,?,?,?,?,?,?,?," + "?,?,?,?,?,?,?,?,?,?," + "?,?,?,?,?,?,?,?,?,?," + "?,?,?,?,?,?,?,?,?,?," + "?,?,?,?,?,?,?,?,?,?," + "?,?,?,?)";
 
         System.out.println(sqlstatement);
-        Connection connect = SpringUtils.getDbConnection();
+        Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             st = connect.prepareStatement(sqlstatement);
             //////
@@ -463,7 +463,7 @@ public class HSFODAO {
     public void updatePatientDx(String patientId, int hsfoRxDx) throws SQLException {
         String sql = "UPDATE hsfo_patient SET RxDx=?  WHERE Patient_Id=?";
 
-        Connection connect = SpringUtils.getDbConnection();
+        Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
         PreparedStatement ps = null;
         try {
             ps = connect.prepareStatement(sql);
@@ -496,7 +496,7 @@ public class HSFODAO {
 
         String sql = "SELECT RxDx FROM hsfo_patient WHERE Patient_Id=?";
 
-        Connection connect = SpringUtils.getDbConnection();
+        Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
@@ -526,7 +526,7 @@ public class HSFODAO {
 
         String query = "SELECT * FROM hsfo_patient WHERE Patient_Id='" + ID + "'";
         System.out.println("query: " + query);
-        Connection connect = SpringUtils.getDbConnection();
+        Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
         Statement sql = null;
         ResultSet result = null;
         try {
@@ -591,7 +591,7 @@ public class HSFODAO {
 
         String query = "SELECT FName FROM hsfo_patient WHERE Patient_Id='" + ID + "'";
         System.out.println("query: " + query);
-        Connection connect = SpringUtils.getDbConnection();
+        Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
         Statement sql = null;
         ResultSet result = null;
         try {
@@ -724,7 +724,7 @@ public class HSFODAO {
         DBHandler db = null;
         PreparedStatement query = null;
         ResultSet rs = null;
-        Connection connect = SpringUtils.getDbConnection();
+        Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             query = connect.prepareStatement("SELECT * FROM form_hsfo_visit where ID in (SELECT max(ID) FROM form_hsfo_visit WHERE Patient_Id = ? group by VisitDate_Id)");
             query.setString(1, ID);
@@ -759,7 +759,7 @@ public class HSFODAO {
 
         System.out.println("query1: " + query);
         String timestamp = "";
-        Connection connect = SpringUtils.getDbConnection();
+        Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
         Statement sql=null;
         try {
             sql = connect.createStatement();
@@ -898,7 +898,7 @@ public class HSFODAO {
     public boolean isRecordExists(Date visitdate, String demographicNo) throws SQLException {
         boolean isRecordExists = false;
         PreparedStatement sql = null;
-        Connection connect = SpringUtils.getDbConnection();
+        Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             int ID = 0;
             String query = "SELECT ID FROM form_hsfo_visit WHERE VisitDate_Id= ? and demographic_no = ?";
@@ -928,7 +928,7 @@ public class HSFODAO {
 
     public VisitData retrieveSelectedRecord(int ID) throws SQLException {
         VisitData visitData = new VisitData();
-        Connection connect = SpringUtils.getDbConnection();
+        Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
         Statement sql = null;
         ResultSet result = null;
         String query = "SELECT DISTINCT * FROM form_hsfo_visit WHERE  ID = " + ID;;
@@ -1052,7 +1052,7 @@ public class HSFODAO {
         String query = "SELECT Distinct Patient_Id FROM hsfo_patient";
         Statement sql = null;
         ResultSet result = null;
-        Connection connect = SpringUtils.getDbConnection();
+        Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             sql = connect.createStatement();
             result = sql.executeQuery(query);
@@ -1084,7 +1084,7 @@ public class HSFODAO {
         ResultSet result = null;
 
         List patientList = new LinkedList();
-        Connection connect = SpringUtils.getDbConnection();
+        Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             sql = connect.createStatement();
             result = sql.executeQuery(query);

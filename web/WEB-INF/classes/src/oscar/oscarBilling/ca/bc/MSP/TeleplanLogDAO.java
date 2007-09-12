@@ -34,9 +34,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
-import oscar.oscarDB.DBHandler;
 import oscar.util.SqlUtils;
 
 /**
@@ -61,7 +60,7 @@ public class TeleplanLogDAO {
     String nsql = "insert into log_teleplantx (sequence_no, claim,billingmaster_no) values (?,?,?)";
 
     public void save(TeleplanLog tl) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         PreparedStatement ps = null;
         try {
             ps = c.prepareStatement(nsql);
@@ -80,7 +79,7 @@ public class TeleplanLogDAO {
     }
 
     public void save(List list) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         PreparedStatement ps = null;
         try {
             ps = c.prepareStatement(nsql);

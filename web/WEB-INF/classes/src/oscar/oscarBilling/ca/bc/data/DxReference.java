@@ -41,7 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.util.SqlUtils;
 import oscar.util.UtilDateUtilities;
@@ -71,7 +71,7 @@ public class DxReference {
     public List getLatestDxCodes(String demo) throws SQLException {
         ArrayList list = new ArrayList();
         String nsql = "select dx_code1, dx_code2, dx_code3,service_date from billingmaster where demographic_no = ? and billingstatus != 'D' order by service_date desc";
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {

@@ -24,18 +24,38 @@ package oscar.oscarBilling.ca.bc.MSP;
  * Ontario, Canada
  */
 
-import java.io.*;
-import java.math.*;
-import java.sql.*;
-import java.text.*;
-import java.util.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Vector;
 
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
-import oscar.entities.*;
-import oscar.oscarBilling.ca.bc.data.*;
-import oscar.oscarDB.*;
-import oscar.util.*;
+import oscar.entities.MSPBill;
+import oscar.entities.Provider;
+import oscar.entities.S21;
+import oscar.oscarBilling.ca.bc.data.BillRecipient;
+import oscar.oscarBilling.ca.bc.data.BillingHistoryDAO;
+import oscar.oscarDB.DBHandler;
+import oscar.util.BeanUtilHlp;
+import oscar.util.SqlUtils;
+import oscar.util.StringUtils;
+import oscar.util.UtilMisc;
 
 public class MSPReconcile {
 
@@ -1011,7 +1031,7 @@ public class MSPReconcile {
      * @throws SQLException 
      */
     public void saveOrUpdateBillRecipient(BillRecipient recip) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {

@@ -10,7 +10,7 @@ import java.util.Properties;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.login.DBHelp;
 
@@ -45,7 +45,7 @@ public class RptReportItem {
 
     // id
     public String getReportName(String recordId) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             String ret = null;
             String sql = "select report_name from reportItem where id = " + recordId;
@@ -63,7 +63,7 @@ public class RptReportItem {
 
     // 1 - name list, 0 - deleted name list
     public Vector getNameList(int n) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
 
             Vector ret = new Vector();

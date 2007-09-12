@@ -30,7 +30,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.billing.model.Appointment;
 import oscar.billing.model.Demographic;
@@ -58,7 +58,7 @@ public class AppointmentDAO extends DAO {
         sqlDiag = "insert into cad_diagnostico (appointment_no, co_cid) values (?, ?)";
         sqlApp = "update appointment set billing = 'P' where appointment_no = ?";
 
-        Connection c=SpringUtils.getDbConnection();
+        Connection c=DbConnectionFilter.getThreadLocalDbConnection();
         PreparedStatement pstmProc = null;
         PreparedStatement pstmDiag = null;
 		PreparedStatement pstmApp = null;
@@ -122,7 +122,7 @@ public class AppointmentDAO extends DAO {
         sqlProc = "delete from cad_procedimento_realizado where appointment_no = ?";
         sqlDiag = "delete from cad_diagnostico where appointment_no = ?";
 
-        Connection c=SpringUtils.getDbConnection();
+        Connection c=DbConnectionFilter.getThreadLocalDbConnection();
         PreparedStatement pstmProc = null;
         PreparedStatement pstmDiag = null;
         try {

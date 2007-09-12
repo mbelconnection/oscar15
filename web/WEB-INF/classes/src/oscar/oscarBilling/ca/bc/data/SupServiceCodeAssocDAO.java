@@ -24,13 +24,20 @@
 
 package oscar.oscarBilling.ca.bc.data;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
-import oscar.oscarDB.*;
-import oscar.util.*;
+import oscar.oscarDB.DBHandler;
+import oscar.util.SqlUtils;
 
 /**
  * <p>Description: </p>
@@ -106,7 +113,7 @@ public class SupServiceCodeAssocDAO {
         String primaryCodeId = this.getBillingServiceValue(primaryCode, this.VALUE_BY_CODE);
         String secondaryCodeId = this.getBillingServiceValue(secondaryCode, this.VALUE_BY_CODE);
 
-        Connection c=SpringUtils.getDbConnection();
+        Connection c=DbConnectionFilter.getThreadLocalDbConnection();
         try {
             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             rs = db.GetSQL(c, "select billingServiceNo,billingServiceTrayNo from billing_trayfees where billingServiceNo = " + primaryCodeId);

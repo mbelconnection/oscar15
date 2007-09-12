@@ -25,7 +25,7 @@
 <%@ page import="oscar.login.*" %>
 <%@ page import="oscar.log.*" %>
 <%@ page import="oscar.util.*" %>
-<%@page import="org.oscarehr.util.SpringUtils"%>
+<%@page import="org.oscarehr.util.*"%>
 <%
 if(session.getAttribute("user") == null )
 	response.sendRedirect("../logout.jsp");
@@ -103,7 +103,7 @@ String curUser_no = (String)session.getAttribute("user");
 		ResultSet rs = null;
 		try
 		{
-			c=SpringUtils.getDbConnection();
+			c=DbConnectionFilter.getThreadLocalDbConnection();
 			rs = dbObj.searchDBRecord(c, sql);
 			//System.out.println(sql);
 	
@@ -267,7 +267,7 @@ Connection c=null;
 ResultSet rs = null;
 try
 {
-	c=SpringUtils.getDbConnection();
+	c=DbConnectionFilter.getThreadLocalDbConnection();
 	rs = dbObj.searchDBRecord(c, sql);
 	while (rs.next()) {
 	%>

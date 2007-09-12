@@ -38,7 +38,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.entities.Billactivity;
 import oscar.util.SqlUtils;
@@ -95,7 +95,7 @@ public class BillActivityDAO {
         //beginningOfYear.set(Calendar.MONTH,0);
         beginningOfYear.set(Calendar.DAY_OF_YEAR, 1);
         /////
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         PreparedStatement ps=null;
         ResultSet rs=null;
         try {
@@ -144,7 +144,7 @@ public class BillActivityDAO {
     public int saveBillactivity(String monthCode, String batchCount, String htmlFilename, String mspFilename, String providerNo, String htmlFile, String mspFile, Date date, int records, String fileTotal) throws SQLException {
         int id = 0;
         ////
-        Connection c=SpringUtils.getDbConnection();
+        Connection c=DbConnectionFilter.getThreadLocalDbConnection();
         PreparedStatement ps=null;
         ResultSet rs=null;
         try {

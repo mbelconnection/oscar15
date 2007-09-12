@@ -34,7 +34,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.util.SqlUtils;
 
@@ -54,7 +54,7 @@ public class TeleplanSubmissionLinkDAO {
     String nsql = "insert into teleplan_submission_link (bill_activity_id,billingmaster_no) values (?,?)";
 
     public void save(int billActId, List billingMasterList) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         PreparedStatement ps = null;
         try {
             ps = c.prepareStatement(nsql);

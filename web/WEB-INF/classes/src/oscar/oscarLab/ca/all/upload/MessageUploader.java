@@ -9,16 +9,20 @@
 
 package oscar.oscarLab.ca.all.upload;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.text.*;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.OscarProperties;
 import oscar.oscarDB.DBHandler;
-import oscar.oscarLab.ForwardingRules;
 import oscar.oscarLab.ca.all.Hl7textResultsData;
 import oscar.oscarLab.ca.all.parsers.Factory;
 import oscar.oscarLab.ca.all.parsers.MDSHandler;
@@ -46,7 +50,7 @@ public class MessageUploader {
     public String routeReport(String type, String hl7Body) throws Exception {
 
         String retVal = "";
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
@@ -284,7 +288,7 @@ public class MessageUploader {
      */
     public void clean(int recordCount) throws SQLException {
 
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {

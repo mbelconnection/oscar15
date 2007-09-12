@@ -23,17 +23,21 @@
  */
 package oscar.oscarDemographic.data;
 
-import java.sql.*;
-import java.text.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.oscarDB.DBHandler;
-//import oscar.oscarMessenger.util.*;
-
-import oscar.util.*;
+import oscar.util.SqlUtils;
+import oscar.util.UtilDateUtilities;
 
 public class DemographicData {
 
@@ -783,7 +787,7 @@ public class DemographicData {
         demos = null;
 
         if (!duplicateRecord) {
-            Connection c = SpringUtils.getDbConnection();
+            Connection c = DbConnectionFilter.getThreadLocalDbConnection();
             PreparedStatement ps = null;
             ResultSet rs=null;
             try {

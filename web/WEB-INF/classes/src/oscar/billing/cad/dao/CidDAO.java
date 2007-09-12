@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.billing.cad.model.CadCid;
 import oscar.oscarDB.DBHandler;
@@ -82,7 +82,7 @@ public class CidDAO extends DAO {
 
 		sql = sql + " order by ds_cid";
 
-		Connection c=SpringUtils.getDbConnection();
+		Connection c=DbConnectionFilter.getThreadLocalDbConnection();
         PreparedStatement ps=null;
         ResultSet rs=null;
 		try {

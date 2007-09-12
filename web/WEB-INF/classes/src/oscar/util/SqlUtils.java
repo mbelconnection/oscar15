@@ -773,7 +773,7 @@ public class SqlUtils {
                 c.close();
             }
             catch (Exception e) {
-                if (e.getMessage().toLowerCase().indexOf("already closed") >= 0) {
+                if (e.getMessage().toLowerCase().indexOf("closed") >= 0) {
                     // I don't care.
                 }
                 else {

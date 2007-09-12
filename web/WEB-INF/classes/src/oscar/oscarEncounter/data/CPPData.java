@@ -28,13 +28,20 @@
 
 package oscar.oscarEncounter.data;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
-import oscar.oscarDB.*;
-import oscar.util.*;
+import oscar.oscarDB.DBHandler;
+import oscar.util.SqlUtils;
+import oscar.util.UtilDateUtilities;
 
 /**
  *
@@ -106,7 +113,7 @@ public class CPPData {
     public void addCPPData(String demoNo, String provNo, String socialFamVal, String ongoingConVal, String medHistVal, String reminderVal, String riskfactorVal, String otherMedVal, String otherAllerVal, String medsList, String allergyList, String divArr) throws SQLException {
         String sql = "insert into cpp (demographic_no,provider_no,socialFam,ongoingCon,medHist,reminder,riskfactor,otherMed,otherAller,medsList,allergyList,divArr,created) values (?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         PreparedStatement ps = null;
         try {
             ps = c.prepareStatement(sql);

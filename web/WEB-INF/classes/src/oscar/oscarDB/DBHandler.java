@@ -32,7 +32,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 public class DBHandler {
     public static String IDDF_DATA = "iddf";
@@ -69,7 +69,7 @@ public class DBHandler {
     }
 
     public DBHandler(String host, String dbName) throws SQLException {
-        conn = SpringUtils.getDbConnection();
+        conn = DbConnectionFilter.getThreadLocalDbConnection();
     }
 
     synchronized public Connection GetConnection() throws SQLException {

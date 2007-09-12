@@ -28,15 +28,15 @@
 
 package oscar.oscarTickler.tld;
 
-import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.servlet.http.*;
-import javax.servlet.jsp.*;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
-import org.apache.struts.util.*;
-import org.oscarehr.util.SpringUtils;
+
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.oscarDB.DBHandler;
 import oscar.util.SqlUtils;
@@ -55,7 +55,7 @@ public class TicklerTag extends TagSupport {
         Connection c=null;
         ResultSet rs=null;
         try {
-            c=SpringUtils.getDbConnection();
+            c=DbConnectionFilter.getThreadLocalDbConnection();
             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
             String sql = new String("select count(*) from tickler where status = 'A' and service_date <= sysdate and task_assigned_to  = '" + providerNo + "' ");

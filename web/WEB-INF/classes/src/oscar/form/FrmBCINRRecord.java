@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 import java.util.Vector;
 
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.login.DBHelp;
 import oscar.oscarDB.DBHandler;
@@ -16,7 +16,7 @@ public class FrmBCINRRecord extends FrmRecord {
     private String _dateFormat = "dd/MM/yyyy";
 
     public Properties getFormRecord(int demographicNo, int existingID) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             Properties props = new Properties();
 
@@ -71,7 +71,7 @@ public class FrmBCINRRecord extends FrmRecord {
     }
 
     public String getLastLabDate(int demographicNo, int existingID) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             String ret = "20/04/2002";
             Properties props = new Properties();

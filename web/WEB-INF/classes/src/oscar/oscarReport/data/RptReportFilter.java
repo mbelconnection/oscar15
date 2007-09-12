@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.login.DBHelp;
 
@@ -50,7 +50,7 @@ public class RptReportFilter {
 
     // 1 - name list, 0 - deleted name list, 0-`description` 1-value 2-javascript 3-dateformat
     public Vector getNameList(int n) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             Vector ret = new Vector();
             String[] str = null;
@@ -75,7 +75,7 @@ public class RptReportFilter {
     }
 
     public Vector getNameList(String recordId, int n) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             Vector ret = new Vector();
             String[] str = null;

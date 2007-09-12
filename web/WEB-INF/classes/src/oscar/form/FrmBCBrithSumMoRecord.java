@@ -28,7 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.login.DBHelp;
 import oscar.oscarDB.DBHandler;
@@ -39,7 +39,7 @@ public class FrmBCBrithSumMoRecord extends FrmRecord {
 
 	public Properties getFormRecord(int demographicNo, int existingID)
             throws SQLException    {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
         Properties props = new Properties();
 

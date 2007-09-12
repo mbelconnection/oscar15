@@ -26,8 +26,8 @@ package oscar.oscarEncounter.pageUtil;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 import javax.servlet.ServletException;
@@ -38,15 +38,14 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
+import oscar.OscarProperties;
 import oscar.log.LogAction;
 import oscar.log.LogConst;
 import oscar.oscarDB.DBHandler;
 import oscar.util.SqlUtils;
 import oscar.util.UtilDateUtilities;
-import oscar.util.UtilMisc;
-import oscar.OscarProperties;
 
 public class EctSaveEncounterAction extends Action {
 
@@ -161,7 +160,7 @@ public class EctSaveEncounterAction extends Action {
                     return actionmapping.findForward("concurrencyError");
                 }
 
-                Connection c = SpringUtils.getDbConnection();
+                Connection c = DbConnectionFilter.getThreadLocalDbConnection();
                 PreparedStatement ps = null;
                 try {
                     String s = "insert into eChart (timeStamp, demographicNo,providerNo,subject,socialHistory,familyHistory,medicalHistory,ongoingConcerns,reminders,encounter) values (?,?,?,?,?,?,?,?,?,?)";

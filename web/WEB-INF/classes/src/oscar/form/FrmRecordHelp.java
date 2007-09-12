@@ -20,7 +20,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.Properties;
 
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 import org.w3c.dom.Document;
 
 import oscar.OscarProperties;
@@ -41,7 +41,7 @@ public class FrmRecordHelp {
         Properties props = new Properties();
         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             ResultSet rs = db.GetSQL(c, sql);
             if (rs.next()) {
@@ -73,7 +73,7 @@ public class FrmRecordHelp {
     public synchronized int saveFormRecord(Properties props, String sql) throws SQLException {
         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             ResultSet rs = db.GetSQL(c, sql, true);
             rs.moveToInsertRow();
@@ -197,7 +197,7 @@ public class FrmRecordHelp {
     public void updateFormRecord(Properties props, String sql) throws SQLException {
         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             ResultSet rs = db.GetSQL(c, sql, true);
             //rs.relative(0);
@@ -216,7 +216,7 @@ public class FrmRecordHelp {
         Properties props = new Properties();
         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             ResultSet rs = db.GetSQL(c, sql);
             if (rs.next()) {

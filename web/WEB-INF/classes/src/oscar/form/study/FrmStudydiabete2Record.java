@@ -23,7 +23,6 @@
  */
 package oscar.form.study;
 
-import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -31,14 +30,14 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.Properties;
 
-import org.oscarehr.util.SpringUtils;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.oscarDB.DBHandler;
-import oscar.util.*;
+import oscar.util.UtilDateUtilities;
 
 public class FrmStudydiabete2Record extends FrmStudyRecord {
     public Properties getFormRecord(int demographicNo, int existingID) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             Properties props = new Properties();
             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
@@ -85,7 +84,7 @@ public class FrmStudydiabete2Record extends FrmStudyRecord {
     }
 
     public int saveFormRecord(Properties props) throws SQLException {
-        Connection c = SpringUtils.getDbConnection();
+        Connection c = DbConnectionFilter.getThreadLocalDbConnection();
         try {
             String demographic_no = props.getProperty("demographic_no");
             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);

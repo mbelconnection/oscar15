@@ -5,10 +5,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.oscarehr.util.DbConnectionFilter;
+
 import oscar.util.SqlUtils;
 
 public class IdGenerator {
     public static final String GENERIC_SEQUENCE="HIBERNATE_SEQUENCE";
+    
+    public static int getNextIdFromGenericSequence() throws SQLException
+    {
+        return(getNextId(DbConnectionFilter.getThreadLocalDbConnection(), GENERIC_SEQUENCE));
+    }
     
     public static int getNextIdFromGenericSequence(Connection c) throws SQLException
     {

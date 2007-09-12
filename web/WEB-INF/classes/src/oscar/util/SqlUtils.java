@@ -820,6 +820,25 @@ public class SqlUtils {
         return(oracleFormat.format(date));
     }
     
+    public static String isoToOracleDate2(String isoDate) throws ParseException
+    {
+        SimpleDateFormat isoFormat=new SimpleDateFormat("yyyy/MM/dd");
+        java.util.Date date=isoFormat.parse(isoDate);
+        
+        SimpleDateFormat oracleFormat=new SimpleDateFormat("dd-MMM-yyyy");
+        return(oracleFormat.format(date));
+    }
+    
+    public static String isoToOracleDate3(String isoDate) throws ParseException
+    {
+        SimpleDateFormat isoFormat=new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+        java.util.Date date=isoFormat.parse(isoDate);
+        
+        SimpleDateFormat oracleFormat=new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss");
+        return(oracleFormat.format(date));
+    }
+    
+    
     public static void main(String... argv) throws Exception
     {
         String x="2006-05-04";

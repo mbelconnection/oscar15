@@ -31,6 +31,7 @@ package oscar.log;
 import java.sql.SQLException;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import oscar.login.DBHelp;
@@ -60,6 +61,10 @@ public class LogWorker extends Thread {
 
     public void run() {
         DBHelp db = new DBHelp();
+        
+        provider_no=StringUtils.trimToNull(provider_no);
+        if (provider_no==null) provider_no=" ";
+        
         String sql = "insert into log values(sysdate,'" + provider_no;
         sql += "', '" + action + "','" + StringEscapeUtils.escapeSql(content) + "','" + contentId + "','" + ip + "')";
         try {

@@ -334,7 +334,7 @@ public class MsgDisplayMessagesBean {
         
         String sql = new String("select ml.message, ml.status, m.thesubject, m.thedate, m.attachment, m.pdfattachment, m.sentby  from messagelisttbl ml, messagetbl m "
         +" where provider_no = '"+ providerNo+"' and status not like \'del\' and remoteLocation = '"+getCurrentLocationId()+"' "
-        +" and ml.message = m.messageid " + getSQLSearchFilter(searchCols) + " order by "+getOrderBy(orderby)+messageLimit);
+        +" and ml.message = m.messageid " + getSQLSearchFilter(searchCols) + " order by "+getOrderBy(orderby));
                 
         rs = db.GetSQL(sql);
 

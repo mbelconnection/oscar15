@@ -331,7 +331,7 @@ public class EDocUtil extends SqlUtilBaseS {
     }       
     
     public static EDoc getDoc(String documentNo) {
-        //get rid of DISTINCT for oracle
+        //get rid of DISTINCT for oracle because of CLOB
     	String sql = "SELECT c.module, c.module_id, d.* FROM document d, ctl_document c WHERE d.status=c.status AND d.status != 'D' AND " + 
                 "c.document_no=d.document_no AND c.document_no='" + documentNo + "' ORDER BY d.updatedatetime DESC";
         
@@ -371,9 +371,7 @@ public class EDocUtil extends SqlUtilBaseS {
                             currentdoc.registerIndivo();
                     }
                     rs2.close();
-                }
-                
-                break;
+                }                
             }
             }
         } catch (SQLException sqe) {

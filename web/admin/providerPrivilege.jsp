@@ -44,8 +44,6 @@ String ip = request.getRemoteAddr();
 <%
 Connection c=DbConnectionFilter.getThreadLocalDbConnection();
 ResultSet rs=null;
-try
-{
 	String msg = "";
 	DBHelp dbObj = new DBHelp();
 	// get role from database
@@ -210,11 +208,6 @@ try
 	    	msg = "Role/Obj/Rights " + roleUserGroup + "/" + objectName + "/" + privilege + " is <font color='red'>NOT</font> deleted!!! ";
 	    }
 	}
-}
-finally
-{
-	SqlUtils.closeResources(c, null, rs);
-}
 	
 String keyword = request.getParameter("keyword")!=null?request.getParameter("keyword"):"";
 
@@ -290,9 +283,7 @@ String orderBy = nameWhere.equals("objectName")? "objectName, roleUserGroup" : "
 String query = "select * from secObjPrivilege where " + nameWhere + " like '" + nameValue + "' order by " + orderBy;
 System.out.println(query);
 
-try
-{
-	c=SqlUtils.getConnection();
+	c=DbConnectionFilter.getThreadLocalDbConnection();
 	rs = dbObj.searchDBRecord(c, query);
 	while (rs.next()) {
 		prop = new Properties();
@@ -302,11 +293,6 @@ try
 		prop.setProperty("priority", rs.getString("priority"));
 		vec.add(prop);
 	}
-}
-finally
-{
-	SqlUtils.closeResources(c, null, rs);
-}
 %>
         <table width="100%" border="0" bgcolor="ivory" cellspacing="1" cellpadding="1">
           <tr bgcolor="mediumaquamarine">

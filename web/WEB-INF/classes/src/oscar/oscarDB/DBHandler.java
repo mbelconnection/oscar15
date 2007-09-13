@@ -35,45 +35,46 @@ import java.sql.Statement;
 import org.oscarehr.util.DbConnectionFilter;
 
 public class DBHandler {
-    public static String IDDF_DATA = "iddf";
+//    public static String IDDF_DATA = "iddf";
     public static String OSCAR_DATA = "oscar_sfhc";
-    private static String connDriver = "org.gjt.mm.mysql.Driver";
-    private static String connURL = "jdbc:mysql://"; //"jdbc:mysql://";/;
-    // //oscar?user=root&password=oscar";
-    private static String connUser = null;
-    private static String connPwd = null;
-    private int connInitialConnections = 1;
-    private int connMaxConnections = 100;
-    private boolean connWaitIfBusy = true;
-    private Connection conn;
+//    private static String connDriver = "org.gjt.mm.mysql.Driver";
+//    private static String connURL = "jdbc:mysql://"; //"jdbc:mysql://";/;
+//    // //oscar?user=root&password=oscar";
+//    private static String connUser = null;
+//    private static String connPwd = null;
+//    private int connInitialConnections = 1;
+//    private int connMaxConnections = 100;
+//    private boolean connWaitIfBusy = true;
+//    private Connection conn;
 
     public static boolean isInit() {
-        boolean initd = true;
-        if (connPwd == null) {
-            initd = false;
-        }
-        return initd;
+//        boolean initd = true;
+//        if (connPwd == null) {
+//            initd = false;
+//        }
+//        return initd;
+return(true);
     }
 
     public static void init(String db_name, String db_driver, String db_uri, String db_username, String db_password) {
-        OSCAR_DATA = db_name;
-        connDriver = db_driver;
-        connURL = db_uri;
-        connUser = db_username;
-        connPwd = db_password;
+//        OSCAR_DATA = db_name;
+//        connDriver = db_driver;
+//        connURL = db_uri;
+//        connUser = db_username;
+//        connPwd = db_password;
     }
 
     public DBHandler(String dbName) throws SQLException {
         //this("localhost:3306/", dbName);
-        this("", dbName);
+//        this("", dbName);
     }
 
     public DBHandler(String host, String dbName) throws SQLException {
-        conn = DbConnectionFilter.getThreadLocalDbConnection();
+//        conn = DbConnectionFilter.getThreadLocalDbConnection();
     }
 
     synchronized public Connection GetConnection() throws SQLException {
-        return conn;
+        return DbConnectionFilter.getThreadLocalDbConnection();
     }
 
     synchronized public java.sql.ResultSet GetSQL(Connection c, String SQLStatement) throws SQLException {
@@ -105,10 +106,10 @@ System.err.println(SQLStatement);
         Statement stmt;
         ResultSet rs = null;
         if (updatable) {
-            stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            stmt = DbConnectionFilter.getThreadLocalDbConnection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
         }
         else {
-            stmt = conn.createStatement();
+            stmt = DbConnectionFilter.getThreadLocalDbConnection().createStatement();
         }
         //        System.err.println(stmt.getResultSetConcurrency());
         rs = stmt.executeQuery(SQLStatement);
@@ -120,7 +121,7 @@ System.err.println(SQLStatement);
 System.err.println(SQLStatement);
         boolean b = false;
         Statement stmt;
-        stmt = conn.createStatement();
+        stmt = DbConnectionFilter.getThreadLocalDbConnection().createStatement();
         b = stmt.execute(SQLStatement);
         return b;
     }

@@ -28,12 +28,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.oscarehr.common.dao.IdGenerator;
 import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.OscarProperties;
@@ -85,6 +87,7 @@ public class EDocUtil extends SqlUtilBaseS {
     
     public static ArrayList getDoctypes(String module) {
         String sql = "SELECT * FROM ctl_doctype WHERE (status = 'A' OR status='H') AND module = '" + module + "'";
+        System.out.println("...... getDocTypes sql: " + sql);
         Connection c=null;
         ResultSet rs = null;
         ArrayList doctypes = new ArrayList();
@@ -103,22 +106,26 @@ public class EDocUtil extends SqlUtilBaseS {
         return doctypes;
     }
     
-    public static void addDocumentSQL(EDoc newDocument) {
-        try{
-        int doc_id = getSQLLastInsertId();
-    	String documentSql = "INSERT INTO document (document_no, doctype, docdesc, docxml, docfilename, doccreator, updatedatetime, status, contenttype, public_no, observationdate) " +
+    public static void addDocumentSQL(EDoc newDocument) throws SQLException {    	    	
+    	Connection c = null;
+    	try {
+    		c = DbConnectionFilter.getThreadLocalDbConnection();
+    		int doc_id = IdGenerator.getNextIdFromGenericSequence(c);
+           	String documentSql = "INSERT INTO document (document_no, doctype, docdesc, docxml, docfilename, doccreator, updatedatetime, status, contenttype, public_no, observationdate) " +
                 "VALUES ("+doc_id+ ", '" + org.apache.commons.lang.StringEscapeUtils.escapeSql(newDocument.getType()) + "', '" + org.apache.commons.lang.StringEscapeUtils.escapeSql(newDocument.getDescription()) + 
                 "', '" + org.apache.commons.lang.StringEscapeUtils.escapeSql(newDocument.getHtml()) + "', '" + org.apache.commons.lang.StringEscapeUtils.escapeSql(newDocument.getFileName()) + "', '" + newDocument.getCreatorId() + 
                 "', '" + SqlUtils.isoToOracleDate3(newDocument.getDateTimeStamp()) + "', '" + newDocument.getStatus() + "', '" + newDocument.getContentType() + "', '" + newDocument.getDocPublic() + "', '" + SqlUtils.isoToOracleDate2(newDocument.getObservationDate()) + "')";
-        
-        String document_no = runSQLinsert_orcle(documentSql);
-        System.out.println("addDoc: " + documentSql);
-        System.out.println("last insert id: " + doc_id + "   after insert document, id =" + document_no);
-                
-        String ctlDocumentSql = "INSERT INTO ctl_document VALUES ('" + newDocument.getModule() + "', " + newDocument.getModuleId() + ", " + Integer.valueOf(document_no).intValue() + ", '" + newDocument.getStatus() + "');";
-        runSQL(ctlDocumentSql);
+           	
+           	//String document_no = runSQLinsert(documentSql);
+           	runSQL(documentSql);
+           	System.out.println("addDoc: " + documentSql);               
+           	String ctlDocumentSql = "INSERT INTO ctl_document VALUES ('" + newDocument.getModule() + "', " + newDocument.getModuleId() + ", " + doc_id + ", '" + newDocument.getStatus() + "')";
+           	runSQL(ctlDocumentSql);
         } catch (Exception e){ 
-        	e.printStackTrace();
+        	e.printStackTrace();        	
+        }
+        finally {
+        	c.close();
         }
     }
     
@@ -141,13 +148,19 @@ public class EDocUtil extends SqlUtilBaseS {
        String html = org.apache.commons.lang.StringEscapeUtils.escapeSql(newDocument.getHtml());
        String contentType = newDocument.getContentType();
        System.out.println("obs date: " + newDocument.getObservationDate());
-       String editDocSql = "UPDATE document SET doctype='" + doctype + "', docdesc='" + docDescription + "', updatedatetime='" + getDmsDateTime() + "', public_no='" + newDocument.getDocPublic() + "', observationdate='" + newDocument.getObservationDate() + "', docxml='" + html + "'";
+       
+       try{
+       String editDocSql = "UPDATE document SET doctype='" + doctype + "', docdesc='" + docDescription + "', updatedatetime='" + SqlUtils.isoToOracleDate3(getDmsDateTime()) + "', public_no='" + newDocument.getDocPublic() + "', observationdate='" + SqlUtils.isoToOracleDate2(newDocument.getObservationDate()) + "', docxml='" + html + "'";
        if (docFileName.length() > 0) {
            editDocSql = editDocSql + ", docfilename='" + docFileName + "', contenttype='" + newDocument.getContentType() + "'";
        }
        editDocSql = editDocSql + " WHERE document_no=" + newDocument.getDocId();
        System.out.println("doceditSQL: " + editDocSql);
        runSQL(editDocSql);
+       } catch (Exception e) {
+    	   e.printStackTrace();
+       }
+       
     }
        
     public static void indivoRegister( EDoc doc ) {
@@ -318,7 +331,8 @@ public class EDocUtil extends SqlUtilBaseS {
     }       
     
     public static EDoc getDoc(String documentNo) {
-        String sql = "SELECT DISTINCT c.module, c.module_id, d.* FROM document d, ctl_document c WHERE d.status=c.status AND d.status != 'D' AND " + 
+        //get rid of DISTINCT for oracle
+    	String sql = "SELECT c.module, c.module_id, d.* FROM document d, ctl_document c WHERE d.status=c.status AND d.status != 'D' AND " + 
                 "c.document_no=d.document_no AND c.document_no='" + documentNo + "' ORDER BY d.updatedatetime DESC";
         
         String indivoSql = "SELECT indivoDocIdx FROM indivoDocs i WHERE i.oscarDocNo = ? and i.docType = 'document' limit 1";
@@ -331,6 +345,7 @@ public class EDocUtil extends SqlUtilBaseS {
         try {
             c=DbConnectionFilter.getThreadLocalDbConnection();
             rs = getSQL(c, sql);
+            if(rs!=null) {
             while (rs.next()) {
                 currentdoc.setModule(rsGetString(rs, "module"));
                 currentdoc.setModuleId(rsGetString(rs, "module_id"));
@@ -355,8 +370,11 @@ public class EDocUtil extends SqlUtilBaseS {
                        if(currentdoc.getIndivoIdx().length() > 0 )
                             currentdoc.registerIndivo();
                     }
+                    rs2.close();
                 }
-                rs2.close();
+                
+                break;
+            }
             }
         } catch (SQLException sqe) {
             SqlUtils.closeResources(c, null, rs);
@@ -387,8 +405,13 @@ public class EDocUtil extends SqlUtilBaseS {
     
     public static void deleteDocument(String documentNo) {
         String nowDate = getDmsDateTime();
-        String sql = "UPDATE document SET status='D', updatedatetime='" + nowDate + "' WHERE document_no=" + documentNo;
-        runSQL(sql);
+        try {
+        	String sql = "UPDATE document SET status='D', updatedatetime='" + SqlUtils.isoToOracleDate3(nowDate) + "' WHERE document_no=" + documentNo;
+        	runSQL(sql); 
+        } catch (Exception e) {
+        	e.printStackTrace();
+        }
+        
     }
 
     public static String getDmsDateTime() {
@@ -420,7 +443,7 @@ public class EDocUtil extends SqlUtilBaseS {
             ex.printStackTrace();
         }
         catch( IOException ex ) {
-            ex.printStackTrace();
+             ex.printStackTrace();
         }
 
         return fdata;

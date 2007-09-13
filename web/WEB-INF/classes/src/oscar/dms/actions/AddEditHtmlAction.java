@@ -86,6 +86,7 @@ public class AddEditHtmlAction extends Action {
         }
         EDoc currentDoc;
         System.out.println("mode: " + fm.getMode());
+        try {
         if (fm.getMode().indexOf("add") != -1) {
             currentDoc = new EDoc(fm.getDocDesc(), fm.getDocType(), fileName, org.apache.commons.lang.StringEscapeUtils.escapeJava(fm.getHtml()), fm.getDocCreator(), 'H', fm.getObservationDate(), fm.getFunction(), fm.getFunctionId());
             currentDoc.setContentType("text/html");
@@ -97,6 +98,9 @@ public class AddEditHtmlAction extends Action {
             currentDoc.setContentType("text/html");
             currentDoc.setDocPublic(fm.getDocPublic());
             EDocUtil.editDocumentSQL(currentDoc);
+        }
+        } catch (Exception e) {
+        	e.printStackTrace();
         }
         ActionRedirect redirect = new ActionRedirect(mapping.findForward("success"));
         redirect.addParameter("function", request.getParameter("function"));

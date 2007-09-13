@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -49,6 +50,9 @@ import org.oscarehr.casemgmt.model.CaseManagementCPP;
 import org.oscarehr.casemgmt.model.CaseManagementNote;
 import org.oscarehr.casemgmt.model.CaseManagementSearchBean;
 import org.oscarehr.casemgmt.web.formbeans.CaseManagementViewFormBean;
+
+import oscar.oscarRx.data.RxPatientData;
+import oscar.oscarRx.pageUtil.RxSessionBean;
 
 
 
@@ -231,7 +235,45 @@ public class CaseManagementViewAction extends BaseCaseManagementViewAction {
 			} else {
 				prescriptions = this.caseManagementMgr.getPrescriptions(this.getDemographicNo(request),false);				
 			}			
-			request.setAttribute("Prescriptions",prescriptions);						
+			request.setAttribute("Prescriptions",prescriptions);	
+			
+			// Setup RX bean start
+	        RxSessionBean bean;
+	        
+	        if(request.getSession().getAttribute("RxSessionBean")!=null) {
+	            bean = (oscar.oscarRx.pageUtil.RxSessionBean)request.getSession().getAttribute("RxSessionBean");
+	            
+	            if(!(providerNo.equals(bean.getProviderNo()))
+	            || (bean.getDemographicNo() != Integer.parseInt(demoNo))) {
+	                bean = new RxSessionBean();
+	            }
+	        }
+	        else {
+	            bean = new RxSessionBean();
+	        }	        
+	        
+	        bean.setProviderNo(providerNo);
+	        bean.setDemographicNo(Integer.parseInt(demoNo));
+	        
+	        request.getSession().setAttribute("RxSessionBean", bean);
+	        
+	        RxPatientData rx = null;
+	        RxPatientData.Patient patient = null;
+	        try {
+	            rx = new RxPatientData();
+	            patient = rx.getPatient(bean.getDemographicNo());
+	        }
+	        catch (java.sql.SQLException ex) {
+	            throw new ServletException(ex);
+	        }
+	        
+	        if(patient!=null) {
+	            request.getSession().setAttribute("Patient", patient);	            	            
+	        } 
+	        
+	        // set up RX end
+			
+			
 		}
 
 		/* tickler */

@@ -80,11 +80,11 @@
     File f = new File(backuppath);
     File[] contents = f.listFiles(); 
     
-    Arrays.sort(contents,new FileSortByDate());
     if (contents == null) {
         Exception e = new Exception("Unable to find any files in the directory "+backuppath+".  (If this is the incorrect directory, please modify the value of backup_path in your properties file to reflect the correct directory).");
         throw e;
     }
+    Arrays.sort(contents,new FileSortByDate());
     for(int i=0; i<contents.length; i++) {
       bodd = bodd?false:true ;
       if(contents[i].isDirectory() || contents[i].getName().equals("BackupClient.class")  || contents[i].getName().startsWith(".")) continue;

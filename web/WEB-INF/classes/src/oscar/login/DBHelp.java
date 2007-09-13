@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
+import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.oscarDB.DBHandler;
 
@@ -25,14 +26,17 @@ public class DBHelp {
             db = new DBHandler(DBHandler.OSCAR_DATA);
             ret = db.RunSQL(sql);
             ret = true;
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             e.printStackTrace();
             ret = false;
             System.out.println(e.getMessage());
-        } finally {
-            db.CloseConn();
         }
         return ret;
+    }
+
+    public synchronized ResultSet searchDBRecord(String sql) throws SQLException {
+        return(searchDBRecord(DbConnectionFilter.getThreadLocalDbConnection(), sql));
     }
 
     public synchronized ResultSet searchDBRecord(Connection c, String sql) throws SQLException {
@@ -40,9 +44,9 @@ public class DBHelp {
         DBHandler db = null;
 
         db = new DBHandler(DBHandler.OSCAR_DATA);
-           ret = db.GetSQL(c, sql);
+        ret = db.GetSQL(c, sql);
 
-           return ret;
+        return ret;
     }
 
     public synchronized boolean updateDBRecord(String sql, String userId) throws SQLException {
@@ -53,14 +57,20 @@ public class DBHelp {
             ret = db.RunSQL(sql);
             ret = true;
             _logger.info("updateDBRecord(sql = " + sql + ", userId = " + userId + ")");
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             e.printStackTrace();
             ret = false;
             _logger.error("updateDBRecord(sql = " + sql + ", userId = " + userId + ")");
-        } finally {
+        }
+        finally {
             db.CloseConn();
         }
         return ret;
+    }
+
+    public synchronized ResultSet searchDBRecord(String sql, String userId) throws SQLException {
+        return(searchDBRecord(DbConnectionFilter.getThreadLocalDbConnection(), sql, userId));
     }
 
     public synchronized ResultSet searchDBRecord(Connection c, String sql, String userId) throws SQLException {
@@ -70,10 +80,12 @@ public class DBHelp {
             db = new DBHandler(DBHandler.OSCAR_DATA);
             ret = db.GetSQL(c, sql);
             _logger.info("searchDBRecord(sql = " + sql + ", userId = " + userId + ")");
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             e.printStackTrace();
             _logger.error("searchDBRecord(sql = " + sql + ", userId = " + userId + ")");
-        } finally {
+        }
+        finally {
             db.CloseConn();
         }
         return ret;

@@ -93,7 +93,8 @@ public class TicklerDAOHibernate extends HibernateDaoSupport implements
 	
 	public List getTicklers(CustomFilter filter) {
 		
-		String tickler_date_order = filter.getSort_order();
+		String tickler_date_order = filter.getSort_order(); //get "asc"
+
 		String query = "from Tickler t where t.service_date >= ? and t.service_date <= ? ";
 		boolean includeProviderClause = true;
 		boolean includeAssigneeClause = true;
@@ -101,11 +102,14 @@ public class TicklerDAOHibernate extends HibernateDaoSupport implements
 		boolean includeClientClause = true;
 		boolean includeDemographicClause = true;
 		
+		//ORACLE DATE: DD-MMM-YYYY
 		if(filter.getStartDate() == null || filter.getStartDate().length()==0) {
-			filter.setStartDate("0001-01-01");
+			//filter.setStartDate("0001-01-01");
+			filter.setStartDate("01-JAN-1900");
 		}
 		if(filter.getEndDate() == null ||filter.getEndDate().length()==0) {
-			filter.setEndDate("9999-12-31");
+			//filter.setEndDate("9999-12-31");
+			filter.setEndDate("31-DEC-9999");
 		}
 		
 		if(filter.getProvider() == null || filter.getProvider().equals("All Providers")) {
@@ -127,8 +131,9 @@ public class TicklerDAOHibernate extends HibernateDaoSupport implements
 		
 		List paramList = new ArrayList();
 		paramList.add(filter.getStartDate());
-		paramList.add(filter.getEndDate() + " 23:59:59");
-		
+		//paramList.add(filter.getEndDate() + " 23:59:59");
+		paramList.add(filter.getEndDate());
+				
 		//TODO: IN clause
 		if(includeProviderClause) {
 			query = query + " and t.creator IN (";
@@ -172,7 +177,7 @@ public class TicklerDAOHibernate extends HibernateDaoSupport implements
 			paramList.add(filter.getDemographic_no());
 		}
 		Object params[] = paramList.toArray(new Object[paramList.size()]);
-
+		System.out.println(".....query= " + query);
 		return (List)getHibernateTemplate().find(query + "order by t.service_date "+tickler_date_order,params);
 	}
 	

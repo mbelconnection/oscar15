@@ -31,6 +31,8 @@ import java.util.Set;
 
 import org.oscarehr.PMmodule.model.Provider;
 
+import oscar.util.SqlUtils;
+
 /**
 * Object representation of 'custom_filter' table in OSCAR
 * @author Marc Dumontier <a href="mailto:marc@mdumontier.com">marc@mdumontier.com</a>
@@ -124,19 +126,23 @@ public class CustomFilter extends BaseObject {
 	/* have to do this */
 	public void setStartDate(String data) {
 		if(data == null || data.length()==0) {
-			data = "0001-01-01";
+			//data = "0001-01-01";
+			data = "01-JAN-0001";
 		}
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		//SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
 		try {
 			setStart_date(formatter.parse(data));
 		}catch(Exception e) {
-			throw new IllegalArgumentException("Invalid service date, use yyyy-MM-dd");
+			//throw new IllegalArgumentException("Invalid service date, use yyyy-MM-dd");
+			throw new IllegalArgumentException("Invalid service date, use dd-MMM-yyyy");
 		}
 	}
 	
 	public String getStartDate() {
 		if(getStart_date() != null) {
-			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			//SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
 			return formatter.format(getStart_date());
 		}
 		return "";
@@ -144,19 +150,23 @@ public class CustomFilter extends BaseObject {
 	
 	public void setEndDate(String data) {
 		if(data == null || data.length()==0) {
-			data = "9999-12-31";
+			//data = "9999-12-31";
+			data = "31-DEC-9999";
 		}
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		//SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
 		try {
 			setEnd_date(formatter.parse(data));
 		}catch(Exception e) {
-			throw new IllegalArgumentException("Invalid service date, use yyyy-MM-dd");
+			//throw new IllegalArgumentException("Invalid service date, use yyyy-MM-dd");
+			throw new IllegalArgumentException("Invalid service date, use dd-MMM-yyyy");
 		}
 	}
 	
 	public String getEndDate() {
 		if(getEnd_date() != null) {
-			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			//SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
 			return formatter.format(getEnd_date());
 		}
 		return "";

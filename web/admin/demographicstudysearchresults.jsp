@@ -33,7 +33,7 @@
 <%@ include file="../admin/dbconnection.jsp" %>
 <% 
     String [][] dbQueries=new String[][] { 
-        {"search_demo", "select d.*, s.study_no from demographic d LEFT JOIN demographicstudy s ON d.demographic_no = s.demographic_no where " + nameValue + " group by d.demographic_no order by last_name limit ? offset ?" }, 
+        {"search_demo", "select d.*, s.study_no from demographic d LEFT JOIN demographicstudy s ON d.demographic_no = s.demographic_no where " + nameValue + " group by d.demographic_no order by last_name" }, 
     };
     studyBean.doConfigure(dbParams,dbQueries);
 %>

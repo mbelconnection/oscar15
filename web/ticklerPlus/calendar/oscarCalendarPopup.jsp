@@ -63,7 +63,26 @@
 			function typeCaisiDate(form_name,element_name,year1,month1,day1) {
 			  self.close();
 			  var test = "opener.document." + form_name + ".elements['" + element_name +"'].value";
-			  var val = "'" + year1+"-"+month1+"-"+day1 + "'";
+			 
+			 	//for mysql
+			  //var val = "'" + year1+"-"+month1+"-"+day1 + "'";
+			  
+			  //for oracle: start .....			  
+			  if(month1==1) month1="Jan";
+			  else if(month1==2) month1="Feb";
+			  else if(month1==3) month1="Mar";
+			  else if(month1==4) month1="Apr";
+			  else if(month1==5) month1="May";
+			  else if(month1==6) month1="Jun";
+			  else if(month1==7) month1="Jul";
+			  else if(month1==8) month1="Aug";
+			  else if(month1==9) month1="Sep";
+			  else if(month1==10) month1="Oct";
+			  else if(month1==11) month1="Nov";
+			  else if(month1==12) month1="Dec";			  
+			  var val = "'" + day1 + "-" + month1 + "-" + year1 + "'";
+			  // oracle end.....
+			  
 			  var myexpr = test + "=" + val;
 			  eval(myexpr);
 			}

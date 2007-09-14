@@ -158,10 +158,10 @@ public class AppointmentMainBean {
 	  String sqlQuery = null;
 	  ResultSet rs =null;
 	  if(aKeyword.equals("*")) {
-	  	sqlQuery = dbSQL.getDef("search*","");
+	  	sqlQuery = dbSQL.getDef("search*","");	  	
     	rs = dbPH.queryResults(sqlQuery);
 	  } else {
-	  	sqlQuery = dbSQL.getDef(dboperation,"");
+	  	sqlQuery = dbSQL.getDef(dboperation,"");	  	
     	rs = dbPH.queryResults(sqlQuery, aKeyword);
 	  }
   	return rs;

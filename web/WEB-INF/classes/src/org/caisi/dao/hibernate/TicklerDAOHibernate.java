@@ -35,6 +35,8 @@ import org.caisi.model.TicklerUpdate;
 import org.oscarehr.PMmodule.model.Provider;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
+import oscar.util.SqlUtils;
+
 /**
  * Hibernate implementation for the corresponding DAO interface 
  * @author Marc Dumontier <a href="mailto:marc@mdumontier.com">marc@mdumontier.com</a>
@@ -101,15 +103,29 @@ public class TicklerDAOHibernate extends HibernateDaoSupport implements
 		boolean includeStatusClause = true;
 		boolean includeClientClause = true;
 		boolean includeDemographicClause = true;
+		List paramList = new ArrayList();
 		
 		//ORACLE DATE: DD-MMM-YYYY
-		if(filter.getStartDate() == null || filter.getStartDate().length()==0) {
-			//filter.setStartDate("0001-01-01");
-			filter.setStartDate("01-JAN-1900");
-		}
-		if(filter.getEndDate() == null ||filter.getEndDate().length()==0) {
-			//filter.setEndDate("9999-12-31");
-			filter.setEndDate("31-DEC-9999");
+		try {
+			System.out.println("start date="+filter.getStartDate());
+			System.out.println("end date="+filter.getEndDate());
+			if(filter.getStartDate() == null || filter.getStartDate().length()==0) {
+				//filter.setStartDate("0001-01-01");
+				filter.setStartDate("01-JAN-1900");
+			} 
+		
+			if(filter.getEndDate() == null ||filter.getEndDate().length()==0) {
+				//filter.setEndDate("9999-12-31");
+				filter.setEndDate("31-DEC-9999");
+			} 
+				
+			paramList.add(filter.getStartDate());
+		
+			//paramList.add(filter.getEndDate() + " 23:59:59");
+			//paramList.add(filter.getEndDate());
+			paramList.add(SqlUtils.addOneDay(filter.getEndDate()));
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		if(filter.getProvider() == null || filter.getProvider().equals("All Providers")) {
@@ -129,10 +145,6 @@ public class TicklerDAOHibernate extends HibernateDaoSupport implements
 			includeStatusClause = false;
 		}
 		
-		List paramList = new ArrayList();
-		paramList.add(filter.getStartDate());
-		//paramList.add(filter.getEndDate() + " 23:59:59");
-		paramList.add(filter.getEndDate());
 				
 		//TODO: IN clause
 		if(includeProviderClause) {

@@ -1,17 +1,20 @@
 <%@ include file="/ticklerPlus/header.jsp" %>
 
 <%@ page import="java.util.*" %>
+<%@ page import="oscar.util.SqlUtils" %>
 <%
  	Calendar rightNow = Calendar.getInstance();              
  	int year = rightNow.get(Calendar.YEAR);
  	int month = rightNow.get(Calendar.MONTH)+1;
  	int day = rightNow.get(Calendar.DAY_OF_MONTH);
- 	String formattedDate = year + "-" + month + "-" + day;
+ 	//String formattedDate = year + "-" + month + "-" + day;
+ 	String month_string = SqlUtils.getStringMonth(month);
+ 	String formattedDate = day + "-" + month_string + "-" + year ;
 %>
 
 	<script>
 		function search_demographic() {
-			window.open('./ticklerPlus/demographicSearch.jsp?form=customFilterForm&elementName=filter.demographic_webName&elementId=filter.demographic_no&query=' + document.customFilterForm.elements['filter.demographic_webName'].value,'demographic_search');
+			window.open('../ticklerPlus/demographicSearch.jsp?form=customFilterForm&elementName=filter.demographic_webName&elementId=filter.demographic_no&query=' + document.customFilterForm.elements['filter.demographic_webName'].value,'demographic_search');
 		}
 	</script>	
 

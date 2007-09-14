@@ -41,6 +41,7 @@ import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
@@ -595,6 +596,38 @@ public class SqlUtils {
         return(oracleFormat.format(date));
     }
     
+      
+    public static String addOneDay(String oldDate) throws ParseException
+    {
+        SimpleDateFormat isoFormat=new SimpleDateFormat("dd-MMM-yyyy");
+        java.util.Date date1=isoFormat.parse(oldDate);
+        
+        Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date1);
+		calendar.add(Calendar.DAY_OF_YEAR, 1);
+		date1 = calendar.getTime();
+        
+        SimpleDateFormat oracleFormat=new SimpleDateFormat("dd-MMM-yyyy");
+        
+        return(oracleFormat.format(date1));
+    }
+    
+    public static String getStringMonth(int month1) {
+    	String month_string = "";
+    	if(month1==1) month_string="Jan";
+    	else if(month1==2) month_string="Feb";
+		else if(month1==3) month_string="Mar";
+		else if(month1==4) month_string="Apr";
+		else if(month1==5) month_string="May";
+		else if(month1==6) month_string="Jun";
+		else if(month1==7) month_string="Jul";
+		else if(month1==8) month_string="Aug";
+		else if(month1==9) month_string="Sep";
+		else if(month1==10) month_string="Oct";
+		else if(month1==11) month_string="Nov";
+		else if(month1==12) month_string="Dec";
+    	return month_string;
+    }
     
     public static void main(String... argv) throws Exception
     {

@@ -63,12 +63,17 @@
     if(request.getParameter("search_mode").equals("search_address")) fieldname="address";
     if(request.getParameter("search_mode").equals("search_phone")) fieldname="phone";
     if(request.getParameter("search_mode").equals("search_hin")) fieldname="hin";
-    if(request.getParameter("search_mode").equals("search_dob")) fieldname="year_of_birth "+regularexp+" ?"+" and month_of_birth "+regularexp+" ?"+" and date_of_birth ";
+   
+    // if(request.getParameter("search_mode").equals("search_dob")) fieldname="year_of_birth "+regularexp+" ?"+" and month_of_birth "+regularexp+" ?"+" and date_of_birth ";
+    if(request.getParameter("search_mode").equals("search_dob")) fieldname="year_of_birth,?,'i') and regexp(month_of_birth,?,'i') and regexp(date_of_birth";
+    
     if(request.getParameter("search_mode").equals("search_chart_no")) fieldname="chart_no";
     if(request.getParameter("search_mode").equals("search_name")) {
       if(request.getParameter("keyword").indexOf(",")==-1)  fieldname="last_name";
       else if(request.getParameter("keyword").trim().indexOf(",")==(request.getParameter("keyword").trim().length()-1)) fieldname="last_name";
-      else fieldname="last_name "+regularexp+" ?"+" and first_name ";
+      
+      //else fieldname="last_name "+regularexp+" ?"+" and first_name ";
+      else fieldname="last_name,?,'i') and regexp_like(first_name";
     }
   }
 

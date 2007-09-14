@@ -37,11 +37,11 @@
 <table>
 <tr>
      <th><bean:message key="issueAdmin.code"/>: </th>
-     <td><html:text property="issueAdmin.code"/></td>
+     <td><html:text property="issueAdmin.code" size="20" maxlength="20" /></td>
 </tr>
 <tr>
      <th><bean:message key="issueAdmin.description"/>: </th>
-     <td><html:text property="issueAdmin.description"/></td>
+     <td><html:text property="issueAdmin.description" size="20" maxlength="255"/></td>
 </tr>
 <tr>
      <th><bean:message key="issueAdmin.role"/>: </th>

@@ -24,6 +24,7 @@
  */
 --%>
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security" %>
+<%@ page import="org.oscarehr.common.dao.IdGenerator" %>
 <%
     if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
     String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
@@ -92,7 +93,9 @@ if(session.getAttribute("user") == null ) //|| !((String) session.getValue("user
     //we save results in request to maintain state of form        
     request.setAttribute("inactive",inactive);
     request.setAttribute("active",active);
-    
+  
+    //get security_no from sequence
+    int security_no = IdGenerator.getNextIdFromGenericSequence();
     
   //operation available to the client - dboperation
   String [][] dbQueries=null;
@@ -114,7 +117,7 @@ if(session.getAttribute("user") == null ) //|| !((String) session.getValue("user
     {"demographic_search_demoaddno", "select demographic_no from demographic where last_name=? and first_name =? and year_of_birth=? and month_of_birth=? and date_of_birth=? and hin=? and ver=?"},
     {"search_lastfirstnamedob", "select demographic_no from demographic where last_name=? and first_name=? and year_of_birth=? and month_of_birth=? and date_of_birth=?"},
     
-    {"security_add_record", "insert into security (user_name,password,provider_no,pin,b_ExpireSet,date_ExpireDate,b_LocalLockSet,b_RemoteLockSet) values(?,?,?,?,?,?,?,?)" },
+    {"security_add_record", "insert into security (security_no,user_name,password,provider_no,pin,b_ExpireSet,date_ExpireDate,b_LocalLockSet,b_RemoteLockSet) values("+security_no+",?,?,?,?,?,?,?,?)" },
     {"security_search_titlename", "select * from security where "+fieldname+ " "+regularexp+" ? " +orderby},
     {"security_search_detail", "select * from security where security_no=?"},
     {"security_delete", "delete from security where security_no=? and provider_no!='super'"},

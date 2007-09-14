@@ -34,7 +34,9 @@
 
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
+<%@ page import="oscar.util.SqlUtils" %>
 <%@ page  import="java.sql.*, java.util.*,java.security.*" errorPage="errorpage.jsp" %>
+
 <%
   //if(session.getValue("user") == null)  response.sendRedirect("../logout.jsp");
 %>
@@ -63,7 +65,10 @@
 	  param[2]=request.getParameter("provider_no");
 	  param[3]=request.getParameter("pin");
 	  param[4]=request.getParameter("b_ExpireSet")==null?"0":request.getParameter("b_ExpireSet");
+	  
 	  param[5]=request.getParameter("date_ExpireDate");
+	  param[5]=SqlUtils.isoToOracleDate(param[5]);
+	  
 	  param[6]=request.getParameter("b_LocalLockSet")==null?"0":request.getParameter("b_LocalLockSet");
 	  param[7]=request.getParameter("b_RemoteLockSet")==null?"0":request.getParameter("b_RemoteLockSet");
 

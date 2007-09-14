@@ -190,8 +190,8 @@ CREATE TABLE PROGRAM (
 	EMERGENCY_NUMBER VARCHAR(255),
 	TYPE VARCHAR(50),
 	LOCATION VARCHAR(70),
-	MAX_ALLOWED NUMBER(6) DEFAULT 0,
-	NUM_OF_MEMBERS NUMBER(6) DEFAULT 0,
+	MAX_ALLOWED NUMBER(10) DEFAULT 0,
+	NUM_OF_MEMBERS NUMBER(10) DEFAULT 0,
 	HOLDING_TANK NUMBER(1) DEFAULT 0,
 	ALLOW_BATCH_ADMISSION NUMBER(1),
 	ALLOW_BATCH_DISCHARGE NUMBER(1),
@@ -1109,7 +1109,7 @@ CREATE TABLE CAISI_FORM (
 	CONSTRAINT CAISI_FORM_PK PRIMARY KEY (FORM_ID),
 	DESCRIPTION VARCHAR(255),
 	SURVEYDATA CLOB,
-	STATUS NUMBER(6),
+	STATUS NUMBER(10),
 	VERSION NUMBER(10) DEFAULT 0
 );
 
@@ -1883,4 +1883,57 @@ INSERT INTO ENCOUNTERTEMPLATE VALUES ('SINUSITIS',SYSDATE,'1. Inquiry re pain in
 INSERT INTO ENCOUNTERTEMPLATE VALUES ('GOUT',SYSDATE,'1. Inquiry re at least one of following? \r\nsevere joint pain \r\nhistory of swelling \r\nhistory of inflammation \r\nmonoarticular joint \r\n2. List of drugs being used OR on chart (3 minute)? \r\n3. Presence/absence of swelling of involved joint? \r\n4. Presence/absence of inflammation of involved joint? \r\n5. IF joint aspiration done, report for uric acid crystals? \r\n6. Serum uric acid? \r\n7. One of the following? \r\nserum uric acid greater than lab normal \r\nuric acid crystals in joint aspirate \r\nX-ray diagnosis \r\n8. ASA used? \r\n9. NSAIDs OR Colchicine used? \r\n10. IF thiazides used, statement of justification? \r\n11. IF 3 or more episodes OR uric acid greater than lab normal, recommendation for prophylaxis treatment? \r\n12. Advice re avoidance of precipitating factors (eg. alcohol, high purine foods) \r\n13. IF flare-up occurs AND allopurinal OR uricosurics are being used, Colchicine used? ','Unknow');
 INSERT INTO ENCOUNTERTEMPLATE VALUES ('NASAL INJURY',SYSDATE,'1. Description of accident? \r\n2. Description of nose including 2 of following; swelling, amount of bleeding, deformity, lacerations? \r\n3. IF deformity found on examination, X-ray of nasal bones? \r\n4. IF deformity found on examination, referral to ENT specialist? \r\n5. IF unable to control bleeding, referral? ','Unknow');
 INSERT INTO ENCOUNTERTEMPLATE VALUES ('VENEREAL WARTS (COND',SYSDATE,'1. Inquiry re duration of lesions? \r\n2. Description of size AND extent of lesions? \r\n3. VDRL OR syphilis screen? ','Unknow');
+
+DROP TABLE DEMOGRAPHICSTUDY CASCADE CONSTRAINTS;
+CREATE TABLE DEMOGRAPHICSTUDY (
+  DEMOGRAPHIC_NO NUMBER(10),
+  STUDY_NO NUMBER(10),
+  CONSTRAINT DEMOGRAPHICSTUDY_PK PRIMARY KEY(DEMOGRAPHIC_NO,STUDY_NO),
+  PROVIDER_NO VARCHAR2(10),
+  TIMESTAMP_STUDY TIMESTAMP  
+);
+
+DROP TABLE STUDY CASCADE CONSTRAINTS;
+CREATE TABLE STUDY (
+  STUDY_NO NUMBER(10), -- NOT NULL auto_increment
+  STUDY_NAME VARCHAR2(20),
+  STUDY_LINK VARCHAR2(255),
+  DESCRIPTION VARCHAR2(255),
+  FORM_NAME VARCHAR2(30),
+  CURRENTNUMBER NUMBER(1),
+  REMOTE_SERVERURL VARCHAR2(50),
+  PROVIDER_NO VARCHAR2(10),
+  TIMESTAMP_STUDY TIMESTAMP,
+  CONSTRAINT STUDY_PK PRIMARY KEY(STUDY_NO)  
+);
+
+
+DROP TABLE STUDYDATA CASCADE CONSTRAINTS;
+CREATE TABLE STUDYDATA (
+  STUDYDATA_NO NUMBER(10), -- NOT NULL auto_increment,
+  DEMOGRAPHIC_NO NUMBER(10),
+  STUDY_NO NUMBER(10),
+  PROVIDER_NO VARCHAR2(10),
+  TIMESTAMP_STUDY TIMESTAMP,
+  STATUS VARCHAR2(30),
+  CONTENT CLOB,
+  CONSTRAINT STUDYDATA_PK PRIMARY KEY (STUDYDATA_NO)
+);
+
+
+DROP TABLE STUDYLOGIN CASCADE CONSTRAINTS;
+CREATE TABLE STUDYLOGIN (
+  ID NUMBER(6), -- NOT NULL auto_increment,
+  PROVIDER_NO VARCHAR2(10),
+  STUDY_NO NUMBER(3),
+  REMOTE_LOGIN_URL VARCHAR2(100),
+  URL_NAME_USERNAME VARCHAR2(20),
+  URL_NAME_PASSWORD VARCHAR2(20),
+  USERNAME VARCHAR2(30),
+  PASSWORD VARCHAR2(100),
+  CURRENTNUMBER NUMBER(1),
+  CREATOR VARCHAR2(6),
+  TIMESTAMP_STUDY TIMESTAMP,
+  CONSTRAINT STUDYLOGIN_PK PRIMARY KEY (ID)
+);
 

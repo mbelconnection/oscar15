@@ -59,7 +59,7 @@ public class CaseManagementIssueDAOHibernate extends HibernateDaoSupport
 		return this
 				.getHibernateTemplate()
 				.find(
-						"from CaseManagementIssue cmi where cmi.demographic_no = ? and cmi.resolved=false",
+						"from CaseManagementIssue cmi where cmi.demographic_no = ? and cmi.resolved=0",
 						new Object[]
 						{ demographic_no });
 	}

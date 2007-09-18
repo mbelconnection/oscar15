@@ -454,23 +454,26 @@ var beginD = "0001-01-01"
     String dateBegin = xml_vdate;
     String dateEnd = xml_appointment_date;
     String redColor = "", lilacColor = "" , whiteColor = "";
-    String vGrantdate = SqlUtils.isoToOracleDate("1980-01-07 00:00:00.0");
+    String vGrantdate = "1980-01-07 00:00:00.0";
     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:ss:mm.SSS", request.getLocale());
     String provider;
     String taskAssignedTo = "";
-    if (dateEnd.compareTo("") == 0) dateEnd = SqlUtils.isoToOracleDate(MyDateFormat.getMysqlStandardDate(curYear, curMonth, curDay));
-    if (dateBegin.compareTo("") == 0) dateBegin=SqlUtils.isoToOracleDate("0001-01-01");
+    if (dateEnd.compareTo("") == 0) dateEnd = MyDateFormat.getMysqlStandardDate(curYear, curMonth, curDay);
+    if (dateBegin.compareTo("") == 0) dateBegin="0001-01-01";
     ResultSet rs=null ;
     String[] param =new String[5];
     boolean bodd=false;
     param[0] = ticklerview;
 
+    if (dateBegin!=null) dateBegin=SqlUtils.isoToOracleDate(dateBegin);
     param[1] = dateBegin;
+    if (dateEnd!=null) dateEnd=SqlUtils.isoToOracleDate(dateEnd);
     param[2] = dateEnd;
     param[3] = request.getParameter("providerview")==null?"%": request.getParameter("providerview");
     param[4] = request.getParameter("assignedTo")==null?"%": request.getParameter("assignedTo");
-   System.out.println(request.getParameter("assignedTo")==null?"%": request.getParameter("assignedTo"));
-
+//   System.out.println(request.getParameter("assignedTo")==null?"%": request.getParameter("assignedTo"));
+//System.err.println("***** "+Arrays.toString(param));
+   
     rs = apptMainBean.queryResults(param, "search_tickler");
     while (rs.next()) {
        nItems = nItems +1;

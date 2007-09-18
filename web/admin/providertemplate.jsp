@@ -37,7 +37,7 @@
     param[0] = request.getParameter("name");
     param[1] = request.getParameter("value");
     param[2] = request.getParameter("creator");
-    param[3] = strDateTime;
+    param[3] = SqlUtils.isoToOracleDate(strDateTime);
     rowsAffected = apptMainBean.queryExecuteUpdate(param[0],"delete_template");
     if(request.getParameter("dboperation")!=null && request.getParameter("dboperation").equals(" Save ") )
       rowsAffected = apptMainBean.queryExecuteUpdate(param,"add_template");

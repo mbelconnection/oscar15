@@ -180,6 +180,7 @@ if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.Is
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.springframework.web.context.WebApplicationContext"%>
 <%@page import="org.caisi.service.Version"%>
+<%@page import="oscar.util.*"%>
 <html:html locale="true">
 <head>
 <title><%=WordUtils.capitalize(userlastname + ", " +  org.apache.commons.lang.StringUtils.substring(userfirstname, 0, 1)) + "-"%><bean:message key="provider.appointmentProviderAdminDay.title"/></title>
@@ -450,7 +451,7 @@ if(providerBean.get(mygroupno) != null) { //single appointed provider view
 		((Statement) rst[1]).close();
        String [] param3 = new String [2];
        param3[0] = mygroupno;
-       param3[1] = strDate; //strYear +"-"+ strMonth +"-"+ strDay ;
+       param3[1] = SqlUtils.isoToOracleDate(strDate); //strYear +"-"+ strMonth +"-"+ strDay ;
   	   rst= apptMainBean.queryResultsCaisi(param3, "search_numgrpscheduledate");
   	 rsgroup=(ResultSet) rst[0];
   	   while (rsgroup.next()) {
@@ -494,7 +495,7 @@ if(providerBean.get(mygroupno) != null) { //single appointed provider view
    //set timecode bean
    String bgcolordef = "#486ebd" ;
    String [] param3 = new String[2];
-   param3[0] = strDate; //strYear+"-"+strMonth+"-"+strDay;
+   param3[0] = SqlUtils.isoToOracleDate(strDate); //strYear+"-"+strMonth+"-"+strDay;
    for(int nProvider=0;nProvider<numProvider;nProvider++) {
      param3[1] = curProvider_no[nProvider];
      	rst=apptMainBean.queryResultsCaisi(param3, "search_appttimecode");
@@ -799,7 +800,7 @@ for(int nProvider=0;nProvider<numProvider;nProvider++) {
      userAvail = true;
      int timecodeLength = dateTimeCodeBean.get(curProvider_no[nProvider])!=null?((String) dateTimeCodeBean.get(curProvider_no[nProvider]) ).length() : 4*24;
      depth = bDispTemplatePeriod ? (24*60 / timecodeLength) : everyMin; // add function to display different time slot
-     param1[0] = strDate; //strYear+"-"+strMonth+"-"+strDay;
+     param1[0] = SqlUtils.isoToOracleDate(strDate); //strYear+"-"+strMonth+"-"+strDay;
      param1[1] = curProvider_no[nProvider];
      rst = apptMainBean.queryResultsCaisi(param1, "search_scheduledate_single");
 		
@@ -857,7 +858,7 @@ for(int nProvider=0;nProvider<numProvider;nProvider++) {
           bFirstTimeRs=true;
           bFirstFirstR=true;
   				param[0]=curProvider_no[nProvider];
-	 				param[1]=year+"-"+month+"-"+day;//e.g."2001-02-02";
+	 				param[1]=SqlUtils.isoToOracleDate(year+"-"+month+"-"+day);//e.g."2001-02-02";
 	 			
 	 			rst=apptMainBean.queryResultsCaisi(param, strsearchappointmentday);
    				rs = (ResultSet)rst[0];
@@ -908,7 +909,7 @@ for(int nProvider=0;nProvider<numProvider;nProvider++) {
                     String name = UtilMisc.toUpperLowerCase(rs.getString("name"));
           	  int demographic_no = rs.getInt("demographic_no");
                   paramTickler[0]=String.valueOf(demographic_no);
-                  paramTickler[1]=strDate; //year+"-"+month+"-"+day;//e.g."2001-02-02";
+                  paramTickler[1]=SqlUtils.isoToOracleDate(strDate); //year+"-"+month+"-"+day;//e.g."2001-02-02";
                   rsTickler = null;
                   rsTickler = apptMainBean.queryResults(paramTickler, "search_tickler");
                   tickler_no = "";

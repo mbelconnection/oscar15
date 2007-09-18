@@ -29,6 +29,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 
 import org.oscarehr.util.DbConnectionFilter;
 
@@ -91,6 +92,7 @@ public class DBPreparedHandler {
 
     synchronized public void queryExecute(String preparedSQL, String[] param) throws SQLException {
 System.err.println("Query:"+preparedSQL);
+System.err.println("Params:"+Arrays.toString(param));
         Connection c=getConnection();
         PreparedStatement ps=null;
         try
@@ -110,6 +112,7 @@ System.err.println("Query:"+preparedSQL);
 
     synchronized public int queryExecuteUpdate(String preparedSQL, String[] param) throws SQLException {
 System.err.println("Query:"+preparedSQL);
+System.err.println("Params:"+Arrays.toString(param));
         Connection c=getConnection();
         PreparedStatement ps=null;
         try
@@ -129,6 +132,7 @@ System.err.println("Query:"+preparedSQL);
 
     synchronized public int queryExecuteUpdate(String preparedSQL, int[] param) throws SQLException {
 System.err.println("Query:"+preparedSQL);
+System.err.println("Params:"+Arrays.toString(param));
         Connection c=getConnection();
         PreparedStatement ps=null;
         try
@@ -147,6 +151,7 @@ System.err.println("Query:"+preparedSQL);
 
     synchronized public int queryExecuteUpdate(String preparedSQL, String[] param, int[] intparam) throws SQLException {
 System.err.println("Query:"+preparedSQL);
+System.err.println("Params:"+Arrays.toString(param));
         Connection c=getConnection();
         PreparedStatement ps=null;
         try
@@ -168,6 +173,7 @@ System.err.println("Query:"+preparedSQL);
 
     synchronized public int queryExecuteUpdate(String preparedSQL, int[] intparam, String[] param) throws SQLException {
 System.err.println("Query:"+preparedSQL);
+System.err.println("Params:"+Arrays.toString(param));
         Connection c=getConnection();
         PreparedStatement ps=null;
         try
@@ -190,6 +196,7 @@ System.err.println("Query:"+preparedSQL);
 
     synchronized public ResultSet queryResults(String preparedSQL, String[] param, int[] intparam) throws SQLException {
 System.err.println("Query:"+preparedSQL);
+System.err.println("Params:"+Arrays.toString(param));
         int i = 0;
         PreparedStatement preparedStmt = getConnection().prepareStatement(preparedSQL);
         for (i = 0; i < param.length; i++) {
@@ -203,6 +210,7 @@ System.err.println("Query:"+preparedSQL);
 
     synchronized public ResultSet queryResults( String preparedSQL, int param) throws SQLException {
 System.err.println("Query:"+preparedSQL);
+System.err.println("Params:"+param);
         PreparedStatement preparedStmt = getConnection().prepareStatement(preparedSQL);
         preparedStmt.setInt(1, param);
         return preparedStmt.executeQuery();
@@ -210,6 +218,7 @@ System.err.println("Query:"+preparedSQL);
 
     synchronized public ResultSet queryResults( String preparedSQL, int[] param) throws SQLException {
 System.err.println("Query:"+preparedSQL);
+System.err.println("Params:"+Arrays.toString(param));
         PreparedStatement preparedStmt = getConnection().prepareStatement(preparedSQL);
         for (int i = 0; i < param.length; i++) {
             preparedStmt.setInt((i + 1), param[i]);
@@ -219,6 +228,7 @@ System.err.println("Query:"+preparedSQL);
 
     synchronized public ResultSet queryResults( String preparedSQL, String param) throws SQLException {
 System.err.println("Query:"+preparedSQL);
+System.err.println("Params:"+param);
         PreparedStatement preparedStmt = getConnection().prepareStatement(preparedSQL);
         preparedStmt.setString(1, param);
         return preparedStmt.executeQuery();
@@ -226,6 +236,7 @@ System.err.println("Query:"+preparedSQL);
 
     synchronized public ResultSet queryResults( String preparedSQL, String[] param) throws SQLException {
 System.err.println("Query:"+preparedSQL);
+System.err.println("Params:"+Arrays.toString(param));
         PreparedStatement preparedStmt = getConnection().prepareStatement(preparedSQL);
         for (int i = 0; i < param.length; i++) {
             preparedStmt.setString((i + 1), param[i]);
@@ -235,6 +246,7 @@ System.err.println("Query:"+preparedSQL);
 
     synchronized public Object[] queryResultsCaisi( String preparedSQL, int param) throws SQLException {
 System.err.println("Query:"+preparedSQL);
+System.err.println("Params:"+param);
         PreparedStatement preparedStmt = getConnection().prepareStatement(preparedSQL);
         preparedStmt.setInt(1, param);
         return new Object[] {preparedStmt.executeQuery(), preparedStmt};
@@ -242,6 +254,7 @@ System.err.println("Query:"+preparedSQL);
 
     synchronized public Object[] queryResultsCaisi( String preparedSQL, String param) throws SQLException {
 System.err.println("Query:"+preparedSQL);
+System.err.println("Params:"+param);
         PreparedStatement preparedStmt = getConnection().prepareStatement(preparedSQL);
         preparedStmt.setString(1, param);
         return new Object[] {preparedStmt.executeQuery(), preparedStmt};
@@ -249,6 +262,7 @@ System.err.println("Query:"+preparedSQL);
 
     synchronized public Object[] queryResultsCaisi( String preparedSQL, String[] param) throws SQLException {
 System.err.println("Query:"+preparedSQL);
+System.err.println("Params:"+Arrays.toString(param));
         PreparedStatement preparedStmt = getConnection().prepareStatement(preparedSQL);
         for (int i = 0; i < param.length; i++) {
             preparedStmt.setString((i + 1), param[i]);

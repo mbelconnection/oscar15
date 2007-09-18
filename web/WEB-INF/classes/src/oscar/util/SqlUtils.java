@@ -571,6 +571,8 @@ public class SqlUtils {
     
     public static String isoToOracleDate(String isoDate) throws ParseException
     {
+        if (isoDate==null) return(null);
+        
         SimpleDateFormat isoFormat=new SimpleDateFormat("yyyy-MM-dd");
         java.util.Date date=isoFormat.parse(isoDate);
         
@@ -578,8 +580,13 @@ public class SqlUtils {
         return(oracleFormat.format(date));
     }
     
+    /**
+     * Hey! that's not an iso date format.
+     */
     public static String isoToOracleDate2(String isoDate) throws ParseException
     {
+        if (isoDate==null) return(null);
+        
         SimpleDateFormat isoFormat=new SimpleDateFormat("yyyy/MM/dd");
         java.util.Date date=isoFormat.parse(isoDate);
         
@@ -587,8 +594,13 @@ public class SqlUtils {
         return(oracleFormat.format(date));
     }
     
+    /**
+     * Hey! that's not an iso date format.
+     */
     public static String isoToOracleDate3(String isoDate) throws ParseException
     {
+        if (isoDate==null) return(null);
+        
         SimpleDateFormat isoFormat=new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
         java.util.Date date=isoFormat.parse(isoDate);
         

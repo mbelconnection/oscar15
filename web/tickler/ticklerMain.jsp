@@ -370,6 +370,7 @@ var beginD = "0001-01-01"
             String proOHIP="";
             String specialty_code;
             String billinggroup_no;
+            String temp=null;
             int Count = 0;
             ResultSet rslocal;
             rslocal = null;
@@ -378,8 +379,19 @@ var beginD = "0001-01-01"
                 proFirst = rslocal.getString("first_name");
                 proLast = rslocal.getString("last_name");
                 proOHIP = rslocal.getString("provider_no");
-                billinggroup_no= SxmlMisc.getXmlContent(rslocal.getString("comments"),"<xml_p_billinggroup_no>","</xml_p_billinggroup_no>");
-                specialty_code = SxmlMisc.getXmlContent(rslocal.getString("comments"),"<xml_p_specialty_code>","</xml_p_specialty_code>");
+
+                temp=rslocal.getString("comments");
+                if (temp!=null)
+                {
+                	billinggroup_no= SxmlMisc.getXmlContent(temp,"<xml_p_billinggroup_no>","</xml_p_billinggroup_no>");
+                    specialty_code = SxmlMisc.getXmlContent(temp,"<xml_p_specialty_code>","</xml_p_specialty_code>");
+                }
+                else
+                {
+                	billinggroup_no=null;
+                	specialty_code=null;
+                }
+                
 
         %>
         <option value="<%=proOHIP%>" <%=providerview.equals(proOHIP)?"selected":""%>><%=proLast%>,

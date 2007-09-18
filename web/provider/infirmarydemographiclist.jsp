@@ -1,3 +1,4 @@
+<%@page import="oscar.util.SqlUtils"%>
 <logic:equal name="infirmaryView_isOscar" value="false">
 <%	
 	session.setAttribute("case_program_id", session.getAttribute("infirmaryView_programId"));
@@ -53,7 +54,7 @@ param[1]=year+"-"+month+"-"+day;//e.g."2001-02-02";
 //System.out.println(param[0]+"::"+param[1]+"::"+rs);
 //original oscar code for demographic table
 paramTickler[0]=String.valueOf(demographic_no);
-paramTickler[1]=strDate; //year+"-"+month+"-"+day;//e.g."2001-02-02";
+paramTickler[1]=SqlUtils.isoToOracleDate(strDate); //year+"-"+month+"-"+day;//e.g."2001-02-02";
 rsTickler = null;
 Object[] rss = apptMainBean.queryResultsCaisi(paramTickler, "search_tickler");
 rsTickler = (java.sql.ResultSet)rss[0];

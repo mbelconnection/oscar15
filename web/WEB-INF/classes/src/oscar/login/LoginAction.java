@@ -187,9 +187,10 @@ public final class LoginAction
             return mapping.findForward(where);
         }
 
-        if (OscarProperties.getInstance().isTorontoRFQ()
-                && FORWARD_PROVIDER.equals("where"))
+        if (OscarProperties.getInstance().isTorontoRFQ() && where.equals(FORWARD_PROVIDER)){
             where = "caisiProvider";
+        }
+             
 
         return mapping.findForward(where);
     }

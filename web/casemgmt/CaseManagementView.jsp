@@ -92,7 +92,7 @@ setTimeout(string,time);
 	
 	boolean reminders = false;
 	CaseManagementCPP cpp = (CaseManagementCPP)request.getAttribute("cpp");
-	if(cpp!=null){
+	if(cpp!=null && cpp.getReminders()!=null){
 		reminders = cpp.getReminders().length() > 0;
 	}
 	//get programId

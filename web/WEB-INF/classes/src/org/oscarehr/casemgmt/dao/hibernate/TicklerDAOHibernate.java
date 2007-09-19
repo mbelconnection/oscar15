@@ -32,6 +32,8 @@ import org.oscarehr.PMmodule.model.Provider;
 import org.oscarehr.casemgmt.dao.TicklerDAO;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
+import oscar.util.SqlUtils;
+
 /**
  * Hibernate implementation for the corresponding DAO interface 
  * @author Marc Dumontier <a href="mailto:marc@mdumontier.com">marc@mdumontier.com</a>
@@ -51,12 +53,12 @@ public class TicklerDAOHibernate extends HibernateDaoSupport implements
 		boolean includeDemographicClause = true;
 		
 		if(filter.getStartDate() == null || filter.getStartDate().length()==0) {
-			filter.setStartDate("0001-01-01");
+			filter.setStart_date(new java.util.Date(0));
 		}
 		if(filter.getEndDate() == null ||filter.getEndDate().length()==0) {
-			filter.setEndDate("9999-12-31");
+			filter.setEnd_date(new java.util.Date(System.currentTimeMillis()+999999));
 		}
-		
+        
 		if(filter.getProvider() == null || filter.getProvider().equals("All Providers")) {
 			includeProviderClause=false;
 		}
@@ -76,7 +78,7 @@ public class TicklerDAOHibernate extends HibernateDaoSupport implements
 		
 		List paramList = new ArrayList();
 		paramList.add(filter.getStartDate());
-		paramList.add(filter.getEndDate() + " 23:59:59");
+		paramList.add(filter.getEndDate());
 		
 		//TODO: IN clause
 		if(includeProviderClause) {

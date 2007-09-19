@@ -29,6 +29,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.httpclient.util.DateUtil;
+import org.apache.commons.lang.time.DateUtils;
 import org.oscarehr.PMmodule.model.Provider;
 
 import oscar.util.SqlUtils;
@@ -177,7 +179,7 @@ public class CustomFilter extends BaseObject {
 	}
 
 	public void setEnd_date(Date end_date) {
-		this.end_date = end_date;
+		this.end_date = new Date(end_date.getTime() + DateUtils.MILLIS_PER_DAY);
 	}
 
 	public Date getStart_date() {

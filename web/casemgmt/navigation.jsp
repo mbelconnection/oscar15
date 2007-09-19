@@ -346,7 +346,7 @@ String  eURL ="/oscarEncounter/IncomingEncounter.do?casetoEncounter=true&provide
 
 <!-- all message -->
 <tr><td>
-<a href="javascript:void(0)" onClick="popupPage('<%=bsurl%>/oscarEncounter/oscarMessenger/DisplayDemographicMessages.do?orderby=date&boxType=3&demographic_no=<%=bean.demographicNo%>&providerNo=<%=bean.providerNo%>&userName=<%=bean.userName%>'); return false;" >-All Messages-</a>
+<a href="javascript:void(0)" onClick="popupPage('<%=bsurl%>/oscarMessenger/DisplayDemographicMessages.do?orderby=date&boxType=3&demographic_no=<%=bean.demographicNo%>&providerNo=<%=bean.providerNo%>&userName=<%=bean.userName%>'); return false;" >-All Messages-</a>
 </td></tr>
 
 <caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">

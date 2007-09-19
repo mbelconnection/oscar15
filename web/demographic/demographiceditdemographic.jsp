@@ -884,11 +884,11 @@ if(oscarVariables.getProperty("demographicExt") != null) {
                             <tr>
                               <td align="right" title='<%=rs.getString("demographic_no")%>'> <b><bean:message key="demographic.demographiceditdemographic.formLastName"/>: </b></td>
                               <td align="left">
-                                <input type="text" name="last_name" size="30" value="<%=rs.getString("last_name")%>" onBlur="upCaseCtrl(this)">
+                                <input type="text" name="last_name" size="30" maxlength="30" value="<%=rs.getString("last_name")%>" onBlur="upCaseCtrl(this)">
                               </td>
                               <td align="right"><b><bean:message key="demographic.demographiceditdemographic.formFirstName"/>: </b> </td>
                               <td align="left">
-                                <input type="text" name="first_name" size="30" value="<%=rs.getString("first_name")%>" onBlur="upCaseCtrl(this)">
+                                <input type="text" name="first_name" size="30" maxlength="30" value="<%=rs.getString("first_name")%>" onBlur="upCaseCtrl(this)">
                               </td>
                             </tr>
 
@@ -945,14 +945,14 @@ if(oscarVariables.getProperty("demographicExt") != null) {
                             <tr valign="top">
                               <td  align="right"> <b><bean:message key="demographic.demographiceditdemographic.formAddr"/>: </b></td>
                               <td align="left" >
-                                <input type="text" name="address" size="30" value="<%=rs.getString("address")%>"><% if (vLocale.getCountry().equals("BR")) { %>
+                                <input type="text" name="address" size="30" maxlength="60" value="<%=rs.getString("address")%>"><% if (vLocale.getCountry().equals("BR")) { %>
                                 <b><bean:message key="demographic.demographicaddrecordhtm.formAddressNo"/>:</b>
                                 <input type="text" name="address_no" size="30" value="<%=rs.getString("address_no")==null?"":rs.getString("address_no")%>" size="6">
                                 <%}%>
                               </td>
                               <td align="right"><b><bean:message key="demographic.demographiceditdemographic.formCity"/>: </b></td>
                               <td align="left">
-                                <input type="text" name="city" size="30" value="<%=rs.getString("city")%>">
+                                <input type="text" name="city" size="30" maxlength="20" value="<%=rs.getString("city")%>">
                               </td>
                             </tr>
                             <% if (vLocale.getCountry().equals("BR")) { %>
@@ -1016,20 +1016,20 @@ if(oscarVariables.getProperty("demographicExt") != null) {
                               :
                               </b> </td>
                               <td  align="left">
-                                <input type="text" name="postal" size="30" value="<%=rs.getString("postal")%>" onBlur="upCaseCtrl(this)">
+                                <input type="text" name="postal" size="30" maxlength="9"value="<%=rs.getString("postal")%>" onBlur="upCaseCtrl(this)">
                               </td>
                             </tr>
                             <tr valign="top">
                               <td  align="right"><b><bean:message key="demographic.demographiceditdemographic.formPhoneH"/>: </b> </td>
                               <td align="left" >
                                 <%-- // <input type="text" name="phone" size="30" value="<%=rs.getString("phone")!=null && rs.getString("phone").length()==10?rs.getString("phone").substring(0,3) + "-" + rs.getString("phone").substring(3,6) +"-"+  rs.getString("phone").substring(6):rs.getString("phone")%>">--%>
-                                <input type="text" name="phone"  onblur="formatPhoneNum();" style="display:inline;width:auto;" value="<%=rs.getString("phone")%>">
+                                <input type="text" name="phone"  maxlength="20" onblur="formatPhoneNum();" style="display:inline;width:auto;" value="<%=rs.getString("phone")%>">
                                 Ext:<input type="text" name="hPhoneExt" value="<%=s(demoExt.get("hPhoneExt"))%>"  size="4" />
                                 <input type="hidden" name="hPhoneExtOrig" value="<%=s(demoExt.get("hPhoneExt"))%>" />
                               </td>
                               <td  align="right"><b><bean:message key="demographic.demographiceditdemographic.formPhoneW"/>:</b> </td>
                               <td  align="left">
-                                <input type="text" name="phone2"  onblur="formatPhoneNum();" style="display:inline;width:auto;" value="<%=rs.getString("phone2")%>">
+                                <input type="text" name="phone2"  maxlength="20" onblur="formatPhoneNum();" style="display:inline;width:auto;" value="<%=rs.getString("phone2")%>">
                                 Ext:<input type="text" name="wPhoneExt" value="<%=s(demoExt.get("wPhoneExt"))%>"  style="display:inline" size="4" />
                                 <input type="hidden" name="wPhoneExtOrig" value="<%=s(demoExt.get("wPhoneExt"))%>" />
                               </td>
@@ -1045,11 +1045,11 @@ if(oscarVariables.getProperty("demographicExt") != null) {
                             <tr valign="top">
                               <td align="right"><b><bean:message key="demographic.demographiceditdemographic.formEmail"/>: </b> </td>
                               <td  align="left">
-                                <input type="text" name="email" size="30" value="<%=rs.getString("email")!=null? rs.getString("email") : ""%>">
+                                <input type="text" name="email" size="30" maxlength="100" value="<%=rs.getString("email")!=null? rs.getString("email") : ""%>">
                               </td>
                               <td  align="right"><b><bean:message key="demographic.demographiceditdemographic.formPIN"/>: </b> </td>
                               <td  align="left">
-                                <input type="text" name="pin" size="30" value="<%=rs.getString("pin")!=null? rs.getString("pin") : ""%>" >
+                                <input type="text" name="pin" size="30" maxlength="255" value="<%=rs.getString("pin")!=null? rs.getString("pin") : ""%>" >
                               </td>
                             </tr>
                             <tr valign="top">
@@ -1072,9 +1072,9 @@ if(oscarVariables.getProperty("demographicExt") != null) {
                             <tr valign="top">
                               <td align="right"><b><bean:message key="demographic.demographiceditdemographic.formHin"/>: </b></td>
                               <td align="left" nowrap>
-                                <input type="text" name="hin" value="<%=rs.getString("hin")%>" size="17">
+                                <input type="text" name="hin" value="<%=rs.getString("hin")%>" size="17" maxlength="20">
                                 <b><bean:message key="demographic.demographiceditdemographic.formVer"/></b>
-                                <input type="text" name="ver" value="<%=rs.getString("ver")%>" size="3"  onBlur="upCaseCtrl(this)">
+                                <input type="text" name="ver" value="<%=rs.getString("ver")%>" size="3" maxlength="3" onBlur="upCaseCtrl(this)">
                               </td>
                               <td align="right"><b><bean:message key="demographic.demographiceditdemographic.formEFFDate"/>:</b></td>
                               <td align="left">

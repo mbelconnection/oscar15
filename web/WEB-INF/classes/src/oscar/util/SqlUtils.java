@@ -46,6 +46,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
+import java.text.DateFormatSymbols;
 
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.logging.Log;
@@ -625,20 +626,8 @@ public class SqlUtils {
     }
     
     public static String getStringMonth(int month1) {
-    	String month_string = "";
-    	if(month1==1) month_string="Jan";
-    	else if(month1==2) month_string="Feb";
-		else if(month1==3) month_string="Mar";
-		else if(month1==4) month_string="Apr";
-		else if(month1==5) month_string="May";
-		else if(month1==6) month_string="Jun";
-		else if(month1==7) month_string="Jul";
-		else if(month1==8) month_string="Aug";
-		else if(month1==9) month_string="Sep";
-		else if(month1==10) month_string="Oct";
-		else if(month1==11) month_string="Nov";
-		else if(month1==12) month_string="Dec";
-    	return month_string;
+    	//01 for Jan .... 12 for Dec
+    	 return new DateFormatSymbols().getShortMonths()[month1-1]; 
     }
     
     public static void main(String... argv) throws Exception

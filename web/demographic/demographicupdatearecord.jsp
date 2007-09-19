@@ -1,4 +1,4 @@
-<%@ page import="java.sql.*, java.util.*, oscar.oscarWaitingList.WaitingList, oscar.oscarWaitingList.util.WLWaitingListUtil, oscar.oscarDemographic.data.*" errorPage="errorpage.jsp" %> 
+<%@ page import="java.sql.*, java.util.*, oscar.util.SqlUtils, oscar.oscarWaitingList.WaitingList, oscar.oscarWaitingList.util.WLWaitingListUtil, oscar.oscarDemographic.data.*" errorPage="errorpage.jsp" %> 
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
@@ -70,20 +70,37 @@
 	  param[14]=request.getParameter("ver");
 	  param[15]=request.getParameter("roster_status");
 	  param[16]=request.getParameter("patient_status");
-	  param[17]=request.getParameter("date_joined_year")+"-"+request.getParameter("date_joined_month")+"-"+request.getParameter("date_joined_date");
+	  //param[17]=request.getParameter("date_joined_year")+"-"+request.getParameter("date_joined_month")+"-"+request.getParameter("date_joined_date");
+	  param[17]=request.getParameter("date_joined_date")+"-"+SqlUtils.getStringMonth(Integer.valueOf(request.getParameter("date_joined_month")).intValue())+"-"+request.getParameter("date_joined_year");
+	 
 	  param[18]=request.getParameter("chart_no");
 	  param[19]=request.getParameter("provider_no");
 	  param[20]=request.getParameter("sex");
-	  param[21]=request.getParameter("end_date_year")+"-"+request.getParameter("end_date_month")+"-"+request.getParameter("end_date_date");
-	  param[22]=request.getParameter("eff_date_year")+"-"+request.getParameter("eff_date_month")+"-"+request.getParameter("eff_date_date");
-	  param[23]=request.getParameter("pcn_indicator");
+	 
+	  //param[21]=request.getParameter("end_date_year")+"-"+request.getParameter("end_date_month")+"-"+request.getParameter("end_date_date");
+	  param[21]=request.getParameter("end_date_date")+"-"+SqlUtils.getStringMonth(Integer.valueOf(request.getParameter("end_date_month")).intValue())+"-"+request.getParameter("end_date_year");
+	  
+	//param[22]=request.getParameter("eff_date_year")+"-"+request.getParameter("eff_date_month")+"-"+request.getParameter("eff_date_date");
+	 param[22]=request.getParameter("eff_date_date")+"-"+SqlUtils.getStringMonth(Integer.valueOf(request.getParameter("eff_date_month")).intValue())+"-"+request.getParameter("eff_date_year");
+	  
+	 param[23]=request.getParameter("pcn_indicator");
 	  param[24]=request.getParameter("hc_type");
-	  param[25]=request.getParameter("hc_renew_date_year")+"-"+request.getParameter("hc_renew_date_month")+"-"+request.getParameter("hc_renew_date_date");
-	  param[26]="<rdohip>" + request.getParameter("r_doctor_ohip") + "</rdohip><rd>" + request.getParameter("r_doctor") + "</rd>" + (request.getParameter("family_doc")!=null? ("<family_doc>" + request.getParameter("family_doc") + "</family_doc>") : "") ;  
+	 
+	 // param[25]=request.getParameter("hc_renew_date_year")+"-"+request.getParameter("hc_renew_date_month")+"-"+request.getParameter("hc_renew_date_date");
+	param[25]=request.getParameter("hc_renew_date_date")+"-"+SqlUtils.getStringMonth(Integer.valueOf(request.getParameter("hc_renew_date_month")).intValue())+"-"+request.getParameter("hc_renew_date_year");
+	
+	  param[26]="<rdohip>" + request.getParameter("r_doctor_ohip") + "</rdohip><rd>" + request.getParameter("r_doctor") + "</rd>" + (request.getParameter("family_doc")!=null? ("<family_doc>" + request.getParameter("family_doc") + "</family_doc>") : "") ;
+	/*
+	  for(int ii=0; ii<=26; ii++) {
+		  if("".equals(param[ii]) || "null".equals(param[ii])) {
+			  param[ii]="' '";
+		  }
+	  }
+	*/
 	  int []intparam=new int[] {Integer.parseInt(request.getParameter("demographic_no"))};
 
           
-  //DemographicExt
+  	//DemographicExt
      DemographicExt dExt = new DemographicExt();
      String proNo = (String) session.getValue("user");
      dExt.addKey(proNo,request.getParameter("demographic_no") ,"language",request.getParameter("language"),request.getParameter("languageOrig") );

@@ -2093,3 +2093,12 @@ CREATE TABLE RELATIONSHIPS (
   CONSTRAINT RELATIONSHIPS_PK PRIMARY KEY (ID)
 );
 
+
+DROP TABLE measurementGroupStyle CASCADE CONSTRAINT;
+CREATE TABLE measurementGroupStyle(
+  groupID NUMBER(10),
+  groupName varchar2(100),
+  cssID NUMBER(10),
+  CONSTRAINT measurementGroupStyle_PK PRIMARY KEY (GROUPID)  
+);
+

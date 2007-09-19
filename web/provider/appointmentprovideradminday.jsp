@@ -550,7 +550,8 @@ if(providerBean.get(mygroupno) != null) { //single appointed provider view
          <li>
             <a href="#" ONCLICK ="popupPage2('<%=resourcebaseurl%>');return false;" title="<bean:message key="global.resources"/>" onmouseover="window.status='<bean:message key="provider.appointmentProviderAdminDay.viewResources"/>';return true"><bean:message key="global.resources"/></a>
          </li>
-         
+      </caisi:isModuleLoad>
+
          <li>
             <caisi:isModuleLoad moduleName="caisi">
                <a HREF="../PMmodule/ClientSearch2.do" TITLE='<bean:message key="global.searchPatientRecords"/>' OnMouseOver="window.status='<bean:message key="global.searchPatientRecords"/>' ; return true"><bean:message key="provider.appointmentProviderAdminDay.search"/></a>
@@ -559,6 +560,8 @@ if(providerBean.get(mygroupno) != null) { //single appointed provider view
                <a HREF="#" ONCLICK ="popupPage2('../demographic/search.jsp');return false;"  TITLE='<bean:message key="global.searchPatientRecords"/>' OnMouseOver="window.status='<bean:message key="global.searchPatientRecords"/>' ; return true"><bean:message key="provider.appointmentProviderAdminDay.search"/></a>
             </caisi:isModuleLoad>
         </li>
+
+      <caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">
         <li>
             <a HREF="#" ONCLICK ="popupPage2('../report/reportindex.jsp','reportPage');return false;"   TITLE='<bean:message key="global.genReport"/>' OnMouseOver="window.status='<bean:message key="global.genReport"/>' ; return true"><bean:message key="global.report"/></a>
         </li>

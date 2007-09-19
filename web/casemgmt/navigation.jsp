@@ -50,6 +50,7 @@ if ("true".equalsIgnoreCase((String)session.getAttribute("casemgmt_bean_flag")))
 //bean=(oscar.oscarEncounter.pageUtil.EctSessionBean)session.getAttribute("EctSessionBean");
 //session.setAttribute("casemgmt_bean", bean);
 bean=(oscar.oscarEncounter.pageUtil.EctSessionBean) session.getAttribute("casemgmt_bean");
+if (bean==null) bean=new oscar.oscarEncounter.pageUtil.EctSessionBean();
 if (bean.appointmentNo==null) bean.appointmentNo="0";
 String bsurl=(String)session.getAttribute("casemgmt_oscar_baseurl");
 String backurl=bsurl+"/oscarEncounter/IncomingEncounter.do?";

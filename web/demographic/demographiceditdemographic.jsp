@@ -488,7 +488,7 @@ div.demographicWrapper {
                                 int curDay = now.get(Calendar.DAY_OF_MONTH);
                                 String dateString = curYear+"-"+curMonth+"-"+curDay;
                                 int age=0, dob_year=0, dob_month=0, dob_date=0;
-
+								String hin="", ver="";
                                 int param = Integer.parseInt(demographic_no);
 
                                 rs = apptMainBean.queryResults(param, request.getParameter("dboperation"));
@@ -516,6 +516,13 @@ div.demographicWrapper {
                                                 dob_month = Integer.parseInt(rs.getString("month_of_birth"));
                                                 dob_date = Integer.parseInt(rs.getString("date_of_birth"));
                                                 if(dob_year!=0) age=MyDateFormat.getAge(dob_year,dob_month,dob_date);
+                       							hin = rs.getString("hin");
+                       							ver = rs.getString("ver");
+                       							if(hin!=null) 
+                       								hin = URLEncoder.encode(hin);
+                       							if(ver!=null)
+                       								ver = URLEncoder.encode(ver);                       							
+                       							
                         %>
                         <%=rs.getString("last_name")%>, <%=rs.getString("first_name")%> <%=rs.getString("sex")%> <%=age%> years
                         <span style="margin-left:20px;"><i>Next Appointment: <oscar:nextAppt demographicNo="<%=rs.getString("demographic_no")%>"/></i></span>
@@ -570,8 +577,18 @@ div.demographicWrapper {
                 	       String default_view = oscarVariables.getProperty("default_view", "");
                 %>
                    <%    if (!oscarProps.getProperty("clinic_no", "").startsWith("1022")) { // part 2 of quick hack to make Dr. Hunter happy %>
-                         <tr><td>
-                         <a href="javascript: function myFunction() {return false; }" onClick="window.open('../billing/CA/ON/specialtyBilling/fluBilling/addFluBilling.jsp?function=demographic&functionid=<%=rs.getString("demographic_no")%>&creator=<%=curProvider_no%>&demographic_name=<%=URLEncoder.encode(rs.getString("last_name"))%>%2C<%=URLEncoder.encode(rs.getString("first_name"))%>&hin=<%=URLEncoder.encode(rs.getString("hin"))%><%=URLEncoder.encode(rs.getString("ver"))%>&demo_sex=<%=URLEncoder.encode(rs.getString("sex"))%>&demo_hctype=<%=URLEncoder.encode(rs.getString("hc_type")==null?"null":rs.getString("hc_type"))%>&rd=<%=URLEncoder.encode(rd==null?"null":rd)%>&rdohip=<%=URLEncoder.encode(rdohip==null?"null":rdohip)%>&dob=<%=MyDateFormat.getStandardDate(Integer.parseInt(rs.getString("year_of_birth")),Integer.parseInt(rs.getString("month_of_birth")),Integer.parseInt(rs.getString("date_of_birth")))%>','', 'scrollbars=yes,resizable=yes,width=720,height=500');return false;" title='Add Flu Billing'>Flu Billing</a>
+                         <tr><td>                         
+                         <a href="javascript: function myFunction() {return false; }" 
+                         onClick="window.open('../billing/CA/ON/specialtyBilling/fluBilling/addFluBilling.jsp?
+                         function=demographic&functionid=<%=rs.getString("demographic_no")%>
+                         &creator=<%=curProvider_no%>&demographic_name=<%=URLEncoder.encode(rs.getString("last_name"))%>%2C<%=URLEncoder.encode(rs.getString("first_name"))%>
+                         &hin=<%=hin%><%=ver%>
+                         &demo_sex=<%=URLEncoder.encode(rs.getString("sex"))%>
+                         &demo_hctype=<%=URLEncoder.encode(rs.getString("hc_type")==null?"null":rs.getString("hc_type"))%>
+                         &rd=<%=URLEncoder.encode(rd==null?"null":rd)%>
+                         &rdohip=<%=URLEncoder.encode(rdohip==null?"null":rdohip)%>
+                         &dob=<%=MyDateFormat.getStandardDate(Integer.parseInt(rs.getString("year_of_birth")),Integer.parseInt(rs.getString("month_of_birth")),Integer.parseInt(rs.getString("date_of_birth")))%>',
+                         '', 'scrollbars=yes,resizable=yes,width=720,height=500');return false;" title='Add Flu Billing'>Flu Billing</a>
                          </td></tr>
                       <% } %>
                       <tr><td>
@@ -579,7 +596,7 @@ div.demographicWrapper {
                       </td></tr>
 
                       <tr><td>
-                      <a href="javascript: function myFunction() {return false; }" onClick="window.open('../billing/CA/ON/inr/addINRbilling.jsp?function=demographic&functionid=<%=rs.getString("demographic_no")%>&creator=<%=curProvider_no%>&demographic_name=<%=URLEncoder.encode(rs.getString("last_name"))%>%2C<%=URLEncoder.encode(rs.getString("first_name"))%>&hin=<%=URLEncoder.encode(rs.getString("hin"))%><%=URLEncoder.encode(rs.getString("ver"))%>&dob=<%=MyDateFormat.getStandardDate(Integer.parseInt(rs.getString("year_of_birth")),Integer.parseInt(rs.getString("month_of_birth")),Integer.parseInt(rs.getString("date_of_birth")))%>','', 'scrollbars=yes,resizable=yes,width=600,height=400');return false;" title='Add INR Billing'>Add INR</a></th>
+                      <a href="javascript: function myFunction() {return false; }" onClick="window.open('../billing/CA/ON/inr/addINRbilling.jsp?function=demographic&functionid=<%=rs.getString("demographic_no")%>&creator=<%=curProvider_no%>&demographic_name=<%=URLEncoder.encode(rs.getString("last_name"))%>%2C<%=URLEncoder.encode(rs.getString("first_name"))%>&hin=<%=hin%><%=ver%>&dob=<%=MyDateFormat.getStandardDate(Integer.parseInt(rs.getString("year_of_birth")),Integer.parseInt(rs.getString("month_of_birth")),Integer.parseInt(rs.getString("date_of_birth")))%>','', 'scrollbars=yes,resizable=yes,width=600,height=400');return false;" title='Add INR Billing'>Add INR</a></th>
                       </td></tr>
                       <tr><td>
                       <a href="javascript: function myFunction() {return false; }" onClick="window.open('../billing/CA/ON/inr/reportINR.jsp?provider_no=<%=curProvider_no%>','', 'scrollbars=yes,resizable=yes,width=600,height=600');return false;" title='INR Billing'>Bill INR</a></th>
@@ -1070,7 +1087,9 @@ if(oscarVariables.getProperty("demographicExt") != null) {
                                  // Month and Day
                                  decF.applyPattern("00");
                                  String effDateMonth = decF.format(MyDateFormat.getMonthFromStandardDate(rs.getString("eff_date")));
-                                 String effDateDay = decF.format(MyDateFormat.getDayFromStandardDate(rs.getString("eff_date")));
+                                 
+                                 //String effDateDay = decF.format(MyDateFormat.getDayFromStandardDate(rs.getString("eff_date")));
+                                 String effDateDay = decF.format(MyDateFormat.getDayFromStandardDate_oracle(rs.getString("eff_date")));
                               %>
                                 <input type="text" name="eff_date_year" size="4" maxlength="4" value="<%= effDateYear%>">
                                 <input type="text" name="eff_date_month" size="2" maxlength="2" value="<%= effDateMonth%>">
@@ -1139,7 +1158,8 @@ if(oscarVariables.getProperty("demographicExt") != null) {
                                 <select name="resident" style="width:200px">
                                   <option value="" ></option>
                         <%
-                          rsdemo.beforeFirst();
+                          // rsdemo . beforeFirst();
+                        	rsdemo = apptMainBean.queryResults("search_provider_doc");
                           while (rsdemo.next()) {
                         %>
                           <option value="<%=rsdemo.getString("provider_no")%>" <%=rsdemo.getString("provider_no").equals(resident)?"selected":""%> >
@@ -1154,7 +1174,8 @@ if(oscarVariables.getProperty("demographicExt") != null) {
                                 <select name="midwife" style="width:200px">
                                   <option value="" ></option>
                         <%
-                          rsdemo.beforeFirst();
+                          // rsdemo.beforeFirst();
+                        rsdemo = apptMainBean.queryResults("search_provider_doc");
                           while (rsdemo.next()) {
                         %>
                           <option value="<%=rsdemo.getString("provider_no")%>" <%=rsdemo.getString("provider_no").equals(midwife)?"selected":""%> >
@@ -1167,7 +1188,8 @@ if(oscarVariables.getProperty("demographicExt") != null) {
                                 <select name="nurse" style="width:200px">
                                   <option value="" ></option>
                         <%
-                          rsdemo.beforeFirst();
+                          // rsdemo.beforeFirst();
+                        rsdemo = apptMainBean.queryResults("search_provider_doc");
                           while (rsdemo.next()) {
                         %>
                           <option value="<%=rsdemo.getString("provider_no")%>" <%=rsdemo.getString("provider_no").equals(nurse)?"selected":""%> >
@@ -1266,7 +1288,7 @@ document.updatedelete.r_doctor_ohip.value = refNo;
                                  String hcRenewYear = decF.format(MyDateFormat.getYearFromStandardDate(rs.getString("hc_renew_date")));
                                  decF.applyPattern("00");
                                  String hcRenewMonth = decF.format(MyDateFormat.getMonthFromStandardDate(rs.getString("hc_renew_date")));
-                                 String hcRenewDay = decF.format(MyDateFormat.getDayFromStandardDate(rs.getString("hc_renew_date")));
+                                 String hcRenewDay = decF.format(MyDateFormat.getDayFromStandardDate_oracle(rs.getString("hc_renew_date")));
                               %>
                                 <input type="text" name="hc_renew_date_year" size="4" maxlength="4" value="<%= hcRenewYear %>">
                                 <input type="text" name="hc_renew_date_month" size="2" maxlength="2" value="<%= hcRenewMonth %>">
@@ -1339,7 +1361,9 @@ document.updatedelete.r_doctor_ohip.value = refNo;
                                %>
                                <input type="hidden" name="wlId" value="<%=wlId%>">
                                 <select name="list_id">
-                                  <%if(wLReadonly.equals("")){%>
+                                  <%//if(wLReadonly.equals("")){
+                                	  if("".equals(wLReadonly)) {
+                                  %>
                                   <option value="0" >--Select Waiting List--</option>
                                   <%}else{%>
                                   <option value="0" >--Please Create Waiting List Name first--</option> 
@@ -1382,7 +1406,7 @@ document.updatedelete.r_doctor_ohip.value = refNo;
                                  String dateJoinedYear = decF.format(MyDateFormat.getYearFromStandardDate(rs.getString("date_joined")));
                                  decF.applyPattern("00");
                                  String dateJoinedMonth = decF.format(MyDateFormat.getMonthFromStandardDate(rs.getString("date_joined")));
-                                 String dateJoinedDay = decF.format(MyDateFormat.getDayFromStandardDate(rs.getString("date_joined")));
+                                 String dateJoinedDay = decF.format(MyDateFormat.getDayFromStandardDate_oracle(rs.getString("date_joined")));
                               %>
                                 <input type="text" name="date_joined_year" size="4" maxlength="4" value="<%= dateJoinedYear %>">
                                 <input type="text" name="date_joined_month" size="2" maxlength="2" value="<%= dateJoinedMonth %>">
@@ -1396,7 +1420,7 @@ document.updatedelete.r_doctor_ohip.value = refNo;
                                  String endYear = decF.format(MyDateFormat.getYearFromStandardDate(rs.getString("end_date")));
                                  decF.applyPattern("00");
                                  String endMonth = decF.format(MyDateFormat.getMonthFromStandardDate(rs.getString("end_date")));
-                                 String endDay = decF.format(MyDateFormat.getDayFromStandardDate(rs.getString("end_date")));
+                                 String endDay = decF.format(MyDateFormat.getDayFromStandardDate_oracle(rs.getString("end_date")));
                               %>
                                 <input type="text" name="end_date_year" size="4" maxlength="4" value="<%= endYear %>">
                                 <input type="text" name="end_date_month" size="2" maxlength="2" value="<%= endMonth %>">

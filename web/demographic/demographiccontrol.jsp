@@ -42,11 +42,9 @@
   if(request.getParameter("limit1")!=null) limit1=request.getParameter("limit1");
   if(request.getParameter("limit2")!=null) {
     limit2=request.getParameter("limit2");
-    limit="limit "+limit2+" offset "+limit1;
+    //limit="limit "+limit2+" offset "+limit1;
+    limit = "rownum<="+limit2;
   }
-
-  //for oracle
-  limit = "rownum<=5";
   
   String fieldname="", regularexp="like"; // exactly search is not required by users, e.g. regularexp="=";
   String strDbType = oscar.OscarProperties.getInstance().getProperty("db_type").trim();
@@ -60,20 +58,34 @@
 
   if(request.getParameter("search_mode")!=null) {
 	  if(request.getParameter("keyword").indexOf("*")!=-1 || request.getParameter("keyword").indexOf("%")!=-1) regularexp="like";
-    if(request.getParameter("search_mode").equals("search_address")) fieldname="address";
-    if(request.getParameter("search_mode").equals("search_phone")) fieldname="phone";
-    if(request.getParameter("search_mode").equals("search_hin")) fieldname="hin";
+    if(request.getParameter("search_mode").equals("search_address")) 
+    	//fieldname="readdress";
+    	fieldname="regexp_like(readdress,?,'i')";
+    if(request.getParameter("search_mode").equals("search_phone")) 
+    	//fieldname="phone";
+    	fieldname="regexp_like(phone,?,'i')";
+    if(request.getParameter("search_mode").equals("search_hin")) 
+    	//fieldname="hin";
+    	fieldname="regexp_like(hin,?,'i')";
    
     // if(request.getParameter("search_mode").equals("search_dob")) fieldname="year_of_birth "+regularexp+" ?"+" and month_of_birth "+regularexp+" ?"+" and date_of_birth ";
-    if(request.getParameter("search_mode").equals("search_dob")) fieldname="year_of_birth,?,'i') and regexp(month_of_birth,?,'i') and regexp(date_of_birth";
+    if(request.getParameter("search_mode").equals("search_dob")) 
+    	fieldname="regexp_like(year_of_birth,?,'i') and regexp_like(month_of_birth,?,'i') and regexp_like(date_of_birth,?,'i')";
     
-    if(request.getParameter("search_mode").equals("search_chart_no")) fieldname="chart_no";
+    if(request.getParameter("search_mode").equals("search_chart_no")) 
+    	//fieldname="chart_no";
+    	fieldname="regexp_like(chart_no,?,'i')";
+    	
     if(request.getParameter("search_mode").equals("search_name")) {
-      if(request.getParameter("keyword").indexOf(",")==-1)  fieldname="last_name";
-      else if(request.getParameter("keyword").trim().indexOf(",")==(request.getParameter("keyword").trim().length()-1)) fieldname="last_name";
+      if(request.getParameter("keyword").indexOf(",")==-1)  
+    	  //fieldname="last_name";
+    	  fieldname="regexp_like(last_name,?,'i')";
+      else if(request.getParameter("keyword").trim().indexOf(",")==(request.getParameter("keyword").trim().length()-1)) 
+    	  //fieldname="last_name";
+    	  fieldname="regexp_like(last_name,?,'i')";
       
       //else fieldname="last_name "+regularexp+" ?"+" and first_name ";
-      else fieldname="last_name,?,'i') and regexp_like(first_name";
+      else fieldname="regexp_like(last_name,?,'i') and regexp_like(first_name,?,'i')";
     }
   }
 
@@ -89,13 +101,13 @@
 
   String [][] dbQueries=new String[][] {
     //{"search_titlename", "select *  from demographic where "+fieldname+" "+regularexp+" ? "+ptstatusexp+orderby+" "+limit},
-    {"search_titlename", "select *  from demographic where "+limit+" and regexp_like("+fieldname+", ? ,'i') " +orderby+" "},
+    {"search_titlename", "select *  from demographic where "+fieldname+" " +orderby+" "},
    
     // {"add_apptrecord", "select demographic_no,first_name,last_name,roster_status,sex,chart_no,year_of_birth,month_of_birth,date_of_birth,provider_no from demographic where "+fieldname+ " "+regularexp+" ? " +ptstatusexp+orderby + " "+limit},
-   	{"add_apptrecord", "select demographic_no,first_name,last_name,roster_status,sex,chart_no,year_of_birth,month_of_birth,date_of_birth,provider_no from demographic where "+limit+" and regexp_like("+fieldname+ ", ? ,'i') " +orderby + " "},
+   	{"add_apptrecord", "select demographic_no,first_name,last_name,roster_status,sex,chart_no,year_of_birth,month_of_birth,date_of_birth,provider_no from demographic where "+fieldname+" " +orderby + " "},
     
    	//{"update_apptrecord", "select demographic_no,first_name,last_name,roster_status,sex,chart_no,year_of_birth,month_of_birth,date_of_birth,provider_no  from demographic where "+fieldname+ " "+regularexp+" ? " +ptstatusexp+orderby + " "+limit},
-    {"update_apptrecord", "select demographic_no,first_name,last_name,roster_status,sex,chart_no,year_of_birth,month_of_birth,date_of_birth,provider_no  from demographic where "+limit+" and regexp_like("+fieldname+ ", ? ,'i') " +orderby + " "},
+    {"update_apptrecord", "select demographic_no,first_name,last_name,roster_status,sex,chart_no,year_of_birth,month_of_birth,date_of_birth,provider_no  from demographic where "+fieldname+" " +orderby + " "},
    	
     {"search_detail", "select * from demographic where demographic_no=?"},
     {"search_detail_ptbr", "select * from demographic d left outer join demographic_ptbr dptbr on dptbr.demographic_no = d.demographic_no where d.demographic_no=?"},
@@ -108,7 +120,7 @@
     {"search_demographicid", "select * from demographic where demographic_no=?"},
     
     //{"search*", "select * from demographic "+ ptstatusexp+orderby + " "+limit },
-    {"search*", "select * from demographic where "+limit+" "+orderby},
+    {"search*", "select * from demographic where "+orderby},
     
     {"search_lastfirstnamedob", "select demographic_no from demographic where last_name=? and first_name=? and year_of_birth=? and month_of_birth=? and date_of_birth=?"},
     {"search_demographiccust_alert", "select cust3 from demographiccust where demographic_no = ? " },
@@ -120,7 +132,7 @@
     {"update_custrecord", "update demographiccust set cust1=?,cust2=?,cust3=?,cust4=?,content=? where demographic_no=?" },
    
     //{"appt_history", "select appointment_no, appointment_date, start_time, end_time, reason, appointment.status, provider.last_name, provider.first_name from appointment LEFT JOIN provider ON appointment.provider_no=provider.provider_no where appointment.demographic_no=? "+ orderby + " desc "+limit },
-    {"appt_history", "select appointment_no, appointment_date, start_time, end_time, reason, appointment.status, provider.last_name, provider.first_name from appointment LEFT JOIN provider ON appointment.provider_no=provider.provider_no where "+limit+" "+"appointment.demographic_no=? "+ orderby + " desc "},
+    {"appt_history", "select appointment_no, appointment_date, start_time, end_time, reason, appointment.status, provider.last_name, provider.first_name from appointment LEFT JOIN provider ON appointment.provider_no=provider.provider_no where "+"appointment.demographic_no=? "+ orderby + " desc "},
    
     {"search_ptstatus", "select distinct patient_status from demographic where patient_status != '' and patient_status != 'AC' and patient_status != 'IN' and patient_status != 'DE' and patient_status != 'MO' and patient_status != 'FI'"},
     {"search_rsstatus", "select distinct roster_status from demographic where roster_status != '' and roster_status != 'RO' and roster_status != 'NR' and roster_status != 'TE' and roster_status != 'FS' "},

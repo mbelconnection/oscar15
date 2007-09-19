@@ -55,13 +55,12 @@ public class CaseManagementIssueDAOHibernate extends HibernateDaoSupport
 	}
 
 	public List getActiveIssuesByDemographic(String demographic_no)
-	{
-		return this
-				.getHibernateTemplate()
-				.find(
-						"from CaseManagementIssue cmi where cmi.demographic_no = ? and cmi.resolved=0",
+	{		
+		return this.getHibernateTemplate().find(
+					//	"from CaseManagementIssue cmi where cmi.demographic_no = ? and cmi.resolved=false",
+				"from CaseManagementIssue cmi where cmi.demographic_no = ? and cmi.resolved=0",
 						new Object[]
-						{ demographic_no });
+						{ demographic_no });		
 	}
 
 	public void deleteIssueById(CaseManagementIssue issue)

@@ -54,7 +54,13 @@ public class MyDateFormat {
 	public static String getStandardDate(int year,int month, int day) {
 		return (year+ getDigitalXX(month) +getDigitalXX(day));
 	}
-	//from 2001-02-02 to 2	
+	
+	//from 2001-02-02 00:00:00.0
+	public static int getDayFromStandardDate_oracle(String aDate) {
+		return Integer.parseInt(aDate.trim().substring(aDate.trim().lastIndexOf('-')+1,aDate.trim().lastIndexOf('-')+3));
+	}
+	
+	//from 2001-02-02 to 2		
 	public static int getDayFromStandardDate(String aDate) {
 		return Integer.parseInt(aDate.trim().substring(aDate.trim().lastIndexOf('-')+1));
 	}

@@ -52,12 +52,14 @@ public class WaitingList{
        ResultSet rs = null;
        try{
            db = new DBHandler(DBHandler.OSCAR_DATA);
-           String sql = "SELECT * FROM waitingListName where is_history = 'N' AND ROWNUM = 1";
+          // String sql = "SELECT * FROM waitingListName where is_history = 'N' limit 1 ";
+           String sql = "SELECT * FROM waitingListName where rownum=1 and is_history = 'N' ";
            rs = db.GetSQL(sql);
+           if(rs!=null) {
            if(rs.next()){
                return true;
            }
-           
+           }
        } catch (Exception e) {
             e.printStackTrace();
             return false;

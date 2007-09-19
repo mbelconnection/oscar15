@@ -244,10 +244,10 @@ String bgColor = bodd?"#EEEEFF":"white";
 <tr bgcolor="<%=bgColor%>" align="center" 
 <%-- 07/10/2006 RJ Added doctor provider_no to url --%>
 onMouseOver="this.style.cursor='hand';this.style.backgroundColor='pink';" onMouseout="this.style.backgroundColor='<%=bgColor%>';" 
-onClick="document.forms[0].demographic_no.value=<%=rs.getString("demographic_no")%>;<% if(caisi) { out.print("addNameCaisi");} else { out.print("addName");} %>('<%=rs.getString("demographic_no")%>','<%=URLEncoder.encode(rs.getString("last_name"))%>','<%=URLEncoder.encode(rs.getString("first_name"))%>','<%=URLEncoder.encode(rs.getString("chart_no"))%>','<%=request.getParameter("messageId")%>','<%=rs.getString("provider_no")%>')"
+onClick="document.forms[0].demographic_no.value=<%=rs.getString("demographic_no")%>;<% if(caisi) { out.print("addNameCaisi");} else { out.print("addName");} %>('<%=rs.getString("demographic_no")%>','<%=URLEncoder.encode(rs.getString("last_name"))%>','<%=URLEncoder.encode(rs.getString("first_name"))%>','<%=rs.getString("chart_no")%>','<%=request.getParameter("messageId")%>','<%=rs.getString("provider_no")%>')"
 >
 <%-- 07/10/2006 RJ Added doctor provider_no to url --%>
-      <td><input type="submit" class="mbttn" name="demographic_no" value="<%=rs.getString("demographic_no")%>"  onClick="<% if(caisi) {out.print("addNameCaisi");} else {out.print("addName");} %>('<%=rs.getString("demographic_no")%>','<%=URLEncoder.encode(rs.getString("last_name"))%>','<%=URLEncoder.encode(rs.getString("first_name"))%>','<%=URLEncoder.encode(rs.getString("chart_no"))%>','<%=request.getParameter("messageId")%>','<%=rs.getString("provider_no")%>')"></td>
+      <td><input type="submit" class="mbttn" name="demographic_no" value="<%=rs.getString("demographic_no")%>"  onClick="<% if(caisi) {out.print("addNameCaisi");} else {out.print("addName");} %>('<%=rs.getString("demographic_no")%>','<%=URLEncoder.encode(rs.getString("last_name"))%>','<%=URLEncoder.encode(rs.getString("first_name"))%>','<%=rs.getString("chart_no")%>','<%=request.getParameter("messageId")%>','<%=rs.getString("provider_no")%>')"></td>
       <td><%=Misc.toUpperLowerCase(rs.getString("last_name"))%></td>
       <td><%=Misc.toUpperLowerCase(rs.getString("first_name"))%></td>
       <td><%=age%></td>
@@ -259,7 +259,9 @@ onClick="document.forms[0].demographic_no.value=<%=rs.getString("demographic_no"
 <%
       bufName = new StringBuffer( (rs.getString("last_name")+ ","+ rs.getString("first_name")) );
       bufNo = new StringBuffer( (rs.getString("demographic_no")) );
-      bufChart = new StringBuffer( (rs.getString("chart_no"))   );
+      if(rs.getString("chart_no")!=null) {
+      	bufChart = new StringBuffer( (rs.getString("chart_no"))   );
+      }
       bufDoctorNo = new StringBuffer( rs.getString("provider_no") ); 
     }
   }

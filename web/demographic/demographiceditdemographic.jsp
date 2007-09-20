@@ -25,6 +25,8 @@
  */
 --%>
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security" %>
+<%@ taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi" %>
+
 <%
     if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
     String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
@@ -89,9 +91,9 @@ You have no rights to access the data!
   <!-- the following script defines the Calendar.setup helper function, which makes
        adding a calendar a matter of 1 or 2 lines of code. -->
   <script type="text/javascript" src="../share/calendar/calendar-setup.js"></script>
-  <!-- calendar stylesheet --> 
+  <!-- calendar stylesheet -->
   <link rel="stylesheet" type="text/css" media="all" href="../share/calendar/calendar.css" title="win2k-cold-1" />
-        
+
 <link rel="stylesheet" type="text/css" href="../oscarEncounter/encounterStyles.css">
 <script language="javascript" type="text/javascript" src="../share/javascript/Oscar.js" ></script>
 
@@ -518,11 +520,11 @@ div.demographicWrapper {
                                                 if(dob_year!=0) age=MyDateFormat.getAge(dob_year,dob_month,dob_date);
                        							hin = rs.getString("hin");
                        							ver = rs.getString("ver");
-                       							if(hin!=null) 
+                       							if(hin!=null)
                        								hin = URLEncoder.encode(hin);
                        							if(ver!=null)
-                       								ver = URLEncoder.encode(ver);                       							
-                       							
+                       								ver = URLEncoder.encode(ver);
+
                         %>
                         <%=rs.getString("last_name")%>, <%=rs.getString("first_name")%> <%=rs.getString("sex")%> <%=age%> years
                         <span style="margin-left:20px;"><i>Next Appointment: <oscar:nextAppt demographicNo="<%=rs.getString("demographic_no")%>"/></i></span>
@@ -533,6 +535,16 @@ div.demographicWrapper {
         </tr>
         <tr>
             <td class="MainTableLeftColumn" valign="top">
+            <%
+                String wLReadonly = "";
+                WaitingList wL = WaitingList.getInstance();
+               if(!wL.getFound()){
+                    wLReadonly = "readonly";
+                    }
+
+            %>
+            <caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">
+
             <table border=0 cellspacing=0 width="100%">
                 <tr class="Header">
                     <td style="font-weight:bold">
@@ -543,12 +555,7 @@ div.demographicWrapper {
                     <a href='demographiccontrol.jsp?demographic_no=<%=rs.getString("demographic_no")%>&last_name=<%=URLEncoder.encode(rs.getString("last_name"))%>&first_name=<%=URLEncoder.encode(rs.getString("first_name"))%>&orderby=appointment_date&displaymode=appt_history&dboperation=appt_history&limit1=0&limit2=25'><bean:message key="demographic.demographiceditdemographic.btnApptHist"/></a>
                 </td></tr>
                 <%
-                    String wLReadonly = ""; 
-                    WaitingList wL = WaitingList.getInstance();
-                   if(!wL.getFound()){ 
-                        wLReadonly = "readonly"; 
-                        }
-                   if(wLReadonly.equals("")){ 
+                   if(wLReadonly.equals("")){
                 %>
                 <tr><td>
                     <a href="../oscarWaitingList/SetupDisplayPatientWaitingList.do?demographic_no=<%=rs.getString("demographic_no")%>">Waiting List</a>
@@ -565,7 +572,7 @@ div.demographicWrapper {
                     <a href='../oscar/billing/consultaFaturamentoPaciente/init.do?demographic_no=<%=rs.getString("demographic_no")%>'>Hist&oacute;rico do Faturamento</a></th>
                     <% } else if("ON".equals(prov)) {%>
                     <a href="javascript: function myFunction() {return false; }" onClick="popupPage(500,600,'../billing/CA/ON/billinghistory.jsp?demographic_no=<%=rs.getString("demographic_no")%>&last_name=<%=URLEncoder.encode(rs.getString("last_name"))%>&first_name=<%=URLEncoder.encode(rs.getString("first_name"))%>&orderby=appointment_date&displaymode=appt_history&dboperation=appt_history&limit1=0&limit2=10')">Billing History</a>
-                    <%}else{%>  
+                    <%}else{%>
                     <a href="#" onclick ="popupPage(800,1000,'../billing/CA/BC/billStatus.jsp?lastName=<%=URLEncoder.encode(rs.getString("last_name"))%>&firstName=<%=URLEncoder.encode(rs.getString("first_name"))%>&filterPatient=true&demographicNo=<%=rs.getString("demographic_no")%>');return false;">Invoice List</a>
                     <%}%>
                 </td></tr>
@@ -577,8 +584,8 @@ div.demographicWrapper {
                 	       String default_view = oscarVariables.getProperty("default_view", "");
                 %>
                    <%    if (!oscarProps.getProperty("clinic_no", "").startsWith("1022")) { // part 2 of quick hack to make Dr. Hunter happy %>
-                         <tr><td>                         
-                         <a href="javascript: function myFunction() {return false; }" 
+                         <tr><td>
+                         <a href="javascript: function myFunction() {return false; }"
                          onClick="window.open('../billing/CA/ON/specialtyBilling/fluBilling/addFluBilling.jsp?
                          function=demographic&functionid=<%=rs.getString("demographic_no")%>
                          &creator=<%=curProvider_no%>&demographic_name=<%=URLEncoder.encode(rs.getString("last_name"))%>%2C<%=URLEncoder.encode(rs.getString("first_name"))%>
@@ -629,10 +636,10 @@ div.demographicWrapper {
                     <a href="javascript: function myFunction() {return false; }" onClick="popup(700,960,'../oscarMessenger/SendDemoMessage.do?demographic_no=<%=rs.getString("demographic_no")%>','msg')">Send a Message</a>
                 </td></tr>
                 <oscar:oscarPropertiesCheck property="MY_OSCAR" value="yes">
-                    <phr:indivoRegistered provider="<%=curProvider_no%>" demographic="<%=demographic_no%>">                               
-                    <tr><td> 
+                    <phr:indivoRegistered provider="<%=curProvider_no%>" demographic="<%=demographic_no%>">
+                    <tr><td>
                       <a href="javascript: function myFunction() {return false; }" ONCLICK ="popupOscarRx(600,900,'../phr//PhrMessage.do?method=createMessage&providerNo=<%=curProvider_no%>&demographicNo=<%=demographic_no%>')" title="myOscar">Send Message to PHR</a>
-                    </td></tr>                
+                    </td></tr>
                     </phr:indivoRegistered>
                 </oscar:oscarPropertiesCheck>
                 <% if (oscarProps.getProperty("clinic_no", "").startsWith("1022")) { // quick hack to make Dr. Hunter happy %>
@@ -662,15 +669,20 @@ div.demographicWrapper {
                     <a href="../eform/efmformslistadd.jsp?demographic_no=<%=demographic_no%>" > <bean:message key="demographic.demographiceditdemographic.btnAddEForm"/> </a>
                 </td></tr>
             </table>
+            </caisi:isModuleLoad>
+
             </td>
             <td class="MainTableRightColumn" valign="top">
                 <table border=0 cellspacing=4 width="100%">
+                <caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">
+
                     <tr>
                         <td colspan="4">
                             <%-- log:info category="Demographic">Demographic [<%=demographic_no%>] is viewed by User [<%=userfirstname%> <%=userlastname %>]  </log:info --%>
                             <%@ include file="zdemographicfulltitlesearch.jsp" %>
                         </td>
                     </tr>
+                    </caisi:isModuleLoad>
                     <tr>
                     <td>
                     <form method="post" name="updatedelete" id="updatedelete" action="demographiccontrol.jsp" onSubmit="return checkTypeInEdit();">
@@ -1087,7 +1099,7 @@ if(oscarVariables.getProperty("demographicExt") != null) {
                                  // Month and Day
                                  decF.applyPattern("00");
                                  String effDateMonth = decF.format(MyDateFormat.getMonthFromStandardDate(rs.getString("eff_date")));
-                                 
+
                                  //String effDateDay = decF.format(MyDateFormat.getDayFromStandardDate(rs.getString("eff_date")));
                                  String effDateDay = decF.format(MyDateFormat.getDayFromStandardDate_oracle(rs.getString("eff_date")));
                               %>
@@ -1340,21 +1352,21 @@ document.updatedelete.r_doctor_ohip.value = refNo;
                             <%}%>
 
                             <tr valign="top">
-                            <td colspan="4"> 
- 	                    <table border="1" width="100%"> 
- 	                       <tr> 
- 	                           <td align="right" width="16%"  nowrap ><b>Waiting List:</b></td> 
- 	                           <td align="left" width="31%"> 
+                            <td colspan="4">
+ 	                    <table border="1" width="100%">
+ 	                       <tr>
+ 	                           <td align="right" width="16%"  nowrap ><b>Waiting List:</b></td>
+ 	                           <td align="left" width="31%">
                               <%
                                 ResultSet rsWLStatus = apptMainBean.queryResults(demographic_no,"search_wlstatus");
- 	                        String wlId="", listID="", wlnote=""; 
- 	                        String wlReferralDate=""; 
+ 	                        String wlId="", listID="", wlnote="";
+ 	                        String wlReferralDate="";
                                 if (rsWLStatus.next()){
-                                    wlId = rsWLStatus.getString("id"); 
+                                    wlId = rsWLStatus.getString("id");
                                     listID = rsWLStatus.getString("listID");
                                     wlnote = rsWLStatus.getString("note");
-                                    wlReferralDate = rsWLStatus.getString("onListSince"); 
-                                    if(wlReferralDate != null  &&  wlReferralDate.length()>10){ 
+                                    wlReferralDate = rsWLStatus.getString("onListSince");
+                                    if(wlReferralDate != null  &&  wlReferralDate.length()>10){
                                         wlReferralDate = wlReferralDate.substring(0, 11);
                                     }
                                 }
@@ -1366,7 +1378,7 @@ document.updatedelete.r_doctor_ohip.value = refNo;
                                   %>
                                   <option value="0" >--Select Waiting List--</option>
                                   <%}else{%>
-                                  <option value="0" >--Please Create Waiting List Name first--</option> 
+                                  <option value="0" >--Please Create Waiting List Name first--</option>
                                   <%} %>
                                   <%
                                       ResultSet rsWL = apptMainBean.queryResults("search_waiting_list");
@@ -1381,22 +1393,22 @@ document.updatedelete.r_doctor_ohip.value = refNo;
                               </td>
                               <td align="right" nowrap><b>Waiting List Note: </b></td>
                               <td align="left">
-    	                        <input type="text" name="waiting_list_note" value="<%=wlnote%>"   size="34" <%=wLReadonly%>> 
- 	                      </td> 
- 	                          </tr> 
- 	                          <tr> 
- 	                            <td colspan="2" >&nbsp;</td> 
- 	                            <td align="right" nowrap><b>Date of request: </b></td> 
- 	                            <td align="left"> 
- 	                            <input type="text" name="waiting_list_referral_date" id="waiting_list_referral_date"  size="11" 
- 	                                               value="<%=wlReferralDate%>"  <%=wLReadonly%> ><img src="../images/cal.gif" id="referral_date_cal">(yyyy-mm-dd) 
- 	                             </td> 
- 	                    
- 	                           </tr> 
- 	                            </table> 
- 	                            </td> 
+    	                        <input type="text" name="waiting_list_note" value="<%=wlnote%>"   size="34" <%=wLReadonly%>>
+ 	                      </td>
+ 	                          </tr>
+ 	                          <tr>
+ 	                            <td colspan="2" >&nbsp;</td>
+ 	                            <td align="right" nowrap><b>Date of request: </b></td>
+ 	                            <td align="left">
+ 	                            <input type="text" name="waiting_list_referral_date" id="waiting_list_referral_date"  size="11"
+ 	                                               value="<%=wlReferralDate%>"  <%=wLReadonly%> ><img src="../images/cal.gif" id="referral_date_cal">(yyyy-mm-dd)
+ 	                             </td>
+
+ 	                           </tr>
+ 	                            </table>
+ 	                            </td>
                             </tr>
- 
+
                             <tr valign="top">
                               <td align="right" nowrap><b><bean:message key="demographic.demographiceditdemographic.formDateJoined1"/>: </b></td>
                               <td align="left" >
@@ -1548,11 +1560,11 @@ if(oscarVariables.getProperty("demographicExtJScript") != null) { out.println(os
             </td>
         </tr>
     </table>
-    
-	     
- <script type="text/javascript"> 
-Calendar.setup({ inputField : "waiting_list_referral_date", ifFormat : "%Y-%m-%d", showsTime :false, button : "referral_date_cal", singleClick : true, step : 1 }); 
-</script>     
+
+
+ <script type="text/javascript">
+Calendar.setup({ inputField : "waiting_list_referral_date", ifFormat : "%Y-%m-%d", showsTime :false, button : "referral_date_cal", singleClick : true, step : 1 });
+</script>
 </body>
 </html:html>
 

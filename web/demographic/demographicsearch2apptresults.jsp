@@ -291,7 +291,7 @@ onClick="document.forms[0].demographic_no.value=<%=rs.getString("demographic_no"
 %> 
 <script language="JavaScript">
 <!--
-  document.addform.action="<%=request.getParameter("originalpage")%>?name=<%=URLEncoder.encode(bufName.toString())%>&chart_no=<%=URLEncoder.encode(bufChart.toString())%>&bFirstDisp=false&demographic_no=<%=bufNo.toString()%>&messageID=<%=request.getParameter("messageId")%>&doctor_no=<%=bufDoctorNo.toString()%>";
+  document.addform.action="<%=request.getParameter("originalpage")%>?name=<%=URLEncoder.encode((bufName!=null?bufName.toString():""))%>&chart_no=<%=URLEncoder.encode((bufChart!=null?bufChart.toString():""))%>&bFirstDisp=false&demographic_no=<%=bufNo.toString()%>&messageID=<%=request.getParameter("messageId")%>&doctor_no=<%=bufDoctorNo.toString()%>";
   document.addform.submit();  
 //-->
 </SCRIPT>

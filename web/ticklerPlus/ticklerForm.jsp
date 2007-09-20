@@ -83,7 +83,7 @@
 				String formattedDate = year + "-" + month + "-" + day;
 			%>
 			<td class="fieldValue">
-				<html:text property="tickler.serviceDate" value="<%=formattedDate%>" />
+				<html:text property="tickler.serviceDate" value="<%=oscar.util.SqlUtils.isoToOracleDate(formattedDate)%>" />
 				<span onClick="openBrWindow('calendar/oscarCalendarPopup.jsp?type=caisi&openerForm=ticklerForm&amp;openerElement=tickler.serviceDate&amp;year=<%=year%>&amp;month=<%=month%>','','width=300,height=300')">
 					<img border="0" src="images/calendar.jpg" />
 				</span>

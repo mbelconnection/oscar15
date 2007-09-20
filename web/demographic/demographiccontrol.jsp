@@ -60,7 +60,7 @@
 	  if(request.getParameter("keyword").indexOf("*")!=-1 || request.getParameter("keyword").indexOf("%")!=-1) regularexp="like";
     if(request.getParameter("search_mode").equals("search_address")) 
     	//fieldname="readdress";
-    	fieldname="regexp_like(readdress,?,'i')";
+    	fieldname="regexp_like(address,?,'i')";
     if(request.getParameter("search_mode").equals("search_phone")) 
     	//fieldname="phone";
     	fieldname="regexp_like(phone,?,'i')";

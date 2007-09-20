@@ -138,17 +138,19 @@ public class Tickler extends BaseObject {
 	
 	/* have to do this */
 	public void setServiceDate(String data) {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		//SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-mon-yyyy");
 		try {
 			setService_date(formatter.parse(data));
 		}catch(Exception e) {
-			throw new IllegalArgumentException("Invalid service date, use yyyy-MM-dd");
+			throw new IllegalArgumentException("Invalid service date, use dd-mon-yyyy");
 		}
 	}
 	
 	public String getServiceDate() {
 		if(getService_date() != null) {
-			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			//SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			SimpleDateFormat formatter = new SimpleDateFormat("dd-mon-yyyy");
 			return formatter.format(getService_date());
 		}
 		return "";
@@ -170,7 +172,8 @@ public class Tickler extends BaseObject {
 	 * expects string '00:00 AM|PM'
 	 */
 	public void setServiceTime(String time) throws ParseException {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm aa");
+		//SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm aa");
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-mon-yyyy hh:mi aa");
 		Date d = formatter.parse(getServiceDate() + " " + time);
 		setService_date(d);
 	}

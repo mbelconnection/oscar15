@@ -22,11 +22,13 @@
 
 package org.caisi.dao.hibernate;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.caisi.dao.TicklerDAO;
 import org.caisi.model.CustomFilter;
 import org.caisi.model.Tickler;
@@ -116,14 +118,20 @@ public class TicklerDAOHibernate extends HibernateDaoSupport implements
 		
 			if(filter.getEndDate() == null ||filter.getEndDate().length()==0) {
 				//filter.setEndDate("9999-12-31");
-				filter.setEndDate("31-DEC-9999");
+				filter.setEndDate("31-DEC-9998");
 			} 
 				
 			paramList.add(filter.getStartDate());
 		
 			//paramList.add(filter.getEndDate() + " 23:59:59");
-			//paramList.add(filter.getEndDate());
 			paramList.add(SqlUtils.addOneDay(filter.getEndDate()));
+			
+			/*SimpleDateFormat isoFormat=new SimpleDateFormat("dd-MMM-yyyy");
+			java.util.Date date1=isoFormat.parse(filter.getEndDate());
+			paramList.add(new Date(date1.getTime() + DateUtils.MILLIS_PER_DAY));
+			*/
+			
+			System.out.println("##### start date = "+filter.getStartDate() + " , ### end date="+SqlUtils.addOneDay(filter.getEndDate()));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

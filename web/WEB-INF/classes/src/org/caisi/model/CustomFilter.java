@@ -178,8 +178,8 @@ public class CustomFilter extends BaseObject {
 		return end_date;
 	}
 
-	public void setEnd_date(Date end_date) {
-		this.end_date = new Date(end_date.getTime() + DateUtils.MILLIS_PER_DAY);
+	public void setEnd_date(Date end_date) {		
+		this.end_date = end_date;
 	}
 
 	public Date getStart_date() {

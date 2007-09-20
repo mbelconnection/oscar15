@@ -139,7 +139,7 @@ public class Tickler extends BaseObject {
 	/* have to do this */
 	public void setServiceDate(String data) {
 		//SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		SimpleDateFormat formatter = new SimpleDateFormat("dd-mon-yyyy");
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
 		try {
 			setService_date(formatter.parse(data));
 		}catch(Exception e) {
@@ -150,7 +150,7 @@ public class Tickler extends BaseObject {
 	public String getServiceDate() {
 		if(getService_date() != null) {
 			//SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-			SimpleDateFormat formatter = new SimpleDateFormat("dd-mon-yyyy");
+			SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
 			return formatter.format(getService_date());
 		}
 		return "";
@@ -173,7 +173,7 @@ public class Tickler extends BaseObject {
 	 */
 	public void setServiceTime(String time) throws ParseException {
 		//SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm aa");
-		SimpleDateFormat formatter = new SimpleDateFormat("dd-mon-yyyy hh:mi aa");
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy hh:mm aa");
 		Date d = formatter.parse(getServiceDate() + " " + time);
 		setService_date(d);
 	}

@@ -34,6 +34,7 @@ import org.oscarehr.PMmodule.model.Demographic;
 import org.oscarehr.PMmodule.model.Formintakea;
 import org.oscarehr.PMmodule.service.ClientManager;
 import org.oscarehr.PMmodule.service.IntakeAManager;
+import org.oscarehr.util.DbConnectionFilter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -41,8 +42,6 @@ public class CopyHealthCardInfoToDemographics {
 	protected final Log log = LogFactory.getLog(getClass());
 	
     protected ApplicationContext ctx = null;
-    protected DataSource ds;
-    protected Connection conn;
     
     
     public CopyHealthCardInfoToDemographics() throws Exception {
@@ -55,8 +54,7 @@ public class CopyHealthCardInfoToDemographics {
     	IntakeAManager intakeMgr = (IntakeAManager)ctx.getBean("intakeAManager");
     	ClientManager clientMgr = (ClientManager)ctx.getBean("clientManager");
     	
-    	ds = (DataSource)ctx.getBean("dataSource");
-    	conn = ds.getConnection();
+    	Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
  
     	Statement stmt = conn.createStatement();
     	stmt.execute("SELECT demographic_no FROM demographic");

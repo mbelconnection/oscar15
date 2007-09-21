@@ -31,6 +31,8 @@ import java.util.Enumeration;
 import java.sql.*;   // communicate with database
 import java.io.*;
 
+import org.oscarehr.util.DbConnectionFilter;
+
 public class DBHandler  { 
   Hashtable theQueries=null; // contains prepackaged queries
   String currentOp=null;
@@ -78,7 +80,7 @@ public class DBHandler  {
       System.err.println("test(): " + e.getMessage());
     }
     try {
-      conn = DriverManager.getConnection(dsn, uid, pwd);
+      conn = DbConnectionFilter.getThreadLocalDbConnection().getConnection(dsn, uid, pwd);
     } catch (Exception e) {
       e.printStackTrace();
     }

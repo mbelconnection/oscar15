@@ -49,36 +49,36 @@ public class DBConnect {
               System.err.println("DBconn (): " + e.getMessage());
       }
   }
-  public boolean executeUpdate(String sql) {
-    boolean insert = false;
-    try {
-         conn = DriverManager.getConnection(ConnStr);
-         Statement stmt = conn.createStatement();
-         int i= stmt.executeUpdate(sql);
+//  public boolean executeUpdate(String sql) {
+//    boolean insert = false;
+//    try {
+//         conn = DriverManager.getConnection(ConnStr);
+//         Statement stmt = conn.createStatement();
+//         int i= stmt.executeUpdate(sql);
+//
+//          insert=true;
+//    }
+//    catch(SQLException ex) {
+//       System.err.println("aq.executeQuery: " + ex.getMessage());
+//    }
+//
+//    return insert;
+//  }
 
-          insert=true;
-    }
-    catch(SQLException ex) {
-       System.err.println("aq.executeQuery: " + ex.getMessage());
-    }
-
-    return insert;
-  }
-
-  public ResultSet executeQuery(String sql) {
-    rs = null;
-    try {
-         conn = DriverManager.getConnection(ConnStr);
-         conn.setAutoCommit(true);
-         Statement stmt = conn.createStatement();
-         rs = stmt.executeQuery(sql);
-
-    }
-    catch(SQLException ex) {
-       System.err.println("aq.executeQuery: " + ex.getMessage());
-    }
-    return rs;
-  }
+//  public ResultSet executeQuery(String sql) {
+//    rs = null;
+//    try {
+//         conn = DriverManager.getConnection(ConnStr);
+//         conn.setAutoCommit(true);
+//         Statement stmt = conn.createStatement();
+//         rs = stmt.executeQuery(sql);
+//
+//    }
+//    catch(SQLException ex) {
+//       System.err.println("aq.executeQuery: " + ex.getMessage());
+//    }
+//    return rs;
+//  }
 
  
 }

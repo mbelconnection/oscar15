@@ -37,10 +37,10 @@ import oscar.util.SqlUtils;
 
 public class DBPreparedHandler {
 
-    String connDriver = null; //"org.gjt.mm.mysql.Driver";
-    String connURL = null; //"jdbc:mysql://";
-    String connUser = null; //"mysql";
-    String connPwd = null; //"oscar";
+//    String connDriver = null; //"org.gjt.mm.mysql.Driver";
+//    String connURL = null; //"jdbc:mysql://";
+//    String connUser = null; //"mysql";
+//    String connPwd = null; //"oscar";
 //    DBHandler db = null;
 
 //    ResultSet rs = null;

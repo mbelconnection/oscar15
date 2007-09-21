@@ -14,6 +14,9 @@ public class SpringUtils {
     //    private static final String[] configs = {"/applicationContext.xml", "/applicationContextCaisi.xml"};
     //    public static final BeanFactory beanFactory = new ClassPathXmlApplicationContext(configs);
 
+    /**
+     * This variable is populated by one of the context listeners.
+     */
     public static BeanFactory beanFactory = null;
 
     protected static Connection getDbConnection() throws SQLException {

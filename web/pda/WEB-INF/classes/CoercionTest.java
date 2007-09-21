@@ -395,7 +395,7 @@ public class CoercionTest {
 
 		try {
 			
- 			aConnection = DriverManager.getConnection(jdbcURL, "dtfadm", "dtfadm");
+// 			aConnection = DriverManager.getConnection(jdbcURL, "dtfadm", "dtfadm");
 
 //  jdbc:mysql:///mydb?user=zt&password=zt
  			

@@ -26,6 +26,7 @@
 
 <%@ taglib uri="/WEB-INF/rewrite-tag.tld" prefix="rewrite" %>
 <%@ page import="java.math.*, java.util.*, java.io.*, java.sql.*, oscar.*, java.net.*,oscar.MyDateFormat"  %>
+<%@page import="oscar.util.*" %>
 <%@ include file="../admin/dbconnection.jsp" %>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean" scope="session" /> 
 <%@ include file="dbTicker.jsp" %>
@@ -53,8 +54,8 @@ docassigned =request.getParameter("task_assigned_to");
 	  param[0]=module_id;
 	  param[1]=docfilename;
 	  param[2]="A";
-	  param[3]=nowDate;
-	  param[4]=docdate;
+	  param[3]=SqlUtils.isoToOracleDate(nowDate);
+	  param[4]=SqlUtils.isoToOracleDate(docdate);
 	  param[5]=doccreator;
 	  param[6]=docpriority;
 	  param[7]=docassigned;

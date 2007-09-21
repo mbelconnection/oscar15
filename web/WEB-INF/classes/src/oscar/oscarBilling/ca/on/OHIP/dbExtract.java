@@ -28,13 +28,14 @@
 package oscar.oscarBilling.ca.on.OHIP;
 import java.io.Serializable;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import org.oscarehr.util.DbConnectionFilter;
 public class dbExtract implements Serializable {
-	private Connection con = null;
+//	private Connection con = null;
 	private Statement stmt = null;
 	private Statement stmt2 = null;
 	private Statement stmt3 = null;
@@ -65,30 +66,30 @@ public class dbExtract implements Serializable {
 		//     System.out.println("Exception : " + ex);
 		//   }
 	}
-	public void openConnection(String sd, String ur, String us, String ps)
-			throws SQLException {
-		sdriver = sd;
-		surl = ur;
-		us = user;
-		password = ps;
-		try {
-			//Load the particular driver
-			Class.forName(sdriver);
-			//establish connection with the specified username, password and
-			// url
-			con = DriverManager.getConnection(surl, user, password);
-			//con2 = DriverManager.getConnection(url, user, password);//create
-			// a statement that can execute a query
-			stmt = con.createStatement();
-			stmt2 = con.createStatement();
-		} catch (SQLException e) {
-			System.out.println("Cannot get connection ");
-			System.out.println("Exception is: " + e);
-		} catch (ClassNotFoundException e) {
-			System.out.println("Class not found exception ");
-			System.out.println("Exception is: " + e);
-		}
-	}
+//	public void openConnection(String sd, String ur, String us, String ps)
+//			throws SQLException {
+//		sdriver = sd;
+//		surl = ur;
+//		us = user;
+//		password = ps;
+//		try {
+//			//Load the particular driver
+//			Class.forName(sdriver);
+//			//establish connection with the specified username, password and
+//			// url
+//			con = DriverManager.getConnection(surl, user, password);
+//			//con2 = DriverManager.getConnection(url, user, password);//create
+//			// a statement that can execute a query
+//			stmt = con.createStatement();
+//			stmt2 = con.createStatement();
+//		} catch (SQLException e) {
+//			System.out.println("Cannot get connection ");
+//			System.out.println("Exception is: " + e);
+//		} catch (ClassNotFoundException e) {
+//			System.out.println("Class not found exception ");
+//			System.out.println("Exception is: " + e);
+//		}
+//	}
 	public ResultSet executeQuery(String sql) throws SQLException {
 		try {
 			String SQLString = sql;
@@ -132,9 +133,9 @@ public class dbExtract implements Serializable {
 		try {
 			String SQLup = getUpdateString();
 			// System.out.println(SQLup);
-			prepStmt = con.createStatement();
+			prepStmt = DbConnectionFilter.getThreadLocalDbConnection().createStatement();
 			numUpdate = prepStmt.executeUpdate(SQLup);
-			con.commit();
+			DbConnectionFilter.getThreadLocalDbConnection().commit();
 			return numUpdate;
 		} catch (SQLException e) {
 			System.out.println("Cannot get connection ");
@@ -150,8 +151,8 @@ public class dbExtract implements Serializable {
 	}
 	public void closeConnection() throws SQLException {
 		try {
-			if ((con != null) && (stmt != null)) {
-				con.close();
+			if ((DbConnectionFilter.getThreadLocalDbConnection() != null) && (stmt != null)) {
+			    DbConnectionFilter.getThreadLocalDbConnection().close();
 				stmt.close();
 			}
 		} catch (Exception e) {

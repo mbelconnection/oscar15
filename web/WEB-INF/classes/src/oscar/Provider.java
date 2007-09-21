@@ -27,6 +27,8 @@ package oscar;
 import java.sql.*;
 import java.io.*;
 
+import org.oscarehr.util.DbConnectionFilter;
+
 public class Provider {
   //String sDBDriver = "sun.jdbc.odbc.JdbcOdbcDriver";
   //String sConnStr = "jdbc:odbc:oscar";
@@ -52,7 +54,7 @@ public class Provider {
       System.err.println("test(): " + e.getMessage());
     }
     try {
-      conn = DriverManager.getConnection(dsn, uid, pwd);
+      conn = DbConnectionFilter.getThreadLocalDbConnection();
     } catch (Exception e) {
       e.printStackTrace();
     }

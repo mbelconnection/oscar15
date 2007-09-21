@@ -29,6 +29,8 @@ import java.text.*;
 import java.util.*;
 import java.lang.*;
 
+import org.oscarehr.util.DbConnectionFilter;
+
 public class dbExtract implements Serializable {
 
   private Connection con = null;
@@ -79,8 +81,7 @@ try
 //Load the particular driver
 Class.forName(sdriver);
 //establish connection with the specified username, password and url
-con = DriverManager.getConnection(surl, user, password);
-//con2 = DriverManager.getConnection(url, user, password);//create a statement that can execute a query
+con = DbConnectionFilter.getThreadLocalDbConnection();
 stmt = con.createStatement();
 stmt2 = con.createStatement();
 }

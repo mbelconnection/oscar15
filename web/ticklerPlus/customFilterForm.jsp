@@ -11,10 +11,23 @@
  	String month_string = SqlUtils.getStringMonth(month);
  	String formattedDate = day + "-" + month_string + "-" + year ;
 %>
-
-	<script>
+<script type="text/javascript" src="../js/checkDate.js"></script>
+	<script>	
 		function search_demographic() {
 			window.open('../ticklerPlus/demographicSearch.jsp?form=customFilterForm&elementName=filter.demographic_webName&elementId=filter.demographic_no&query=' + document.customFilterForm.elements['filter.demographic_webName'].value,'demographic_search');
+		}
+		
+		function check_custom_filter_date() {
+			var startDate = document.customFilterForm.elements['filter.startDate'].value;
+			var endDate = document.customFilterForm.elements['filter.endDate'].value;
+			if(check_date_for_oracle(startDate) && check_date_for_oracle(endDate)) {
+		
+			var form = document.customFilterForm;
+			//form.method.value='filter';
+			form.submit();
+			} else {
+				return false;
+			}	
 		}
 	</script>	
 
@@ -71,14 +84,14 @@
               <tr>
                       <td class="fieldTitle">Start Date:</td>
                       <td class="fieldValue">
-                      	<html:text property="filter.startDate"/>
+                      	<html:text property="filter.startDate" maxlength="11" />
                       	<span onClick="openBrWindow('calendar/oscarCalendarPopup.jsp?type=caisi&openerForm=customFilterForm&amp;openerElement=filter.startDate&amp;year=<%=year %>&amp;month=<%=month %>','','width=300,height=300')"><img border="0" src="images/calendar.jpg"/></span>
 	                 </td>
               </tr>
               <tr>
                       <td class="fieldTitle">End Date:</td>
                       <td class="fieldValue">
-                      	<html:text property="filter.endDate"/>
+                      	<html:text property="filter.endDate" maxlength="11"/>
                       	<span onClick="openBrWindow('calendar/oscarCalendarPopup.jsp?type=caisi&openerForm=customFilterForm&amp;openerElement=filter.endDate&amp;year=<%=year %>&amp;month=<%=month %>','','width=300,height=300')"><img border="0" src="images/calendar.jpg"/></span>
 	                 </td>
               </tr>
@@ -162,7 +175,8 @@
               </tr>
 				<tr>
 	              	<td class="fieldValue" colspan="3" align="left">
-					        <html:submit styleClass="button">Save</html:submit>
+					        <!-- <html:submit styleClass="button">Save</html:submit>  -->
+					        <input type="button" class="button" value="Save" onclick="check_custom_filter_date();">
 					        <input type="button" class="button" value="Cancel" onclick="location.href='<html:rewrite action="CustomFilter"/>'"/>
 					</td>
 				</tr>

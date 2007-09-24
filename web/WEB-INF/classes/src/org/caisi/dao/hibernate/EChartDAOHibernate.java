@@ -23,6 +23,8 @@
 package org.caisi.dao.hibernate;
 
 
+import java.util.List;
+
 import org.caisi.dao.EChartDAO;
 import org.caisi.model.EChart;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
@@ -40,6 +42,13 @@ public class EChartDAOHibernate extends HibernateDaoSupport implements
 	}
 
 	public EChart getLatestChart(int demographicNo) {
-		return (EChart)getHibernateTemplate().find("from EChart c where c.demographicNo = ? order by c.timeStamp desc",new Object[] {String.valueOf(demographicNo)}).get(0);
+		List results = getHibernateTemplate().find("from EChart c where c.demographicNo = ? order by c.echartTimeStamp desc",new Object[] {String.valueOf(demographicNo)});
+		if(results.size()>0) {
+			return (EChart)results.get(0);
+		} else {
+			return null;
+		}
+		
+		//return (EChart)getHibernateTemplate().find("from EChart c where c.demographicNo = ? order by c.echartTimeStamp desc",new Object[] {String.valueOf(demographicNo)}).get(0);
 	}
 }

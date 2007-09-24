@@ -28,7 +28,7 @@ import org.apache.commons.beanutils.BeanUtils;
 
 public class EChart extends BaseObject {
 	private Long id;
-	private Date timeStamp;
+	private Date echartTimeStamp;
 	private int demographicNo;
 	private String providerNo;
 	private String subject;
@@ -93,11 +93,11 @@ public class EChart extends BaseObject {
 	public void setSubject(String subject) {
 		this.subject = subject;
 	}
-	public Date getTimeStamp() {
-		return timeStamp;
+	public Date getEchartTimeStamp() {
+		return echartTimeStamp;
 	}
-	public void setTimeStamp(Date timeStamp) {
-		this.timeStamp = timeStamp;
+	public void setEchartTimeStamp(Date echartTimeStamp) {
+		this.echartTimeStamp = echartTimeStamp;
 	}
 	public String getOngoingConcerns() {
 		return ongoingConcerns;

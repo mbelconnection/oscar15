@@ -21,7 +21,7 @@
 		<id name="id" column="eChartId" unsaved-value="0">
 			<generator class="native" />
 		</id>
-		<property name="timeStamp" type="java.util.Date" />
+		<property name="echartTimeStamp" type="java.util.Date" />
 		<property name="demographicNo" />
 		<property name="providerNo" />
 		<property name="subject" />

@@ -352,15 +352,25 @@ public class TicklerAction extends DispatchAction {
         	
     		/* get current chart */
     		EChart tempChart = chartMgr.getLatestChart(tickler.getDemographic_no());
-    		String postedDate = formatter.format(tempChart.getTimeStamp());
+    		String postedDate = "";
+    		if(tempChart!=null) {
+    			postedDate = formatter.format(tempChart.getEchartTimeStamp());
+    		}
     		
     		/* create new object */
     		EChart chart = new EChart();
-    		BeanUtils.copyProperties(chart,tempChart);
+    		if(tempChart!=null) {
+    			BeanUtils.copyProperties(chart,tempChart);
+    		}
     		String today = formatter.format(new Date());
     		
     		String e = chart.getEncounter();
-    		StringBuffer buf = new StringBuffer(e);
+    		StringBuffer buf;
+    		if(e!=null) {
+    			buf = new StringBuffer(e);
+    		} else {
+    			buf = new StringBuffer();
+    		}
     		buf.append("\n\n");
     		if(!today.equals(postedDate)) {
     			buf.append("__________________________________________________\n");

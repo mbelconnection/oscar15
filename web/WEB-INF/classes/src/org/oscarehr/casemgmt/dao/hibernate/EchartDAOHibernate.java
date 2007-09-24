@@ -60,7 +60,7 @@ public class EchartDAOHibernate extends HibernateDaoSupport implements
 		ec.setSocialHistory(cpp.getSocialHistory());
 
 		Date now = new Date();
-		ec.setTimeStamp(now);
+		ec.setEchartTimeStamp(now);
 		getHibernateTemplate().saveOrUpdate(ec);
 	}
 
@@ -90,7 +90,7 @@ public class EchartDAOHibernate extends HibernateDaoSupport implements
 		ec.setSocialHistory(cpp.getSocialHistory());
 
 		Date now = new Date();
-		ec.setTimeStamp(now);
+		ec.setEchartTimeStamp(now);
 		String etext = oldec.getEncounter();
 		
 		

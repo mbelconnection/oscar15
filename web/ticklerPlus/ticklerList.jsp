@@ -117,21 +117,21 @@
 	</tr>
 	<tr>
 		<td class="blueText">Status: <html:select property="filter.status"
-			onchange="this.form.method.value='filter';this.form.submit();">
+			onchange="return checkTicklerDate();">
 			<html:option value="Z">All</html:option>
 			<html:option value="A">Active</html:option>
 			<html:option value="C">Completed</html:option>
 			<html:option value="D">Deleted</html:option>
 		</html:select></td>
 		<td class="blueText">Provider: <html:select property="filter.provider"
-			onchange="this.form.method.value='filter';this.form.submit();">
+			onchange="return checkTicklerDate();">
 			<option value="All Providers">All Providers</option>
 			<html:options collection="providers" property="provider_no"
 				labelProperty="formattedName" />
 		</html:select></td>
 		<td class="blueText">Task Assigned To: <html:select
 			property="filter.assignee"
-			onchange="this.form.method.value='filter';this.form.submit();">
+			onchange="return checkTicklerDate();">
 			<option value="All Providers">All Providers</option>
 			<html:options collection="providers" property="provider_no"
 				labelProperty="formattedName" />
@@ -142,7 +142,7 @@
 		
 		<oscar:oscarPropertiesCheck property="clientdropbox" value="on">
 		    <html:select property="filter.demographic_no"
-			onchange="this.form.method.value='filter';this.form.submit();">
+			onchange="return checkTicklerDate();">
 			<option value="All Clients">All Clients</option>
 			<html:options collection="demographics" property="demographicNo" labelProperty="formattedName" />
 		    </html:select>

@@ -129,7 +129,7 @@ public class CustomFilter extends BaseObject {
 	public void setStartDate(String data) {
 		if(data == null || data.length()==0) {
 			//data = "0001-01-01";
-			data = "01-JAN-0001";
+			data = "01-JAN-1900";
 		}
 		//SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");

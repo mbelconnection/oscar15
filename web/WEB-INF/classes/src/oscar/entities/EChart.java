@@ -33,7 +33,7 @@ public class EChart {
    * auto_increment
    */
   private int eChartId;
-  private String timeStamp;
+  private String echartTimeStamp;
   private int demographicNo;
   private String providerNo;
   private String subject;
@@ -69,7 +69,7 @@ public class EChart {
                 String familyHistory, String medicalHistory,
                 String ongoingConcerns, String reminders, String encounter) {
     this.eChartId = eChartId;
-    this.timeStamp = timeStamp;
+    this.echartTimeStamp = echartTimeStamp;
     this.demographicNo = demographicNo;
     this.providerNo = providerNo;
     this.subject = subject;
@@ -93,8 +93,8 @@ public class EChart {
    * Gets the timeStamp
    * @return String timeStamp
    */
-  public String getTimeStamp() {
-    return timeStamp;
+  public String getEchartTimeStamp() {
+    return echartTimeStamp;
   }
 
   /**
@@ -181,8 +181,8 @@ public class EChart {
    * Sets the timeStamp
    * @param timeStamp String
    */
-  public void setTimeStamp(String timeStamp) {
-    this.timeStamp = timeStamp;
+  public void setEchartTimeStamp(String echartTimeStamp) {
+    this.echartTimeStamp = echartTimeStamp;
   }
 
   /**

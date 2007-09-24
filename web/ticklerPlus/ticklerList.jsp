@@ -2,13 +2,15 @@
 
 <%@ page import="java.util.Calendar"%>
 <%
-                        Calendar now = Calendar.getInstance();
-			int curYear = now.get(Calendar.YEAR);
-			int curMonth = now.get(Calendar.MONTH) + 1;
+	Calendar now = Calendar.getInstance();
+	int curYear = now.get(Calendar.YEAR);
+	int curMonth = now.get(Calendar.MONTH) + 1;
 
-			%>
+%>
 
 <script type="text/javascript" src="../share/javascript/prototype.js"></script>
+<script type="text/javascript" src="../js/checkDate.js"></script>
+
 <script>
 	function batch_operation(method) {
 		var checked=false;
@@ -28,6 +30,21 @@
 		form.method.value=method;
 		form.submit();
 	}
+	
+	function checkTicklerDate() {
+		//21-Sep-2007
+		var startDate = document.ticklerForm.elements['filter.startDate'].value;
+		var endDate = document.ticklerForm.elements['filter.endDate'].value;
+		
+		if(check_date_for_oracle(startDate) && check_date_for_oracle(endDate)) {
+		
+		var form = document.ticklerForm;
+		form.method.value='filter';
+		form.submit();
+		} else {
+			return false;
+		}		
+	}	
 
         function createReport() {        
                 document.ticklerForm.method.value='filter';
@@ -88,12 +105,15 @@
 		<td class="blueText">Service Date Range:</td>
 		<td class="blueText"><span style="text-decoration:underline"
 			onClick="openBrWindow('<c:out value="${ctx}"/>/ticklerPlus/calendar/oscarCalendarPopup.jsp?type=caisi&openerForm=ticklerForm&amp;openerElement=filter.startDate&amp;year=<%=curYear%>&amp;month=<%=curMonth%>','','width=300,height=300')">Begin:</span>
-		<html:text property="filter.startDate" /></td>
+		<html:text property="filter.startDate" maxlength="11" /></td>
+		
 		<td class="blueText"><span style="text-decoration:underline"
-			onClick="openBrWindow('<c:out value="${ctx}"/>/ticklerPlus/calendar/oscarCalendarPopup.jsp?type=caisi&openerForm=ticklerForm&amp;openerElement=filter.endDate&amp;year=<%=curYear%>&amp;month=<%=curMonth %>','','width=300,height=300')">End:</span><html:text
-			property="filter.endDate" /></td>
+			onClick="openBrWindow('<c:out value="${ctx}"/>/ticklerPlus/calendar/oscarCalendarPopup.jsp?type=caisi&openerForm=ticklerForm&amp;openerElement=filter.endDate&amp;year=<%=curYear%>&amp;month=<%=curMonth %>','','width=300,height=300')">End:</span>
+		<html:text property="filter.endDate" maxlength="11"/>
+		</td>
+		
 		<td><input type="button" value="Create Report"
-			onclick="this.form.method.value='filter';this.form.submit();" /></td>
+			onclick="return checkTicklerDate();" /></td>
 	</tr>
 	<tr>
 		<td class="blueText">Status: <html:select property="filter.status"

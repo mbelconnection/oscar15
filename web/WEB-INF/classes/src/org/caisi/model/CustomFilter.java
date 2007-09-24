@@ -153,7 +153,7 @@ public class CustomFilter extends BaseObject {
 	public void setEndDate(String data) {
 		if(data == null || data.length()==0) {
 			//data = "9999-12-31";
-			data = "31-DEC-9999";
+			data = "31-DEC-8888";
 		}
 		//SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");

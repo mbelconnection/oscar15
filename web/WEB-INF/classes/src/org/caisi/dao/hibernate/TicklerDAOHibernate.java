@@ -109,8 +109,8 @@ public class TicklerDAOHibernate extends HibernateDaoSupport implements
 		
 		//ORACLE DATE: DD-MMM-YYYY
 		try {
-			System.out.println("start date="+filter.getStartDate());
-			System.out.println("end date="+filter.getEndDate());
+			//System.out.println("start date="+filter.getStartDate());
+			//System.out.println("end date="+filter.getEndDate());
 			if(filter.getStartDate() == null || filter.getStartDate().length()==0) {
 				//filter.setStartDate("0001-01-01");
 				filter.setStartDate("01-JAN-1900");
@@ -205,12 +205,12 @@ public class TicklerDAOHibernate extends HibernateDaoSupport implements
 		Tickler tickler = this.getTickler(tickler_id);
 		if(tickler != null) {
 			tickler.setStatus(status);
-			TicklerUpdate update = new TicklerUpdate();
-			update.setProvider_no(provider);
-			update.setStatus(status);
-			update.setTickler_no(tickler_id.longValue());
-			update.setUpdate_date(new Date());
-			tickler.getUpdates().add(update);
+			TicklerUpdate ticklerUpdate = new TicklerUpdate();
+			ticklerUpdate.setProvider_no(provider);
+			ticklerUpdate.setStatus(status);
+			ticklerUpdate.setTickler_no(tickler_id.longValue());
+			ticklerUpdate.setUpdate_date(new Date());
+			tickler.getUpdates().add(ticklerUpdate);
 			this.saveTickler(tickler);
 		}
 	}

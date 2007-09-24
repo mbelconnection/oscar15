@@ -32,6 +32,8 @@ import java.sql.*;
 import java.util.*;
 import oscar.oscarDB.*;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.oscarehr.common.dao.IdGenerator;
+import oscar.util.StringUtils;
 
 /**
  *
@@ -71,8 +73,9 @@ public class DemographicRelationship {
        try {
             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
-            String sql = "insert into relationships (demographic_no,relation_demographic_no,relation,sub_decision_maker,emergency_contact,notes,creator,creation_date) values "
-            + "('"+demographic+"','"+linkingDemographic+"','"+StringEscapeUtils.escapeSql(relationship)+"','"+sdmStr+"','"+eContact+"','"+StringEscapeUtils.escapeSql(notes)+"','"+providerNo+"',now())";
+            Connection c = db.GetConnection();
+            String sql = "insert into relationships (id,demographic_no,relation_demographic_no,relation,sub_decision_maker,emergency_contact,notes,creator,creation_date) values "
+            + "("+ IdGenerator.getNextIdFromGenericSequence(c) +",'"+demographic+"','"+linkingDemographic+"','"+StringEscapeUtils.escapeSql(relationship)+"','"+sdmStr+"','"+eContact+"','"+StringEscapeUtils.escapeSql(notes)+"','"+providerNo+"',sysdate)";
             db.RunSQL(sql);                                                
             db.CloseConn();
             
@@ -106,9 +109,10 @@ public class DemographicRelationship {
             h.put("demographic_no", rs.getString("relation_demographic_no"));
             h.put("relation", rs.getString("relation"));
             h.put("sub_decision_maker", rs.getString("sub_decision_maker"));
-            h.put("notes", rs.getString("notes"));
+            h.put("notes", StringUtils.transformNullInEmptyString(rs.getString("notes")));
             list.add(h);
          }
+         rs.close();
          db.CloseConn();            
       } catch (SQLException e) {
          System.out.println(e.getMessage());
@@ -127,6 +131,7 @@ public class DemographicRelationship {
          if(rs.next()){            
             sdm = rs.getString("relation_demographic_no");
          }
+         rs.close();
          db.CloseConn();            
       } catch (SQLException e) {
          System.out.println(e.getMessage());
@@ -150,15 +155,16 @@ public class DemographicRelationship {
             DemographicData.Demographic demographic = dd.getDemographic(demo);    
             h.put("lastName", demographic.getLastName());
             h.put("firstName", demographic.getFirstName());
-            h.put("phone", demographic.getPhone());
+            h.put("phone", StringUtils.transformNullInEmptyString(demographic.getPhone()));
             h.put("demographicNo", demo);
-            h.put("relation", rs.getString("relation"));
+            h.put("relation",StringUtils.transformNullInEmptyString( rs.getString("relation")));
             
             h.put("subDecisionMaker", booleanConverter(rs.getString("sub_decision_maker")));
             h.put("emergencyContact", booleanConverter(rs.getString("emergency_contact")));
-            h.put("notes", rs.getString("notes"));
+            h.put("notes", StringUtils.transformNullInEmptyString(rs.getString("notes")));
             list.add(h);
          }
+         rs.close();
          db.CloseConn();            
       } catch (SQLException e) {
          System.out.println(e.getMessage());

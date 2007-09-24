@@ -20,15 +20,62 @@
 		function check_custom_filter_date() {
 			var startDate = document.customFilterForm.elements['filter.startDate'].value;
 			var endDate = document.customFilterForm.elements['filter.endDate'].value;
-			if(check_date_for_oracle(startDate) && check_date_for_oracle(endDate)) {
-		
-			var form = document.customFilterForm;
-			//form.method.value='filter';
-			form.submit();
+			
+			if(check_date_for_oracle(startDate) && check_date_for_oracle(endDate)) {				
+				return true;
 			} else {
 				return false;
 			}	
 		}
+		
+		function validateCustomFilterForm(form) {
+			if(form.elements['filter.name'].value == '') {
+				alert('You must provider a filter name.');
+				return false;
+			}
+			
+			if (form.elements['filter.demographic_no'].value == '' || form.elements['filter.demographic_no'].value == '0') {
+				alert('You must provide patient information. Please use the search button');
+				return false;
+			}
+			
+			var checked = false;
+			var checkboxes = document.getElementsByName("assignee");
+			for(x=0;x<checkboxes.length;x++) {
+				if(checkboxes[x].checked == true) {
+					checked = true;
+				}
+			}
+			if(checked==false) {
+				alert('You must choose a assignee');
+				return false;
+			}
+			
+			var checked_provider = false;
+			var checkboxes_provider = document.getElementsByName("provider");
+			for(x=0;x<checkboxes_provider.length;x++) {
+				if(checkboxes_provider[x].checked == true) {
+					checked_provider = true;
+				}
+			}
+			if(checked_provider==false) {
+				alert('You must choose a provider');
+				return false;
+			}
+			
+			if (form.elements['filter.startDate'].value == '') {
+				alert('You must provide a valid start date');
+				return false;
+			}
+			
+			if (form.elements['filter.endDate'].value == '') {
+				alert('You must provide a valid end date');
+				return false;
+			}
+			
+			return check_custom_filter_date();
+		}
+		
 	</script>	
 
 
@@ -66,7 +113,7 @@
                       	 <html:hidden property="filter.name"/>
                       </c:when>
                       <c:otherwise>
-                        <html:text property="filter.name"/>        
+                        <html:text property="filter.name" maxlength="255" />        
                       </c:otherwise>
                       	</c:choose>
                       	
@@ -76,7 +123,7 @@
                       <td class="fieldTitle">Demographic:</td>
                       <td class="fieldValue">
                       	<html:hidden property="filter.demographic_no"/>
-                      	<html:text property="filter.demographic_webName"/>
+                      	<html:text property="filter.demographic_webName" />
                       	<input type="button" value="Search" onclick="search_demographic();"/>
 			</td>
 	                 </td>
@@ -175,8 +222,7 @@
               </tr>
 				<tr>
 	              	<td class="fieldValue" colspan="3" align="left">
-					        <!-- <html:submit styleClass="button">Save</html:submit>  -->
-					        <input type="button" class="button" value="Save" onclick="check_custom_filter_date();">
+					        <html:submit styleClass="button">Save</html:submit>					        
 					        <input type="button" class="button" value="Cancel" onclick="location.href='<html:rewrite action="CustomFilter"/>'"/>
 					</td>
 				</tr>

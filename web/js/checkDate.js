@@ -1,6 +1,6 @@
 
 function check_date_for_oracle(checkedDate) 
-{
+{ 
 	var date1 = convert_date(checkedDate);
 	if(date1!=null) {	
 		if(check_date_format1(date1) ) {						
@@ -8,7 +8,7 @@ function check_date_for_oracle(checkedDate)
 		} else {
 		return false;
 		}
-	} else {
+	} else {		
 		return false;
 	}
 }		
@@ -48,6 +48,17 @@ function check_date(checkedDate)
 
 function convert_date(convertedDate) {
 	// from '21-Sep-2007' to '21-09-2007'
+	var hasIt = false;
+	for(i=0;i<convertedDate.length;i++) {
+		if(convertedDate.charAt(i)== '-') {
+			hasIt = true;
+		}
+	}
+	if(!hasIt) {
+		alert("Date format is not valid");
+		return null;
+	}
+	
 	var date_array = convertedDate.split('-');
     var day = date_array[0];
     var month = date_array[1].toUpperCase();

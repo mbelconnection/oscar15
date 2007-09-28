@@ -163,9 +163,19 @@ public class IntakeCAction2 extends BaseAction {
 				for (int x = 0; x < entries.length; x++) {
 					String[] fields = entries[x].split("~~~");
 					if (fields.length > 0) {
-						addresses[x].setInfo(fields[0]);
-						addresses[x].setStartDate(fields[1]);
+						if(fields.length==1) {
+							addresses[x].setInfo(fields[0]);						
+							addresses[x].setStartDate("");
+							addresses[x].setEndDate("");
+						}
+						if(fields.length==2) {
+							addresses[x].setInfo(fields[0]);						
+							addresses[x].setStartDate(fields[1]);
+							addresses[x].setEndDate("");
+						}
 						if (fields.length > 2) {
+							addresses[x].setInfo(fields[0]);						
+							addresses[x].setStartDate(fields[1]);
 							addresses[x].setEndDate(fields[2]);
 						}
 					}

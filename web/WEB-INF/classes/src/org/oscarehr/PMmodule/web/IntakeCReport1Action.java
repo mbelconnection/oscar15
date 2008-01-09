@@ -2795,13 +2795,15 @@ public class IntakeCReport1Action extends BaseAction {
 
 			// Current Psychiatric Hospitalizations     Total Number of Episodes
 			if (!"on".equals(formintakec.getCboxPreAdmission())) {	
-            	dataList[row][col] = Integer.toString(numPsychHospitalizations);
+            	//dataList[row][col] = Integer.toString(numPsychHospitalizations);
+				dataList[row][col] = Integer.toString(Integer.parseInt(dataList[row][col]) + numPsychHospitalizations);
             }
             row++;
 
 			// Current Psychiatric Hospitalizations     Total Number of Hospitalization Days
             if (!"on".equals(formintakec.getCboxPreAdmission())) {	
-            	dataList[row][col] = Integer.toString(numDaysHospitalized);
+            	//dataList[row][col] = Integer.toString(numDaysHospitalized);
+            	dataList[row][col] = Integer.toString(Integer.parseInt(dataList[row][col]) + numDaysHospitalized);
             }
             row++;
 

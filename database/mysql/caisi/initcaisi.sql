@@ -2593,7 +2593,7 @@ select 'AST',code code,description,null,isactive,displayorder,null
 from lst_admission_status
 union
 select 'PTY',code code,description,null,isactive,displayorder,null
-from lst_program_type
+from lst_program_type;
 
 
 

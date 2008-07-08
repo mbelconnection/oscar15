@@ -122,9 +122,10 @@ function validateEdit() {
 		
 		var month = getElement('client.monthOfBirth');
 		var day = getElement('client.dateOfBirth');
-		var year = getElement('client.yearOfBirth');
+		var year = getElement('client.yearOfBirth');		
 		
-		var age=calculateAge(year.value,month.value,day.value);
+		var age=calculateAge(year.value,month.value,day.value);		
+		
 		if (!validAgeRangeForProgram(programId,age))
 		{
 			return error(year, "This client does not meet the age range requirements for this program.");

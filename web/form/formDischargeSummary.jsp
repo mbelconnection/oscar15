@@ -30,6 +30,7 @@
 <%
 	String formClass = "DischargeSummary";
 	String formLink = "formDischargeSummary.jsp";
+	String formLink_printPreview = "formDischargeSummaryPrint.jsp";
 	int programNo = Integer.parseInt((String)request.getSession().getAttribute(SessionConstants.CURRENT_PROGRAM_ID));
     int demoNo = Integer.parseInt(request.getParameter("demographic_no"));
     int formId = Integer.parseInt(request.getParameter("formId"));
@@ -102,11 +103,21 @@
         }
         return ret;
     }
+    function onPrintPreview() {
+        document.forms[0].submit.value="save";
+        var ret = checkAllDates();   
+        if(ret) {         	
+        	document.forms[0].action = "/<%=project_home%>/form/formname.do" ; 
+        	ret = confirm("Are you sure you want to save this form and see the print preview?");         		
+        }    
+        return ret; 
+    }
     function onSave() {
         document.forms[0].submit.value="save";
+       
         var ret = checkAllDates();
-        if(ret==true) {
-            reset();
+        if(ret) {
+            //reset();
             ret = confirm("Are you sure you want to save this form?");
         }
         return ret;
@@ -121,7 +132,7 @@
         document.forms[0].submit.value="exit";
         var ret = checkAllDates();
         if(ret == true) {
-            reset();
+            //reset();
             ret = confirm("Are you sure you wish to save and close this window?");
         }
         return ret;
@@ -267,12 +278,9 @@ var maxYear=9900;
 
     function checkAllDates() {
         var b = true;
-        if(valDate(document.forms[0].pg1_eddByDate)==false){
-            b = false;
-        } else if(valDate(document.forms[0].pg1_eddByUs)==false){
+        if(valDate(document.forms[0].dischargeDate)==false){
             b = false;
         } 
-
         return b;
     }
 </script>
@@ -283,7 +291,13 @@ var maxYear=9900;
 <input type="hidden" name="demographic_no" value="<%= props.getProperty("demographic_no", "0") %>" />
 <input type="hidden" name="formCreated" value="<%= props.getProperty("formCreated", "") %>" />
 <input type="hidden" name="form_class" value="<%=formClass%>" />
+
+<% if (formId > 0) { %>
+<input type="hidden" name="form_link" value="<%=formLink_printPreview%>" />
+<%}else{ %>
 <input type="hidden" name="form_link" value="<%=formLink%>" />
+<%} %>
+
 <input type="hidden" name="formId" value="<%=formId%>" />
 <!--input type="hidden" name="provider_no" value=<%=request.getParameter("provNo")%> />
 <input type="hidden" name="provNo" value="<%= request.getParameter("provNo") %>" /-->
@@ -307,10 +321,14 @@ var maxYear=9900;
             <%
             String appPath = request.getContextPath();            
             %> 
+            <% if (formId > 0) { %>
+            <input type="submit" value="Print Preview" onclick="javascript:return onPrintPreview();"/>
+            <!--  
             <input type="button" value="Print Preview" onclick="location.href='<%= appPath %>/form/formDischargeSummaryPrint.jsp?demographic_no=<%=demoNo%>&formId=<%=formId%>&user=<%=provNo%>' " />
-            <!-- 
+            
             <a href='<%=appPath %>/form/formDischargeSummaryPrint.jsp' onClick="window.open(this.href,'Discharge Summary Form Print Preview','width=800,height=600,toolbar=no,location=no,directories=no,status=no,menubar=yes,scrollbars=yes,copyhistory=no,resizable=yes');return false;">Print Preview</a> 
             -->
+            <% } %>
         </td>
     </tr>
 </table>
@@ -701,7 +719,9 @@ var maxYear=9900;
   }
 %>
             <input type="button" value="Exit" onclick="javascript:return onExit();"/>
-            <input type="button" value="Print Preview" onclick="location.href='<%= appPath %>/form/formDischargeSummaryPrint.jsp' " />
+            <% if (formId > 0) { %>
+            <input type="submit" value="Print Preview" onclick="javascript:return onPrintPreview();"/>
+            <%} %>
         </td>
     </tr>
 </table>

@@ -1,5 +1,5 @@
-insert into property(id,name,value,provider_no)
-values(1,'IS_PIN_ENCRYPTED',0,999998);
+insert into property(name,value,provider_no)
+values('IS_PIN_ENCRYPTED',0,999998);
 
 insert into access_type	(name, type) values("Run Report Runner","access");
 insert into access_type	(name, type) values("Design Reports","access");

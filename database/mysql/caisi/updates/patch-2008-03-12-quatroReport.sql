@@ -272,7 +272,7 @@ SELECT 0 grandParentID, 0 parentID, bed_type_id id, name description
 FROM bed_type a;
 
 CREATE OR REPLACE VIEW v_lk_org AS
-SELECT 0 grandParentID, 0 parentID, id, name description
+SELECT 0 grandParentID, 0 parentID, id, '' description
 FROM agency;
 
 CREATE OR REPLACE VIEW v_lookup_table AS
@@ -343,7 +343,7 @@ a.client_id client_id,
   pc.name client_prog_st_name,
   d.last_name last_name,
   d.first_name first_name,
-  p.agency_id orgCd
+  p.facility_id orgCd
 FROM
 	admission a left join program_clientstatus pc on a.program_id=pc.program_id  
 	join program p on a.program_id= p.program_id 	

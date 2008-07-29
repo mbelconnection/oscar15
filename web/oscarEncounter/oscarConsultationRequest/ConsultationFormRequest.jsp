@@ -31,7 +31,7 @@
 <%@ taglib uri="/WEB-INF/rewrite-tag.tld" prefix="rewrite" %>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@page import="java.util.ArrayList, java.util.Collections, java.util.List, oscar.dms.*, oscar.oscarEncounter.pageUtil.*,oscar.oscarEncounter.data.*, oscar.OscarProperties, oscar.util.StringUtils, oscar.oscarLab.ca.on.*"%>
-<%@page import="org.oscarehr.casemgmt.service.CaseManagementManager, org.oscarehr.casemgmt.model.CaseManagementNote, org.oscarehr.casemgmt.model.Issue, org.oscarehr.common.model.UserProperty, org.oscarehr.common.dao.UserPropertyDAO, org.springframework.web.context.support.*,org.springframework.web.context.*"%>
+<%@page import="org.oscarehr.casemgmt.service.CaseManagementManager, org.oscarehr.casemgmt.model.CaseManagementNote, org.oscarehr.casemgmt.model.Issue, org.springframework.web.context.support.*,org.springframework.web.context.*"%>
 
 <%
     if(session.getAttribute("user") == null) response.sendRedirect("../../logout.jsp");
@@ -63,12 +63,9 @@ CaseManagementManager cmgmtMgr = null;
 if( users != null && users.size() > 0 && (users.get(0).equalsIgnoreCase("all") || Collections.binarySearch(users, providerNo)>=0)) {
         useNewCmgmt = true;
         cmgmtMgr = (CaseManagementManager)ctx.getBean("caseManagementManager");
-}   
+}
 
-UserPropertyDAO userPropertyDAO = (UserPropertyDAO) ctx.getBean("UserPropertyDAO");
-UserProperty fmtProperty = userPropertyDAO.getProp(providerNo,UserProperty.CONSULTATION_REQ_PASTE_FMT);
-String pasteFmt = fmtProperty != null ? fmtProperty.getValue() : null;
-
+    
 if (demo != null ){
     demoData = new oscar.oscarDemographic.data.DemographicData();
     demographic = demoData.getDemographic(demo);    
@@ -498,7 +495,6 @@ function importFromEnct(reqInfo,txtArea)
     {
         case "MedicalHistory":
             <%
-                
                 String value = "";                                
                 if( demo != null )
                 {                 
@@ -508,9 +504,7 @@ function importFromEnct(reqInfo,txtArea)
                     else {
                         value = demographic.EctInfo.getMedicalHistory();
                     }
-                    if( pasteFmt == null || pasteFmt.equalsIgnoreCase("single") ) {
-                        value = StringUtils.lineBreaks(value);
-                    }
+                    //value = StringUtils.lineBreaks(value);
                     value = org.apache.commons.lang.StringEscapeUtils.escapeJavaScript(value);
                     out.println("info = '" + value + "'");
                 }
@@ -526,9 +520,7 @@ function importFromEnct(reqInfo,txtArea)
                     else {
                         value = demographic.EctInfo.getOngoingConcerns();
                     }
-                    if( pasteFmt == null || pasteFmt.equalsIgnoreCase("single") ) {
-                        value = StringUtils.lineBreaks(value);
-                    }
+                    //value = StringUtils.lineBreaks(value);
                     value = org.apache.commons.lang.StringEscapeUtils.escapeJavaScript(value);
                     out.println("info = '" + value + "'");
                  }
@@ -538,15 +530,17 @@ function importFromEnct(reqInfo,txtArea)
               <%
                  if( demo != null )
                  {
-                     if( useNewCmgmt ) {
-                        value = listNotes(cmgmtMgr, "SocHistory", providerNo, demo);
-                    }
-                    else {
-                        value = demographic.EctInfo.getSocialHistory();
-                    }
-                    if( pasteFmt == null || pasteFmt.equalsIgnoreCase("single") ) {
-                        value = StringUtils.lineBreaks(value);
-                    }
+                	 if(OscarProperties.getInstance().getBooleanProperty("caisi","on")) {
+                		 value = demographic.EctInfo.getFamilyHistory();
+                	 }else{
+                     	if( useNewCmgmt ) {
+                        	value = listNotes(cmgmtMgr, "SocHistory", providerNo, demo);
+                    	}
+                    	else {
+                        	value = demographic.EctInfo.getSocialHistory();
+                    	}
+                	 }
+                    //value = StringUtils.lineBreaks(value);
                     value = org.apache.commons.lang.StringEscapeUtils.escapeJavaScript(value);
                     out.println("info = '" + value + "'");
                  }
@@ -556,16 +550,19 @@ function importFromEnct(reqInfo,txtArea)
               <%
                  if( demo != null )
                  {
-                    if( useNewCmgmt ) {
-                        value = listNotes(cmgmtMgr, "OMeds", providerNo, demo);
-                    }
-                    else {
-                    //family history was used as bucket for Other Meds in old encounter
-                        value = demographic.EctInfo.getFamilyHistory();
-                    }
-                    if( pasteFmt == null || pasteFmt.equalsIgnoreCase("single") ) {
-                        value = StringUtils.lineBreaks(value);
-                    }
+                	 if(OscarProperties.getInstance().getBooleanProperty("caisi","on")) {
+                		 value = "";
+                	 }else{               		 
+                	
+	                    if( useNewCmgmt ) {
+	                        value = listNotes(cmgmtMgr, "OMeds", providerNo, demo);
+	                    }
+	                    else {
+	                    //family history was used as bucket for Other Meds in old encounter
+	                        value = demographic.EctInfo.getFamilyHistory();
+	                    }
+                	 }
+                    //value = StringUtils.lineBreaks(value);
                     value = org.apache.commons.lang.StringEscapeUtils.escapeJavaScript(value);
                     out.println("info = '" + value + "'");
                     
@@ -583,10 +580,7 @@ function importFromEnct(reqInfo,txtArea)
                         value = demographic.EctInfo.getReminders();
                     }
                     //if( !value.equals("") ) {
-                    if( pasteFmt == null || pasteFmt.equalsIgnoreCase("single") ) {
-                        value = StringUtils.lineBreaks(value);
-                    }
-
+                        //value = StringUtils.lineBreaks(value);
                         value = org.apache.commons.lang.StringEscapeUtils.escapeJavaScript(value);
                         out.println("info = '" + value + "'");
                     //}

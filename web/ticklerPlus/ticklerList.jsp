@@ -75,9 +75,16 @@
         }
         
         function search_demographic() {
-                window.open('<c:out value="${ctx}"/>/ticklerPlus/demographicSearch2.jsp?query=' + document.ticklerForm.elements['filter.demographic_webName'].value,'demographic_search');
+                var popup = window.open('<c:out value="${ctx}"/>/ticklerPlus/demographicSearch2.jsp?query=' + document.ticklerForm.elements['filter.demographic_webName'].value,'demographic_search');
                 demo_no_orig = document.ticklerForm.elements['filter.demographic_no'].value;
                 check_demo_no = setInterval("if (demo_no_orig != document.ticklerForm.elements['filter.demographic_no'].value) updTklrList()",100);
+       		
+       			if (popup != null) {
+    				if (popup.opener == null) {
+      					popup.opener = self;
+    				}
+    				popup.focus();
+  				}	
         }
         
         function printTickler() {
@@ -163,6 +170,7 @@
 		<td class="blueText">Program: <html:select
 			property="filter.programId"
 			onchange="return checkTicklerDate();">
+			<option value="All Programs">All Programs</option>
 			<html:options collection="programs" property="id"
 				labelProperty="name" />
 		</html:select></td>
@@ -356,7 +364,9 @@ String style = "";
 		</tr>
 	-->
 		<tr>
-			<!--<td><input type="button" value="Create New Tickler" onclick="location.href='<html:rewrite action="/Tickler"/>?method=edit'"/></td>-->
+		<!-- 
+			<td><input type="button" value="Create New Tickler" onclick="location.href='<html:rewrite action="/Tickler"/>?method=edit'"/></td>
+		 -->	
 			<td class=noprint><input type="button" value="Complete"
 				onclick="batch_operation('complete');" /></td>
 			<td class=noprint><input type="button" value="Delete"

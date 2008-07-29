@@ -135,7 +135,7 @@ public class ProgramManager {
         return programDao.getAllPrograms();
     }
 
-    public List<Program> getAllPrograms(String programStatus, String type, int facilityId) {
+    public List<Program> getAllPrograms(String programStatus, String type, long facilityId) {
         return programDao.getAllPrograms(programStatus, type, facilityId);
     }
 
@@ -349,7 +349,32 @@ public class ProgramManager {
         return programDomain;
     }
 
-    public List<Program> getProgramDomainInFacility(String providerNo, Integer facilityId) {
+    
+    public List<Program> getActiveProgramDomain(String providerNo) {
+        List<Program> programDomain = new ArrayList<Program>();
+
+        for (Iterator<?> i = programProviderDAO.getActiveProgramDomain(providerNo).iterator(); i.hasNext();) {
+            ProgramProvider programProvider = (ProgramProvider) i.next();
+            programDomain.add(getProgram(programProvider.getProgramId()));
+        }
+
+        return programDomain;
+    }
+    
+    public List<Program> getActiveProgramDomainInFacility(String providerNo, Long facilityId) {
+    	List<Program> programs = getActiveProgramDomain(providerNo);
+    	List<Program> results = new ArrayList<Program>();
+    	if(facilityId==null) 
+    		return null;
+    	for(Iterator<Program> itr =programs.iterator(); itr.hasNext();) {
+    		Program p = itr.next();
+    		if(p.getFacilityId()==facilityId)
+    			results.add(p);
+    	}
+    	return results;
+    }
+    
+    public List<Program> getProgramDomainInFacility(String providerNo, Long facilityId) {
     	List<Program> programs = getProgramDomain(providerNo);
     	List<Program> results = new ArrayList<Program>();
     	if(facilityId==null) 
@@ -361,6 +386,7 @@ public class ProgramManager {
     	}
     	return results;
     }
+    
     public Program[] getCommunityPrograms() {
         return programDao.getCommunityPrograms();
     }
@@ -451,4 +477,15 @@ public class ProgramManager {
         Program program = getProgram(programId);
         return(program.getFacilityId() == currentFacilityId.intValue());
     }
+    
+    public boolean hasAccessBasedOnProgramProvider(String providerId, String programId) {
+        // if no program restrictions are defined.
+        if (programId == null) return(true);
+        if (providerId == null && programId == null) return(true);
+       
+        ProgramProvider pp = (ProgramProvider)getProgramProvider(providerId, programId);
+        
+        return( !(pp == null));
+    }
+    
 }

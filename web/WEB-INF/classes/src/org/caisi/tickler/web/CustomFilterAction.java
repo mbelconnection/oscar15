@@ -186,7 +186,7 @@ public class CustomFilterAction extends DispatchAction {
 		
 		//request.setAttribute("programs", programMgr.getProgramDomain(providerId));
 		Integer currentFacilityId=(Integer)request.getSession().getAttribute(SessionConstants.CURRENT_FACILITY_ID);  
-		request.setAttribute("programs", programMgr.getProgramDomainInFacility(providerId,currentFacilityId));
+		request.setAttribute("programs", programMgr.getProgramDomainInFacility(providerId,Long.valueOf(currentFacilityId)));
 		return mapping.findForward("customFilterForm");
 	}
 	
@@ -221,6 +221,10 @@ public class CustomFilterAction extends DispatchAction {
 	        filter.setAssignees(sAssignees);
         }
         filter.setProvider_no(this.getProviderNo(request));
+        
+        if("All Programs".equals(filter.getProgramId())) {
+        	filter.setProgramId("");
+        }
         ticklerMgr.saveCustomFilter(filter);
         
         ActionMessages messages = new ActionMessages();

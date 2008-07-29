@@ -123,7 +123,7 @@ public class TicklerAction extends DispatchAction {
         
         //request.setAttribute("programs",programMgr.getProgramDomain(providerId));
         Integer currentFacilityId=(Integer)request.getSession().getAttribute(SessionConstants.CURRENT_FACILITY_ID);  
-        List<Program> programs=programMgr.getProgramDomainInFacility(providerId,currentFacilityId);
+        List<Program> programs=programMgr.getActiveProgramDomainInFacility(providerId,Long.valueOf(currentFacilityId));
         request.setAttribute("programs", programs);
         
         List ticklers = ticklerMgr.getTicklers();
@@ -156,14 +156,14 @@ public class TicklerAction extends DispatchAction {
         String providerId = (String)request.getSession().getAttribute("user");
         String programId = "";
         
-        List<Program> programs=programMgr.getProgramDomainInFacility(providerId,currentFacilityId);
+        List<Program> programs=programMgr.getActiveProgramDomainInFacility(providerId,Long.valueOf(currentFacilityId));
         request.setAttribute("programs", programs);
         
         // if program selected default to first
-        if (filter.getProgramId()==null || filter.getProgramId().length()==0)
-        {
-            if (programs.size()>0) filter.setProgramId(String.valueOf(programs.get(0).getId()));
-        }
+        //if (filter.getProgramId()==null || filter.getProgramId().length()==0)
+        //{
+        //    if (programs.size()>0) filter.setProgramId(String.valueOf(programs.get(0).getId()));
+        //}
         
         List<Tickler> ticklers = ticklerMgr.getTicklers(filter, currentFacilityId,providerId, programId);
 
@@ -228,7 +228,7 @@ public class TicklerAction extends DispatchAction {
         request.setAttribute("demographics", demographicMgr.getDemographics());
         
         //request.setAttribute("programs",programMgr.getProgramDomain(providerId));
-		request.setAttribute("programs", programMgr.getProgramDomainInFacility(providerId,currentFacilityId));
+		request.setAttribute("programs", programMgr.getActiveProgramDomainInFacility(providerId,Long.valueOf(currentFacilityId)));
         
 		request.setAttribute("customFilters", ticklerMgr.getCustomFilters(this.getProviderNo(request)));
         request.setAttribute("from", getFrom(request));

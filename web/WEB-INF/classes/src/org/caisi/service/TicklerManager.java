@@ -84,14 +84,17 @@ public class TicklerManager {
         List<Tickler> results = ticklerDAO.getTicklers(filter);     
            
         //String programNo = filter.getProgramId();
-        
+        //Get the ticklers only in the provider's domain
         
         if (OscarProperties.getInstance().getBooleanProperty("FILTER_ON_FACILITY", "true")) {        	
         	//filter based on facility
         	results = ticklerFacilityFiltering(currentFacilityId, results);
         	
-        	//filter based on caisi role access
-            results = filterTicklersByAccess(results,providerNo,programId);
+        	//filter based on program_provider domain
+        	//results = ticklerDomainFiltering(results,providerNo) ;
+        	
+        	//filter based on caisi role access           
+        	results = filterTicklersByAccess(results,providerNo,programId);
         }        
         
         return(results);
@@ -110,6 +113,23 @@ public class TicklerManager {
 
         return results;
     }
+    
+    private List<Tickler> ticklerDomainFiltering(List<Tickler>ticklers, String providerNo) {
+        ArrayList<Tickler> results = new ArrayList<Tickler>();
+
+        for (Tickler tickler : ticklers) {
+            Integer programId = tickler.getProgram_id();
+            if(programId==null) {
+            	
+            }
+            if (programManager.hasAccessBasedOnProgramProvider(providerNo, String.valueOf(programId))) {            	
+            	results.add(tickler);
+            }        
+        }
+
+        return results;
+    }
+    
     private List<Tickler> filterTicklersByAccess(List<Tickler> ticklers, String providerNo, String programNo) {
     	List<Tickler> filteredTicklers = new ArrayList<Tickler>();
 
@@ -124,8 +144,8 @@ public class TicklerManager {
 	        boolean add = false;	        
 	        List ppList = new ArrayList();
 	        
-	        //If there is no selected program
-	        if(programNo==null || "".equals(programNo) || "null".equals(programNo))
+	        //If there is no selected program, show all ticklers in domain
+	        //if(programNo==null || "".equals(programNo) || "null".equals(programNo))
 	        	programId = String.valueOf(t.getProgram_id());
 	        
 	        if(programId==null || "".equals(programId) || "null".equals(programId))

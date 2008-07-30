@@ -17,6 +17,19 @@
     }
     
     function addBeds(){
+    	var num = bedManagerForm.numBeds.value;       
+        if(num>=10) {
+        	alert("You cannot add more than 10 beds at a time.");
+        	return;
+      	}else{  
+      		bedManagerForm.method.value='addBeds'; 
+      		var obj= document.getElementsByName("submit.addBed")[0]   	        
+	        obj.value='Add Beds';
+	        bedManagerForm.submit();
+	    }  
+    }
+    
+    function addBeds_backup(){
       if(bedManagerForm.bedslines.value!=null && parseInt(bedManagerForm.bedslines.value)>=10){
         alert("You cannot add more than 10 beds at a time.");
         return;
@@ -28,7 +41,7 @@
       }  
     }    
 
-    function addRooms(){
+    function addRooms_backup(){
       if(bedManagerForm.roomslines.value!=null && parseInt(bedManagerForm.roomslines.value)>=10){
         alert("You cannot add more than 10 rooms at a time.");
         return;
@@ -38,6 +51,19 @@
         obj.value='Add Rooms';
         bedManagerForm.submit();
       }  
+    }    
+    
+    function addRooms(){ 
+        var num = bedManagerForm.numRooms.value;       
+        if(num>=10) {
+        	alert("You cannot add more than 10 rooms at a time.");
+        	return;
+      	}else{  
+      		bedManagerForm.method.value='addRooms'; 
+      		var obj= document.getElementsByName("submit.addRoom")[0]   	        
+	        obj.value='Add Rooms';
+	        bedManagerForm.submit();
+	    }  
     }    
     
     function saveBeds(){

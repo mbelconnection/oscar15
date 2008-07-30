@@ -19,14 +19,15 @@ import org.oscarehr.PMmodule.exception.DuplicateRoomNameException;
 import org.oscarehr.PMmodule.exception.RoomHasActiveBedsException;
 import org.oscarehr.PMmodule.model.Bed;
 import org.oscarehr.PMmodule.model.BedDemographic;
+import org.oscarehr.PMmodule.model.Facility;
 import org.oscarehr.PMmodule.model.Room;
 import org.oscarehr.PMmodule.model.RoomDemographic;
 import org.oscarehr.PMmodule.service.BedManager;
+import org.oscarehr.PMmodule.service.FacilityManager;
 import org.oscarehr.PMmodule.service.ProgramManager;
 import org.oscarehr.PMmodule.service.RoomManager;
 import org.oscarehr.PMmodule.web.BaseAction;
-import org.oscarehr.common.dao.FacilityDao;
-import org.oscarehr.common.model.Facility;
+import org.springframework.beans.factory.annotation.Required;
 
 /**
  * Responsible for managing beds
@@ -35,19 +36,15 @@ public class BedManagerAction extends BaseAction {
 
     private static final String FORWARD_MANAGE = "manage";
 
+    private FacilityManager facilityManager;
+
     private BedManager bedManager;
 
     private ProgramManager programManager;
 
     private RoomManager roomManager;
-    
-    private FacilityDao facilityDao;
 
-    public void setFacilityDao(FacilityDao facilityDao) {
-		this.facilityDao = facilityDao;
-	}
-
-	public ActionForward unspecified(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+    public ActionForward unspecified(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
         // dispatch to correct method based on which button was selected
         // Please don't make changes that causes addRoom and addBed button not working any more!
         if ("".equals(request.getParameter("submit.saveRoom")) == false) return saveRooms(mapping, form, request, response);
@@ -64,7 +61,7 @@ public class BedManagerAction extends BaseAction {
         BedManagerForm bForm = (BedManagerForm) form;
 
         Integer facilityId = Integer.valueOf(request.getParameter("facilityId"));
-        Facility facility = facilityDao.find(facilityId);
+        Facility facility = facilityManager.getFacility(facilityId);
 
         bForm.setFacilityId(facilityId);
         bForm.setRooms(roomManager.getRooms(facilityId));
@@ -101,7 +98,7 @@ public class BedManagerAction extends BaseAction {
         BedManagerForm bForm = (BedManagerForm) form;
 
         Integer facilityId = Integer.valueOf(request.getParameter("facilityId"));
-        Facility facility = facilityDao.find(facilityId);
+        Facility facility = facilityManager.getFacility(facilityId);
 
         bForm.setFacilityId(facilityId);
         bForm.setRooms(bForm.getRooms());
@@ -259,7 +256,8 @@ public class BedManagerAction extends BaseAction {
     public ActionForward addRooms(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
         BedManagerForm bForm = (BedManagerForm) form;
         Integer numRooms = bForm.getNumRooms();
-
+        
+/*????what is roomlines used for?
         Integer roomslines = 0;
         if ("".equals(request.getParameter("roomslines")) == false) {
             roomslines = Integer.valueOf(request.getParameter("roomslines"));
@@ -273,7 +271,7 @@ public class BedManagerAction extends BaseAction {
                 numRooms = 10 - roomslines;
             }
         }
-
+*/
         if (numRooms != null && numRooms > 0) {
             try {
                 roomManager.addRooms(bForm.getFacilityId(), numRooms);
@@ -293,7 +291,8 @@ public class BedManagerAction extends BaseAction {
         BedManagerForm bForm = (BedManagerForm) form;
         Integer numBeds = bForm.getNumBeds();
         Integer roomId = bForm.getBedRoomFilterForBed();
-
+        
+/*????what is bedslines used for?
         Integer bedslines = 0;
         if ("".equals(request.getParameter("bedslines")) == false) {
             bedslines = Integer.valueOf(request.getParameter("bedslines"));
@@ -307,7 +306,7 @@ public class BedManagerAction extends BaseAction {
                 numBeds = 10 - bedslines;
             }
         }
-
+*/
         if (numBeds != null && numBeds > 0) {
             try {
                 bedManager.addBeds(facilityId, roomId, numBeds);
@@ -384,6 +383,15 @@ public class BedManagerAction extends BaseAction {
         form = bForm;
 
         return manageFilter(mapping, form, request, response);
+    }
+
+    public FacilityManager getFacilityManager() {
+        return facilityManager;
+    }
+
+    @Required
+    public void setFacilityManager(FacilityManager facilityManager) {
+        this.facilityManager = facilityManager;
     }
 
     public void setBedManager(BedManager bedManager) {

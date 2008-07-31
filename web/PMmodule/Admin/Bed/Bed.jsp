@@ -169,7 +169,7 @@
         
 <!-- end room status & bed program filter -->           
         
-        <display:table class="simple" name="sessionScope.bedManagerForm.rooms" uid="room" requestURI="/PMmodule/BedManager.do" summary="Edit rooms">
+        <display:table class="simple" name="sessionScope.bedManagerForm.rooms" id="room" requestURI="/PMmodule/BedManager.do" summary="Edit rooms">
             <display:column title="Name" sortable="true">
                 <input type="text" name="rooms[<c:out value="${room_rowNum - 1}" />].name" value="<c:out value="${room.name}" />" />
             </display:column>
@@ -313,7 +313,7 @@
 		</table>
 <!-- end bed status & bedRoom filter -->           
         
-        <display:table class="simple" name="sessionScope.bedManagerForm.beds" uid="bed" requestURI="/PMmodule/BedManager.do" summary="Edit beds">
+        <display:table class="simple" name="sessionScope.bedManagerForm.beds" id="bed" requestURI="/PMmodule/BedManager.do" summary="Edit beds">
 
             <display:column title="Name" sortable="true">
                 <input type="text" name="beds[<c:out value="${bed_rowNum - 1}" />].name" value="<c:out value="${bed.name}" />" />
@@ -370,7 +370,7 @@
                  <input type="button" name="submit.deleteBed"  value="Delete"
             		onclick='bedManagerForm.bedToDelete.value="<c:out value="${bed.id}"/>"; deleteBed();'  />
             </display:column>
-            
+           
         </display:table>
     </td>
     <td width="20%">
@@ -382,6 +382,7 @@
 <tr>
     <td>
         <input type=hidden name="bedslines" value="<c:out value="${bed_rowNum}" />">
+        
         <c:choose>
             <c:when test="${not empty bedManagerForm.rooms}">
                 <html:text property="numBeds" />

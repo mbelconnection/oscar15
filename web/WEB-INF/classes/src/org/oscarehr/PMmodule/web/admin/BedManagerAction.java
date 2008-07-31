@@ -292,7 +292,9 @@ public class BedManagerAction extends BaseAction {
         Integer numBeds = bForm.getNumBeds();
         Integer roomId = bForm.getBedRoomFilterForBed();
         
-/*????what is bedslines used for?
+        int occupancyOfRoom = roomManager.getRoom(roomId).getOccupancy().intValue();
+        
+        //bedslines is the current total number of bed in the room.
         Integer bedslines = 0;
         if ("".equals(request.getParameter("bedslines")) == false) {
             bedslines = Integer.valueOf(request.getParameter("bedslines"));
@@ -302,11 +304,12 @@ public class BedManagerAction extends BaseAction {
             if (numBeds <= 0) {
                 numBeds = 0;
             }
-            else if (numBeds + bedslines > 10) {
-                numBeds = 10 - bedslines;
+            else if (numBeds + bedslines > occupancyOfRoom) {
+                numBeds = occupancyOfRoom - bedslines;
             }
         }
-*/
+
+                
         if (numBeds != null && numBeds > 0) {
             try {
                 bedManager.addBeds(facilityId, roomId, numBeds);
@@ -316,7 +319,14 @@ public class BedManagerAction extends BaseAction {
                 messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("bed.reserved.error", e.getMessage()));
                 saveMessages(request, messages);
             }
+        } else {
+        	
+	        	ActionMessages messages = new ActionMessages();
+	            messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("message", "The number of the beds in this room already reaches the maximum."));
+	            saveMessages(request, messages);
+        	
         }
+        	
 
         return manage(mapping, form, request, response);
     }

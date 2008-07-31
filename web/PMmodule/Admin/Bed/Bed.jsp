@@ -211,7 +211,7 @@
             <display:column title="Room Capacity">
 				<select name="rooms[<c:out value="${room_rowNum - 1}" />].occupancy">
        
-					<c:forEach var="num" begin="1" end="20" step="1">
+					<c:forEach var="num" begin="1" end="50" step="1">
                			<c:choose>
                    			<c:when test="${room.occupancy == num}">
 								<option value="<c:out value='${num}' />" selected="selected"> 

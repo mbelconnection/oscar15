@@ -89,10 +89,7 @@ public class TicklerManager {
         if (OscarProperties.getInstance().getBooleanProperty("FILTER_ON_FACILITY", "true")) {        	
         	//filter based on facility
         	results = ticklerFacilityFiltering(currentFacilityId, results);
-        	
-        	//filter based on program_provider domain
-        	//results = ticklerDomainFiltering(results,providerNo) ;
-        	
+        	        	
         	//filter based on caisi role access           
         	results = filterTicklersByAccess(results,providerNo,programId);
         }        
@@ -114,21 +111,7 @@ public class TicklerManager {
         return results;
     }
     
-    private List<Tickler> ticklerDomainFiltering(List<Tickler>ticklers, String providerNo) {
-        ArrayList<Tickler> results = new ArrayList<Tickler>();
-
-        for (Tickler tickler : ticklers) {
-            Integer programId = tickler.getProgram_id();
-            if(programId==null) {
-            	
-            }
-            if (programManager.hasAccessBasedOnProgramProvider(providerNo, String.valueOf(programId))) {            	
-            	results.add(tickler);
-            }        
-        }
-
-        return results;
-    }
+    
     
     private List<Tickler> filterTicklersByAccess(List<Tickler> ticklers, String providerNo, String programNo) {
     	List<Tickler> filteredTicklers = new ArrayList<Tickler>();
@@ -148,8 +131,12 @@ public class TicklerManager {
 	        //if(programNo==null || "".equals(programNo) || "null".equals(programNo))
 	        	programId = String.valueOf(t.getProgram_id());
 	        
-	        if(programId==null || "".equals(programId) || "null".equals(programId))
-		        continue;
+	        //If the ticklers are not in any problem (old ticklers), show them.
+	        //They will not be filtered by the role access.
+	        if(programId==null || "".equals(programId) || "null".equals(programId)) {
+	        	filteredTicklers.add(t);
+	        	continue;
+	        }
 	        
 	        ppList = roleProgramAccessDAO.getProgramProviderByProviderProgramID(providerNo, new Long(programId));
 	        if (ppList == null || ppList.isEmpty()) {

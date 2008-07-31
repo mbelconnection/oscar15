@@ -152,6 +152,15 @@ public class TicklerAction extends DispatchAction {
         DynaActionForm ticklerForm = (DynaActionForm) form;
         CustomFilter filter = (CustomFilter) ticklerForm.get("filter");
         
+        //view tickler from CME
+        String filter_clientId = filter.getDemographic_no();
+        String filter_clientName = filter.getDemographic_webName();
+        if(!"".equals(filter_clientId) && filter_clientId!=null) {
+        	if("".equals(filter_clientName) || filter_clientName==null) {
+        		filter.setDemographic_webName(demographicMgr.getDemographic(filter_clientId).getFormattedName());
+        	}
+        }
+        
         Integer currentFacilityId=(Integer)request.getSession().getAttribute(SessionConstants.CURRENT_FACILITY_ID);        
         String providerId = (String)request.getSession().getAttribute("user");
         String programId = "";

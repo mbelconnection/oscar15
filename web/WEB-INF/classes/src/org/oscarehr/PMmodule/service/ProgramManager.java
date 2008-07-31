@@ -478,14 +478,5 @@ public class ProgramManager {
         return(program.getFacilityId() == currentFacilityId.intValue());
     }
     
-    public boolean hasAccessBasedOnProgramProvider(String providerId, String programId) {
-        // if no program restrictions are defined.
-        if (programId == null) return(true);
-        if (providerId == null && programId == null) return(true);
-       
-        ProgramProvider pp = (ProgramProvider)getProgramProvider(providerId, programId);
-        
-        return( !(pp == null));
-    }
-    
+ 
 }

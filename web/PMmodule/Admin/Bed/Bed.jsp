@@ -306,7 +306,7 @@
 				<td width="30%" align="right"  style="font-weight:bold">
  					Room<br/>
 					<html:select property="bedRoomFilterForBed" name="bedManagerForm" onchange="bedFilter();" >
-						<html:optionsCollection  property="rooms"  value="id"  label="name"/>
+						<html:optionsCollection  property="assignedBedRooms"  value="id"  label="name"/>
 					</html:select>
 				</td>
 			</tr>

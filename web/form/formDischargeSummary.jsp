@@ -570,7 +570,13 @@ var maxYear=9900;
 			
 		</tr>
 		<tr>
-			<td colspan="6"><input type="textarea" name="changeMedications" style="width:100%" size="255" maxlength="255" value="<%= props.getProperty("changeMedications", "") %>"/><td>							
+			<td colspan="6">
+				<table width="100%" border="1"  cellspacing="0" cellpadding="0">
+					<tr><td>
+					<textarea name="changeMedications" style="width:100%" cols="30" rows="3" @oscar.formDB dbType="text"/><%= props.getProperty("changeMedications", "") %></textarea>
+					</td></tr>
+				</table>
+			</td>
 		</tr>
 		<!--
 		<tr>

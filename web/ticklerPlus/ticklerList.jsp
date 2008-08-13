@@ -45,21 +45,25 @@
 		  
 		  if(parseInt(sArray1[0])>parseInt(sArray2[0])) {
 		    bValid=false;
-		  }else if(parseInt(sArray1[1])>parseInt(sArray2[1])) {
-		    bValid=false;
-		  }else if(parseInt(sArray1[2])>parseInt(sArray2[2])) {
-		    bValid=false;
-		  }
+		  }else if(parseInt(sArray1[0])==parseInt(sArray2[0])) {
+		  	if(parseInt(sArray1[1])>parseInt(sArray2[1])) {
+		    	bValid=false;
+		  	}else if(parseInt(sArray1[1])==parseInt(sArray2[1])) {
+		  		if(parseInt(sArray1[2])>parseInt(sArray2[2])) {
+		    		bValid=false;
+		 		}
+		 	}
+		 }
 		    
 		  if(!bValid){
-            alert("Begin Date cann not be greater than End Date.");
+            alert("Begin Date can not be greater than End Date.");
             return false;		
-		  }else{
+		  }else{ 
 		    var form = document.ticklerForm;
 		    form.method.value='filter';
 		    form.submit();
 		  }  
-		} else {
+		} else {alert("false");
 			return false;
 		}		
 	}	

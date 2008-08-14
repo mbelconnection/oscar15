@@ -63,7 +63,7 @@
 		    form.method.value='filter';
 		    form.submit();
 		  }  
-		} else {alert("false");
+		} else {
 			return false;
 		}		
 	}	

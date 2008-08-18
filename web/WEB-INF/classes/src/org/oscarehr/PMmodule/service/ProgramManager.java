@@ -475,7 +475,11 @@ public class ProgramManager {
 
         // check the providers facilities against the programs facilities
         Program program = getProgram(programId);
-        return(program.getFacilityId() == currentFacilityId.intValue());
+        if(program!=null) {
+        	return(program.getFacilityId() == currentFacilityId.intValue());
+        } else {
+        	return false;
+        }
     }
     
  

@@ -87,8 +87,9 @@
                                             
                                             String provider = (String) request.getSession().getAttribute("user");
                                             UserProperty prop = userPropertyDAO.getProp(provider, UserProperty.WORKLOAD_MANAGEMENT);
-         
-                                            String wrkloadmanagement =  prop!= null ? prop.getValue() : null;
+         									
+                                            if(prop != null) {
+                                            String wrkloadmanagement =  prop.getValue();
                                             if ( wrkloadmanagement != null && !wrkloadmanagement.equals("") && !wrkloadmanagement.equals(curBilf) ){ 
                                             ///NEED TO CHECK IF THIS IS THE CURRENT FORM IF SO LET IT CLOSE!!!
                                             String urlBack = request.getParameter("url_back")+"&curBillForm="+wrkloadmanagement;
@@ -100,7 +101,8 @@
                                         <%}else{%>
                                             self.close();
                                             self.opener.refresh();
-                                        <% }%>
+                                        <% } 
+                                        }%>
 					</script>
 				<% } else { %>
 					<script LANGUAGE="JavaScript">
@@ -128,6 +130,8 @@
 				<%}
 			}
 			%>
+<!-- 
 <p>
-<h1>Sorry, billing has failed. Please do it again!</h1>
+<h1>Sorry, billing has failed. Please do it again!</h1>  
 </p>
+-->

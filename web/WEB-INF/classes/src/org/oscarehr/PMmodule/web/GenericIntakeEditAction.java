@@ -45,12 +45,12 @@ import org.oscarehr.PMmodule.exception.ServiceRestrictionException;
 import org.oscarehr.PMmodule.model.Admission;
 import org.oscarehr.PMmodule.model.Agency;
 import org.oscarehr.PMmodule.model.Demographic;
+import org.oscarehr.PMmodule.model.Facility;
 import org.oscarehr.PMmodule.model.Intake;
 import org.oscarehr.PMmodule.model.JointAdmission;
 import org.oscarehr.PMmodule.model.Program;
 import org.oscarehr.PMmodule.service.SurveyManager;
 import org.oscarehr.PMmodule.web.formbean.GenericIntakeEditFormBean;
-import org.oscarehr.common.model.Facility;
 import org.oscarehr.util.SessionConstants;
 
 import oscar.OscarProperties;
@@ -241,6 +241,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
         String providerNo = getProviderNo(request);
         
         Integer oldId=null ;
+        Integer newId=null;
         try { 
         	// save client information.
             saveClient(client, providerNo);
@@ -250,6 +251,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
             	Integer clientId = client.getDemographicNo();
             	if(clientId !=null && !"".equals(clientId)) {
             		oldId = getCurrentBedCommunityProgramId(client.getDemographicNo());
+            		newId = formBean.getSelectedBedCommunityProgramId();
         		
             	            	
             	//Save 'external' program for RFQ.
@@ -370,7 +372,10 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
     // Adapt
 
     private Demographic getClient(Integer clientId) {
-        return clientManager.getClientByDemographicNo(clientId.toString());
+    	if(clientId!=null)
+    		return clientManager.getClientByDemographicNo(clientId.toString());
+    	else
+    		return null;
     }
 
     private Set<Program> getActiveProviderPrograms(String providerNo) {
@@ -678,7 +683,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
         if(facilityId==null) 
         	return programs;
         
-        for(Program p : programManager.getProgramDomainInFacility(providerNo, facilityId))
+        for(Program p : programManager.getProgramDomainInFacility(providerNo, Long.valueOf(facilityId)))
         		 {
         	if(programsInDomain.contains(p)) {
         		programs.add(p);

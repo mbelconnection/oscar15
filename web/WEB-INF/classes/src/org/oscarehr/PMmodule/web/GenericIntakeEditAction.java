@@ -702,11 +702,14 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 
         if (bedCommunityProgramsVisible || serviceProgramsVisible || externalProgramsVisible) {
             Set<Program> providerPrograms = getActiveProviderPrograms(providerNo);
+           /*
             if (OscarProperties.getInstance().isTorontoRFQ()) {        		
         		providerPrograms = getActiveProviderProgramsInFacility(providerNo,facilityId);
         	} else {
         		providerPrograms = getActiveProviderPrograms(providerNo);
         	}
+        	*/
+            providerPrograms = getActiveProviderProgramsInFacility(providerNo,facilityId);
         	
             if (bedCommunityProgramsVisible) {
                 formBean.setBedCommunityPrograms(getBedPrograms(providerPrograms, providerNo), getCommunityPrograms());
@@ -735,7 +738,11 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
             	formBean.setSelectedProgramInDomainId(Integer.valueOf(intakeLocation));
             }            
         }
-       
+        if (!bedCommunityProgramsVisible) {
+        	//reset
+        	formBean.setBedCommunityPrograms(new ArrayList(), new ArrayList());
+        	formBean.setSelectedBedCommunityProgramId(null);
+        }
     }
 
 }

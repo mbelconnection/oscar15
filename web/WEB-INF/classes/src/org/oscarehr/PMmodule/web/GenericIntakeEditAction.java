@@ -283,8 +283,9 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
            
             	admitBedCommunityProgram(client.getDemographicNo(), providerNo, formBean.getSelectedBedCommunityProgramId(), saveWhich);
             
-            	if (!formBean.getSelectedServiceProgramIds().isEmpty() && "RFQ_admit".endsWith(saveWhich)) {
-            		admitServicePrograms(client.getDemographicNo(), providerNo, formBean.getSelectedServiceProgramIds());
+            	//if (!formBean.getSelectedServiceProgramIds().isEmpty() && "RFQ_admit".endsWith(saveWhich)) {
+            	if (!formBean.getSelectedServiceProgramIds().isEmpty()) {
+            	admitServicePrograms(client.getDemographicNo(), providerNo, formBean.getSelectedServiceProgramIds());
             	}
          
             

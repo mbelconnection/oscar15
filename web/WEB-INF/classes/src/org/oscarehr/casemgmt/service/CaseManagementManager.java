@@ -33,6 +33,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.util.LabelValueBean;
 import org.caisi.model.Role;
 import org.oscarehr.PMmodule.dao.ClientDao;
@@ -79,6 +81,8 @@ import org.oscarehr.common.model.UserProperty;
 import oscar.OscarProperties;
 
 public class CaseManagementManager {
+
+	private static Log log = LogFactory.getLog(CaseManagementManager.class);
 
     protected String issueAccessType = "access";
     protected CaseManagementNoteDAO caseManagementNoteDAO;
@@ -566,7 +570,11 @@ public class CaseManagementManager {
     }
 
     public boolean haveIssue(Long issid, String demoNo) {
-        List allNotes = caseManagementNoteDAO.getNotesByDemographic(demoNo);
+    	log.debug("have issue being called");
+    	log.debug("issid=" + issid + ", demoNo=" + demoNo);
+    	return caseManagementNoteDAO.haveIssue(issid, demoNo);
+        /*
+    	List allNotes = caseManagementNoteDAO.getNotesByDemographic(demoNo);
         Iterator itr = allNotes.iterator();
         while (itr.hasNext()) {
             CaseManagementNote note = (CaseManagementNote)itr.next();
@@ -574,10 +582,15 @@ public class CaseManagementManager {
             Iterator its = issues.iterator();
             while (its.hasNext()) {
                 CaseManagementIssue iss = (CaseManagementIssue)its.next();
-                if (iss.getId().intValue() == issid.intValue()) return true;
+                if (iss.getId().intValue() == issid.intValue()) {
+                	log.debug("have issue returning true");
+                	return true;
+                }
             }
         }
+        log.debug("have issue returning false");
         return false;
+        */
     }
 
     public boolean greaterEqualLevel(int level, String providerNo) {

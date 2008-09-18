@@ -1,0 +1,1 @@
+INSERT INTO ctl_doctype VALUES ('demographic','Medication Records','A');

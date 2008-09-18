@@ -102,6 +102,7 @@ INSERT INTO ctl_doctype VALUES ('demographic','lab','A');
 INSERT INTO ctl_doctype VALUES ('demographic','consult','A');
 INSERT INTO ctl_doctype VALUES ('demographic','insurance','A');
 INSERT INTO ctl_doctype VALUES ('demographic','legal','A');
+INSERT INTO ctl_doctype VALUES ('demographic','Medication Records','A');
 INSERT INTO ctl_doctype VALUES ('demographic','oldchart','A');
 INSERT INTO ctl_doctype VALUES ('demographic','radiology','A');
 INSERT INTO ctl_doctype VALUES ('demographic','pathology','A');

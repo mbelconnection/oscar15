@@ -121,6 +121,7 @@ public class CaseManagementViewAction extends BaseCaseManagementViewAction {
 		CaseManagementViewFormBean caseForm = (CaseManagementViewFormBean) form;
 		CaseManagementCPP cpp = caseForm.getCpp();
 		cpp.setUpdate_date(new Date());
+		cpp.setDemographic_no(caseForm.getDemographicNo());
 		String providerNo = getProviderNo(request);
 		caseManagementMgr.saveCPP(cpp, providerNo);
 		addMessage(request, "cpp.saved");
@@ -628,11 +629,11 @@ public class CaseManagementViewAction extends BaseCaseManagementViewAction {
 			Collections.sort(notes, CaseManagementNote.getRoleComparator());
 		}
 		if (field.equals("update_date_asc")) {
-			Collections.sort(notes, CaseManagementNote.getObservationComparator());		
+			Collections.sort(notes, CaseManagementNote.getUpdateComparator());
+			Collections.reverse(notes);
 		}
 		if (field.equals("update_date_desc")) {
-			Collections.sort(notes, CaseManagementNote.getObservationComparator());
-                        Collections.reverse(notes);
+			Collections.sort(notes, CaseManagementNote.getUpdateComparator());
 		}
 
 		return notes;

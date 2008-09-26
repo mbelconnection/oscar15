@@ -1,3 +1,8 @@
+
+alter table demographic engine=InnoDB;
+alter table demographic modify demographic_no int not null auto_increment;
+
+SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS IntegratorConsent;
 create table IntegratorConsent
 (
@@ -47,3 +52,4 @@ create table IntegratorConsentComplexExitInterview
 	reAskConsentComments varchar(255),
 	additionalComments varchar(255)
 );
+SET FOREIGN_KEY_CHECKS = 0;

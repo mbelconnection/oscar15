@@ -613,11 +613,11 @@ public class CaseManagementViewAction extends BaseCaseManagementViewAction {
             Collections.sort(notes, CaseManagementNote.getRoleComparator());
         }
         if (field.equals("update_date_asc")) {
-			Collections.sort(notes, CaseManagementNote.getUpdateComparator());
+			Collections.sort(notes, CaseManagementNote.getObservationComparator());
             Collections.reverse(notes);
         }
 		if (field.equals("update_date_desc")) {
-			Collections.sort(notes, CaseManagementNote.getUpdateComparator());
+			Collections.sort(notes, CaseManagementNote.getObservationComparator());
 		}
         
         return notes;

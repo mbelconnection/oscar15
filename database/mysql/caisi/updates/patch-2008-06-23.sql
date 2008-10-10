@@ -4,6 +4,9 @@ alter table demographic modify demographic_no int not null auto_increment;
 
 SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS IntegratorConsent;
+DROP TABLE IF EXISTS IntegratorConsentComplexForm;
+DROP TABLE IF EXISTS IntegratorConsentComplexExitInterview;
+
 create table IntegratorConsent
 (
 	facilityId int not null, foreign key (facilityId) references facility(id),
@@ -20,7 +23,6 @@ create table IntegratorConsent
 	restrictConsentToHic tinyint(1) NOT NULL
 );
 
-DROP TABLE IF EXISTS IntegratorConsentComplexForm;
 create table IntegratorConsentComplexForm
 (
 	facilityId int not null, foreign key (facilityId) references facility(id),
@@ -32,7 +34,6 @@ create table IntegratorConsentComplexForm
 	refusedToSign tinyint(1) not null
 );
 
-DROP TABLE IF EXISTS IntegratorConsentComplexExitInterview;
 create table IntegratorConsentComplexExitInterview
 (
 	facilityId int not null, foreign key (facilityId) references facility(id),

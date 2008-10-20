@@ -1,22 +1,26 @@
-create table Facility (
-    id int primary key auto_increment,
-    name varchar(32) NOT NULL, unique(name),
-    description VARCHAR(150),
-    contactName varchar(255),
-    contactEmail varchar(255),
-    contactPhone varchar(255),
-    hic tinyint(1) NOT NULL,
-    disabled tinyint(1) NOT NULL,
-    orgId int NOT NULL,
-    sectorId int NOT NULL,
-	integratorEnabled tinyint(1) not null,
-	integratorUrl varchar(255),
-	integratorUser varchar(255),
-	integratorPassword varchar(255),
-	integratorLastPushTime datetime,
-	useQuickConsent tinyint(1) not null,
-	enableIntegratedReferrals tinyint(1) not null
+
+-- Facility table, added to CAISI to support RFQ requirement of facilities.
+create table facility (
+    `id` int NOT NULL auto_increment,
+    `name` varchar(32) NOT NULL default '',
+    `description` VARCHAR(150) NOT NULL default '',
+    `contact_name` varchar(255) default NULL,
+    `contact_email` varchar(255) default NULL,
+    `contact_phone` varchar(255) default NULL,
+    `hic` tinyint(1) NOT NULL default FALSE,
+    `disabled` tinyint(1) NOT NULL default '0',
+    `org_id` int(10) NOT NULL default '0',
+    `sector_id` int(10) NOT NULL default '0',
+	`integratorEnabled` tinyint(1) not null default 0,
+	`integratorUrl` varchar(255),
+	`integratorUser` varchar(255),
+	`integratorPassword` varchar(255),
+	`integratorLastPushTime` datetime,
+	`useQuickConsent` tinyint(1) not null,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `idx_facility_name` USING HASH (`name`)
 );
+
 
 
 --
@@ -1857,24 +1861,24 @@ CREATE TABLE `survey` (
 -- Table structure for table `surveyData`
 --
 
-CREATE TABLE `surveyData` (
-  `surveyDataId` int(10) NOT NULL auto_increment,
-  `surveyId` varchar(5) default NULL,
-  `demographic_no` int(10) default NULL,
-  `provider_no` varchar(6) default NULL,
-  `status` char(2) default NULL,
-  `survey_date` date default NULL,
-  `answer` varchar(10) default NULL,
-  `processed` int(10) default NULL,
-  PRIMARY KEY  (`surveyDataId`),
-  KEY `surveyId_index` (`surveyId`),
-  KEY `demographic_no_index` (`demographic_no`),
-  KEY `provider_no_index` (`provider_no`),
-  KEY `status_index` (`status`),
-  KEY `survey_date_index` (`survey_date`),
-  KEY `answer_index` (`answer`),
-  KEY `processed_index` (`processed`)
-);
+-- CREATE TABLE `surveyData` (
+--  `surveyDataId` int(10) NOT NULL auto_increment,
+--  `surveyId` varchar(5) default NULL,
+--  `demographic_no` int(10) default NULL,
+--  `provider_no` varchar(6) default NULL,
+--  `status` char(2) default NULL,
+--  `survey_date` date default NULL,
+--  `answer` varchar(10) default NULL,
+--  `processed` int(10) default NULL,
+--  PRIMARY KEY  (`surveyDataId`),
+--  KEY `surveyId_index` (`surveyId`),
+--  KEY `demographic_no_index` (`demographic_no`),
+--  KEY `provider_no_index` (`provider_no`),
+--  KEY `status_index` (`status`),
+--  KEY `survey_date_index` (`survey_date`),
+--  KEY `answer_index` (`answer`),
+--  KEY `processed_index` (`processed`)
+--);
 
 --
 -- Table structure for table `survey_test_data`
@@ -2428,7 +2432,7 @@ create table app_module
 
 create table IntegratorConsent
 (
-	facilityId int not null, foreign key (facilityId) references Facility(id),
+	facilityId int not null, foreign key (facilityId) references facility(id),
 	demographicId int not null, foreign key (demographicId) references demographic(demographic_no),
 	primary key (facilityId,demographicId),
 
@@ -2444,7 +2448,7 @@ create table IntegratorConsent
 
 create table IntegratorConsentComplexForm
 (
-	facilityId int not null, foreign key (facilityId) references Facility(id),
+	facilityId int not null, foreign key (facilityId) references facility(id),
 	demographicId int not null, foreign key (demographicId) references demographic(demographic_no),
 	primary key (facilityId,demographicId),
 
@@ -2455,7 +2459,7 @@ create table IntegratorConsentComplexForm
 
 create table IntegratorConsentComplexExitInterview
 (
-	facilityId int not null, foreign key (facilityId) references Facility(id),
+	facilityId int not null, foreign key (facilityId) references facility(id),
 	demographicId int not null, foreign key (demographicId) references demographic(demographic_no),
 	primary key (facilityId,demographicId),
 

@@ -1878,7 +1878,7 @@ CREATE TABLE `survey` (
 --  KEY `survey_date_index` (`survey_date`),
 --  KEY `answer_index` (`answer`),
 --  KEY `processed_index` (`processed`)
---);
+-- );
 
 --
 -- Table structure for table `survey_test_data`

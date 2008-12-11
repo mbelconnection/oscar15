@@ -74,7 +74,7 @@
                 return;
             }
             var id = document.getElementById('formInstanceId').value;
-            var url = '/oscar_rfq/PMmodule/Forms/SurveyExecute.do?method=survey&type=provider&formId=' + formId + '&formInstanceId=' + id + '&clientId=' + 10;
+            var url = '<html:rewrite action="/PMmodule/Forms/SurveyExecute.do"/>?method=survey&type=provider&formId=' + formId + '&formInstanceId=' + id + '&clientId=' + 10;
             ctl.selectedIndex = 0;
             popupPage(url);
         }
@@ -87,8 +87,8 @@
         }
         </script>
         
-        <script type="text/javascript" src="/oscar_rfq/dojoAjax/dojo.js"></script>
-        <script type="text/javascript" src="/oscar_rfq/js/AlphaTextBox.js"></script>
+        <script type="text/javascript" src="<html:rewrite page="/dojoAjax/dojo.js"/>"></script>
+        <script type="text/javascript" src="<html:rewrite page="/js/AlphaTextBox.js"/>"></script>
         <script type="text/javascript">
         <!--
         dojo.require("dojo.widget.*");
@@ -113,12 +113,17 @@
 	
         List<IntakeNode> lis = genericIntakeManager.getIntakeNodes();
         if (lis != null){ %>
-	<select>
+        <script>
+			function change_form(value) {
+				location.href='EditIntake.jsp?id=' + value;
+			}
+        </script>
+	<select onchange="change_form(this.options[this.selectedIndex].value)">
                     <% for (IntakeNode i : lis) {
 			   String frmLabel = i.getForm_version()!=null ? i.getLabelStr()+" ("+i.getForm_version()+")" : i.getLabelStr();
 			   if (i.getPublish_date()!=null) frmLabel += " PUBLISHED " +i.getPublishDateStr()+ " BY " +i.getPublish_by();
 			   %>
-	    <option <%=i.getId()==iNum?"selected":""%> onclick="location.href='EditIntake.jsp?id=<%=i.getId()%>'"><%=frmLabel%></option>
+	    <option <%=i.getId()==iNum?"selected":""%> value="<%=i.getId()%>"><%=frmLabel%></option>
                     <% } %>
 	</select>
 	<%}

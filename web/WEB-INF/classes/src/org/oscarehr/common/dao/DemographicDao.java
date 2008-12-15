@@ -30,16 +30,16 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.persistence.PersistenceException;
 
-import org.hibernate.Hibernate;
 import org.hibernate.SQLQuery;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.util.DbConnectionFilter;
@@ -111,7 +111,11 @@ public class DemographicDao extends HibernateDaoSupport {
     }
 
     public Set getArchiveDemographicByProgramOptimized(int programId, Date dt, Date defdt) {
-    	Set<Demographic> archivedClients = new HashSet<Demographic>();
+    	Set<Demographic> archivedClients = new TreeSet<Demographic>(new Comparator<Demographic>() {
+    		public int compare(Demographic o1, Demographic o2) {    	
+    			return String.CASE_INSENSITIVE_ORDER.compare(o1.getLastName(), o2.getLastName());
+    		}
+    	});    	
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     	String sqlQuery = "select distinct d.demographic_no,d.first_name,d.last_name,(select count(*) from admission a where client_id=d.demographic_no and admission_status='current' and program_id="+programId+" and admission_date<='"+sdf.format(dt)+"') as is_active from admission a,demographic d where a.client_id=d.demographic_no and (d.patient_status='AC' or d.patient_status='' or d.patient_status=null) and program_id="+programId;
     	System.out.println(sqlQuery);

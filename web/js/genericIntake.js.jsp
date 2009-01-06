@@ -121,20 +121,19 @@ function validateEdit() {
 			}
 		}
 		
-		var month = getElement('client.monthOfBirth');
-		var day = getElement('client.dateOfBirth');
-		var year = getElement('client.yearOfBirth');
-		
-		var age=calculateAge(year.value,month.value,day.value);
-		if (!validAgeRangeForProgram(programId,age))
-		{
-			return error(year, "This client does not meet the age range requirements for this program.");
-		}
+	var month = parseInt(getElement('client.monthOfBirth').value, 10);
+	var day = parseInt(getElement('client.dateOfBirth').value, 10);
+	var year = parseInt(getElement('client.yearOfBirth').value, 10);
+	if (!validateDate(year, month, day))
+	{
+		return error(getElement('client.yearOfBirth'), "The birth date you've entered is not a valid date.");
+	}
 
-		if (!validateDate(year.value, month.value, day.value))
-		{
-			return error(year, "The birth date you entered is not a valid date.");
-		}
+	var age = calculateAge(year, month, day);
+	if (!validAgeRangeForProgram(programId, age))
+	{
+		return error(getElement('client.yearOfBirth'), "This client does not meet the age range requirements for this program.");
+	}
 	
 		
 		

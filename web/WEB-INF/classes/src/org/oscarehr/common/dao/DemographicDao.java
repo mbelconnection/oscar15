@@ -111,14 +111,18 @@ public class DemographicDao extends HibernateDaoSupport {
     }
 
     public Set getArchiveDemographicByProgramOptimized(int programId, Date dt, Date defdt) {
+/*
     	Set<Demographic> archivedClients = new TreeSet<Demographic>(new Comparator<Demographic>() {
     		public int compare(Demographic o1, Demographic o2) {    	
-    			return String.CASE_INSENSITIVE_ORDER.compare(o1.getLastName(), o2.getLastName());
+    			return String.CASE_INSENSITIVE_ORDER.compare(o1.getLastName()+","+o1.getFirstName(), o2.getLastName()+","+o2.getFirstName());
     		}
     	});    	
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    	String sqlQuery = "select distinct d.demographic_no,d.first_name,d.last_name,(select count(*) from admission a where client_id=d.demographic_no and admission_status='current' and program_id="+programId+" and admission_date<='"+sdf.format(dt)+"') as is_active from admission a,demographic d where a.client_id=d.demographic_no and (d.patient_status='AC' or d.patient_status='' or d.patient_status=null) and program_id="+programId;
-    	System.out.println(sqlQuery);
+*/
+    	Set<Demographic> archivedClients = new java.util.LinkedHashSet<Demographic>();
+
+
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    	String sqlQuery = "select distinct d.demographic_no,d.first_name,d.last_name,(select count(*) from admission a where client_id=d.demographic_no and admission_status='current' and program_id="+programId+" and admission_date<='"+sdf.format(dt)+"') as is_active from admission a,demographic d where a.client_id=d.demographic_no and (d.patient_status='AC' or d.patient_status='' or d.patient_status=null) and program_id="+programId + " ORDER BY d.last_name,d.first_name";
     	
     	
 		SQLQuery q = this.getSession().createSQLQuery(sqlQuery);
@@ -127,7 +131,7 @@ public class DemographicDao extends HibernateDaoSupport {
 		q.addScalar("d.last_name");
 		q.addScalar("is_active");
 		List results = q.list();
-		
+
 		Iterator iter = results.iterator();
 		while(iter.hasNext()) {
 			Object[] result = (Object[])iter.next();
@@ -139,6 +143,7 @@ public class DemographicDao extends HibernateDaoSupport {
 				archivedClients.add(d);
 			}
 		}
+
 		return archivedClients;
     }
     
@@ -225,8 +230,6 @@ public class DemographicDao extends HibernateDaoSupport {
      public List<Demographic> searchDemographic(String searchStr){
         String fieldname = "", regularexp = "like";
           
-        System.out.println("searchStr" + searchStr);
-
         if (searchStr.indexOf(",") == -1) {
             fieldname = "last_name";
         } else if (searchStr.trim().indexOf(",") == (searchStr.trim().length() - 1)) {
@@ -236,7 +239,6 @@ public class DemographicDao extends HibernateDaoSupport {
         }
         
         String hql = "From Demographic d where " + fieldname + " " + regularexp + " ? ";
-        System.out.println("====" + hql);
         
         String[] lastfirst = searchStr.split(",");
         Object[] object = null;

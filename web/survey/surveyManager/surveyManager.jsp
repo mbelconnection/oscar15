@@ -21,7 +21,14 @@
 * Toronto, Ontario, Canada 
 */
  -->
-
+<%
+	boolean showMfhExport=false;
+	oscar.OscarProperties pros = oscar.OscarProperties.getInstance();
+	String mfhExport = pros.getProperty("MFH_UFC_EXPORT");
+	if(mfhExport != null && mfhExport.equalsIgnoreCase("true")) {
+		showMfhExport=true;
+	}
+%>
 <%@ include file="/survey/taglibs.jsp" %>
 <style type="text/css">
 <!--
@@ -145,6 +152,17 @@
 		
 		selectObj.selectedIndex=0;
 	}
+
+	function export_inverse_csv(selectObj) {
+		var formId = selectObj.options[selectObj.selectedIndex].value;
+		if(formId != "") {
+			//alert('<html:rewrite action="/SurveyManager"/>?method=export_csv&id=' + formId);	
+			location.href='<html:rewrite action="/SurveyManager"/>?method=export_inverse_csv&id=' + formId;		
+		}
+		//run the command
+		
+		selectObj.selectedIndex=0;
+	}
 	
 	function export_to_db(selectObj) {
 		var formId = selectObj.options[selectObj.selectedIndex].value;
@@ -164,6 +182,17 @@ Export Form Data:&nbsp;
 	<option value="<c:out value="${f.formId}"/>"><c:out value="${f.description}"/></option>
 </c:forEach>
 </select>
+
+<%if(showMfhExport) { %>
+<br/><br/>
+Export Form Data (MFH):&nbsp;
+<select onchange="export_inverse_csv(this);">
+	<option value=""></option>
+<c:forEach var="f" items="${released_forms}">
+	<option value="<c:out value="${f.formId}"/>"><c:out value="${f.description}"/></option>
+</c:forEach>
+</select>
+<% } %>
 
 <br/><br/>
 Export form structure to database:&nbsp;

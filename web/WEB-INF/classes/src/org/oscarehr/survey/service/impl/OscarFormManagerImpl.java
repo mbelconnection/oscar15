@@ -24,6 +24,9 @@ public class OscarFormManagerImpl implements OscarFormManager {
 		dao.generateCSV(formId, out);
 	}
 
+	public void generateInverseCSV(Long formId, OutputStream out) {
+		dao.generateInverseCSV(formId, out);
+	}
 	public void convertFormXMLToDb(Long formId) {
 		dao.convertFormXMLToDb(formId);
 	}

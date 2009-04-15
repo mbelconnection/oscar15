@@ -5,6 +5,7 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ page import="oscar.oscarProvider.data.*"%>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
+<%@ page import="org.apache.log4j.Logger" %>
 <%@ page import="oscar.*,java.lang.*,java.util.Date"%>
 <% response.setHeader("Cache-Control","no-cache");%>
 
@@ -196,9 +197,15 @@ OscarProperties props = OscarProperties.getInstance();
                         for(i=0;i<bean.getStashSize();i++)
                         {
                         rx = bean.getStashItem(i);
+						String fullOutLine=rx.getFullOutLine().replaceAll(";","<br />");
+						
+						if (fullOutLine==null || fullOutLine.length()<=6)
+						{
+							Logger.getLogger("preview_jsp").error("drug full outline was null");
+							fullOutLine="<span style=\"color:red;font-size:16;font-weight:bold\">An error occurred, please write a new prescription.</span><br />"+fullOutLine;
+						}
                         %>
-                        
-                        <%= rx.getFullOutLine().replaceAll(";","<br/>") %>
+                        <%=fullOutLine%>
                         <hr>
                         <%
                         strRx += rx.getFullOutLine() + ";;";

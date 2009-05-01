@@ -5,9 +5,9 @@
 ant clean
 ant
 
-pushd ..
+cd ..
 tar cvfz build/tmp/oscar_rc.tar.gz --exclude \*/CVS/\* --exclude \*/CVS database install build/tmp/*.war
-popd
+cd build
 
 echo ----------
 echo Run the following to upload the archive

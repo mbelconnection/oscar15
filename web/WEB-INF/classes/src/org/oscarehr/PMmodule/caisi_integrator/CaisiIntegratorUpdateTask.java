@@ -41,6 +41,7 @@ import javax.xml.ws.WebServiceException;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jfree.util.Log;
 import org.oscarehr.PMmodule.dao.ProgramDao;
 import org.oscarehr.PMmodule.dao.ProviderDao;
 import org.oscarehr.PMmodule.model.Program;
@@ -487,6 +488,11 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 				continue;
 			}
 			// filter out notes from a programs attached to different facilities
+			try {
+				Integer.parseInt(localNote.getProgram_no());
+			} catch(NumberFormatException e) {
+				Log.debug("Note " + localNote.getId() + " has no programNo, skipping");
+			}
 			Program noteProgram = programDao.getProgram(Integer.parseInt(localNote.getProgram_no()));
 			if (noteProgram.getFacilityId() != facility.getId()) {
 				logger.debug("Note " + localNote.getId() + " is attached to Program " + localNote.getProgram_no() + " from " + noteProgram.getFacilityId() + ", NOT " + facility.getId() + ", skipping");

@@ -373,13 +373,11 @@ public class ScheduleProgramOccuServlet extends HttpServlet {
 	     */
 	    public void doGet(HttpServletRequest request, HttpServletResponse response) throws java.io.IOException, javax.servlet.ServletException {
 	        try {
-		       /*
-	           Calendar dt = Calendar.getInstance();
-               dt.add(Calendar.DATE, -2);
-	           ProgramOccuTimerTask.DeactiveServiceIntake(dt);
-	           ProgramOccuTimerTask.inputSDMT(path);
-	           */
-		       //    IntakeTimerTask.DeactiveBedIntake();
+		       
+	           //Calendar dt = Calendar.getInstance();
+               //dt.add(Calendar.DATE, -2);
+	           //IntakeTimerTask.DeactiveServiceIntake();
+		       //IntakeTimerTask.DeactiveBedIntake();
                // programOccupancyManager.insertSdmtOut();
 	           // ProgramOccuTimerTask.outputSDMT(path, programOccupancyManager.getSdmtOutList(Calendar.getInstance(), true));
 	           return;

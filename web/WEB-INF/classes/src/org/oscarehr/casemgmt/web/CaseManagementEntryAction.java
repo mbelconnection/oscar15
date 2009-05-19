@@ -1536,7 +1536,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
             Issue issue = (Issue) filteredSearchResults.get(i);
         	issueList[i] = new CheckIssueBoxBean();
             issueList[i].setIssue(issue);
-            if(communityIssueCodes.contains(issue.getCode()))
+            if(communityIssueCodes != null && communityIssueCodes.contains(issue.getCode()))
             {
             	issueList[i].setCommunity(true);
             }

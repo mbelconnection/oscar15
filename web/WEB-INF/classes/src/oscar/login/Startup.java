@@ -27,13 +27,21 @@
  */
 package oscar.login;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
+import java.util.logging.Handler;
+import java.util.logging.FileHandler;
+import java.util.logging.SimpleFormatter;
+import oscar.log.LoggingOutputStream;
+import oscar.log.StdOutErrLevel;
 
 /**
  * This ContextListener is used to Initialize classes at startup - Initialize the DBConnection Pool.
@@ -45,8 +53,38 @@ public class Startup implements ServletContextListener {
 	public Startup() {}
 
 	public void contextInitialized(ServletContextEvent sc) {
-		System.out.println("contextInit");
+		try {
+			// initialize logging to redirect SystemOut and SystemErr go to rolling log file
+			java.util.logging.LogManager logManager = java.util.logging.LogManager.getLogManager();
+			logManager.reset();
+
+			// log file max size 10K, 3 rolling files, append-on-open
+        	java.util.logging.Handler fileHandler = new java.util.logging.FileHandler("QSlog", 10000, 3, true);
+        	fileHandler.setFormatter(new SimpleFormatter());
+        	java.util.logging.Logger.getLogger("").addHandler(fileHandler);
+        	
+            // preserve old stdout/stderr streams in case they might be useful      
+//            PrintStream stdout = System.out;                                        
+//            PrintStream stderr = System.err;                                        
+
+            // now rebind stdout/stderr to logger                                   
+            java.util.logging.Logger logger;                                                          
+            LoggingOutputStream los;                                                
+
+            logger = java.util.logging.Logger.getLogger("stdout");                                    
+            los = new LoggingOutputStream(logger, StdOutErrLevel.STDOUT);           
+            System.setOut(new PrintStream(los, true));                              
+
+            logger = java.util.logging.Logger.getLogger("stderr");                                    
+            los= new LoggingOutputStream(logger, StdOutErrLevel.STDERR);            
+            System.setErr(new PrintStream(los, true));  
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
 		
+		System.out.println("contextInit");
 		String contextPath = "";
 		try {
 //			String webInfDir = sc.getServletContext().getResource("/WEB-INF").getPath();

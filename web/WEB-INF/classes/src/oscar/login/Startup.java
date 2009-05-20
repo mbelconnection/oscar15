@@ -59,13 +59,13 @@ public class Startup implements ServletContextListener {
 			logManager.reset();
 
 			// log file max size 10K, 3 rolling files, append-on-open
-        	java.util.logging.Handler fileHandler = new java.util.logging.FileHandler("QSlog", 10000, 3, true);
+        	java.util.logging.Handler fileHandler = new java.util.logging.FileHandler("logs/QuatroShelter.SystemOut.%g.log", 10000, 3, true);
         	fileHandler.setFormatter(new SimpleFormatter());
         	java.util.logging.Logger.getLogger("").addHandler(fileHandler);
         	
             // preserve old stdout/stderr streams in case they might be useful      
-//            PrintStream stdout = System.out;                                        
-//            PrintStream stderr = System.err;                                        
+            PrintStream stdout = System.out;                                        
+            PrintStream stderr = System.err;                                        
 
             // now rebind stdout/stderr to logger                                   
             java.util.logging.Logger logger;                                                          

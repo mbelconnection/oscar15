@@ -81,12 +81,12 @@ function submitForm(methodVal) {
 
 <tr><td>
 <table class="simple" cellspacing="2" cellpadding="3">
-<tr><td width="25%">Rejection Reason</td>
+<tr><td width="25%">Rejection Reason*</td>
 <td width="75%"><html:select property="rejectReason">
 <html-el:option value=""></html-el:option>
 <html-el:optionsCollection property="rejectReasonList" value="code" label="description"/>
 </html:select></td></tr>
-<tr><td>Rejection Note</td>
+<tr><td>Rejection Note*</td>
 <td><html:textarea property="rejectNote" rows="6" style="width: 90%;" /></td></tr>
 </table>
 </td></tr>

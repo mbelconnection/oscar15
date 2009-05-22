@@ -163,7 +163,7 @@
 										Information from External Agencies
 									</b></font>
 								</td>
-								<td style="width: 30%">Shelter Name:<c:out value="${shelter.buf1}" /><br />
+								<td style="width: 30%">Shelter Name:<c:out value="${shelter.description}" /><br />
 									Shelter Mailing Address:<c:out value="${shelter.buf3}"/>
 								</td>
 								<td style="width: 20%">Tel:<c:out value="${shelter.buf8}" /><br /> Fax:<c:out value="${shelter.buf9}" /></td>

@@ -43,5 +43,6 @@
  -->
 		<property name="fromIntakeId" column="intake_id" />
 		<property name="ClientActive" type="boolean"  formula="(select count(*) from admission t where t.admission_status='admitted' and t.client_id=client_id)"/> 
+		<property name="ClientFamilyHead" type="boolean" formula="(select count(*) from intake_family f where f.intake_head_id=f.intake_id and f.intake_head_id = (select r.intake_id from client_referral r where r.referral_id = referral_id))"></property>
 	</class>
 </hibernate-mapping>

@@ -155,7 +155,7 @@ public class ProgramOccupancyDao extends HibernateDaoSupport {
 
 				if (MyDateFormat.getHoursDiff(qih.getCreatedOn(), now) > maxAge.intValue()) {
 					i++;
-					ids = qih.getId().toString() + ",";
+					ids += qih.getId().toString() + ",";
 				}
 			}
 			if (ids.endsWith(","))

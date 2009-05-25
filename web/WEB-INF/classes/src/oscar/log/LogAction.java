@@ -41,7 +41,7 @@ public class LogAction {
             ret = true;
         } catch (SQLException e) {
             _logger.error("failed to insert into logging table userId" + userId + "(" + provider_no + "), action " + action
-                    + ", content " + content + ", contentId " + contentId + ", ip " + ip);
+                    + ", content " + content + ", contentId " + contentId + ", ip " + ip + " " + e.getMessage());
         }
         finally
         {

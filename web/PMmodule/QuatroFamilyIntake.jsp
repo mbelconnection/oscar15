@@ -227,7 +227,7 @@ function checkExistClients(i){
 <html:hidden property="familyHead.alias" /></td>
 <td>
 <c:if test="${intakeHeadId > 0 &&  intakeHeadId != intakeId}">
-	<a href="<c:out value="${ctx}"/>/PMmodule/QuatroIntakeEdit.do?method=update&intakeId=<c:out value="${intakeHeadId}"/>&clientId=<c:out value="${quatroClientFamilyIntakeForm.familyHead.demographicNo}"/>" style="color:Navy;text-decoration:underline;">View Family Head Intake</a>
+	<a href="<c:out value="${ctx}"/>/PMmodule/QuatroIntakeEdit.do?method=showHeadIntake&intakeId=<c:out value="${intakeHeadId}"/>&clientId=<c:out value="${quatroClientFamilyIntakeForm.familyHead.demographicNo}"/>" style="color:Navy;text-decoration:underline;">View Family Head Intake</a>
 </c:if>
 </td></tr>
 </table>

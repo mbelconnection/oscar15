@@ -160,7 +160,15 @@ public class QuatroIntakeEditAction extends BaseClientAction {
 			return mapping.findForward("failure");
 		}
 	}
+	// for existing client
+	public ActionForward showHeadIntake(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response) {
+		Integer clientId = Integer.valueOf(request.getParameter("clientId"));
 
+		super.cacheClient(request, clientId);
+		return update(mapping,form,request,response);
+	}
+	
 	// for existing client
 	public ActionForward update(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) {

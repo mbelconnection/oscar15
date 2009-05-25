@@ -601,7 +601,7 @@ public class QuatroFamilyIntakeAction extends BaseClientAction {
           actionParam.put("programId", request.getParameter("programId"));
        }
        request.setAttribute("actionParam", actionParam);
-       
+       request.setAttribute("intakeId", intakeId);
        String demographicNo= (String)actionParam.get("headclientId");
        request.setAttribute("headclientId", demographicNo);
        request.setAttribute("programId", (String)actionParam.get("programId"));

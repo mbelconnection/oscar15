@@ -322,12 +322,14 @@ public abstract class BaseClientAction extends BaseAction {
 	       QuatroIntakeHeader obj0 = null;
 	       Integer programIdActive = new Integer(0);
 	       Integer programId  = new Integer(0);
+	       Integer currentIntakeId = new Integer(0);
 	       boolean isAdmittedOrActive = false;
 	       for(int i=0; i<lst.size() ; i++) {
 	    	   obj0=  (QuatroIntakeHeader)lst.get(i);
 	  		   if (obj0.getIntakeStatus().equals(KeyConstants.STATUS_ADMITTED)) {
 	  			   programIdActive = obj0.getProgramId();
 	  			   programId = programIdActive;
+	  			   currentIntakeId = obj0.getId();
 		    	   isAdmittedOrActive = true;
 		    	   break;
 	  		   }
@@ -339,6 +341,7 @@ public abstract class BaseClientAction extends BaseAction {
 	    			   if(obj1.getIntakeStatus().equals(KeyConstants.STATUS_ACTIVE)) {
 	    	  			   programIdActive = obj0.getProgramId();
 	    	  			   programId = programIdActive;
+	    	  			   currentIntakeId = obj1.getId();
 	    		    	   isAdmittedOrActive = true;
 	    		    	   break;
 	    			   }
@@ -348,9 +351,11 @@ public abstract class BaseClientAction extends BaseAction {
 	       if(!isAdmittedOrActive && lst.size() > 0) {
     		   QuatroIntakeHeader obj1 = (QuatroIntakeHeader)lst.get(0);
   			   programId = obj1.getProgramId();
+  			   currentIntakeId = obj1.getId();
 	       }
 	       request.getSession().setAttribute("currentIntakeProgramIdActive",programIdActive);
 	       request.getSession().setAttribute("currentIntakeProgramId",programId);
+	       request.getSession().setAttribute("currentIntakeId",currentIntakeId);
 	}
 	protected Integer getCurrentIntakeProgramId(HttpServletRequest request,boolean activeOne)
 	{
@@ -359,6 +364,10 @@ public abstract class BaseClientAction extends BaseAction {
 		else
 	        return (Integer) request.getSession().getAttribute("currentIntakeProgramId");
 			
+	}
+	protected Integer getCurrentIntakeId(HttpServletRequest request)
+	{
+	    return (Integer) request.getSession().getAttribute("currentIntakeId");
 	}
 	protected Integer getClientId(HttpServletRequest request){
 		 return (Integer) request.getSession().getAttribute("clientId");

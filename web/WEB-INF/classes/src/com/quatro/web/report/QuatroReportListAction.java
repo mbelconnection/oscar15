@@ -34,7 +34,6 @@ public class QuatroReportListAction extends BaseAdminAction {
 	}
 	
 	public ActionForward unspecified(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-		request.getSession().removeAttribute("reportSource");
 		return reportlist(mapping,form,request,response);
 	}
 

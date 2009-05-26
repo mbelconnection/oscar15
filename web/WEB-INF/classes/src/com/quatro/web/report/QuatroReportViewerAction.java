@@ -71,7 +71,14 @@ public class QuatroReportViewerAction extends BaseAction {
 	{
 		QuatroReportRunnerForm myForm = (QuatroReportRunnerForm)form;
 		try {
-			Refresh(myForm, request, response);
+//			if (request.getParameter("ini") != null)
+//			{
+				Refresh(myForm, request, response);
+//			}
+//			else
+//			{
+//				ViewReport(request, response);
+//			}
 			return null;
 		}
 		catch(Exception e)
@@ -590,17 +597,19 @@ public class QuatroReportViewerAction extends BaseAction {
         try{
 			String loginId = (String)request.getSession(true).getAttribute("user");
 			String sessionId = request.getSession(true).getId();
+        	Fields fields = getParameterFieldValues(reportDocument1, loginId, sessionId, orgDis, criteriaDis);
 			IReportSource reportSource = reportDocument1.getReportSource();
-			request.getSession().setAttribute("reportSource", reportSource);
-			ConnectionInfos cifs = new ConnectionInfos();
+//			request.getSession().setAttribute("reportSource", reportSource);
+//			request.getSession().setAttribute("reportParameterFields", fields);
+//			ConnectionInfos cifs = new ConnectionInfos();
 			
-			crystalReportViewer.setDatabaseLogonInfos(cifs);
-			ITable table =  (ITable)reportDocument1.getDatabaseController().getDatabase().getTables().get(0);
-			IConnectionInfo cif = table.getConnectionInfo();
-			cif.getAttributes().putStringValue("Server Name", "QGSHELTERXX");
-			reportDocument1.verifyDatabase();
+//			crystalReportViewer.setDatabaseLogonInfos(cifs);
+//			ITable table =  (ITable)reportDocument1.getDatabaseController().getDatabase().getTables().get(0);
+//			IConnectionInfo cif = table.getConnectionInfo();
+//			cif.getAttributes().putStringValue("Server Name", "QGSHELTERXX");
+//			reportDocument1.verifyDatabase();
         	crystalReportViewer.setReportSource(reportSource);
-	    	crystalReportViewer.setParameterFields(getParameterFieldValues(reportDocument1, loginId, sessionId, orgDis, criteriaDis));
+	    	crystalReportViewer.setParameterFields(fields);
         	crystalReportViewer.setOwnPage(true);
 	    	crystalReportViewer.setOwnForm(true);
 	    	crystalReportViewer.setDisplayGroupTree(true);
@@ -616,6 +625,7 @@ public class QuatroReportViewerAction extends BaseAction {
 	    	crystalReportViewer.setEnableParameterPrompt(true);
 //    	  crystalReportViewer.setRenderAsHTML32(true);
            	crystalReportViewer.processHttpRequest(request, response, getServlet().getServletContext(), null);
+           	reportDocument1.close();
             crystalReportViewer.dispose(); 
       }catch(Exception ex2) {
          System.out.println(ex2.toString());
@@ -625,13 +635,16 @@ public class QuatroReportViewerAction extends BaseAction {
    private void ViewReport(HttpServletRequest request, HttpServletResponse response){
     	CrystalReportViewer crystalReportViewer = new CrystalReportViewer();
         try{
-			String loginId = (String)request.getSession(true).getAttribute("user");
-			String sessionId = request.getSession(true).getId();
-        	crystalReportViewer.setReportSource(request.getSession().getAttribute("reportSource"));
+//			String loginId = (String)request.getSession(true).getAttribute("user");
+//			String sessionId = request.getSession(true).getId();
+        	IReportSource reportSource = (IReportSource)request.getSession().getAttribute("reportSource");
+        	Fields fields = (Fields)request.getSession().getAttribute("reportParameterFields");
+        	crystalReportViewer.setReportSource(reportSource);
+	    	crystalReportViewer.setParameterFields(fields);
         	crystalReportViewer.setOwnPage(true);
 	    	crystalReportViewer.setOwnForm(true);
 	    	crystalReportViewer.setDisplayGroupTree(true);
-//	    	crystalReportViewer.setGroupTreeWidth(50);
+	    	crystalReportViewer.setGroupTreeWidth(50);
 	    	crystalReportViewer.setHasExportButton(true);
 	    	crystalReportViewer.setHasSearchButton(false);
 	    	crystalReportViewer.setHasPageBottomToolbar(false);

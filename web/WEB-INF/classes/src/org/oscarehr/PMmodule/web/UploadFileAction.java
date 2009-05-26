@@ -71,11 +71,11 @@ public class UploadFileAction extends BaseClientAction {
 		 List atts=null;
 		 try {
 			 DynaActionForm myform = (DynaActionForm)form;
-			 String clientId = myform.getString("clientId");
+			 Integer clientId = super.getClientId(request);
 			 HashMap actionParam = (HashMap) request.getAttribute("actionParam");
 	         if(actionParam==null){
 	    	  actionParam = new HashMap();
-	          actionParam.put("clientId", clientId); 
+	          actionParam.put("clientId", clientId.toString()); 
 	         }
 		     request.setAttribute("actionParam", actionParam);
 			 super.setScreenMode(request, KeyConstants.TAB_CLIENT_ATTCHMENT);
@@ -87,21 +87,12 @@ public class UploadFileAction extends BaseClientAction {
 			        saveMessages(request,messages);
 				   return edit(mapping,form,request,response);
 			  }
-		      String demographicNo= (String)actionParam.get("clientId");
-		       if(Utility.IsEmpty(demographicNo)){
-		    	   ActionMessages messages= new ActionMessages();
-		    	   
-		    	   messages.add(ActionMessages.GLOBAL_MESSAGE,new ActionMessage("error.save.attachment", request.getContextPath()));
-			        saveMessages(request,messages);
-					//return mapping.findForward("edit");		        
-		    	   return edit(mapping,form,request,response);
-		       }
 			   Integer currentFacilityId=(Integer)request.getSession().getAttribute(KeyConstants.SESSION_KEY_SHELTERID);
 				String providerNo=(String) request.getSession().getAttribute("user");
 	
 		    	// attachment only for client 
 			    Integer moduleId = KeyConstants.MODULE_ID_CLIENT;
-			    String refNo = demographicNo;			   
+			    String refNo = clientId.toString();			   
 			   // List lstProgram = programManager.getPrograms(providerNo, currentFacilityId);
 				atts=uploadFileManager.getAttachment(moduleId, refNo,providerNo,currentFacilityId);
 			    request.setAttribute("att_files", atts);

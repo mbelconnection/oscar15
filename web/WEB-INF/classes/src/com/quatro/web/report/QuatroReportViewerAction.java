@@ -496,7 +496,8 @@ public class QuatroReportViewerAction extends BaseAction {
 	      {
 	    	  try {
 	    	    	if(reportDocument1 != null)
-	    	    		reportDocument1.close();  
+	    	    		reportDocument1.close(); 
+	    	    		reportDocument1 =  null;
 	    	  }
 	    	  catch(Exception ex)
 	    	  {
@@ -625,7 +626,6 @@ public class QuatroReportViewerAction extends BaseAction {
 	    	crystalReportViewer.setEnableParameterPrompt(true);
 //    	  crystalReportViewer.setRenderAsHTML32(true);
            	crystalReportViewer.processHttpRequest(request, response, getServlet().getServletContext(), null);
-           	reportDocument1.close();
             crystalReportViewer.dispose(); 
       }catch(Exception ex2) {
          System.out.println(ex2.toString());

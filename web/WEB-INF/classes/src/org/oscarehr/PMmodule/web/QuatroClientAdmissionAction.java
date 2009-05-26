@@ -721,8 +721,8 @@ public class QuatroClientAdmissionAction  extends BaseClientAction {
              for(int j = 0; j<lst.size(); j++) {
             	 Admission admObj = (Admission) lst.get(j);
             	 if(isClientAdmittedAsDependent(admObj, headClientId)) {
-            		 Demographic client1 = intakeManager.getClientByDemographicNo(admObj.getClientId());
-            		 messages.add(ActionMessages.GLOBAL_MESSAGE,new ActionMessage("error.intake.admission.existing_dependent", request.getContextPath(),client1.getLastName() + ", " + client.getFirstName()));
+            		 Demographic client1 = clientManager.getClientByDemographicNo(admObj.getClientId().toString());
+            		 messages.add(ActionMessages.GLOBAL_MESSAGE,new ActionMessage("error.intake.admission.existing_dependent", request.getContextPath(),client1.getLastName() + ", " + client1.getFirstName()));
             		 isError = true;
             	 }
              }

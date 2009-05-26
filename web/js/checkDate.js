@@ -281,7 +281,9 @@ function validateDate(year, month, day)
 	// so date is normalized to 2009 October 01 when setMonth() is called.
 */
 	date.setFullYear(year, month-1, day);
-
+	date.setMonth(month-1);
+    date.setDate(day);
+	
 	if (year!=date.getFullYear()) return(false);
 	if (month!=date.getMonth()+1) return(false);
 	if (day!=date.getDate()) return(false);

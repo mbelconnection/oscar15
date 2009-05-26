@@ -1629,6 +1629,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
             caseIssueList[i].setChecked(oldList[i].getChecked());
             caseIssueList[i].setUsed(oldList[i].isUsed());
             caseIssueList[i].setIssue(oldList[i].getIssue());
+            caseIssueList[i].setCommunityIssue(oldList[i].getCommunityIssue());
         }
         k = 0;
 

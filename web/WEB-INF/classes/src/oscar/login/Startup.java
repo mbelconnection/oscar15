@@ -53,37 +53,6 @@ public class Startup implements ServletContextListener {
 	public Startup() {}
 
 	public void contextInitialized(ServletContextEvent sc) {
-		try {
-			// initialize logging to redirect SystemOut and SystemErr go to rolling log file
-			java.util.logging.LogManager logManager = java.util.logging.LogManager.getLogManager();
-			logManager.reset();
-
-			// log file max size 10K, 3 rolling files, append-on-open
-        	java.util.logging.Handler fileHandler = new java.util.logging.FileHandler("logs/QuatroShelter.SystemOut.%g.log", 10000, 3, true);
-        	fileHandler.setFormatter(new SimpleFormatter());
-        	java.util.logging.Logger.getLogger("").addHandler(fileHandler);
-        	
-            // preserve old stdout/stderr streams in case they might be useful      
-            PrintStream stdout = System.out;                                        
-            PrintStream stderr = System.err;                                        
-
-            // now rebind stdout/stderr to logger                                   
-            java.util.logging.Logger logger;                                                          
-            LoggingOutputStream los;                                                
-
-            logger = java.util.logging.Logger.getLogger("stdout");                                    
-            los = new LoggingOutputStream(logger, StdOutErrLevel.STDOUT);           
-            System.setOut(new PrintStream(los, true));                              
-
-            logger = java.util.logging.Logger.getLogger("stderr");                                    
-            los= new LoggingOutputStream(logger, StdOutErrLevel.STDERR);            
-            System.setErr(new PrintStream(los, true));  
-		}
-		catch(IOException e)
-		{
-			e.printStackTrace();
-		}
-		
 		System.out.println("contextInit");
 		String contextPath = "";
 		try {
@@ -125,7 +94,40 @@ public class Startup implements ServletContextListener {
 			return;
 		}
 		System.out.println("LAST LINE IN contextInitialized");
-                
+		
+		if (p.getProperty("redirect_system_out_to_file").equals("yes")) {
+			try {
+				// initialize logging to redirect SystemOut and SystemErr go to rolling log file
+				java.util.logging.LogManager logManager = java.util.logging.LogManager.getLogManager();
+				logManager.reset();
+	
+				// log file max size 10K, 3 rolling files, append-on-open
+				int fileSize = Integer.valueOf(p.getProperty("filesize_rollover")).intValue() * 1024;
+	        	java.util.logging.Handler fileHandler = new java.util.logging.FileHandler("logs/QuatroShelter.SystemOut.%g.log", fileSize, 3, true);
+	        	fileHandler.setFormatter(new SimpleFormatter());
+	        	java.util.logging.Logger.getLogger("").addHandler(fileHandler);
+	        	
+	            // preserve old stdout/stderr streams in case they might be useful      
+	            PrintStream stdout = System.out;                                        
+	            PrintStream stderr = System.err;                                        
+	
+	            // now rebind stdout/stderr to logger                                   
+	            java.util.logging.Logger logger;                                                          
+	            LoggingOutputStream los;                                                
+	
+	            logger = java.util.logging.Logger.getLogger("stdout");                                    
+	            los = new LoggingOutputStream(logger, StdOutErrLevel.STDOUT);           
+	            System.setOut(new PrintStream(los, true));                              
+	
+	            logger = java.util.logging.Logger.getLogger("stderr");                                    
+	            los= new LoggingOutputStream(logger, StdOutErrLevel.STDERR);            
+	            System.setErr(new PrintStream(los, true));  
+			}
+			catch(IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 	public void contextDestroyed(ServletContextEvent arg0) {}
 

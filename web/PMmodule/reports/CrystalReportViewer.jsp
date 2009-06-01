@@ -34,6 +34,5 @@ viewer.setReportSource(reportSource);
 Fields fields = (Fields) session.getAttribute("paramFields");
 viewer.setParameterFields(fields);
 //Render the report.
-viewer.processHttpRequest(request, response, getServletConfig().getServletContext(), null); 
-
+viewer.processHttpRequest(request, response, getServletConfig().getServletContext(), null);
 %>

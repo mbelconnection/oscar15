@@ -435,7 +435,10 @@
         <action path="/QuatroReport/ReportViewer" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method"
               name="quatroReportRunnerForm" validate="false" scope="request">
            <forward name="error" path="/PMmodule/reports/QuatroReportViewer.jsp"/>
-           <forward name="view" path="/PMmodule/reports/CrystalReportViewer.jsp" redirect="true"/>
+           <forward name="view" path="/QuatroReport/ReportShow.do" redirect="true" />
+        </action>
+        <action path="/QuatroReport/ReportShow" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method"
+              name="quatroReportRunnerForm" validate="false" scope="request">
         </action>
         <action path="/QuatroReport/SaveReportTemplate" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method"
               name="quatroReportSaveTemplateForm" validate="false" scope="request">

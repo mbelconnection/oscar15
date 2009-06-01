@@ -13,6 +13,7 @@ package com.quatro.web.report;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
@@ -663,7 +664,7 @@ public class QuatroReportViewerAction extends BaseAction {
 	}
     private void ViewReport(HttpServletRequest request, HttpServletResponse response, ReportClientDocument reportDocument1, String orgDis, String criteriaDis)
     throws Exception {
-//    	CrystalReportViewer crystalReportViewer = new CrystalReportViewer();
+    	CrystalReportViewer crystalReportViewer = new CrystalReportViewer();
         try{
 			String loginId = (String)request.getSession(true).getAttribute("user");
 			String sessionId = request.getSession(true).getId();
@@ -671,40 +672,14 @@ public class QuatroReportViewerAction extends BaseAction {
 			IReportSource reportSource = reportDocument1.getReportSource();
 			request.getSession().setAttribute("reportSource", reportSource);
 			request.getSession().setAttribute("paramFields", fields);
-/*
-//			request.getSession().setAttribute("reportParameterFields", fields);
-//			ConnectionInfos cifs = new ConnectionInfos();
 			
-//			crystalReportViewer.setDatabaseLogonInfos(cifs);
-//			ITable table =  (ITable)reportDocument1.getDatabaseController().getDatabase().getTables().get(0);
-//			IConnectionInfo cif = table.getConnectionInfo();
-//			cif.getAttributes().putStringValue("Server Name", "QGSHELTERXX");
-//			reportDocument1.verifyDatabase();
-        	crystalReportViewer.setReportSource(reportSource);
-	    	crystalReportViewer.setParameterFields(fields);
-        	crystalReportViewer.setOwnPage(true);
-	    	crystalReportViewer.setOwnForm(true);
-	    	crystalReportViewer.setDisplayGroupTree(true);
-	    	crystalReportViewer.setGroupTreeWidth(50);
-	    	crystalReportViewer.setHasExportButton(true);
-	    	crystalReportViewer.setHasSearchButton(false);
-	    	crystalReportViewer.setHasPageBottomToolbar(false);
-	    	crystalReportViewer.setHasRefreshButton(true);
-	    	crystalReportViewer.setHasToggleGroupTreeButton(false);
-	    	crystalReportViewer.setHasZoomFactorList(true);
-	    	crystalReportViewer.setHasLogo(false);
-	    	crystalReportViewer.setEnableDrillDown(true);
-	    	crystalReportViewer.setEnableParameterPrompt(true);
-//    	  crystalReportViewer.setRenderAsHTML32(true);
-           	crystalReportViewer.processHttpRequest(request, response, getServlet().getServletContext(), null);
-           	reportSource.dispose();
-            crystalReportViewer.dispose(); 
-*/
+			Hashtable actionParam = new Hashtable();
+			actionParam.put("method", "showReport");
+			request.setAttribute("actionParam",actionParam);
 		} catch(Exception ex2) {
          System.out.println(ex2.toString());
       }    
    }
-    //View catched version of the report for crystal export/print
 
    private String getDateSql(String startPeriod, String endPeriod)
    {

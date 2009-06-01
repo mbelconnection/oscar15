@@ -33,8 +33,8 @@
 	}
 	function submitForm(methodVal) {
 		trimInputBox();
-		if(!isDateValid) return;
-		if(methodVal=="save" && !validateSave()) return;
+		if(!isDateValid) return false;
+		if(methodVal=="save" && !validateSave()) return false;
 		if(methodVal=="save" && noChanges())
 		{
 			alert("There are no changes detected to save");
@@ -47,36 +47,45 @@
 	}
 	
 	function validateStateLength(){
-	    var fieldValue = document.consentDetailForm.elements["consentValue.statePurpose"].value;
+		var str1="Stated Purpose - this field should not over 512 characters!" ;
+		var str2="Stated Purpose - the field is mandatory!" ;
+	    var fieldValue = document.consentDetailForm.elements["consentValue.statePurpose"].value.trim();
 		if (fieldValue.length>512)
 		{
-			alert("State Purpose input length is over 512!!!");
-			return false;
-		}else{
-		 	return true;
+			return str1;
+		}else if (fieldValue.length == 0){
+		 	return str2;
 		}	
+		else
+		{
+			return "";
+		}
 	}
 	function validateNotesLength(){
-	    var fieldValue = document.consentDetailForm.elements["consentValue.notes"].value;
+		var str1="Consent to the release and exchange of the following information: this field is mandatory!" ;
+		var str2="Consent to the release and exchange of the following information: this field length should not over 512 characters!" ;
+	    var fieldValue = document.consentDetailForm.elements["consentValue.notes"].value.trim();
 		if (fieldValue.length>512)
 		{
-			return false;
-		}else{
-		 	return true;
+			return str2;
+		}else if (fieldValue.length == 0){
+		 	return str1;
 		}	
+		else
+		{
+			return "";
+		}
 	}
 	function validateSave(){
-	
-		var str1="State Purpose input length is over 512!!!" ;
-		var str2="Notes input length is over 512!!!" ;
-		
-		if (!validateStateLength()){
-			alert(str1); return false;
+		var s = validateNotesLength();
+		if (s.length > 0){
+			alert(s); return false;
 		}
-		if (!validateNotesLength()){
-			alert(str2); return false;
+		s = validateStateLength();
+		if (s.length > 0){
+			alert(s); return false;
 		}
-			return true;
+		return true;
 	}
 	
 	function signSignature(){
@@ -177,7 +186,7 @@
 								<tr>
 									<td colspan="2">I,	
 									<c:out value="${client.firstName}" /> &nbsp;<c:out value="${client.lastName}" />&nbsp;
-									  , consent to the release and exchange of the following information:
+									  , consent to the release and exchange of the following information*:
 									</td>
 								</tr>
 								<tr>
@@ -198,7 +207,7 @@
 								<tr><td style="width:20%">Contact Person Name:</td><td><html-el:text style="width: 60%" property="consentValue.contactName" maxlength="60" /></td></tr>
 								<tr><td style="width:20%">Contact Person Title:</td><td><html-el:text style="width: 60%" property="consentValue.contactTitle" maxlength="30" /></td></tr>
 								<tr><td style="width:20%">Contact Person Phone:</td><td><html-el:text style="width: 60%" property="consentValue.contactPhone" maxlength="25" /></td></tr>							
-								<tr><td colspan="2">For the following Stated purpose(s):</td></tr>
+								<tr><td colspan="2">For the following Stated purpose(s)*:</td></tr>
 								<tr><td colspan="2"><html-el:textarea property="consentValue.statePurpose" cols="105"  rows="3" /></td></tr>
 						  </table>
 						 <table  class="simple" cellspacing="2" cellpadding="3">

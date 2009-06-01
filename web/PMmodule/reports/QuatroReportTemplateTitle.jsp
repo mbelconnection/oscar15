@@ -23,7 +23,18 @@ function showNew() {
 
 function setupOpt(){
   var selectedRadio=document.getElementById('<c:out value="${quatroReportSaveTemplateForm.optSaveAsSelected}" />');
-  if(selectedRadio!=null) selectedRadio.checked=true;
+  if(selectedRadio!=null) {
+  	selectedRadio.checked=true;
+  	if (selectedRadio.id == "optNew") {
+	  	var optOldB =document.getElementById('optOld');
+	  	optOldB.disabled = true;
+	    quatroReportSaveTemplateForm.txtTitle.disabled = true;
+  	}
+  	else
+  	{
+	   quatroReportSaveTemplateForm.txtDescription.disabled = true;
+  	}
+  }
 }
 </script>
 </head>

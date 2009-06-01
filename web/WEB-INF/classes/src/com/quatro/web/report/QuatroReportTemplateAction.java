@@ -15,12 +15,12 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.PMmodule.web.BaseAction;
+import org.oscarehr.PMmodule.web.admin.BaseAdminAction;
 
+import com.quatro.common.KeyConstants;
 import com.quatro.model.DataViews;
 import com.quatro.model.ReportTempValue;
 import com.quatro.model.ReportValue;
@@ -29,7 +29,7 @@ import com.quatro.service.QuatroReportManager;
 import com.quatro.util.Utility;
 
 
-public class QuatroReportTemplateAction extends BaseAction {
+public class QuatroReportTemplateAction extends BaseAdminAction {
 
 	private QuatroReportManager reportManager;
 	public void setQuatroReportManager(QuatroReportManager reportManager) {
@@ -43,8 +43,18 @@ public class QuatroReportTemplateAction extends BaseAction {
 
 		String param=(String)request.getSession(true).getAttribute(DataViews.REPORTTPL);
 		if(param!=null){
-		   if(Integer.parseInt(param)>0){
-			 myForm.setOptSaveAsSelected("optOld");
+		   int templateNo = Integer.parseInt(param);
+		   if(templateNo>0){
+			 String right = super.getAccess(request, KeyConstants.FUN_REPORTS,KeyConstants.ACCESS_WRITE);
+			 String userId = (String)request.getSession(true).getAttribute("user");
+			 boolean xRights = "x".equals(right);
+			 ReportTempValue temp = reportManager.GetReportTemplate(templateNo, userId,xRights);
+ 
+			 if (temp != null && (temp.getLoginId().equals(userId) || xRights))
+				 myForm.setOptSaveAsSelected("optOld");
+			 else
+				 myForm.setOptSaveAsSelected("optNew");
+
 			 String param2=(String)request.getParameter("postback");
 			 if(param2==null){  // not postback
 			   ReportValue rptValue = (ReportValue)request.getSession(true).getAttribute(DataViews.REPORT);

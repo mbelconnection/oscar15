@@ -187,7 +187,7 @@ Source:web/PMmodule/Admin/ProgramEdit/general.jsp
 					<td><html:text property="program.phone" size="25" maxlength="22"/></td>
 				</tr>
 				<tr class="b">
-					<td width="20%">Heath Information Custodian</td>
+					<td width="20%">Health Information Custodian</td>
 					<td><html:checkbox property="program.hic" /></td>
 				</tr>
 				

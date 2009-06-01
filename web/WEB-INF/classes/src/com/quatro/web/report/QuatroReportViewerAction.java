@@ -28,19 +28,23 @@ import org.oscarehr.PMmodule.web.BaseAction;
 
 import com.crystaldecisions.report.htmlrender.DatabaseLogonRenderer;
 import com.crystaldecisions.report.web.viewer.CrystalReportViewer;
+import com.crystaldecisions.reports.reportengineinterface.JPEReportSourceFactory;
 import com.crystaldecisions.reports.sdk.ReportClientDocument;
 import com.crystaldecisions.sdk.occa.report.data.ConnectionInfo;
 import com.crystaldecisions.sdk.occa.report.data.ConnectionInfos;
 import com.crystaldecisions.sdk.occa.report.data.Fields;
 import com.crystaldecisions.sdk.occa.report.data.IConnectionInfo;
+import com.crystaldecisions.sdk.occa.report.data.IDatabase;
 import com.crystaldecisions.sdk.occa.report.data.ITable;
 import com.crystaldecisions.sdk.occa.report.data.ParameterField;
 import com.crystaldecisions.sdk.occa.report.data.ParameterFieldDiscreteValue;
 import com.crystaldecisions.sdk.occa.report.data.Values;
 import com.crystaldecisions.sdk.occa.report.exportoptions.ReportExportFormat;
+import com.crystaldecisions.sdk.occa.report.lib.PropertyBag;
 import com.crystaldecisions.sdk.occa.report.lib.ReportSDKException;
 import com.crystaldecisions.sdk.occa.report.lib.ReportSDKExceptionBase;
 import com.crystaldecisions.sdk.occa.report.reportsource.IReportSource;
+import com.crystaldecisions.sdk.occa.report.reportsource.IReportSourceFactory2;
 import com.quatro.common.KeyConstants;
 import com.crystaldecisions.report.web.viewer.ReportExportControl;
 import com.crystaldecisions.sdk.occa.report.exportoptions.ExportOptions;
@@ -71,15 +75,10 @@ public class QuatroReportViewerAction extends BaseAction {
 	{
 		QuatroReportRunnerForm myForm = (QuatroReportRunnerForm)form;
 		try {
-//			if (request.getParameter("ini") != null)
-//			{
-				Refresh(myForm, request, response);
-//			}
-//			else
-//			{
-//				ViewReport(request, response);
-//			}
-			return null;
+			String fwd =  Refresh(myForm, request, response);
+			if ("".equals(fwd)) return null;
+			else
+				return mapping.findForward("view");
 		}
 		catch(Exception e)
 		{
@@ -91,7 +90,7 @@ public class QuatroReportViewerAction extends BaseAction {
 		}
 	}
 	
-	protected void Refresh(QuatroReportRunnerForm myForm, HttpServletRequest request, HttpServletResponse response) throws Exception
+	protected String Refresh(QuatroReportRunnerForm myForm, HttpServletRequest request, HttpServletResponse response) throws Exception
 	{
 	    _rptValue = (ReportValue)request.getSession(true).getAttribute(DataViews.REPORT);
 	    _rptOption = (ReportOptionValue)request.getSession(true).getAttribute(DataViews.REPORT_OPTION);
@@ -183,8 +182,8 @@ public class QuatroReportViewerAction extends BaseAction {
 			criteria = appendCriteria("AND",orgs, criteria);
 			
 			// 7. Paint the report
-			PaintReport(request, response, criteria, orgDis, criteriaDis);
-
+			return PaintReport(request, response, criteria, orgDis, criteriaDis);
+			
 	    }catch(Exception e){
 	    	throw e;
 		}
@@ -449,7 +448,8 @@ public class QuatroReportViewerAction extends BaseAction {
         return sDt;
     }
     
-    private void PaintReport(HttpServletRequest request, HttpServletResponse response, String criteriaString,  String orgDis, String criteriaDis){
+    private String PaintReport(HttpServletRequest request, HttpServletResponse response, String criteriaString,  String orgDis, String criteriaDis)
+    throws Exception {
 	    	String loginId = (String)request.getSession(true).getAttribute("user");
 	    	String sessionId = request.getSession(true).getId();
 	    	
@@ -472,38 +472,31 @@ public class QuatroReportViewerAction extends BaseAction {
 	       	  	System.out.print(ex.getMessage());
 	       	  	System.out.print("loading rpt from " + path1);
 	       	  	System.out.print("download rpt to " + path);
+	       	    throw ex;
 		    }
 	      
 		    try{
+//		    	viewRpt(path1,request, response);
+	    	
 		    	reportDocument1.open(path1,0);
 		    	if (!Utility.IsEmpty(criteriaString))  reportDocument1.setRecordSelectionFormula(criteriaString);
 		    	if (_rptValue.getExportFormatType()==ReportExportFormat._PDF)
 		    	{
 		    		ExportReport(request, response, reportDocument1,orgDis, criteriaDis);
+		    		return "";
 		    	}
 		    	else
 		    	{
 		    		ViewReport(request, response, reportDocument1,orgDis, criteriaDis);
+		    		return "view";
 		    	}
 	      }catch(ReportSDKException ex){
-		      ;
+		      throw new Exception(ex.getMessage());
 	      }
 	      catch(ReportSDKExceptionBase ex)
 	      {
-	    	 ; 
-	      }
-	      finally 
-	      {
-	    	  try {
-	    	    	if(reportDocument1 != null)
-	    	    		reportDocument1.close(); 
-	    	    		reportDocument1 =  null;
-	    	  }
-	    	  catch(Exception ex)
-	    	  {
-	    		  ;
-	    	  }
-	      }
+	    	  throw new Exception(ex);
+	      }	
    }
         
 	private Fields getParameterFieldValues(ReportClientDocument reportDocument1, String loginId,String sessionId, String orgDis, String criteriaDis) throws ReportSDKException
@@ -593,14 +586,92 @@ public class QuatroReportViewerAction extends BaseAction {
     	  exportControl.processHttpRequest(request, response, getServlet().getServletContext(), null);
     	  exportControl.dispose(); 
 	}
-    private void ViewReport(HttpServletRequest request, HttpServletResponse response, ReportClientDocument reportDocument1, String orgDis, String criteriaDis){
-    	CrystalReportViewer crystalReportViewer = new CrystalReportViewer();
+	private void viewRpt(String reportName,HttpServletRequest request,HttpServletResponse response)
+	{
+
+		try {
+
+			IReportSourceFactory2 rptsrcFac=new JPEReportSourceFactory();
+			IReportSource reportSource=(IReportSource)rptsrcFac.createReportSource(reportName,request.getLocale());
+		
+			ConnectionInfos connInfos = new ConnectionInfos();
+			IConnectionInfo connInfo1 = new ConnectionInfo();
+			String DBUSERNAME = "quatroshelter";
+			String DBPASSWORD = "qsreader";
+		
+			String SERVER = "192.168.0.207";
+			String CONNECTION_URL = "jdbc:oracle:thin:@192.168.0.207:1521:smisCL";
+			String DATABASE_CLASSNAME = "oracle.jdbc.OracleDriver";
+			String DATABASE_DLL = "crdb_jdbc.dll";
+			String JDBC_CONNECTION_STRING = "Use JDBC=b(true);Connection URL=s(jdbc:oracle:thin:@192.168.0.207:smisCL);" +
+			"Database Class Name=s(oracle.jdbc.driver.OracleDriver);Server=s(QGSHELTER) ;" +
+			"User ID=;Password=;Database=s(dbname);Trusted_Connection=b(false) ;" +
+			"JDBC Connection String=s(!oracle.jdbc.OracleDriver!jdbc:oracle:thin:@192.168.0.207:1521:smisCL;" +
+			"DatabaseName={database};user={userid};password={password}!)";
+		
+		
+			PropertyBag propertyBag = new PropertyBag();
+			propertyBag.put("Use JDBC", "true");
+//			propertyBag.put("Connection URL", CONNECTION_URL);
+//			propertyBag.put("Database Class Name", DATABASE_CLASSNAME);
+//			propertyBag.put("Database DLL", DATABASE_DLL);
+			propertyBag.put("Server Type", "JDBC (JNDI)");
+//			propertyBag.put("Server", SERVER);
+			propertyBag.put("Trusted_Connection", "False");
+//			propertyBag.put("JDBC Connection String", JDBC_CONNECTION_STRING);
+//			propertyBag.put("JDBC Connection JNDI Connection Name", "java:QGSHELTER");
+		
+			connInfo1.setUserName(DBUSERNAME);
+			connInfo1.setPassword(DBPASSWORD);
+		
+		
+			connInfo1.setAttributes(propertyBag);
+			connInfos.add(connInfo1);
+
+			/*		
+			Fields fields=new Fields();
+			ParameterField paramfield=new ParameterField();
+			Values vals=new Values();
+			ParameterFieldDiscreteValue val=new ParameterFieldDiscreteValue();
+			paramfield.setName("pop");
+			val.setValue(pop);
+			vals.add(val);
+			paramfield.setCurrentValues(vals);
+			fields.add(paramfield);
+*/		
+			CrystalReportViewer viewer=new CrystalReportViewer();
+			viewer.refresh();
+			viewer.setDatabaseLogonInfos(connInfos);
+			viewer.setReportSource(reportSource);
+//			viewer.setParameterFields(fields);
+			viewer.setReuseParameterValuesOnRefresh(true);
+			viewer.setHasPageBottomToolbar(false);
+			viewer.setHasLogo(false);
+			viewer.setOwnPage(true);
+			viewer.setOwnForm(true);
+			viewer.setEnableLogonPrompt(false);
+			viewer.processHttpRequest(request, response, getServlet().getServletContext(), null);
+			viewer.getReportSource().dispose();
+			viewer.dispose();
+		
+		}
+		catch(ReportSDKExceptionBase e) {
+			System.out.print("ERROR in the connection"+e);
+	
+		}
+
+	}
+    private void ViewReport(HttpServletRequest request, HttpServletResponse response, ReportClientDocument reportDocument1, String orgDis, String criteriaDis)
+    throws Exception {
+//    	CrystalReportViewer crystalReportViewer = new CrystalReportViewer();
         try{
 			String loginId = (String)request.getSession(true).getAttribute("user");
 			String sessionId = request.getSession(true).getId();
         	Fields fields = getParameterFieldValues(reportDocument1, loginId, sessionId, orgDis, criteriaDis);
 			IReportSource reportSource = reportDocument1.getReportSource();
-//			request.getSession().setAttribute("reportSource", reportSource);
+			request.getSession().setAttribute("reportSource", reportSource);
+			request.getSession().setAttribute("paramFields", fields);
+/*
 //			request.getSession().setAttribute("reportParameterFields", fields);
 //			ConnectionInfos cifs = new ConnectionInfos();
 			
@@ -626,41 +697,14 @@ public class QuatroReportViewerAction extends BaseAction {
 	    	crystalReportViewer.setEnableParameterPrompt(true);
 //    	  crystalReportViewer.setRenderAsHTML32(true);
            	crystalReportViewer.processHttpRequest(request, response, getServlet().getServletContext(), null);
+           	reportSource.dispose();
             crystalReportViewer.dispose(); 
-      }catch(Exception ex2) {
+*/
+		} catch(Exception ex2) {
          System.out.println(ex2.toString());
       }    
    }
     //View catched version of the report for crystal export/print
-   private void ViewReport(HttpServletRequest request, HttpServletResponse response){
-    	CrystalReportViewer crystalReportViewer = new CrystalReportViewer();
-        try{
-//			String loginId = (String)request.getSession(true).getAttribute("user");
-//			String sessionId = request.getSession(true).getId();
-        	IReportSource reportSource = (IReportSource)request.getSession().getAttribute("reportSource");
-        	Fields fields = (Fields)request.getSession().getAttribute("reportParameterFields");
-        	crystalReportViewer.setReportSource(reportSource);
-	    	crystalReportViewer.setParameterFields(fields);
-        	crystalReportViewer.setOwnPage(true);
-	    	crystalReportViewer.setOwnForm(true);
-	    	crystalReportViewer.setDisplayGroupTree(true);
-	    	crystalReportViewer.setGroupTreeWidth(50);
-	    	crystalReportViewer.setHasExportButton(true);
-	    	crystalReportViewer.setHasSearchButton(false);
-	    	crystalReportViewer.setHasPageBottomToolbar(false);
-	    	crystalReportViewer.setHasRefreshButton(true);
-	    	crystalReportViewer.setHasToggleGroupTreeButton(false);
-	    	crystalReportViewer.setHasZoomFactorList(true);
-	    	crystalReportViewer.setHasLogo(false);
-	    	crystalReportViewer.setEnableDrillDown(true);
-	    	crystalReportViewer.setEnableParameterPrompt(true);
-//    	  crystalReportViewer.setRenderAsHTML32(true);
-           	crystalReportViewer.processHttpRequest(request, response, getServlet().getServletContext(), null);
-            crystalReportViewer.dispose(); 
-      }catch(Exception ex2) {
-         System.out.println(ex2.toString());
-      }    
-   }
 
    private String getDateSql(String startPeriod, String endPeriod)
    {

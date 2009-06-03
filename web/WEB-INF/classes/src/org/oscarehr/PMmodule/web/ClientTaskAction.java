@@ -137,6 +137,8 @@ public class ClientTaskAction extends BaseClientAction{
              }
           }
         }
+        
+        request.setAttribute("client", tickler.getDemographic());
         request.setAttribute("comments", msg);
         if("Completed".equals(tickler.getStatus())) request.setAttribute("isReadOnly", Boolean.TRUE);
         return mapping.findForward("mytask_edit");

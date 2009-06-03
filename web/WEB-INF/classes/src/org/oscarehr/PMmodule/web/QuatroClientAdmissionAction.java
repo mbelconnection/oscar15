@@ -774,8 +774,8 @@ public class QuatroClientAdmissionAction  extends BaseClientAction {
        }else{
     	  //check bedId selected for single person intake admission
     	  //admitted family member may not necessary be assigned bed on this page.  
-    	  if((!clientForm.getFamilyIntakeType().equals("Y") && !"Y".equals(overrideYN)) ||
-    		 (clientForm.getFamilyIntakeType().equals("Y") && !"Y".equals(overrideYN) && admission.getId().intValue()>0)){
+    	  if((!clientForm.getFamilyIntakeType().equals("Y")) ||
+    		 (clientForm.getFamilyIntakeType().equals("Y")&& admission.getId().intValue()>0)){
     		 Room roomToSave = roomManager.getRoom(rdm.getId().getRoomId());  
     		 if(roomToSave.getAssignedBed().intValue()==1){
     	       Integer bedId = rdm.getBedId();
@@ -801,10 +801,10 @@ public class QuatroClientAdmissionAction  extends BaseClientAction {
     	    		   }
     	    	   }
     	       }
-    		 }else{
+    		 }else{  //!roomToSave.getAssignedBed().intValue()==1
                 Integer roomOccupancy = new Integer(roomDemographicManager.getRoomOccupanyByRoom(roomToSave.getId()));
                 RoomDemographic rdm_currentinDB = roomDemographicManager.getRoomDemographicByDemographic(clientId);
-                if(rdm_currentinDB!=null && (!rdm_currentinDB.getId().getRoomId().equals(roomToSave.getId()) && roomToSave.getCapacity().intValue()-roomOccupancy.intValue()<1)){
+                if(!"Y".equals(overrideYN) &&  rdm_currentinDB!=null && (!rdm_currentinDB.getId().getRoomId().equals(roomToSave.getId()) && roomToSave.getCapacity().intValue()-roomOccupancy.intValue()<1)){
      	          messages.add(ActionMessages.GLOBAL_MESSAGE,new ActionMessage("error.intake.admission.not_available_room_space",
            			     request.getContextPath()));
                   isError = true;

@@ -224,11 +224,13 @@ public abstract class BaseAction extends DispatchAction {
 		try {
 			ActionForward fwd =  super.dispatchMethod(mapping, form, request, response, name);
 			if(fwd != null && fwd.getName() != null && fwd.getName().equals("failure")) throw new NoAccessException();
-	        response.setHeader("Expires", "-1");
-	        response.setHeader("Cache-Control",
-	        	"must-revalidate, post-check=0, pre-check=0");
-	        response.setHeader("Pragma", "no-cache");
-	        
+	        if (fwd != null) {
+				response.setHeader("Expires", "-1");
+	//	        response.setHeader("Expires", "Jan 1, 1900 12:00 AM");
+		        response.setHeader("Cache-Control",
+		        	"no-cache, nostore, must-revalidate, post-check=0, pre-check=0");
+		        response.setHeader("Pragma", "no-cache");
+	        }
 	        if (request.getAttribute("notoken") == null)
 	        {
 	        	request.getSession().setAttribute("token", request.getSession().getId() + String.valueOf(Calendar.getInstance().getTimeInMillis()));

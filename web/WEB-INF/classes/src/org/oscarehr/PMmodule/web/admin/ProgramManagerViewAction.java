@@ -134,7 +134,7 @@ public class ProgramManagerViewAction extends BaseProgramAction {
     	Integer refId =programQueue.getReferralId();
         Integer fromIntakeId = clientManager.getClientReferral(refId.toString()).getFromIntakeId();
         if(fromIntakeId!=null && fromIntakeId.intValue()>0){
-	        Integer headIntakeId = intakeManager.getIntakeFamilyHeadId(fromIntakeId.toString());
+	        Integer headIntakeId = intakeManager.getIntakeFamilyHeadId(fromIntakeId);
 	        Integer intakeHeadClientId = new Integer(0);
 			if (headIntakeId.intValue() != 0) {
 				intakeHeadClientId = intakeManager.getQuatroIntakeDBByIntakeId(headIntakeId).getClientId();				
@@ -651,7 +651,7 @@ public class ProgramManagerViewAction extends BaseProgramAction {
                 admission.setLastUpdateDate(Calendar.getInstance());
                 admission.setProviderNo(providerNo);
                 
-                List lstFamily = intakeManager.getClientFamilyByIntakeId(admission.getIntakeId().toString());
+                List lstFamily = intakeManager.getClientFamilyByIntakeId(admission.getIntakeId());
                 
 //                admissionManager.dischargeAdmission(admission, communityProgramCode.equals(""), lstFamily);
                 admissionManager.dischargeAdmission(admission, false, lstFamily);
@@ -783,8 +783,8 @@ public class ProgramManagerViewAction extends BaseProgramAction {
 	   		    messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("bed.check.swap_room_success"));
 	   		    saveMessages(request, messages);   		           
 	   		}else if(!isIndependent1  &&  !isIndependent2){
-	  			List f1 =intakeManager.getClientFamilyByIntakeId(admObj1.getIntakeId().toString());
-	   			List f2 =intakeManager.getClientFamilyByIntakeId(admObj2.getIntakeId().toString());
+	  			List f1 =intakeManager.getClientFamilyByIntakeId(admObj1.getIntakeId());
+	   			List f2 =intakeManager.getClientFamilyByIntakeId(admObj2.getIntakeId());
 	   			
 	   			if (f1.size() != f2.size()) {
 	   				// checking the room capacity before continue

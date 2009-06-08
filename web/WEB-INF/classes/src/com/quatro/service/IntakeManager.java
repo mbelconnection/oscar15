@@ -58,6 +58,7 @@ import com.quatro.common.KeyConstants;
 import com.quatro.model.LookupCodeValue;
 import org.oscarehr.PMmodule.model.Program;
 import org.oscarehr.PMmodule.service.RoomManager;
+import org.oscarehr.PMmodule.web.QuatroFamilyIntakeAction;
 import org.oscarehr.PMmodule.web.formbean.ClientForm;
 
 import org.oscarehr.PMmodule.dao.ClientReferralDAO;
@@ -93,14 +94,14 @@ public class IntakeManager {
 	public void setClientHistoryDao(ClientHistoryDao historyDao) {
 		this.historyDao = historyDao;
 	}
-	public List getAdmittedIntakeIds(Integer clientId){
-		return intakeDao.getAdmittedIntakeIds(clientId);
+	public List getActiveIntakeIds(Integer clientId){
+		return intakeDao.getActiveIntakeIds(clientId);
 	}
 
     public void removeInactiveIntakeFamilyMember(String sDependentInakeIds, Integer intakeHeadId){
     	if(sDependentInakeIds==null) return;
     	
-    	List lst = intakeDao.getClientIntakeFamily(intakeHeadId.toString());
+    	List lst = intakeDao.getClientIntakeFamily(intakeHeadId);
     	if(lst.size()==0) return;
     	
     	StringBuffer sb = new StringBuffer();
@@ -200,12 +201,18 @@ public class IntakeManager {
     	return intakeDao.getActiveIntakeByProgramByClient(clientId, programId);
 	}
 		
-	public Integer getIntakeFamilyHeadId(String intakeId){
+	public Integer getIntakeFamilyHeadId(Integer intakeId){
 		return intakeDao.getIntakeFamilyHeadId(intakeId);
 	}
+	public QuatroIntakeFamily getIntakeFamilyRecord(Integer intakeId) {
+        if (intakeId == null || intakeId.intValue() == 0) {
+            return null;
+        }
+        return intakeDao.getIntakeFamilyRecord(intakeId);
+	}
 	
-	public List getClientFamilyByIntakeId(String intakeId) {
-        if (intakeId == null || intakeId.length() == 0) {
+	public List getClientFamilyByIntakeId(Integer intakeId) {
+        if (intakeId == null || intakeId.intValue() == 0) {
             return new ArrayList();
         }
         

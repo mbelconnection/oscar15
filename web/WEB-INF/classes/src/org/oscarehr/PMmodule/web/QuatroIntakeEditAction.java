@@ -180,8 +180,7 @@ public class QuatroIntakeEditAction extends BaseClientAction {
 			if (intakeId.intValue() == 0)
 				super.getAccess(request, KeyConstants.FUN_CLIENTINTAKE, null,
 						KeyConstants.ACCESS_WRITE);
-			Integer intakeHeadId = intakeManager.getIntakeFamilyHeadId(intakeId
-					.toString());
+			Integer intakeHeadId = intakeManager.getIntakeFamilyHeadId(intakeId);
 			if (intakeHeadId.intValue() != 0) {
 				request.setAttribute("intakeHeadId", intakeHeadId); // intakeHeadId:
 				// for intake
@@ -967,7 +966,7 @@ public class QuatroIntakeEditAction extends BaseClientAction {
 		Integer fromIntakeId = refer.getFromIntakeId();
 		
 		List dependents = intakeManager
-				.getClientFamilyByIntakeId(fromIntakeId.toString());
+				.getClientFamilyByIntakeId(fromIntakeId);
 		if(dependents.size()<= 1 ) return isWarning; //the family include family head (this client)
 
 		Integer programId = headIntakeTo.getProgramId();

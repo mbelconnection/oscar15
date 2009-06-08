@@ -4,11 +4,9 @@
 	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
 <hibernate-mapping package="org.oscarehr.PMmodule.model">
 	<class name="QuatroIntakeFamily" table="intake_family">
-		<composite-id>
-			<key-property name="intakeHeadId" column="intake_head_id" />
-			<key-property name="intakeId" column="intake_id" />
-	    </composite-id>
-
+		<id name="intakeId" column="intake_id">
+	    </id>
+		<property name="intakeHeadId" column="intake_head_id" />
 		<property name="memberStatus" column="member_status" />
 		<property name="relationship" column="relationship" />
 		<property name="joinFamilyDate" column="join_family_date" type="calendar" />
@@ -17,5 +15,6 @@
 		<property name="lastUpdateUser" column="lastupdateuser"></property>
 		<property name="clientId" formula="(select b.client_id from intake b where b.intake_id=intake_id)"> </property>
 		<property name="admissionId" formula="(select c.am_id from Admission c where c.intake_id=intake_id)"> </property>
+		<property name="programId" formula="(select b.program_id from intake b where b.intake_id=intake_id)"> </property>
 	</class>
 </hibernate-mapping>

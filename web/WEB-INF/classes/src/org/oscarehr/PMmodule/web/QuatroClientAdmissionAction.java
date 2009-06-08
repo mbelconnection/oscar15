@@ -127,14 +127,14 @@ public class QuatroClientAdmissionAction  extends BaseClientAction {
 
        programId=intakeDB.getProgramId();
 
-       List clientFamily = intakeManager.getClientFamilyByIntakeId(intakeId.toString());
+       List clientFamily = intakeManager.getClientFamilyByIntakeId(intakeId);
        if(clientFamily.size()<=1){
          clientForm.setFamilyIntakeType("N");
      	 request.setAttribute("isFamilyMember", "N");
          clientForm.setIntakeClientNum(new Integer(1));
        }else{
          clientForm.setFamilyIntakeType("Y");
-         Integer IntakeFamilyHeadId = intakeManager.getIntakeFamilyHeadId(intakeId.toString());
+         Integer IntakeFamilyHeadId = intakeManager.getIntakeFamilyHeadId(intakeId);
          if(IntakeFamilyHeadId==null || IntakeFamilyHeadId.equals(intakeId)){
         	request.setAttribute("isFamilyMember", "N");
          }else{
@@ -401,7 +401,7 @@ public class QuatroClientAdmissionAction  extends BaseClientAction {
        clientForm.setFamilyIntakeType("N");
 
        String isFamilyMember;
-       List clientFamily = intakeManager.getClientFamilyByIntakeId(intakeId.toString());
+       List clientFamily = intakeManager.getClientFamilyByIntakeId(intakeId);
        if(clientFamily.size()<=1){
          clientForm.setFamilyIntakeType("N");
          FamilyIntakeType="N";
@@ -411,7 +411,7 @@ public class QuatroClientAdmissionAction  extends BaseClientAction {
        }else{
          clientForm.setFamilyIntakeType("Y");
          FamilyIntakeType="Y";
-         Integer IntakeFamilyHeadId = intakeManager.getIntakeFamilyHeadId(intakeId.toString());
+         Integer IntakeFamilyHeadId = intakeManager.getIntakeFamilyHeadId(intakeId);
          if(IntakeFamilyHeadId==null || IntakeFamilyHeadId.equals(intakeId)){
             isFamilyMember="N";
 //        	request.setAttribute("isFamilyMember", "N");
@@ -705,7 +705,7 @@ public class QuatroClientAdmissionAction  extends BaseClientAction {
        if(admissionId.intValue()==0)
        {
     	 if(clientForm.getFamilyIntakeType().equals("Y")){  
-    	   lstFamily = intakeManager.getClientFamilyByIntakeId(admission.getIntakeId().toString());
+    	   lstFamily = intakeManager.getClientFamilyByIntakeId(admission.getIntakeId());
     	   if(lstFamily.size() > 0) headClientId = ((QuatroIntakeFamily)lstFamily.get(lstFamily.size()-1)).getClientId();
            for(int i=0;i<lstFamily.size();i++){
              QuatroIntakeFamily qif = (QuatroIntakeFamily)lstFamily.get(i);
@@ -896,7 +896,7 @@ public class QuatroClientAdmissionAction  extends BaseClientAction {
     		     admObj.setProviderNo(providerNo);
     		     admObj.setDischargeReason(KeyConstants.AUTO_DISCHARGE_REASON);
     		     admObj.setDischargeNotes("auto-discharge for other intake admission");
-              	 List lstFam = intakeManager.getClientFamilyByIntakeId(admObj.getIntakeId().toString());
+              	 List lstFam = intakeManager.getClientFamilyByIntakeId(admObj.getIntakeId());
               	 boolean isReferral=false;
               	 admissionManager.dischargeAdmission(admObj, isReferral, lstFam);
                }
@@ -915,7 +915,7 @@ public class QuatroClientAdmissionAction  extends BaseClientAction {
     		     admObj.setDischargeReason(KeyConstants.AUTO_DISCHARGE_REASON);
     		     admObj.setDischargeNotes("auto-discharge for other intake admission");
             	 
-              	 List lstFam = intakeManager.getClientFamilyByIntakeId(admObj.getIntakeId().toString());
+              	 List lstFam = intakeManager.getClientFamilyByIntakeId(admObj.getIntakeId());
               	 boolean isReferral=false;
               	 admissionManager.dischargeAdmission(admObj, isReferral, lstFam);
               	 // programManager.sendTask(admObj.getProgramId(), admObj.getClientId(), "Client was auto-discharged");
@@ -969,7 +969,7 @@ public class QuatroClientAdmissionAction  extends BaseClientAction {
    }
    private boolean isClientAdmittedAsDependent(Admission admObj, Integer headClientId)
    {
-	   List lstFamily = intakeManager.getClientFamilyByIntakeId(admObj.getIntakeId().toString());
+	   List lstFamily = intakeManager.getClientFamilyByIntakeId(admObj.getIntakeId());
 	   boolean isDependent=false;
 	   if(lstFamily.size() > 0) {
 		   boolean isHead = false;

@@ -495,31 +495,37 @@ public class IntakeDao extends HibernateDaoSupport {
 		return results;
 	}
 	
-	public Integer getIntakeFamilyHeadId(String intakeId){
+	public Integer getIntakeFamilyHeadId(Integer intakeId){
 		String sSQL="select a.intakeHeadId from QuatroIntakeFamily a " +
 		  " WHERE a.intakeId = ?";
 
-		List lst = getHibernateTemplate().find(sSQL, new Object[] {Integer.valueOf(intakeId)});
+		List lst = getHibernateTemplate().find(sSQL, new Object[] {intakeId});
 		if(lst.size()==0) return new Integer(0);
 		
 		return (Integer)lst.get(0);
 	}
 
-	public List getAdmittedIntakeIds(Integer clientId){
+	public List getActiveIntakeIds(Integer clientId){
 		String sSQL="select a.id from QuatroIntakeHeader a WHERE a.clientId = ? and " +
-		"(a.intakeStatus='" + KeyConstants.INTAKE_STATUS_ADMITTED + "')" ;
-//		" or a.intakeStatus='" + KeyConstants.INTAKE_STATUS_ADMITTED + "')";
+		"(a.intakeStatus='" + KeyConstants.INTAKE_STATUS_ADMITTED + "' " +
+		" or a.intakeStatus='" + KeyConstants.INTAKE_STATUS_ACTIVE + "')";
 
 
 		List lst = getHibernateTemplate().find(sSQL, new Object[] {clientId});
 		return lst;
 	}
 
-	public List getClientIntakeFamily(String intakeId){
+	public QuatroIntakeFamily getIntakeFamilyRecord(Integer intakeId){
+		QuatroIntakeFamily f = (QuatroIntakeFamily) getHibernateTemplate().get(QuatroIntakeFamily.class, intakeId); // .find(sSQL2, new Object[] {intakeHeadId});
+		return  f;
+	}
+
+	
+	public List getClientIntakeFamily(Integer intakeId){
 		String sSQL="select a.intakeHeadId from QuatroIntakeFamily a " +
 		  " WHERE a.intakeId = ?";
 
-		List lst = getHibernateTemplate().find(sSQL, new Object[] {Integer.valueOf(intakeId)});
+		List lst = getHibernateTemplate().find(sSQL, new Object[] {intakeId});
 		if(lst.size()==0) return new ArrayList();
 		
 		Integer intakeHeadId = (Integer)lst.get(0);
@@ -719,7 +725,7 @@ public class IntakeDao extends HibernateDaoSupport {
 
 		  //update family member programId if family head programId changed
           if(bFamilyMember && intakeHeadId.intValue()==intakeDb.getId().intValue() && programChangedForFamily==true){
-        	  List  family = getClientIntakeFamily(intakeDb.getId().toString());
+        	  List  family = getClientIntakeFamily(intakeDb.getId());
         	  for(int i=1;i<family.size();i++){
         		QuatroIntakeFamily qif = (QuatroIntakeFamily)family.get(i);
         		updateFamilyProgramId(qif.getIntakeId(), intakeDb.getProgramId());

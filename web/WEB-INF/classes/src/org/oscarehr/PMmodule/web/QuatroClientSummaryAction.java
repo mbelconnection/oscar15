@@ -96,7 +96,7 @@ public class QuatroClientSummaryAction extends BaseClientAction {
 	       this.setAccessType(request);
 		   super.setScreenMode(request, KeyConstants.TAB_CLIENT_SUMMARY);
 	       
-    	   List lst2 = intakeManager.getClientFamilyByIntakeId( super.getCurrentIntakeId(request).toString());
+    	   List lst2 = intakeManager.getClientFamilyByIntakeId( super.getCurrentIntakeId(request));
     	   request.setAttribute("family", lst2);
 
 	    	   // only allow bed/service programs show up.(not external program)

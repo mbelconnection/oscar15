@@ -20,6 +20,7 @@ public class QuatroIntakeFamily implements Serializable{
     private Integer intakeHeadId;
     private Integer intakeId;
     private Integer admissionId;
+    private Integer programId;
     private String memberStatus;
     private String relationship;
     private String relationshipDesc;
@@ -279,6 +280,14 @@ public class QuatroIntakeFamily implements Serializable{
 
 	public void setAdmissionId(Integer admissionId) {
 		this.admissionId = admissionId;
+	}
+
+	public Integer getProgramId() {
+		return programId;
+	}
+
+	public void setProgramId(Integer programId) {
+		this.programId = programId;
 	}
 
 }

@@ -105,7 +105,7 @@ public class ProgramQueueManagerImpl implements ProgramQueueManager
 		if(KeyConstants.AUTOMATIC.equals(referral.getAutoManual())){
 	        QuatroIntakeDB intakeDB =  intakeDao.getQuatroIntakeDBByReferralId(referral.getId());
 	        if(intakeDB!=null){
-	          List familyList = intakeDao.getClientIntakeFamily(intakeDB.getId().toString());
+	          List familyList = intakeDao.getClientIntakeFamily(intakeDB.getId());
 			  if(familyList.size()==0){
 	            dao.setIntakeRejectStatus(intakeDB.getId().toString());
 			  }else{

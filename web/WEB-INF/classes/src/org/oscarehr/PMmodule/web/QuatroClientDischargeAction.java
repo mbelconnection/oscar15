@@ -78,7 +78,7 @@ public class QuatroClientDischargeAction  extends BaseClientAction {
 		   admObj.setLastUpdateDate(new GregorianCalendar());
 		   admObj.setProviderNo(providerNo);
 		   super.getAccess(request, KeyConstants.FUN_CLIENTDISCHARGE, admObj.getProgramId(), KeyConstants.ACCESS_WRITE);
-		   List lstFamily = intakeManager.getClientFamilyByIntakeId(admObj.getIntakeId().toString());
+		   List lstFamily = intakeManager.getClientFamilyByIntakeId(admObj.getIntakeId());
 		   boolean isReferral=false;
 		   admissionManager.dischargeAdmission(admObj, isReferral, lstFamily);
 	/*	   
@@ -184,7 +184,7 @@ public class QuatroClientDischargeAction  extends BaseClientAction {
     	 Admission admission = (Admission)lstDischarge.get(i);
 	     admission.setFamilyMember(false);	 
     	 if(admission.getAdmissionStatus().equals(KeyConstants.INTAKE_STATUS_ADMITTED)){
-    	   Integer intakeFamilyHeadId = intakeManager.getIntakeFamilyHeadId(admission.getIntakeId().toString());
+    	   Integer intakeFamilyHeadId = intakeManager.getIntakeFamilyHeadId(admission.getIntakeId());
     	   if(intakeFamilyHeadId.intValue()!=0){  //family
     		 if(!intakeFamilyHeadId.equals(admission.getIntakeId())) admission.setFamilyMember(true);
     	   }

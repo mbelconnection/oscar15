@@ -80,7 +80,7 @@ public class AdmissionManager {
 
     	if(bFamily)
     	{
-    	   List lstFamily= intakeDao.getClientIntakeFamily(intakeId.toString());
+    	   List lstFamily= intakeDao.getClientIntakeFamily(intakeId);
            for(int i=0;i<lstFamily.size();i++){
              QuatroIntakeFamily qif = (QuatroIntakeFamily)lstFamily.get(i);
              RoomDemographic rdm2 = new RoomDemographic();
@@ -156,7 +156,7 @@ public class AdmissionManager {
     	Calendar cal = Calendar.getInstance();
 
     	if(bFamilyHead){
-     	   List lstFamily= intakeDao.getClientIntakeFamily(admission.getIntakeId().toString());
+     	   List lstFamily= intakeDao.getClientIntakeFamily(admission.getIntakeId());
            for(int i=0;i<lstFamily.size();i++){
              QuatroIntakeFamily qif = (QuatroIntakeFamily)lstFamily.get(i);
              RoomDemographic rdm2 = new RoomDemographic();

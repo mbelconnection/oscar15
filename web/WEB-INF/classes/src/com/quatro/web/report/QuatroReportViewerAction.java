@@ -317,7 +317,7 @@ public class QuatroReportViewerAction extends BaseAction {
                 {
                 	try {
                     criteriaSQL += GetValueListCrystal(val, FieldType);
-                    r_criteriaDis += "(" + val + ")";
+                    r_criteriaDis += "(" + valDesc + ")";
                 	}
                 	catch(Exception ex)
                 	{
@@ -327,7 +327,7 @@ public class QuatroReportViewerAction extends BaseAction {
                 else if ("LIKE".equals(op))
                 {
                     criteriaSQL += "\"*" + val + "*\"";
-                    r_criteriaDis +=  val;
+                    r_criteriaDis +=  valDesc;
                 }
                 else
                 {
@@ -363,7 +363,7 @@ public class QuatroReportViewerAction extends BaseAction {
                     else
                     {
                         criteriaSQL += val;
-                        r_criteriaDis += val;
+                        r_criteriaDis += valDesc;
                     }
                 }
                 r_criteriaDis += "\n";      // end of line

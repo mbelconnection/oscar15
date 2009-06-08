@@ -197,13 +197,14 @@ public class RoomManager {
 			if(isClientAssignedToThisRoom(Integer.valueOf(demographicNo), roomDemographicNumbers)){
 			  availableRooms.add(rooms[i]);
 			}else{
-			  //if client not in this room, only display room if capacity is not reached(AssignedBed=N)
-			  //or have available bed(AssignedBed=Y)
+			  //if client not in this room, only display room only if the room have available bed(AssignedBed=Y)
 			  if(rooms[i].getAssignedBed().intValue()==1){
 				Bed[] availableBeds = bedManager.getAvailableBedsByRoom(rooms[i].getId());
 				if(availableBeds.length>0) availableRooms.add(rooms[i]);
 			  }else{
-				if(rooms[i].getCapacity().intValue() -  totalClientsInRoom > 0){
+				if (roomDemograhics.size() == 0) {
+				//v1.3 if a no-bed room is occupied, no body can take it regardless capacity.
+//				if(rooms[i].getCapacity().intValue() -  totalClientsInRoom > 0){
 				  availableRooms.add(rooms[i]);
 				}
 			  }

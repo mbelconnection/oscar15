@@ -57,7 +57,7 @@ public class IntakeDao extends HibernateDaoSupport {
 		{
 			sSQL += " where s.active = 1 ";
 		}
-		sSQL += " order by s.prefix, s.displayOrder";
+		sSQL += " order by s.prefix, s.displayOrder,s.description";
 		return getHibernateTemplate().find(sSQL);
 	}
 

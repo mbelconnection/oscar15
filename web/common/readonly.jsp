@@ -13,12 +13,15 @@
            if (elem) {
                if (elem.type == 'hidden' ) continue;
                if(elem.title == 'filter' ) continue;
-               if (elem.type == 'checkbox'||elem.type=='option'|| elem.type == 'radio'||elem.type=='textarea'|| elem.type=='button' || elem.type=='select-one') {
+               if (elem.type == 'checkbox'||elem.type=='option'|| elem.type == 'radio'|| elem.type=='button' || elem.type=='select-one') {
                   elem.disabled = true;
                }  
                else
                {
                   elem.readOnly=true;
+                  if (elem.style) {
+                  	elem.style.color = "graytext";
+                  }
                }
            }
         }

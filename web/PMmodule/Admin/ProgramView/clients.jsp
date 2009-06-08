@@ -230,7 +230,7 @@
 				<!-- display:column property="admissionNote" sortable="true" title="Admission Notes" /-->
 				<display:column property="room" sortable="true" title="Room" />
 				<display:column property="bed" sortable="true" title="Bed" />
-				<display:column title="Late Pass">		
+				<display:column title="Overnight Pass">		
 					<logic:equal name="clientInfo" property="isLatepassHolder" value="0"> 
 						<input type="checkbox" disabled="disabled">
 					</logic:equal>

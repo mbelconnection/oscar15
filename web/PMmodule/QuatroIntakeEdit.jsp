@@ -535,7 +535,7 @@ function confirmActive()
 								value="1" /></td>
 						</tr>
 						<tr>
-							<td>Native Reserve Card</td>
+							<td>Native Status Card</td>
 							<td><html-el:text property="intake.nativeReserveNo"
 								size="20" maxlength="20" /></td>
 							<td>On file?</td>
@@ -782,7 +782,7 @@ function confirmActive()
 					<table width="100%" class="simple">
 						<tr>
 							<td width="15%">Comments/Details</td>
-							<td width="85%"><html-el:textarea property="intake.comments"
+							<td width="85%"><html-el:textarea property="intake.comments" 
 								rows="6" style="width:90%" /></td>
 						</tr>
 					</table>

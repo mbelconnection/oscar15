@@ -33,6 +33,7 @@ function checkSignLinkVisibility(objSel) {
 function submitForm(methodVal) {
 	if(!isDateValid) return;
 	trimInputBox();
+	/*
 	var ovPassStartDateTxt = document.getElementsByName("admission.ovPassStartDateTxt")[0];
 	var ovPassEndDateTxt = document.getElementsByName("admission.ovPassEndDateTxt")[0];
 	if(ovPassEndDateTxt.value!='')
@@ -53,6 +54,7 @@ function submitForm(methodVal) {
 	    }
 	  }
 	}
+	*/
 	if(methodVal=="save" && noChanges()){
 		alert("There are no changes detected to save");
 	}else{   

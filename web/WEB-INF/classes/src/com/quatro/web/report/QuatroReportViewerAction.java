@@ -27,16 +27,14 @@ import org.apache.struts.action.ActionMessage;
 import org.oscarehr.PMmodule.web.BaseAction;
 
 
-import com.crystaldecisions.report.htmlrender.DatabaseLogonRenderer;
 import com.crystaldecisions.report.web.viewer.CrystalReportViewer;
 import com.crystaldecisions.reports.reportengineinterface.JPEReportSourceFactory;
-import com.crystaldecisions.reports.sdk.ReportClientDocument;
+import com.crystaldecisions.sdk.occa.report.application.ReportClientDocument;
+import com.crystaldecisions.sdk.occa.report.application.DataDefController;
 import com.crystaldecisions.sdk.occa.report.data.ConnectionInfo;
 import com.crystaldecisions.sdk.occa.report.data.ConnectionInfos;
 import com.crystaldecisions.sdk.occa.report.data.Fields;
 import com.crystaldecisions.sdk.occa.report.data.IConnectionInfo;
-import com.crystaldecisions.sdk.occa.report.data.IDatabase;
-import com.crystaldecisions.sdk.occa.report.data.ITable;
 import com.crystaldecisions.sdk.occa.report.data.ParameterField;
 import com.crystaldecisions.sdk.occa.report.data.ParameterFieldDiscreteValue;
 import com.crystaldecisions.sdk.occa.report.data.Values;
@@ -503,7 +501,7 @@ public class QuatroReportViewerAction extends BaseAction {
 	private Fields getParameterFieldValues(ReportClientDocument reportDocument1, String loginId,String sessionId, String orgDis, String criteriaDis) throws ReportSDKException
 	{
 	      String userName = _rptValue.getAuthor();
-	  	  com.crystaldecisions.reports.sdk.DataDefController ddf = reportDocument1.getDataDefController();
+	  	  DataDefController ddf = reportDocument1.getDataDefController();
 	  	  
 		  Fields fields = ddf.getDataDefinition().getParameterFields();
 		  Fields fields2 = new Fields();

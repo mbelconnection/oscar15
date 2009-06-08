@@ -312,6 +312,16 @@ function checkExistClients(i){
        <font color="#ff0000"> This client is the head of the family.<br></font>
        </td></tr>
        </logic:equal>
+       <logic:equal name="dependent" property="statusMsg" value="+">
+       <tr><td></td><td colspan="6">
+       <font color="#ff0000"> This client is admitted in another family.<br></font>
+       </td></tr>
+       </logic:equal>
+       <logic:equal name="dependent" property="statusMsg" value="-">
+       <tr><td></td><td colspan="6">
+       <font color="#ff0000"> This client is an active member of another family in this program.<br></font>
+       </td></tr>
+       </logic:equal>
     </logic:notEqual>
 </logic:empty>
 <logic:notEmpty name="dependent" property="admissionId">

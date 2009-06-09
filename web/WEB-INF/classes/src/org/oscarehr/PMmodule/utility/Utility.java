@@ -768,6 +768,7 @@ public static String calcAgeAtDate(Date DOB,Date pointInTime)    {
         ageInYears = curYear - birthYear - 1;
         result = String.valueOf(ageInYears);// + " " + ResourceBundle.getBundle("oscarResources").getString("global.years");
     }
+    /*
     if (ageInYears < 2)        {
         int yearDiff = curYear - birthYear;
         int ageInDays;
@@ -786,6 +787,7 @@ public static String calcAgeAtDate(Date DOB,Date pointInTime)    {
             result = String.valueOf(ageInDays);//  + " " + ResourceBundle.getBundle("oscarResources").getString("global.days");
         }
     }
+    */
     return result;
 }
         

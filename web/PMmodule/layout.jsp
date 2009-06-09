@@ -16,9 +16,13 @@
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="request"/>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html:html locale="true">
+
+
+
+
 	<head>
 		
-		<title>QuatroShelter</title>
+		<title>QuatroShelter V1.4</title>
 		<link rel="shortcut icon" type="image/x-icon" href='<html:rewrite page="/images/favicon.ico" />'/>
 	    <link rel="stylesheet" type="text/css" href='<html:rewrite page="/css/tigris.css" />' />
 	    <link rel="stylesheet" type="text/css" href='<html:rewrite page="/css/displaytag.css" />' />

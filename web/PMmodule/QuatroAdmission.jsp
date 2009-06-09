@@ -15,6 +15,7 @@
 <html:hidden property="familyIntakeType"/>
 <html:hidden property="intakeClientNum"/>
 <html:hidden property="admission.id"/>
+<html:hidden property="admission.issuedBy"/>
 <html:hidden property="admission.programId"/>
 <html:hidden property="admission.admissionDateTxt"/>
 <html:hidden property="admission.admissionStatus"/>

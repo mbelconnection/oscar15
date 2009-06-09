@@ -47,11 +47,13 @@ function submitForm(methodVal)
 	var famAdmitted = document.getElementsByName("isFamilyAdmitted")[0];
 	if (famAdmitted.value=="true" && methodVal == "add") 
 	{
+	/*
 		var roomFull = document.getElementsByName("isRoomFull")[0];
 		if (roomFull.value=="true") {
 			alert("Room capacity reached");
 			return;
 		}
+	*/
 		ans = confirm("New members added to the family will be discharged from other shelters if they are currently admitted to those shelters. To proceed, click OK.");	
 		if (!ans) return;
 	}

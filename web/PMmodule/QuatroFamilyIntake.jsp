@@ -314,12 +314,12 @@ function checkExistClients(i){
        </logic:equal>
        <logic:equal name="dependent" property="statusMsg" value="+">
        <tr><td></td><td colspan="6">
-       <font color="#ff0000"> This client is admitted in another family.<br></font>
+       <font color="#ff0000"> This client is active in another family.<br></font>
        </td></tr>
        </logic:equal>
        <logic:equal name="dependent" property="statusMsg" value="-">
        <tr><td></td><td colspan="6">
-       <font color="#ff0000"> This client is an active member of another family in this program.<br></font>
+       <font color="#ff0000"> This client is a member of another family in this program.<br></font>
        </td></tr>
        </logic:equal>
     </logic:notEqual>

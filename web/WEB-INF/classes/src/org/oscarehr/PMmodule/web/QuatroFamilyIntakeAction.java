@@ -268,21 +268,23 @@ public class QuatroFamilyIntakeAction extends BaseClientAction {
 	       super.getAccess(request, KeyConstants.FUN_CLIENTINTAKE, programId, KeyConstants.ACCESS_WRITE);
 	       
 		   String newClientConfirmed= request.getParameter("newClientConfirmed");
-		   boolean bDupliDemographicNoApproved=true;
 	       List dependents = buildDependentList(request, clientForm);       
 	       boolean familyAdmitted = Boolean.valueOf(request.getParameter("isFamilyAdmitted")).booleanValue();
-	       bDupliDemographicNoApproved = checkDuplicateDemographicNo(dependents,newClientConfirmed, headClientId, headIntakeId,programId,familyAdmitted);	       
-	       if(!bDupliDemographicNoApproved){
-			 messages.add(ActionMessages.GLOBAL_MESSAGE,new ActionMessage("error.intake.family.duplicated_client",
+	       String retMsg = checkDuplicateDemographicNo(dependents,newClientConfirmed, headClientId, headIntakeId,programId);	       
+	       if(!"".equals(retMsg)){
+	    	   if ("?".equals(retMsg))
+	    	   {
+	    		   request.setAttribute("bDupliDemographicNoApproved", "false");
+	    	   }else{
+	    		   request.setAttribute("bDupliDemographicNoApproved", "true");
+	    	   }
+	    	   messages.add(ActionMessages.GLOBAL_MESSAGE,new ActionMessage("error.intake.family.duplicated_client",
 	          			request.getContextPath()));
-		     saveMessages(request,messages);
-	         isError = true;
-	         clientForm.setDependents(dependents);
-	         clientForm.setDependentsSize(dependents.size());
-	         request.setAttribute("bDupliDemographicNoApproved", "false");
-	         return mapping.findForward("edit");
-	       }else{
-	         request.setAttribute("bDupliDemographicNoApproved", "true");
+	    	   saveMessages(request,messages);
+	    	   isError = true;
+	    	   clientForm.setDependents(dependents);
+	    	   clientForm.setDependentsSize(dependents.size());
+	    	   return mapping.findForward("edit");
 	       }
 	       
 	       //check if family members existing in other families.
@@ -540,10 +542,11 @@ public class QuatroFamilyIntakeAction extends BaseClientAction {
  	   }
        return dependents;
    }
-   private boolean checkDuplicateDemographicNo(List dependents,String newClientConfirmed, Integer headClientId, Integer headIntakeId, Integer programId, boolean familyAdmitted)
+   private String checkDuplicateDemographicNo(List dependents,String newClientConfirmed, Integer headClientId, Integer headIntakeId, Integer programId)
    {
 	   //check duplicate client for intakeId==0 && clientId==0 
 	   boolean bDupliDemographicNoApproved = true;
+	   String retMsg = "";
 	   Hashtable hs = new Hashtable(); 
 	   for(int i=0; i<dependents.size(); i++) {
 	 		QuatroIntakeFamily obj = (QuatroIntakeFamily) dependents.get(i);	
@@ -559,6 +562,7 @@ public class QuatroFamilyIntakeAction extends BaseClientAction {
 		             obj.setDuplicateClient("Y");
 			         obj.setNewClientChecked("N");
 					 obj.setStatusMsg("?");
+					 if (retMsg.equals("")) retMsg = "?";
 		             bDupliDemographicNoApproved=false;
 		           }else{
 			         obj.setDuplicateClient("N");
@@ -574,9 +578,15 @@ public class QuatroFamilyIntakeAction extends BaseClientAction {
 	 				obj.setDuplicateClient("Y");
 	 				obj.setNewClientChecked("N");
 	 				if (!hs.containsKey(obj.getClientId().toString()))
+	 				{
 	 					obj.setStatusMsg("x");
+	 					retMsg = "x";
+	 				}
 	 				else
+	 				{
 	 					obj.setStatusMsg("*");
+	 					retMsg = "*";
+	 				}
 		            bDupliDemographicNoApproved=false;
 	 			}
 	 			else
@@ -592,23 +602,16 @@ public class QuatroFamilyIntakeAction extends BaseClientAction {
 		      	    		QuatroIntakeFamily f = intakeManager.getIntakeFamilyRecord((Integer)intakeIds.get(k));
 		      	    		if (f != null && !f.getIntakeHeadId().equals(headIntakeId)) {
 		      	    			if (f.getAdmissionId() != null && f.getAdmissionId().intValue() > 0) {
-		      	    				if (familyAdmitted)
-		      	    				{
-		      	    					obj.setStatusMsg("+");   // + admiited in another family, error because cannot do auto discharge
-				      	    			bDupliDemographicNoApproved = false;
-		      	    				}
-		      	    				else if (f.getProgramId().equals(programId))
-		      	    				{
-		      	    					obj.setStatusMsg("-");   // - active in the same program 
-				      	    			bDupliDemographicNoApproved = false;
-		      	    				}
+		      	    				obj.setStatusMsg("+");   // + admiited in another family, error because cannot do auto discharge
+		    	 					retMsg = "+";
+		      	    				bDupliDemographicNoApproved = false;
 		      	    			}
 		      	    			else
 		      	    			{
 		      	    				if (f.getProgramId().equals(programId)) {
 				      	    			bDupliDemographicNoApproved = false;
-				      	    			obj.setStatusMsg("-");  // intaked into another family in the same program
-				      	    			bDupliDemographicNoApproved = false;
+				      	    			obj.setStatusMsg("-");  // intaked into another family in the same program, this is the same rule as single
+					 					retMsg = "-";
 		      	    				}
 		      	    			}
 		      	    			
@@ -619,7 +622,7 @@ public class QuatroFamilyIntakeAction extends BaseClientAction {
 	 			
 	 		}
 	   	}
-	   return bDupliDemographicNoApproved;
+	   return retMsg;
    	}
    
    private void setEditFields(HttpServletRequest request, QuatroClientFamilyIntakeForm clientForm) throws NoAccessException

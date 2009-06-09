@@ -39,6 +39,7 @@
 		<property name="nextKinCountry" column="nextkin_country" />
 		<property name="ovPassStartDate" column="ovpass_startdate" />
 		<property name="ovPassEndDate" column="ovpass_enddate" />
+		<property name="issuedBy" column="issuedby" insert="false" update="false"></property>
 		<property name="notSignReason" column="notsign_reason" />
 		<property name="lastUpdateDate" column="lastupdate_date"></property>
 		<property name="programName" type="string" lazy="true"

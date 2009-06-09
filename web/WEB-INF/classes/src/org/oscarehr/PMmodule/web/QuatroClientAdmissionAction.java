@@ -385,7 +385,7 @@ public class QuatroClientAdmissionAction  extends BaseClientAction {
           clientForm.setAdmission(admission);
        }else{
           admissionId = clientForm.getAdmission().getId();
-          admission = clientForm.getAdmission();
+          admission = admissionManager.getAdmissionByAdmissionId(admissionId);
        }
 
        Integer programId = admission.getProgramId();
@@ -599,7 +599,7 @@ public class QuatroClientAdmissionAction  extends BaseClientAction {
 	   List notSignReasonList = lookupManager.LoadCodeList("RNS",!readOnly, null, null);
        clientForm.setNotSignReasonList(notSignReasonList);
        
-       if(admission.getProviderNo()!=null) request.setAttribute("issuedBy",providerManager.getProvider(admission.getProviderNo()).getFormattedName());
+       if(admission.getIssuedBy()!=null) request.setAttribute("issuedBy",providerManager.getProvider(admission.getIssuedBy()).getFormattedName());
        if("discharged".equalsIgnoreCase(admission.getAdmissionStatus())){
     	   request.setAttribute("isReadOnly", "true");
        }

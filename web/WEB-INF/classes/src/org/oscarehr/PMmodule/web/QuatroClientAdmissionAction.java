@@ -385,7 +385,14 @@ public class QuatroClientAdmissionAction  extends BaseClientAction {
           clientForm.setAdmission(admission);
        }else{
           admissionId = clientForm.getAdmission().getId();
-          admission = admissionManager.getAdmissionByAdmissionId(admissionId);
+          if ("Y".equals(request.getAttribute("saved"))) 
+          {
+        	  admission = admissionManager.getAdmissionByAdmissionId(admissionId);
+          }
+          else
+          {
+        	  admission = clientForm.getAdmission();
+          }
        }
 
        Integer programId = admission.getProgramId();
@@ -599,7 +606,7 @@ public class QuatroClientAdmissionAction  extends BaseClientAction {
 	   List notSignReasonList = lookupManager.LoadCodeList("RNS",!readOnly, null, null);
        clientForm.setNotSignReasonList(notSignReasonList);
        
-       if(admission.getIssuedBy()!=null) request.setAttribute("issuedBy",providerManager.getProvider(admission.getIssuedBy()).getFormattedName());
+       if(admission.getIssuedBy()!=null && !"".equals(admission.getIssuedBy())) request.setAttribute("issuedBy",providerManager.getProvider(admission.getIssuedBy()).getFormattedName());
        if("discharged".equalsIgnoreCase(admission.getAdmissionStatus())){
     	   request.setAttribute("isReadOnly", "true");
        }
@@ -960,6 +967,7 @@ public class QuatroClientAdmissionAction  extends BaseClientAction {
        Integer shelterId=(Integer)request.getSession().getAttribute(KeyConstants.SESSION_KEY_SHELTERID);
        super.cacheClient(request, clientId);
        super.setCurrentIntakeProgramId(request, clientId, shelterId, providerNo);
+       request.setAttribute("saved", "Y");
        return update(mapping, form, request, response);
 	   }
 	   catch(NoAccessException e)

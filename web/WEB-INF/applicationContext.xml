@@ -15,6 +15,7 @@
 	</bean>
 	
     <!-- data source configuration -->
+    <!-- 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close" lazy-init="default"
           autowire="default" dependency-check="default">
         <property name="driverClassName" value="${db_driver}"/>
@@ -28,9 +29,12 @@
         <property name="testOnBorrow" value="true" />
 		<property name="validationQuery" value="${db_validationQuery}" />
 		<property name="maxWait" value="4000" />
-
     </bean>
-
+	 -->
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="resourceRef" value="false" />
+		<property name="jndiName" value="${jndiName}" />
+	</bean>	 
     <!-- hibernate session factory -->
     <bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean" lazy-init="default"
           autowire="default" dependency-check="default">

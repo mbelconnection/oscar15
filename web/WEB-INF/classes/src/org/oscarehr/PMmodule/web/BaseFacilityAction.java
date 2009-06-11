@@ -24,7 +24,6 @@ package org.oscarehr.PMmodule.web;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.tools.ant.taskdefs.condition.IsFileSelected;
 import org.oscarehr.PMmodule.web.admin.BaseAdminAction;
 
 import com.quatro.common.KeyConstants;

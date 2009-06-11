@@ -271,24 +271,17 @@ public abstract class BaseAction extends DispatchAction {
         if(programId == null) programId = new Integer(0);
         String clientId = "";
         try {
-        	clientId = ((Integer) request.getSession().getAttribute("clientId")).toString();
+        	clientId =  ((Integer) request.getSession().getAttribute("clientId")).toString();
         }
         catch(Exception ex)
         {
         	;
         }
+        if(clientId == null || "".equals(clientId)) clientId = "0"; 
         Integer shelterId = (Integer) session.getAttribute(KeyConstants.SESSION_KEY_SHELTERID);
         if(shelterId == null) shelterId = new Integer(0);
         String sessionId = request.getSession().getId();
         String queryString = request.getRequestURI()  + '?' + request.getQueryString();
-        if(clientId == null) 
-        {
-            HashMap actionParam = (HashMap) request.getAttribute("actionParam");
-            if(actionParam!=null){
-            	Object ccId = actionParam.get("clientId");
-            	if (ccId != null) clientId =  ccId.toString(); 
-            }
-        }
         oscar.log.LogAction.logAccess(providerNo, className, method, programId.toString(), shelterId.toString(), clientId, queryString, sessionId, timeSpan, ExName, result);
 	}
 }

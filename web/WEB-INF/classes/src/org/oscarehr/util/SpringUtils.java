@@ -13,7 +13,8 @@ package org.oscarehr.util;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.apache.commons.dbcp.BasicDataSource;
+//import org.apache.commons.dbcp.BasicDataSource;
+import javax.sql.DataSource;
 import org.springframework.beans.factory.BeanFactory;
 
 /**
@@ -35,7 +36,8 @@ public class SpringUtils {
      * This method should only be called by DbConnectionFilter, everyone else should use that to obtain a connection. 
      */
     public static Connection getDbConnection() throws SQLException {
-        BasicDataSource ds = (BasicDataSource)SpringUtils.getBean("dataSource");
+//        BasicDataSource ds = (BasicDataSource)SpringUtils.getBean("dataSource");
+    	DataSource ds = (DataSource)SpringUtils.getBean("dataSource");
         Connection c=ds.getConnection();
         c.setAutoCommit(true);
         return(c);

@@ -139,128 +139,35 @@ public class ProgramOccupancyDao extends HibernateDaoSupport {
 	}
 
 	public void deactiveServiceProgram() {
-		Calendar now = Calendar.getInstance();
 		Integer maxAge = Integer.valueOf(oscar.OscarProperties.getInstance().getProperty("DEACTIVE_INTAKE_HOURS"));
-		List result = null;
-		String sql = "from QuatroIntakeHeader where nerverExpiry=0 and endDate is null and programType='Service'";
-		result = getHibernateTemplate().find(sql, null);
-		Object[] params;
-		int i = 0;
-		sql = "update  QuatroIntakeHeader set endDate=? where id in ( ";
-		String ids = "";
-		if (result.size() > 0) {
-			Iterator items = result.iterator();
-			while (items.hasNext()) {
-				QuatroIntakeHeader qih = (QuatroIntakeHeader) items.next();
+		
+		String sql = "update  QuatroIntakeHeader set endDate=sysdate, intakeStatus='inactive' where " +
+			  "intakeStatus='active' and nerverExpiry=0 and (endDate is null or endDate < sysdate) " +
+			  "and createdOn < sysdate -  " + maxAge.toString() + "/24" +    //oracle date diff in days 
+ 			  "and programId in (select id from Program where type='Service') ";
 
-				if (MyDateFormat.getHoursDiff(qih.getCreatedOn(), now) > maxAge.intValue()) {
-					i++;
-					ids += qih.getId().toString() + ",";
-				}
-			}
-			if (ids.endsWith(","))
-				ids = ids.substring(0, ids.length() - 1);
-			if (i > 0) {
-				sql += ids + ")";
-				params = new Object[] { Calendar.getInstance() };
-				getHibernateTemplate().bulkUpdate(sql, params);
-			}
-
-		}
+		getHibernateTemplate().bulkUpdate(sql);
 	}
 
 	public void deactiveBedProgram() {
-		Calendar now = Calendar.getInstance();
+
 		Integer maxAge = Integer.valueOf(oscar.OscarProperties.getInstance().getProperty("DEACTIVE_INTAKE_HOURS"));
-		List result = null;
-		String sql = "from QuatroIntakeHeader where intakeStatus='active' and programType='Bed'";
-		result = getHibernateTemplate().find(sql, null);
-		// Calendar now =Calendar.getInstance();
-		Object[] params;
-
-		String qIds = "";
-		String rIds = "";
-		String iIds = "";
-		String qDel = "delete  ProgramQueue where Id in ( ";
-		String refUpdSql = "update ClientReferral set status='rejected',autoManual='A',rejectionReason='50',"
-				+ "completionNotes='Intake Automated reject process',completionDate=?  where id in (";
-		String intakeUpdSql = "update  QuatroIntakeHeader set intakeStatus='rejected' where id in ( ";
-		sql = "from ProgramQueue where fromIntakeId in (";
-		if (result.size() > 0) {
-			Iterator items = result.iterator();
-			while (items.hasNext()) {
-				QuatroIntakeHeader qih = (QuatroIntakeHeader) items.next();
-				if (MyDateFormat.getHoursDiff(qih.getCreatedOn(), now) > maxAge.intValue()) {
-					iIds += qih.getId().toString() + ",";
-				}
-			}
-			if (iIds.endsWith(","))
-				iIds = iIds.substring(0, iIds.length() - 1);
-			if (!Utility.IsEmpty(iIds)) {
-				intakeUpdSql += iIds + ")";
-
-				getHibernateTemplate().bulkUpdate(intakeUpdSql, null);
-
-				sql += iIds + ")";
-
-				result = getHibernateTemplate().find(sql, null);
-
-				if (result.size() > 0) {
-					Iterator item = result.iterator();
-					while (item.hasNext()) {
-						ProgramQueue queue = (ProgramQueue) item.next();
-						if (queue != null) {
-							qIds += queue.getId().toString() + ",";
-							rIds += queue.getReferralId().toString() + ",";
-						}
-					}
-				}
-			}
-
-			if (qIds.endsWith(","))
-				qIds = qIds.substring(0, qIds.length() - 1);
-			if (!Utility.IsEmpty(qIds)) {
-				qDel += qIds + ")";
-				getHibernateTemplate().bulkUpdate(qDel, null);
-			}
-			if (rIds.endsWith(","))
-				rIds = rIds.substring(0, rIds.length() - 1);
-			if (!Utility.IsEmpty(rIds)) {
-				refUpdSql += rIds + ")";
-				params = new Object[] { Calendar.getInstance() };
-				getHibernateTemplate().bulkUpdate(refUpdSql, params);
-			}
-
-		}
-
-		sql = "from ClientReferral where status='active'";
-		result = getHibernateTemplate().find(sql, null);
-		String delQsql = "delete  ProgramQueue where referralId in ( ";
-		String updCRSql = "update ClientReferral set status='rejected',autoManual='A',rejectionReason='50',"
-				+ "completionNotes='Intake Automated reject process',completionDate=? where id in(";
-		qIds = "";
-		rIds = "";
-		if (result.size() > 0) {
-			Iterator items = result.iterator();
-			while (items.hasNext()) {
-
-				ClientReferral cr = (ClientReferral) items.next();
-				if (MyDateFormat.getHoursDiff(cr.getReferralDate(), now) > maxAge.intValue()) {
-					qIds += cr.getId().toString() + ",";
-
-				}
-			}
-			if (qIds.endsWith(","))
-				qIds = qIds.substring(0, qIds.length() - 1);
-			if (!Utility.IsEmpty(qIds)) {
-				delQsql += qIds + ")";
-				getHibernateTemplate().bulkUpdate(delQsql, null);
-				updCRSql += qIds + ")";
-				params = new Object[] { Calendar.getInstance() };
-				getHibernateTemplate().bulkUpdate(updCRSql, params);
-			}
-		}
-
+		String intakeIdSql = " (select h.id from QuatroIntakeHeader h where h.intakeStatus='active' " +
+				             " and h.createdOn < sysdate -  " + maxAge.toString() + "/24" +    //oracle date diff in days 
+				             " and h.programId in (select p.id from Program p where p.type='Bed')" +
+				             ")";
+		
+		String qDel = "delete  ProgramQueue where ReferralId in (" 
+					+ "	select id from ClientReferral where autoManual='A' and fromIntakeId in  " + intakeIdSql
+					+ ")";
+		String refUpdSql = "update ClientReferral set status='rejected',rejectionReason='50',"
+						   + "completionNotes='Intake Automated reject process',completionDate=sysdate  " 
+						   + " where autoManual='A' and fromIntakeId in " + intakeIdSql;
+		String intakeUpdSql = "update  QuatroIntakeHeader set intakeStatus='rejected' " 
+							+ " where id in " + intakeIdSql;
+		getHibernateTemplate().bulkUpdate(qDel);
+		getHibernateTemplate().bulkUpdate(refUpdSql);
+		getHibernateTemplate().bulkUpdate(intakeUpdSql);
 	}
 
 	public void setProgramQueueDao(ProgramQueueDao programQueueDao) {

@@ -157,7 +157,7 @@ if (props.getProperty("logintitle", "").equals("")) {
 					<td align="center">
 						<object
 							classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93"
-								width="500" height="150" 
+								width="500" height="150"
 								codebase="http://java.sun.com/products/plugin/autodl/jinstall-1_5_0-windows-i586.cab#Version=1,5,0,0">
 								    <PARAM NAME="code" VALUE="com.quatro.model.security.QSSecurity.class">
 								    <PARAM NAME="archive" VALUE="QSSecurity.jar, registry.jar">

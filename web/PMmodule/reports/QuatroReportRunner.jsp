@@ -33,7 +33,7 @@ showReport('<c:out value="${ctx}"/>/QuatroReport/ReportViewer.do?ini=1');
 <logic:equal name="quatroReportRunnerForm" property="strClientJavascript" value="saveTemplate">
 <script language="JavaScript">
 saveTemplate('<c:out value="${ctx}"/>/QuatroReport/SaveReportTemplate.do');
-
+var criChanged = false;
 function saveTemplate(url){
   top.childWin = window.open(url,"_blank","toolbar=yes,menubar= yes,resizable=yes,scrollbars=yes,status=yes,width=650,height=400,top=50, left=50");
   top.childWin.focus();
@@ -41,7 +41,10 @@ function saveTemplate(url){
 </script>
 </logic:equal>
 <script language="JavaScript">
+var criChanged = false;
 function CriteriaChanged(obj){
+	if(criChanged) return false;
+	criChanged = true;
   	document.forms[0].method.value=obj.name;
   	document.forms[0].onCriteriaChange.value=obj.name;
 	getOrgList();

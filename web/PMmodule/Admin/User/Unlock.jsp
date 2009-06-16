@@ -24,13 +24,15 @@
 <!--
 function submitForm(func){
 	var userIds = getUserIds();
-	if (userIds == "") {
-			alert("Please select the user you want to unlock");
+	var siteIds = getSiteIds();
+	if (userIds == "" && siteIds == "") {
+			alert("Please select users/accounts you want to unlock/overwrite synchronize");
 	}
 	else
 	{
 		document.forms[0].method.value=func;
 		document.forms[0].userId.value=userIds;
+		document.forms[0].siteId.value=siteIds;
 		document.forms[0].submit();
 	}
 }
@@ -39,7 +41,7 @@ function getUserIds()
 		var userIds  = "";
 		var elements = document.userUnlockForm.elements;
 		for(var i=0;i<elements.length;i++) {
-			if(elements[i].type == 'checkbox' && elements[i].name.substring(0,8) == 'checked_') {
+			if(elements[i].type == 'checkbox' && elements[i].name.substring(0,9) == 'checkedU_') {
 				if(elements[i].checked == true) {
 					var idx =elements[i].name.indexOf("_");
 					var userId = elements[i].name.substring(idx+1);
@@ -49,10 +51,26 @@ function getUserIds()
 		}		
 		return userIds; 
 }
+function getSiteIds()
+{
+		var siteIds  = "";
+		var elements = document.userUnlockForm.elements;
+		for(var i=0;i<elements.length;i++) {
+			if(elements[i].type == 'checkbox' && elements[i].name.substring(0,9) == 'checkedS_') {
+				if(elements[i].checked == true) {
+					var idx =elements[i].name.indexOf("_");
+					var siteId = elements[i].name.substring(idx+1);
+					siteIds +="," + siteId;
+				}
+			}
+		}		
+		return siteIds; 
+}
 //-->
 </script>
 <html:form action="/PMmodule/Admin/UnlockAccount.do"  method="post">
 <html:hidden property="userId" styleId="userId"/>
+<html:hidden property="siteId" styleId="siteId"/>
 <input type="hidden" id="method" name="method" />
 <table width="100%" height="100%" cellpadding="0px" cellspacing="0px">
 	<tr>
@@ -71,30 +89,27 @@ function getUserIds()
 			</security:oscarSec>
 		</td>
 	</tr>
-    <tr>
-      <td align="left">
-        &nbsp;
-      </td>
-    </tr>
+	<logic:messagesPresent		message="true">
 	<tr>
 		<td align="left" class="message">
 			<br />
-			<logic:messagesPresent
-			message="true">
 			<html:messages id="message" message="true" bundle="pmm">
 				<c:out escapeXml="false" value="${message}" />
 			</html:messages>
-		</logic:messagesPresent>
 		<br /></td>
 	</tr>
-       <tr height="100%">
+	</logic:messagesPresent>
+         <tr>
+         	<th> Locked User Accounts</th>
+         </tr>
+       <tr>
            <td>
 				<display:table class="simple" cellspacing="2" cellpadding="3" id="user" name="users" export="false" 
 					pagesize="0" requestURI="/PMmodule/Admin/UnlockAccount.do">
 					<display:setProperty name="paging.banner.placement" value="bottom" />
 					<display:setProperty name="basic.msg.empty_list" value="No users are locked" />
 					<display:column title="Select">
-						<input type="checkbox" name='checked_<c:out value="${user.userName}"/>' />
+						<input type="checkbox" name='checkedU_<c:out value="${user.userName}"/>' />
 					</display:column>
 					<display:column property="userName" sortable="true" title="Login Id" />
 					<display:column property="loginIP" sortable="true" title="Login from IP" />
@@ -102,5 +117,28 @@ function getUserIds()
 				</display:table>			
            </td>
          </tr>
+        <tr><td>&nbsp</td></tr>
+         <tr>
+         	<th> Out of Sync Sites</th>
+         </tr>
+       <tr>
+           <td>
+				<display:table class="simple" cellspacing="2" cellpadding="3" id="site" name="sites" export="false" 
+					pagesize="0" requestURI="/PMmodule/Admin/UnlockAccount.do">
+					<display:setProperty name="paging.banner.placement" value="bottom" />
+					<display:setProperty name="basic.msg.empty_list" value="No Sites are out of sync" />
+					<display:column title="Select">
+						<input type="checkbox" name='checkedS_<c:out value="${site.siteId}"/>' />
+					</display:column>
+					<display:column property="ip" sortable="true" title="IP" />
+					<display:column property="siteId" sortable="true" title="Site Id" />
+					<display:column property="siteKey" sortable="true" title="Site Key" />
+					<display:column property="lastUpdateTime.time" sortable="true" title="Last Try Date"  format="{0, date, yyyy/MM/dd hh:mm:ss a}"/>
+					<display:column property="times" sortable="true" title="Times Tried"/>
+					<display:column property="statusDesc" sortable="true" title="Overridden" />
+				</display:table>			
+           </td>
+         </tr>
+        <tr height="100%"><td>&nbsp</td></tr>
    </table>
  </html:form>

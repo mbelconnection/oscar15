@@ -2,15 +2,19 @@
 <%@ include file="/taglibs.jsp"%>
 <%String a="debug"; %>	
 <script type="text/javascript">
-
+var prgChanged = false;
 function submitForm(methodVal) {
 	trimInputBox();
 	if(!isDateValid) return;
-    if(methodVal=='save'){
-	   if(methodVal=="save" && noChanges())
+	if (methodName = 'changeProgram') {
+		if ( prgChanged) return false;
+		prgChanged = true;
+	}	
+    else if(methodVal=='save'){
+	   if(noChanges())
 	   {
 		  alert("There are no changes detected to save");
-		  return;
+		  return false;
 	   }
 
 	   var serviceDate = document.ticklerForm.elements['tickler.serviceDate'];
@@ -30,42 +34,23 @@ function submitForm(methodVal) {
 	   var task_assigned_to = document.ticklerForm.elements['tickler.program_id'];
 	   if(task_assigned_to.value == '') {
 		  alert('Please select a program.');
-		  return;
+		  return false;
 	   }
 
 	   var task_assigned_to = document.ticklerForm.elements['tickler.task_assigned_to'];
 	   if(task_assigned_to.value == '') {
 		  alert('Please assign the task to a valid provider.');
-		  return;
+		  return false;
 	   }
 
 	   var message = document.ticklerForm.elements['tickler.message'];
 	   if(message.value == '') {
 		  alert('You must provide a message');
-		  return;
+		  return false;
 	   }
-
-//	   if(methodVal=="save" && noChanges())
-//	   {
-//		  alert("There are no changes detected to save");
-//	   }
-//	   else
-//	   {
-	      document.forms[0].method.value = methodVal;
-	      document.forms[0].submit();
-//       }	   
-    }else{
-	   if(methodVal=="save" && noChanges())
-	   {
-		  alert("There are no changes detected to save");
-	   }
-	   else
-	   {
-	      document.forms[0].method.value = methodVal;
-	      document.forms[0].submit();
-	   }
-    }
-    
+	}
+    document.forms[0].method.value = methodVal;
+    document.forms[0].submit();
 }
 </script>
 

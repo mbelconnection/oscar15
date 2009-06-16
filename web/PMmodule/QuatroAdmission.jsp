@@ -21,6 +21,7 @@
 <html:hidden property="admission.admissionStatus"/>
 <input type="hidden" id="scrollPosition" name="scrollPosition" value='<c:out value="${scrPos}"/>' />
 <script lang="javascript">
+var rmChanged = false;
 function checkSignLinkVisibility(objSel) {
   if(objSel.value==''){
     var signLink = document.getElementById("signLink");
@@ -84,6 +85,8 @@ function viewSignature(){
 }
 function roomChanged()
 {
+	if(rmChanged) return;
+	rmChanged = true;
 	quatroClientAdmissionForm.method.value='roomchange';
 	quatroClientAdmissionForm.pageChanged.value='1';
 	setNoConfirm();

@@ -1,12 +1,15 @@
 <%@ include file="/taglibs.jsp"%>
 <%@page import="com.quatro.common.KeyConstants;"%>
 <script>
+	var rmStatusChanged = false;
     function ConfirmDelete(name)
     {
         return confirm("Are you sure you want to delete " + name + " ?");
     }
     
     function roomFilter(){
+	    if (rmStatusChanged) return;
+	    rmStatusChanged = true;
 		var obj = document.getElementById("hrefSort");
 		var obj2 = document.getElementsByName("bedProgramFilterForRoom")[0];
 		var obj3 = document.getElementsByName("roomStatusFilter")[0];

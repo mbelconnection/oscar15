@@ -25,12 +25,13 @@
     <input type="hidden" id="scrollPosition" name="scrollPosition" value='<c:out value="${scrPos}"/>' />
 
 <script lang="javascript">
-
+var prgChanged = false;
 function submitForm(methodVal) {
 	trimInputBox();
 	if(!isDateValid) return;
 	if(methodVal=='programChange'){
-
+		if(prgChanged) return false;
+		prgChanged = true;
 	}
 	else if (methodVal == 'queue') 
 	{

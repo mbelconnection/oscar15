@@ -8,7 +8,7 @@
 <html-el:form action="/PMmodule/QuatroServiceRestriction.do">
 
 	<script lang="javascript">
-
+	prgChanged = false;
 	function resetClientFields() {
 		var form = document.serviceRestrictionForm;
 		form.elements['program.name'].value='';
@@ -70,9 +70,9 @@
     }	
     
     function programFilter(){
-//    	return;
-		document.forms[0].action = '<html:rewrite action="/PMmodule/QuatroServiceRestriction.do" />';
-		document.forms[0].method.value = "edit";
+    	if(prgChanged) return false;
+    	prgChanged = true;
+		serviceRestrictionForm.method.value = "edit";
 		serviceRestrictionForm.submit();
     }
     
@@ -80,7 +80,7 @@
 <%String a="1"; %>
 	<input type="hidden" name="clientId"
 		value="<c:out value='${clientId}'/>" />
-	<input type="hidden" name="method" value="save" />
+	<input type="hidden" name="method" id="method" value="save" />
 	<input type="hidden" name="ruleCheck" value="N" />
 	<html:hidden property="serviceRestriction.demographicNo" />
 	<html:hidden property="serviceRestriction.id" />

@@ -216,6 +216,7 @@
         
         <form-bean name="userUnlockForm" type="org.apache.struts.validator.DynaValidatorForm">
             <form-property name="userId" type="java.lang.String" />
+            <form-property name="siteId" type="java.lang.String" />
         </form-bean>
         
         <!-- Admin End -->
@@ -409,12 +410,12 @@
             <forward name="case" path="/CaseManagementView2.do" redirect="true" />
         </action>
                 
-        <action path="/PMmodule/Consent" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method" scope="request" name="consentForm" input="/PMmodule/Consent/consentFormA.jsp" validate="false">
+        <!-- action path="/PMmodule/Consent" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method" scope="request" name="consentForm" input="/PMmodule/Consent/consentFormA.jsp" validate="false">
             <forward name="formA" path="/PMmodule/Consent/consentFormA.jsp" />
             <forward name="formB" path="/PMmodule/Consent/consentFormB.jsp" />
             <forward name="interview" path="/PMmodule/Consent/consentInterview.jsp" />
             <forward name="success" path="/PMmodule/Consent/exit.jsp" />
-        </action>
+        </action -->
         <action path="/PMmodule/QuatroIntakeEdit"
             type="org.springframework.web.struts.DelegatingActionProxy"
             parameter="method" name="quatroIntakeEditForm" scope="session">

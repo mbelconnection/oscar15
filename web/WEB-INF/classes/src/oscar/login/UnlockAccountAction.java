@@ -69,6 +69,18 @@ public final class UnlockAccountAction extends BaseAdminAction {
 	    	      vec.remove(userName);
 	    	      cl.unlock(userName);
 	    	  }
+	    	  
+		       String [] siteIds = myForm.getString("siteId").split(",");
+		       msg += " & Over Write Site Key";
+		    	  //LoginList llist = null;
+		       vec = cl.findLockList();
+		       // unlock
+		       for(int i=0; i<siteIds.length; i++)
+		       {
+	    		  String siteId = siteIds[i];
+	    	      cl.unlockSite(siteId);
+	    	  }	    	  
+	    	  
 	    	  ActionMessages messages = new ActionMessages();
 	    	  messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("Selected Users are successfully unlocked "));
 	    	  saveMessages(request, messages);
@@ -85,7 +97,9 @@ public final class UnlockAccountAction extends BaseAdminAction {
     		super.getAccess(request, KeyConstants.FUN_ADMIN_UNLOCKUSER);
     		LoginCheckLogin cl = new LoginCheckLogin();
     		List users = cl.getLockUserList();
+    		List sites = cl.getBadSiteList();
     		request.setAttribute("users", users);
+    		request.setAttribute("sites", sites);
     		return mapping.findForward("list");
     	}
     	catch(NoAccessException e)

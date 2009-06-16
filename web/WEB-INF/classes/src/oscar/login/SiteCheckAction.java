@@ -16,6 +16,8 @@ package oscar.login;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.PrintWriter;
+import java.util.Enumeration;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Properties;
 import com.quatro.model.security.*;
@@ -89,7 +91,7 @@ public final class SiteCheckAction extends BaseAction {
  	    if(ssv.getUserName() == null || "".equals(ssv.getUserName())) {
  	    	try{
      	    	int newKey = 0;
-	     	    if (secSiteManager.isKeyValid(ssv.getSiteId(),ssv.getSiteKey()))
+	     	    if (isKeyValid(ssv.getSiteId(),ssv.getSiteKey(),request.getRemoteAddr()))
 	     	    {
 	     	    	newKey = secSiteManager.generateNewKey();
 		     	    sendMessage(response,"confirmed:" + newKey);
@@ -110,6 +112,39 @@ public final class SiteCheckAction extends BaseAction {
  	    	return null;
  	    }
     }
+	private boolean isKeyValid(String siteId, int siteKey, String ip)
+	{
+		boolean isValid = secSiteManager.isKeyValid(siteId, siteKey);
+		BadSiteList siteList = BadSiteList.getLoginListInstance();
+		BadSite badSite = (BadSite)siteList.get(siteId);
+		if (isValid)
+		{
+			if (badSite != null) siteList.remove(siteId); 
+		}
+		else
+		{
+			if ( badSite== null) {
+				badSite = new BadSite();
+				badSite.setLastUpdateTime(GregorianCalendar.getInstance());
+				badSite.setSiteId(siteId);
+				badSite.setSiteKey(String.valueOf(siteKey));
+				badSite.setStatus(0);
+				badSite.setIp(ip);
+
+				siteList.put(siteId, badSite);
+				
+			}
+			else
+			{
+				if (badSite.getStatus() == 1) 
+				{
+					siteList.remove(siteId);
+					isValid = true;
+				}
+			}
+		}
+		return isValid;
+	}
     
     private void sendMessage(HttpServletResponse response, String message) throws IOException
     {

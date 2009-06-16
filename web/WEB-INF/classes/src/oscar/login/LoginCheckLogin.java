@@ -193,12 +193,32 @@ public class LoginCheckLogin {
         }
         return bBlock;
     }
+    public void unlockSite(String siteId) {
+        BadSiteList siteList = BadSiteList.getLoginListInstance();
+
+        if (!siteList.isEmpty()) {
+        	BadSite bs = (BadSite)siteList.get(siteId); 
+        	if (bs != null) bs.setStatus(1);
+        }
+    }
     public LoginList findLockList() {
 
         while (llist == null) {
             llist = LoginList.getLoginListInstance();
         }
         return llist;
+    }
+    
+    public ArrayList getBadSiteList()
+    {
+        BadSiteList  llist = BadSiteList.getLoginListInstance();
+        ArrayList siteList = new ArrayList();
+        for (Enumeration e = llist.keys(); e.hasMoreElements();) {
+        	String key = (String) e.nextElement();
+            BadSite bs = (BadSite)llist.get(key) ;
+            siteList.add(bs);
+        }
+        return siteList;
     }
 
     public ArrayList getLockUserList() {

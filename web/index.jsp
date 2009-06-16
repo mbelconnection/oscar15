@@ -58,7 +58,6 @@ if (props.getProperty("logintitle", "").equals("")) {
 }
 %>
 </title>
-<!--LINK REL="StyleSheet" HREF="web.css" TYPE="text/css"-->
 
 <script language="JavaScript">
   <!-- hide

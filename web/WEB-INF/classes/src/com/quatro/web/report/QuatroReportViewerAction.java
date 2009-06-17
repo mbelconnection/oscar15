@@ -362,6 +362,9 @@ public class QuatroReportViewerAction extends BaseAction {
                     }
                     else
                     {
+                    	if (!Utility.IsNUmber(val)) {
+                            err += "A numeric value is expected at line " + String.valueOf(i + 1) + "<br>";
+                    	}
                         criteriaSQL += val;
                         r_criteriaDis += valDesc;
                     }

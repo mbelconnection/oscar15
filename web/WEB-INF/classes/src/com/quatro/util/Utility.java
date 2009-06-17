@@ -43,6 +43,19 @@ public class Utility {
     	java.sql.Date date = oscar.MyDateFormat.getSysDate(pStr);
     	return date != null;
     }
+    public static boolean IsNUmber(String pStr)
+    {
+    	boolean isDouble = true;
+    	try 
+    	{
+    		Double d = Double.valueOf(pStr);
+    	}
+    	catch (Exception e)
+    	{
+    		isDouble = false;
+    	}
+    	return isDouble;
+    }
     public static boolean IsInt(String pStr)
     {
     	boolean isInt = true;

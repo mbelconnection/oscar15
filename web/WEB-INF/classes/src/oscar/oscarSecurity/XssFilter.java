@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.net.URLDecoder;
 
@@ -75,10 +76,15 @@ public class XssFilter implements Filter {
 	   {
 	       String queryString;
 	       queryString = httpRequest.getQueryString();
-	       if ( patternQueryString.matcher( queryString ).find()  )
+	       Matcher m = patternQueryString.matcher( queryString );
+	       if ( m.find()  )
 	       {
-	           httpResponse.sendRedirect(xssErrPage );
-	           return;
+	    	   String g = m.group();
+	    	   if (!(("script".equals(g) && queryString.indexOf("<script") < 0)))
+	    	   {
+	    		   httpResponse.sendRedirect(xssErrPage );
+	    		   return;
+	    	   }
 	       }
 	       try
 	       {
@@ -89,10 +95,15 @@ public class XssFilter implements Filter {
 	           httpResponse.sendRedirect(xssErrPage );
 	           return;           
 	       }
-	       if ( patternQueryString.matcher( queryString ).find()  )
+	       m = patternQueryString.matcher( queryString );
+	       if ( m.find())
 	       {
-	           httpResponse.sendRedirect(xssErrPage );
-	           return;
+	    	   String g = m.group();
+	    	   if (!(("script".equals(g) && queryString.indexOf("<script") < 0)))
+	    	   {
+	    		   httpResponse.sendRedirect(xssErrPage);
+	    		   return;
+	    	   }
 	       }
 	   }
 	   

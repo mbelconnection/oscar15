@@ -302,7 +302,6 @@ public class MsgDisplayMessagesBean {
         orderTable.put("from","sentby");
         orderTable.put("subject","thesubject");
         orderTable.put("date","thedate");
-        orderTable.put("date","theime");
         orderTable.put("sentto", "sentto");
                                 
         orderBy = (String) orderTable.get(order);  

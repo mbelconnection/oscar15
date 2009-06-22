@@ -609,10 +609,6 @@ public class QuatroIntakeEditAction extends BaseClientAction {
 		request.setAttribute("newClientChecked",request.getParameter("newClientChecked"));
 		try {
 			QuatroIntakeEditForm qform = (QuatroIntakeEditForm) form;
-			for(int i=0; i< 10000000; i++)
-			{
-				String a =  "";
-			}
 			Demographic client = qform.getClient();
 			QuatroIntake intake = qform.getIntake();
 			if (intake.getId() == null || intake.getId().intValue() == 0)

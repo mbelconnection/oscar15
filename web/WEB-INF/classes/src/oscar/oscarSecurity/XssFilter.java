@@ -33,6 +33,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import oscar.OscarProperties;
+import oscar.ping.xml.OscarPrescriptions;
+
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,7 +43,7 @@ import java.net.URLDecoder;
 
 
 /**
- * @author Dennis Langdeau
+ * @author Tony
  */
 public class XssFilter implements Filter {
 
@@ -61,9 +64,8 @@ public class XssFilter implements Filter {
 	{
 		String xssErrPage       = "/failure.jsp";
 	//   String xssErrPage       = "http://www.turkcell.com.tr/";
-	   String regexQueryString = "<IMG|<SCRIPT|SCRIPT|%3CSCRIPT%3CIMG|&lt;SCRIPT|&lt;IMG|&#60;SCRIPT|&#60;IMG|&#x3C;SCRIPT|&#x3C;IMG|%0D";
+	   String regexQueryString = "<IMG|<IFRAME|<SCRIPT|SCRIPT|%3CSCRIPT%3CIMG|&lt;IFRAME|&lt;SCRIPT|&lt;IMG|&#60;IFRAME|&#60;SCRIPT|&#60;IMG|&#x3C;IFRAME|&#x3C;SCRIPT|&#x3C;IMG|%0D";
 	   String regexGotoString  = "(http|https)://(\\w*\\.){1,3}turkcell\\.com\\.tr(\\:\\d+)?\\/.*|\\/amconsole.*";
-	   
 	   Pattern patternQueryString = Pattern.compile( regexQueryString, Pattern.CASE_INSENSITIVE );
 	   Pattern patternGotoString  = Pattern.compile( regexGotoString, Pattern.CASE_INSENSITIVE );
 	 
@@ -110,7 +112,7 @@ public class XssFilter implements Filter {
 	   String gotoLinks[] = request.getParameterValues( "goto" );
 	   if ( gotoLinks != null )
 	   {
-	       for ( int i=0; i<gotoLinks.length; i++ )
+/*	       for ( int i=0; i<gotoLinks.length; i++ )
 	       {
 	           String link;
 	           try
@@ -124,10 +126,11 @@ public class XssFilter implements Filter {
 	           }
 	           if ( ! patternGotoString.matcher( URLDecoder.decode( link, "UTF-8" ) ).find() )
 	           {
-	               httpResponse.sendRedirect( xssErrPage );
+*/
+		   		   httpResponse.sendRedirect( xssErrPage );
 	               return;
-	           }
-	       }
+//	           }
+//	       }
 	   }
 	   chain.doFilter(request, response);
 	}

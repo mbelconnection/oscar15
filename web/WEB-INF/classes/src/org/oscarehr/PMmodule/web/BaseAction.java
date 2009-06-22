@@ -225,6 +225,8 @@ public abstract class BaseAction extends DispatchAction {
 			ActionForward fwd =  super.dispatchMethod(mapping, form, request, response, name);
 			if(fwd != null && fwd.getName() != null && fwd.getName().equals("failure")) throw new NoAccessException();
 	        if (fwd != null) {
+	        	response.setHeader("Content-Type", "text/html; charset=utf-8" );
+
 				response.setHeader("Expires", "-1");
 	//	        response.setHeader("Expires", "Jan 1, 1900 12:00 AM");
 		        response.setHeader("Cache-Control",

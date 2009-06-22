@@ -152,7 +152,7 @@ public class ProgramManagerAction extends BaseProgramAction {
 	        }
 	        else{
 	        	 super.setEditScreenMode(request, KeyConstants.TAB_PROGRAM_GENERAL,programId);
-	             setEditAttributes(request, form);
+	             setEditAttributes(request, form, KeyConstants.FUN_PROGRAMEDIT);
 	        }
 	        
 	        return mapping.findForward("edit");
@@ -187,7 +187,7 @@ public class ProgramManagerAction extends BaseProgramAction {
 	        
 	        request.setAttribute("pageTitle","Program Management - New Program");
 	        
-	        setEditAttributes(request, form);
+	        setEditAttributes(request, form, KeyConstants.FUN_PROGRAMEDIT);
 	
 	        return mapping.findForward("edit");
 	   }
@@ -551,7 +551,7 @@ public class ProgramManagerAction extends BaseProgramAction {
     
     public ActionForward save_restriction_settings(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
     	try {
-    		super.getAccess(request, KeyConstants.FUN_PROGRAMEDIT,KeyConstants.ACCESS_UPDATE);
+    		super.getAccess(request, KeyConstants.FUN_PROGRAMEDIT_SERVICERESTRICTIONS,KeyConstants.ACCESS_UPDATE);
 	    	DynaActionForm programForm = (DynaActionForm) form;
 	
 	        Program program = (Program) programForm.get("program");
@@ -567,7 +567,7 @@ public class ProgramManagerAction extends BaseProgramAction {
 	            ActionMessages messages = new ActionMessages();
 	            messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("program.default_restriction_exceeds_maximum", request.getContextPath(),defaultRestrictionDays, maxRestrictionDays));
 	            saveMessages(request, messages);
-	            setEditAttributes(request, form);
+	            setEditAttributes(request, form, KeyConstants.FUN_PROGRAMEDIT_SERVICERESTRICTIONS);
 	
 	            return edit(mapping, form, request, response);
 	        }
@@ -586,7 +586,7 @@ public class ProgramManagerAction extends BaseProgramAction {
 	
 	        logManager.log("write", "edit program", String.valueOf(program.getId()), request);
 	
-	        setEditAttributes(request, form);
+	        setEditAttributes(request, form, KeyConstants.FUN_PROGRAMEDIT_SERVICERESTRICTIONS);
 	
 	        return edit(mapping, form, request, response);
  	   }
@@ -850,7 +850,7 @@ public class ProgramManagerAction extends BaseProgramAction {
 	                    ActionMessages messages = new ActionMessages();
 	                    messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("program.client_in_the_program", program.getName()));
 	                    saveMessages(request, messages);
-	                    setEditAttributes(request, form);
+	                    setEditAttributes(request, form, KeyConstants.FUN_PROGRAMEDIT);
 	                    return mapping.findForward("edit");
 	                }
 	                int numQueue = programQueueManager.getProgramQueuesByProgramId(program.getId()).size();
@@ -858,7 +858,7 @@ public class ProgramManagerAction extends BaseProgramAction {
 	                    ActionMessages messages = new ActionMessages();
 	                    messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("program.client_in_the_queue", program.getName(), String.valueOf(numQueue)));
 	                    saveMessages(request, messages);
-	                    setEditAttributes(request, form);
+	                    setEditAttributes(request, form, KeyConstants.FUN_PROGRAMEDIT);
 	                   // return edit(mapping,form,request,response);  
 	                    return mapping.findForward("edit");
 	                }
@@ -869,7 +869,7 @@ public class ProgramManagerAction extends BaseProgramAction {
 	            ActionMessages messages = new ActionMessages();
 	            messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("program.invalid_holding_tank"));
 	            saveMessages(request, messages);
-	            setEditAttributes(request,form);
+	            setEditAttributes(request,form, KeyConstants.FUN_PROGRAMEDIT);
 	           // return edit(mapping,form,request,response);
 	            return mapping.findForward("edit");
 	        }
@@ -884,7 +884,7 @@ public class ProgramManagerAction extends BaseProgramAction {
 	        		ActionMessages messages = new ActionMessages();
 	                messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("program.invalid_capacity_space",request.getContextPath(),actCap,program.getCapacity_space()));
 	                saveMessages(request, messages);
-	                setEditAttributes(request, form);
+	                setEditAttributes(request, form, KeyConstants.FUN_PROGRAMEDIT);
 	                return mapping.findForward("edit");
 	        	}        	
 	        }
@@ -899,7 +899,7 @@ public class ProgramManagerAction extends BaseProgramAction {
 	
 	        logManager.log("write", "edit program", String.valueOf(program.getId()), request);
 	
-	        setEditAttributes(request, form);
+	        setEditAttributes(request, form, KeyConstants.FUN_PROGRAMEDIT);
 	
 	        return edit(mapping,form,request,response);
  	   }
@@ -1232,7 +1232,7 @@ public class ProgramManagerAction extends BaseProgramAction {
         return mapping.findForward("edit");
     }
 */
-    private void setEditAttributes(HttpServletRequest request, ActionForm form) throws NoAccessException {
+    private void setEditAttributes(HttpServletRequest request, ActionForm form, String funCd ) throws NoAccessException {
 		ArrayList programSignatureLst = new ArrayList();
     	 DynaActionForm programForm = (DynaActionForm) form;
     	Program program = (Program) programForm.get("program");
@@ -1261,7 +1261,7 @@ public class ProgramManagerAction extends BaseProgramAction {
         
         request.setAttribute("facilities",facilityManager.getActiveFacilities(providerNo,shelterId));
         
-        boolean isReadOnly =super.isReadOnly(request, KeyConstants.FUN_PROGRAMEDIT, programId);
+        boolean isReadOnly =super.isReadOnly(request, funCd, programId);
         if(isReadOnly)request.setAttribute("isReadOnly", Boolean.valueOf(isReadOnly));
  		request.setAttribute("typeEditable", Boolean.TRUE);
    		request.setAttribute("statusEditable", Boolean.TRUE);

@@ -55,7 +55,7 @@ public class LookupDao extends HibernateDaoSupport {
 	private static Hashtable lookupTableDefs = null;
 	private static Hashtable orgCodeCsvs = null;
 	private static Calendar lastCacheTime = Calendar.getInstance();
-	private static int lastId  = 0;
+	private static int lastId  = -1;
 	public List LoadCodeList(String tableId, boolean activeOnly, String code, String codeDesc)
 	{
 	   return LoadCodeList(tableId,activeOnly,"",code,codeDesc,true);

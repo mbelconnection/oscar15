@@ -21,7 +21,7 @@
 <html:hidden property="admission.admissionStatus"/>
 <input type="hidden" id="scrollPosition" name="scrollPosition" value='<c:out value="${scrPos}"/>' />
 <script lang="javascript">
-var rmChanged = false;
+var inRefreshing = false;
 function checkSignLinkVisibility(objSel) {
   if(objSel.value==''){
     var signLink = document.getElementById("signLink");
@@ -33,7 +33,12 @@ function checkSignLinkVisibility(objSel) {
 }
 
 function submitForm(methodVal) {
-	if(!isDateValid) return;
+	if (inRefreshing) return;
+	inRefreshing = true;
+	if(!isDateValid) {
+		inRefreshing = false;
+		return;
+	}
 	trimInputBox();
 	/*
 	var ovPassStartDateTxt = document.getElementsByName("admission.ovPassStartDateTxt")[0];
@@ -59,6 +64,7 @@ function submitForm(methodVal) {
 	*/
 	if(methodVal=="save" && noChanges()){
 		alert("There are no changes detected to save");
+		inRefreshing = false;
 	}else{   
 		document.getElementById("btnSave").disabled=true;
 		document.forms[0].method.value = methodVal;
@@ -85,8 +91,8 @@ function viewSignature(){
 }
 function roomChanged()
 {
-	if(rmChanged) return;
-	rmChanged = true;
+	if(inRefreshing) return;
+	inRefreshing = true;
 	quatroClientAdmissionForm.method.value='roomchange';
 	quatroClientAdmissionForm.pageChanged.value='1';
 	setNoConfirm();

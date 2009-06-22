@@ -8,23 +8,27 @@
 <html-el:form action="/PMmodule/QuatroServiceRestriction.do">
 
 	<script lang="javascript">
-	prgChanged = false;
+	inRefreshing = false;
 	function resetClientFields() {
 		var form = document.serviceRestrictionForm;
 		form.elements['program.name'].value='';
 	}
     
     function submitForm(methodVal) {
+    	if (inRefreshing) return false;
+    	inRefreshing = true;
 		trimInputBox();
     	var validProgram = document.getElementsByName("serviceRestriction.programId")[0].value.length > 0;
     	var validReason = document.getElementsByName("serviceRestriction.commentId")[0].value.length > 0;
     	
     	if(!validProgram){
     		alert("Please select 'Program' before saving.");
+			inRefreshing = false;
     		return;
     	}
     	if(!validReason){
     		alert("Please select 'Reason for service restriction' before saving.");
+			inRefreshing = false;
     		return;
     	}    	
 	    if(validProgram && validReason && validateLength()){
@@ -32,6 +36,7 @@
 			if(methodVal=="save" && noChanges())
 			{
 				alert("There are no changes detected to save");
+				inRefreshing = false;
 			}
 			else
 			{
@@ -70,8 +75,8 @@
     }	
     
     function programFilter(){
-    	if(prgChanged) return false;
-    	prgChanged = true;
+    	if(inRefreshing) return false;
+		inRefreshing = true;
 		serviceRestrictionForm.method.value = "edit";
 		serviceRestrictionForm.submit();
     }

@@ -25,13 +25,18 @@
     <input type="hidden" id="scrollPosition" name="scrollPosition" value='<c:out value="${scrPos}"/>' />
 
 <script lang="javascript">
-var prgChanged = false;
+var inRefreshing = false;
 function submitForm(methodVal) {
+	if (inRefreshing)  return false;
+	inRefreshing = true;
 	trimInputBox();
-	if(!isDateValid) return;
-	if(methodVal=='programChange'){
-		if(prgChanged) return false;
-		prgChanged = true;
+	if(!isDateValid) {
+		inRefreshing = false
+		return;
+	}
+	if (methodVal == 'programChange')
+	{
+		;
 	}
 	else if (methodVal == 'queue') 
 	{
@@ -40,7 +45,10 @@ function submitForm(methodVal) {
 			if (!confirm("You have made changes to this form.\n Click on Cancel to be able to Save information or click OK to proceed without saving?")) return false;
 			setNoConfirm();
 		}
-		if (!confirmActive()) return;
+		if (!confirmActive()) {
+			inRefreshing = false
+			return;
+		}
 	}
 	else
 	{
@@ -49,11 +57,13 @@ function submitForm(methodVal) {
         alert("First name is empty.");
         obj.value="";
         obj.focus();
+		inRefreshing = false
         return; 
       }
       if(!isName(obj.value.trim())){
         alert("First name contains illegal character!");
         obj.focus();
+		inRefreshing = false
         return; 
       }
     
@@ -62,11 +72,13 @@ function submitForm(methodVal) {
         alert("Last name is empty.");
         obj.value="";
         obj.focus();
+		inRefreshing = false
         return; 
       }
       if(!isName(obj.value.trim())){
         alert("Last name contains illegal character!");
         obj.focus();
+		inRefreshing = false
         return; 
       }
     
@@ -75,6 +87,7 @@ function submitForm(methodVal) {
         alert("Gender is empty.");
         obj.value="";
         obj.focus();
+		inRefreshing = false
         return; 
       }
 
@@ -83,11 +96,13 @@ function submitForm(methodVal) {
         alert("Date of birth is empty.");
         obj.value="";
         obj.focus();
+		inRefreshing = false
         return; 
       }
 
       if(validateBirthDay(obj.value)==false){
         obj.focus();
+		inRefreshing = false
         return;
       }
     
@@ -95,6 +110,7 @@ function submitForm(methodVal) {
       if(obj.value.trim()==""){
         alert("Lived the last 12 months is empty.");
         obj.focus();
+		inRefreshing = false
         return; 
       }
 
@@ -102,12 +118,14 @@ function submitForm(methodVal) {
       if(obj.value.trim()==""){
         alert("No program selected.");
         obj.focus();
+		inRefreshing = false
         return; 
       }
     }
 	if(methodVal=="save" && noChanges())
 	{
 		alert("There are no changes detected to save");
+		inRefreshing = false
 	}
 	else
 	{

@@ -2,18 +2,20 @@
 <%@ include file="/taglibs.jsp"%>
 <%String a="debug"; %>	
 <script type="text/javascript">
-var prgChanged = false;
+var inRefreshing = false;
 function submitForm(methodVal) {
+	if (inRefreshing) return;
+	inRefreshing = true;
 	trimInputBox();
 	if(!isDateValid) return;
-	if (methodName = 'changeProgram') {
-		if ( prgChanged) return false;
-		prgChanged = true;
+	if (methodVal == 'changeProgram') {
+		;
 	}	
     else if(methodVal=='save'){
 	   if(noChanges())
 	   {
 		  alert("There are no changes detected to save");
+		  inRefreshing = false;
 		  return false;
 	   }
 
@@ -25,27 +27,32 @@ function submitForm(methodVal) {
 	   if ("PM" == serviceAmpm) serviceHour = parseInt(serviceHour) + 12;
 	   if(serviceDate.value == '') {
 		  alert('Please provide a service date.');
+		  inRefreshing = false;
 		  return;
 	   }else if(isBeforeNowxMin(serviceDate.value, serviceHour, serviceMinute,5)){
 		  alert('Service date/time should not be before now for more than 5 minutes.');
+		  inRefreshing = false;
 		  return;
 	   }
 
 	   var task_assigned_to = document.ticklerForm.elements['tickler.program_id'];
 	   if(task_assigned_to.value == '') {
 		  alert('Please select a program.');
+		  inRefreshing = false;
 		  return false;
 	   }
 
 	   var task_assigned_to = document.ticklerForm.elements['tickler.task_assigned_to'];
 	   if(task_assigned_to.value == '') {
-		  alert('Please assign the task to a valid provider.');
+		  alert('Please assign the task to a valid Staff member.');
+		  inRefreshing = false;
 		  return false;
 	   }
 
 	   var message = document.ticklerForm.elements['tickler.message'];
 	   if(message.value == '') {
 		  alert('You must provide a message');
+		  inRefreshing = false;
 		  return false;
 	   }
 	}
@@ -87,12 +94,12 @@ function submitForm(methodVal) {
 </table>
 
 <table width="100%" class="simple">
-		<tr><td>Client:</td>
+		<tr><td>Client</td>
 		<td colspan="2"><input type=hidden name="clientId" value="<c:out value="${client.demographicNo}"/>">
 		<c:out value="${client.formattedName}"/></td></tr>
-		<tr><td>Service Date:</td>
+		<tr><td>Service Date</td>
 		<td colspan="2"><quatro:datePickerTag property="tickler.serviceDate" openerForm="ticklerForm" width="30%"/></td></tr>
-		<tr><td>Service Time:</td>
+		<tr><td>Service Time</td>
 		<td colspan="2"><html:select property="tickler.service_hour">
            <html:optionsCollection property="serviceHourLst" value="value" label="label"/>
 		</html:select> : 
@@ -103,12 +110,12 @@ function submitForm(methodVal) {
            <html:optionsCollection property="ampmLst" value="value" label="label"/>
 		</html:select>
 		</td></tr>
-		<tr><td>Priority:</td>
+		<tr><td>Priority</td>
 		<td colspan="2"><html:select property="tickler.priority">
            <html:optionsCollection property="priorityLst" value="value" label="label"/>
 		</html:select></td></tr>
-		<tr><td width="20%">Task Assigned To:</td>
-		<td width="10%">Program:</td>
+		<tr><td width="20%">Task Assigned To</td>
+		<td width="10%">Program*</td>
 		<td width="70%"> 
           <c:choose>
             <c:when test="${viewTickler!='Y'}">
@@ -126,19 +133,19 @@ function submitForm(methodVal) {
 		  </c:choose>
 		</td></tr>
         <tr><td></td>		      
-		<td>User:</td>
+		<td>User*</td>
 		<td><html:select property="tickler.task_assigned_to">
 		   <option value=""> --- </option>
            <html:optionsCollection property="providerLst" value="providerNo" label="formattedName"/>
 		</html:select>
 		</td></tr>
-		<tr><td>Status:</td>
+		<tr><td>Status</td>
 		<td colspan="2"><html:select property="tickler.status">
 			<html:option value="Active">Active</html:option>
 			<html:option value="Completed">Completed</html:option>
 			</html:select>
 		</td></tr>
-		<tr><td>Message:</td>
+		<tr><td>Message</td>
 		<td colspan="2"><html:textarea style="width: 90%" rows="16" property="tickler.message" /></td></tr>
 </table>
 <%@ include file="/common/readonly.jsp" %>

@@ -92,8 +92,8 @@ public final class LoginAction extends BaseAction {
 	            HttpSession session = request.getSession(false);
 	            if (session != null) {
 	                session.invalidate();
-	                session = request.getSession(); // Create a new session for this user
 	            }
+	            session = request.getSession(); // Create a new session for this user
 	            
 	            String providerNo = user.getProviderNo();
 	            Provider provider = providerManager.getProvider(providerNo);

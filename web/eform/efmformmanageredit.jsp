@@ -105,12 +105,15 @@ function disablenupload() {
 				key="eform.uploadhtml.formName" />:</th>
 			<td><input type="text" name="formName"
 				value="<%= curform.get("formName") %>"
-				<% if (errors.containsKey("formNameMissing") || (errors.containsKey("formNameExists"))) { %>
-				class="warning" <% } %> size="30" /> <% if (errors.containsKey("formNameMissing")) { %>
-			<font class="warning"><bean:message
-				key="<%= (String) errors.get("formNameMissing")%>" /></font> <%} else if (errors.containsKey("formNameExists")) { %>
-			<font class="warning"><bean:message
-				key="<%= (String) errors.get("formNameExists")%>" /></font> <%} %>
+				<% if (errors.containsKey("formNameMissing") || (errors.containsKey("formNameExists"))) {
+                                    
+                                %>
+				class="warning" <% } %> size="30" /> 
+                                <%String formNameMissing = (String) errors.get("formNameMissing"); 
+                                  if (errors.containsKey("formNameMissing")) {  
+                                %>
+			<font class="warning"><bean:message key="<%=formNameMissing%>" /></font> <%} else if (errors.containsKey("formNameExists")) { %>
+			<font class="warning"><bean:message key="<%=formNameMissing%>" /></font> <%} %>
 			</td>
 		</tr>
 		<tr class="highlight">
@@ -136,9 +139,9 @@ function disablenupload() {
 				id="uploadMarker" value="false"> <input type="button"
 				name="uploadbtn" id="uploadbtn"
 				value="<bean:message key="eform.edithtml.frmUpload"/>"
-				onclick="disablenupload()"> <% if (errors.containsKey("uploadError")) { %><font
-				class="warning"><bean:message
-				key="<%= (String) errors.get("uploadError") %>" /></font>
+				onclick="disablenupload()"> <% if (errors.containsKey("uploadError")) { 
+                                    String uploadError = (String) errors.get("uploadError"); %>
+                                <font class="warning"><bean:message key="<%=uploadError%>" /></font>
 			<% } %>
 			</td>
 		</tr>

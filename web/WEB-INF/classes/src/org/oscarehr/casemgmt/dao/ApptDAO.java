@@ -43,4 +43,9 @@ public class ApptDAO extends HibernateDaoSupport {
             getHibernateTemplate().update(appt);
         }
     }
+    
+    public Appointment getAppt(String apptId) {
+       Appointment appt = (Appointment) getHibernateTemplate().get(Appointment.class,new Long(apptId));
+       return appt;
+    }
 }

@@ -241,15 +241,6 @@ public class GenericIntakeSearchAction extends BaseGenericIntakeAction {
 			cal.setTime(demographicTransfer.getBirthDate());
 			demographic.setBirthDay(cal);
 			
-			GetConsentTransfer consent=CaisiIntegratorManager.getConsentState(demographicTransfer.getIntegratorFacilityId(), demographicTransfer.getCaisiDemographicId());
-			if (consent!=null && consent.getConsentState()==ConsentState.ALL)
-			{
-				demographic.setHin(demographicTransfer.getHin());
-				demographic.setCity(demographicTransfer.getCity());
-				demographic.setProvince(demographicTransfer.getProvince());
-				demographic.setSin(demographicTransfer.getSin());
-			}
-			
 			return forwardIntakeEditCreate(mapping, request, demographic);
 		} catch (Exception e) {
 			log.error("Unexpected error.", e);

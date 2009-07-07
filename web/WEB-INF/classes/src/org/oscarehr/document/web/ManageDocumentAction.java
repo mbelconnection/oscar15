@@ -4,16 +4,16 @@
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version. 
+ * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details. 
- * 
+ * GNU General Public License for more details.
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. 
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  * Jason Gallagher
  *
@@ -63,17 +63,17 @@ import org.oscarehr.common.dao.ProviderInboxRoutingDao;
  * @author jaygallagher
  */
 public class ManageDocumentAction extends DispatchAction {
-    
+
     private static Log log = LogFactory.getLog(ManageDocumentAction.class);
 
     private DocumentDAO documentDAO = null;
     private ProviderInboxRoutingDao  providerInboxRoutingDAO = null;
-    
+
 
     public void setDocumentDAO(DocumentDAO documentDAO) {
         this.documentDAO = documentDAO;
     }
-    
+
     public void setProviderInboxRoutingDAO(ProviderInboxRoutingDao providerInboxRoutingDAO){
         this.providerInboxRoutingDAO = providerInboxRoutingDAO;
     }
@@ -94,9 +94,9 @@ public class ManageDocumentAction extends DispatchAction {
         String documentDescription = request.getParameter("documentDescription");//:test2<
         String documentId = request.getParameter("documentId");//:29<
         String docType = request.getParameter("docType");//:consult<
-        
+
         LogAction.addLog((String) request.getSession().getAttribute("user"), LogConst.ADD, LogConst.CON_DOCUMENT, documentId, request.getRemoteAddr());
-        
+
         String demog = request.getParameter("demog");// :22<
         String demographicKeyword = request.getParameter("demographicKeyword");// :ABLE, ALEX<
         String[] flagproviders = request.getParameterValues("flagproviders");//:999998<
@@ -104,18 +104,18 @@ public class ManageDocumentAction extends DispatchAction {
         System.out.println("link to prov "+request.getParameter("demoLink")+" demo "+demog);
         //DONT COPY THIS !!!
          if (flagproviders !=null && flagproviders.length > 0){ //TODO: THIS NEEDS TO RUN THRU THE  lab forwarding rules!
-             
-            for(String proNo:flagproviders){ 
-               providerInboxRoutingDAO.addToProviderInbox(proNo, documentId, "DOC"); 
-               //try{ 
+
+            for(String proNo:flagproviders){
+               providerInboxRoutingDAO.addToProviderInbox(proNo, documentId, "DOC");
+               //try{
                //String docLab = "insert into providerLabRouting (provider_no,lab_no,status,timestamp,lab_type)  values ('"+proNo+"','"+documentId+"','N',now(),\"DOC\")";
                //DBHandler dbh = new DBHandler(DBHandler.OSCAR_DATA);
                //dbh.RunSQL(docLab);
                //}catch(Exception ee ){ee.printStackTrace();}
             }
         }
-        //// END COPY  
-        
+        //// END COPY
+
 
         Document d = documentDAO.getDocument(documentId);
 
@@ -129,8 +129,8 @@ public class ManageDocumentAction extends DispatchAction {
             d.setObservationdate(obDate);
         }
 
-        
-        
+
+
 
 
         System.out.println("bbb " + d);
@@ -174,15 +174,15 @@ public class ManageDocumentAction extends DispatchAction {
         File docDir = new File(docdownload);
         String documentDirName = docDir.getName();
         File parentDir = docDir.getParentFile();
-        
+
         File cacheDir = new File(parentDir,documentDirName+"_cache");
-        
+
         if(!cacheDir.exists()){
             cacheDir.mkdir();
         }
         return cacheDir;
     }
-    
+
     private File hasCacheVersion(Document d){
         File documentCacheDir = getDocumentCacheDir(oscar.OscarProperties.getInstance().getProperty("DOCUMENT_DIR"));
         File outfile = new File(documentCacheDir,d.getDocfilename()+".png");
@@ -191,14 +191,14 @@ public class ManageDocumentAction extends DispatchAction {
         }
         return outfile;
     }
-    
+
     public File createCacheVersion(Document d) throws Exception{
-        
+
         String docdownload = oscar.OscarProperties.getInstance().getProperty("DOCUMENT_DIR");
         File documentDir = new File(docdownload);
         File documentCacheDir = getDocumentCacheDir(docdownload);
         log.debug("Document Dir is a dir"+documentDir.isDirectory());
-        
+
         File file = new File(documentDir,d.getDocfilename());
 
         RandomAccessFile raf = new RandomAccessFile(file, "r");
@@ -211,7 +211,7 @@ public class ManageDocumentAction extends DispatchAction {
 
         log.debug("WIDTH " + (int) ppage.getBBox().getWidth() + " height " + (int) ppage.getBBox().getHeight());
 
-        //get the width and height for the doc at the default zoom 
+        //get the width and height for the doc at the default zoom
         Rectangle rect = new Rectangle(0, 0,
                 (int) ppage.getBBox().getWidth(),
                 (int) ppage.getBBox().getHeight());
@@ -224,28 +224,28 @@ public class ManageDocumentAction extends DispatchAction {
                 true, // fill background with white
                 true // block until drawing is done
                 );
-       
+
         log.debug("about to Print to stream");
         File outfile = new File(documentCacheDir,d.getDocfilename()+".png");
         OutputStream outs = new FileOutputStream(outfile);
-  
+
         RenderedImage rendImage = (RenderedImage) img;
         ImageIO.write(rendImage, "png", outs);
         outs.flush();
-        outs.close(); 
+        outs.close();
         return outfile;
-        
+
     }
     //PNG version
     public ActionForward view(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception{
         String doc_no = request.getParameter("doc_no");
            log.debug("Document No :"+doc_no);
-                   
+
         LogAction.addLog((String) request.getSession().getAttribute("user"), LogConst.READ, LogConst.CON_DOCUMENT, doc_no, request.getRemoteAddr());
-  
+
         Document d = documentDAO.getDocument(doc_no);
         log.debug("Document Name :"+d.getDocfilename());
-        
+
         File outfile = hasCacheVersion(d);
         if (outfile == null){
             System.out.println("No Cache Version");
@@ -254,16 +254,16 @@ public class ManageDocumentAction extends DispatchAction {
         }else{
             System.out.println("THERE WAS A CACHE Version "+outfile);
         }
-        
+
         response.setContentType("image/png");
         //response.setHeader("Content-Disposition", "attachment;filename=\"" + filename+ "\"");
         //read the file name.
-        
+
 
         log.debug("about to Print to stream");
         ServletOutputStream outs = response.getOutputStream();
- 
-        
+
+
         response.setHeader("Content-Disposition", "attachment;filename=" + d.getDocfilename());
         BufferedInputStream bfis = new BufferedInputStream(new FileInputStream(outfile));
         int data;
@@ -271,10 +271,10 @@ public class ManageDocumentAction extends DispatchAction {
             outs.write(data);
             outs.flush();
         }
-		
+
         bfis.close();
         outs.flush();
-        outs.close();     
+        outs.close();
         return null;
     }
 
@@ -282,18 +282,18 @@ public class ManageDocumentAction extends DispatchAction {
         //TODO: NEED TO CHECK FOR ACCESS
         String doc_no = request.getParameter("doc_no");
            log.debug("Document No :"+doc_no);
-                   
+
         LogAction.addLog((String) request.getSession().getAttribute("user"), LogConst.READ, LogConst.CON_DOCUMENT, doc_no, request.getRemoteAddr());
-  
+
         String docdownload = oscar.OscarProperties.getInstance().getProperty("DOCUMENT_DIR");
         File documentDir = new File(docdownload);
         log.debug("Document Dir is a dir"+documentDir.isDirectory());
-        
+
         Document d = documentDAO.getDocument(doc_no);
         log.debug("Document Name :"+d.getDocfilename());
-        
+
         //TODO: Right now this assumes it's a pdf which it shouldn't
-        
+
         response.setContentType("image/png");
         //response.setHeader("Content-Disposition", "attachment;filename=\"" + filename+ "\"");
         //read the file name.
@@ -309,7 +309,7 @@ public class ManageDocumentAction extends DispatchAction {
 
         log.debug("WIDTH " + (int) ppage.getBBox().getWidth() + " height " + (int) ppage.getBBox().getHeight());
 
-        //get the width and height for the doc at the default zoom 
+        //get the width and height for the doc at the default zoom
         Rectangle rect = new Rectangle(0, 0,
                 (int) ppage.getBBox().getWidth(),
                 (int) ppage.getBBox().getHeight());
@@ -322,39 +322,39 @@ public class ManageDocumentAction extends DispatchAction {
                 true, // fill background with white
                 true // block until drawing is done
                 );
-       
+
         log.debug("about to Print to stream");
         ServletOutputStream outs = response.getOutputStream();
-  
+
         RenderedImage rendImage = (RenderedImage) img;
         ImageIO.write(rendImage, "png", outs);
         outs.flush();
-        outs.close();     
+        outs.close();
         return null;
     }
 
 
-    
+
         public ActionForward display(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception{
-        
+
         String doc_no = request.getParameter("doc_no");
            log.debug("Document No :"+doc_no);
-           
+
         CtlDocument ctld = documentDAO.getCtrlDocument(Integer.parseInt(doc_no));
         if(ctld.isDemographicDocument()){
             LogAction.addLog((String) request.getSession().getAttribute("user"), LogConst.READ, LogConst.CON_DOCUMENT, doc_no, request.getRemoteAddr(),""+ctld.getModuleId());
-        }else{           
+        }else{
             LogAction.addLog((String) request.getSession().getAttribute("user"), LogConst.READ, LogConst.CON_DOCUMENT, doc_no, request.getRemoteAddr());
         }
-        
+
         String docdownload = oscar.OscarProperties.getInstance().getProperty("DOCUMENT_DIR");
         File documentDir = new File(docdownload);
         log.debug("Document Dir is a dir"+documentDir.isDirectory());
-        
-        Document d = documentDAO.getDocument(doc_no); 
+
+        Document d = documentDAO.getDocument(doc_no);
         log.debug("Document Name :"+d.getDocfilename());
         String docxml = d.getDocxml();
-        
+
         String contentType = d.getContenttype();
         if (docxml != null && !docxml.trim().equals("")){
             ServletOutputStream outs = response.getOutputStream();
@@ -363,7 +363,7 @@ public class ManageDocumentAction extends DispatchAction {
             outs.close();
             return null;
         }
-        
+
         //TODO: Right now this assumes it's a pdf which it shouldn't
         if (contentType == null){
             contentType = "application/pdf";
@@ -373,24 +373,27 @@ public class ManageDocumentAction extends DispatchAction {
         //response.setHeader("Content-Disposition", "attachment;filename=\"" + filename+ "\"");
         //read the file name.
         File file = new File(documentDir,d.getDocfilename());
-        //InputFileStream is = 
-        
+        //InputFileStream is =
+
         log.debug("about to Print to stream");
         ServletOutputStream outs = response.getOutputStream();
- 
-        
+
+
         response.setHeader("Content-Disposition", "attachment;filename=" + d.getDocfilename());
         BufferedInputStream bfis = new BufferedInputStream(new FileInputStream(file));
-        int data;
-        while ((data = bfis.read()) != -1) {
-            outs.write(data);
-            outs.flush();
+
+        byte[] buffer = new byte[1024];
+        int bytesRead = 0;
+
+        while ((bytesRead = bfis.read(buffer)) != -1) {
+            outs.write(buffer, 0, bytesRead);
+            //outs.flush();
         }
-		
+
         bfis.close();
-        
+
         outs.flush();
-        outs.close();     
+        outs.close();
         return null;
     }
 

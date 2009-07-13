@@ -42,6 +42,10 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
+import org.caisi.model.Appointment;
+import org.oscarehr.casemgmt.dao.ApptDAO;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import oscar.OscarProperties;
 import oscar.oscarBilling.ca.bc.MSP.MSPBillingNote;
 import oscar.oscarBilling.ca.bc.MSP.MSPReconcile;
@@ -72,15 +76,14 @@ public class BillingSaveBillingAction
     //  oscar.oscarBilling.data.BillingStoreData bsd = new oscar.oscarBilling.data.BillingStoreDate();
     //  bsd.storeBilling(bean);
     
-    
-    
-    
-    
-    
+    WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getSession().getServletContext());
+    ApptDAO apptDAO = (ApptDAO) ctx.getBean("ApptDAO"); 
     
     oscar.appt.ApptStatusData as = new oscar.appt.ApptStatusData();
-    String billStatus = as.billStatus(bean.getApptStatus());
-
+    
+    Appointment appt = apptDAO.getAppt(""+bean.getApptNo());
+    String billStatus = as.billStatus(appt.getStatus());
+    
     java.sql.ResultSet rs;
     GregorianCalendar now = new GregorianCalendar();
     int curYear = now.get(Calendar.YEAR);

@@ -13,7 +13,7 @@ public class BackupDownload extends GenericDownload {
 
     private static final String ROLE_BACKUP_ADMIN = "_admin.backup";
 
-    private static final String PROFESSINAL_ADMIN = "admin";
+    private static final String ROLE_ADMIN = "_admin";
 
     public BackupDownload() {}
 
@@ -32,7 +32,7 @@ public class BackupDownload extends GenericDownload {
             java.sql.ResultSet rs = db.GetSQL(sql);
             
             while(rs.next()) {
-                if( ROLE_BACKUP_ADMIN.equalsIgnoreCase(rs.getString("objectName")) ) {
+                if( ROLE_BACKUP_ADMIN.equalsIgnoreCase(rs.getString("objectName")) || ROLE_ADMIN.equalsIgnoreCase(rs.getString("objectName")) ) {
                     adminPrivs = true;
                     break;
                 }
@@ -44,10 +44,7 @@ public class BackupDownload extends GenericDownload {
             e.printStackTrace();
         }
         boolean bDownload = false;
-        if (filename != null
-                && (adminPrivs
-                || ((String) session.getAttribute("userprofession") != null && ((String) session
-                        .getAttribute("userprofession")).equalsIgnoreCase(PROFESSINAL_ADMIN)))) {
+        if (filename != null && adminPrivs) {
             bDownload = true;
         }
         download(bDownload, res, dir, filename, null);

@@ -9,9 +9,12 @@
 <%@page import="org.oscarehr.util.LoggedInInfo"%>
 <%@page import="org.oscarehr.util.DigitalSignatureUtils"%>
 <%@page import="org.oscarehr.ui.servlet.ImageRenderingServlet"%>
+<%@page import="org.oscarehr.PMmodule.service.CheckSignatureStatus" %>
 
 <%@include file="/layouts/caisi_html_top2.jspf"%>
-
+<script>
+	String.prototype.trim = function() { return this.replace(/^\s+|\s+$|\n$/g, ''); };
+</script>
 <%
 	int currentDemographicId=Integer.parseInt(request.getParameter("demographicId"));
 	
@@ -19,6 +22,8 @@
 
 	String viewConsentId=request.getParameter("viewConsentId");
 	manageConsent.setViewConsentId(viewConsentId);
+	
+	String signatureRequestId = null;
 %>
 
 <h3><%=viewConsentId!=null?"View Consent":"Manage Consent"%></h3>
@@ -27,9 +32,11 @@
 	<%@include file="manage_consent_text.jspf" %>
 </div>
 <hr />
+
+
 <form action="manage_consent_action.jsp">
 	<input type="hidden" name="demographicId" value="<%=currentDemographicId%>" />
-
+	<input type="hidden" name="signature_status" id="signature_status" value="NOT_FOUND"/>
 	<div style="font-weight:bold">Client consent</div>
 	<table style="background-color:#ccccff">
 		<tr>
@@ -99,9 +106,11 @@
 	<%
 		if (manageConsent.useDigitalSignatures())
 		{
-			String signatureRequestId=DigitalSignatureUtils.generateSignatureRequestId(LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo());
+			signatureRequestId=DigitalSignatureUtils.generateSignatureRequestId(LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo());
 			
 			String imageUrl=null;
+			String statusUrl=null;
+			
 			if (viewConsentId==null)
 			{
 				imageUrl=request.getContextPath()+"/imageRenderingServlet?source="+ImageRenderingServlet.Source.signature_preview.name()+"&"+DigitalSignatureUtils.SIGNATURE_REQUEST_ID_KEY+"="+signatureRequestId;
@@ -112,7 +121,7 @@
 				if (previousDigitalSignatureId==null) imageUrl=request.getContextPath()+"/images/1x1.gif";
 				else imageUrl=request.getContextPath()+"/imageRenderingServlet?source="+ImageRenderingServlet.Source.signature_stored.name()+"&digitalSignatureId="+previousDigitalSignatureId;
 			}
-
+			statusUrl = request.getContextPath()+"/PMmodule/ClientManager/check_signature_status.jsp?" + DigitalSignatureUtils.SIGNATURE_REQUEST_ID_KEY+"="+signatureRequestId;
 			%>
 				<br />
 				<input type="hidden" name="<%=DigitalSignatureUtils.SIGNATURE_REQUEST_ID_KEY%>" value="<%=signatureRequestId%>" />
@@ -126,6 +135,18 @@
 						counter=counter+1;
 						var img=document.getElementById("signature");
 						img.src='<%=imageUrl%>&rand='+counter;
+
+						
+                        var request = dojo.io.bind({
+                            url: '<%=statusUrl%>',
+                            method: "post",
+                            mimetype: "text/html",
+                            load: function(type, data, evt){   
+                                	var x = data.trim();                                	
+                                    document.getElementById('signature_status').value=x;                                   
+                            }
+                    });
+						
 					}
 				</script>
 				<br />
@@ -143,7 +164,19 @@
 			<%
 		}
 	%>
-	<input type="submit" value="sign save and exit" <%=manageConsent.disableEdit()?"disabled=\"disabled\" style=\"display:none\"":""%> /> &nbsp; <input type="button" value="Cancel" onclick="document.location='<%=request.getContextPath()%>/PMmodule/ClientManager.do?id=<%=currentDemographicId%>'"/>
+<script type="text/javascript">
+function verifyRequiredSignature() {
+	var currentStatus = document.getElementById('signature_status').value;
+	if(currentStatus == 'FOUND') {
+		return true;
+	}
+	alert('The client must sign the form to obtain consent');
+	return false;
+}
+
+</script>
+		
+	<input type="submit" onclick="return verifyRequiredSignature()" value="sign save and exit" <%=manageConsent.disableEdit()?"disabled=\"disabled\" style=\"display:none\"":""%> /> &nbsp; <input type="button" value="Cancel" onclick="document.location='<%=request.getContextPath()%>/PMmodule/ClientManager.do?id=<%=currentDemographicId%>'"/>
 </form>
 
 <%@include file="/layouts/caisi_html_bottom2.jspf"%>

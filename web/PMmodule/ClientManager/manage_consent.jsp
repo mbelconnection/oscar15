@@ -9,7 +9,6 @@
 <%@page import="org.oscarehr.util.LoggedInInfo"%>
 <%@page import="org.oscarehr.util.DigitalSignatureUtils"%>
 <%@page import="org.oscarehr.ui.servlet.ImageRenderingServlet"%>
-<%@page import="org.oscarehr.PMmodule.service.CheckSignatureStatus" %>
 
 <%@include file="/layouts/caisi_html_top2.jspf"%>
 <script>

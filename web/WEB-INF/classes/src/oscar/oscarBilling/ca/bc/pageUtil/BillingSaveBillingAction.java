@@ -79,10 +79,7 @@ public class BillingSaveBillingAction
     WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getSession().getServletContext());
     ApptDAO apptDAO = (ApptDAO) ctx.getBean("ApptDAO"); 
     
-    oscar.appt.ApptStatusData as = new oscar.appt.ApptStatusData();
     
-    Appointment appt = apptDAO.getAppt(""+bean.getApptNo());
-    String billStatus = as.billStatus(appt.getStatus());
     
     java.sql.ResultSet rs;
     GregorianCalendar now = new GregorianCalendar();
@@ -97,24 +94,30 @@ public class BillingSaveBillingAction
         "dataCenterId");
     String billingMasterId = "";
    
-    
-    ///Update Appointment information
-    log.debug("appointment_no: " + bean.getApptNo());
-    log.debug("BillStatus:" + billStatus);
-    String sql = "update appointment set status='" + billStatus +
-        "' where appointment_no='" + bean.getApptNo() + "'";
+    oscar.appt.ApptStatusData as = new oscar.appt.ApptStatusData();
+    String sql = "";
+    System.out.println("appt no "+bean.getApptNo());
+    if (bean.getApptNo() != null && !bean.getApptNo().trim().equals("0") &&  !bean.getApptNo().trim().equals("")){
+        Appointment appt = apptDAO.getAppt(""+bean.getApptNo());
+        String billStatus = as.billStatus(appt.getStatus());
+        ///Update Appointment information
+        log.debug("appointment_no: " + bean.getApptNo());
+        log.debug("BillStatus:" + billStatus);
+        sql = "update appointment set status='" + billStatus +
+            "' where appointment_no='" + bean.getApptNo() + "'";
 
-    try {  
-      DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
-      db.RunSQL(sql);
-      db.CloseConn();
+        try {
+          DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+          db.RunSQL(sql);
+          db.CloseConn();
 
-    }
-    catch (SQLException e) {
-      log.error(e.getMessage(),e);
-      log.error("LLLOOK: APPT ERROR FOR demo:" + bean.getPatientName() +
-                         " date " + curDate);
-      e.printStackTrace();
+        }
+        catch (SQLException e) {
+          log.error(e.getMessage(),e);
+          log.error("LLLOOK: APPT ERROR FOR demo:" + bean.getPatientName() +
+                             " date " + curDate);
+          e.printStackTrace();
+        }
     }
     ////End of updating appt information
 

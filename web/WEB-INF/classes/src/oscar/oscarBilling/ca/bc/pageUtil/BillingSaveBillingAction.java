@@ -75,7 +75,11 @@ public class BillingSaveBillingAction
         getSession().getAttribute("billingSessionBean");
     //  oscar.oscarBilling.data.BillingStoreData bsd = new oscar.oscarBilling.data.BillingStoreDate();
     //  bsd.storeBilling(bean);
-    
+
+    if (bean.getApptNo() == null || bean.getApptNo().equalsIgnoreCase("null")){
+       bean.setApptNo("0");
+    }
+
     WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getSession().getServletContext());
     ApptDAO apptDAO = (ApptDAO) ctx.getBean("ApptDAO"); 
     

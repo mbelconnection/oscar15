@@ -394,8 +394,11 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
                         Provider prov;
                         Iterator<Provider>iter = providers.iterator();
                         while(iter.hasNext()) {
-                    prov = iter.next();
-                        providerNo = prov.getProviderNo();
+                            prov = iter.next();
+                            if(prov==null){
+                                continue;
+                            }
+                            providerNo = prov.getProviderNo();
                         %>
 		<li><html:multibox property="filter_providers"
 			value="<%=providerNo%>" onclick="filterCheckBox(this)"></html:multibox><%=prov.getFormattedName()%></li>

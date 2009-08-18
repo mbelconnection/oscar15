@@ -94,6 +94,7 @@ public final class SiteCheckAction extends BaseAction {
 	     	    if (isKeyValid(ssv.getSiteId(),ssv.getSiteKey(),request.getRemoteAddr()))
 	     	    {
 	     	    	newKey = secSiteManager.generateNewKey();
+	     	    	secSiteManager.setSiteKey(ssv.getSiteId(), newKey); 
 		     	    sendMessage(response,"confirmed:" + newKey);
 	     	    }
 	     	    else
@@ -107,7 +108,6 @@ public final class SiteCheckAction extends BaseAction {
  	    }
  	    else
  	    {
- 	    	secSiteManager.setSiteKey(ssv.getSiteId(), ssv.getSiteKey()); 
  	    	sendMessage(response,login(request,mapping, ssv));
  	    	return null;
  	    }

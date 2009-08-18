@@ -275,6 +275,14 @@ public class UserManagerAction extends BaseAdminAction {
 
 		}
 		user.setUserName(((String) secuserForm.get("userName")).toLowerCase());
+		if(!Utility.IsRegular(user.getUserName())) {
+			messages
+			.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage(
+					"error.newuser.invalidUserId", request
+							.getContextPath()));
+			saveMessages(request, messages);
+			return mapping.findForward("edit");
+		}
 		secuserForm.set("userName",user.getUserName());
 		String password = (String) secuserForm.get("password");
 		String cpass = (String) secuserForm.get("confirmPassword");

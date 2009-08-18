@@ -2,11 +2,8 @@
 <%@ include file="/taglibs.jsp"%>
 <%String a="debug"; %>	
 <script type="text/javascript">
-var inRefreshing = false;
 function submitForm(methodVal) {
-	if (inRefreshing) return;
-	inRefreshing = true;
-	trimInputBox();
+	if (!trimInputBox()) return false;
 	if(!isDateValid) return;
 	if (methodVal == 'changeProgram') {
 		;
@@ -149,6 +146,6 @@ function submitForm(methodVal) {
 		<td colspan="2"><html:textarea style="width: 90%" rows="16" property="tickler.message" /></td></tr>
 </table>
 <%@ include file="/common/readonly.jsp" %>
-	</html:form>
+	<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>
 	</body>
 </html>

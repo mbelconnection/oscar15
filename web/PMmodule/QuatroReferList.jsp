@@ -6,7 +6,7 @@
 <script type="text/javascript" src='<c:out value="${ctx}"/>/js/quatroLookup.js'></script>
 <script lang="javascript">
 		function submitForm(methodVal) {
-			trimInputBox();
+			if (!trimInputBox()) return false;
 			document.forms[0].method.value = methodVal;
 			document.forms[0].submit();
 		}
@@ -96,4 +96,4 @@
 		</tr>		
 			
 	</table>
-</html-el:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html-el:form>

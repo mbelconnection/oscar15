@@ -1,5 +1,6 @@
 /* This method will return true if valid, false otherwise (and present an alert box). */ 
 String.prototype.trim = function() { return this.replace(/^\s+|\s+$/, ''); };
+var inRefreshing = false;
 function isInt(str)
 {
 	var iv =  parseInt(str);
@@ -231,6 +232,8 @@ function isDigit(c){
 }
 function trimInputBox()
 {
+	if (inRefreshing) return false;
+	inRefreshing  = true;
     var k = document.forms[0].elements.length;
     for(var i=0; i < k; i++) 
     {
@@ -241,4 +244,5 @@ function trimInputBox()
            }  
        }
     }
+    return true;
 }

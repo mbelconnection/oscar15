@@ -102,18 +102,20 @@ Source:web/PMmodule/Admin/User/AddRoles.jsp
 	</td></tr>
 </table>
 <%@ include file="/common/readonly.jsp" %>
-</html:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>
 <script language="javascript" type="text/javascript">
 <!--
 function submitForm(mthd){
-	trimInputBox();
+	if (!trimInputBox()) return false;
 	if(mthd == "saveRoles" && noChanges())
 	{
 		alert("There are no changes detected to save");
+		inRefreshing = false;
 	}
 	else if(mthd=="removeRole" && !getChecks())
 	{
 		alert ("Please select a line to remove");
+		inRefreshing = false;
 	}
 	else
 	{

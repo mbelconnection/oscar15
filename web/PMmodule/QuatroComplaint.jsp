@@ -29,18 +29,23 @@ Source:web/PMmodule/QuatroComplaint.jsp
 	}
 	
 	function submitForm(methodVal) {
-		trimInputBox();
-		if(!isDateValid) return;
+		if (!trimInputBox()) return false;
+		if(!isDateValid) {
+			inRefreshing = false;
+			return;
+		}
 		var validSource = document.getElementsByName("complaint.source")[0].value.length > 0;
 		if(!validSource){
 			alert("Please select Source of Complaint before saving.");
 			document.getElementsByName("complaint.source")[0].focus();
+			inRefreshing = false;
 			return;
 		}
 		var validMethod = document.getElementsByName("complaint.method")[0].value.length > 0;
 		if(!validMethod){
 			document.getElementsByName("complaint.method")[0].focus();
 			alert("Please select Method of Contact before saving.");
+			inRefreshing = false;
 			return;
 		}
 		//name
@@ -48,11 +53,13 @@ Source:web/PMmodule/QuatroComplaint.jsp
     if(obj.value.trim()==""){
       alert("First name is empty.");
       obj.focus();
+	  inRefreshing = false;
       return; 
     }
     if(!isName(obj.value.trim())){
       alert("First name contains illegal character!");
       obj.focus();
+	  inRefreshing = false;
       return; 
     }
     
@@ -60,12 +67,14 @@ Source:web/PMmodule/QuatroComplaint.jsp
     if(obj.value.trim()==""){
       alert("Last name is empty.");
       obj.focus();
+	  inRefreshing = false;
       return; 
     }
     if(!isName(obj.value.trim())){
       alert("Last name contains illegal character!");
       obj.value="";
       obj.focus();
+	  inRefreshing = false;
       return; 
     }
 		
@@ -73,24 +82,28 @@ Source:web/PMmodule/QuatroComplaint.jsp
 		if(!validProgram){
 			alert("Please select program before saving.");
 			document.getElementsByName("complaint.programId")[0].focus();
+			inRefreshing = false;
 			return;
 		}
 		//standards
 		var validStandards = validateStandards();
 		if(!validStandards){
 			alert("Please select Toronto Shelter Standards before saving.");
+			inRefreshing = false;
 			return;
 		}
 		var validDescription = document.getElementsByName("complaint.description")[0].value.length > 0;
 		if(!validDescription){
 			alert("Please enter the Description of Complaint before saving.");
 			document.getElementsByName("complaint.description")[0].focus();
+			inRefreshing = false;
 			return;
 		}
 		var validOutcome = document.getElementsByName("complaint.satisfiedWithOutcome")[0].value.length > 0;
 		if(!validOutcome){
 			alert("Please specify if the complainant was satisfied with the outcome before saving.");
 			document.getElementsByName("complaint.satisfiedWithOutcome")[0].focus();
+			inRefreshing = false;
 			return;
 		}
 		var duration = document.getElementsByName("complaint.duration")[0].value;
@@ -98,6 +111,7 @@ Source:web/PMmodule/QuatroComplaint.jsp
 		{
 			alert("Time Spent on Complaint is mandatory, should be a number, and not less than 0");
 			document.getElementsByName("complaint.duration")[0].focus();
+			inRefreshing = false;
 			return;
 		}
 		
@@ -106,6 +120,7 @@ Source:web/PMmodule/QuatroComplaint.jsp
 		if(completeStatus && completeDate.length == 0){
 			alert("Please specify the complete date before saving.");
 			document.getElementsByName("complaint.completedDatex")[0].focus();
+			inRefreshing = false;
 			return;
 		}
 		if(!completeStatus && completeDate.length > 0){
@@ -114,11 +129,13 @@ Source:web/PMmodule/QuatroComplaint.jsp
 		if(isBeforeToday(completeDate)){
 			alert("Date Completed - Should be today's date or after.");
 			document.getElementsByName("complaint.completedDatex")[0].focus();
+			inRefreshing = false;
 			return;
 		}
 		if(methodVal=="save" && noChanges())
 		{
 			alert("There are no changes detected to save");
+			inRefreshing = false;
 		}
 		else
 		{
@@ -505,4 +522,4 @@ Source:web/PMmodule/QuatroComplaint.jsp
 		</tr>
 	</table>
 	<%@ include file="/common/readonly.jsp" %>
-</html-el:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html-el:form>

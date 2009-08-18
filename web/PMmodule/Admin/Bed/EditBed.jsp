@@ -2,17 +2,19 @@
 
 <script>
     function submitForm(){
-      trimInputBox();
+      if (!trimInputBox()) return false;
       	var name= document.getElementsByName("bed.name")[0];
       	if(name.value.trim()==''){
       	   alert("Please input Bed Name.");
       	   name.focus();
-      	   return;
+			inRefreshing = false;
+      	   return false;
       	}
       	var type= document.getElementsByName("bed.bedTypeId")[0];
       	if(type.value==''){
       	   alert("Please input Bed Type.");
       	   type.focus();
+			inRefreshing = false;
       	   return;
       	}
 
@@ -139,4 +141,4 @@
 		<!-- body end -->
 	</table>
 	<%@ include file="/common/readonly.jsp" %>
-</html:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>

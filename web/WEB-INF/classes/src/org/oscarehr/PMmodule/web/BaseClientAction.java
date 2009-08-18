@@ -370,7 +370,7 @@ public abstract class BaseClientAction extends BaseAction {
 	    return (Integer) request.getSession().getAttribute("currentIntakeId");
 	}
 	protected Integer getClientId(HttpServletRequest request){
-		 return (Integer) request.getSession().getAttribute("clientId");
+		return (Integer) request.getSession().getAttribute("clientId");
 	}
 	protected String getClientName(HttpServletRequest request){
 		 return ((Demographic) request.getSession().getAttribute("client")).getFormattedName();

@@ -11,9 +11,10 @@ Source:web/PMmodule/Admin/ProgramEdit/general.jsp
 <script type="text/javascript">
 <!--
 	function save() {
-	    trimInputBox();
+	    if (!trimInputBox()) return false;
 		if(noChanges()) {
 			alert("There are no changes detected");
+			inRefreshing = false;
 			return false;
 		}
 		var obj1 = document.getElementsByName('program.capacity_funding')[0];
@@ -26,35 +27,45 @@ Source:web/PMmodule/Admin/ProgramEdit/general.jsp
 		var obj8 = document.getElementsByName('programManagerForm_program.facilityId')[0];		
 		if(obj8 == null) obj8 = document.getElementsByName('program.facilityId')[0];
 		obj5.value = trim(obj5.value);
-			
 		if(obj8 != null && obj8.value == '') {
 			alert('Facility can not be blank.');
+			inRefreshing = false;
 		}else if(obj5.value == null || obj5.value == '') {
 			alert('The program name can not be blank.');
+			inRefreshing = false;
 		} else if(obj7.value == null || obj7.value == '') {
 			alert('The program type can not be blank.');
+			inRefreshing = false;
 		}else if(!isNumberInRange(obj1, 0, 'unlimit', 'Funding Capacity')){
 			//alert('1');
+			inRefreshing = false;
 			
 		}else if(!isNumberInRange(obj2, 0, 'unlimit', 'Space Capacity')){
 			//alert('2');
+			inRefreshing = false;
 			
 		} else if(obj6.value == null || obj6.value == '') {
 			alert('The program Male/Female can not be blank.');
 			obj6.focus();
+			inRefreshing = false;
+			
 		}else if(!isNumberInRange(obj3, 0, 100, 'Minimum Age')){
 			//alert('3');
+			inRefreshing = false;
 			
 		}else if( !isNumberInRange(obj4, 0, 100, 'Maximum Age')){
 			//alert('4');
+			inRefreshing = false;
 			
 		}else if(!compareNumber(obj3.value, obj4.value, 'Maximum Age field must be greater or equal to Minimum Age field.')){
 			//alert('5');
+			inRefreshing = false;
 			
 		}else{
 		  var obj9 = document.getElementsByName('program.programStatus')[0];
 		  if(obj9.value=='0'){
             if(!confirm("You are going to deactivate this program. Select Ok to proceed or Cancel to cancel."))
+			inRefreshing = false;
             return false;
 		  }
 

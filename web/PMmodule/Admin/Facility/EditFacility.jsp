@@ -32,7 +32,7 @@
             return false;
 		}
 
-		trimInputBox();
+		if (!trimInputBox()) return false;
 		var isOk = false;
 		isOk = validateRequiredField('facilityName', 'Facility Name', 32);
 		if (isOk) isOk = validateRequiredField('facilityDesc', 'Facility Description', 70);
@@ -49,11 +49,16 @@
 			if(noChanges())
 			{
 				alert("There are no changes detected to save");
+				inRefreshing = false;
 			}
 			else
 			{
 				document.forms[0].submit();
 			}
+		}
+		else
+		{
+			inRefreshing = false;
 		}
 		return false;
 	}
@@ -221,4 +226,4 @@
 		<!-- body end -->
 	</table>
 	<%@ include file="/common/readonly.jsp" %>
-</html:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>

@@ -196,7 +196,7 @@ if (props.getProperty("logintitle", "").equals("")) {
 	</tr>
 	<tr><td height=20></td></tr>
 </table>
-</html:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>
 </div>
 
 </body>

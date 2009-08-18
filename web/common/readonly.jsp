@@ -132,4 +132,3 @@
 		</script>
 	</logic:equal>
 </logic:present>
-<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" />

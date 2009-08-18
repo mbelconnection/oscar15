@@ -79,7 +79,10 @@ public class QuatroReportViewerAction extends BaseAction {
 			String fwd =  Refresh(myForm, request, response);
 			if ("".equals(fwd)) return null;
 			else
+			{
+				request.setAttribute("notoken",Boolean.TRUE);
 				return mapping.findForward("view");
+			}
 		}
 		catch(Exception e)
 		{

@@ -15,4 +15,4 @@
 </head>
 <html-el:form action="/PMmodule/PrintView.do">
 	<input type="hidden" name="rId">
-</html-el:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html-el:form>

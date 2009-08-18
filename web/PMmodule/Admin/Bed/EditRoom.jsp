@@ -2,17 +2,19 @@
 
 <script>
     function submitForm(){
-    	trimInputBox();
+    	if (!trimInputBox()) return false;
       	var name= document.getElementsByName("room.name")[0];
       	if(name.value.trim()==''){
       	   alert("Please input Room Name.");
       	   name.focus();
+			inRefreshing = false;
       	   return;
       	}
       	var rmtype= document.getElementsByName("room.roomTypeId")[0];
       	if(rmtype.value.trim()==''){
       	   alert("Please select Room Type.");
       	   rmtype.focus();
+			inRefreshing = false;
       	   return;
       	}
  
@@ -23,6 +25,7 @@
       	if(current_assignedBed.value=='1' && assignedBed.value=='0' && bednum.value>0){
     	   alert("This room already has bed(s) assigned, Assigned Beds can not be 'N'.");
       	   assignedBed.focus();
+			inRefreshing = false;
       	   return;
       	}
  
@@ -31,6 +34,7 @@
       	   if(!isInteger(roomCapacity.value)){
       	      alert("Please input valid Room Capacity.");
       	      roomCapacity.focus();
+			inRefreshing = false;
       	      return;
       	   }
       	}
@@ -39,6 +43,7 @@
       	if(programId.value==''){
       	   alert("Please select a Program.");
       	   programId.focus();
+			inRefreshing = false;
       	   return;
       	}
 
@@ -142,4 +147,4 @@
 		<!-- body end -->
 	</table>
 	<%@ include file="/common/readonly.jsp" %>
-</html:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>

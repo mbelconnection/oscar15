@@ -1746,7 +1746,7 @@ Version version = (Version) ctx.getBean("version");
                 &nbsp;&nbsp;
             </div>
         </div>
-    </html:form>          
+    <input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>          
     
     <nested:form action="/CaseManagementEntry" style="display:inline; margin-top:0; margin-bottom:0;">
         <html:hidden property="demographicNo"/>

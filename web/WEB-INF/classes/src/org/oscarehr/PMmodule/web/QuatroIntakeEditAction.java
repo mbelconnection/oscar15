@@ -499,6 +499,7 @@ public class QuatroIntakeEditAction extends BaseClientAction {
 	public ActionForward queue(ActionMapping mapping, ActionForm form, 
 			HttpServletRequest request, HttpServletResponse response) 
 	{
+		request.setAttribute("notoken", Boolean.TRUE);
 		return mapping.findForward("admission");
 	}
 	private void setProgramEditable(HttpServletRequest request,
@@ -968,6 +969,15 @@ public class QuatroIntakeEditAction extends BaseClientAction {
 		Integer programId = headIntakeTo.getProgramId();
 		Program program = programManager
 				.getProgram(headIntakeTo.getProgramId());
+		//check to see if the current client is family head
+		boolean isFamilyHead  = false;
+		for (int i = 0; i < dependents.size(); i++) {
+			QuatroIntakeFamily obj3 = (QuatroIntakeFamily) dependents.get(i);
+			if(!obj3.getClientId().equals(headIntakeTo.getClientId())) continue;
+			if ("AA".equals(obj3.getRelationship())) isFamilyHead = true; 
+		}
+		if (!isFamilyHead) return isWarning;
+		
 		for (int i = 0; i < dependents.size(); i++) {
 			QuatroIntakeFamily obj3 = (QuatroIntakeFamily) dependents.get(i);
 			if(obj3.getClientId().equals(headIntakeTo.getClientId())) continue;

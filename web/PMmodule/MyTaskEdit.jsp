@@ -2,10 +2,11 @@
 	
 <script type="text/javascript">
 function submitForm(methodVal) {
-	trimInputBox();
+	if (!trimInputBox()) return false;
 	if(methodVal == "mytasksave" && noChanges())
 	{
 		alert("There are no changes detected to save");
+		inRefreshing = false;
 	}
 	else
 	{
@@ -89,6 +90,6 @@ function submitForm(methodVal) {
 		<td colspan="3"><textarea name="newcomment" style="width: 90%;" rows="8"></textarea></td></tr>
 </table>
 <%@ include file="/common/readonly.jsp" %>
-	</html:form>
+	<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>
 	</body>
 </html>

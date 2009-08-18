@@ -135,12 +135,12 @@ Source:web/PMmodule/Admin/User/UserEdit.jsp
 	</tr>
 </table>
 <%@ include file="/common/readonly.jsp" %>
-</html:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>
 <script language="javascript" type="text/javascript">
 <!--
 
 function submitForm(func){
-	trimInputBox();
+	if (!trimInputBox()) return false;
 	document.forms[0].method.value=func;
 	
 	var fld_userName = document.getElementsByName('userName')[0];
@@ -194,7 +194,10 @@ function submitForm(func){
 		if ( fld_email.value.length == 0 || ( fld_email.value.length > 0 && emailChecker(fld_email.value)))	{
 			v8 = true;
 		}	
-		if(!(v1 && v2 && v3 && v4 && v5 && v6 && v7 && v8 && v9)) return false;
+		if(!(v1 && v2 && v3 && v4 && v5 && v6 && v7 && v8 && v9)) {
+			inRefreshing = false;
+			return false;
+		}
 	}
 	if (func == 'profile') 
 	{
@@ -202,11 +205,13 @@ function submitForm(func){
 		{
 			if (!confirm("You have made changes to this form.\n Click on Cancel to be able to Save information or click OK to proceed without saving?")) return false;
 			setNoConfirm();
+			inRefreshing = false;
 		}
 	}
 	if (func != 'profile' && noChanges())
 	{
 		alert("There are no changes detected to save");
+		inRefreshing = false;
 	}
 	else
 	{

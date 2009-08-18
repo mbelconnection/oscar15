@@ -21,7 +21,6 @@
 <html:hidden property="admission.admissionStatus"/>
 <input type="hidden" id="scrollPosition" name="scrollPosition" value='<c:out value="${scrPos}"/>' />
 <script lang="javascript">
-var inRefreshing = false;
 function checkSignLinkVisibility(objSel) {
   if(objSel.value==''){
     var signLink = document.getElementById("signLink");
@@ -33,13 +32,11 @@ function checkSignLinkVisibility(objSel) {
 }
 
 function submitForm(methodVal) {
-	if (inRefreshing) return;
-	inRefreshing = true;
+	if (!trimInputBox()) return false;
 	if(!isDateValid) {
 		inRefreshing = false;
 		return;
 	}
-	trimInputBox();
 	/*
 	var ovPassStartDateTxt = document.getElementsByName("admission.ovPassStartDateTxt")[0];
 	var ovPassEndDateTxt = document.getElementsByName("admission.ovPassEndDateTxt")[0];
@@ -48,15 +45,18 @@ function submitForm(methodVal) {
 	  if(ovPassStartDateTxt.value=='') {
 	      alert("Please input Overnight Pass start date.");
     	  ovPassStartDateTxt.focus();
+		  inRefreshing = false;
       	  return;
       } else {
 	    if(isBeforeToday(ovPassStartDateTxt.value)){
            alert("Overnight Pass start date must not be earlier than today.");
            ovPassStartDateTxt.focus();
+		   inRefreshing = false;
            return;
 	    }else if(!isBefore(ovPassStartDateTxt.value, ovPassEndDateTxt.value)){
            alert("Overnight Pass end date must be after start date.");
            ovPassEndDateTxt.focus();
+		   inRefreshing = false;
            return;
 	    }
 	  }
@@ -352,4 +352,4 @@ Telephone no. 416-392-8741, Metro Hall, 55 John St. 6th Floor, Toronto, Ontario 
 </tr>
 </table>
 <%@ include file="/common/readonly.jsp" %>
-</html-el:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html-el:form>

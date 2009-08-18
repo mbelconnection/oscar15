@@ -60,7 +60,7 @@ public class LogAction {
             db.queryExecuteUpdate(sql);
             ret = true;
         } catch (SQLException e) {
-        	//e.printStackTrace();
+        	// e.printStackTrace();
         }
         finally
         {

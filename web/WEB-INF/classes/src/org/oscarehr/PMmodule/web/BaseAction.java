@@ -22,9 +22,11 @@
 
 package org.oscarehr.PMmodule.web;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Calendar;
-import java.util.HashMap;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -38,12 +40,6 @@ import org.apache.struts.action.RedirectingActionForward;
 import org.apache.struts.actions.DispatchAction;
 import org.oscarehr.PMmodule.model.Provider;
 //import org.oscarehr.PMmodule.service.AgencyManager;
-import org.oscarehr.PMmodule.service.ProgramManager;
-import org.oscarehr.PMmodule.service.ProgramQueueManager;
-import org.oscarehr.PMmodule.service.ProviderManager;
-import org.oscarehr.PMmodule.service.RatePageManager;
-import org.oscarehr.PMmodule.service.RoomDemographicManager;
-import org.oscarehr.PMmodule.service.RoomManager;
 import org.oscarehr.PMmodule.utility.Utility;
 
 import oscar.OscarProperties;
@@ -51,7 +47,6 @@ import oscar.OscarProperties;
 import com.quatro.common.KeyConstants;
 import com.quatro.model.security.NoAccessException;
 import com.quatro.service.security.SecurityManager;
-import com.quatro.service.security.UserAccessManager;
 
 public abstract class BaseAction extends DispatchAction {
 
@@ -66,6 +61,7 @@ public abstract class BaseAction extends DispatchAction {
 		msgs.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage(
 				"errors.detail", message));
 		addErrors(req, msgs);
+		
 	}
 
 	public void addMessage(HttpServletRequest req, String message) {
@@ -206,11 +202,19 @@ public abstract class BaseAction extends DispatchAction {
 	{
 		
 		String tokenP = (String) request.getParameter("token");
+		String qStr = request.getQueryString();
+		if (Utility.isNotNullOrEmptyStr(qStr))
+		{
+			if (qStr.indexOf("token") >=0) tokenP = ""; 
+		}
+		
 		String methodName = name;
 		Calendar startDt = Calendar.getInstance();
-
 		if (methodName != null) methodName = methodName.toLowerCase();
-		if (tokenP != null && !tokenP.equals("") && name!= null && (methodName.indexOf("save") >=0 || methodName.indexOf("login")>=0 || methodName.indexOf("hange")>=0)) {
+//		if (tokenP != null && !tokenP.equals("") && name!= null && (methodName.indexOf("save") >=0 || methodName.indexOf("login")>=0 || methodName.indexOf("hange")>=0)) {
+
+		if (tokenP != null && !tokenP.equals("")) 
+		{
 			String tokenS = (String) request.getSession().getAttribute("token"); 
 			if(Utility.isNotNullOrEmptyStr(tokenS)) {
 				if(!tokenS.equals(tokenP))   {
@@ -222,7 +226,8 @@ public abstract class BaseAction extends DispatchAction {
 		}
 
 		try {
-			ActionForward fwd =  super.dispatchMethod(mapping, form, request, response, name);
+//			ActionForward fwd =  super.dispatchMethod(mapping, form, request, response, name);
+			ActionForward fwd =  dispatchMethodQ(mapping, form, request, response, name);
 			if(fwd != null && fwd.getName() != null && fwd.getName().equals("failure")) throw new NoAccessException();
 	        if (fwd != null) {
 	        	response.setHeader("Content-Type", "text/html; charset=utf-8" );
@@ -232,10 +237,11 @@ public abstract class BaseAction extends DispatchAction {
 		        response.setHeader("Cache-Control",
 		        	"no-cache, nostore, must-revalidate, post-check=0, pre-check=0");
 		        response.setHeader("Pragma", "no-cache");
-	        }
-	        if (request.getAttribute("notoken") == null)
-	        {
-	        	request.getSession().setAttribute("token", request.getSession().getId() + String.valueOf(Calendar.getInstance().getTimeInMillis()));
+		        if (request.getAttribute("notoken") == null)
+		        {
+//		        	request.getSession().setAttribute("token", request.getSession().getId() + String.valueOf(Calendar.getInstance().getTimeInMillis()));
+		        	request.getSession().setAttribute("token", String.valueOf(Calendar.getInstance().getTimeInMillis()));
+		        }
 	        }
 	        // do a access log
 	        Calendar endDt = Calendar.getInstance();
@@ -251,8 +257,82 @@ public abstract class BaseAction extends DispatchAction {
 			request.setAttribute("message", "Access to the requested page has been denied due to insufficient privileges.");
 			return mapping.findForward("failure");
 		}
+		catch(NoSuchMethodException ex)
+		{
+			request.setAttribute("message", "Invalid Request.");
+			return mapping.findForward("failure");
+		}
+		catch (Exception ex)
+		{
+	        Calendar endDt = Calendar.getInstance();
+	        long timeSpan = endDt.getTimeInMillis()-startDt.getTimeInMillis();
+			log(timeSpan, ex.toString(),name,0, request);
+			return mapping.findForward("failure");
+		}
 	}
-	
+	private ActionForward dispatchMethodQ(ActionMapping mapping,
+                                              ActionForm form,
+                                              HttpServletRequest request,
+                                              HttpServletResponse response,
+                                              String name) throws Exception {
+   
+           // Make sure we have a valid method name to call.
+           // This may be null if the user hacks the query string.
+           if (name == null) {
+               return this.unspecified(mapping, form, request, response);
+           }
+   
+           // Identify the method object to be dispatched to
+           Method method = null;
+           try {
+               method = getMethod(name);
+   
+           } catch(NoSuchMethodException e) {
+   //            String message =
+   //                    messages.getMessage("dispatch.method", mapping.getPath(), name);
+   //            log.error(message, e);
+   
+               String userMsg =
+                   messages.getMessage("dispatch.method.user", mapping.getPath());
+               throw new NoSuchMethodException(userMsg);
+           }
+   
+           ActionForward forward = null;
+           try {
+               Object args[] = {mapping, form, request, response};
+               forward = (ActionForward) method.invoke(this, args);
+   
+           } catch(ClassCastException e) {
+               String message =
+                       messages.getMessage("dispatch.return", mapping.getPath(), name);
+               log.error(message, e);
+               throw e;
+   
+           } catch(IllegalAccessException e) {
+               String message =
+                       messages.getMessage("dispatch.error", mapping.getPath(), name);
+               log.error(message, e);
+               throw e;
+   
+           } catch(InvocationTargetException e) {
+               // Rethrow the target exception if possible so that the
+               // exception handling machinery can deal with it
+               Throwable t = e.getTargetException();
+               if (t instanceof Exception) {
+                   throw ((Exception) t);
+               } else {
+                   String message =
+                           messages.getMessage("dispatch.error", mapping.getPath(), name);
+                   log.error(message, e);
+                   throw new ServletException(t);
+               }
+           }
+   
+           // Return the returned ActionForward instance
+           return (forward);
+       }
+   
+
 	private void log(long timeSpan, String ExName,String method, int result, HttpServletRequest request)
 	{
         if (!oscar.OscarProperties.getInstance().getProperty("audit_mode").equals("on")) return;

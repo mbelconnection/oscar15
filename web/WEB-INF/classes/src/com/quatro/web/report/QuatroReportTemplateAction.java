@@ -64,7 +64,7 @@ public class QuatroReportTemplateAction extends BaseAdminAction {
 			 myForm.setOptSaveAsSelected("optNew");
 		   }
 		}
-
+		request.setAttribute("notoken", Boolean.TRUE);
 		if((String)request.getParameter("Save")!=null) btnSave_Click(myForm, request);
 		ActionForward forward = mapping.findForward("success");
 		return forward;

@@ -285,11 +285,12 @@ var XMLHttpRequestObject = false;
 	}	
 	function submitForm(methodValue)
 	{
-		trimInputBox();
+		if (!trimInputBox()) return false;
 		if(!isDateValid) return;
 		if(methodValue=="save" && noChanges())
 		{
 			alert("There are no changes detected to save");
+			inRefreshing = false;
 		}
 		else
 		{
@@ -344,7 +345,7 @@ var XMLHttpRequestObject = false;
 			</logic:messagesPresent>
 			</td>
 		</tr>
-	</table>		
+	</table>
 	<table cellpadding="3" cellspacing="0" border="0" width="80%">
 		<tr>
 			<th style="width:40%">Case Status*</th>
@@ -464,6 +465,6 @@ var XMLHttpRequestObject = false;
 -->				 
 	</table>
 	<%@ include file="/common/readonly.jsp" %>
-</html:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>
 </body>
 </html>

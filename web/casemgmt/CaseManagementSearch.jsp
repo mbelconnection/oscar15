@@ -16,9 +16,12 @@ response.setHeader("Cache-Control", "no-cache");
 
 	function submitForm(methodValue)
 	{
-		trimInputBox();
+		if (!trimInputBox()) return false;
 		if(!isDateValid) return;
-		if(!validate()) return;
+		if(!validate()) {
+			inRefreshing = false;
+			return false;
+		}
 		document.forms[0].method.value=methodValue;
 		document.forms[0].submit();
 	}
@@ -312,4 +315,4 @@ response.setHeader("Cache-Control", "no-cache");
 		</td>
 	</tr>
 	</table>		
-</html:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>

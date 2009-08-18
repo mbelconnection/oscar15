@@ -7,14 +7,29 @@
 	<import value="net.sourceforge.barbecue.BarcodeFactory"/>
 	<parameter name="demo" isForPrompting="true" class="java.lang.String"/>
 	<title>
-		<band height="72">
+		<band height="96">
 			<image scaleImage="FillFrame" hAlign="Left" vAlign="Middle">
-				<reportElement x="0" y="21" width="243" height="49"/>
+				<reportElement x="20" y="21" width="200" height="21"/>
 				<graphicElement/>
 				<imageExpression class="net.sf.jasperreports.engine.JRRenderable">
-                 <![CDATA[new net.sf.jasperreports.renderers.BarbecueRenderer(BarcodeFactory.createCode128B($P{demo}))]]>
-                </imageExpression>
+	       	          <![CDATA[new net.sf.jasperreports.renderers.BarbecueRenderer(BarcodeFactory.createCode128B($P{demo}))]]>
+       	       	</imageExpression>
 			</image>
+			<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<reportElement
+					mode="Opaque"
+					x="100"
+					y="50"
+					width="200"
+					height="21"
+					key="textField"
+					positionType="Float"/>
+				<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+			<textFieldExpression   class="java.lang.String"><![CDATA[ $P{demo}]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
 </jasperReport>

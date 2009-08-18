@@ -11,9 +11,10 @@ response.setHeader("Cache-Control", "no-cache");
 <script>	
 	function submitForm(methodValue)
 	{
-		trimInputBox();
+		if (!trimInputBox()) return;
 		if(document.forms[0].imagefile.value=="") {
 			alert ("Please browse a file to upload first");
+			inRefreshing = false;
 			return;
 		}
 		document.forms[0].method.value=methodValue;
@@ -74,5 +75,5 @@ response.setHeader("Cache-Control", "no-cache");
 		</tr>
 	</table>
 	<%@ include file="/common/readonly.jsp" %>
-</html:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>
 

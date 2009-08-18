@@ -32,12 +32,16 @@
 			document.forms[0].submit();
 	}
 	function submitForm(methodVal) {
-		trimInputBox();
+		if (!trimInputBox()) return false;
 		if(!isDateValid) return false;
-		if(methodVal=="save" && !validateSave()) return false;
+		if(methodVal=="save" && !validateSave()) {
+			inRefreshing = false;
+			return false;
+		}
 		if(methodVal=="save" && noChanges())
 		{
 			alert("There are no changes detected to save");
+			inRefreshing = false;
 		}
 		else
 		{
@@ -49,11 +53,14 @@
 	function validateStateLength(){
 		var str1="Stated Purpose - this field should not over 512 characters!" ;
 		var str2="Stated Purpose - the field is mandatory!" ;
-	    var fieldValue = document.consentDetailForm.elements["consentValue.statePurpose"].value.trim();
+		var fd = document.consentDetailForm.elements["consentValue.statePurpose"];
+	    var fieldValue = fd.value.trim();
 		if (fieldValue.length>512)
 		{
+			fd.focus();
 			return str1;
 		}else if (fieldValue.length == 0){
+			fd.focus();
 		 	return str2;
 		}	
 		else
@@ -64,11 +71,14 @@
 	function validateNotesLength(){
 		var str1="Consent to the release and exchange of the following information: this field is mandatory!" ;
 		var str2="Consent to the release and exchange of the following information: this field length should not over 512 characters!" ;
-	    var fieldValue = document.consentDetailForm.elements["consentValue.notes"].value.trim();
+	    var fd = document.consentDetailForm.elements["consentValue.notes"];
+	    var fieldValue = fd.value.trim();
 		if (fieldValue.length>512)
 		{
+			fd.focus();
 			return str2;
 		}else if (fieldValue.length == 0){
+			fd.focus();
 		 	return str1;
 		}	
 		else
@@ -261,4 +271,4 @@
 		</tr>
 	</table>
 	<%@ include file="/common/readonly.jsp" %>
-</html-el:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html-el:form>

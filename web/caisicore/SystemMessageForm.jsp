@@ -133,18 +133,22 @@
 		<!-- body end -->
 	</table>
 <%@ include file="/common/readonly.jsp" %>
-</html:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>
 <script type="text/javascript">
 <!--
 	function submitForm(){
-		trimInputBox();
-		if(!isDateValid) return;
+		if (!trimInputBox()) return false;
+		if(!isDateValid) {
+			inRefreshing = false;
+			return;
+		}
 		var expiry_day = document.getElementsByName("system_message.expiry_day")[0];
 		var expiry_hour = document.getElementsByName("system_message.expiry_hour")[0];
 		var expiry_min = document.getElementsByName("system_message.expiry_minute")[0];
 		if(expiry_day.value=='' || isBeforeNow(expiry_day.value,expiry_hour.value,expiry_min.value )){
           alert("Expiry Day must not be earlier than today.");
           expiry_day.focus();
+		  inRefreshing = false;
           return;
         }
         
@@ -153,6 +157,7 @@
 		{
 			alert ("Message Type is required");
 			messageType.focus();
+			inRefreshing = false;
 			return;
 		}
 		var message = document.getElementsByName("system_message.message")[0];
@@ -160,12 +165,14 @@
 		{
 			alert ("Message is required");
 			message.focus();
+			inRefreshing = false;
 			return;
 		}
 		
 		if(noChanges())
 		{
 			alert("There are no changes detected to save");
+			inRefreshing = false;
 		}
 		else
 		{

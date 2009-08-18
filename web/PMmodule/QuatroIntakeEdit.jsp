@@ -25,11 +25,8 @@
     <input type="hidden" id="scrollPosition" name="scrollPosition" value='<c:out value="${scrPos}"/>' />
 
 <script lang="javascript">
-var inRefreshing = false;
 function submitForm(methodVal) {
-	if (inRefreshing)  return false;
-	inRefreshing = true;
-	trimInputBox();
+	if (!trimInputBox()) return false;
 	if(!isDateValid) {
 		inRefreshing = false
 		return;
@@ -902,4 +899,4 @@ function confirmActive()
 		</tr>
 	</table>
 	<%@ include file="/common/readonly.jsp" %>
-</html-el:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html-el:form>

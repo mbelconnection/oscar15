@@ -26,18 +26,20 @@
     
     
     function submitForm(methodVal) {
-		trimInputBox();
+		if (!trimInputBox()) return false;
 		if(methodVal=="save")
 		{
 			if (noChanges())
 			{
 		    	alert("There are no changes detected to save");
+				inRefreshing = false;
 		    	return;
 			}
 			var programFrom = document.getElementsByName("referral.fromProgramId")[0];
 			if(programFrom.value == "") 
 			{
 				alert("Please select From Program");
+				inRefreshing = false;
 				return;
 			}
 		}
@@ -157,4 +159,4 @@
 </tr>
 </table>
 <%@ include file="/common/readonly.jsp" %>
-</html-el:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html-el:form>

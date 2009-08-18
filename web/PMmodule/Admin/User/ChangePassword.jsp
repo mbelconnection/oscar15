@@ -82,7 +82,7 @@ Source:web/PMmodule/Admin/User/UserEdit.jsp
 					<td><html:password property="confirmPassword"  tabindex="3" maxlength="15"/></td>
 				</tr>
 			</table>
-		</html:form></div>
+		<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form></div>
 		</td>
 	</tr>
 </table>
@@ -90,7 +90,7 @@ Source:web/PMmodule/Admin/User/UserEdit.jsp
 <!--
 
 function submitForm(func){
-	trimInputBox();
+	if (!trimInputBox()) return false;
 	document.forms[0].method.value=func;
 
 	var v1 = false;
@@ -113,6 +113,14 @@ function submitForm(func){
 		if (fld_password.value == fld_cPassword.value) {
 			document.forms[0].submit();
 		}
+		else
+		{
+			inRefreshing = false;
+		}
+	}
+	else
+	{
+		inRefreshing = false;
 	}
 }
 

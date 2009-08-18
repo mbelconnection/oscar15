@@ -19,20 +19,23 @@
 			 }
 
 function submitForm(form) {
- trimInputBox();
+ if (!trimInputBox()) return false;
  var message = form.elements['healthsafety.message'].value;
  if(message!=null && message.length==0){
-   alert("message can not be empty.");
-   return false;
+   	alert("message can not be empty.");
+   	inRefreshing = false;
+   	return false;
  }  
  if(message!=null && message.length>500){
-   alert("message can not exceed 500 characters.");
-   return false;
+   	alert("message can not exceed 500 characters.");
+	inRefreshing = false;
+   	return false;
  }  
 			
  if(noChanges())
  {
-	 alert("There are no changes detected to save");
+	alert("There are no changes detected to save");
+	inRefreshing = false;
  }
  else
  {
@@ -60,6 +63,6 @@ function submitForm(form) {
 </td></tr>
 </table>
 <%@ include file="/common/readonly.jsp" %>
-</html:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>
 </body>
 </html>

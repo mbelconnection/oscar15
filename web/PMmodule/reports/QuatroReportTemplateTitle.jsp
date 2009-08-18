@@ -58,6 +58,6 @@ function setupOpt(){
 		<td><input type="submit" name="Save" value="Save" />
 		<input type="submit" name="btnClose" value="Close"  onclick="window.close();" /></td></tr>
 	</table>
-	</html:form>
+	<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>
 </body>
 </html>

@@ -10,8 +10,11 @@
 <input type="hidden" name="clientId" value="<c:out value="${clientId}"/>" />
 <script lang="javascript">
 function submitForm(methodVal) {
-   trimInputBox();
-   if(!isDateValid) return;
+   if (!trimInputBox()) return false;
+   if(!isDateValid) {
+		inRefreshing = false;
+	   	return;
+   	}
    document.forms[0].method.value = methodVal;
    document.forms[0].submit();
 }
@@ -95,4 +98,4 @@ function submitForm(methodVal) {
 </td>
 </tr>
 </table>
-</html-el:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html-el:form>

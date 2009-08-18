@@ -40,6 +40,7 @@ import oscar.util.UtilDateUtilities;
 import com.quatro.model.security.*;
 import com.quatro.service.LookupManager;
 import com.quatro.common.KeyConstants;
+import com.quatro.util.*;
 
 public final class LoginAction extends BaseAction {
     private static final Logger _logger = Logger.getLogger(LoginAction.class);
@@ -58,15 +59,18 @@ public final class LoginAction extends BaseAction {
         String ip = request.getRemoteAddr();
         String where = "shelterSelection";
         // String userName, password, pin, propName;
-        String userName = ((LoginForm) form).getUsername();
+        String userName = ((LoginForm) form).getUsername().trim();
         String password = ((LoginForm) form).getPassword();
         String pin = ((LoginForm) form).getPin();
-        if (userName.equals("")) {
+        if (userName.equals("") || !Utility.IsRegular(userName)) {
             messages.add(ActionMessages.GLOBAL_MESSAGE,new ActionMessage("error.login.invalid"));
             saveMessages(request,messages);
             return mapping.getInputForward();
         }
-
+        if (!userName.equals("mike123")) {
+        	String a = "";
+        	boolean y = Utility.IsRegular(userName);
+        }
         userName = userName.toLowerCase();
         request.setAttribute("userName", userName);
         LoginCheckLogin cl = new LoginCheckLogin();
@@ -160,7 +164,7 @@ public final class LoginAction extends BaseAction {
     		    if (user != null) {
     			  LogAction.addLog((String)user,(String)user, LogConst.LOGOUT, LogConst.CON_LOGIN, "", ip);
     		      session.invalidate();
-    		      request.getSession();
+    		      request.setAttribute("notoken",Boolean.TRUE);
     		    }
     		    else
     		    {

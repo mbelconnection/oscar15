@@ -34,9 +34,11 @@ function isName(str)
 }
 function submitForm(methodVal) 
 {
-	trimInputBox();
-	if(!isDateValid) return;
-
+	if (!trimInputBox()) return false;
+	if(!isDateValid) {
+		inRefreshing = false;
+		return;
+	}
     var lineNum = document.getElementsByName("dependentsSize")[0].value;
     var lastName;
     var firstName;
@@ -55,7 +57,10 @@ function submitForm(methodVal)
 		}
 	*/
 		ans = confirm("New members added to the family will be discharged from other shelters if they are currently admitted to those shelters. To proceed, click OK.");	
-		if (!ans) return;
+		if (!ans) {
+			inRefreshing = false;
+			return;
+		}
 	}
     if (methodVal == "save") 
     {	    
@@ -69,43 +74,51 @@ function submitForm(methodVal)
 	        alert("First name is empty.");
 	        firstName.value="";
 	        firstName.focus();
+			inRefreshing = false;
 	        return; 
 	      }
 	      if(!isName(firstName.value.trim())){
 	        alert("First name contains illegal character!");
 	        firstName.focus();
+			inRefreshing = false;
 	        return; 
 	      }
 	      if(lastName.value.trim()==""){
 	        alert("Last name is empty.");
 	        lastName.value="";
 	        lastName.focus();
+			inRefreshing = false;
 	        return; 
 	      }
 	      if(!isName(lastName.value.trim())){
 	        alert("Last name contains illegal character!");
 	        lastName.focus();
+			inRefreshing = false;
 	        return; 
 	      }
 	      if (dob.value==null || dob.value=='')
 		  {
 			alert('The field Date of Birth is required.');
+			inRefreshing = false;
 			return;
 		  }
 		  
 	      if(validateBirthDay(dob.value)==false){
     	    dob.focus();
+			inRefreshing = false;
         	return;
       	  }
 		  
 	      if (gender.value==null || gender.value=='')
 		  {
 			alert('The field Gender is required.');
+			inRefreshing = false;
 			return;
 		  }
 	      if (relation.value==null || relation.value=='')
 		  {
 			alert('The field Relationship is required.');
+			inRefreshing = false;
 			return;
 		  }
 	    }
@@ -113,6 +126,7 @@ function submitForm(methodVal)
 	if(methodVal=="save" && noChanges())
 	{
 		alert("There are no changes detected to save");
+		inRefreshing = false;
 	}
 	else
 	{
@@ -391,4 +405,4 @@ function checkExistClients(i){
 </tr>
 </table>
 <%@ include file="/common/readonly.jsp" %>
-</html-el:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html-el:form>

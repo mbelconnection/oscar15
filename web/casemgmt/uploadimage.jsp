@@ -59,7 +59,7 @@
 	
 	function submitForm(methodValue)
 	{
-		trimInputBox();
+		if (!trimInputBox()) return false;
 		document.forms[0].method.value=methodValue;
 		document.forms[0].submit();
 	}
@@ -91,7 +91,7 @@
 		<!-- html:submit value="Upload" /-->
 	</td>
 		</tr>
-	</html:form>
+	<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>
 </table>
 <br>
 <table width="100%">

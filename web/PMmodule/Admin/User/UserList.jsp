@@ -75,7 +75,7 @@
 
 			</div>
 
-		</html:form></td>
+		<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form></td>
 	</tr>
 	<tr style="height: 100%">
 		<td>
@@ -136,7 +136,7 @@
 <!--
 
 function submitForm(mthd){
-	trimInputBox();
+	if (!trimInputBox()) return false;
 	document.forms[0].method.value=mthd;
 	document.forms[0].submit();
 

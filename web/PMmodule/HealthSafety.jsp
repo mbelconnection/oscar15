@@ -14,14 +14,16 @@
 
 <script>
 function submitForm(form) {
- trimInputBox();
+ if (!trimInputBox()) return false;
  var message = form.elements['healthsafety.message'].value;
  if(message!=null && message.length==0){
    alert("message can not be empty.");
+   inRefreshing = false;
    return false;
  }  
  if(message!=null && message.length>500){
    alert("message can not exceed 500 characters.");
+	inRefreshing = false;
    return false;
  }  
 			
@@ -49,6 +51,6 @@ function submitForm(form) {
 	<input type="button" value="Cancel"	onclick="window.close()" />
 </td></tr>
 </table>
-</html:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>
 </body>
 </html>

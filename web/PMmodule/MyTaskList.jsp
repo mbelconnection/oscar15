@@ -17,8 +17,11 @@ function validate()
 }
 
 	function submitForm(methodVal) {
-		trimInputBox();
-		if(!isDateValid) return;		
+		if (!trimInputBox()) return false;
+		if(!isDateValid) {
+			inRefreshing = false;
+			return;
+		}		
 		if (!validate()) return;
 		document.forms[0].method.value = methodVal;
 		document.forms[0].submit();
@@ -128,5 +131,5 @@ function validate()
 </display:table> 
 </td></tr>
 </table>
-</html:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>
 

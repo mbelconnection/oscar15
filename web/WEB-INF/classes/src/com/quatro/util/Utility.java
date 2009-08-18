@@ -38,6 +38,23 @@ public class Utility {
             return false;
         }
     }
+    public static boolean IsRegular(String pStr)
+    {
+        if (IsEmpty(pStr))
+        {
+            return true;
+        }
+        for(int i=0; i<pStr.length(); i++)
+        {
+        	String c = pStr.substring(i,i+1).toLowerCase();
+        	if (c.compareTo("a") >= 0  && c.compareTo("z") <=0) continue;
+        	if (c.compareTo("0") >= 0  && c.compareTo("9") <=0) continue;
+        	if (c.equals(" ")) continue;
+        	return false;
+        }
+        return true;
+    }
+
     public static boolean IsDate(String pStr)
     {
     	java.sql.Date date = oscar.MyDateFormat.getSysDate(pStr);

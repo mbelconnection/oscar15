@@ -132,23 +132,25 @@ Source:web/PMmodule/Admin/Role/RoleEdit.jsp
 	</logic:present>
 </table>
 <%@ include file="/common/readonly.jsp" %>
-</html:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>
 <script language="javascript" type="text/javascript">
 <!--
 	function gotoRoleList(){
 	 	window.open("<c:out value='${ctx}'/>/PMmodule/Admin/RoleManager.do?method=list", "_self") ;
 	}
 	function submitForm(mthd){
-		trimInputBox();
+		if (!trimInputBox()) return false;
 		var roleName = document.getElementsByName("roleName")[0].value;
 		roleName = trim(roleName);
 		if(roleName.length == 0){
 			alert("'Role Name' field can not be empty!");
+			inRefreshing = false;
 			return;
 		}
 		if((mthd == "saveChange" || mthd=="saveNew") && noChanges())
 		{
 			alert("There are no changes detected to save");
+			inRefreshing = false;
 		}
 		else
 		{

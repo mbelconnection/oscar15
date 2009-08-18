@@ -12,18 +12,21 @@
 <input type="hidden" name="programId" value="<c:out value="${programId}"/>"/>
 <script lang="javascript">
 function submitForm(methodVal) {
-	trimInputBox();
+	if (!trimInputBox()) return false;
 	var note =  document.getElementsByName("rejectNote")[0];
 	var reason = document.getElementsByName("rejectReason")[0];
 	if(reason.value == "") {
 		alert("Rejection Reason is empty!");
+		inRefreshing = false;
 	}
 	else if(note.value == "") {
 		alert("Rejection Note is empty!");
+		inRefreshing = false;
 	}
 	else if(methodVal=="save" && noChanges())
 	{
 		alert("There are no changes detected to save");
+		inRefreshing = false;
 	}
 	else
 	{
@@ -99,4 +102,4 @@ function submitForm(methodVal) {
 </tr>
 </table>
 <%@ include file="/common/readonly.jsp" %>
-</html-el:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html-el:form>

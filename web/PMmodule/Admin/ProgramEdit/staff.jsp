@@ -186,7 +186,7 @@
 </table>
 <script>
 	function submitForm(mthd) {
-		trimInputBox();
+		if (!trimInputBox()) return false;
 		var flag = true;
 		var form = document.programManagerForm; 
 		if(mthd == "removeExistStaff"){
@@ -196,6 +196,10 @@
 			form.method.value=mthd;
 			form.submit();
 		}
+		else
+		{
+			inRefreshing = false;
+		}
 	}
 	
 	function resetForm() {
@@ -204,7 +208,7 @@
 	}
 	
 	function searchStaff(){
-		trimInputBox();
+		if (!trimInputBox()) return false;
 		document.forms[0].method.value = "edit";
 		document.forms[0].mthd.value = "search";
 		document.forms[0].elements["view.tab"].value = "Staff";

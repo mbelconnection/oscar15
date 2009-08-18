@@ -48,7 +48,7 @@ response.setHeader("Cache-Control", "no-cache");
 		</tr>
 	</table>
 	</div>
-</html:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>
 	<div	style="color: Black; background-color: White; border-width: 1px; border-style: Ridge;
                     height: 450px; width: 100%; overflow: auto;" id="scrollBar">
 		<display:table class="simple" sort="list" cellspacing="2" cellpadding="3" id="atth" name="att_files" export="false" pagesize="50"  requestURI="/PMmodule/UploadFile.do">

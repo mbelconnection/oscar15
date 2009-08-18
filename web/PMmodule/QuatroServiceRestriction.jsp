@@ -8,16 +8,13 @@
 <html-el:form action="/PMmodule/QuatroServiceRestriction.do">
 
 	<script lang="javascript">
-	inRefreshing = false;
 	function resetClientFields() {
 		var form = document.serviceRestrictionForm;
 		form.elements['program.name'].value='';
 	}
     
     function submitForm(methodVal) {
-    	if (inRefreshing) return false;
-    	inRefreshing = true;
-		trimInputBox();
+		if (!trimInputBox()) return false;
     	var validProgram = document.getElementsByName("serviceRestriction.programId")[0].value.length > 0;
     	var validReason = document.getElementsByName("serviceRestriction.commentId")[0].value.length > 0;
     	
@@ -186,4 +183,4 @@
 		</tr>
 	</table>
 	<%@ include file="/common/readonly.jsp" %>
-</html-el:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html-el:form>

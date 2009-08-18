@@ -40,7 +40,7 @@
 	}		
 	function submitForm(methodVal) {
 	// alert("method");
-		trimInputBox();
+		if (!trimInputBox()) return false;
 		document.forms[0].method.value = methodVal;
 		document.forms[0].submit();
 	}
@@ -102,7 +102,7 @@
   		<tr><td>Maximum Age (inclusive)</td>
   			<td><html:text property="program.ageMax" maxlength="3" /></td></tr>  		
  	</table>
-	</html:form>
+	<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>
 		
 		<display:table class="simple" sort="list" cellspacing="2" cellpadding="3" id="program" name="programs" pagesize="200" requestURI="/PMmodule/QuatroProgramSearch.do">
 			<display:setProperty name="paging.banner.placement" value="bottom" />

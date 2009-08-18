@@ -151,4 +151,4 @@ if(selectedTab.contains("Bed/Room")){
 %>	
 	<%@ include file="/common/messages.jsp"%>
 	<jsp:include page='<%="/PMmodule/ClientManager/" + selectedTab.toLowerCase().replaceAll(" ", "_") + ".jsp"%>' />
-</html:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>

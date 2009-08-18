@@ -185,6 +185,6 @@ function submitForm(shortFlagValue){
 <input type="hidden" name="clientNo" value="<c:out value="${clientNo}"/>">
 <input type="hidden" name="statusMsg" value="<c:out value="${statusMsg}"/>">
 <input type="hidden" name="newClientChecked" value="<c:out value="${newClientChecked}"/>">
-</html:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>
 </body>
 </html>

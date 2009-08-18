@@ -2,12 +2,16 @@
 <script type="text/javascript">
 	function submitForm()
 	{
-		trimInputBox();
-		if(!isDateValid) return;
+		if (!trimInputBox()) return false;
+		if(!isDateValid) {
+			inRefreshing = false;
+			return;
+		}
  		document.forms[0].method.value="save";
 		if(noChanges())
 		{
 			alert("There are no changes detected to save");
+			inRefreshing = false;
 		}
 		else
 		{
@@ -15,12 +19,18 @@
 		    if(obj1.value=='SHL'){
 		      var obj2 = document.getElementsByName('field[4].val')[0];
               if(obj2.value=='0' && !confirm("Deactivating this shelter will also deactivate facilities and programs in the shelter. Select Ok to proceed or Cancel to cancel."))
-              return;
+              {
+			  	inRefreshing = false;
+              	return;
+              }
 		    }
 		    if(obj1.value=='OGN'){
 		      var obj2 = document.getElementsByName('field[2].val')[0];
               if(obj2.value=='0' && !confirm("Deactivating this organization will also deactivate shelters, facilities and programs in the organization. Select Ok to proceed or Cancel to cancel."))
-              return;
+              {
+				  inRefreshing = false;
+    	          return;
+    	      }
 		    }
 			document.forms[0].submit();
 		}
@@ -128,4 +138,4 @@
 	</tr>
 </table>
 <%@ include file="/common/readonly.jsp" %>
-</html:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>

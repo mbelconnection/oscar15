@@ -141,4 +141,4 @@ function getSiteIds()
          </tr>
         <tr height="100%"><td>&nbsp</td></tr>
    </table>
- </html:form>
+ <input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>

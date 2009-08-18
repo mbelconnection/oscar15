@@ -73,8 +73,11 @@
 		alert('not yet implemented... will show term definitions');
 	}
 	function submitForm(methodVal) {
-		trimInputBox();
-		if(!isDateValid) return;
+		if (!trimInputBox()) return false;
+		if(!isDateValid) {
+			inRefreshing = false;
+			return;
+		}
 		document.forms[0].method.value = methodVal;
 		document.forms[0].submit();
 	}
@@ -268,4 +271,4 @@
 			</tr>
 	</table>	
 	</c:if>
-	</html:form>
+	<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>

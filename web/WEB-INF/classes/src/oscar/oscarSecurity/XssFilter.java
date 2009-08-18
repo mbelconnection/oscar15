@@ -37,6 +37,7 @@ import oscar.OscarProperties;
 import oscar.ping.xml.OscarPrescriptions;
 
 
+import java.util.Enumeration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.net.URLDecoder;
@@ -73,6 +74,22 @@ public class XssFilter implements Filter {
 	   HttpServletResponse httpResponse = (HttpServletResponse) response;
 	   String contextPath = httpRequest.getContextPath();
 	   xssErrPage = contextPath + xssErrPage;
+	   Enumeration em = httpRequest.getParameterNames();
+	   while (em.hasMoreElements())
+	   {
+		   Object p = em.nextElement();
+		   String pr = httpRequest.getParameter(p.toString());
+	       Matcher m = patternQueryString.matcher( pr );
+	       if ( m.find()  )
+	       {
+	    	   String g = m.group();
+	    	   if (!(("script".equals(g) && pr.indexOf("<script") < 0)))
+	    	   {
+	    		   httpResponse.sendRedirect(xssErrPage );
+	    		   return;
+	    	   }
+	       }
+	   }
 	   
 	   if ( httpRequest.getQueryString() != null )
 	   {

@@ -22,7 +22,7 @@
 
 	<head>
 		
-		<title>QuatroShelter V1.5</title>
+		<title>QuatroShelter V1.6</title>
 		<link rel="shortcut icon" type="image/x-icon" href='<html:rewrite page="/images/favicon.ico" />'/>
 	    <link rel="stylesheet" type="text/css" href='<html:rewrite page="/css/tigris.css" />' />
 	    <link rel="stylesheet" type="text/css" href='<html:rewrite page="/css/displaytag.css" />' />

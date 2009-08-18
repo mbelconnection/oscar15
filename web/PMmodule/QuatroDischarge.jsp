@@ -9,10 +9,11 @@
 <script lang="javascript">
 	
 	function submitForm(methodVal) {
-		trimInputBox();
+		if (!trimInputBox()) return false;
 		if(methodVal == "save" && noChanges())
 		{
 			alert("There are no changes detected to save");
+			inRefreshing = false;
 		}
 		else
 		{
@@ -138,4 +139,4 @@
 			</tr>
 		</table>
 	<%@ include file="/common/readonly.jsp" %>
-</html-el:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html-el:form>

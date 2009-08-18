@@ -48,4 +48,4 @@
 		<!-- function body end -->
 	</table>
 
-</html:form>
+<input type="hidden" name="token" value="<c:out value="${sessionScope.token}"/>" /></html:form>

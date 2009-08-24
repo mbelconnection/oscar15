@@ -161,7 +161,7 @@ public final class SiteCheckAction extends BaseAction {
 
             String where = "shelterSelection";
             // String userName, password, pin, propName;
-            String userName = ssv.getUserName();
+            String userName = ssv.getUserName().toLowerCase();
             String password = String.valueOf(ssv.getPassword());
             String pin = ssv.getPin();
             if (userName.equals("")) {

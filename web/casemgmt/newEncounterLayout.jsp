@@ -37,6 +37,8 @@
     oscar.oscarEncounter.pageUtil.EctSessionBean bean = null;
     String beanName = "casemgmt_oscar_bean" + (String) request.getAttribute("demographicNo");
     bean=(oscar.oscarEncounter.pageUtil.EctSessionBean)request.getSession().getAttribute(beanName);
+    String demographicNo = (String) request.getAttribute("demographicNo");
+    String providerNo = (String) request.getSession().getAttribute("user");
     
     pageContext.setAttribute("providerNo",bean.providerNo, pageContext.PAGE_SCOPE);
     org.oscarehr.casemgmt.model.CaseManagementNoteExt cme = new org.oscarehr.casemgmt.model.CaseManagementNoteExt();
@@ -334,7 +336,7 @@
      </style>
  <![endif]-->
     <html:base />
-    <title><bean:message key="oscarEncounter.Index.title"/> - <oscar:nameage demographicNo="<%=(String) request.getAttribute(\"demographicNo\")%>"/></title>
+    <title><bean:message key="oscarEncounter.Index.title"/> - <oscar:nameage demographicNo="<%=demographicNo%>"/></title>
     <meta http-equiv="Cache-Control" content="no-cache">
     <script type="text/javascript">
         
@@ -519,7 +521,7 @@ function init() {
                    <div style="margin-top:5px; text-align:center">
                        <input type="submit" id="printOp" style="border: 1px solid #7682b1;" value="Print" onclick="return printNotes();">
                        <oscarProperties:oscarPropertiesCheck property="MY_OSCAR" value="yes">
-                              <indivo:indivoRegistered demographic="<%=(String) request.getAttribute(\"demographicNo\")%>" provider="<%=(String) request.getSession().getAttribute(\"user\")%>">
+                              <indivo:indivoRegistered demographic="<%=demographicNo%>" provider="<%=providerNo%>">
                        <input type="submit" id="sendToPhr" style="border: 1px solid #7682b1;" value="Send To Phr" onclick="return sendToPhrr();">
                               </indivo:indivoRegistered>
                        </oscarProperties:oscarPropertiesCheck>

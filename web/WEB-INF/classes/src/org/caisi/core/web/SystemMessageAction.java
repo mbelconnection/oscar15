@@ -141,15 +141,15 @@ public class SystemMessageAction extends BaseAdminAction {
         return edit(mapping, form, request, response);
 	}
 	public ActionForward view(ActionMapping mapping,ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-		try {
-			super.getAccess(request, KeyConstants.FUN_ADMIN_SYSTEMMESSAGE);
+		try { 
+			//super.getAccess(request, KeyConstants.FUN_ADMIN_SYSTEMMESSAGE);
 			List messages = mgr.getActiveMessages();
 			if(messages.size()>0) {
 				request.setAttribute("messages",messages);
 			}
 			return mapping.findForward("view");
 		}
-		catch(NoAccessException e)
+		catch(Exception e)
 		{
 			return mapping.findForward("view");
 			//return mapping.findForward("failure");

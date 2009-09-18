@@ -66,8 +66,8 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-logic"
 	prefix="logic"%>
-<%@ taglib uri="/WEB-INF/special_tag.tld" prefix="special" %>
-<%@ taglib uri="http://www.caisi.ca/plugin-tag" prefix="plugin" %>
+
+
 
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 <%
@@ -640,16 +640,7 @@ div.demographicWrapper {
 				<bean:message key="demographic.demographiceditdemographic.msgInvoiceList"/></a>
 
                              
-                                <br/>
-                                <a  href="javascript: void();" onclick="return !showMenu('2', event);" onmouseover="callEligibilityWebService('../billing/CA/BC/ManageTeleplan.do','returnTeleplanMsg');"><bean:message key="demographic.demographiceditdemographic.btnCheckElig"/></a>
-					<div id='menu2' class='menu' onclick='event.cancelBubble = true;' style="width:350px;">
-                                        <span id="search_spinner" ><bean:message key="demographic.demographiceditdemographic.msgLoading"/></span>
-                                        <span id="returnTeleplanMsg"></span>
-					</div>
-
-
-
-
+                                
 
 
 				<%}%>
@@ -720,7 +711,6 @@ div.demographicWrapper {
 			<% } %>
 			<security:oscarSec roleName="<%=roleName$%>" objectName="_eChart"
 				rights="r" reverse="<%=false%>">
-                    <special:SpecialEncounterTag moduleName="eyeform" reverse="true">
                     <tr><td>
 					<!--a href=# onclick="popupPage(600,800,'../provider/providercontrol.jsp?appointment_no=&demographic_no=<%=demographic_no%>&curProvider_no=&reason=<%=URLEncoder.encode("telephone encounter with client")%>&username=&appointment_date=&start_time=&status=&displaymode=encounter&dboperation=search_demograph&template=');return false;" title="Tel-Progress Notes">Add Encounter</a-->
 					<a href="javascript: function myFunction() {return false; }" onClick="popupEChart(710, 1024,encURL);return false;" title="<bean:message key="demographic.demographiceditdemographic.btnEChart"/>">
@@ -743,48 +733,14 @@ div.demographicWrapper {
 					</ul>
 					</div>
                     </td></tr>
-                    </special:SpecialEncounterTag>
-                    <special:SpecialEncounterTag moduleName="eyeform">
-                    <tr><td>
-                            <!--a href=# onclick="popupPage(600,800,'../provider/providercontrol.jsp?appointment_no=&demographic_no=<%=demographic_no%>&curProvider_no=&reason=<%=URLEncoder.encode("telephone encounter with client")%>&username=&appointment_date=&start_time=&status=&displaymode=encounter&dboperation=search_demograph&template=');return false;" title="Tel-Progress Notes">Add Encounter</a-->
-                            <a href="javascript: function myFunction() {return false; }" onClick="popupEChart(710, 1024,encURL);return false;" title="<bean:message key="demographic.demographiceditdemographic.btnEChart"/>">
-                            <bean:message key="demographic.demographiceditdemographic.btnEChart"/></a>
-                    </td></tr>
-                    </special:SpecialEncounterTag>
-				<tr>
+                    		<tr>
 					<td><a
 						href="javascript: function myFunction() {return false; }"
 						onClick="popupPage(700,960,'<c:out value="${ctx}"/>/oscarPrevention/index.jsp?demographic_no=<%=demographic_no%>');return false;">
 					<bean:message key="oscarEncounter.LeftNavBar.Prevent" /></a></td>
 				</tr>
 			</security:oscarSec>
-                <plugin:hideWhenCompExists componentName="specialencounterComp" reverse="true">
-      			<%session.setAttribute("encounter_oscar_baseurl",request.getContextPath());
-				 %>
-      			<special:SpecialEncounterTag moduleName="eyeform" exactEqual="true">
-
-				<tr><td>
-      			<a href="#" style="color: brown;" onclick="popupPage(600,800,'<%=request.getContextPath()%>/mod/specialencounterComp/PatientLog.do?method=editPatientLog&demographicNo=<%=demographic_no%>&providerNo=<%=curProvider_no%>&providerName=<%=URLEncoder.encode( userfirstname+" "+userlastname)%>');return false;">patient log</a>
-      			</td>
-      			</tr>
-      			</special:SpecialEncounterTag>
-      			<special:SpecialEncounterTag moduleName="eyeform">
-      			<tr><td>
-      			<a href="#" style="color: brown;" onclick="popupPage(600,600,'<%=request.getContextPath()%>/mod/specialencounterComp/EyeForm.do?method=eyeFormHistory&demographicNo=<%=demographic_no%>&providerNo=<%=curProvider_no%>&providerName=<%=URLEncoder.encode( userfirstname+" "+userlastname)%>');return false;">eyeForm Hx</a>
-      			</td>
-      			</tr>
-      			<tr>
-      			<td>
-				<a href="#" style="color: brown;" onclick="popupPage(600,600,'<%=request.getContextPath()%>/mod/specialencounterComp/EyeForm.do?method=chooseField&&demographicNo=<%=demographic_no%>&providerNo=<%=curProvider_no%>&providerName=<%=URLEncoder.encode( userfirstname+" "+userlastname)%>');return false;">Exam Hx</a>
-				</td>
-				</tr>
-				<tr>
-				<td>
-				<a href="#" style="color: brown;" onclick="popupPage(600,1000,'<%=request.getContextPath()%>/mod/specialencounterComp/ConReportList.do?method=list&&dno=<%=demographic_no%>');return false;">ConReport Hx</a>
-
-      			</td></tr>
-      			</special:SpecialEncounterTag>
-      		</plugin:hideWhenCompExists>
+                
 			<tr>
 				<td><a
 					href="javascript: function myFunction() {return false; }"
@@ -837,15 +793,8 @@ div.demographicWrapper {
 				<td style="font-weight: bold"><bean:message
 					key="oscarEncounter.Index.clinicalResources" /></td>
 			</tr>
-                <special:SpecialPlugin moduleName="inboxmnger">
-                <tr>
-                <td>
-
-                        <a href="#" onClick="window.open('../mod/docmgmtComp/DocList.do?method=list&&demographic_no=<%=demographic_no %>','_blank','resizable=yes,status=yes,scrollbars=yes');return false;">Inbox Manager</a><br>
-              	</td>
-              	</tr>
-                 </special:SpecialPlugin>
-                 <special:SpecialPlugin moduleName="inboxmnger" reverse="true">
+                
+                 
 			<tr>
 				<td><!--th><a href="javascript: function myFunction() {return false; }" onClick="popupPage(500,600,'demographicsummary.jsp?demographic_no=<%=apptMainBean.getString(rs,"demographic_no")%>')">Patient Summary</a> </th-->
 				<a href="javascript: function myFunction() {return false; }"
@@ -858,18 +807,8 @@ div.demographicWrapper {
 					onClick="popupPage(710,970,'../dms/documentReport.jsp?function=demographic&doctype=lab&functionid=<%=apptMainBean.getString(rs,"demographic_no")%>&curUser=<%=curProvider_no%>&mode=add')"><bean:message
 					key="demographic.demographiceditdemographic.btnAddDocument" /></a></td>
 			</tr>
-                </special:SpecialPlugin>
-                <special:SpecialEncounterTag moduleName="eyeform">
-                <% String iviewTag=oscarProps.getProperty("iviewTag");
-
-                   if (iviewTag!=null && !"".equalsIgnoreCase(iviewTag.trim())){
-                %>
-	    		<tr><td>
-				<a href='<%=request.getContextPath()%>/mod/specialencounterComp/iviewServlet?method=iview&demoNo=<%=apptMainBean.getString(rs,"demographic_no")%>&<%=System.currentTimeMillis() %>'>
-				<%=iviewTag %></a>
-				</td></tr>
-		<%} %>
-		</special:SpecialEncounterTag>
+                
+                
 			<tr>
 				<td><a
 					href="../eform/efmpatientformlist.jsp?demographic_no=<%=demographic_no%>"><bean:message

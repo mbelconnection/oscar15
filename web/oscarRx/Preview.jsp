@@ -116,10 +116,6 @@ if (hasSig){
    doctorName = (provider.getFirstName() + ' ' + provider.getSurname());
 }
 
-
-
-doctorName = doctorName.replaceAll("\\d{6}","");
-doctorName = doctorName.replaceAll("\\-","");
 OscarProperties props = OscarProperties.getInstance();
 
 String pracNo = provider.getPractitionerNo();
@@ -255,8 +251,8 @@ ProviderData user = new ProviderData(strUser);
 				</tr>
 				<tr valign=bottom>
 					<td height=25px></td>
-					<td height=25px>&nbsp; <%= doctorName%> <% if ( pracNo == null || pracNo.equals("") ) { %>
-					<% } else { %> Pract. No. <%= pracNo%> <% } %>
+					<td height=25px>&nbsp; <%= doctorName%> <% if ( pracNo != null && ! pracNo.equals("") && !pracNo.equalsIgnoreCase("null")) { %>
+						Pract. No. <%= pracNo%> <% } %>
 					</td>
 
 

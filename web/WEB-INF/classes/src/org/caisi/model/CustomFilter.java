@@ -24,7 +24,7 @@ package org.caisi.model;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,9 +32,11 @@ import java.util.Set;
 import org.oscarehr.PMmodule.model.Program;
 import org.oscarehr.PMmodule.model.Provider;
 
+import oscar.MyDateFormat;
+
 public class CustomFilter extends BaseObject {
-	private Date start_date;
-	private Date end_date;
+	private Calendar start_date;
+	private Calendar end_date;
 	private String status;
 	
 	private String provider_no;        
@@ -52,62 +54,35 @@ public class CustomFilter extends BaseObject {
 	}
 	
 	public void setStartDate(String data) {
-		if(data == null || data.length()==0) {
-			data = "1900/01/01";
-		}
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
-		try {
-			setStart_date(formatter.parse(data));
-		}catch(Exception e) {
-			throw new IllegalArgumentException("Invalid service date, use yyyy/MM/dd");
-		}
+		setStart_date(MyDateFormat.getCalendar(data));
 	}
 	
 	public String getStartDate() {
-		if(getStart_date() != null) {
-			SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
-			String ret= formatter.format(getStart_date());
-			if(ret.equals("1900/01/01")) ret =  "";
-			return ret;
-		}
-		return "";
+		return MyDateFormat.getStandardDate(start_date);
 	}
 	
 	public void setEndDate(String data) {
-		if(data == null || data.length()==0) {
-			data = "8888/12/31";
-		}
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
-		try {
-			setEnd_date(formatter.parse(data));
-		}catch(Exception e) {
-			throw new IllegalArgumentException("Invalid service date, use yyyy/MM/dd");
-		}
+		setEnd_date(MyDateFormat.getCalendar(data));
 	}
 	
 	public String getEndDate() {
-		if(getEnd_date() != null) {
-			SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
-			String ret = formatter.format(getEnd_date());
-			if(ret.equals("8888/12/31")) ret= "";
-			return ret;
-		}
-		return "";
+		String ret = MyDateFormat.getStandardDate(getEnd_date());
+		return ret;
 	}
 
-	public Date getEnd_date() {
+	public Calendar getEnd_date() {
 		return end_date;
 	}
 
-	public void setEnd_date(Date end_date) {
+	public void setEnd_date(Calendar end_date) {
 		this.end_date = end_date;
 	}
 
-	public Date getStart_date() {
+	public Calendar getStart_date() {
 		return start_date;
 	}
 
-	public void setStart_date(Date start_date) {
+	public void setStart_date(Calendar start_date) {
 		this.start_date = start_date;
 	}
 	

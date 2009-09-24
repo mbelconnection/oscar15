@@ -36,6 +36,9 @@ import org.oscarehr.PMmodule.dao.MergeClientDao;
 import org.oscarehr.PMmodule.model.ClientMerge;
 import org.oscarehr.PMmodule.model.Provider;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+
+import oscar.MyDateFormat;
+
 import com.quatro.util.Utility;
 
 
@@ -153,17 +156,20 @@ public class TicklerDAO extends HibernateDaoSupport {
 //      boolean includeProviderClause = true;
       boolean includeStatusClause = true;
 //      boolean includeClientClause = true;
-            
-      if (filter.getStartDate() == null || filter.getStartDate().length() == 0) filter.setStartDate("1900/01/01");
-      if (filter.getEndDate() == null || filter.getEndDate().length() == 0) filter.setEndDate("8888/12/31");
+      Date startDt = filter.getStart_date().getTime();
+      Date endDt = filter.getEnd_date().getTime();
+      if (filter.getStartDate() == null || filter.getStartDate().length() == 0) 
+    	  startDt = MyDateFormat.getSysDate("1900/01/01");
+      if (filter.getEndDate() == null || filter.getEndDate().length() == 0) 
+    	  endDt = MyDateFormat.getSysDate("9999/12/31");
 
 //      if (filter.getProvider() == null || filter.getProvider().equals("All Providers")) includeProviderClause=false;
 //      if (filter.getClient() == null || filter.getClient().equals("All Clients")) includeClientClause=false;
       if (filter.getStatus().equals("Any")) includeStatusClause = false;
 
       query = query + " and t.service_date >= ? and t.service_date <= ?";
-	  paramList.add(filter.getStart_date());
-      paramList.add(new Date(filter.getEnd_date().getTime()+DateUtils.MILLIS_PER_DAY));
+	  paramList.add(startDt);
+      paramList.add(new Date(endDt.getTime()+DateUtils.MILLIS_PER_DAY));
 
 /*      
       if(includeProviderClause) {

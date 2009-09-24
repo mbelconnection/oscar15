@@ -42,7 +42,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import org.oscarehr.util.SpringUtils;
 
 import org.oscarehr.util.SpringUtils;
 

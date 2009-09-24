@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.oscarehr.PMmodule.web;
 
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -63,6 +64,10 @@ public class QuatroClientDischargeAction  extends BaseClientAction {
        {
 	       return mapping.findForward("failure");
        }
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
    }
    public ActionForward save(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
 	   try {
@@ -128,6 +133,10 @@ public class QuatroClientDischargeAction  extends BaseClientAction {
        {
 	       return mapping.findForward("failure");
        }
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
    }
    public ActionForward list(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
 	   try {
@@ -140,7 +149,7 @@ public class QuatroClientDischargeAction  extends BaseClientAction {
 	       return mapping.findForward("failure");
        }
    }
-   private void setEditAttributes(ActionForm form, HttpServletRequest request) throws NoAccessException {
+   private void setEditAttributes(ActionForm form, HttpServletRequest request) throws NoAccessException, SQLException {
 	   QuatroClientDischargeForm clientForm = (QuatroClientDischargeForm) form;
 
        Integer aId = new Integer(request.getParameter("admissionId"));

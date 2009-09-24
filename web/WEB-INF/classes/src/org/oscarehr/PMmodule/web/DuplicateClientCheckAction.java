@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.oscarehr.PMmodule.web;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,65 +42,76 @@ public class DuplicateClientCheckAction extends BaseClientAction {
    private IntakeManager intakeManager;
 
    public ActionForward unspecified(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws NoAccessException{
-	   super.getAccess(request, KeyConstants.FUN_CLIENTINTAKE, null);
-	   DynaActionForm qform = (DynaActionForm) form;
-       Demographic client = (Demographic) qform.get("client");
-       
-       client.setFirstName(request.getParameter("firstName"));
-	   client.setLastName(request.getParameter("lastName"));
-	   client.setDob(request.getParameter("dob"));
-	   client.setSex( request.getParameter("sex"));
-	   client.setAlias(request.getParameter("alias"));
-
-	   List clients = getClientList(client);
-	   if(!Utility.IsEmpty(client.getFirstName()) && !Utility.IsEmpty(client.getLastName()))
+	   try {
+		   super.getAccess(request, KeyConstants.FUN_CLIENTINTAKE, null);
+		   DynaActionForm qform = (DynaActionForm) form;
+	       Demographic client = (Demographic) qform.get("client");
+	       
+	       client.setFirstName(request.getParameter("firstName"));
+		   client.setLastName(request.getParameter("lastName"));
+		   client.setDob(request.getParameter("dob"));
+		   client.setSex( request.getParameter("sex"));
+		   client.setAlias(request.getParameter("alias"));
+	
+		   List clients = getClientList(client);
+		   if(!Utility.IsEmpty(client.getFirstName()) && !Utility.IsEmpty(client.getLastName()))
+		   {
+			   client.setDemographicNo(new Integer(0));
+			   clients.add(0, client);
+		   }
+		   request.setAttribute("clients", clients);
+		   
+		   request.setAttribute("pageFrom", request.getParameter("pageFrom"));
+		   request.setAttribute("var", request.getParameter("var"));
+		   request.setAttribute("shortFlag", request.getParameter("shortFlag"));
+		   if(!Utility.IsEmpty(request.getParameter("var"))){
+			   String[] split= request.getParameter("var").split(",");
+			   request.setAttribute("formName", split[0]);
+			   request.setAttribute("firstName", split[1]);
+			   request.setAttribute("lastName", split[2]);
+			   request.setAttribute("sex", split[3]);
+			   request.setAttribute("dob", split[4]);
+			   request.setAttribute("alias", split[5]);
+			   request.setAttribute("clientNo", split[6]);
+			   request.setAttribute("statusMsg", split[7]);
+			   request.setAttribute("newClientChecked", split[8]);
+		   }
+		   setEditFields(request,qform);
+		   request.setAttribute("notoken", "Y");
+		   return mapping.findForward("edit");
+	   }
+	   catch(SQLException e)
 	   {
-		   client.setDemographicNo(new Integer(0));
-		   clients.add(0, client);
+			return mapping.findForward("failure");
 	   }
-	   request.setAttribute("clients", clients);
-	   
-	   request.setAttribute("pageFrom", request.getParameter("pageFrom"));
-	   request.setAttribute("var", request.getParameter("var"));
-	   request.setAttribute("shortFlag", request.getParameter("shortFlag"));
-	   if(!Utility.IsEmpty(request.getParameter("var"))){
-		   String[] split= request.getParameter("var").split(",");
-		   request.setAttribute("formName", split[0]);
-		   request.setAttribute("firstName", split[1]);
-		   request.setAttribute("lastName", split[2]);
-		   request.setAttribute("sex", split[3]);
-		   request.setAttribute("dob", split[4]);
-		   request.setAttribute("alias", split[5]);
-		   request.setAttribute("clientNo", split[6]);
-		   request.setAttribute("statusMsg", split[7]);
-		   request.setAttribute("newClientChecked", split[8]);
-	   }
-	   setEditFields(request,qform);
-	   request.setAttribute("notoken", "Y");
-	   return mapping.findForward("edit");
    }
    public ActionForward search(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws NoAccessException {
-	   super.getAccess(request, KeyConstants.FUN_CLIENTINTAKE, null);
-       DynaActionForm qform = (DynaActionForm) form;
-       Demographic client = (Demographic) qform.get("client");
-       
-       List clients = getClientList(client);
-	   request.setAttribute("clients", clients);
-
-       setEditFields(request,qform);
-
-	   request.setAttribute("formName", request.getParameter("formName"));
-	   request.setAttribute("firstName", request.getParameter("firstName"));
-	   request.setAttribute("lastName", request.getParameter("lastName"));
-	   request.setAttribute("sex", request.getParameter("sex"));
-	   request.setAttribute("dob", request.getParameter("dob"));
-	   request.setAttribute("alias", request.getParameter("alias"));
-	   request.setAttribute("clientNo", request.getParameter("clientNo"));
-	   request.setAttribute("statusMsg", request.getParameter("statusMsg"));
-	   request.setAttribute("newClientChecked", request.getParameter("newClientChecked"));
-	   request.setAttribute("notoken", "Y");
-       
-	   return mapping.findForward("edit");
+	   try {
+		   super.getAccess(request, KeyConstants.FUN_CLIENTINTAKE, null);
+	       DynaActionForm qform = (DynaActionForm) form;
+	       Demographic client = (Demographic) qform.get("client");
+	       
+	       List clients = getClientList(client);
+		   request.setAttribute("clients", clients);
+	
+	       setEditFields(request,qform);
+	
+		   request.setAttribute("formName", request.getParameter("formName"));
+		   request.setAttribute("firstName", request.getParameter("firstName"));
+		   request.setAttribute("lastName", request.getParameter("lastName"));
+		   request.setAttribute("sex", request.getParameter("sex"));
+		   request.setAttribute("dob", request.getParameter("dob"));
+		   request.setAttribute("alias", request.getParameter("alias"));
+		   request.setAttribute("clientNo", request.getParameter("clientNo"));
+		   request.setAttribute("statusMsg", request.getParameter("statusMsg"));
+		   request.setAttribute("newClientChecked", request.getParameter("newClientChecked"));
+		   request.setAttribute("notoken", "Y");
+		   return mapping.findForward("edit");
+	   }
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
    }
    private List getClientList(Demographic client)
    {
@@ -122,7 +134,7 @@ public class DuplicateClientCheckAction extends BaseClientAction {
     	   return new java.util.ArrayList();
        }
    }
-   private void setEditFields(HttpServletRequest request, DynaActionForm qform)
+   private void setEditFields(HttpServletRequest request, DynaActionForm qform) throws SQLException
    {
 	   List genders = lookupManager.LoadCodeList("GEN", true, null, null);
 	   LookupCodeValue obj3= new LookupCodeValue();

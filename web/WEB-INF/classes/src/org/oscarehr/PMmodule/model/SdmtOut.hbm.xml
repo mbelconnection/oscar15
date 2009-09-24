@@ -11,10 +11,10 @@
 			</generator>
 		</id>
 		<property column="batch_no" name="batchNumber"></property>
-		<property column="batch_date"  name="batchDateStr"></property>
+		<property column="batch_date"  name="batchDate"></property>
 		<property column="first_name" name="firstName"></property>
 		<property column="last_name" name="lastName"></property>
-		<property column="dob" name="dobStr"></property>
+		<property column="dob" name="dob"></property> 
 		<property column="sin" name="sin"></property>
 		<property column="health_card_no" name="healthCardNo"></property>
 		<property column="client_id" name="clientId"></property>

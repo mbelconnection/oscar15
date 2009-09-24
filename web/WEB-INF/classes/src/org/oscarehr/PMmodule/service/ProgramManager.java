@@ -200,13 +200,6 @@ public class ProgramManager {
     public List getProgramProviders(String orgcd, boolean activeOnly) {
         return secuserroleDao.findByOrgcd(orgcd, activeOnly);
     }
-
-    public void deleteProgramProvider(List lst) {
-        for(int i = 0; i < lst.size(); i++){
-        	Integer id = (Integer)lst.get(i);
-        	secuserroleDao.deleteById(id);
-        }
-    }
     
     public List getFunctionalUserTypes() {
         return programFunctionalUserDAO.getFunctionalUserTypes();

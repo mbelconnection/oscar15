@@ -11,6 +11,7 @@
 package oscar.login;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -63,70 +64,79 @@ public final class ShelterSelectionAction extends BaseAction {
     private static final String LOG_PRE = "Login!@#$: ";
 
     public ActionForward unspecified(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	
-    	 String mthd =request.getParameter("method");
-    	// initMenu(request);
-         if(mthd!=null && mthd.equals("select")){
-        	 select(mapping,form,request,response);
-        	 return mapping.findForward("home");
-         }
-         
-    	String providerNo=(String)request.getSession(true).getAttribute(KeyConstants.SESSION_KEY_PROVIDERNO);
-    	List shelters=providerManager.getShelterIds(providerNo);
-    	ActionMessages messages = new ActionMessages();
-      
-         if (shelters.size() > 1) {
-         	String shlts = String.valueOf(shelters.get(0));
-         	for(int i=1; i<shelters.size(); i++)
-         	{
-         		shlts += "," + String.valueOf(shelters.get(i));
-         	}
-         	List facilityCodes = lookupManager.LoadCodeList("SHL", false, shlts, null);
-         	request.setAttribute("shelters", facilityCodes);
-	        response.setHeader("Expires", "-1");
-	        response.setHeader("Cache-Control",
-	        	"must-revalidate, post-check=0, pre-check=0");
-	        response.setHeader("Pragma", "private");
+    	try {
+	    	 String mthd =request.getParameter("method");
+	    	// initMenu(request);
+	         if(mthd!=null && mthd.equals("select")){
+	        	 select(mapping,form,request,response);
+	        	 return mapping.findForward("home");
+	         }
+	         
+	    	String providerNo=(String)request.getSession(true).getAttribute(KeyConstants.SESSION_KEY_PROVIDERNO);
+	    	List shelters=providerManager.getShelterIds(providerNo);
+	    	ActionMessages messages = new ActionMessages();
+	      
+	         if (shelters.size() > 1) {
+	         	String shlts = String.valueOf(shelters.get(0));
+	         	for(int i=1; i<shelters.size(); i++)
+	         	{
+	         		shlts += "," + String.valueOf(shelters.get(i));
+	         	}
+	         	List facilityCodes = lookupManager.LoadCodeList("SHL", false, shlts, null);
+	         	request.setAttribute("shelters", facilityCodes);
+		        response.setHeader("Expires", "-1");
+		        response.setHeader("Cache-Control",
+		        	"must-revalidate, post-check=0, pre-check=0");
+		        response.setHeader("Pragma", "private");
+	
+	             return(mapping.findForward("shelterSelection"));
+	         }
+	         else if (shelters.size() == 1) {
+	             Integer shelterId = (Integer) shelters.get(0);
+	             LookupCodeValue shelter=lookupManager.GetLookupCode("SHL",String.valueOf(shelterId));
+	             request.getSession(true).setAttribute(KeyConstants.SESSION_KEY_SHELTERID , shelterId);
+	             request.getSession(true).setAttribute(KeyConstants.SESSION_KEY_SHELTER, shelter);             
+	            // LogAction.addLog(strAuth[0], LogConst.LOGIN, LogConst.CON_LOGIN, "shelterId="+shelterId, ip);
+	         }
+	         else {
+	             request.getSession(true).setAttribute(KeyConstants.SESSION_KEY_SHELTERID, new Integer(0));
+	             request.getSession(true).setAttribute(KeyConstants.SESSION_KEY_SHELTER, new LookupCodeValue());
+	         }
+	         // initiate security manager
+	         
+	         SecurityManager secManager = userAccessManager.getUserSecurityManager(providerNo,null,lookupManager);
+	         request.getSession(true).setAttribute(KeyConstants.SESSION_KEY_SECURITY_MANAGER, secManager);
+	        
+	         return mapping.findForward("home");
+    	}
+    	catch (SQLException e) {
+    		return mapping.findForward("failure");
+		}
 
-             return(mapping.findForward("shelterSelection"));
-         }
-         else if (shelters.size() == 1) {
-             Integer shelterId = (Integer) shelters.get(0);
-             LookupCodeValue shelter=lookupManager.GetLookupCode("SHL",String.valueOf(shelterId));
-             request.getSession(true).setAttribute(KeyConstants.SESSION_KEY_SHELTERID , shelterId);
-             request.getSession(true).setAttribute(KeyConstants.SESSION_KEY_SHELTER, shelter);             
-            // LogAction.addLog(strAuth[0], LogConst.LOGIN, LogConst.CON_LOGIN, "shelterId="+shelterId, ip);
-         }
-         else {
-             request.getSession(true).setAttribute(KeyConstants.SESSION_KEY_SHELTERID, new Integer(0));
-             request.getSession(true).setAttribute(KeyConstants.SESSION_KEY_SHELTER, new LookupCodeValue());
-         }
-         // initiate security manager
-         
-         SecurityManager secManager = userAccessManager.getUserSecurityManager(providerNo,null,lookupManager);
-         request.getSession(true).setAttribute(KeyConstants.SESSION_KEY_SECURITY_MANAGER, secManager);
-        
-         return mapping.findForward("home");
-            	
     }
     public ActionForward select(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-    	
-		String shelter =request.getParameter("shelterId");
-		String providerNo = (String) request.getSession().getAttribute(KeyConstants.SESSION_KEY_PROVIDERNO);
-		Integer shelterId = new Integer(shelter);
-		request.getSession(true).setAttribute(KeyConstants.SESSION_KEY_SHELTERID,shelterId );
-		LookupCodeValue shelterObj=lookupManager.GetLookupCode("SHL",shelter);
-        request.getSession(true).setAttribute(KeyConstants.SESSION_KEY_SHELTER, shelterObj);
-        
-        // initiate security manager
-         SecurityManager secManager = userAccessManager.getUserSecurityManager(providerNo,shelterId,lookupManager);
-        request.getSession(true).setAttribute(KeyConstants.SESSION_KEY_SECURITY_MANAGER, secManager);
-        String ip = request.getRemoteAddr();
-        LogAction.addLog(providerNo,providerNo, LogConst.CON_LOGIN, LogConst.SHELTER_SELECTION, shelterId.toString(), ip);
-        
-        return mapping.findForward("home");
+    	try {
+			String shelter =request.getParameter("shelterId");
+			String providerNo = (String) request.getSession().getAttribute(KeyConstants.SESSION_KEY_PROVIDERNO);
+			Integer shelterId = new Integer(shelter);
+			request.getSession(true).setAttribute(KeyConstants.SESSION_KEY_SHELTERID,shelterId );
+			LookupCodeValue shelterObj=lookupManager.GetLookupCode("SHL",shelter);
+	        request.getSession(true).setAttribute(KeyConstants.SESSION_KEY_SHELTER, shelterObj);
+	        
+	        // initiate security manager
+	         SecurityManager secManager = userAccessManager.getUserSecurityManager(providerNo,shelterId,lookupManager);
+	        request.getSession(true).setAttribute(KeyConstants.SESSION_KEY_SECURITY_MANAGER, secManager);
+	        String ip = request.getRemoteAddr();
+	        LogAction.addLog(providerNo,providerNo, LogConst.CON_LOGIN, LogConst.SHELTER_SELECTION, shelterId.toString(), ip);
+	        
+	        return mapping.findForward("home");
+    	}
+    	catch (SQLException e) {
+    		return mapping.findForward("failure");
+		}
     }
-    private void initMenu(HttpServletRequest request)
+    /*
+    private void initMenu(HttpServletRequest request) 
 	{
 		SecurityManager sec = getSecurityManager(request);
 		if (sec==null) return;
@@ -162,5 +172,5 @@ public final class ShelterSelectionAction extends BaseAction {
 		request.getSession(true).setAttribute(KeyConstants.MENU_HOME, KeyConstants.ACCESS_VIEW);
 		request.getSession(true).setAttribute(KeyConstants.MENU_TASK, KeyConstants.ACCESS_VIEW);
 	}
-	
+*/	
 }

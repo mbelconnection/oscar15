@@ -22,6 +22,7 @@
 
 package org.oscarehr.PMmodule.service;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -44,7 +45,7 @@ public class IncidentManager {
 	
 	private LookupManager lookupManager;
 
-	public IncidentForm getIncidentForm(String incidentId) {
+	public IncidentForm getIncidentForm(String incidentId) throws SQLException{
 		IncidentForm incidentForm = new IncidentForm();
 		IncidentValue incident = null;
 		if( incidentId == null || incidentId.equals("0"))

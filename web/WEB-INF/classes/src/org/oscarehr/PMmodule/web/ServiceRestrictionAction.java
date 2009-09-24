@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.oscarehr.PMmodule.web;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -187,7 +188,7 @@ public class ServiceRestrictionAction  extends BaseClientAction {
            return mapping.findForward("detail");       
        }
    }
-   private void setEditAttributes(ActionForm form, HttpServletRequest request,boolean readOnly) throws NoAccessException {
+   private void setEditAttributes(ActionForm form, HttpServletRequest request,boolean readOnly) throws NoAccessException, SQLException {
        DynaActionForm clientForm = (DynaActionForm) form;
        Integer clientId = super.getClientId(request);     
        Integer shelterId=(Integer)request.getSession().getAttribute(KeyConstants.SESSION_KEY_SHELTERID);
@@ -348,6 +349,10 @@ public class ServiceRestrictionAction  extends BaseClientAction {
 	   catch(NoAccessException e)
 	   {
 		   return mapping.findForward("failure");
+	   }
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
 	   }
    }
    public void setClientManager(ClientManager clientManager) {

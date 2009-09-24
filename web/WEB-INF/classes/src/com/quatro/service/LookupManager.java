@@ -20,23 +20,27 @@ import com.quatro.model.LookupCodeValue;
 public class LookupManager {
     private LookupDao lookupDao=null;
 
-	public List LoadCodeList(String tableId, boolean activeOnly, String code, String codeDesc) {
+	public List LoadCodeList(String tableId, boolean activeOnly, String code, String codeDesc) 
+	throws SQLException {
         return lookupDao.LoadCodeList(tableId, activeOnly, code, codeDesc);
 	}
 
-	public List LoadCodeList(String tableId, boolean activeOnly, String parentCode, String code, String codeDesc) {
+	public List LoadCodeList(String tableId, boolean activeOnly, String parentCode, String code, String codeDesc)
+	throws SQLException {
         return lookupDao.LoadCodeList(tableId, activeOnly,parentCode, code, codeDesc);
 	}
 
-    public LookupTableDefValue GetLookupTableDef(String tableId){
+    public LookupTableDefValue GetLookupTableDef(String tableId)
+    throws SQLException {
         return lookupDao.GetLookupTableDef(tableId);
     }
 	
-    public LookupCodeValue GetLookupCode(String tableId, String code){
+    public LookupCodeValue GetLookupCode(String tableId, String code)
+    throws SQLException {
         return lookupDao.GetCode(tableId, code);
     }
     public String GetOrgCdCsv(String code)
-    {
+    throws SQLException {
     	return lookupDao.getOrgCdCsv(code);
     }
 
@@ -53,11 +57,11 @@ public class LookupManager {
 		return lookupDao.LoadFieldDefList(tableId);
 	}
 	public List GetCodeFieldValues(LookupTableDefValue tableDef, String code)
-	{
+	throws SQLException {
 		return lookupDao.GetCodeFieldValues(tableDef, code);
 	}
 	public List GetCodeFieldValues(LookupTableDefValue tableDef)
-	{
+	throws SQLException {
 		return lookupDao.GetCodeFieldValues(tableDef);
 	}
 	public String SaveCodeValue(boolean isNew, LookupTableDefValue tableDef, List fieldDefList) throws SQLException

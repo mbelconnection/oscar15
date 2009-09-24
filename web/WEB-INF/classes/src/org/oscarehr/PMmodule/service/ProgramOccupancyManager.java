@@ -49,8 +49,8 @@ public class ProgramOccupancyManager {
 		 Demographic client=new Demographic();
 		 client.setDemographicNo(sdVal.getClientId());
 		 client.setBenefitUnitStatus(sdVal.getBenefitUnitStatus());
-		 client.setPin(sdVal.getSdmtBenUnitId().toString()); 
-		 client.setHin(sdVal.getMemberId().toString());  //sdmt member id
+		 client.setHin(sdVal.getSdmtBenUnitId().toString()); 
+		 client.setPin(sdVal.getMemberId().toString());  //sdmt member id
 		 clientDao.updateClientBenUnitStatus(client);
 	 }
 	 public void DeactiveServiceIntake(){

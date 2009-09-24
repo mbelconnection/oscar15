@@ -9,6 +9,7 @@
  *     <Quatro Group Software Systems inc.>  <OSCAR Team>
  *******************************************************************************/
 package com.quatro.service.security;
+import java.sql.SQLException;
 import java.util.*;
 
 import org.oscarehr.PMmodule.service.RoomDemographicManager;
@@ -44,7 +45,7 @@ public class SecurityManager {
 		lookupManager=lkManager;
 		}
 	
-    public String GetAccess(String functioncd, String orgcd)
+    public String GetAccess(String functioncd, String orgcd) throws SQLException
     {
         String privilege = this.ACCESS_NONE;
         if (Utility.IsInt(orgcd)) orgcd = "P" + orgcd;
@@ -89,7 +90,7 @@ public class SecurityManager {
         }
         return privilege;
     }
-    public String GetAccess(String function)
+    public String GetAccess(String function) throws SQLException
     {
         return GetAccess(function, "");
     }

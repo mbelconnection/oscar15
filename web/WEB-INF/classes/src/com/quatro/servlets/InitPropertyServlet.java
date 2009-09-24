@@ -16,13 +16,16 @@ import javax.servlet.http.HttpServlet;
 
 import org.oscarehr.util.SpringUtils;
 import java.util.List;
+
+import com.ibm.disthubmq.spi.ServerLogConstants;
 import com.quatro.model.LookupCodeValue;
 import oscar.OscarProperties;
 
 import com.quatro.service.LookupManager;
 public class InitPropertyServlet extends HttpServlet {
     public void init(ServletConfig servletConfig) throws ServletException {
-        super.init(servletConfig);
+    	try {
+    	super.init(servletConfig);
         OscarProperties p = OscarProperties.getInstance();
        
         LookupManager lookupManager = (LookupManager) SpringUtils.getBean("lookupManager");
@@ -32,5 +35,10 @@ public class InitPropertyServlet extends HttpServlet {
         	LookupCodeValue pv = (LookupCodeValue) prps.get(i);
         	p.setProperty(pv.getDescription(), pv.getBuf1());
         }
+    	}
+    	catch(Exception e)
+    	{
+    		throw new ServletException(e);
+    	}
     }
 }

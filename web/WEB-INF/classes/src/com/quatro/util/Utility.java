@@ -349,7 +349,7 @@ public class Utility {
     	for(int i=0;i<tolLen-pStr.length();i++){
     		retVal=" "+retVal; 
     	}
-    	return retVal;
+    	return retVal.substring(0,tolLen);
     }
     public static String FormatNumber(String pNumber,int tolLen){
     	if(pNumber==null) pNumber="";

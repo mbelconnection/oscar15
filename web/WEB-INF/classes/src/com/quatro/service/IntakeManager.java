@@ -211,7 +211,7 @@ public class IntakeManager {
         return intakeDao.getIntakeFamilyRecord(intakeId);
 	}
 	
-	public List getClientFamilyByIntakeId(Integer intakeId) {
+	public List getClientFamilyByIntakeId(Integer intakeId) throws SQLException{
         if (intakeId == null || intakeId.intValue() == 0) {
             return new ArrayList();
         }
@@ -279,7 +279,7 @@ public class IntakeManager {
         return lst;	
     }
 	
-	public List getClientIntakeFamilyHistory(Integer intakeHeadId)
+	public List getClientIntakeFamilyHistory(Integer intakeHeadId) throws SQLException
 	{
 		List lst =  intakeDao.getClientIntakeFamilyHistory(intakeHeadId);
 		for(int i=0; i<lst.size();i++)

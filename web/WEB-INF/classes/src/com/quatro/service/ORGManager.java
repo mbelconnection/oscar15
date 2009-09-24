@@ -11,6 +11,7 @@
 package com.quatro.service;
 
 
+import java.sql.SQLException;
 import java.util.List;
 
 import com.quatro.dao.ORGDao;
@@ -27,11 +28,12 @@ public class ORGManager {
 		this.orgDao = orgDao;
 	}
 	
-    public LookupTableDefValue GetLookupTableDef(String tableId){
+    public LookupTableDefValue GetLookupTableDef(String tableId) throws SQLException{
         return orgDao.GetLookupTableDef(tableId);
     }
 	
-    public List LoadCodeList(String tableId, boolean activeOnly, String code, String codeDesc) {
+    public List LoadCodeList(String tableId, boolean activeOnly, String code, String codeDesc) 
+    throws SQLException {
         return orgDao.LoadCodeList(tableId, activeOnly, code, codeDesc);
 	}
 	    

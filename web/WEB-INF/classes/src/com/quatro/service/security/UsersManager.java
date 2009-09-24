@@ -88,49 +88,25 @@ public class UsersManager {
 		secroleDao.save(secrole);
 	}
 	public void saveRolesToUser(List list, String providerNo) {
-		List existLst = secuserroleDao.findByProviderNo(providerNo);
-		saveAll(list, existLst);
+		secuserroleDao.deleteByProviderNo(providerNo);
+		saveAll(list);
 	}
 	
 	public void saveStaffToProgram(List list, String orgcd) {
-		List existLst = secuserroleDao.findByOrgcd(orgcd,false);
-		saveAll(list, existLst);
+		secuserroleDao.deleteByOrgcd(orgcd);
+		saveAll(list);
 		
 	}
-	public void saveAll(List newLst, List existLst) {
-		
-		ArrayList lstForDelete = new ArrayList();
-		if(existLst.size()>0){
-			
-			for(int i = 0; i < existLst.size(); i++){
-				boolean keepIt = false;
-				Secuserrole sur1 = (Secuserrole)existLst.get(i);
-				for(int j = 0; j < newLst.size(); j++){
-					Secuserrole sur2 = (Secuserrole)newLst.get(j);
-					if(compare(sur1, sur2)){
-						keepIt = true;
-						break;
-					}
-				}
-				if(!keepIt){
-					lstForDelete.add(sur1);
-				}
-				
-			}
-			for( int i = 0; i < lstForDelete.size(); i++){
-				secuserroleDao.delete((Secuserrole)lstForDelete.get(i));				
-			}
-			
+	public void saveAll(List newLst) {
+		for(int j = 0; j < newLst.size(); j++){
+			Secuserrole sur1 = (Secuserrole) newLst.get(j);
+			secuserroleDao.save(sur1);
 		}
-		
-		secuserroleDao.saveAll(newLst);
 	}
 	
 	public boolean compare(Secuserrole sur1, Secuserrole sur2){
 		boolean isSame = false;
-		if(sur1.getOrgcd().equals(sur2.getOrgcd()) && 
-				sur1.getProviderNo().equals(sur2.getProviderNo()) && 
-				sur1.getRoleName().equals(sur2.getRoleName()))
+		if(sur1.getId().equals(sur2.getId()))
 			isSame = true;
 		return isSame;
 	}

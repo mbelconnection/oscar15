@@ -22,6 +22,7 @@
 
 package org.oscarehr.casemgmt.web;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -191,6 +192,7 @@ public class BaseCaseManagementEntryAction extends BaseClientAction {
 
 	/* create related issue string */
 	protected String createIssueString(Set issuelist,Integer caseStatusId ) {
+		try {
 		if (issuelist.isEmpty())
 			return "";
 		String rt = "\n[" + relateIssueString;
@@ -203,6 +205,12 @@ public class BaseCaseManagementEntryAction extends BaseClientAction {
 		String cs = lookupManager.GetLookupCode("CST", caseStatusId.toString()).getDescription();
 		rt = rt+"]\t\t\n[Case Status of this note " + "[" + cs + "]\n";
 		return rt+ "]\n";
+		}
+		catch(SQLException e)
+		{
+			return "";
+		}
+
 	}
         
         protected CaseManagementIssue newIssueToCIssue(String demoNo, LookupCodeValue iss, Integer programId,String providerNo) {

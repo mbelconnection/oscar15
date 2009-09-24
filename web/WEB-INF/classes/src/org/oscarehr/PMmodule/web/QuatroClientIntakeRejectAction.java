@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.oscarehr.PMmodule.web;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -71,6 +72,10 @@ public class QuatroClientIntakeRejectAction extends BaseProgramAction {
 	   catch(NoAccessException e)
 	   {
 		   return mapping.findForward("failure");
+	   }
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
 	   }
    }
 

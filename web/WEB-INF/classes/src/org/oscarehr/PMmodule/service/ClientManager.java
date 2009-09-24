@@ -22,6 +22,7 @@
 
 package org.oscarehr.PMmodule.service;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -123,7 +124,7 @@ public class ClientManager {
     public ClientReferral getClientReferral(String id) {
         return referralDAO.getClientReferral(Integer.valueOf(id));
     }
-    public List getProgramLookups(Integer clientId, Integer shelterId, String providerNo){
+    public List getProgramLookups(Integer clientId, Integer shelterId, String providerNo)throws SQLException {
 		
 		String progIds = "";
 		List programs =new ArrayList();

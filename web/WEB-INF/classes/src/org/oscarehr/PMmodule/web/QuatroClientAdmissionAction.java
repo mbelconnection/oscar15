@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.oscarehr.PMmodule.web;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -196,6 +197,10 @@ public class QuatroClientAdmissionAction  extends BaseClientAction {
 	   {
 		   return mapping.findForward("failure");
 	   }
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
    }
    
    //from quatroClientAdmission.jsp room change event 
@@ -365,6 +370,10 @@ public class QuatroClientAdmissionAction  extends BaseClientAction {
 	   catch(NoAccessException e)
 	   {
 		   return mapping.findForward("failure");
+	   }
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
 	   }
    }
    	
@@ -620,10 +629,15 @@ public class QuatroClientAdmissionAction  extends BaseClientAction {
 	   {
 		   return mapping.findForward("failure");
 	   }
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
      
    }
 
-   private boolean canOverwrite(HttpServletRequest request,String programId){
+   private boolean canOverwrite(HttpServletRequest request,String programId)throws SQLException
+   {
 	   SecurityManager sec = super.getSecurityManager(request);
 		//summary
 		if(programId==null) return false;
@@ -974,8 +988,12 @@ public class QuatroClientAdmissionAction  extends BaseClientAction {
 	   {
 		   return mapping.findForward("failure");
 	   }
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
    }
-   private boolean isClientAdmittedAsDependent(Admission admObj, Integer headClientId)
+   private boolean isClientAdmittedAsDependent(Admission admObj, Integer headClientId) throws SQLException
    {
 	   List lstFamily = intakeManager.getClientFamilyByIntakeId(admObj.getIntakeId());
 	   boolean isDependent=false;

@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.oscarehr.PMmodule.web;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -159,6 +160,10 @@ public class QuatroIntakeEditAction extends BaseClientAction {
 		} catch (NoAccessException e) {
 			return mapping.findForward("failure");
 		}
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
 	}
 	// for existing client
 	public ActionForward showHeadIntake(ActionMapping mapping, ActionForm form,
@@ -314,6 +319,10 @@ public class QuatroIntakeEditAction extends BaseClientAction {
 		} catch (NoAccessException e) {
 			return mapping.findForward("failure");
 		}
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
 	}
 
 	// this method loads a intake edit page from the program queue
@@ -495,6 +504,10 @@ public class QuatroIntakeEditAction extends BaseClientAction {
 		} catch (NoAccessException e) {
 			return mapping.findForward("failure");
 		}
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
 	}
 	public ActionForward queue(ActionMapping mapping, ActionForm form, 
 			HttpServletRequest request, HttpServletResponse response) 
@@ -621,6 +634,7 @@ public class QuatroIntakeEditAction extends BaseClientAction {
 				super.getAccess(request, KeyConstants.FUN_CLIENTINTAKE, intake.getProgramId(), KeyConstants.ACCESS_UPDATE);
 
 			String providerNo = (String) request.getSession().getAttribute(KeyConstants.SESSION_KEY_PROVIDERNO);
+			String providerName = (String) request.getSession().getAttribute(KeyConstants.SESSION_KEY_PROVIDERNAME);
 			Integer intakeHeadId = new Integer(0);
 			if (!Utility.IsEmpty(request.getParameter("intakeHeadId")))
 				intakeHeadId = Integer.valueOf(request.getParameter("intakeHeadId"));
@@ -655,7 +669,8 @@ public class QuatroIntakeEditAction extends BaseClientAction {
 				intake.setEndDate(MyDateFormat.getCalendar(intake.getEndDateTxt()));
 			}
 			intake.setLastUpdateDate(Calendar.getInstance());
-			
+			intake.setLastUpdateUserId(providerNo);
+			intake.setLastUpdateUserName(providerName);
 			// get program type
 			Program prog = programManager.getProgram(intake.getProgramId());
 			if (prog != null) {
@@ -829,6 +844,7 @@ public class QuatroIntakeEditAction extends BaseClientAction {
 				Calendar cal = Calendar.getInstance();
 				intake.setCreatedOn(cal);
 				intake.setCreatedOnTxt(MyDateFormat.getStandardDateTime(cal));
+				intake.setStaffId(providerNo);
 			}
 
 			if (intake.getId().intValue() == 0)
@@ -853,9 +869,11 @@ public class QuatroIntakeEditAction extends BaseClientAction {
 			intake.setVeteranNoYN(request.getParameter("intake.veteranNoYN"));
 			intake.setRecordLandingYN(request.getParameter("intake.recordLandingYN"));
 			intake.setLibraryCardYN(request.getParameter("intake.libraryCardYN"));
-			intake.setStaffId(providerNo);
+//			intake.setStaffId(providerNo);
 			
 			intake.setLastUpdateDate(new GregorianCalendar());
+			intake.setLastUpdateUserId(providerNo);
+			intake.setLastUpdateUserName(providerName);
 			String sourceIncome = request.getParameter("intake.sourceIncome");
 			if (Utility.IsEmpty(sourceIncome)) {
 				intake.setSourceIncome(new String[] {});
@@ -954,14 +972,19 @@ public class QuatroIntakeEditAction extends BaseClientAction {
 		} catch (NoAccessException e) {
 			return mapping.findForward("failure");
 		}
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
 	}
 	private boolean copyFamily(HttpServletRequest request,
-			Integer fromReferralId, QuatroIntake headIntakeTo, ActionMessages messages) {
+			Integer fromReferralId, QuatroIntake headIntakeTo, ActionMessages messages) throws SQLException {
 		boolean isWarning = false;
 		if(fromReferralId == null) return isWarning;
 		ClientReferral refer = clientManager.getClientReferral(fromReferralId.toString());
 		Integer fromIntakeId = refer.getFromIntakeId();
-		
+		String providerNo = (String) request.getSession().getAttribute(KeyConstants.SESSION_KEY_PROVIDERNO);
+		String providerName = (String) request.getSession().getAttribute(KeyConstants.SESSION_KEY_PROVIDERNAME);
 		List dependents = intakeManager
 				.getClientFamilyByIntakeId(fromIntakeId);
 		if(dependents.size()<= 1 ) return isWarning; //the family include family head (this client)
@@ -1038,6 +1061,7 @@ public class QuatroIntakeEditAction extends BaseClientAction {
 			intake.setId(Integer.valueOf("0"));
 			intake.setProgramId(programId);
 			intake.setCreatedOn(Calendar.getInstance());
+			intake.setStaffId(headIntakeTo.getStaffId());
 			intake.setIntakeStatus(KeyConstants.INTAKE_STATUS_ACTIVE);
 			intake.setReferredBy(headIntakeTo.getReferredBy());
 			intake.setContactName(headIntakeTo.getContactName());
@@ -1051,8 +1075,10 @@ public class QuatroIntakeEditAction extends BaseClientAction {
 			intake.setCurSleepArrangement(headIntakeTo.getCurSleepArrangement());
 			intake.setLivedBefore(headIntakeTo.getLivedBefore());
 			intake.setOriginalCountry(headIntakeTo.getOriginalCountry());
-			intake.setStaffId(headIntakeTo.getStaffId());
 			intake.setLastUpdateDate(new GregorianCalendar());
+			intake.setLastUpdateUserId(providerNo);
+			intake.setLastUpdateUserName(providerName);
+
 			intake.setEndDate(headIntakeTo.getEndDate());
 			
 			intakeFamily.setJoinFamilyDate(MyDateFormat.getCalendarwithTime(intakeFamily.getJoinFamilyDateTxt()));

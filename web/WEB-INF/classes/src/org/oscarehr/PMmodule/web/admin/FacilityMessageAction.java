@@ -22,6 +22,7 @@
 
 package org.oscarehr.PMmodule.web.admin;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -157,6 +158,10 @@ public class FacilityMessageAction extends BaseFacilityAction {
 		   catch(NoAccessException e)
 		   {
 			   return mapping.findForward("failure");
+		   }
+		   catch(SQLException e)
+		   {
+				return mapping.findForward("failure");
 		   }
 	}
 

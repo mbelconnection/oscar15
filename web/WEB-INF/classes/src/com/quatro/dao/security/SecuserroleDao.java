@@ -44,29 +44,9 @@ public class SecuserroleDao extends HibernateDaoSupport {
 	public static final String ORGCD = "orgcd";
 	public static final String ACTIVEYN = "activeyn";
 
-	public void saveAll(List list) {
-		log.debug("saving ALL Secuserrole instances");
-		try {
-			for(int i =0; i< list.size(); i++){
-				Secuserrole obj = (Secuserrole)list.get(i);
-				
-				int rowcount = update(obj);
-				
-				if(rowcount <= 0){
-					getSession().save(obj);
-				}
-				
-			}
-			//this.getHibernateTemplate().saveOrUpdateAll(list);
-			log.debug("save ALL successful");
-		} catch (RuntimeException re) {
-			log.error("save ALL failed", re);
-			throw re;
-		}
-	}
 	public void save(Secuserrole transientInstance) {
 		log.debug("saving Secuserrole instance");
-		try {
+		try { 
 			getSession().save(transientInstance);
 			log.debug("save successful");
 		} catch (RuntimeException re) {
@@ -108,20 +88,12 @@ public class SecuserroleDao extends HibernateDaoSupport {
 		}
 	}
 	
-	public int deleteById(Integer id) {
-		log.debug("deleting Secuserrole by ID");
-		try {
-			
-			return getHibernateTemplate().bulkUpdate("delete Secuserrole as model where model.id =?", id);
-			
-		} catch (RuntimeException re) {
-			log.error("delete failed", re);
-			throw re;
-		}
-	}
 	public int update(Secuserrole instance) {
 		log.debug("Update Secuserrole instance");
 		try {
+			this.getHibernateTemplate().saveOrUpdate(instance);
+			return 1;
+/*			
 			String queryString = "update Secuserrole as model set model.activeyn ='" + instance.getActiveyn() + "'"
 				+ " where model.providerNo ='" + instance.getProviderNo() + "'"
 				+ " and model.roleName ='" + instance.getRoleName() + "'"
@@ -130,7 +102,7 @@ public class SecuserroleDao extends HibernateDaoSupport {
 			Query queryObject = getSession().createQuery(queryString);
 			
 			return queryObject.executeUpdate();
-						
+*/						
 		} catch (RuntimeException re) {
 			log.error("Update failed", re);
 			throw re;

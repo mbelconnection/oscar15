@@ -22,6 +22,7 @@
 
 package org.oscarehr.PMmodule.web.admin;
 
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -261,10 +262,14 @@ public class ProgramManagerViewAction extends BaseProgramAction {
  	   {
  		   return mapping.findForward("failure");
  	   }
+ 	   catch(SQLException e)
+ 	   {
+ 		   return mapping.findForward("failure");
+ 	   }
     }
 
     
-    private void processClients( HttpServletRequest request, Program program, ProgramManagerViewFormBean formBean) throws NoAccessException{
+    private void processClients( HttpServletRequest request, Program program, ProgramManagerViewFormBean formBean) throws NoAccessException, SQLException{
 
 		super.getAccess(request, KeyConstants.FUN_PROGRAM_CLIENTS,KeyConstants.ACCESS_READ);
     	String mthd = request.getParameter("mthd");
@@ -332,7 +337,9 @@ public class ProgramManagerViewAction extends BaseProgramAction {
    	
     }
     
-    private void processIncident(HttpServletRequest request, String programId,boolean isProgramActive, ProgramManagerViewFormBean formBean) throws NoAccessException{
+    private void processIncident(HttpServletRequest request, String programId,boolean isProgramActive, ProgramManagerViewFormBean formBean) 
+    throws NoAccessException,SQLException
+    {
     	String incidentId = request.getParameter("incidentId");
     	String mthd = request.getParameter("mthd");
     	Integer pid = Integer.valueOf(programId);
@@ -608,65 +615,67 @@ public class ProgramManagerViewAction extends BaseProgramAction {
         log.info("do batch discharge");
         try {
         	super.getAccess(request, KeyConstants.FUN_PROGRAM_CLIENTS, KeyConstants.ACCESS_WRITE);
+	        ProgramManagerViewFormBean formBean = (ProgramManagerViewFormBean) form;
+	        ClientForm clientForm = formBean.getClientForm();
+	
+	        String message = "";
+	
+	        // get clients
+	        String dischargeReason = clientForm.getDischargeReason();
+	        String communityProgramCode = clientForm.getCommunityProgramCode();
+	        String providerNo = (String) request.getSession(true).getAttribute(KeyConstants.SESSION_KEY_PROVIDERNO);
+	        
+	        Enumeration e = request.getParameterNames();
+	                
+	        while (e.hasMoreElements()) {
+	            String name = (String) e.nextElement();
+	            if (name.startsWith("checked_") && request.getParameter(name).equals("on")) {
+	                Integer clientIdx =new Integer(name.indexOf(":"));
+	            	String admissionId = name.substring(8,clientIdx.intValue());
+	                Admission admission = admissionManager.getAdmission(new Integer(admissionId));
+	                if (admission == null) {
+	                    log.warn("admission #" + admissionId + " not found.");
+	                    continue;
+	                }
+	
+	                
+	                // lets see if there's room first
+	                Program programToAdmit = null;
+	                Demographic client = clientManager.getClientByDemographicNo(admission.getClientId().toString());
+	
+	                admission.setDischargeDate(Calendar.getInstance());
+	                admission.setDischargeNotes("Batch discharge");
+	                admission.setAdmissionStatus(KeyConstants.INTAKE_STATUS_DISCHARGED);
+	                
+	                admission.setDischargeReason(dischargeReason);
+	                admission.setCommunityProgramCode(communityProgramCode);
+	                
+	                admission.setTransportationType("");
+	                admission.setLastUpdateDate(Calendar.getInstance());
+	                admission.setProviderNo(providerNo);
+	                
+	                List lstFamily = intakeManager.getClientFamilyByIntakeId(admission.getIntakeId());
+	                
+	//                admissionManager.dischargeAdmission(admission, communityProgramCode.equals(""), lstFamily);
+	                admissionManager.dischargeAdmission(admission, false, lstFamily);
+	                
+	                message += client.getFormattedName() + " has been discharged.<br>";
+	                
+	            }
+	        }
+	
+	        ActionMessages messages = new ActionMessages();
+	        messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("errors.detail", message));
+	        saveMessages(request, messages);
+	
+	        return view(mapping, form, request, response);
         }
         catch (NoAccessException e) {
 			return mapping.findForward("failure");
 		}
-        ProgramManagerViewFormBean formBean = (ProgramManagerViewFormBean) form;
-        ClientForm clientForm = formBean.getClientForm();
-
-        String message = "";
-
-        // get clients
-        String dischargeReason = clientForm.getDischargeReason();
-        String communityProgramCode = clientForm.getCommunityProgramCode();
-        String providerNo = (String) request.getSession(true).getAttribute(KeyConstants.SESSION_KEY_PROVIDERNO);
-        
-        Enumeration e = request.getParameterNames();
-                
-        while (e.hasMoreElements()) {
-            String name = (String) e.nextElement();
-            if (name.startsWith("checked_") && request.getParameter(name).equals("on")) {
-                Integer clientIdx =new Integer(name.indexOf(":"));
-            	String admissionId = name.substring(8,clientIdx.intValue());
-                Admission admission = admissionManager.getAdmission(new Integer(admissionId));
-                if (admission == null) {
-                    log.warn("admission #" + admissionId + " not found.");
-                    continue;
-                }
-
-                
-                // lets see if there's room first
-                Program programToAdmit = null;
-                Demographic client = clientManager.getClientByDemographicNo(admission.getClientId().toString());
-
-                admission.setDischargeDate(Calendar.getInstance());
-                admission.setDischargeNotes("Batch discharge");
-                admission.setAdmissionStatus(KeyConstants.INTAKE_STATUS_DISCHARGED);
-                
-                admission.setDischargeReason(dischargeReason);
-                admission.setCommunityProgramCode(communityProgramCode);
-                
-                admission.setTransportationType("");
-                admission.setLastUpdateDate(Calendar.getInstance());
-                admission.setProviderNo(providerNo);
-                
-                List lstFamily = intakeManager.getClientFamilyByIntakeId(admission.getIntakeId());
-                
-//                admissionManager.dischargeAdmission(admission, communityProgramCode.equals(""), lstFamily);
-                admissionManager.dischargeAdmission(admission, false, lstFamily);
-                
-                message += client.getFormattedName() + " has been discharged.<br>";
-                
-            }
-        }
-
-        ActionMessages messages = new ActionMessages();
-        messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("errors.detail", message));
-        saveMessages(request, messages);
-
-        return view(mapping, form, request, response);
-        
+        catch (SQLException e) {
+			return mapping.findForward("failure");
+		}
     }
    /*
     public ActionForward select_client_for_reject(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
@@ -845,6 +854,9 @@ public class ProgramManagerViewAction extends BaseProgramAction {
     	catch (NoAccessException e) {
     		return mapping.findForward("failure");
 		}
+    	catch (SQLException e) {
+    		return mapping.findForward("failure");
+		}
     }
     
     public void setClientRestrictionManager(ClientRestrictionManager clientRestrictionManager) {
@@ -885,6 +897,7 @@ public class ProgramManagerViewAction extends BaseProgramAction {
 		this.incidentManager = incidentManager;
 	}
 	private Boolean hasAccess(HttpServletRequest request, Integer programId, String function, String right)
+	throws SQLException
 	{
 	    SecurityManager sec = (SecurityManager)request.getSession(true).getAttribute(KeyConstants.SESSION_KEY_SECURITY_MANAGER);
 	    String orgCd = "P" + programId.toString();

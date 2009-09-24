@@ -49,9 +49,9 @@ public class SecurityDao extends HibernateDaoSupport {
 		try {
 			// String queryString = "select securityNo, userName, providerNo from Security";
 			
-			String queryString =  "select sur.providerNo, sur.roleName, org.description, s.userName, sur.orgcd"
+			String queryString =  "select sur.providerNo, sur.roleName, org.description, s.userName, sur.orgcd, sur.id"
 				+ " from Secuserrole sur, Security s, LstOrgcd org"
-				+ " where sur.providerNo = '" + providerNo + "'"
+				+ " where sur.providerNo = ?"
 				+ " and s.providerNo = sur.providerNo"
 				+ " and sur.orgcd = org.code"
 				+ " order by sur.orgcd";
@@ -61,7 +61,7 @@ public class SecurityDao extends HibernateDaoSupport {
 			from Security s, Provider p LEFT OUTER JOIN secuserrole sur ON p.provider_No = sur.provider_No
 			where s.provider_No = p.provider_No
 			*/
-			return this.getHibernateTemplate().find(queryString);
+			return this.getHibernateTemplate().find(queryString,providerNo);
 		} catch (RuntimeException re) {
 			log.error("find All User list failed", re);
 			throw re;
@@ -144,7 +144,7 @@ public class SecurityDao extends HibernateDaoSupport {
 			if (bean.getRoleName() != null && bean.getRoleName().length() > 0) {
 				
 				roleName = bean.getRoleName();
-				
+				roleName = StringEscapeUtils.escapeSql(roleName);
 				sql4 = "p.providerNo IN (select r.providerNo from Secuserrole r where r.roleName ='" + roleName + "')";
 				
 			}

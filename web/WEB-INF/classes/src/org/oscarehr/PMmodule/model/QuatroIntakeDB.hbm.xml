@@ -17,6 +17,8 @@
 		<property name="intakeStatus" column="intake_status"/>
 		<property name="programId" column="program_id" type="integer" not-null="true" />
 		<property name="lastUpdateDate" column="lastupdatedate"></property>	
+		<property name="lastUpdateUserId" column="lastupdate_userid"></property>	
+	    <property name="lastUpdateUserName" lazy="true" formula="(select concat(p.last_name, concat(', ', p.first_name)) from Provider p where p.provider_no=lastupdate_userid)"></property> 
 		<property name="nerverExpiry" column="never_end" type="boolean"></property>
 		<property name="sdmtBenUnitStatus" column="sdmt_ben_unit_status"></property>
 		<property name="sdmtOffice" column="sdmt_office"></property>

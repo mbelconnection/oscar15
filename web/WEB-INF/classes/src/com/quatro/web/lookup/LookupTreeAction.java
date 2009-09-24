@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.quatro.web.lookup;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +43,7 @@ public class LookupTreeAction extends BaseAction {
 	}
 	
 	private ActionForward tree(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+		try {
 		String tableId=request.getParameter("tableId");
 		LookupTableDefValue tableDef = lookupManager.GetLookupTableDef(tableId); 
 
@@ -55,10 +57,15 @@ public class LookupTreeAction extends BaseAction {
 		request.setAttribute("notoken", "Y");
 
    	    return mapping.findForward("tree");
+		}		catch(SQLException e)
+		{
+			return mapping.findForward("failure");
+		}
 	}
 
 	public ActionForward search(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-        String tableId=request.getParameter("tableId");
+		try {
+		String tableId=request.getParameter("tableId");
 		LookupTableDefValue tableDef = lookupManager.GetLookupTableDef(tableId); 
    	    DynaActionForm qform = (DynaActionForm) form;
 
@@ -71,6 +78,11 @@ public class LookupTreeAction extends BaseAction {
 	    request.setAttribute("notoken", "Y");
 
    	    return mapping.findForward("tree");
+		}
+		catch(SQLException e)
+		{
+			return mapping.findForward("failure");
+		}
 	}
 
     private MenuRepository setMenu(List lst, HttpServletRequest request){

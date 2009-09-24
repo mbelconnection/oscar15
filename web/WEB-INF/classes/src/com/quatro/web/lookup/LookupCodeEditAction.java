@@ -94,6 +94,10 @@ public class LookupCodeEditAction extends BaseAdminAction {
     	{
     		return mapping.findForward("failure");
     	}
+    	catch(SQLException e)
+    	{
+    		return mapping.findForward("failure");
+    	}
 	}
 
 	public ActionForward save(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception 

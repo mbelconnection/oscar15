@@ -34,6 +34,7 @@ import com.quatro.service.LookupManager;
 import com.quatro.service.UploadFileManager;
 import com.quatro.util.Utility;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.GregorianCalendar;
@@ -136,6 +137,10 @@ public class UploadFileAction extends BaseClientAction {
 		   {
 			   return mapping.findForward("failure");
 		    }
+		   catch(SQLException e)
+		   {
+				return mapping.findForward("failure");
+		   }
 	 }
 	 public ActionForward edit(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
 		 try {
@@ -183,6 +188,10 @@ public class UploadFileAction extends BaseClientAction {
 		   catch(NoAccessException e)
 		   {
 			   return mapping.findForward("failure");
+		   }
+		   catch(SQLException e)
+		   {
+				return mapping.findForward("failure");
 		   }
 	 }
 	 public ActionForward delete(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws NoAccessException{

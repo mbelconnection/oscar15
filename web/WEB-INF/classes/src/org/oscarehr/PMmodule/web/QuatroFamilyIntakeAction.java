@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.oscarehr.PMmodule.web;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -160,7 +161,10 @@ public class QuatroFamilyIntakeAction extends BaseClientAction {
        {
 	       return mapping.findForward("failure");
        }
-
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
    }
 
    public ActionForward history(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
@@ -182,6 +186,10 @@ public class QuatroFamilyIntakeAction extends BaseClientAction {
        {
 	       return mapping.findForward("failure");
        }
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
    }
    
    
@@ -222,6 +230,10 @@ public class QuatroFamilyIntakeAction extends BaseClientAction {
        {
 	       return mapping.findForward("failure");
        }
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
        
    }
 
@@ -248,6 +260,10 @@ public class QuatroFamilyIntakeAction extends BaseClientAction {
        {
 	       return mapping.findForward("failure");
        }
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
 }
 
    public ActionForward save(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
@@ -419,7 +435,8 @@ public class QuatroFamilyIntakeAction extends BaseClientAction {
 			    
 			     	 if(intake.getId().intValue()==0){
 			     	 //  intake.setStaffId(providerNo);
-			     	   intake.setCreatedOn(Calendar.getInstance());
+			     	    intake.setCreatedOn(Calendar.getInstance());
+				        intake.setStaffId(providerNo);
 					    if(familyAdmitted) {
 					    	intake.setIntakeStatus(KeyConstants.INTAKE_STATUS_ADMITTED);
 					    }
@@ -442,7 +459,7 @@ public class QuatroFamilyIntakeAction extends BaseClientAction {
 			     	 }else{
 			           intake.setIntakeStatus(headIntake.getIntakeStatus());
 			     	 }
-			     	 intake.setStaffId(providerNo);
+			     	 intake.setLastUpdateUserId(providerNo);
 			     	 intake.setLastUpdateDate(new GregorianCalendar());
 			
 			     	 intakeFamilyCurr.setJoinFamilyDate(MyDateFormat.getCalendarwithTime(intakeFamilyCurr.getJoinFamilyDateTxt()));
@@ -493,6 +510,10 @@ public class QuatroFamilyIntakeAction extends BaseClientAction {
        {
 	       return mapping.findForward("failure");
        }
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
    }
    private List buildDependentList(HttpServletRequest request, QuatroClientFamilyIntakeForm clientForm)
    {
@@ -625,7 +646,7 @@ public class QuatroFamilyIntakeAction extends BaseClientAction {
 	   return retMsg;
    	}
    
-   private void setEditFields(HttpServletRequest request, QuatroClientFamilyIntakeForm clientForm) throws NoAccessException
+   private void setEditFields(HttpServletRequest request, QuatroClientFamilyIntakeForm clientForm) throws NoAccessException,SQLException
    {
        Integer intakeId = Integer.valueOf((String)clientForm.getIntakeId());
        Integer intakeFamilyHeadId = intakeManager.getIntakeFamilyHeadId(intakeId);

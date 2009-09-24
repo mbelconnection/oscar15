@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.quatro.web.report;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -85,5 +86,9 @@ public class QuatroReportListAction extends BaseAdminAction {
     	{
     		return mapping.findForward("failure");
     	}
+		catch(SQLException e)
+		{
+			return mapping.findForward("failure");
+		}
 	}
 }

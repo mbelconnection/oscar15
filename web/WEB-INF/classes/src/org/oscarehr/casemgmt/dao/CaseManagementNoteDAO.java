@@ -94,7 +94,7 @@ public class CaseManagementNoteDAO extends HibernateDaoSupport {
             catch(ParseException e) {
                 GregorianCalendar cal = new GregorianCalendar(1970,1,1);
                 d = cal.getTime();
-                e.printStackTrace();
+                //e.printStackTrace();
             }
             String clientIds =mergeClientDao.getMergedClientIds(Integer.valueOf(demographic_no));
             String hql = "select distinct cmn from CaseManagementNote cmn join cmn.issues i where i.issue_id in (" + list + ") and cmn.demographic_no in "+clientIds+"  and cmn.id in (select max(cmn.id) from cmn where cmn.observation_date >= ? GROUP BY uuid) ORDER BY cmn.observation_date asc";            

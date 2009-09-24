@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.quatro.web.lookup;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,7 +41,8 @@ public class LookupListAction extends BaseAdminAction {
 	}
 	
 	private ActionForward list(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws NoAccessException{
-        String tableId=request.getParameter("tableId");
+		try {
+		String tableId=request.getParameter("tableId");
 		if("PRP,SIT,LKT,QGV,RPG".indexOf(tableId)> 0) throw new NoAccessException();
 		if(tableId.equals("FUN"))
 			super.getAccess(request, KeyConstants.FUN_ADMIN_ROLE);
@@ -61,9 +63,15 @@ public class LookupListAction extends BaseAdminAction {
 		
 		request.setAttribute("notoken", "Y");
 		return mapping.findForward("list");
+		}
+		catch(SQLException e)
+		{
+			return mapping.findForward("failure");
+		}
 	}
 	
 	public ActionForward search(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws NoAccessException{
+		try {
 		String tableId=request.getParameter("tableId");
 		if("PRP,SIT,LKT,QGV,RPG".indexOf(tableId)> 0) throw new NoAccessException();
 		if(tableId.equals("FUN"))
@@ -87,6 +95,12 @@ public class LookupListAction extends BaseAdminAction {
 //		qform.setOpenerDescElementName(request.getParameter("openerDescElementName"));
 		request.setAttribute("notoken", "Y");
 		return mapping.findForward("list");
+		}
+		catch(SQLException e)
+		{
+			return mapping.findForward("failure");
+		}
+
 	}
 	
 }

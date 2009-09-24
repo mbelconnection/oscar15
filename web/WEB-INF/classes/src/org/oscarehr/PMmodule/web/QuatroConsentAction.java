@@ -11,6 +11,7 @@
 package org.oscarehr.PMmodule.web;
 
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -128,6 +129,10 @@ public class QuatroConsentAction extends BaseClientAction {
        {
 	       return mapping.findForward("failure");
        }
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
 	}
 	 public ActionForward withdraw(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws NoAccessException
 	 {
@@ -147,7 +152,7 @@ public class QuatroConsentAction extends BaseClientAction {
 		       return edit(mapping, form, request, response);
 		   
 	   }
-	 private void setEditAttributes(ActionForm form, HttpServletRequest request) throws NoAccessException {
+	 private void setEditAttributes(ActionForm form, HttpServletRequest request) throws NoAccessException,SQLException {
 		   DynaActionForm dForm = (DynaActionForm) form;
 		   ConsentDetail cdObj =(ConsentDetail)dForm.get("consentValue");
 	      // ClientManagerFormBean tabBean = (ClientManagerFormBean) clientForm.get("view");
@@ -316,6 +321,10 @@ public class QuatroConsentAction extends BaseClientAction {
        {
 	       return mapping.findForward("failure");
        }
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
 	}
 	
 	private String getRandomForm() {

@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.oscarehr.PMmodule.web;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -147,6 +148,10 @@ public class QuatroClientSummaryAction extends BaseClientAction {
 		} catch (NoAccessException e) {
 			return mapping.findForward("failure");
 		}
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
    }
    public ActionForward deleteHS(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws NoAccessException 
    {

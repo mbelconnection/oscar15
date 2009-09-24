@@ -12,6 +12,7 @@ package com.quatro.web.admin;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -117,6 +118,7 @@ public class UserManagerAction extends BaseAdminAction {
 						sur.setOrgcd_desc((String) tmp[2]);
 						sur.setUserName((String) tmp[3]);
 						sur.setOrgcd((String) tmp[4]);
+						sur.setId((Integer) tmp[5]);
 						profilelist.add(sur);
 					}
 	
@@ -153,6 +155,10 @@ public class UserManagerAction extends BaseAdminAction {
 			return mapping.findForward("edit");
 		}
 		catch(NoAccessException e)
+		{
+			return mapping.findForward("failure");
+		}
+		catch(SQLException e)
 		{
 			return mapping.findForward("failure");
 		}
@@ -220,99 +226,103 @@ public class UserManagerAction extends BaseAdminAction {
 		{
 			return mapping.findForward("failure");
 		}
+		catch(SQLException e)
+		{
+			return mapping.findForward("failure");
+		}
 
 	}
 
 	public ActionForward save(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws NoAccessException {
-		List titleLst = lookupManager.LoadCodeList("TLT", true, null, null);
-        request.setAttribute("titleLst", titleLst);
-        request.setAttribute("scrPos", request.getParameter("scrollPosition"));
+
 		ActionMessages messages = new ActionMessages();
-
-		DynaActionForm secuserForm = (DynaActionForm) form;
-
 		SecProvider provider = null;
 		Security user = null;
-		String providerNo = (String) secuserForm.get("providerNo");
-		if (providerNo != null && providerNo.length() > 0) {
-			super.getAccess(request,KeyConstants.FUN_ADMIN_USER,KeyConstants.ACCESS_UPDATE);
-			provider = usersManager.getProviderByProviderNo(providerNo);
-			List userList = usersManager.getUserByProviderNo(providerNo);
-			if (userList != null && userList.size() > 0)
-				user = (Security) userList.get(0);
-		} else
-		{
-			super.getAccess(request,KeyConstants.FUN_ADMIN_USER,KeyConstants.ACCESS_WRITE);
-			provider = new SecProvider();
-		}
-		provider.setFirstName((String) secuserForm.get("firstName"));
-		provider.setLastName((String) secuserForm.get("lastName"));
-		provider.setInit((String) secuserForm.get("init"));
-		provider.setTitle((String) secuserForm.get("title"));
-		provider.setJobTitle((String) secuserForm.get("jobTitle"));
-		provider.setEmail((String) secuserForm.get("email"));
-
-		Map map = request.getParameterMap();
-		String[] isChecked = (String[]) map.get("status");
-		if (isChecked != null)
-			provider.setStatus("1");
-		else
-			provider.setStatus("0");
-
-		if (user == null) {
-			user = new Security();
-			user.setBLocallockset(new Integer(1));
-			user.setBRemotelockset(new Integer(1));
-			user.setBExpireset(new Integer(1));
-			try {
-				SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-				java.util.Date aDate = sdf.parse("01/01/2999");
-				user.setDateExpiredate(aDate);
-			} catch (Exception e) {
-
-			}
-
-		}
-		user.setUserName(((String) secuserForm.get("userName")).toLowerCase());
-		if(!Utility.IsRegular(user.getUserName())) {
-			messages
-			.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage(
-					"error.newuser.invalidUserId", request
-							.getContextPath()));
-			saveMessages(request, messages);
-			return mapping.findForward("edit");
-		}
-		secuserForm.set("userName",user.getUserName());
-		String password = (String) secuserForm.get("password");
-		String cpass = (String) secuserForm.get("confirmPassword");
-		//String pin = (String) secuserForm.get("pin");
-		//String cpin = (String) secuserForm.get("confirmPin");
-		String pin = "123456";
-		String cpin = "123456";
-
-		if (password.equals(cpass) && pin.equals(cpin)) {
-			if (!password.equals(PWD)) {
-				try {
-					password = encryptPassword(password);
-				} catch (NoSuchAlgorithmException foo) {
-					logManager.log("new user",
-							"NoSuchAlgorithmException - SHA", "", request);
-				}
-				user.setPassword(password);
-			}
-			if (!pin.equals(PIN))
-				user.setPin(oscar.Misc.encryptPIN(pin));
-		} else {
-			messages
-					.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage(
-							"error.newuser.passwordNotMatch", request
-									.getContextPath()));
-			saveMessages(request, messages);
-			return mapping.findForward("edit");
-		}
-
 		try {
+			List titleLst = lookupManager.LoadCodeList("TLT", true, null, null);
+	        request.setAttribute("titleLst", titleLst);
+	        request.setAttribute("scrPos", request.getParameter("scrollPosition"));
+	
+			DynaActionForm secuserForm = (DynaActionForm) form;
+	
+			String providerNo = (String) secuserForm.get("providerNo");
+			if (providerNo != null && providerNo.length() > 0) {
+				super.getAccess(request,KeyConstants.FUN_ADMIN_USER,KeyConstants.ACCESS_UPDATE);
+				provider = usersManager.getProviderByProviderNo(providerNo);
+				List userList = usersManager.getUserByProviderNo(providerNo);
+				if (userList != null && userList.size() > 0)
+					user = (Security) userList.get(0);
+			} else
+			{
+				super.getAccess(request,KeyConstants.FUN_ADMIN_USER,KeyConstants.ACCESS_WRITE);
+				provider = new SecProvider();
+			}
+			provider.setFirstName((String) secuserForm.get("firstName"));
+			provider.setLastName((String) secuserForm.get("lastName"));
+			provider.setInit((String) secuserForm.get("init"));
+			provider.setTitle((String) secuserForm.get("title"));
+			provider.setJobTitle((String) secuserForm.get("jobTitle"));
+			provider.setEmail((String) secuserForm.get("email"));
+	
+			Map map = request.getParameterMap();
+			String[] isChecked = (String[]) map.get("status");
+			if (isChecked != null)
+				provider.setStatus("1");
+			else
+				provider.setStatus("0");
+	
+			if (user == null) {
+				user = new Security();
+				user.setBLocallockset(new Integer(1));
+				user.setBRemotelockset(new Integer(1));
+				user.setBExpireset(new Integer(1));
+				try {
+					SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+					java.util.Date aDate = sdf.parse("01/01/2999");
+					user.setDateExpiredate(aDate);
+				} catch (Exception e) {
+	
+				}
+	
+			}
+			user.setUserName(((String) secuserForm.get("userName")).toLowerCase());
+			if(!Utility.IsRegular(user.getUserName())) {
+				messages
+				.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage(
+						"error.newuser.invalidUserId", request
+								.getContextPath()));
+				saveMessages(request, messages);
+				return mapping.findForward("edit");
+			}
+			secuserForm.set("userName",user.getUserName());
+			String password = (String) secuserForm.get("password");
+			String cpass = (String) secuserForm.get("confirmPassword");
+			//String pin = (String) secuserForm.get("pin");
+			//String cpin = (String) secuserForm.get("confirmPin");
+			String pin = "123456";
+			String cpin = "123456";
+	
+			if (password.equals(cpass) && pin.equals(cpin)) {
+				if (!password.equals(PWD)) {
+					try {
+						password = encryptPassword(password);
+					} catch (NoSuchAlgorithmException foo) {
+						logManager.log("new user",
+								"NoSuchAlgorithmException - SHA", "", request);
+					}
+					user.setPassword(password);
+				}
+				if (!pin.equals(PIN))
+					user.setPin(oscar.Misc.encryptPIN(pin));
+			} else {
+				messages
+						.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage(
+								"error.newuser.passwordNotMatch", request
+										.getContextPath()));
+				saveMessages(request, messages);
+				return mapping.findForward("edit");
+			}
 			usersManager.save(provider, user);
 			request.setAttribute("userForEdit", user);
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage(
@@ -559,12 +569,15 @@ public class UserManagerAction extends BaseAdminAction {
 			String[] isChecked = (String[]) map.get("p" + i);
 			if ((operationType == 1 && isChecked == null) || operationType != 1) {
 				Secuserrole objNew = new Secuserrole();
-				
+				String[] role_id = (String[]) map.get("role_id" + i);
 				String[] org_code = (String[]) map.get("org_code" + i);
 				String[] org_description = (String[]) map.get("org_description" + i);
 				String[] role_code = (String[]) map.get("role_code" + i);
 				String[] role_description = (String[]) map.get("role_description" + i);
 		
+				if (role_id != null)
+					if (!role_id[0].equals(""))
+						objNew.setId(new Integer(Integer.parseInt(role_id[0])));
 				if (org_code != null)
 					objNew.setOrgcd(org_code[0]);
 				if (org_description != null)

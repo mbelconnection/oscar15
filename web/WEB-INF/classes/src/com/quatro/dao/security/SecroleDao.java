@@ -61,7 +61,7 @@ public class SecroleDao extends HibernateDaoSupport {
             throw new IllegalArgumentException();
         }
 
-        List lst = this.getHibernateTemplate().find("from Secrole r where r.roleName='" + roleName + "'");
+        List lst = this.getHibernateTemplate().find("from Secrole r where r.roleName=?",roleName);
         if(lst != null && lst.size() > 0)
         	result = (Secrole) lst.get(0);
 

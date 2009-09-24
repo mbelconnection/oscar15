@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.quatro.web.lookup;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,14 +48,20 @@ public class LookupCodeListAction extends BaseAdminAction {
 	}
 	
 	private ActionForward list(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-		String tableId=request.getParameter("id");
-		LookupTableDefValue tableDef = lookupManager.GetLookupTableDef(tableId); 
-
-		List lst = lookupManager.LoadCodeList(tableId, false, null, null);
-		
-		DynaActionForm qform = (DynaActionForm) form;
-		qform.set("codes",lst);
-		qform.set("tableDef", tableDef);
-		return mapping.findForward("list");
+		try {
+			String tableId=request.getParameter("id");
+			LookupTableDefValue tableDef = lookupManager.GetLookupTableDef(tableId); 
+	
+			List lst = lookupManager.LoadCodeList(tableId, false, null, null);
+			
+			DynaActionForm qform = (DynaActionForm) form;
+			qform.set("codes",lst);
+			qform.set("tableDef", tableDef);
+			return mapping.findForward("list");
+		}
+		catch(SQLException e)
+		{
+			return mapping.findForward("failure");
+		}
 	}
 }

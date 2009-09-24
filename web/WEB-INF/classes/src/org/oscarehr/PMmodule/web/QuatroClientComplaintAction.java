@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.oscarehr.PMmodule.web;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -196,6 +197,10 @@ public class QuatroClientComplaintAction extends BaseClientAction {
 		} catch (NoAccessException e) {
 			return mapping.findForward("failure");
 		}
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
 	}
 
 	public ActionForward save(ActionMapping mapping, ActionForm form,

@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.quatro.web.lookup;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,7 +48,8 @@ public class LookupTableListAction extends BaseAdminAction {
 	}
 	
 	private ActionForward list(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-			String tableId="FCT";
+		try {
+		String tableId="FCT";
 			List lst = lookupManager.LoadCodeList(tableId, true, null, null);
 			
 			for(int i=0; i<lst.size(); i++)
@@ -60,5 +62,10 @@ public class LookupTableListAction extends BaseAdminAction {
 			DynaActionForm qform = (DynaActionForm) form;
 			qform.set("modules",lst);
 			return mapping.findForward("list");
+		}
+		catch(SQLException e)
+		{
+			return mapping.findForward("failure");
+		}
 	}
 }

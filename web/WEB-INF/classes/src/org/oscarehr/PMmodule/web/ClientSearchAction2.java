@@ -119,100 +119,110 @@ public class ClientSearchAction2 extends BaseClientAction {
 	   {
 		   return mapping.findForward("failure");
 	   }
+	   catch(SQLException e)
+	   {
+		   return mapping.findForward("failure");
+	   }
 	}
 	
 	public ActionForward search(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) throws NoAccessException {
-
-		super.getAccess(request, KeyConstants.FUN_CLIENT, new Integer(0));
-		DynaActionForm searchForm = (DynaActionForm) form;
-		ClientSearchFormBean formBean = (ClientSearchFormBean) searchForm
-				.get("criteria");
-
-		// formBean.setProgramDomain((List)request.getSession().getAttribute("program_domain"));
-		boolean allowOnlyOptins = UserRoleUtils.hasRole(request,
-				UserRoleUtils.Roles_external);
-		String progId = formBean.getBedProgramId();
-		Integer shelterId = (Integer) request.getSession().getAttribute(
-					KeyConstants.SESSION_KEY_SHELTERID);
-		String providerNo = (String) request.getSession().getAttribute(
-					KeyConstants.SESSION_KEY_PROVIDERNO);
-			//List allBedPrograms = programManager.getBedPrograms(providerNo, shelterId);
-		if(!"".equals(progId)) {
-			List allPrograms = programManager.getPrograms(Program.PROGRAM_STATUS_ACTIVE,providerNo,shelterId);
-			String prgId = "";
-			boolean isOk = "MyP".equals(progId);
-			for (int i=0;i<allPrograms.size();i++) {
-				Program prg = (Program)allPrograms.get(i);
-				if ("MyP".equals(progId)) {
-					prgId += prg.getId().toString() + ",";
+		try {
+			super.getAccess(request, KeyConstants.FUN_CLIENT, new Integer(0));
+			DynaActionForm searchForm = (DynaActionForm) form;
+			ClientSearchFormBean formBean = (ClientSearchFormBean) searchForm
+					.get("criteria");
+	
+			// formBean.setProgramDomain((List)request.getSession().getAttribute("program_domain"));
+			boolean allowOnlyOptins = UserRoleUtils.hasRole(request,
+					UserRoleUtils.Roles_external);
+			String progId = formBean.getBedProgramId();
+			Integer shelterId = (Integer) request.getSession().getAttribute(
+						KeyConstants.SESSION_KEY_SHELTERID);
+			String providerNo = (String) request.getSession().getAttribute(
+						KeyConstants.SESSION_KEY_PROVIDERNO);
+				//List allBedPrograms = programManager.getBedPrograms(providerNo, shelterId);
+			if(!"".equals(progId)) {
+				List allPrograms = programManager.getPrograms(Program.PROGRAM_STATUS_ACTIVE,providerNo,shelterId);
+				String prgId = "";
+				boolean isOk = "MyP".equals(progId);
+				for (int i=0;i<allPrograms.size();i++) {
+					Program prg = (Program)allPrograms.get(i);
+					if ("MyP".equals(progId)) {
+						prgId += prg.getId().toString() + ",";
+					}
+					else
+					{
+						if (progId.equals(prg.getId().toString())) {
+							isOk = true;
+							prgId = progId + ",";
+						}
+					}
+				}
+				if(!isOk) throw new NoAccessException();
+				
+				if (!"".equals(prgId)) {
+					prgId = prgId.substring(0, prgId.length() - 1);
 				}
 				else
 				{
-					if (progId.equals(prg.getId().toString())) {
-						isOk = true;
-						prgId = progId + ",";
+					prgId = "1";
+				}
+				formBean.setBedProgramId(prgId);
+			}
+			/* checking if the staff is in scope */
+			String staffId = formBean.getAssignedToProviderNo();
+			if (!Utility.IsEmpty(staffId)) {
+				List allProviders = providerManager.getActiveProviders(providerNo,
+						shelterId);
+				boolean isStaffOk = false;
+				for(int i=0; i<allProviders.size(); i++)
+				{
+					Provider provider = (Provider) allProviders.get(i); 
+					if(provider.getProviderNo().equals(staffId))
+					{
+						isStaffOk = true;
+					    break;
 					}
 				}
+				if(!isStaffOk) throw new NoAccessException();
+	
 			}
-			if(!isOk) throw new NoAccessException();
-			
-			if (!"".equals(prgId)) {
-				prgId = prgId.substring(0, prgId.length() - 1);
+	
+			/* do the search */
+			request.setAttribute("clients", clientManager.search(formBean,allowOnlyOptins,false));
+	
+			// sort out the consent type used to search
+			String consentSearch = StringUtils.trimToNull(request
+					.getParameter("search_with_consent"));
+			String emergencySearch = StringUtils.trimToNull(request
+					.getParameter("emergency_search"));
+			String consent = null;
+	
+			if (consentSearch != null && emergencySearch != null)
+				throw (new IllegalStateException(
+						"This is an unexpected state, both search_with_consent and emergency_search are not null."));
+			else if (consentSearch != null)
+				consent = Demographic.ConsentGiven_ALL;
+			else if (emergencySearch != null)
+				consent = Demographic.ConsentGiven_ALL;
+			request.setAttribute("consent", consent);
+	
+			if (formBean.isSearchOutsideDomain()) {
+				logManager.log("read", "out of domain client search", "", request);
 			}
-			else
-			{
-				prgId = "1";
-			}
-			formBean.setBedProgramId(prgId);
+			setLookupLists(request);
+	
+			return mapping.findForward("form");
 		}
-		/* checking if the staff is in scope */
-		String staffId = formBean.getAssignedToProviderNo();
-		if (!Utility.IsEmpty(staffId)) {
-			List allProviders = providerManager.getActiveProviders(providerNo,
-					shelterId);
-			boolean isStaffOk = false;
-			for(int i=0; i<allProviders.size(); i++)
-			{
-				Provider provider = (Provider) allProviders.get(i); 
-				if(provider.getProviderNo().equals(staffId))
-				{
-					isStaffOk = true;
-				    break;
-				}
-			}
-			if(!isStaffOk) throw new NoAccessException();
-
+		catch(SQLException e)
+		{
+			return mapping.findForward("failure");
 		}
-
-		/* do the search */
-		request.setAttribute("clients", clientManager.search(formBean,allowOnlyOptins,false));
-
-		// sort out the consent type used to search
-		String consentSearch = StringUtils.trimToNull(request
-				.getParameter("search_with_consent"));
-		String emergencySearch = StringUtils.trimToNull(request
-				.getParameter("emergency_search"));
-		String consent = null;
-
-		if (consentSearch != null && emergencySearch != null)
-			throw (new IllegalStateException(
-					"This is an unexpected state, both search_with_consent and emergency_search are not null."));
-		else if (consentSearch != null)
-			consent = Demographic.ConsentGiven_ALL;
-		else if (emergencySearch != null)
-			consent = Demographic.ConsentGiven_ALL;
-		request.setAttribute("consent", consent);
-
-		if (formBean.isSearchOutsideDomain()) {
-			logManager.log("read", "out of domain client search", "", request);
-		}
-		setLookupLists(request);
-
-		return mapping.findForward("form");
 	}
 
-	private void setLookupLists(HttpServletRequest request) {
+	private void setLookupLists(HttpServletRequest request) throws SQLException
+	{
 		Integer shelterId = (Integer) request.getSession().getAttribute(
 				KeyConstants.SESSION_KEY_SHELTERID);
 		String providerNo = (String) request.getSession().getAttribute(

@@ -32,6 +32,8 @@ import org.oscarehr.util.SpringUtils;
 import com.quatro.common.KeyConstants;
 import com.quatro.dao.LookupDao;
 import com.quatro.model.LookupCodeValue;
+
+import java.sql.SQLException;
 import java.util.List;
 public class ProgramUtils
 {
@@ -63,38 +65,44 @@ public class ProgramUtils
     }
     
     public static String admitToNewFacilityValidationMethod(HttpServletRequest request) {
-        StringBuffer sb=new StringBuffer();
-        
-        sb.append("function isNewFacility(newProgramId,oldProgramId)\n");
-        sb.append("{\n");
-        
-        sb.append("var oldIn=false; var newIn=false; \n");
-        sb.append("if(oldProgramId=='' || oldProgramId==null) {return false;}\n");
-        
-        List facs = lookupDao.LoadCodeList("FAC",false,null,null);
-        for (int i=0; i<facs.size(); i++) {
-        	LookupCodeValue facility = (LookupCodeValue) facs.get(i); 
-            List progs = lookupDao.LoadCodeList("PRO", true, facility.getCode(),null,null);
-        for(int j = 0; j < progs.size(); j++) {
-        	LookupCodeValue program  = (LookupCodeValue) progs.get(j);	
-        		sb.append("if(oldProgramId==" + program.getCode()+") {oldIn=true;}\n ");
-        		sb.append("if(newProgramId==" + program.getCode()+") {newIn=true;} \n");
-        }
-        	sb.append("if(oldIn==true && newIn==true) {return(false);}\n");
-        	
-        	sb.append("else { oldIn=false; newIn=false; } \n");
-        }
-/*        for(Program program : programDao.getCommunityPrograms()){
-        	if(program.isCommunity()) {
-        		sb.append("if(oldProgramId=="+program.getId()+") {return(false);} \n");
-        		sb.append("if(newProgramId=="+program.getId()+") {return(false);} \n");
-        	}
-        }
-*/
-        sb.append(" return(true);\n");
-        sb.append("}\n");
-        
-        return(sb.toString());
+    	try {
+	    	StringBuffer sb=new StringBuffer();
+	        
+	        sb.append("function isNewFacility(newProgramId,oldProgramId)\n");
+	        sb.append("{\n");
+	        
+	        sb.append("var oldIn=false; var newIn=false; \n");
+	        sb.append("if(oldProgramId=='' || oldProgramId==null) {return false;}\n");
+	        
+	        List facs = lookupDao.LoadCodeList("FAC",false,null,null);
+	        for (int i=0; i<facs.size(); i++) {
+	        	LookupCodeValue facility = (LookupCodeValue) facs.get(i); 
+	            List progs = lookupDao.LoadCodeList("PRO", true, facility.getCode(),null,null);
+	        for(int j = 0; j < progs.size(); j++) {
+	        	LookupCodeValue program  = (LookupCodeValue) progs.get(j);	
+	        		sb.append("if(oldProgramId==" + program.getCode()+") {oldIn=true;}\n ");
+	        		sb.append("if(newProgramId==" + program.getCode()+") {newIn=true;} \n");
+	        }
+	        	sb.append("if(oldIn==true && newIn==true) {return(false);}\n");
+	        	
+	        	sb.append("else { oldIn=false; newIn=false; } \n");
+	        }
+	/*        for(Program program : programDao.getCommunityPrograms()){
+	        	if(program.isCommunity()) {
+	        		sb.append("if(oldProgramId=="+program.getId()+") {return(false);} \n");
+	        		sb.append("if(newProgramId=="+program.getId()+") {return(false);} \n");
+	        	}
+	        }
+	*/
+	        sb.append(" return(true);\n");
+	        sb.append("}\n");
+	        
+	        return(sb.toString());
+    	}
+ 	   catch(SQLException e)
+	   {
+			return null;
+	   }
     }
     
     public static String addProgramAgeRestrictionsMethod() {

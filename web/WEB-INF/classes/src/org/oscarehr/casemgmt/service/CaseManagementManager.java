@@ -22,6 +22,7 @@
 
 package org.oscarehr.casemgmt.service;
 
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -298,7 +299,7 @@ public class CaseManagementManager {
         return rt;
     }
     
-    public LookupCodeValue getIssue(String issue_id) {
+    public LookupCodeValue getIssue(String issue_id) throws SQLException{
         return this.lookupDao.GetCode("ISS",issue_id);
     }
 

@@ -100,11 +100,24 @@ public class QuatroIntake implements Serializable,Cloneable {
     private String sdmtLastBenMonth;
     private String completionNotes;
     private String rejectionReasonDesc;
-    
-    
 
     private String comments;
-
+    private String lastUpdateUserId;
+    private String m_lastUpdateUserName;
+    
+    public String getLastUpdateUserId() {
+		return lastUpdateUserId;
+	}
+    public void setLastUpdateUserId(String lastUpdateUserId)
+    {
+    	this.lastUpdateUserId = lastUpdateUserId;
+    }
+	public String getLastUpdateUserName() {
+		return m_lastUpdateUserName;
+	}
+	public void setLastUpdateUserName(String lastUpdateUserName) {
+		this.m_lastUpdateUserName = lastUpdateUserName;
+	}
 //    private Integer referralId;
 //    private Integer queueId;
     private Calendar lastUpdateDate;

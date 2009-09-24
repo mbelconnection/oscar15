@@ -22,6 +22,7 @@
 
 package org.oscarehr.PMmodule.web.admin;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -97,6 +98,10 @@ public class ProgramManagerAction extends BaseProgramAction {
     	{
     		return mapping.findForward("failure");
     	}
+ 	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
     }
 
     public ActionForward edit(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
@@ -161,6 +166,10 @@ public class ProgramManagerAction extends BaseProgramAction {
 	   {
 		   return mapping.findForward("failure");
 	   }
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
 
     }
     /*
@@ -194,6 +203,10 @@ public class ProgramManagerAction extends BaseProgramAction {
 	   catch(NoAccessException e)
 	   {
 		   return mapping.findForward("failure");
+	   }
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
 	   }
     }
 
@@ -594,6 +607,10 @@ public class ProgramManagerAction extends BaseProgramAction {
  	   {
  		   return mapping.findForward("failure");
  	   }
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
     }
 /*
 	public void changeLstTable(int operationType, ActionForm myForm,
@@ -891,7 +908,7 @@ public class ProgramManagerAction extends BaseProgramAction {
 	        if(program.getDefaultServiceRestrictionDays() == null)
 	        	program.setDefaultServiceRestrictionDays(new Integer(1));
 	        
-	        saveProgram(request, program);
+	        programManager.saveProgram(program);
 	
 	        ActionMessages messages = new ActionMessages();
 	        messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("message.save.success", request.getContextPath()));
@@ -907,11 +924,12 @@ public class ProgramManagerAction extends BaseProgramAction {
  	   {
  		   return mapping.findForward("failure");
  	   }
+ 	   catch(SQLException e)
+ 	   {
+ 		   return mapping.findForward("failure");
+ 	   }
     }
 
-    private void saveProgram(HttpServletRequest request, Program program) {
-        programManager.saveProgram(program);
-    }
 /*    
     public ActionForward addStaff(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)throws NoAccessException {
     	String programId = request.getParameter("programId");
@@ -1232,7 +1250,7 @@ public class ProgramManagerAction extends BaseProgramAction {
         return mapping.findForward("edit");
     }
 */
-    private void setEditAttributes(HttpServletRequest request, ActionForm form, String funCd ) throws NoAccessException {
+    private void setEditAttributes(HttpServletRequest request, ActionForm form, String funCd ) throws NoAccessException,SQLException {
 		ArrayList programSignatureLst = new ArrayList();
     	 DynaActionForm programForm = (DynaActionForm) form;
     	Program program = (Program) programForm.get("program");

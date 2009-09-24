@@ -22,6 +22,7 @@
 
 package org.caisi.core.web;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
@@ -113,6 +114,10 @@ public class SystemMessageAction extends BaseAdminAction {
 			return mapping.findForward("edit");
 		}
 		catch(NoAccessException e)
+		{
+			return mapping.findForward("failure");
+		}
+		catch(SQLException e)
 		{
 			return mapping.findForward("failure");
 		}

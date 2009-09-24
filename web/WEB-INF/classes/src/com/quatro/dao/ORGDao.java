@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.quatro.dao;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
@@ -30,12 +31,12 @@ public class ORGDao extends HibernateDaoSupport {
 		this.lookupDao = lookupDao;
 	}
 
-	public LookupTableDefValue GetLookupTableDef(String tableId)
+	public LookupTableDefValue GetLookupTableDef(String tableId) throws SQLException
 	{
 		return lookupDao.GetLookupTableDef(tableId);
 	}
 	
-	public List LoadCodeList(String tableId, boolean activeOnly, String code, String codeDesc)
+	public List LoadCodeList(String tableId, boolean activeOnly, String code, String codeDesc)throws SQLException
 	{
 	   return LoadCodeList(tableId,activeOnly,"",code,codeDesc);
 	}
@@ -45,7 +46,7 @@ public class ORGDao extends HibernateDaoSupport {
 		return lookupDao.LoadFieldDefList(tableId);
 	}
 
-	public List LoadCodeList(String tableId,boolean activeOnly,  String parentCode,String code, String codeDesc)
+	public List LoadCodeList(String tableId,boolean activeOnly,  String parentCode,String code, String codeDesc) throws SQLException
 	{
 	   return lookupDao.LoadCodeList(tableId, activeOnly, parentCode,code, codeDesc);
 	}

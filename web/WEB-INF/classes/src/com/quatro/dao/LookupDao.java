@@ -57,10 +57,11 @@ public class LookupDao extends HibernateDaoSupport {
 	private static Calendar lastCacheTime = Calendar.getInstance();
 	private static int lastId  = -1;
 	public List LoadCodeList(String tableId, boolean activeOnly, String code, String codeDesc)
+	throws SQLException
 	{
 	   return LoadCodeList(tableId,activeOnly,"",code,codeDesc,true);
 	}
-	public String getOrgCdCsv(String code)
+	public String getOrgCdCsv(String code) throws SQLException
 	{
 		if (code == null || code.equals("")) return "";
 		Calendar now = Calendar.getInstance();
@@ -69,7 +70,7 @@ public class LookupDao extends HibernateDaoSupport {
 		if (orgCodeCsvs == null || now.getTimeInMillis()-lastCacheTime.getTimeInMillis() > timeOut) doCache();
 		return (String)orgCodeCsvs.get(code);
 	}
-	private boolean isOrgChanged()
+	private boolean isOrgChanged() throws SQLException
 	{
 		boolean isChanged = true;
 		String sSQL = "select max(logid) from lst_orgcd_log";
@@ -84,13 +85,13 @@ public class LookupDao extends HibernateDaoSupport {
 			isChanged = (id > lastId);
 			if (isChanged) lastId = id;
 		}
-		catch(Exception ex)
+		catch(SQLException ex)
 		{
-			;
+			throw ex;
 		}
 		return isChanged;
 	}
-	private void doCache()
+	private void doCache() throws SQLException
 	{
 		synchronized ("runonceOrg") 
 		{
@@ -107,7 +108,7 @@ public class LookupDao extends HibernateDaoSupport {
 			lastCacheTime = Calendar.getInstance();
 		}
 	}
-	public LookupCodeValue GetCode(String tableId,String code)
+	public LookupCodeValue GetCode(String tableId,String code) throws SQLException
 	{
 		if (code == null || "".equals(code)) return null;
 		List lst = LoadCodeList(tableId, false,"", code, "",false);
@@ -118,11 +119,13 @@ public class LookupDao extends HibernateDaoSupport {
 		}
 		return lkv;
 	}
-	public List LoadCodeList(String tableId,boolean activeOnly,  String parentCode,String code, String codeDesc){
+	public List LoadCodeList(String tableId,boolean activeOnly,  String parentCode,String code, String codeDesc)
+	throws SQLException {
 		return LoadCodeList(tableId,activeOnly,parentCode,code,codeDesc,true);
 	}
 
 	private List LoadCodeList(String tableId,boolean activeOnly,  String parentCode,String code, String codeDesc, boolean includeTree)
+	throws SQLException
 	{
 		String pCd=parentCode;
 		if("USR".equals(tableId)) parentCode=null;
@@ -257,7 +260,8 @@ public class LookupDao extends HibernateDaoSupport {
 	   }
 	   catch(SQLException e)
 	   {
-		  e.printStackTrace();
+		   throw e;
+		  //e.printStackTrace();
 	   }
 	   finally
 	   {
@@ -266,23 +270,19 @@ public class LookupDao extends HibernateDaoSupport {
 	   return list;
 	}
 
-	public LookupTableDefValue GetLookupTableDef(String tableId)
+	public LookupTableDefValue GetLookupTableDef(String tableId) throws SQLException
 	{
 		if (lookupTableDefs == null) {
 		    synchronized ("runonece")
 		    {
-				try{
-					String sSQL="from LookupTableDefValue s";
-					lookupTableDefs = new Hashtable();
-					List tableDefs = getHibernateTemplate().find(sSQL);
-					for(int i=0; i<tableDefs.size(); i++)
-					{
-						LookupTableDefValue tdv = (LookupTableDefValue) tableDefs.get(i);
-						lookupTableDefs.put(tdv.getTableId(), tdv);
-					}
-			    }catch(Exception ex){
-			    	return null;
-			    }
+				String sSQL="from LookupTableDefValue s";
+				lookupTableDefs = new Hashtable();
+				List tableDefs = getHibernateTemplate().find(sSQL);
+				for(int i=0; i<tableDefs.size(); i++)
+				{
+					LookupTableDefValue tdv = (LookupTableDefValue) tableDefs.get(i);
+					lookupTableDefs.put(tdv.getTableId(), tdv);
+				}
 		    }
 		}
 	    return (LookupTableDefValue) lookupTableDefs.get(tableId);
@@ -296,7 +296,7 @@ public class LookupDao extends HibernateDaoSupport {
 		
 	    return getHibernateTemplate().find(sSql,params);
 	}
-	public List GetCodeFieldValues(LookupTableDefValue tableDef, String code)
+	public List GetCodeFieldValues(LookupTableDefValue tableDef, String code) throws SQLException
 	{
 		String tableName = tableDef.getTableName();
 		List fs = LoadFieldDefList(tableDef.getTableId());
@@ -315,10 +315,10 @@ public class LookupDao extends HibernateDaoSupport {
 			}
 		}
 		sql += " from " + tableName + " s";
-		sql += " where " + idFieldName + "='" + code + "'"; 
+		sql += " where " + idFieldName + "=?"; 
 		DBPreparedHandler db = new DBPreparedHandler();
-		try {
-			ResultSet rs = db.queryResults(sql);
+		try { 
+			ResultSet rs = db.queryResults(sql,code);
 			if (rs.next()) {
 				for(int i=0; i< fs.size(); i++) 
 				{
@@ -348,7 +348,8 @@ public class LookupDao extends HibernateDaoSupport {
 		}
 		catch(SQLException e)
 		{
-			e.printStackTrace();
+			//e.printStackTrace();
+			throw e;
 		}
 		finally
 		{
@@ -356,7 +357,7 @@ public class LookupDao extends HibernateDaoSupport {
 		}
 		return fs;
 	}
-	public List GetCodeFieldValues(LookupTableDefValue tableDef)
+	public List GetCodeFieldValues(LookupTableDefValue tableDef) throws SQLException
 	{
 		String tableName = tableDef.getTableName();
 		List fs = LoadFieldDefList(tableDef.getTableId());
@@ -396,7 +397,8 @@ public class LookupDao extends HibernateDaoSupport {
 		}
 		catch(SQLException e)
 		{
-			System.out.println(e.getStackTrace());
+			throw e;
+			//System.out.println(e.getStackTrace());
 		}
 		finally
 		{

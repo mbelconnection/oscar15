@@ -198,6 +198,8 @@ public class IntakeDao extends HibernateDaoSupport {
 			
 			QuatroIntake intake= new QuatroIntake();
 			intake.setLastUpdateDate(intakeDb.getLastUpdateDate());
+			intake.setLastUpdateUserId(intakeDb.getLastUpdateUserId());
+			intake.setLastUpdateUserName(intakeDb.getLastUpdateUserName());
 		    intake.setId(intakeDb.getId());
 		    intake.setClientId(intakeDb.getClientId());
 		    intake.setProgramId(intakeDb.getProgramId());
@@ -207,6 +209,7 @@ public class IntakeDao extends HibernateDaoSupport {
 		    intake.setProgramName((String)oo[1]);
 		    intake.setSdmtBenUnitStatus(intakeDb.getSdmtBenUnitStatus());
 		    intake.setSdmtLastBenMonth(intakeDb.getSdmtLastBenMonth());
+		    intake.setSdmtOffice(intakeDb.getSdmtOffice());
 		    String strNerverExp="0";
 		    if(intakeDb.isNerverExpiry()) strNerverExp="1";
 		    intake.setNerverExpiry(strNerverExp);
@@ -654,6 +657,8 @@ public class IntakeDao extends HibernateDaoSupport {
 			    intakeDb.setProgramType(intake.getProgramType());
 			    intakeDb.setEndDate(intake.getEndDate());
 			    intakeDb.setLastUpdateDate(intake.getLastUpdateDate());
+			    intakeDb.setLastUpdateUserId(intake.getLastUpdateUserId());
+			    intakeDb.setLastUpdateUserName(intake.getLastUpdateUserName());
 			    intakeDb.setNerverExpiry("1".equals(intake.getNerverExpiry()));
 		      }
 		      obj.add(obj2);
@@ -668,6 +673,8 @@ public class IntakeDao extends HibernateDaoSupport {
 		    intakeDb.setEndDate(intake.getEndDate());
 		    intakeDb.setNerverExpiry("1".equals(intake.getNerverExpiry()));
 		    intakeDb.setLastUpdateDate(intake.getLastUpdateDate());
+		    intakeDb.setLastUpdateUserId(intake.getLastUpdateUserId());
+		    intakeDb.setLastUpdateUserName(intake.getLastUpdateUserName());
 		    intakeDb.setProgramId(intake.getProgramId());
 		    intakeDb.setStaffId(intake.getStaffId());
 

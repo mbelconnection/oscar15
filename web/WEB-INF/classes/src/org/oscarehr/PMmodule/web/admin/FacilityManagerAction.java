@@ -96,6 +96,10 @@ public class FacilityManagerAction extends BaseFacilityAction {
 		{
 			return mapping.findForward("failure");
 		}
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
     }
 
     public ActionForward view(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
@@ -146,6 +150,10 @@ public class FacilityManagerAction extends BaseFacilityAction {
  	   {
  		   return mapping.findForward("failure");
  	   }
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
     }
     
     public ActionForward listPrograms(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
@@ -361,6 +369,11 @@ public class FacilityManagerAction extends BaseFacilityAction {
  	   {
  		   return mapping.findForward("failure");
  	   }
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
+ 	   
     }
 /*
     public ActionForward delete(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
@@ -388,21 +401,32 @@ public class FacilityManagerAction extends BaseFacilityAction {
         return list(mapping, form, request, response);
     }
 */
-    public ActionForward add(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws NoAccessException {
-    	super.getAccess(request,KeyConstants.FUN_FACILITY, KeyConstants.ACCESS_WRITE);
-    	Facility facility = new Facility("", "");
-    	facility.setId(Integer.valueOf("0"));
-        facility.setActive(true);
-        ((FacilityManagerForm) form).setFacility(facility);
+    public ActionForward add(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+    	try {
+	    	super.getAccess(request,KeyConstants.FUN_FACILITY, KeyConstants.ACCESS_WRITE);
+	    	Facility facility = new Facility("", "");
+	    	facility.setId(Integer.valueOf("0"));
+	        facility.setActive(true);
+	        ((FacilityManagerForm) form).setFacility(facility);
+	
+	        // get agency's organization list from caisi editor table
+	        request.setAttribute("orgList", lookupManager.LoadCodeList("SHL", true, null, null));
+	
+	        // get agency's sector list from caisi editor table
+	        request.setAttribute("sectorList", lookupManager.LoadCodeList("SEC", true, null, null));
+	        request.setAttribute("lastActive", "Y");
+	
+	        return mapping.findForward(FORWARD_EDIT);
+    	}
+ 	   catch(NoAccessException e)
+	   {
+			return mapping.findForward("failure");
+	   }
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
 
-        // get agency's organization list from caisi editor table
-        request.setAttribute("orgList", lookupManager.LoadCodeList("SHL", true, null, null));
-
-        // get agency's sector list from caisi editor table
-        request.setAttribute("sectorList", lookupManager.LoadCodeList("SEC", true, null, null));
-        request.setAttribute("lastActive", "Y");
-
-        return mapping.findForward(FORWARD_EDIT);
     }
 
     public ActionForward save(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {

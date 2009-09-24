@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.oscarehr.PMmodule.web;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -94,6 +95,10 @@ public class QuatroClientReferAction  extends BaseClientAction {
 		} catch (NoAccessException e) {
 			return mapping.findForward("failure");
 		}
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
 	}
 	public ActionForward selectProgram(ActionMapping mapping, ActionForm form, 
 		 HttpServletRequest request, HttpServletResponse response) {
@@ -130,6 +135,10 @@ public class QuatroClientReferAction  extends BaseClientAction {
 		} catch (NoAccessException e) {
 			return mapping.findForward("failure");
 		}
+		   catch(SQLException e)
+		   {
+				return mapping.findForward("failure");
+		   }
 	}
 	public ActionForward save(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) {
@@ -220,9 +229,13 @@ public class QuatroClientReferAction  extends BaseClientAction {
 		} catch (NoAccessException e) {
 			return mapping.findForward("failure");
 		}
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
 	}
 
-	private void setEditAttributes(ActionForm form, HttpServletRequest request) throws NoAccessException {
+	private void setEditAttributes(ActionForm form, HttpServletRequest request) throws NoAccessException,SQLException {
 		DynaActionForm clientForm = (DynaActionForm) form;
 		ClientReferral crObj=(ClientReferral)clientForm.get("referral");
 		String rId = request.getParameter("rId");

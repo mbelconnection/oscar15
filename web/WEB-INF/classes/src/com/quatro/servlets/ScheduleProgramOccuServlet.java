@@ -18,6 +18,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.sql.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -43,6 +44,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import com.quatro.common.KeyConstants;
 import com.quatro.util.Utility;
 
+import oscar.MyDateFormat;
 import oscar.OscarProperties;
 import oscar.util.BeanUtilHlp;
 
@@ -93,64 +95,88 @@ public class ScheduleProgramOccuServlet extends HttpServlet {
 	       protected static void inputSDMT(String pathLoc){	        	
 				String filename = "";	
 				String inPath =StringUtils.trimToNull(OscarProperties.getInstance().getProperty("SDMT_IN_PATH"));
+				String archivePath =StringUtils.trimToNull(OscarProperties.getInstance().getProperty("SDMT_IN_ARCHIVE_PATH"));
 				File dir = new File(inPath);
 			    String[] list = dir.list();
 			    if(list == null) return;
 			    for (int i = 0; i < list.length; i++) {
-			        if(list[i].indexOf(".in")>0) 
+			        if(list[i].indexOf(".txt")>0) 
 			        {
 			        	filename =list[i];
-			        	break;
+			    
+					    if(Utility.IsEmpty(filename)) continue;
+						BeanUtilHlp buHlp = new BeanUtilHlp();
+						FileReader fstream = null;
+						try {
+							fstream = new FileReader(inPath + filename);
+						}
+						catch(java.io.FileNotFoundException e)
+						{
+							continue;
+						}
+						BufferedReader in = new BufferedReader(fstream);
+						try {
+							// java.io.FileOutputStream os = new java.io.FileOutputStream(path +
+							// "/out/" + filename);
+							//StringBuffer sb = new StringBuffer();
+							
+							ArrayList tempLst = Utility.getTemplate(pathLoc, "/in/template/","sdmt_in_template.txt");
+							String rStr="";
+							SdmtIn sdVal = new SdmtIn();
+							while((rStr=in.readLine())!=null) {
+								String [] fds = rStr.split(";");
+								for (int j = 0; j < tempLst.size(); j++) {
+									FieldDefinition fd = (FieldDefinition) tempLst.get(j);
+									String value = "";
+									if (fds.length > 1) {
+										value = fds[j];
+										if(value.length() > fd.getFieldLength().intValue()) {
+											value = value.substring(0,fd.getFieldLength().intValue());
+										}
+									}
+									else
+									{
+										value =  rStr.substring(fd.getFieldStartIndex().intValue()-1,fd.getFieldLength().intValue()+fd.getFieldStartIndex().intValue()-1).trim();
+									}
+									buHlp.setPropertyValue(sdVal, fd.getFieldName(),fd.getFieldType(),fd.getDateFormatStr(), value);
+								}	
+								sdVal.setRecordId(new Integer(0));
+								sdVal.setLastUpdateUser("1111");
+								sdVal.setLastUpdateDate(Calendar.getInstance());
+								programOccupancyManager.insertSdmtIn(sdVal);
+							}
+						}
+				        catch (Exception e) {
+				        	logger.error("Sdmt import: " + e.getMessage());
+							System.out.println("Sdmt in:" +e.getMessage());
+				        }
+				        finally
+				        {
+				        	try 
+				        	{
+				        		in.close();
+				        	}
+				        	catch(IOException e)
+				        	{
+				        		;
+				        	}
+				        }
+				        try 
+				        {
+							File file = new File(inPath + filename);
+							Calendar now = Calendar.getInstance();
+							File toFile = new File(archivePath + filename + "." + Utility.FormatDate(now.getTime(), "yyyyMMddHHmmss"));
+							file.renameTo(toFile);
+						}
+				        catch(Exception e)
+				        {
+				        	;
+				        }
 			        }
 			    }
-			    if(Utility.IsEmpty(filename)) return;
-				BeanUtilHlp buHlp = new BeanUtilHlp();
-				FileReader fstream = null;
-				try {
-					fstream = new FileReader(inPath + filename);
-				}
-				catch(java.io.FileNotFoundException e)
-				{
-					return;
-				}
-				BufferedReader in = new BufferedReader(fstream);
-				try {
-					// java.io.FileOutputStream os = new java.io.FileOutputStream(path +
-					// "/out/" + filename);
-					//StringBuffer sb = new StringBuffer();
-					
-					ArrayList tempLst = Utility.getTemplate(pathLoc, "/in/template/","sdmt_in_template.txt");
-					String rStr="";
-					SdmtIn sdVal = new SdmtIn();
-					while((rStr=in.readLine())!=null) {
-						for (int j = 0; j < tempLst.size(); j++) {
-							FieldDefinition fd = (FieldDefinition) tempLst.get(j);
-							String value =rStr.substring(fd.getFieldStartIndex().intValue()-1,fd.getFieldLength().intValue()+fd.getFieldStartIndex().intValue()-1).trim();
-							buHlp.setPropertyValue(sdVal, fd.getFieldName(),fd.getFieldType(),fd.getDateFormatStr(), value);
-						}	
-						sdVal.setRecordId(new Integer(0));
-						sdVal.setLastUpdateUser("1111");
-						sdVal.setLastUpdateDate(Calendar.getInstance());
-						programOccupancyManager.insertSdmtIn(sdVal);
-					}
-				}
-		        catch (Exception e) {
-		        	logger.error("Sdmt import: " + e.getMessage());
-					System.out.println("Sdmt in:" +e.getMessage());
-		        }
-		        finally
-		        {
-		        	try 
-		        	{
-		        		in.close();
-		        	}
-		        	catch(IOException e)
-		        	{
-		        		;
-		        	}
-		        }
 	        }
-			protected static void outputSDMT(String pathLoc, List clientInfo) {				
+
+	       protected static void outputSDMT(String pathLoc, List clientInfo) {				
 				int year = Calendar.getInstance().get(Calendar.YEAR);
 				int month = Calendar.getInstance().get(Calendar.MONTH)+1;
 				int day = Calendar.getInstance().get(Calendar.DATE);
@@ -171,15 +197,20 @@ public class ScheduleProgramOccuServlet extends HttpServlet {
 						String outStr="";
 						for (int j = 0; j < tempLst.size(); j++) {
 							FieldDefinition fd = (FieldDefinition) tempLst.get(j);
-							String value = buHlp.getPropertyValue(sdVal, fd.getFieldName());
-							
-							if("batchNumber".equals(fd.getFieldName())) 
-								{
-									batchNo=new Integer(value).intValue();								
-								}							
-							if("S".equals(fd.getFieldType())) value=Utility.FormatString(value, fd.getFieldLength().intValue());
-							else if("N".equals(fd.getFieldType())) value=Utility.FormatNumber(value, fd.getFieldLength().intValue());
-							outStr+=value;
+							Object value = buHlp.getPropertyValue(sdVal, fd.getFieldName());
+							String val1 =  Utility.FormatString("", fd.getFieldLength().intValue());
+							if (value != null)
+							{
+								if("batchNumber".equals(fd.getFieldName())) 
+									{
+										batchNo=Integer.valueOf(value.toString()).intValue();								
+									}							
+								if("S".equals(fd.getFieldType())) val1=Utility.FormatString((String)value, fd.getFieldLength().intValue());
+								else if("N".equals(fd.getFieldType())) val1=Utility.FormatNumber(value.toString(), fd.getFieldLength().intValue());
+								else 
+									val1 = Utility.FormatDate(((Calendar)value).getTime(), fd.getDateFormatStr());
+							}
+							outStr+=val1;
 						}	
 						out.write(outStr);
 						out.newLine(); 						
@@ -190,7 +221,6 @@ public class ScheduleProgramOccuServlet extends HttpServlet {
 				}
 
 			}
-
 	    }
 
 	    public static class IntakeTimerTask extends TimerTask {
@@ -230,109 +260,8 @@ public class ScheduleProgramOccuServlet extends HttpServlet {
 					System.out.println("Deactivating Bed Intake:" +e.getMessage());
 		        }
 			}
-	        protected static void inputSDMT(String pathLoc){	        	
-				String filename = "";	
-				String inPath =StringUtils.trimToNull(OscarProperties.getInstance().getProperty("SDMT_IN_PATH"));
-				File dir = new File(inPath);
-			    String[] list = dir.list();
-			    if(list == null) return;
-			    for (int i = 0; i < list.length; i++) {
-			        if(list[i].indexOf(".in")>0) 
-			        {
-			        	filename =list[i];
-			        	break;
-			        }
-			    }
-			    if(Utility.IsEmpty(filename)) return;
-				BeanUtilHlp buHlp = new BeanUtilHlp();
-				FileReader fstream = null;
-				try {
-					fstream = new FileReader(inPath + filename);
-				}
-				catch(java.io.FileNotFoundException e)
-				{
-					return;
-				}
-				BufferedReader in = new BufferedReader(fstream);
-				try {
-					// java.io.FileOutputStream os = new java.io.FileOutputStream(path +
-					// "/out/" + filename);
-					//StringBuffer sb = new StringBuffer();
-					
-					ArrayList tempLst = Utility.getTemplate(pathLoc, "/in/template/","sdmt_in_template.txt");
-					String rStr="";
-					SdmtIn sdVal = new SdmtIn();
-					while((rStr=in.readLine())!=null) {
-						for (int j = 0; j < tempLst.size(); j++) {
-							FieldDefinition fd = (FieldDefinition) tempLst.get(j);
-							String value =rStr.substring(fd.getFieldStartIndex().intValue()-1,fd.getFieldLength().intValue()+fd.getFieldStartIndex().intValue()-1).trim();
-							buHlp.setPropertyValue(sdVal, fd.getFieldName(),fd.getFieldType(),fd.getDateFormatStr(), value);
-						}	
-						sdVal.setRecordId(new Integer(0));
-						sdVal.setLastUpdateUser("1111");
-						sdVal.setLastUpdateDate(Calendar.getInstance());
-						programOccupancyManager.insertSdmtIn(sdVal);
-					}
-				}
-		        catch (Exception e) {
-		        	logger.error("Sdmt import: " + e.getMessage());
-					System.out.println("Sdmt in:" +e.getMessage());
-		        }
-		        finally
-		        {
-		        	try 
-		        	{
-		        		in.close();
-		        	}
-		        	catch(IOException e)
-		        	{
-		        		;
-		        	}
-		        }
-	        }
-			protected static void outputSDMT(String pathLoc, List clientInfo) {				
-				int year = Calendar.getInstance().get(Calendar.YEAR);
-				int month = Calendar.getInstance().get(Calendar.MONTH)+1;
-				int day = Calendar.getInstance().get(Calendar.DATE);
-				int hour = Calendar.getInstance().get(Calendar.HOUR);
-				int min = Calendar.getInstance().get(Calendar.MINUTE);
-				String filename = Utility.FormatIntNoWithZero(year, 4)+ Utility.FormatIntNoWithZero(month,2) + Utility.FormatIntNoWithZero(day,2) + Utility.FormatIntNoWithZero(hour,2) + Utility.FormatIntNoWithZero(min,2) + ".out";
-				BeanUtilHlp buHlp = new BeanUtilHlp();
-				try {
-					// java.io.FileOutputStream os = new java.io.FileOutputStream(path +
-					// "/out/" + filename);
-					FileWriter fstream = new FileWriter(StringUtils.trimToNull(OscarProperties.getInstance().getProperty("SDMT_OUT_PATH")) + filename);
-					BufferedWriter out = new BufferedWriter(fstream);
-					//StringBuffer sb = new StringBuffer();
-					
-					ArrayList tempLst = Utility.getTemplate(pathLoc, "/out/template/","sdmt_out_template.txt");
-					for (int i = 0; i < clientInfo.size(); i++) {
-						SdmtOut sdVal = (SdmtOut) clientInfo.get(i);
-						String outStr="";
-						for (int j = 0; j < tempLst.size(); j++) {
-							FieldDefinition fd = (FieldDefinition) tempLst.get(j);
-							String value = buHlp.getPropertyValue(sdVal, fd.getFieldName());
-							
-							if("batchNumber".equals(fd.getFieldName())) 
-								{
-									batchNo=new Integer(value).intValue();								
-								}							
-							if("S".equals(fd.getFieldType())) value=Utility.FormatString(value, fd.getFieldLength().intValue());
-							else if("N".equals(fd.getFieldType())) value=Utility.FormatNumber(value, fd.getFieldLength().intValue());
-							outStr+=value;
-						}	
-						out.write(outStr);
-						out.newLine(); 						
-					}					
-					out.close();
-				} catch (Exception e) {
-					String err=e.getMessage();
-				}
 
-			}
-
-	    }
-	    
+	    }	    
 	    private static long getDelayTime(String startTime){
 	    	long delayTime=0;
 	    	Integer hr=Integer.valueOf(startTime.substring(0,2));
@@ -376,9 +305,10 @@ public class ScheduleProgramOccuServlet extends HttpServlet {
 	           //Calendar dt = Calendar.getInstance();
                //dt.add(Calendar.DATE, -2);
 	           //IntakeTimerTask.DeactiveServiceIntake();
-		       IntakeTimerTask.DeactiveBedIntake();
-               // programOccupancyManager.insertSdmtOut();
-	           // ProgramOccuTimerTask.outputSDMT(path, programOccupancyManager.getSdmtOutList(Calendar.getInstance(), true));
+		       //IntakeTimerTask.DeactiveBedIntake();
+               //programOccupancyManager.insertSdmtOut();
+	           //ProgramOccuTimerTask.outputSDMT(path, programOccupancyManager.getSdmtOutList(Calendar.getInstance(), true));
+	           //ProgramOccuTimerTask.inputSDMT(path);
 	           return;
 	           
 	        }

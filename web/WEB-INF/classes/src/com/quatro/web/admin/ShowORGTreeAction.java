@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.quatro.web.admin;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -66,6 +67,10 @@ public class ShowORGTreeAction extends BaseAdminAction {
 			return mapping.findForward("tree");
 		}
 		catch(NoAccessException e)
+		{
+			return mapping.findForward("failure");
+		}
+		catch(SQLException e)
 		{
 			return mapping.findForward("failure");
 		}

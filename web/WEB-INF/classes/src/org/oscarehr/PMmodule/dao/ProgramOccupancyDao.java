@@ -78,7 +78,7 @@ public class ProgramOccupancyDao extends HibernateDaoSupport {
 		sql += " select seq_sdmt_out.nextval,"
 				+ batchNo
 				+ ",sysdate,d.first_name,d.last_name,d.dob,ltrim(rtrim(ri.sin)),";
-		sql += " ri.healthcardno,d.hin,d.demographic_no,d.pin from demographic d,admission a,report_intake ri ";
+		sql += " ri.healthcardno,d.demographic_no,d.hin,d.pin from demographic d,admission a,report_intake ri ";
 		sql += " where  d.demographic_no=a.client_id and a.intake_id=ri.intake_id and a.admission_status='admitted'";
 		q = getSession().createSQLQuery(sql);
 		q.executeUpdate();
@@ -94,9 +94,9 @@ public class ProgramOccupancyDao extends HibernateDaoSupport {
 				.get(Calendar.MONTH), today.get(Calendar.DATE), 23, 59, 59);
 		params = new Object[] { sDt, eDt };
 		if (includeSendout)
-			sql += "i.batchDateStr between ? and ? ";
+			sql += "i.batchDate between ? and ? ";
 		else
-			sql += "(i.batchDateStr between ? and ?) and sendOut=0";
+			sql += "(i.batchDate between ? and ?) and sendOut=0";
 		sql += " order by i.recordId";
 		result = getHibernateTemplate().find(sql, params);
 		return result;
@@ -120,20 +120,20 @@ public class ProgramOccupancyDao extends HibernateDaoSupport {
 
 	private void updateIntake(SdmtIn sdVal) {
 		String sql = "update intake set sdmt_ben_unit_status=?,sdmt_office=?,sdmt_last_ben_month=?";
-		sql += " where client_id=? and intake_status in ('active','admitted')"
-				+ " and (end_date > ? or never_end=1)";
+		sql += " where client_id=? and intake_status in ('active','admitted')" ;
+//				+ " and (end_date > ? or never_end=1)";
 		SQLQuery q = getSession().createSQLQuery(sql);
 		q.setString(0, sdVal.getBenefitUnitStatus());
 		q.setString(1, sdVal.getOffice());
 		q.setString(2, sdVal.getLastBenMonth());
 		q.setInteger(3, sdVal.getClientId().intValue());
-		Calendar today = Calendar.getInstance();
-		today.clear(Calendar.HOUR_OF_DAY);
-		today.clear(Calendar.HOUR);
-		today.clear(Calendar.MINUTE);
-		today.clear(Calendar.SECOND);
-		today.clear(Calendar.MILLISECOND);
-		q.setDate(4, today.getTime());
+		//Calendar today = Calendar.getInstance();
+		//today.clear(Calendar.HOUR_OF_DAY);
+		//today.clear(Calendar.HOUR);
+		//today.clear(Calendar.MINUTE);
+		//today.clear(Calendar.SECOND);
+		//today.clear(Calendar.MILLISECOND);
+		//q.setDate(4, today.getTime());
 
 		q.executeUpdate();
 	}

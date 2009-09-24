@@ -151,7 +151,6 @@ public class IncidentDao extends HibernateDaoSupport {
 				queryString = queryString + AND + "model.incidentDate = to_date('" +  incDateStr + "','yyyy/mm/dd')";
 			}
 			queryString = queryString + " order by model.id desc";
-			
 			return this.getHibernateTemplate().find(queryString);
 			
 		} catch (RuntimeException re) {

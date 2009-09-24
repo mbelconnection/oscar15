@@ -22,6 +22,7 @@
 
 package org.oscarehr.PMmodule.dao;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -188,67 +189,79 @@ public class ClientHistoryDao extends HibernateDaoSupport {
         }
     }
     
-    public void saveClientHistory(QuatroIntake intake) {
+    public void saveClientHistory(QuatroIntake intake)  {
         if (intake == null) {
             return;
         }
-        ClientHistory history = new ClientHistory();
-        history.setClientId(intake.getClientId());
-        history.setAction("Intake");
-        history.setActionDate(intake.getCreatedOn());
-        history.setHistoryDate(Calendar.getInstance().getTime());
-        LookupCodeValue referedBy = lookupDao.GetCode("RFB", intake.getReferredBy()); 
-        if (referedBy != null) history.setNotes("Referred by: " + referedBy.getDescription());
-        history.setProgramId(intake.getProgramId());
-        history.setProviderNo(intake.getStaffId());
-       
-        saveClientHistory(history);
-
-        if (log.isDebugEnabled()) {
-            log.debug("saveClientReferral: id=" + history.getId());
+        try {
+	        ClientHistory history = new ClientHistory();
+	        history.setClientId(intake.getClientId());
+	        history.setAction("Intake");
+	        history.setActionDate(intake.getCreatedOn());
+	        history.setHistoryDate(Calendar.getInstance().getTime());
+	        LookupCodeValue referedBy = lookupDao.GetCode("RFB", intake.getReferredBy()); 
+	        if (referedBy != null) history.setNotes("Referred by: " + referedBy.getDescription());
+	        history.setProgramId(intake.getProgramId());
+	        history.setProviderNo(intake.getStaffId());
+	       
+	        saveClientHistory(history);
+	
+	        if (log.isDebugEnabled()) {
+	            log.debug("saveClientReferral: id=" + history.getId());
+	        }
         }
+		catch(SQLException e)
+		{
+			return;
+		}
     }
     
     public void saveClientHistory( Admission admission, String room, String bed) {
         if (admission == null) {
             return;
         }
-        ClientHistory history = new ClientHistory();
-        history.setId(new Integer(0));
-        history.setClientId(admission.getClientId());
-        if ("admitted".equals(admission.getAdmissionStatus())) {
-        	history.setAction("Admit/Bed Assignment");
-        	history.setActionDate(Calendar.getInstance());
-        	history.setHistoryDate(Calendar.getInstance().getTime());
-        	LookupCodeValue provider = lookupDao.GetCode("USR", admission.getPrimaryWorker());
-        	String notes = "";
-        	if(provider != null) notes += " Primary Worker: " + provider.getDescription();
-        	if (room != null) notes = Utility.append(notes,  "Room: " + room, ", ");
-        	if (bed != null) notes = Utility.append(notes,"Bed: " + bed,  ", ");
-        	history.setNotes(notes);
-        	history.setProgramId(admission.getProgramId());
-        	history.setProviderNo(admission.getProviderNo());
+        try {
+	        ClientHistory history = new ClientHistory();
+	        history.setId(new Integer(0));
+	        history.setClientId(admission.getClientId());
+	        if ("admitted".equals(admission.getAdmissionStatus())) {
+	        	history.setAction("Admit/Bed Assignment");
+	        	history.setActionDate(Calendar.getInstance());
+	        	history.setHistoryDate(Calendar.getInstance().getTime());
+	        	LookupCodeValue provider = lookupDao.GetCode("USR", admission.getPrimaryWorker());
+	        	String notes = "";
+	        	if(provider != null) notes += " Primary Worker: " + provider.getDescription();
+	        	if (room != null) notes = Utility.append(notes,  "Room: " + room, ", ");
+	        	if (bed != null) notes = Utility.append(notes,"Bed: " + bed,  ", ");
+	        	history.setNotes(notes);
+	        	history.setProgramId(admission.getProgramId());
+	        	history.setProviderNo(admission.getProviderNo());
+	        }
+	        else if("discharged".equals(admission.getAdmissionStatus()))
+	        {
+	            history.setAction("Discharge");
+	            if(admission.getDischargeDate()!=null) history.setActionDate(admission.getDischargeDate());
+	            history.setHistoryDate(Calendar.getInstance().getTime());
+	            LookupCodeValue dischargeReason = lookupDao.GetCode("DRN", admission.getDischargeReason());
+	            if(dischargeReason!=null){
+	            	history.setNotes("Discharge Reason: " + dischargeReason.getDescription());
+	            }else{
+	            	history.setNotes("Discharge Reason: ");
+	            }
+	            history.setProgramId(admission.getProgramId());
+	            history.setProviderNo(admission.getProviderNo());
+	        }
+	        history.setHistoryDate(Calendar.getInstance().getTime());
+	        saveClientHistory(history);
+	
+	        if (log.isDebugEnabled()) {
+	            log.debug("saveClientReferral: id=" + history.getId());
+	        }
         }
-        else if("discharged".equals(admission.getAdmissionStatus()))
-        {
-            history.setAction("Discharge");
-            if(admission.getDischargeDate()!=null) history.setActionDate(admission.getDischargeDate());
-            history.setHistoryDate(Calendar.getInstance().getTime());
-            LookupCodeValue dischargeReason = lookupDao.GetCode("DRN", admission.getDischargeReason());
-            if(dischargeReason!=null){
-            	history.setNotes("Discharge Reason: " + dischargeReason.getDescription());
-            }else{
-            	history.setNotes("Discharge Reason: ");
-            }
-            history.setProgramId(admission.getProgramId());
-            history.setProviderNo(admission.getProviderNo());
-        }
-        history.setHistoryDate(Calendar.getInstance().getTime());
-        saveClientHistory(history);
-
-        if (log.isDebugEnabled()) {
-            log.debug("saveClientReferral: id=" + history.getId());
-        }
+		catch(SQLException e)
+		{
+			return;
+		}
     }
 
 	public void setMergeClientDao(MergeClientDao mergeClientDao) {

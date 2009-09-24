@@ -142,7 +142,7 @@ public class ImportFileServlet extends HttpServlet {
 					FieldDefinition fd = (FieldDefinition) tempLst.get(j);
 
 					String value = buHlp.getPropertyValue(sdVal, fd
-							.getFieldName());
+							.getFieldName()).toString();
 					sb.append(value);
 				}
 				sb.append("\n");

@@ -19,16 +19,16 @@ public class SdmtOut implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	 private Integer batchNumber;
-	 private Calendar batchDateStr;
+	 private Calendar batchDate;
 	 private String firstName;
 	 private String lastName;
-	 private Calendar dobStr;
+	 private Calendar dob;
 	 private String sin;
 	 private String healthCardNo;	 
 	 private Integer recordId;
 	 private Integer sdmtId;
 	 private Integer sdmtBenUnitId;
-	 private Integer clientId;
+	 private Integer clientId;  //qs client id 
 	 private Integer maxBatchNo;
 	 private boolean sendOut;
 	
@@ -44,27 +44,12 @@ public class SdmtOut implements Serializable {
 	public void setMaxBatchNo(Integer maxBatchNo) {
 		this.maxBatchNo = maxBatchNo;
 	}
-	public String getBatchDate() {
-		String retVal="";
-		retVal=Utility.FormatIntNoWithZero(batchDateStr.get(Calendar.YEAR),4)+Utility.FormatIntNoWithZero(batchDateStr.get(Calendar.MONTH)+1,2)+
-		Utility.FormatIntNoWithZero(batchDateStr.get(Calendar.DATE),2)+Utility.FormatIntNoWithZero(batchDateStr.get(Calendar.HOUR),2)+
-		Utility.FormatIntNoWithZero(batchDateStr.get(Calendar.MINUTE),2);
-		return retVal;
-	}
-	
 	
 	public Integer getClientId() {
 		return clientId;
 	}
 	public void setClientId(Integer clientId) {
 		this.clientId = clientId;
-	}
-	public String getDob() {
-		//mmddyyyy
-		String retVal="";
-		retVal=Utility.FormatIntNoWithZero(dobStr.get(Calendar.MONTH)+1,2)+
-			Utility.FormatIntNoWithZero(dobStr.get(Calendar.DATE),2)+Utility.FormatIntNoWithZero(dobStr.get(Calendar.YEAR),4);
-		return retVal;
 	}
 	
 	public String getFirstName() {
@@ -115,17 +100,17 @@ public class SdmtOut implements Serializable {
 	public void setBatchNumber(Integer batchNumber) {
 		this.batchNumber = batchNumber;
 	}
-	public Calendar getBatchDateStr() {
-		return batchDateStr;
+	public Calendar getBatchDate() {
+		return batchDate;
 	}
-	public void setBatchDateStr(Calendar batchDateStr) {
-		this.batchDateStr = batchDateStr;
+	public void setBatchDate(Calendar batchDateStr) {
+		this.batchDate = batchDateStr;
 	}
-	public Calendar getDobStr() {
-		return dobStr;
+	public Calendar getDob() {
+		return dob;
 	}
-	public void setDobStr(Calendar dobStr) {
-		this.dobStr = dobStr;
+	public void setDob(Calendar dobStr) {
+		this.dob = dobStr;
 	}
 	
 }

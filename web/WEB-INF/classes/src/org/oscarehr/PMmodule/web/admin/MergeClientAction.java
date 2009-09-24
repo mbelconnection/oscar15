@@ -69,6 +69,10 @@ public class MergeClientAction extends BaseAdminAction {
 		{
 			return mapping.findForward("failure");
 		}
+ 	    catch(SQLException e)
+	    {
+			return mapping.findForward("failure");
+	    }
 	}
 
 	public ActionForward mergedSearch(ActionMapping mapping, ActionForm form,
@@ -105,6 +109,10 @@ public class MergeClientAction extends BaseAdminAction {
 			return mapping.findForward("view");
 		}
 		catch(NoAccessException e)
+		{
+			return mapping.findForward("failure");
+		}
+		catch(SQLException e)
 		{
 			return mapping.findForward("failure");
 		}
@@ -177,6 +185,10 @@ public class MergeClientAction extends BaseAdminAction {
 		{
 			return mapping.findForward("failure");
 		}
+	   catch(SQLException e)
+	   {
+			return mapping.findForward("failure");
+	   }
 			
 	}
 
@@ -258,6 +270,10 @@ public class MergeClientAction extends BaseAdminAction {
 		{
 			return mapping.findForward("failure");
 		}
+		catch(SQLException e)
+		{
+				return mapping.findForward("failure");
+		}
 	}
 
 	public ActionForward search(ActionMapping mapping, ActionForm form,
@@ -296,9 +312,13 @@ public class MergeClientAction extends BaseAdminAction {
 		{
 			return mapping.findForward("failure");
 		}
+	    catch(SQLException e)
+	    {
+			return mapping.findForward("failure");
+	    }
 	}
 
-	private void setLookupLists(HttpServletRequest request) {
+	private void setLookupLists(HttpServletRequest request) throws SQLException{
 		Integer shelterId = (Integer) request.getSession().getAttribute(
 				KeyConstants.SESSION_KEY_SHELTERID);
 		String providerNo = (String) request.getSession().getAttribute(

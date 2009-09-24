@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.oscarehr.PMmodule.web.admin;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,8 +45,13 @@ public class UnMergeClientAction extends BaseAdminAction {
 	public ActionForward unspecified(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) {	
 		//return search(mapping, form, request, response);
-		setLookupLists(request);
-		return mergedSearch(mapping, form, request, response);
+		try {
+			setLookupLists(request);
+			return mergedSearch(mapping, form, request, response);
+		}
+    	catch (SQLException e) {
+    		return mapping.findForward("failure");
+		}
 	}
 	private ActionForward mergedSearch(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) {
@@ -82,8 +88,11 @@ public class UnMergeClientAction extends BaseAdminAction {
 		{
 			return mapping.findForward("failure");
 		}
+    	catch (SQLException e) {
+    		return mapping.findForward("failure");
+		}
 	}
-	private void setLookupLists(HttpServletRequest request) {
+	private void setLookupLists(HttpServletRequest request)throws SQLException {
 		Integer shelterId = (Integer) request.getSession().getAttribute(KeyConstants.SESSION_KEY_SHELTERID);
 		String providerNo = (String) request.getSession().getAttribute(KeyConstants.SESSION_KEY_PROVIDERNO);
 		List allBedPrograms = programManager.getBedPrograms(providerNo, shelterId);

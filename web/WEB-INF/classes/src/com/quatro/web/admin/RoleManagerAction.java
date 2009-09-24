@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.quatro.web.admin;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -119,7 +120,6 @@ public class RoleManagerAction extends BaseAdminAction {
 					messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage(
 							"role.missing"));
 					saveMessages(request, messages);
-	
 					return list(mapping, form, request, response);
 				}
 	
@@ -188,6 +188,10 @@ public class RoleManagerAction extends BaseAdminAction {
 			return mapping.findForward("edit");
 		}
 		catch(NoAccessException e)
+		{
+			return mapping.findForward("failure");
+		}
+		catch(SQLException e)
 		{
 			return mapping.findForward("failure");
 		}

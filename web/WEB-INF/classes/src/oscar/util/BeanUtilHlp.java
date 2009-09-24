@@ -38,6 +38,7 @@ package oscar.util;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.quatro.util.Utility;
 
@@ -59,13 +60,12 @@ public class BeanUtilHlp {
  * A convenience method used to retrieve the field value of a specified JavaBean
  * @param bill Object
  * @param fieldName String
- * @return String
+ * @return Object
  */
-	public String getPropertyValue(Object bean, String fieldName) {
-		  BeanUtils ut = new BeanUtils();
-		  String value = "";
+	public Object getPropertyValue(Object bean, String fieldName) {
+		  Object value=null;
 		  try {
-		    value = ut.getProperty(bean, fieldName);
+		    value = PropertyUtils.getProperty(bean, fieldName);
 		  }
 		  catch (NoSuchMethodException ex) {
 		    ex.printStackTrace();
@@ -80,7 +80,6 @@ public class BeanUtilHlp {
 	}
 	
 	public void setPropertyValue(Object bean,String fieldName,String fieldType,String dateFormat, String val){
-		BeanUtils ut = new BeanUtils();
 		try {
 			Object inputVal=null;
 			if("D".equals(fieldType)) {
@@ -92,7 +91,7 @@ public class BeanUtilHlp {
 				else inputVal = new Integer(val);
 			}
 			else inputVal=val;			
-			ut.setProperty(bean, fieldName, inputVal);
+			BeanUtils.setProperty(bean, fieldName, inputVal);
 		}		  
 		  catch (InvocationTargetException ex) {
 		    ex.printStackTrace();

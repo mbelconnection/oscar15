@@ -57,7 +57,10 @@ Source:web/PMmodule/Admin/User/AddRoles.jsp
 		<logic:iterate id="secUserRole" name="secuserForm" property="secUserRoleLst" indexId="rIndex">
 		  <TR><TD align="center" width="5%"><input type="checkbox"
 				name="p<%=String.valueOf(rIndex)%>" value="" />
-			<input type="hidden" name="lineno" value="<%=String.valueOf(rIndex)%>" /></TD>
+			<input type="hidden" name="lineno" value="<%=String.valueOf(rIndex)%>" />
+			<input type="hidden" name="role_id<%=String.valueOf(rIndex)%>" 
+			value='<c:out value="${secUserRole.id}"/>' />
+			</TD>
 		  <TD width="55%"><table cellpadding="0" style="border:0px;" cellspacing="0" width="100%">
 			<tr><td style="border:0px;" width="20%">
 			  <input style="width:100%;" type="text"

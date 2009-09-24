@@ -11,7 +11,7 @@
 	function resetClientFields() {
 		var form = document.serviceRestrictionForm;
 		form.elements['program.name'].value='';
-	}
+	} 
     
     function submitForm(methodVal) {
 		if (!trimInputBox()) return false;
@@ -21,12 +21,12 @@
     	if(!validProgram){
     		alert("Please select 'Program' before saving.");
 			inRefreshing = false;
-    		return;
+    		return false;
     	}
     	if(!validReason){
     		alert("Please select 'Reason for service restriction' before saving.");
 			inRefreshing = false;
-    		return;
+    		return false;
     	}    	
 	    if(validProgram && validReason && validateLength()){
 
@@ -41,6 +41,11 @@
 				document.forms[0].submit();
 			}
 		}
+		else
+		{
+				inRefreshing = false;
+		}
+		return false;
 	}
 	
 	function validateLength() {
@@ -103,7 +108,7 @@
 				 style="color:Navy;text-decoration:none;">
 				<img style="vertical-align: middle" border=0 src=<html:rewrite page="/images/close16.png"/> />&nbsp;Close&nbsp;&nbsp;|</html:link>
          <c:if test="${serviceObjStatus!='completed' && !isReadOnly}">				
-			<a	href="javaScript:submitForm('save')" onclick="javascript: setNoConfirm();"	style="color:Navy;text-decoration:none;"> 
+			<a	href="javaScript:void1()" onclick="javascript: setNoConfirm();return submitForm('save');"	style="color:Navy;text-decoration:none;"> 
 			<img style="vertical-align: middle" border=0	src=<html:rewrite page="/images/Save16.png"/> />&nbsp;Save&nbsp;&nbsp;</a>
          </c:if>				
 </td>

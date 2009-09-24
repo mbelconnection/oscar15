@@ -862,7 +862,7 @@ function confirmActive()
 										<td width="15%">Last updated by</td>
 							<td width="15%">
 							<html-el:text style="width: 90%"
-										property="intake.staffDesc" readonly="true" /></td>
+										property="intake.lastUpdateUserName" readonly="true" /></td>
 							<td width="15%">Last updated date</td>
 							<td width="15%">
 							<html-el:text style="width: 90%"

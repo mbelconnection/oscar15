@@ -30,6 +30,7 @@
  */
 package oscar.login.tld;
 
+import java.sql.SQLException;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.Hashtable;
@@ -71,35 +72,41 @@ public class SecurityTag implements Tag {
         /*
          * try { JspWriter out = pageContext.getOut(); out.print("goooooooo"); } catch (Exception e) { }
          */
-        int ret = 0;
-        Vector v = getPrivilegeProp(objectName);
-        // if (checkPrivilege(roleName, (Properties) getPrivilegeProp(objectName).get(0), (Vector) getPrivilegeProp(
-        ///        objectName).get(1)))
-    	/*TODO: temporily allow current security work, the if statement should be removed */
-        if (roleName == null) 
-        {
-        	if (checkPrivilege(objectName,orgCd, rights)) {
-	            ret = EVAL_BODY_INCLUDE;
-	        }else{
-	            ret = SKIP_BODY;
+    	try {
+	        int ret = 0;
+	        Vector v = getPrivilegeProp(objectName);
+	        // if (checkPrivilege(roleName, (Properties) getPrivilegeProp(objectName).get(0), (Vector) getPrivilegeProp(
+	        ///        objectName).get(1)))
+	    	/*TODO: temporily allow current security work, the if statement should be removed */
+	        if (roleName == null) 
+	        {
+	        	if (checkPrivilege(objectName,orgCd, rights)) {
+		            ret = EVAL_BODY_INCLUDE;
+		        }else{
+		            ret = SKIP_BODY;
+		        }
 	        }
-        }
-        else
-        {
-	        if (checkPrivilege(roleName, (Properties) v.get(0), (Vector) v.get(1))){
-	            ret = EVAL_BODY_INCLUDE;
-	        }else{
-	            ret = SKIP_BODY;
+	        else
+	        {
+		        if (checkPrivilege(roleName, (Properties) v.get(0), (Vector) v.get(1))){
+		            ret = EVAL_BODY_INCLUDE;
+		        }else{
+		            ret = SKIP_BODY;
+		        }
 	        }
-        }
-        //System.out.println("reverse: " + reverse);
-        if (reverse) {
-            if (ret == EVAL_BODY_INCLUDE)
-                ret = SKIP_BODY;
-            else
-                ret = EVAL_BODY_INCLUDE;
-        }
-        return ret;
+	        //System.out.println("reverse: " + reverse);
+	        if (reverse) {
+	            if (ret == EVAL_BODY_INCLUDE)
+	                ret = SKIP_BODY;
+	            else
+	                ret = EVAL_BODY_INCLUDE;
+	        }
+	        return ret;
+    	}
+    	catch(SQLException e)
+    	{
+    		throw new JspException(e);
+    	}
     }
 
     public int doEndTag() throws JspException {
@@ -172,7 +179,7 @@ public class SecurityTag implements Tag {
         return vec;
     }
 
-    private boolean checkPrivilege(String objName, String orgCd, String propPrivilege)
+    private boolean checkPrivilege(String objName, String orgCd, String propPrivilege) throws SQLException
     {
     	com.quatro.service.security.SecurityManager secManager =(com.quatro.service.security.SecurityManager)pageContext.getSession().
     			getAttribute(KeyConstants.SESSION_KEY_SECURITY_MANAGER); 

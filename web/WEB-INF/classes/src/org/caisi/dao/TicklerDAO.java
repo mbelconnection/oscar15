@@ -156,12 +156,17 @@ public class TicklerDAO extends HibernateDaoSupport {
 //      boolean includeProviderClause = true;
       boolean includeStatusClause = true;
 //      boolean includeClientClause = true;
-      Date startDt = filter.getStart_date().getTime();
-      Date endDt = filter.getEnd_date().getTime();
+      Date startDt;
+      Date endDt;
+      
       if (filter.getStartDate() == null || filter.getStartDate().length() == 0) 
     	  startDt = MyDateFormat.getSysDate("1900/01/01");
+      else
+    	  startDt = filter.getStart_date().getTime();
       if (filter.getEndDate() == null || filter.getEndDate().length() == 0) 
     	  endDt = MyDateFormat.getSysDate("9999/12/31");
+      else
+    	  endDt = filter.getEnd_date().getTime();
 
 //      if (filter.getProvider() == null || filter.getProvider().equals("All Providers")) includeProviderClause=false;
 //      if (filter.getClient() == null || filter.getClient().equals("All Clients")) includeClientClause=false;

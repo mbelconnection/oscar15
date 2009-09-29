@@ -117,7 +117,7 @@ public class BedDAO extends HibernateDaoSupport {
             if (andClause) queryBuilder.append(" and ");
             queryBuilder.append("b.active = ?");
         }
-
+        queryBuilder.append(" order by b.name");
         return queryBuilder.toString();
     }
 

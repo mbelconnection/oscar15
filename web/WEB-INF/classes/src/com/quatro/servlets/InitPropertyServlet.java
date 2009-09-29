@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServlet;
 import org.oscarehr.util.SpringUtils;
 import java.util.List;
 
-import com.ibm.disthubmq.spi.ServerLogConstants;
 import com.quatro.model.LookupCodeValue;
 import oscar.OscarProperties;
 

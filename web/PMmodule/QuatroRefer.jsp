@@ -100,7 +100,7 @@
 <tr><td>
   <table class="simple" cellspacing="2" cellpadding="3">
 	<tr><th style="color:black" rowspan="2">Program* <br>
-	<c:if test="${!isReadOnly}">
+	<c:if test="${!isReadOnly && (referralStatus=='' || referralStatus=='pending')}">
 		<a href="javaScript:popupProgramSearch('<bean:write name="quatroClientReferForm" property="clientId" />');" style="color:Navy;text-decoration:none;"
 			onclick="javascript: setNoConfirm();">			
 		<img style="vertical-align: middle" border=0 src=<html:rewrite page="/images/search16.gif"/> height="16px" width="16px"/>&nbsp;Search&nbsp;&nbsp;</a>

@@ -8,7 +8,7 @@
       	   alert("Please input Bed Name.");
       	   name.focus();
 			inRefreshing = false;
-      	   return false;
+      	   return;
       	}
       	var type= document.getElementsByName("bed.bedTypeId")[0];
       	if(type.value==''){

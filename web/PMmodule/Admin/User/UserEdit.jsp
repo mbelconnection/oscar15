@@ -164,7 +164,7 @@ function submitForm(func){
 		var v8 = false;
 		var v9 = false;
 				
-		if (validateRequired(fld_userName, "UserID") && validateLength(fld_userName, "UserID", 12, 6)){
+		if (validateRequired(fld_userName, "UserID") && validateLength(fld_userName, "UserID", 12, 2)){
 			v1 = true;
 		}
 		v1 = v1 &&  isUserId(fld_userName.value);

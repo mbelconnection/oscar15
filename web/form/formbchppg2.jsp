@@ -24,18 +24,18 @@ props.setProperty("c_lastVisited", "pg2");
 String project_home = request.getContextPath().substring(1);
 
 boolean bView = false;
-if (request.getParameter("view") != null && request.getParameter("view").equals("1")) bView = true; 
+if (request.getParameter("view") != null && request.getParameter("view").equals("1")) bView = true;
 
 
 
 // if this is a new form automatically fill as much as possible
 if (props == null || (props.getProperty("pg2_medName1", "").equals("") && props.getProperty("pg2_fluDate1", "").equals("") && props.getProperty("pg2_otherVac1", "").equals(""))){
 //if(true){
-    
+
     // fill the medications
     RxPrescriptionData rxData = new RxPrescriptionData();
     RxPrescriptionData.Prescription[] medications = rxData.getPrescriptionsByPatient(demoNo);
-    
+
     if (medications.length > 13){
         for (int i=14; i<medications.length && i<28; i++){
             String tempName = medications[i].getBrandName();
@@ -44,12 +44,13 @@ if (props == null || (props.getProperty("pg2_medName1", "").equals("") && props.
                 tempName = medications[i].getCustomName();
 
             props.setProperty("pg2_medName"+(i-13), tempName);
-            props.setProperty("pg2_date"+(i-13), medications[i].getRxDate().toString().replaceAll("-", "/"));
+            props.setProperty("pg2_date"+(i-13),UtilDateUtilities.DateToString( medications[i].getRxDate(), "dd/MM/yyyy"));
+            //props.setProperty("pg2_date"+(i-13), medications[i].getRxDate().toString().replaceAll("-", "/"));
             props.setProperty("pg2_dose"+(i-13), medications[i].getDosageDisplay());
             props.setProperty("pg2_howOften"+(i-13), medications[i].getFullFrequency());
         }
     }
-    
+
     // fill the preventions
     PreventionData pd = new PreventionData();
     ArrayList vaccines = new ArrayList();
@@ -65,16 +66,16 @@ if (props == null || (props.getProperty("pg2_medName1", "").equals("") && props.
     for (int i=0; i < vaccines.size(); i++){
         Hashtable vacHash = (Hashtable) vaccines.get(i);
         type = (String) vacHash.get("type");
-        
+
         String oldDateFormat = "yyyy-MM-dd";
         String newDateFormat = "dd/MM/yyyy";
-        
+
         Date date = UtilDateUtilities.StringToDate((String) vacHash.get("prevention_date"), oldDateFormat);
         String vacDate = UtilDateUtilities.DateToString(date, newDateFormat);
-        
+
         if (!type.equals("Pneu-C") && !type.equals("Td") && !type.equals("HepA") && !type.equals("HepB") && !type.equals(props.getProperty("pg1_otherVac"))){
 
-            if (type.equals("Flu")){        
+            if (type.equals("Flu")){
                 fluCount++;
                 if (fluCount > 7)
                     props.setProperty("pg2_fluDate"+(fluCount-7), vacDate);
@@ -116,29 +117,29 @@ if (props == null || (props.getProperty("pg2_medName1", "").equals("") && props.
 }
 %>
 
-<!--  
+<!--
 /*
- * 
+ *
  * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved. *
- * This software is published under the GPL GNU General Public License. 
- * This program is free software; you can redistribute it and/or 
- * modify it under the terms of the GNU General Public License 
- * as published by the Free Software Foundation; either version 2 
- * of the License, or (at your option) any later version. * 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
- * GNU General Public License for more details. * * You should have received a copy of the GNU General Public License 
- * along with this program; if not, write to the Free Software 
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. * 
- * 
+ * This software is published under the GPL GNU General Public License.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version. *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details. * * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *
+ *
  * <OSCAR TEAM>
- * 
- * This software was written for the 
- * Department of Family Medicine 
- * McMaster Unviersity 
- * Hamilton 
- * Ontario, Canada 
+ *
+ * This software was written for the
+ * Department of Family Medicine
+ * McMaster Unviersity
+ * Hamilton
+ * Ontario, Canada
  */
 -->
 <html:html locale="true">
@@ -167,28 +168,28 @@ if (props == null || (props.getProperty("pg2_medName1", "").equals("") && props.
 
 <script type="text/javascript">
         <!--
-       
+
         var dtCh= "/";
         var minYear=1900;
         var maxYear=9900;
-        
+
         function reset() {
             document.forms[0].target = "";
             document.forms[0].action = "/<%=project_home%>/form/formname.do" ;
         }
-        
+
         function onPrint() {
-            document.forms[0].submit.value="printAll"; 
+            document.forms[0].submit.value="printAll";
             var ret = checkAllDates();
 
             if(ret==true)
             {
                 document.forms[0].action = "../form/formname.do?__title=British+Columbia+Health+Passport&__cfgfile=bchpPrintCfgPg1&__cfgfile=bchpPrintCfgPg2&__template=bchp";
-                document.forms[0].target="_blank";       
+                document.forms[0].target="_blank";
             }
             return ret;
         }
-        
+
         function onSave() {
             document.forms[0].submit.value="save";
             var ret = checkAllDates();
@@ -200,7 +201,7 @@ if (props == null || (props.getProperty("pg2_medName1", "").equals("") && props.
 
             return ret;
         }
-        
+
         function onSaveExit() {
             document.forms[0].submit.value="exit";
             var ret = checkAllDates();
@@ -329,7 +330,7 @@ if (props == null || (props.getProperty("pg2_medName1", "").equals("") && props.
             }
             return b;
         }
-        
+
         function valDate(dateBox)
         {
             try
@@ -358,15 +359,15 @@ if (props == null || (props.getProperty("pg2_medName1", "").equals("") && props.
             }
             return true;
         }
-        
+
         function isDate(dtStr){
             var daysInMonth = DaysArray(12)
             var pos1=dtStr.indexOf(dtCh)
-            var pos2=dtStr.indexOf(dtCh,pos1+1)            
+            var pos2=dtStr.indexOf(dtCh,pos1+1)
             var strMonth=dtStr.substring(0,pos1)
             var strDay=dtStr.substring(pos1+1,pos2)
             var strYear=dtStr.substring(pos2+1)
-            strYr=strYear           
+            strYr=strYear
             if (strDay.charAt(0)=="0" && strDay.length>1) strDay=strDay.substring(1)
             if (strMonth.charAt(0)=="0" && strMonth.length>1) strMonth=strMonth.substring(1)
             for (var i = 1; i <= 3; i++) {
@@ -392,7 +393,7 @@ if (props == null || (props.getProperty("pg2_medName1", "").equals("") && props.
             }
         return true
         }
-        
+
         function DaysArray(n) {
             for (var i = 1; i <= n; i++) {
                 this[i] = 31
@@ -401,13 +402,13 @@ if (props == null || (props.getProperty("pg2_medName1", "").equals("") && props.
            }
            return this
         }
-        
+
         function daysInFebruary (year){
             // February has 29 days in any year evenly divisible by four,
             // EXCEPT for centurial years which are not also divisible by 400.
             return (((year % 4 == 0) && ( (!(year % 100 == 0)) || (year % 400 == 0))) ? 29 : 28 );
         }
-        
+
         function stripCharsInBag(s, bag){
             var i;
             var returnString = "";
@@ -419,7 +420,7 @@ if (props == null || (props.getProperty("pg2_medName1", "").equals("") && props.
             }
             return returnString;
         }
-        
+
         function isInteger(s){
             var i;
             for (i = 0; i < s.length; i++){

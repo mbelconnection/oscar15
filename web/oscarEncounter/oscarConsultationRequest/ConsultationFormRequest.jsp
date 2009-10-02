@@ -712,7 +712,7 @@ function fetchAttached() {
 				<tr>
 					<td class="Header"
 						style="padding-left: 2px; padding-right: 2px; border-right: 2px solid #003399; text-align: left; font-size: 80%; font-weight: bold; width: 100%;"
-						NOWRAP><%=consultUtil.patientName%> <%=consultUtil.patientSex%>
+						><%=consultUtil.patientName%> <%=consultUtil.patientSex%>
 					<%=consultUtil.patientAge%></td>
 				</tr>
 			</table>

@@ -137,11 +137,11 @@
                                 <!--value>classpath:oscar/oscarEncounter/oscarMeasurements/flowsheets/inrFlowsheet2.xml</value-->
                                  
                                  
-                    <!-- value>classpath:oscar/oscarEncounter/oscarMeasurements/flowsheets/physicalFunctionFlowsheet.xml</value >
+                    <value>classpath:oscar/oscarEncounter/oscarMeasurements/flowsheets/physicalFunctionFlowsheet.xml</value >
                     <value>classpath:oscar/oscarEncounter/oscarMeasurements/flowsheets/omdAsthmaFlowsheet.xml</value >
 		    <value>classpath:oscar/oscarEncounter/oscarMeasurements/flowsheets/omdCOPDFlowsheet.xml</value>
                     <value>classpath:oscar/oscarEncounter/oscarMeasurements/flowsheets/omdChf.xml</value>
-                    <value>classpath:oscar/oscarEncounter/oscarMeasurements/flowsheets/omdDiabetesFlowsheet.xml</value>
+                    <!--value>classpath:oscar/oscarEncounter/oscarMeasurements/flowsheets/omdDiabetesFlowsheet.xml</value>
 	            <value>classpath:oscar/oscarEncounter/oscarMeasurements/flowsheets/omdHypertensionFlowsheet.xml</value -->
 			</list>
 		</property>

@@ -313,16 +313,18 @@ if (pId==null) pId="";
 		</tr>
 
 		<nested:iterate indexId="ind" id="issueCheckList" property="issueCheckList" type="org.oscarehr.casemgmt.web.CheckBoxBean">
-			<%String submitString = "this.form.method.value='issueChange';";
-					submitString = submitString + "this.form.lineId.value=" + "'"
-				+ ind.intValue() + "';" + "this.form.submit();";
+			<tr bgcolor="<%= (ind.intValue()%2==0)?"#EEEEFF":"white" %>"
+				align="center">
+				<%String submitString = "this.form.method.value='issueChange';";
+						submitString = submitString + "this.form.lineId.value=" + "'"
+					+ ind.intValue() + "';" + "this.form.submit();";
 
-			org.oscarehr.casemgmt.web.CheckBoxBean cbb = (org.oscarehr.casemgmt.web.CheckBoxBean)pageContext.getAttribute("issueCheckList");
-			boolean writeAccess = cbb.getIssueDisplay().isWriteAccess();
-			boolean disabled = !"local".equals(cbb.getIssueDisplay().location) ? true : !writeAccess;
-			boolean checkBoxDisabled=!"local".equals(cbb.getIssueDisplay().location)? false : disabled;
+				org.oscarehr.casemgmt.web.CheckBoxBean cbb = (org.oscarehr.casemgmt.web.CheckBoxBean)pageContext.getAttribute("issueCheckList");
+				boolean writeAccess = cbb.getIssueDisplay().isWriteAccess();
+				boolean disabled = !"local".equals(cbb.getIssueDisplay().location) ? true : !writeAccess;
+				boolean checkBoxDisabled=!"local".equals(cbb.getIssueDisplay().location)? false : disabled;
 			boolean resolved="resolved".equals(cbb.getIssueDisplay().resolved);
-			%>
+				%>
 
 			<tr <%=resolved?"name=\"resolvedRow\"":""%> bgcolor="<%= (ind.intValue()%2==0)?"#EEEEFF":"white" %>"
 				align="center">

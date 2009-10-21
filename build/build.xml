@@ -214,7 +214,7 @@
   their filters updated -->
   <propertyfile file="../web/WEB-INF/classes/build.properties">
        <entry key="builddate" type="date" value="now"/>
-   	   <entry key="builddate" operation="+" value=", branch : trunk" />
+   	   <entry key="builddate" operation="+" value=", branch : branch_CAISI_20091007" />
   </propertyfile>
   
   <war destfile="${build}/oscar.war" webxml="../web/WEB-INF/web.xml"> 

@@ -31,6 +31,16 @@
 <%
     if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
     String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
+
+    boolean showResolved=false;
+    try
+    {
+    	showResolved=Boolean.parseBoolean(request.getParameter("showResolved"));
+    }
+    catch (NullPointerException e)
+    {
+    	// do nothing it's okay to not have this parameter
+    }
 %>
 <html>
 <head>
@@ -313,8 +323,6 @@ if (pId==null) pId="";
 		</tr>
 
 		<nested:iterate indexId="ind" id="issueCheckList" property="issueCheckList" type="org.oscarehr.casemgmt.web.CheckBoxBean">
-			<tr bgcolor="<%= (ind.intValue()%2==0)?"#EEEEFF":"white" %>"
-				align="center">
 				<%String submitString = "this.form.method.value='issueChange';";
 						submitString = submitString + "this.form.lineId.value=" + "'"
 					+ ind.intValue() + "';" + "this.form.submit();";
@@ -324,9 +332,14 @@ if (pId==null) pId="";
 				boolean disabled = !"local".equals(cbb.getIssueDisplay().location) ? true : !writeAccess;
 				boolean checkBoxDisabled=!"local".equals(cbb.getIssueDisplay().location)? false : disabled;
 			boolean resolved="resolved".equals(cbb.getIssueDisplay().resolved);
+			int counter=0;
+			
+			if (!resolved || showResolved)
+			{
+				counter++;
 				%>
 
-			<tr <%=resolved?"name=\"resolvedRow\"":""%> bgcolor="<%= (ind.intValue()%2==0)?"#EEEEFF":"white" %>"
+				<tr bgcolor="<%= (counter%2==0)?"#EEEEFF":"white" %>"
 				align="center">
 				<td>
 					<nested:checkbox indexed="true" name="issueCheckList" property="checked" onchange="setChangeFlag(true);" disabled="<%=checkBoxDisabled%>"></nested:checkbox>
@@ -387,41 +400,28 @@ else{%>
 <%}%>
 				</td>
 			</tr>
+			<%
+			}
+			%>
 		</nested:iterate>
 
 	</table>
 	<br>
 	<br>
-	<input id="showResolved" type="button" value="Show Resolved Issues" onclick="showResolvedIssues()" />
-	<input id="hideResolved" type="button" value="Hide Resolved Issues" onclick="hideResolvedIssues()" />
-	<script type="text/javascript">
-		function showResolvedIssues()
-		{
-			var resolvedRows=document.getElementsByName("resolvedRow");
-			for (var i=0; i<resolvedRows.length; i++)
+	<%
+		if (showResolved)
 			{
-				resolvedRows[i].style.display="";
-			}
-			
-			document.getElementById("showResolved").style.display="none";
-			document.getElementById("hideResolved").style.display="inline";
+			%>
+				<input id="hideResolved" type="button" value="Hide Resolved Issues" onclick="document.location=document.location.href.replace('&amp;showResolved=true','')" />
+			<%
 		}
-		
-		function hideResolvedIssues()
-		{
-			var resolvedRows=document.getElementsByName("resolvedRow");
-			for (var i=0; i<resolvedRows.length; i++)
+		else
 			{
-				resolvedRows[i].style.display="none";
-			}
-			
-			document.getElementById("showResolved").style.display="inline";
-			document.getElementById("hideResolved").style.display="none";
+			%>
+				<input id="showResolved" type="button" value="Show Resolved Issues" onclick="document.location=document.location.href+'&amp;showResolved=true'" />
+			<%
 		}
-
-		// default
-		hideResolvedIssues();
-	</script>	
+	%>
 	<br>
 	<security:oscarSec roleName="<%=roleName$%>" objectName="_casemgmt.issues" rights="w">
 		<nested:submit value="add new issue" onclick="this.form.method.value='addNewIssue';" />

@@ -31,14 +31,19 @@ import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletContext;
 
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
-import oscar.oscarPrevention.PreventionData;
 
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import oscar.oscarPrevention.PreventionData;
+import org.oscarehr.provider.model.PreventionManager;
 /**
  *
  * @author Jay Gallagher
@@ -107,10 +112,17 @@ public class AddPreventionAction  extends Action {
          addHashtoArray(extraData,request.getParameter("product"),"product");
          addHashtoArray(extraData,request.getParameter("workflowId"),"workflowId");
          addHashtoArray(extraData,request.getParameter("formId"),"formId");
-         
-         
-         
-         
+         addHashtoArray(extraData,request.getParameter("dose1"),"dose1");
+         addHashtoArray(extraData,request.getParameter("dose2"),"dose2");
+         addHashtoArray(extraData,request.getParameter("chronic"),"chronic");
+         addHashtoArray(extraData,request.getParameter("pregnant"),"pregnant");
+         addHashtoArray(extraData,request.getParameter("remote"),"remote");
+         addHashtoArray(extraData,request.getParameter("healthcareworker"),"healthcareworker");
+         addHashtoArray(extraData,request.getParameter("householdcontact"),"householdcontact");
+         addHashtoArray(extraData,request.getParameter("firstresponder"),"firstresponder");
+         addHashtoArray(extraData,request.getParameter("swineworker"),"swineworker");
+         addHashtoArray(extraData,request.getParameter("poultryworker"),"poultryworker");
+         addHashtoArray(extraData,request.getParameter("firstnations"),"firstnations");
                                                                                                                   
          PreventionData pd = new  PreventionData() ;         
          if (id == null || id.equals("null")){ //New                                             
@@ -121,7 +133,7 @@ public class AddPreventionAction  extends Action {
             addHashtoArray(extraData,id,"previousId"); 
             pd.updatetPreventionData(id,sessionUser,demographic_no,prevDate,providerNo,providerName,preventionType,refused,nextDate,neverWarn,extraData);
          }
-         
+
          System.out.println("Given "+given+" prevDate "+prevDate+" providerName "+providerName+" provider "+providerNo);
 
       return mapping.findForward("success");                                

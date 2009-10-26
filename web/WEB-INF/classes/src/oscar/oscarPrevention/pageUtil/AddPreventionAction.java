@@ -43,7 +43,6 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import oscar.oscarPrevention.PreventionData;
-import org.oscarehr.provider.model.PreventionManager;
 /**
  *
  * @author Jay Gallagher

@@ -35,6 +35,12 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import org.apache.commons.dbcp.BasicDataSource;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+
 import oscar.util.SqlUtils;
 
 public class DbConnectionFilter implements javax.servlet.Filter {
@@ -52,7 +58,7 @@ public class DbConnectionFilter implements javax.servlet.Filter {
     public static Connection getThreadLocalDbConnection() throws SQLException {
         Connection c = dbConnection.get();
         if (c == null || c.isClosed()) {
-            c = SpringUtils.getDbConnection();
+            c = getDbConnection();
             dbConnection.set(c);
             Thread currentThread=Thread.currentThread();
             debugMap.put(currentThread, currentThread.getStackTrace());
@@ -66,11 +72,15 @@ public class DbConnectionFilter implements javax.servlet.Filter {
     }
 
     public void doFilter(ServletRequest tmpRequest, ServletResponse tmpResponse, FilterChain chain) throws IOException, ServletException {
+		JpaTransactionManager txManager = (JpaTransactionManager) SpringUtils.getBean("txManager");
+		TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRED));
+
         try {
             chain.doFilter(tmpRequest, tmpResponse);
-        }
-        finally {
+			txManager.commit(status);
+		} finally {
             releaseThreadLocalDbConnection();
+			if (!status.isCompleted()) txManager.rollback(status);
         }
     }
 
@@ -79,6 +89,16 @@ public class DbConnectionFilter implements javax.servlet.Filter {
         SqlUtils.closeResources(c, null, null);
         dbConnection.remove();
         debugMap.remove(Thread.currentThread());
+    }
+
+    /**
+     * This method should only be called by DbConnectionFilter internally, everyone else should use getThreadLocalDbConnection to obtain a connection. 
+     */
+    private static Connection getDbConnection() throws SQLException {
+        BasicDataSource ds = (BasicDataSource)SpringUtils.getBean("dataSource");
+        Connection c=ds.getConnection();
+        c.setAutoCommit(true);
+        return(c);
     }
 
     public void destroy() {

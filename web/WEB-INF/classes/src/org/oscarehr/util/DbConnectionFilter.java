@@ -36,6 +36,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.log4j.Logger;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -44,6 +45,8 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import oscar.util.SqlUtils;
 
 public class DbConnectionFilter implements javax.servlet.Filter {
+	private static final Logger logger=MiscUtils.getLogger();
+	
     private static ThreadLocal<Connection> dbConnection = new ThreadLocal<Connection>();
 
     /**
@@ -71,18 +74,23 @@ public class DbConnectionFilter implements javax.servlet.Filter {
         // nothing
     }
 
-    public void doFilter(ServletRequest tmpRequest, ServletResponse tmpResponse, FilterChain chain) throws IOException, ServletException {
+	public void doFilter(ServletRequest tmpRequest, ServletResponse tmpResponse, FilterChain chain) throws IOException, ServletException {
 		JpaTransactionManager txManager = (JpaTransactionManager) SpringUtils.getBean("txManager");
 		TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRED));
 
-        try {
-            chain.doFilter(tmpRequest, tmpResponse);
-			txManager.commit(status);
+		try {
+			chain.doFilter(tmpRequest, tmpResponse);
+			
+			try {
+	            txManager.commit(status);
+            } catch (Exception e) {
+            	logger.warn(e.getMessage(), e);
+            }
 		} finally {
-            releaseThreadLocalDbConnection();
+			releaseThreadLocalDbConnection();
 			if (!status.isCompleted()) txManager.rollback(status);
-        }
-    }
+		}
+	}
 
     public static void releaseThreadLocalDbConnection() {
         Connection c = dbConnection.get();

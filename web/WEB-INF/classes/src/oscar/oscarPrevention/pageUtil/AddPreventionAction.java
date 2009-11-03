@@ -118,8 +118,9 @@ public class AddPreventionAction  extends Action {
          addHashtoArray(extraData,request.getParameter("remote"),"remote");
          addHashtoArray(extraData,request.getParameter("healthcareworker"),"healthcareworker");
          addHashtoArray(extraData,request.getParameter("householdcontact"),"householdcontact");
-         addHashtoArray(extraData,request.getParameter("firstresponder"),"firstresponder");
-         addHashtoArray(extraData,request.getParameter("swineworker"),"swineworker");
+         addHashtoArray(extraData,request.getParameter("firstresponderpolice"),"firstresponderpolice");
+         addHashtoArray(extraData,request.getParameter("firstresponderfire"),"firstresponderfire");
+	 addHashtoArray(extraData,request.getParameter("swineworker"),"swineworker");
          addHashtoArray(extraData,request.getParameter("poultryworker"),"poultryworker");
          addHashtoArray(extraData,request.getParameter("firstnations"),"firstnations");
                                                                                                                   

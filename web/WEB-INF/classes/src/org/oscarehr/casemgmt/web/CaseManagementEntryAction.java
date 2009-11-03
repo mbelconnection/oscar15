@@ -1765,9 +1765,11 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
                     //should issue be automagically added to Dx? check config file
                     if(dxProps != null && dxProps.get(issueList[i].getIssue().getCode()) != null) {
                             String codingSystem = dxProps.getProperty("coding_system");
-                            log.info("adding to Dx");
-                            this.caseManagementMgr.saveToDx(getDemographicNo(request),issueList[i].getIssue().getCode(),codingSystem,false);
-                            caseIssueList[oldList.length + k].getIssue().setMajor(true);
+                            if(caseIssueList[oldList.length+k].getIssue().isCertain()){ 
+	                            log.info("adding to Dx");
+	                            this.caseManagementMgr.saveToDx(getDemographicNo(request),issueList[i].getIssue().getCode(),codingSystem,false);
+	                            caseIssueList[oldList.length + k].getIssue().setMajor(true);
+                            }
                     }
 
                     k++;

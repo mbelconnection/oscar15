@@ -10,7 +10,7 @@
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <script>
 	
-	
+   	
 	function doAll() {
 		popupDifference();
 		InitializeTimer();
@@ -46,12 +46,14 @@ function StopTheClock()
 
 function StartTheTimer()
 {
+	document.unreadTicklerForm.target='_self';
     if (secs==0)
     {
         StopTheClock()
         // Here's where you put something useful that's
         // supposed to happen after the allotted time.
         // For example, you could display a message:
+                
 		document.unreadTicklerForm.submit();
     }
     else
@@ -71,8 +73,8 @@ function StartTheTimer()
 You have
 <c:out value="${sessionScope.num_ticklers}" />
 ticklers.
-<html:form action="/UnreadTickler.do">
-	<input type="hidden" name="method" value="refresh" />
+<html:form styleId="unreadTicklerForm" action="/UnreadTickler.do" target="_self">
+	<input type="hidden" name="method" value="refresh"/>
 </html:form>
 
 <!-- 

@@ -2,7 +2,6 @@ package oscar.oscarResearch.oscarDxResearch.pageUtil;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +21,9 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DispatchAction;
 import org.apache.struts.upload.FormFile;
 import org.oscarehr.casemgmt.dao.CaseManagementIssueDAO;
+import org.oscarehr.casemgmt.dao.IssueDAO;
 import org.oscarehr.casemgmt.model.CaseManagementIssue;
+import org.oscarehr.casemgmt.model.Issue;
 import org.oscarehr.casemgmt.service.CaseManagementManager;
 import org.oscarehr.common.dao.DxDao;
 import org.oscarehr.common.model.DxAssociation;
@@ -154,6 +155,7 @@ public class dxResearchLoadAssociationsAction extends DispatchAction {
     	int recordsAdded=0;
     	CaseManagementIssueDAO cmiDao =(CaseManagementIssueDAO)SpringUtils.getBean("CaseManagementIssueDAO");
     	CaseManagementManager cmMgr = (CaseManagementManager)SpringUtils.getBean("caseManagementManager");
+    	IssueDAO issueDao = (IssueDAO)SpringUtils.getBean("IssueDAO");
     	DxResearchDAO dxrDao = (DxResearchDAO)SpringUtils.getBean("dxResearchDao");
     	
     	//clear existing entries
@@ -163,8 +165,9 @@ public class dxResearchLoadAssociationsAction extends DispatchAction {
     	List<CaseManagementIssue> certainIssues = cmiDao.getAllCertainIssues();
     	System.out.println("certain issues found=" + certainIssues.size());
     	for(CaseManagementIssue issue:certainIssues) {
+    		Issue iss = issueDao.getIssue(issue.getIssue().getId());
     		System.out.println("checking " + issue.getIssue().getType() + "," +issue.getIssue().getCode());
-    		DxAssociation assoc = dxDao.findAssociation(issue.getIssue().getType(), issue.getIssue().getCode());
+    		DxAssociation assoc = dxDao.findAssociation(iss.getType(), iss.getCode());
     		if(assoc != null) {
     			System.out.println("match");
     			//we now have a certain issue which matches an association.

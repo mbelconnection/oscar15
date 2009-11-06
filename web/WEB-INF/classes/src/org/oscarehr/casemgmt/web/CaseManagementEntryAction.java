@@ -1848,6 +1848,8 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
                     origIssue = new CaseManagementIssue(oldList[x].getIssue());
                     oldList[x].getIssue().setIssue(iss);
                     oldList[x].getIssue().setIssue_id(substitution.getIssue().getId().longValue());
+                    oldList[x].getIssue().setDemographic_no(demono);
+                    oldList[x].getIssue().setType(iss.getType());
                     newIssue = oldList[x].getIssue();
                     caseManagementMgr.saveCaseIssue(oldList[x].getIssue());
                 }

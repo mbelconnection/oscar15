@@ -161,9 +161,12 @@ public class dxResearchLoadAssociationsAction extends DispatchAction {
     	
     	//get all certain issues
     	List<CaseManagementIssue> certainIssues = cmiDao.getAllCertainIssues();
+    	System.out.println("certain issues found=" + certainIssues.size());
     	for(CaseManagementIssue issue:certainIssues) {
+    		System.out.println("checking " + issue.getIssue().getType() + "," +issue.getIssue().getCode());
     		DxAssociation assoc = dxDao.findAssociation(issue.getIssue().getType(), issue.getIssue().getCode());
     		if(assoc != null) {
+    			System.out.println("match");
     			//we now have a certain issue which matches an association.
     			cmMgr.saveToDx(issue.getDemographic_no(), assoc.getDxCode(), assoc.getDxCodeType(), true);
     			recordsAdded++;

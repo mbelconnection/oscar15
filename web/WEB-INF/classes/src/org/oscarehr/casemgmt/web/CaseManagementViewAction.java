@@ -890,8 +890,9 @@ public class CaseManagementViewAction extends BaseCaseManagementViewAction {
 
 		try {
 			List<CachedDemographicNote> linkedNotes = CaisiIntegratorManager.getLinkedNotes(demographicNo);
-
-			for (CachedDemographicNote cachedDemographicNote : linkedNotes) {
+			log.info("# of linkedNotes returned by integrator:" + linkedNotes.size());
+			
+			for (CachedDemographicNote cachedDemographicNote : linkedNotes) {				
 				try {
 					
 					// filter on issues to display
@@ -900,7 +901,11 @@ public class CaseManagementViewAction extends BaseCaseManagementViewAction {
 						// filter on role based access
 						if (hasRole(roles, cachedDemographicNote.getRole())) {
 							notesToDisplay.add(getNoteToDisplay(cachedDemographicNote));
+						} else {
+							log.info("hasRole is false. suppressing: role is " + cachedDemographicNote.getRole());
 						}
+					} else {
+						log.info("linkedNote has no issue which is being displayed..suppressing");						
 					}
 				} catch (Exception e) {
 					log.error("Unexpected error.", e);

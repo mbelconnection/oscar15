@@ -438,7 +438,14 @@ function init() {
         alert("<nested:write name="DateError"/>");
     </nested:notEmpty>
 
+    doscroll();
 }
+
+function doscroll(){
+	x=document.body.scrollHeight;
+	x=x+99999
+	window.scrollTo(0,x);
+	}
 
 </script>
   </head> 

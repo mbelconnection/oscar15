@@ -1736,13 +1736,18 @@ function showIssues(e) {
     Element.toggle('noteIssues');
     showIssue = !showIssue;
     
-    if( showIssue )
+    if( showIssue ) {
         $("issueAutocomplete").focus();
-    else
+        scrollEncDown();
+    } else {
         $(caseNote).focus();
-        
+    }
     return false;
 
+}
+
+function scrollEncDown() {	
+	$("encMainDiv").scrollTop= $("encMainDiv").scrollHeight;
 }
 
 function issueIsAssigned() {

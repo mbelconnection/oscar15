@@ -1749,6 +1749,9 @@ function showIssues(e) {
 function scrollEncDown() {	
 	//$("encMainDiv").scrollTop= $("encMainDiv").scrollHeight;
 	$("noteIssues").scrollIntoView(false);
+	var x=document.body.scrollHeight;
+	x=x+99999
+	window.scrollTo(0,x);
 }
 
 function issueIsAssigned() {

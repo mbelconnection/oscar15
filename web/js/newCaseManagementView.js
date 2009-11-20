@@ -1860,11 +1860,12 @@ function ajaxSaveNote(div,noteId,noteTxt) {
             alert(assignIssueError);
             return false;
         }
-
+/*
         if( $("observationDate").value.length == 0 ) {
             alert(assignObservationDateError);
             return false;
         }
+*/        
     }
 
 
@@ -1924,11 +1925,12 @@ function savePage(method, chain) {
             alert(assignIssueError);
             return false;
         }
-
+/*
         if( $("observationDate").value.length == 0 ) {
             alert(assignObservationDateError);
             return false;
         }
+*/        
     }
     document.forms["caseManagementEntryForm"].method.value = method;
     document.forms["caseManagementEntryForm"].ajax.value = false;

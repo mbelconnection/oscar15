@@ -381,7 +381,7 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
 
 	<div id="filter" style="display: none;">
 	<div
-		style="clear: both; height: 150px; width: auto; overflow: auto; float: left; position: relative; left: 5%;">
+		style="clear: both; height: 150px; width: auto; overflow: auto; float: left; position: relative;">
 	<bean:message key="oscarEncounter.providers.title"/>:
 	<ul
 		style="margin-left: 0px; padding-left: 0px; margin-top: 5px; list-style: none inside none;">
@@ -406,7 +406,7 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
 	</div>
 
 	<div
-		style="height: 150px; width: auto; overflow: auto; float: left; position: relative; left: 10%;">
+		style="height: 150px; width: auto; overflow: auto; float: left; position: relative;">
 	Role:
 	<ul
 		style="margin-left: 0px; padding-left: 0px; margin-top: 5px; list-style: none inside none;">
@@ -426,7 +426,7 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
 	</ul>
 	</div>
 
-	<div style="float: left; position: relative; left: 15%;"><bean:message key="oscarEncounter.sort.title"/>:
+	<div style="float: left; width: auto; position: relative;"><bean:message key="oscarEncounter.sort.title"/>:
 	<ul
 		style="margin-left: 0px; padding-left: 0px; margin-top: 5px; list-style: none inside none;">
 		<li><html:radio property="note_sort" value="observation_date_asc"><bean:message key="oscarEncounter.sortDateAsc.title"/></html:radio></li>
@@ -440,10 +440,10 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
 	</div>
 
 	<div
-		style="float : right; text-align: right; cursor: pointer; text-decoration: underline; margin-right: 5px;margin-top: 1px;"
+		style="float : right; text-align: right; cursor: pointer; text-decoration: underline; margin-right: 5px;"
 		onclick="return filter(false);"><bean:message key="oscarEncounter.showView.title"/></div>
 	<div
-		style="float : right; text-align: right; cursor: pointer; text-decoration: underline; margin-right: 5px;margin-top: 1px;"
+		style="float : right; text-align: right; cursor: pointer; text-decoration: underline; margin-right: 5px;"
 		onclick="return filter(true);"><bean:message key="oscarEncounter.resetFilter.title"/></div>
 	</div>
 	<div

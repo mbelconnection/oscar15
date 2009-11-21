@@ -367,6 +367,7 @@
         pastObservationDateError = "<bean:message key="oscarEncounter.pastObservationDateError.msg"/>";
         assignIssueError = "<bean:message key="oscarEncounter.assignIssueError.msg"/>";
         assignObservationDateError = "<bean:message key="oscarEncounter.assignObservationDateError.msg"/>";
+        assignEncTypeError = "<bean:message key="oscarEncounter.assignEncTypeError.msg"/>";
         savingNoteError = "<bean:message key="oscarEncounter.savingNoteError.msg"/>";
         changeIssueMsg = "<bean:message key="oscarEncounter.change.title"/>";
         closeWithoutSaveMsg = "<bean:message key="oscarEncounter.closeWithoutSave.msg"/>";

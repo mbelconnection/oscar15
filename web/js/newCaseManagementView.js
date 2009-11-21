@@ -1869,6 +1869,10 @@ function ajaxSaveNote(div,noteId,noteTxt) {
             return false;
         }
 */        
+        if($("encTypeSelect0").options[$("encTypeSelect0").selectedIndex].value.length == 0 ) {
+        	alert(assignEncTypeError);
+        	return false;
+        }
     }
 
 
@@ -1933,7 +1937,12 @@ function savePage(method, chain) {
             alert(assignObservationDateError);
             return false;
         }
-*/        
+*/              
+       
+        if($("encTypeSelect0").options[$("encTypeSelect0").selectedIndex].value.length == 0 ) {
+        	alert(assignEncTypeError);
+        	return false;
+        }
     }
     document.forms["caseManagementEntryForm"].method.value = method;
     document.forms["caseManagementEntryForm"].ajax.value = false;

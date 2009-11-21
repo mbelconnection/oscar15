@@ -1,4 +1,4 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+s<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!-- 
 /*
 * 
@@ -339,7 +339,7 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
 		style="float: left; width: 100%; margin-right: -2px; padding-bottom: 10px; background-color: #CCCCFF; font-size: 10px;">
 	<nested:notEmpty name="caseManagementViewForm"
 		property="filter_providers">
-		<div style="float: left; margin-left: 30px; margin-top: 0px;"><u><bean:message key="oscarEncounter.providers.title"/>:</u><br>
+		<div style="float: left; margin-left: 10px; margin-top: 0px;"><u><bean:message key="oscarEncounter.providers.title"/>:</u><br>
 		<nested:iterate type="String" id="filter_provider"
 			property="filter_providers">
 			<c:choose>
@@ -357,7 +357,7 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
 			</c:choose>
 		</nested:iterate></div>
 	</nested:notEmpty> <nested:notEmpty name="caseManagementViewForm" property="filter_roles">
-		<div style="float: left; margin-left: 30px; margin-top: 0px;"><u><bean:message key="oscarEncounter.roles.title"/>:</u><br>
+		<div style="float: left; margin-left: 10px; margin-top: 0px;"><u><bean:message key="oscarEncounter.roles.title"/>:</u><br>
 		<nested:iterate type="String" id="filter_role" property="filter_roles">
 			<c:choose>
 				<c:when test="${filter_role == 'a'}">
@@ -374,17 +374,17 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
 			</c:choose>
 		</nested:iterate></div>
 	</nested:notEmpty> <nested:notEmpty name="caseManagementViewForm" property="note_sort">
-		<div style="float: left; margin-left: 30px; margin-top: 0px;"><u><bean:message key="oscarEncounter.sort.title"/>:</u><br>
+		<div style="float: left; margin-left: 10px; margin-top: 0px;"><u><bean:message key="oscarEncounter.sort.title"/>:</u><br>
 		<nested:write property="note_sort" /><br>
 		</div>
 	</nested:notEmpty>
 
 	<div id="filter" style="display: none;">
 	<div
-		style="clear: both; height: 150px; width: auto; overflow: auto; float: left; position: relative; left: 10%;">
+		style="clear: both; height: 150px; width: auto; overflow: auto; float: left; position: relative; left: 5%;">
 	<bean:message key="oscarEncounter.providers.title"/>:
 	<ul
-		style="margin-left: 0px; padding-left: 0px; margin-top: 1px; list-style: none inside none;">
+		style="margin-left: 0px; padding-left: 0px; margin-top: 5px; list-style: none inside none;">
 		<li><html:multibox property="filter_providers" value="a"
 			onclick="filterCheckBox(this)"></html:multibox><bean:message key="oscarEncounter.sortAll.title"/></li>
 		<%
@@ -406,10 +406,10 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
 	</div>
 
 	<div
-		style="height: 150px; width: auto; overflow: auto; float: left; position: relative; left: 20%;">
+		style="height: 150px; width: auto; overflow: auto; float: left; position: relative; left: 10%;">
 	Role:
 	<ul
-		style="margin-left: 0px; padding-left: 0px; margin-top: 1px; list-style: none inside none;">
+		style="margin-left: 0px; padding-left: 0px; margin-top: 5px; list-style: none inside none;">
 		<li><html:multibox property="filter_roles" value="a"
 			onclick="filterCheckBox(this)"></html:multibox><bean:message key="oscarEncounter.sortAll.title"/></li>
 		<%
@@ -426,23 +426,24 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
 	</ul>
 	</div>
 
-	<div style="float: left; position: relative; left: 25%;"><bean:message key="oscarEncounter.sort.title"/>:
+	<div style="float: left; position: relative; left: 15%;"><bean:message key="oscarEncounter.sort.title"/>:
 	<ul
-		style="margin-left: 0px; padding-left: 0px; margin-top: 1px; list-style: none inside none;">
+		style="margin-left: 0px; padding-left: 0px; margin-top: 5px; list-style: none inside none;">
 		<li><html:radio property="note_sort" value="observation_date_asc"><bean:message key="oscarEncounter.sortDateAsc.title"/></html:radio></li>
 		<li><html:radio property="note_sort"
 			value="observation_date_desc"><bean:message key="oscarEncounter.sortDateDesc.title"/></html:radio></li>
 		<li><html:radio property="note_sort" value="providerName"><bean:message key="oscarEncounter.provider.title"/></html:radio></li>
 		<li><html:radio property="note_sort" value="programName"><bean:message key="oscarEncounter.program.title"/></html:radio></li>
 		<li><html:radio property="note_sort" value="roleName"><bean:message key="oscarEncounter.role.title"/></html:radio></li>
+	
 	</ul>
 	</div>
 
 	<div
-		style="text-align: right; cursor: pointer; text-decoration: underline; margin-right: 10px;"
+		style="float : right; text-align: right; cursor: pointer; text-decoration: underline; margin-right: 5px;margin-top: 1px;"
 		onclick="return filter(false);"><bean:message key="oscarEncounter.showView.title"/></div>
 	<div
-		style="text-align: right; cursor: pointer; text-decoration: underline; margin-right: 10px;"
+		style="float : right; text-align: right; cursor: pointer; text-decoration: underline; margin-right: 5px;margin-top: 1px;"
 		onclick="return filter(true);"><bean:message key="oscarEncounter.resetFilter.title"/></div>
 	</div>
 	<div

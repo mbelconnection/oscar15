@@ -68,7 +68,7 @@ public class DbConnectionFilter implements javax.servlet.Filter {
 		}
 	}
 
-    public static void releaseThreadLocalDbConnection() {
+    public static void releaseThreadLocalDbConnection1() {
         try {
 	        Connection c = dbConnection.get();
 	        SqlUtils.closeResources(c, null, null);
@@ -76,6 +76,17 @@ public class DbConnectionFilter implements javax.servlet.Filter {
         } catch (Exception e) {
 	        logger.error("Error closing db connection.", e);
         }
+    }
+
+    public static void releaseThreadLocalDbConnection() {
+    	releaseAllThreadDbResources();
+    }
+    	
+    public static void releaseAllThreadDbResources()
+    {
+		releaseThreadLocalDbConnection();
+		SpringHibernateLocalSessionFactoryBean.releaseThreadSessions();
+		TrackingBasicDataSource.releaseThreadConnections();
     }
 
     /**

@@ -252,7 +252,7 @@ public class JdbcBillingRAImpl {
 					if (amountsubmit.compareTo("0") == 0)
 						amountsubmit = "000";
 
-					if( amountsubmit.length() == 1 ) {
+					 if( amountsubmit.length() == 1 ) {
                                             amountsubmit = "0.0" + amountsubmit;
                                         }
                                         else {

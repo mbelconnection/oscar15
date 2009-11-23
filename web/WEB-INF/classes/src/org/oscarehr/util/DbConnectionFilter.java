@@ -68,7 +68,7 @@ public class DbConnectionFilter implements javax.servlet.Filter {
 		}
 	}
 
-    public static void releaseThreadLocalDbConnection1() {
+    private static void releaseThreadLocalDbConnection1() {
         try {
 	        Connection c = dbConnection.get();
 	        SqlUtils.closeResources(c, null, null);
@@ -84,7 +84,7 @@ public class DbConnectionFilter implements javax.servlet.Filter {
     	
     public static void releaseAllThreadDbResources()
     {
-		releaseThreadLocalDbConnection();
+		releaseThreadLocalDbConnection1();
 		SpringHibernateLocalSessionFactoryBean.releaseThreadSessions();
 		TrackingBasicDataSource.releaseThreadConnections();
     }

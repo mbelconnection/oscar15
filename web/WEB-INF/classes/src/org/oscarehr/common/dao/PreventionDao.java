@@ -32,11 +32,10 @@ import javax.persistence.Query;
 import org.oscarehr.common.model.Prevention;
 import org.oscarehr.util.DbConnectionFilter;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-@Transactional(propagation=Propagation.REQUIRES_NEW)
+@Transactional
 public class PreventionDao extends AbstractDao {
 
 	public Prevention find(Integer id) {

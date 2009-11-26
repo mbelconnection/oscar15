@@ -70,8 +70,5 @@ public class PreventionDao extends AbstractDao {
 		catch (SQLException e) {
 			throw(new PersistenceException(e));
 		}
-		finally {
-			DbConnectionFilter.releaseThreadLocalDbConnection();
-		}
 	}
 }

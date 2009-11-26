@@ -246,7 +246,7 @@
 -->
 <div><span>Information</span>
 		<div><span><a target='_blank'
-			href='http://www.oscarcanada.org/caisi/social_support_services/hospitals-agencies-and-shelters/participating-agencies-1/participating-agencies'>List of CAISI Agencies</a></span></div>
+			href='http://www.oscarcanada.org/caisi/social_support_services/hospitals-agencies-and-shelters/participating-agencies-1/participating-agencies'>List of Integrating CAISI Agencies</a></span></div>
 		</div>
 </div>
 <div id="admintools" class="toolgroup">

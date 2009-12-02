@@ -942,7 +942,7 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
 		title='<bean:message key="oscarEncounter.Index.btnSignSave"/>'>&nbsp;
 	<input tabindex="13" type='image'
 		src="<c:out value="${ctx}/oscarEncounter/graphics/verify-sign.png"/>"
-		onclick="document.forms['caseManagementEntryForm'].sign.value='on';document.forms['caseManagementEntryForm'].verify.value='on';Event.stop(event);return savePage('saveAndExit', '');"
+		onclick="document.forms['caseManagementEntryForm'].sign.value='on';document.forms['caseManagementEntryForm'].verify.value='on';Event.stop(event);return savePage('save', 'list');"
 		title='<bean:message key="oscarEncounter.Index.btnSign"/>'>&nbsp;
        <%if(bean.source == null)  { %>
         <input tabindex="13" type='image'

@@ -37,15 +37,7 @@ public class IssueDAO extends HibernateDaoSupport {
 	private Logger log = Logger.getLogger(this.getClass());
 	
     public Issue getIssue(Long id) {
-		Session session=getSession();
-		try
-		{
-			return (Issue)getHibernateTemplate().get(Issue.class, id);
-		}
-		finally
-		{
-			session.close();
-		}
+		return (Issue)getHibernateTemplate().get(Issue.class, id);
     }
 
     public List getIssues() {

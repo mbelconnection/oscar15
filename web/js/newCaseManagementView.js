@@ -1869,7 +1869,7 @@ function ajaxSaveNote(div,noteId,noteTxt) {
             return false;
         }
 */        
-        if($("encTypeSelect0").options[$("encTypeSelect0").selectedIndex].value.length == 0 ) {
+        if($("encTypeSelect0") != null && $("encTypeSelect0").options[$("encTypeSelect0").selectedIndex].value.length == 0 ) {
         	alert(assignEncTypeError);
         	return false;
         }
@@ -1939,7 +1939,7 @@ function savePage(method, chain) {
         }
 */              
        
-        if($("encTypeSelect0").options[$("encTypeSelect0").selectedIndex].value.length == 0 ) {
+        if($("encTypeSelect0") != null && $("encTypeSelect0").options[$("encTypeSelect0").selectedIndex].value.length == 0 ) {
         	alert(assignEncTypeError);
         	return false;
         }

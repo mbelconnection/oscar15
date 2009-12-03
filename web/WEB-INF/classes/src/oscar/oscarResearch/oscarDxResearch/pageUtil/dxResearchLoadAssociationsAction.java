@@ -166,7 +166,7 @@ public class dxResearchLoadAssociationsAction extends DispatchAction {
     	System.out.println("certain issues found=" + certainIssues.size());
     	for(CaseManagementIssue issue:certainIssues) {
     		Issue iss = issueDao.getIssue(issue.getIssue().getId());
-    		System.out.println("checking " + issue.getIssue().getType() + "," +issue.getIssue().getCode());
+    		System.out.println("checking " + iss.getType() + "," +iss.getCode());
     		DxAssociation assoc = dxDao.findAssociation(iss.getType(), iss.getCode());
     		if(assoc != null) {
     			System.out.println("match");

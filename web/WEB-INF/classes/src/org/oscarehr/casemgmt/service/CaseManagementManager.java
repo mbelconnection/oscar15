@@ -985,7 +985,6 @@ public class CaseManagementManager {
 
 		ProgramProvider pp = (ProgramProvider) ppList.get(0);
 		Role role = pp.getRole();
-		logger.info("role for this program provider record is " + role.getName() + " (provider_no="+loggedInInfo.loggedInProvider.getProviderNo()+",program_id=" + programId + ")");
 
 		// Load up access list from program
 		@SuppressWarnings("unchecked")
@@ -1026,8 +1025,6 @@ public class CaseManagementManager {
 			// did it pass the test?
 			if (add) {
 				filteredNotes.add(cmNote);
-			} else {
-				logger.info("filtered out note: " + cmNote.getId() + "," + cmNote.getRoleName() + "," + noteRole + "," + noteRoleName);
 			}
 		}
 
@@ -1044,7 +1041,7 @@ public class CaseManagementManager {
 
 		for (Iterator iter = pa.getRoles().iterator(); iter.hasNext();) {
 			Role accessRole = (Role) iter.next();
-			if (role.getId() == accessRole.getId()) {
+			if (role.getId().longValue() == accessRole.getId().longValue()) {
 				return true;
 			}
 		}

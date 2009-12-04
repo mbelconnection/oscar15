@@ -22,8 +22,10 @@
 
 package org.oscarehr.PMmodule.dao;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
@@ -39,7 +41,7 @@ public class ProgramProviderDAO extends HibernateDaoSupport
 
 	private Log log = LogFactory.getLog(ProgramProviderDAO.class);
 
-	private static TimeClearedHashMap<String, List<ProgramProvider>> programProviderByProviderProgramIdCache = new TimeClearedHashMap<String, List<ProgramProvider>>(DateUtils.MILLIS_PER_HOUR, DateUtils.MILLIS_PER_HOUR);
+	private static Map<String, List<ProgramProvider>> programProviderByProviderProgramIdCache = Collections.synchronizedMap(new TimeClearedHashMap<String, List<ProgramProvider>>(DateUtils.MILLIS_PER_HOUR, DateUtils.MILLIS_PER_HOUR));
 
 	private static String makeCacheKey(String providerNo, Long programId)
 	{
@@ -51,23 +53,13 @@ public class ProgramProviderDAO extends HibernateDaoSupport
 	{
 		String cacheKey = makeCacheKey(providerNo, programId);
 
-		List<ProgramProvider> results = null;
-		synchronized (programProviderByProviderProgramIdCache)
-		{
-			results = programProviderByProviderProgramIdCache.get(cacheKey);
-		}
+		List<ProgramProvider> results = programProviderByProviderProgramIdCache.get(cacheKey);
 
 		if (results == null)
 		{
 			String q = "select pp from ProgramProvider pp where pp.ProgramId=? and pp.ProviderNo=?";
 			results = getHibernateTemplate().find(q, new Object[]{programId, providerNo});
-			if (results != null)
-			{
-				synchronized (programProviderByProviderProgramIdCache)
-				{
-					programProviderByProviderProgramIdCache.put(cacheKey, results);
-				}
-			}
+			if (results != null) programProviderByProviderProgramIdCache.put(cacheKey, results);
 		}
 
 		return results;

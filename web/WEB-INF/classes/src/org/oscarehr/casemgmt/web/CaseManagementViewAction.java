@@ -613,9 +613,12 @@ public class CaseManagementViewAction extends BaseCaseManagementViewAction {
 	    // deal with local notes
 	    startTime = System.currentTimeMillis();
 	    Collection<CaseManagementNote> localNotes = caseManagementNoteDao.findNotesByDemographicAndIssueCode(demographicNo, checkedCodeList.toArray(new String[0]));
+	    log.info("localNotes - findNotesByDemographicAndIssueCode found " + localNotes.size() + " notes.");
 	    localNotes = manageLockedNotes(localNotes, true, this.getUnlockedNotesMap(request));
+	    log.info("localNotes - manageLockedNotes kept " + localNotes.size() + " notes.");	    
 	    localNotes = caseManagementMgr.filterNotes(localNotes, programId);                        
-
+	    log.info("localNotes - filterNotes kept " + localNotes.size() + " notes.");
+	    
 	    caseManagementMgr.getEditors(localNotes);
 
 	    addLocalNotes(notesToDisplay, localNotes);
@@ -643,11 +646,14 @@ public class CaseManagementViewAction extends BaseCaseManagementViewAction {
 	    List roles = roleMgr.getRoles();
 	    request.setAttribute("roles", roles);
 	    String[] roleId = caseForm.getFilter_roles();
+	    log.info("notestoDisplay before role filter has " + notesToDisplay.size() + " notes");
 	    notesToDisplay = applyRoleFilter(notesToDisplay, roleId);
+	    log.info("notestodisplay after role filter has " +  notesToDisplay.size()  + " notes");
 	    log.debug("Filter on Role " + (System.currentTimeMillis()-startTime));
 	                
 	    // filter providers
 	    notesToDisplay = applyProviderFilter(notesToDisplay, caseForm.getFilter_providers());
+	    log.info("notestodisplay after provider filter has " +  notesToDisplay.size()  + " notes");
 	    
 	    // set providers to display
 	    HashSet<LabelValueBean> providers=new HashSet<LabelValueBean>();

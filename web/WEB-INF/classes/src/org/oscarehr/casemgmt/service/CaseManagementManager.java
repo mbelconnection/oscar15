@@ -1025,6 +1025,8 @@ public class CaseManagementManager {
 			// did it pass the test?
 			if (add) {
 				filteredNotes.add(cmNote);
+			} else {
+				logger.info("filtered out note: " + cmNote.getId() + "," + cmNote.getRoleName());
 			}
 		}
 

@@ -56,7 +56,7 @@
         int nowYear = now.get(Calendar.YEAR);
         int nowMonth = now.get(Calendar.MONTH)+1 ; //be care for the month +-1
         int nowDay = now.get(Calendar.DAY_OF_MONTH);
-        response.sendRedirect("./providercontrol.jsp?year="+nowYear+"&month="+(nowMonth)+"&day="+(nowDay)+"&view=0&displaymode=day&dboperation=searchappointmentday");
+        response.sendRedirect("./providercontrol.jsp?year="+nowYear+"&month="+(nowMonth)+"&day="+(nowDay)+"&view=0&displaymode=day&dboperation=searchappointmentday&viewall=1");
         return;
     }
 

@@ -2230,8 +2230,14 @@ function newNote(e) {
     }
     else
         $(caseNote).focus();
-        
+           
+    //need delay..something else going on
+    setTimeout(scrollDownInnerBar,1500);
     return false;
+}
+
+function scrollDownInnerBar() {
+	$("encMainDiv").scrollTop= $("encMainDiv").scrollHeight;
 }
 
 function deleteAutoSave() {

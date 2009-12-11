@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -69,6 +70,7 @@ import org.oscarehr.casemgmt.web.CaseManagementViewAction.IssueDisplay;
 import org.oscarehr.casemgmt.web.formbeans.CaseManagementEntryFormBean;
 import org.oscarehr.common.model.DxAssociation;
 import org.oscarehr.common.model.Provider;
+import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.util.SessionConstants;
 import org.oscarehr.util.SpringUtils;
 import org.oscarehr.util.WebUtils;
@@ -1552,10 +1554,12 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
         CaseManagementEntryFormBean cform = (CaseManagementEntryFormBean) form;
 
         String demono = request.getParameter("amp;demographicNo");
+       
 
         // get current providerNo
-        String providerNo = request.getParameter("amp;providerNo");
-
+        //String providerNo = request.getParameter("providerNo");
+        String providerNo = LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo();
+        
         // get the issue list have search string
         String search = request.getParameter("issueSearch");
 

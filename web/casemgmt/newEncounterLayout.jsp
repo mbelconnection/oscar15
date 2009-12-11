@@ -440,6 +440,14 @@ function init() {
     </nested:notEmpty>
 
     doscroll();
+
+    //if we're on a new note
+    setTimeout(scrollDownInnerBar,1500);
+    
+}
+
+function scrollDownInnerBar() {
+	$("encMainDiv").scrollTop= $("encMainDiv").scrollHeight;
 }
 
 function doscroll(){

@@ -400,10 +400,14 @@ public class Drug extends AbstractModel<Integer> implements Serializable {
 
 
 	public Boolean getLongTerm() {
+	if( longTerm == null ) 
+		longTerm = false;
     	return longTerm;
     }
 
         public Boolean isLongTerm() {
+	if( longTerm == null ) 
+		longTerm = false;
     	return longTerm;
     }
 

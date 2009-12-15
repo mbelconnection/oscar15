@@ -16,18 +16,25 @@ questr=oscar.caisi.CaisiUtil.removeAttr(questr,"viewall");
 questr += "&viewall=1";
 
 String providerurlString="providercontrol.jsp?"+questr;
+
 //remove "infirmaryView_isOscar" from querystring
-session.setAttribute("infirmaryView_OscarQue",oscar.caisi.CaisiUtil.removeAttr(questr,"infirmaryView_isOscar="));
+questr=oscar.caisi.CaisiUtil.removeAttr(questr,"infirmaryView_isOscar=");
+
+//remove "GoToCaisiViewFromOscarView" from querystring
+questr=oscar.caisi.CaisiUtil.removeAttr(questr,"GoToCaisiViewFromOscarView=");
+
+session.setAttribute("infirmaryView_OscarQue",questr);
+
 %>
 
 <script>
 function submitProgram(ctrl) {
-	var url = "<%=providerurlString%>"+"&infirmaryView_programId="+ctrl.value;	
+	var url = "<%=providerurlString%>"+"&infirmaryView_programId="+ctrl.value+"&GoToCaisiViewFromOscarView=true";	
 	document.location.href = url;
 }
 function submitStatus(ctrl) {
 	var programCtrl = document.getElementById("bedprogram_no");
-	document.location.href = "<%=providerurlString%>"+"&infirmaryView_programId="+programCtrl.value+"&infirmaryView_clientStatusId="+ctrl.value;
+	document.location.href = "<%=providerurlString%>"+"&infirmaryView_programId="+programCtrl.value+"&infirmaryView_clientStatusId="+ctrl.value+"&GoToCaisiViewFromOscarView=true";
 }
 </script>
 
@@ -114,7 +121,7 @@ function submitStatus(ctrl) {
 	<caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">
 		<caisi:ProgramExclusiveView providerNo="<%=curUser_no%>" value="no">
 			<a
-				href='providercontrol.jsp?infirmaryView_isOscar=true&<%=session.getAttribute("infirmaryView_OscarQue") %>'>|
+				href='providercontrol.jsp?infirmaryView_isOscar=true&GoToCaisiViewFromOscarView=false&<%=session.getAttribute("infirmaryView_OscarQue") %>'>|
 			Oscar View</a>
 		</caisi:ProgramExclusiveView>
 	</caisi:isModuleLoad>
@@ -123,7 +130,7 @@ function submitStatus(ctrl) {
 <logic:equal name="infirmaryView_isOscar" value="true">
 	<caisi:ProgramExclusiveView providerNo="<%=curUser_no%>" value="no">
 		<div align="right"><a
-			href='providercontrol.jsp?infirmaryView_isOscar=false&<%=session.getAttribute("infirmaryView_OscarQue") %>'>|
+			href='providercontrol.jsp?infirmaryView_isOscar=false&GoToCaisiViewFromOscarView=true&<%=session.getAttribute("infirmaryView_OscarQue") %>'>|
 		Case Management View</a></div>
 	</caisi:ProgramExclusiveView>
 </logic:equal>

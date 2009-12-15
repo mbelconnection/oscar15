@@ -107,7 +107,12 @@ public boolean patientHasOutstandingPrivateBills(String demographicNo){
 	oscar.oscarSecurity.CookieSecurity cs = new oscar.oscarSecurity.CookieSecurity();
     response.addCookie(cs.GiveMeACookie(oscar.oscarSecurity.CookieSecurity.providerCookie));
 
-    String mygroupno = (String) session.getAttribute("groupno");
+    String mygroupno = (String) session.getAttribute("groupno");  
+    String caisiView = null;
+    caisiView = (String)request.getParameter("GoToCaisiViewFromOscarView");
+    if(caisiView!=null && "true".equals(caisiView)) {
+    	mygroupno = ".default";
+    }
     String userfirstname = (String) session.getAttribute("userfirstname");
     String userlastname = (String) session.getAttribute("userlastname");
     String prov= ((String ) oscarVariables.getProperty("billregion","")).trim().toUpperCase();
@@ -159,7 +164,9 @@ if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.Is
     if (provNum != null) {
         isWeekView = true;
     } 
-
+    if(caisiView!=null && "true".equals(caisiView)) {
+    	isWeekView = false;
+    }
 int nProvider;
 
 GregorianCalendar cal = new GregorianCalendar();

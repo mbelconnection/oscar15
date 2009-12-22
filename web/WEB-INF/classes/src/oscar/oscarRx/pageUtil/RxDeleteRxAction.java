@@ -1,25 +1,25 @@
 /*
- * 
+ *
  * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved. *
- * This software is published under the GPL GNU General Public License. 
- * This program is free software; you can redistribute it and/or 
- * modify it under the terms of the GNU General Public License 
- * as published by the Free Software Foundation; either version 2 
- * of the License, or (at your option) any later version. * 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
- * GNU General Public License for more details. * * You should have received a copy of the GNU General Public License 
- * along with this program; if not, write to the Free Software 
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. * 
- * 
+ * This software is published under the GPL GNU General Public License.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version. *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details. * * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *
+ *
  * <OSCAR TEAM>
- * 
- * This software was written for the 
- * Department of Family Medicine 
- * McMaster University 
- * Hamilton 
- * Ontario, Canada 
+ *
+ * This software was written for the
+ * Department of Family Medicine
+ * McMaster University
+ * Hamilton
+ * Ontario, Canada
  */
 package oscar.oscarRx.pageUtil;
 
@@ -58,7 +58,7 @@ import oscar.oscarEncounter.data.EctProgram;
 
 public final class RxDeleteRxAction extends DispatchAction {
     private DrugDao drugDao = (DrugDao) SpringUtils.getBean("drugDao");
-    
+
 
     @Override
     public ActionForward unspecified(ActionMapping mapping,
@@ -66,32 +66,32 @@ public final class RxDeleteRxAction extends DispatchAction {
     HttpServletRequest request,
     HttpServletResponse response)
     throws IOException, ServletException {
-        
+
       //  System.out.println("===========================RxDeleteRxAction========================");
         // Extract attributes we will need
         Locale locale = getLocale(request);
-        MessageResources messages = getResources(request);        
-        // Setup variables        
-        RxSessionBean bean =(RxSessionBean)request.getSession().getAttribute("RxSessionBean");                
+        MessageResources messages = getResources(request);
+        // Setup variables
+        RxSessionBean bean =(RxSessionBean)request.getSession().getAttribute("RxSessionBean");
         if(bean==null) {
             response.sendRedirect("error.html");
             return null;
-        }        
-        String ip = request.getRemoteAddr();       
+        }
+        String ip = request.getRemoteAddr();
         try {
 
-            
+
             String drugList = ((RxDrugListForm)form).getDrugList();
        //     System.out.println("drugList="+drugList);
             String[] drugArr = drugList.split(",");
             int drugId;
             int i;
-            
+
             for(i=0;i<drugArr.length;i++) {
                 try {
                     drugId = Integer.parseInt(drugArr[i]);
                //     System.out.println("drugId="+drugId);
-                } catch (Exception e) { break; }                
+                } catch (Exception e) { break; }
                 // get original drug
                 Drug drug = drugDao.find(drugId);
                 setDrugDelete(drug);
@@ -101,7 +101,7 @@ public final class RxDeleteRxAction extends DispatchAction {
         }
         catch (Exception e) {
             e.printStackTrace(System.out);
-        }        
+        }
            //   System.out.println("===========================END RxDeleteRxAction========================");
          return (mapping.findForward("success"));
     }
@@ -141,6 +141,16 @@ public final class RxDeleteRxAction extends DispatchAction {
          return null;
     }
 
+public ActionForward clearStash(ActionMapping mapping,ActionForm form,HttpServletRequest request,HttpServletResponse response)
+    throws IOException, ServletException {
+        RxSessionBean bean = (RxSessionBean)request.getSession().getAttribute("RxSessionBean");
+        if(bean==null) {
+            response.sendRedirect("error.html");
+            return null;
+        }
+        bean.clearStash();
+        return mapping.findForward("successClearStash");
+    }
 
     /**
      * The action to discontinue a drug.
@@ -197,11 +207,11 @@ public final class RxDeleteRxAction extends DispatchAction {
             System.out.println("request.attributeName in session="+s);
             System.out.println("value="+request.getSession().getAttribute(s));
         }*/
-        
+
         createDiscontinueNote(request);
 
         LogAction.addLog((String) request.getSession().getAttribute("user"), LogConst.DISCONTINUE, LogConst.CON_PRESCRIPTION,""+drug.getId(), ip,""+drug.getDemographicId(),logStatement);
-       
+
         Hashtable d = new Hashtable();
         d.put("id",""+id);
         d.put("reason",reason);

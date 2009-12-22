@@ -492,8 +492,8 @@ lightwindow.prototype = {
 	//
 	_addLightWindowMarkup : function(rebuild) {
             oscarLog("&&&&&&&&&&&&&&&&&&&& _addLightWindowMarkup");
-           
-            
+
+
 		var overlay = Element.extend(document.createElement('div'));
 		overlay.setAttribute('id', 'lightwindow_overlay');
                 //var h=this._viewportHeight();
@@ -514,7 +514,7 @@ lightwindow.prototype = {
 				//height: this.pageDimensions.height+'px'
                                 height: h+'px'
 			});
-                        
+
 		} else {
                     oscarLog("overlay image :"+this.options.overlay.image);
 			overlay.setStyle({
@@ -687,22 +687,15 @@ lightwindow.prototype = {
 					left: parseFloat($('lightwindow').getStyle('left'))-this.pagePosition.x+'px'
 				});
 			} else {
-                                //oscarLog("x2");
-                              // if(!(window.frames['lightwindow_iframe'].document==null)){
-                                   //oscarLog("$$$ $$$ pwTable's height="+window.frames['lightwindow_iframe'].document.getElementById('pwTable').clientHeight);
-                                   //oscarLog(window.frames['lightwindow_iframe'].document);
-                               //    this.customedHeight=window.frames['lightwindow_iframe'].document.getElementById('pwTable').clientHeight+200;
-
-                                    //oscarLog("222 222 pwTable's height="+document.getElementById('lightwindow_iframe').contentWindow.document.getElementById('pwTable').clientHeight);
-                                    this.customedHeight=document.getElementById('lightwindow_iframe').contentWindow.document.getElementById('pwTable').clientHeight+250;
-                               //oscarLog("contentWindow scrollHeight: "+document.getElementById('lightwindow_iframe').contentWindow.document.body.scrollHeight);
-                                //oscarLog("$$$ $$$ this.customedHeight="+this.customedHeight);
+                               
+                                    this.customedHeight=document.getElementById('lightwindow_iframe').contentWindow.document.getElementById('preview').contentWindow.document.getElementById('pwTable').clientHeight+150;
+                               
                                 $('lightwindow_contents').setStyle({
                                        height:  this.customedHeight+'px'
                                });
                                 //oscarLog("lightwindow_contents' height :"+$('lightwindow_contents').getHeight());
                                 //oscarLog("lightwindow_contents' scroll height :"+$('lightwindow_contents').scrollHeight);
-                                
+
 				if ($('lightwindow_iframe')) {
 					// Ideally here we would set a 50% value for top and left, but Safari rears it ugly head again and we need to do it by pixels
 					this._browserDimensions();

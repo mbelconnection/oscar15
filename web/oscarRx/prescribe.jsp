@@ -11,8 +11,8 @@ System.out.println("***### IN prescribe.jsp");
 List<RxPrescriptionData.Prescription> listRxDrugs=(List)request.getAttribute("listRxDrugs");
 
 System.out.println("listRxDrugs="+listRxDrugs);
-
-for(RxPrescriptionData.Prescription rx : listRxDrugs ){
+if(listRxDrugs!=null){
+  for(RxPrescriptionData.Prescription rx : listRxDrugs ){
          System.out.println("display prescribe :"+rx);
          String rand            = Long.toString(rx.getRandomId());
          String instructions    = rx.getSpecial();
@@ -97,8 +97,8 @@ for(RxPrescriptionData.Prescription rx : listRxDrugs ){
        <input type="text" id="instructions_<%=rand%>" name="instructions_<%=rand%>" value="<%=instructions%>" size="60" onblur="parseIntr(this);" /> <br>
     <label style="float:left;width:80px;">Quantity:</label>
     <input type="text" id="quantity_<%=rand%>"     name="quantity_<%=rand%>"     value="<%=quantity%>" onblur="updateQty(this);" />
-    <label style="">Repeats:</label>                            
-       <input type="text" id="repeats_<%=rand%>"      name="repeats_<%=rand%>"      value="<%=repeats%>" />       
+    <label style="">Repeats:</label>
+       <input type="text" id="repeats_<%=rand%>"      name="repeats_<%=rand%>"      value="<%=repeats%>" />
        <input type="checkbox" id="longTerm_<%=rand%>"  name="longTerm_<%=rand%>" <%if(longTerm) {%> checked="true" <%}%> >Long Term Med </input>
        <div id="rxString_<%=rand%>"><%=rxString%> </div>
        <div id="quantityWarning_<%=rand%>"> </div>
@@ -116,7 +116,7 @@ for(RxPrescriptionData.Prescription rx : listRxDrugs ){
 	<bean:message key="WriteScript.msgPatientCompliance"/>:
           <bean:message key="WriteScript.msgYes"/>
             <input type="checkbox"  name="patientComplianceY_<%=rand%>" id="patientComplianceY_<%=rand%>" <%if(patientCompliance==1) {%> checked="true" <%}%> />
-        
+
           <bean:message key="WriteScript.msgNo"/>
             <input type="checkbox"  name="patientComplianceN_<%=rand%>" id="patientComplianceN_<%=rand%>" <%if(patientCompliance==-1) {%> checked="true" <%}%> /><br/>
 
@@ -131,7 +131,7 @@ for(RxPrescriptionData.Prescription rx : listRxDrugs ){
            <input type="text" id="writtenDate_<%=rand%>"  name="writtenDate_<%=rand%>" value="<%=writtenDate%>" />
            <a href="javascript:void(0);" style="float:right;margin-top:0px;padding-top:0px;" onclick="addFav('<%=rand%>','<%=drugName%>')">Add to Favorite</a>
        </div>
-    
+
            <div id="renalDosing_<%=rand%>" ></div>
 
            <oscar:oscarPropertiesCheck property="billregion" value="ON" >
@@ -158,7 +158,7 @@ for(RxPrescriptionData.Prescription rx : listRxDrugs ){
             </oscar:oscarPropertiesCheck>
 
 </fieldset>
-   
+
         <script type="text/javascript">
             var gcn_val=<%=gcn%>;
            if(gcn_val==0){
@@ -178,7 +178,7 @@ for(RxPrescriptionData.Prescription rx : listRxDrugs ){
                var archD='<%=archivedDate%>';
                var archR='<%=archivedReason%>';
                oscarLog("in js discon "+archR+"--"+archD);
-               
+
                     if(confirm('This drug was discontinued on <%=archivedDate%> because of <%=archivedReason%> are you sure you want to continue it?')==true){
                         //do nothing
                     }
@@ -198,5 +198,6 @@ for(RxPrescriptionData.Prescription rx : listRxDrugs ){
                 }
             }*/
         </script>
- <%}%>
- 
+ <%}
+}%>
+

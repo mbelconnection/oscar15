@@ -32,7 +32,7 @@ import java.io.Serializable;
  * @author rjonasz
  */
 public class UserProperty implements Serializable {
-    
+
     public final static String STALE_NOTEDATE = "cme_note_date";
     public final static String MYDRUGREF_ID = "mydrugref_id";
     public final static String ONTARIO_MD_USERNAME = "ontario_md_username";
@@ -41,48 +41,57 @@ public class UserProperty implements Serializable {
     public final static String CONSULTATION_TEAM_WARNING = "consultation_team_warning";
     public final static String WORKLOAD_MANAGEMENT = "workload_management";
     public final static String CONSULTATION_REQ_PASTE_FMT = "consultation_req_paste_fmt";
-    
-   
+    public final static String RX_PAGE_SIZE = "rx_page_size";
+    public final static String RX_DEFAULT_QUANTITY = "rx_default_quantity";
+    public final static String RX_PROFILE_VIEW = "rx_profile_view";
     private long id;
     private String name;
     private String value;
     private String providerNo;
-    
+    private String[] valueArray;
+
+    public String[] getValueArray(){
+        return this.valueArray;
+    }
+
+    public void setValueArray(String[] va){
+       this.valueArray=va;
+    }
     public String getProviderNo() {
         return this.providerNo;
     }
-    
+
     public void setProviderNo(String providerNo) {
         this.providerNo = providerNo;
     }
-    
+
     public String getValue() {
         return this.value;
     }
-    
+
     public void setValue(String value) {
         this.value = value;
-    }    
-    
+    }
+
     public String getName() {
         return this.name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public long getId() {
         return this.id;
     }
-    
+
     public void setId(long id) {
         this.id = id;
     }
-    
-    
+
+
     /** Creates a new instance of UserProperty */
     public UserProperty() {
     }
-    
+
 }

@@ -45,7 +45,6 @@ public class CaseManagementIssue extends BaseObject {
 
 	private ProgramProviderDAO programProviderDao=(ProgramProviderDAO)SpringUtils.getBean("programProviderDAO");
 	private ProgramAccessDAO programAccessDao=(ProgramAccessDAO)SpringUtils.getBean("programAccessDAO");
-	private static TimeClearedHashMap<String, Boolean> writeAccessCache=new TimeClearedHashMap<String, Boolean>(DateUtils.MILLIS_PER_MINUTE, DateUtils.MILLIS_PER_MINUTE);
 	
 	protected Long id;
 	protected String demographic_no;
@@ -222,21 +221,7 @@ public class CaseManagementIssue extends BaseObject {
 		this.program_id = program_id;
 	}
 
-	public boolean isWriteAccess(int programId)
-	{
-		String cacheKey=LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo()+':'+programId;
-		
-		Boolean result=writeAccessCache.get(cacheKey);
-		if (result==null)
-		{
-			result=calculateWriteAccess(programId);
-			writeAccessCache.put(cacheKey, result);
-		}
-		
-		return(result);
-	}
-
-	private boolean calculateWriteAccess(int programId) {
+	public boolean isWriteAccess(int programId) {
 	    List<ProgramProvider> ppList = programProviderDao.getProgramProviderByProviderProgramId(LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo(), new Long(programId));
 	    if (ppList == null || ppList.isEmpty()) {
 	    	return(false);

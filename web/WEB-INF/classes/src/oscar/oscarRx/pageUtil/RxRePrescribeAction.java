@@ -1,25 +1,25 @@
 /*
- * 
+ *
  * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved. *
- * This software is published under the GPL GNU General Public License. 
- * This program is free software; you can redistribute it and/or 
- * modify it under the terms of the GNU General Public License 
- * as published by the Free Software Foundation; either version 2 
- * of the License, or (at your option) any later version. * 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
- * GNU General Public License for more details. * * You should have received a copy of the GNU General Public License 
- * along with this program; if not, write to the Free Software 
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. * 
- * 
+ * This software is published under the GPL GNU General Public License.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version. *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details. * * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *
+ *
  * <OSCAR TEAM>
- * 
- * This software was written for the 
- * Department of Family Medicine 
- * McMaster University 
- * Hamilton 
- * Ontario, Canada 
+ *
+ * This software was written for the
+ * Department of Family Medicine
+ * McMaster University
+ * Hamilton
+ * Ontario, Canada
  */
 package oscar.oscarRx.pageUtil;
 
@@ -83,7 +83,7 @@ public final class RxRePrescribeAction extends DispatchAction {
             p = list.get(idx);
 //            p("in for loop");
      //       p("prescription data: "+p.getNumPrints());
-            beanRX.setStashIndex(beanRX.addStashItem(p));            
+            beanRX.setStashIndex(beanRX.addStashItem(p));
             auditStr.append(p.getAuditString() + "\n");
         }
      //   p("auditStr "+auditStr.toString());
@@ -98,7 +98,7 @@ public final class RxRePrescribeAction extends DispatchAction {
         request.getSession().setAttribute("tmpBeanRX", beanRX);
         request.setAttribute("rePrint", "true");
         request.setAttribute("comment", comment);
-        
+
         LogAction.addLog((String) request.getSession().getAttribute("user"), LogConst.REPRINT, LogConst.CON_PRESCRIPTION, script_no, ip, "" + beanRX.getDemographicNo(), auditStr.toString());
      //   System.out.println("==========================END reprint of RxRePrescribeAction.java====================");
         return mapping.findForward("reprint");
@@ -196,7 +196,7 @@ public final class RxRePrescribeAction extends DispatchAction {
                 RxPrescriptionData.Prescription oldRx =
                         rxData.getPrescription(drugId);
                 //    System.out.println("oldRx.getDrugId()="+oldRx.getDrugId());
-                // create copy of Prescription                
+                // create copy of Prescription
                 RxPrescriptionData.Prescription rx =
                         rxData.newPrescription(beanRX.getProviderNo(), beanRX.getDemographicNo(), oldRx);
                 //           System.out.println("***###addStathItem called44");
@@ -219,38 +219,7 @@ public final class RxRePrescribeAction extends DispatchAction {
     //    System.out.println("================END represcribe of RxRePrescribeAction.java=================");
         return (mapping.findForward("success"));
     }
-/*
-    public void p(String s) {
-        System.out.println(s);
-    }
 
-    public void p(String s, String s1) {
-        System.out.println(s + "=" + s1);
-    }
-*/
-
-    //check to see if a represcription of a med is clicked twice.
-    public boolean isUnique(oscar.oscarRx.pageUtil.RxSessionBean beanRx,RxPrescriptionData.Prescription rx){
-        boolean unique=true;
-
-        for (int j = 0; j < beanRx.getStashSize(); j++) {
-            try {
-                RxPrescriptionData.Prescription rxTemp = beanRx.getStashItem(j);
-           /*     p("BN rx  ",rx.getBrandName());
-                p("BN in stash",rxTemp.getBrandName());
-                p("GCN  ",""+rx.getGCN_SEQNO());
-                p("GCN in stash",""+rxTemp.getGCN_SEQNO());*/
-                if(rx.getBrandName().equals(rxTemp.getBrandName()) && rx.getGCN_SEQNO()==rxTemp.getGCN_SEQNO()) {
-                  //  p("unique turning false");
-                    unique=false;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-      //  if(unique) p("unique is true");
-        return unique;
-    }
     public ActionForward represcribe2(ActionMapping mapping,
             ActionForm form,
             HttpServletRequest request,
@@ -290,18 +259,19 @@ try{
         List<RxPrescriptionData.Prescription> listReRx=new ArrayList();
         rx.setDiscontinuedLatest(RxUtil.checkDiscontinuedBefore(rx));
         //add rx to rx list
-        if(isUnique(beanRX,rx)){
-            listReRx.add(rx);
+        if(RxUtil.isRxUniqueInStash(beanRX,rx)){
+          listReRx.add(rx);
         }
         //save rx to stash
-     //    p("stashIndex is", "" + beanRX.getStashIndex());
-        beanRX.setStashIndex(beanRX.addStashItem(rx));
+              int rxStashIndex=beanRX.addStashItem(rx);
+            beanRX.setStashIndex(rxStashIndex);
+
         auditStr.append(rx.getAuditString() + "\n");
         beanRX.addAttributeName(rx.getAtcCode() + "-" + String.valueOf(beanRX.getStashIndex()));
         String script_no = beanRX.getStashItem(beanRX.getStashIndex()).getScript_no();
      //   p("brandName saved in stash", rx.getBrandName());
      //   p("stashIndex becomes", "" + beanRX.getStashIndex());
-        
+
         //   System.out.println("script_no ="+script_no);
         LogAction.addLog((String) request.getSession().getAttribute("user"), LogConst.REPRESCRIBE, LogConst.CON_PRESCRIPTION, script_no, request.getRemoteAddr(), "" + beanRX.getDemographicNo(), auditStr.toString());
         RxUtil.printStashContent(beanRX);
@@ -346,8 +316,8 @@ try{
                                     listLongTermMed.add(prescriptDrug.getId());
                                 }
                         }
-        
-                                
+
+
        //  p("here2");
         List<RxPrescriptionData.Prescription> listLongTerm = new ArrayList();
         for (int i = 0; i < listLongTermMed.size(); i++) {
@@ -372,29 +342,30 @@ try{
             rx.setSpecial(spec);
 
 
-       //     p("RxUtil.DateToString(rx.getRxDate(),", RxUtil.DateToString(rx.getRxDate(), "yyyy-MM-dd"));
-
-            if(isUnique(beanRX,rx)){
-                //add rx to list
+            if(RxUtil.isRxUniqueInStash(beanRX,rx)){
                 listLongTerm.add(rx);
             }
-     //       p("stashIndex is", "" + beanRX.getStashIndex());
-            // System.out.println("***###addStathItem called44");
-            beanRX.setStashIndex(beanRX.addStashItem(rx));
+            int rxStashIndex=beanRX.addStashItem(rx);
+            beanRX.setStashIndex(rxStashIndex);
             auditStr.append(rx.getAuditString() + "\n");
             // System.out.println("String.valueOf(beanRX.getStashIndex())="+String.valueOf(beanRX.getStashIndex()));
             //allocate space for annotation
             beanRX.addAttributeName(rx.getAtcCode() + "-" + String.valueOf(beanRX.getStashIndex()));
-        //    p("brandName saved", rx.getBrandName());
-        //    p("stashIndex becomes", "" + beanRX.getStashIndex());
-
-
-            
         }
         RxUtil.printStashContent(beanRX);
         request.setAttribute("listRxDrugs", listLongTerm);
-        
+
      //   System.out.println("================END repcbAllLongTerm of RxRePrescribeAction.java=================");
         return (mapping.findForward("repcbLongTerm"));
     }
+
+
+    public void p(String s) {
+        System.out.println(s);
+    }
+
+    public void p(String s, String s1) {
+        System.out.println(s + "=" + s1);
+    }
+
 }

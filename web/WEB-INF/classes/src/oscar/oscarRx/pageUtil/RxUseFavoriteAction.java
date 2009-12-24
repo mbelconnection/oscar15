@@ -141,7 +141,7 @@ public final class RxUseFavoriteAction extends DispatchAction {
             e.printStackTrace(System.out);
         }
 
-        RxUtil.printStashContent(bean);
+        //RxUtil.printStashContent(bean);
       //  System.out.println("==========***###END RxUseFavoriteAction.java=============");
         return (mapping.findForward("useFav2"));
     }

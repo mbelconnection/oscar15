@@ -153,7 +153,7 @@ public final class RxStashAction extends DispatchAction {
                 if(bean.getStashIndex() >= bean.getStashSize()) {
                     bean.setStashIndex(bean.getStashSize() - 1);
                 }
-        RxUtil.printStashContent(bean);
+        //RxUtil.printStashContent(bean);
     //    System.out.println("===========end in deletePrescribe===========");
         return mapping.findForward("success");
     }

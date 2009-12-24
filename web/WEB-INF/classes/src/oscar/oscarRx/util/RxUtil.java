@@ -942,12 +942,12 @@ public class RxUtil {
         for (int j = 0; j < beanRx.getStashSize(); j++) {
             try {
                 RxPrescriptionData.Prescription rxTemp = beanRx.getStashItem(j);
-                p("BN rx  ",rx.getBrandName());
-                p("BN in stash",rxTemp.getBrandName());
-                p("GCN  ",""+rx.getGCN_SEQNO());
-                p("GCN in stash",""+rxTemp.getGCN_SEQNO());
+                //p("BN rx  ",rx.getBrandName());
+                //p("BN in stash",rxTemp.getBrandName());
+                //p("GCN  ",""+rx.getGCN_SEQNO());
+                //p("GCN in stash",""+rxTemp.getGCN_SEQNO());
                 if(rx.getBrandName().equals(rxTemp.getBrandName()) && rx.getGCN_SEQNO()==rxTemp.getGCN_SEQNO()) {
-                    p("unique turning false");
+                    //p("unique turning false");
                     unique=false;
                 }
             } catch (Exception e) {

@@ -126,7 +126,7 @@ public final class RxAddFavoriteAction extends DispatchAction {
         request.setAttribute("BoxNoFillFirstLoad", "true");
         System.out.println("fill box no");
         */
-        RxUtil.printStashContent(bean);
+        //RxUtil.printStashContent(bean);
     //    System.out.println("================END addFav2 of RxAddFavoriteAction.java=================");
         return null;
     }

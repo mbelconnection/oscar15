@@ -274,7 +274,7 @@ try{
 
         //   System.out.println("script_no ="+script_no);
         LogAction.addLog((String) request.getSession().getAttribute("user"), LogConst.REPRESCRIBE, LogConst.CON_PRESCRIPTION, script_no, request.getRemoteAddr(), "" + beanRX.getDemographicNo(), auditStr.toString());
-        RxUtil.printStashContent(beanRX);
+        //RxUtil.printStashContent(beanRX);
         request.setAttribute("listRxDrugs", listReRx);
 }catch(Exception e){e.printStackTrace();}
       //  System.out.println("================END represcribe2 of RxRePrescribeAction.java=================");
@@ -312,7 +312,7 @@ try{
                        //     p("id of drug returned",""+prescriptDrug.getId());
                                 //add all long term med drugIds to an array.
                                 if (prescriptDrug.isLongTerm()) {
-                                    System.out.println("long term med's prescriptDrug.getLocalDrugId()=" + prescriptDrug.getId());
+                                    //System.out.println("long term med's prescriptDrug.getLocalDrugId()=" + prescriptDrug.getId());
                                     listLongTermMed.add(prescriptDrug.getId());
                                 }
                         }
@@ -352,7 +352,7 @@ try{
             //allocate space for annotation
             beanRX.addAttributeName(rx.getAtcCode() + "-" + String.valueOf(beanRX.getStashIndex()));
         }
-        RxUtil.printStashContent(beanRX);
+        //RxUtil.printStashContent(beanRX);
         request.setAttribute("listRxDrugs", listLongTerm);
 
      //   System.out.println("================END repcbAllLongTerm of RxRePrescribeAction.java=================");

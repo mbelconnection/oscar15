@@ -256,7 +256,7 @@ public final class RxWriteScriptAction extends DispatchAction {
             //bean.addAttributeName(rx.getAtcCode() + "-" + String.valueOf(bean.getIndexFromRx(Integer.parseInt(randomId))));
             //  p("updateDrug parseIntr bean.getStashIndex()", Integer.toString(bean.getStashIndex()));
             bean.setStashItem(bean.getIndexFromRx(Integer.parseInt(randomId)), rx);
-            RxUtil.printStashContent(bean);
+            //RxUtil.printStashContent(bean);
             //check for most recent drug,
             p("rx.getCustomName in saveCustomName", rx.getCustomName());
             RxUtil.setSpecialQuantityRepeat(rx);
@@ -504,7 +504,7 @@ public final class RxWriteScriptAction extends DispatchAction {
                 //       p("updateDrug parseIntr bean.getStashIndex()", Integer.toString(bean.getStashIndex()));
                 // bean.setStashIndex(bean.addStashItem(rx));
                 bean.setStashItem(bean.getIndexFromRx(Integer.parseInt(randomId)), rx);
-                RxUtil.printStashContent(bean);
+                //RxUtil.printStashContent(bean);
                 HashMap hm = new HashMap();
 
                 if (rx.getRoute() == null || rx.getRoute().equalsIgnoreCase("null")) {
@@ -572,7 +572,7 @@ public final class RxWriteScriptAction extends DispatchAction {
                 bean.addAttributeName(rx.getAtcCode() + "-" + String.valueOf(bean.getIndexFromRx(Integer.parseInt(randomId))));
                 //   p("updateDrug parseIntr bean.getStashIndex()", Integer.toString(bean.getStashIndex()));
                 bean.setStashItem(bean.getIndexFromRx(Integer.parseInt(randomId)), rx);
-                RxUtil.printStashContent(bean);
+                //RxUtil.printStashContent(bean);
                 if (rx.getRoute() == null) {
                     rx.setRoute("");
                 }
@@ -832,13 +832,6 @@ public final class RxWriteScriptAction extends DispatchAction {
         for (int i = 0; i < bean.getStashSize(); i++) {
             try {
                 rx = bean.getStashItem(i);
-                //     p("before saving rx", rx.getGenericName());
-                //      p(rx.getSpecial());
-                //       p(rx.getQuantity());
-                //      p("" + rx.getRepeat());
-                //      p(rx.getAtcCode());
-                //      p(rx.getRegionalIdentifier());
-                // System.out.println("*** before rx.Save(" + scriptId.toString() + ")");
                 rx.Save(scriptId);
                 auditStr.append(rx.getAuditString());
                 auditStr.append("\n");

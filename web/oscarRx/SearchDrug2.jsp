@@ -405,7 +405,7 @@
                 }
                 //add all long term med drugIds to an array.
                 if (prescriptDrug.isLongTerm()) {
-                    System.out.println("long term med's prescriptDrug.getLocalDrugId()=" + prescriptDrug.getLocalDrugId());
+                    //System.out.println("long term med's prescriptDrug.getLocalDrugId()=" + prescriptDrug.getLocalDrugId());
                     // listLongTermMed[counter]=""+prescriptDrug.getLocalDrugId();
                     // counter++;
                     listLongTermMed.add(prescriptDrug.getLocalDrugId());

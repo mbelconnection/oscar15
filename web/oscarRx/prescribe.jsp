@@ -54,13 +54,13 @@ if(listRxDrugs!=null){
          boolean isOutsideProvider ;
          System.out.println("---"+outsideProvOhip+"--");System.out.println("---"+outsideProvName+"--");
          if(isDiscontinuedLatest){
-                System.out.println("isDiscontinuedLatest true");
+                //System.out.println("isDiscontinuedLatest true");
                 archivedReason=rx.getLastArchReason();
                 archivedDate=rx.getLastArchDate();
-                System.out.println("---"+archivedDate +"--"+archivedReason);
+                //System.out.println("---"+archivedDate +"--"+archivedReason);
          }
          else{
-             System.out.println("isDiscontinuedLatest false");
+             //System.out.println("isDiscontinuedLatest false");
          }
           if((outsideProvOhip!=null && !outsideProvOhip.equals("")) || (outsideProvName!=null && !outsideProvName.equals(""))){
              isOutsideProvider=true;

@@ -139,6 +139,7 @@ table.ele {
 			<option value="Pneumovax" <%=selled ("Pneumovax",injectionType)%>>Pneumovax</option>
 			<option value="TdP" <%=selled ("TdP",injectionType)%>>TdP</option>
 			<option value="IPV" <%=selled ("IPV",injectionType)%>>IPV</option>
+                        <option value="OtherA"  <%=selled ("OtherA",injectionType)%>>Other A</option>
 		</select> <input type="submit" value="Run Report" /></fieldset>
 		</form>
 		</td>

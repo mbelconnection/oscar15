@@ -44,12 +44,24 @@ public class RxSessionBean {
     private Hashtable allergyWarnings = new Hashtable();
     private Hashtable workingAllergyWarnings = new Hashtable();
     private ArrayList attributeNames = new ArrayList();
+    private Vector interactingDrugList=new Vector();//contains hash tables, each hashtable has the a
+
     
     
     
     
     //--------------------------------------------------------------------------
-    
+
+
+    public Vector getInteractingDrugList(){
+        return interactingDrugList;
+    }
+    public void setInteractingDrugList(Vector v){
+        interactingDrugList=v;
+    }
+    public void addInteractingDrugList(Hashtable ht){
+        interactingDrugList.add(ht);
+    }
     public String getProviderNo() {
         return this.providerNo;
     }
@@ -116,6 +128,7 @@ public class RxSessionBean {
         return (RxPrescriptionData.Prescription)stash.get(index);
     }
 
+    //return rx from its random id
     public RxPrescriptionData.Prescription getStashItem2(int randomId) {;
         RxPrescriptionData.Prescription psp=null;
         for (RxPrescriptionData.Prescription rx:stash){
@@ -305,7 +318,7 @@ public class RxSessionBean {
           RxInteractionData rxInteract =  RxInteractionData.getInstance();
           Vector atcCodes = rxData.getCurrentATCCodesByPatient(this.getDemographicNo());
 
-          System.out.println("atccode "+atcCodes.hashCode());
+          System.out.println("atccode "+atcCodes);
           RxPrescriptionData.Prescription rx;                
           for(int i=0;i<this.getStashSize(); i++) {
              rx = this.getStashItem(i);
@@ -313,7 +326,7 @@ public class RxSessionBean {
                 atcCodes.add(rx.getAtcCode());
              }
           }
-          System.out.println("atccode 2"+atcCodes.hashCode());
+          System.out.println("atccode 2"+atcCodes);
           if (atcCodes != null && atcCodes.size() > 1){
              try{        
                 interactions = rxInteract.getInteractions(atcCodes);

@@ -87,6 +87,23 @@ String annotation_attrib = "";// = "anno"+now;
 
 <script language=javascript>
 
+    var addTextView=0;
+    function showAddText(randId){
+        var addTextId="addText_"+randId;
+        var addTextWordId="addTextWord_"+randId;
+        oscarLog("randId="+randId);
+        if(addTextView==0){
+            $(addTextId).show();
+            addTextView=1;
+            $(addTextWordId).update("less")
+        }
+        else{
+            $(addTextId).hide();
+            addTextView=0;
+            $(addTextWordId).update("more")
+        }
+    }
+
     var frm = document.forms.RxWriteScriptForm;
     oscarLog("frm="+frm+"$(frm)"+$(frm));
     var freqMin;
@@ -1509,7 +1526,8 @@ int i;
          <oscar:oscarPropertiesCheck property="RENAL_DOSING_DS" value="yes">
  
          function getRenalDosingInformation(origRequest){
-               var url = "RenalDosing.jsp";
+             var dummie="";
+               var url="RenalDosing.jsp" ;
                var ran_number=Math.round(Math.random()*1000000);
                var params = "demographicNo=<%=bean.getDemographicNo()%>&atcCode=<%=atcCode%>&rand="+ran_number;  //hack to get around ie caching the page
                //alert(params);
@@ -1520,11 +1538,13 @@ int i;
          </oscar:oscarPropertiesCheck>
          
          function callReplacementWebService(url,id){
+             oscarLog("in callReplacementWebService writescript.jsp: "+url+"--"+id);
                var ran_number=Math.round(Math.random()*1000000);
                var params = "demographicNo=<%=bean.getDemographicNo()%>&atcCode=<%=atcCode%>&rand="+ran_number;  //hack to get around ie caching the page
                new Ajax.Updater(id,url, {method:'get',parameters:params,asynchronous:true}); 
          } 
-          callReplacementWebService("InteractionDisplay.jsp",'interactionsRx');
+         // callReplacementWebService("InteractionDisplay.jsp",'interactionsRx');
+          callReplacementWebService("GetmyDrugrefInfo.do?method=view&target=interactionsRx",'interactionsRx');
           <oscar:oscarPropertiesCheck property="MYDRUGREF_DS" value="yes">
           callReplacementWebService("GetmyDrugrefInfo.do?method=view",'interactionsRxMyD');
           </oscar:oscarPropertiesCheck>

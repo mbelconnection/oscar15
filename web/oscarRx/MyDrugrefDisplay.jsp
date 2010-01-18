@@ -48,17 +48,18 @@ trusted truejava.lang.Boolean ? i think
  
 --%><%@page contentType="text/html"%>
 <%@page pageEncoding="UTF-8"%>
-<%@ page
-	import="java.util.*,oscar.oscarRx.data.*,oscar.oscarRx.pageUtil.*,java.io.*,org.apache.xmlrpc.*, oscar.util.StringUtils"%>
+<%@ page import="java.util.*,oscar.oscarRx.data.*,oscar.oscarRx.pageUtil.*,java.io.*,org.apache.xmlrpc.*, oscar.util.StringUtils,java.util.Random"%>
+
 <%
     Vector<Hashtable> warnings = (Vector)request.getAttribute("warnings");    
     Hashtable hiddenResources = (Hashtable) request.getSession().getAttribute("hideResources");
-    
+
     if ( warnings != null && warnings.size() > 0){
         System.out.println("numb warnings "+warnings.size());
     
         int untrustedRes = 0;
         int hiddenRes = 0;
+        Random rnd=new Random();
         for (Hashtable ht: warnings){   
             Vector<Hashtable> commentsVec = (Vector) ht.get("comments");
             displayKeys(ht);
@@ -66,7 +67,11 @@ trusted truejava.lang.Boolean ? i think
             System.out.println("\nDrug: "+ht.get("name")+"\nEvidence: "+ht.get("evidence")+"\nSignificance: "+ht.get("significance")+"\nATC: "+ht.get("atc")+"\nReference: "+ht.get("reference")+"\nWarning: "+ht.get("body")+" trusted "+ht.get("trusted"));
             boolean trustedResource = trusted(ht.get("trusted"));
             boolean hideResource = false;
-            
+
+            String interactStr=(String)ht.get("interactStr");
+            if(interactStr==null) interactStr="";
+            System.out.println("---interactStr="+interactStr);
+            //MessageResources messageResources=getResources(request);   
             if (hiddenResources != null ) {
                 hideResource = hiddenResources.containsKey("mydrugref"+ht.get("id"));
             }
@@ -81,29 +86,38 @@ trusted truejava.lang.Boolean ? i think
                 hidden ="display:none;";
             }
             
+            String bodyStr=(String)ht.get("body");
+            int rand=Math.abs(rnd.nextInt());
             %>
 
 <div id="<%=ht.get("id")%>.<%=getTime(ht.get("updated_at"))%>"
 	<%=outputHtmlClass(trustedResource,hideResource)%>
-	style="<%=hidden%>background-color:<%=sigColor(""+ht.get("significance"))%>;margin-right:3px;margin-left:3px;margin-top:2px;padding-left:3px;padding-top:3px;padding-bottom:3px;">
+	style="font-size: 9pt;<%=hidden%>background-color:<%=sigColor(""+ht.get("significance"))%>;margin-right:3px;margin-left:3px;margin-top:2px;padding-left:3px;padding-top:3px;padding-bottom:3px;">
 <span style="float: right;"><a href="javascript:void(0);"
 	onclick="HideW('<%=ht.get("id")%>.<%=getTime(ht.get("updated_at"))%>','<%=ht.get("id")%>','<%=getTime(ht.get("updated_at"))%>')">Hide</a></span>
-<b><%=ht.get("name")%></b> From:<%=s(ht.get("author"))%> <br />
+        <%=interactStr%><br/>
+<b><%=ht.get("name")%></b> From:<%=s(ht.get("author"))%> <br/>
 
 
+<%if(bodyStr.length() > 90){%>
+<%=((String)ht.get("body")).substring(0,90)%><a id="addText_<%=rand%>" style="display:none;padding:2px;"><%=((String)ht.get("body")).substring(90)%>
+</a>
+<div><a href="#" id="addTextWord_<%=rand%>" onclick="showAddText('<%=rand%>')"><span>more</span></a></div>
 
-<%=ht.get("body")%><br />
+<%} else{%>
+<%=ht.get("body")%>
+<%}%>
+     <br/><!--br/><%--=interactStr--%><br/-->
 <% String ref = (String)ht.get("reference");%> <%if (commentsVec != null && commentsVec.size() > 0){ %>
 <a style="float: right;" href="javascript:void(0);"
 	onclick="$('comm.<%=ht.get("id")%>.<%=getTime(ht.get("updated_at"))%>').toggle();">comments</a>
-<%}%> (<%=ht.get("evidence")%>) &nbsp;Reference: <a
-	href="<%=ht.get("reference")%>" target="_blank"><%= StringUtils.maxLenString(ref, 51, 50, "...") %></a>
+<%}%> (<%=ht.get("evidence")%>) &nbsp;Reference: <a href="<%=ht.get("reference")%>" target="_blank"><%= StringUtils.maxLenString(ref, 51, 50, "...") %></a>
 
 
 
-<%if (commentsVec != null && commentsVec.size() > 0){ %> <!--a style="float:right;" href="javascript:void(0);" onclick="$('comm.<%=ht.get("id")%>.<%=getTime(ht.get("updated_at"))%>').toggle();">comments</a-->
-<fieldset style="border: 1px solid white; display: none; padding: 2px;"
-	id="comm.<%=ht.get("id")%>.<%=getTime(ht.get("updated_at"))%>">
+<%if (commentsVec != null && commentsVec.size() > 0){
+    System.out.println("commentsVec != null && commentsVec.size() > 0"); %> <!--a style="float:right;" href="javascript:void(0);" onclick="$('comm.<%=ht.get("id")%>.<%=getTime(ht.get("updated_at"))%>').toggle();">comments</a-->
+<fieldset style="border: 1px solid white; display: none; padding: 2px;"	id="comm.<%=ht.get("id")%>.<%=getTime(ht.get("updated_at"))%>">
 <legend>Comments</legend> <%for(Hashtable comment : commentsVec){ %>
 <div><%= getCommentDisplay( comment ) %></div>
 <%}%>

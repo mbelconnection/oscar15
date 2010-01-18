@@ -900,6 +900,9 @@ body {
                     //oscarLog("str="+str);
                     //console.log(transport.responseText);
                     oscarLog("in asdfadf");
+                    <oscar:oscarPropertiesCheck property="MYDRUGREF_DS" value="yes">
+                      callReplacementWebService("GetmyDrugrefInfo.do?method=view",'interactionsRxMyD');
+                     </oscar:oscarPropertiesCheck>
                 }});
 
     }});

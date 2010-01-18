@@ -896,8 +896,8 @@ body {
                     var str=transport.responseText;
                     str=str.replace('<script type="text/javascript">','');
                     str=str.replace(/<\/script>/,'');
+                    eval(str);
                     //oscarLog("str="+str);
-                    //console.log(eval(str));
                     //console.log(transport.responseText);
                     oscarLog("in asdfadf");
                 }});

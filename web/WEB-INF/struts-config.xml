@@ -727,6 +727,7 @@
         </action>
         <action input="/oscarRx/MyDrugrefDisplay.jsp" name="FrmForm" path="/oscarRx/GetmyDrugrefInfo" parameter="method" scope="request" type="oscar.oscarRx.pageUtil.RxMyDrugrefInfoAction">
             <forward name="success" path="/oscarRx/MyDrugrefDisplay.jsp"></forward>
+            <forward name="updateInteractions" path="/oscarRx/InteractionDisplay2.jsp"></forward>
         </action>
         <action input="/oscarRx/ViewScript2.jsp"  path="/oscarRx/GetRxPageSizeInfo" parameter="method" scope="request" type="oscar.oscarRx.pageUtil.RxRxPageSizeInfoAction">
             <forward name="success" path="/oscarRx/ViewScript2.jsp"></forward>

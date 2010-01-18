@@ -289,7 +289,7 @@
 
 
         function setup() {
-            console.log("set up");
+            //console.log("set up");
         //    var update = "<%=updateParent%>";
         //    var parentId = "<%=parentAjaxId%>";
         //    var Url = window.opener.URLs;
@@ -301,19 +301,19 @@
     
     
         function saveDemoId(text, li){
-            console.log("saveDemoId "+li.id+" "+text.id);
+            //console.log("saveDemoId "+li.id+" "+text.id);
             var str = text.id.replace("autocompletedemo","demofind");
-            console.log("str "+str);
+            //console.log("str "+str);
             $(str).value = li.id;
         }
     
         function saveProvId(text, li){
-            console.log("saveProvId "+li.id+" "+text.id+" "+text.value);
+            //console.log("saveProvId "+li.id+" "+text.id+" "+text.value);
             var provName = text.value;
             var str = text.id.replace("autocompletedemo","demofind");
             var str2 = text.id.replace("autocompleteprov","providerList");
-            console.log("str "+str);
-            console.log("str2 "+str2);
+            //console.log("str "+str);
+            //console.log("str2 "+str2);
             $(str).value = li.id;
        
             var bdoc = document.createElement('a');
@@ -353,7 +353,7 @@
     
         function successAdjusting(transport){
             var jason = transport.responseText.evalJSON(true);
-            console.log("successlog"+jason.success+"   "+jason.docId);                
+            //console.log("successlog"+jason.success+"   "+jason.docId);
         
         
 
@@ -367,11 +367,11 @@
 
     
         function autoCompleteShowMenu(){
-            console.log("autoCompleteShowMenu");
+            //console.log("autoCompleteShowMenu");
         }
     
         function autoCompleteHideMenu(){
-            console.log("autoCompleteHideMenu"); 
+            //console.log("autoCompleteHideMenu");
         }
         
         function callReplacementWebService(url,id){

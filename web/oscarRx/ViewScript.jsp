@@ -161,7 +161,7 @@ function setDefaultAddr(){
     var url = "setDefaultAddr.jsp";
     var ran_number=Math.round(Math.random()*1000000);    
     var addr = encodeURIComponent(document.getElementById('addressSel').value);
-    var params = "addr="+addr+"&rand="+ran_number;  //]
+    var params = "addr="+addr+"&rand="+ran_number;
     new Ajax.Request(url, {method: 'post',parameters:params});
 }
 

@@ -9,7 +9,9 @@
 System.out.println("***### IN prescribe.jsp");
 
 List<RxPrescriptionData.Prescription> listRxDrugs=(List)request.getAttribute("listRxDrugs");
-
+oscar.oscarRx.pageUtil.RxSessionBean bean = (oscar.oscarRx.pageUtil.RxSessionBean)request.getSession().getAttribute("RxSessionBean");
+Vector interactingDrugList=bean.getInteractingDrugList();
+int interactingDrugListSize=interactingDrugList.size();
 System.out.println("listRxDrugs="+listRxDrugs);
 if(listRxDrugs!=null){
   for(RxPrescriptionData.Prescription rx : listRxDrugs ){
@@ -71,30 +73,21 @@ if(listRxDrugs!=null){
              //System.out.println("isOutsideProvider false");
          }
          System.out.println("instructions from repscbAllLongTerm="+instructions+ " rand="+rand+" drugName="+drugName+" startDate="+startDate+" writtenDate="+writtenDate);
-        // if(drugName==null){System.out.println("null meta");}
-         //    else if(drugName.equals("null")){System.out.println("null phys");}
-        /* if(route!=null){
-             System.out.println("length of route "+route.length());System.out.println("then route is "+route);
-            if(route.equalsIgnoreCase("null")) {
-                System.out.println("lllllllllll");
-                route=" ";
-            }
-         }
-         else if(route==null)System.out.println("route ==null ");*/
          if(route==null || route.equalsIgnoreCase("null")) route="";
          String rxString="Method:"+method+"; Route:"+route+"; Frequency:"+frequency+"; Min:"+takeMin+"; Max:"
                     +takeMax+"; Duration:"+duration+"; DurationUnit:"+durationUnit+"; Quantity:"+quantity;
          //System.out.println("*************** rxString="+rxString);
 %>
 
-<fieldset style="margin-top:2px;width:600px;" id="set_<%=rand%>">
+<fieldset style="margin-top:2px;width:580px;" id="set_<%=rand%>">
     <a href="javascript:void(0);" style="float:right;margin-left:5px;margin-top:0px;padding-top:0px;" onclick="$('set_<%=rand%>').remove();deletePrescribe('<%=rand%>');">X</a>
     <a href="javascript:void(0);" style="float:right;margin-top:0px;padding-top:0px;" onclick="$('rx_more_<%=rand%>').toggle();">more</a>
 
     <label style="float:left;width:80px;">Name:</label>
-    <input type="text" id="drugName_<%=rand%>"     name="drugName_<%=rand%>"     size="30" <%if(gcn==0 && (drugName==null || drugName.equalsIgnoreCase("null") || drugName.equals(""))){%> onchange="saveCustomName(this);" <%} else{%> value="<%=drugName%>" <%}%>/><span id="alleg_<%=rand%>" style="color:red;"></span><span id="inactive_<%=rand%>" style="color:red;"></span><br>
+    <input type="text" id="drugName_<%=rand%>"     name="drugName_<%=rand%>"     size="30" <%if(gcn==0 && (drugName==null || drugName.equalsIgnoreCase("null") || drugName.equals(""))){%> onchange="saveCustomName(this);" <%} else{%> value="<%=drugName%>" <%}%>/><span id="alleg_<%=rand%>" style="color:red;"></span>&nbsp;&nbsp;<span id="inactive_<%=rand%>" style="color:red;"></span><br>
     <label style="float:left;width:80px;">Instructions:</label>
-       <input type="text" id="instructions_<%=rand%>" name="instructions_<%=rand%>" value="<%=instructions%>" size="60" onblur="parseIntr(this);" /> <br>
+    <input type="text" id="instructions_<%=rand%>" name="instructions_<%=rand%>" value="<%=instructions%>" size="60" onblur="parseIntr(this);" /> <a id="major_<%=rand%>" style="display:none;background-color:red"></a>&nbsp;<a id="moderate_<%=rand%>" style="display:none;background-color:orange"></a>&nbsp;<a id='minor_<%=rand%>' style="display:none;background-color:yellow;"></a>&nbsp;<a id='unknown_<%=rand%>' style="display:none;background-color:#B1FB17"></a>
+       <br>
     <label style="float:left;width:80px;">Quantity:</label>
     <input type="text" id="quantity_<%=rand%>"     name="quantity_<%=rand%>"     value="<%=quantity%>" onblur="updateQty(this);" />
     <label style="">Repeats:</label>
@@ -160,6 +153,8 @@ if(listRxDrugs!=null){
 </fieldset>
 
         <script type="text/javascript">
+
+            callReplacementWebService('GetmyDrugrefInfo.do?method=view','interactionsRxMyD');
             var gcn_val=<%=gcn%>;
            if(gcn_val==0){
                $('drugName_<%=rand%>').focus();
@@ -189,14 +184,165 @@ if(listRxDrugs!=null){
                         deletePrescribe(randId);
                     }
             }
-         /*   function pause(ms){//can be used to delay execution of a js function
-                var date=new Date();
-                var current=null;
-                current=new Date();
-                while(current-date<ms){
-                    current=new Date();
+
+            var interactionSize=<%=interactingDrugListSize%>;
+            if(interactionSize>0){
+
+                var interactionDrugList='<%=interactingDrugList%>';
+                oscarLog(interactionDrugList);
+                var patt1=/\}, \{/g;
+                if(patt1.test(interactionDrugList)){//multiple interactions
+                    var intArr=interactionDrugList.split("}, {");
+                    oscarLog("in multiple interactions="+intArr);
+                    for(var i=0;i<intArr.length;i++){
+                        var str=intArr[i];
+                        oscarLog(str);
+                        str=str.replace(/\{/g, "");
+                        str=str.replace(/\}/g, "");
+                        str=str.replace(/\[/g, "");
+                        str=str.replace(/\]/g, "");
+                        var strArr=str.split("=");
+                        var interacter=strArr[0];
+                        var interactee=strArr[1];
+                        var interacteeArr=interactee.split(",");
+                        var interacteeNameArr=new Array();
+                        var interacteeEffectArr=new Array();
+                        var interacteeSigArr=new Array();
+                        for(var j=0;j<interacteeArr.length;j++){
+                            if(j%3==0){
+                                interacteeNameArr.push(interacteeArr[j]);
+                            }else if((j+2)%3==0){
+                                interacteeEffectArr.push(interacteeArr[j]);
+                            }else{
+                                interacteeSigArr.push(interacteeArr[j]);
+                            }                            
+                        }
+                        oscarLog("interacter="+interacter);
+                        oscarLog("interacteeNameArr="+interacteeNameArr);
+                        oscarLog("interacteeEffectArr="+interacteeEffectArr);
+                        oscarLog("interacteeSigArr="+interacteeSigArr);
+                        //update the html here.
+                        //new Insertion.After("instructions_"+interacter, "<p>"+interacteeNameArr+"<p>");
+                            /*     h.put("1","minor");
+                                   h.put("2","moderate");
+                                   h.put("3","major");
+                                   h.put(" ","unknown");
+
+                                   h.put("1","yellow");
+                                   h.put("2","orange");
+                                   h.put("3","red");
+                                   h.put(" ","greenyellow");*/
+                        var minor="";
+                        var moderate="";
+                        var major="";
+                        var unknownStr="";
+                        for(var h=0;h<interacteeSigArr.length;h++){
+                            oscarLog("interacteeSigArr[h]="+interacteeSigArr[h]);
+                            if(interacteeSigArr[h]==1){
+                                minor+=" "+interacteeNameArr[h];
+                            }else if(interacteeSigArr[h]==2){
+                                moderate+=" "+interacteeNameArr[h];
+                            }else if(interacteeSigArr[h]==3){
+                                major+=" "+interacteeNameArr[h];
+                            }else{
+                                unknownStr+=" "+interacteeNameArr[h];
+                            }
+                        }
+                        oscarLog("major="+major);
+                        oscarLog("moderate="+moderate);
+                        oscarLog("minor="+minor);
+                        oscarLog("unknownStr="+unknownStr);
+                        if(major.length>0){
+                            var htmlStr="<a title='"+major+"'>&nbsp;&nbsp;</a>";
+                            $('major_'+interacter).show();
+                            $('major_'+interacter).update(htmlStr);
+                        }
+                        if(moderate.length>0){
+                            var htmlStr="<a title='"+moderate+"'>&nbsp;&nbsp;</a>";
+                            $('moderate_'+interacter).show();
+                            $('moderate_'+interacter).update(htmlStr);
+                        }
+                        if(minor.length>0){
+                            var htmlStr="<a title='"+minor+"'>&nbsp;&nbsp;</a>";
+                            $('minor_'+interacter).show();
+                            $('minor_'+interacter).update(htmlStr);
+                        }
+                        if(unknownStr.length>0){
+                            var htmlStr="<a title='"+unknownStr+"'>&nbsp;&nbsp;</a>";
+                            $('unknown_'+interacter).show();
+                            $('unknown_'+interacter).update(htmlStr);
+                        }
+                    }
+                }else{//only one interaction
+                    var str=interactionDrugList.replace(/\{/g, "");
+                        str=str.replace(/\}/g, "");
+                        str=str.replace(/\[/g, "");
+                        str=str.replace(/\]/g, "");
+                        var strArr=str.split("=");
+                        var interacter=strArr[0];
+                        var interactee=strArr[1];
+                        var interacteeArr=interactee.split(",");
+                        var interacteeNameArr=new Array();
+                        var interacteeEffectArr=new Array();
+                        var interacteeSigArr=new Array();
+                        for(var j=0;j<interacteeArr.length;j++){
+                            if(j%3==0){
+                                interacteeNameArr.push(interacteeArr[j]);
+                            }else if((j+2)%3==0){
+                                interacteeEffectArr.push(interacteeArr[j]);
+                            }else{
+                                interacteeSigArr.push(interacteeArr[j]);
+                            }
+                        }
+                        oscarLog("interacter="+interacter);
+                        oscarLog("interacteeNameArr="+interacteeNameArr);
+                        oscarLog("interacteeEffectArr="+interacteeEffectArr);
+                        oscarLog("interacteeSigArr="+interacteeSigArr);
+
+                        //new Insertion.After("instructions_"+interacter, "<p>"+interacteeNameArr+"<p>");
+                        var minor="";
+                        var moderate="";
+                        var major="";
+                        var unknownStr="";
+                        for(var h=0;h<interacteeSigArr.length;h++){
+                            oscarLog("interacteeSigArr[h]="+interacteeSigArr[h]);
+                            if(interacteeSigArr[h]==1){
+                                minor+=" "+interacteeNameArr[h];
+                            }else if(interacteeSigArr[h]==2){
+                                moderate+=" "+interacteeNameArr[h];
+                            }else if(interacteeSigArr[h]==3){
+                                major+=" "+interacteeNameArr[h];
+                            }else{
+                                unknownStr+=" "+interacteeNameArr[h];
+                            }
+                        }
+                        oscarLog("major="+major);
+                        oscarLog("moderate="+moderate);
+                        oscarLog("minor="+minor);
+                        oscarLog("unknownStr="+unknownStr);
+                        if(major.length>0){
+                            var htmlStr="<a title='"+major+"'>&nbsp;&nbsp;</a>";
+                            $('major_'+interacter).show();
+                            $('major_'+interacter).update(htmlStr);
+                        }
+                        if(moderate.length>0){
+                            var htmlStr="<a title='"+moderate+"'>&nbsp;&nbsp;</a>";
+                            $('moderate_'+interacter).show();
+                            $('moderate_'+interacter).update(htmlStr);
+                        }
+                        if(minor.length>0){
+                            var htmlStr="<a title='"+minor+"'>&nbsp;&nbsp;</a>";
+                            $('minor_'+interacter).show();
+                            $('minor_'+interacter).update(htmlStr);
+                        }
+                        if(unknownStr.length>0){
+                            var htmlStr="<a title='"+unknownStr+"'>&nbsp;&nbsp;</a>";
+                            $('unknown_'+interacter).show();
+                            $('unknown_'+interacter).update(htmlStr);
+                        }
+
                 }
-            }*/
+            }
         </script>
  <%}
 }%>

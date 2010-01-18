@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Properties;
 
+import java.util.Vector;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -218,4 +219,14 @@ public class MiscUtils {
 		long ms=date2.getTime()-date1.getTime();
 		return((int) (ms/DateUtils.MILLIS_PER_DAY));
 	}
+
+        //return a vector which contains distinctive string elements
+        public static Vector findUniqueElementVector (Vector v){
+            Vector retVec=new Vector();
+            for(int i=0;i<v.size();i++){
+                if(!retVec.contains(v.get(i)))
+                    retVec.add(v.get(i));
+            }
+            return retVec;
+        }
 }

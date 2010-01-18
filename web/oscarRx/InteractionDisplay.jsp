@@ -28,7 +28,7 @@ RxSessionBean bean = (RxSessionBean) session.getAttribute("RxSessionBean");
 if ( bean == null ){
     return;
 }
-  
+
      RxDrugData.Interaction[] interactions = (RxDrugData.Interaction[]) bean.getInteractions();
      if (interactions != null && interactions.length > 0){ 
         System.out.println("interactions.length "+interactions.length);
@@ -49,7 +49,7 @@ if ( bean == null ){
 		  Hashtable h = new Hashtable();
         h.put("a","augments (no clinical effect)");
         h.put("A","augments");
-        h.put("i","inhibts  (no clinical effect)");
+        h.put("i","inhibits  (no clinical effect)");
         h.put("I","inhibits");
         h.put("n","has no effect on");
         h.put("N","has no effect on");

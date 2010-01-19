@@ -24,8 +24,7 @@
 
 <%@page contentType="text/html"%>
 <%@page pageEncoding="UTF-8"%>
-<%@ page
-	import="java.util.*,oscar.oscarRx.data.*,oscar.oscarRx.pageUtil.*"%>
+<%@ page import="java.util.*,oscar.oscarRx.data.*,oscar.oscarRx.pageUtil.*"%>
 <%
 RxSessionBean bean = (RxSessionBean) session.getAttribute("RxSessionBean");
 if ( bean == null ){
@@ -42,14 +41,15 @@ Vector<Hashtable> warnings = (Vector)request.getAttribute("warnings");
         for (Hashtable ht: warnings){
             Vector<Hashtable> commentsVec = (Vector) ht.get("comments");
             System.out.println("commentsVec="+commentsVec);
-            displayKeys(ht);
+            //displayKeys(ht);
 
             System.out.println("\nDrug: "+ht.get("name")+"\nEvidence: "+ht.get("evidence")+"\nSignificance: "+ht.get("significance")+"\nATC: "+ht.get("atc")+"\nReference: "+ht.get("reference")+"\nWarning: "+ht.get("body")+" trusted "+ht.get("trusted"));
             boolean trustedResource = trusted(ht.get("trusted"));
 
             String interactStr=(String)ht.get("interactStr");
-            if(interactStr==null) interactStr="";
-            System.out.println("---interactStr="+interactStr);
+            if(interactStr!=null && interactStr.trim().length()>0){
+
+                System.out.println("---interactStr="+interactStr);
 
             %>
 <div
@@ -58,36 +58,27 @@ Vector<Hashtable> warnings = (Vector)request.getAttribute("warnings");
 &nbsp;&nbsp;&nbsp;&nbsp;SIGNIFICANCE = <%=significance((String)ht.get("significance"))%>
 &nbsp;&nbsp;&nbsp;EVIDENCE = <%=evidence((String) ht.get("evidence"))%><br />
 <%--=commentsVec--%></div>
-<%      }
+<%              }else;
+        }
     }else if(warnings == null && bean.getStashSize() > 1){ %>
 <div>Drug to Drug Interaction Service not available</div>
 <%  }   %>
 <%!
 
-    String effect(String s){
-		  Hashtable h = new Hashtable();
-        h.put("a","augments (no clinical effect)");
-        h.put("A","augments");
-        h.put("i","inhibits  (no clinical effect)");
-        h.put("I","inhibits");
-        h.put("n","has no effect on");
-        h.put("N","has no effect on");
-        h.put(" ","unknown effect on");
-
-        String retval = (String) h.get(s);
-        if (retval == null) {retval = "unknown effect on";}
-        return retval;
-   }
-
-	String significance(String s){
+   String significance(String s){
        Hashtable h = new Hashtable();
        h.put("1","minor");
        h.put("2","moderate");
        h.put("3","major");
        h.put(" ","unknown");
-
-       String retval = (String) h.get(s);
-        if (retval == null) {retval = "unknown";}
+       System.out.println("s="+s);
+       String retval=null;
+       if(s!=null){
+         retval = (String) h.get(s);
+         if (retval == null) {
+            retval = "unknown";
+         }
+       }else retval = "unknown";
         return retval;
    }
 
@@ -97,9 +88,13 @@ Vector<Hashtable> warnings = (Vector)request.getAttribute("warnings");
        h.put("F","fair");
        h.put("G","good");
        h.put(" ","unknown");
-
-       String retval = (String) h.get(s);
+       System.out.println("s "+s);
+       String retval;
+      if(s!=null){
+           retval = (String) h.get(s);
         if (retval == null) {retval = "unknown";}
+      }
+       else retval="unkown";
         return retval;
    }
 
@@ -110,9 +105,11 @@ Vector<Hashtable> warnings = (Vector)request.getAttribute("warnings");
        h.put("2","orange");
        h.put("3","red");
        h.put(" ","greenyellow");
-
-       String retval = (String) h.get(s);
-        if (retval == null) {retval = "greenyellow";}
+       String retval;
+       if(s!=null){
+            retval = (String) h.get(s);
+            if (retval == null) {retval = "greenyellow";}
+       }else retval = "greenyellow";
         return retval;
    }
 

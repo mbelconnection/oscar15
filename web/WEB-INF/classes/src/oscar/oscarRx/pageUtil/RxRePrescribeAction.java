@@ -251,7 +251,14 @@ try{
         rx.setRandomId(rand);
 
         request.setAttribute("BoxNoFillFirstLoad", "true");
-
+        String qText=rx.getQuantity();
+        System.out.println("qText in represcribe2="+qText);
+        if(RxUtil.isStringToNumber(qText)){}
+        else{
+            rx.setQuantity(RxUtil.getQuantityFromQuantityText(qText));
+            rx.setUnitName(RxUtil.getUnitNameFromQuantityText(qText));
+        }
+        System.out.println("quantity, unitName represcribe2="+rx.getQuantity()+"; "+rx.getUnitName());
         //trim Special
        String spec=RxUtil.trimSpecial(rx);
        rx.setSpecial(spec);
@@ -337,7 +344,14 @@ try{
 
             //give rx a random id.
             rx.setRandomId(rand);
-
+            String qText=rx.getQuantity();
+            System.out.println("qText in represcribe2="+qText);
+            if(RxUtil.isStringToNumber(qText)){}
+            else{
+                rx.setQuantity(RxUtil.getQuantityFromQuantityText(qText));
+                rx.setUnitName(RxUtil.getUnitNameFromQuantityText(qText));
+            }
+            System.out.println("quantity, unitName represcribe2="+rx.getQuantity()+"; "+rx.getUnitName());
             String spec=RxUtil.trimSpecial(rx);
             rx.setSpecial(spec);
 

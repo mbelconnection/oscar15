@@ -23,13 +23,7 @@
  * Ontario, Canada 
  */
 -->
-<%
-  
-  //int demographic_no = Integer.parseInt(request.getParameter("demographic_no")); 
-  String demographic_no = request.getParameter("demographic_no"); 
-%>
-
-<%@page import="oscar.oscarDemographic.data.*,java.util.*"%>
+<%@page import="oscar.oscarDemographic.data.*,java.util.*,oscar.oscarDemographic.pageUtil.Util"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 
@@ -57,7 +51,17 @@ function displayAndDisable(){
 </head>
 
 <body class="BodyStyle" vlink="#0000FF">
-<!--  -->
+
+<%
+oscar.OscarProperties op = oscar.OscarProperties.getInstance();
+if (!Util.checkDir(op.getProperty("TMP_DIR"))) { %>
+<p>
+<h2>Error! Cannot perform demographic import. Please contact support.</h2>
+
+<%
+} else {
+%>
+
 <table class="MainTable" id="scrollNumber1" name="encounterTable">
 	<tr class="MainTableTopRow">
 		<td class="MainTableTopRowLeftColumn" width="175"><bean:message
@@ -88,12 +92,20 @@ function displayAndDisable(){
             </html:form>
 //--> <html:form action="/form/importUpload3.do" method="POST"
 			enctype="multipart/form-data" onsubmit="displayAndDisable()">
-			<input type="file" name="importFile" value="">
-			<input type="submit" name="Submit" value="Import (CMS spec 3.0)">
+                        <p><html:file property="importFile" value=""/></p>
+
+                        If providers do not have OHIP numbers -<br>
+                        <html:radio property="matchProviderNames" value="true">
+                            Match providers in database by first and last names
+                        </html:radio><br>
+                        <html:radio property="matchProviderNames" value="false">
+                            Import as new providers - no further matching
+                        </html:radio><br>
+                        <p><input type="submit" name="Submit" value="Import (CMS spec 3.0)"></p>
 		</html:form>
 
 		<div id="waitingMessage" style="display: none;">
-		<h2>This make take several minutes</h2>
+		<h2>This may take several minutes</h2>
 		</div>
 
 		<% ArrayList list = (ArrayList)  request.getAttribute("warnings");
@@ -123,5 +135,7 @@ function displayAndDisable(){
 		<td class="MainTableBottomRowRightColumn" valign="top">&nbsp;</td>
 	</tr>
 </table>
+                
+<% } %>
 </body>
 </html:html>

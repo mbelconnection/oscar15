@@ -90,8 +90,6 @@ public final class RxChoosePatientAction extends Action {
         } else {
             bean = new RxSessionBean();
         }
-
-
         bean.setProviderNo(user_no);
         bean.setDemographicNo(Integer.parseInt(frm.getDemographicNo()));
 
@@ -105,15 +103,18 @@ public final class RxChoosePatientAction extends Action {
         } catch (java.sql.SQLException ex) {
             throw new ServletException(ex);
         }
-
+        String provider = (String) request.getSession().getAttribute("user");
+        WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getSession().getServletContext());
+        userPropertyDAO = (UserPropertyDAO) ctx.getBean("UserPropertyDAO");
+        boolean providerUseRx3=false;
+        UserProperty propUseRx3 = userPropertyDAO.getProp(provider, UserProperty.RX_USE_RX3);
+        if(propUseRx3!=null && propUseRx3.getValue().equalsIgnoreCase("yes"))
+                providerUseRx3=true;
         if(patient!=null) {
             request.getSession().setAttribute("Patient", patient);
-            if(OscarProperties.getInstance().getBooleanProperty("RX3", "yes")){//if rx3 is set to yes.
+            if(OscarProperties.getInstance().getBooleanProperty("RX3", "yes")||providerUseRx3){//if rx3 is set to yes.
                 System.out.println("successRX3");
-                //set the profile view
-                String provider = (String) request.getSession().getAttribute("user");
-                WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getSession().getServletContext());
-                userPropertyDAO = (UserPropertyDAO) ctx.getBean("UserPropertyDAO");
+                //set the profile view                
                 UserProperty prop = userPropertyDAO.getProp(provider, UserProperty.RX_PROFILE_VIEW);
                 if (prop != null) {
                     try {
@@ -137,8 +138,8 @@ public final class RxChoosePatientAction extends Action {
                 } else {
                     return (mapping.findForward("successRX3"));
                 }
-            } else {
-                return (mapping.findForward("success"));
+            } else {                
+                    return (mapping.findForward("success"));
             }
 
         } else //no records found

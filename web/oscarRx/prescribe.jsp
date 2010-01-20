@@ -47,6 +47,15 @@ if(listRxDrugs!=null){
 
          boolean pastMed        = rx.getPastMed();
          String quantity        = rx.getQuantity();
+         String quantityText="";
+         //System.out.println("in prescribe.jsp, unitName="+rx.getUnitName());
+
+         if(rx.getUnitName()==null || rx.getUnitName().equalsIgnoreCase("null")){
+             quantityText=quantity;
+         }
+         else{
+             quantityText=quantity+" "+rx.getUnitName();
+         }
          String duration        = rx.getDuration();
          String method          = rx.getMethod();
          String outsideProvName = rx.getOutsideProviderName();
@@ -75,7 +84,7 @@ if(listRxDrugs!=null){
          System.out.println("instructions from repscbAllLongTerm="+instructions+ " rand="+rand+" drugName="+drugName+" startDate="+startDate+" writtenDate="+writtenDate);
          if(route==null || route.equalsIgnoreCase("null")) route="";
          String rxString="Method:"+method+"; Route:"+route+"; Frequency:"+frequency+"; Min:"+takeMin+"; Max:"
-                    +takeMax+"; Duration:"+duration+"; DurationUnit:"+durationUnit+"; Quantity:"+quantity;
+                    +takeMax+"; Duration:"+duration+"; DurationUnit:"+durationUnit+"; Quantity:"+quantityText;
          //System.out.println("*************** rxString="+rxString);
 %>
 
@@ -89,7 +98,7 @@ if(listRxDrugs!=null){
     <input type="text" id="instructions_<%=rand%>" name="instructions_<%=rand%>" value="<%=instructions%>" size="60" onblur="parseIntr(this);" /> <a id="major_<%=rand%>" style="display:none;background-color:red"></a>&nbsp;<a id="moderate_<%=rand%>" style="display:none;background-color:orange"></a>&nbsp;<a id='minor_<%=rand%>' style="display:none;background-color:yellow;"></a>&nbsp;<a id='unknown_<%=rand%>' style="display:none;background-color:#B1FB17"></a>
        <br>
     <label style="float:left;width:80px;">Quantity:</label>
-    <input type="text" id="quantity_<%=rand%>"     name="quantity_<%=rand%>"     value="<%=quantity%>" onblur="updateQty(this);" />
+    <input type="text" id="quantity_<%=rand%>"     name="quantity_<%=rand%>"     value="<%=quantityText%>" onblur="updateQty(this);" />
     <label style="">Repeats:</label>
        <input type="text" id="repeats_<%=rand%>"      name="repeats_<%=rand%>"      value="<%=repeats%>" />
        <input type="checkbox" id="longTerm_<%=rand%>"  name="longTerm_<%=rand%>" <%if(longTerm) {%> checked="true" <%}%> >Long Term Med </input>

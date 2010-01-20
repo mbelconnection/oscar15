@@ -104,11 +104,15 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
     
     //Create export files
     String tmpDir = oscar.OscarProperties.getInstance().getProperty("TMP_DIR");
-    if (!Util.filled(tmpDir)) throw new Exception("Temporary Export Directory not set! Check oscar.properties.");
+    if (!Util.checkDir(tmpDir)) {
+        System.out.println("Error! Cannot write to TMP_DIR - Check oscar.properties or dir permissions.");
+    } else {
+        tmpDir = Util.fixDirName(tmpDir);
+    }
     File[] exportFiles = this.make(patientList, tmpDir);
     
     //Create & put error.log into the file list
-    File errorLog = makeErrorLog(tmpDir+"error.log");
+    File errorLog = makeErrorLog("error.log", tmpDir);
     if (errorLog!=null) {
 	File[] tmp_f = new File[exportFiles.length+1];
 	for (int i=0; i<exportFiles.length; i++) tmp_f[i]=exportFiles[i];
@@ -117,28 +121,15 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
     }
     
     //Zip export files
-    String zipFile = "omd_diabetes-"+UtilDateUtilities.getToday("yyyy-MM-dd.HH.mm.ss")+".zip";
-    if (!Util.zipFiles(exportFiles, zipFile)) throw new Exception("Error! Failed zipping export files");
+    String zipName = "omd_diabetes-"+UtilDateUtilities.getToday("yyyy-MM-dd.HH.mm.ss")+".zip";
+    if (!Util.zipFiles(exportFiles, zipName, tmpDir)) System.out.println("Error! Failed zipping export files");
     
-    //Remove export files from temp dir
-    for (File f : exportFiles) {
-        f.delete();
-    }
     //Download zip file
-    response.setContentType("application/octet-stream");
-    response.setHeader("Content-Disposition", "attachment; filename=\""+zipFile+"\"" );
+    Util.downloadFile(zipName, tmpDir, response);
 
-    InputStream in = new FileInputStream(tmpDir+zipFile);
-    OutputStream out = response.getOutputStream();
-    byte[] buf = new byte[1024];
-    int len;
-    while ((len=in.read(buf)) > 0) out.write(buf,0,len);
-    in.close();
-    out.close();
-
-    //Remove zip file from temp dir
-    if (!Util.cleanFile(tmpDir+zipFile))
-        throw new Exception("Note: Cannot remove zip file from temporary directory");
+    //Remove zip & export files from temp dir
+    Util.cleanFile(zipName, tmpDir);
+    Util.cleanFiles(exportFiles);
     
     return null;
 }
@@ -199,10 +190,11 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
         return files;
     }
     
-    File makeErrorLog(String errorLogName) throws IOException {
+    File makeErrorLog(String errorLogName, String dirName) throws IOException {
 	if (this.errors.isEmpty()) return null;
-	
-	File errorLog = new File(errorLogName);
+
+        dirName = Util.fixDirName(dirName);
+	File errorLog = new File(dirName+errorLogName);
 	BufferedWriter out = new BufferedWriter(new FileWriter(errorLog));
 	
 	for (String err : errors) {
@@ -491,20 +483,20 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
 	firstName.setPart(data);
 	firstName.setPartType(cdsDt.PersonNamePartTypeCode.GIV);
 	firstName.setPartQualifier(cdsDt.PersonNamePartQualifierCode.BR);
-        if (!Util.filled(data)) {
+        if (Util.empty(data)) {
             errors.add("Error! No First Name for Patient "+demoNo);
         }
         data = Util.noNull(demographic.getLastName());
 	lastName.setPart(data);
 	lastName.setPartType(cdsDt.PersonNamePartTypeCode.FAMC);
 	lastName.setPartQualifier(cdsDt.PersonNamePartQualifierCode.BR);
-        if (!Util.filled(data)) {
+        if (Util.empty(data)) {
             errors.add("Error! No Last Name for Patient "+demoNo);
         }
 
         data = Util.noNull(demographic.getSex());
 	demo.setGender(cdsDt.Gender.Enum.forString(data));
-        if (!Util.filled(data)) {
+        if (Util.empty(data)) {
             errors.add("Error! No Gender for Patient "+demoNo);
         }
         
@@ -513,14 +505,14 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
             ProviderData provider = new ProviderData(data);
             data = Util.noNull(provider.getOhip_no());
 	    demo.setOHIPPhysicianId(data);
-            if (!Util.filled(data))
+            if (Util.empty(data))
 	      errors.add("Error! No OHIP Physician ID for Patient "+demoNo);
         }
         
         data = Util.noNull(demographic.getJustHIN());
 	cdsDt.HealthCard healthCard = demo.addNewHealthCard();
 	healthCard.setNumber(data);
-	if (!Util.filled(data)) errors.add("Error! No Health Card Number for Patient "+demoNo);
+	if (Util.empty(data)) errors.add("Error! No Health Card Number for Patient "+demoNo);
 	healthCard.setProvinceCode(Util.setProvinceCode(demographic.getProvince()));
 	if (healthCard.getProvinceCode()==null) {
 	    errors.add("Error! No Health Card Province Code for Patient "+demoNo);
@@ -606,7 +598,7 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
                 }
                 data = (String) h.get("refused");
                 cdsDt.YnIndicator refused = immunizations.addNewRefusedFlag();
-                if (!Util.filled(data)) {
+                if (Util.empty(data)) {
                     errors.add("Error! No Refused Flag for Patient "+demoNo+" ("+immunizations.getImmunizationName()+")");
 		    refused.setYnIndicatorsimple(null);
                 } else {
@@ -643,18 +635,18 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
 	    data = labMea.getMeasure().getDataField();
 	    LaboratoryResults.Result result = labResults.addNewResult();
 	    result.setValue(data);
-	    if (!Util.filled(data)) {
+	    if (Util.empty(data)) {
 		errors.add("Error! No Result Value for Lab Test "+testName+" for Patient "+demoNo);
 	    }
 	    
 	    data = labMea.getExtVal("unit");
 	    result.setUnitOfMeasure(data);
-	    if (!Util.filled(data)) {
+	    if (Util.empty(data)) {
 		errors.add("Error! No Unit for Lab Test "+testName+" for Patient "+demoNo);
 	    }
 	    
 	    labResults.setLaboratoryName(Util.noNull(labMea.getExtVal("labname")));
-	    if (!Util.filled(labResults.getLaboratoryName())) {
+	    if (Util.empty(labResults.getLaboratoryName())) {
 		errors.add("Error! No Laboratory Name for Lab Test "+testName+" for Patient "+demoNo);
 	    }
 	    

@@ -37,7 +37,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -118,14 +117,15 @@ public class DemographicExportAction3 extends Action {
     String demographicNo=null;
 
 public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-    OscarProperties props = OscarProperties.getInstance();
-    String strEditable = props.getProperty("ENABLE_EDIT_APPT_STATUS");
-    this.demographicNo = request.getParameter("demographicNo");
+    OscarProperties oscarp = OscarProperties.getInstance();
+    String strEditable = oscarp.getProperty("ENABLE_EDIT_APPT_STATUS");
     
     DemographicExportForm defrm = (DemographicExportForm)form;
+    this.demographicNo = defrm.getDemographicNo();
     String setName = defrm.getPatientSet();
     String mediaType = defrm.getMediaType();
     String noOfMedia = defrm.getNoOfMedia();
+    String pgpReady = defrm.getPgpReady();
     boolean exPersonalHistory = defrm.getExPersonalHistory();
     boolean exFamilyHistory = defrm.getExFamilyHistory();
     boolean exPastHealth = defrm.getExPastHealth();
@@ -140,7 +140,7 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
     boolean exReportsReceived = defrm.getExReportsReceived();
     boolean exAuditInformation = defrm.getExAuditInformation();
     boolean exCareElements = defrm.getExCareElements();
-    
+
     ArrayList list = new ArrayList();
     if (this.demographicNo==null) {
 	list = new DemographicSets().getDemographicSet(setName);
@@ -187,12 +187,11 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
     PreventionData pd = new PreventionData();
     DemographicExt ext = new DemographicExt();
 
-    String tmpDir = props.getProperty("TMP_DIR");
-    if (!Util.filled(tmpDir)) {
-	throw new Exception("Temporary Export Directory not set! Check oscar.properties.");
+    String ffwd = "fail";
+    String tmpDir = oscarp.getProperty("TMP_DIR");
+    if (!Util.checkDir(tmpDir)) {
+        System.out.println("Error! Cannot write to TMP_DIR - Check oscar.properties or dir permissions.");
     } else {
-	if (tmpDir.charAt(tmpDir.length()-1)!='/') tmpDir = tmpDir + '/';
-	
 	XmlOptions options = new XmlOptions();
 	options.put( XmlOptions.SAVE_PRETTY_PRINT );
 	options.put( XmlOptions.SAVE_PRETTY_PRINT_INDENT, 3 );
@@ -210,7 +209,7 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
 		ArrayList l2 = (ArrayList) obj;
 		this.demographicNo = (String) l2.get(0);
 	    } 
-	    if (!Util.filled(this.demographicNo)) {
+	    if (Util.empty(this.demographicNo)) {
 		this.demographicNo="";
 		err.add("Error! No Demographic Number");
 	    } else {
@@ -249,7 +248,7 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
 		} else {
 		    err.add("Error! No Last Name for Patient "+this.demographicNo);
 		}
-		if (!Util.filled(setName)) setName = demoName;
+		if (Util.empty(setName)) setName = demoName;
 		
 		data = demographic.getTitle();
 		if (Util.filled(data)) {
@@ -290,7 +289,7 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
 		}
 
 		data = Util.noNull(demographic.getRosterStatus());
-		if (!Util.filled(data)) {
+		if (Util.empty(data)) {
 		    data = "";
 		    err.add("Error! No Enrollment Status for Patient "+this.demographicNo);
 		}
@@ -298,7 +297,7 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
 		demo.setEnrollmentStatus(cdsDt.EnrollmentStatus.Enum.forString(data));
 		
 		data = Util.noNull(demographic.getPatientStatus());
-		if (!Util.filled(data)) {
+		if (Util.empty(data)) {
 		    data = "";
 		    err.add("Error! No Person Status Code for Patient "+this.demographicNo);
 		}
@@ -408,10 +407,10 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
 
 			Demographics.Contact contact = demo.addNewContact();
 			Util.writeNameSimple(contact.addNewName(), relDemo.getFirstName(), relDemo.getLastName());
-			if (!Util.filled(relDemo.getFirstName())) {
+			if (Util.empty(relDemo.getFirstName())) {
 			    err.add("Error! No First Name for contact ("+j+") for Patient "+this.demographicNo);
 			}
-			if (!Util.filled(relDemo.getLastName())) {
+			if (Util.empty(relDemo.getLastName())) {
 			    err.add("Error! No Last Name for contact ("+j+") for Patient "+this.demographicNo);
 			}
 
@@ -891,7 +890,7 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
 			aSummary = Util.appendLine(aSummary, "Notes: ", n.getNote());
 		    }
 		    
-		    if (!Util.filled(aSummary)) {
+		    if (Util.empty(aSummary)) {
 			err.add("Error! No Category Summary Line (Allergies & Adverse Reactions) for Patient "+this.demographicNo+" ("+(j+1)+")");
 		    }
 		    alr.setCategorySummaryLine(aSummary);
@@ -906,14 +905,14 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
 		    if (a != null && inject.contains((String) a.get("type")) ){
 			Immunizations immu = patientRec.addNewImmunizations();
 			data = Util.noNull((String) a.get("type"));
-			if (!Util.filled(data)) {
+			if (Util.empty(data)) {
 			    err.add("Error! No Immunization Name for Patient "+this.demographicNo+" ("+(k+1)+")");
 			}
 			immu.setImmunizationName(data);
 			String imSummary = "Immunization Name: "+data;
 
 			data = (String) a.get("refused");
-			if (!Util.filled(data)) {
+			if (Util.empty(data)) {
 			    immu.addNewRefusedFlag();
 			    err.add("Error! No Refused Flag for Patient "+this.demographicNo+" ("+(k+1)+")");
 			} else {
@@ -942,7 +941,7 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
 			imSummary = Util.appendLine(imSummary, "Dose: ", immu.getDose());
 			imSummary = Util.appendLine(imSummary, "Notes: ", immu.getNotes());
 			
-			if (!Util.filled(imSummary)) {
+			if (Util.empty(imSummary)) {
 			    err.add("Error! No Category Summary Line (Immunization) for Patient "+this.demographicNo+" ("+(k+1)+")");
 			}
 			immu.setCategorySummaryLine(Util.noNull(imSummary));
@@ -978,7 +977,7 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
 			mSummary = Util.appendLine(mSummary, "DIN: ", data);
 		    }
 		    String drugName = Util.noNull(arr[p].getDrugName());
-		    if (!Util.filled(drugName)) {
+		    if (Util.empty(drugName)) {
 			err.add("Error! No Drug Name for Patient "+this.demographicNo+" ("+(p+1)+")");
 		    }
 		    medi.setDrugName(drugName);
@@ -1083,7 +1082,7 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
 			mSummary = Util.appendLine(mSummary, "Notes: ", n.getNote());
 		    }
 		    
-		    if (!Util.filled(mSummary)) err.add("Error! No Category Summary Line (Medications & Treatments) for Patient "+this.demographicNo+" ("+(p+1)+")");
+		    if (Util.empty(mSummary)) err.add("Error! No Category Summary Line (Medications & Treatments) for Patient "+this.demographicNo+" ("+(p+1)+")");
 		    medi.setCategorySummaryLine(mSummary);
 		}
 		arr = null;
@@ -1101,7 +1100,7 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
 		    labResults.setTestNameReportedByLab(Util.noNull(labMea.getExtVal("name")));
                     
                     labResults.setLaboratoryName(Util.noNull(labMea.getExtVal("labname")));
-                    if (!Util.filled(labResults.getLaboratoryName())) {
+                    if (Util.empty(labResults.getLaboratoryName())) {
                         err.add("Error! No Laboratory Name for Lab Test "+labResults.getLabTestCode()+" for Patient "+this.demographicNo);
                     }
                     
@@ -1189,14 +1188,14 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
 		    
 		    labr.setTestName((String) h.get("testName"));
 		    data = (String) h.get("abn");
-		    if (!Util.filled(data)) {
+		    if (Util.empty(data)) {
 			data = "U";
 			err.add("Error! No Result Normal/Abnormal Flag for Patient "+this.demographicNo+" ("+(l+1)+")");
 		    }
 		    labr.setResultNormalAbnormalFlag(cdsDt.ResultNormalAbnormalFlag.Enum.forString(data));
 
 		    data = (String) h.get("location");
-		    if (!Util.filled(data)) {
+		    if (Util.empty(data)) {
 			data = "";
 			err.add("Error! No Laboratory Name for Patient "+this.demographicNo+" ("+(l+1)+")");
 		    }
@@ -1338,9 +1337,9 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
 			    in.close();
 			    rpc.setMedia(b);
 
-			    data = Util.getFileExt(edoc.getContentType());
-			    if (!Util.filled(data)) data = cutExt(edoc.getFileName());
-			    if (!Util.filled(data)) err.add("Error! No File Extension&Version info for Document \""+edoc.getFileName()+"\"");
+			    data = Util.mimeToExt(edoc.getContentType());
+			    if (Util.empty(data)) data = cutExt(edoc.getFileName());
+			    if (Util.empty(data)) err.add("Error! No File Extension&Version info for Document \""+edoc.getFileName()+"\"");
 			    rpr.setFileExtensionAndVersion(data);
 
 			    data = edoc.getType();
@@ -1409,7 +1408,7 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
 		    }
 		    audSummary = audReport;
 		    AuditInformation audInf = patientRec.addNewAuditInformation();
-		    if (!Util.filled(audSummary)) {
+		    if (Util.empty(audSummary)) {
 			err.add("Error! No Category Summary Line (Audit Information) for Patient "+this.demographicNo);
 		    } else {
 			audInf.setCategorySummaryLine(audSummary);
@@ -1603,12 +1602,13 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
 		    }
 		}
 	    }
-		
+
+
 		//export file to temp directory
 		try{
 		    File directory = new File(tmpDir);
 		    if(!directory.exists()){
-			throw new Exception("Temporary Export Directory (as set in oscar.properties) does not exist!");
+			throw new Exception("Temporary Export Directory does not exist!");
 		    }
 		    String inFile = this.demographicNo+"-"+demoName+"-"+UtilDateUtilities.getToday("yyyy-MM-dd.HH.mm.ss")+".xml";
 		    files[i] = new File(directory,inFile);
@@ -1632,57 +1632,53 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
 	
 	//zip all export files
 	String zipName = "export-"+setName.replace(" ","")+"-"+UtilDateUtilities.getToday("yyyy-MM-dd.HH.mm.ss")+".zip";
-	if (!Util.zipFiles(exportFiles, zipName)) {
-	    throw new Exception("Error! Failed zipping export files");
+	if (!Util.zipFiles(exportFiles, zipName, tmpDir)) {
+            System.out.println("Error! Failed to zip export files");
 	}
-	
-	//PGP encrypt zip file (source zip file will be deleted)
-	PGPEncrypt pet = new PGPEncrypt(zipName, tmpDir);
-	if (!pet.doEncrypt()) throw new Exception("Error encrypting export files!");
-	
-	//Remove export files from temp dir
-	for (int i=0; i<exportFiles.length; i++) {
-	    exportFiles[i].delete();
-	}
-	
-	//Download .pgp file
-	String pgpFile = zipName+".pgp";
-	response.setContentType("application/octet-stream");
-	response.setHeader("Content-Disposition", "attachment; filename=\""+pgpFile+"\"" );
-	
-	InputStream in = new FileInputStream(tmpDir+pgpFile);
-	OutputStream out = response.getOutputStream();
-	byte[] buf = new byte[1024];
-	int len;
-	while ((len=in.read(buf)) > 0) out.write(buf,0,len);
-	in.close();
-	out.close();
-	
-        //Remove .pgp file from temp dir
-	if (!Util.cleanFile(tmpDir+pgpFile))
-            throw new Exception("Error! Cannot remove .pgp file from temporary directory");
+
+        if (pgpReady.equals("Yes")) {
+            //PGP encrypt zip file
+            PGPEncrypt pgp = new PGPEncrypt();
+            if (pgp.encrypt(zipName, tmpDir)) {
+                Util.downloadFile(zipName+".pgp", tmpDir, response);
+                Util.cleanFile(zipName+".pgp", tmpDir);
+                ffwd = "success";
+            } else {
+                HttpSession session = request.getSession();
+                session.setAttribute("pgp_ready", "No");
+            }
+        } else {
+            System.out.println("Warning: PGP Encryption NOT available - unencrypted file exported!");
+            Util.downloadFile(zipName, tmpDir, response);
+            ffwd = "success";
+        }
+
+        //Remove zip & export files from temp dir
+        Util.cleanFile(zipName, tmpDir);
+        Util.cleanFiles(exportFiles);
     }
-    return null;
+
+    return mapping.findForward(ffwd);
 }
 
     File makeReadMe(File[] f, Vector error, String mediaType, String noOfMedia) throws IOException {
-        OscarProperties props = oscar.OscarProperties.getInstance();
+        OscarProperties oscarp = oscar.OscarProperties.getInstance();
 	File readMe = new File(f[0].getParentFile(), "ReadMe.txt");
 	BufferedWriter out = new BufferedWriter(new FileWriter(readMe));
 	out.write("Physician Group                    : ");
 	out.write(new ClinicData().getClinicName());
 	out.newLine();
 	out.write("CMS Vendor, Product & Version      : ");
-	String vendor = props.getProperty("Vendor_Product");
-	if (!Util.filled(vendor)) {
+	String vendor = oscarp.getProperty("Vendor_Product");
+	if (Util.empty(vendor)) {
 	    error.add("Error! Vendor_Product not defined in oscar.properties");
 	} else {
 	    out.write(vendor);
 	}
 	out.newLine();
 	out.write("Application Support Contact        : ");
-	String support = props.getProperty("Support_Contact");
-	if (!Util.filled(support)) {
+	String support = oscarp.getProperty("Support_Contact");
+	if (Util.empty(support)) {
 	    error.add("Error! Support_Contact not defined in oscar.properties");
 	} else {
 	    out.write(support);
@@ -1860,7 +1856,7 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
     }
     
     String cutExt(String filename) {
-	if (!Util.filled(filename)) return "";
+	if (Util.empty(filename)) return "";
 	String[] parts = filename.split(".");
 	if (parts.length>1) return "."+parts[parts.length-1];
 	else return "";

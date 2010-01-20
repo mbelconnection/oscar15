@@ -74,6 +74,7 @@ public final class RxWriteScriptAction extends DispatchAction {
 
     private static final Logger logger = MiscUtils.getLogger();
     private static UserPropertyDAO userPropertyDAO;
+    private static final String DEFAULT_QUANTITY="30";
 
     public void p(String s) {
         System.out.println(s);
@@ -291,7 +292,10 @@ public final class RxWriteScriptAction extends DispatchAction {
                 userPropertyDAO = (UserPropertyDAO) ctx.getBean("UserPropertyDAO");
                 UserProperty prop = userPropertyDAO.getProp(provider, UserProperty.RX_DEFAULT_QUANTITY);
                 //System.out.println("prop="+prop);
-                RxUtil.setDefaultQuantity(prop.getValue());
+                if(prop!=null)
+                    RxUtil.setDefaultQuantity(prop.getValue());
+                else
+                    RxUtil.setDefaultQuantity(DEFAULT_QUANTITY);
             } else {
                 logger.error("Provider is null", new NullPointerException());
             }
@@ -444,7 +448,10 @@ public final class RxWriteScriptAction extends DispatchAction {
             String atcCode = dmono.atc;
             rx.setAtcCode(atcCode);
             RxUtil.setSpecialQuantityRepeat(rx);
-            rx.setDuration(RxUtil.findDuration(rx));
+            System.out.println("after setSpecialQuantityRepeat ,quantity="+rx.getQuantity()+" unitName="+rx.getUnitName());
+            String calculatedDur=RxUtil.findDuration(rx);
+            System.out.println("after findDuration ,quantity="+rx.getQuantity()+" unitName="+rx.getUnitName());
+            if(calculatedDur!=null) rx.setDuration(calculatedDur);
             System.out.println("duration=" + rx.getDuration());
             //    p("set atc code to ", rx.getAtcCode());
             List<RxPrescriptionData.Prescription> listRxDrugs = new ArrayList();
@@ -650,8 +657,8 @@ private Vector getMyDrugrefInfo(String command, Vector drugs,String myDrugrefId)
 
                 String instructions = request.getParameter("instruction");
                 p("instruction", instructions);
-
-                RxUtil.instrucParser(instructions, rx);
+                rx.setSpecial(instructions);
+                RxUtil.instrucParser(rx);
                 //       p("before updateDrug parseIntr bean.getStashIndex()", Integer.toString(bean.getStashIndex()));
                 // bean.addAttributeName(rx.getAtcCode() + "-" + String.valueOf(bean.getStashIndex()));
                 bean.addAttributeName(rx.getAtcCode() + "-" + String.valueOf(bean.getIndexFromRx(Integer.parseInt(randomId))));
@@ -674,6 +681,7 @@ private Vector getMyDrugrefInfo(String command, Vector drugs,String myDrugrefId)
                 hm.put("durationUnit", rx.getDurationUnit());
                 hm.put("prn", rx.getPrn());
                 hm.put("calQuantity", rx.getQuantity());
+                hm.put("unitName", rx.getUnitName());
                 JSONObject jsonObject = JSONObject.fromObject(hm);
                 p("jsonObject", jsonObject.toString());
                 response.getOutputStream().write(jsonObject.toString().getBytes());
@@ -696,14 +704,22 @@ private Vector getMyDrugrefInfo(String command, Vector drugs,String myDrugrefId)
                 if (quantity.equals(rx.getQuantity())) {
                     //do nothing
                 } else {
-                    rx.setQuantity(quantity);
+
+                    if(RxUtil.isStringToNumber(quantity)){
+                        rx.setQuantity(quantity);
+                        rx.setUnitName(null);
+                    }else{
+                        rx.setQuantity(RxUtil.getQuantityFromQuantityText(quantity));
+                        rx.setUnitName(RxUtil.getUnitNameFromQuantityText(quantity));
+                    }
+                    
                     String frequency = rx.getFrequencyCode();
                     String takeMin = rx.getTakeMinString();
                     String takeMax = rx.getTakeMaxString();
                     String durationUnit = rx.getDurationUnit();
                     double nPerDay = 0d;
                     double nDays = 0d;
-                    if (takeMin.equals("0") || takeMax.equals("0") || frequency.equals("")) {
+                    if (rx.getUnitName()!=null || takeMin.equals("0") || takeMax.equals("0") || frequency.equals("")) {
                     } else {
                         if (durationUnit.equals("")) {
                             durationUnit = "D";
@@ -711,12 +727,16 @@ private Vector getMyDrugrefInfo(String command, Vector drugs,String myDrugrefId)
 
                         nPerDay = RxUtil.findNPerDay(frequency);
                         nDays = RxUtil.findNDays(durationUnit);
-                        double qtyD = Double.parseDouble(quantity);
-                        //quantity=takeMax * nDays * duration * nPerDay
-                        double durD = qtyD / ((Double.parseDouble(takeMax)) * nPerDay * nDays);
-                        int durI = (int) durD;
-                        rx.setDuration(Integer.toString(durI));
-                        rx.setDurationUnit(durationUnit);
+                        if(RxUtil.isStringToNumber(quantity)){
+                            double qtyD = Double.parseDouble(quantity);
+                            //quantity=takeMax * nDays * duration * nPerDay
+                            double durD = qtyD / ((Double.parseDouble(takeMax)) * nPerDay * nDays);
+                            int durI = (int) durD;
+                            rx.setDuration(Integer.toString(durI));
+                        }else{
+                            //don't calculate duration if quantity can't be parsed to string
+                        }
+                        rx.setDurationUnit(durationUnit);                        
                     }
                     //duration=quantity divide by no. of pills per duration period.
                     //if not, recalculate duration based on frequency if frequency is not empty
@@ -740,6 +760,7 @@ private Vector getMyDrugrefInfo(String command, Vector drugs,String myDrugrefId)
                 hm.put("durationUnit", rx.getDurationUnit());
                 hm.put("prn", rx.getPrn());
                 hm.put("calQuantity", rx.getQuantity());
+                hm.put("unitName", rx.getUnitName());
                 JSONObject jsonObject = JSONObject.fromObject(hm);
                 //     p("jsonObject", jsonObject.toString());
                 response.getOutputStream().write(jsonObject.toString().getBytes());
@@ -838,7 +859,13 @@ private Vector getMyDrugrefInfo(String command, Vector drugs,String myDrugrefId)
                         if (val.equals("") || val == null) {
                             rx.setQuantity("0");
                         } else {
-                            rx.setQuantity(val);
+                            if(RxUtil.isStringToNumber(val)){
+                                rx.setQuantity(val);
+                                rx.setUnitName(null);
+                            }else{
+                                rx.setQuantity(RxUtil.getQuantityFromQuantityText(val));
+                                rx.setUnitName(RxUtil.getUnitNameFromQuantityText(val));
+                            }
                         }
                     } else if (elem.equals("longTerm_" + num)) {
                         if (val.equals("on")) {
@@ -912,7 +939,11 @@ private Vector getMyDrugrefInfo(String command, Vector drugs,String myDrugrefId)
                 if (rx.isCustom()) {
                     special = rx.getCustomName() + newline + rx.getSpecial() + newline + "Qty:" + rx.getQuantity() + " Repeats:" + "" + rx.getRepeat();
                 } else {
-                    special = rx.getBrandName() + newline + rx.getSpecial() + newline + "Qty:" + rx.getQuantity() + " Repeats:" + "" + rx.getRepeat();
+                    if(rx.getUnitName()==null){
+                        special = rx.getBrandName() + newline + rx.getSpecial() + newline + "Qty:" + rx.getQuantity() + " Repeats:" + "" + rx.getRepeat();
+                    }else{
+                        special = rx.getBrandName() + newline + rx.getSpecial() + newline + "Qty:" + rx.getQuantity() + " "+rx.getUnitName() +" Repeats:" + "" + rx.getRepeat();
+                    }
                 }
                 //     p("here222");
                 rx.setSpecial(special.trim());

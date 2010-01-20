@@ -303,6 +303,84 @@ public class ProviderPropertyAction extends DispatchAction {
          return actionmapping.findForward("genRxProfileView");
     }
 
+      public ActionForward viewUseRx3(ActionMapping actionmapping,
+                               ActionForm actionform,
+                               HttpServletRequest request,
+                               HttpServletResponse response) {
+         System.out.println(" in viewProfileView");
+         DynaActionForm frm = (DynaActionForm)actionform;
+         String provider = (String) request.getSession().getAttribute("user");
+         UserProperty prop = this.userPropertyDAO.getProp(provider, UserProperty.RX_USE_RX3);
+
+         String propValue="";
+         if (prop == null){
+             prop = new UserProperty();
+         }else{
+            propValue=prop.getValue();
+         }
+
+         //String [] propertyArray= new String[7];
+         boolean checked;
+         if(propValue.equalsIgnoreCase("yes"))
+             checked=true;
+         else
+             checked=false;
+
+         prop.setChecked(checked);
+         request.setAttribute("rxUseRx3Property", prop);
+         request.setAttribute("providertitle","provider.setRxRxUseRx3.title"); //=Select if you want to use Rx3
+         request.setAttribute("providermsgPrefs","provider.setRxRxUseRx3.msgPrefs"); //=Preferences
+         request.setAttribute("providermsgProvider","provider.setRxRxUseRx3.msgProfileView"); //=Use Rx3
+         request.setAttribute("providermsgEdit","provider.setRxUseRx3.msgEdit"); //=Check if you want to use Rx3
+         request.setAttribute("providerbtnSubmit","provider.setRxUseRx3.btnSubmit"); //=Save
+         request.setAttribute("providermsgSuccess","provider.setRxUseRx3.msgSuccess"); //=Rx3 Selection saved
+         request.setAttribute("method","saveUseRx3");
+
+         frm.set("rxUseRx3Property", prop);
+         System.out.println("Finish in viewProfileView");
+         return actionmapping.findForward("genRxUseRx3");
+     }
+
+   public ActionForward saveUseRx3(ActionMapping actionmapping,ActionForm actionform,HttpServletRequest request,HttpServletResponse response){
+        System.out.println(" in saveUseRx3");
+        String provider=(String) request.getSession().getAttribute("user");
+
+        DynaActionForm frm=(DynaActionForm)actionform;
+        UserProperty UUseRx3=(UserProperty)frm.get("rxUseRx3Property");
+        //UserProperty UUseRx3=(UserProperty)request.getAttribute("rxUseRx3Property");
+        if(UUseRx3!=null)
+            System.out.println("ischecked by user? "+UUseRx3.isChecked());
+        else System.out.println("UUseRx3 is null ");
+
+        boolean checked=false;
+        if(UUseRx3!=null)
+            checked = UUseRx3.isChecked();
+        UserProperty prop=this.userPropertyDAO.getProp(provider, UserProperty.RX_USE_RX3);
+        if(prop==null){
+            prop=new UserProperty();
+            prop.setName(UserProperty.RX_USE_RX3);
+            prop.setProviderNo(provider);
+        }
+        String useRx3="no";
+        if(checked)
+            useRx3="yes";
+        System.out.println("useRx3="+useRx3);
+        prop.setValue(useRx3);
+        this.userPropertyDAO.saveProp(prop);
+
+         request.setAttribute("status", "success");
+         request.setAttribute("rxUseRx3Property",prop);
+         request.setAttribute("providertitle","provider.setRxRxUseRx3.title"); //=Select if you want to use Rx3
+         request.setAttribute("providermsgPrefs","provider.setRxRxUseRx3.msgPrefs"); //=Preferences
+         request.setAttribute("providermsgProvider","provider.setRxRxUseRx3.msgProfileView"); //=Use Rx3
+         request.setAttribute("providermsgEdit","provider.setRxUseRx3.msgEdit"); //=Check if you want to use Rx3
+         request.setAttribute("providerbtnSubmit","provider.setRxUseRx3.btnSubmit"); //=Save
+         request.setAttribute("providermsgSuccess","provider.setRxUseRx3.msgSuccess"); //=Rx3 Selection saved
+         request.setAttribute("method","saveUseRx3");
+         System.out.println("Finish in saveUseRx3");
+         return actionmapping.findForward("genRxUseRx3");
+    }
+
        public ActionForward viewDefaultQuantity(ActionMapping actionmapping,
                                ActionForm actionform,
                                HttpServletRequest request,

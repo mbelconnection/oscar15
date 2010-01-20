@@ -568,9 +568,9 @@ body {
                                                 <span id="indicator1" style="display: none"> <!--img src="/images/spinner.gif" alt="Working..." --></span>
                                             </td>
                                             <td>
+                                                <input type="button" name="search" class="ControlPushButton" value="<bean:message key="SearchDrug.msgSearch"/>" onclick="popupRxSearchWindow();">
                                                 <a href="javascript:void(0);" onclick="callTreatments('searchString','treatmentsMyD')"><bean:message key="SearchDrug.msgDrugOfChoice" /></a>
-                                                <a href=#  title="Set most frequently used prescription quantity" onClick ="popupPage(230,860,'../setProviderStaleDate.do?method=viewDefaultQuantity');return false;" style="font-style:normal;color:#6699CC"><bean:message key="provider.SetDefaultPrescriptionQuantity"/></a>
-                                                <%-- <input type="button" name="search" class="ControlPushButton" value="<bean:message key="SearchDrug.msgSearch"/>" onclick="popupRxSearchWindow();">  --%>
+                                                <a href=#  title="Set most frequently used prescription quantity" onClick ="popupPage(230,860,'../setProviderStaleDate.do?method=viewDefaultQuantity');return false;" style="font-style:normal;color:#6699CC"><bean:message key="provider.SetDefaultPrescriptionQuantity"/></a>                                           
                                                 <%if (OscarProperties.getInstance().hasProperty("ONTARIO_MD_INCOMINGREQUESTOR")) {%>
                                                 <a href="javascript:goOMD();"><bean:message key="SearchDrug.msgOMDLookup"/></a>
                                                 <%}%>
@@ -1373,7 +1373,9 @@ function updateQty(element){
                 str="Method:"+json.method+"; Route:"+json.route+"; Frequency:"+json.frequency+"; Min:"+json.takeMin+"; Max:"
                     +json.takeMax +"; Duration:"+json.duration+"; DurationUnit:"+json.durationUnit+"; Quantity:"+json.calQuantity;
                 oscarLog("json.duration="+json.duration);
-
+                if(json.unitName!=null && json.unitName!="null"){
+                    str+=" "+json.unitName;
+                }
                 if(json.prn){
                     str=str+" prn";
                 } else{ }
@@ -1405,12 +1407,20 @@ function updateQty(element){
                 str="Method:"+json.method+"; Route:"+json.route+"; Frequency:"+json.frequency+"; Min:"+json.takeMin+"; Max:"
                     +json.takeMax +"; Duration:"+json.duration+"; DurationUnit:"+json.durationUnit+"; Quantity:"+json.calQuantity;
                 oscarLog("json.duration="+json.duration);
+                if(json.unitName!=null && json.unitName!="null"){
+                    str+=" "+json.unitName;
+                }
                 if(json.prn){
                     str=str+" prn";
                 } else{ }
                 oscarLog("str="+str);
                 $(rxString).innerHTML=str;//display parsed string below instruction.
-                $(quantity).value=json.calQuantity;
+                var quantityText;
+                if(json.unitName!=null && json.unitName!="null"){
+                    quantityText=json.calQuantity+" "+json.unitName;
+                }else
+                    quantityText=json.calQuantity;
+                $(quantity).value=quantityText;
             }});
         return true;
     }

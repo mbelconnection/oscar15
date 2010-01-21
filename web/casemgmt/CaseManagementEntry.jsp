@@ -41,6 +41,7 @@
     {
     	// do nothing it's okay to not have this parameter
     }
+    int count_issues_display=0;
 %>
 <html>
 <head>
@@ -61,13 +62,13 @@
         
 	int size=form.getIssueCheckList().length;
 	
+	
 	if (session.getAttribute("newNote")!=null && "true".equalsIgnoreCase((String)session.getAttribute("newNote")))
 	{%>
 	var newNote=true;
 	<%}else{%>
 	var newNote=false;
 	<%}
-	
 	if (session.getAttribute("issueStatusChanged")!=null && "true".equalsIgnoreCase((String)session.getAttribute("issueStatusChanged")))
 	{%>
 	var issueChanged=true;
@@ -75,7 +76,8 @@
 	var issueChanged=false;
 	<%}%>
 	
-	var issueSize=<%=size%>;
+	var issueSize=<%=size%>; 
+	
 	function setChangeFlag(change){
 		flag=change;
 		document.getElementById("spanMsg").innerHTML="This note has not been saved yet!";
@@ -104,14 +106,13 @@
 			return true;
 		}
 	}
-	function validateIssuecheck(){
-		var i=0;
+	function validateIssuecheck(issueSize){
+		var i=0; 
 		for (i=0;i<issueSize;i++)
-		{
+		{ 
 			//alert("checked="+document.caseManagementEntryForm.elements["issueCheckList["+i+"].checked"].checked);
 			if (document.caseManagementEntryForm.elements["issueCheckList["+i+"].checked"].checked) 
 			{
-				//alert("issue check return true");
 				return true;
 			}
 		}
@@ -154,7 +155,7 @@
 			return false;
 	}
 		
-	function validateSave(){
+	function validateSave(count_issues_display){
 	
 		var str1="You cannot save a note when there is no issue checked, please add an issue or check a currently available issue before save." ;
 		var str2="Are you sure that you want to sign and save without changing the status of any of the issues?";
@@ -162,10 +163,10 @@
 		var str4="Are you sure that you want to save without signing?";
 		if (!validateEnounter()){
 			alert(str3); return false;
-		}
-		if (!validateIssuecheck()){
+		}alert("start...");
+		if (!validateIssuecheck(count_issues_display)){ alert("fales??????");
 			alert(str1); return false;
-		}
+		}alert("end....");
 		if (!validateSignStatus()){
 			if(!confirm(str4)) return false;
 		}
@@ -321,7 +322,7 @@ if (pId==null) pId="";
 			<td>Type</td>
 			<td></td>
 		</tr>
-
+		
 		<nested:iterate indexId="ind" id="issueCheckList" property="issueCheckList" type="org.oscarehr.casemgmt.web.CheckBoxBean">
 				<%String submitString = "this.form.method.value='issueChange';";
 						submitString = submitString + "this.form.lineId.value=" + "'"
@@ -336,6 +337,7 @@ if (pId==null) pId="";
 			
 			if (!resolved || showResolved)
 			{
+				count_issues_display++;
 				counter++;
 				%>
 
@@ -508,9 +510,9 @@ else{%>
 		<tr>
 			<td class="fieldValue" colspan="2">
 			<input type="submit" value="Save"
-				onclick="this.form.method.value='save';return validateSave();"> 
+				onclick="this.form.method.value='save';return validateSave(<%=count_issues_display%>);"> 
 			<input type="submit"
-				value="Save and Exit" onclick="this.form.method.value='saveAndExit';if (validateSave()) {return true;}else return false;">
+				value="Save and Exit" onclick="this.form.method.value='saveAndExit';if (validateSave(<%=count_issues_display%>)) {return true;}else return false;">
 			<input type="submit" 
 			    value="cancel" onclick = "this.form.method.value='cancel';return true;">
 			</td>

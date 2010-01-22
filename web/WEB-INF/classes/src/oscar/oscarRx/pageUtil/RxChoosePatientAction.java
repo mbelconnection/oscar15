@@ -84,7 +84,7 @@ public final class RxChoosePatientAction extends Action {
         if (request.getSession().getAttribute("RxSessionBean") != null) {
             bean = (oscar.oscarRx.pageUtil.RxSessionBean) request.getSession().getAttribute("RxSessionBean");
 
-            if ((bean.getProviderNo() != frm.getProviderNo()) || (bean.getDemographicNo() != Integer.parseInt(frm.getDemographicNo()))) {
+            if ((bean.getProviderNo().trim().equals(frm.getProviderNo().trim())) || (bean.getDemographicNo() != Integer.parseInt(frm.getDemographicNo()))) {
                 bean = new RxSessionBean();
             }
         } else {

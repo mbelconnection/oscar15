@@ -163,10 +163,10 @@
 		var str4="Are you sure that you want to save without signing?";
 		if (!validateEnounter()){
 			alert(str3); return false;
-		}alert("start...");
-		if (!validateIssuecheck(count_issues_display)){ alert("fales??????");
+		}
+		if (!validateIssuecheck(count_issues_display)){ 
 			alert(str1); return false;
-		}alert("end....");
+		}
 		if (!validateSignStatus()){
 			if(!confirm(str4)) return false;
 		}

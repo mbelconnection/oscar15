@@ -99,7 +99,7 @@ public class UserDSMessagePrefs implements Serializable {
         this.recordCreated = recordCreated;
     }
 
-    public Boolean getArchived() {
+    public Boolean isArchived() {
         return archived;
     }
 

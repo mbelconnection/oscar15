@@ -701,6 +701,7 @@
         </action>
         <action input="/oscarRx/ChooseAllergy.jsp" path="/oscarRx/deleteAllergy" scope="request" type="oscar.oscarRx.pageUtil.RxDeleteAllergyAction">
             <forward name="success" path="/oscarRx/ShowAllergies.jsp" />
+            <forward name="successRx3" path="/oscarRx/ShowAllergies2.jsp" />
         </action>
         <action input="/oscarRx/ChooseAllergy.jsp" path="/oscarRx/deleteAllergy2" scope="request" type="oscar.oscarRx.pageUtil.RxDeleteAllergyAction">
             <forward name="success" path="/oscarRx/ShowAllergies2.jsp" />
@@ -728,6 +729,8 @@
         </action>
         <action input="/oscarRx/MyDrugrefDisplay.jsp" name="FrmForm" path="/oscarRx/GetmyDrugrefInfo" parameter="method" scope="request" type="oscar.oscarRx.pageUtil.RxMyDrugrefInfoAction">
             <forward name="success" path="/oscarRx/MyDrugrefDisplay.jsp"></forward>
+            <forward name="updateInteractions" path="/oscarRx/InteractionDisplay2.jsp"></forward>
+            <forward name="updateResources" path="/oscarRx/updateMyDrugrefResource.jsp"></forward>
         </action>
         <action input="/oscarRx/ViewScript2.jsp"  path="/oscarRx/GetRxPageSizeInfo" parameter="method" scope="request" type="oscar.oscarRx.pageUtil.RxRxPageSizeInfoAction">
             <forward name="success" path="/oscarRx/ViewScript2.jsp"></forward>

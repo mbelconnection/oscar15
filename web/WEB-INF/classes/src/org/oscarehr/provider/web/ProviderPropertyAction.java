@@ -331,7 +331,7 @@ public class ProviderPropertyAction extends DispatchAction {
          request.setAttribute("providertitle","provider.setRxRxUseRx3.title"); //=Select if you want to use Rx3
          request.setAttribute("providermsgPrefs","provider.setRxRxUseRx3.msgPrefs"); //=Preferences
          request.setAttribute("providermsgProvider","provider.setRxRxUseRx3.msgProfileView"); //=Use Rx3
-         request.setAttribute("providermsgEdit","provider.setRxUseRx3.msgEdit"); //=Check if you want to use Rx3
+         request.setAttribute("providermsgEdit","provider.setRxUseRx3.msgEdit"); //=Do you want to use Rx3?
          request.setAttribute("providerbtnSubmit","provider.setRxUseRx3.btnSubmit"); //=Save
          request.setAttribute("providermsgSuccess","provider.setRxUseRx3.msgSuccess"); //=Rx3 Selection saved
          request.setAttribute("method","saveUseRx3");
@@ -375,7 +375,10 @@ public class ProviderPropertyAction extends DispatchAction {
          request.setAttribute("providermsgProvider","provider.setRxRxUseRx3.msgProfileView"); //=Use Rx3
          request.setAttribute("providermsgEdit","provider.setRxUseRx3.msgEdit"); //=Check if you want to use Rx3
          request.setAttribute("providerbtnSubmit","provider.setRxUseRx3.btnSubmit"); //=Save
-         request.setAttribute("providermsgSuccess","provider.setRxUseRx3.msgSuccess"); //=Rx3 Selection saved
+         if(checked)
+            request.setAttribute("providermsgSuccess","provider.setRxUseRx3.msgSuccess_selected"); //=Rx3 is selected
+         else
+            request.setAttribute("providermsgSuccess","provider.setRxUseRx3.msgSuccess_unselected"); //=Rx3 is unselected
          request.setAttribute("method","saveUseRx3");
          System.out.println("Finish in saveUseRx3");
          return actionmapping.findForward("genRxUseRx3");

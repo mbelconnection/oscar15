@@ -63,13 +63,12 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
         UserPropertyDAO  propDAO =  (UserPropertyDAO) ctx.getBean("UserPropertyDAO");
         UserDSMessagePrefsDAO  dsmessageDAO =  (UserDSMessagePrefsDAO) ctx.getBean("UserDSMessagePrefsDAO");
         System.out.println("hideResources is before "+request.getSession().getAttribute("hideResources"));
+        Hashtable dsPrefs=new Hashtable();
         if (request.getSession().getAttribute("hideResources") == null){
             //System.out.println("hideResources attribute is null ");
-            //System.out.println("provider:"+provider);
-            Hashtable dsPrefs = dsmessageDAO.getHashofMessages(provider,UserDSMessagePrefs.MYDRUGREF);System.out.println(dsPrefs);
-            request.getSession().setAttribute("hideResources",dsPrefs);
-        }
-        //System.out.println("hideResources is after "+request.getSession().getAttribute("hideResources"));
+            dsPrefs = dsmessageDAO.getHashofMessages(provider,UserDSMessagePrefs.MYDRUGREF);
+            //System.out.println("dsPrefs="+dsPrefs);
+        }        
         UserProperty prop = propDAO.getProp(provider, UserProperty.MYDRUGREF_ID);
         String myDrugrefId = null;
         if (prop != null){
@@ -82,8 +81,6 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
             return mapping.findForward("success");
         }
         Vector codes = bean.getAtcCodes();
-       // System.out.println(codes);
-        //Vector warnings = getWarnings(codes,myDrugrefId);
         //String[] str = new String[]{"warnings_byATC","bulletins_byATC","interactions_byATC"};
         String[] str = new String[]{"warnings_byATC,bulletins_byATC,interactions_byATC,get_guidelines"};   //NEW more efficent way of sending multiple requests at the same time.
         MessageResources mr=getResources(request);
@@ -137,8 +134,8 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
             npe.printStackTrace();
         }
         //Vector idWarningVec=new Vector();
-        Vector allRetVec=new Vector();
-        Vector currentIdWarnings=new Vector();
+        Vector<Hashtable> allRetVec=new Vector();
+        Vector<String> currentIdWarnings=new Vector();
         for(int i=0;i<all.size();i++){
             Hashtable ht=(Hashtable)all.get(i);
             Date dt=(Date)ht.get("updated_at");
@@ -150,12 +147,27 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
                 //idWarningVec.add(idWarning);
             }
         }
-       // System.out.println("idWarningVec="+idWarningVec);
-        //System.out.println("allRetVec="+allRetVec);
-        //bean.setWarningsMyDrugrefInfo(idWarningVec);
+        System.out.println("currentIdWarnings is  "+currentIdWarnings);
+        //set session attribute hiddenResources if it was null
+        if(dsPrefs!=null && dsPrefs.size()>0){
+            Hashtable hiddenR=new Hashtable();
+            Enumeration em=dsPrefs.keys();
+            while(em.hasMoreElements()){
+                String resId=(String)em.nextElement();
+                resId=resId.replace(UserDSMessagePrefs.MYDRUGREF, "");
+                for(String warning:currentIdWarnings){
+                    if(warning.contains(resId)){
+                        String[] arr=warning.split("\\.");
+                        hiddenR.put(UserDSMessagePrefs.MYDRUGREF+resId, arr[1]);
+                    }
+                }
+            }
+            request.getSession().setAttribute("hideResources", hiddenR);
+        }
+        //System.out.println("hideResources is after "+request.getSession().getAttribute("hideResources"));
         request.setAttribute("warnings",allRetVec);
         log2.debug("MyDrugref return time " + (System.currentTimeMillis() - start) );
-        System.out.println("before view in RxMyDrugrefInfoAction return");
+        //System.out.println("before view in RxMyDrugrefInfoAction return");
         if(target!=null && target.equals("interactionsRx")) return mapping.findForward("updateInteractions");
         else return mapping.findForward("success");
     }
@@ -164,27 +176,26 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
     public ActionForward setWarningToHide(ActionMapping mapping,ActionForm form,HttpServletRequest request,HttpServletResponse response)throws IOException, ServletException {
          //System.out.println("in setWarningToHide");
         WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(getServlet().getServletContext());
-        UserDSMessagePrefsDAO  dsmessageDAO =  (UserDSMessagePrefsDAO) ctx.getBean("UserDSMessagePrefsDAO");
-        
+        UserDSMessagePrefsDAO  dsmessageDAO =  (UserDSMessagePrefsDAO) ctx.getBean("UserDSMessagePrefsDAO");  
         
         
         String provider = (String) request.getSession().getAttribute("user");
         String postId = request.getParameter("resId");
         String date = request.getParameter("updatedat");
-        
+        String elementId=postId+"."+date;
+
         long datel = Long.parseLong(date);
         Date updatedatId = new Date();
         updatedatId.setTime(datel);
         
         log2.debug("post Id "+postId+"  date "+date);
         
-     //   System.out.println("hideResources is before "+request.getSession().getAttribute("hideResources"));
+      
         if (request.getSession().getAttribute("hideResources") == null){
-          //  System.out.println("provider:"+provider);
+
             Hashtable dsPrefs = dsmessageDAO.getHashofMessages(provider,UserDSMessagePrefs.MYDRUGREF);
-            request.getSession().setAttribute("hideResources",dsPrefs);
+            request.getSession().setAttribute("hideResources",dsPrefs);//this doesn't save values that can be used directly
         }
-     //   System.out.println("hideResources is after "+request.getSession().getAttribute("hideResources"));
         Hashtable h = (Hashtable) request.getSession().getAttribute("hideResources");
         
         h.put("mydrugref"+postId,date);
@@ -196,12 +207,52 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
         pref.setResourceId(postId);
         pref.setResourceType(UserDSMessagePrefs.MYDRUGREF);
         pref.setResourceUpdatedDate(updatedatId);
-        
-       
-       
+        pref.setArchived(Boolean.TRUE);
+        request.getSession().setAttribute("hideResources", h);
+        //System.out.println("hideResources is after "+request.getSession().getAttribute("hideResources"));
+
         dsmessageDAO.saveProp(pref);
-        
-        return null;
+
+       return mapping.findForward("updateResources");
+    }
+
+    public ActionForward setWarningToShow(ActionMapping mapping,ActionForm form,HttpServletRequest request,HttpServletResponse response)throws IOException, ServletException {
+         //System.out.println("in setWarningToShow");
+        WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(getServlet().getServletContext());
+        UserDSMessagePrefsDAO  dsmessageDAO =  (UserDSMessagePrefsDAO) ctx.getBean("UserDSMessagePrefsDAO");
+
+        String provider = (String) request.getSession().getAttribute("user");
+        String postId = request.getParameter("resId");
+        String date = request.getParameter("updatedat");
+        String elementId=postId+"."+date;
+
+        long datel = Long.parseLong(date);
+        Date updatedatId = new Date();
+        updatedatId.setTime(datel);
+
+        log2.debug("post Id "+postId+"  date "+date);
+
+        if (request.getSession().getAttribute("hideResources") == null){
+            Hashtable dsPrefs = dsmessageDAO.getHashofMessages(provider,UserDSMessagePrefs.MYDRUGREF);
+            request.getSession().setAttribute("hideResources",dsPrefs);//this doesn't save values that can be used directly
+        }
+        Hashtable h = (Hashtable) request.getSession().getAttribute("hideResources");
+        h.remove("mydrugref"+postId);
+        System.out.println("provider,UserDSMessagePrefs.MYDRUGREF , postId, updatedatId :"+provider+"--"+UserDSMessagePrefs.MYDRUGREF +"--"+ postId+"--"+ updatedatId);
+        UserDSMessagePrefs pref = dsmessageDAO.getDsMessage(provider,UserDSMessagePrefs.MYDRUGREF , postId,true);
+        pref.setId(pref.getId());
+        pref.setProviderNo(provider);
+        pref.setRecordCreated(new Date());
+        pref.setResourceId(postId);
+        pref.setResourceType(UserDSMessagePrefs.MYDRUGREF);
+        pref.setResourceUpdatedDate(updatedatId);
+        pref.setArchived(Boolean.FALSE);
+
+        request.getSession().setAttribute("hideResources", h);
+
+        dsmessageDAO.updateProp(pref);
+
+       return mapping.findForward("updateResources");
     }
     
     

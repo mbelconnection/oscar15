@@ -53,7 +53,7 @@ trusted truejava.lang.Boolean ? i think
 <%
     Vector<Hashtable> warnings = (Vector)request.getAttribute("warnings");    
     Hashtable hiddenResources = (Hashtable) request.getSession().getAttribute("hideResources");
-
+    //System.out.println("hiddenResources in MyDrugrefDisplay.jsp="+hiddenResources);
     if ( warnings != null && warnings.size() > 0){
         System.out.println("numb warnings "+warnings.size());
     
@@ -85,12 +85,20 @@ trusted truejava.lang.Boolean ? i think
                 hiddenRes++;
                 hidden ="display:none;";
             }
-            
+           // System.out.println("hidden="+hidden);
+            String showHidden="";
+            if(hidden.equals("display:none;"));
+            else
+                showHidden="display:none;";
+           // System.out.println("showHidden="+showHidden);
             String bodyStr=(String)ht.get("body");
             int rand=Math.abs(rnd.nextInt());
+            String elementId=ht.get("id")+"."+getTime(ht.get("updated_at"));
+           // System.out.println("updated at:"+ht.get("updated_at"));
+          //  System.out.println("elementId="+elementId);
             %>
 
-<div id="<%=ht.get("id")%>.<%=getTime(ht.get("updated_at"))%>"
+<div id="<%=elementId%>"
 	<%=outputHtmlClass(trustedResource,hideResource)%>
 	style="font-size: 9pt;<%=hidden%>background-color:<%=sigColor(""+ht.get("significance"))%>;margin-right:3px;margin-left:3px;margin-top:2px;padding-left:3px;padding-top:3px;padding-bottom:3px;">
 <span style="float: right;"><a href="javascript:void(0);"
@@ -102,7 +110,7 @@ trusted truejava.lang.Boolean ? i think
 <%if(bodyStr.length() > 90){%>
 <%=((String)ht.get("body")).substring(0,90)%><a id="addText_<%=rand%>" style="display:none;padding:2px;"><%=((String)ht.get("body")).substring(90)%>
 </a>
-<div><a href="#" id="addTextWord_<%=rand%>" onclick="showAddText('<%=rand%>')"><span>more</span></a></div>
+<div><a href="javascript:void(0);" id="addTextWord_<%=rand%>" onclick="showAddText('<%=rand%>');"><span>more</span></a></div>
 
 <%} else{%>
 <%=ht.get("body")%>
@@ -124,7 +132,9 @@ trusted truejava.lang.Boolean ? i think
 </fieldset>
 <%}%>
 </div>
-
+<div id="show_<%=elementId%>" style="text-align: right; <%=showHidden%>font-size: 9pt; background-color:<%=sigColor(""+ht.get("significance"))%>;margin-right:3px;margin-left:3px;margin-top:2px;padding-left:3px;padding-top:3px;padding-bottom:3px;">
+    <a  href="javascript:void(0);" onclick="ShowW('<%=elementId%>','<%=ht.get("id")%>','<%=getTime(ht.get("updated_at"))%>');">Show</a>
+</div>
 <%
         }
         if (untrustedRes > 0 ){ %>
@@ -133,16 +143,17 @@ trusted truejava.lang.Boolean ? i think
 resources</a></div>
 <%}
         
-        if (hiddenRes > 0){ %>
-<div><a href="javascript:void(0);" onclick="showHiddenRes();"><span
-	id="showHiddenResWord">show</span> <%=hiddenRes%> hidden resources</a></div>
-<%}
-        
-    }else if(warnings == null){ %>
+%>
+<div id="showHideTotal"></div>
+    <%}else if(warnings == null){ %>
 <div>MyDrug to MyDrug Warning Service not available</div>
 <%  }   %>
 
-
+<script type="text/javascript">
+    new Ajax.Updater('showHideTotal','updateMyDrugrefResource.jsp',{method:'get',onSuccess:function(transport){
+                oscarLog("updated showHideTotal ");
+            }});
+</script>
 
 
 

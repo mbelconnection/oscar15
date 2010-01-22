@@ -767,7 +767,7 @@ body {
 
         <br/>
         Comment:<br/>
-        <textarea id="disComment" rows="3" cols="60"></textarea><br/>
+        <textarea id="disComment" rows="3" cols="45"></textarea><br/>
         <input type="button" onclick="$('discontinueUI').hide();" value="Cancel"/>
         <input type="button" onclick="Discontinue2($('disDrugId').value,$('disReason').value,$('disComment').value);" value="Discontinue"/>
 
@@ -1253,23 +1253,76 @@ function addFav(randomId,brandName){
         }})
    }
 }
-    var resHidden2 = 0;
+    var resHidden2 = 0;//not used
+    //not used
     function showHiddenRes(){
         var list = $$('div.hiddenResource');
-
-        if(resHidden2 == 0){oscarLog("resHidden2 is 0");
+        oscarLog("list="+list);
+        if(resHidden2 == 0){
+          oscarLog("resHidden2 is 0");
           list.invoke('show');
           resHidden2 = 1;
           $('showHiddenResWord').update('hide');
           var url = "updateHiddenResources.jsp";
           var params="hiddenResources=";
           new Ajax.Request(url, {method: 'post',parameters:params});
-        }else{oscarLog("resHidden2 is not 0");
-          $('showHiddenResWord').update('show');
-          list.invoke('hide');
-          resHidden2 = 0;
+        }else{
+            oscarLog("resHidden2 is not 0");
+            $('showHiddenResWord').update('show');
+            list.invoke('hide');
+            resHidden2 = 0;
         }
     }
+    var showOrHide=0;
+    function showOrHideRes(hiddenRes){
+        oscarLog("hiddenRes="+hiddenRes);
+
+        hiddenRes=hiddenRes.replace(/\{/g,"");
+        hiddenRes=hiddenRes.replace(/\}/g,"");
+        hiddenRes=hiddenRes.replace(/\s/g,"");
+        var arr=hiddenRes.split(",");
+        oscarLog(arr);
+        var numberOfHiddenResources=0;
+        if(showOrHide==0){
+            numberOfHiddenResources=0;
+            for(var i=0;i<arr.length;i++){
+                var element=arr[i];
+                element=element.replace("mydrugref","");
+                var elementArr=element.split("=");
+                var resId=elementArr[0];
+                var resUpdated=elementArr[1];
+                var id=resId+"."+resUpdated;
+                oscarLog("id="+id);
+                $(id).show();
+                $('show_'+id).hide();
+                $('showHideWord').update('hide');
+                
+                showOrHide=1;
+                numberOfHiddenResources++;
+            }
+        }else{
+            numberOfHiddenResources=0
+            for(var i=0;i<arr.length;i++){
+                var element=arr[i];
+                element=element.replace("mydrugref","");
+                var elementArr=element.split("=");
+                var resId=elementArr[0];
+                var resUpdated=elementArr[1];
+                var id=resId+"."+resUpdated;
+                oscarLog("id="+id);
+                $(id).hide();
+                $('show_'+id).show();
+                $('showHideWord').update('show');
+                showOrHide=0;
+                numberOfHiddenResources++;
+            }
+        }
+        $('showHideNumber').update(numberOfHiddenResources);
+
+    }
+   // var totalHiddenResources=0;
+
+
     var addTextView=0;
     function showAddText(randId){
         var addTextId="addText_"+randId;
@@ -1287,15 +1340,34 @@ function addFav(randomId,brandName){
         }
     }
 
+    function ShowW(id,resourceId,updated){
+
+        var params = "resId="+resourceId+"&updatedat="+updated
+        var url='GetmyDrugrefInfo.do?method=setWarningToShow';
+        new Ajax.Updater('showHideTotal',url,{method:'get',parameters:params,asynchronous:true,evalScripts:true,onSuccess:function(transport){
+
+                //oscarLog("successfully sent data "+url);
+                $(id).show();
+                $('show_'+id).hide();
+
+            }});
+    }
+
    function HideW(id,resourceId,updated){
         var url = 'GetmyDrugrefInfo.do?method=setWarningToHide';
+        //oscarLog("hidew in searchdrug3");
         //callReplacementWebService("GetmyDrugrefInfo.do?method=setWarningToHide",'interactionsRxMyD');function callReplacementWebService(url,id){
         var ran_number=Math.round(Math.random()*1000000);
         var params = "resId="+resourceId+"&updatedat="+updated+"&rand="+ran_number;  //hack to get around ie caching the page
-
+        //totalHiddenResources++;
         //console.log("params: "+params);
-        new Ajax.Updater(id,url, {method:'get',parameters:params,asynchronous:true});
+        new Ajax.Updater('showHideTotal',url, {method:'get',parameters:params,asynchronous:true,evalScripts:true,onSuccess:function(transport){
 
+                //oscarLog("successfully sent data "+url);
+                $(id).hide();
+                $("show_"+id).show();
+
+            }});
     }
 
 

@@ -366,8 +366,53 @@ public final class RxWriteScriptAction extends DispatchAction {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        p("=============END newCustomDrug RxWriteScriptAction.java===============");
+        //p("=============END newCustomDrug RxWriteScriptAction.java===============");
         return (mapping.findForward("newRx"));
+    }
+    public ActionForward normalDrugSetCustom(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        //p("=============Start normalDrugSetCustom RxWriteScriptAction.java===============");
+        oscar.oscarRx.pageUtil.RxSessionBean bean = (oscar.oscarRx.pageUtil.RxSessionBean) request.getSession().getAttribute("RxSessionBean");
+        if (bean == null) {
+            response.sendRedirect("error.html");
+            return null;
+        }
+        String randomId=request.getParameter("randomId");
+        String customDrugName=request.getParameter("customDrugName");
+        p("radomId="+randomId);
+        if(randomId!=null && customDrugName!=null){
+            RxPrescriptionData.Prescription normalRx=bean.getStashItem2(Integer.parseInt(randomId));
+            if(normalRx!=null){//set other fields same as normal drug, set some fields null like custom drug, remove normal drugfrom stash,add customdrug to stash,
+                //forward to prescribe.jsp
+                RxPrescriptionData rxData = new RxPrescriptionData();
+                RxPrescriptionData.Prescription customRx = rxData.newPrescription(bean.getProviderNo(), bean.getDemographicNo());
+                customRx=normalRx;
+                customRx.setCustomName(customDrugName);
+                customRx.setRandomId(Long.parseLong(randomId));
+                customRx.setGenericName(null);
+                customRx.setBrandName(null);
+                customRx.setDrugForm("");
+                customRx.setRoute("");
+                customRx.setDosage("");
+                customRx.setUnit("");
+                customRx.setGCN_SEQNO(0);
+                customRx.setRegionalIdentifier("");
+                customRx.setAtcCode("");
+                bean.setStashItem(bean.getIndexFromRx(Integer.parseInt(randomId)), customRx);
+                List<RxPrescriptionData.Prescription> listRxDrugs = new ArrayList();
+                if (RxUtil.isRxUniqueInStash(bean, customRx)) {
+                    //p("unique");
+                    listRxDrugs.add(customRx);
+                }
+                request.setAttribute("listRxDrugs", listRxDrugs);
+                //p("=============END normalDrugSetCustom RxWriteScriptAction.java===============");
+                return (mapping.findForward("newRx"));
+            }else {
+                //p("===blah1===");
+                return null;
+            }
+        } else {
+            //p("===blah2===");
+            return null;}
     }
 
     public ActionForward createNewRx(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {

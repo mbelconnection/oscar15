@@ -856,6 +856,27 @@ body {
                         }
 %>
 <script type="text/javascript">
+    function changeDrugName(randomId){
+            if (confirm('If you change the drug name and write your own drug, you will lose the following functionality:'
+            + '\n  *  Known Dosage Forms / Routes'
+            + '\n  *  Drug Allergy Information'
+            + '\n  *  Drug-Drug Interaction Information'
+            + '\n  *  Drug Information'
+            + '\n\nAre you sure you wish to use this feature?')==true) {
+            
+            //call another function to bring up prescribe.jsp
+            var url="<c:out value="${ctx}"/>"+ "/oscarRx/WriteScript.do?parameterValue=normalDrugSetCustom";
+            var customDrugName=$("drugName_"+randomId).getValue();
+            oscarLog("customDrugName="+customDrugName);
+            var data="randomId="+randomId+"&customDrugName="+customDrugName;
+            new Ajax.Updater('rxText',url,{method:'get',parameters:data,asynchronous:true,insertion: Insertion.Bottom,onSuccess:function(transport){ 
+                    $('set_'+randomId).remove();
+                    <oscar:oscarPropertiesCheck property="MYDRUGREF_DS" value="yes">
+                      callReplacementWebService("GetmyDrugrefInfo.do?method=view",'interactionsRxMyD');
+                     </oscar:oscarPropertiesCheck>
+                }});
+        }
+    }
     function resetStash(){
                var url="<c:out value="${ctx}"/>" + "/oscarRx/deleteRx.do?parameterValue=clearStash";
                var data = "";
@@ -1443,7 +1464,12 @@ function updateQty(element){
         new Ajax.Request(url, {method: 'get',parameters:data, onSuccess:function(transport){
                 var json=transport.responseText.evalJSON();
                 str="Method:"+json.method+"; Route:"+json.route+"; Frequency:"+json.frequency+"; Min:"+json.takeMin+"; Max:"
-                    +json.takeMax +"; Duration:"+json.duration+"; DurationUnit:"+json.durationUnit+"; Quantity:"+json.calQuantity;
+                    +json.takeMax +"; Duration:";
+                    if(json.duration==null || json.duration=="null"){
+                        str+=  "; DurationUnit:"+json.durationUnit+"; Quantity:"+json.calQuantity;
+                    }else{
+                        str+= json.duration+ "; DurationUnit:"+json.durationUnit+"; Quantity:"+json.calQuantity;
+                    }
                 oscarLog("json.duration="+json.duration);
                 if(json.unitName!=null && json.unitName!="null"){
                     str+=" "+json.unitName;
@@ -1477,7 +1503,12 @@ function updateQty(element){
         new Ajax.Request(url, {method: 'get',parameters:instruction, onSuccess:function(transport){
                 var json=transport.responseText.evalJSON();
                 str="Method:"+json.method+"; Route:"+json.route+"; Frequency:"+json.frequency+"; Min:"+json.takeMin+"; Max:"
-                    +json.takeMax +"; Duration:"+json.duration+"; DurationUnit:"+json.durationUnit+"; Quantity:"+json.calQuantity;
+                    +json.takeMax +"; Duration:";
+                if(json.duration==null || json.duration=="null"){
+                        str+="; DurationUnit:"+json.durationUnit+"; Quantity:"+json.calQuantity;
+                }else{
+                        str+=json.duration+"; DurationUnit:"+json.durationUnit+"; Quantity:"+json.calQuantity;
+                }
                 oscarLog("json.duration="+json.duration);
                 if(json.unitName!=null && json.unitName!="null"){
                     str+=" "+json.unitName;
@@ -1518,6 +1549,7 @@ function updateQty(element){
         {method: 'post',postBody:data,
             onSuccess:function(transport){
                 oscarLog("successfully sent data "+url);
+                callReplacementWebService("ListDrugs.jsp",'drugProfile');
                 popForm2();
             }});
         return false;

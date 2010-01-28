@@ -164,14 +164,40 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
             }
             request.getSession().setAttribute("hideResources", hiddenR);
         }
-        //System.out.println("hideResources is after "+request.getSession().getAttribute("hideResources"));
+        //if hideResources are not in warnings, remove them from hiddenResource and set them to archived=0 in database;
+        Hashtable hiddenResAttribute=(Hashtable)request.getSession().getAttribute("hideResources");
+        Enumeration hiddenResKeys=hiddenResAttribute.keys();
+        while(hiddenResKeys.hasMoreElements()){
+            String key=(String)hiddenResKeys.nextElement();
+            String value=(String)hiddenResAttribute.get(key);
+            Date updatedatId=new Date();
+            updatedatId.setTime(Long.parseLong(value));
+            String resId=key.replace(UserDSMessagePrefs.MYDRUGREF, "");
+            String id=resId+"."+value;
+            if(!currentIdWarnings.contains(id)){
+                hiddenResAttribute.remove(key);
+                //update database
+                setShowDSMessage(dsmessageDAO, provider, resId, updatedatId);
+            }
+        }
+        request.getSession().setAttribute("hideResources", hiddenResAttribute);
         request.setAttribute("warnings",allRetVec);
         log2.debug("MyDrugref return time " + (System.currentTimeMillis() - start) );
-        //System.out.println("before view in RxMyDrugrefInfoAction return");
         if(target!=null && target.equals("interactionsRx")) return mapping.findForward("updateInteractions");
         else return mapping.findForward("success");
     }
     
+    private void setShowDSMessage(UserDSMessagePrefsDAO  dsmessageDAO,String provider,String resId,Date updatedatId){
+                UserDSMessagePrefs pref = dsmessageDAO.getDsMessage(provider,UserDSMessagePrefs.MYDRUGREF , resId,true);
+                pref.setId(pref.getId());
+                pref.setProviderNo(provider);
+                pref.setRecordCreated(new Date());
+                pref.setResourceId(resId);
+                pref.setResourceType(UserDSMessagePrefs.MYDRUGREF);
+                pref.setResourceUpdatedDate(updatedatId);
+                pref.setArchived(Boolean.FALSE);
+                dsmessageDAO.updateProp(pref);
+    }
     
     public ActionForward setWarningToHide(ActionMapping mapping,ActionForm form,HttpServletRequest request,HttpServletResponse response)throws IOException, ServletException {
          //System.out.println("in setWarningToHide");
@@ -222,35 +248,25 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
         UserDSMessagePrefsDAO  dsmessageDAO =  (UserDSMessagePrefsDAO) ctx.getBean("UserDSMessagePrefsDAO");
 
         String provider = (String) request.getSession().getAttribute("user");
-        String postId = request.getParameter("resId");
+        String resId = request.getParameter("resId");
         String date = request.getParameter("updatedat");
-        String elementId=postId+"."+date;
+        String elementId=resId+"."+date;
 
         long datel = Long.parseLong(date);
         Date updatedatId = new Date();
         updatedatId.setTime(datel);
 
-        log2.debug("post Id "+postId+"  date "+date);
+        log2.debug("post Id "+resId+"  date "+date);
 
         if (request.getSession().getAttribute("hideResources") == null){
             Hashtable dsPrefs = dsmessageDAO.getHashofMessages(provider,UserDSMessagePrefs.MYDRUGREF);
             request.getSession().setAttribute("hideResources",dsPrefs);//this doesn't save values that can be used directly
         }
         Hashtable h = (Hashtable) request.getSession().getAttribute("hideResources");
-        h.remove("mydrugref"+postId);
-        System.out.println("provider,UserDSMessagePrefs.MYDRUGREF , postId, updatedatId :"+provider+"--"+UserDSMessagePrefs.MYDRUGREF +"--"+ postId+"--"+ updatedatId);
-        UserDSMessagePrefs pref = dsmessageDAO.getDsMessage(provider,UserDSMessagePrefs.MYDRUGREF , postId,true);
-        pref.setId(pref.getId());
-        pref.setProviderNo(provider);
-        pref.setRecordCreated(new Date());
-        pref.setResourceId(postId);
-        pref.setResourceType(UserDSMessagePrefs.MYDRUGREF);
-        pref.setResourceUpdatedDate(updatedatId);
-        pref.setArchived(Boolean.FALSE);
-
+        h.remove("mydrugref"+resId);
+        System.out.println("provider,UserDSMessagePrefs.MYDRUGREF , postId, updatedatId :"+provider+"--"+UserDSMessagePrefs.MYDRUGREF +"--"+ resId+"--"+ updatedatId);
+        setShowDSMessage(dsmessageDAO, provider, resId, updatedatId);
         request.getSession().setAttribute("hideResources", h);
-
-        dsmessageDAO.updateProp(pref);
 
        return mapping.findForward("updateResources");
     }

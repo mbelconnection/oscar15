@@ -835,6 +835,24 @@ private Vector getMyDrugrefInfo(String command, Vector drugs,String myDrugrefId)
 
     }
 
+    public ActionForward updateSpecialInstruction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException, Exception {
+               //get special instruction from parameter
+        //get rx from random Id
+        // rx.setspecialisntruction
+        String randomId=request.getParameter("randomId");
+        String specialInstruction=request.getParameter("specialInstruction");
+        //System.out.println("specialInstruction  ="+specialInstruction.trim());
+        oscar.oscarRx.pageUtil.RxSessionBean bean = (oscar.oscarRx.pageUtil.RxSessionBean) request.getSession().getAttribute("RxSessionBean");
+        RxPrescriptionData.Prescription rx = bean.getStashItem2(Integer.parseInt(randomId));
+        if(specialInstruction.trim().length()>0&&!specialInstruction.trim().equalsIgnoreCase("Enter Special Instruction")){            
+            rx.setSpecialInstruction(specialInstruction.trim());
+        }else{
+            rx.setSpecialInstruction(null);
+        }
+
+        return null;
+    }
     public ActionForward updateSaveAllDrugs(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException, Exception {
         System.out.println("==========***### start updaing drugs RxWriteScriptAction.java");
@@ -982,14 +1000,25 @@ private Vector getMyDrugrefInfo(String command, Vector drugs,String myDrugrefId)
                 rx.setPatientCompliance(patientComplianceY, patientComplianceN);
                 String special;
                 if (rx.isCustom()) {
-                    special = rx.getCustomName() + newline + rx.getSpecial() + newline + "Qty:" + rx.getQuantity() + " Repeats:" + "" + rx.getRepeat();
+                    special = rx.getCustomName() + newline + rx.getSpecial();
+                    if(rx.getSpecialInstruction()!=null && !rx.getSpecialInstruction().equalsIgnoreCase("null") && rx.getSpecialInstruction().trim().length()>0)
+                            special+=newline+rx.getSpecialInstruction();
+                    
+                    special+= newline + "Qty:" + rx.getQuantity() + " Repeats:" + "" + rx.getRepeat();
                 } else {
                     if(rx.getUnitName()==null){
-                        special = rx.getBrandName() + newline + rx.getSpecial() + newline + "Qty:" + rx.getQuantity() + " Repeats:" + "" + rx.getRepeat();
+                        special = rx.getBrandName() + newline + rx.getSpecial();
+                        if(rx.getSpecialInstruction()!=null && !rx.getSpecialInstruction().equalsIgnoreCase("null") && rx.getSpecialInstruction().trim().length()>0)
+                            special+=newline+rx.getSpecialInstruction();
+
+                        special+= newline + "Qty:" + rx.getQuantity() + " Repeats:" + "" + rx.getRepeat();
                     }else{
-                        special = rx.getBrandName() + newline + rx.getSpecial() + newline + "Qty:" + rx.getQuantity() + " "+rx.getUnitName() +" Repeats:" + "" + rx.getRepeat();
+                        special = rx.getBrandName() + newline + rx.getSpecial();
+                        if(rx.getSpecialInstruction()!=null && !rx.getSpecialInstruction().equalsIgnoreCase("null") && rx.getSpecialInstruction().trim().length()>0)
+                            special+=newline+rx.getSpecialInstruction();
+                        special+= newline + "Qty:" + rx.getQuantity() + " "+rx.getUnitName() +" Repeats:" + "" + rx.getRepeat();
                     }
-                }
+                }             
                 //     p("here222");
                 rx.setSpecial(special.trim());
                 System.out.println("SETTING SPECIAL TOO >" + special + "<");

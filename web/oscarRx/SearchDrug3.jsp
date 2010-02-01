@@ -19,7 +19,7 @@
 <%@page import="org.oscarehr.casemgmt.web.PrescriptDrug"%>
 <%@page import="org.oscarehr.PMmodule.caisi_integrator.CaisiIntegratorManager"%>
 <%@page import="org.oscarehr.util.LoggedInInfo"%>
-<%@page import="java.util.ArrayList"%>
+<%@page import="java.util.ArrayList,oscar.oscarRx.data.RxPrescriptionData"%>
 <bean:define id="patient" type="oscar.oscarRx.data.RxPatientData.Patient" name="Patient" />
 
 <%
@@ -97,7 +97,7 @@
             oscar.oscarRx.data.RxPrescriptionData.Prescription[] prescribedDrugs;
                         prescribedDrugs = patient.getPrescribedDrugScripts(); //this function only returns drugs which have an entry in prescription and drugs table
                         String script_no = "";
-
+           
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
@@ -856,6 +856,34 @@ body {
                         }
 %>
 <script type="text/javascript">
+     function updateSpecialInstruction(elementId){
+         var randomId=elementId.split("_")[1];
+         var url="<c:out value="${ctx}"/>"+ "/oscarRx/WriteScript.do?parameterValue=updateSpecialInstruction";
+         var data="randomId="+randomId+"&specialInstruction="+$(elementId).value;
+         new Ajax.Request(url, {method: 'post',parameters:data});
+     }
+
+    function changeText(elementId){
+        oscarLog("in clearText");
+        oscarLog("text value="+$(elementId).value);
+        if($(elementId).value=='Enter Special Instruction'){
+            $(elementId).value="";
+            $(elementId).setStyle({color:'black'});
+        }else if ($(elementId).value==''){
+            $(elementId).value='Enter Special Instruction';
+            $(elementId).setStyle({color:'gray'});
+        }
+
+    }
+    function updateMoreLess(elementId){
+        oscarLog(elementId);
+        oscarLog($(elementId).innerHTML);
+        if($(elementId).innerHTML=='more')
+            $(elementId).innerHTML='less';
+        else
+            $(elementId).innerHTML='more';
+    }
+
     function changeDrugName(randomId){
             if (confirm('If you change the drug name and write your own drug, you will lose the following functionality:'
             + '\n  *  Known Dosage Forms / Routes'

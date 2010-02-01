@@ -60,6 +60,7 @@ public class Drug extends AbstractModel<Integer> implements Serializable {
 	private boolean noSubs;
 	private boolean prn;
 	private String special = null;
+        private String special_instruction=null;
 	private boolean archived;
         @Column(name = "archived_reason")
         private String archivedReason;
@@ -292,6 +293,12 @@ public class Drug extends AbstractModel<Integer> implements Serializable {
 	public void setSpecial(String special) {
 		this.special = special;
 	}
+        public String getSpecialInstruction(){
+            return special_instruction;
+        }
+        public void setSpecialInstruction(String si){
+            special_instruction=si;
+        }
 
 	public boolean isArchived() {
 		return archived;

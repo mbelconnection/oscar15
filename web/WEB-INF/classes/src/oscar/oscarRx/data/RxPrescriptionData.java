@@ -1202,42 +1202,46 @@ public class RxPrescriptionData {
         }
 
         public void calcEndDate() {
-            GregorianCalendar cal = new GregorianCalendar(Locale.CANADA);
-            int days = 0;
-            //        p("in calcEndDate");
-            //          p("this.getRxDate()",this.getRxDate().toString());
-            cal.setTime(this.getRxDate());
+            try{
+                GregorianCalendar cal = new GregorianCalendar(Locale.CANADA);
+                int days = 0;
+                        p("in calcEndDate");
+                //          p("this.getRxDate()",this.getRxDate().toString());
+                cal.setTime(this.getRxDate());
 
-            if (this.getDuration()!=null && this.getDuration().length() > 0) {
-                if (Integer.parseInt(this.getDuration()) > 0) {
-                    int i = Integer.parseInt(this.getDuration());
-                    //      p("i",Integer.toString(i));
-                    //      p("this.getDurationUnit()",this.getDurationUnit());
-                    if (this.getDurationUnit().equalsIgnoreCase("D")) {
-                        days = i;
-                    }
-                    if (this.getDurationUnit().equalsIgnoreCase("W")) {
-                        days = i * 7;
-                    }
-                    if (this.getDurationUnit().equalsIgnoreCase("M")) {
-                        days = i * 30;
-                    }
+                if (this.getDuration()!=null && this.getDuration().length() > 0) {
+                    if (Integer.parseInt(this.getDuration()) > 0) {
+                        int i = Integer.parseInt(this.getDuration());
+                        //      p("i",Integer.toString(i));
+                        //      p("this.getDurationUnit()",this.getDurationUnit());
+                        if (this.getDurationUnit()!=null && this.getDurationUnit().equalsIgnoreCase("D")) {
+                            days = i;
+                        }
+                        if (this.getDurationUnit()!=null && this.getDurationUnit().equalsIgnoreCase("W")) {
+                            days = i * 7;
+                        }
+                        if (this.getDurationUnit()!=null && this.getDurationUnit().equalsIgnoreCase("M")) {
+                            days = i * 30;
+                        }
 
-                    if (this.getRepeat() > 0) {
-                        int r = this.getRepeat();
+                        if (this.getRepeat() > 0) {
+                            int r = this.getRepeat();
 
-                        r++; // if we have a repeat of 1, multiply days by 2
+                            r++; // if we have a repeat of 1, multiply days by 2
 
-                        days = days * r;
-                    }
-                    //    p("days",Integer.toString(days));
-                    if (days > 0) {
-                        cal.add(GregorianCalendar.DATE, days);
+                            days = days * r;
+                        }
+                        //    p("days",Integer.toString(days));
+                        if (days > 0) {
+                            cal.add(GregorianCalendar.DATE, days);
+                        }
                     }
                 }
-            }
 
-            this.endDate = cal.getTime();
+                this.endDate = cal.getTime();
+            }catch(Exception e){
+                e.printStackTrace();
+            }
             //     p("endDate",RxUtil.DateToString(this.endDate));
         }
 

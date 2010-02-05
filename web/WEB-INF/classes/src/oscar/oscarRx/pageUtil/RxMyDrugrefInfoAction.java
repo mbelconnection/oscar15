@@ -166,21 +166,26 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
         }
         //if hideResources are not in warnings, remove them from hiddenResource and set them to archived=0 in database;
         Hashtable hiddenResAttribute=(Hashtable)request.getSession().getAttribute("hideResources");
-        Enumeration hiddenResKeys=hiddenResAttribute.keys();
-        while(hiddenResKeys.hasMoreElements()){
-            String key=(String)hiddenResKeys.nextElement();
-            String value=(String)hiddenResAttribute.get(key);
-            Date updatedatId=new Date();
-            updatedatId.setTime(Long.parseLong(value));
-            String resId=key.replace(UserDSMessagePrefs.MYDRUGREF, "");
-            String id=resId+"."+value;
-            if(!currentIdWarnings.contains(id)){
-                hiddenResAttribute.remove(key);
-                //update database
-                setShowDSMessage(dsmessageDAO, provider, resId, updatedatId);
+        if(hiddenResAttribute==null){
+            Hashtable emptyHiddenRes=new Hashtable();
+            request.getSession().setAttribute("hideResources", emptyHiddenRes);
+        }else{
+            Enumeration hiddenResKeys=hiddenResAttribute.keys();
+            while(hiddenResKeys.hasMoreElements()){
+                String key=(String)hiddenResKeys.nextElement();
+                String value=(String)hiddenResAttribute.get(key);
+                Date updatedatId=new Date();
+                updatedatId.setTime(Long.parseLong(value));
+                String resId=key.replace(UserDSMessagePrefs.MYDRUGREF, "");
+                String id=resId+"."+value;
+                if(!currentIdWarnings.contains(id)){
+                    hiddenResAttribute.remove(key);
+                    //update database
+                    setShowDSMessage(dsmessageDAO, provider, resId, updatedatId);
+                }
             }
+            request.getSession().setAttribute("hideResources", hiddenResAttribute);
         }
-        request.getSession().setAttribute("hideResources", hiddenResAttribute);
         request.setAttribute("warnings",allRetVec);
         log2.debug("MyDrugref return time " + (System.currentTimeMillis() - start) );
         if(target!=null && target.equals("interactionsRx")) return mapping.findForward("updateInteractions");

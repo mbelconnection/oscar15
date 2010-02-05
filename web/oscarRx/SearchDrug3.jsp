@@ -884,7 +884,7 @@ body {
             $(elementId).innerHTML='more';
     }
 
-    function changeDrugName(randomId){
+    function changeDrugName(randomId,origDrugName){
             if (confirm('If you change the drug name and write your own drug, you will lose the following functionality:'
             + '\n  *  Known Dosage Forms / Routes'
             + '\n  *  Drug Allergy Information'
@@ -903,6 +903,8 @@ body {
                       callReplacementWebService("GetmyDrugrefInfo.do?method=view",'interactionsRxMyD');
                      </oscar:oscarPropertiesCheck>
                 }});
+        }else{
+            $("drugName_"+randomId).value=origDrugName;
         }
     }
     function resetStash(){

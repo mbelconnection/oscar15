@@ -165,7 +165,7 @@ public class Billingmaster {
     @Column(name = "oin_postalcode")
     private String oinPostalcode;
     @Column(name = "wcb_id")
-    private int wcbId;
+    private Integer wcbId;
     @Column(name = "paymentMethod")
     private int paymentMethod;
 
@@ -1319,7 +1319,7 @@ public class Billingmaster {
         return wcbId;
     }
 
-    public void setWcbId(int wcbId) {
+    public void setWcbId(Integer wcbId) {
         this.wcbId = wcbId;
     }
 }

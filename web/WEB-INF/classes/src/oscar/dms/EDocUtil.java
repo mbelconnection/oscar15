@@ -490,6 +490,8 @@ public class EDocUtil extends SqlUtilBaseS {
     }
 
     public static EDoc getDoc(String documentNo) {
+
+
         String sql = "SELECT DISTINCT c.module, c.module_id, d.* FROM document d, ctl_document c WHERE d.status=c.status AND d.status != 'D' AND " + "c.document_no=d.document_no AND c.document_no='" + documentNo + "' ORDER BY d.updatedatetime DESC";
 
         String indivoSql = "SELECT indivoDocIdx FROM indivoDocs i WHERE i.oscarDocNo = ? and i.docType = 'document' limit 1";
@@ -796,6 +798,19 @@ public static String getLastDocumentDesc() {
         return returnVal;
 
     }
+       //get noteId from tableId
+    public static ResultSet getAllNotesFromDocId(int docId){
+        String getNoteIdSql = "select note_id from casemgmt_note_link where table_name=5 and table_id=" + docId;
+         ResultSet rs=null;
+             rs= getSQL(getNoteIdSql);
+             return rs;
+    }
+
+    public static ResultSet getDemoNoFromNoteId(int noteId){
+        String sql = "select demographic_no from casemgmt_note where note_id="+noteId;
+        ResultSet rs=getSQL(sql);
+        return rs;
+    }
 
     //get tableId from noteId
     public static Long getTableIdFromNoteId(Long noteId){
@@ -866,6 +881,11 @@ public static String getLastDocumentDesc() {
             sqe.printStackTrace();
         }
         return retStr;
+    }
+
+    public static ResultSet getAllActiveDocs(){
+        String sql = "select c.module,c.module_id,c.document_no from ctl_document c where c.status='A'";
+        return getSQL(sql);
     }
 }
 

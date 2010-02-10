@@ -109,7 +109,7 @@ if(listRxDrugs!=null){
        <label for="specialInstr_<%=rand%>" ></label>
        <div id="siAutoComplete_<%=rand%>" <%if(isSpecInstPresent){%> style="overflow:visible;"<%} else{%> style="overflow:visible;display:none;"<%}%> >
            <label style="float:left;width:80px;">&nbsp;&nbsp;</label>
-           <input id="siInput_<%=rand%>" type="text" <%if(!isSpecInstPresent) {%>style="color:gray; width:auto" value="Enter Special Instruction" <%} else {%> style="color:black; width:auto" value="<%=specialInstruction%>" <%}%> onblur="changeText('siInput_<%=rand%>');updateSpecialInstruction('siInput_<%=rand%>');" onfocus="changeText('siInput_<%=rand%>');" >
+           <input id="siInput_<%=rand%>" type="text" size="60" <%if(!isSpecInstPresent) {%>style="color:gray; width:auto" value="Enter Special Instruction" <%} else {%> style="color:black; width:auto" value="<%=specialInstruction%>" <%}%> onblur="changeText('siInput_<%=rand%>');updateSpecialInstruction('siInput_<%=rand%>');" onfocus="changeText('siInput_<%=rand%>');" >
            <div id="siContainer_<%=rand%>" style="float:right" >              
            </div>
                        <br><br>

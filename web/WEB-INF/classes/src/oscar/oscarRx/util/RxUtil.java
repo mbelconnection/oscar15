@@ -351,27 +351,28 @@ public class RxUtil {
         }
         String amount = "0";
         String route = "";
-        //String frequency = "";
-        String frequency;
+        String frequency = "";
+        /*String frequency;
         if (rx.getFrequencyCode() == null) {
             frequency = "";
         } else {
             frequency = rx.getFrequencyCode();
-        }
+        }*/
         String form = "";
-        String duration;
-        if (rx.getDuration() == null) {
+        String duration="0";
+        /*if (rx.getDuration() == null) {
             duration = "0";
         } else {
             duration = rx.getDuration();
-        }
+        }*/
+        System.out.println("duration="+duration);
         String method = "";
-        String durationUnit;
-        if (rx.getDurationUnit() == null) {
+        String durationUnit="";
+        /*if (rx.getDurationUnit() == null) {
             durationUnit = "";
         } else {
             durationUnit = rx.getDurationUnit();
-        }
+        }*/
         String durationUnitSpec = "";
         boolean prn = false;
         String amountFrequency = "";
@@ -380,9 +381,9 @@ public class RxUtil {
         String takeMaxFrequency = "";
         String takeMinMethod = "";
         String takeMaxMethod = "";
-        //String takeMin = "0";
-        //String takeMax = "0";
-        String takeMin;
+        String takeMin = "0";
+        String takeMax = "0";
+      /*  String takeMin;
         String takeMax;
         if (rx.getTakeMinString() == null) {
             takeMin = "0";
@@ -393,7 +394,7 @@ public class RxUtil {
             takeMax = "0";
         } else {
             takeMax = rx.getTakeMaxString();
-        }
+        }*/
         String durationSpec = "";
         int quantity = 0;
 
@@ -410,17 +411,10 @@ public class RxUtil {
                 }
             }
 
-            /*       String[] routes = {"\\s(?i)PO$", "(?i)SL$", "(?i)IM$", "(?i)SC$", "(?i)PATCH$", "(?i)TOP\\.$", "(?i)INH$",
-            "(?i)SUPP$", "(?i)O\\.D\\.$", "(?i)O\\.S\\.$", "(?i)O\\.U\\.$", "(?i)OD$", "(?i)OS$", "(?i)OU$"};
-            String[] frequences = {"\\s(?i)OD\\s*", "\\s(?i)BID\\s*", "\\s(?i)TID\\s*", "\\s(?i)QID\\s*", "\\s(?i)Q1H\\s*", "\\s(?i)Q2H\\s*", "\\s(?i)Q1-2H\\s*", "\\s(?i)Q3-4H\\s*", "\\s(?i)Q4H\\s*", "\\s(?i)Q4-6H\\s*",
-            "\\s(?i)Q6H\\s*", "\\s(?i)Q8H\\s*", "\\s(?i)Q12H\\s*", "\\s(?i)QAM\\s*", "\\s(?i)QPM\\s*", "\\s(?i)QHS\\s*", "\\s(?i)Q1Week\\s*", "\\s(?i)Q2Week\\s*", "\\s(?i)Q1Month\\s*", "\\s(?i)Q3Month\\s*"};
-            String[] methods = {"(?i)Take", "(?i)Apply", "(?i)Rub well in"};
-            String[] durationUnits = {"\\s+(?i)days\\s*", "\\s+(?i)weeks\\s*", "\\s+(?i)months\\s*", "\\s+(?i)day\\s*", "\\s+(?i)week\\s*", "\\s+(?i)month\\s*",
-            "\\s+(?i)d\\s*", "\\s+(?i)w\\s*", "\\s+(?i)m\\s*"};
-             */
-            String[] routes = {"\\s(?i)PO$", "(?i)SL$", "(?i)IM$", "(?i)SC$", "(?i)PATCH$", "(?i)TOP\\.$", "(?i)INH$",
-                "(?i)SUPP$", "(?i)O.D.$", "(?i)O.S.$", "(?i)O.U.$", "(?i)OD$", "(?i)OS$", "(?i)OU$", "\\s(?i)PO\\s", "(?i)SL\\s", "(?i)IM\\s", "(?i)SC\\s", "(?i)PATCH\\s", "(?i)TOP\\.\\s", "(?i)INH\\s",
-                "(?i)SUPP\\s", "(?i)O.D.\\s", "(?i)O.S.\\s", "(?i)O.U.\\s", "(?i)OD\\s", "(?i)OS\\s", "(?i)OU\\s"};
+            String[] routes = {"\\s(?i)PO$", "\\s(?i)SL$", "\\s(?i)IM$", "\\s(?i)SC$", "\\s(?i)PATCH$", "\\s(?i)TOP\\.$", "\\s(?i)INH$",
+                "\\s(?i)SUPP$", "\\s(?i)O.D.$", "\\s(?i)O.S.$", "\\s(?i)O.U.$", "\\s(?i)OD$", "\\s(?i)OS$", "\\s(?i)OU$", "\\s(?i)PO\\s", "\\s(?i)SL\\s", "\\s(?i)IM\\s",
+                "\\s(?i)SC\\s", "\\s(?i)PATCH\\s", "\\s(?i)TOP\\.\\s", "\\s(?i)INH\\s",
+                "\\s(?i)SUPP\\s", "\\s(?i)O.D.\\s", "\\s(?i)O.S.\\s", "\\s(?i)O.U.\\s", "\\s(?i)OD\\s", "\\s(?i)OS\\s", "\\s(?i)OU\\s"};
             String[] frequences = {"\\s(?i)OD\\s", "\\s(?i)BID\\s", "\\s(?i)TID\\s", "\\s(?i)QID\\s", "\\s(?i)Q1H\\s", "\\s(?i)Q2H\\s", "\\s(?i)Q1-2H\\s", "\\s(?i)Q3-4H\\s",
                 "\\s(?i)Q4H\\s", "\\s(?i)Q4-6H\\s", "\\s(?i)Q6H\\s", "\\s(?i)Q8H\\s", "\\s(?i)Q12H\\s", "\\s(?i)QAM\\s", "\\s(?i)QPM\\s", "\\s(?i)QHS\\s", "\\s(?i)Q1Week\\s",
                 "\\s(?i)Q2Week\\s", "\\s(?i)Q1Month\\s", "\\s(?i)Q3Month\\s",
@@ -612,7 +606,7 @@ public class RxUtil {
                         //         p("" + m1.start(), "" + m.start());
                         durationSpec = instructions.substring(m1.start(), m.start());
                         duration = durationSpec.trim();
-                        //        p("duration here1", duration);
+                                p("duration here1", duration);
                     }
                     break;
                 }
@@ -634,8 +628,8 @@ public class RxUtil {
                         if (m1.find()) {
                             duration = str1.substring(m1.start(), m1.end());
                             durationUnitSpec = (str1.substring(m1.end())).trim();
-                            //        System.out.println("duration=" + duration);
-                            //         System.out.println("durationUnitSpec=" + durationUnitSpec);
+                                    System.out.println("duration=" + duration);
+                                     System.out.println("durationUnitSpec=" + durationUnitSpec);
                             break;
                         }
                     }
@@ -718,9 +712,46 @@ public class RxUtil {
                 isUnitNameUsed=false;
             else
                 isUnitNameUsed=true;
+            //if duration is 0 or null or length==0,it means duration is not specified by user
+                //if quantity,frequency, durationUnit are valid values,isUnitNameUsed==false
+                        //yes,calculate duration based on quantity because duration is not specified
+                        //no,leave duration an invalid value
+           //else if duration is a valid value
+                //if frequency, durationUnit,takeMax are valid too
+                    //yes, calculate quantity
+                    //no, leave quantity intact.
+            //--start new code
+            if(duration.equals("0") || duration.length()==0 || duration==null){//if duration is not valid, find duration based on quantity
+                if(!isUnitNameUsed && rx.getQuantity()!=null && !rx.getQuantity().equalsIgnoreCase("null") &&
+                    !rx.getQuantity().equals("") && !durationUnit.equals("") && !frequency.equals("") && !takeMax.equals("0")){
+                    quantity=Integer.parseInt(rx.getQuantity());
+                    double quantityD=quantity;
+                    nPerDay = findNPerDay(frequency);
+                    nDays = findNDays(durationUnit);
+                    double durationD=quantityD/((Double.parseDouble(takeMax)) * nPerDay * nDays);
+                    Integer durationI=(int)durationD;
+                    duration=durationI.toString();
+                    rx.setDuration(duration);
+                }else
+                    rx.setDuration("0");
+            }else{//if duration is valid, find quantity based on duration
+                rx.setDuration(duration);
+                if (!isUnitNameUsed && !durationUnit.equals("") && !takeMin.equals("0") && !takeMax.equals("0") && !frequency.equals("")) {
+                    nPerDay = findNPerDay(frequency);
+                    nDays = findNDays(durationUnit);
+                    System.out.println("in instrucParser duration="+duration);
+                    //quantity=takeMax * nDays * duration * nPerDay
+                    double quantityD = (Double.parseDouble(takeMax)) * nPerDay * nDays * (Double.parseDouble(duration));
+                    quantity = (int) quantityD;
+                    System.out.println("in instrucParser,else="+quantity+"-- "+takeMax+" --"+nPerDay+"-- "+ nDays+"-- "+ duration);
+                }
+
+            }
+
+            //--end new code
             //calculate quantity based on duration, frequency, duration unit, takeMin , takeMax
             //if unitName is used, don't calculate quantity or duration
-            if (isUnitNameUsed || duration.equals("0")||duration.length()==0 || durationUnit.equals("") || takeMin.equals("0") || takeMax.equals("0") || frequency.equals("")) {
+     /*       if (isUnitNameUsed || duration.equals("0")||duration.length()==0 || durationUnit.equals("") || takeMin.equals("0") || takeMax.equals("0") || frequency.equals("")) {
                 System.out.println("in instrucParser,if="+rx.getUnitName()+"--"+duration+" --"+durationUnit+"-- "+ takeMin+"-- "+ takeMax+"--"+frequency);
             } else {
 
@@ -733,7 +764,7 @@ public class RxUtil {
                 quantity = (int) quantityD;
                 System.out.println("in instrucParser,else="+quantity+"-- "+takeMax+" --"+nPerDay+"-- "+ nDays+"-- "+ duration);
             }
-
+*/
             //if drug route is in rx is different from specified, set it to specified.
             if (!route.equals("") && !route.equalsIgnoreCase(rx.getRoute())) {
                 rx.setRoute(route);
@@ -743,13 +774,13 @@ public class RxUtil {
             rx.setTakeMin(Float.parseFloat(takeMin));
             rx.setMethod(method);
             rx.setFrequencyCode(frequency);
-            if (!duration.equals("0")) {
+         /*   if (!duration.equals("0")) {
                 rx.setDuration(duration);
-            }
+            }*/
             rx.setDurationUnit(durationUnit);
             rx.setPrn(prn);
             System.out.println("in instrucParser,quantity="+quantity +" ; unitName="+rx.getUnitName());
-            if (quantity != 0) {
+            if (!isUnitNameUsed && quantity != 0) {
                 rx.setQuantity(Integer.toString(quantity));
             }
             rx.setSpecial(instructions);

@@ -25,6 +25,7 @@ package oscar.oscarRx.pageUtil;
 
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Locale;
 
 import javax.servlet.ServletException;
@@ -147,7 +148,7 @@ public final class RxStashAction extends DispatchAction {
     HttpServletRequest request,
     HttpServletResponse response)
     throws IOException, ServletException {
-       //         System.out.println("===========start in deletePrescribe ===========");
+                System.out.println("===========start in deletePrescribe ===========");
         // Extract attributes we will need
         Locale locale = getLocale(request);
         MessageResources messages = getResources(request);
@@ -160,7 +161,7 @@ public final class RxStashAction extends DispatchAction {
         }
 
         int randomId=Integer.parseInt(request.getParameter("randomId"));
-    //    System.out.println("randomId="+randomId);
+       System.out.println("randomId="+randomId);
                 bean.removeStashItem(bean.getIndexFromRx(randomId));
                 if(bean.getStashIndex() >= bean.getStashSize()) {
                     bean.setStashIndex(bean.getStashSize() - 1);
@@ -181,7 +182,7 @@ public final class RxStashAction extends DispatchAction {
             String myDrugrefId = null;
             if (prop != null){
                 myDrugrefId = prop.getValue();
-                //System.out.println("3myDrugrefId"+myDrugrefId);
+                System.out.println("3myDrugrefId"+myDrugrefId);
             }
             RxPrescriptionData.Prescription[] rxs=bean.getStash();
             //acd contains all atccodes in stash
@@ -189,18 +190,18 @@ public final class RxStashAction extends DispatchAction {
             for(RxPrescriptionData.Prescription rxItem:rxs){
                 acd.add(rxItem.getAtcCode());
             }
-            //System.out.println("3acd="+acd);
+            System.out.println("3acd="+acd);
 
             String[] str = new String[]{"warnings_byATC,bulletins_byATC,interactions_byATC,get_guidelines"};   //NEW more efficent way of sending multiple requests at the same time.
             Vector allInteractions = new Vector();
             for (String command : str){
                 try{
                     Vector v = getMyDrugrefInfo(command,  acd,myDrugrefId) ;
-                    //System.out.println("2v in for loop: "+v);
+                    System.out.println("2v in for loop: "+v);
                     if (v !=null && v.size() > 0){
                         allInteractions.addAll(v);
                     }
-                    //System.out.println("3after all.addAll(v): "+allInteractions);
+                    System.out.println("3after all.addAll(v): "+allInteractions);
                 }catch(Exception e){
                     log2.debug("3command :"+command+" "+e.getMessage());
                     e.printStackTrace();
@@ -208,43 +209,65 @@ public final class RxStashAction extends DispatchAction {
             }
 
 
-            Vector allInteractingPairs=new Vector();
+
+            String retStr="";
+            HashMap rethm=new HashMap();
+
             for (RxPrescriptionData.Prescription rxItem:rxs){
-                Vector interactedDrugs=new Vector();
-                //System.out.println("3rxItem="+rxItem.getDrugName());
+                System.out.println("rxItem="+rxItem.getDrugName());
                 Vector uniqueDrugNameList=new Vector();
                 for(int i=0;i<allInteractions.size();i++){
                     Hashtable hb=(Hashtable)allInteractions.get(i);
                     String interactingAtc=(String)hb.get("atc");
                     String interactingDrugName=(String)hb.get("drug2");
                     String effectStr=(String)hb.get("effect");
-                    String significanceStr=(String)hb.get("significance");
-                    if(rxItem.getAtcCode().equals(interactingAtc) && effectStr!=null && effectStr.length()>0 && !effectStr.equalsIgnoreCase("N")&& !effectStr.equals(" ")){
-                        //System.out.println("3interactingDrugName="+interactingDrugName);
+                    String sigStr=(String)hb.get("significance");
+                    if(sigStr.equals("1")){
+                        sigStr="minor";
+                    }else if(sigStr.equals("2")){
+                        sigStr="moderate";
+                    }else if(sigStr.equals("3")){
+                        sigStr="major";
+                    }else {
+                        sigStr="unknown";
+                    }
+                    if(rxItem.getAtcCode().equals(interactingAtc) && effectStr!=null &&
+                            effectStr.length()>0 && !effectStr.equalsIgnoreCase("N")&& !effectStr.equals(" ")){
+                        System.out.println("interactingDrugName="+interactingDrugName);
                         RxPrescriptionData.Prescription rrx=findRxFromDrugNameOrGN(rxs,interactingDrugName);
-                        //System.out.println("3rrx.getDrugName()="+rrx.getDrugName());
+
                         if(rrx!=null && !uniqueDrugNameList.contains(rrx.getDrugName())) {
+                            System.out.println("rrx.getDrugName()="+rrx.getDrugName());
                             uniqueDrugNameList.add(rrx.getDrugName());
-                            Vector oneDrugInfo=new Vector();
-                            oneDrugInfo.add(rrx.getDrugName());
-                            oneDrugInfo.add(effectStr);
-                            oneDrugInfo.add(significanceStr);
-                            interactedDrugs.add(oneDrugInfo);
-                            System.out.println("3interactedDrugs="+interactedDrugs);
+
+                            String key=sigStr+"_"+rxItem.getRandomId();
+
+                            if(rethm.containsKey(key)){
+                                String val=(String)rethm.get(key);
+                                val+=";"+rrx.getDrugName();
+                                rethm.put(key, val);
+                            }else{
+                                rethm.put(key, rrx.getDrugName());
+                            }
+
+                            key=sigStr+"_"+rrx.getRandomId();
+                            if(rethm.containsKey(key)){
+                                String val=(String)rethm.get(key);
+                                val+=";"+rxItem.getDrugName();
+                                rethm.put(key, val);
+                            }else{
+                                rethm.put(key, rxItem.getDrugName());
+                            }
                         }
                     }
                 }
-
-                if(interactedDrugs.size()>0){
-                    Hashtable interactingPairs=new Hashtable();
-                    interactingPairs.put(rxItem.getRandomId(), interactedDrugs);
-                    allInteractingPairs.add(interactingPairs);
-                }
-                System.out.println("3***next rxItem***");
+                System.out.println("***next rxItem***");
             }
-            System.out.println("3allInteractingPairs="+allInteractingPairs);
-            bean.setInteractingDrugList(allInteractingPairs);
-            request.setAttribute("abc", allInteractingPairs);
+            System.out.println("rethm="+rethm);
+            retStr=rethm.toString();
+            retStr=retStr.replace("}", "");
+            retStr=retStr.replace("{", "");
+            bean.setInteractingDrugList(retStr);
 
         return mapping.findForward("success");
     }

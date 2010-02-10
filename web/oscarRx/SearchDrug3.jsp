@@ -949,7 +949,6 @@ body {
                     str=str.replace(/<\/script>/,'');
                     eval(str);
                     //oscarLog("str="+str);
-                    //console.log(transport.responseText);
                     oscarLog("in asdfadf");
                     <oscar:oscarPropertiesCheck property="MYDRUGREF_DS" value="yes">
                       callReplacementWebService("GetmyDrugrefInfo.do?method=view",'interactionsRxMyD');
@@ -1411,7 +1410,6 @@ function addFav(randomId,brandName){
         var ran_number=Math.round(Math.random()*1000000);
         var params = "resId="+resourceId+"&updatedat="+updated+"&rand="+ran_number;  //hack to get around ie caching the page
         //totalHiddenResources++;
-        //console.log("params: "+params);
         new Ajax.Updater('showHideTotal',url, {method:'get',parameters:params,asynchronous:true,evalScripts:true,onSuccess:function(transport){
 
                 //oscarLog("successfully sent data "+url);

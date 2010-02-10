@@ -17,20 +17,14 @@
 
 <script type="text/javascript">
             var interactStr='<%=interactingDrugList%>';
-            console.log("interactStr="+interactStr);
             var randomIds='<%=allRandomIdInStash%>';
-                //console.log("interactionSize in deletePrescribe  "+interactionSize);
-                //console.log("interactionDrugList in deletePrescribe  "+interactionDrugList);
-                console.log("allRandomIdInStash  "+randomIds);
                 //clear all warnings
                 randomIds=randomIds.replace(/\[/, "");
                 randomIds=randomIds.replace(/\]/, "");
                 var randomIdArr=randomIds.split(",");
-                console.log("randomIdArr="+randomIdArr);
                 for(var h=0;h<randomIdArr.length;h++){
                     var randId=randomIdArr[h];
                     randId=randId.replace(/\s/g,"");//trim
-                    console.log("randId="+randId);
                     $('major_'+randId).hide();
                     $('major_'+randId).update("");
                     $('moderate_'+randId).hide();
@@ -48,7 +42,6 @@
                     var id=arr2[0];
                     var title=arr2[1];
                     var htmlStr="<a title='"+title+"'>&nbsp;&nbsp;</a>";
-                    console.log('id='+id);
                     id=id.replace(/\s/g,"");
                     $(id).show();
                     $(id).update(htmlStr);

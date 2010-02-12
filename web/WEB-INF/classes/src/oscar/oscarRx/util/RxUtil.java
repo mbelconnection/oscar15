@@ -819,6 +819,8 @@ public class RxUtil {
     }
     public static String trimSpecial(RxPrescriptionData.Prescription rx) {
         String special = rx.getSpecial();
+        if(special==null || special.trim().length()==0)
+            return "";
         //if rx has special instruction, remove it from special
         if(rx.getSpecialInstruction()!=null && !rx.getSpecialInstruction().equalsIgnoreCase("null")&&rx.getSpecialInstruction().trim().length()>0){
             special=special.replace(rx.getSpecialInstruction(), "");
@@ -835,26 +837,39 @@ public class RxUtil {
         special = m.replaceAll("");
         //remove brand name
         String regex3 = rx.getBrandName();
+        if(regex3!=null){
+            regex3=regex3.trim();
+            special=special.replace(regex3,"");
+     /*   System.out.println("regex3== "+regex3);
         if (regex3 != null) {
             p = Pattern.compile(regex3);
             m = p.matcher(special);
             special = m.replaceAll("");
+        }*/
         }
         //remove generic name
         String regex4 = rx.getGenericName();
-        if (regex4 != null) {
+        if(regex4!=null){
+            regex4=regex4.trim();
+            special=special.replace(regex4, "");
+        }
+        /*if (regex4 != null) {
             p = Pattern.compile(regex4);
             m = p.matcher(special);
             special = m.replaceAll("");
-        }
+        }*/
         //remove custom name
         String regex5 = rx.getCustomName();
-        System.out.println("regex5=" + regex5);
+        if(regex5!=null){
+            regex5=regex5.trim();
+            special=special.replace(regex5, "");
+        }
+     /*   System.out.println("regex5=" + regex5);
         if (regex5 != null) {
             p = Pattern.compile(regex5);
             m = p.matcher(special);
             special = m.replaceAll("");
-        }
+        }*/
         System.out.println("special=" + special);
         //assume drug name is before method and drug name is the first part of the instruction.
         if (special.indexOf("Take") != -1) {

@@ -33,11 +33,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.Vector;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -45,15 +42,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DispatchAction;
 import org.apache.struts.util.MessageResources;
-import org.apache.xmlrpc.XmlRpcClientLite;
 import org.oscarehr.casemgmt.model.CaseManagementNote;
 import org.oscarehr.casemgmt.model.CaseManagementNoteLink;
 import org.oscarehr.casemgmt.service.CaseManagementManager;
@@ -63,14 +57,11 @@ import org.oscarehr.util.MiscUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import oscar.OscarProperties;
 import oscar.log.LogAction;
 import oscar.log.LogConst;
 import oscar.oscarRx.data.RxDrugData;
 import oscar.oscarRx.data.RxPrescriptionData;
 import oscar.oscarRx.util.RxUtil;
-import oscar.oscarRx.util.TimingOutCallback;
-import oscar.oscarRx.util.TimingOutCallback.TimeoutException;
 
 public final class RxWriteScriptAction extends DispatchAction {
 

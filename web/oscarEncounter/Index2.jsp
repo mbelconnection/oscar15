@@ -1432,7 +1432,7 @@ function grabEnterGetTemplate(event){
 								<td>
 								<div class="RowTop">
 								<div class="RowTop"><a href=#
-									onClick="popupPage(700,960,'Rx','../oscarRx/choosePatient.do?providerNo=<%=bean.providerNo%>&demographicNo=<%=bean.demographicNo%>');return false;"><bean:message
+									onClick="popupPage(700,1027,'Rx','../oscarRx/choosePatient.do?providerNo=<%=bean.providerNo%>&demographicNo=<%=bean.demographicNo%>');return false;"><bean:message
 									key="global.prescriptions" /></a></div>
 								</div>
 								</td>

@@ -1588,7 +1588,9 @@ if(oscarVariables.getProperty("demographicExt") != null) {
                                  decF.applyPattern("0000");
 
 								 GregorianCalendar hcRenewalCal=new GregorianCalendar();
-								 hcRenewalCal.setTime(demographic.getHcRenewDate());
+                                                                 if(demographic != null && demographic.getHcRenewDate() != null){
+								    hcRenewalCal.setTime(demographic.getHcRenewDate());
+                                                                 }
 								 
                                  String renewDateYear = decF.format(hcRenewalCal.get(GregorianCalendar.YEAR));
                                  // Month and Day

@@ -60,6 +60,8 @@ MessageHandler handler = f.getHandler(segmentID);
 Hl7textResultsData data = new Hl7textResultsData();
 String multiLabId = data.getMatchingLabs(segmentID);
 
+String hl7 = f.getHL7Body(segmentID);
+
 
 // check for errors printing
 if (request.getAttribute("printError") != null && (Boolean) request.getAttribute("printError")){
@@ -728,6 +730,7 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
             </table>
             
         </form>
-        
+     <a style="color:white;" href="javascript: void();" onclick="showHideItem('rawhl7');" >show</a>
+     <pre id="rawhl7" style="display:none;"><%=hl7%></pre>
     </body>
 </html>

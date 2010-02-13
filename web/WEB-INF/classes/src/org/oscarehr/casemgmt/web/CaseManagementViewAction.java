@@ -581,7 +581,8 @@ public class CaseManagementViewAction extends BaseCaseManagementViewAction {
 		boolean hideInactiveIssues=Boolean.parseBoolean(caseForm.getHideActiveIssue());
 		
 		ArrayList<CheckBoxBean> checkBoxBeanList = new ArrayList<CheckBoxBean>();
-		addLocalIssues(checkBoxBeanList, demographicNo, hideInactiveIssues, null);
+		//addLocalIssues(checkBoxBeanList, demographicNo, hideInactiveIssues, null);
+		addLocalIssues(checkBoxBeanList, demographicNo, hideInactiveIssues, Integer.valueOf(programId));
 		addRemoteIssues(checkBoxBeanList, demographicNo, hideInactiveIssues);
 		
     	request.setAttribute("Issues", checkBoxBeanList);
@@ -1084,6 +1085,11 @@ public class CaseManagementViewAction extends BaseCaseManagementViewAction {
 
 		for (CaseManagementIssue cmi : localIssues)
 		{
+			//filter issues if there is no "read *** issues" assigned to this provider
+			if(cmi!=null){
+				if(!cmi.isReadAccess(programId)) continue;
+			}
+			
 			CheckBoxBean checkBoxBean=new CheckBoxBean();
 			
 			checkBoxBean.setIssue(cmi);

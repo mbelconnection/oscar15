@@ -1021,7 +1021,13 @@ public class CaseManagementManager {
 					add = true;
 				}
 			}
-
+			
+			//global default role access
+			String accessName="read " + noteRoleName + " notes";
+			if(roleProgramAccessDAO.hasAccess(accessName,role.getId())) {
+					add=true;
+			}
+			
 			// did it pass the test?
 			if (add) {
 				filteredNotes.add(cmNote);
@@ -1073,7 +1079,7 @@ public class CaseManagementManager {
 		ProgramProvider pp = (ProgramProvider) ppList.get(0);
 		Role role = pp.getRole();
 
-		// get program accesses... program allows either all roles or not all roles (does this mean no roles?)
+		// get program accesses... program allows either all roles or some particular roles
 		List paList = programAccessDAO.getAccessListByProgramId(new Long(programId));
 		Map paMap = convertProgramAccessListToMap(paList);
 
@@ -1091,6 +1097,11 @@ public class CaseManagementManager {
 				}
 			}
 			if (pa == null && r.getId().intValue() == role.getId().intValue()) {
+				allowableSearchRoles.add(r);
+			}
+			
+			//global default role access			
+			if(roleProgramAccessDAO.hasAccess(key,role.getId())) {
 				allowableSearchRoles.add(r);
 			}
 		}

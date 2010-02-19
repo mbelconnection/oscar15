@@ -1086,9 +1086,9 @@ public class CaseManagementViewAction extends BaseCaseManagementViewAction {
 		for (CaseManagementIssue cmi : localIssues)
 		{
 			//filter issues if there is no "read *** issues" assigned to this provider
-			if(cmi!=null){
-				if(!cmi.isReadAccess(programId)) continue;
-			}
+			//if(cmi!=null){
+			//	if(!cmi.isReadAccess(programId)) continue;
+			//}
 			
 			CheckBoxBean checkBoxBean=new CheckBoxBean();
 			

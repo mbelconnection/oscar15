@@ -55,6 +55,18 @@ public class BillingReProcessBillAction
     extends Action {
   Misc misc = new Misc();
   MSPReconcile msp = new MSPReconcile();
+
+
+   public String getNameVerify(String firstName,String lastName){
+        if (lastName.length() < 2){
+           lastName += "   ";
+        }
+        if (firstName.length() < 1){
+           firstName += "   ";
+        }
+        return oscar.util.UtilMisc.mysqlEscape(firstName.substring(0, 1) + " " + lastName.substring(0, 2));
+    }
+
   public ActionForward execute(ActionMapping mapping,
                                ActionForm form,
                                HttpServletRequest request,
@@ -79,8 +91,7 @@ public class BillingReProcessBillAction
     String providerNo = frm.getProviderNo(); //f
     String demographicFirstName = demo.getFirstName(); //d
     String demographicLastName = demo.getLastName(); //d
-    String name_verify = demographicFirstName.substring(0, 1) + " " +
-        demographicLastName.substring(0, 2); //d
+    String name_verify = getNameVerify(demographicFirstName,demographicLastName); //d
     String billingGroupNo = billform.getGroupNo(providerNo);
     String practitionerNo = billform.getPracNo(providerNo); //p
 

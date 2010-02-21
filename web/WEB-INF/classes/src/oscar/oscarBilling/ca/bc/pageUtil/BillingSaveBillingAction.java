@@ -58,6 +58,20 @@ import oscar.oscarEncounter.data.Echart;
 public class BillingSaveBillingAction
     extends Action {
   private static Log log = LogFactory.getLog(BillingSaveBillingAction.class);
+
+  // Temporary fix for 9.06
+   public String getNameVerify(String firstName,String lastName){
+        if (lastName.length() < 2){
+           lastName += "   ";
+        }
+        if (firstName.length() < 1){
+           firstName += "   ";
+        }
+        return oscar.util.UtilMisc.mysqlEscape(firstName.substring(0, 1) + " " + lastName.substring(0, 2));
+    }
+
+
+
   public ActionForward execute(ActionMapping mapping,
                                ActionForm form,
                                HttpServletRequest request,
@@ -223,7 +237,7 @@ public class BillingSaveBillingAction
               + "'" + bean.getBillingGroupNo() + "',"
               + "'" + bean.getBillingPracNo() + "',"
               + "'" + bean.getPatientPHN() + "',"
-              + "'" + oscar.util.UtilMisc.mysqlEscape(bean.getPatientFirstName().substring(0, 1) + " " + bean.getPatientLastName().substring(0, 2)) + "',"
+              + "'" + getNameVerify(bean.getPatientFirstName(),bean.getPatientLastName()) + "',"
               + "'" + bean.getDependent() + "',"
               + "'" + ( (oscar.oscarBilling.ca.bc.pageUtil.BillingBillingManager.BillingItem) billItem.get(i)).getUnit() + "',"
               + "'" + bean.getVisitLocation().substring(0, 2) + "',"

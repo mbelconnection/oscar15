@@ -29,9 +29,9 @@
 <%@ taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi"%>
 <%@page import="java.util.Enumeration"%>
 <%@page import="oscar.oscarEncounter.pageUtil.NavBarDisplayDAO"%>
-<%@page	import="java.util.Arrays, java.util.Properties, java.util.List, java.util.Set, java.util.ArrayList, java.util.Enumeration, java.util.HashSet, java.util.Iterator, java.text.SimpleDateFormat, java.util.Calendar, java.util.Date, java.text.ParseException" %>
+<%@page	import="java.util.Arrays,java.util.Properties,java.util.List,java.util.Set,java.util.ArrayList,java.util.Enumeration,java.util.HashSet,java.util.Iterator,java.text.SimpleDateFormat,java.util.Calendar,java.util.Date,java.text.ParseException"%>
 <%@page import="org.apache.commons.lang.StringEscapeUtils"%>
-<%@page	import="org.oscarehr.common.model.UserProperty, org.oscarehr.casemgmt.model.*"%>
+<%@page import="org.oscarehr.common.model.UserProperty,org.oscarehr.casemgmt.model.*,org.oscarehr.casemgmt.service.* "%>
 <%@page import="org.oscarehr.casemgmt.web.formbeans.*"%>
 <%@page import="org.oscarehr.PMmodule.model.*"%>
 <%@page import="org.oscarehr.common.model.*"%>
@@ -44,7 +44,9 @@
 <%@page import="oscar.dms.EDoc"%>
 <%@page	import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="com.quatro.dao.security.*,com.quatro.model.security.Secrole"%>
-
+<%@page import="org.oscarehr.util.SpringUtils"%>
+<%@page import="oscar.oscarRx.data.RxPrescriptionData"%>
+<%@page import="org.oscarehr.casemgmt.dao.CaseManagementNoteLinkDAO"%>
 <%@page import="java.lang.Character"%>
 
 <%@page import="org.oscarehr.util.EncounterUtil"%><jsp:useBean
@@ -55,10 +57,12 @@
 
 
 <%
+    CaseManagementManager caseManagementManager=(CaseManagementManager)SpringUtils.getBean("caseManagementManager");
     String demographicNo = request.getParameter("demographicNo");
     oscar.oscarEncounter.pageUtil.EctSessionBean bean = null;
     String strBeanName = "casemgmt_oscar_bean" + demographicNo;
-    if((bean=(oscar.oscarEncounter.pageUtil.EctSessionBean)request.getSession().getAttribute(strBeanName))==null) {
+	if ((bean = (oscar.oscarEncounter.pageUtil.EctSessionBean)request.getSession().getAttribute(strBeanName)) == null)
+	{
         response.sendRedirect("error.jsp");
         return;
     }
@@ -68,8 +72,8 @@
     String provNo = bean.providerNo;
     //Properties windowSizes = oscar.oscarEncounter.pageUtil.EctWindowSizes.getWindowSizes(provNo);
 
-    String pId=(String)session.getAttribute("case_program_id");
-    if (pId==null) pId="";
+	String pId = (String)session.getAttribute("case_program_id");
+	if (pId == null) pId = "";
 
     String dateFormat = "dd-MMM-yyyy H:mm";
     long savedId = 0;
@@ -645,6 +649,7 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
                         String messagesColour="color:#"+blackColour+";background-color:#"+Colour.messages+";" ;
                         String preventionColour="color:#"+blackColour+";background-color:#"+Colour.prevention+";" ;
                         String ticklerColour="color:#"+blackColour+";background-color:#"+Colour.tickler+";" ;
+                        String rxColour="color:#" + blackColour + ";background-color:#"+Colour.rx+";";
 
                     for(pos = noteSize-1; pos >= 0; --pos) {
                         CaseManagementNote cmNote = (CaseManagementNote)noteList.get(pos);
@@ -681,6 +686,8 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
                                 System.out.println("nId value inside if="+nId);
                                 bgColour = documentColour;
                             //    }
+                        } else if (cmNote.isRxAnnotation()){
+                            bgColour=rxColour;
                         }
 
 
@@ -826,11 +833,36 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
 			style='float: right; margin-right: 5px; margin-top: 2px;'
 			src='<c:out value="${ctx}"/>/oscarEncounter/graphics/printer.png' > <%
 
-                        if (!note.isDocumentNote()) {
+                        if (!note.isDocumentNote()&&!note.isRxAnnotation()) {
 
                                %>
                         <a title="<bean:message key="oscarEncounter.edit.msgEdit"/>" id="edit<%=note.getId()%>" href="#" onclick="<%=editWarn?"noPrivs(event)":"editNote(event)"%> ;return false;" style="float:right; margin-right:5px; font-size:8px;"><bean:message key="oscarEncounter.edit.msgEdit"/></a>
- <% }
+ <% }else if(note.isRxAnnotation()){//prescription note
+                                    System.out.println("note is rx annotation");
+                                    String winName="dummie";
+                                    int hash = Math.abs(winName.hashCode());
+                                    //get drug from note id.
+                                    CaseManagementNoteLink cmnl=caseManagementManager.getLatestLinkByNote(Long.parseLong(note.getId().toString()));
+                                    RxPrescriptionData.Prescription rx=note.getRxFromAnnotation(cmnl);
+
+                                    
+						%>
+				 		<a title="<bean:message key="oscarEncounter.edit.msgEdit"/>" id="edit<%=note.getId()%>"
+				 		href="javascript:void(0);" onclick="<%=editWarn?"noPrivs(event)":"editNote(event)"%> ;return false;" style="float: right; margin-right: 5px; font-size: 8px;">
+				 		<bean:message key="oscarEncounter.edit.msgEdit" />
+				 		</a>
+				 		<%
+					
+                                    if(rx!=null){
+                                        String url="popupPage(700,800,'" + hash + "', '" + request.getContextPath() + "/oscarRx/StaticScript2.jsp?regionalIdentifier="+rx.getRegionalIdentifier()+"&cn="+response.encodeURL(rx.getCustomName())+"');";
+                                        //System.out.println("url="+url);
+
+                                        %>
+                                        <a class="links" title="<%=rx.getSpecial()%>" id="view<%=note.getId()%>" href="javascript:void(0);" onclick="<%=url%>" style="float: right; margin-right: 5px; font-size: 8px;"> <bean:message key="oscarEncounter.view.rxView" /> </a>
+                                        <%
+                                        }
+
+                                }
                              else if (note.isDocumentNote() && !note.getProviderNo().equals("-1") ){ //document annotation
 
                                 String url;
@@ -1031,9 +1063,6 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
 --%> <%
                 }
                 %>
-	<%-- The BRs are here because the drop down list is not in the scrolling pane view so we need some padding at the end so when the drop down occurs it's in the view--%>            
-	<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />
-	
 	</div>
 	<div id='save'
 		style="width: 99%; background-color: #CCCCFF; padding-top: 5px; margin-left: 2px; border-left: thin solid #000000; border-right: thin solid #000000; border-bottom: thin solid #000000;">

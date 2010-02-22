@@ -280,6 +280,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
                 note.setHistory(note.getNote());
                 //System.out.println("here savenotesimple1");
                 caseManagementMgr.saveNoteSimple(note);
+                addNewNoteLink(Long.parseLong(nId));
             }
 
         }
@@ -741,6 +742,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
             }
             cpp = copyNote2cpp(cpp,note);
             String savedStr = caseManagementMgr.saveNote(cpp, note, providerNo, userName, lastSavedNoteString, roleName);
+            addNewNoteLink(note.getId());
             log.debug("Saved note " + savedStr);
             caseManagementMgr.saveCPP(cpp, providerNo);
             /* remember the str written into echart */
@@ -798,6 +800,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
             ActionForward forward = mapping.findForward("listCPPNotes");
             StringBuffer path = new StringBuffer(forward.getPath());            
             path.append("?" + reloadQuery);
+            System.out.println("path="+path.toString());
             return new ActionForward(path.toString());
         }
 
@@ -1064,6 +1067,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
         
         /* save note including add signature */
         String savedStr = caseManagementMgr.saveNote(cpp, note, providerNo, userName, lastSavedNoteString, roleName);
+        addNewNoteLink(note.getId());
         /* remember the str written into echart */
         request.getSession().setAttribute("lastSavedNoteString", savedStr);
         caseManagementMgr.getEditors(note);
@@ -1370,26 +1374,11 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
         //System.out.println("note id="+note.getId());
         Long prevNoteId=note.getId();
         boolean docAnno=false;
-        if (note.isDocumentNote()){//check if note is a document annotation
-            //System.out.println(""+note.getId()+" is a document annotation"); //previous note is a document annotation.
-            docAnno=true;
-        }
 
         this.caseManagementMgr.saveNoteSimple(note);
         this.caseManagementMgr.getEditors(note);
+        addNewNoteLink(prevNoteId);
 
-        //save a casemanagement note link if previous note is document note.
-        //System.out.println("note id="+note.getId());
-        if(docAnno){
-                //get table name=5 and doc id from preNote.
-                Long docId= EDocUtil.getTableIdFromNoteId(prevNoteId);
-                //set a casemgmt note link.
-                CaseManagementNoteLink cmnl= new CaseManagementNoteLink();
-                cmnl.setNoteId(note.getId());//set the new note to be a doc note.
-                cmnl.setTableName(5);
-                cmnl.setTableId(docId);
-                EDocUtil.addCaseMgmtNoteLink(cmnl); //add the note link
-        }
         try {
             this.caseManagementMgr.deleteTmpSave(providerNo, note.getDemographic_no(), note.getProgram_no());
         }
@@ -1437,6 +1426,44 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
         return null;*/
     }
 
+    //add new note link if note is document or rx note
+    private void addNewNoteLink(Long noteId){
+        System.out.println("in addnewnotelink, noteId="+noteId);
+        CaseManagementNote cmn=caseManagementMgr.getNote(noteId.toString());
+        List<CaseManagementNote> cmnList=caseManagementMgr.getNotesByUUID(cmn.getUuid());
+        Long firstNoteId;
+        Long lastNoteId;
+        List<Long> noteIdList=new ArrayList();
+        for(CaseManagementNote note:cmnList){
+            noteIdList.add(note.getId());
+        }
+        if(noteIdList.size()>0){
+            Collections.sort(noteIdList);
+            firstNoteId=noteIdList.get(0);
+            lastNoteId=noteIdList.get(noteIdList.size()-1);
+            if(firstNoteId!=lastNoteId){
+                CaseManagementNote firstNote=caseManagementMgr.getNote(firstNoteId.toString());
+                if(firstNote.isDocumentNote()){
+                    Long tableId= EDocUtil.getTableIdFromNoteId(firstNote.getId());
+                    CaseManagementNoteLink cmnl= new CaseManagementNoteLink();
+                    cmnl.setNoteId(lastNoteId);
+                    cmnl.setTableName(cmnl.DOCUMENT);
+                    cmnl.setTableId(tableId);
+                    caseManagementMgr.saveNoteLink(cmnl);
+                }else if(firstNote.isRxAnnotation()){
+                    //System.out.println(firstNote.getId());
+                    CaseManagementNoteLink latestLink= caseManagementMgr.getLatestLinkByNote(firstNote.getId());
+                    //System.out.println(latestLink.getTableId());
+                    CaseManagementNoteLink cmnl= new CaseManagementNoteLink();
+                    cmnl.setNoteId(lastNoteId);
+                    cmnl.setTableName(cmnl.DRUGS);
+                    cmnl.setTableId(latestLink.getTableId());
+                    caseManagementMgr.saveNoteLink(cmnl);
+                    //EDocUtil.addCaseMgmtNoteLink(cmnl);
+                }
+            }
+        }
+    }
     public ActionForward saveAndExit(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         //System.out.println("==========In saveAndExit==========");
         log.debug("saveandexit");
@@ -1453,32 +1480,11 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
         saveMessages(request, messages);
         boolean docAnno=false;
 
-        CaseManagementNote preNote=new CaseManagementNote();
-        Long nId=Long.parseLong(cform.getNoteId());
-        preNote.setId(nId);
-        //System.out.println("nId value="+nId);
-
-        if (preNote.isDocumentNote()){//check if note is a document annotation
-            //System.out.println(""+nId+" is a document annotation"); //previous note is a document annotation.
-            docAnno=true;
-        }
-
         long noteId = noteSave(cform, request);        
         if( noteId == -1 ) {
             return mapping.findForward("windowClose");
         }
 
-        //System.out.println("noteId="+noteId);//new noteId
-        if(docAnno){
-                //get table name=5 and doc id from preNote.
-                Long docId= EDocUtil.getTableIdFromNoteId(preNote.getId());
-                //set a casemgmt note link.
-                CaseManagementNoteLink cmnl= new CaseManagementNoteLink();
-                cmnl.setNoteId(noteId);//set the new note to be a doc note.
-                cmnl.setTableName(5);
-                cmnl.setTableId(docId);
-                EDocUtil.addCaseMgmtNoteLink(cmnl); //add the note link
-        }
 
         cform.setMethod("view");
         String error = (String)request.getAttribute("DateError");

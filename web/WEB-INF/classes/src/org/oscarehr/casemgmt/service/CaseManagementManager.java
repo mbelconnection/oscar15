@@ -52,7 +52,6 @@ import org.oscarehr.PMmodule.model.ProgramAccess;
 import org.oscarehr.PMmodule.model.ProgramProvider;
 import org.oscarehr.PMmodule.service.AdmissionManager;
 import org.oscarehr.PMmodule.service.ProgramManager;
-import org.oscarehr.PMmodule.service.RoleManager;
 import org.oscarehr.caisi_integrator.ws.CachedDemographicDrug;
 import org.oscarehr.caisi_integrator.ws.CachedFacility;
 import org.oscarehr.caisi_integrator.ws.DemographicWs;
@@ -64,7 +63,6 @@ import org.oscarehr.casemgmt.dao.CaseManagementNoteDAO;
 import org.oscarehr.casemgmt.dao.CaseManagementNoteExtDAO;
 import org.oscarehr.casemgmt.dao.CaseManagementNoteLinkDAO;
 import org.oscarehr.casemgmt.dao.CaseManagementTmpSaveDAO;
-import org.oscarehr.casemgmt.dao.ClientImageDAO;
 import org.oscarehr.casemgmt.dao.EchartDAO;
 import org.oscarehr.casemgmt.dao.EncounterFormDAO;
 import org.oscarehr.casemgmt.dao.EncounterWindowDAO;
@@ -402,6 +400,11 @@ public class CaseManagementManager {
 		return this.caseManagementNoteLinkDAO.getLinkByNote(noteId);
 	}
 
+        public CaseManagementNoteLink getLatestLinkByNote(Long noteId){
+                List<CaseManagementNoteLink> lcml =getLinkByNote(noteId);
+                if (lcml.isEmpty()) return null;
+		else return lcml.get(lcml.size() - 1);
+        }
 	public List getLinkByTableId(Integer tableName, Long tableId) {
 		return this.caseManagementNoteLinkDAO.getLinkByTableId(tableName, tableId);
 	}

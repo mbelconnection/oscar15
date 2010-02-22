@@ -36,7 +36,7 @@ import oscar.oscarDB.DBPreparedHandlerParam;
 import oscar.util.UtilDict;
 
 public class AppointmentMainBean {
-
+    public AppointmentMainBean(){}
   private DBPreparedHandler dbPH=null;
   private UtilDict toFile=null;
   private UtilDict dbSQL=null;
@@ -226,10 +226,10 @@ public class AppointmentMainBean {
 	  ResultSet rs =null;
 	  if(aKeyword.equals("*")) {
 	  	sqlQuery = dbSQL.getDef("search*","");
-    	rs = dbPH.queryResults(sqlQuery);
+                rs = dbPH.queryResults(sqlQuery);
 	  } else {
 	  	sqlQuery = dbSQL.getDef(dboperation,"");
-    	rs = dbPH.queryResults(sqlQuery, aKeyword);
+                rs = dbPH.queryResults(sqlQuery, aKeyword);
 	  }
   	return rs;
   }

@@ -31,7 +31,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 public class Misc {
-
+    public Misc(){}
 public static Hashtable hashDefs(String [] names, String [] values){
   Hashtable H=new Hashtable();
   if(names.length>values.length)return H;

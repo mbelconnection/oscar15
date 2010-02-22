@@ -34,6 +34,7 @@ public class MyDateFormat {
 	//private int aDateTime;
 	public MyDateFormat() {
 		//this.aDateTime = d;
+            super();
 	}
 	
 	public static int getDaysDiff(Calendar start, Calendar end){

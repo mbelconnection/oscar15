@@ -201,16 +201,10 @@ public class AddEditDocumentAction extends DispatchAction {
             //---
             String doc_no = EDocUtil.addDocumentSQL(newDoc);
             LogAction.addLog((String) request.getSession().getAttribute("user"), LogConst.ADD, LogConst.CON_DOCUMENT, doc_no, request.getRemoteAddr());
-            System.out.println("DEMOGRAPHIC NO: "+request.getSession().getAttribute("casemgmt_DemoNo").toString());
-            System.out.println("USER: "+request.getSession().getAttribute("user").toString());
             //add note if document is added under a patient
             String module=fm.getFunction().trim();
             String moduleId=fm.getFunctionId().trim();
-            if(module.equals("demographic")){//doc is uploaded under a patient,moduleId become demo no.
-                        //save casemanagementnote
-            //add a note to the newly added document.
-                   //     Locale locale = getLocale(request);
-                    //ResourceBundle props=ResourceBundle.getBundle("oscarResources", locale);
+            if(module.equals("demographic")){//doc is uploaded under a patient,moduleId become demo no.               
                     System.out.println("module is demographic");
             Date now=EDocUtil.getDmsDateTimeAsDate();
             //System.out.println("here11");
@@ -220,14 +214,6 @@ public class AddEditDocumentAction extends DispatchAction {
             cmn.setUpdate_date(now);
             //java.sql.Date od1 = MyDateFormat.getSysDate(newDoc.getObservationDate());
             cmn.setObservation_date(now);
-                    //String demoNo=request.getSession().getAttribute("casemgmt_DemoNo").toString();
-                    //System.out.println("casemgmt_DemoNo session attri="+demoNo);
-                  //  Enumeration em=request.getParameterNames();
-                  //  while(em.hasMoreElements())
-                 //       System.out.println("para val="+em.nextElement());
-                  //  em=request.getAttributeNames();
-                   // while(em.hasMoreElements())
-                  //      System.out.println("attr val="+em.nextElement());
                     cmn.setDemographic_no(moduleId);
             HttpSession se = request.getSession();
             String user_no = (String) se.getAttribute("user");
@@ -235,8 +221,6 @@ public class AddEditDocumentAction extends DispatchAction {
             WebApplicationContext  ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(se.getServletContext());
             CaseManagementManager cmm = (CaseManagementManager) ctx.getBean("caseManagementManager");
             cmn.setProviderNo("-1");// set the provider no to be -1 so the editor appear as 'System'.
-         //   System.out.println("here");
-       //     System.out.println("here33 "+fm.getDocCreator());
 
             String provFirstName=EDocUtil.getProviderInfo("first_name", fm.getDocCreator());
             String provLastName=EDocUtil.getProviderInfo("last_name", fm.getDocCreator());
@@ -254,7 +238,7 @@ public class AddEditDocumentAction extends DispatchAction {
             cmn.setLocked(false);
             cmn.setHistory(strNote);
             cmn.setPosition(0);
-           cmm.saveNoteSimple(cmn);
+            cmm.saveNoteSimple(cmn);
             //Add a noteLink to casemgmt_note_link
             CaseManagementNoteLink cmnl=new CaseManagementNoteLink();
             cmnl.setTableName(cmnl.DOCUMENT);
@@ -266,6 +250,7 @@ public class AddEditDocumentAction extends DispatchAction {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             //ActionRedirect redirect = new ActionRedirect(mapping.findForward("failAdd"));
             request.setAttribute("docerrors", errors);
             request.setAttribute("completedForm", fm);

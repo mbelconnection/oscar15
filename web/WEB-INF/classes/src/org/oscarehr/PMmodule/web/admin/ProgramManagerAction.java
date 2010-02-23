@@ -67,9 +67,9 @@ import org.oscarehr.caisi_integrator.ws.FacilityIdStringCompositePk;
 import org.oscarehr.caisi_integrator.ws.Referral;
 import org.oscarehr.caisi_integrator.ws.ReferralWs;
 import org.oscarehr.common.dao.FacilityDao;
+import org.oscarehr.common.model.Facility;
+import org.oscarehr.util.SessionConstants;
 import org.springframework.beans.factory.annotation.Required;
-
-import com.quatro.service.security.RolesManager;
 
 public class ProgramManagerAction extends BaseAction {
 
@@ -83,9 +83,8 @@ public class ProgramManagerAction extends BaseAction {
 	private ProgramManager programManager;
 	private ProviderManager providerManager;
 	private ProgramQueueManager programQueueManager;
-	//private RoleManager roleManager;
-	private RolesManager roleManager;
-	
+	private RoleManager roleManager;
+
 	public void setFacilityDao(FacilityDao facilityDao) {
 		this.facilityDao = facilityDao;
 	}
@@ -655,6 +654,7 @@ public class ProgramManagerAction extends BaseAction {
 		if (request.getParameter("program.transgender") == null) program.setTransgender(false);
 		if (request.getParameter("program.firstNation") == null) program.setFirstNation(false);
 		if (request.getParameter("program.bedProgramAffiliated") == null) program.setBedProgramAffiliated(false);
+		if (request.getParameter("program.bedProgramLinkId") == null) program.setBedProgramLinkId(0);
 		if (request.getParameter("program.alcohol") == null) program.setAlcohol(false);
 		if (request.getParameter("program.physicalHealth") == null) program.setPhysicalHealth(false);
 		if (request.getParameter("program.mentalHealth") == null) program.setMentalHealth(false);
@@ -782,7 +782,6 @@ public class ProgramManagerAction extends BaseAction {
 			}
 			for (String role : roles) {
 				access.getRoles().add(roleManager.getRole(role));
-				//access.getRoles().add()
 			}
 		}
 
@@ -1173,7 +1172,7 @@ public class ProgramManagerAction extends BaseAction {
 		this.providerManager = mgr;
 	}
 
-	public void setRolesManager(RolesManager mgr) {
+	public void setRoleManager(RoleManager mgr) {
 		this.roleManager = mgr;
 	}
 

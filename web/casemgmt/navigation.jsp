@@ -352,7 +352,7 @@ String backurl=bsurl+"/oscarEncounter/IncomingEncounter.do?";
     <select name="msgSelect" class="ControlSelect" onchange="javascript:popUpMsg(600,800,this.options[this.selectedIndex].value)">
         <option value="null" selected>-Select Message-</option>
         <nested:iterate id="cmb" name="casemgmt_msgBeans" type="org.apache.struts.util.LabelValueBean">
-            <option value="<%= cmb.getLabel() %>"><%= cmb.getLabel() %></option>
+            <option value="<%= cmb.getLabel() %>"><%= cmb.getValue() %></option>
         </nested:iterate>
     </select>
 </td></tr>

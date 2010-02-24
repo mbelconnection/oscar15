@@ -272,6 +272,7 @@ public class MammogramReport implements PreventionReport{
    String LETTER1 = "L1";
    String LETTER2 = "L2";
    String PHONE1 = "P1";
+   String CALLFU = "Follow Up";
   
    private String letterProcessing(PreventionReportDisplay prd,String measurementType,Date asofDate,Date prevDate){
        if (prd != null){
@@ -362,7 +363,9 @@ public class MammogramReport implements PreventionReport{
                 //prd.numMonths ;
           }else if(prd.state.equals("Ineligible")){
                 // Do nothing   
-                prd.nextSuggestedProcedure = "----"; 
+                prd.nextSuggestedProcedure = "----";
+          }else if(prd.state.equals("Pending")){
+                prd.nextSuggestedProcedure = this.CALLFU;
           }else if(prd.state.equals("Up to date")){
                 //Do nothing
               EctMeasurementsDataBeanHandler measurementDataHandler = new EctMeasurementsDataBeanHandler(prd.demographicNo,measurementType);

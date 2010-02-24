@@ -93,7 +93,7 @@ String backurl=bsurl+"/oscarEncounter/IncomingEncounter.do?";
     function popUpMsg(vheight,vwidth,msgPosition) {
 
 
-        var page = "<%=session.getAttribute("casemgmt_oscar_baseurl")%>"+"/oscarEncounter/oscarMessenger/ViewMessageByPosition.do?from=encounter&orderBy=!date&demographic_no=<%=bean.demographicNo%>&messagePosition="+msgPosition;
+        var page = "<%=session.getAttribute("casemgmt_oscar_baseurl")%>"+"/oscarMessenger/ViewMessageByPosition.do?from=encounter&orderBy=!date&demographic_no=<%=bean.demographicNo%>&messagePosition="+msgPosition;
         windowprops = "height="+vheight+",width="+vwidth+",location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=yes,screenX=0,screenY=0,top=0,left=0";
         var popup=window.open(page, "", windowprops);
         if (popup != null) {
@@ -349,12 +349,17 @@ String backurl=bsurl+"/oscarEncounter/IncomingEncounter.do?";
 <tr style="background-color:#BBBBBB;"><td>oscarMessenger</td></tr>
 <!-- select message -->
 <tr><td>
-    <select name="msgSelect" class="ControlSelect" onchange="javascript:popUpMsg(600,900,this.options[this.selectedIndex].value)">
+    <select name="msgSelect" class="ControlSelect" onchange="javascript:popUpMsg(600,800,this.options[this.selectedIndex].value)">
         <option value="null" selected>-Select Message-</option>
         <nested:iterate id="cmb" name="casemgmt_msgBeans" type="org.apache.struts.util.LabelValueBean">
-            <option value="<%= cmb.getValue() %>"><%= cmb.getLabel() %></option>
+            <option value="<%= cmb.getLabel() %>"><%= cmb.getLabel() %></option>
         </nested:iterate>
     </select>
+</td></tr>
+
+<!-- add a new message -->
+<tr><td>
+    <a href="javascript:void(0)" onClick="popupPage('<%=bsurl%>/oscarMessenger/SendDemoMessage.do?orderby=date&boxType=3&demographic_no=<%=bean.demographicNo%>&providerNo=<%=bean.providerNo%>&userName=<%=bean.userName%>'); return false;" >New Messages</a>
 </td></tr>
 
 <!-- all message -->

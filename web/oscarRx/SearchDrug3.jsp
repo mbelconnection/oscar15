@@ -1157,18 +1157,20 @@ function saveCustomName(element){
 }
 function popForm2(){
         try{
-            oscarLog("popForm2 called");
-           // var url= "<c:out value="${ctx}"/>" + "/oscarRx/Preview2.jsp";
+            //oscarLog("popForm2 called");
             var url= "<c:out value="${ctx}"/>" + "/oscarRx/ViewScript2.jsp";
                     oscarLog( "preview2 done");
                     myLightWindow.activateWindow({
                         href: url,
                         width: 660
                     });
-
+                    var editRxMsg='<bean:message key="oscarRx.Preview.EditRx"/>';
+            $('lightwindow_title_bar_close_link').update(editRxMsg);
         }
-        catch(er){alert(er);}
-        oscarLog("bottom of popForm");
+        catch(er){
+            oscarLog(er);
+        }
+        //oscarLog("bottom of popForm");
     }
 
      function callTreatments(textId,id){

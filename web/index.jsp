@@ -38,6 +38,7 @@ OscarProperties props = OscarProperties.getInstance();
 
 BuildInfo buildInfo = BuildInfo.getInstance();
 String buildDate = buildInfo.getBuildDate();
+String buildTag  = buildInfo.getBuildTag();
 
 // clear old cookies
 Cookie rcpCookie = new Cookie(CookieSecurity.receptionistCookie, "");
@@ -120,7 +121,7 @@ response.addCookie(admCookie);
                     %><bean:message key="<%=key%>"/>        
                 </td>
                 <td  class="topbar" align="center" >
-                    <span style="float: right; color:#FFFFFF; font-size: xx-small;">build date: <%= buildDate %></span>     
+                    <span style="float: right; color:#FFFFFF; font-size: xx-small;text-align: right;">build date: <%= buildDate %><br/>build tag: <%=buildTag%></span>
                     <%=props.getProperty("logintitle", "")%>
                     <% if (props.getProperty("logintitle", "").equals("")) { %>
                     <bean:message key="loginApplication.alert"/>

@@ -517,14 +517,6 @@ public final class RxWriteScriptAction extends DispatchAction {
             rx.setRxDate(tod);
             rx.setWrittenDate(tod);
             rx.setDiscontinuedLatest(RxUtil.checkDiscontinuedBefore(rx));//check and set if rx was discontinued before.
-            
-            WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(getServlet().getServletContext());
-            UserPropertyDAO  propDAO =  (UserPropertyDAO) ctx.getBean("UserPropertyDAO");
-            String provider = (String) request.getSession().getAttribute("user");
-            String retStr=RxUtil.findInterDrugStr(propDAO,provider,bean);    
-       
-            bean.setInteractingDrugList(retStr);
-
             request.setAttribute("listRxDrugs", listRxDrugs);
         } catch (Exception e) {
             e.printStackTrace();

@@ -15,7 +15,7 @@
 <%@page import="org.oscarehr.ui.servlet.ImageRenderingServlet"%>
 <%@page import="oscar.OscarProperties"%>
 <%@page import="org.oscarehr.caisi_integrator.ws.GetConsentTransfer"%>
-
+<%@ taglib uri="/WEB-INF/security.tld" prefix="security" %>
 <%@ taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi"%>
 <%
 	IntegratorConsentDao integratorConsentDao=(IntegratorConsentDao)SpringUtils.getBean("integratorConsentDao");
@@ -541,6 +541,21 @@ function openSurvey() {
 </table>
 </div>
 
+<% boolean bShowEncounterLink = false; 
+String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
+%>
+<security:oscarSec roleName="<%=roleName$%>" objectName="_eChart" rights="r">
+<% bShowEncounterLink = true; %>
+</security:oscarSec>
+<%
+String curUser_no = (String) session.getAttribute("user");
+String rsAppointNO="0";
+int demographic_no = currentDemographic.getDemographicNo();
+String status = "T";
+String userfirstname = (String) session.getAttribute("userfirstname");;
+String userlastname = (String) session.getAttribute("userlastname");
+String reason ="";
+%>
 <display:table class="simple" cellspacing="2" cellpadding="3"
 	id="admission" name="admissions" export="false" pagesize="10"
 	requestURI="/PMmodule/ClientManager.do">
@@ -550,6 +565,25 @@ function openSurvey() {
 
 	<display:column property="programName" sortable="true"
 		title="Program Name" />
+		
+	<display:column sortable="true" title="">	
+		<% if(bShowEncounterLink) {	
+			HttpSession se = request.getSession();			
+			Admission tempAdmission=(Admission)pageContext.getAttribute("admission");
+			String programId = String.valueOf(tempAdmission.getProgramId());
+			String eURL = "../oscarEncounter/IncomingEncounter.do?programId="+programId+"&providerNo="+curUser_no+"&appointmentNo="+rsAppointNO+"&demographicNo="+demographic_no+"&curProviderNo="+curUser_no+"&reason="+java.net.URLEncoder.encode(reason)+"&encType="+java.net.URLEncoder.encode("face to face encounter with client","UTF-8")+"&userName="+java.net.URLEncoder.encode( userfirstname+" "+userlastname)+"&curDate=null&appointmentDate=null&startTime=0:0"+"&status="+status+"&source=cm";
+		%>	
+		<logic:notEqual value="community" property="programType" name="admission">
+		
+		<a href=#
+			onClick="popupPage(710, 1024,'../oscarSurveillance/CheckSurveillance.do?demographicNo=<%=demographic_no%>&proceed=<%=java.net.URLEncoder.encode(eURL)%>');return false;"
+			title="<bean:message key="global.encounter"/>"> <bean:message
+			key="provider.appointmentProviderAdminDay.btnE" /></a> 
+		
+		</logic:notEqual>
+	<% } %>
+		</display:column>
+	
 	<display:column property="programType" sortable="true"
 		title="Program Type" />
 	<display:column property="admissionDate"
@@ -557,7 +591,7 @@ function openSurvey() {
 		title="Admission Date" />
 	<display:column sortable="true" title="Days in Program">
 		<%
-			Admission tempAdmission=(Admission)pageContext.getAttribute("admission");
+					Admission tempAdmission=(Admission)pageContext.getAttribute("admission");
 					Date admissionDate=tempAdmission.getAdmissionDate();
 					Date dischargeDate=tempAdmission.getDischargeDate()!=null?tempAdmission.getDischargeDate():new Date();
 

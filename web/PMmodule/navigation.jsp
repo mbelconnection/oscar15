@@ -56,91 +56,20 @@
     String dateStr = yearStr + "-" + mthStr + "-" + dayStr;
 	WebApplicationContext ctx=null;
 %>
-
-<script type="text/javascript">
-    function getIntakeReport(type) {
-        var oneWeekAgo = new Date();
-        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-
-        var startDate = prompt("Please enter a start date in this format (e.g. 2000-01-01)", dojo.date.format(oneWeekAgo, {selector:'dateOnly', datePattern:'yyyy-MM-dd'}));
-        if (startDate == null) {
-            return;
+<script type="text/javascript" src="<html:rewrite page="/js/topnav.js" />"></script>
+<script type="javascript" >
+function popupPage2(varpage, windowname) 
+{
+    var page = "" + varpage;
+    var windowprops = "height=700,width=1000,top=10,left=0,location=yes,scrollbars=yes,menubars=no,toolbars=no,resizable=yes";
+    var popup = window.open(page, windowname, windowprops);
+    if (popup != null) {
+        if (popup.opener == null) {
+            popup.opener = self;
         }
-        if (!dojo.validate.isValidDate(startDate, 'YYYY-MM-DD')) {
-            alert("'" + startDate + "' is not a valid start date");
-            return;
-        }
-
-        var endDate = prompt("Please enter the end date in this format (e.g. 2000-12-01)", dojo.date.format(new Date(), {selector:'dateOnly', datePattern:'yyyy-MM-dd'}));
-        if (endDate == null) {
-            return;
-        }
-        if (!dojo.validate.isValidDate(endDate, 'YYYY-MM-DD')) {
-            alert("'" + endDate + "' is not a valid end date");
-            return;
-        }
-
-        var includePast = confirm("Do you want to include past intake forms in your report? ([OK] for yes / [Cancel] for no)");
-
-        alert("Generating report from " + startDate + " to " + endDate + ". Please note: it is normal for the generation process to take up to a few minutes to complete, be patient.");
-
-        var url = '<html:rewrite action="/PMmodule/GenericIntake/Report"/>?' + 'method=report' + '&type=' + type + '&startDate=' + startDate + '&endDate=' + endDate + '&includePast=' + includePast;
-        
-        popupPage2(url, "IntakeReport" + type);
+        popup.focus();
     }
-
-    function createIntakeCReport1()
-    {
-        var startDate = "";
-
-        while (startDate.length != 10 || startDate.substring(4, 5) != "-" || startDate.substring(7, 8) != "-")
-        {
-            startDate = prompt("Please enter the date in this format (e.g. 2006-01-01)", "<%=dateStr%>");
-            if (startDate == null) {
-                return false;
-            }
-        }
-
-        alert('Generating report for date ' + startDate);
-
-        popupPage2('<html:rewrite action="/PMmodule/IntakeCMentalHealthReportAction.do"/>?startDate=' + startDate, "IntakeCReport");
-    }
-
-	function getGeneralFormsReport()
-	{
-		
-		popupPage2('<html:rewrite action="/PMmodule/ClientManager.do"/>?method=getGeneralFormsReport',"generalFormsReport");
-	}
-	
-	
-    function createStreetHealthReport()
-    {
-        var startDate = "";
-
-        while (startDate.length != 10 || startDate.substring(4, 5) != "-" || startDate.substring(7, 8) != "-")
-        {
-            startDate = prompt("Please enter start date (e.g. 2006-01-01)", "<%=dateStr%>");
-            if (startDate == null) {
-                return false;
-            }
-        }
-
-        alert('Generating report for date ' + startDate);
-
-        popupPage2('<html:rewrite action="/PMmodule/StreetHealthIntakeReportAction.do"/>?startDate=' + startDate, "StreetHealthReport");
-    }
-
-    function popupPage2(varpage, windowname) {
-        var page = "" + varpage;
-        var windowprops = "height=700,width=1000,top=10,left=0,location=yes,scrollbars=yes,menubars=no,toolbars=no,resizable=yes";
-        var popup = window.open(page, windowname, windowprops);
-        if (popup != null) {
-            if (popup.opener == null) {
-                popup.opener = self;
-            }
-            popup.focus();
-        }
-    }
+}
 </script>
 
 <!--
@@ -200,37 +129,6 @@
 </div>
 
 <c:if
-	test="${sessionScope.userrole ne 'er_clerk' and sessionScope.userrole ne 'Vaccine Provider'}">
-	<div><span>Reporting Tools</span> <caisi:isModuleLoad
-		moduleName="TORONTO_RFQ" reverse="true">		
-		<div><a HREF="javascript:void(0);" 
-		ONCLICK="javascript:getGeneralFormsReport();return false;">General Forms Reports 
-		</a></div>
-		<div><a href="javascript:void(0);" onclick="javascript:getIntakeReport('quick');return false;">Registration
-		Intake Report</a></div>
-		<div><a href="javascript:void(0);" onclick="javascript:getIntakeReport('indepth');return false;">Follow-up
-		Intake Report</a></div>
-		<caisi:isModuleLoad moduleName="intakec.enabled">
-			<div><a href="javascript:void(0);" onclick="javascript:createIntakeCReport1();return false;">Street
-			Health Mental Health Report</a></div>
-		</caisi:isModuleLoad>
-		<div><html:link action="/PMmodule/Reports/ProgramActivityReport.do">Activity Report</html:link>
-		</div>
-		<%--
-                <div>
-                    <html:link action="/PMmodule/Reports/ClientListsReport">Client Lists Report</html:link>
-                </div>
-                --%>
-		<div><html:link action="/SurveyManager.do?method=reportForm">User Created Form Report</html:link>
-		</div>
-		</caisi:isModuleLoad> <caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="false">
-			<div><html:link action="QuatroReport/ReportList.do">Quatro Report Runner</html:link>
-			</div>
-		</caisi:isModuleLoad> <caisi:isModuleLoad moduleName="streethealth">
-		<div><a href="javascript:void(0);" onclick="javascript:createStreetHealthReport();return false;">Street
-		Health Mental Health Report</a></div>
-	</caisi:isModuleLoad></div>
-</c:if> <c:if
 	test="${sessionScope.userrole ne 'er_clerk' and sessionScope.userrole ne 'Vaccine Provider'}">
 	<security:oscarSec roleName="<%=roleName$%>"
 		objectName="_pmm.caseManagement" rights="r">

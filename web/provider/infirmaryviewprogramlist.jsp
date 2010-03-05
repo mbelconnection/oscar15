@@ -129,9 +129,11 @@ function submitStatus(ctrl) {
 
 <logic:equal name="infirmaryView_isOscar" value="true">
 	<caisi:ProgramExclusiveView providerNo="<%=curUser_no%>" value="no">
+		<caisi:isModuleLoad moduleName="oscarClinic" reverse="true">
 		<div align="right"><a
 			href='providercontrol.jsp?infirmaryView_isOscar=false&GoToCaisiViewFromOscarView=true&<%=session.getAttribute("infirmaryView_OscarQue") %>'>|
 		Case Management View</a></div>
+		</caisi:isModuleLoad>
 	</caisi:ProgramExclusiveView>
 </logic:equal>
 </td>

@@ -46,10 +46,6 @@
         <form-bean name="siteForm" type="org.apache.struts.validator.DynaValidatorForm">
             <form-property name="site" type="org.oscarehr.common.model.Site" />
         </form-bean>
-        <form-bean name="billingreferralForm" type="org.apache.struts.validator.DynaValidatorForm">
-            <form-property name="search" type="java.lang.String" />
-            <form-property name="referral" type="org.oscarehr.common.model.Billingreferral" />
-        </form-bean>
         <form-bean name="annotationForm" type="org.apache.struts.validator.DynaValidatorForm">
             <form-property name="oAnnotation" type="org.oscarehr.common.model.OscarAnnotation" />
         </form-bean>
@@ -576,51 +572,23 @@
         <action name="RxChoosePatientForm" path="/oscarRx/choosePatient2" scope="request" type="oscar.oscarRx.pageUtil.RxChoosePatientAction">
             <forward name="success" path="/oscarRx/SearchDrug2.jsp" />
         </action>
-
-        <action name="RxChoosePatientForm" path="/oscarRx/choosePatient3" scope="request" type="oscar.oscarRx.pageUtil.RxChoosePatientAction">
-            <forward name="success" path="/oscarRx/SearchDrug3.jsp" />
-        </action>
-
-
         <action input="/oscarRx/SearchDrug.jsp" name="RxSearchDrugForm" path="/oscarRx/searchDrug" scope="request" type="oscar.oscarRx.pageUtil.RxSearchDrugAction">
             <forward name="success" path="/oscarRx/ChooseDrug.jsp" />
         </action>
-        
-        <action input="/oscarRx/SearchDrug2.jsp" path="/oscarRx/WriteScript" parameter="method" scope="request" type="oscar.oscarRx.pageUtil.RxWriteScriptAction">
-            <forward name="success" path="/oscarRx/SearchDrug2.jsp" />
-            <forward name="newRx" path="/oscarRx/prescribe.jsp" />
-        </action>
-
         <action input="/oscarRx/ChooseDrug.jsp" path="/oscarRx/chooseDrug" scope="request" type="oscar.oscarRx.pageUtil.RxChooseDrugAction">
             <forward name="success" path="/oscarRx/WriteScript.jsp" />
         </action>
-
-        <action input="/oscarRx/SearchDrug2.jsp" path="/oscarRx/searchDrug2" scope="request" type="oscar.oscarRx.pageUtil.RxChooseDrugAction">
-            <forward name="success" path="/oscarRx/SearchDrug2.jsp" />
-        </action>
-
         <action input="/oscarRx/SearchDrug.jsp" path="/oscarRx/viewScript" scope="request" type="oscar.oscarRx.pageUtil.RxViewScriptAction">
             <forward name="viewScript" path="/oscarRx/ViewScript.jsp" />
         </action>
-        <action input="/oscarRx/WriteScript.jsp" name="RxWriteScriptForm" path="/oscarRx/writeScript" scope="request" parameter="method" type="oscar.oscarRx.pageUtil.RxWriteScriptAction">
+        <action input="/oscarRx/WriteScript.jsp" name="RxWriteScriptForm" path="/oscarRx/writeScript" scope="request" type="oscar.oscarRx.pageUtil.RxWriteScriptAction">
             <forward name="refresh" path="/oscarRx/WriteScript.jsp" />
             <forward name="addAnother" path="/oscarRx/SearchDrug.jsp" />
             <forward name="viewScript" path="/oscarRx/ViewScript.jsp" />
         </action>
-        <action input="/oscarRx/prescribe.jsp" name="RxPrescribeForm" path="/oscarRx/prescribe" scope="request" parameter="method" type="oscar.oscarRx.pageUtil.RxWriteScriptAction">
-            <forward name="refresh" path="/oscarRx/SearchDrug2.jsp" />
-            <forward name="success" path="/oscarRx/SearchDrug2.jsp" />
-        </action>
-        <action input="/oscarRx/WriteScript.jsp" name="RxStashForm" path="/oscarRx/stash" scope="request" parameter="method" type="oscar.oscarRx.pageUtil.RxStashAction">
+        <action input="/oscarRx/WriteScript.jsp" name="RxStashForm" path="/oscarRx/stash" scope="request" type="oscar.oscarRx.pageUtil.RxStashAction">
             <forward name="success" path="/oscarRx/WriteScript.jsp" />
         </action>
-        <!--action input="/oscarRx/WriteScript.jsp" name="RxStashForm" path="/oscarRx/stash" scope="request" type="oscar.oscarRx.pageUtil.RxStashAction">
-            <forward name="success" path="/oscarRx/WriteScript.jsp" />
-        </action-->
-        <action input="/oscarRx/SearchDrug2.jsp"  path="/oscarRx/stash2" scope="request" parameter="method" type="oscar.oscarRx.pageUtil.RxStashAction">
-            <forward name="success" path="/oscarRx/SearchDrug2.jsp" />
-        </action>
-
         <action name="RxUseFavoriteForm" path="/oscarRx/useFavorite" scope="request" type="oscar.oscarRx.pageUtil.RxUseFavoriteAction">
             <forward name="success" path="/oscarRx/WriteScript.jsp" />
         </action>
@@ -643,13 +611,7 @@
             <forward name="success" path="/oscarRx/WriteScript.jsp" />
             <forward name="reprint" path="/oscarRx/ViewScript.jsp" />
         </action>
-        <action input="/oscarRx/SearchDrug2.jsp" name="RxRePrescribeForm" path="/oscarRx/rePrescribe2" parameter="method" scope="request" type="oscar.oscarRx.pageUtil.RxRePrescribeAction">
-            <forward name="success" path="/oscarRx/SearchDrug2.jsp" />
-            <forward name="repcbLongTerm" path="/oscarRx/prescribe.jsp" />
-            <forward name="represcribe" path="/oscarRx/prescribe.jsp" />
-        </action>
-
-        <action input="/oscarRx/SearchDrug.jsp" name="RxDeleteRxForm" path="/oscarRx/deleteRx" scope="request" parameter="method" type="oscar.oscarRx.pageUtil.RxDeleteRxAction">
+        <action input="/oscarRx/SearchDrug.jsp" name="RxDeleteRxForm" path="/oscarRx/deleteRx" scope="request" type="oscar.oscarRx.pageUtil.RxDeleteRxAction">
             <forward name="success" path="/oscarRx/SearchDrug.jsp" />
         </action>
         <action input="/oscarRx/ViewScript.jsp" name="RxClearPendingForm" path="/oscarRx/clearPending" scope="request" type="oscar.oscarRx.pageUtil.RxClearPendingAction">
@@ -686,6 +648,8 @@
         <action input="/oscarRx/MyDrugrefDisplay.jsp" name="FrmForm" path="/oscarRx/GetmyDrugrefInfo" parameter="method" scope="request" type="oscar.oscarRx.pageUtil.RxMyDrugrefInfoAction">
             <forward name="success" path="/oscarRx/MyDrugrefDisplay.jsp"></forward>
         </action>
+
+
 
         <action input="/SegmentDisplay.jsp" path="/oscarMDS/UpdateStatus" scope="request" type="oscar.oscarMDS.pageUtil.ReportStatusUpdateAction">
             <forward name="failure" path="/errorpage.jsp" />
@@ -1227,13 +1191,6 @@
             <forward name="ON" path="/billing/CA/ON/billingOB2.jsp" />
             <forward name="private" path="/billing/CA/BC/billReceipt.jsp" />
         </action>
-
-        <action input="/billing/CA/BC/billingView.jsp" name="BillingViewForm" parameter="method" path="/billing/CA/BC/billingStatement" scope="request" type="oscar.oscarBilling.ca.bc.pageUtil.CreateBillingStatementAction">
-            <forward name="success" path="/billing/CA/BC/billStatement.jsp" />
-        </action>
-
-
-
         <action input="/billing/CA/BC/formwcb.jsp" name="WCBForm" path="/billing/CA/BC/formwcb" scope="request" type="oscar.oscarBilling.ca.bc.pageUtil.WCBAction2" parameter="method">
             <forward name="success" path="/billing/CA/BC/billingCreated.jsp" />
             <forward name="newbill" path="/billing.do?newWCBClaim=1" />
@@ -1727,11 +1684,13 @@
         </action>
         <!-- REPORTS -->
         <action path="/QuatroReport/ReportList" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method" name="quatroReportListForm" scope="request" validate="false" >
-            <forward name="reportlist" path="page.report.quatroreportlist" />
+            <!-- <forward name="reportlist" path="page.report.quatroreportlist" /> -->
+            <forward name="reportlist" path="/PMmodule/reports/QuatroReportList.jsp"/>
         </action>
         <action path="/QuatroReport/ReportRunner" type="com.quatro.web.report.QuatroReportRunnerAction"
                 name="quatroReportRunnerForm" validate="false" scope="request">
-            <forward name="success" path="page.report.quatroreportrunner" />
+            <!-- <forward name="success" path="page.report.quatroreportrunner" /> -->
+            <forward name="success" path="/PMmodule/reports/QuatroReportRunner.jsp"/>
         </action>
         <action path="/QuatroReport/ReportViewer" type="com.quatro.web.report.QuatroReportViewerAction"
                 name="quatroReportRunnerForm" validate="false" scope="request">
@@ -1749,12 +1708,14 @@
 
         <action path="/Lookup/LookupTableList" type="org.springframework.web.struts.DelegatingActionProxy"
                 name="lookupTableListForm" scope="request" validate="false" parameter="method">
-            <forward name="list" path="page.admin.lookup.tablelist" />
+            <!-- <forward name="list" path="page.admin.lookup.tablelist" />  -->
+            <forward name="list" path="/PMmodule/lookup/LookupTableList.jsp"/>
         </action>
 
         <action path="/Lookup/LookupCodeList" type="org.springframework.web.struts.DelegatingActionProxy"
                 name="lookupCodeListForm" scope="request" validate="false" parameter="method">
-             <forward name="list" path="page.admin.lookup.codelist" />
+             <!-- <forward name="list" path="page.admin.lookup.codelist" />  -->
+             <forward name="list" path="/PMmodule/lookup/LookupCodeList.jsp"/>
         </action>
 
         <action path="/Lookup/LookupCodeEdit" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method"
@@ -1763,15 +1724,22 @@
         </action>
 
         <action path="/PMmodule/Reports/ProgramActivityReport" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method" name="activityReportForm" scope="request" validate="false">
-            <forward name="form" path="page.report.activityform" />
+            <!-- <forward name="form" path="page.report.activityform" />
             <forward name="report" path="page.report.activityreport" />
+             -->
+            <forward name="form" path="/PMmodule/reports/ActivityReportForm.jsp"/>
+            <forward name="report" path="/PMmodule/reports/ActivityReport.jsp"/>
         </action>
         <action path="/PMmodule/Reports/BasicReport" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method" scope="request" validate="false">
-            <forward name="form" path="page.report.basicform" />
+            <!-- <forward name="form" path="page.report.basicform" /> -->
+            <forward name="form" path="/PMmodule/reports/BasicReport.jsp"/>
         </action>
         <action path="/PMmodule/Reports/ClientListsReport" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method" name="clientListsReportForm" scope="request" validate="false">
-            <forward name="form" path="page.report.clientlistsreportform" />
+            <!-- <forward name="form" path="page.report.clientlistsreportform" />
             <forward name="report" path="page.report.clientlistsreport" />
+             -->
+            <forward name="form" path="/PMmodule/reports/ClientListsReportForm.jsp"/>
+            <forward name="report" path="/PMmodule/reports/ClientListsReport.jsp"/>
         </action>
         <!--
         <action path="/PMmodule/Reports/CustomReport" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method" name="customReportForm" scope="request" validate="false">
@@ -1904,11 +1872,7 @@
             <forward name="list" path="/admin/sitesAdmin.jsp" />
             <forward name="details" path="/admin/sitesAdminDetail.jsp" />
         </action>
-
-        <action path="/admin/ManageBillingReferral" name="billingreferralForm" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method" scope="request">
-            <forward name="list" path="/admin/billingreferralAdmin.jsp" />
-            <forward name="detail" path="/admin/billingreferralAdminDetail.jsp" />
-        </action>
+      
         
         <action path="/OscarAnnotation" name="annotationForm" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method" scope="request">
             <forward name="success" path="/close.jsp" />
@@ -2008,14 +1972,7 @@
 
         <action path="/Provider/showPersonal" type="org.oscarehr.provider.web.DisplayPersonalInfoAppointmentAction" parameter="method" validate="false" scope="request" >
         </action>
-<!--
-        <action path="/PMmodule/CaseLoad" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method">            
-        </action>
--->		
- 		<action parameter="method" path="/PMmodule/Admin/MigrateCaisiRoles" scope="request" type="org.springframework.web.struts.DelegatingActionProxy">
-            <forward name="success" path="/PMmodule/Admin/migrateCaisiRoles.jsp" redirect="true"/>
-        </action>    
-                
+
     </action-mappings>
     <controller processorClass="org.apache.struts.tiles.TilesRequestProcessor" maxFileSize="10M"/>
     <message-resources parameter="oscarResources" />

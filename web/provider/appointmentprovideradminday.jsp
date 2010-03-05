@@ -870,7 +870,7 @@ if (curProvider_no[provIndex].equals(provNum)) { %>
 <% } else { %>
 
 <!-- caisi infirmary view extension add ffffffffffff-->
-<caisi:isModuleLoad moduleName="caisi">
+<caisi:isModuleLoad moduleName="caisi"> 	
 <table><tr><td align="right">
     <caisi:ProgramExclusiveView providerNo="<%=curUser_no%>" value="appointment">
 	<% session.setAttribute("infirmaryView_isOscar", "true"); %>
@@ -878,10 +878,15 @@ if (curProvider_no[provIndex].equals(provNum)) { %>
     <caisi:ProgramExclusiveView providerNo="<%=curUser_no%>" value="case-management">
 	<% session.setAttribute("infirmaryView_isOscar", "false"); %>
     </caisi:ProgramExclusiveView>
+    
 </caisi:isModuleLoad>
 
 <caisi:isModuleLoad moduleName="TORONTO_RFQ">
 	<% session.setAttribute("infirmaryView_isOscar", "false"); %>
+</caisi:isModuleLoad>
+
+<caisi:isModuleLoad moduleName="oscarClinic">
+	<% session.setAttribute("infirmaryView_isOscar", "true"); %>
 </caisi:isModuleLoad>
 <!-- caisi infirmary view extension add end ffffffffffffff-->
 

@@ -117,9 +117,15 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		System.out.println("Javascript Location=" + jsLocation);
 		
 		LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
-
+		
+		Integer defaultCommunityProgramId = null;
+		
+		if(org.oscarehr.common.IsPropertiesOn.propertiesOn("oscarClinic")) {
+			defaultCommunityProgramId = getOscarClinicDefaultCommunityProgramId(oscar.OscarProperties.getInstance().getProperty("oscarClinicDefaultProgram"));
+		}
+						
 		setBeanProperties(formBean, intake, getClient(request), providerNo, Agency.getLocalAgency().areHousingProgramsVisible(intakeType), Agency.getLocalAgency()
-				.areServiceProgramsVisible(intakeType), Agency.getLocalAgency().areExternalProgramsVisible(intakeType), null, null, null, loggedInInfo.currentFacility.getId(), null,jsLocation);
+				.areServiceProgramsVisible(intakeType), Agency.getLocalAgency().areExternalProgramsVisible(intakeType), defaultCommunityProgramId, null, null, loggedInInfo.currentFacility.getId(), null,jsLocation);
 
 		request.getSession().setAttribute(SessionConstants.INTAKE_CLIENT_IS_DEPENDENT_OF_FAMILY, false);
 
@@ -680,7 +686,13 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		}
 		return programsInDomain;
 	}
-
+	
+	private Integer getOscarClinicDefaultCommunityProgramId (String communityProgram){
+		Integer communityProgramId = null;
+		communityProgramId=programManager.getProgramIdByProgramName(communityProgram);
+		return communityProgramId;
+	}
+	
 	private Integer getCurrentBedCommunityProgramId(Integer clientId) {
 		Integer currentProgramId = null;
 

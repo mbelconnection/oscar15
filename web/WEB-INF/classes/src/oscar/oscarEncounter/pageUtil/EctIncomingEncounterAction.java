@@ -54,6 +54,11 @@ public class EctIncomingEncounterAction extends Action {
         UtilDateUtilities dateConvert = new UtilDateUtilities();
         oscar.oscarSecurity.CookieSecurity cs   = new oscar.oscarSecurity.CookieSecurity();
         EctSessionBean bean = new EctSessionBean();
+        
+        if(request.getParameter("programId")!=null) {
+        	 request.getSession().setAttribute("case_program_id",request.getParameter("programId"));
+        }
+       
         if(cs.FindThisCookie(request.getCookies(),cs.providerCookie)){ //pass security???
             if(request.getParameter("appointmentList")!=null){
                     bean = (EctSessionBean) request.getSession().getAttribute("EctSessionBean") ;

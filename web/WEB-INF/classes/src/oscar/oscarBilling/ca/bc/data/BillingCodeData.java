@@ -43,7 +43,7 @@ import oscar.util.SqlUtils;
  */
 public final class BillingCodeData implements Comparable      {
     private static BillingServiceDao billingServiceDao = (BillingServiceDao) SpringUtils.getBean("billingServiceDao");
-  
+
 
   /*
    +-----------------------+-------------+------+-----+---------+----------------+
@@ -83,7 +83,7 @@ public final class BillingCodeData implements Comparable      {
 
 
   public boolean editBillingCode(String servicecode,String desc, String val, String codeId) {
-    boolean retval = true;   
+    boolean retval = true;
     BillingService  billingService = billingServiceDao.find(Integer.parseInt(codeId));
     billingService.setServiceCode(servicecode);
     billingService.setDescription(desc);
@@ -128,11 +128,11 @@ public final class BillingCodeData implements Comparable      {
     billingservice.setBillingserviceNo(0);
     billingservice.setBillingserviceDate(new Date());
     billingservice.setValue(val);
-    billingServiceDao.persist(billingservice);
+    billingServiceDao.merge(billingservice);
     return retval;
   }
-  
-  
+
+
   public BillingService getBillingCodeByCode(String code){
     List list = billingServiceDao.findBillingCodesByCode( code,"BC");
     //List list = codeSearch("select * from billingservice where service_code like '" +code + "'" );
@@ -141,7 +141,7 @@ public final class BillingCodeData implements Comparable      {
     }
     return (BillingService) list.get(0);
   }
-  
+
   /**
    * Finds private service codes by code id
    * @param code String - the service code
@@ -152,7 +152,7 @@ public final class BillingCodeData implements Comparable      {
     return billingServiceDao.findBillingCodesByCode(code,billingServiceDao.BC,order);
   }
 
-  
+
 
   public List getBillingCodesLookup(String searchTerm){
     return  SqlUtils.getQueryResultsList("select service_code,description from billingservice where description like '" + Misc.mysqlEscape(searchTerm) + "%'");

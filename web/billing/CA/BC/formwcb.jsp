@@ -311,8 +311,16 @@ function isformNeeded(){
      }
   }
 
-  function setClaim(w_wcbno,w_empname,w_opaddress,w_opcity,w_emparea,w_empphone){
+  function setClaim(w_wcbno,w_empname,w_opaddress,w_opcity,w_emparea,w_empphone,w_icd9,w_bp,w_side,w_noi,w_doi){
      document.WCBForm.w_wcbno.value = w_wcbno;
+     document.WCBForm.w_icd9.value = w_icd9;
+     document.WCBForm.w_bp.value = w_bp;
+     document.WCBForm.w_noi.value = w_noi;
+     document.WCBForm.w_doi.value = w_doi;
+     document.WCBForm.w_side.value = w_side;
+
+     //still need side
+
      setEmployer(w_empname,w_opaddress,w_opcity,w_emparea,w_empphone);
   }
 
@@ -323,18 +331,18 @@ function isformNeeded(){
     document.WCBForm.w_emparea.value = w_emparea;
     document.WCBForm.w_empphone.value = w_empphone;
   }
-  
+
   function billingFormActive(){
      oscarLog("billingFormActive")
       if(window.opener && window.opener.replaceWCB){
           oscarLog("Calling on replaceWCB");
-        window.opener.replaceWCB('1');  
+        window.opener.replaceWCB('1');
       }
       oscarLog("billingFormActiveEnd");
   }
 
   function validateForm(){
-  
+
      if(!checkAskiiData(document.getElementById('w_problem'))){
          return false;
      }
@@ -406,9 +414,9 @@ String fmtApptDate = fmt.format(new Date());
                     if (WCBCodes.getInstance().isFormNeeded(billingcode)){
                         form.setFormNeeded("1");
                     }
-                }              
+                }
                 %>
-                    
+
 			<td>Form Needed <html:checkbox value="1" property="formNeeded"
 				onclick="isformNeeded();" /></td>
 			<td colspan="1" valign="top" height="25" class="SmallerText"
@@ -703,12 +711,12 @@ String fmtApptDate = fmt.format(new Date());
                             <%if(hideToBill){ %>
                             <hidden name="hideToBill" value="true"/>
                             <%}%>
-                            <input type="submit" name="save" value="Save" />| 
-                            <input type="submit" name="saveAndClose" value="Save and Close" />|  
+                            <input type="submit" name="save" value="Save" />|
+                            <input type="submit" name="saveAndClose" value="Save and Close" />|
                             <%if( !hideToBill){%>
                             <input type="submit" name="saveandbill" value="Save and Bill" />|
-                            <%}%> 
-                            <input type="button" value="Cancel" onClick="window.close();" /> | 
+                            <%}%>
+                            <input type="button" value="Cancel" onClick="window.close();" /> |
                             <input type="button" value="Print" onClick="window.print()" />
                         </td>
 		</tr>
@@ -824,10 +832,14 @@ String fmtApptDate = fmt.format(new Date());
 	<% for (int i = 0 ; i < claims.size(); i++){
       WcbHelper.WCBClaim claim = (WcbHelper.WCBClaim) claims.get(i);
       WcbHelper.WCBEmployer emp = claim.wcbEmp;
+      if (claim.getClaimNumber() != null && claim.getClaimNumber().trim().equals("")){
+        continue;
+      }
     %>
 	<tr class="SectionHead">
-		<td class="wcblayerTitle"><a href="#"
-			onClick="setClaim('<%=claim.getClaimNumber()%>','<%=emp.w_empname%>','<%=emp.w_opaddress%>','<%=emp.w_opcity%>','<%=emp.w_emparea%>','<%=emp.w_empphone%>');hidepic('claimLayer');return false;">
+		<td class="wcblayerTitle">
+                    <a href="#"
+			onClick="setClaim('<%=claim.getClaimNumber()%>','<%=emp.w_empname%>','<%=emp.w_opaddress%>','<%=emp.w_opcity%>','<%=emp.w_emparea%>','<%=emp.w_empphone%>','<%=claim.w_icd9%>','<%=claim.w_bp%>','<%=claim.w_side%>','<%=claim.w_noi%>','<%=claim.w_doi%>');hidepic('claimLayer');return false;">
 		<%=claim.getClaimNumber()%> </a></td>
 		<td class="wcblayerItem">&nbsp;</td>
 

@@ -74,6 +74,9 @@ public class BillingmasterDAO {
     }
     
     public void save(WCB wcb){
+        if (wcb.getW_doi() == null){
+            wcb.setW_doi(new Date());  //If a date is not set today
+        }
         entityManager.persist(wcb);
     }
     

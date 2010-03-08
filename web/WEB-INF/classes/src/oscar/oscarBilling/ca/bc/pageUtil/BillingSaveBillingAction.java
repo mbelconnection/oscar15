@@ -152,24 +152,25 @@ public class BillingSaveBillingAction extends Action {
             billingmasterDAO.save(billingmaster);
             billingMasterId = "" + billingmaster.getBillingmasterNo();
             this.createBillArchive(billingMasterId);
-        }
+        
 
-        if (bean.getCorrespondenceCode().equals("N") || bean.getCorrespondenceCode().equals("B")) {
-            try {
-                MSPBillingNote n = new MSPBillingNote();
-                n.addNote(billingMasterId, bean.getCreator(), bean.getNotes());
-            } catch (SQLException e) {
-                log.error(e.getMessage(), e);
+            if (bean.getCorrespondenceCode().equals("N") || bean.getCorrespondenceCode().equals("B")) {
+                try {
+                    MSPBillingNote n = new MSPBillingNote();
+                    n.addNote(billingMasterId, bean.getCreator(), bean.getNotes());
+                } catch (SQLException e) {
+                    log.error(e.getMessage(), e);
+                }
             }
-        }
-        if (bean.getMessageNotes() != null || !bean.getMessageNotes().trim().equals("")) {
-            try {
-                BillingNote n = new BillingNote();
-                n.addNote(billingMasterId, bean.getCreator(), bean.getMessageNotes());
-            } catch (SQLException e) {
-                log.error(e.getMessage(), e);
-            }
+            if (bean.getMessageNotes() != null || !bean.getMessageNotes().trim().equals("")) {
+                try {
+                    BillingNote n = new BillingNote();
+                    n.addNote(billingMasterId, bean.getCreator(), bean.getMessageNotes());
+                } catch (SQLException e) {
+                    log.error(e.getMessage(), e);
+                }
 
+            }
         }
         
         if (bean.getBillingType().equals("WCB")) {

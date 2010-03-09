@@ -1,3 +1,4 @@
+-- backup secRole, secObjPrivilege, caisi_role, access_type and default_role_access before you run this script file.
 
 insert into `secRole` (role_name, description) values('psychiatrist', 'psychiatrist');
 insert into `secRole` (role_name, description) values('RN', 'Registered Nurse');
@@ -89,7 +90,6 @@ insert into `secObjPrivilege` values('psychiatrist','_tasks','x',0,'999998');
 
 
 insert into `secObjPrivilege` values('nurse','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('nurse','_appointment.doctorLink','x',0,'999998');
 insert into `secObjPrivilege` values('nurse','_casemgmt.issues','x',0,'999998');
 insert into `secObjPrivilege` values('nurse','_casemgmt.notes','x',0,'999998');
 insert into `secObjPrivilege` values('nurse','_demographic','x',0,'999998');
@@ -108,7 +108,6 @@ insert into `secObjPrivilege` values('nurse','_tasks','x',0,'999998');
 
 
 insert into `secObjPrivilege` values('RN','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('RN','_appointment.doctorLink','x',0,'999998');
 insert into `secObjPrivilege` values('RN','_casemgmt.issues','x',0,'999998');
 insert into `secObjPrivilege` values('RN','_casemgmt.notes','x',0,'999998');
 insert into `secObjPrivilege` values('RN','_demographic','x',0,'999998');
@@ -127,7 +126,6 @@ insert into `secObjPrivilege` values('RN','_tasks','x',0,'999998');
 
 
 insert into `secObjPrivilege` values('RPN','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('RPN','_appointment.doctorLink','x',0,'999998');
 insert into `secObjPrivilege` values('RPN','_casemgmt.issues','x',0,'999998');
 insert into `secObjPrivilege` values('RPN','_casemgmt.notes','x',0,'999998');
 insert into `secObjPrivilege` values('RPN','_demographic','x',0,'999998');
@@ -147,7 +145,6 @@ insert into `secObjPrivilege` values('RPN','_tasks','x',0,'999998');
 
 
 insert into `secObjPrivilege` values('Nurse Manager','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('Nurse Manager','_appointment.doctorLink','x',0,'999998');
 insert into `secObjPrivilege` values('Nurse Manager','_casemgmt.issues','x',0,'999998');
 insert into `secObjPrivilege` values('Nurse Manager','_casemgmt.notes','x',0,'999998');
 insert into `secObjPrivilege` values('Nurse Manager','_demographic','x',0,'999998');
@@ -165,7 +162,8 @@ insert into `secObjPrivilege` values('Nurse Manager','_tasks','x',0,'999998');
 
 
 insert into `secObjPrivilege` values('Clinical Social Worker','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Social Worker','_appointment.doctorLink','x',0,'999998');
+insert into `secObjPrivilege` values('Clinical Social Worker','_casemgmt.issues','x',0,'999998');
+insert into `secObjPrivilege` values('Clinical Social Worker','_casemgmt.notes','x',0,'999998');
 insert into `secObjPrivilege` values('Clinical Social Worker','_demographic','x',0,'999998');
 insert into `secObjPrivilege` values('Clinical Social Worker','_eChart','x',0,'999998');
 insert into `secObjPrivilege` values('Clinical Social Worker','_eChart.verifyButton','x',0,'999998');
@@ -180,7 +178,8 @@ insert into `secObjPrivilege` values('Clinical Social Worker','_tasks','x',0,'99
 
 
 insert into `secObjPrivilege` values('Clinical Case Manager','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Case Manager','_appointment.doctorLink','x',0,'999998');
+insert into `secObjPrivilege` values('Clinical Case Manager','_casemgmt.issues','x',0,'999998');
+insert into `secObjPrivilege` values('Clinical Case Manager','_casemgmt.notes','x',0,'999998');
 insert into `secObjPrivilege` values('Clinical Case Manager','_demographic','x',0,'999998');
 insert into `secObjPrivilege` values('Clinical Case Manager','_eChart','x',0,'999998');
 insert into `secObjPrivilege` values('Clinical Case Manager','_eChart.verifyButton','x',0,'999998');
@@ -196,7 +195,8 @@ insert into `secObjPrivilege` values('Clinical Case Manager','_tasks','x',0,'999
 
 
 insert into `secObjPrivilege` values('counsellor','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('counsellor','_appointment.doctorLink','x',0,'999998');
+insert into `secObjPrivilege` values('counsellor','_casemgmt.issues','x',0,'999998');
+insert into `secObjPrivilege` values('counsellor','_casemgmt.notes','x',0,'999998');
 insert into `secObjPrivilege` values('counsellor','_demographic','x',0,'999998');
 insert into `secObjPrivilege` values('counsellor','_eChart','x',0,'999998');
 insert into `secObjPrivilege` values('counsellor','_eChart.verifyButton','x',0,'999998');
@@ -211,7 +211,8 @@ insert into `secObjPrivilege` values('counsellor','_tasks','x',0,'999998');
 
 
 insert into `secObjPrivilege` values('Case Manager','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('Case Manager','_appointment.doctorLink','x',0,'999998');
+insert into `secObjPrivilege` values('Case Manager','_casemgmt.issues','x',0,'999998');
+insert into `secObjPrivilege` values('Case Manager','_casemgmt.notes','x',0,'999998');
 insert into `secObjPrivilege` values('Case Manager','_demographic','x',0,'999998');
 insert into `secObjPrivilege` values('Case Manager','_eChart','x',0,'999998');
 insert into `secObjPrivilege` values('Case Manager','_eChart.verifyButton','x',0,'999998');
@@ -226,7 +227,8 @@ insert into `secObjPrivilege` values('Case Manager','_tasks','x',0,'999998');
 
 
 insert into `secObjPrivilege` values('Housing Worker','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('Housing Worker','_appointment.doctorLink','x',0,'999998');
+insert into `secObjPrivilege` values('Housing Worker','_casemgmt.issues','x',0,'999998');
+insert into `secObjPrivilege` values('Housing Worker','_casemgmt.notes','x',0,'999998');
 insert into `secObjPrivilege` values('Housing Worker','_demographic','x',0,'999998');
 insert into `secObjPrivilege` values('Housing Worker','_eChart','x',0,'999998');
 insert into `secObjPrivilege` values('Housing Worker','_eChart.verifyButton','x',0,'999998');
@@ -241,7 +243,8 @@ insert into `secObjPrivilege` values('Housing Worker','_tasks','x',0,'999998');
 
 
 insert into `secObjPrivilege` values('Medical Secretary','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('Medical Secretary','_appointment.doctorLink','x',0,'999998');
+insert into `secObjPrivilege` values('Medical Secretary','_casemgmt.issues','x',0,'999998');
+insert into `secObjPrivilege` values('Medical Secretary','_casemgmt.notes','x',0,'999998');
 insert into `secObjPrivilege` values('Medical Secretary','_demographic','x',0,'999998');
 insert into `secObjPrivilege` values('Medical Secretary','_masterLink','x',0,'999998');
 insert into `secObjPrivilege` values('Medical Secretary','_pmm.agencyInformation','x',0,'999998');
@@ -254,7 +257,8 @@ insert into `secObjPrivilege` values('Medical Secretary','_tasks','x',0,'999998'
 
 
 insert into `secObjPrivilege` values('Clinical Assistant','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Assistant','_appointment.doctorLink','x',0,'999998');
+insert into `secObjPrivilege` values('Clinical Assistant','_casemgmt.issues','x',0,'999998');
+insert into `secObjPrivilege` values('Clinical Assistant','_casemgmt.notes','x',0,'999998');
 insert into `secObjPrivilege` values('Clinical Assistant','_demographic','x',0,'999998');
 insert into `secObjPrivilege` values('Clinical Assistant','_masterLink','x',0,'999998');
 insert into `secObjPrivilege` values('Clinical Assistant','_pmm.agencyInformation','x',0,'999998');
@@ -267,7 +271,8 @@ insert into `secObjPrivilege` values('Clinical Assistant','_tasks','x',0,'999998
 
 
 insert into `secObjPrivilege` values('secretary','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('secretary','_appointment.doctorLink','x',0,'999998');
+insert into `secObjPrivilege` values('secretary','_casemgmt.issues','x',0,'999998');
+insert into `secObjPrivilege` values('secretary','_casemgmt.notes','x',0,'999998');
 insert into `secObjPrivilege` values('secretary','_demographic','x',0,'999998');
 insert into `secObjPrivilege` values('secretary','_masterLink','x',0,'999998');
 insert into `secObjPrivilege` values('secretary','_pmm.agencyInformation','x',0,'999998');
@@ -279,7 +284,8 @@ insert into `secObjPrivilege` values('secretary','_pmm.newClient','x',0,'999998'
 insert into `secObjPrivilege` values('secretary','_tasks','x',0,'999998');
 
 insert into `secObjPrivilege` values('Support Worker','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('Support Worker','_appointment.doctorLink','x',0,'999998');
+insert into `secObjPrivilege` values('Support Worker','_casemgmt.issues','x',0,'999998');
+insert into `secObjPrivilege` values('Support Worker','_casemgmt.notes','x',0,'999998');
 insert into `secObjPrivilege` values('Support Worker','_demographic','x',0,'999998');
 insert into `secObjPrivilege` values('Support Worker','_eChart','x',0,'999998');
 insert into `secObjPrivilege` values('Support Worker','_eChart.verifyButton','x',0,'999998');
@@ -291,7 +297,8 @@ insert into `secObjPrivilege` values('Support Worker','_pmm.newClient','x',0,'99
 insert into `secObjPrivilege` values('Support Worker','_tasks','x',0,'999998');
 
 insert into `secObjPrivilege` values('Client Service Worker','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('Client Service Worker','_appointment.doctorLink','x',0,'999998');
+insert into `secObjPrivilege` values('Client Service Worker','_casemgmt.issues','x',0,'999998');
+insert into `secObjPrivilege` values('Client Service Worker','_casemgmt.notes','x',0,'999998');
 insert into `secObjPrivilege` values('Client Service Worker','_demographic','x',0,'999998');
 insert into `secObjPrivilege` values('Client Service Worker','_eChart','x',0,'999998');
 insert into `secObjPrivilege` values('Client Service Worker','_eChart.verifyButton','x',0,'999998');
@@ -304,7 +311,6 @@ insert into `secObjPrivilege` values('Client Service Worker','_tasks','x',0,'999
 
 
 
-# backup caisi_role, access_type and default_role_access before you run this file.
 
 insert into caisi_role (name,userDefined,oscar_name,update_date) values('psychiatrist', 1,'',now());
 insert into caisi_role (name,userDefined,oscar_name,update_date) values('RN', 1,'',now());
@@ -317,6 +323,8 @@ insert into caisi_role (name,userDefined,oscar_name,update_date) values('Clinica
 insert into caisi_role (name,userDefined,oscar_name,update_date) values('secretary', 1,'',now());
 insert into caisi_role (name,userDefined,oscar_name,update_date) values('Case Manager',1,'',now());
 insert into caisi_role (name,userDefined,oscar_name,update_date) values('Housing Worker', 1,'',now());
+insert into caisi_role (name,userDefined,oscar_name,update_date) values('Support Worker', 1,'',now());
+insert into caisi_role (name,userDefined,oscar_name,update_date) values('Client Service Worker', 1,'',now());
 
 
 insert into access_type (name, type) values("read ticklers assigned to a doctor","access");
@@ -359,7 +367,6 @@ insert into access_type (name, type) values("read Clinical Case Manager notes","
 
 insert into access_type (name, type) values("read ticklers assigned to a counsellor","access");
 
-
 insert into access_type (name, type) values("read ticklers assigned to a Case Manager","access");
 insert into access_type (name, type) values("write Case Manager issues","access");
 insert into access_type (name, type) values("read Case Manager issues","access");
@@ -400,9 +407,7 @@ insert into access_type (name, type) values("read Client Service Worker issues",
 insert into access_type (name, type) values("read Client Service Worker notes","access");
 
 
-
 delete from default_role_access;
-
 
 insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='doctor'),(select access_id from access_type where name='read ticklers assigned to a doctor'));
 insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='doctor'),(select access_id from access_type where name='read doctor issues'));
@@ -902,7 +907,6 @@ insert into default_role_access (role_id,access_id) values ((select role_id from
 
 
 
-
 insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='Clinical Social Worker'),(select access_id from access_type where name='read ticklers assigned to a doctor'));
 insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='Clinical Social Worker'),(select access_id from access_type where name='read doctor issues'));
 insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='Clinical Social Worker'),(select access_id from access_type where name='write doctor issues'));
@@ -1349,9 +1353,6 @@ insert into default_role_access (role_id,access_id) values ((select role_id from
 ###############################
 #### additional adding....
 
-
-insert into caisi_role (name,userDefined,oscar_name,update_date) values('Support Worker', 1,'',now());
-insert into caisi_role (name,userDefined,oscar_name,update_date) values('Client Service Worker', 1,'',now());
 
 
 insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='Support Worker'),(select access_id from access_type where name='read ticklers assigned to a Support Worker'));

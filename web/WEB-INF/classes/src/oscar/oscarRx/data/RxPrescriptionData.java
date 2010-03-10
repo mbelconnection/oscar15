@@ -1019,7 +1019,14 @@ public class RxPrescriptionData {
         private Date archivedDate;
         private boolean discontinuedLatest=false;
         String special_instruction=null;
+        private boolean durationSpecifiedByUser=false;
 
+        public boolean isDurationSpecifiedByUser(){
+            return durationSpecifiedByUser;
+        }
+        public void setDurationSpecifiedByUser(boolean b){
+            this.durationSpecifiedByUser=b;
+        }
         public String getSpecialInstruction(){
             return special_instruction;
         }

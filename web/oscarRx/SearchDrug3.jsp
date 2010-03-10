@@ -779,7 +779,7 @@ body {
         Comment:<br/>
         <textarea id="disComment" rows="3" cols="45"></textarea><br/>
         <input type="button" onclick="$('discontinueUI').hide();" value="Cancel"/>
-        <input type="button" onclick="Discontinue2($('disDrugId').value,$('disReason').value,$('disComment').value);" value="Discontinue"/>
+        <input type="button" onclick="Discontinue2($('disDrugId').value,$('disReason').value,$('disComment').value,$('disDrug').innerHTML);" value="Discontinue"/>
 
     </div>
 
@@ -1072,10 +1072,10 @@ body {
 
     }
 
-    function Discontinue2(id,reason,comment){
+    function Discontinue2(id,reason,comment,drugSpecial){
         var url="<c:out value="${ctx}"/>" + "/oscarRx/deleteRx.do?parameterValue=Discontinue"  ;
         var demoNo='<%=patient.getDemographicNo()%>';
-        var data="drugId="+id+"&reason="+reason+"&comment="+comment+"&demoNo="+demoNo;
+        var data="drugId="+id+"&reason="+reason+"&comment="+comment+"&demoNo="+demoNo+"&drugSpecial="+drugSpecial;
             new Ajax.Request(url,{method: 'post',postBody:data,onSuccess:function(transport){
                   oscarLog("Drug is now discontinued>"+transport.responseText);
                   var json=transport.responseText.evalJSON();
@@ -1083,7 +1083,7 @@ body {
                   $('rxDate_'+json.id).style.textDecoration='line-through';
                   $('reRx_'+json.id).style.textDecoration='line-through';
                   $('del_'+json.id).style.textDecoration='line-through';
-                  $('discont_'+json.id).innerHTML = json.reason;d
+                  $('discont_'+json.id).innerHTML = json.reason;
                   $('prescrip_'+json.id).style.textDecoration='line-through';
                   oscarLog("here2");
             }});
@@ -1097,8 +1097,7 @@ body {
                                             str=str.replace('<script type="text/javascript">','');
                                             str=str.replace(/<\/script>/,'');
                                             eval(str);
-                                            //oscarLog("str="+str);
-                                            oscarLog("in asdfadf");
+                                            //oscarLog("str="+str);                                            
                                             <oscar:oscarPropertiesCheck property="MYDRUGREF_DS" value="yes">re
                                               callReplacementWebService("GetmyDrugrefInfo.do?method=view",'interactionsRxMyD');
                                              </oscar:oscarPropertiesCheck>

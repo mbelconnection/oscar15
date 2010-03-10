@@ -618,7 +618,7 @@ public final class RxWriteScriptAction extends DispatchAction {
 
                         nPerDay = RxUtil.findNPerDay(frequency);
                         nDays = RxUtil.findNDays(durationUnit);
-                        if(RxUtil.isStringToNumber(quantity)){
+                        if(RxUtil.isStringToNumber(quantity) && !rx.isDurationSpecifiedByUser()){//don't not caculate duration if it's already specified by the user
                             double qtyD = Double.parseDouble(quantity);
                             //quantity=takeMax * nDays * duration * nPerDay
                             double durD = qtyD / ((Double.parseDouble(takeMax)) * nPerDay * nDays);

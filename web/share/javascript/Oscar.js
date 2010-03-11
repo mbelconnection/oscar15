@@ -1,25 +1,25 @@
 /*
- * 
+ *
  * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved. *
- * This software is published under the GPL GNU General Public License. 
- * This program is free software; you can redistribute it and/or 
- * modify it under the terms of the GNU General Public License 
- * as published by the Free Software Foundation; either version 2 
- * of the License, or (at your option) any later version. * 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
- * GNU General Public License for more details. * * You should have received a copy of the GNU General Public License 
- * along with this program; if not, write to the Free Software 
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. * 
- * 
+ * This software is published under the GPL GNU General Public License.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version. *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details. * * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *
+ *
  * <OSCAR TEAM>
- * 
- * This software was written for the 
- * Department of Family Medicine 
- * McMaster Unviersity 
- * Hamilton 
- * Ontario, Canada 
+ *
+ * This software was written for the
+ * Department of Family Medicine
+ * McMaster Unviersity
+ * Hamilton
+ * Ontario, Canada
  */
 
 function popup(height, width, url, windowName) {
@@ -27,17 +27,17 @@ function popup(height, width, url, windowName) {
 }
 
 
-function popup2(height, width, top, left, url, windowName){   
-  var page = url;  
+function popup2(height, width, top, left, url, windowName){
+  var page = url;
   windowprops = "height="+height+",width="+width+",location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=yes,screenX=0,screenY=0,top=" + top + ",left=" + left;
-  var popup=window.open(url, windowName, windowprops);  
-  if (popup != null){  
-    if (popup.opener == null){  
-      popup.opener = self;  
-    }  
-  }  
-  popup.focus();  
-  return false;  
+  var popup=window.open(url, windowName, windowprops);
+  if (popup != null){
+    if (popup.opener == null){
+      popup.opener = self;
+    }
+  }
+  popup.focus();
+  return false;
 }
 
 function confirmNGo(url, message) {
@@ -48,19 +48,19 @@ function confirmNGo(url, message) {
 }
 
 
-function showHideItem(id){ 
+function showHideItem(id){
     if(document.getElementById(id).style.display == 'none')
-        showItem(id);        
+        showItem(id);
     else
-        hideItem(id);        
+        hideItem(id);
 }
 
 function showItem(id){
-        document.getElementById(id).style.display = ''; 
+        document.getElementById(id).style.display = '';
 }
 
 function hideItem(id){
-        document.getElementById(id).style.display = 'none'; 
+        document.getElementById(id).style.display = 'none';
 }
 
 /*
@@ -152,10 +152,50 @@ function checkAll(master, parentEle, className){
    }
 }
 
-
+//Calls firebugs console log if it's available.  A safer way to use the console because if firebug is not enabled the javascript will error on the console.log line.
 function oscarLog(str){
     if(window.console){
        console.log(str);
     }
-    
+
+}
+
+
+//Can be use the enter key in a text box and call javacript function
+//example:  <itput type="text" onkeypress="return grabEnter(event,'ReferralScriptAttach1()')"/>
+function grabEnter(event,callb){
+  if( (window.event && window.event.keyCode == 13) || (event && event.which == 13) )  {
+     eval(callb);
+     return false;
+  }
+}
+
+
+
+//Checks to see if a String is numeric integer ie. No decimal aloud
+function isNumericInt(sText){
+   var validNumChars = "0123456789";
+   var isNumber=true;
+   var chara;
+   for (i = 0; i < sText.length && isNumber == true; i++) {
+      chara = sText.charAt(i);
+      if (validNumChars.indexOf(chara) == -1) {
+         isNumber = false;
+      }
+   }
+   return isNumber;
+}
+
+//Checks to see if a String is numeric
+function isNumeric(sText){
+   var validNumChars = "0123456789.";
+   var isNumber=true;
+   var chara;
+   for (i = 0; i < sText.length && isNumber == true; i++) {
+      chara = sText.charAt(i);
+      if (validNumChars.indexOf(chara) == -1) {
+         isNumber = false;
+      }
+   }
+   return isNumber;
 }

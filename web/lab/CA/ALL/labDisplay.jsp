@@ -62,7 +62,6 @@ String multiLabId = data.getMatchingLabs(segmentID);
 
 String hl7 = f.getHL7Body(segmentID);
 
-
 // check for errors printing
 if (request.getAttribute("printError") != null && (Boolean) request.getAttribute("printError")){
 %>
@@ -648,20 +647,16 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
                                         
                                         String lineClass = "NormalRes";
                                         String abnormal = handler.getOBXAbnormalFlag(j, k);
-                                        if ( abnormal != null && ( abnormal.equals("A") || abnormal.startsWith("H")) ){
-                                            lineClass = "AbnormalRes";
-                                        }else if ( abnormal != null && abnormal.startsWith("L")){
+                                        if ( abnormal != null && abnormal.startsWith("L")){
                                             lineClass = "HiLoRes";
+                                        } else if ( abnormal != null && ( abnormal.equals("A") || abnormal.startsWith("H") || handler.isOBXAbnormal( j, k) ) ){
+                                            lineClass = "AbnormalRes";
                                         }%>
                                         <tr bgcolor="<%=(linenum % 2 == 1 ? highlight : "")%>" class="<%=lineClass%>">
                                             <td valign="top" align="left"><%= obrFlag ? "&nbsp; &nbsp; &nbsp;" : "&nbsp;" %><a href="javascript:popupStart('660','900','../ON/labValues.jsp?testName=<%=obxName%>&demo=<%=demographicID%>&labType=HL7&identifier=<%= handler.getOBXIdentifier(j, k) %>')"><%=obxName %></a></td>                                         
                                             <td align="right"><%= handler.getOBXResult( j, k) %></td>
                                             <td align="center">
-                                                <%if (handler.isOBXAbnormal( j, k)) {%>
                                                     <%= handler.getOBXAbnormalFlag(j, k)%>
-                                                <%}else{%>
-                                                    <%= "N"%>
-                                                <%}%>
                                             </td>
                                             <td align="left"><%=handler.getOBXReferenceRange( j, k)%></td>
                                             <td align="left"><%=handler.getOBXUnits( j, k) %></td>
@@ -694,7 +689,16 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
                                 <tr bgcolor="<%=(linenum % 2 == 1 ? highlight : "")%>" class="NormalRes">
                                     <td valign="top" align="left" colspan="8"><pre  style="margin:0px 0px 0px 100px;"><%=handler.getOBRComment(j, k)%></pre></td>
                                 </tr>
-                            <%}
+                                <% if(handler.getOBXName(j,k).equals("")){
+                                       String result = handler.getOBXResult(j, k);%>
+                                        <tr bgcolor="<%=(linenum % 2 == 1 ? highlight : "")%>" >
+                                                <td colspan="7" valign="top"  align="left"><%=result%></td>
+                                        </tr>
+                                            <%
+                            }
+
+
+                                }
                             }
                             }%>
                         </table>

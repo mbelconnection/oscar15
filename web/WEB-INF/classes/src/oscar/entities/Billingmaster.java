@@ -413,6 +413,16 @@ public class Billingmaster {
         return (phn != null ? phn : "");
     }
 
+    public void setNameVerify(String firstName, String lastName){
+        if (lastName.length() < 2){
+           lastName += "   ";
+        }
+        if (firstName.length() < 1){
+           firstName += "   ";
+        }
+        nameVerify = oscar.util.UtilMisc.mysqlEscape(firstName.substring(0, 1) + " " + lastName.substring(0, 2));
+    }
+
     /**
      * Gets the nameVerify
      * @return String nameVerify

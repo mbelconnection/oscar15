@@ -495,6 +495,10 @@ public class Billingmaster {
         return (billAmount != null ? billAmount : "");
     }
 
+    public double getBillAmountAsDouble(){
+        return Double.parseDouble(getBillAmount());
+    }
+
     /**
      * Gets the paymentMode
      * @return String paymentMode

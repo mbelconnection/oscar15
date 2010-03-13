@@ -153,7 +153,7 @@ public class BillingSaveBillingAction extends Action {
             billingMasterId = "" + billingmaster.getBillingmasterNo();
             this.createBillArchive(billingMasterId);
         
-
+            //Changed March 8th to be included side this loop,  before only one billing would get this information.
             if (bean.getCorrespondenceCode().equals("N") || bean.getCorrespondenceCode().equals("B")) {
                 try {
                     MSPBillingNote n = new MSPBillingNote();
@@ -533,7 +533,10 @@ public class BillingSaveBillingAction extends Action {
         bill.setPayeeNo(bean.getBillingGroupNo());
         bill.setPractitionerNo(bean.getBillingPracNo());
         bill.setPhn(bean.getPatientPHN());
-        bill.setNameVerify(oscar.util.UtilMisc.mysqlEscape(bean.getPatientFirstName().substring(0, 1) + " " + bean.getPatientLastName().substring(0, 2)));
+
+
+
+        bill.setNameVerify(bean.getPatientFirstName(),bean.getPatientLastName());
         bill.setDependentNum(bean.getDependent());
         bill.setBillingUnit(billingUnit); //"" + billItem.getUnit());
         bill.setClarificationCode(bean.getVisitLocation().substring(0, 2));

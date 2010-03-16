@@ -592,13 +592,21 @@ public final class RxWriteScriptAction extends DispatchAction {
                     quantity = "";
                 }
                 //check if quantity is same as rx.getquantity(), if yes, do nothing.
-                if (quantity.equals(rx.getQuantity())) {
+                if (quantity.equals(rx.getQuantity()) && rx.getUnitName()==null) {
                     //do nothing
                 } else {
 
                     if(RxUtil.isStringToNumber(quantity)){
                         rx.setQuantity(quantity);
                         rx.setUnitName(null);
+                    }else if(RxUtil.isMitte(quantity)){//set duration for mitte
+                        
+                        String duration=RxUtil.getDurationFromQuantityText(quantity);
+                        String durationUnit=RxUtil.getDurationUnitFromQuantityText(quantity);
+                        rx.setDuration(duration);
+                        rx.setDurationUnit(durationUnit);
+                        rx.setQuantity(RxUtil.getQuantityFromQuantityText(quantity));
+                        rx.setUnitName(RxUtil.getUnitNameFromQuantityText(quantity));//this is actually an indicator for Mitte rx
                     }else{
                         rx.setQuantity(RxUtil.getQuantityFromQuantityText(quantity));
                         rx.setUnitName(RxUtil.getUnitNameFromQuantityText(quantity));
@@ -918,7 +926,12 @@ public final class RxWriteScriptAction extends DispatchAction {
                             special+=newline+rx.getSpecialInstruction();
                         special+= newline + "Qty:" + rx.getQuantity() + " "+rx.getUnitName() +" Repeats:" + "" + rx.getRepeat();
                     }
-                }             
+                }
+                
+                if(rx.isMitte()){
+                    special=special.replace("Qty", "Mitte");
+                }
+
                 //     p("here222");
                 rx.setSpecial(special.trim());
                 System.out.println("SETTING SPECIAL TOO >" + special + "<");

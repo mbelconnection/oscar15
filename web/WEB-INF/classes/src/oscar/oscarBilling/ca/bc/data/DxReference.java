@@ -43,12 +43,19 @@ import java.util.Map;
 import oscar.oscarDB.DBHandler;
 import oscar.util.UtilDateUtilities;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.oscarehr.util.SpringUtils;
+import oscar.entities.BillingDxCode;
+
 /**
  *
  * @author jay
  */
 public class DxReference {
-    
+    private static final Log _log = LogFactory.getLog(DxReference.class);
+    BillingDxCodeDAO dxCode = (BillingDxCodeDAO) SpringUtils.getBean("BillingDxCodeDAO");
+
     /** Creates a new instance of DxReference */
     public DxReference() {
     }
@@ -60,12 +67,12 @@ public class DxReference {
 | 250      |          |          | 20061114     |
 +----------+----------+----------+--------------+
      */
-    
+
     /*
      * method looks in a paitnest
      */
-    public List getLatestDxCodes(String demo){     
-       ArrayList list = new ArrayList(); 
+    public List getLatestDxCodes(String demo){
+       ArrayList list = new ArrayList();
        String nsql ="select dx_code1, dx_code2, dx_code3,service_date from billingmaster where demographic_no = ? and billingstatus != 'D' order by service_date desc";
        try {
             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
@@ -79,15 +86,15 @@ public class DxReference {
                 dx[0] = rs.getString("dx_code1");
                 dx[1] = rs.getString("dx_code2");
                 dx[2] = rs.getString("dx_code3");
-                System.out.println("THIS IS THE DATE: "+sDate);
                 Date sD = UtilDateUtilities.StringToDate(sDate,"yyyyMMdd") ;
-                System.out.println("DATE PARSED "+sD);
-                       
+                _log.debug("THIS IS THE DATE: "+sDate +" DATE PARSED "+sD);
+
                 for (int i = 0; i < dx.length; i++){
                     if (dx[i] != null && !dx[i].trim().equals("")){
                         DxCode code = new DxCode(sD,dx[i]);
                         if (!m.containsKey(dx[i])){
                             m.put(dx[i],dx[i]);
+                            fillDxCodeDescrition(code);
                             list.add(code);
                         }
                     }
@@ -98,22 +105,28 @@ public class DxReference {
           e.printStackTrace();
        }
        Collections.sort(list);
-       
+
        return list;
     }
-    
-    
-    
+
+    private void fillDxCodeDescrition(DxCode code){
+
+         List<BillingDxCode> dxCodeList = dxCode.getByDxCode(code.getDx());
+         BillingDxCode bdc = dxCodeList.get(0);
+         code.setDesc(bdc.getDescription());
+    }
+
 
     public class DxCode implements Comparable{
-        
+
         public DxCode(Date d, String dx){
             this.setDx(dx);
             this.setDate(d);
         }
-        
+
         private String dx = null;
         private Date date = null;
+        private String desc = null;
 
         public String getDx() {
             return dx;
@@ -130,19 +143,27 @@ public class DxReference {
         public void setDate(Date date) {
             this.date = date;
         }
-        
-        
+
+        public void setDesc(String desc){
+            this.desc = desc;
+        }
+
+        public String getDesc(){
+            return this.desc;
+        }
+
+
         public int getNumMonthSinceDate(){
             return getNumMonths(date,Calendar.getInstance().getTime());
         }
         public int getNumMonthsSinceDate(Date d){
-            return getNumMonths(date,d); 
-        }   
-    
+            return getNumMonths(date,d);
+        }
+
         private int getNumMonths(Date dStart, Date dEnd) {
             int i = 0;
             try{
-                System.out.println("Getting the number of months between "+dStart.toString()+ " and "+dEnd.toString() );        
+                _log.debug("Getting the number of months between "+dStart.toString()+ " and "+dEnd.toString() );
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(dStart);
                 while (calendar.getTime().before(dEnd) || calendar.getTime().equals(dEnd)) {
@@ -152,7 +173,7 @@ public class DxReference {
                 i--;
                 if (i < 0) { i = 0; }
             }catch (Exception e){
-                System.out.println("Date was NULL in DxReference");
+                _log.warn("Date was NULL in DxReference");
             }
             return i;
         }
@@ -162,7 +183,7 @@ public class DxReference {
             if (d == null && date == null) return 0;
             if (d == null && date != null) return -1;
             if (d != null && date == null) return 1;
-            
+
             if (date.after(d)){
                 return 1;
             }else if (date.before(d)){
@@ -171,6 +192,6 @@ public class DxReference {
             return 0;
         }
     }
-    
-    
+
+
 }

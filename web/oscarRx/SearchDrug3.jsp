@@ -462,10 +462,9 @@ function checkRePrescribe(){
      //represcribe a drug
     function represcribeOnLoad(drugId){
         var data="drugId="+drugId;
-        var url= "<c:out value="${ctx}"/>" + "/oscarRx/rePrescribe2.do?method=represcribe2";
+        var url= "<c:out value="${ctx}"/>" + "/oscarRx/rePrescribe2.do?method=saveReRxDrugIdToStash";
         new Ajax.Updater('rxText',url, {method:'get',parameters:data,asynchronous:false,evalScripts:true,insertion: Insertion.Bottom,
             onSuccess:function(transport){
-                updateCurrentInteractions();
             }});
 
     }
@@ -987,9 +986,13 @@ body {
                $("searchString").focus();
     }
     function iterateStash(){
-                var url="<c:out value="${ctx}"/>" + "/oscarRx/WriteScript.do?parameterValue=iterateStash";
-                var data="";
-                new Ajax.Updater('rxText',url, {method:'get',parameters:data,asynchronous:true,evalScripts:true,insertion: Insertion.Bottom});
+        var url="<c:out value="${ctx}"/>" + "/oscarRx/WriteScript.do?parameterValue=iterateStash";
+        var data="";
+        new Ajax.Updater('rxText',url, {method:'get',parameters:data,asynchronous:true,evalScripts:true,
+            insertion: Insertion.Bottom,onSuccess:function(transport){
+                updateCurrentInteractions();
+        }});
+        
     }
     function rxPageSizeSelect(){
                var ran_number=Math.round(Math.random()*1000000);

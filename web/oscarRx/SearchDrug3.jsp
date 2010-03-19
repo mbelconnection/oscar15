@@ -56,7 +56,7 @@
 <%
             String usefav=request.getParameter("usefav");
             String favid=request.getParameter("favid");
-            String reRxDrugId=request.getParameter("reRxDrugId");
+            //String reRxDrugId=request.getParameter("reRxDrugId");
             HashMap hm=(HashMap)session.getAttribute("profileViewSpec");
             boolean show_current=true;
             boolean show_all=true;
@@ -451,15 +451,17 @@ function checkFav(){
         useFav2(favid);
     }else{}
 }
-function checkRePrescribe(){
-    var drugId='<%=reRxDrugId%>';
+//not used
+/*function checkRePrescribe(){
+    var drugId='<%--=reRxDrugId--%>';
     oscarLog("drugId in checkrePrescribe: "+drugId);
     if(drugId!=null && (drugId!='null')){
               represcribeOnLoad(drugId);
     }else{}
 }
+*/
 
-     //represcribe a drug
+     //not used , represcribe a drug
     function represcribeOnLoad(drugId){
         var data="drugId="+drugId;
         var url= "<c:out value="${ctx}"/>" + "/oscarRx/rePrescribe2.do?method=saveReRxDrugIdToStash";
@@ -587,7 +589,7 @@ body {
 
 
 
-    <body  vlink="#0000FF" onload="checkFav();checkRePrescribe();iterateStash();rxPageSizeSelect();<%-- initmb(); --%>load()" class="yui-skin-sam">
+    <body  vlink="#0000FF" onload="checkFav();iterateStash();rxPageSizeSelect();<%-- initmb(); --%>load()" class="yui-skin-sam">
         <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="100%" id="AutoNumber1" height="100%">
             <%@ include file="TopLinks2.jsp" %><!-- Row One included here-->
             <tr>

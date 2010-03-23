@@ -320,6 +320,72 @@ public final class RxWriteScriptAction extends DispatchAction {
         }
     }
 
+  /*  public ActionForward newCustomNote(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
+        p("=============Start newCustomNote RxWriteScriptAction.java===============");
+        Locale locale = getLocale(request);
+        MessageResources messages = getResources(request);
+        //set default quantity;
+        //setDefaultQuantity(request);
+        oscar.oscarRx.pageUtil.RxSessionBean bean = (oscar.oscarRx.pageUtil.RxSessionBean) request.getSession().getAttribute("RxSessionBean");
+        if (bean == null) {
+            response.sendRedirect("error.html");
+            return null;
+        }
+
+        try {
+            RxPrescriptionData rxData = new RxPrescriptionData();
+            RxDrugData drugData = new RxDrugData();
+            // create Prescription
+            RxPrescriptionData.Prescription rx = rxData.newPrescription(bean.getProviderNo(), bean.getDemographicNo());
+            String ra = request.getParameter("randomId");
+            rx.setRandomId(Integer.parseInt(ra));
+            rx.setGenericName(null);
+            rx.setBrandName(null);
+            rx.setDrugForm("");
+            rx.setRoute("");
+            rx.setDosage("");
+            rx.setUnit("");
+            rx.setGCN_SEQNO(0);
+            rx.setRegionalIdentifier("");
+            rx.setAtcCode("");
+            RxUtil.setDefaultSpecialQuantityRepeat(rx);//1 OD, 20, 0;
+            rx.setDuration(RxUtil.findDuration(rx));
+            bean.addAttributeName(rx.getAtcCode() + "-" + String.valueOf(bean.getStashIndex()));
+            List<RxPrescriptionData.Prescription> listRxDrugs = new ArrayList();
+
+            if (RxUtil.isRxUniqueInStash(bean, rx)) {
+                listRxDrugs.add(rx);
+            }
+            int rxStashIndex = bean.addStashItem(rx);
+            bean.setStashIndex(rxStashIndex);
+
+            //bean.setStashIndex(bean.addStashItem(rx));
+            //    p("brandName of rx", rx.getBrandName());
+            //    p("stash index it's set to", "" + bean.getStashIndex());
+
+            String today = null;
+            Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                today = dateFormat.format(calendar.getTime());
+                //      p("today's date", today);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Date tod = RxUtil.StringToDate(today, "yyyy-MM-dd");
+            rx.setRxDate(tod);
+            rx.setWrittenDate(tod);
+
+
+            request.setAttribute("listRxDrugs", listRxDrugs);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        p("=============END newCustomNote RxWriteScriptAction.java===============");
+        return (mapping.findForward("newRx"));
+    }*/
+
     public ActionForward newCustomDrug(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         p("=============Start newCustomDrug RxWriteScriptAction.java===============");
         Locale locale = getLocale(request);
@@ -816,168 +882,164 @@ public final class RxWriteScriptAction extends DispatchAction {
         for (String num : randNum) {
             //          p("num", num);
             int stashIndex = bean.getIndexFromRx(Integer.parseInt(num));
-            existingIndex.add(stashIndex);
-            RxPrescriptionData.Prescription rx = bean.getStashItem(stashIndex);
+         try {
+             if(stashIndex==-1){
+                    System.out.println("stashIndex is -1");
+                    continue;
+                }
+             else{
+                        existingIndex.add(stashIndex);
+                        RxPrescriptionData.Prescription rx = bean.getStashItem(stashIndex);
 
-            boolean patientComplianceY = false;
-            boolean patientComplianceN = false;
-            boolean isOutsideProvider = false;
-            boolean isLongTerm = false;
-            boolean isPastMed = false;
-            try {
-                em = request.getParameterNames();
-                while (em.hasMoreElements()) {
-                    String elem = (String) em.nextElement();
-                    String val = request.getParameter(elem);
-                    val=val.trim();
-                    System.out.println("paramName=" + elem + ", value=" + val);
-                    if (elem.startsWith("drugName_" + num)) {
-                        if (rx.isCustom()) {
-                            rx.setCustomName(val);
-                            rx.setBrandName(null);
-                            rx.setGenericName(null);
-                        } else {
-                            rx.setBrandName(val);
-                        }
-                        ;
-                    } else if (elem.equals("repeats_" + num)) {
-                        if (val.equals("") || val == null) {
-                            rx.setRepeat(0);
-                        } else {
-                            rx.setRepeat(Integer.parseInt(val));
-                        }
+                        boolean patientComplianceY = false;
+                        boolean patientComplianceN = false;
+                        boolean isOutsideProvider = false;
+                        boolean isLongTerm = false;
+                        boolean isPastMed = false;
+        
+                            em = request.getParameterNames();
+                            while (em.hasMoreElements()) {
+                                String elem = (String) em.nextElement();
+                                String val = request.getParameter(elem);
+                                val=val.trim();
+                                System.out.println("paramName=" + elem + ", value=" + val);
+                                if (elem.startsWith("drugName_" + num)) {
+                                    if (rx.isCustom()) {
+                                        rx.setCustomName(val);
+                                        rx.setBrandName(null);
+                                        rx.setGenericName(null);
+                                    } else {
+                                        rx.setBrandName(val);
+                                    }
+                                    ;
+                                } else if (elem.equals("repeats_" + num)) {
+                                    if (val.equals("") || val == null) {
+                                        rx.setRepeat(0);
+                                    } else {
+                                        rx.setRepeat(Integer.parseInt(val));
+                                    }
 
-                    } else if (elem.equals("instructions_" + num)) {
-                        rx.setSpecial(val);
-                    } else if (elem.equals("quantity_" + num)) {
-                        if (val.equals("") || val == null) {
-                            rx.setQuantity("0");
-                        } else {
-                            if(RxUtil.isStringToNumber(val)){
-                                rx.setQuantity(val);
-                                rx.setUnitName(null);
-                            }else{
-                                rx.setQuantity(RxUtil.getQuantityFromQuantityText(val));
-                                rx.setUnitName(RxUtil.getUnitNameFromQuantityText(val));
+                                } else if (elem.equals("instructions_" + num)) {
+                                    rx.setSpecial(val);
+                                } else if (elem.equals("quantity_" + num)) {
+                                    if (val.equals("") || val == null) {
+                                        rx.setQuantity("0");
+                                    } else {
+                                        if(RxUtil.isStringToNumber(val)){
+                                            rx.setQuantity(val);
+                                            rx.setUnitName(null);
+                                        }else{
+                                            rx.setQuantity(RxUtil.getQuantityFromQuantityText(val));
+                                            rx.setUnitName(RxUtil.getUnitNameFromQuantityText(val));
+                                        }
+                                    }
+                                } else if (elem.equals("longTerm_" + num)) {
+                                    if (val.equals("on")) {
+                                        isLongTerm = true;
+                                    } else {
+                                        isLongTerm = false;
+                                    }
+                                } else if (elem.equals("lastRefillDate_" + num)) {
+                                    rx.setLastRefillDate(RxUtil.StringToDate(val, "yyyy-MM-dd"));
+                                } else if (elem.equals("outsideProviderName_" + num)) {
+                                    rx.setOutsideProviderName(val);
+                                } else if (elem.equals("rxDate_" + num)) {
+                                    //     p("paramName is rxDate!!");
+                                    if ((val == null) || (val.equals(""))) {
+                                        rx.setRxDate(RxUtil.StringToDate("0000-00-00", "yyyy-MM-dd"));
+                                    } else {
+                                        rx.setRxDate(RxUtil.StringToDate(val, "yyyy-MM-dd"));
+                                    }
+                                } else if (elem.equals("writtenDate_" + num)) {
+                                    if (val == null || (val.equals(""))) {
+                                        //     p("writtenDate is null");
+                                        rx.setWrittenDate(RxUtil.StringToDate("0000-00-00", "yyyy-MM-dd"));
+                                    } else {
+                                        rx.setWrittenDate(RxUtil.StringToDate(val, "yyyy-MM-dd"));
+                                    }
+
+                                } else if (elem.equals("outsideProviderName_" + num)) {
+                                    rx.setOutsideProviderName(val);
+                                } else if (elem.equals("outsideProviderOhip_" + num)) {
+                                    if (val.equals("") || val == null) {
+                                        rx.setOutsideProviderOhip("0");
+                                    } else {
+                                        rx.setOutsideProviderOhip(val);
+                                    }
+                                } else if (elem.equals("ocheck_" + num)) {
+                                    if (val.equals("on")) {
+                                        isOutsideProvider = true;
+                                    } else {
+                                        isOutsideProvider = false;
+                                    }
+                                } else if (elem.equals("pastMed_" + num)) {
+                                    if (val.equals("on")) {
+                                        isPastMed = true;
+                                    } else {
+                                        isPastMed = false;
+                                    }
+                                } else if (elem.equals("patientComplianceY_" + num)) {
+                                    if (val.equals("on")) {
+                                        patientComplianceY = true;
+                                    } else {
+                                        patientComplianceY = false;
+                                    }
+                                } else if (elem.equals("patientComplianceN_" + num)) {
+                                    if (val.equals("on")) {
+                                        patientComplianceN = true;
+                                    } else {
+                                        patientComplianceN = false;
+                                    }
+                                }
                             }
-                        }
-                    } else if (elem.equals("longTerm_" + num)) {
-                        if (val.equals("on")) {
-                            isLongTerm = true;
-                        } else {
-                            isLongTerm = false;
-                        }
-                    } else if (elem.equals("lastRefillDate_" + num)) {
-                        rx.setLastRefillDate(RxUtil.StringToDate(val, "yyyy-MM-dd"));
-                    } else if (elem.equals("outsideProviderName_" + num)) {
-                        rx.setOutsideProviderName(val);
-                    } else if (elem.equals("rxDate_" + num)) {
-                        //     p("paramName is rxDate!!");
-                        if ((val == null) || (val.equals(""))) {
-                            rx.setRxDate(RxUtil.StringToDate("0000-00-00", "yyyy-MM-dd"));
-                        } else {
-                            rx.setRxDate(RxUtil.StringToDate(val, "yyyy-MM-dd"));
-                        }
-                    } else if (elem.equals("writtenDate_" + num)) {
-                        if (val == null || (val.equals(""))) {
-                            //     p("writtenDate is null");
-                            rx.setWrittenDate(RxUtil.StringToDate("0000-00-00", "yyyy-MM-dd"));
-                        } else {
-                            rx.setWrittenDate(RxUtil.StringToDate(val, "yyyy-MM-dd"));
-                        }
 
-                    } else if (elem.equals("outsideProviderName_" + num)) {
-                        rx.setOutsideProviderName(val);
-                    } else if (elem.equals("outsideProviderOhip_" + num)) {
-                        if (val.equals("") || val == null) {
-                            rx.setOutsideProviderOhip("0");
-                        } else {
-                            rx.setOutsideProviderOhip(val);
-                        }
-                    } else if (elem.equals("ocheck_" + num)) {
-                        if (val.equals("on")) {
-                            isOutsideProvider = true;
-                        } else {
-                            isOutsideProvider = false;
-                        }
-                    } else if (elem.equals("pastMed_" + num)) {
-                        if (val.equals("on")) {
-                            isPastMed = true;
-                        } else {
-                            isPastMed = false;
-                        }
-                    } else if (elem.equals("patientComplianceY_" + num)) {
-                        if (val.equals("on")) {
-                            patientComplianceY = true;
-                        } else {
-                            patientComplianceY = false;
-                        }
-                    } else if (elem.equals("patientComplianceN_" + num)) {
-                        if (val.equals("on")) {
-                            patientComplianceN = true;
-                        } else {
-                            patientComplianceN = false;
-                        }
-                    }
-                }
+                            if (!isOutsideProvider) {
+                                rx.setOutsideProviderName("");
+                                rx.setOutsideProviderOhip("");
+                            }
+                            rx.setPastMed(isPastMed);
+                            rx.setLongTerm(isLongTerm);
+                            String newline = System.getProperty("line.separator");
+                            rx.setPatientCompliance(patientComplianceY, patientComplianceN);
+                            String special;
+                            if (rx.isCustom()) {
+                                special = rx.getCustomName() + newline + rx.getSpecial();
+                                if(rx.getSpecialInstruction()!=null && !rx.getSpecialInstruction().equalsIgnoreCase("null") && rx.getSpecialInstruction().trim().length()>0)
+                                        special+=newline+rx.getSpecialInstruction();
 
-                if (!isOutsideProvider) {
-                    rx.setOutsideProviderName("");
-                    rx.setOutsideProviderOhip("");
-                }
-                rx.setPastMed(isPastMed);
-                rx.setLongTerm(isLongTerm);
-                String newline = System.getProperty("line.separator");
-                rx.setPatientCompliance(patientComplianceY, patientComplianceN);
-                String special;
-                if (rx.isCustom()) {
-                    special = rx.getCustomName() + newline + rx.getSpecial();
-                    if(rx.getSpecialInstruction()!=null && !rx.getSpecialInstruction().equalsIgnoreCase("null") && rx.getSpecialInstruction().trim().length()>0)
-                            special+=newline+rx.getSpecialInstruction();
-                    
-                    special+= newline + "Qty:" + rx.getQuantity() + " Repeats:" + "" + rx.getRepeat();
-                } else {
-                    if(rx.getUnitName()==null){
-                        special = rx.getBrandName() + newline + rx.getSpecial();
-                        if(rx.getSpecialInstruction()!=null && !rx.getSpecialInstruction().equalsIgnoreCase("null") && rx.getSpecialInstruction().trim().length()>0)
-                            special+=newline+rx.getSpecialInstruction();
+                                special+= newline + "Qty:" + rx.getQuantity() + " Repeats:" + "" + rx.getRepeat();
+                            } else {
+                                if(rx.getUnitName()==null){
+                                    special = rx.getBrandName() + newline + rx.getSpecial();
+                                    if(rx.getSpecialInstruction()!=null && !rx.getSpecialInstruction().equalsIgnoreCase("null") && rx.getSpecialInstruction().trim().length()>0)
+                                        special+=newline+rx.getSpecialInstruction();
 
-                        special+= newline + "Qty:" + rx.getQuantity() + " Repeats:" + "" + rx.getRepeat();
-                    }else{
-                        special = rx.getBrandName() + newline + rx.getSpecial();
-                        if(rx.getSpecialInstruction()!=null && !rx.getSpecialInstruction().equalsIgnoreCase("null") && rx.getSpecialInstruction().trim().length()>0)
-                            special+=newline+rx.getSpecialInstruction();
-                        special+= newline + "Qty:" + rx.getQuantity() + " "+rx.getUnitName() +" Repeats:" + "" + rx.getRepeat();
-                    }
-                }
-                
-                if(rx.isMitte()){
-                    special=special.replace("Qty", "Mitte");
-                }
+                                    special+= newline + "Qty:" + rx.getQuantity() + " Repeats:" + "" + rx.getRepeat();
+                                }else{
+                                    special = rx.getBrandName() + newline + rx.getSpecial();
+                                    if(rx.getSpecialInstruction()!=null && !rx.getSpecialInstruction().equalsIgnoreCase("null") && rx.getSpecialInstruction().trim().length()>0)
+                                        special+=newline+rx.getSpecialInstruction();
+                                    special+= newline + "Qty:" + rx.getQuantity() + " "+rx.getUnitName() +" Repeats:" + "" + rx.getRepeat();
+                                }
+                            }
 
-                //     p("here222");
-                rx.setSpecial(special.trim());
-                System.out.println("SETTING SPECIAL TOO >" + special + "<");
-                //         p("rx.getDuration()", rx.getDuration());
-                int duration;
-                if (rx.getDuration() == null || rx.getDuration().equals("")) {
-                    duration = 0;
-                } else {
-                    duration = Integer.parseInt(rx.getDuration());
-                }
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(rx.getRxDate());
-                DateFormat ft = new SimpleDateFormat("yyyy/MM/dd");
-                //       p("cal", ft.format(cal.getTime()));
-                cal.add(Calendar.DATE, duration);
-                String end = ft.format(cal.getTime());
-                //       p("after addition", end);
-                Date endDate = (Date) ft.parse(end);
+                            if(rx.isMitte()){
+                                special=special.replace("Qty", "Mitte");
+                            }
+
+                            //     p("here222");
+                            rx.setSpecial(special.trim());
+                            System.out.println("SETTING SPECIAL TOO >" + special + "<");
+                            //         p("rx.getDuration()", rx.getDuration());
+
+                            
+                            bean.addAttributeName(rx.getAtcCode() + "-" + String.valueOf(stashIndex));
+                            bean.setStashItem(stashIndex, rx);
+                        }
             } catch (Exception e) {
                 e.printStackTrace();
+                continue;
             }
-            bean.addAttributeName(rx.getAtcCode() + "-" + String.valueOf(stashIndex));
-            bean.setStashItem(stashIndex, rx);
         }
         for (Integer n : existingIndex) {
             if (allIndex.contains(n)) {

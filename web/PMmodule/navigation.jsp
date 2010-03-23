@@ -56,8 +56,7 @@
     String dateStr = yearStr + "-" + mthStr + "-" + dayStr;
 	WebApplicationContext ctx=null;
 %>
-<script type="text/javascript" src="<html:rewrite page="/js/topnav.js" />"></script>
-<script type="javascript" >
+<script type="text/javascript" >
 function popupPage2(varpage, windowname) 
 {
     var page = "" + varpage;

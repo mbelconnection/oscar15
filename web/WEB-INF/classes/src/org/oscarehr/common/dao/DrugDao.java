@@ -53,7 +53,7 @@ public class DrugDao extends AbstractDao<Drug> {
         return (results);
     }
 
-  /*  public List<Drug> findByDemographicIdSimilarDrugOrderByDate(Integer demographicId, String regionalIdentifier, String customName) {
+    public List<Drug> findByDemographicIdSimilarDrugOrderByDate(Integer demographicId, String regionalIdentifier, String customName) {
         // build sql string
         String sqlCommand = "select x from Drug x where x.demographicId=?1 and x." + (regionalIdentifier != null ? "regionalIdentifier" : "customName") + "=?2 order by x.rxDate desc, x.id desc";
 
@@ -70,7 +70,7 @@ public class DrugDao extends AbstractDao<Drug> {
         List<Drug> results = query.getResultList();
 
         return (results);
-    }*/
+    }
 
     public List<Drug> findByDemographicIdSimilarDrugOrderByDate(Integer demographicId, String regionalIdentifier, String customName, String brandName) {
         // build sql string

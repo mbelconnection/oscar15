@@ -1319,7 +1319,7 @@ if(wcbneeds != null){%>
               
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td colspan="2">
+                  <td >
                     <font size="-2">
                       <strong>                        Short Claim Note:
                         &nbsp;
@@ -1327,13 +1327,12 @@ if(wcbneeds != null){%>
                     </font>
                     <html:text property="shortClaimNote" size="23" maxlength="20"/>
                   </td>
+                  <td align="right">
+                        <input type="checkbox" name="ignoreWarn"/> Ignore Warnings &nbsp;
+                  </td>
                 </tr>
-                <!--
+
                   <tr>
-                  <td colspan="2">&nbsp;</td>
-                  </tr>
-                -->
-                <tr>
                   <td align="left">
                     <html:select property="correspondenceCode" onchange="correspondenceNote();">
                       <html:option value="0">No Correspondence</html:option>

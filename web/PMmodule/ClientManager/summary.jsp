@@ -15,6 +15,7 @@
 <%@page import="org.oscarehr.ui.servlet.ImageRenderingServlet"%>
 <%@page import="oscar.OscarProperties"%>
 <%@page import="org.oscarehr.caisi_integrator.ws.GetConsentTransfer"%>
+<%@page import="org.oscarehr.PMmodule.dao.ProgramProviderDAO"%>
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security" %>
 <%@ taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi"%>
 <%
@@ -89,6 +90,7 @@ function openSurvey() {
 
 <div style="text-align:right">
 	<%
+		ProgramProviderDAO ppd =(ProgramProviderDAO)SpringUtils.getBean("programProviderDAO");
 		ClientImageDAO clientImageDAO=(ClientImageDAO)SpringUtils.getBean("clientImageDAO");
 		ClientImage clientImage=clientImageDAO.getClientImage(currentDemographic.getDemographicNo());
 
@@ -571,7 +573,10 @@ String reason ="";
 			HttpSession se = request.getSession();			
 			Admission tempAdmission=(Admission)pageContext.getAttribute("admission");
 			String programId = String.valueOf(tempAdmission.getProgramId());
-			String eURL = "../oscarEncounter/IncomingEncounter.do?programId="+programId+"&providerNo="+curUser_no+"&appointmentNo="+rsAppointNO+"&demographicNo="+demographic_no+"&curProviderNo="+curUser_no+"&reason="+java.net.URLEncoder.encode(reason)+"&encType="+java.net.URLEncoder.encode("face to face encounter with client","UTF-8")+"&userName="+java.net.URLEncoder.encode( userfirstname+" "+userlastname)+"&curDate=null&appointmentDate=null&startTime=0:0"+"&status="+status+"&source=cm";
+			
+			//Check program is in provider's program domain:
+			if(ppd.isThisProgramInProgramDomain(curUser_no,Integer.valueOf(programId))) {
+				String eURL = "../oscarEncounter/IncomingEncounter.do?programId="+programId+"&providerNo="+curUser_no+"&appointmentNo="+rsAppointNO+"&demographicNo="+demographic_no+"&curProviderNo="+curUser_no+"&reason="+java.net.URLEncoder.encode(reason)+"&encType="+java.net.URLEncoder.encode("face to face encounter with client","UTF-8")+"&userName="+java.net.URLEncoder.encode( userfirstname+" "+userlastname)+"&curDate=null&appointmentDate=null&startTime=0:0"+"&status="+status+"&source=cm";
 		%>	
 		<logic:notEqual value="community" property="programType" name="admission">
 		
@@ -581,7 +586,9 @@ String reason ="";
 			key="provider.appointmentProviderAdminDay.btnE" /></a> 
 		
 		</logic:notEqual>
-	<% } %>
+	<% 		} 
+		}
+	%>
 		</display:column>
 	
 	<display:column property="programType" sortable="true"

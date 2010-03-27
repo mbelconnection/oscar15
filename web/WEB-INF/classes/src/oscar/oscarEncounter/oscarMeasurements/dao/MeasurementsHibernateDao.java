@@ -113,4 +113,13 @@ public class MeasurementsHibernateDao extends HibernateDaoSupport implements
 			releaseSession(s);
 		}
 	}
+        
+        public List<Measurements> getMeasurementsByDemo(Integer demoId) {
+            String queryStr = "FROM Measurements m WHERE m.demographicNo = "+demoId+" ORDER BY m.id";
+
+            @SuppressWarnings("unchecked")
+            List<Measurements> rs = getHibernateTemplate().find(queryStr);
+
+            return rs;
+        }
 }

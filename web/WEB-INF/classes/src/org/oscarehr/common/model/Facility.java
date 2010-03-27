@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PreUpdate;
+import javax.persistence.Temporal;
 
 @Entity
 public class Facility extends AbstractModel<Integer> implements Serializable {
@@ -33,6 +34,7 @@ public class Facility extends AbstractModel<Integer> implements Serializable {
 	private boolean allowSims = true;
 	private boolean enableDigitalSignatures = false;
 	private boolean enableCdsForms = false; 
+        @Temporal(javax.persistence.TemporalType.DATE)
 	private Date lastUpdated=new Date();
 	
 	

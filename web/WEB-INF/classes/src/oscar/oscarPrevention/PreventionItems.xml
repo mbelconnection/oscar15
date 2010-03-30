@@ -29,6 +29,67 @@
 		layout="injection" atc="J07AG51" minAge="0" maxAge="19"
 		showIfMinRecordNum="1" />
 
+<!-- For eva.caisi.ca -->
+        <item
+                desc="HIV = HIV screening"
+                name="HIV"
+                link="http://dsol-smed.hc-sc.gc.ca/dsol-smed/ndis/diseases/aids-eng.php"
+                layout="PAPMAM"
+                minAge="15"
+                maxAge="24"
+                showIfMinRecordNum="1" />
+
+        <item
+                desc="HepB screen= Hep B serology screeining"
+                name="HepB screen"
+                link="http://dsol-smed.hc-sc.gc.ca/dsol-smed/ndis/diseases/hepb-eng.php"
+                layout="PAPMAM"
+                minAge="15"
+                maxAge="24"
+                showIfMinRecordNum="1" />
+
+        <item
+                name="HepC screen"
+                desc="HepC screen = Hep C serology screeining"
+                link="http://dsol-smed.hc-sc.gc.ca/dsol-smed/ndis/diseases/hepc-eng.php"
+                layout="PAPMAM"
+                minAge="15"
+                maxAge="24"
+                showIfMinRecordNum="1" />
+
+
+
+        <item
+                desc="VDRL = VDRL screening for syphillis"
+                name="VDRL"
+                link="http://dsol-smed.hc-sc.gc.ca/dsol-smed/ndis/diseases/syph-eng.php"
+                layout="PAPMAM"
+ 				minAge="15"
+                maxAge="24"
+                showIfMinRecordNum="1" />
+
+
+        <item
+                desc="Chlamydia = chlamydia urine PCR"
+                name="chlamydia"
+                link="http://dsol-smed.hc-sc.gc.ca/dsol-smed/ndis/diseases/chlm-eng.php"
+                layout="PAPMAM"
+                minAge="15"
+                maxAge="24"
+                showIfMinRecordNum="1" />
+
+        <item
+                desc="ghonorrhea = ghonorrhea urine PCR"
+                name="ghonorrhea PCR"
+                link="http://dsol-smed.hc-sc.gc.ca/dsol-smed/ndis/diseases/gono-eng.php"
+                layout="PAPMAM"
+                minAge="15"
+                maxAge="24"
+                showIfMinRecordNum="1" />
+        <!-- eva.caisi.ca -->
+
+
+
 	<item desc="Pneu-C=pneumococcal 7-valent conjugate" name="Pneu-C"
 		link="http://www.phac-aspc.gc.ca/naci-ccni/is-si/recimmsche-icy_e.html#PneuC"
 		layout="injection" atc="J07AL" minAge="0" maxAge="19"

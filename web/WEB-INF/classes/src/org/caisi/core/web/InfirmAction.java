@@ -65,6 +65,7 @@ public class InfirmAction extends BaseAction
 		//if (memob!=null) memob.clear();
 		
 		List programBean;
+		List programBean_oscarClinic;
 		String archiveView = (String)request.getSession().getAttribute("archiveView");
 		/*
 		if(archiveView != null && archiveView.equals("true")){
@@ -88,9 +89,13 @@ public class InfirmAction extends BaseAction
             facilityId = loggedInInfo.currentFacility.getId();
         }        
 
-		programBean=manager.getProgramBeans(providerNo, facilityId);		
-		se.setAttribute("infirmaryView_programBeans",programBean );
-				
+		programBean=manager.getProgramBeans(providerNo, facilityId);	
+		programBean_oscarClinic = manager.getProgramForApptViewBeans(providerNo, facilityId);
+		if(OscarProperties.getInstance().getBooleanProperty("oscarClinic", "true")) { 
+			se.setAttribute("infirmaryView_programBeans",programBean_oscarClinic);
+		} else {
+			se.setAttribute("infirmaryView_programBeans",programBean);
+		}
 		
 		//set default program
 		int defaultprogramId=getInfirmBedProgramManager().getDefaultProgramId(providerNo);
@@ -113,8 +118,9 @@ public class InfirmAction extends BaseAction
 		}
 		if (programId!=defaultprogramId) getInfirmBedProgramManager().setDefaultProgramId(providerNo,programId);
 		
-		se.setAttribute(SessionConstants.CURRENT_PROGRAM_ID,String.valueOf(programId));
 		
+		se.setAttribute(SessionConstants.CURRENT_PROGRAM_ID,String.valueOf(programId));
+				
 		//if()
 		if(programId != 0) {
 			se.setAttribute("case_program_id",String.valueOf(programId));
@@ -225,6 +231,14 @@ public class InfirmAction extends BaseAction
 		if (providerNo==null) providerNo=(String) request.getSession().getAttribute("user");
 		Boolean onsig=getInfirmBedProgramManager().getProviderSig(providerNo);
 		request.getSession().setAttribute("signOnNote",onsig);
+		int pid = getInfirmBedProgramManager().getDefaultProgramId(providerNo);
+		String ppid = (String)request.getSession().getAttribute("programId_oscarView");
+		if(ppid==null) {
+			request.getSession().setAttribute("programId_oscarView",String.valueOf(pid));
+		} else {
+			request.getSession().setAttribute("programId_oscarView", ppid);
+			getInfirmBedProgramManager().setDefaultProgramId(providerNo,Integer.valueOf(ppid).intValue());
+		}
 		return null;
 	}
 	

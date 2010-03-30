@@ -670,6 +670,8 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 				CachedDemographicDrug cachedDemographicDrug = new CachedDemographicDrug();
 
 				cachedDemographicDrug.setArchived(drug.isArchived());
+                                cachedDemographicDrug.setArchivedReason(drug.getArchivedReason());
+                                cachedDemographicDrug.setArchivedDate(drug.getArchivedDate());
 				cachedDemographicDrug.setAtc(drug.getAtc());
 				cachedDemographicDrug.setBrandName(drug.getBrandName());
 				cachedDemographicDrug.setCaisiDemographicId(drug.getDemographicId());

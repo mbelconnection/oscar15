@@ -13,7 +13,13 @@
     if (isOscar!=null) session.setAttribute("infirmaryView_isOscar", isOscar);
     session.setAttribute(SessionConstants.CURRENT_PROGRAM_ID,request.getParameter(SessionConstants.CURRENT_PROGRAM_ID));
     session.setAttribute("infirmaryView_OscarURL",request.getRequestURL());
-
+    String pid2 = null;
+    pid2 = request.getParameter("programId_oscarView");
+   if(pid2==null) {
+	   pid2 = (String)session.getAttribute("programId_oscarView");
+   }
+	   session.setAttribute("programId_oscarView", pid2);
+   
 %><c:import url="/infirm.do?action=getSig" />
 </caisi:isModuleLoad>
 
@@ -62,10 +68,17 @@
         	response.sendRedirect("./providercontrol.jsp?GoToCaisiViewFromOscarView=true&year="+nowYear+"&month="+(nowMonth)+"&day="+(nowDay)+"&view=0&displaymode=day&dboperation=searchappointmentday&viewall=1");
         	return;
         }
+        //session.setAttribute("programId_oscarView", session.getAttribute(SessionConstants.CURRENT_PROGRAM_ID));
+		//String pid = (String) session.getAttribute("programId_oscarView");
+		
+		//String ppid = infirmaryView_programId
+		//session.setAttribute("programId_oscarView",pid);
         response.sendRedirect("./providercontrol.jsp?year="+nowYear+"&month="+(nowMonth)+"&day="+(nowDay)+"&view=0&displaymode=day&dboperation=searchappointmentday&viewall=1");
         return;
     }
-
+    //String pid = (String) session.getAttribute("programId_oscarView");	
+	//session.setAttribute("programId_oscarView",pid);
+	
     //associate each operation with an output JSP file - displaymode
     String[][] opToFile = new String[][] {
             {"day" , "appointmentprovideradminday.jsp"},

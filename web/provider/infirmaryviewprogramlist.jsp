@@ -28,7 +28,7 @@ session.setAttribute("infirmaryView_OscarQue",questr);
 %>
 
 <script>
-function submitProgram(ctrl) {
+function submitProgram(ctrl) {	
 	var url = "<%=providerurlString%>"+"&infirmaryView_programId="+ctrl.value+"&GoToCaisiViewFromOscarView=true";	
 	document.location.href = url;
 }
@@ -68,12 +68,12 @@ function submitStatus(ctrl) {
 		<br>
 		<b>Program:</b>
 		<select id="bedprogram_no" name="bedprogram_no"
-			onchange="submitProgram(this)">
+			onchange="changeGroup()">
 			<%java.util.List programBean=(java.util.List)session.getAttribute("infirmaryView_programBeans");
 	String programId=(String)session.getAttribute(SessionConstants.CURRENT_PROGRAM_ID);
 	if (programBean.size()==0 || programId.equalsIgnoreCase("0")){%>
 			<option value="0" selected>-No assigned program-</option>
-			<%}else{ %>
+			<%}else{ %>			
 			<logic:iterate id="pb" name="infirmaryView_programBeans"
 				type="org.apache.struts.util.LabelValueBean">
 				<logic:equal name="infirmaryView_programId"
@@ -87,7 +87,7 @@ function submitStatus(ctrl) {
 			</logic:iterate>
 			<%} %>
 		</select>
-	</caisi:ProgramExclusiveView>
+  	</caisi:ProgramExclusiveView>
 </logic:notEqual>
 
 <logic:notEqual name="infirmaryView_isOscar" value="true">

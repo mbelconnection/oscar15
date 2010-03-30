@@ -250,7 +250,7 @@ try{
         request.setAttribute("BoxNoFillFirstLoad", "true");
         String qText=rx.getQuantity();
         System.out.println("qText in represcribe2="+qText);
-        if(RxUtil.isStringToNumber(qText)){}
+        if(qText!=null && RxUtil.isStringToNumber(qText)){}
         else{
             rx.setQuantity(RxUtil.getQuantityFromQuantityText(qText));
             rx.setUnitName(RxUtil.getUnitNameFromQuantityText(qText));
@@ -319,15 +319,15 @@ try{
         request.setAttribute("BoxNoFillFirstLoad", "true");
         String qText=rx.getQuantity();
         System.out.println("qText in represcribe2="+qText);
-        if(RxUtil.isStringToNumber(qText)){}
+        if(qText!=null && RxUtil.isStringToNumber(qText)){}
         else{
             rx.setQuantity(RxUtil.getQuantityFromQuantityText(qText));
             rx.setUnitName(RxUtil.getUnitNameFromQuantityText(qText));
         }
         System.out.println("quantity, unitName represcribe2="+rx.getQuantity()+"; "+rx.getUnitName());
         //trim Special
-       String spec=RxUtil.trimSpecial(rx);
-       rx.setSpecial(spec);
+        String spec=RxUtil.trimSpecial(rx);
+        rx.setSpecial(spec);
 
         List<RxPrescriptionData.Prescription> listReRx=new ArrayList();
         rx.setDiscontinuedLatest(RxUtil.checkDiscontinuedBefore(rx));
@@ -336,8 +336,8 @@ try{
           listReRx.add(rx);
         }
         //save rx to stash
-              int rxStashIndex=beanRX.addStashItem(rx);
-            beanRX.setStashIndex(rxStashIndex);
+        int rxStashIndex=beanRX.addStashItem(rx);
+        beanRX.setStashIndex(rxStashIndex);
 
         auditStr.append(rx.getAuditString() + "\n");
         beanRX.addAttributeName(rx.getAtcCode() + "-" + String.valueOf(beanRX.getStashIndex()));
@@ -414,7 +414,7 @@ try{
             rx.setRandomId(rand);
             String qText=rx.getQuantity();
             System.out.println("qText in represcribe2="+qText);
-            if(RxUtil.isStringToNumber(qText)){}
+            if(qText!=null && RxUtil.isStringToNumber(qText)){}
             else{
                 rx.setQuantity(RxUtil.getQuantityFromQuantityText(qText));
                 rx.setUnitName(RxUtil.getUnitNameFromQuantityText(qText));
@@ -461,7 +461,7 @@ public ActionForward represcribeMultiple(ActionMapping mapping,
             rx.setRandomId(rand);
             String qText=rx.getQuantity();
             System.out.println("qText in represcribe2="+qText);
-            if(RxUtil.isStringToNumber(qText)){}
+            if(qText!=null && RxUtil.isStringToNumber(qText)){}
             else{
                 rx.setQuantity(RxUtil.getQuantityFromQuantityText(qText));
                 rx.setUnitName(RxUtil.getUnitNameFromQuantityText(qText));

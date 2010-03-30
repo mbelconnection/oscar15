@@ -72,12 +72,6 @@ String billingRegion = (oscar.OscarProperties.getInstance()).getProperty("billre
 		</script>
 <script type="text/javascript" src="../js/caisi_report_tools.js"></script>
 
-
-<script language="JavaScript">
-dojo.require("dojo.date.format");
-dojo.require("dojo.widget.*");
-dojo.require("dojo.validate.*");
-
 <!--
 function setfocus() {
   this.focus();

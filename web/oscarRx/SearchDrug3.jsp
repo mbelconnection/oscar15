@@ -1215,10 +1215,11 @@ body {
                                             str=str.replace('<script type="text/javascript">','');
                                             str=str.replace(/<\/script>/,'');
                                             eval(str);
-                                            //oscarLog("str="+str);                                            
-                                            <oscar:oscarPropertiesCheck property="MYDRUGREF_DS" value="yes">re
+                                            //oscarLog("before calling mydrugrefinfo view");
+                                            <oscar:oscarPropertiesCheck property="MYDRUGREF_DS" value="yes">
                                               callReplacementWebService("GetmyDrugrefInfo.do?method=view",'interactionsRxMyD');
                                              </oscar:oscarPropertiesCheck>
+                                                 //oscarLog("after calling mydrugrefinfo view");
                                         }});
                             }});
     }
@@ -1340,6 +1341,7 @@ function popForm2(){
      }
 
      function callReplacementWebService(url,id){
+         //oscarLog("in callReplacementWebService,url="+url+"--id"+id);
               var ran_number=Math.round(Math.random()*1000000);
               var params = "demographicNo=<%=bean.getDemographicNo()%>&rand="+ran_number;  //hack to get around ie caching the page
               var updater=new Ajax.Updater(id,url, {method:'get',parameters:params,asynchronous:false,evalScripts:true});

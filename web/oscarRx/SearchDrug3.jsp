@@ -233,8 +233,30 @@
            };
 
            var resultFormatter = function(oResultData, sQuery, sResultMatch) {
+               //oscarLog("oResultData, sQuery, sResultMatch="+oResultData+"--"+sQuery+"--"+sResultMatch);
+               //oscarLog("oResultData[0]="+oResultData[0]);
+               //oscarLog("oResultData.name="+oResultData.name);
+               //oscarLog("oResultData.name="+oResultData.id);
                var query = sQuery.toUpperCase();
                var drugName = oResultData[0];
+
+               var mIndex = drugName.toUpperCase().indexOf(query);
+               var display = '';
+
+               if(mIndex > -1){
+                   display = highlightMatch(drugName,query,mIndex);
+               }else{
+                   display = drugName;
+               }
+               return  display;
+           };
+            var resultFormatter2 = function(oResultData, sQuery, sResultMatch) {
+               //oscarLog("oResultData, sQuery, sResultMatch="+oResultData+"--"+sQuery+"--"+sResultMatch);
+               //oscarLog("oResultData[0]="+oResultData[0]);
+               //oscarLog("oResultData.name="+oResultData.name);
+               //oscarLog("oResultData.name="+oResultData.id);
+               var query = sQuery.toUpperCase();
+               var drugName = oResultData.name;
 
                var mIndex = drugName.toUpperCase().indexOf(query);
                var display = '';
@@ -774,8 +796,9 @@ body {
        <a href="javascript: function myFunction() {return false; }" onclick="hidepic('treatmentsMyD');" style="text-decoration: none;">X</a>
 </div>
 
+                                                                        
 
-
+<!--div id="drag_demo_3" style="width:80px; height:80px; cursor:move; background:#88da5d; border:1px solid #333;"></div-->
     <div id="discontinueUI" style="position: absolute;display:none; width:500px;height:200px;background-color:white;padding:20px;border:1px solid grey">
         <h3>Discontinue :<span id="disDrug"></span></h3>
         <input type="hidden" name="disDrugId" id="disDrugId"/>
@@ -881,12 +904,91 @@ body {
         </tr>
 
     </table>
-
+    
 </div>
+            
 <%
                         }
 %>
 <script type="text/javascript">
+// new Draggable('drag_demo_3', { scroll: window });
+/* var dd;
+    function addInstruction(content,randomId){
+        $('instructions_'+randomId).value=content;
+    }
+    function addSpecialInstruction(content,randomId){        
+        showHideSpecInst=function showHideSpecInst(elementId){
+        oscarLog("in show hide spec inst="+elementId);
+        if($('siAutoComplete_'+randomId).getStyle('display')=='none'){
+          Effect.BlindDown(elementId);
+        }else{}
+        $('siInput_'+randomId).value=content;
+    }
+   }
+   function hideMedHistory(){
+       mb.hide();
+   }
+    var modalBox=function(){ 
+        this.show=function(randomId){
+            oscarLog('mb, show called,randomid '+randomId);
+            if(!document.getElementById("xmaskframe")){
+                oscarLog('inkk ');
+                var divFram=document.createElement('iframe');
+                divFram.setAttribute("id","xmaskframe");
+                //divFram.setAttribute("src","displayMedHistory.jsp?randomId="+randomId);
+                divFram.setAttribute("allowtransparency","false");
+                document.body.appendChild(divFram);
+                var divSty=document.getElementById("xmaskframe").style;
+                //divSty.position="fixed";
+                //divSty.top="0px";
+                //divSty.left="0px";
+                divSty.border="none";
+                divSty.backgroundColor="#FFF8C6";
+                divSty.zIndex="45";
+                divSty.cursor="move";
+            }
+            oscarLog('adf ');
+            this.waitifrm=document.getElementById("xmaskframe");
+
+            oscarLog('nn ');
+            this.waitifrm.setAttribute("src","displayMedHistory.jsp?randomId="+randomId);
+            oscarLog('dd ');
+            var dsh=document.documentElement.scrollHeight;
+            var dch=document.documentElement.clientHeight;
+            var dsw=document.documentElement.scrollWidth;
+            var dcw=document.documentElement.clientWidth;
+            var bdh=(dsh>dch)?dsh:dch;
+            var bdw=(dsw>dcw)?dsw:dcw;
+            //this.waitifrm.style.height=bdh+'px';
+            //this.waitifrm.style.width=bdw+'px';
+            this.waitifrm.style.display="block";
+            //Effect.Grow('xmaskframe');
+            $("drag_demo_3").appendChild(this.waitifrm);
+            oscarLog('cc ');
+            oscarLog('aa ');
+            Effect.BlindDown('xmaskframe');
+            //dd=new Draggable('xmasframe', {scroll: window});
+            oscarLog('ff ');
+        };
+        this.hide=function()
+            {
+                Effect.BlindUp('xmaskframe');
+
+            };
+    }
+    var mb=new modalBox();    
+    function displayMedHistory(randomId){
+           var data="randomId="+randomId;
+           new Ajax.Request("<c:out value='${ctx}'/>"+ "/oscarRx/WriteScript.do?parameterValue=listPreviousInstructions", 
+           {method: 'post',parameters:data,asynchronous:false,onSuccess:function(transport){
+                    /*new Ajax.Request("displayMedHistory.jsp",{method: 'post',parameters:data,onSuccess:function(transport){
+
+                    }});*/
+                   
+ /*                   mb.show(randomId);
+                }});
+    }
+*/
     function updateProperty(elementId){
          var randomId=elementId.split("_")[1];
          if(randomId!=null){
@@ -1276,13 +1378,14 @@ function saveCustomName(element){
     var ar=elemId.split("_");
     var rand=ar[1];
     var url="<c:out value="${ctx}"/>"+"/oscarRx/WriteScript.do?parameterValue=saveCustomName";
-    var data="customName="+element.value+"&randomId="+rand;
+    var data="customName="+encodeURIComponent(element.value)+"&randomId="+rand;
     var instruction="instructions_"+rand;
     var quantity="quantity_"+rand;
     var repeat="repeats_"+rand;
     new Ajax.Request(url, {method: 'get',parameters:data, onSuccess:function(transport){
             //output default instructions
-            var json=transport.responseText.evalJSON();oscarLog("json: "+json.instructions);
+            var json=transport.responseText.evalJSON();
+                oscarLog("json: "+json.instructions);
                 $(instruction).value=json.instructions;
                 $(quantity).value=json.quantity;
                 $(repeat).value=json.repeat;
@@ -1352,7 +1455,7 @@ function popForm2(){
           </oscar:oscarPropertiesCheck>
           callReplacementWebService("ListDrugs.jsp",'drugProfile');
 
-
+/*
 YAHOO.example.BasicRemote = function() {
     //var oDS = new YAHOO.util.XHRDataSource("http://localhost:8080/drugref2/test4.jsp");
     var url = "<c:out value="${ctx}"/>" + "/oscarRx/searchDrug.do?method=jsonSearch";
@@ -1374,7 +1477,7 @@ YAHOO.example.BasicRemote = function() {
                             Send all requests, but handle only the response for the most recently sent request.
                         */
     // Instantiate the AutoComplete
-    var oAC = new YAHOO.widget.AutoComplete("searchString", "autocomplete_choices", oDS);
+  /*  var oAC = new YAHOO.widget.AutoComplete("searchString", "autocomplete_choices", oDS);
     oAC.queryMatchSubset = true;
     oAC.minQueryLength = 3;
     oAC.maxResultsDisplayed = 25;
@@ -1398,6 +1501,58 @@ YAHOO.example.BasicRemote = function() {
                 $('searchString').value = "";
     });
 
+
+    return {
+        oDS: oDS,
+        oAC: oAC
+    };
+}();
+*/
+YAHOO.example.FnMultipleFields = function(){
+    oscarLog("FnMultipleFields ");
+    var url = "<c:out value="${ctx}"/>" + "/oscarRx/searchDrug.do?method=jsonSearch";
+    var oDS = new YAHOO.util.XHRDataSource(url,{connMethodPost:true,connXhrMode:'ingoreStaleResponse'});
+    oDS.responseType = YAHOO.util.XHRDataSource.TYPE_JSON;// Set the responseType
+    // Define the schema of the delimited results
+    oDS.responseSchema = {
+        resultsList : "results",
+        fields : ["name", "id"]
+    };
+    // Enable caching
+    oDS.maxCacheEntries =0;
+    oDS.connXhrMode ="cancelStaleRequests";    
+    oscarLog(oDS.responseSchema);
+    // Instantiate AutoComplete
+    var oAC = new YAHOO.widget.AutoComplete("searchString", "autocomplete_choices", oDS);
+    oAC.useShadow = true;
+    oAC.resultTypeList = false;
+    oAC.queryMatchSubset = true;
+    oAC.minQueryLength = 3;
+    oAC.maxResultsDisplayed = 50;
+    oAC.formatResult = resultFormatter2;
+
+    // Define an event handler to populate a hidden form field
+    // when an item gets selected and populate the input field
+    //var myHiddenField = YAHOO.util.Dom.get("myHidden");
+    var myHandler = function(type, args) {
+                    oscarLog(type+" :: "+args);
+                    //oscarLog(args[2]);
+                    var arr = args[2];
+                    //oscarLog('In yahoo----'+arr.name);
+                    //oscarLog('In yahoo----'+arr.id);
+                    var url = "<c:out value="${ctx}"/>" + "/oscarRx/WriteScript.do?parameterValue=createNewRx"; //"prescribe.jsp";
+                    var ran_number=Math.round(Math.random()*1000000);
+                    var name=encodeURIComponent(arr.name);
+                    var params = "demographicNo=<%=bean.getDemographicNo()%>&drugId="+arr.id+"&text="+name+"&randomId="+ran_number;  //hack to get around ie caching the page
+                   new Ajax.Updater('rxText',url, {method:'get',parameters:params,asynchronous:false,evalScripts:true,
+                        insertion: Insertion.Bottom,onSuccess:function(transport){
+                            updateCurrentInteractions();
+                        }});
+
+                    $('searchString').value = "";
+
+    };
+    oAC.itemSelectEvent.subscribe(myHandler);
 
     return {
         oDS: oDS,

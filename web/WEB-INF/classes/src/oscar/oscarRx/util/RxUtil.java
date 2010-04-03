@@ -1157,6 +1157,84 @@ public class RxUtil {
         }
     }
 
+ /*   private static List<HashMap<String,String>> drugsTableQuery(String parameter,String value){
+        List<HashMap<String,String>> retList=new ArrayList();
+       try{
+            DBHandler db=new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs;
+            String sql="select special ,special_instruction from drugs where "+parameter+" = '"+value+"' order by drugid desc" ;
+            rs = db.GetSQL(sql);
+            while(rs.next()){
+                HashMap hm=new HashMap();
+                hm.put("instruction", rs.getString("special"));
+                hm.put("special_instruction", rs.getString("special_instruction"));
+                retList.add(hm);
+            }
+       }catch(Exception e){
+            e.printStackTrace();
+       }
+        return retList;
+    }
+    private static List<HashMap<String,String>> getCustomNamePrevInstructions(String customName){
+        return drugsTableQuery("customName",customName);
+    }
+    private static List<HashMap<String,String>> getDinPrevInstructions(String din){
+        return drugsTableQuery("regional_identifier",din);
+    }
+    private static List<HashMap<String,String>> getBNPrevInstructions(String bn){
+        return drugsTableQuery("BN",bn);
+    }
+    private static List<HashMap<String,String>> getGNPrevInstructions(String gn){
+        return drugsTableQuery("GN",gn);
+    }
+    public static List<HashMap<String,String>> getPreviousInstructions(RxPrescriptionData.Prescription rx){
+        List<HashMap<String,String>> retList=new ArrayList();
+        if(rx.isCustom()){
+            retList=getCustomNamePrevInstructions(rx.getCustomName());
+
+        }else{
+            retList=getDinPrevInstructions(rx.getRegionalIdentifier());
+            if(retList.size()==0){
+                retList=getBNPrevInstructions(rx.getBrandName());
+                if(retList.size()==0)
+                    retList=getGNPrevInstructions(rx.getGenericName());
+            }
+            if(retList.size()>0){
+
+            }
+        }
+       retList=trimMedHistoryList(rx,retList);
+        return retList;
+    }
+    private static List<HashMap<String,String>> trimMedHistoryList(RxPrescriptionData.Prescription rx,List<HashMap<String,String>> l){
+
+        String customName=rx.getCustomName();
+        String bn=rx.getBrandName();
+        List<HashMap<String,String>> retList=new ArrayList();
+        if(l.size()>0 ||rx!=null){
+            for(HashMap hm:l){
+                String ins=(String)hm.get("instruction");
+                String specIns=(String)hm.get("special_instruction");
+                if(ins!=null&&ins.length()>0){
+                    if(customName!=null && !customName.equalsIgnoreCase("null"))
+                        ins=ins.replace(customName, "");
+                    if(bn!=null && !bn.equalsIgnoreCase("null"))
+                        ins=ins.replace(bn, "");
+                    if(specIns!=null&& !specIns.equalsIgnoreCase("null"))
+                        ins=ins.replace(specIns, "");
+                }
+                ins=ins.replace("\n", " ").trim();
+                specIns=specIns.replace("\n", " ").trim();
+                HashMap<String,String> h=new HashMap();
+                h.put("instruction", ins);
+                h.put("special_instruction", specIns);
+                retList.add(h);
+            }
+        }else;
+
+        return retList;
+    }
+*/
     public static void setSpecialQuantityRepeat(RxPrescriptionData.Prescription rx) {
 
         try {
@@ -1173,7 +1251,12 @@ public class RxUtil {
                 if (rs.first()) {//use the first result if there are multiple.
                     setResultSpecialQuantityRepeat(rx, rs);
                 } else {
-                    //else, set to special to "1 OD", quantity to "30", repeat to "0".
+                    String sql2 = "SELECT * FROM drugs WHERE regional_identifier='" + rx.getRegionalIdentifier() + "' and BN='"+rx.getBrandName()+"' order by drugid desc"; //most recent is the first.
+                    System.out.println("sql 2="+sql2);
+                    rs = db.GetSQL(sql2);
+                    if (rs.first()) {//use the first result if there are multiple.
+                        setResultSpecialQuantityRepeat(rx, rs);
+                    }else   //else, set to special to "1 OD", quantity to "30", repeat to "0".
                     setDefaultSpecialQuantityRepeat(rx);
                 }
             } else {
@@ -1189,7 +1272,12 @@ public class RxUtil {
                     if (rs.first()) {
                         setResultSpecialQuantityRepeat(rx, rs);
                     } else {
-                        //else, set to special to "1 OD", quantity to "30", repeat to "0".
+                        String sql3="SELECT * FROM drugs WHERE BN='" + StringEscapeUtils.escapeSql(rx.getBrandName()) + "' order by drugid desc"; //most recent is the first.
+                        System.out.println("sql 3="+sql3);
+                        rs = db.GetSQL(sql3);
+                        if (rs.first()) {//use the first result if there are multiple.
+                            setResultSpecialQuantityRepeat(rx, rs);
+                        }else                        //else, set to special to "1 OD", quantity to "30", repeat to "0".
                         setDefaultSpecialQuantityRepeat(rx);
                     }
                 } else {
@@ -1205,7 +1293,12 @@ public class RxUtil {
                         if (rs.first()) {
                             setResultSpecialQuantityRepeat(rx, rs);
                         } else {
-                            //else, set to special to "1 OD", quantity to "30", repeat to "0".
+                            String sql4="SELECT * FROM drugs WHERE customName='" + StringEscapeUtils.escapeSql(rx.getCustomName()) + "'  order by drugid desc"; //most recent is the first.
+                            rs = db.GetSQL(sql4);
+                            if (rs.first()) {
+                                setResultSpecialQuantityRepeat(rx, rs);
+                            }//else, set to special to "1 OD", quantity to "30", repeat to "0".
+                            else
                             setDefaultSpecialQuantityRepeat(rx);
                         }
                     } else {

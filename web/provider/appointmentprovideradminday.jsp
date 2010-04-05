@@ -131,17 +131,15 @@ public boolean patientHasOutstandingPrivateBills(String demographicNo){
     String newticklerwarningwindow=null;
     String default_pmm=null;
     String programId_oscarView=null;
-    //String infirmaryView_programId2=null;
-    //String tempq=null;
+    
 if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable()){
 	newticklerwarningwindow = (String) session.getAttribute("newticklerwarningwindow");
-	default_pmm = (String)session.getAttribute("default_pmm");
-	//programId_oscarView = (String)request.getParameter("programId_oscarView");
-	programId_oscarView= (String)session.getAttribute("programId_oscarView");
-	//nfirmaryView_programId2 = (String)session.getAttribute("infirmaryView_programId");
-	//tempq = (String)request.getParameter("programId_oscarView");
-
-}   
+	default_pmm = (String)session.getAttribute("default_pmm");	
+	programId_oscarView= (String)session.getAttribute("programId_oscarView");	
+} else {
+	programId_oscarView="0";
+	session.setAttribute("programId_oscarView",programId_oscarView);
+}
     int lenLimitedL=11, lenLimitedS=3; //L - long, S - short
     int len = lenLimitedL;
     int view = request.getParameter("view")!=null ? Integer.parseInt(request.getParameter("view")) : 0; //0-multiple views, 1-single view
@@ -455,12 +453,14 @@ if(newGroupNo.indexOf("_grp_") != -1) {
 }else{
   newGroupNo = s.options[s.selectedIndex].value;
 }
-var programId = document.getElementById("bedprogram_no").value;
+
 <%if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable())
 { %>
+	var programId = document.getElementById("bedprogram_no").value;
 	popupPage(10,10, "providercontrol.jsp?provider_no=<%=curUser_no%>&start_hour=<%=startHour%>&end_hour=<%=endHour%>&every_min=<%=everyMin%>&new_tickler_warning_window=<%=newticklerwarningwindow%>&default_pmm=<%=default_pmm%>&color_template=deepblue&dboperation=updatepreference&displaymode=updatepreference&mygroup_no="+newGroupNo+"&programId_oscarView="+programId);
 <%}else {%>
-  popupPage(10,10, "providercontrol.jsp?provider_no=<%=curUser_no%>&start_hour=<%=startHour%>&end_hour=<%=endHour%>&every_min=<%=everyMin%>&color_template=deepblue&dboperation=updatepreference&displaymode=updatepreference&mygroup_no="+newGroupNo);
+	var programId = "0";
+	popupPage(10,10, "providercontrol.jsp?provider_no=<%=curUser_no%>&start_hour=<%=startHour%>&end_hour=<%=endHour%>&every_min=<%=everyMin%>&color_template=deepblue&dboperation=updatepreference&displaymode=updatepreference&mygroup_no="+newGroupNo+"&programId_oscarView="+programId);
 <%}%>
 }
 

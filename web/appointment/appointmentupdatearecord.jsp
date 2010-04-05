@@ -55,7 +55,7 @@
 	  rowsAffected = oscarSuperManager.update("appointmentDao", "updatestatusc", param);
 
   } else {
-	  String[] param = new String[17];
+	  String[] param = new String[18];
 	  if (request.getParameter("demographic_no")!=null && !(request.getParameter("demographic_no").equals(""))) {
 		  param[0] = request.getParameter("demographic_no");
 	  } else param[0]="0";
@@ -75,6 +75,8 @@
 	  param[14]=creator;  //request.getParameter("creator");
 	  param[15]=request.getParameter("remarks");
 	  param[16]=request.getParameter("appointment_no");
+	  param[17]=(String)request.getSession().getAttribute("programId_oscarView");
+		
 	  rowsAffected = oscarSuperManager.update("appointmentDao", request.getParameter("dboperation"), param);
   }
   if (rowsAffected == 1) {

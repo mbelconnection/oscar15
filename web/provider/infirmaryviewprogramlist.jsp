@@ -63,9 +63,7 @@ function submitStatus(ctrl) {
 	</select>
 </logic:notEqual>
 <logic:notEqual name="infirmaryView_isOscar" value="false">
-	<caisi:ProgramExclusiveView providerNo="<%=curUser_no%>"
-		value="appointment">
-		<br>
+	<br>
 		<b>Program:</b>
 		<select id="bedprogram_no" name="bedprogram_no"
 			onchange="changeGroup()">
@@ -87,8 +85,8 @@ function submitStatus(ctrl) {
 			</logic:iterate>
 			<%} %>
 		</select>
-  	</caisi:ProgramExclusiveView>
 </logic:notEqual>
+
 
 <logic:notEqual name="infirmaryView_isOscar" value="true">
   &nbsp;

@@ -90,12 +90,12 @@ public class InfirmAction extends BaseAction
         }        
 
 		programBean=manager.getProgramBeans(providerNo, facilityId);	
-		programBean_oscarClinic = manager.getProgramForApptViewBeans(providerNo, facilityId);
-		if(OscarProperties.getInstance().getBooleanProperty("oscarClinic", "true")) { 
-			se.setAttribute("infirmaryView_programBeans",programBean_oscarClinic);
-		} else {
+		//programBean_oscarClinic = manager.getProgramForApptViewBeans(providerNo, facilityId);
+		//if(OscarProperties.getInstance().getBooleanProperty("oscarClinic", "true")) { 
+		//	se.setAttribute("infirmaryView_programBeans",programBean_oscarClinic);
+		//} else {
 			se.setAttribute("infirmaryView_programBeans",programBean);
-		}
+		//}
 		
 		//set default program
 		int defaultprogramId=getInfirmBedProgramManager().getDefaultProgramId(providerNo);

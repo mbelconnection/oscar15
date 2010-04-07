@@ -169,6 +169,7 @@
         <script type="text/javascript" src="<c:out value="${ctx}/share/javascript/effects.js"/>"></script>
         <script type="text/javascript" src="<c:out value="${ctx}/share/javascript/controls.js"/>"></script>
         <script type="text/javascript" src="<c:out value="${ctx}/share/javascript/Oscar.js"/>"></script>
+        <script type="text/javascript" src="<c:out value="${ctx}/share/javascript/dragiframe.js"/>"></script>
         <script type="text/javascript" src="<c:out value="${ctx}/share/lightwindow/javascript/lightwindow.js"/>"></script>
         <!--script type="text/javascript" src="<%--c:out value="modaldbox.js"/--%>"></script-->
 
@@ -517,7 +518,7 @@ function checkFav(){
 
             }
             .rxStr a:hover{
-                color:blue;
+                color:blue;css
                 text-decoration:underline;
             }
             .rxStr a{
@@ -796,9 +797,9 @@ body {
        <a href="javascript: function myFunction() {return false; }" onclick="hidepic('treatmentsMyD');" style="text-decoration: none;">X</a>
 </div>
 
-                                                                        
 
-<!--div id="drag_demo_3" style="width:80px; height:80px; cursor:move; background:#88da5d; border:1px solid #333;"></div-->
+
+<div id="dragifm" style="top:0px;left:0px;"></div>
     <div id="discontinueUI" style="position: absolute;display:none; width:500px;height:200px;background-color:white;padding:20px;border:1px solid grey">
         <h3>Discontinue :<span id="disDrug"></span></h3>
         <input type="hidden" name="disDrugId" id="disDrugId"/>
@@ -911,19 +912,16 @@ body {
                         }
 %>
 <script type="text/javascript">
-// new Draggable('drag_demo_3', { scroll: window });
-/* var dd;
     function addInstruction(content,randomId){
         $('instructions_'+randomId).value=content;
     }
     function addSpecialInstruction(content,randomId){        
-        showHideSpecInst=function showHideSpecInst(elementId){
-        oscarLog("in show hide spec inst="+elementId);
-        if($('siAutoComplete_'+randomId).getStyle('display')=='none'){
-          Effect.BlindDown(elementId);
-        }else{}
-        $('siInput_'+randomId).value=content;
-    }
+                //oscarLog("in show hide spec inst="+randomId);
+                if($('siAutoComplete_'+randomId).getStyle('display')=='none'){
+                  Effect.BlindDown('siAutoComplete_'+randomId);
+                }else{}
+                $('siInput_'+randomId).value=content;
+                $('siInput_'+randomId).setStyle({color:'black'});
    }
    function hideMedHistory(){
        mb.hide();
@@ -935,17 +933,19 @@ body {
                 oscarLog('inkk ');
                 var divFram=document.createElement('iframe');
                 divFram.setAttribute("id","xmaskframe");
+                divFram.setAttribute("name","xmaskframe");
                 //divFram.setAttribute("src","displayMedHistory.jsp?randomId="+randomId);
                 divFram.setAttribute("allowtransparency","false");
                 document.body.appendChild(divFram);
                 var divSty=document.getElementById("xmaskframe").style;
-                //divSty.position="fixed";
-                //divSty.top="0px";
-                //divSty.left="0px";
-                divSty.border="none";
-                divSty.backgroundColor="#FFF8C6";
+                divSty.position="fixed";
+                divSty.top="0px";
+                divSty.left="0px";
+                divSty.width="400px"
+                //divSty.border="solid";
+                divSty.backgroundColor="#F5F5F5";
                 divSty.zIndex="45";
-                divSty.cursor="move";
+                //divSty.cursor="move";
             }
             oscarLog('adf ');
             this.waitifrm=document.getElementById("xmaskframe");
@@ -953,26 +953,16 @@ body {
             oscarLog('nn ');
             this.waitifrm.setAttribute("src","displayMedHistory.jsp?randomId="+randomId);
             oscarLog('dd ');
-            var dsh=document.documentElement.scrollHeight;
-            var dch=document.documentElement.clientHeight;
-            var dsw=document.documentElement.scrollWidth;
-            var dcw=document.documentElement.clientWidth;
-            var bdh=(dsh>dch)?dsh:dch;
-            var bdw=(dsw>dcw)?dsw:dcw;
-            //this.waitifrm.style.height=bdh+'px';
-            //this.waitifrm.style.width=bdw+'px';
             this.waitifrm.style.display="block";
-            //Effect.Grow('xmaskframe');
-            $("drag_demo_3").appendChild(this.waitifrm);
-            oscarLog('cc ');
-            oscarLog('aa ');
-            Effect.BlindDown('xmaskframe');
-            //dd=new Draggable('xmasframe', {scroll: window});
+            $("dragifm").appendChild(this.waitifrm);
+            //oscarLog('cc ');
+            //oscarLog('aa ');
+            Effect.Appear('xmaskframe');
             oscarLog('ff ');
         };
         this.hide=function()
             {
-                Effect.BlindUp('xmaskframe');
+                Effect.Fade('xmaskframe');
 
             };
     }
@@ -981,14 +971,10 @@ body {
            var data="randomId="+randomId;
            new Ajax.Request("<c:out value='${ctx}'/>"+ "/oscarRx/WriteScript.do?parameterValue=listPreviousInstructions", 
            {method: 'post',parameters:data,asynchronous:false,onSuccess:function(transport){
-                    /*new Ajax.Request("displayMedHistory.jsp",{method: 'post',parameters:data,onSuccess:function(transport){
-
-                    }});*/
-                   
- /*                   mb.show(randomId);
+                 mb.show(randomId);
                 }});
     }
-*/
+
     function updateProperty(elementId){
          var randomId=elementId.split("_")[1];
          if(randomId!=null){

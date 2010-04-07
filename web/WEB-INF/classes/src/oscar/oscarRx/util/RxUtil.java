@@ -1194,15 +1194,23 @@ public class RxUtil {
     public static List<HashMap<String,String>> getPreviousInstructions(RxPrescriptionData.Prescription rx){
         List<HashMap<String,String>> retList=new ArrayList();
         if(rx.isCustom()){
-            retList=getCustomNamePrevInstructions(rx.getCustomName());
-
+            String cn=rx.getCustomName();
+            if(cn!=null && cn.trim().length()>0)
+                retList=getCustomNamePrevInstructions(cn);
         }else{
-            retList=getDinPrevInstructions(rx.getRegionalIdentifier());
+            String din=rx.getRegionalIdentifier();
+           if(din!=null && din.trim().length()>0){
+               retList=getDinPrevInstructions(din);
             if(retList.size()==0){
                 retList=getBNPrevInstructions(rx.getBrandName());
                 //if(retList.size()==0)
                     //retList=getGNPrevInstructions(rx.getGenericName());
             }
+           }else{
+                String bn=rx.getBrandName();
+                if(bn!=null && bn.trim().length()>0)
+                     retList=getBNPrevInstructions(bn);
+        }
         }
        if(retList.size()>0)
            retList=trimMedHistoryList(rx,retList);
@@ -1214,7 +1222,7 @@ public class RxUtil {
         String bn=rx.getBrandName();
         List<HashMap<String,String>> retList=new ArrayList();
         if(l.size()>0 ||rx!=null){
-            for(HashMap hm:l){
+          try{  for(HashMap hm:l){
                 String ins=(String)hm.get("instruction");
                 String specIns=(String)hm.get("special_instruction");
                 if(ins!=null&&ins.length()>0){
@@ -1225,13 +1233,15 @@ public class RxUtil {
                     if(specIns!=null&& !specIns.equalsIgnoreCase("null"))
                         ins=ins.replace(specIns, "");
                 }
+                if(ins!=null)
                 ins=ins.replace("\n", " ").trim();
+                if(specIns!=null)
                 specIns=specIns.replace("\n", " ").trim();
                 HashMap<String,String> h=new HashMap();
                 h.put("instruction", removeQuantityMitteRepeat(ins));
                 h.put("special_instruction", specIns);
                 retList.add(h);
-            }
+            }}catch(Exception e){e.printStackTrace();}
             retList=commonUniqueMedHistory(retList);
         }else;
         
@@ -1239,6 +1249,7 @@ public class RxUtil {
     }
     private static List<HashMap<String,String>> commonUniqueMedHistory(List<HashMap<String,String>> l){
         System.out.println("in commonUniqueMedHistory l="+l);
+
        if(l!=null&&l.size()>0){
             HashMap elementCount=new HashMap();
             List<HashMap<String,String>> retList=new ArrayList();
@@ -1251,6 +1262,7 @@ public class RxUtil {
             List<Integer> count=new ArrayList(elementCount.values());
             HashMap[] arr=new HashMap[count.size()];
             Collections.sort(count);//ascending order
+           try{
             for(int i=count.size()-1;i>=0;i--){
                 Set set=elementCount.keySet();
                 Iterator iter=set.iterator();
@@ -1264,6 +1276,7 @@ public class RxUtil {
                     }else;
                 }
             }
+           }catch(Exception e){e.printStackTrace();}
             System.out.println("in commonUniqueMedHistory retList="+retList);
             return retList;
        }else
@@ -1298,14 +1311,14 @@ public class RxUtil {
                 System.out.println("in removeQuantityMitteRepeat regex="+regex2);
                 System.out.println("in removeQuantityMitteRepeat after remove repeat s="+s);
                 
-                String regex1 = "Qty:\\s*[0-9]*\\.?[0-9]*\\s*\\w+";
+                String regex1 = "Qty:\\s*[0-9]*\\.?[0-9]*\\s*\\w*";
                 p = Pattern.compile(regex1);
                 m = p.matcher(s);
                 s = m.replaceAll("");
                 System.out.println("in removeQuantityMitteRepeat regex="+regex1);
                 System.out.println("in removeQuantityMitteRepeat after remove quantity ="+s);
                 
-                String regex6= "Mitte:\\s*[0-9]*\\.?[0-9]*\\s*\\w+";
+                String regex6= "Mitte:\\s*[0-9]*\\.?[0-9]*\\s*\\w*";
                 p = Pattern.compile(regex6);
                 m = p.matcher(s);
                 s = m.replaceAll("");

@@ -518,7 +518,7 @@ function checkFav(){
 
             }
             .rxStr a:hover{
-                color:blue;css
+                color:blue;
                 text-decoration:underline;
             }
             .rxStr a{

@@ -28,11 +28,13 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -1034,6 +1036,9 @@ public class RxUtil {
         //System.out.println("before   mitte="+special);
         //remove Qty:num
         String regex1 = "Qty:\\s*[0-9]*\\.?[0-9]*\\s*";
+        String unitName=rx.getUnitName();
+        if(unitName!=null && special.indexOf(unitName)!=-1)
+            regex1+=unitName;
         Pattern p = Pattern.compile(regex1);
         Matcher m = p.matcher(special);
         special = m.replaceAll("");
@@ -1092,10 +1097,7 @@ public class RxUtil {
         } else if (special.indexOf("Rub Well In") != -1) {
             special = special.substring(special.indexOf("Rub Well In"));
         }
-
-        String unitName=rx.getUnitName();
-        if(unitName!=null && special.indexOf(unitName)!=-1)
-            special=special.replace(unitName, "");
+        
         return special.trim();
 
     }
@@ -1157,12 +1159,13 @@ public class RxUtil {
         }
     }
 
- /*   private static List<HashMap<String,String>> drugsTableQuery(String parameter,String value){
+   private static List<HashMap<String,String>> drugsTableQuery(String parameter,String value){       
         List<HashMap<String,String>> retList=new ArrayList();
        try{
             DBHandler db=new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
             String sql="select special ,special_instruction from drugs where "+parameter+" = '"+value+"' order by drugid desc" ;
+            System.out.println("in drugsTableQuery,sql="+sql);
             rs = db.GetSQL(sql);
             while(rs.next()){
                 HashMap hm=new HashMap();
@@ -1173,6 +1176,7 @@ public class RxUtil {
        }catch(Exception e){
             e.printStackTrace();
        }
+        System.out.println("in drugsTableQuery,retList="+retList);
         return retList;
     }
     private static List<HashMap<String,String>> getCustomNamePrevInstructions(String customName){
@@ -1196,14 +1200,12 @@ public class RxUtil {
             retList=getDinPrevInstructions(rx.getRegionalIdentifier());
             if(retList.size()==0){
                 retList=getBNPrevInstructions(rx.getBrandName());
-                if(retList.size()==0)
-                    retList=getGNPrevInstructions(rx.getGenericName());
-            }
-            if(retList.size()>0){
-
+                //if(retList.size()==0)
+                    //retList=getGNPrevInstructions(rx.getGenericName());
             }
         }
-       retList=trimMedHistoryList(rx,retList);
+       if(retList.size()>0)
+           retList=trimMedHistoryList(rx,retList);
         return retList;
     }
     private static List<HashMap<String,String>> trimMedHistoryList(RxPrescriptionData.Prescription rx,List<HashMap<String,String>> l){
@@ -1226,15 +1228,92 @@ public class RxUtil {
                 ins=ins.replace("\n", " ").trim();
                 specIns=specIns.replace("\n", " ").trim();
                 HashMap<String,String> h=new HashMap();
-                h.put("instruction", ins);
+                h.put("instruction", removeQuantityMitteRepeat(ins));
                 h.put("special_instruction", specIns);
                 retList.add(h);
             }
+            retList=commonUniqueMedHistory(retList);
         }else;
-
+        
         return retList;
     }
-*/
+    private static List<HashMap<String,String>> commonUniqueMedHistory(List<HashMap<String,String>> l){
+        System.out.println("in commonUniqueMedHistory l="+l);
+       if(l!=null&&l.size()>0){
+            HashMap elementCount=new HashMap();
+            List<HashMap<String,String>> retList=new ArrayList();
+            for(HashMap<String,String> hm:l){
+                if(!elementCount.containsKey(hm))
+                    elementCount.put(hm, 1);
+                else
+                    elementCount.put(hm, (Integer)elementCount.get(hm)+1);
+            }
+            List<Integer> count=new ArrayList(elementCount.values());
+            HashMap[] arr=new HashMap[count.size()];
+            Collections.sort(count);//ascending order
+            for(int i=count.size()-1;i>=0;i--){
+                Set set=elementCount.keySet();
+                Iterator iter=set.iterator();
+                while(iter.hasNext()){
+                    HashMap key=(HashMap)iter.next();
+                    Integer value=(Integer)elementCount.get(key);
+                    if(value==count.get(i)){
+                        retList.add(key);
+                        elementCount.remove(key);
+                        break;
+                    }else;
+                }
+            }
+            System.out.println("in commonUniqueMedHistory retList="+retList);
+            return retList;
+       }else
+           return l;
+    }
+    //return distinct hashmap
+    /*private static List<HashMap<String,String>> distinctMedHistory(List<HashMap<String,String>> l){
+        if(l!=null && l.size()>0){
+            for(int i=0;i<l.size();i++){
+                HashMap<String,String> hm1=l.get(i);
+                String s1=hm1.toString();
+                for(int h=i+1;h<l.size();h++){
+                    HashMap<String,String> hm2=l.get(h);
+                    String s2=hm2.toString();
+                    if(s2.equalsIgnoreCase(s1)){
+                        l.remove(hm2);
+                        --h;
+                    }
+                }
+            }
+            return l;
+        }else return l;
+    }*/
+    private static String removeQuantityMitteRepeat(String s){
+                Pattern p;
+                Matcher m;
+                System.out.println("in removeQuantityMitteRepeat s="+s);
+                String regex2 = "Repeats:\\s*[0-9]*\\.?[0-9]*\\s*";                
+                p = Pattern.compile(regex2);
+                m = p.matcher(s);
+                s = m.replaceAll("");
+                System.out.println("in removeQuantityMitteRepeat regex="+regex2);
+                System.out.println("in removeQuantityMitteRepeat after remove repeat s="+s);
+                
+                String regex1 = "Qty:\\s*[0-9]*\\.?[0-9]*\\s*\\w+";
+                p = Pattern.compile(regex1);
+                m = p.matcher(s);
+                s = m.replaceAll("");
+                System.out.println("in removeQuantityMitteRepeat regex="+regex1);
+                System.out.println("in removeQuantityMitteRepeat after remove quantity ="+s);
+                
+                String regex6= "Mitte:\\s*[0-9]*\\.?[0-9]*\\s*\\w+";
+                p = Pattern.compile(regex6);
+                m = p.matcher(s);
+                s = m.replaceAll("");
+                System.out.println("in removeQuantityMitteRepeat regex="+regex6);
+                System.out.println("in removeQuantityMitteRepeat after remove mitte ="+s);
+                s=s.trim();
+                return s;
+    }
     public static void setSpecialQuantityRepeat(RxPrescriptionData.Prescription rx) {
 
         try {

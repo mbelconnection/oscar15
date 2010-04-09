@@ -1510,7 +1510,8 @@ public class RxUtil {
                     //p("BN in stash",rxTemp.getBrandName());
                     //p("GCN  ",""+rx.getGCN_SEQNO());
                     //p("GCN in stash",""+rxTemp.getGCN_SEQNO());
-                    if (rx.getBrandName()!=null && !rx.getBrandName().equalsIgnoreCase("null") && rx.getBrandName().equals(rxTemp.getBrandName()) && rx.getGCN_SEQNO() == rxTemp.getGCN_SEQNO()) {
+                    if (rx.getBrandName()!=null && !rx.getBrandName().equalsIgnoreCase("null") && rx.getBrandName().equals(rxTemp.getBrandName()) 
+                            && rx.getGCN_SEQNO() == rxTemp.getGCN_SEQNO() && rxTemp.getRandomId()!=rx.getRandomId()) {
                         p("unique turning false");
                         unique = false;
                     }

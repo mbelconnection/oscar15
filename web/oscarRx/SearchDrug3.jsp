@@ -646,7 +646,8 @@ body {
                                                 <a href="javascript:goOMD();"><bean:message key="SearchDrug.msgOMDLookup"/></a>
                                                 <%}%>
                                                 <div class="buttonrow">
-                                                    <input id="saveButton" type="button"  onclick="updateSaveAllDrugs();" value="<bean:message key="SearchDrug.msgSaveAndPrescribe"/>" />                                                    
+                                                    <input id="saveButton" type="button"  onclick="updateSaveAllDrugsPrint();" value="<bean:message key="SearchDrug.msgSaveAndPrint"/>" />
+                                                    <input id="saveOnlyButton" type="button"  onclick="updateSaveAllDrugs();" value="<bean:message key="SearchDrug.msgSaveOnly"/>" />
                                                     <!--input id="testEvalJS" type="button"   onclick="functionOne();" value="testEvalJS" /-->
                                                 </div>
                                             </td>
@@ -1304,11 +1305,11 @@ body {
                                             str=str.replace('<script type="text/javascript">','');
                                             str=str.replace(/<\/script>/,'');
                                             eval(str);
-                                            oscarLog("before calling mydrugrefinfo view");
+                                            //oscarLog("before calling mydrugrefinfo view");
                                             <oscar:oscarPropertiesCheck property="MYDRUGREF_DS" value="yes">
                                               callReplacementWebService("GetmyDrugrefInfo.do?method=view",'interactionsRxMyD');
                                              </oscar:oscarPropertiesCheck>
-                                            oscarLog("after calling mydrugrefinfo view");
+                                            //oscarLog("after calling mydrugrefinfo view");
                                         }});
                             }});
     }
@@ -1954,12 +1955,8 @@ function findDataStr(ids){
     oscarLog(retVal);
     return retVal;
 }*/
-    function updateSaveAllDrugs(){
+    function updateSaveAllDrugsPrint(){
         var data=Form.serialize($('drugForm'));
-        //var uniqueIds=findUniqueRandomIds(data);
-        //var data2=findDataStr(uniqueIds);
-        //if(data2!='')
-          //  data+="&"+data2;
         oscarLog("data="+data);
         var url= "<c:out value="${ctx}"/>" + "/oscarRx/WriteScript.do?parameterValue=updateSaveAllDrugs";
         new Ajax.Request(url,
@@ -1969,6 +1966,20 @@ function findDataStr(ids){
                 callReplacementWebService("ListDrugs.jsp",'drugProfile');
                 popForm2();
                 resetReRxDrugList();
+            }});
+        return false;
+    }
+    function updateSaveAllDrugs(){
+        var data=Form.serialize($('drugForm'));
+        oscarLog("data="+data);
+        var url= "<c:out value="${ctx}"/>" + "/oscarRx/WriteScript.do?parameterValue=updateSaveAllDrugs";
+        new Ajax.Request(url,
+        {method: 'post',postBody:data,asynchronous:false,
+            onSuccess:function(transport){
+                oscarLog("successfully sent data "+url);
+                callReplacementWebService("ListDrugs.jsp",'drugProfile');
+                resetReRxDrugList();
+                resetStash();
             }});
         return false;
     }

@@ -474,15 +474,6 @@ function checkFav(){
         useFav2(favid);
     }else{}
 }
-//not used
-/*function checkRePrescribe(){
-    var drugId='<%--=reRxDrugId--%>';
-    oscarLog("drugId in checkrePrescribe: "+drugId);
-    if(drugId!=null && (drugId!='null')){
-              represcribeOnLoad(drugId);
-    }else{}
-}
-*/
 
      //not used , represcribe a drug
     function represcribeOnLoad(drugId){
@@ -636,8 +627,8 @@ body {
                                     <table border="0">
                                         <tr valign="top">
                                             <td style="width:320px;"><bean:message key="SearchDrug.drugSearchTextBox"  />
-                                                <html:text styleId="searchString" property="searchString"   size="16" maxlength="16" style="width:248px;\" autocomplete=\"off"  />
-                                                <div id="autocomplete_choices"></div>
+                                                <html:text styleId="searchString" property="searchString" size="16" maxlength="16" onfocus="changeContainerHeight();" onblur="changeContainerHeight();" onclick="changeContainerHeight();" onkeydown="changeContainerHeight();" style="width:248px;\" autocomplete=\"off"  />
+                                                <div id="autocomplete_choices" style="overflow:auto;width:600px"></div>
                                                 <span id="indicator1" style="display: none"> <!--img src="/images/spinner.gif" alt="Working..." --></span>
                                             </td>
                                             <td>
@@ -913,6 +904,14 @@ body {
                         }
 %>
 <script type="text/javascript">
+    function changeContainerHeight(ele){
+        var ss=$('searchString').value;
+        ss=trim(ss);
+        if(ss.length==0)
+            $('autocomplete_choices').setStyle({height:'0%'});
+        else
+            $('autocomplete_choices').setStyle({height:'100%'});
+    }
     function addInstruction(content,randomId){
         $('instructions_'+randomId).value=content;
     }

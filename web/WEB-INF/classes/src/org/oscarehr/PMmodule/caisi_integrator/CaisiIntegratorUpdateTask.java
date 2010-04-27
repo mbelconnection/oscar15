@@ -896,10 +896,10 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
                 for (MeasurementsExt measurementExt : measurementExts) {
                     CachedMeasurementExt cachedMeasurementExt = new CachedMeasurementExt();
                     FacilityIdIntegerCompositePk fidIntegerCompositePk = new FacilityIdIntegerCompositePk();
-                    fidIntegerCompositePk.setCaisiItemId(measurementExt.getId().intValue());
+                    fidIntegerCompositePk.setCaisiItemId(measurementExt.getId());
                     cachedMeasurementExt.setFacilityIdIntegerCompositePk(fidIntegerCompositePk);
 
-                    cachedMeasurementExt.setMeasurementId(measurementExt.getMeasurementId().intValue());
+                    cachedMeasurementExt.setMeasurementId(measurementExt.getMeasurementId());
                     cachedMeasurementExt.setKeyval(measurementExt.getKeyVal());
                     cachedMeasurementExt.setVal(measurementExt.getVal());
 

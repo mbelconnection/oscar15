@@ -1062,7 +1062,7 @@ public class ImportDemographicDataAction3 extends Action {
 
             // Save to measurements, measurementsExt
             for (LaboratoryResults labResults : labResultArr) {
-                Measurements meas = new Measurements(Long.valueOf(demographicNo), admProviderNo);
+                Measurements meas = new Measurements(Integer.valueOf(demographicNo), admProviderNo);
                 LaboratoryResults.Result result = labResults.getResult();
                 String unit = null;
                 if (result!=null) {
@@ -1077,7 +1077,7 @@ public class ImportDemographicDataAction3 extends Action {
                     meas.setDateEntered(new Date());
                 }
                 ImportExportMeasurements.saveMeasurements(meas);
-                Long measId = meas.getId();
+                Integer measId = meas.getId();
                 saveMeasurementsExt(measId, "unit", unit);
                 String testCode = Util.filled(labResults.getLabTestCode()) ? labResults.getLabTestCode() : "";
                 String testName = Util.noNull(labResults.getTestName());
@@ -1802,9 +1802,9 @@ public class ImportDemographicDataAction3 extends Action {
 	}
     }
     
-    void saveMeasurementsExt(Long measurementId, String key, String val) throws SQLException {
+    void saveMeasurementsExt(Integer measurementId, String key, String val) throws SQLException {
         if (measurementId!=null && Util.filled(key)) {
-            MeasurementsExt mx = new MeasurementsExt(measurementId);
+            MeasurementsExt mx = new MeasurementsExt(measurementId.intValue());
             mx.setKeyVal(key);
             mx.setVal(Util.noNull(val));
             ImportExportMeasurements.saveMeasurementsExt(mx);

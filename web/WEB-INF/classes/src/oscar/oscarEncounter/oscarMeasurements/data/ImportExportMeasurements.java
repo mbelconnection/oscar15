@@ -48,8 +48,8 @@ public class ImportExportMeasurements {
 	    ResultSet rs = db.GetSQL(sql);
 
 	    while (rs.next()) {
-		Measurements meas = new Measurements(Long.valueOf(demoNo));
-		meas.setId(rs.getLong("id"));
+		Measurements meas = new Measurements(Integer.valueOf(demoNo));
+		meas.setId(rs.getInt("id"));
 		meas.setType(rs.getString("type"));
 		meas.setProviderNo(rs.getString("providerNo"));
 		meas.setDataField(rs.getString("dataField"));
@@ -134,7 +134,7 @@ public class ImportExportMeasurements {
 	pstmt.setDate(7, new java.sql.Date(meas.getDateEntered().getTime()));
 	pstmt.executeUpdate();
 	ResultSet rs = pstmt.getGeneratedKeys();
-	if (rs.next()) meas.setId(rs.getLong(1));
+	if (rs.next()) meas.setId(rs.getInt(1));
 	pstmt.close();
 	conn.close();
     }
@@ -149,12 +149,12 @@ public class ImportExportMeasurements {
 	pstmt.setString(3, mExt.getVal());
 	pstmt.executeUpdate();
 	ResultSet rs = pstmt.getGeneratedKeys();
-	if (rs.next()) mExt.setId(rs.getLong(1));
+	if (rs.next()) mExt.setId(rs.getInt(1));
 	pstmt.close();
 	conn.close();
     }
     
-    public static List getMeasurementsExt(Long measurementId) throws SQLException {
+    public static List getMeasurementsExt(Integer measurementId) throws SQLException {
 	List extsList = new ArrayList();
 	if (measurementId!=null) {
 	    DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
@@ -162,9 +162,9 @@ public class ImportExportMeasurements {
 	    ResultSet rs = db.GetSQL(sql);
 
 	    while (rs.next()) {
-		MeasurementsExt exts = new MeasurementsExt(measurementId);
-		exts.setId(rs.getLong("id"));
-		exts.setMeasurementId(rs.getLong("measurement_id"));
+		MeasurementsExt exts = new MeasurementsExt(measurementId.intValue());
+		exts.setId(rs.getInt("id"));
+		exts.setMeasurementId(rs.getInt("measurement_id"));
 		exts.setKeyVal(rs.getString("keyval"));
 		exts.setVal(rs.getString("val"));
 		extsList.add(exts);
@@ -182,9 +182,9 @@ public class ImportExportMeasurements {
 	    ResultSet rs = db.GetSQL(sql);
 
 	    if (rs.next()) {
-		measurementsExt = new MeasurementsExt(measurementId);
-		measurementsExt.setId(rs.getLong("id"));
-		measurementsExt.setMeasurementId(rs.getLong("measurement_id"));
+		measurementsExt = new MeasurementsExt(measurementId.intValue());
+		measurementsExt.setId(rs.getInt("id"));
+		measurementsExt.setMeasurementId(rs.getInt("measurement_id"));
 		measurementsExt.setKeyVal(rs.getString("keyval"));
 		measurementsExt.setVal(rs.getString("val"));
 	    }

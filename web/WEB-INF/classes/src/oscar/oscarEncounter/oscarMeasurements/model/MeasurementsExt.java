@@ -28,16 +28,14 @@
 
 package oscar.oscarEncounter.oscarMeasurements.model;
 
-import oscar.oscarEncounter.oscarMeasurements.data.*;
-
 public class MeasurementsExt {
-    private Long    id;
-    private Long    measurementId;
+    private Integer id;
+    private Integer measurementId;
     private String  keyVal;
     private String  val;
     
     /** Creates a new instance of Measurements */
-    public MeasurementsExt(Long mId) {
+    public MeasurementsExt(Integer mId) {
 	this.measurementId = mId;
     }
     
@@ -45,17 +43,17 @@ public class MeasurementsExt {
     
     
     
-    public Long getId() {
+    public Integer getId() {
 	return this.id;
     }
-    public void setId(Long id) {
+    public void setId(Integer id) {
 	this.id = id;
     }
-    
-    public Long getMeasurementId() {
+
+    public Integer getMeasurementId() {
 	return this.measurementId;
     }
-    public void setMeasurementId(Long mId) {
+    public void setMeasurementId(Integer mId) {
 	this.measurementId = mId;
     }
     

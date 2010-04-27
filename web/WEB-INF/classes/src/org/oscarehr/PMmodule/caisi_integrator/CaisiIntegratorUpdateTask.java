@@ -344,11 +344,11 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 			MiscUtils.checkShutdownSignaled();
 			logger.debug("Adding provider " + providerId + " for " + facility.getName());
 
-			ProviderTransfer providerTransfer=new ProviderTransfer();
-			
 			// copy provider basic data over
 			Provider provider = providerDao.getProvider(providerId);
+                        if (provider == null) continue;
 
+			ProviderTransfer providerTransfer=new ProviderTransfer();
 			CachedProvider cachedProvider = new CachedProvider();
 
 			BeanUtils.copyProperties(cachedProvider, provider);

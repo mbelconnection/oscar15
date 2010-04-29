@@ -426,6 +426,7 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 
 		demographicTransfer.setHinType(demographic.getHcType());
 		demographicTransfer.setHinVersion(demographic.getVer());
+                demographicTransfer.setCaisiProviderId(demographic.getProviderNo());
 		
 		try
 		{
@@ -701,7 +702,7 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 				cachedDemographicDrug.setRepeats(drug.getRepeat());
 				cachedDemographicDrug.setRoute(drug.getRoute());
 				cachedDemographicDrug.setRxDate(drug.getRxDate());
-				cachedDemographicDrug.setScriptNo(drug.getScriptNo());
+				if (drug.getScriptNo()!=null) cachedDemographicDrug.setScriptNo(drug.getScriptNo());
 				cachedDemographicDrug.setSpecial(drug.getSpecial());
 				cachedDemographicDrug.setTakeMax(drug.getTakeMax());
 				cachedDemographicDrug.setTakeMin(drug.getTakeMin());
@@ -800,6 +801,7 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
                     cachedBillingOnItem.setDx(billingItem.getDx());
                     cachedBillingOnItem.setDx1(billingItem.getDx1());
                     cachedBillingOnItem.setDx2(billingItem.getDx2());
+                    cachedBillingOnItem.setServiceCode(billingItem.getService_code());
                     cachedBillingOnItem.setServiceDate(billingItem.getService_date());
                     cachedBillingOnItem.setStatus(billingItem.getStatus());
 

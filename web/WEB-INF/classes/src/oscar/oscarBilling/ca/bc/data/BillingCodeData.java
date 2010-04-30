@@ -81,6 +81,9 @@ public final class BillingCodeData implements Comparable      {
   //    fillCodeData(rs);
   //}
 
+  public List<BillingService> search(String str,Date date) {
+    return billingServiceDao.search(str,"BC",date);
+  }
 
   public boolean editBillingCode(String servicecode,String desc, String val, String codeId) {
     boolean retval = true;
@@ -133,6 +136,20 @@ public final class BillingCodeData implements Comparable      {
   }
 
 
+
+  public BillingService getBillingCodeByCode(String code,Date date){
+    List list = billingServiceDao.findBillingCodesByCode( code,BillingServiceDao.BC,date,1);
+
+    //List list = codeSearch("select * from billingservice where service_code like '" +code + "'" );
+    if(list == null || list.size() ==0 ){
+        return null;
+    }
+    return (BillingService) list.get(0);
+
+  }
+
+
+
   public BillingService getBillingCodeByCode(String code){
     List list = billingServiceDao.findBillingCodesByCode( code,"BC");
     //List list = codeSearch("select * from billingservice where service_code like '" +code + "'" );
@@ -149,7 +166,7 @@ public final class BillingCodeData implements Comparable      {
    * @return ArrayList - list of codes
    */
   public List findBillingCodesByCode(String code,int order) {
-    return billingServiceDao.findBillingCodesByCode(code,billingServiceDao.BC,order);
+    return billingServiceDao.findBillingCodesByCode(code,BillingServiceDao.BC,order);
   }
 
 

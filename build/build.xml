@@ -1,23 +1,23 @@
 <?xml version="1.0"?>
-<project name="oscar" 
+<project name="oscar"
          default="dist">
   <property environment="env"/>
 
   <property name="catalina" location="${env.CATALINA_HOME}" />
   <property file="tomcat.properties" />
   <property name="webapp.name" value="oscar"/>
-  
+
   <path id="classpath.path">
    <fileset dir="../web/WEB-INF/lib">
     <include name="*.jar"/>
    </fileset>
-   <fileset dir="${catalina}/common/lib">
+   <fileset dir="${catalina}/lib">
     <include name="*.jar"/>
    </fileset>
    <pathelement location="${classes}"/>
   </path>
 
- <target name="init" 
+ <target name="init"
          description="Init build directories">
   <tstamp/>
 
@@ -27,25 +27,25 @@
   <property name="now" value="${DSTAMP}-${TSTAMP}" />
 
   <property name="build" location="tmp" />
-  <property name="root_web" location="${build}/web" /> 
-  <property name="classes_web" location="${root_web}/classes" /> 
-  <property name="doc" location="${build}/doc" /> 
-  <property name="tarball.tar" value="${project}-${now}.tar" />  
-  <property name="tarball.tar.gz" value="${tarball.tar}.gz" />  
+  <property name="root_web" location="${build}/web" />
+  <property name="classes_web" location="${root_web}/classes" />
+  <property name="doc" location="${build}/doc" />
+  <property name="tarball.tar" value="${project}-${now}.tar" />
+  <property name="tarball.tar.gz" value="${tarball.tar}.gz" />
   <property name="test" location="${build}/test" />
   <property name="src_web" location="../web/WEB-INF/classes/src" />
   <property name="webapp" location="../web" />
   <property name="jspbasedir" location="${catalina}/webapps/oscar" />
   <property name="mdsfiledir" location="../mdsFileManagement" />
   <property name="cmlfiledir" location="../CMLFileManagement" />
-  
+
   <property name="src_document" location="../oscar_document" />
   <property name="root_document" location="${build}/document" />
   <property name="classes_document" location="${root_document}/classes" />
 
   <property name="JAVA_TARGET_VERSION" value="1.5" />
 
-  
+
 
   <mkdir dir="${build}" />
   <mkdir dir="${root_web}" />
@@ -59,7 +59,7 @@
 
   <!-- webapp filtering - splice version etc. into web files -->
   <filter token="project" value="${project}" />
-  <filter token="version" value="${version}" /> 
+  <filter token="version" value="${version}" />
   <filter token="date" value="${TODAY}" />
   <filter token="now" value="${now}" />
   <filter token="tarball" value="${tarball.tar.gz}" />
@@ -82,7 +82,7 @@
  </target>
 
 <!-- <target name="web" depends="init">
-  <javac 
+  <javac
 	 srcdir="${src_web}"
      excludes="oscar/oscarMessenger/**,oscar/form/study/**"
      destdir="${classes_web}"
@@ -96,7 +96,7 @@
    </classpath>
   </javac>
  </target>-->
- 
+
  <target name="document" depends="init">
    <javac
           srcdir="${src_document}"
@@ -104,13 +104,13 @@
           deprecation="off"
 	target="${JAVA_TARGET_VERSION}"
           debug="on">
-     <classpath>     
+     <classpath>
        <path refid="classpath.path"/>
      </classpath>
-   </javac>   
+   </javac>
  </target>
 
- 
+
  <patternset id="meta.files">
         <include name="**/*.xml"/>
         <include name="**/*.properties"/>
@@ -121,12 +121,12 @@
         <include name="**/*.pdf" />
         <include name="**/*.jrxml" />
         <include name="**/*.html"/>
- </patternset> 
- 
+ </patternset>
+
  <target name="web" depends="init">
-  <javac  
-         fork="true" 
-         memoryinitialsize="128m" 
+  <javac
+         fork="true"
+         memoryinitialsize="128m"
          memorymaximumsize="256m"
 	 srcdir="${src_web}"
          excludes="oscar/oscarMessenger/data/MsgRemoteMessageData.java"
@@ -144,7 +144,7 @@
       <fileset dir="${webapp}/WEB-INF/classes/src">
           <patternset refid="meta.files"/>
       </fileset>
-  </copy> 
+  </copy>
  </target>
  <target name="testprep" depends="init">
   <copy todir="${test}/polls">
@@ -217,9 +217,9 @@
    	   <entry key="builddate" operation="+" value=", branch : 9.12" />
            <entry key="buildtag" type="string" value="${env.JOB_NAME}-${env.BUILD_NUMBER}"/>
   </propertyfile>
-  
-  <war destfile="${build}/oscar.war" webxml="../web/WEB-INF/web.xml"> 
-       <fileset dir="${webapp}"> 
+
+  <war destfile="${build}/oscar.war" webxml="../web/WEB-INF/web.xml">
+       <fileset dir="${webapp}">
          <exclude name="WEB-INF/lib/**"/>
          <exclude name="WEB-INF/classes/src/**"/>
          <exclude name="WEB-INF/classes/oscar/**"/>
@@ -229,7 +229,7 @@
        <lib dir="${webapp}/WEB-INF/lib"/>
        <classes dir="${classes_web}"/>
   </war>
-  
+
   <war destfile="${build}/OscarDocument.war" webxml="${src_document}/WEB-INF/web.xml">
     <fileset dir="${src_document}">
       <exclude name="WEB-INF/classes/**"/>
@@ -237,14 +237,14 @@
     </fileset>
     <classes dir="${classes_document}"/>
   </war>
-  
+
  </target>
 
- 
+
  <target name="oscarcomm-jar" depends="web">
         <echo message="${classes_web}/oscar/comm/**" />
         <jar destfile="${build}/oscarcomm-${now}.jar">
-             
+
              <fileset dir="${classes_web}">
                 <exclude name="oscar/oscarEncounter/**"/>
                 <exclude name="oscar/appt/**"/>
@@ -263,14 +263,14 @@
                 <exclude name="oscar/oscarReport/**"/>
                 <exclude name="oscar/oscarResearch/**"/>
                 <exclude name="oscar/oscarRx/**"/>
-                <exclude name="oscar/oscarSecurity/**"/>                
+                <exclude name="oscar/oscarSecurity/**"/>
                 <exclude name="oscar/decision/**"/>
                 <exclude name="oscar/*.class"/>
                 <exclude name="*"/>
                 <exclude name="bean/**"/>
              </fileset>
-               <!-- <include name="${classes_web}/oscar/oscarDB/**"/>                
-                    <include name="${classes_web}/oscar/util/**"/>                
+               <!-- <include name="${classes_web}/oscar/oscarDB/**"/>
+                    <include name="${classes_web}/oscar/util/**"/>
                     <include name="${classes_web}/oscar/Misc.class"/>                -->
             <!--</fileset>-->
             <manifest>
@@ -278,11 +278,11 @@
             </manifest>
         </jar>
 </target>
-    
+
 <target name="pathnet-jar" depends="web">
         <echo message="${classes_web}/oscar/comm/**" />
         <jar destfile="${build}/oscar_pathnet.jar">
-             
+
              <fileset dir="${classes_web}">
                 <exclude name="oscar/oscarEncounter/**"/>
                 <exclude name="oscar/appt/**"/>
@@ -302,25 +302,25 @@
                 <exclude name="oscar/oscarReport/**"/>
                 <exclude name="oscar/oscarResearch/**"/>
                 <exclude name="oscar/oscarRx/**"/>
-                <exclude name="oscar/oscarSecurity/**"/>                
+                <exclude name="oscar/oscarSecurity/**"/>
                 <exclude name="oscar/decision/**"/>
                 <!--<exclude name="oscar/*.class"/>-->
                 <exclude name="*"/>
                 <exclude name="bean/**"/>
              </fileset>
-               <!-- <include name="${classes_web}/oscar/oscarDB/**"/>                
-                    <include name="${classes_web}/oscar/util/**"/>                
+               <!-- <include name="${classes_web}/oscar/oscarDB/**"/>
+                    <include name="${classes_web}/oscar/util/**"/>
                     <include name="${classes_web}/oscar/Misc.class"/>                -->
             <!--</fileset>-->
             <manifest>
                 <attribute name="Built-By" value="oscarmcmaster"/>
             </manifest>
         </jar>
- </target> 
- 
+ </target>
+
  <target name="mdsfile" depends="init">
-  <javac 
-	 srcdir="${mdsfiledir}"     
+  <javac
+	 srcdir="${mdsfiledir}"
          destdir="${mdsfiledir}"
 	 deprecation="on"
          target="${JAVA_TARGET_VERSION}"
@@ -329,18 +329,18 @@
       <pathelement path="${classes_web}/"/>
       <path refid="classpath.path"/>
    </classpath> -->
-  </javac>  
+  </javac>
  </target>
- 
+
  <target name="mds-jar" depends="mdsfile">
-        
+
         <jar destfile="${build}/mds-${now}.jar">
-             
+
              <fileset dir="${mdsfiledir}">
-                
+
              </fileset>
-               <!-- <include name="${classes_web}/oscar/oscarDB/**"/>                
-                    <include name="${classes_web}/oscar/util/**"/>                
+               <!-- <include name="${classes_web}/oscar/oscarDB/**"/>
+                    <include name="${classes_web}/oscar/util/**"/>
                     <include name="${classes_web}/oscar/Misc.class"/>                -->
             <!--</fileset>-->
             <manifest>
@@ -350,8 +350,8 @@
 </target>
 
 <target name="cmlfile" depends="init">
-  <javac 
-	 srcdir="${cmlfiledir}"     
+  <javac
+	 srcdir="${cmlfiledir}"
          destdir="${cmlfiledir}"
 	 deprecation="on"
          target="${JAVA_TARGET_VERSION}"
@@ -359,21 +359,21 @@
    <classpath>
       <pathelement path="${classes_web}/"/>
       <path refid="classpath.path"/>
-   </classpath> 
-  </javac>  
+   </classpath>
+  </javac>
  </target>
- 
- 
- 
+
+
+
  <target name="cml-jar" depends="cmlfile">
-        
+
         <jar destfile="${build}/cml-${now}.jar">
-             
+
              <fileset dir="${cmlfiledir}">
-                
+
              </fileset>
-               <!-- <include name="${classes_web}/oscar/oscarDB/**"/>                
-                    <include name="${classes_web}/oscar/util/**"/>                
+               <!-- <include name="${classes_web}/oscar/oscarDB/**"/>
+                    <include name="${classes_web}/oscar/util/**"/>
                     <include name="${classes_web}/oscar/Misc.class"/>                -->
             <!--</fileset>-->
             <manifest>
@@ -381,7 +381,7 @@
             </manifest>
         </jar>
 </target>
-	
+
 <!--XMLBeans Tasks-->
 <taskdef file="xmlBeanTasks.properties" classpathref="classpath.path"/>
 
@@ -396,40 +396,40 @@
                 destfile="../web/WEB-INF/lib/surveyModel.jar"
         />
 </target>
-	
+
 
  <taskdef file="tomcatTasks.properties">
     <classpath>
-       <pathelement path="${catalina}/server/lib/catalina-ant.jar"/>
+       <pathelement path="${catalina}/lib/catalina-ant.jar"/>
     </classpath>
  </taskdef>
-                                                                                               
+
  <target description="Remove application in Tomcat" name="undeploy">
     <undeploy password="${tomcat.password}" path="/${webapp.name}" url="${tomcat.manager.url}" username="${tomcat.username}"/>
  </target>
-                                                                                           
+
  <target description="Remove application in Tomcat" name="remove">
     <remove password="${tomcat.password}" path="/${webapp.name}" url="${tomcat.manager.url}" username="${tomcat.username}"/>
  </target>
-                                                                                           
+
  <target depends="stop,dist,remove,deploy" name="redeploy"/>
-                                                                                                                                                                
+
  <target depends="dist" name="deploy">
     <deploy password="${tomcat.password}" path="/${webapp.name}" url="${tomcat.manager.url}" username="${tomcat.username}" war="file:${build}/oscar.war"/>
  </target>
- 
+
  <target description="Reload application in Tomcat" name="reload">
     <reload password="${tomcat.password}" path="/${webapp.name}" url="${tomcat.manager.url}" username="${tomcat.username}"/>
  </target>
-                                                                                           
+
  <target description="Start Tomcat application" name="start">
     <start password="${tomcat.password}" path="/${webapp.name}" url="${tomcat.manager.url}" username="${tomcat.username}"/>
  </target>
-                                                                                           
+
  <target description="Stop Tomcat application" name="stop">
     <stop password="${tomcat.password}" path="/${webapp.name}" url="${tomcat.manager.url}" username="${tomcat.username}"/>
  </target>
-                                                                                           
+
  <target description="List Tomcat applications" name="list">
     <list password="${tomcat.password}" url="${tomcat.manager.url}" username="${tomcat.username}"/>
  </target>
@@ -439,7 +439,7 @@
     <echo message="The password tomcat is using: ${tomcat.password}" />
     <echo message="tomcat url : ${tomcat.manager.url}" />
  </target>
- 
+
  <!--
  tomcatTasks.properties contains the following
     deploy=org.apache.catalina.ant.DeployTask
@@ -452,13 +452,13 @@
     start=org.apache.catalina.ant.StartTask
     stop=org.apache.catalina.ant.StopTask
     undeploy=org.apache.catalina.ant.UndeployTask
-    
+
  tomcat.properties contains the following
     tomcat.server=localhost
     tomcat.manager.url=http://${tomcat.server}:8080/manager
     tomcat.username=tomcatUserName
     tomcat.password=tomcatPassword
-    
+
  -->
 
 </project>

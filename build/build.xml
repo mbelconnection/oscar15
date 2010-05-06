@@ -7,16 +7,24 @@
   <property file="tomcat.properties" />
   <property name="webapp.name" value="oscar"/>
 
+  <condition  property="tomcat.lib" value="${catalina}/lib">
+      <available file="${catalina}/lib" type="dir"/>     
+  </condition>
+  <condition property="tomcat.lib" value="${catalina}/common/lib">
+      <available file="${catalina}/common/lib" type="dir" />
+  </condition>
+  <property name="tomcat.lib.dir" location="${tomcat.lib}"/>
+
   <path id="classpath.path">
    <fileset dir="../web/WEB-INF/lib">
     <include name="*.jar"/>
    </fileset>
-   <fileset dir="${catalina}/lib">
+   <fileset dir="${tomcat.lib.dir}">
     <include name="*.jar"/>
    </fileset>
    <pathelement location="${classes}"/>
   </path>
-
+ 
  <target name="init"
          description="Init build directories">
   <tstamp/>
@@ -45,7 +53,7 @@
 
   <property name="JAVA_TARGET_VERSION" value="1.5" />
 
-
+  
 
   <mkdir dir="${build}" />
   <mkdir dir="${root_web}" />
@@ -71,7 +79,7 @@
   <property name="live.webapps" value="/opt/webapps"/>
   <property name="rsync" value="rsync"/>  <!-- local location of rsync -->
   <property name="ssh" value="ssh"/>  <!-- local location of rsync -->
-
+  
  </target>
 
  <target name="clean" depends="init">
@@ -399,8 +407,9 @@
 
 
  <taskdef file="tomcatTasks.properties">
-    <classpath>
+   <classpath>
        <pathelement path="${catalina}/lib/catalina-ant.jar"/>
+       <pathelement path="${catalina}/server/lib/catalina-ant.jar"/>
     </classpath>
  </taskdef>
 

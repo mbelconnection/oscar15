@@ -265,8 +265,7 @@ public class BillingBillingManager {
       grandtotal += bi.getLineTotal();
       System.out.println("total:" + grandtotal);
     }
-    BigDecimal bdFee = new BigDecimal(grandtotal).setScale(2,
-        BigDecimal.ROUND_HALF_UP);
+    BigDecimal bdFee = new BigDecimal(""+grandtotal).setScale(2,RoundingMode.HALF_UP);
     return bdFee.toString();
 
   }

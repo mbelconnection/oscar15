@@ -78,6 +78,49 @@
 	type="text/javascript"></script>
 
 <script language="JavaScript">
+
+    
+    function checkAskiiData(textEle){
+    var textstr = textEle.value;
+    for (i=0; i<textstr.length; i++) {
+        var charCode = textstr.charCodeAt(i);
+        if(!validChar(charCode)){
+            //textEle.focus();
+            alert("Text Field Contains an extend Askii Character that is not permitted.  Please remove "+textstr.charAt(i)+" character");
+            var caretPos = i;
+            if(textEle.createTextRange) {
+                var range = textEle.createTextRange();
+                range.move('character', caretPos);
+                range.select();
+            }
+            else {
+                if(textEle.selectionStart) {
+                    textEle.focus();
+                    textEle.setSelectionRange(caretPos, caretPos+1);
+                }
+                else
+                    textEle.focus();
+            }
+            return false;
+        }
+
+    }
+    return true;
+
+}
+
+function validChar(ch){
+    if(ch == 13 || ch == 10){  //Let new lines pass.  They will be removed anyway
+        return true;
+    }
+
+    if(ch < 32 || ch > 126){
+        return false;
+    }
+    return true;
+}
+
+
 function setStateofConditionalElements(){
 
   if(document.WCBForm.w_rphysician[0].checked == true){
@@ -279,12 +322,28 @@ function isformNeeded(){
     document.WCBForm.w_emparea.value = w_emparea;
     document.WCBForm.w_empphone.value = w_empphone;
   }
+   function validateForm(){
+
+     if(!checkAskiiData(document.getElementById('w_problem'))){
+         return false;
+     }
+     if(!checkAskiiData(document.getElementById('w_diagnosis'))){
+         return false;
+     }
+     if(!checkAskiiData(document.getElementById('w_clinicinfo'))){
+         return false;
+     }
+     if(!checkAskiiData(document.getElementById('w_capreason'))){
+         return false;
+     }
+      return true;
+  }
 </script>
 </head>
 <body onLoad="isformNeeded()" bgproperties="fixed" topmargin="0"
 	leftmargin="0" rightmargin="0">
 <html:errors />
-<html:form action="/billing/CA/BC/formwcb">
+<html:form action="/billing/CA/BC/formwcb" onsubmit="return validateForm()">
 	<html:hidden property="w_servicelocation" />
 
 	<!-- Params for billingBC.jsp -->
@@ -461,7 +520,7 @@ String fmtApptDate = fmt.format(new Date());
 			<td>Prior/Other Problems Affecting Injury, Recovery and
 			Disability</td>
 			<td><html:textarea cols="50"
-				onkeyup="checkTextLimit(this.form.w_problem,160);"
+				onkeyup="checkTextLimit(this.form.w_problem,160);" styleId="w_problem"
 				property="w_problem" style="height:50px;width:100%;"></html:textarea>
 			</td>
 		</tr>
@@ -481,7 +540,7 @@ String fmtApptDate = fmt.format(new Date());
 		</tr>
 		<tr id="thirdSection1">
 			<td>Diagnosis:</td>
-			<td><html:text maxlength="120" property="w_diagnosis" size="120" />
+			<td><html:text maxlength="120" property="w_diagnosis" styleId="w_diagnosis" size="120" />
 			</td>
 		</tr>
 		<tr>
@@ -546,7 +605,7 @@ String fmtApptDate = fmt.format(new Date());
 			Treatment, Meds</small></td>
 			<td align="left" valign="top"><html:textarea
 				styleClass="mhAssTextarea"
-				onkeyup="checkTextLimit(this.form.w_clinicinfo,800);"
+				onkeyup="checkTextLimit(this.form.w_clinicinfo,800);" styleId="w_clinicinfo"
 				property="w_clinicinfo" style="height:80px;width:100%;"></html:textarea>
 			</td>
 		</tr>
@@ -565,7 +624,7 @@ String fmtApptDate = fmt.format(new Date());
 			<td valign="top">If No: What are the current physical and/or
 			psychological restrictions?</td>
 			<td><html:textarea styleClass="mhAssTextarea"
-				onkeyup="checkTextLimit(this.form.w_capreason,240);"
+				onkeyup="checkTextLimit(this.form.w_capreason,240);" styleId="w_capreason"
 				property="w_capreason" style="height:80px;width:100%;"></html:textarea>
 			</td>
 		</tr>

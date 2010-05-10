@@ -30,20 +30,19 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.util.MessageResources;
-
+import org.apache.struts.actions.DispatchAction;
 import oscar.oscarRx.data.RxPrescriptionData;
 import oscar.oscarRx.util.RxUtil;
 
 
-public final class RxUpdateFavoriteAction extends Action {
+public final class RxUpdateFavoriteAction extends DispatchAction {
 
 
-    public ActionForward execute(ActionMapping mapping,
+    public ActionForward unspecified(ActionMapping mapping,
 				 ActionForm form,
 				 HttpServletRequest request,
 				 HttpServletResponse response)
@@ -76,5 +75,55 @@ public final class RxUpdateFavoriteAction extends Action {
             fav.Save();
 
             return (mapping.findForward("success"));
+    }
+
+    public ActionForward ajaxEditFavorite(ActionMapping mapping,
+				 ActionForm form,
+				 HttpServletRequest request,
+				 HttpServletResponse response)
+	throws IOException, ServletException {
+            // Setup variables
+            int favId = Integer.parseInt(request.getParameter("favoriteId"));
+
+            RxPrescriptionData.Favorite fav = new RxPrescriptionData().getFavorite(favId);
+            String favName=request.getParameter("favoriteName");
+            String customName=request.getParameter("customName");
+            String takeMin=request.getParameter("takeMin");
+            String takeMax=request.getParameter("takeMax");
+            String freqCode=request.getParameter("frequencyCode");
+            String duration=request.getParameter("duration");
+            String durationUnit=request.getParameter("durationUnit");
+            String quantity=request.getParameter("quantity");
+            String repeat=request.getParameter("repeat");
+            String noSubs=request.getParameter("nosubs");
+            String prn=request.getParameter("prn");
+            String special=request.getParameter("special");
+            String customInstr=request.getParameter("customInstr");
+            fav.setFavoriteName(favName);
+            fav.setCustomName(customName);
+            fav.setTakeMin(RxUtil.StringToFloat(takeMin));
+            fav.setTakeMax(RxUtil.StringToFloat(takeMax));
+            fav.setFrequencyCode(freqCode);
+            fav.setDuration(duration);
+            fav.setDurationUnit(durationUnit);
+            fav.setQuantity(quantity);
+            fav.setRepeat(Integer.parseInt(repeat));
+            if(noSubs.equalsIgnoreCase("true"))
+                fav.setNosubs(true);
+            else
+                fav.setNosubs(false);
+            if(prn.equalsIgnoreCase("true"))
+                fav.setPrn(true);
+            else
+                fav.setPrn(false);
+            fav.setSpecial(special);
+            if(customInstr.equalsIgnoreCase("true"))
+                fav.setCustomInstr(true);
+            else
+                fav.setCustomInstr(false);
+
+            fav.Save();
+
+            return null;
     }
 }

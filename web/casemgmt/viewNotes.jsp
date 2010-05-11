@@ -112,7 +112,7 @@
 		if (key.contains(" Date")) {
 		    val = oscar.util.UtilDateUtilities.DateToString(cme.getDateValue(),"yyyy-MM-dd");
 		} else {
-		    val = cme.getValue();
+		    val = org.apache.commons.lang.StringEscapeUtils.escapeJavaScript(cme.getValue());
 		}
 		if (strcme.length()>0) strcme.append(";");
 		strcme.append(key + ";" + val);

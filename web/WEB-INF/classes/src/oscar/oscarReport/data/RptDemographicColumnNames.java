@@ -52,6 +52,7 @@ public class RptDemographicColumnNames {
         hstbl.put("date_joined",new String("Date Joined"));
         hstbl.put("chart_no",new String("Chart #"));
         hstbl.put("provider_no",new String("Provider #"));
+        hstbl.put("provider_name",new String("Provider Name"));
         hstbl.put("sex",new String("Sex"));
         hstbl.put("end_date",new String("End Date"));
         hstbl.put("eff_date",new String("Eff. Date"));

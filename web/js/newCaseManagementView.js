@@ -1108,7 +1108,7 @@ function changeToView(id) {
     var sumary;
 
     var sig = 'sig' + nId;
-
+    
     //check if case note has been changed
     //if so, warn user that changes will be lost if not saved
 
@@ -1736,10 +1736,13 @@ function showIssues(e) {
     Element.toggle('noteIssues');
     showIssue = !showIssue;
 
-    if( showIssue )
+    if( showIssue ) {
+        $("noteIssues").scrollIntoView(false);
         $("issueAutocomplete").focus();
-    else
+    }
+    else {
         $(caseNote).focus();
+    }
 
     return false;
 
@@ -2244,12 +2247,12 @@ function autoSave(async) {
                                         okToClose = true;
 				},
                                 onSuccess: function(req) {
-                                                var nId = caseNote.substr(13);
+                                                /*var nId = caseNote.substr(13);
                                                 var sig = "sig" + nId;
 
                                                 if( $("autosaveTime") == null )
                                                     new Insertion.Bottom(sig, "<div id='autosaveTime' class='sig' style='text-align:center; margin:0px;'><\/div>");
-
+                                                    */
                                                 var d = new Date();
                                                 var min = d.getMinutes();
                                                 min = min < 10 ? "0" + min : min;

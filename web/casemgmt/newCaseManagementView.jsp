@@ -768,7 +768,7 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
 		    time1 = System.currentTimeMillis();
                     boolean editWarn = !note.isSigned() && !note.getProviderNo().equals(provNo);
                     %>
-		<div id="nc<%=idx%>" class="note"><input type="hidden"
+		<div id="nc<%=idx+1%>" class="note"><input type="hidden"
 			id="signed<%=note.getId()%>" value="<%=note.isSigned()%>"> <input
 			type="hidden" id="full<%=note.getId()%>"
 			value="<%=fulltxt || note.getId() == savedId%>"> <input

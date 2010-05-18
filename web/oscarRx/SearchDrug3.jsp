@@ -204,12 +204,6 @@
             function buildRoute() {
 
                 pickRoute = "";
-              <%--  <oscar:oscarPropertiesCheck property="drugref_route_search" value="on">
-                <%for (int i = 0; i < d_route.length; i++) {%>
-                        if (document.forms[2].route<%=i%>.checked) pickRoute += " "+document.forms[2].route<%=i%>.value;
-                <%}%>
-                        document.forms[2].searchRoute.value = pickRoute;
-                </oscar:oscarPropertiesCheck>--%>
             }
 
 
@@ -627,7 +621,7 @@ body {
 
 
 
-    <body  vlink="#0000FF" onload="checkFav();iterateStash();rxPageSizeSelect();<%-- initmb(); --%>load()" class="yui-skin-sam">
+    <body  vlink="#0000FF" onload="checkFav();iterateStash();rxPageSizeSelect();checkReRxLongTerm();load()" class="yui-skin-sam">
         <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="100%" id="AutoNumber1" height="100%">
             <%@ include file="TopLinks2.jsp" %><!-- Row One included here-->
             <tr>
@@ -920,6 +914,13 @@ body {
                         }
 %>
 <script type="text/javascript">
+    function checkReRxLongTerm(){
+        var url=window.location.href;
+        var match=url.indexOf('ltm=true');
+        if(match>-1){
+            RePrescribeLongTerm();
+        }
+    }
     function changeContainerHeight(ele){
         var ss=$('searchString').value;
         ss=trim(ss);
@@ -1213,10 +1214,7 @@ body {
          new Ajax.Request(url,{method: 'post',postBody:data,onSuccess:function(transport){
                  //oscarLog("here");
                  var json=transport.responseText.evalJSON();
-                  //oscarLog(json);
-                  //oscarLog("here2 -- " +$('alleg_'+json.id));
-                 // var str = "Allergy: "+ json.alleg.DESCRIPTION + " Reaction: "+json.alleg.reaction;
-                 if(json.DESCRIPTION!=null&&json.reaction!=null){
+                 if(json!=null&&json.DESCRIPTION!=null&&json.reaction!=null){
                       var str = "Allergy: "+ json.DESCRIPTION + " Reaction: "+json.reaction;
                       $('alleg_'+json.id).innerHTML = str;
                       //oscarLog("-- "+ $('alleg_'+json.id).innerHTML);
@@ -1229,11 +1227,10 @@ body {
          new Ajax.Request(url,{method: 'post',postBody:data,onSuccess:function(transport){
                  //oscarLog("here");
                  var json=transport.responseText.evalJSON();
-
-                  //oscarLog(new Date(json.vec[0].time));
-                  //oscarLog("here inactive check 2 -- " +$('inactive_'+json.id));
+                if(json!=null){
                   var str = "Inactive Drug Since: "+new Date(json.vec[0].time).toDateString();
                   $('inactive_'+json.id).innerHTML = str;
+                }
                   //oscarLog("-- "+ $('inactive_'+json.id).innerHTML);
             }});
    }
@@ -1325,14 +1322,11 @@ body {
     function RePrescribeLongTerm(){
         //var longTermDrugs=$(longTermDrugList).value;
        // var data="drugIdList="+longTermDrugs;
-       var demoNo='<%=patient.getDemographicNo()%>';
-              oscarLog("demoNo="+demoNo);
+       var demoNo='<%=patient.getDemographicNo()%>';              
         var data="demoNo="+demoNo+"&showall=<%=showall%>";
-        var url= "<c:out value="${ctx}"/>" + "/oscarRx/rePrescribe2.do?method=repcbAllLongTerm";
-
-        new Ajax.Updater('rxText',url, {method:'get',parameters:data,asynchronous:false,evalScripts:true,
-            insertion: Insertion.Bottom,onSuccess:function(transport){
-                            updateCurrentInteractions();
+        var url= "<c:out value="${ctx}"/>" + "/oscarRx/rePrescribe2.do?method=repcbAllLongTerm";        
+        new Ajax.Updater('rxText',url, {method:'get',parameters:data,asynchronous:true,insertion: Insertion.Bottom,onSuccess:function(transport){
+                            updateCurrentInteractions();                            
             }});
         return false;
     }
@@ -1945,11 +1939,6 @@ function updateQty(element){
             }});
         return false;
     }
-<%if (request.getParameter("ltm") != null && request.getParameter("ltm").equals("true")){%>
-
-RePrescribeLongTerm();
-<%}%>
-
 
 function checkEnterSendRx(){
         popupRxSearchWindow();

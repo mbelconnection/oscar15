@@ -1251,6 +1251,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
         boolean newNote;
         Date now = new Date();
         if( noteId.substring(0,1).equals("0") ) {
+            log.debug("Starting new note");
             note = new CaseManagementNote();
             note.setDemographic_no(demo);          
             history = "";
@@ -1376,8 +1377,12 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
         boolean docAnno=false;
 
         this.caseManagementMgr.saveNoteSimple(note);
+        log.debug("Saved note " + note.getId());
         this.caseManagementMgr.getEditors(note);
-        addNewNoteLink(prevNoteId);
+
+        if( prevNoteId != null ) {
+            addNewNoteLink(prevNoteId);
+        }
 
         try {
             this.caseManagementMgr.deleteTmpSave(providerNo, note.getDemographic_no(), note.getProgram_no());

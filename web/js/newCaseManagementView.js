@@ -1863,8 +1863,7 @@ function ajaxSaveNote(div,noteId,noteTxt) {
             return false;
         }
     }
-
-
+   
     document.forms["caseManagementEntryForm"].method.value = 'ajaxsave';
 
     var idx = 0;

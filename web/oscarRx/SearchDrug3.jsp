@@ -915,7 +915,7 @@ body {
 %>
 <script type="text/javascript">
 function changeLt(drugId){
-    if (confirm('Change Drug to Long Term Med?')==true) {
+    if (confirm('<bean:message key="oscarRx.Prescription.changeDrugLongTermConfirm" />')==true) {
            var data="ltDrugId="+drugId;
            var url="<c:out value='${ctx}'/>"+ "/oscarRx/WriteScript.do?parameterValue=changeToLongTerm";
            new Ajax.Request(url,{method: 'post',parameters:data,onSuccess:function(transport){

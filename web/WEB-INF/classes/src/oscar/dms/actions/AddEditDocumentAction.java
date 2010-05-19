@@ -27,10 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Locale;
-import java.util.ResourceBundle;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -48,6 +45,7 @@ import org.oscarehr.util.SessionConstants;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import oscar.MyDateFormat;
 import oscar.dms.EDoc;
 import oscar.dms.EDocUtil;
 import oscar.dms.data.AddEditDocumentForm;
@@ -205,16 +203,16 @@ public class AddEditDocumentAction extends DispatchAction {
             String module=fm.getFunction().trim();
             String moduleId=fm.getFunctionId().trim();
             if(module.equals("demographic")){//doc is uploaded under a patient,moduleId become demo no.               
-                    System.out.println("module is demographic");
+                    //System.out.println("module is demographic");
             Date now=EDocUtil.getDmsDateTimeAsDate();
             //System.out.println("here11");
             String docDesc=EDocUtil.getLastDocumentDesc();
                        
             CaseManagementNote cmn=new CaseManagementNote();
             cmn.setUpdate_date(now);
-            //java.sql.Date od1 = MyDateFormat.getSysDate(newDoc.getObservationDate());
-            cmn.setObservation_date(now);
-                    cmn.setDemographic_no(moduleId);
+            java.sql.Date od1 = MyDateFormat.getSysDate(newDoc.getObservationDate());
+            cmn.setObservation_date(od1);
+            cmn.setDemographic_no(moduleId);
             HttpSession se = request.getSession();
             String user_no = (String) se.getAttribute("user");
             String prog_no = new EctProgram(se).getProgram(user_no);

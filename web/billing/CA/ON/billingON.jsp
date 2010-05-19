@@ -75,7 +75,14 @@
 			    ctlBillForm = curBillForm;
 			} else {
 			    // check user preference to show a bill form
-			    sql = "select default_servicetype from preference where provider_no='" + apptProvider_no + "'";
+			    sql = "select default_servicetype from preference where provider_no='";
+                            if( apptProvider_no.equalsIgnoreCase("none") ) {
+                                sql += user_no + "'";
+                            }
+                            else {
+                                sql += apptProvider_no + "'";
+                            }
+
 			    rs = dbObj.searchDBRecord(sql);
 			    if (rs.next() && rs.getString("default_servicetype")!=null) {
 				ctlBillForm = rs.getString("default_servicetype");
@@ -293,7 +300,7 @@
 				}
 			}
 			sql = "select c.service_group_name, c.service_order,b.service_code, b.description, b.value, b.percentage from billingservice b, ctl_billingservice c where c.service_code=b.service_code and c.status='A' and c.servicetype ='"
-					+ ctlBillForm + "' and c.service_group ='" + "Group2" + "' and b.billingservice_date in (select max(b2.billingservice_date) from billingservice b2 where b2.billingservice_date <= '" + billReferenceDate + "' and b2.service_code = b.service_code) order by c.service_order";
+					+ ctlBillForm + "' and c.service_group ='" + "Group2" + "' and b.billingservice_date in (select max(b2.billingservice_date) from billingservice b2 where b2.billingservice_date <= '" + billReferenceDate + "' and b2.service_code = b.service_code) order by c.service_code";
                         rs = dbObj.searchDBRecord(sql);
                         
 			while (rs.next()) {
@@ -1021,10 +1028,15 @@ function changeSite(sel) {
 %>				    
 				    
 					<select name="xml_provider">
-<%	    if (vecProvider.size() == 1) {
-		propT = (Properties) vecProvider.get(0); %>
+<%
+            String[] tmp;
+            if (vecProvider.size() == 1) {
+		propT = (Properties) vecProvider.get(0);
+                tmp = propT.getProperty("proOHIP","").split("\\|");
+
+                %>
 					    <option value="<%=propT.getProperty("proOHIP")%>"
-						    <%=providerview.startsWith(propT.getProperty("proOHIP"))?"selected":""%>>
+						    <%=providerview.equals(tmp[0].trim())?"selected":""%>>
 						<b><%=propT.getProperty("last_name")%>,
 						    <%=propT.getProperty("first_name")%></b>
 					    </option>
@@ -1033,9 +1045,11 @@ function changeSite(sel) {
 						<b>Select Provider</b>
 					    </option>
 <%	        for (int i = 0; i < vecProvider.size(); i++) {
-		    propT = (Properties) vecProvider.get(i); %>
+		    propT = (Properties) vecProvider.get(i);
+
+                    %>
 					    <option value="<%=propT.getProperty("proOHIP")%>"
-						    <%=providerview.startsWith(propT.getProperty("proOHIP","").substring(0,propT.getProperty("proOHIP","").indexOf("|")))?"selected":""%>>
+						    <%=providerview.equals(propT.getProperty("proOHIP","").substring(0,propT.getProperty("proOHIP","").indexOf("|")))?"selected":""%>>
 						<b><%=propT.getProperty("last_name")%>,
 						   <%=propT.getProperty("first_name")%></b>
 					    </option>

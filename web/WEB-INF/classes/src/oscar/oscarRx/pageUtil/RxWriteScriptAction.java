@@ -507,6 +507,7 @@ public final class RxWriteScriptAction extends DispatchAction {
                     //p("unique");
                     listRxDrugs.add(customRx);
                 }
+                //RxUtil.printStashContent(bean);
                 request.setAttribute("listRxDrugs", listRxDrugs);
                 //p("=============END normalDrugSetCustom RxWriteScriptAction.java===============");
                 return (mapping.findForward("newRx"));
@@ -552,12 +553,13 @@ public final class RxWriteScriptAction extends DispatchAction {
             RxDrugData.DrugMonograph dmono = drugData.getDrug2(drugId);
 
             String brandName = text;
+            //System.out.println("brand name from client="+brandName);
             //String genericName = request.getParameter("drugName");
 
             //      p("BRAND = " + brandName);
             rx.setGenericName(dmono.name); //TODO: how was this done before?
             rx.setBrandName(brandName);
-
+            //System.out.println("first set brand name="+rx.getBrandName());
             rx.setDrugForm(dmono.drugForm);
 
             //TO DO: cache the most used route from the drugs table.
@@ -597,14 +599,16 @@ public final class RxWriteScriptAction extends DispatchAction {
             String atcCode = dmono.atc;
             rx.setAtcCode(atcCode);
             RxUtil.setSpecialQuantityRepeat(rx);
-            System.out.println("after setSpecialQuantityRepeat ,quantity="+rx.getQuantity()+" unitName="+rx.getUnitName());
+            //System.out.println("after setSpecialQuantityRepeat ,quantity="+rx.getQuantity()+" unitName="+rx.getUnitName());
             String calculatedDur=RxUtil.findDuration(rx);
-            System.out.println("after findDuration ,quantity="+rx.getQuantity()+" unitName="+rx.getUnitName());
+            //System.out.println("after findDuration ,quantity="+rx.getQuantity()+" unitName="+rx.getUnitName());
             if(calculatedDur!=null) rx.setDuration(calculatedDur);
-            System.out.println("duration=" + rx.getDuration());
+            //System.out.println("duration=" + rx.getDuration());
             //    p("set atc code to ", rx.getAtcCode());
             List<RxPrescriptionData.Prescription> listRxDrugs = new ArrayList();
+            //RxUtil.printStashContent(bean);
             if (RxUtil.isRxUniqueInStash(bean, rx)) {
+                //System.out.println("brand name added to listRxDrugs="+rx.getBrandName());
                 listRxDrugs.add(rx);
             }
             bean.addAttributeName(rx.getAtcCode() + "-" + String.valueOf(bean.getStashIndex()));
@@ -614,7 +618,7 @@ public final class RxWriteScriptAction extends DispatchAction {
             //bean.setStashIndex(bean.addStashItem(rx));
             //     p("brandName of rx", rx.getBrandName());
             //    p("stash index it's set to", "" + bean.getStashIndex());
-
+            //System.out.println("generic name in createnewrx="+rx.getGenericName());
             String today = null;
             Calendar calendar = Calendar.getInstance();
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -1097,7 +1101,34 @@ public final class RxWriteScriptAction extends DispatchAction {
         saveDrug(request);
         return null;
     }
-
+    public ActionForward changeToLongTerm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
+        throws IOException, ServletException, Exception{
+        String strId=request.getParameter("ltDrugId");
+        if(strId!=null){
+                int drugId=Integer.parseInt(strId);
+                RxSessionBean bean=(RxSessionBean) request.getSession().getAttribute("RxSessionBean");
+                if(bean==null){
+                    response.sendRedirect("error.html");
+                    return null;
+                }
+                RxPrescriptionData rxData=new RxPrescriptionData();
+                RxPrescriptionData.Prescription oldRx=rxData.getPrescription(drugId);
+                oldRx.setLongTerm(true);
+                boolean b=oldRx.Save();
+                HashMap hm = new HashMap();
+                if(b) hm.put("success", true);
+                else hm.put("success",false);
+                JSONObject jsonObject = JSONObject.fromObject(hm);
+                response.getOutputStream().write(jsonObject.toString().getBytes());
+                return null;
+        }else{
+                HashMap hm = new HashMap();
+                hm.put("success", false);
+                JSONObject jsonObject = JSONObject.fromObject(hm);
+                response.getOutputStream().write(jsonObject.toString().getBytes());
+                return null;
+        }
+    }
     public void saveDrug(final HttpServletRequest request)
             throws IOException, ServletException, Exception {
         System.out.println("==========***### start save drug RxWriteScriptAction.java");

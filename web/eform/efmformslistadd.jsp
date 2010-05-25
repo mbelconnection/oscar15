@@ -7,6 +7,8 @@
   String deepColor = "#CCCCFF" , weakColor = "#EEEEFF" ;
   String country = request.getLocale().getCountry();
   String parentAjaxId = request.getParameter("parentAjaxId");
+  String curProvider = request.getParameter("curProvider");
+  String appointment = request.getParameter("appointment");
 %>  
 
 <%@ page import = "java.util.*, java.sql.*, oscar.eform.*"%>
@@ -38,10 +40,10 @@
  * Ontario, Canada 
  */
 -->
-
 <%
+String user = (String) session.getAttribute("user");
 if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
-    String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
+    String roleName$ = (String)session.getAttribute("userrole") + "," + user;
     
 String orderByRequest = request.getParameter("orderby");
 String orderBy = "";
@@ -51,7 +53,7 @@ else if (orderByRequest.equals("form_date")) orderBy = EFormUtil.DATE;
 
 String groupView = request.getParameter("group_view");
 if (groupView == null) {
-    groupView = "";
+        groupView = "";
 }
 %>
 
@@ -114,7 +116,7 @@ function updateAjax() {
         </tr>
         <tr>
             <td class="MainTableLeftColumn" valign="top">
-               <a href="efmformslistadd.jsp?demographic_no=<%=demographic_no%>&parentAjaxId=<%=parentAjaxId%>" class="current"> <bean:message key="eform.showmyform.btnAddEForm"/></a><br/>
+               <a href="efmformslistadd.jsp?demographic_no=<%=demographic_no%>&curProvider=<%=curProvider%>&appointment=<%=appointment%>&parentAjaxId=<%=parentAjaxId%>" class="current"> <bean:message key="eform.showmyform.btnAddEForm"/></a><br/>
                 <%  if (country.equals("BR")) { %>
                     <a href="../demographic/demographiccontrol.jsp?demographic_no=<%=demographic_no%>&displaymode=edit&dboperation=search_detail_ptbr"><bean:message key="global.btnBack" /> &nbsp;</a>
                 <%}else{%>
@@ -137,10 +139,10 @@ function updateAjax() {
 
 <table class="elements" style="margin-left: 0px; margin-right: 0px;" width="100%">
       <tr bgcolor=<%=deepColor%>>
-      <th><a href="efmformslistadd.jsp?demographic_no=<%=demographic_no%>&group_view=<%=groupView%>&parentAjaxId=<%=parentAjaxId%>"><bean:message key="eform.showmyform.btnFormName"/></a></th>
-      <th><a href="efmformslistadd.jsp?demographic_no=<%=demographic_no%>&group_view=<%=groupView%>&orderby=form_subject&parentAjaxId=<%=parentAjaxId%>"><bean:message key="eform.showmyform.btnSubject"/></a></th>
+      <th><a href="efmformslistadd.jsp?demographic_no=<%=demographic_no%>&curProvider=<%=curProvider%>&appointment=<%=appointment%>&group_view=<%=groupView%>&parentAjaxId=<%=parentAjaxId%>"><bean:message key="eform.showmyform.btnFormName"/></a></th>
+      <th><a href="efmformslistadd.jsp?demographic_no=<%=demographic_no%>&curProvider=<%=curProvider%>&appointment=<%=appointment%>&group_view=<%=groupView%>&orderby=form_subject&parentAjaxId=<%=parentAjaxId%>"><bean:message key="eform.showmyform.btnSubject"/></a></th>
       <!--<th><a href="myform.jsp?demographic_no=<%=demographic_no%>&group_view=<%=groupView%>&orderby=file_name"><bean:message key="eform.myform.btnFile"/></a></th>-->
-      <th><a href="efmformslistadd.jsp?demographic_no=<%=demographic_no%>&group_view=<%=groupView%>&orderby=form_date&parentAjaxId=<%=parentAjaxId%>"><bean:message key="eform.showmyform.formDate"/></a></th>
+      <th><a href="efmformslistadd.jsp?demographic_no=<%=demographic_no%>&curProvider=<%=curProvider%>&appointment=<%=appointment%>&group_view=<%=groupView%>&orderby=form_date&parentAjaxId=<%=parentAjaxId%>"><bean:message key="eform.showmyform.formDate"/></a></th>
       <!--<th><a href="myform.jsp?demographic_no=<%=demographic_no%>&group_view=<%=groupView%>"><bean:message key="eform.showmyform.formTime"/></a></th> -->
       </tr>      
       
@@ -157,7 +159,7 @@ function updateAjax() {
 %>
       <tr bgcolor="<%= ((i%2) == 1)?"#F2F2F2":"white"%>">
 	    <td width="30%" style="padding-left: 7px">
-	    <a HREF="#" ONCLICK ="javascript: popupPage('efmformadd_data.jsp?fid=<%=curForm.get("fid")%>&demographic_no=<%=demographic_no%>', '<%="FormA" + i%>'); return true;"  TITLE='Add This eForm' OnMouseOver="window.status='Add This eForm' ; return true">
+	    <a HREF="#" ONCLICK ="javascript: popupPage('efmformadd_data.jsp?fid=<%=curForm.get("fid")%>&demographic_no=<%=demographic_no%>&curProvider=<%=curProvider%>&appointment=<%=appointment%>','<%="FormA"+i%>'); return true;"  TITLE='Add This eForm' OnMouseOver="window.status='Add This eForm' ; return true">
             <%=curForm.get("formName")%>
         </a></td>
                 <td style="padding-left: 7px"><%=curForm.get("formSubject")%></td>

@@ -166,12 +166,22 @@ if(bMultisites) {
     System.out.println(provider.getClinicName().replaceAll("\\(\\d{6}\\)",""));
 }
 String comment = (String) request.getSession().getAttribute("comment");
-
+RxPharmacyData pharmacyData = new RxPharmacyData();
+RxPharmacyData.Pharmacy pharmacy;
+pharmacy = pharmacyData.getPharmacyFromDemographic(Integer.toString(bean.getDemographicNo()));
+String prefPharmacy = "";
+String prefPharmacyId="";
+if (pharmacy != null) {
+    prefPharmacy = pharmacy.name;
+    prefPharmacyId=pharmacy.ID;
+    prefPharmacy=prefPharmacy.trim();
+    prefPharmacyId=prefPharmacyId.trim();
+}
 %>
 <link rel="stylesheet" type="text/css" href="styles.css" />
 <link rel="stylesheet" type="text/css" media="all" href="../share/css/extractedFromPages.css"  />
 <script type="text/javascript" src="../share/javascript/prototype.js"></script>
-<script type="text/javascript" src="../share/javascript/Oscar.js"/>"></script>
+<script type="text/javascript" src="../share/javascript/Oscar.js"></script>
 
 <script type="text/javascript">
     function resetStash(){
@@ -403,23 +413,25 @@ function toggleView(form) {
 
 				<td valign=top><html:form action="/oscarRx/clearPending">
 					<html:hidden property="action" value="" />
-				</html:form> <script language=javascript>
+				</html:form> 
+                                    <script type="text/javascript">
                                 function clearPending(action){
                                     document.forms.RxClearPendingForm.action.value = action;
                                     document.forms.RxClearPendingForm.submit();
                                 }
-                            </script> <script language=javascript>
+                           
                                 function ShowDrugInfo(drug){
                                     window.open("drugInfo.do?GN=" + escape(drug), "_blank",
                                         "location=no, menubar=no, toolbar=no, scrollbars=yes, status=yes, resizable=yes");
                                 }                              
 
-                                 function printPharmacyInfo(){
+                             /*    function printPharmacyInfo(){
                                     $("listPharmacy").show();
                                 }
                                 function hidePharmacyInfo(){
                                     $("listPharmacy").hide();
                                 }
+                                */
                                 function printPharmacy(id,name){
                                     //ajax call to get all info about a pharmacy
                                     //use json to write to html
@@ -445,7 +457,7 @@ function toggleView(form) {
                                     frames['preview'].document.getElementById('pharmInfo').innerHTML=text;
                                     //frames['preview'].document.getElementById('removePharm').show();
                                     $("selectedPharmacy").innerHTML='<bean:message key="oscarRx.printPharmacyInfo.paperSizeWarning"/>';
-                                    $("listPharmacy").hide();
+                                    //$("listPharmacy").hide();
                                 }
                                 function reducePreview(){
                                     parent.document.getElementById('lightwindow_container').style.width="680px";
@@ -529,13 +541,18 @@ function toggleView(form) {
 							class="ControlPushButton" style="width: 120px"
 							onClick="javascript:printPaste2Parent();" /></span></td>
 					</tr>
-                                        <tr>
-                                            <td><span><input id="selectPharmacyButton" type=button value="<bean:message key='oscarRx.printPharmacyInfo.selectPharmacyButton'/>" class="ControlPushButton" style="width:120px;"
-                                                             onclick="javascript:printPharmacyInfo();"/>
+                                       <%if(prefPharmacy.length()>0 && prefPharmacyId.length()>0){   %>
+                                           <tr><td><span><input id="selectPharmacyButton" type=button value="<bean:message key='oscarRx.printPharmacyInfo.addPharmacyButton'/>" class="ControlPushButton" style="width:120px;"
+                                                             onclick="printPharmacy('<%=prefPharmacyId%>','<%=prefPharmacy%>');"/>
                                                 </span>
 
                                             </td>
-                                        </tr>
+                                            <%--<td><span><input id="selectPharmacyButton" type=button value="<bean:message key='oscarRx.printPharmacyInfo.selectPharmacyButton'/>" class="ControlPushButton" style="width:120px;"
+                                                             onclick="javascript:printPharmacyInfo();"/>
+                                                </span>
+
+                                            </td>--%>
+                                        </tr><%}%>
                                         <tr>
                                             <td>
                                                 <a id="selectedPharmacy" style="color:red"></a>
@@ -595,8 +612,8 @@ function toggleView(form) {
 		<td width="100%" height="0%" colspan="2">&nbsp;</td>
 	</tr>
 </table>
-
-<div id="listPharmacy" style="position: absolute; left: 1px; top: 1px; width: 300px; height: 311px; display:none; border:2px outset blue; z-index: 1; background-color: white;">
+<%--
+<!div id="listPharmacy" style="position: absolute; left: 1px; top: 1px; width: 300px; height: 311px; display:none; border:2px outset blue; z-index: 1; background-color: white;">
     <bean:message key="oscarRx.printPharmacyInfo.selectPharmacyInfo"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="hidePharmacyInfo();" style="text-align:right;text-decoration:none" href="javascript:void(0);">X</a>
     <br>
   <%
@@ -610,7 +627,7 @@ function toggleView(form) {
     <%}%>
     
 </div>
-
+--%>
 </div>
 </body>
 </html:html>

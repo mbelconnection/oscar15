@@ -48,7 +48,7 @@
 
   String billingCentre = ((String ) props.getProperty("billcenter","")).trim().toUpperCase();
   String defaultCity = prov.equals("ON")&&billingCentre.equals("N") ? "Toronto":"";
-  
+
   WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
   CountryCodeDAO ccDAO =  (CountryCodeDAO) ctx.getBean("countryCodeDAO");
 
@@ -74,7 +74,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster Unviersity
+ * McMaster University
  * Hamilton
  * Ontario, Canada
  */
@@ -129,10 +129,10 @@ function upCaseCtrl(ctrl) {
 
 function checkTypeIn() {
   var dob = document.titlesearch.keyword; typeInOK = false;
-  
-  if (dob.value.indexOf('%b610054') == 0 && dob.value.length > 18){     
+
+  if (dob.value.indexOf('%b610054') == 0 && dob.value.length > 18){
      document.titlesearch.keyword.value = dob.value.substring(8,18);
-     document.titlesearch.search_mode[4].checked = true;                  
+     document.titlesearch.search_mode[4].checked = true;
   }
 
   if(document.titlesearch.search_mode[2].checked) {
@@ -243,7 +243,7 @@ function checkDob() {
 		    typeInOK = true;
 		    //alert("failed in here 1");
 		}
-		if ( yyyy == "0000"){ 
+		if ( yyyy == "0000"){
         typeInOK = false;
       }
 	}
@@ -251,12 +251,12 @@ function checkDob() {
 	if (!typeInOK){
       alert ("You must type in the right DOB.");
    }
-   
+
    if (!isValidDate(dd,mm,yyyy)){
       alert ("DOB Date is an incorrect date");
       typeInOK = false;
    }
-   
+
 	return typeInOK;
 }
 
@@ -331,12 +331,9 @@ function checkFormTypeIn() {
 	return true;
 }
 
-function checkTitleSex() {
-    var title = document.adddemographic.title.selectedIndex;
-    if (title>0) {
-        if (title<=3 || title==12) document.adddemographic.sex.selectedIndex=0;
-        if (title==4 || title==5) document.adddemographic.sex.selectedIndex=1;
-    }
+function checkTitleSex(ttl) {
+    if (ttl=="MS" || ttl=="MISS" || ttl=="MRS" || ttl=="SR") document.adddemographic.sex.selectedIndex=1;
+	else if (ttl=="MR" || ttl=="MSSR") document.adddemographic.sex.selectedIndex=0;
 }
 
 </script>
@@ -383,7 +380,7 @@ function checkTitleSex() {
 	</td>
 	<td align="right"><b>Title<font color="red">:</font></b></td>
 	<td align="left">
-	    <select name="title" onchange="checkTitleSex();">
+	    <select name="title" onchange="checkTitleSex(value);">
                 <option value="" selected><bean:message key="demographic.demographicaddrecordhtm.msgNotSet"/></option>
                 <option value="MS"><bean:message key="demographic.demographicaddrecordhtm.msgMs"/></option>
                 <option value="MISS"><bean:message key="demographic.demographicaddrecordhtm.msgMiss"/></option>
@@ -484,7 +481,7 @@ function checkTitleSex() {
 			<tr valign="top">
 				<td align="right"><b> <% if(oscarProps.getProperty("demographicLabelProvince") == null) { %>
 				<bean:message key="demographic.demographicaddrecordhtm.formprovince" />
-				<% } else { 
+				<% } else {
           out.print(oscarProps.getProperty("demographicLabelProvince"));
       	 } %> : </b></td>
 				<td align="left">
@@ -577,7 +574,7 @@ function checkTitleSex() {
 				</td>
 				<td align="right"><b> <% if(oscarProps.getProperty("demographicLabelPostal") == null) { %>
 				<bean:message key="demographic.demographicaddrecordhtm.formPostal" />
-				<% } else { 
+				<% } else {
           out.print(oscarProps.getProperty("demographicLabelPostal"));
       	 } %> : </b></td>
 				<td align="left"><input type="text" name="postal"
@@ -695,12 +692,12 @@ function checkTitleSex() {
 				<td align="right"><b><bean:message
 					key="demographic.demographicaddrecordhtm.formSex" /><font
 					color="red">:</font></b></td>
-				<td align="left"><select name="sex">
-					<option value="F" selected><bean:message
-						key="demographic.demographicaddrecordhtm.formF" /></option>
-					<option value="M"><bean:message
-						key="demographic.demographicaddrecordhtm.formM" /></option>
-				</select></td>
+                                <td align="left"><select name="sex">
+                                    <option value="M"  <%= sex.equals("M") ? " selected": "" %>><bean:message
+                                        key="demographic.demographicaddrecordhtm.formM" /></option>
+                                    <option value="F"  <%= sex.equals("F") ? " selected": "" %>><bean:message
+                                        key="demographic.demographicaddrecordhtm.formF" /></option>
+                                </select></td>
 			</tr>
 			<tr valign="top">
 				<td align="right"><b><bean:message
@@ -807,7 +804,7 @@ function checkTitleSex() {
         <% }%>
       </td>
       <td align="right">
-         <b>Country of Origin:</b>          
+         <b>Country of Origin:</b>
       </td>
       <td>
           <select name="countryOfOrigin">
@@ -823,12 +820,12 @@ function checkTitleSex() {
 	<td align="left"  >
 	    <input type="text" name="sin">
 	</td>
-	
-	
-	<td  align="right"><b>  <bean:message key="demographic.demographicaddrecordhtm.cytolNum"/>:</b> </td>
+
+
+	<td  align="right"><b> <bean:message key="demographic.demographicaddrecordhtm.cytolNum"/>:</b> </td>
 	<td align="left"  >
 	    <input type="text" name="cytolNum">
-	    
+
 	</td>
     </tr>
     <tr valign="top">
@@ -1001,8 +998,8 @@ document.forms[1].r_doctor_ohip.value = refNo;
 			</tr>
 
 			<%if (oscarProps.getProperty("EXTRA_DEMO_FIELDS") !=null){
-      String fieldJSP = oscarProps.getProperty("EXTRA_DEMO_FIELDS"); 
-      fieldJSP+= ".jsp";  
+      String fieldJSP = oscarProps.getProperty("EXTRA_DEMO_FIELDS");
+      fieldJSP+= ".jsp";
     %>
 			<jsp:include page="<%=fieldJSP%>" />
 
@@ -1029,9 +1026,9 @@ document.forms[1].r_doctor_ohip.value = refNo;
                          </tr>
 <% }
 
-        String wLReadonly = ""; 
+        String wLReadonly = "";
         WaitingList wL = WaitingList.getInstance();
-        if(!wL.getFound()){ 
+        if(!wL.getFound()){
             wLReadonly = "readonly";
             }
     %>
@@ -1048,13 +1045,13 @@ document.forms[1].r_doctor_ohip.value = refNo;
 							<option value="0">--Please Create Waiting List Name
 							first--</option>
 							<%} %>
-							<% 
-                                       ResultSet rsWL = addDemoBean.queryResults("search_waiting_list"); 
-                                       while (rsWL.next()) { 
+							<%
+                                       ResultSet rsWL = addDemoBean.queryResults("search_waiting_list");
+                                       while (rsWL.next()) {
                                     %>
 							<option value="<%=rsWL.getString("ID")%>"><%=rsWL.getString("name")%></option>
-							<% 
-                                       } 
+							<%
+                                       }
                                      %>
 						</select></td>
 						<td align="right" nowrap><b>Waiting List Note: </b></td>
@@ -1092,7 +1089,7 @@ document.forms[1].r_doctor_ohip.value = refNo;
 					name="end_date_month" size="2" maxlength="2"> <input
 					type="text" name="end_date_date" size="2" maxlength="2"></td>
 			</tr>
-			<% if(oscarVariables.getProperty("demographicExt") != null) {    
+			<% if(oscarVariables.getProperty("demographicExt") != null) {
     boolean bExtForm = oscarVariables.getProperty("demographicExtForm") != null ? true : false;
     String [] propDemoExtForm = bExtForm ? (oscarVariables.getProperty("demographicExtForm","").split("\\|") ) : null;
 	String [] propDemoExt = oscarVariables.getProperty("demographicExt","").split("\\|");
@@ -1101,7 +1098,7 @@ document.forms[1].r_doctor_ohip.value = refNo;
 			<tr valign="top" bgcolor="#CCCCFF">
 				<td align="right"><b><%=propDemoExt[k] %></b><b>: </b></td>
 				<td align="left">
-				<% if(bExtForm) { 
+				<% if(bExtForm) {
 			out.println(propDemoExtForm[k] );
 		 } else { %> <input type="text"
 					name="<%=propDemoExt[k].replace(' ', '_') %>" value=""> <% }  %>
@@ -1109,13 +1106,13 @@ document.forms[1].r_doctor_ohip.value = refNo;
 				<td align="right"><%=(k+1)<propDemoExt.length?("<b>"+propDemoExt[k+1]+": </b>") : "&nbsp;" %>
 				</td>
 				<td align="left">
-				<% if(bExtForm && (k+1)<propDemoExt.length) { 
+				<% if(bExtForm && (k+1)<propDemoExt.length) {
 			out.println(propDemoExtForm[k+1] );
 		 } else { %> <%=(k+1)<propDemoExt.length?"<input type=\"text\" name=\""+propDemoExt[k+1].replace(' ', '_')+"\"  value=''>" : "&nbsp;" %>
 				<% }  %>
 				</td>
 			</tr>
-			<% 	} 
+			<% 	}
 }
 if(oscarVariables.getProperty("demographicExtJScript") != null) { out.println(oscarVariables.getProperty("demographicExtJScript")); }
 %>
@@ -1166,8 +1163,8 @@ if(oscarVariables.getProperty("demographicExtJScript") != null) { out.println(os
 	key="demographic.demographicaddrecordhtm.formDateFormat" /> </font>
 <% addDemoBean.closePstmtConn(); %>
 
-<script type="text/javascript"> 
-Calendar.setup({ inputField : "waiting_list_referral_date", ifFormat : "%Y-%m-%d", showsTime :false, button : "referral_date_cal", singleClick : true, step : 1 }); 
+<script type="text/javascript">
+Calendar.setup({ inputField : "waiting_list_referral_date", ifFormat : "%Y-%m-%d", showsTime :false, button : "referral_date_cal", singleClick : true, step : 1 });
 </script>
 </body>
 </html:html>

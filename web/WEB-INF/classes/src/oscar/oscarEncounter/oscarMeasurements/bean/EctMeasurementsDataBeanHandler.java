@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the
 // * Department of Family Medicine
-// * McMaster Unviersity
+// * McMaster University
 // * Hamilton
 // * Ontario, Canada
 // *
@@ -273,8 +273,9 @@ public class EctMeasurementsDataBeanHandler {
         String sql ="SELECT mt.typeDisplayName, mt.typeDescription, m.dataField, m.measuringInstruction,"+
                 "m.comments, m.dateObserved, m.dateEntered , p.first_name AS provider_first, p.last_name AS provider_last " +
                 "FROM measurements m, provider p, measurementType mt " +
-                "WHERE m.demographicNo='" + demo + "' AND m.type = '" + type + "' AND m.providerNo= p.provider_no " +
-                "AND m.type = mt.type GROUP BY m.id ORDER BY m.dateObserved,m.dateEntered DESC LIMIT 1";
+                "WHERE m.demographicNo='" + demo + "' AND m.type = '" + type +
+                "' AND (m.providerNo = p.provider_no OR m.providerNo = '0') " +
+                "AND m.type = mt.type GROUP BY m.id ORDER BY m.dateObserved DESC,m.dateEntered DESC LIMIT 1";
         return getHashfromSQL(sql);
     }
     

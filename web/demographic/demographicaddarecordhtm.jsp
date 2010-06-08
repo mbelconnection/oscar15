@@ -8,11 +8,9 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 
-<%@ page
-	import="java.util.*, java.sql.*, oscar.*, oscar.oscarDemographic.data.ProvinceNames, oscar.oscarWaitingList.WaitingList"
+<%@ page import="java.util.*, java.sql.*, oscar.*, oscar.oscarDemographic.data.ProvinceNames, oscar.oscarWaitingList.WaitingList"
 	errorPage="errorpage.jsp"%>
-<%@ page
-	import="org.springframework.web.context.*,org.springframework.web.context.support.*,org.oscarehr.common.dao.*,org.oscarehr.common.model.*"%>
+<%@ page import="org.springframework.web.context.*,org.springframework.web.context.support.*,org.oscarehr.common.dao.*,org.oscarehr.common.model.*"%>
 <jsp:useBean id="providerBean" class="java.util.Properties"
 	scope="session" />
 <jsp:useBean id="addDemoBean" class="oscar.AppointmentMainBean"
@@ -693,9 +691,9 @@ function checkTitleSex(ttl) {
 					key="demographic.demographicaddrecordhtm.formSex" /><font
 					color="red">:</font></b></td>
                                 <td align="left"><select name="sex">
-                                    <option value="M"  <%= sex.equals("M") ? " selected": "" %>><bean:message
+                                        <option value="M"><bean:message
                                         key="demographic.demographicaddrecordhtm.formM" /></option>
-                                    <option value="F"  <%= sex.equals("F") ? " selected": "" %>><bean:message
+                                    <option value="F"><bean:message
                                         key="demographic.demographicaddrecordhtm.formF" /></option>
                                 </select></td>
 			</tr>

@@ -53,20 +53,20 @@ import org.oscarehr.phr.service.PHRService;
 public class PHRLoginAction extends DispatchAction {
      private static Log log = LogFactory.getLog(PHRLoginAction.class);
      PHRService phrService;
-    
+
     /**
      * Creates a new instance of PHRLoginAction
      */
     public PHRLoginAction() {
     }
-    
+
     public void setPhrService(PHRService phrService){
         this.phrService = phrService;
     }
-     
+
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
        HttpSession session = request.getSession();
-       
+
        String providerNo = (String) session.getAttribute("user");
        PHRAuthentication phrAuth = null;
        String forwardTo = (String) request.getParameter("forwardto");
@@ -84,7 +84,7 @@ public class PHRLoginAction extends DispatchAction {
            request.setAttribute("phrTechLoginErrorMsg", "No MyOSCAR information in the database");
            return ar;
        }
-       
+
        try {
            phrAuth = phrService.authenticate(providerNo, request.getParameter("phrPassword"));
        } catch (Exception e) {
@@ -105,7 +105,7 @@ public class PHRLoginAction extends DispatchAction {
             //log.warn("getname: " + e.getCause().getClass().getName());
             //log.warn("getname2: " + e.getClass().getName());
             //log.warn("service server wrong");
-           
+
            //server probably offline
            log.debug("exception");
            request.setAttribute("phrUserLoginErrorMsg", "Incorrect password");
@@ -117,7 +117,8 @@ public class PHRLoginAction extends DispatchAction {
        Calendar cal = Calendar.getInstance();
        cal.roll(Calendar.HOUR_OF_DAY, false);
        session.setAttribute(phrService.SESSION_PHR_EXCHANGE_TIME, cal.getTime());
+       ActionRedirect arr = new ActionRedirect(forwardTo);
        log.debug("Correct user/pass, auth success");
-       return ar;
-    } 
+       return arr;
+    }
 }

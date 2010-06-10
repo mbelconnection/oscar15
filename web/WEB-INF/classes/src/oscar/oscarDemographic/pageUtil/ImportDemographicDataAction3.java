@@ -1083,7 +1083,7 @@ import org.oscarehr.util.SpringUtils;
 
 			// Save to measurements, measurementsExt
 			for (LaboratoryResults labResults : labResultArr) {
-				Measurements meas = new Measurements(Long.valueOf(demographicNo), admProviderNo);
+				Measurements meas = new Measurements(Integer.valueOf(demographicNo), admProviderNo);
 				LaboratoryResults.Result result = labResults.getResult();
 				String unit = null;
 				if (result!=null) {
@@ -1098,7 +1098,7 @@ import org.oscarehr.util.SpringUtils;
 					meas.setDateEntered(new Date());
 				}
 				ImportExportMeasurements.saveMeasurements(meas);
-				Long measId = meas.getId();
+				Long measId = meas.getId().longValue();
 				saveMeasurementsExt(measId, "unit", unit);
 				String testCode = Util.filled(labResults.getLabTestCode()) ? labResults.getLabTestCode() : "";
 				String testName = Util.noNull(labResults.getTestName());

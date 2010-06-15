@@ -416,12 +416,12 @@ function showHideLayers() { //v3.0
         } else if(document.forms[0].serviceDate2.value.length>0 && document.forms[0].serviceDate2.value.length!=5 || !isServiceCode(document.forms[0].serviceDate2.value)){
         	alert("Wrong service code 3!");
             b = false;
-        //} else if(document.forms[0].serviceDate3.value.length>0 && document.forms[0].serviceDate3.value.length!=5 || !isServiceCode(document.forms[0].serviceDate3.value)){
-        //	alert("Wrong service code 4!");
-        //    b = false;
-        //} else if(document.forms[0].serviceDate4.value.length>0 && document.forms[0].serviceDate4.value.length!=5 || !isServiceCode(document.forms[0].serviceDate4.value)){
-        //	alert("Wrong service code 5!");
-        //    b = false;
+        } else if(document.forms[0].serviceDate3.value.length>0 && document.forms[0].serviceDate3.value.length!=5 || !isServiceCode(document.forms[0].serviceDate3.value)){
+        	alert("Wrong service code 4!");
+            b = false;
+        } else if(document.forms[0].serviceDate4.value.length>0 && document.forms[0].serviceDate4.value.length!=5 || !isServiceCode(document.forms[0].serviceDate4.value)){
+        	alert("Wrong service code 5!");
+            b = false;
         } else if(document.forms[0].dxCode.value.length!=3){
         	alert("Wrong dx code!");
             b = false;

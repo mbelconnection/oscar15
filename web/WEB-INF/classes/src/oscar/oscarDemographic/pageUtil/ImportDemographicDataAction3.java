@@ -382,11 +382,11 @@ import org.oscarehr.util.SpringUtils;
 			err_data.add("Error! No Primary Physician; patient assigned to \"doctor oscardoc\"");
 		}
 
-		Date bDate = UtilDateUtilities.StringToDate(birthDate,"yyyy-MM-dd");
+			Date bDate = UtilDateUtilities.StringToDate(birthDate,"yyyy-MM-dd");
 		String year_of_birth = UtilDateUtilities.DateToString(bDate,"yyyy");
 		String month_of_birth = UtilDateUtilities.DateToString(bDate,"MM");
 		String date_of_birth = UtilDateUtilities.DateToString(bDate,"dd");
-
+	
 		DemographicData dd = new DemographicData();
 		DemographicExt dExt = new DemographicExt();
 		demoRes = dd.addDemographic(title, lastName, firstName, address, city, province, postalCode, homePhone, workPhone,
@@ -1610,9 +1610,9 @@ import org.oscarehr.util.SpringUtils;
 	Set<CaseManagementIssue> getCMIssue(String code) {
 		CaseManagementIssue cmIssu = new CaseManagementIssue();
 		cmIssu.setDemographic_no(demographicNo);
-		cmIssu.setType("doctor");
 		Issue isu = caseManagementManager.getIssueInfoByCode(Util.noNull(code));
 		cmIssu.setIssue_id(isu.getId());
+		cmIssu.setType(isu.getType());
 		caseManagementManager.saveCaseIssue(cmIssu);
 
 		Set<CaseManagementIssue> sCmIssu = new HashSet<CaseManagementIssue>();
@@ -1626,8 +1626,8 @@ import org.oscarehr.util.SpringUtils;
 		if (isu!=null) {
 			CaseManagementIssue cmIssu = new CaseManagementIssue();
 			cmIssu.setDemographic_no(demographicNo);
-			cmIssu.setType("doctor");
 			cmIssu.setIssue_id(isu.getId());
+			cmIssu.setType(isu.getType());
 			caseManagementManager.saveCaseIssue(cmIssu);
 			sCmIssu.add(cmIssu);
 		}
@@ -1638,8 +1638,8 @@ import org.oscarehr.util.SpringUtils;
 			if (isu!=null) {
 				CaseManagementIssue cmIssu = new CaseManagementIssue();
 				cmIssu.setDemographic_no(demographicNo);
-				cmIssu.setType("doctor");
 				cmIssu.setIssue_id(isu.getId());
+				cmIssu.setType(isu.getType());
 				caseManagementManager.saveCaseIssue(cmIssu);
 				sCmIssu.add(cmIssu);
 			}

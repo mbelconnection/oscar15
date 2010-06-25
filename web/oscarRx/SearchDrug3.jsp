@@ -1459,59 +1459,6 @@ function popForm2(){
           </oscar:oscarPropertiesCheck>
           callReplacementWebService("ListDrugs.jsp",'drugProfile');
 
-/*
-YAHOO.example.BasicRemote = function() {
-    //var oDS = new YAHOO.util.XHRDataSource("http://localhost:8080/drugref2/test4.jsp");
-    var url = "<c:out value="${ctx}"/>" + "/oscarRx/searchDrug.do?method=jsonSearch";
-    var oDS = new YAHOO.util.XHRDataSource(url,{connMethodPost:true,connXhrMode:'ingoreStaleResponse'});
-    oDS.responseType = YAHOO.util.XHRDataSource.TYPE_JSON;// Set the responseType
-    // Define the schema of the delimited results
-    oDS.responseSchema = {
-        resultsList : "results",
-        fields : ["name", "id"]
-    };
-    // Enable caching
-    oDS.maxCacheEntries = 500;
-
-    oDS.connXhrMode ="cancelStaleRequests";
-                        /*  Not sure which one of these to use
-                        cancelStaleRequests
-                            If a request is already in progress, cancel it before sending the next request.
-                        ignoreStaleResponses
-                            Send all requests, but handle only the response for the most recently sent request.
-                        */
-    // Instantiate the AutoComplete
-  /*  var oAC = new YAHOO.widget.AutoComplete("searchString", "autocomplete_choices", oDS);
-    oAC.queryMatchSubset = true;
-    oAC.minQueryLength = 3;
-    oAC.maxResultsDisplayed = 25;
-    oAC.formatResult = resultFormatter;
-    //oAC.typeAhead = true;
-    //oAC.queryMatchContains = true;
-    oAC.itemSelectEvent.subscribe(function(type, args) {
- 		oscarLog(type+" :: "+args);
-                oscarLog(args[2]);
-                arr = args[2];
-                oscarLog('In yahoo----'+arr[1]);oscarLog('In yahoo----'+arr[0]);
-                var url = "<c:out value="${ctx}"/>" + "/oscarRx/WriteScript.do?parameterValue=createNewRx"; //"prescribe.jsp";
-                var ran_number=Math.round(Math.random()*1000000);
-                var name=encodeURIComponent(arr[0]);
-                var params = "demographicNo=<%=bean.getDemographicNo()%>&drugId="+arr[1]+"&text="+name+"&randomId="+ran_number;  //hack to get around ie caching the page
-               new Ajax.Updater('rxText',url, {method:'get',parameters:params,asynchronous:false,evalScripts:true,
-                    insertion: Insertion.Bottom,onSuccess:function(transport){
-                        updateCurrentInteractions();
-                    }});
-
-                $('searchString').value = "";
-    });
-
-
-    return {
-        oDS: oDS,
-        oAC: oAC
-    };
-}();
-*/
 YAHOO.example.FnMultipleFields = function(){
     oscarLog("FnMultipleFields ");
     var url = "<c:out value="${ctx}"/>" + "/oscarRx/searchDrug.do?method=jsonSearch";
@@ -1522,8 +1469,8 @@ YAHOO.example.FnMultipleFields = function(){
         resultsList : "results",
         fields : ["name", "id","isInactive"]
     };
-    // Enable caching
-    oDS.maxCacheEntries =0;
+    
+    oDS.maxCacheEntries =0;//no caching so it return more relevant result when search string is changed.
     oDS.connXhrMode ="cancelStaleRequests";    
     //oscarLog(oDS.responseSchema);
     // Instantiate AutoComplete

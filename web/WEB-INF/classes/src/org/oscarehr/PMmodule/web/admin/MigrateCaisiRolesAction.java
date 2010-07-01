@@ -157,7 +157,7 @@ public class MigrateCaisiRolesAction extends BaseAdminAction {
 					mappedRoleName=mappedRole.getOscarRole().getName();
 					List<SecUserRole> roles = providerManager.getSecUserRoles(providerNo);
 					for(SecUserRole role:roles) {
-						if(role.getRoleName() == mappedRoleName) {
+						if(mappedRoleName.equals(role.getRoleName())) {
 							ok=true;
 						}
 					}
@@ -303,8 +303,8 @@ public class MigrateCaisiRolesAction extends BaseAdminAction {
 					boolean ok=false;
 					mappedRoleName=mappedRole.getOscarRole().getName();
 					List<SecUserRole> roles = providerManager.getSecUserRoles(providerNo);
-					for(SecUserRole role:roles) {
-						if(role.getRoleName() == mappedRoleName) {
+					for(SecUserRole role:roles) {						
+						if(mappedRoleName.equals(role.getRoleName())) {
 							ok=true;
 						}
 					}

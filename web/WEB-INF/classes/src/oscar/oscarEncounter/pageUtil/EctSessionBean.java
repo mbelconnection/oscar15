@@ -151,7 +151,8 @@ public class EctSessionBean {
             }
             rs.close();
             UtilDateUtilities dateUtil = new UtilDateUtilities();
-            patientAge = UtilDateUtilities
+            if(yearOfBirth!="" && yearOfBirth!=null)
+            	patientAge = UtilDateUtilities
                     .calcAge(UtilDateUtilities.calcDate(yearOfBirth, monthOfBirth, dateOfBirth));
 
             sql = "select * from appointment where provider_no='" + curProviderNo + "' and appointment_date='"
@@ -161,7 +162,7 @@ public class EctSessionBean {
                 tmp = Integer.toString(rs.getInt("appointment_no"));
                 appointmentsIdArray.add(tmp);
                 appointmentsNamesArray.add(db.getString(rs,"name") + " " + db.getString(rs,"start_time"));
-                //                System.out.println(tmp);
+
             }
             rs.close();
             sql = "select * from encountertemplate order by encountertemplate_name";

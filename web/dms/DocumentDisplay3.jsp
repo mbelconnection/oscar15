@@ -150,6 +150,30 @@
                                             <%}%>
 
          <script type="text/javascript">
+function sendMRP(ele){
+                                                var doclabid=ele.id;
+                                                doclabid=doclabid.split('_')[1];
+                                                var demoId=$('demofind'+doclabid).value;
+                                            if(demoId=='-1'){
+                                                alert('Please enter a valid demographic');
+                                                ele.checked=false;
+                                            }else{
+                                                if(confirm('Send to Most Responsible Provider?')){
+                                                    var type='DOC';
+                                                    var url= "../oscarMDS/SendMRP.do";
+                                                    var data='demoId='+demoId+'&docLabType='+type+'&docLabId='+doclabid;
+                                                    new Ajax.Request(url, {method: 'post',parameters:data,onSuccess:function(transport){
+                                                        ele.disabled=true;
+                                                        $('mrp_fail_'+doclabid).hide();
+                                                    },onFailure:function(transport){
+                                                        ele.checked=false;
+                                                        $('mrp_fail_'+doclabid).show();
+                                                    }});
+                                                }else{
+                                                    ele.checked=false;
+                                                }
+                                             }
+                                          }
 
         renderCalendar=function(id,inputFieldId){
                 Calendar.setup({ inputField : inputFieldId, ifFormat : "%Y-%m-%d", showsTime :false, button : id });
@@ -215,7 +239,8 @@
                                             }();
 
                                             </script>
-                                            <input tabindex="<%=tabindex++%>" type="checkbox" name="demoLink" >Send to MRP
+                                            <input id="mrp_<%=docId%>" tabindex="<%=tabindex++%>" onclick="sendMRP(this)" type="checkbox" name="demoLink" >Send to MRP
+                                            <a id="mrp_fail_<%=docId%>" style="color:red;font-style: italic;display: none;" >Failed to send MRP</a>
                                         </td>
                                     </tr>
 
@@ -430,11 +455,11 @@
                         <fieldset>
                             <legend><span class="FieldData"><i>Next Appointment: <oscar:nextAppt demographicNo="<%=demographicID%>"/></i></span></legend>
                             <form name="reassignForm" method="post" action="Forward.do">
-                                <input type="hidden" name="flaggedLabs" value="<%= docId%>" />
+                                <input type="hidden" name="flaggedLabs" value="<%=docId%>" />
                                 <input type="hidden" name="selectedProviders" value="" />
                                 <input type="hidden" name="labType" value="DOC" />
-                                <input type="hidden" name="labType<%= docId%>DOC" value="imNotNull" />
-                                <input type="hidden" name="providerNo" value="<%= providerNo%>" />
+                                <input type="hidden" name="labType<%=docId%>DOC" value="imNotNull" />
+                                <input type="hidden" name="providerNo" value="<%=providerNo%>" />
                             </form>
                                 <form name="acknowledgeForm_<%=docId%>" id="acknowledgeForm_<%=docId%>" onsubmit="updateStatus('acknowledgeForm_<%=docId%>');refreshParent();" method="post" action="javascript:void(0);">
 

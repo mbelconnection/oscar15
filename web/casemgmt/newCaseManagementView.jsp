@@ -46,7 +46,6 @@
 <%@page import="com.quatro.dao.security.*,com.quatro.model.security.Secrole"%>
 <%@page import="org.oscarehr.util.SpringUtils"%>
 <%@page import="oscar.oscarRx.data.RxPrescriptionData"%>
-<%@page import="org.oscarehr.casemgmt.dao.CaseManagementNoteLinkDAO"%>
 <%@page import="java.lang.Character"%>
 
 <%@page import="org.oscarehr.util.EncounterUtil"%><jsp:useBean
@@ -913,7 +912,19 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
                             <bean:message key="oscarEncounter.view.docView"/>
                         </a>
 
-                        <% }%>
+                        <% }
+                        if (note.isEformData()) {
+                            String winName = "eforms"+demographicNo;
+                            int hash = Math.abs(winName.hashCode());
+                            String url = "popupPage(700,800,'"+hash+"', '"+request.getContextPath()+"/eform/efmshowform_data.jsp?fdid=";
+                            CaseManagementNoteLink noteLink = caseManagementManager.getLatestLinkByNote(note.getId());
+                            if (noteLink!=null) url += noteLink.getTableId();
+                            url += "'); return false;";
+                        %>
+                        <a class="links" title="<bean:message key="oscarEncounter.view.eformView"/>" id="view<%=note.getId()%>" href="#" onclick="<%=url%>" style="float: right; margin-right: 5px; font-size: 8px;"> <bean:message key="oscarEncounter.view" /> </a>
+                        <%
+                        }
+                        %>
 		<span id="txt<%=note.getId()%>"><%=noteStr%></span> <%--
 			    time2 = System.currentTimeMillis();
 			    System.out.println("Format note " + String.valueOf(time2 - time1));

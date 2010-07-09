@@ -268,7 +268,7 @@ public final class RxWriteScriptAction extends DispatchAction {
             String randomId = request.getParameter("randomId");
             String customName = request.getParameter("customName");
             //    p("randomId from request",randomId);
-            p("customName from request", customName);
+            //p("customName from request", customName);
             RxPrescriptionData.Prescription rx = bean.getStashItem2(Integer.parseInt(randomId));
             if (rx == null) {
                 logger.error("rx is null", new NullPointerException());
@@ -280,17 +280,7 @@ public final class RxWriteScriptAction extends DispatchAction {
             //bean.addAttributeName(rx.getAtcCode() + "-" + String.valueOf(bean.getIndexFromRx(Integer.parseInt(randomId))));
             //  p("updateDrug parseIntr bean.getStashIndex()", Integer.toString(bean.getStashIndex()));
             bean.setStashItem(bean.getIndexFromRx(Integer.parseInt(randomId)), rx);
-            //RxUtil.printStashContent(bean);
-            //check for most recent drug,
-            p("rx.getCustomName in saveCustomName", rx.getCustomName());
-            RxUtil.setSpecialQuantityRepeat(rx);
-            HashMap hm = new HashMap();
-            hm.put("instructions", rx.getSpecial());
-            hm.put("quantity", rx.getQuantity());
-            hm.put("repeat", rx.getRepeat());
-            JSONObject jsonObject = JSONObject.fromObject(hm);
-            //      p("jsonObject", jsonObject.toString());
-            response.getOutputStream().write(jsonObject.toString().getBytes());
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -319,7 +309,22 @@ public final class RxWriteScriptAction extends DispatchAction {
             e.printStackTrace();
         }
     }
+    private RxPrescriptionData.Prescription setCustomRxDurationQuantity(RxPrescriptionData.Prescription rx){
+            String quantity=rx.getQuantity();
+            if(RxUtil.isMitte(quantity)){
+                //MiscUtils.getLogger().info("quantity is mitte");
+                String duration=RxUtil.getDurationFromQuantityText(quantity);
+                String durationUnit=RxUtil.getDurationUnitFromQuantityText(quantity);
+                rx.setDuration(duration);
+                rx.setDurationUnit(durationUnit);
+                rx.setQuantity(RxUtil.getQuantityFromQuantityText(quantity));
+                rx.setUnitName(RxUtil.getUnitNameFromQuantityText(quantity));//this is actually an indicator for Mitte rx
+            }
+            else
+                rx.setDuration(RxUtil.findDuration(rx));
 
+            return rx;
+    }
     public ActionForward newCustomNote(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         p("=============Start newCustomNote RxWriteScriptAction.java===============");
@@ -350,8 +355,8 @@ public final class RxWriteScriptAction extends DispatchAction {
             rx.setGCN_SEQNO(0);
             rx.setRegionalIdentifier("");
             rx.setAtcCode("");
-            RxUtil.setDefaultSpecialQuantityRepeat(rx);//1 OD, 20, 0;
-            rx.setDuration(RxUtil.findDuration(rx));
+            RxUtil.setDefaultSpecialQuantityRepeat(rx);
+            rx=setCustomRxDurationQuantity(rx);
             bean.addAttributeName(rx.getAtcCode() + "-" + String.valueOf(bean.getStashIndex()));
             List<RxPrescriptionData.Prescription> listRxDrugs = new ArrayList();
 
@@ -438,7 +443,7 @@ public final class RxWriteScriptAction extends DispatchAction {
             rx.setRegionalIdentifier("");
             rx.setAtcCode("");
             RxUtil.setDefaultSpecialQuantityRepeat(rx);//1 OD, 20, 0;
-            rx.setDuration(RxUtil.findDuration(rx));
+            rx=setCustomRxDurationQuantity(rx);
             bean.addAttributeName(rx.getAtcCode() + "-" + String.valueOf(bean.getStashIndex()));
             List<RxPrescriptionData.Prescription> listRxDrugs = new ArrayList();
 
@@ -507,7 +512,6 @@ public final class RxWriteScriptAction extends DispatchAction {
                     //p("unique");
                     listRxDrugs.add(customRx);
                 }
-                //RxUtil.printStashContent(bean);
                 request.setAttribute("listRxDrugs", listRxDrugs);
                 //p("=============END normalDrugSetCustom RxWriteScriptAction.java===============");
                 return (mapping.findForward("newRx"));
@@ -553,13 +557,12 @@ public final class RxWriteScriptAction extends DispatchAction {
             RxDrugData.DrugMonograph dmono = drugData.getDrug2(drugId);
 
             String brandName = text;
-            //System.out.println("brand name from client="+brandName);
             //String genericName = request.getParameter("drugName");
 
             //      p("BRAND = " + brandName);
             rx.setGenericName(dmono.name); //TODO: how was this done before?
             rx.setBrandName(brandName);
-            //System.out.println("first set brand name="+rx.getBrandName());
+
             rx.setDrugForm(dmono.drugForm);
 
             //TO DO: cache the most used route from the drugs table.
@@ -606,9 +609,7 @@ public final class RxWriteScriptAction extends DispatchAction {
             //System.out.println("duration=" + rx.getDuration());
             //    p("set atc code to ", rx.getAtcCode());
             List<RxPrescriptionData.Prescription> listRxDrugs = new ArrayList();
-            //RxUtil.printStashContent(bean);
             if (RxUtil.isRxUniqueInStash(bean, rx)) {
-                //System.out.println("brand name added to listRxDrugs="+rx.getBrandName());
                 listRxDrugs.add(rx);
             }
             bean.addAttributeName(rx.getAtcCode() + "-" + String.valueOf(bean.getStashIndex()));
@@ -618,7 +619,7 @@ public final class RxWriteScriptAction extends DispatchAction {
             //bean.setStashIndex(bean.addStashItem(rx));
             //     p("brandName of rx", rx.getBrandName());
             //    p("stash index it's set to", "" + bean.getStashIndex());
-            //System.out.println("generic name in createnewrx="+rx.getGenericName());
+
             String today = null;
             Calendar calendar = Calendar.getInstance();
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -1101,6 +1102,8 @@ public final class RxWriteScriptAction extends DispatchAction {
         saveDrug(request);
         return null;
     }
+
+
     public ActionForward changeToLongTerm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
         throws IOException, ServletException, Exception{
         String strId=request.getParameter("ltDrugId");
@@ -1129,6 +1132,7 @@ public final class RxWriteScriptAction extends DispatchAction {
                 return null;
         }
     }
+
     public void saveDrug(final HttpServletRequest request)
             throws IOException, ServletException, Exception {
         System.out.println("==========***### start save drug RxWriteScriptAction.java");

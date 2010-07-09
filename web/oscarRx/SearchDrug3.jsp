@@ -231,9 +231,13 @@
                 "<span class=match>" +full.substr(matchindex, snippet.length) +"</span>" + full.substring(matchindex + snippet.length)+"</span>"+"</a>";
            };
            var highlightMatchInactive = function(full, snippet, matchindex) {
-                //oscarLog(full+"--"+snippet+"--"+matchindex);
-                return "<a title='"+full+"'>"+"<span class=matchInactive>"+full.substring(0, matchindex) +
-                full.substr(matchindex, snippet.length) +full.substring(matchindex + snippet.length)+"</span>"+"</a>";
+               /* oscarLog(full+"--"+snippet+"--"+matchindex);
+                oscarLog(" aa "+full.substring(0, matchindex) );
+                oscarLog(" bb "+full.substr(matchindex, snippet.length) );
+                oscarLog(" cc "+ full.substring(matchindex + snippet.length));*/
+               /*return "<a title='"+full+"'>"+"<span class=matchInactive>"+full.substring(0, matchindex) +
+                full.substr(matchindex, snippet.length) +full.substring(matchindex + snippet.length)+"</span>"+"</a>";*/
+                return "<a title='"+full+"'>"+"<span class=matchInactive>"+full+"</span>"+"</a>";
            };
            var resultFormatter = function(oResultData, sQuery, sResultMatch) {
                //oscarLog("oResultData, sQuery, sResultMatch="+oResultData+"--"+sQuery+"--"+sResultMatch);
@@ -254,10 +258,10 @@
                return  display;
            };
             var resultFormatter2 = function(oResultData, sQuery, sResultMatch) {
-               //oscarLog("oResultData, sQuery, sResultMatch="+oResultData+"--"+sQuery+"--"+sResultMatch);
-               //oscarLog("oResultData[0]="+oResultData[0]);
-               //oscarLog("oResultData.name="+oResultData.name);
-               //oscarLog("oResultData.name="+oResultData.id);
+               /*oscarLog("oResultData, sQuery, sResultMatch="+oResultData+"--"+sQuery+"--"+sResultMatch);
+               oscarLog("oResultData[0]="+oResultData[0]);
+               oscarLog("oResultData.name="+oResultData.name);
+               oscarLog("oResultData.name="+oResultData.id);*/
                var query = sQuery.toUpperCase();
                var drugName = oResultData.name;
                var isInactive=oResultData.isInactive;
@@ -1493,7 +1497,7 @@ YAHOO.example.FnMultipleFields = function(){
     // when an item gets selected and populate the input field
     //var myHiddenField = YAHOO.util.Dom.get("myHidden");
     var myHandler = function(type, args) {
-                    oscarLog(type+" :: "+args);
+                    //oscarLog(type+" :: "+args);
                     //oscarLog(args[2]);
                     var arr = args[2];
                     //oscarLog('In yahoo----'+arr.name);

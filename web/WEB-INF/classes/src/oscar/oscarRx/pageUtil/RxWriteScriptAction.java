@@ -268,7 +268,7 @@ public final class RxWriteScriptAction extends DispatchAction {
             String randomId = request.getParameter("randomId");
             String customName = request.getParameter("customName");
             //    p("randomId from request",randomId);
-            p("customName from request", customName);
+            //p("customName from request", customName);
             RxPrescriptionData.Prescription rx = bean.getStashItem2(Integer.parseInt(randomId));
             if (rx == null) {
                 logger.error("rx is null", new NullPointerException());
@@ -280,17 +280,7 @@ public final class RxWriteScriptAction extends DispatchAction {
             //bean.addAttributeName(rx.getAtcCode() + "-" + String.valueOf(bean.getIndexFromRx(Integer.parseInt(randomId))));
             //  p("updateDrug parseIntr bean.getStashIndex()", Integer.toString(bean.getStashIndex()));
             bean.setStashItem(bean.getIndexFromRx(Integer.parseInt(randomId)), rx);
-            //RxUtil.printStashContent(bean);
-            //check for most recent drug,
-            p("rx.getCustomName in saveCustomName", rx.getCustomName());
-            RxUtil.setSpecialQuantityRepeat(rx);
-            HashMap hm = new HashMap();
-            hm.put("instructions", rx.getSpecial());
-            hm.put("quantity", rx.getQuantity());
-            hm.put("repeat", rx.getRepeat());
-            JSONObject jsonObject = JSONObject.fromObject(hm);
-            //      p("jsonObject", jsonObject.toString());
-            response.getOutputStream().write(jsonObject.toString().getBytes());
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -319,7 +309,22 @@ public final class RxWriteScriptAction extends DispatchAction {
             e.printStackTrace();
         }
     }
+    private RxPrescriptionData.Prescription setCustomRxDurationQuantity(RxPrescriptionData.Prescription rx){
+            String quantity=rx.getQuantity();
+            if(RxUtil.isMitte(quantity)){
+                //MiscUtils.getLogger().info("quantity is mitte");
+                String duration=RxUtil.getDurationFromQuantityText(quantity);
+                String durationUnit=RxUtil.getDurationUnitFromQuantityText(quantity);
+                rx.setDuration(duration);
+                rx.setDurationUnit(durationUnit);
+                rx.setQuantity(RxUtil.getQuantityFromQuantityText(quantity));
+                rx.setUnitName(RxUtil.getUnitNameFromQuantityText(quantity));//this is actually an indicator for Mitte rx
+            }
+            else
+                rx.setDuration(RxUtil.findDuration(rx));
 
+            return rx;
+    }
     public ActionForward newCustomNote(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         p("=============Start newCustomNote RxWriteScriptAction.java===============");
@@ -350,8 +355,8 @@ public final class RxWriteScriptAction extends DispatchAction {
             rx.setGCN_SEQNO(0);
             rx.setRegionalIdentifier("");
             rx.setAtcCode("");
-            RxUtil.setDefaultSpecialQuantityRepeat(rx);//1 OD, 20, 0;
-            rx.setDuration(RxUtil.findDuration(rx));
+            RxUtil.setDefaultSpecialQuantityRepeat(rx);
+            rx=setCustomRxDurationQuantity(rx);
             bean.addAttributeName(rx.getAtcCode() + "-" + String.valueOf(bean.getStashIndex()));
             List<RxPrescriptionData.Prescription> listRxDrugs = new ArrayList();
 
@@ -438,7 +443,7 @@ public final class RxWriteScriptAction extends DispatchAction {
             rx.setRegionalIdentifier("");
             rx.setAtcCode("");
             RxUtil.setDefaultSpecialQuantityRepeat(rx);//1 OD, 20, 0;
-            rx.setDuration(RxUtil.findDuration(rx));
+            rx=setCustomRxDurationQuantity(rx);
             bean.addAttributeName(rx.getAtcCode() + "-" + String.valueOf(bean.getStashIndex()));
             List<RxPrescriptionData.Prescription> listRxDrugs = new ArrayList();
 
@@ -597,11 +602,11 @@ public final class RxWriteScriptAction extends DispatchAction {
             String atcCode = dmono.atc;
             rx.setAtcCode(atcCode);
             RxUtil.setSpecialQuantityRepeat(rx);
-            System.out.println("after setSpecialQuantityRepeat ,quantity="+rx.getQuantity()+" unitName="+rx.getUnitName());
+            //System.out.println("after setSpecialQuantityRepeat ,quantity="+rx.getQuantity()+" unitName="+rx.getUnitName());
             String calculatedDur=RxUtil.findDuration(rx);
-            System.out.println("after findDuration ,quantity="+rx.getQuantity()+" unitName="+rx.getUnitName());
+            //System.out.println("after findDuration ,quantity="+rx.getQuantity()+" unitName="+rx.getUnitName());
             if(calculatedDur!=null) rx.setDuration(calculatedDur);
-            System.out.println("duration=" + rx.getDuration());
+            //System.out.println("duration=" + rx.getDuration());
             //    p("set atc code to ", rx.getAtcCode());
             List<RxPrescriptionData.Prescription> listRxDrugs = new ArrayList();
             if (RxUtil.isRxUniqueInStash(bean, rx)) {

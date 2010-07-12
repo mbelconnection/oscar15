@@ -1506,7 +1506,7 @@ YAHOO.example.FnMultipleFields = function(){
                     var name=encodeURIComponent(arr.name);
                     //oscarLog("after encode="+name);
                     var params = "demographicNo=<%=bean.getDemographicNo()%>&drugId="+arr.id+"&text="+name+"&randomId="+ran_number;  //hack to get around ie caching the page
-                   new Ajax.Updater('rxText',url, {method:'get',parameters:params,asynchronous:false,evalScripts:true,
+                    new Ajax.Updater('rxText',url, {method:'get',parameters:params,asynchronous:false,evalScripts:true,
                         insertion: Insertion.Bottom,onSuccess:function(transport){
                             updateCurrentInteractions();
                         }});
@@ -1515,7 +1515,14 @@ YAHOO.example.FnMultipleFields = function(){
 
    };
     oAC.itemSelectEvent.subscribe(myHandler);
-
+    var collapseFn=function(){
+        $('autocomplete_choices').hide();
+    }
+    oAC.containerCollapseEvent.subscribe(collapseFn);
+    var expandFn=function(){
+        $('autocomplete_choices').show();
+    }
+    oAC. dataRequestEvent.subscribe(expandFn);
     return {
         oDS: oDS,
         oAC: oAC

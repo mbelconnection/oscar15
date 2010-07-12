@@ -1514,7 +1514,14 @@ YAHOO.example.FnMultipleFields = function(){
 
     };
     oAC.itemSelectEvent.subscribe(myHandler);
-
+    var collapseFn=function(){
+        $('autocomplete_choices').hide();
+    }
+    oAC.containerCollapseEvent.subscribe(collapseFn);
+    var expandFn=function(){
+        $('autocomplete_choices').show();
+    }
+    oAC. dataRequestEvent.subscribe(expandFn);
     return {
         oDS: oDS,
         oAC: oAC

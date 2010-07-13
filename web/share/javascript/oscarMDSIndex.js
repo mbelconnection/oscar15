@@ -931,15 +931,7 @@ function cutText(text,first,last){
 }
 
 function updateDocLabData(doclabid){//remove doclabid from global variables
-    /*oscarLog("** doclabid="+doclabid);
-
-oscarLog("before---typeDocLab ="+typeDocLab);
-                           oscarLog("docType ="+docType);
-                           oscarLog("patientDocs ="+patientDocs);
-                           oscarLog("patientIdNames ="+patientIdNames);
-                           oscarLog("patientIdStr ="+patientIdStr);
-                           oscarLog("docStatus ="+docStatus);
-   */
+    
   if(doclabid){
        //trim doclabid
       doclabid=doclabid.replace(/\s/g,'');

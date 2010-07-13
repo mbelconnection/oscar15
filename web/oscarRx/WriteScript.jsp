@@ -91,7 +91,6 @@ String annotation_attrib = "";// = "anno"+now;
     function showAddText(randId){
         var addTextId="addText_"+randId;
         var addTextWordId="addTextWord_"+randId;
-        oscarLog("randId="+randId);
         if(addTextView==0){
             $(addTextId).show();
             addTextView=1;
@@ -105,7 +104,6 @@ String annotation_attrib = "";// = "anno"+now;
     }
 
     var frm = document.forms.RxWriteScriptForm;
-    oscarLog("frm="+frm+"$(frm)"+$(frm));
     var freqMin;
     var freqMax;
     var orig = null;
@@ -161,17 +159,12 @@ String annotation_attrib = "";// = "anno"+now;
     }
 
     function submitForm(action){
-        oscarLog(frm);
-        oscarLog("submitForm called");
         if(frm.repeat.value.length < 1 || isNaN(parseInt(frm.repeat.value))){
-            oscarLog("first");
             frm.repeat.value = 0;
         }
 
         if( frm.quantity.value.length < 1 || frm.quantity.value.match(/\D/)){
-            oscarLog('<bean:message key="WriteScript.msgQuantity"/>');
         }else{
-            oscarLog("else");
             frm.action.value = action;
 
             frm.submit();
@@ -1227,8 +1220,6 @@ int i;
                                                         <script language="javascript">
                                         function setQuantity(){
                                             var path="<c:out value="${ctx}"/>";
-                                            oscarLog("here1");
-                                oscarLog("path in setQuantity"+path);
                                             var sugQtyLbl = document.getElementById('lblSugQty');
                                             while (sugQtyLbl.hasChildNodes()){
                                                 sugQtyLbl.removeChild(sugQtyLbl.firstChild);
@@ -1398,7 +1389,6 @@ int i;
                         </div>--> <script language=javascript>
                             function submitPending(stashId, action){ //calls stash action
                                 var path="<c:out value="${ctx}"/>";
-                                oscarLog("path in submitPending:"+path);
                                 var frm = document.getElementsByName("RxStashForm");
                                 frm[0].elements["stashId"].value = stashId;
                                 frm[0].elements["action"].value = action;
@@ -1538,7 +1528,6 @@ int i;
          </oscar:oscarPropertiesCheck>
 
          function callReplacementWebService(url,id){
-             oscarLog("in callReplacementWebService writescript.jsp: "+url+"--"+id);
                var ran_number=Math.round(Math.random()*1000000);
                var params = "demographicNo=<%=bean.getDemographicNo()%>&atcCode=<%=atcCode%>&rand="+ran_number;  //hack to get around ie caching the page
                new Ajax.Updater(id,url, {method:'get',parameters:params,asynchronous:true});

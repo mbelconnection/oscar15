@@ -198,7 +198,6 @@ if(listRxDrugs!=null){
                     showHideSpecInst('siAutoComplete_'+id);
             }
             showHideSpecInst=function showHideSpecInst(elementId){
-                oscarLog("in show hide spec inst="+elementId);
               if($(elementId).getStyle('display')=='none'){
                   Effect.BlindDown(elementId);
               }else{

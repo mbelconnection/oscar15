@@ -153,7 +153,6 @@ resources</a></div>
 
 <script type="text/javascript">
     new Ajax.Updater('showHideTotal','updateMyDrugrefResource.jsp',{method:'get',onSuccess:function(transport){
-                oscarLog("updated showHideTotal ");
             }});
 </script>
 

@@ -282,6 +282,7 @@ public class MsgMessageData {
             }
 
          sentToWho = org.apache.commons.lang.StringEscapeUtils.escapeSql(sentToWho);
+         userName = org.apache.commons.lang.StringEscapeUtils.escapeSql(userName);
          String sql = new String("insert into messagetbl (thedate,theime,themessage,thesubject,sentby,sentto,sentbyNo,sentByLocation,attachment, pdfattachment)"
                        +" values (now(),now(),'"
                        +str.q(message)+"','"
@@ -292,7 +293,7 @@ public class MsgMessageData {
                        +getCurrentLocationId()+"','"
                        +attach+"','"
                        +pdfAttach+"')");
-         // System.out.println("here2 "+sql);
+         System.out.println("SEND MSG "+sql);
          messageid = String.valueOf(db.queryExecuteInsertReturnId(sql));
          // System.out.println("here3");
 

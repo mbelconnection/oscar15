@@ -199,7 +199,7 @@
                     providerStr=pAr.join("+");
                     //pass to server to save the links.
                     var data="providers="+providerStr+"&queues="+queueStr;
-                    oscarLog(data);
+                    
                     var url="<c:out value='${ctx}'/>" + "/dms/inboxManage.do?method=addQueueProviderLink";
                     new Ajax.Request(url, {method: 'post',parameters:data,onSuccess:function(transport){
                             var json=transport.responseText.evalJSON();
@@ -284,8 +284,7 @@
         var oDS = new YAHOO.util.FunctionDataSource(matchNames);
         oDS.responseSchema = {fields: ["id", "fname", "lname"]};
         YAHOO.example.FnMultipleFields = function(){
-                                oscarLog("FnMultipleFields ");
-                                oscarLog(oDS.responseSchema);
+                                
                                 // Instantiate AutoComplete
                                 var oAC = new YAHOO.widget.AutoComplete("searchProviderName", "searchProviderName_choices", oDS);
                                 oAC.useShadow = true;
@@ -330,9 +329,7 @@
 
 
         function saveQueue(element){
-            //oscarLog("in saveQueue "+element);
             var qn=$(element).getValue();
-            //oscarLog("in saveQueue "+qn);
             qn=qn.replace(/^\s+/g,"");
             qn=qn.replace(/\s+$/g,"");//trim qn
             if(qn.length>0){                

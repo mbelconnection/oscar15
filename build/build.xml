@@ -258,7 +258,7 @@
   their filters updated -->
 		<propertyfile file="../web/WEB-INF/classes/build.properties">
 			<entry key="builddate" type="date" value="now" />
-			<entry key="builddate" operation="+" value=", branch : trunk" />
+			<entry key="builddate" operation="+" value=", branch : 10_06" />
 			<entry key="buildtag" type="string" value="${env.JOB_NAME}-${env.BUILD_NUMBER}" />
 		</propertyfile>
 

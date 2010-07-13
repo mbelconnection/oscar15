@@ -141,7 +141,6 @@
             i=0,
             l=myContacts.length,
             matches = [];
-            //console.log(l);
  
         // Match against each name of each contact
         for(; i<l; i++) {
@@ -156,11 +155,6 @@
 
     var oDS = new YAHOO.util.FunctionDataSource(matchNames);
     oDS.responseSchema = {fields: ["id", "fname", "lname"]};
- //   console.log("oDS="+oDS);
-//    console.log("oDS.id="+oDS.id);
-  //  console.log("oDS.fname="+oDS.fname);
-  //  console.log("oDS.lname="+oDS.lname);
-
 
             window.onload=function(){
                 if(!NiftyCheck())
@@ -288,17 +282,13 @@
 
 
         function saveDemoId(text, li){
-            //console.log("saveDemoId "+li.id+" "+text.id);
             var str = text.id.replace("autocompletedemo","demofind");
-            //console.log("str "+str);
             $(str).value = li.id;
         }
 
         function saveProvId(text, li){
-         //   console.log("saveProvId "+li.id+" "+text.id+" "+text.value);
             var provName = text.value;
             var str = text.id.replace("autocompletedemo","demofind");
-            //console.log("str "+str);
             $(str).value = li.id;
 
             var bdoc = document.createElement('a');
@@ -319,47 +309,20 @@
             providerList.appendChild(adoc);
             text.value = '';
         }
-
-      /*  function removeProv(th){
-            var ele = th.up();
-            ele.remove();
-
-        }
-*/
         function sendToServer(formId){
-        //    console.log("in sendToServer");
-       //     console.log(formId);
             var toSend = $(formId).serialize(true);
             var url = "ManageDocument.do";//"send.jsp";
             Effect.SlideUp('document'+toSend.documentId);
-        //    console.log(toSend.documentId);
             new Ajax.Request(url, { method: 'post', parameters: toSend, onSuccess: successAdjusting });
-
-            //Effect.SlideUp('document'+toSend.documentId);
             return false;
         }
 
         function successAdjusting(transport){
             var jason = transport.responseText.evalJSON(true);
-            //console.log("successlog"+jason.success+"   "+jason.docId);
         }
 
 
- /*       function checkSave(elementId){
-            var curVal=$('autocompletedemo'+elementId).value;
-            var isCurValValid=false;
-            for(var i=0;i<selectedDemos.length;i++){
-                if(curVal==selectedDemos[i]){
-                    isCurValValid=true;
-                    break;
-                }
-            }
-            if(isCurValValid)
-                $('save'+elementId).enable();
-            else
-                $('save'+elementId).disable();
-        }
-*/
+
         function callReplacementWebService(url,id,providerNo){
               var ran_number=Math.round(Math.random()*1000000);
               var params = "currentUser="+providerNo+"&rand="+ran_number;
@@ -382,7 +345,6 @@
      function showDocumentQueue(qid,qname){
             if($("DocumentQueue_"+qid)==null){
                  var params = "currentQueueId="+qid+"&currentQueueName="+qname;
-                 oscarLog(params);
                  var url="listDocumentFromQueue.jsp";
                  var id="doclists";
                  var updater=new Ajax.Updater(id,url, {method:'get',parameters:params,asynchronous:false,insertion: Insertion.Bottom,evalScripts:true});

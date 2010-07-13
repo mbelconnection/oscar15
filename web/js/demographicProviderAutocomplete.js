@@ -15,11 +15,8 @@ var resultFormatter2 = function(oResultData, sQuery, sResultMatch) {
     dob = oResultData[1],
     fnameMatchIndex = fname.toLowerCase().indexOf(query),
     displayfname= '';
-    //oscarLog("in resultFormatter2");
-    //oscarLog(oResultData);
     if(fnameMatchIndex > -1) {
         displayfname = highlightMatch(fname, query, fnameMatchIndex);
-    //oscarLog("displayfname in if="+displayfname);
     }
     else {
         displayfname = fname;

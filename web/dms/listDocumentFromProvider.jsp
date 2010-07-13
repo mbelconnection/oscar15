@@ -201,13 +201,12 @@ if(providerDocs!=null && !providerDocs.isEmpty() && providerDocs.containsKey(cur
                 //oscarLog(oAC);
                 //oscarLog(oAC.itemSelectEvent);
                 oAC.itemSelectEvent.subscribe(function(type, args) {
-                    oscarLog(args);
-                    oscarLog(args[0].getInputEl().id);
+                
                     var str = args[0].getInputEl().id.replace("autocompletedemo","demofind");
-                   oscarLog(str);
+                
                    $(str).value = args[2][2];//li.id;
-                   oscarLog("str value="+$(str).value);
-                   //oscarLog(args[2][1]+"--"+args[2][0]);
+               
+               
                    args[0].getInputEl().value = args[2][0] + "("+args[2][1]+")";
                    //oscarLog("--"+args[0].getInputEl().value);
                    selectedDemos.push(args[0].getInputEl().value);
@@ -322,42 +321,33 @@ if(providerDocs!=null && !providerDocs.isEmpty() && providerDocs.containsKey(cur
                 oAC.minQueryLength = 3;
                 oAC.maxResultsDisplayed = 25;
                 oAC.formatResult = resultFormatter3;
-                //oAC.typeAhead = true;
+              
                 oAC.queryMatchContains = true;
-                //oscarLog(oAC);
-                //oscarLog(oAC.itemSelectEvent);
+              
                 oAC.itemSelectEvent.subscribe(function(type, args) {
-                    oscarLog(args);
+                  
                    var myAC = args[0];
                    var str = myAC.getInputEl().id.replace("autocompleteprov","provfind");
-                   oscarLog(str);
-                   oscarLog(args[2]);
+                
                    var oData=args[2];
                    $(str).value = args[2][0];//li.id;
-                   oscarLog("str value="+$(str).value);
-                   oscarLog(args[2][1]+"--"+args[2][0]);
+                  
                    myAC.getInputEl().value = args[2][2] + ","+args[2][1];
-                   oscarLog("--"+args[0].getInputEl().value);
                    //selectedDemos.push(args[0].getInputEl().value);
 
                    //enable Save button whenever a selection is made
                     var bdoc = document.createElement('a');
                     bdoc.setAttribute("onclick", "removeProv(this);");
                     bdoc.appendChild(document.createTextNode(" -remove- "));
-                    oscarLog("--");
+                
                     var adoc = document.createElement('div');
                     adoc.appendChild(document.createTextNode(oData[2] + " " +oData[1]));
-                    oscarLog("--==");
+                    
                     var idoc = document.createElement('input');
                     idoc.setAttribute("type", "hidden");
                     idoc.setAttribute("name","flagproviders");
                     idoc.setAttribute("value",oData[0]);
-                    //console.log(oData[0]);
-                    //console.log(myAC);
-                 //   console.log(elLI);
-                 //   console.log(oData);
-                 //   console.log(aArgs);
-                 //   console.log(sType);
+                    
                     adoc.appendChild(idoc);
 
                     adoc.appendChild(bdoc);

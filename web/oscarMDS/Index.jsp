@@ -123,14 +123,7 @@ Integer totalNumDocs=(Integer)request.getAttribute("totalNumDocs");
                            var abnormals='<%=abnormals%>';
                            var tabindex=0;
                            var current_first_doclab=0;
-                           /*oscarLog("typeDocLab ="+typeDocLab);
-                           oscarLog("docType ="+docType);
-                           oscarLog("patientDocs ="+patientDocs);
-                           oscarLog("patientIdNames ="+patientIdNames);
-                           oscarLog("patientIdStr ="+patientIdStr);
-                           oscarLog("docStatus ="+docStatus);
-                           oscarLog("normals ="+normals);
-                           oscarLog("abnormals ="+abnormals);*/
+                          
 
                             
 </script>
@@ -381,7 +374,6 @@ Integer totalNumDocs=(Integer)request.getAttribute("totalNumDocs");
                                             </td>
                                         <script type="text/javascript">
                                                 var doclabid_seq='<%=doclabid_seq%>';
-                                                //oscarLog('doclabid_seq='+doclabid_seq);
                                                 doclabid_seq=doclabid_seq.replace('[','');
                                                 doclabid_seq=doclabid_seq.replace(']','');
                                                 var arr=doclabid_seq.split(',');
@@ -392,7 +384,6 @@ Integer totalNumDocs=(Integer)request.getAttribute("totalNumDocs");
                                                     arr2.push(ele);
                                                 }
                                                 doclabid_seq=arr2;
-                                                //oscarLog('doclabid_seq='+doclabid_seq);
 
                                         </script>
                                         </tr>

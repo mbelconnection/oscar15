@@ -246,9 +246,6 @@ if(queueDocs!=null && !queueDocs.isEmpty() && queueDocs.containsKey(currentQueue
                                                                     <script type="text/javascript">
 
                                                                     YAHOO.example.FnMultipleFields = function(){
-                                                                        oscarLog("FnMultipleFields ");
-                                                                        oscarLog(oDS.responseSchema);
-                                                                        // Instantiate AutoComplete
                                                                         var oAC = new YAHOO.widget.AutoComplete("autocompleteprov<%=currentDocId%>", "autocomplete_choicesprov<%=currentDocId%>", oDS);
                                                                         oAC.useShadow = true;
                                                                         oAC.resultTypeList = false;

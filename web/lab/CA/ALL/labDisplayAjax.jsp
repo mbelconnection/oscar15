@@ -21,12 +21,8 @@ String segmentID = request.getParameter("segmentID");
 String providerNo = request.getParameter("providerNo");
 String searchProviderNo = request.getParameter("searchProviderNo");
 String patientMatched = request.getParameter("patientMatched");
-//System.out.println("1111111111111111="+segmentID.trim());
 Long reqIDL = LabRequestReportLink.getIdByReport("hl7TextMessage",Long.valueOf(segmentID.trim()));
-//System.out.println("88888888888");
 String reqID = reqIDL==null ? "" : String.valueOf(reqIDL);
-//System.out.println("222222222");
-//String sql = "SELECT status FROM providerLabRouting WHERE lab_no='"+segmentID+"';";
 String sql = "SELECT demographic_no FROM patientLabRouting WHERE lab_type='HL7' and lab_no='"+segmentID+"';";
 DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 ResultSet rs = db.GetSQL(sql);
@@ -60,7 +56,6 @@ Hl7textResultsData data = new Hl7textResultsData();
 String multiLabId = data.getMatchingLabs(segmentID);
 
 String hl7 = Factory.getHL7Body(segmentID);
-//System.out.println("55555555555555");
 // check for errors printing
 if (request.getAttribute("printError") != null && (Boolean) request.getAttribute("printError")){
 %>
@@ -202,9 +197,9 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
             return ret;
         }
 
-         printPDF=function(){
-            document.acknowledgeForm.action="PrintPDF.do";
-            document.acknowledgeForm.submit();
+         printPDF=function(doclabid){
+            document.forms['acknowledgeForm_'+doclabid].action="../lab/CA/ALL/PrintPDF.do";
+            document.forms['acknowledgeForm_'+doclabid].submit();        
         }
 
 	 linkreq=function(rptId, reqId) {
@@ -273,9 +268,8 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
                                     <input type="submit" value="<bean:message key="oscarMDS.segmentDisplay.btnAcknowledge"/>" onclick="return confirmAck();">
                                     <input type="submit" value="<bean:message key="oscarMDS.segmentDisplay.btnComment"/>" onclick="return getComment();">
                                     <% } %>
-                                    <input type="button" class="smallButton" value="<bean:message key="oscarMDS.index.btnForward"/>" onClick="popupStart(300, 400, '../oscarMDS/SelectProviderAltView.jsp?doc_no=<%=segmentID%>&providerNo=<%=providerNo%>&searchProviderNo=<%=searchProviderNo%>', 'providerselect')">
-                                    <input type="button" value=" <bean:message key="global.btnClose"/> " onClick="window.close()">
-                                    <input type="button" value=" <bean:message key="global.btnPrint"/> " onClick="printPDF()">
+                                    <input type="button" class="smallButton" value="<bean:message key="oscarMDS.index.btnForward"/>" onClick="popupStart(300, 400, '../oscarMDS/SelectProviderAltView.jsp?doc_no=<%=segmentID%>&providerNo=<%=providerNo%>&searchProviderNo=<%=searchProviderNo%>', 'providerselect')">                                    
+                                    <input type="button" value=" <bean:message key="global.btnPrint"/> " onClick="printPDF('<%=segmentID%>')">
                                     <% if ( demographicID != null && !demographicID.equals("") && !demographicID.equalsIgnoreCase("null")){ %>
                                     <input type="button" value="Msg" onclick="popup(700,960,'../oscarMessenger/SendDemoMessage.do?demographic_no=<%=demographicID%>','msg')"/>
                                     <input type="button" value="Tickler" onclick="popup(450,600,'../tickler/ForwardDemographicTickler.do?docType=HL7&docId=<%= segmentID %>&demographic_no=<%=demographicID%>','tickler')"/>
@@ -736,8 +730,8 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
                                     <input type="submit" value="<bean:message key="oscarMDS.segmentDisplay.btnComment"/>" onclick="getComment()">
                                     <% } %>
                                     <input type="button" class="smallButton" value="<bean:message key="oscarMDS.index.btnForward"/>" onClick="popupStart(300, 400, '../oscarMDS/SelectProviderAltView.jsp?doc_no=<%=segmentID%>&providerNo=<%=providerNo%>&searchProviderNo=<%=searchProviderNo%>', 'providerselect')">
-                                    <!--input type="button" value=" <bean:message key="global.btnClose"/> " onClick="window.close()"-->
-                                    <input type="button" value=" <bean:message key="global.btnPrint"/> " onClick="printPDF()">
+                                    
+                                    <input type="button" value=" <bean:message key="global.btnPrint"/> " onClick="printPDF('<%=segmentID%>')">
                                     <oscarProperties:oscarPropertiesCheck property="MY_OSCAR" value="yes">
                                         <indivo:indivoRegistered demographic="<%=demographicID%>" provider="<%=providerNo%>">
                                         <input type="button" value="<bean:message key="global.btnSendToPHR"/>" onClick="sendToPHR('<%=segmentID%>', '<%=demographicID%>')">
@@ -755,10 +749,10 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
                         </table>
                     </td>
                 </tr>
+                <tr><td colspan="1" ><hr width="100%" color="blue"></td></tr>
             </table>
 
         </form>
-        <!-- a style="color:white;" href="labDebug.jsp?segmentID=<%=segmentID%>" >debug</a -->
         <a style="color:white;" href="javascript: void();" onclick="showHideItem('rawhl7');" >show</a>
         <pre id="rawhl7" style="display:none;"><%=hl7%></pre>
     </div>

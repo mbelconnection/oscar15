@@ -2690,7 +2690,7 @@ function autoCompleteShowMenuCPP(element, update) {
        Event.stop(e);
 
         //cycle through container divs for each note
-        for( idx = 0; idx < numNotes; ++idx ) {
+        for( idx = 1; idx <= numNotes; ++idx ) {
             notesDiv = $("nc" + idx).down('div');
             noteId = notesDiv.id.substr(1);  //get note id
             imgId = "print"+noteId;
@@ -2722,7 +2722,7 @@ function autoCompleteShowMenuCPP(element, update) {
         //$("notes2print").value = "";
 
         //cycle through container divs for each note
-        for( idx = 0; idx < numNotes; ++idx ) {
+        for( idx = 1; idx <= numNotes; ++idx ) {
             notesDiv = $("nc" + idx).down('div');
             noteId = notesDiv.id.substr(1);  //get note id
 

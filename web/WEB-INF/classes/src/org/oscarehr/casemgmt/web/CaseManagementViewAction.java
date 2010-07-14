@@ -232,6 +232,7 @@ public class CaseManagementViewAction extends BaseCaseManagementViewAction {
 			programId = "0";
 		}
 
+		
 		log.debug("is there a tmp note?");
 		// check to see if there is an unsaved note
 		// if there is see if casemanagemententry has already handled it
@@ -278,7 +279,12 @@ public class CaseManagementViewAction extends BaseCaseManagementViewAction {
 				String id2 = Integer.toString(admission.getTeamId());
 				if (id1.equals(id2)) teamName = team.getName();
 			}
+		} else {
+			// If the client was never in the program. CME page should not be opened.
+			if(!admissionMgr.wasInProgram(Integer.valueOf(programId),Integer.valueOf(demoNo)))
+				return mapping.findForward("clientNeverInTheProgramError");			
 		}
+		
 		request.setAttribute("teamName", teamName);
 
 		if (OscarProperties.getInstance().isCaisiLoaded() && !useNewCaseMgmt) {

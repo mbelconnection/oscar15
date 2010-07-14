@@ -102,8 +102,6 @@ alter table gstControl add column id int auto_increment primary key;
 alter table billingperclimit drop primary key;
 alter table billingperclimit add column id integer auto_increment primary key;
 
-insert into secObjectName values('_queue.1','default',0);
-
 
 -- -----------------------------------------------------------
 -- CAISI patches
@@ -121,7 +119,6 @@ CREATE TABLE `intake_node_js` (
 
 ALTER TABLE `intake_node` add `common_list` boolean NOT NULL default false;
 
-alter table Facility drop enableCdsForms;
 
 create table CdsHospitalisationDays
 (

@@ -42,6 +42,7 @@ Hashtable patientDocs=(Hashtable)request.getAttribute("patientDocs");
 String providerNo=(String)request.getAttribute("providerNo");
 String searchProviderNo=(String)request.getAttribute("searchProviderNo");
 Hashtable patientIdNames=(Hashtable)request.getAttribute("patientIdNames");
+String patientIdNamesStr=(String)request.getAttribute("patientIdNamesStr");
 Hashtable docStatus=(Hashtable)request.getAttribute("docStatus");
 String patientIdStr =(String)request.getAttribute("patientIdStr");
 Hashtable typeDocLab =(Hashtable)request.getAttribute("typeDocLab");
@@ -102,6 +103,8 @@ Integer totalNumDocs=(Integer)request.getAttribute("totalNumDocs");
 
 <link rel="stylesheet" type="text/css" href="encounterStyles.css">
 <script type="text/javascript" >
+                           var tabindex=0;
+                           var current_first_doclab=0;
                            var currentBold='';
                            var number_of_row_per_page=20;
                            var current_category=new Array();
@@ -113,19 +116,27 @@ Integer totalNumDocs=(Integer)request.getAttribute("totalNumDocs");
                            var msgConsReq='<bean:message key="oscarEncounter.oscarConsultationRequest.ViewConsultationRequests.msgConsReq"/>';
                            var providerNo='<%=providerNo%>';
                            var searchProviderNo='<%=searchProviderNo%>';
-                           var typeDocLab='<%=typeDocLab%>';   
-                           var docType='<%=docType%>';   
-                           var patientDocs='<%=patientDocs%>';
-                           var patientIdNames='<%=patientIdNames%>';
-                           var patientIdStr='<%=patientIdStr%>';
-                           var docStatus='<%=docStatus%>';
-                           var normals='<%=normals%>';
-                           var abnormals='<%=abnormals%>';
-                           var tabindex=0;
-                           var current_first_doclab=0;
-                          
-
-                            
+                           var typeDocLab=initTypeDocLab('<%=typeDocLab%>');   //{DOC=[357, 317, 316], HL7=[38, 33, 30, 28]}
+                           var docType=initDocType('<%=docType%>');   //{357=DOC, 38=HL7, 317=DOC, 316=DOC, 33=HL7, 30=HL7, 28=HL7}
+                           var patientDocs=initPatientDocs('<%=patientDocs%>');//{2=[316, 30, 28], 1=[33], -1=[357, 317, 38]}
+                           var patientIdNames=initPatientIdNames('<%=patientIdNamesStr%>');//;2=TEST2, PATIENT2;1=Zrrr, Srrr;-1=Not, Assigned
+                           //var patientIdStr='<%=patientIdStr%>';//2,1,-1,
+                           var docStatus=initDocStatus('<%=docStatus%>');//{357=A, 38=N, 317=A, 316=A, 33=N, 30=N, 28=N}
+                           var normals=initNormals('<%=normals%>');//[357, 317, 316, 38, 33, 30, 28]
+                           var abnormals=initAbnormals('<%=abnormals%>');//[123,567]
+                           oscarLog('patientDocs='+patientDocs);
+                           var patientIds=initPatientIds('<%=patientIdStr%>');
+                           var types=['DOC','HL7'];
+                          /* console.log(typeDocLab);
+                           console.log(docType);
+                           console.log(patientDocs);
+                           console.log(patientIdNames);
+                           console.log(patientIds);
+                           console.log(docStatus);
+                           console.log(normals);*/
+                           
+                           
+                                                 
 </script>
 </head>
 
@@ -443,7 +454,7 @@ if(totalDocs>0||totalHL7>0){%><br><%}
     <div><a id="totalAbnormals" href="javascript:void(0);" onclick="resetCurrentFirstDocLab();showAb_Normal('abnormal');un_bold(this);" title="Abnormal">Abnormal(<span id="abnormalNum"><%=abnormalNum%></span>)</a></div>
 
 <%}%>
-<dl>
+<dl id="patientsdoclabs">
     <%
          Enumeration em=patientIdNames.keys();
          while(em.hasMoreElements()){
@@ -477,7 +488,7 @@ if(totalDocs>0||totalHL7>0){%><br><%}
    <dt><img id="plus<%=patientId%>" alt="plus" src="../images/plus.png" onclick="showhideSubCat('plus','<%=patientId%>');"/>
        <img id="minus<%=patientId%>" alt="minus" style="display:none;" src="../images/minus.png" onclick="showhideSubCat('minus','<%=patientId%>');"/>
        <a id="patient<%=patientId%>all" href="javascript:void(0);"  onclick="resetCurrentFirstDocLab();showThisPatientDocs('<%=patientId%>');un_bold(this);" title="<%=patientName%>"><%=patientName%> (<span id="patientNumDocs<%=patientId%>"><%=numDocs%></span>)</a>
-                         <dl id="labdoc<%=patientId%>showSublist" style="display:none" >
+                    <dl id="labdoc<%=patientId%>showSublist" style="display:none" >
                         <%if(scanDocs>0){%>
                         <dt><a id="patient<%=patientId%>docs" href="javascript:void(0);" onclick="resetCurrentFirstDocLab();showSubType('<%=patientId%>','DOC');un_bold(this);" title="Documents">Documents(<span id="pDocNum_<%=patientId%>"><%=scanDocs%></span>)</a>
                         </dt>

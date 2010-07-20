@@ -2588,12 +2588,12 @@ function autoCompleteShowMenuCPP(element, update) {
         var noteDate = null;
         var msnote;
         var pos;
-        
-        for( idx = 0; idx < numNotes; ++idx ) {
+
+        for( idx = 0; idx <= numNotes; ++idx ) {
             notesDiv = $("nc" + idx).down('div');
-            noteId = notesDiv.id.substr(1);  //get note id                       
-            
-            if( $("obs"+noteId) != null ) 
+            noteId = notesDiv.id.substr(1);  //get note id
+            if(noteId==0) continue;
+            if( $("obs"+noteId) != null )
                 noteDate = $("obs"+noteId).innerHTML;
             else if( $("observationDate") != null )
                 noteDate = $F("observationDate");
@@ -2715,7 +2715,7 @@ function autoCompleteShowMenuCPP(element, update) {
        Event.stop(e);
         
         //cycle through container divs for each note
-        for( idx = 0; idx < numNotes; ++idx ) {
+        for( idx = 1; idx <= numNotes; ++idx ) {
             notesDiv = $("nc" + idx).down('div');
             noteId = notesDiv.id.substr(1);  //get note id
             imgId = "print"+noteId;
@@ -2747,7 +2747,7 @@ function autoCompleteShowMenuCPP(element, update) {
         //$("notes2print").value = "";
         
         //cycle through container divs for each note
-        for( idx = 0; idx < numNotes; ++idx ) {
+        for( idx = 1; idx <= numNotes; ++idx ) {
             notesDiv = $("nc" + idx).down('div');
             noteId = notesDiv.id.substr(1);  //get note id
             

@@ -1,5 +1,5 @@
 -- Both regular and CAISI database updates from the 9.12 to 10.06 standard schema
--- From update-2010-02-01.sql to update-2010-6-29.sql for OSCAR
+-- From update-2010-02-01.sql to update-2010-7-20.sql for OSCAR
 -- From patch-2010-01-18.sql to patch-2010-06-08.sql for CAISI
 
 -- Note that to add the Rich Text Letter eForm, you need to merge the OscarDocument.war with the new one, ie
@@ -102,6 +102,8 @@ alter table gstControl add column id int auto_increment primary key;
 alter table billingperclimit drop primary key;
 alter table billingperclimit add column id integer auto_increment primary key;
 
+DROP TABLE IF EXISTS queue_provider_link;
+insert into queue values(1,'default');
 
 -- -----------------------------------------------------------
 -- CAISI patches

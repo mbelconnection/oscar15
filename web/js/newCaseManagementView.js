@@ -1871,11 +1871,11 @@ function ajaxSaveNote(div,noteId,noteTxt) {
             alert(assignObservationDateError);
             return false;
         }
-*/        
+*/
         if($("encTypeSelect0") != null && $("encTypeSelect0").options[$("encTypeSelect0").selectedIndex].value.length == 0 ) {
         	alert(assignEncTypeError);
         	return false;
-        }        
+        }
     }
 
 
@@ -1939,11 +1939,11 @@ function savePage(method, chain) {
             alert(assignObservationDateError);
             return false;
         }
-*/        
+*/
         if($("encTypeSelect0") != null && $("encTypeSelect0").options[$("encTypeSelect0").selectedIndex].value.length == 0 ) {
         	alert(assignEncTypeError);
         	return false;
-        }       
+        }
     }
     document.forms["caseManagementEntryForm"].method.value = method;
     document.forms["caseManagementEntryForm"].ajax.value = false;
@@ -2194,7 +2194,7 @@ function newNote(e) {
     // the extra BR NBSP at the ends are for IE fix for selection box is out of scrolling pane view.
     var div = "<div id='" + id + "' class='newNote'><input type='hidden' id='signed" + newNoteIdx + "' value='false'><input type='hidden' id='editWarn" + newNoteIdx + "' value='false'><div id='n" + newNoteIdx + "'><input type='hidden' id='full" + newNoteIdx + "' value='true'>" +
               "<input type='hidden' id='bgColour" + newNoteIdx + "' value='color:#000000;background-color:#CCCCFF;'>" + input + "<div class='sig' style='display:inline;' id='" + sigId + "'><\/div>" + passwd + "<\/div><\/div><br \/>&nbsp;<br \/>&nbsp;<br \/>&nbsp;<br \/>";
-   
+
 
     if( changeToView(caseNote) ) {
 
@@ -2236,7 +2236,7 @@ function newNote(e) {
 
     //need delay..something else going on
     setTimeout(scrollDownInnerBar,1500);
-    
+
     return false;
 }
 
@@ -2593,10 +2593,10 @@ function autoCompleteShowMenuCPP(element, update) {
         var msnote;
         var pos;
 
-        for( idx = 0; idx < numNotes; ++idx ) {
+        for( idx = 0; idx <= numNotes; ++idx ) {
             notesDiv = $("nc" + idx).down('div');
             noteId = notesDiv.id.substr(1);  //get note id
-
+            if(noteId==0) continue;
             if( $("obs"+noteId) != null )
                 noteDate = $("obs"+noteId).innerHTML;
             else if( $("observationDate") != null )
@@ -2754,8 +2754,7 @@ function autoCompleteShowMenuCPP(element, update) {
         for( idx = 1; idx <= numNotes; ++idx ) {
             notesDiv = $("nc" + idx).down('div');
             noteId = notesDiv.id.substr(1);  //get note id
-
-            //if print img present, add note to print queue if not already there
+          //if print img present, add note to print queue if not already there
             if( $("print"+noteId) != null ) {
                 pos = noteIsQeued(noteId);
                 if( pos == -1 )
@@ -2774,5 +2773,3 @@ function autoCompleteShowMenuCPP(element, update) {
             Event.stop(e);
         }
     }
-
-   

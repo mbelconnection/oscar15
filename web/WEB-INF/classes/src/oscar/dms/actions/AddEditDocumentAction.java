@@ -58,12 +58,11 @@ import oscar.oscarEncounter.data.EctProgram;
 import oscar.util.UtilDateUtilities;
 
 public class AddEditDocumentAction extends DispatchAction {
-
-    public ActionForward multifast(ActionMapping mapping, ActionForm form,HttpServletRequest request, HttpServletResponse response) throws Exception{
-        //System.out.println("in multifast");
+    public ActionForward html5MultiUpload(ActionMapping mapping, ActionForm form,HttpServletRequest request, HttpServletResponse response) throws Exception{
+        
         Hashtable errors = new Hashtable();
         AddEditDocumentForm fm = (AddEditDocumentForm) form;
-
+        
         FormFile docFile = fm.getFiledata();
         int numberOfPages=0;
          String fileName = docFile.getFileName();
@@ -87,15 +86,16 @@ public class AddEditDocumentAction extends DispatchAction {
             String doc_no = EDocUtil.addDocumentSQL(newDoc);
             LogAction.addLog((String) request.getSession().getAttribute("user"), LogConst.ADD, LogConst.CON_DOCUMENT, doc_no, request.getRemoteAddr());
             String providerId=request.getParameter("provider");
-            //System.out.println("providerId="+providerId);
+            
         if (providerId !=null){ //TODO: THIS NEEDS TO RUN THRU THE  lab forwarding rules!
             WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getSession().getServletContext());
-            ProviderInboxRoutingDao providerInboxRoutingDao = (ProviderInboxRoutingDao) ctx.getBean("providerInboxRoutingDAO");            
+            ProviderInboxRoutingDao providerInboxRoutingDao = (ProviderInboxRoutingDao) ctx.getBean("providerInboxRoutingDAO");
             providerInboxRoutingDao.addToProviderInbox(providerId,doc_no,"DOC");
         }
         //add to queuelinkdocument
             String queueId=request.getParameter("queue");
-            //System.out.println("queueId="+queueId);
+            
+            
         if ( queueId !=null &&!queueId.equals("-1")){
             WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getSession().getServletContext());
             QueueDocumentLinkDao queueDocumentLinkDAO = (QueueDocumentLinkDao) ctx.getBean("queueDocumentLinkDAO");
@@ -111,7 +111,7 @@ public class AddEditDocumentAction extends DispatchAction {
         return mapping.findForward("fastUploadSuccess");
 
     }
-
+        
     public int countNumOfPages(String fileName){//count number of pages in a local pdf file
          //System.out.println("in countNumOfPages");
          int numOfPage=0;

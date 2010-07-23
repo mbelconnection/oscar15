@@ -105,7 +105,6 @@
 	<bean id="BillingreferralDAO" class="org.oscarehr.common.dao.BillingreferralDao" autowire="byName" />
 	<bean id="DxresearchDAO" class="org.oscarehr.common.dao.DxresearchDAO" autowire="byName" />
 	<bean id="Icd9DAO" class="org.oscarehr.common.dao.Icd9Dao" autowire="byName" />
-        <bean id="MyGroupDAO" class="org.oscarehr.common.dao.MyGroupDAO" autowire="byName" />
 
 	<!--  configure the scratch pad -->
 	<bean id="scratchPadDao" class="com.quatro.dao.ScratchPadDao" autowire="byName" />
@@ -117,7 +116,6 @@
 	<bean id="providerInboxRoutingDAO" class="org.oscarehr.common.dao.ProviderInboxRoutingDao" autowire="byName"/>
 
         <bean id="queueDocumentLinkDAO" class="org.oscarehr.common.dao.QueueDocumentLinkDao" autowire="byName"/>
-        <bean id="queueProviderLinkDAO" class="org.oscarehr.common.dao.QueueProviderLinkDao" autowire="byName"/>
 	<bean id="integratorControlDao" class="oscar.facility.IntegratorControlDao" autowire="byName" />
 	<bean id="appointmentDao" class="oscar.appt.AppointmentDao" autowire="byName" />
 

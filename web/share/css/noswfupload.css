@@ -17,7 +17,7 @@ div.noswfupload {
     display: inline-block;
     width: 240px;
     padding: 2px;
-    background: #FFF;
+    background: #F2F7FF;
 }
 div.noswfupload,
 div.noswfupload a {
@@ -56,7 +56,7 @@ div.noswfupload ul {
     width: 220px !important;
     width: 216px;
     height: 100px;
-    background: #FFF;
+    background: #F2F7FF;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -70,7 +70,7 @@ div.noswfupload li {
 div.noswfupload .info {
     display: block;
     clear: left;
-    background: #FFF;
+    background: #F2F7FF;
 }
 div.noswfupload .hidden {
     visibility: hidden;

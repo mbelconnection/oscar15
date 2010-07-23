@@ -480,6 +480,7 @@ var $ = {
 
         // be sure input accept multiple files
         input.setAttribute("multiple", "multiple");
+        input.setAttribute("style", "background:#F2F7FF");
 
         // created structure swapped with the input
         // <div class="noswfupload">

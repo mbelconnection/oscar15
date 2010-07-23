@@ -53,13 +53,12 @@ import org.apache.struts.actions.DispatchAction;
 import org.oscarehr.PMmodule.utility.UtilDateUtilities;
 import org.oscarehr.common.dao.ProviderInboxRoutingDao;
 import org.oscarehr.common.dao.QueueDocumentLinkDao;
-import org.oscarehr.common.dao.QueueProviderLinkDao;
 import org.oscarehr.common.model.ProviderInboxItem;
 import org.oscarehr.common.model.QueueDocumentLink;
 import org.oscarehr.document.DocumentResultsData;
+import org.oscarehr.util.SpringUtils;
 import oscar.dms.EDoc;
-import oscar.dms.EDocUtil;
-import oscar.dms.data.QueueData;
+import org.oscarehr.common.dao.QueueDao;
 import oscar.oscarLab.ca.on.CommonLabResultData;
 import oscar.oscarLab.ca.on.LabResultData;
 import oscar.oscarProvider.data.ProviderData;
@@ -72,7 +71,6 @@ import oscar.util.OscarRoleObjectPrivilege;
 public class DmsInboxManageAction extends DispatchAction {
     private ProviderInboxRoutingDao providerInboxRoutingDAO=null;
     private QueueDocumentLinkDao queueDocumentLinkDAO=null;
-    private QueueProviderLinkDao queueProviderLinkDAO=null;
     private SecObjectNameDao secObjectNameDao=null;
     public void setProviderInboxRoutingDAO(ProviderInboxRoutingDao providerInboxRoutingDAO){
         this.providerInboxRoutingDAO = providerInboxRoutingDAO;
@@ -80,51 +78,14 @@ public class DmsInboxManageAction extends DispatchAction {
     public void setQueueDocumentLinkDAO(QueueDocumentLinkDao queueDocumentLinkDAO){
         this.queueDocumentLinkDAO=queueDocumentLinkDAO;
     }
-    public void setQueueProviderLinkDAO(QueueProviderLinkDao queueProviderLinkDAO){
-        this.queueProviderLinkDAO=queueProviderLinkDAO;
-    }
+    
     public void setSecObjectNameDao(SecObjectNameDao secObjectNameDao){
         this.secObjectNameDao=secObjectNameDao;
     }
     public ActionForward unspecified(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-       try{
-           String module,moduleid, view, sort, viewstatus;
-        module = "demographic";
-        moduleid = "-1";
-        view = "all";
-        if (request.getParameter("view") != null) {
-            view = (String) request.getParameter("view");
-        } else if (request.getAttribute("view") != null) {
-            view = (String) request.getAttribute("view");
-        }
-        sort =EDocUtil.SORT_CREATOR+",  "+ EDocUtil.SORT_OBSERVATIONDATE;
-        String sortRequest = request.getParameter("sort");
-        if (sortRequest != null) {
-            if (sortRequest.equals("description")) {
-                sort = EDocUtil.SORT_DESCRIPTION;
-            } else if (sortRequest.equals("type")) {
-                sort = EDocUtil.SORT_DOCTYPE;
-            } else if (sortRequest.equals("contenttype")) {
-                sort = EDocUtil.SORT_CONTENTTYPE;
-            } else if (sortRequest.equals("creator")) {
-                sort = EDocUtil.SORT_CREATOR;
-            } else if (sortRequest.equals("uploaddate")) {
-                sort = EDocUtil.SORT_DATE;
-            } else if (sortRequest.equals("observationdate")) {
-                sort = EDocUtil.SORT_OBSERVATIONDATE;
-            }
-        }
-        viewstatus = "active";
-        ArrayList<EDoc> privatedocs = new ArrayList();
-        privatedocs = EDocUtil.listDocs(module, moduleid, view, EDocUtil.PRIVATE, sort, viewstatus);//TODO: implement public docs later if needed.
         
-        setProviderDocsInSession(privatedocs,request);
-        setQueueDocsInSession(privatedocs,request);
-        
-       }catch(Exception e){
-           e.printStackTrace();
-       }
-        return mapping.findForward("success");
+
+        return null;
     }
     private void setProviderDocsInSession(ArrayList<EDoc> privatedocs,HttpServletRequest request){
         ArrayList providers = ProviderData.getProviderListOfAllTypes();
@@ -179,7 +140,8 @@ public class DmsInboxManageAction extends DispatchAction {
     private void setQueueDocsInSession(ArrayList<EDoc> privatedocs,HttpServletRequest request){
          //docs according to queue name
         Hashtable queueDocs=new Hashtable();
-        List<Hashtable> queues=QueueData.getQueues();
+        QueueDao queueDao = (QueueDao) SpringUtils.getBean("queueDao");
+        List<Hashtable> queues=queueDao.getQueues();
         for(int i=0;i<queues.size();i++){
             Hashtable ht=(Hashtable)queues.get(i);
             List<EDoc> EDocs=new ArrayList();
@@ -527,8 +489,9 @@ public class DmsInboxManageAction extends DispatchAction {
            String qn=request.getParameter("newQueueName");
            qn=qn.trim();
            if(qn!=null && qn.length()>0){
-                success=QueueData.addNewQueue(qn);
-                addQueueSecObjectName(qn,QueueData.getLastId());
+               QueueDao queueDao=(QueueDao)SpringUtils.getBean("queueDao");
+                success=queueDao.addNewQueue(qn);
+                addQueueSecObjectName(qn,queueDao.getLastId());
            }
        }catch(Exception e){
            e.printStackTrace();
@@ -545,18 +508,4 @@ public class DmsInboxManageAction extends DispatchAction {
         return null;
     }
 
-    public ActionForward addQueueProviderLink(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-        String providerS=request.getParameter("providers");
-        String queueS=request.getParameter("queues");
-        System.out.println(providerS+" ; "+queueS);
-        String [] providerAr=providerS.split("\\+");
-        String [] queueAr=queueS.split("\\+");
-        for(String sprovider:providerAr){
-            for(String squeue:queueAr){
-                if(sprovider!=null && squeue!=null && sprovider.trim().length()>0 &&squeue.trim().length()>0)
-                    queueProviderLinkDAO.addQueueProviderLink(Integer.parseInt(squeue.trim()), sprovider.trim());
-            }
-        }
-        return null;
-    }
 }

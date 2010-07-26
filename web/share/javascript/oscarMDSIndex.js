@@ -70,26 +70,32 @@ function initPatientIds(s){
                                return r;
                            }
                            function initHashtableWithList(s){//for typeDocLab,patientDocs
+                               //console.log(s);
                                 s=s.replace('{','');
                                 s=s.replace('}','');
-                                //console.log(s);
-                                var sar=s.split('],');
-                                var r=new Object();
-                                for(var i=0;i<sar.length;i++){
-                                    var ele=sar[i];
-                                    ele=ele.replace(/\s/g,'');
-                                    var elear=ele.split('=');
-                                    var key=elear[0];
-                                    var val=elear[1];
-                                    val=val.replace('[','');
-                                    val=val.replace(']','');
-                                    val=val.replace(/\s/g,'');
-                                    //console.log(key);
-                                    //console.log(val);
-                                    var valar=val.split(',');
-                                    r[key]=valar;
+                                if(s.length>0){
+                                        var sar=s.split('],');
+                                        var r=new Object();
+                                        for(var i=0;i<sar.length;i++){
+                                            var ele=sar[i];
+                                            //console.log('ele='+ele);
+                                            ele=ele.replace(/\s/g,'');
+                                            var elear=ele.split('=');
+                                            var key=elear[0];
+                                            var val=elear[1];
+                                            val=val.replace('[','');
+                                            val=val.replace(']','');
+                                            val=val.replace(/\s/g,'');
+                                            //console.log(key);
+                                            //console.log(val);
+                                            var valar=val.split(',');
+                                            r[key]=valar;
+                                        }
+                                        return r;
+                                }else{
+                                    return new Object();
                                 }
-                                return r;
+                                
                            }
 
                            function initHashtableWithString(s){//for docStatus,docType
@@ -249,13 +255,17 @@ function initPatientIds(s){
 
 function hideTopBtn(){
     $('topFRBtn').hide();
-    $('topFBtn').hide();
-    $('topFileBtn').hide();
+    if($('topFBtn') && $('topFileBtn')){
+        $('topFBtn').hide();
+        $('topFileBtn').hide();
+    }
 }
 function showTopBtn(){
     $('topFRBtn').show();
-    $('topFBtn').show();
-    $('topFileBtn').show();
+    if($('topFBtn') && $('topFileBtn')){
+        $('topFBtn').show();
+        $('topFileBtn').show();
+    }
 }
   function changeView(){
                                 if($('summaryView').getStyle('display')=='none'){
@@ -1384,7 +1394,7 @@ function updateGlobalDataAndSideNav(doclabid,patientId){
                                                     //oscarLog(windowprops);
                                                     var popup=window.open(varpage, windowname, windowprops);
                                                 }
-                                               function updateDocument(eleId){
+                                               function updateDocument(eleId){//save doc info
                                                     var url="../dms/ManageDocument.do",data=$(eleId).serialize(true);
                                                     new Ajax.Request(url,{method:'post',parameters:data,onSuccess:function(transport){
                                                             var json=transport.responseText.evalJSON();
@@ -1397,6 +1407,7 @@ function updateGlobalDataAndSideNav(doclabid,patientId){
                                                                 var num=ar[1];
                                                                 num=num.replace(/\s/g,'');
                                                                 $("saveSucessMsg_"+num).show();
+                                                                $('saved'+num).value='true';
 
                                                                 var success= updateGlobalDataAndSideNav(num,patientId);
                                                                 if(success){
@@ -1412,17 +1423,50 @@ function updateGlobalDataAndSideNav(doclabid,patientId){
                                                     return false;
                                                 }
 
-                                             function updateStatus(formid){
-                                                        var url=contextpath+"/oscarMDS/UpdateStatus.do";
-                                                        var data=$(formid).serialize(true);
+                                             function updateStatus(formid){//acknowledge
+                                                        var num=formid.split("_");
+                                                        var doclabid=num[1];
+                                                        if(doclabid){
+                                                            var demoId=$('demofind'+doclabid).value;
+                                                            var saved=$('saved'+doclabid).value;
+                                                            if(demoId=='-1'|| saved=='false'){
+                                                                alert('Document is not assigned and saved to a patient,please file it');
+                                                            }else{
+                                                                    var url=contextpath+"/oscarMDS/UpdateStatus.do";
+                                                                    var data=$(formid).serialize(true);
 
-                                                        new Ajax.Request(url,{method:'post',parameters:data,onSuccess:function(transport){
-                                                                var num=formid.split("_");
-                                                             if(num[1]){
-                                                                 Effect.BlindUp('labdoc_'+num[1]);
-                                                                 updateDocLabData(num[1]);
+                                                                    new Ajax.Request(url,{method:'post',parameters:data,onSuccess:function(transport){
 
+                                                                         if(doclabid){
+                                                                             Effect.BlindUp('labdoc_'+doclabid);
+                                                                             updateDocLabData(doclabid);
+
+                                                                        }
+                                                                }});
                                                             }
-                                                    }});
-
                                                     }
+                                                }
+
+                                       function fileDoc(docId){
+                                           if(docId){
+                                                docId=docId.replace(/\s/,'');
+                                                if(docId.length>0){
+                                                     var demoId=$('demofind'+docId).value;
+                                                     var isFile=true;
+                                                    if(demoId=='-1'){
+                                                        isFile=confirm('Document is not assigned to any patient, do you still want to file it?');
+                                                    }
+                                                    if(isFile) {
+                                                             var type='DOC';
+                                                             if(type){
+                                                                 var url='../oscarMDS/FileLabs.do';
+                                                                var data='method=fileLabAjax&flaggedLabId='+docId+'&labType='+type;
+                                                                new Ajax.Request(url, {method: 'post',parameters:data,onSuccess:function(transport){
+                                                                        Effect.Fade('labdoc_'+docId);
+                                                                        updateDocLabData(docId);
+                                                                }});
+                                                        }
+                                                    }
+                                               }
+                                            }
+                                       }

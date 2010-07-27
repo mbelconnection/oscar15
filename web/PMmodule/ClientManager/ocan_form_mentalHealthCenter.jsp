@@ -76,10 +76,11 @@
 				<%=OcanForm.renderAsTextArea(ocanStaffForm.getId(),"serviceUseRecord_orgNumberOther"+centerNumber,1,30, prepopulationLevel)%>
 			</td>
 		</tr>
+		<!--  
 		<tr>
 			<td class="genericTableHeader">Program Name</td>
 			<td class="genericTableData">
-				<select name="admissionId">
+				<select name="admissionId<%=centerNumber %>">
 					<%
 						for (Admission admission : OcanForm.getAdmissions(currentDemographicId))
 						{
@@ -113,6 +114,7 @@
 				<%=OcanForm.renderAsTextArea(ocanStaffForm.getId(),"serviceUseRecord_programNumberOther"+centerNumber,1,30, prepopulationLevel)%>
 			</td>
 		</tr>
+		-->
 		<tr>
 			<td class="genericTableHeader">Functional Center Name</td>
 			<td class="genericTableData">

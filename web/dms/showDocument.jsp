@@ -45,7 +45,131 @@
             String url2 = request.getContextPath()+"/dms/ManageDocument.do?method=display&doc_no=" + docId;
             
 %>
-       
+       <script type="text/javascript">
+
+        renderCalendar=function(id,inputFieldId){
+                Calendar.setup({ inputField : inputFieldId, ifFormat : "%Y-%m-%d", showsTime :false, button : id });
+        }
+
+                                        YAHOO.example.BasicRemote = function() {
+                                          if($("autocompletedemo<%=docId%>") && $("autocomplete_choices<%=docId%>")){
+                                                 //oscarLog('in basic remote');
+                                                //var oDS = new YAHOO.util.XHRDataSource("http://localhost:8080/drugref2/test4.jsp");
+                                                var url = "../demographic/SearchDemographic.do";
+                                                var oDS = new YAHOO.util.XHRDataSource(url,{connMethodPost:true,connXhrMode:'ignoreStaleResponses'});
+                                                oDS.responseType = YAHOO.util.XHRDataSource.TYPE_JSON;// Set the responseType
+                                                // Define the schema of the delimited resultsTEST, PATIENT(1985-06-15)
+                                                oDS.responseSchema = {
+                                                    resultsList : "results",
+                                                    fields : ["formattedName","fomattedDob","demographicNo"]
+                                                };
+                                                // Enable caching
+                                                oDS.maxCacheEntries = 0;
+                                                var oAC = new YAHOO.widget.AutoComplete("autocompletedemo<%=docId%>","autocomplete_choices<%=docId%>",oDS);
+                                                oAC.queryMatchSubset = true;
+                                                oAC.minQueryLength = 3;
+                                                oAC.maxResultsDisplayed = 25;
+                                                oAC.formatResult = resultFormatter2;
+                                                //oAC.typeAhead = true;
+                                                oAC.queryMatchContains = true;
+                                                //oscarLog(oAC);
+                                                //oscarLog(oAC.itemSelectEvent);
+                                                oAC.itemSelectEvent.subscribe(function(type, args) {
+                                                    //oscarLog(args);
+                                                    //oscarLog(args[0].getInputEl().id);
+                                                    var str = args[0].getInputEl().id.replace("autocompletedemo","demofind");
+                                                   //oscarLog(str);
+                                                   $(str).value = args[2][2];//li.id;
+                                                   args[0].getInputEl().value = args[2][0] + "("+args[2][1]+")";
+                                                   selectedDemos.push(args[0].getInputEl().value);
+                                                   //enable Save button whenever a selection is made
+                                                   $('save<%=docId%>').enable();
+
+                                                });
+
+
+                                                return {
+                                                    oDS: oDS,
+                                                    oAC: oAC
+                                                };
+                                            }
+                                            }();
+
+
+
+
+                                                YAHOO.example.BasicRemote = function() {
+                                                        var url = "<%= request.getContextPath() %>/provider/SearchProvider.do";
+                                                        var oDS = new YAHOO.util.XHRDataSource(url,{connMethodPost:true,connXhrMode:'ignoreStaleResponses'});
+                                                        oDS.responseType = YAHOO.util.XHRDataSource.TYPE_JSON;// Set the responseType
+                                                        // Define the schema of the delimited resultsTEST, PATIENT(1985-06-15)
+                                                        oDS.responseSchema = {
+                                                            resultsList : "results",
+                                                            fields : ["providerNo","firstName","lastName"]
+                                                        };
+                                                        // Enable caching
+                                                        oDS.maxCacheEntries = 0;
+                                                        var oAC = new YAHOO.widget.AutoComplete("autocompleteprov<%=docId%>", "autocomplete_choicesprov<%=docId%>", oDS);
+                                                        oAC.queryMatchSubset = true;
+                                                        oAC.minQueryLength = 3;
+                                                        oAC.maxResultsDisplayed = 25;
+                                                        oAC.formatResult = resultFormatter3;
+                                                        //oAC.typeAhead = true;
+                                                        oAC.queryMatchContains = true;
+                                                        //oscarLog(oAC);
+                                                        //oscarLog(oAC.itemSelectEvent);
+                                                        oAC.itemSelectEvent.subscribe(function(type, args) {
+                                                            //oscarLog(args);
+                                                           var myAC = args[0];
+                                                           var str = myAC.getInputEl().id.replace("autocompleteprov","provfind");
+                                                           //oscarLog(str);
+                                                           //oscarLog(args[2]);
+                                                           var oData=args[2];
+                                                           $(str).value = args[2][0];//li.id;
+                                                           //oscarLog("str value="+$(str).value);
+                                                           //oscarLog(args[2][1]+"--"+args[2][0]);
+                                                           myAC.getInputEl().value = args[2][2] + ","+args[2][1];
+                                                           //oscarLog("--"+args[0].getInputEl().value);
+                                                           //selectedDemos.push(args[0].getInputEl().value);
+
+                                                           //enable Save button whenever a selection is made
+                                                            var bdoc = document.createElement('a');
+                                                            bdoc.setAttribute("onclick", "removeProv(this);");
+                                                            bdoc.appendChild(document.createTextNode(" -remove- "));
+                                                            //oscarLog("--");
+                                                            var adoc = document.createElement('div');
+                                                            adoc.appendChild(document.createTextNode(oData[2] + " " +oData[1]));
+                                                            //oscarLog("--==");
+                                                            var idoc = document.createElement('input');
+                                                            idoc.setAttribute("type", "hidden");
+                                                            idoc.setAttribute("name","flagproviders");
+                                                            idoc.setAttribute("value",oData[0]);
+                                                            //console.log(oData[0]);
+                                                            //console.log(myAC);
+                                                         //   console.log(elLI);
+                                                         //   console.log(oData);
+                                                         //   console.log(aArgs);
+                                                         //   console.log(sType);
+                                                            adoc.appendChild(idoc);
+
+                                                            adoc.appendChild(bdoc);
+                                                            var providerList = $('providerList<%=docId%>');
+                                                        //    console.log('Now HERE'+providerList);
+                                                            providerList.appendChild(adoc);
+
+                                                            myAC.getInputEl().value = '';//;oData.fname + " " + oData.lname ;
+
+                                                        });
+
+
+                                                        return {
+                                                            oDS: oDS,
+                                                            oAC: oAC
+                                                        };
+                                                    }();
+
+
+                                            </script>
 
         <div id="labdoc_<%=docId%>">
             <table class="docTable">
@@ -111,57 +235,7 @@
                                             <div id="autocomplete_choices<%=docId%>"class="autocomplete"></div>
                                             <%}%>
 
-         <script type="text/javascript">
-
-        renderCalendar=function(id,inputFieldId){
-                Calendar.setup({ inputField : inputFieldId, ifFormat : "%Y-%m-%d", showsTime :false, button : id });
-        }
-                    
-                                        YAHOO.example.BasicRemote = function() {
-                                          if($("autocompletedemo<%=docId%>") && $("autocomplete_choices<%=docId%>")){
-                                                 //oscarLog('in basic remote');
-                                                //var oDS = new YAHOO.util.XHRDataSource("http://localhost:8080/drugref2/test4.jsp");
-                                                var url = "../demographic/SearchDemographic.do";
-                                                var oDS = new YAHOO.util.XHRDataSource(url,{connMethodPost:true,connXhrMode:'ignoreStaleResponses'});
-                                                oDS.responseType = YAHOO.util.XHRDataSource.TYPE_JSON;// Set the responseType
-                                                // Define the schema of the delimited resultsTEST, PATIENT(1985-06-15)
-                                                oDS.responseSchema = {
-                                                    resultsList : "results",
-                                                    fields : ["formattedName","fomattedDob","demographicNo"]
-                                                };
-                                                // Enable caching
-                                                oDS.maxCacheEntries = 0;                                        
-                                                var oAC = new YAHOO.widget.AutoComplete("autocompletedemo<%=docId%>","autocomplete_choices<%=docId%>",oDS);
-                                                oAC.queryMatchSubset = true;
-                                                oAC.minQueryLength = 3;
-                                                oAC.maxResultsDisplayed = 25;
-                                                oAC.formatResult = resultFormatter2;
-                                                //oAC.typeAhead = true;
-                                                oAC.queryMatchContains = true;
-                                                //oscarLog(oAC);
-                                                //oscarLog(oAC.itemSelectEvent);
-                                                oAC.itemSelectEvent.subscribe(function(type, args) {
-                                                    //oscarLog(args);
-                                                    //oscarLog(args[0].getInputEl().id);
-                                                    var str = args[0].getInputEl().id.replace("autocompletedemo","demofind");
-                                                   //oscarLog(str);
-                                                   $(str).value = args[2][2];//li.id;
-                                                   args[0].getInputEl().value = args[2][0] + "("+args[2][1]+")";
-                                                   selectedDemos.push(args[0].getInputEl().value);
-                                                   //enable Save button whenever a selection is made
-                                                   $('save<%=docId%>').enable();
-
-                                                });
-
-
-                                                return {
-                                                    oDS: oDS,
-                                                    oAC: oAC
-                                                };
-                                            }
-                                            }();
-
-                                            </script>
+         
                                                    <input id="saved_<%=docId%>" type="hidden" name="saved" value="false"/>
                                                    <input id="mrp_<%=docId%>" type="checkbox" onclick="sendMRP(this)"  name="demoLink" ><bean:message key="inboxmanager.document.SendToMRPMsg" />
                                                    <a id="mrp_fail_<%=docId%>" style="color:red;font-style: italic;display: none;" ><bean:message key="inboxmanager.document.SendToMRPFailedMsg" /></a>
@@ -175,82 +249,7 @@
                                             <input type="text" id="autocompleteprov<%=docId%>" name="demographicKeyword"/>
                                             <div id="autocomplete_choicesprov<%=docId%>" class="autocomplete"></div>
 
-                                            <script type="text/javascript">
-
-                            
-                                         
-                                                YAHOO.example.BasicRemote = function() {
-                                                        var url = "<%= request.getContextPath() %>/provider/SearchProvider.do";
-                                                        var oDS = new YAHOO.util.XHRDataSource(url,{connMethodPost:true,connXhrMode:'ignoreStaleResponses'});
-                                                        oDS.responseType = YAHOO.util.XHRDataSource.TYPE_JSON;// Set the responseType
-                                                        // Define the schema of the delimited resultsTEST, PATIENT(1985-06-15)
-                                                        oDS.responseSchema = {
-                                                            resultsList : "results",
-                                                            fields : ["providerNo","firstName","lastName"]
-                                                        };
-                                                        // Enable caching
-                                                        oDS.maxCacheEntries = 0;                                                      
-                                                        var oAC = new YAHOO.widget.AutoComplete("autocompleteprov<%=docId%>", "autocomplete_choicesprov<%=docId%>", oDS);
-                                                        oAC.queryMatchSubset = true;
-                                                        oAC.minQueryLength = 3;
-                                                        oAC.maxResultsDisplayed = 25;
-                                                        oAC.formatResult = resultFormatter3;
-                                                        //oAC.typeAhead = true;
-                                                        oAC.queryMatchContains = true;
-                                                        //oscarLog(oAC);
-                                                        //oscarLog(oAC.itemSelectEvent);
-                                                        oAC.itemSelectEvent.subscribe(function(type, args) {
-                                                            //oscarLog(args);
-                                                           var myAC = args[0];
-                                                           var str = myAC.getInputEl().id.replace("autocompleteprov","provfind");
-                                                           //oscarLog(str);
-                                                           //oscarLog(args[2]);
-                                                           var oData=args[2];
-                                                           $(str).value = args[2][0];//li.id;
-                                                           //oscarLog("str value="+$(str).value);
-                                                           //oscarLog(args[2][1]+"--"+args[2][0]);
-                                                           myAC.getInputEl().value = args[2][2] + ","+args[2][1];
-                                                           //oscarLog("--"+args[0].getInputEl().value);
-                                                           //selectedDemos.push(args[0].getInputEl().value);
-
-                                                           //enable Save button whenever a selection is made
-                                                            var bdoc = document.createElement('a');
-                                                            bdoc.setAttribute("onclick", "removeProv(this);");
-                                                            bdoc.appendChild(document.createTextNode(" -remove- "));
-                                                            //oscarLog("--");
-                                                            var adoc = document.createElement('div');
-                                                            adoc.appendChild(document.createTextNode(oData[2] + " " +oData[1]));
-                                                            //oscarLog("--==");
-                                                            var idoc = document.createElement('input');
-                                                            idoc.setAttribute("type", "hidden");
-                                                            idoc.setAttribute("name","flagproviders");
-                                                            idoc.setAttribute("value",oData[0]);
-                                                            //console.log(oData[0]);
-                                                            //console.log(myAC);
-                                                         //   console.log(elLI);
-                                                         //   console.log(oData);
-                                                         //   console.log(aArgs);
-                                                         //   console.log(sType);
-                                                            adoc.appendChild(idoc);
-
-                                                            adoc.appendChild(bdoc);
-                                                            var providerList = $('providerList<%=docId%>');
-                                                        //    console.log('Now HERE'+providerList);
-                                                            providerList.appendChild(adoc);
-
-                                                            myAC.getInputEl().value = '';//;oData.fname + " " + oData.lname ;
-
-                                                        });
-
-
-                                                        return {
-                                                            oDS: oDS,
-                                                            oAC: oAC
-                                                        };
-                                                    }();
-
-                                         
-                                            </script>
+                                            
                                             <div id="providerList<%=docId%>"></div>
                                         </td>
                                     </tr>

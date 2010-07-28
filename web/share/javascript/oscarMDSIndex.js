@@ -70,7 +70,6 @@ function initPatientIds(s){
                                return r;
                            }
                            function initHashtableWithList(s){//for typeDocLab,patientDocs
-                               //console.log(s);
                                 s=s.replace('{','');
                                 s=s.replace('}','');
                                 if(s.length>0){
@@ -78,7 +77,6 @@ function initPatientIds(s){
                                         var r=new Object();
                                         for(var i=0;i<sar.length;i++){
                                             var ele=sar[i];
-                                            //console.log('ele='+ele);
                                             ele=ele.replace(/\s/g,'');
                                             var elear=ele.split('=');
                                             var key=elear[0];
@@ -172,41 +170,60 @@ function initPatientIds(s){
                              }
                          }
                          function removePatientId(pid){
+                             if(pid){
                              var i=patientIds.indexOf(pid);
+                             //console.log('i='+i+'patientIds='+patientIds);
                              if(i!=-1){
                                  patientIds.splice(i,1);
                              }
-                         }
+                             //console.log(patientIds);
+                         }}
                          function removeEmptyPairFromPatientDocs(){
+                             var notUsedPid=new Array();
                              for(var i=0;i<patientIds.length;i++){
                                  var pid=patientIds[i];
                                  var e=patientDocs[pid];
+
                                  if(!e){
-                                     removePatientId(pid);//remove pid if it doesn't relate to any doclab
+                                     notUsedPid.push(pid);
                                  }
                                  else if(e==null || e.length==0){
                                      delete patientDocs[pid];
                                  }
                              }
+                             //console.log(notUsedPid);
+                             for(var i=0;i<notUsedPid.length;i++){
+                                 removePatientId(notUsedPid[i]);//remove pid if it doesn't relate to any doclab
+                         }
                          }
                          function removeIdFromPatientDocs(doclabid){
-//console.log('in removeidfrompatientdocs');
+//console.log('in removeidfrompatientdocs'+doclabid);
+//console.log(patientIds);
+//console.log(patientDocs);
                                 for(var i=0;i<patientIds.length;i++){
                                     var pid=patientIds[i];
                                     var a=patientDocs[pid];
-                                    if(a.length>0){
+                                    //console.log('a');
+                                    //console.log(a);
+                                    if(a&&a.length>0){
                                         var f=a.indexOf(doclabid);
+                                        //console.log('before splice');
+                                        //console.log(patientDocs);
                                         if(f!=-1){
                                             a.splice(f, 1);
                                             patientDocs[pid]=a;
                                         }
-                                        
+                                        //console.log('after splice');
+                                        //console.log(patientDocs);
                                     }
                                     else{
                                         delete patientDocs[pid];
+                                        //console.log('after delete');
+                                        //console.log(patientDocs);
                                     }
                                 }
-                              //console.log('after remove');console.log(patientDocs);
+                              //console.log('after remove');
+                              //console.log(patientDocs);
                          }
                          function addIdToPatient(did,pid){
                              var a=patientDocs[pid];
@@ -487,14 +504,16 @@ function wrapUp() {
                                $('currentPageNum').innerHTML=page;
                                if(page==1)
                                {
-                                   $('msgPrevious').hide();
+                                  if($('msgPrevious')) $('msgPrevious').hide();
                                }else if(page>1){
-                                   $('msgPrevious').show();
+                                  if($('msgPrevious')) $('msgPrevious').show();
                                }
-                               if(isLastPage)
-                                   $('msgNext').hide();
-                               else
-                                   $('msgNext').show();
+                               if(isLastPage){
+                                    if($('msgNext'))    $('msgNext').hide();
+                           }
+                               else{
+                                    if($('msgNext'))    $('msgNext').show();
+                               }
                            }
                            function showTypePageNumber(page,type){
                                var eles;
@@ -1016,21 +1035,30 @@ function wrapUp() {
                             }
 
                             function getPatientIdFromDocLabId(docLabId){
-                                //console.log('in getpatientidfromdoclabid');
+                                //console.log('in getpatientidfromdoclabid='+docLabId);
                                 //console.log(patientIds);
                                 //console.log(patientDocs);
+                                var notUsedPid=new Array();
                                 for(var i=0;i<patientIds.length;i++){
 
                                     var pid=patientIds[i];
                                     var e=patientDocs[pid];
+                                    //console.log('e'+e);
                                     if(!e){
-                                        removePatientId(pid);
+                                        //console.log('if');
+                                        notUsedPid.push(pid);
                                     }else{
+                                        //console.log('in else='+docLabId);
                                         if(e.indexOf(docLabId)>-1){
                                             return pid;
                                         }
                                     }
                                 }
+                                //console.log(notUsedPid);
+                                for(var i=0;i<notUsedPid.length;i++){
+
+                                    removePatientId(notUsedPid[i]);
+                            }
                             }
                             function getLabDocFromPatientId(patientId){//return array of doc ids and lab ids from patient id.
                                 //console.log(patientId+"--");
@@ -1097,34 +1125,39 @@ function checkSelected() {
 }
 
 function updateDocLabData(doclabid){//remove doclabid from global variables
-//console.log('in updatedoclabdata');
+//console.log('in updatedoclabdata='+doclabid);
   if(doclabid){
       //console.log('aa');
        //trim doclabid
       doclabid=doclabid.replace(/\s/g,'');
-        updateSideNav(doclabid);//console.log('aa_aa11');
+        updateSideNav(doclabid);
+        //console.log('aa_aa11');
         hideRowUsingId(doclabid);
 //console.log('aa_aa');
     //change typeDocLab
     removeIdFromTypeDocLab(doclabid);
 //console.log('bb');
     //change docType
-    removeIdFromDocType(doclabid);//console.log('cc');
+    removeIdFromDocType(doclabid);
+    //console.log('cc');
     //change patientDocs
-    removeIdFromPatientDocs(doclabid);//console.log('dd');
+    removeIdFromPatientDocs(doclabid);
+    //console.log('dd');
 
     //change patientIdNames and patientIdStr
-    removeEmptyPairFromPatientDocs();//console.log('ee');
+    removeEmptyPairFromPatientDocs();
+    //console.log('ee');
 
     //change docStatus
-    removeIdFromDocStatus(doclabid);//console.log('ff');
+    removeIdFromDocStatus(doclabid);
+    //console.log('ff');
 
     //remove from normals
     removeNormal(doclabid);
     //remove from abnormals
     removeAbnormal(doclabid);
-    /*
-console.log(typeDocLab);
+
+/*console.log(typeDocLab);
                            console.log(docType);
                            console.log(patientDocs);
                            console.log(patientIdNames);
@@ -1415,7 +1448,8 @@ function updateGlobalDataAndSideNav(doclabid,patientId){
                                                                     if(success){
                                                                         //disable demo input
                                                                         $('autocompletedemo'+num).disabled=true;
-                                                                        //console.log('updated by save');console.log(patientDocs);
+                                                                        //console.log('updated by save');
+                                                                        //console.log(patientDocs);
                                                                     }
                                                                 }
                                                             }

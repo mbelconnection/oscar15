@@ -1296,6 +1296,8 @@ insert into `secRole` (role_name, description) values('Housing Worker', 'Housing
 insert into `secRole` (role_name, description) values('Support Worker', 'Support Worker');
 insert into `secRole` (role_name, description) values('Client Service Worker', 'Client Service Worker');
 insert into `secRole` (role_name, description) values('CAISI ADMIN', 'CAISI ADMIN');
+insert into `secRole` (role_name, description) values('Recreation Therapist', 'Recreation Therapist');
+
 
 insert into `secUserRole` (`provider_no`,`role_name`,`orgcd`,`activeyn`) values('999998', 'doctor', 'R0000001',1);
 insert into `secUserRole` (`provider_no`,`role_name`,`orgcd`,`activeyn`) values('999998', 'admin', 'R0000001',1);
@@ -1752,7 +1754,20 @@ insert into `secObjPrivilege` values('Client Service Worker','_pmm.clientSearch'
 insert into `secObjPrivilege` values('Client Service Worker','_pmm.newClient','x',0,'999998');
 insert into `secObjPrivilege` values('Client Service Worker','_tasks','x',0,'999998');
 
-
+insert into `secObjPrivilege` values('Recreation Therapist','_appointment','x',0,'999998');
+insert into `secObjPrivilege` values('Recreation Therapist','_casemgmt.issues','x',0,'999998');
+insert into `secObjPrivilege` values('Recreation Therapist','_casemgmt.notes','x',0,'999998');
+insert into `secObjPrivilege` values('Recreation Therapist','_demographic','x',0,'999998');
+insert into `secObjPrivilege` values('Recreation Therapist','_eChart','x',0,'999998');
+insert into `secObjPrivilege` values('Recreation Therapist','_eChart.verifyButton','x',0,'999998');
+insert into `secObjPrivilege` values('Recreation Therapist','_flowsheet','x',0,'999998');
+insert into `secObjPrivilege` values('Recreation Therapist','_masterLink','x',0,'999998');
+insert into `secObjPrivilege` values('Recreation Therapist','_pmm.agencyInformation','x',0,'999998');
+insert into `secObjPrivilege` values('Recreation Therapist','_pmm.caseManagement','x',0,'999998');
+insert into `secObjPrivilege` values('Recreation Therapist','_pmm.clientSearch','x',0,'999998');
+insert into `secObjPrivilege` values('Recreation Therapist','_pmm.mergeRecords','x',0,'999998');
+insert into `secObjPrivilege` values('Recreation Therapist','_pmm.newClient','x',0,'999998');
+insert into `secObjPrivilege` values('Recreation Therapist','_tasks','x',0,'999998');
 
 
 insert into lst_orgcd (code, description, activeyn, orderbyindex,codetree) values('R0000001','Shelter Management Information System',1,10,'R000001');

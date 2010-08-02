@@ -2,19 +2,19 @@
 
 <%!
 //multisite starts =====================
-private boolean bMultisites = org.oscarehr.common.IsPropertiesOn.isMultisitesEnable();	
+private boolean bMultisites = org.oscarehr.common.IsPropertiesOn.isMultisitesEnable();
 private JdbcApptImpl jdbc = new JdbcApptImpl();
 private List<Site> sites;
 private String [] curScheduleMultisite;
 private String getSiteHTML(String scDate, String provider_no, List<Site> sites) {
 	 if (!bMultisites) return "";
 	 String _loc = jdbc.getLocationFromSchedule(scDate, provider_no);
-	 return "<span style='background-color:"+ApptUtil.getColorFromLocation(sites, _loc)+"'>"+ApptUtil.getShortNameFromLocation(sites, _loc)+"</span>";	
+	 return "<span style='background-color:"+ApptUtil.getColorFromLocation(sites, _loc)+"'>"+ApptUtil.getShortNameFromLocation(sites, _loc)+"</span>";
 }
 %>
 <% if (bMultisites) {
 SiteDao siteDao = (SiteDao)WebApplicationContextUtils.getWebApplicationContext(application).getBean("siteDao");
-sites = siteDao.getAllSites(); 
+sites = siteDao.getAllSites();
 }
 //multisite ends =======================
 %>
@@ -52,8 +52,8 @@ if (request.getParameter("year")!=null && request.getParameter("month")!=null &&
 	{
 		session.setAttribute("infirmaryView_date",null);
 	}
-	String reqstr =request.getQueryString(); 
-	if (reqstr == null) 
+	String reqstr =request.getQueryString();
+	if (reqstr == null)
 	{
 		//Hack:: an unknown bug of struts or JSP causing the queryString to be null
 		String year_q = request.getParameter("year");
@@ -61,10 +61,10 @@ if (request.getParameter("year")!=null && request.getParameter("month")!=null &&
 	    String day_q = request.getParameter("day");
 	    String view_q = request.getParameter("view");
 	    String displayMode_q = request.getParameter("displaymode");
-	    reqstr = "year=" + year_q + "&month=" + month_q 
+	    reqstr = "year=" + year_q + "&month=" + month_q
            + "&day="+ day_q + "&view=" + view_q + "&displaymode=" + displayMode_q;
 	}
-	session.setAttribute("infirmaryView_OscarQue",reqstr); 
+	session.setAttribute("infirmaryView_OscarQue",reqstr);
 	String absurl="/infirm.do?action=showProgram";
 %>
 <c:import url="/infirm.do?action=showProgram" />
@@ -108,7 +108,7 @@ public boolean patientHasOutstandingPrivateBills(String demographicNo){
 	oscar.oscarSecurity.CookieSecurity cs = new oscar.oscarSecurity.CookieSecurity();
     response.addCookie(cs.GiveMeACookie(oscar.oscarSecurity.CookieSecurity.providerCookie));
 
-    String mygroupno = (String) session.getAttribute("groupno");  
+    String mygroupno = (String) session.getAttribute("groupno");
     String caisiView = null;
     caisiView = (String)request.getParameter("GoToCaisiViewFromOscarView");
     if(caisiView!=null && "true".equals(caisiView)) {
@@ -117,7 +117,7 @@ public boolean patientHasOutstandingPrivateBills(String demographicNo){
     String userfirstname = (String) session.getAttribute("userfirstname");
     String userlastname = (String) session.getAttribute("userlastname");
     String prov= ((String ) oscarVariables.getProperty("billregion","")).trim().toUpperCase();
-   
+
 	boolean bShortcutForm = oscarVariables.getProperty("appt_formview", "").equalsIgnoreCase("on") ? true : false;
 	String formName = bShortcutForm ? oscarVariables.getProperty("appt_formview_name") : "";
 	String formNameShort = formName.length() > 3 ? (formName.substring(0,2)+".") : formName;
@@ -140,15 +140,15 @@ public boolean patientHasOutstandingPrivateBills(String demographicNo){
     if( defaultServiceType == null ) {
         defaultServiceType = "";
     }
-    
+
     String newticklerwarningwindow=null;
     String default_pmm=null;
     String programId_oscarView=null;
-    
+
 if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable()){
 	newticklerwarningwindow = (String) session.getAttribute("newticklerwarningwindow");
 	default_pmm = (String)session.getAttribute("default_pmm");
-	programId_oscarView= (String)session.getAttribute("programId_oscarView");   
+	programId_oscarView= (String)session.getAttribute("programId_oscarView");
 } else {
 	programId_oscarView="0";
 	session.setAttribute("programId_oscarView",programId_oscarView);
@@ -161,7 +161,7 @@ if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.Is
 
 %>
 <%
-   
+
     String tickler_no="", textColor="", tickler_note="";
     String ver = "", roster="";
     String yob = "";
@@ -183,7 +183,7 @@ if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.Is
     String provNum = request.getParameter("provider_no");
     if (provNum != null) {
         isWeekView = true;
-    } 
+    }
     if(caisiView!=null && "true".equals(caisiView)) {
     	isWeekView = false;
     }
@@ -203,7 +203,7 @@ cal = new GregorianCalendar(year,(month-1),day);
 
 if (isWeekView) {
 cal.add(Calendar.DATE, -(cal.get(Calendar.DAY_OF_WEEK)-1)); // change the day to the current weeks initial sunday
-} 
+}
 
 int week = cal.get(Calendar.WEEK_OF_YEAR);
 year = cal.get(Calendar.YEAR);
@@ -291,9 +291,9 @@ if (apptDate.before(minDate)) {
 <script language="JavaScript">
 function storeApptNo(apptNo) {
 	var url = "storeApptInSession.jsp?appointment_no="+apptNo;
-	new Ajax.Request(url, {method:'get'});	
+	new Ajax.Request(url, {method:'get'});
 }
-    
+
 function showPersonal()  {
     var url = "<%=request.getContextPath()%>/Provider/showPersonal.do";
 
@@ -364,11 +364,11 @@ function confirmPopupPage(height, width, queryString, doConfirm, allowDay, allow
                         alert("<bean:message key="provider.appointmentProviderAdminDay.sameWeek"/>");
                 }
                 else {
-                        popupPage(height, width, queryString);
+                        popupPage2(queryString, 'appointment', height, width);
                 }
         }
         else {
-                popupPage(height, width, queryString);
+                popupPage2(queryString, 'appointment', height, width);
         }
 }
 
@@ -402,29 +402,29 @@ function popUpEncounter(vheight,vwidth,varpage) {
 }
 
 function popupPageOfChangePassword(){
-<% 	
+<%
 	Integer ed;
 	String expired_days="";
 	if(session.getAttribute("expired_days")!=null){
 		expired_days = (String)session.getAttribute("expired_days");
-	}	
+	}
 	//System.out.println("***** expired days???"+expired_days);
 	//ed = Integer.valueOf(expired_days);
 	if(!(expired_days.equals(" ")||expired_days.equals("")||expired_days==null)) {
 	//if(ed >= 0) {
 		//System.out.println("***** inside ***** ");
 %>
-	
+
 window.open("changePassword.jsp","changePassword","resizable=yes,scrollbars=yes,width=400,height=300");
 changePassword.moveTo(0,0);
 <%
-	}		
+	}
 %>
 }
 function popupInboxManager(varpage){
     var page = "" + varpage;
     var windowname="apptProviderSearch";
-    windowprops = "height=700,width=1024,location=no,"
+    windowprops = "height=700,width=1350,location=no,"
     + "scrollbars=yes,menubars=no,toolbars=no,resizable=yes,top=10,left=0";
     var popup = window.open(page, windowname, windowprops);
     if (popup != null) {
@@ -439,9 +439,12 @@ popupPage2(varpage, "apptProviderSearch");
 }
 
 function popupPage2(varpage, windowname) {
+popupPage2(varpage, windowname, 700, 1024);
+}
+
+function popupPage2(varpage, windowname, vheight, vwidth) {
 var page = "" + varpage;
-windowprops = "height=700,width=1024,location=no,"
-+ "scrollbars=yes,menubars=no,toolbars=no,resizable=yes,top=10,left=0";
+windowprops = "height="+vheight+",width="+vwidth+",location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=yes,screenX=50,screenY=50,top=0,left=0";
 var popup = window.open(page, windowname, windowprops);
 if (popup != null) {
 if (popup.opener == null) {
@@ -504,7 +507,7 @@ popupPage(700,720, url);
 }
 
 function changeGroup() {
-var s = document.appointmentForm.elements['mygroup_no'];		
+var s = document.appointmentForm.elements['mygroup_no'];
 var newGroupNo = s.options[s.selectedIndex].value;
 if(newGroupNo.indexOf("_grp_") != -1) {
   newGroupNo = s.options[s.selectedIndex].value.substring(5);
@@ -522,17 +525,17 @@ if(newGroupNo.indexOf("_grp_") != -1) {
 }
 
 function ts1(s) {
-popupPage(360,780,('../appointment/addappointment.jsp?'+s));
+popupPage2(('../appointment/addappointment.jsp?'+s),'appointment',360,780);
 }
 function tsr(s) {
-popupPage(360,780,('../appointment/appointmentcontrol.jsp?displaymode=edit&dboperation=search&'+s));
+popupPage2(('../appointment/appointmentcontrol.jsp?displaymode=edit&dboperation=search&'+s),'appointment',360,780);
 }
 function goFilpView(s) {
 self.location.href = "../schedule/scheduleflipview.jsp?originalpage=../provider/providercontrol.jsp&startDate=<%=year+"-"+month+"-"+day%>" + "&provider_no="+s ;
 }
 function goWeekView(s) {
 self.location.href = "providercontrol.jsp?year=<%=year%>&month=<%=month%>&day=<%=day%>&view=0&displaymode=day&dboperation=searchappointmentday&provider_no="+s;
-} 
+}
 function goZoomView(s, n) {
 self.location.href = "providercontrol.jsp?year=<%=strYear%>&month=<%=strMonth%>&day=<%=strDay%>&view=1&curProvider="+s+"&curProviderName="+n+"&displaymode=day&dboperation=searchappointmentday" ;
 }
@@ -612,19 +615,19 @@ phrAsyncActivate();
 
 </SCRIPT>
 
-<style type="text/css">    
+<style type="text/css">
 #navlist{
     margin: 0;
     padding: 0;
     white-space: nowrap;
-}    
+}
 
 #navlist li {
     padding-top: 0.5px;
     padding-bottom: 0.5px;
     padding-left: 2.5px;
     padding-right: 2.5px;
-    display: inline; 
+    display: inline;
 }
 
 #navlist li:hover { color: #fff; background-color: #486ebd; }
@@ -685,14 +688,14 @@ param3[1] = strDate; //strYear +"-"+ strMonth +"-"+ strDay ;
        for (Map count : resultList) {
          numAvailProvider = ((Long)(count.get(count.keySet().toArray()[0]))).intValue();
 	   }
-  	 
+
      if(numProvider==0 || isTeamScheduleOnly) { // _team_schedule_only does not support groups
        numProvider=1; //the login user
        curProvider_no = new String []{curUser_no};  //[numProvider];
        curProviderName = new String []{(userlastname+", "+userfirstname)}; //[numProvider];
-// multisite start =============	 
+// multisite start =============
   	 curScheduleMultisite = new String[]{ bMultisites?getSiteHTML(_scheduleDate, curProvider_no[0], sites):"" };
-// multisite end =============       
+// multisite end =============
      } else {
        if(request.getParameter("viewall")!=null && request.getParameter("viewall").equals("1") ) {
          if(numProvider >= 5) {lenLimitedL = 2; lenLimitedS = 3; }
@@ -704,15 +707,15 @@ param3[1] = strDate; //strYear +"-"+ strMonth +"-"+ strDay ;
      curProvider_no = new String [numProvider];
      curProviderName = new String [numProvider];
 curScheduleMultisite = new String [numProvider];
-     
+
      int iTemp = 0;
      resultList = oscarSuperManager.find("providerDao", "searchmygroupprovider", new Object[] {mygroupno});
      for (Map provider : resultList) {
        curProvider_no[iTemp] = String.valueOf(provider.get("provider_no"));
        curProviderName[iTemp] = provider.get("first_name")+" "+provider.get("last_name");
- // multisite start =============  	 
+ // multisite start =============
   	 curScheduleMultisite[iTemp] = bMultisites?getSiteHTML(_scheduleDate, curProvider_no[iTemp], sites):"";
- // multisite end =============       
+ // multisite end =============
        iTemp++;
      }
     }
@@ -802,17 +805,17 @@ java.util.Locale vLocale =(java.util.Locale)session.getAttribute(org.apache.stru
    </li>
   </security:oscarSec>
 </oscar:oscarPropertiesCheck>
-     
+
  </caisi:isModuleLoad>
- <caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true"> 
+ <caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">
      <li>
-	 <a HREF="#" ONCLICK ="popupOscarRx(600,1024,'../oscarMessenger/DisplayMessages.do?providerNo=<%=curUser_no%>&userName=<%=URLEncoder.encode(userfirstname+" "+userlastname)%>')" title="<bean:message key="global.messenger"/>">
+	 <a HREF="#" ONCLICK ="popupOscarRx(600,1090,'../oscarMessenger/DisplayMessages.do?providerNo=<%=curUser_no%>&userName=<%=URLEncoder.encode(userfirstname+" "+userlastname)%>')" title="<bean:message key="global.messenger"/>">
 	 <span id="oscar_new_msg"><bean:message key="global.msg"/></span></a>
      </li>
  </caisi:isModuleLoad>
-<caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">     
+<caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">
 <li>
- <a HREF="#" ONCLICK ="popupOscarRx(625,1024,'../oscarEncounter/IncomingConsultation.do?providerNo=<%=curUser_no%>&userName=<%=URLEncoder.encode(userfirstname+" "+userlastname)%>')" title="<bean:message key="provider.appointmentProviderAdminDay.viewConReq"/>">
+ <a HREF="#" ONCLICK ="popupOscarRx(625,1090,'../oscarEncounter/IncomingConsultation.do?providerNo=<%=curUser_no%>&userName=<%=URLEncoder.encode(userfirstname+" "+userlastname)%>')" title="<bean:message key="provider.appointmentProviderAdminDay.viewConReq"/>">
  <span id="oscar_aged_consults"><bean:message key="global.con"/></span></a>
 </li>
 </caisi:isModuleLoad>
@@ -820,14 +823,14 @@ java.util.Locale vLocale =(java.util.Locale)session.getAttribute(org.apache.stru
 <li>    <!-- remove this and let providerpreference check -->
     <caisi:isModuleLoad moduleName="ticklerplus">
 	<a href=# onClick ="popupPage(715,680,'providerpreference.jsp?provider_no=<%=curUser_no%>&start_hour=<%=startHour%>&end_hour=<%=endHour%>&every_min=<%=everyMin%>&mygroup_no=<%=mygroupno%>&new_tickler_warning_window=<%=newticklerwarningwindow%>&default_pmm=<%=default_pmm%>');return false;" TITLE='<bean:message key="provider.appointmentProviderAdminDay.msgSettings"/>' OnMouseOver="window.status='<bean:message key="provider.appointmentProviderAdminDay.msgSettings"/>' ; return true"><bean:message key="global.pref"/></a>
-    </caisi:isModuleLoad>	
+    </caisi:isModuleLoad>
     <caisi:isModuleLoad moduleName="ticklerplus" reverse="true">
 	<a href=# onClick ="popupPage(715,680,'providerpreference.jsp?provider_no=<%=curUser_no%>&start_hour=<%=startHour%>&end_hour=<%=endHour%>&every_min=<%=everyMin%>&mygroup_no=<%=mygroupno%>');return false;" TITLE='<bean:message key="provider.appointmentProviderAdminDay.msgSettings"/>' OnMouseOver="window.status='<bean:message key="provider.appointmentProviderAdminDay.msgSettings"/>' ; return true"><bean:message key="global.pref"/></a>
     </caisi:isModuleLoad>
 </li>
  <caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">
 <li>
-   <a HREF="#" onclick="popup('700', '1024', '../dms/documentReport.jsp?function=provider&functionid=<%=curUser_no%>&curUser=<%=curUser_no%>', 'edocView');" TITLE='<bean:message key="provider.appointmentProviderAdminDay.viewEdoc"/>'><bean:message key="global.edoc"/></a>
+   <a HREF="#" onclick="popup('700', '1000', '../dms/documentReport.jsp?function=provider&functionid=<%=curUser_no%>&curUser=<%=curUser_no%>', 'edocView');" TITLE='<bean:message key="provider.appointmentProviderAdminDay.viewEdoc"/>'><bean:message key="global.edoc"/></a>
 </li>
  </caisi:isModuleLoad>
 <li>
@@ -842,20 +845,20 @@ java.util.Locale vLocale =(java.util.Locale)session.getAttribute(org.apache.stru
 </li>
 
 <oscar:oscarPropertiesCheck property="OSCAR_LEARNING" value="yes">
-<li>   
+<li>
     <a HREF="#" ONCLICK ="popupPage2('../oscarLearning/CourseView.jsp','<bean:message key="global.courseview"/>');return false;" TITLE='<bean:message key="global.courseview"/>'>
 	<span id="oscar_courseview"><bean:message key="global.btncourseview"/></span></a>
 </li>
 </oscar:oscarPropertiesCheck>
 
 <oscar:oscarPropertiesCheck property="WORKFLOW" value="yes">
-   <li><a href="javascript: function myFunction() {return false; }" onClick="popup(700,1000,'../oscarWorkflow/WorkFlowList.jsp','<bean:message key="global.workflow"/>')"><bean:message key="global.btnworkflow"/></a></li> 
+   <li><a href="javascript: function myFunction() {return false; }" onClick="popup(700,1000,'../oscarWorkflow/WorkFlowList.jsp','<bean:message key="global.workflow"/>')"><bean:message key="global.btnworkflow"/></a></li>
 </oscar:oscarPropertiesCheck>
  <oscar:oscarPropertiesCheck property="MY_OSCAR" value="yes">
-    <myoscar:indivoRegistered provider="<%=curUser_no%>">                               
-   
+    <myoscar:indivoRegistered provider="<%=curUser_no%>">
+
     <li>
-	<a HREF="#" ONCLICK ="popup('600', '1024','../phr/PhrMessage.do?method=viewMessages','INDIVOMESSENGER2<%=curUser_no%>')" title='<bean:message key="global.myoscar"/>'><phr:setColor><bean:message key="global.btnmyoscar"/></phr:setColor></a>
+	<a HREF="#" ONCLICK ="popup('600', '1090','../phr/PhrMessage.do?method=viewMessages','INDIVOMESSENGER2<%=curUser_no%>')" title='<bean:message key="global.myoscar"/>'><phr:setColor><bean:message key="global.btnmyoscar"/></phr:setColor></a>
     </li>
     </myoscar:indivoRegistered>
 </oscar:oscarPropertiesCheck>
@@ -867,7 +870,7 @@ java.util.Locale vLocale =(java.util.Locale)session.getAttribute(org.apache.stru
 </security:oscarSec>
 	</caisi:isModuleLoad>
 <!-- plugins menu extension point add -->
-<%int pluginMenuTagNumber=0; %> 
+<%int pluginMenuTagNumber=0; %>
 <plugin:pageContextExtension serviceName="oscarMenuExtension" stemFromPrefix="Oscar"/>
 <%System.out.println("enter plugin---"); %>
 <logic:iterate name="oscarMenuExtension.points" id="pt" scope="page" type="oscar.caisi.OscarMenuExtension">
@@ -877,12 +880,12 @@ java.util.Locale vLocale =(java.util.Locale)session.getAttribute(org.apache.stru
 
        <li><a href='<html:rewrite page="<%= pt.getLink() %>"/>'>
        <%= pt.getName() %></a></li>
-<%} %>      
+<%} %>
 </logic:iterate>
 
 <!-- plugin menu extension point add end-->
-	
-<%int menuTagNumber=0; %> 
+
+<%int menuTagNumber=0; %>
 <caisi:isModuleLoad moduleName="caisi">
    <li>
      <a href='<html:rewrite page="/PMmodule/ProviderInfo.do"/>'>Program</a>
@@ -895,7 +898,7 @@ java.util.Locale vLocale =(java.util.Locale)session.getAttribute(org.apache.stru
 </td>
 
 <form method="post" name="findprovider" onSubmit="findProvider(<%=year%>,<%=month%>,<%=day%>);return false;" target="apptReception" action="receptionistfindprovider.jsp">
-<td align="right" valign="bottom">   
+<td align="right" valign="bottom">
 <caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">
 <INPUT TYPE="text" NAME="providername" VALUE="" WIDTH="2" HEIGHT="10" border="0" size="10" maxlength="10">-
 <INPUT TYPE="SUBMIT" NAME="Go" VALUE='<bean:message key="receptionist.appointmentreceptionistadminday.btnGo"/>' onClick="findProvider(<%=year%>,<%=month%>,<%=day%>);return false;">
@@ -936,7 +939,7 @@ java.util.Locale vLocale =(java.util.Locale)session.getAttribute(org.apache.stru
 
 <td ALIGN="center"  BGCOLOR="ivory" width="33%">
 
-<% if (isWeekView) { 
+<% if (isWeekView) {
 for(int provIndex=0;provIndex<numProvider;provIndex++) {
 if (curProvider_no[provIndex].equals(provNum)) { %>
 <b><bean:message key="provider.appointmentProviderAdminDay.weekView"/>: <%=curProviderName[provIndex]%></b>
@@ -949,8 +952,8 @@ if (curProvider_no[provIndex].equals(provNum)) { %>
 <% } } %>
 <td ALIGN="RIGHT" BGCOLOR="Ivory">
 
-<% if (isWeekView) { %> 
-<b><bean:message key="provider.appointmentProviderAdminDay.doctor"/>:</b> 
+<% if (isWeekView) { %>
+<b><bean:message key="provider.appointmentProviderAdminDay.doctor"/>:</b>
 <select name="provider_select" onChange="goWeekView(this.options[this.selectedIndex].value)">
 <% for (nProvider=0;nProvider<numProvider;nProvider++) { %>
 <option value="<%=curProvider_no[nProvider]%>"<%=curProvider_no[nProvider].equals(provNum)?" selected":""%>><%=curProviderName[nProvider]%></option>
@@ -1046,11 +1049,11 @@ if (curProvider_no[provIndex].equals(provNum)) { %>
 
 <% } %>
          <a href="../logout.jsp"><bean:message key="global.btnLogout"/> <img src="../images/next.gif"  border="0" width="10" height="9" align="absmiddle"> &nbsp;</a>
-         
+
 <!-- caisi infirmary view extension add fffffffffffff-->
 <caisi:isModuleLoad moduleName="caisi">
-	
-	<%@ include file="infirmaryviewprogramlist.jsp" %>	
+
+	<%@ include file="infirmaryviewprogramlist.jsp" %>
 
 </caisi:isModuleLoad>
 <!-- caisi infirmary view extension add end fffffffffffff-->
@@ -1122,7 +1125,7 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
 
         strDate = year + "-" + month + "-" + day;
         monthDay = month + "-" + day;
-      
+
         inform = new SimpleDateFormat ("yyyy-MM-dd", request.getLocale());
         try {
            java.util.ResourceBundle prop = ResourceBundle.getBundle("oscarResources", request.getLocale());
@@ -1133,8 +1136,8 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
         }
         strYear=""+year;
         strMonth=month>9?(""+month):("0"+month);
-        strDay=day>9?(""+day):("0"+day); 
- 
+        strDay=day>9?(""+day):("0"+day);
+
         // Reset timecode bean for this day
         param3[0] = strDate; //strYear+"-"+strMonth+"-"+strDay;
         param3[1] = curProvider_no[nProvider];
@@ -1169,7 +1172,7 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
      param1[0] = strDate; //strYear+"-"+strMonth+"-"+strDay;
      param1[1] = curProvider_no[nProvider];
      resultList = oscarSuperManager.find("providerDao", "search_scheduledate_single", param1);
-		
+
      //viewall function
      if(request.getParameter("viewall")==null || request.getParameter("viewall").equals("0") ) {
          if(resultList.size()==0 || "0".equals(resultList.get(0).get("available")) ) {
@@ -1187,7 +1190,7 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
   <logic:notEqual name="infirmaryView_isOscar" value="false">
 
       <% if (isWeekView) { %>
-          <b><a href="providercontrol.jsp?year=<%=year%>&month=<%=month%>&day=<%=day%>&view=0&displaymode=day&dboperation=searchappointmentday"><%=formatDate%></a></b> 
+          <b><a href="providercontrol.jsp?year=<%=year%>&month=<%=month%>&day=<%=day%>&view=0&displaymode=day&dboperation=searchappointmentday"><%=formatDate%></a></b>
       <% } else { %>
   <b><input type='button' value="<bean:message key="provider.appointmentProviderAdminDay.weekLetter"/>" name='weekview' onClick=goWeekView('<%=curProvider_no[nProvider]%>') title="<bean:message key="provider.appointmentProviderAdminDay.weekView"/>" style="color:black">
           <b><input type='radio' name='flipview' onClick="goFilpView('<%=curProvider_no[nProvider]%>')" title="Flip view"  >
@@ -1202,7 +1205,7 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
           <% } %>
 </logic:notEqual>
 <logic:equal name="infirmaryView_isOscar" value="false">
-	<%String prID="1"; %> 	
+	<%String prID="1"; %>
 	<logic:present name="infirmaryView_programId">
 	<%prID=(String)session.getAttribute(SessionConstants.CURRENT_PROGRAM_ID); %>
 	</logic:present>
@@ -1225,18 +1228,18 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
 <!-- caisi infirmary view exteion add end ffffffffffffffffff-->
 <!-- =============== following block is the original oscar code. -->
         <!-- table for hours of day start -->
-        <table border="1" cellpadding="0" bgcolor="<%=userAvail?"#486ebd":"silver"%>" cellspacing="0" width="100%">                       
+        <table border="1" cellpadding="0" bgcolor="<%=userAvail?"#486ebd":"silver"%>" cellspacing="0" width="100%">
 <%
         bFirstTimeRs=true;
         bFirstFirstR=true;
         String [] param0 = new String[3];
-        
+
                 param0[0]=curProvider_no[nProvider];
                 param0[1]=year+"-"+month+"-"+day;//e.g."2001-02-02";
 				param0[2]=programId_oscarView;
                 List<Map> appointmentList = oscarSuperManager.find("providerDao", strsearchappointmentday, param0);
                 Iterator<Map> it = appointmentList.iterator();
-                
+
                 Map appointment = null;
 
 			    for(ih=startHour*60; ih<=(endHour*60+(60/depth-1)*depth); ih+=depth) { // use minutes as base
@@ -1343,12 +1346,12 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
             <%
 			    if (as.getNextStatus() != null && !as.getNextStatus().equals("")) {
             %>
-            <a href="providercontrol.jsp?appointment_no=<%=appointment.get("appointment_no")%>&provider_no=<%=curProvider_no[nProvider]%>&status=&statusch=<%=as.getNextStatus()%>&year=<%=year%>&month=<%=month%>&day=<%=day%>&view=<%=view==0?"0":("1&curProvider="+request.getParameter("curProvider")+"&curProviderName="+request.getParameter("curProviderName") )%>&displaymode=addstatus&dboperation=updateapptstatus&viewall=<%=request.getParameter("viewall")==null?"0":(request.getParameter("viewall"))%><%=isWeekView?"&viewWeek=1":""%>" title="<%=as.getTitle()%> " > 
+            <a href="providercontrol.jsp?appointment_no=<%=appointment.get("appointment_no")%>&provider_no=<%=curProvider_no[nProvider]%>&status=&statusch=<%=as.getNextStatus()%>&year=<%=year%>&month=<%=month%>&day=<%=day%>&view=<%=view==0?"0":("1&curProvider="+request.getParameter("curProvider")+"&curProviderName="+request.getParameter("curProviderName") )%>&displaymode=addstatus&dboperation=updateapptstatus&viewall=<%=request.getParameter("viewall")==null?"0":(request.getParameter("viewall"))%><%=isWeekView?"&viewWeek=1":""%>" title="<%=as.getTitle()%> " >
             <%
 				}
 			    if (as.getNextStatus() != null) {
             %>
-            <img src="../images/<%=as.getImageName()%>" border="0" height="10" title="<%=as.getTitle()%>"></a> 
+            <img src="../images/<%=as.getImageName()%>" border="0" height="10" title="<%=as.getTitle()%>"></a>
             <%
                 } else {
 	                out.print("&nbsp;");
@@ -1359,15 +1362,15 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
         			if(demographic_no==0) {
         %>
         	<!--  caisi  -->
-        	<% if (tickler_no.compareTo("") != 0) {%>	
+        	<% if (tickler_no.compareTo("") != 0) {%>
 	        	<caisi:isModuleLoad moduleName="ticklerplus" reverse="true">
-        			<a href="#" onClick="popupPage(700,1024, '../tickler/ticklerDemoMain.jsp?demoview=0');return false;" title="<bean:message key="provider.appointmentProviderAdminDay.ticklerMsg"/>: <%=UtilMisc.htmlEscape(tickler_note)%>"><font color="red">!</font></a>
+        			<a href="#" onClick="popupPage(700,1000, '../tickler/ticklerDemoMain.jsp?demoview=0');return false;" title="<bean:message key="provider.appointmentProviderAdminDay.ticklerMsg"/>: <%=UtilMisc.htmlEscape(tickler_note)%>"><font color="red">!</font></a>
     			</caisi:isModuleLoad>
     			<caisi:isModuleLoad moduleName="ticklerplus">
     				<a href="../ticklerPlus/index.jsp" title="<bean:message key="provider.appointmentProviderAdminDay.ticklerMsg"/>: <%=UtilMisc.htmlEscape(tickler_note)%>"><font color="red">!</font></a>
     			</caisi:isModuleLoad>
-    		<%} %>	    		
-<a href=# onClick ="popupPage(535,860,'../appointment/appointmentcontrol.jsp?appointment_no=<%=appointment.get("appointment_no")%>&provider_no=<%=curProvider_no[nProvider]%>&year=<%=year%>&month=<%=month%>&day=<%=day%>&start_time=<%=iS+":"+iSm%>&demographic_no=0&displaymode=edit&dboperation=search');return false;" title="<%=iS+":"+(iSm>10?"":"0")+iSm%>-<%=iE+":"+iEm%>
+    		<%} %>
+<a href=# onClick ="popupPage2('../appointment/appointmentcontrol.jsp?appointment_no=<%=appointment.get("appointment_no")%>&provider_no=<%=curProvider_no[nProvider]%>&year=<%=year%>&month=<%=month%>&day=<%=day%>&start_time=<%=iS+":"+iSm%>&demographic_no=0&displaymode=edit&dboperation=search','appointment',360,780,860);return false;" title="<%=iS+":"+(iSm>10?"":"0")+iSm%>-<%=iE+":"+iEm%>
 <%=name%>
 <bean:message key="provider.appointmentProviderAdminDay.reason"/>: <%=UtilMisc.htmlEscape(reason)%>
 <bean:message key="provider.appointmentProviderAdminDay.notes"/>: <%=UtilMisc.htmlEscape(notes)%>" >
@@ -1383,7 +1386,7 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
     					</caisi:isModuleLoad>
     					<caisi:isModuleLoad moduleName="ticklerplus">
 		    				<!--  <a href="../Tickler.do?method=filter&filter.client=<%=demographic_no %>" title="<bean:message key="provider.appointmentProviderAdminDay.ticklerMsg"/>: <%=UtilMisc.htmlEscape(tickler_note)%>"><font color="red">!</font></a> -->
-    						<a href="#" onClick="popupPage(700,1000, '../Tickler.do?method=filter&filter.client=<%=demographic_no %>');return false;" title="<bean:message key="provider.appointmentProviderAdminDay.ticklerMsg"/>: <%=UtilMisc.htmlEscape(tickler_note)%>"><font color="red">!</font></a> 	
+    						<a href="#" onClick="popupPage(700,1000, '../Tickler.do?method=filter&filter.client=<%=demographic_no %>');return false;" title="<bean:message key="provider.appointmentProviderAdminDay.ticklerMsg"/>: <%=UtilMisc.htmlEscape(tickler_note)%>"><font color="red">!</font></a>
     					</caisi:isModuleLoad>
 					<%} %>
 
@@ -1409,7 +1412,7 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
       htmlWarning = "";
    }
  %>
-<%=htmlWarning%><a href=# onClick ="popupPage(535,860,'../appointment/appointmentcontrol.jsp?appointment_no=<%=appointment.get("appointment_no")%>&provider_no=<%=curProvider_no[nProvider]%>&year=<%=year%>&month=<%=month%>&day=<%=day%>&start_time=<%=iS+":"+iSm%>&demographic_no=<%=demographic_no%>&displaymode=edit&dboperation=search');return false;"  <oscar:oscarPropertiesCheck property="SHOW_APPT_REASON_TOOLTIP" value="yes" defaultVal="true"> title="<%=name%>
+<%=htmlWarning%><a href=# onClick ="popupPage2('../appointment/appointmentcontrol.jsp?appointment_no=<%=appointment.get("appointment_no")%>&provider_no=<%=curProvider_no[nProvider]%>&year=<%=year%>&month=<%=month%>&day=<%=day%>&start_time=<%=iS+":"+iSm%>&demographic_no=<%=demographic_no%>&displaymode=edit&dboperation=search','appointment',360,780,860);return false;"  <oscar:oscarPropertiesCheck property="SHOW_APPT_REASON_TOOLTIP" value="yes" defaultVal="true"> title="<%=name%>
 &nbsp; reason: <%=UtilMisc.htmlEscape(reason)%>
 &nbsp; notes: <%=UtilMisc.htmlEscape(notes)%>"</oscar:oscarPropertiesCheck>   ><%=(view==0)?(name.length()>len?name.substring(0,len):name):name%></a>
 <% if(len==lenLimitedL || view!=0 || numAvailProvider==1 ) {%>
@@ -1472,12 +1475,12 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
 	  <%}}%>
       <oscar:oscarPropertiesCheck property="SHOW_APPT_REASON" value="yes">| <b><%=reason%></b></oscar:oscarPropertiesCheck>
 	  </security:oscarSec>
-	 
+
 	  <!-- add one link to caisi Program Management Module -->
 	  <caisi:isModuleLoad moduleName="caisi">
                 <%-- <a href=# onClick="popupPage(700, 1048,'../PMmodule/ClientManager.do?id=<%=demographic_no%>')" title="Program Management">|P</a>--%>
 	  	<a href='../PMmodule/ClientManager.do?id=<%=demographic_no%>' title="Program Management">|P</a>
-    </caisi:isModuleLoad>   
+    </caisi:isModuleLoad>
           <%
      //out.print(monthDay + " " + demBday);
       if(isBirthday(monthDay,demBday)){%>
@@ -1524,7 +1527,7 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
           <% } %>
 </logic:notEqual>
 <logic:equal name="infirmaryView_isOscar" value="false">
-	<%String prID="1"; %> 
+	<%String prID="1"; %>
 	<logic:present name="infirmaryView_programId">
         <%prID=(String)session.getAttribute(SessionConstants.CURRENT_PROGRAM_ID); %>
 	</logic:present>
@@ -1541,8 +1544,8 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
 
             </td>
  <%
-   } //end of display team a, etc.   
-   
+   } //end of display team a, etc.
+
  %>
 
 
@@ -1580,8 +1583,8 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
 <script language="JavaScript">
 
 // popup blocking for the site must be off!
-// developed on Windows FF 2, 3 IE 6 Linux FF 1.5 
-// FF on Mac and Opera on Windows work but will require shift or control with alt and Alpha 
+// developed on Windows FF 2, 3 IE 6 Linux FF 1.5
+// FF on Mac and Opera on Windows work but will require shift or control with alt and Alpha
 // to fire the altKey + Alpha combination - strange
 
 // Modification Notes:
@@ -1606,41 +1609,41 @@ document.onkeydown=function(e){
 			case <bean:message key="global.edocShortcut"/> : popupOscarRx('700', '1000', '../dms/documentReport.jsp?function=provider&functionid=<%=curUser_no%>&curUser=<%=curUser_no%>', 'edocView');  return false;  //run code for e'D'oc
 			case <bean:message key="global.resourcesShortcut"/> : popupOscarRx(550,687,'<%=resourcebaseurl%>'); return false; // code for R'e'sources
  			case <bean:message key="global.helpShortcut"/> : popupOscarRx(600,750,'<%=resourcebaseurl%>');  return false;  //run code for 'H'elp
-			case <bean:message key="global.ticklerShortcut"/> : {  
+			case <bean:message key="global.ticklerShortcut"/> : {
 				<caisi:isModuleLoad moduleName="ticklerplus" reverse="true">
-					popupOscarRx(700,1000,'../tickler/ticklerMain.jsp','<bean:message key="global.tickler"/>') //run code for t'I'ckler  
+					popupOscarRx(700,1000,'../tickler/ticklerMain.jsp','<bean:message key="global.tickler"/>') //run code for t'I'ckler
 				</caisi:isModuleLoad>
 				<caisi:isModuleLoad moduleName="ticklerplus">
-					popupOscarRx(700,1000,'../Tickler.do','<bean:message key="global.tickler"/>'); //run code for t'I'ckler+  
+					popupOscarRx(700,1000,'../Tickler.do','<bean:message key="global.tickler"/>'); //run code for t'I'ckler+
 				</caisi:isModuleLoad>
 				return false;
 			}
-			case <bean:message key="global.labShortcut"/> : popupOscarRx(600,1024,'../dms/inboxManage.do?method=prepareForIndexPage&providerNo=<%=curUser_no%>', '<bean:message key="global.lab"/>');  return false;  //run code for 'L'ab
-			case <bean:message key="global.msgShortcut"/> : popupOscarRx(600,1024,'../oscarMessenger/DisplayMessages.do?providerNo=<%=curUser_no%>&userName=<%=URLEncoder.encode(userfirstname+" "+userlastname)%>'); return false;  //run code for 'M'essage
+			case <bean:message key="global.labShortcut"/> : popupOscarRx(600,1350,'../dms/inboxManage.do?method=prepareForIndexPage&providerNo=<%=curUser_no%>', '<bean:message key="global.lab"/>');  return false;  //run code for 'L'ab
+			case <bean:message key="global.msgShortcut"/> : popupOscarRx(600,1090,'../oscarMessenger/DisplayMessages.do?providerNo=<%=curUser_no%>&userName=<%=URLEncoder.encode(userfirstname+" "+userlastname)%>'); return false;  //run code for 'M'essage
 			case <bean:message key="global.monthShortcut"/> : window.open("providercontrol.jsp?year=<%=year%>&month=<%=month%>&day=1&view=<%=view==0?"0":("1&curProvider="+request.getParameter("curProvider")+"&curProviderName="+request.getParameter("curProviderName") )%>&displaymode=month&dboperation=searchappointmentmonth","_self"); return false ;  //run code for Mo'n'th
-			case <bean:message key="global.conShortcut"/> : popupOscarRx(625,1024,'../oscarEncounter/IncomingConsultation.do?providerNo=<%=curUser_no%>&userName=<%=URLEncoder.encode(userfirstname+" "+userlastname)%>');  return false;  //run code for c'O'nsultation
-			case <bean:message key="global.reportShortcut"/> : popupOscarRx(650,1024,'../report/reportindex.jsp','reportPage');  return false;  //run code for 'R'eports
+			case <bean:message key="global.conShortcut"/> : popupOscarRx(625,1090,'../oscarEncounter/IncomingConsultation.do?providerNo=<%=curUser_no%>&userName=<%=URLEncoder.encode(userfirstname+" "+userlastname)%>');  return false;  //run code for c'O'nsultation
+			case <bean:message key="global.reportShortcut"/> : popupOscarRx(650,1090,'../report/reportindex.jsp','reportPage');  return false;  //run code for 'R'eports
 			case <bean:message key="global.prefShortcut"/> : {
 				    <caisi:isModuleLoad moduleName="ticklerplus">
 					popupOscarRx(715,680,'providerpreference.jsp?provider_no=<%=curUser_no%>&start_hour=<%=startHour%>&end_hour=<%=endHour%>&every_min=<%=everyMin%>&mygroup_no=<%=mygroupno%>&new_tickler_warning_window=<%=newticklerwarningwindow%>&default_pmm=<%=default_pmm%>'); //run code for tickler+ 'P'references
-					return false;   
-				    </caisi:isModuleLoad>	
+					return false;
+				    </caisi:isModuleLoad>
 			            <caisi:isModuleLoad moduleName="ticklerplus" reverse="true">
 					popupOscarRx(715,680,'providerpreference.jsp?provider_no=<%=curUser_no%>&start_hour=<%=startHour%>&end_hour=<%=endHour%>&every_min=<%=everyMin%>&mygroup_no=<%=mygroupno%>'); //run code for 'P'references
-					return false; 
+					return false;
 			            </caisi:isModuleLoad>
 			}
 			case <bean:message key="global.searchShortcut"/> : popupOscarRx(550,687,'../demographic/search.jsp');  return false;  //run code for 'S'earch
-			case <bean:message key="global.dayShortcut"/> : window.open("providercontrol.jsp?year=<%=curYear%>&month=<%=curMonth%>&day=<%=curDay%>&view=<%=view==0?"0":("1&curProvider="+request.getParameter("curProvider")+"&curProviderName="+request.getParameter("curProviderName") )%>&displaymode=day&dboperation=searchappointmentday","_self") ;  return false;  //run code for 'T'oday                       
+			case <bean:message key="global.dayShortcut"/> : window.open("providercontrol.jsp?year=<%=curYear%>&month=<%=curMonth%>&day=<%=curDay%>&view=<%=view==0?"0":("1&curProvider="+request.getParameter("curProvider")+"&curProviderName="+request.getParameter("curProviderName") )%>&displaymode=day&dboperation=searchappointmentday","_self") ;  return false;  //run code for 'T'oday
 			case <bean:message key="global.viewShortcut"/> : {
 				<% if(request.getParameter("viewall")!=null && request.getParameter("viewall").equals("1") ) { %>
-				         review('0');  return false; //scheduled providers 'V'iew 
+				         review('0');  return false; //scheduled providers 'V'iew
 				<% } else {  %>
-				         review('1');  return false; //all providers 'V'iew 
+				         review('1');  return false; //all providers 'V'iew
 				<% } %>
 			}
 			case <bean:message key="global.workflowShortcut"/> : popupOscarRx(700,1000,'../oscarWorkflow/WorkFlowList.jsp','<bean:message key="global.workflow"/>'); return false ; //code for 'W'orkflow
-			case <bean:message key="global.myoscarShortcut"/> : popupOscarRx('600', '1024','../phr/PhrMessage.do?method=viewMessages','INDIVOMESSENGER2<%=curUser_no%>')
+			case <bean:message key="global.myoscarShortcut"/> : popupOscarRx('600', '1090','../phr/PhrMessage.do?method=viewMessages','INDIVOMESSENGER2<%=curUser_no%>')
 			default : return;
                }
 	}
@@ -1648,7 +1651,7 @@ document.onkeydown=function(e){
                switch(evt.keyCode || evt.charCode) {
 			case <bean:message key="global.btnLogoutShortcut"/> : window.open('../logout.jsp','_self');  return false;  // 'Q'uit/log out
 			default : return;
-               }        
+               }
 
         }
 }

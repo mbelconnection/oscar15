@@ -587,10 +587,12 @@ div.demographicWrapper {
                                                         family_doc = family_doc !=null ? family_doc : "" ;
                                                 }
                                                 //----------------------------REFERRAL DOCTOR --------------end-----------
-
-                                                dob_year = Integer.parseInt(apptMainBean.getString(rs,"year_of_birth"));
-                                                dob_month = Integer.parseInt(apptMainBean.getString(rs,"month_of_birth"));
-                                                dob_date = Integer.parseInt(apptMainBean.getString(rs,"date_of_birth"));
+												if(apptMainBean.getString(rs,"year_of_birth")!="")
+                                                	dob_year = Integer.parseInt(apptMainBean.getString(rs,"year_of_birth"));
+                                                if(apptMainBean.getString(rs,"month_of_birth")!="")
+                                                	dob_month = Integer.parseInt(apptMainBean.getString(rs,"month_of_birth"));
+                                                if(apptMainBean.getString(rs,"date_of_birth")!="")
+                                                	dob_date = Integer.parseInt(apptMainBean.getString(rs,"date_of_birth"));
                                                 if(dob_year!=0) age=MyDateFormat.getAge(dob_year,dob_month,dob_date);
                         %> <%=apptMainBean.getString(rs,"last_name")%>,
 				<%=apptMainBean.getString(rs,"first_name")%> <%=apptMainBean.getString(rs,"sex")%>
@@ -678,7 +680,7 @@ if(wLReadonly.equals("")){
 			<tr>
 				<td><a
 					href="javascript: function myFunction() {return false; }"
-					onClick="window.open('../billing/CA/ON/specialtyBilling/fluBilling/addFluBilling.jsp?function=demographic&functionid=<%=apptMainBean.getString(rs,"demographic_no")%>&creator=<%=curProvider_no%>&demographic_name=<%=URLEncoder.encode(apptMainBean.getString(rs,"last_name"))%>%2C<%=URLEncoder.encode(apptMainBean.getString(rs,"first_name"))%>&hin=<%=URLEncoder.encode(apptMainBean.getString(rs,"hin")!=null?apptMainBean.getString(rs,"hin"):"")%><%=URLEncoder.encode(apptMainBean.getString(rs,"ver")!=null?apptMainBean.getString(rs,"ver"):"")%>&demo_sex=<%=URLEncoder.encode(apptMainBean.getString(rs,"sex"))%>&demo_hctype=<%=URLEncoder.encode(apptMainBean.getString(rs,"hc_type")==null?"null":apptMainBean.getString(rs,"hc_type"))%>&rd=<%=URLEncoder.encode(rd==null?"null":rd)%>&rdohip=<%=URLEncoder.encode(rdohip==null?"null":rdohip)%>&dob=<%=MyDateFormat.getStandardDate(Integer.parseInt(apptMainBean.getString(rs,"year_of_birth")),Integer.parseInt(apptMainBean.getString(rs,"month_of_birth")),Integer.parseInt(apptMainBean.getString(rs,"date_of_birth")))%>','', 'scrollbars=yes,resizable=yes,width=720,height=500');return false;"
+					onClick="window.open('../billing/CA/ON/specialtyBilling/fluBilling/addFluBilling.jsp?function=demographic&functionid=<%=apptMainBean.getString(rs,"demographic_no")%>&creator=<%=curProvider_no%>&demographic_name=<%=URLEncoder.encode(apptMainBean.getString(rs,"last_name"))%>%2C<%=URLEncoder.encode(apptMainBean.getString(rs,"first_name"))%>&hin=<%=URLEncoder.encode(apptMainBean.getString(rs,"hin")!=null?apptMainBean.getString(rs,"hin"):"")%><%=URLEncoder.encode(apptMainBean.getString(rs,"ver")!=null?apptMainBean.getString(rs,"ver"):"")%>&demo_sex=<%=URLEncoder.encode(apptMainBean.getString(rs,"sex"))%>&demo_hctype=<%=URLEncoder.encode(apptMainBean.getString(rs,"hc_type")==null?"null":apptMainBean.getString(rs,"hc_type"))%>&rd=<%=URLEncoder.encode(rd==null?"null":rd)%>&rdohip=<%=URLEncoder.encode(rdohip==null?"null":rdohip)%>&dob=<%=MyDateFormat.getStandardDate(dob_year,dob_month,dob_date)%>','', 'scrollbars=yes,resizable=yes,width=720,height=500');return false;"
 					title='<bean:message key="demographic.demographiceditdemographic.msgAddFluBill"/>'><bean:message key="demographic.demographiceditdemographic.msgFluBilling"/></a></td>
 			</tr>
 <%          } %>
@@ -692,7 +694,7 @@ if(wLReadonly.equals("")){
 			<tr>
 				<td><a
 					href="javascript: function myFunction() {return false; }"
-					onClick="window.open('../billing/CA/ON/inr/addINRbilling.jsp?function=demographic&functionid=<%=apptMainBean.getString(rs,"demographic_no")%>&creator=<%=curProvider_no%>&demographic_name=<%=URLEncoder.encode(apptMainBean.getString(rs,"last_name"))%>%2C<%=URLEncoder.encode(apptMainBean.getString(rs,"first_name"))%>&hin=<%=URLEncoder.encode(apptMainBean.getString(rs,"hin")!=null?apptMainBean.getString(rs,"hin"):"")%><%=URLEncoder.encode(apptMainBean.getString(rs,"ver")!=null?apptMainBean.getString(rs,"ver"):"")%>&dob=<%=MyDateFormat.getStandardDate(Integer.parseInt(apptMainBean.getString(rs,"year_of_birth")),Integer.parseInt(apptMainBean.getString(rs,"month_of_birth")),Integer.parseInt(apptMainBean.getString(rs,"date_of_birth")))%>','', 'scrollbars=yes,resizable=yes,width=600,height=400');return false;"
+					onClick="window.open('../billing/CA/ON/inr/addINRbilling.jsp?function=demographic&functionid=<%=apptMainBean.getString(rs,"demographic_no")%>&creator=<%=curProvider_no%>&demographic_name=<%=URLEncoder.encode(apptMainBean.getString(rs,"last_name"))%>%2C<%=URLEncoder.encode(apptMainBean.getString(rs,"first_name"))%>&hin=<%=URLEncoder.encode(apptMainBean.getString(rs,"hin")!=null?apptMainBean.getString(rs,"hin"):"")%><%=URLEncoder.encode(apptMainBean.getString(rs,"ver")!=null?apptMainBean.getString(rs,"ver"):"")%>&dob=<%=MyDateFormat.getStandardDate(dob_year,dob_month,dob_date)%>','', 'scrollbars=yes,resizable=yes,width=600,height=400');return false;"
 					title='<bean:message key="demographic.demographiceditdemographic.msgAddINRBilling"/>'><bean:message key="demographic.demographiceditdemographic.msgAddINR"/></a>
 				</td>
 			</tr>

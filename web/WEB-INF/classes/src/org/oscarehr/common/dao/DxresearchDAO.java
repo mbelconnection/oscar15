@@ -115,9 +115,6 @@ public class DxresearchDAO extends HibernateDaoSupport{
         }
 
         if (dList != null && dList.size() > 0) {
-            //Iterator i = dList.listIterator();
-            //while (i.hasNext())
-             //   System.out.println(i.next());
             return getPatientRegisted (dList,doctorList);
         } else {
             return null;
@@ -152,7 +149,6 @@ public class DxresearchDAO extends HibernateDaoSupport{
         } else {
             HQL = "SELECT dxres FROM Dxresearch dxres ORDER BY dxres.demographicNo asc, dxres.updateDate asc";
         }
-        //System.out.println("HQL======="+HQL);
         try {
             session = getSession();
             dList = session.createQuery(HQL).list();
@@ -165,9 +161,6 @@ public class DxresearchDAO extends HibernateDaoSupport{
         }
 
         if (dList != null && dList.size() > 0) {
-            //Iterator i = dList.listIterator();
-            //while (i.hasNext())
-             //   System.out.println(i.next());
             return getPatientRegisted (dList,doctorList);
         } else {
             return null;
@@ -226,9 +219,6 @@ public class DxresearchDAO extends HibernateDaoSupport{
         }
 
         if (dList != null && dList.size() > 0) {
-            //Iterator i = dList.listIterator();
-            //while (i.hasNext())
-            //    System.out.println(i.next());
             return getPatientRegisted (dList,doctorList);
         } else {
             return null;

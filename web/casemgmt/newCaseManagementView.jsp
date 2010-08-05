@@ -474,6 +474,7 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
 		<option
 			value="http://www.bnf.org/bnf/bnf/current/noframes/search.htm?n=50&amp;searchButton=Search&amp;q="><bean:message
 			key="global.BNF" /></option>
+                <option value="tripsearch.jsp?searchterm=">Trip Database</option>
 	</select> <input type="text" id="keyword" name="keyword" value=""
 		onkeypress="return grabEnter('searchButton',event)"> <input
 		type="button" id="searchButton" name="button" value="<bean:message key="oscarEncounter.Index.btnSearch"/>"

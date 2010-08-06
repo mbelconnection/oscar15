@@ -1303,10 +1303,19 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
                   for (Map demo : demoList) {
                     ver = (String)demo.get("ver");
                     roster = (String)demo.get("roster_status");
-                    int intMob = Integer.parseInt(String.valueOf(demo.get("month_of_birth")));
-                    int intDob = Integer.parseInt(String.valueOf(demo.get("date_of_birth")));
-                    mob = String.valueOf(intMob);
-                    dob = String.valueOf(intDob);
+                    
+                    int intMob = 0;
+                    int intDob = 0;
+                    
+                    mob = String.valueOf(demo.get("month_of_birth"));
+                    if(mob.length()>0 && !mob.equals("null"))
+                    	intMob = Integer.parseInt(mob);           
+                    	
+                    dob = String.valueOf(demo.get("date_of_birth"));
+                    if(dob.length()>0 && !dob.equals("null"))
+                    	intDob = Integer.parseInt(dob);
+                    
+                    
                     demBday = mob + "-" + dob;
 
                     if (roster == null ) { //|| !(roster.equalsIgnoreCase("FS") || roster.equalsIgnoreCase("NR") || roster.equalsIgnoreCase("PL"))) {

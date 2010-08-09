@@ -53,8 +53,8 @@ function submitOcanForm() {
 	}
 	*/
 	
-	var newCount = $("#center_count").val(); alert("annie: nmber of center="+newCount);
-	for(var x=1;x<=newCount;x++) { alert("annie: center ?="+x);
+	var newCount = $("#center_count").val(); 
+	for(var x=1;x<=newCount;x++) { 
 		if($("#exitDate"+x).val().length != 0) {		
 			if($("#serviceUseRecord_exitDisposition"+x).val().length==0) {			
 				alert('Exit Disposition - Please specify one');

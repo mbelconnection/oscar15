@@ -207,7 +207,7 @@
 		<tr>
 			<td class="genericTableHeader">Exit Disposition</td>
 			<td class="genericTableData">
-				<select id="serviceUseRecord_exitDisposition<%=centerNumber %>" >
+				<select name="serviceUseRecord_exitDisposition<%=centerNumber %>" id="serviceUseRecord_exitDisposition<%=centerNumber %>" >
 					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "serviceUseRecord_exitDisposition"+centerNumber, OcanForm.getOcanFormOptions("Exit Disposition"),prepopulationLevel)%>
 				</select>					
 			</td>

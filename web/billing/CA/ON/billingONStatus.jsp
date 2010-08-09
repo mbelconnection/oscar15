@@ -96,7 +96,6 @@ List pList = isTeamBillingOnly
 		: (Vector)(new JdbcBillingPageUtil()).getCurProviderStr();
 
 BillingStatusPrep sObj = new BillingStatusPrep();
-System.out.println(" statusType "+strBillType);
 List bList = null;
 if(serviceCode == null && dx.length()<2 && visitType.length()<2) {
 	bList = bSearch ? sObj.getBills(strBillType, statusType, providerNo, startDate, endDate, demoNo) : new Vector();
@@ -114,13 +113,13 @@ if(serviceCode == null && dx.length()<2 && visitType.length()<2) {
 //BillingStatusData billingData = new BillingStatusData();
 RAData raData = new RAData();
 
-System.out.println(" statusType "+statusType+" providerNo "+providerNo+" startDate "+startDate+" endDate "+endDate+" demo "+demoNo);
 
 //ArrayList bList = billingData.getBills( statusType,  providerNo, startDate,  endDate,  demoNo);
 //ArrayList bList = billingData.getBills( statusType,  providerNo, startDate,  endDate,  demoNo);
 
 BigDecimal total = new BigDecimal(0).setScale(2, BigDecimal.ROUND_HALF_UP); 
 BigDecimal paidTotal = new BigDecimal(0).setScale(2, BigDecimal.ROUND_HALF_UP); 
+BigDecimal adjTotal = new BigDecimal(0).setScale(2, BigDecimal.ROUND_HALF_UP);
 
 %>
 
@@ -490,8 +489,8 @@ function changeSite(sel) {
         <li><input type="radio" name="statusType" value="_" <%=statusType.equals("_")?"checked":""%>>Rejected</input></li>
         <li><input type="radio" name="statusType" value="H" <%=statusType.equals("H")?"checked":""%>>Capitated</input></li>
         <li><input type="radio" name="statusType" value="O" <%=statusType.equals("O")?"checked":""%>>Invoiced</input></li>
-        <!--  li><input type="radio" name="statusType" value="P" <%=statusType.equals("P")?"checked":""%>>Bill Patient</input></li>
-        <li><input type="radio" name="statusType" value="N" <%=statusType.equals("N")?"checked":""%>>Do Not Bill</input></li>
+        <li><input type="radio" name="statusType" value="P" <%=statusType.equals("P")?"checked":""%>>Bill Patient</input></li>
+        <!--li><input type="radio" name="statusType" value="N" <%=statusType.equals("N")?"checked":""%>>Do Not Bill</input></li>
         <li><input type="radio" name="statusType" value="W" <%=statusType.equals("W")?"checked":""%>>WCB</input></li>-->
         <li><input type="radio" name="statusType" value="B" <%=statusType.equals("B")?"checked":""%>>Submmitted OHIP</input></li>
         <li><input type="radio" name="statusType" value="S" <%=statusType.equals("S")?"checked":""%>>Settled/Paid</input></li>
@@ -584,9 +583,11 @@ if(statusType.equals("_")) { %>
              <th>PATIENT</th>
              <th>PATIENT NAME</th>
              <th title="Status">STAT</th>
+             <th>SETTLED</th>
              <th title="Code Billed">CODE</th>
              <th title="Amount Billed">BILLED</th>
              <th title="Amount Paid"  >PAID</th>
+             <th title="Adjustments">ADJ</th>
              <th>DX</th>
              <!--th>DX1</th-->
              <th>TYPE</th>
@@ -614,7 +615,6 @@ if(statusType.equals("_")) { %>
     		   }
     	   }
     	   
-           System.out.println( ch1Obj.getBilling_date().replaceAll("\\D", "") + "total::::::::::::::::::::::::::::::::::::::::::::" + ch1Obj.getProvider_ohip_no());
            String ohip_no = ch1Obj.getProvider_ohip_no();
 	       ArrayList raList = raData.getRADataIntern(ch1Obj.getId(), ch1Obj.getBilling_date().replaceAll("\\D", ""), ohip_no);
 	       boolean incorrectVal = false;
@@ -645,19 +645,29 @@ if(statusType.equals("_")) { %>
 	       //System.out.println("paidTotal:" + paidTotal + ":amountPaid:" + amountPaid + ":");
 	       BigDecimal bTemp = (new BigDecimal(amountPaid.trim())).setScale(2,BigDecimal.ROUND_HALF_UP);
 	       paidTotal = paidTotal.add(bTemp);
-	       
+	       BigDecimal adj = (new BigDecimal(ch1Obj.getTotal())).setScale(2,BigDecimal.ROUND_HALF_UP);
+               adj = adj.subtract(bTemp);
+               adjTotal = adjTotal.add(adj);
 	       String color = "";
 	       if(!invoiceNo.equals(ch1Obj.getId())) {
 	    	   invoiceNo = ch1Obj.getId(); 
 	    	   nC = nC ? false : true;
 	       } 
 	       color = nC ? "class='myGreen'" : "";
+               String settleDate = ch1Obj.getSettle_date();
+               if( settleDate == null || !ch1Obj.getStatus().equals("S")) {
+                   settleDate = "N/A";
+               }
+               else {
+                   settleDate = settleDate.substring(0, settleDate.indexOf(" "));
+               }
        %>       
           <tr <%=color %>> 
              <td align="center"><%= ch1Obj.getBilling_date()%>  <%--=ch1Obj.getBilling_time()--%></td>  <!--SERVICE DATE-->
              <td align="center"><a href="javascript: setDemographic('<%=ch1Obj.getDemographic_no()%>');"><%=ch1Obj.getDemographic_no()%></a></td> <!--PATIENT-->
              <td align="center"><a href=# onclick="popupPage(800,740,'../../../demographic/demographiccontrol.jsp?demographic_no=<%=ch1Obj.getDemographic_no()%>&displaymode=edit&dboperation=search_detail');return false;"><%= ch1Obj.getDemographic_name()%></a></td> 
              <td align="center"><%=ch1Obj.getStatus()%></td> <!--STAT-->
+             <td align="center"><%=settleDate%></td> <!--SETTLE DATE-->
              <td align="center"><%=getHtmlSpace(ch1Obj.getTransc_id())%></td><!--CODE-->
              <td align="right"><%=getStdCurr(ch1Obj.getTotal())%></td><!--BILLED-->
              <td align="right">
@@ -665,6 +675,7 @@ if(statusType.equals("_")) { %>
                  <%=amountPaid%>
                  </a>
              </td><!--PAID-->
+             <td align="center"><%=adj.toString()%></td> <!--SETTLE DATE-->
              <td align="center"><%=getHtmlSpace(ch1Obj.getRec_id())%></td><!--DX1-->
              <!--td>&nbsp;</td--><!--DX2-->
              <td align="center"><%=ch1Obj.getPay_program()%></td><!--DX3-->
@@ -684,9 +695,11 @@ if(statusType.equals("_")) { %>
              <td align="center"><%=bList.size()%></td> 
              <td align="center"><%=bList.size()%></td> 
              <td>&nbsp;</td> <!--STAT-->
+             <td>&nbsp;</td>
              <td>Total:</td><!--CODE-->
              <td align="right"><%=total.toString()%></td><!--BILLED-->
              <td align="right"><%=paidTotal.toString()%></td><!--PAID-->
+             <td align="right"><%=adjTotal.toString()%></td><!--ADJUSTMENTS-->
              <td>&nbsp;</td><!--DX1-->
              <td>&nbsp;</td><!--DX2-->
              <td>&nbsp;</td><!--DX3-->

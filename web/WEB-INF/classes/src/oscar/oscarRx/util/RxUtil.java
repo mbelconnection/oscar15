@@ -17,7 +17,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster Unviersity
+ * McMaster University
  * Hamilton
  * Ontario, Canada
  */
@@ -1041,8 +1041,9 @@ public class RxUtil {
         //remove Qty:num
         String regex1 = "Qty:\\s*[0-9]*\\.?[0-9]*\\s*";
         String unitName=rx.getUnitName();
-        if(unitName!=null && special.indexOf(unitName)!=-1)
-            regex1+=unitName;
+        if(unitName!=null && special.indexOf(unitName)!=-1){
+            regex1+="\\Q"+unitName+"\\E";
+        }
         Pattern p = Pattern.compile(regex1);
         Matcher m = p.matcher(special);
         special = m.replaceAll("");

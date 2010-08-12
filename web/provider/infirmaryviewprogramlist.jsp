@@ -62,8 +62,8 @@ function submitStatus(ctrl) {
 			</logic:notEqual>
 		</logic:iterate>
 		<%} %>
-	</select>
 </logic:notEqual>
+
 <logic:notEqual name="infirmaryView_isOscar" value="false">
 	<br>
 		<b>Program:</b>

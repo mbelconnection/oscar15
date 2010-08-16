@@ -22,6 +22,13 @@
  */
 
 
+		function updateLabDemoStatus(labno){
+                                    if(document.getElementById("DemoTable"+labno)){
+					alert("now I am here");
+                                       document.getElementById("DemoTable"+labno).style.backgroundColor="#FFF";
+                                    }
+                                }
+
 /************init global data methods*****************/
 function initPatientIds(s){
                                var r= new Array();

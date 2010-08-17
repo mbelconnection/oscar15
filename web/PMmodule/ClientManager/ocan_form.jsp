@@ -74,6 +74,29 @@ $('document').ready(function() {
 </script>
 
 <script>
+function changeOrgLHIN(selectBox) {
+	//annie
+		var newCount = $("#center_count").val(); 
+
+		var selectBoxId = selectBox.id;
+		var priority = selectBoxId.charAt(selectBoxId.length-1);
+		var selectBoxValue = selectBox.options[selectBox.selectedIndex].value;
+		
+		var demographicId='<%=currentDemographicId%>';
+
+		//do we need to add..loop through existing blocks, and see if we need more...create on the way.
+			
+			if(document.getElementById("serviceUseRecord_orgName" + priority) == null) {
+				$.get('ocan_form_getOrgName.jsp?demographicId='+demographicId+'&center_num='+priority+'&lhin_num='+selectBoxValue, function(data) {
+					  $("#center_block_orgName"+priority).append(data);					 
+					});														
+			}
+
+		//do we need to remove. If there's any blocks > newCount..we need to delete them.
+			if(document.getElementById("serviceUseRecord_orgName" + priority) != null) {
+				$("#center_block_orgName"+priority).remove();
+			}
+}
 
 function changeNumberOfMedications() {
 	var newCount = $("#medications_count").val(); 
@@ -120,6 +143,9 @@ function changeNumberOfcentres() {
 		}
 	}
 }
+
+
+
 </script>
 
 <script>
@@ -207,6 +233,10 @@ function changeNumberOfReferrals() {
 		}
 	}
 }
+
+
+
+
 </script>
 
 <script>
@@ -357,7 +387,7 @@ $("document").ready(function(){
 		<tr>
 			<td class="genericTableHeader">Was Consumer Self-Assessment Completed?</td>
 			<td class="genericTableData">
-				<select name="consumerSelfAxCompleted">
+				<select name="consumerSelfAxCompleted" id="consumerSelfAxCompleted" class="{validate: {required:true}}">
 					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "consumerSelfAxCompleted", OcanForm.getOcanFormOptions("Consumer Self-Assessment completed"),prepopulationLevel)%>
 				</select>					
 			</td>
@@ -536,7 +566,7 @@ $("document").ready(function(){
 		<tr>
 			<td class="genericTableHeader">Number of Mental Health Functional Centres?</td>
 			<td class="genericTableData">
-				<select name="center_count" id="center_count" onchange="changeNumberOfcentres();">
+				<select name="center_count" id="center_count" onchange="changeNumberOfcentres();" class="{validate: {required:true}}">
 					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "center_count", OcanForm.getOcanFormOptions("Number Of Centres"),prepopulationLevel)%>
 				</select>					
 			</td>
@@ -1911,7 +1941,7 @@ This information is collected from a variety of sources, including self-report, 
 		<tr>
 			<td class="genericTableHeader">How many times did you visit an Emergency Department in the last 6 months for Mental Health Reasons?</td>
 			<td class="genericTableData">
-				<select name="visitEmergencyDepartment">
+				<select name="visitEmergencyDepartment" id="visitEmergencyDepartment" class="{validate: {required:true}}">
 					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "visitEmergencyDepartment", OcanForm.getOcanFormOptions("Emergency Department"),prepopulationLevel)%>
 				</select>					
 			</td>

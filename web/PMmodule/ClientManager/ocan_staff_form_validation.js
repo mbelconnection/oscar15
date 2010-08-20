@@ -22,7 +22,7 @@ $("document").ready(function() {
 	
 	$("#otherContact").each(function() {
 		if($("#otherContact").val()!='TRUE' || $("#otherContact").val()=='') { 
-			for(var x=1;x<=3;x++) { alert("annie: contact="+$("#otherContact").val());
+			for(var x=1;x<=3;x++) { 
 				$("#"+x+"_otherContactType").attr('disabled','disabled');
 				$("#"+x+"_otherContactType").val("");
 				$("#"+x+"_otherContactName").attr('disabled','disabled');

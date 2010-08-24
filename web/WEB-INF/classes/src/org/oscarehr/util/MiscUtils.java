@@ -53,7 +53,7 @@ import org.apache.log4j.xml.DOMConfigurator;
  * even though the jvm itself has not restarted. 
  */
 public class MiscUtils {
-
+        public static final String ENCODING = "UTF-8";
 	private static boolean shutdownSignaled = false;
 	private static Thread shutdownHookThread = null;
 

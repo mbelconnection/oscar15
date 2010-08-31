@@ -160,7 +160,7 @@
         <html:base />
 
         <link rel="stylesheet" href="<c:out value="${ctx}/share/lightwindow/css/lightwindow.css"/>" type="text/css" media="screen" />
-        <link rel="stylesheet" type="text/css" media="all" href="../share/css/extractedFromPages.css"  ></link>
+        <link rel="stylesheet" type="text/css" media="all" href="../share/css/extractedFromPages.css"  />
         <!--link rel="stylesheet" type="text/css" href="modaldbox.css"  /-->
         <script type="text/javascript" src="<c:out value="${ctx}/phr/phr.js"/>"></script>
         <script type="text/javascript" src="<c:out value="${ctx}/share/javascript/prototype.js"/>"></script>
@@ -724,7 +724,7 @@ body {
                                                             <div style="margin-top: 10px;  width: 100%">
                                                                 <table width="100%" cellspacing="0" cellpadding="0">
                                                                     <tr>
-                                                                        <td align="left">
+                                                                        <td align="left"  height="30px">
                                                                             <a href="javascript:void(0);" title="View drug profile legend" onclick="ThemeViewer();" style="font-style:normal;color:#000000" ><bean:message key="SearchDrug.msgProfileLegend"/></a>
                                                                             <a href="#"  title="<bean:message key="provider.rxChangeProfileViewMessage"/>" onclick="popupPage(230,860,'../setProviderStaleDate.do?method=viewRxProfileView');" style="color:red;vertical-align:super;text-decoration:none" ><bean:message key="provider.rxChangeProfileView"/></a>
                                                                             <%if(show_current){%>

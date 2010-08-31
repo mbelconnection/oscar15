@@ -474,7 +474,7 @@ function toggleView(form) {
                                         if(vecAddress != null) { %>
 					<tr>
 						<td align="left" colspan=2><bean:message key="ViewScript.msgAddress"/>
-                                                    <select	name="addressSel" id="addressSel" onChange="addressSelect()">
+                                                    <select	name="addressSel" id="addressSel" onChange="addressSelect()" style="width:200px;" >
 							<% String rxAddr = (String) session.getAttribute("RX_ADDR");
                                                           for (int i =0; i < vecAddressName.size();i++){
 					                 String te = (String) vecAddressName.get(i);

@@ -3645,7 +3645,7 @@ This information is collected from a variety of sources, including self-report, 
 				<%
 					}
 				%>
-				<input type="button" value="Cancel" onclick="history.go(-1)" />
+				<input type="button" name="cancel" value="Cancel" onclick="history.go(-1)" />
 				<%
 					if (printOnly)
 					{
@@ -3669,9 +3669,8 @@ This information is collected from a variety of sources, including self-report, 
 					document.getElementsByName('print')[0].disabled=false;
 				</script>
 			<%
-		}
-	%>
-
+		} 
+	%>		
 </form>
 
 

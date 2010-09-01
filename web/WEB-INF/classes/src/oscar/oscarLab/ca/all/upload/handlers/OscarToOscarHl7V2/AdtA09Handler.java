@@ -109,6 +109,10 @@ public final class AdtA09Handler {
 			logger.debug("Against appointmentDemographic : " + ReflectionToStringBuilder.toString(appointmentDemographic));
 		}
 
+                if (appointmentDemographic == null){
+                    return (false);
+                }
+                
 		if (demographic.getLastName() == null || demographic.getFirstName() == null || demographic.getHin() == null || demographic.getHcType() == null) {
 			logger.debug("fail : demographic has null data");
 			return (false);

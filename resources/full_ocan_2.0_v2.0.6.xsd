@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+<xsd:schema targetNamespace="http://oscarehr.org/ocan" xmlns:ocan="http://oscarehr.org/ocan" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="qualified">
 
 	<!-- 
 	============================================================================================
@@ -23,7 +23,7 @@
 				<xsd:restriction base="xsd:anyType">
 
 					<xsd:sequence maxOccurs="unbounded">
-						<xsd:element ref="OCANv2SubmissionRecord"/>
+						<xsd:element ref="ocan:OCANv2SubmissionRecord"/>
 					</xsd:sequence>
 
 					<!-- OCAN Tool Version Number: it has to be a constant 2.0.5 -->
@@ -76,10 +76,10 @@
 				<xsd:restriction base="xsd:anyType">
 
 					<xsd:sequence>
-						<xsd:element ref="submitOrganizationRecord"/>
-						<xsd:element ref="clientRecord"/>
-						<xsd:element ref="OCANDomains"/>
-						<xsd:element ref="additionalElements"/>
+						<xsd:element ref="ocan:submitOrganizationRecord"/>
+						<xsd:element ref="ocan:clientRecord"/>
+						<xsd:element ref="ocan:OCANDomains"/>
+						<xsd:element ref="ocan:additionalElements"/>
 					</xsd:sequence>
 
 					<!-- 
@@ -182,7 +182,7 @@
 			<xsd:complexContent>
 				<xsd:restriction base="xsd:anyType">
 					<xsd:sequence>
-						<xsd:element ref="submitOrg"/>
+						<xsd:element ref="ocan:submitOrg"/>
 					</xsd:sequence>
 				</xsd:restriction>
 			</xsd:complexContent>
@@ -227,39 +227,39 @@
 				<xsd:restriction base="xsd:anyType">
 					<xsd:sequence>
 
-						<xsd:element ref="clientID"/>
-						<xsd:element ref="completedByOCANLead"/>
-						<xsd:element ref="reasonForOCAN"/>
-						<xsd:element ref="consumerSelfAxCompleted"/>
-						<xsd:element ref="reasonConsumerSelfAxNotCompletedList" minOccurs="1"/>
-						<xsd:element ref="clientName"/>
-						<xsd:element ref="clientAddress"/>
-						<xsd:element ref="clientPhone"/>
-						<xsd:element ref="clientEmailAddress"/>
-						<xsd:element ref="clientDOB"/>
-						<xsd:element ref="clientHealthCardInfo"/>
-						<xsd:element ref="serviceRecipientLocation"/>
-						<xsd:element ref="serviceRecipientLHIN"/>
-						<xsd:element ref="gender"/>
-						<xsd:element ref="maritalStatus"/>
-						<xsd:element ref="serviceUseRecordList" minOccurs="1" maxOccurs="1"/>
-						<xsd:element ref="clientContact"/>
-						<xsd:element ref="clientCapacity"/>
-						<xsd:element ref="ageOnsetMental"/>
-						<xsd:element ref="ageHospitalization"/>
-						<xsd:element ref="firstEntryDate"/>
-						<xsd:element ref="clientCulture"/>
-						<xsd:element ref="aboriginalOrigin"/>
-						<xsd:element ref="citizenshipStatus"/>
-						<xsd:element ref="timeLivedInCanada"/>
-						<xsd:element ref="immigExpList" minOccurs="0"/>
-						<xsd:element ref="immigExpFreeText"/>
-						<xsd:element ref="discrimExpList" minOccurs="0"/>
-						<xsd:element ref="prefLang"/>
-						<xsd:element ref="serviceLang"/>
-						<xsd:element ref="legalIssues"/>
-						<xsd:element ref="legalStatusList" minOccurs="0"/>
-						<xsd:element ref="generalComments"/>
+						<xsd:element ref="ocan:clientID"/>
+						<xsd:element ref="ocan:completedByOCANLead"/>
+						<xsd:element ref="ocan:reasonForOCAN"/>
+						<xsd:element ref="ocan:consumerSelfAxCompleted"/>
+						<xsd:element ref="ocan:reasonConsumerSelfAxNotCompletedList" minOccurs="1"/>
+						<xsd:element ref="ocan:clientName"/>
+						<xsd:element ref="ocan:clientAddress"/>
+						<xsd:element ref="ocan:clientPhone"/>
+						<xsd:element ref="ocan:clientEmailAddress"/>
+						<xsd:element ref="ocan:clientDOB"/>
+						<xsd:element ref="ocan:clientHealthCardInfo"/>
+						<xsd:element ref="ocan:serviceRecipientLocation"/>
+						<xsd:element ref="ocan:serviceRecipientLHIN"/>
+						<xsd:element ref="ocan:gender"/>
+						<xsd:element ref="ocan:maritalStatus"/>
+						<xsd:element ref="ocan:serviceUseRecordList" minOccurs="1" maxOccurs="1"/>
+						<xsd:element ref="ocan:clientContact"/>
+						<xsd:element ref="ocan:clientCapacity"/>
+						<xsd:element ref="ocan:ageOnsetMental"/>
+						<xsd:element ref="ocan:ageHospitalization"/>
+						<xsd:element ref="ocan:firstEntryDate"/>
+						<xsd:element ref="ocan:clientCulture"/>
+						<xsd:element ref="ocan:aboriginalOrigin"/>
+						<xsd:element ref="ocan:citizenshipStatus"/>
+						<xsd:element ref="ocan:timeLivedInCanada"/>
+						<xsd:element ref="ocan:immigExpList" minOccurs="0"/>
+						<xsd:element ref="ocan:immigExpFreeText"/>
+						<xsd:element ref="ocan:discrimExpList" minOccurs="0"/>
+						<xsd:element ref="ocan:prefLang"/>
+						<xsd:element ref="ocan:serviceLang"/>
+						<xsd:element ref="ocan:legalIssues"/>
+						<xsd:element ref="ocan:legalStatusList" minOccurs="0"/>
+						<xsd:element ref="ocan:generalComments"/>
 
 					</xsd:sequence>
 				</xsd:restriction>
@@ -761,7 +761,7 @@
 			<xsd:complexContent>
 				<xsd:restriction base="xsd:anyType">
 					<xsd:sequence>
-						<xsd:element ref="serviceUseRecord" maxOccurs="unbounded" minOccurs="1"/>
+						<xsd:element ref="ocan:serviceUseRecord" maxOccurs="unbounded" minOccurs="1"/>
 					</xsd:sequence>
 				</xsd:restriction>
 			</xsd:complexContent>
@@ -773,19 +773,19 @@
 			<xsd:complexContent>
 				<xsd:restriction base="xsd:anyType">
 					<xsd:sequence>
-						<xsd:element ref="OCANLead"/>
-						<xsd:element ref="staffWorker"/>
-						<xsd:element ref="serviceOrg"/>
-						<xsd:element ref="program"/>
-						<xsd:element ref="MISFunction"/>
-						<xsd:element ref="serviceDeliveryLHIN"/>
-						<xsd:element ref="referralSource"/>
-						<xsd:element ref="requestForServiceDate"/>
-						<xsd:element ref="serviceDecisionDate"/>
-						<xsd:element ref="accepted"/>
-						<xsd:element ref="serviceInitiationDate"/>
-						<xsd:element ref="exitDate"/>
-						<xsd:element ref="exitDisposition"/>
+						<xsd:element ref="ocan:OCANLead"/>
+						<xsd:element ref="ocan:staffWorker"/>
+						<xsd:element ref="ocan:serviceOrg"/>
+						<xsd:element ref="ocan:program"/>
+						<xsd:element ref="ocan:MISFunction"/>
+						<xsd:element ref="ocan:serviceDeliveryLHIN"/>
+						<xsd:element ref="ocan:referralSource"/>
+						<xsd:element ref="ocan:requestForServiceDate"/>
+						<xsd:element ref="ocan:serviceDecisionDate"/>
+						<xsd:element ref="ocan:accepted"/>
+						<xsd:element ref="ocan:serviceInitiationDate"/>
+						<xsd:element ref="ocan:exitDate"/>
+						<xsd:element ref="ocan:exitDisposition"/>
 					</xsd:sequence>
 				</xsd:restriction>
 			</xsd:complexContent>
@@ -1432,10 +1432,10 @@
 			<xsd:complexContent>
 				<xsd:restriction base="xsd:anyType">
 					<xsd:sequence>
-						<xsd:element ref="doctorContact"/>
-						<xsd:element ref="psychiatristContact"/>
-						<xsd:element ref="otherPractitionerContact" maxOccurs="unbounded" minOccurs="0"/>
-						<xsd:element ref="otherAgencyContact" maxOccurs="unbounded" minOccurs="0"/>
+						<xsd:element ref="ocan:doctorContact"/>
+						<xsd:element ref="ocan:psychiatristContact"/>
+						<xsd:element ref="ocan:otherPractitionerContact" maxOccurs="unbounded" minOccurs="0"/>
+						<xsd:element ref="ocan:otherAgencyContact" maxOccurs="unbounded" minOccurs="0"/>
 					</xsd:sequence>
 				</xsd:restriction>
 			</xsd:complexContent>
@@ -1449,7 +1449,7 @@
 				<xsd:restriction base="xsd:anyType">
 
 					<xsd:sequence>
-						<xsd:element ref="contactInfo"/>
+						<xsd:element ref="ocan:contactInfo"/>
 					</xsd:sequence>
 
 					<xsd:attribute name="doctor" use="optional">
@@ -1489,7 +1489,7 @@
 				<xsd:restriction base="xsd:anyType">
 
 					<xsd:sequence>
-						<xsd:element ref="contactInfo"/>
+						<xsd:element ref="ocan:contactInfo"/>
 					</xsd:sequence>
 
 					<xsd:attribute name="psychiatrist" use="optional">
@@ -1529,7 +1529,7 @@
 				<xsd:restriction base="xsd:anyType">
 
 					<xsd:sequence>
-						<xsd:element ref="contactInfo"/>
+						<xsd:element ref="ocan:contactInfo"/>
 					</xsd:sequence>
 
 					<xsd:attribute name="otherContact" use="optional">
@@ -1606,7 +1606,7 @@
 				<xsd:restriction base="xsd:anyType">
 
 					<xsd:sequence>
-						<xsd:element ref="contactInfo"/>
+						<xsd:element ref="ocan:contactInfo"/>
 					</xsd:sequence>
 
 					<xsd:attribute name="otherAgency" use="optional">
@@ -1761,10 +1761,10 @@
 			<xsd:complexContent>
 				<xsd:restriction base="xsd:anyType">
 					<xsd:sequence>
-						<xsd:element ref="powerAttorneyPersonalCare"/>
-						<xsd:element ref="powerAttorneyProperty"/>
-						<xsd:element ref="legalGuardian"/>
-						<xsd:element ref="areasOfConcern"/>
+						<xsd:element ref="ocan:powerAttorneyPersonalCare"/>
+						<xsd:element ref="ocan:powerAttorneyProperty"/>
+						<xsd:element ref="ocan:legalGuardian"/>
+						<xsd:element ref="ocan:areasOfConcern"/>
 					</xsd:sequence>
 				</xsd:restriction>
 			</xsd:complexContent>
@@ -2611,7 +2611,7 @@
 			<xsd:complexContent>
 				<xsd:restriction base="xsd:anyType">
 					<xsd:sequence>
-						<xsd:element ref="legalStatus" minOccurs="0" maxOccurs="unbounded"/>
+						<xsd:element ref="ocan:legalStatus" minOccurs="0" maxOccurs="unbounded"/>
 					</xsd:sequence>
 				</xsd:restriction>
 			</xsd:complexContent>
@@ -2664,7 +2664,7 @@
 			<xsd:complexContent>
 				<xsd:restriction base="xsd:anyType">
 					<xsd:sequence>
-						<xsd:element ref="domain" maxOccurs="unbounded"/>
+						<xsd:element ref="ocan:domain" maxOccurs="unbounded"/>
 					</xsd:sequence>
 				</xsd:restriction>
 			</xsd:complexContent>
@@ -2678,71 +2678,71 @@
 					<xsd:sequence>
 
 						<!-- common for all domains -->
-						<xsd:element ref="needRating" minOccurs="1"/>
-						<xsd:element ref="informalHelpRecvd" minOccurs="1"/>
-						<xsd:element ref="formalHelpRecvd" minOccurs="1"/>
-						<xsd:element ref="formalHelpNeed" minOccurs="1"/>
-						<xsd:element ref="domainComments" minOccurs="1"/>
-						<xsd:element ref="domainActions" minOccurs="1"/>
+						<xsd:element ref="ocan:needRating" minOccurs="1"/>
+						<xsd:element ref="ocan:informalHelpRecvd" minOccurs="1"/>
+						<xsd:element ref="ocan:formalHelpRecvd" minOccurs="1"/>
+						<xsd:element ref="ocan:formalHelpNeed" minOccurs="1"/>
+						<xsd:element ref="ocan:domainComments" minOccurs="1"/>
+						<xsd:element ref="ocan:domainActions" minOccurs="1"/>
 
 						<!-- 01: accommodation -->
-						<xsd:element ref="residenceType" minOccurs="0"/>
-						<xsd:element ref="residenceSupport" minOccurs="0"/>
-						<xsd:element ref="livingArrangementType" minOccurs="0"/>
+						<xsd:element ref="ocan:residenceType" minOccurs="0"/>
+						<xsd:element ref="ocan:residenceSupport" minOccurs="0"/>
+						<xsd:element ref="ocan:livingArrangementType" minOccurs="0"/>
 
 						<!-- 05: daytime activities -->
-						<xsd:element ref="employStatus" minOccurs="0"/>
-						<xsd:element ref="educationProgramStatus" minOccurs="0"/>
-						<xsd:element ref="barriersFindingWorkList" minOccurs="0"/>
+						<xsd:element ref="ocan:employStatus" minOccurs="0"/>
+						<xsd:element ref="ocan:educationProgramStatus" minOccurs="0"/>
+						<xsd:element ref="ocan:barriersFindingWorkList" minOccurs="0"/>
 
 						<!-- 06: physical health -->
-						<xsd:element ref="medicalConditionList" minOccurs="0"/>
-						<xsd:element ref="physicalHealthConcern" minOccurs="0"/>
-						<xsd:element ref="concernAreaList" minOccurs="0"/>
-						<xsd:element ref="medicationList" minOccurs="0"/>
+						<xsd:element ref="ocan:medicalConditionList" minOccurs="0"/>
+						<xsd:element ref="ocan:physicalHealthConcern" minOccurs="0"/>
+						<xsd:element ref="ocan:concernAreaList" minOccurs="0"/>
+						<xsd:element ref="ocan:medicationList" minOccurs="0"/>
 
 						<!-- 07: psychotic symptoms -->
-						<xsd:element ref="hospitalizedPastTwoYears" minOccurs="0"/>
-						<xsd:element ref="totalAdmissions" minOccurs="0"/>
-						<xsd:element ref="totalHospitalDays" minOccurs="0"/>
-						<xsd:element ref="visitEmergencyDepartment" minOccurs="0"/>
-						<xsd:element ref="communityTreatOrder" minOccurs="0"/>
-						<xsd:element ref="psychiatricAdditionalInfo" minOccurs="0"/>
-						<xsd:element ref="symptomList" minOccurs="0"/>
+						<xsd:element ref="ocan:hospitalizedPastTwoYears" minOccurs="0"/>
+						<xsd:element ref="ocan:totalAdmissions" minOccurs="0"/>
+						<xsd:element ref="ocan:totalHospitalDays" minOccurs="0"/>
+						<xsd:element ref="ocan:visitEmergencyDepartment" minOccurs="0"/>
+						<xsd:element ref="ocan:communityTreatOrder" minOccurs="0"/>
+						<xsd:element ref="ocan:psychiatricAdditionalInfo" minOccurs="0"/>
+						<xsd:element ref="ocan:symptomList" minOccurs="0"/>
 
 						<!-- 08: condition and treatment -->
-						<xsd:element ref="diagnosticList" minOccurs="0"/>
-						<xsd:element ref="otherIllnessList" minOccurs="0"/>
+						<xsd:element ref="ocan:diagnosticList" minOccurs="0"/>
+						<xsd:element ref="ocan:otherIllnessList" minOccurs="0"/>
 
 						<!-- 10: safety to self -->
-						<xsd:element ref="suicideAttempt" minOccurs="0"/>
-						<xsd:element ref="suicideThoughts" minOccurs="0"/>
-						<xsd:element ref="safetyConcernSelf" minOccurs="0"/>
-						<xsd:element ref="safetyToSelfRiskList" minOccurs="0"/>
+						<xsd:element ref="ocan:suicideAttempt" minOccurs="0"/>
+						<xsd:element ref="ocan:suicideThoughts" minOccurs="0"/>
+						<xsd:element ref="ocan:safetyConcernSelf" minOccurs="0"/>
+						<xsd:element ref="ocan:safetyToSelfRiskList" minOccurs="0"/>
 
 						<!-- 12: alcohol -->
-						<xsd:element ref="drinkAlcohol" minOccurs="0"/>
-						<xsd:element ref="stageOfChangeAlcohol" minOccurs="0"/>
-						<xsd:element ref="drinkingImpact" minOccurs="0"/>
+						<xsd:element ref="ocan:drinkAlcohol" minOccurs="0"/>
+						<xsd:element ref="ocan:stageOfChangeAlcohol" minOccurs="0"/>
+						<xsd:element ref="ocan:drinkingImpact" minOccurs="0"/>
 
 						<!-- 13: drugs -->
-						<xsd:element ref="drugUseList" minOccurs="0"/>
-						<xsd:element ref="stageOfChangeDrugs" minOccurs="0"/>
-						<xsd:element ref="drugsImpact" minOccurs="0"/>
+						<xsd:element ref="ocan:drugUseList" minOccurs="0"/>
+						<xsd:element ref="ocan:stageOfChangeDrugs" minOccurs="0"/>
+						<xsd:element ref="ocan:drugsImpact" minOccurs="0"/>
 
 						<!-- 14: other addictions -->
-						<xsd:element ref="addictionTypeList" minOccurs="0"/>
-						<xsd:element ref="stageOfChangeAddictions" minOccurs="0"/>
-						<xsd:element ref="addictionImpact" minOccurs="0"/>
+						<xsd:element ref="ocan:addictionTypeList" minOccurs="0"/>
+						<xsd:element ref="ocan:stageOfChangeAddictions" minOccurs="0"/>
+						<xsd:element ref="ocan:addictionImpact" minOccurs="0"/>
 
 						<!-- 15: company -->
-						<xsd:element ref="changedSocialPatterns" minOccurs="0"/>
+						<xsd:element ref="ocan:changedSocialPatterns" minOccurs="0"/>
 
 						<!-- 20: basic education -->
-						<xsd:element ref="highestEducationLevel" minOccurs="0"/>
+						<xsd:element ref="ocan:highestEducationLevel" minOccurs="0"/>
 
 						<!-- 23: money -->
-						<xsd:element ref="sourceOfIncome" minOccurs="0"/>
+						<xsd:element ref="ocan:sourceOfIncome" minOccurs="0"/>
 
 					</xsd:sequence>
 
@@ -3108,7 +3108,7 @@
 				<xsd:restriction base="xsd:anyType">
 
 					<xsd:sequence>
-						<xsd:element ref="barriersFindingWork" maxOccurs="unbounded" minOccurs="0"/>
+						<xsd:element ref="ocan:barriersFindingWork" maxOccurs="unbounded" minOccurs="0"/>
 					</xsd:sequence>
 
 					<xsd:attribute name="otherBarriers" use="optional">
@@ -3167,7 +3167,7 @@
 				<xsd:restriction base="xsd:anyType">
 
 					<xsd:sequence>
-						<xsd:element ref="medicalCondition" maxOccurs="unbounded" minOccurs="0"/>
+						<xsd:element ref="ocan:medicalCondition" maxOccurs="unbounded" minOccurs="0"/>
 					</xsd:sequence>
 
 					<xsd:attribute name="autismDetail" use="optional">
@@ -3269,7 +3269,7 @@
 				<xsd:restriction base="xsd:anyType">
 
 					<xsd:sequence>
-						<xsd:element ref="concernArea" maxOccurs="unbounded" minOccurs="0"/>
+						<xsd:element ref="ocan:concernArea" maxOccurs="unbounded" minOccurs="0"/>
 					</xsd:sequence>
 
 					<xsd:attribute name="otherConcernArea" use="optional">
@@ -3313,7 +3313,7 @@
 				<xsd:restriction base="xsd:anyType">
 
 					<xsd:sequence>
-						<xsd:element ref="medicationDetail" maxOccurs="unbounded" minOccurs="0"/>
+						<xsd:element ref="ocan:medicationDetail" maxOccurs="unbounded" minOccurs="0"/>
 					</xsd:sequence>
 
 					<xsd:attribute name="additionalInfo" use="optional">
@@ -3477,7 +3477,7 @@
 				<xsd:restriction base="xsd:anyType">
 
 					<xsd:sequence>
-						<xsd:element ref="symptom" maxOccurs="unbounded" minOccurs="0"/>
+						<xsd:element ref="ocan:symptom" maxOccurs="unbounded" minOccurs="0"/>
 					</xsd:sequence>
 
 					<xsd:attribute name="symptomComments" use="optional">
@@ -3524,7 +3524,7 @@
 			<xsd:complexContent>
 				<xsd:restriction base="xsd:anyType">
 					<xsd:sequence>
-						<xsd:element ref="diagnostic" maxOccurs="unbounded" minOccurs="0"/>
+						<xsd:element ref="ocan:diagnostic" maxOccurs="unbounded" minOccurs="0"/>
 					</xsd:sequence>
 				</xsd:restriction>
 			</xsd:complexContent>
@@ -3564,7 +3564,7 @@
 			<xsd:complexContent>
 				<xsd:restriction base="xsd:anyType">
 					<xsd:sequence>
-						<xsd:element ref="otherIllness" maxOccurs="unbounded" minOccurs="0"/>
+						<xsd:element ref="ocan:otherIllness" maxOccurs="unbounded" minOccurs="0"/>
 					</xsd:sequence>
 				</xsd:restriction>
 			</xsd:complexContent>
@@ -3629,7 +3629,7 @@
 				<xsd:restriction base="xsd:anyType">
 
 					<xsd:sequence>
-						<xsd:element ref="safetyToSelfRisk" maxOccurs="unbounded" minOccurs="0"/>
+						<xsd:element ref="ocan:safetyToSelfRisk" maxOccurs="unbounded" minOccurs="0"/>
 					</xsd:sequence>
 
 					<xsd:attribute name="otherSafetyToSelfRisk" use="optional">
@@ -3722,7 +3722,7 @@
 				<xsd:restriction base="xsd:anyType">
 
 					<xsd:sequence>
-						<xsd:element ref="drugUse" maxOccurs="unbounded" minOccurs="0"/>
+						<xsd:element ref="ocan:drugUse" maxOccurs="unbounded" minOccurs="0"/>
 					</xsd:sequence>
 
 					<!-- Has the substance been injected? -->
@@ -3811,7 +3811,7 @@
 				<xsd:restriction base="xsd:anyType">
 
 					<xsd:sequence>
-						<xsd:element ref="addictionType" maxOccurs="unbounded" minOccurs="0"/>
+						<xsd:element ref="ocan:addictionType" maxOccurs="unbounded" minOccurs="0"/>
 					</xsd:sequence>
 
 					<xsd:attribute name="otherAddictionType" use="optional">
@@ -3940,14 +3940,14 @@
 
 					<xsd:sequence>
 
-						<xsd:element ref="clientHopesForFuture"/>
-						<xsd:element ref="clientNeedToGetThere"/>
-						<xsd:element ref="clientViewMentalHealth"/>
-						<xsd:element ref="clientSpiritualityImportance"/>
-						<xsd:element ref="clientCultureHeritageImportance"/>
-						<xsd:element ref="presentingIssueList" minOccurs="1" maxOccurs="1"/>
-						<xsd:element ref="actionList" minOccurs="0" maxOccurs="1"/>
-						<xsd:element ref="referralList" minOccurs="0" maxOccurs="1"/>
+						<xsd:element ref="ocan:clientHopesForFuture"/>
+						<xsd:element ref="ocan:clientNeedToGetThere"/>
+						<xsd:element ref="ocan:clientViewMentalHealth"/>
+						<xsd:element ref="ocan:clientSpiritualityImportance"/>
+						<xsd:element ref="ocan:clientCultureHeritageImportance"/>
+						<xsd:element ref="ocan:presentingIssueList" minOccurs="1" maxOccurs="1"/>
+						<xsd:element ref="ocan:actionList" minOccurs="0" maxOccurs="1"/>
+						<xsd:element ref="ocan:referralList" minOccurs="0" maxOccurs="1"/>
 
 					</xsd:sequence>
 
@@ -4128,7 +4128,7 @@
 				<xsd:restriction base="xsd:anyType">
 
 					<xsd:sequence>
-						<xsd:element ref="presentingIssue" minOccurs="1" maxOccurs="unbounded"/>
+						<xsd:element ref="ocan:presentingIssue" minOccurs="1" maxOccurs="unbounded"/>
 					</xsd:sequence>
 
 					<xsd:attribute name="otherIssues" use="optional">
@@ -4183,7 +4183,7 @@
 			<xsd:complexContent>
 				<xsd:restriction base="xsd:anyType">
 					<xsd:sequence>
-						<xsd:element ref="action" maxOccurs="unbounded" minOccurs="0"/>
+						<xsd:element ref="ocan:action" maxOccurs="unbounded" minOccurs="0"/>
 					</xsd:sequence>
 				</xsd:restriction>
 			</xsd:complexContent>
@@ -4257,7 +4257,7 @@
 			<xsd:complexContent>
 				<xsd:restriction base="xsd:anyType">
 					<xsd:sequence>
-						<xsd:element ref="referral" maxOccurs="unbounded" minOccurs="0"/>
+						<xsd:element ref="ocan:referral" maxOccurs="unbounded" minOccurs="0"/>
 					</xsd:sequence>
 				</xsd:restriction>
 			</xsd:complexContent>

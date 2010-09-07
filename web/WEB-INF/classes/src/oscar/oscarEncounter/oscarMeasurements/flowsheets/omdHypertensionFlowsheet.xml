@@ -194,11 +194,11 @@
         <validationRule name="Numeric Value: 0 to 300"
 			maxValue="300" minValue="0" isNumeric="1" />
     </measurement>
-    <measurement type="BMI" typeDesc="BMI" typeDisplayName="Body Mass Index"measuringInstrc="BMI">
+    <measurement type="BMI" typeDesc="BMI" typeDisplayName="Body Mass Index" measuringInstrc="BMI" >
         <validationRule name="Numeric Value: 0 to 100" maxValue="100" minValue="0" isNumeric="1" />
     </measurement>
-    <measurement type="ACR" typeDesc="ACR" typeDisplayName="Alb creat ratio"measuringInstrc="">
-        <validationRule name="Numeric Value: 0 to 300"maxValue="300" minValue="0" isNumeric="1" />
+    <measurement type="ACR" typeDesc="ACR" typeDisplayName="Alb creat ratio" measuringInstrc="">
+        <validationRule name="Numeric Value: 0 to 300" maxValue="300" minValue="0" isNumeric="1" />
     </measurement>
     <measurement type="TCHD" typeDesc="TC/HDL" typeDisplayName="LIPIDS TD/HDL" measuringInstrc="monitor every 1-3 year">
         <validationRule name="Numeric Value: 0 to 50" maxValue="50" minValue="0" isNumeric="1" />

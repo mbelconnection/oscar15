@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<xsd:schema targetNamespace="http://oscarehr.org/ocan" xmlns:ocan="http://oscarehr.org/ocan" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="qualified">
+<xsd:schema targetNamespace="http://oscarehr.org/ocan" xmlns:ocan="http://oscarehr.org/ocan" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified" attributeFormDefault="unqualified">
 
 	<!-- 
 	============================================================================================
@@ -57,10 +57,8 @@
 					<!-- Timestamp: on which the File is generated YYYY-MM-DDThh:mi:ssZ -->
 					<xsd:attribute name="timestamp" use="required">
 						<xsd:simpleType>
-							<xsd:restriction base="xsd:dateTime">
+							<xsd:restriction base="xsd:string">
 								<xsd:pattern value="((000[1-9])|(00[1-9][0-9])|(0[1-9][0-9]{2})|([1-9][0-9]{3}))-((0[1-9])|(1[012]))-((0[1-9])|([12][0-9])|(3[01]))T(([01][0-9])|(2[0-3]))(:[0-5][0-9]){2}(\.[0-9]+)?(([\+|\-]((0[0-9])|(1[0-2]))(:[0-5][0-9]))|(\+13(:[0-5][0-9])(:[0-5][0-9]))|\+14:00|Z)"/>
-								<xsd:minInclusive value="1900-01-01T00:00:00Z"/>
-								<xsd:maxInclusive value="2079-06-06T00:00:00Z"/>
 							</xsd:restriction>
 						</xsd:simpleType>
 					</xsd:attribute>
@@ -103,10 +101,8 @@
 					<!-- Assessment Start Date: YYYY-MM-DDZ note the existence of the letter Z at the end of date value -->
 					<xsd:attribute name="startDate" use="required">
 						<xsd:simpleType>
-							<xsd:restriction base="xsd:date">
+							<xsd:restriction base="xsd:string">
 								<xsd:pattern value="((000[1-9])|(00[1-9][0-9])|(0[1-9][0-9]{2})|([1-9][0-9]{3}))-((0[1-9])|(1[012]))-((0[1-9])|([12][0-9])|(3[01]))(Z)"/>
-								<xsd:minInclusive value="1900-01-01Z"/>
-								<xsd:maxInclusive value="2079-06-06Z"/>
 							</xsd:restriction>
 						</xsd:simpleType>
 					</xsd:attribute>
@@ -114,10 +110,8 @@
 					<!-- Assessment Completion Date: YYYY-MM-DDZ note the existence of the letter Z at the end of date value -->
 					<xsd:attribute name="completionDate" use="required">
 						<xsd:simpleType>
-							<xsd:restriction base="xsd:date">
+							<xsd:restriction base="xsd:string">
 								<xsd:pattern value="((000[1-9])|(00[1-9][0-9])|(0[1-9][0-9]{2})|([1-9][0-9]{3}))-((0[1-9])|(1[012]))-((0[1-9])|([12][0-9])|(3[01]))(Z)"/>
-								<xsd:minInclusive value="1900-01-01Z"/>
-								<xsd:maxInclusive value="2079-06-06Z"/>
 							</xsd:restriction>
 						</xsd:simpleType>
 					</xsd:attribute>

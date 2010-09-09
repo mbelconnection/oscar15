@@ -21,14 +21,20 @@
 
  */
 
-
 function updateLabDemoStatus(labno){
+
     if(document.getElementById("DemoTable"+labno)){
        document.getElementById("DemoTable"+labno).style.backgroundColor="#FFF";
     }
 }
 
+
+
+
 /************init global data methods*****************/
+
+
+
 function initPatientIds(s){
                                var r= new Array();
                                var t=s.split(',');
@@ -780,20 +786,20 @@ function wrapUp() {
                                                    $('currentPageNum').innerHTML=1;
                                                     //update the page number shown and update previous and next words
                                                     if(current_numberofpages>1){
-                                                        $('msgNext').show();
-                                                        $('msgPrevious').hide();
+                                                       if($('msgNext'))   $('msgNext').show();
+                                                       if($('msgPrevious'))   $('msgPrevious').hide();
                                                     }else if(current_numberofpages<1){
-                                                        $('msgNext').hide();
-                                                        $('msgPrevious').hide();
+                                                       if($('msgNext'))   $('msgNext').hide();
+                                                       if($('msgPrevious'))    $('msgPrevious').hide();
                                                     }else if(current_numberofpages==1){
-                                                        $('msgNext').hide();
-                                                        $('msgPrevious').hide();
+                                                       if($('msgNext'))   $('msgNext').hide();
+                                                       if($('msgPrevious'))    $('msgPrevious').hide();
                                                     }
                                                     //oscarLog("current_numberofpages "+current_numberofpages);
-                                                    $('current_individual_pages').innerHTML="";
+                                                    if($('current_individual_pages'))   $('current_individual_pages').innerHTML="";
                                                    if(current_numberofpages>1){
                                                        for(var i=1;i<=current_numberofpages;i++){
-                                                        $('current_individual_pages').innerHTML+='<a style="text-decoration:none;" href="javascript:void(0);" onclick="navigatePage('+i+')> [ '+i+' ] </a>';
+                                                        if($('current_individual_pages'))  $('current_individual_pages').innerHTML+='<a style="text-decoration:none;" href="javascript:void(0);" onclick="navigatePage('+i+')> [ '+i+' ] </a>';
                                                     }
                                                    }
                                             }
@@ -851,19 +857,19 @@ function wrapUp() {
                                             function changeNavigationBar(){
                                                 var pagenum=parseInt($('currentPageNum').innerHTML);
                                                 if(current_numberofpages==1){
-                                                    $('msgNext').hide();
-                                                    $('msgPrevious').hide();
+                                                    if($('msgNext'))  $('msgNext').hide();
+                                                   if($('msgPrevious'))    $('msgPrevious').hide();
                                                 }
                                                 else if(current_numberofpages>1 && current_numberofpages==pagenum){
-                                                    $('msgNext').hide();
-                                                    $('msgPrevious').show();
+                                                    if($('msgNext'))  $('msgNext').hide();
+                                                    if($('msgPrevious'))   $('msgPrevious').show();
                                                 }
                                                 else if(current_numberofpages>1 && pagenum==1){
-                                                    $('msgNext').show();
-                                                    $('msgPrevious').hide();
+                                                    if($('msgNext'))  $('msgNext').show();
+                                                    if($('msgPrevious'))   $('msgPrevious').hide();
                                                 }else if(pagenum<current_numberofpages && pagenum>1){
-                                                    $('msgNext').show();
-                                                    $('msgPrevious').show();
+                                                    if($('msgNext'))  $('msgNext').show();
+                                                    if($('msgPrevious'))   $('msgPrevious').show();
                                                 }
                                             }
                                             function syncCB(ele){
@@ -1509,4 +1515,26 @@ function updateGlobalDataAndSideNav(doclabid,patientId){
                                                     }
                                                }
                                             }
+                                       }
+                                       function showPatientPreview(pid,providerNo,searchProviderNo,ackStatus){
+                                           var labdocsArr=getLabDocFromPatientId(pid);
+                                           var docs='';
+                                           var labs='';
+                                           for(var i=0;i<labdocsArr.length;i++){
+                                                var labdoc=labdocsArr[i];
+                                                labdoc=labdoc.replace(' ','');
+
+                                                var type=checkType(labdoc);
+                                                if(type=='DOC')
+                                                    docs+=labdoc+",";
+                                                else if(type=='HL7')
+                                                    labs+=labdoc+",";
+                                           }
+                                           var url='../dms/inboxManage.do?';
+                                           var data='method=previewPatientDocLab&demog='+pid+'&docs='+docs+'&labs='+labs+'&providerNo='+providerNo+'&searchProviderNo='+searchProviderNo+'&ackStatus='+ackStatus;
+                                           url=url+data;
+                                           var windowprops = "height=800,width=800,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=yes,screenX=600,screenY=200,top=0,left=0";
+                                           var w=window.open(url,"Preview Document and Lab",windowprops);
+                                           if(w!=null)
+                                               w.focus();
                                        }

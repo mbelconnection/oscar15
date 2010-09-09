@@ -31,6 +31,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -165,6 +166,26 @@ public class EDocUtil extends SqlUtilBaseS {
         System.out.println("in addDocumentSQL ,add ctl_document: " + ctlDocumentSql);
         runSQL(ctlDocumentSql);
         return document_no;
+    }
+
+    public static String getMaxCtlDocId(){
+        String id = null;
+        try {
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            String sql = "select max(id) from ctl_document";
+            ResultSet rs = db.GetSQL(sql);
+            if (rs.next()) {
+                id = oscar.Misc.getString(rs, 1);
+            }
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if(id==null)
+            return "0";
+        else{
+            return id;
+        }
     }
 
     public static void detachDocConsult(String docNo, String consultId) {
@@ -309,7 +330,56 @@ public class EDocUtil extends SqlUtilBaseS {
         return  listDocs( module,  moduleid,  docType,  publicDoc,  sort, "active") ;
     }
 
+    public static EDoc getEDocFromDocId(String docId){
+         String sql = "SELECT DISTINCT c.module, c.module_id, d.doccreator, d.source, d.responsible, d.program_id, "
+                + "d.status, d.docdesc, d.docfilename, d.doctype, d.document_no, d.updatedatetime, d.contenttype, d.observationdate, d.reviewer, d.reviewdatetime " +
+		"FROM document d, ctl_document c WHERE "
+                + " c.document_no=d.document_no AND c.document_no='" + docId + "'";
+        sql = sql + " ORDER BY " + EDocUtil.SORT_OBSERVATIONDATE;//default sort
 
+        ResultSet rs = getSQL(sql);
+        EDoc currentdoc = new EDoc();
+        try {
+          if(rs.first()){
+
+                currentdoc.setModule(rsGetString(rs, "module"));
+                currentdoc.setModuleId(rsGetString(rs, "module_id"));
+                currentdoc.setDocId(rsGetString(rs, "document_no"));
+                currentdoc.setDescription(rsGetString(rs, "docdesc"));
+                currentdoc.setType(rsGetString(rs, "doctype"));
+                currentdoc.setCreatorId(rsGetString(rs, "doccreator"));
+		currentdoc.setSource(rsGetString(rs, "source"));
+		currentdoc.setResponsibleId(rsGetString(rs, "responsible"));
+                String temp = rsGetString(rs, "program_id");
+                if (temp != null && temp.length()>0) currentdoc.setProgramId(Integer.valueOf(temp));
+                currentdoc.setDateTimeStamp(rsGetString(rs, "updatedatetime"));
+                currentdoc.setFileName(rsGetString(rs, "docfilename"));
+                currentdoc.setStatus(rsGetString(rs, "status").charAt(0));
+                currentdoc.setContentType(rsGetString(rs, "contenttype"));
+                currentdoc.setObservationDate(rsGetString(rs, "observationdate"));
+		currentdoc.setReviewerId(rsGetString(rs, "reviewer"));
+		currentdoc.setReviewDateTime(rsGetString(rs, "reviewdatetime"));
+
+
+            rs.close();
+          }
+        }
+        catch (SQLException sqe) {
+           sqe.printStackTrace();
+        }
+
+        return currentdoc;
+    }
+    public static ArrayList<EDoc> listDocsPreviewInbox(List<String> docIds){
+
+        ArrayList<EDoc> resultDocs = new ArrayList<EDoc>();
+        for(String docId:docIds){
+            EDoc currentdoc = new EDoc();
+            currentdoc=getEDocFromDocId(docId);
+            resultDocs.add(currentdoc);
+        }
+        return resultDocs;
+    }
     public static ArrayList<EDoc> listDocs(String module, String moduleid, String docType, String publicDoc, String sort, String viewstatus) {
         // sort must be not null
         // docType = null or = "all" to show all doctypes

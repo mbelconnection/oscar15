@@ -105,8 +105,7 @@ public class NoteDisplayLocal implements NoteDisplay {
 		return cmDao.getLastLinkByNote(caseManagementNote.getId());
 	}
 
-	public boolean isRxAnnotation(){
-		System.out.println("in isRxAnnotation in notedisplaylocal.java, note id="+caseManagementNote.getId());
+	public boolean isRxAnnotation(){		
 		return (caseManagementNote.isRxAnnotation());
 	}
 

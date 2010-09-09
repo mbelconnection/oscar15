@@ -51,14 +51,19 @@ import org.apache.struts.action.ActionMapping;
 
 import org.apache.struts.actions.DispatchAction;
 import org.oscarehr.PMmodule.utility.UtilDateUtilities;
+import org.oscarehr.common.dao.DemographicDao;
+import org.oscarehr.common.dao.DocumentResultsDao;
 import org.oscarehr.common.dao.ProviderInboxRoutingDao;
 import org.oscarehr.common.dao.QueueDocumentLinkDao;
 import org.oscarehr.common.model.ProviderInboxItem;
 import org.oscarehr.common.model.QueueDocumentLink;
-import org.oscarehr.document.DocumentResultsData;
 import org.oscarehr.util.SpringUtils;
 import oscar.dms.EDoc;
 import org.oscarehr.common.dao.QueueDao;
+import org.oscarehr.common.model.Demographic;
+import org.oscarehr.util.MiscUtils;
+import oscar.dms.EDocUtil;
+import oscar.oscarLab.ca.all.Hl7textResultsData;
 import oscar.oscarLab.ca.on.CommonLabResultData;
 import oscar.oscarLab.ca.on.LabResultData;
 import oscar.oscarProvider.data.ProviderData;
@@ -211,6 +216,62 @@ public class DmsInboxManageAction extends DispatchAction {
         }
         return unique;
     }
+
+    public ActionForward previewPatientDocLab(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+        String demographicNo=request.getParameter("demog");
+        String docs=request.getParameter("docs");
+        String labs=request.getParameter("labs");
+        String providerNo=request.getParameter("providerNo");
+        String searchProviderNo=request.getParameter("searchProviderNo");
+        String ackStatus=request.getParameter("ackStatus");
+        ArrayList<EDoc> docPreview=new ArrayList();
+        ArrayList labPreview=new ArrayList();
+
+        if(docs.length()==0){
+            //do nothing
+        }else{
+            String[] did=docs.split(",");
+            List<String> didList=new ArrayList();
+            for(int i=0;i<did.length;i++){
+                if(did[i].length()>0){
+                    didList.add(did[i]);
+                }
+            }
+            if(didList.size()>0)
+                docPreview=EDocUtil.listDocsPreviewInbox(didList);
+
+        }
+
+        if(labs.length()==0){
+            //do nothing
+        }else{
+            String[] labids=labs.split(",");
+            List<String> ls=new ArrayList();
+            for(int i=0;i<labids.length;i++){
+                if(labids.length>0)
+                    ls.add(labids[i]);
+            }
+
+            Hl7textResultsData hrd=new Hl7textResultsData();
+            if(ls.size()>0)
+                labPreview=hrd.getNotAckLabsFromLabNos(ls);
+        }
+
+        request.setAttribute("docPreview",docPreview);
+        request.setAttribute("labPreview",labPreview);
+        request.setAttribute("providerNo", providerNo);
+        request.setAttribute("searchProviderNo",searchProviderNo );
+        request.setAttribute("ackStatus",ackStatus);
+        DemographicDao demographicDao=(DemographicDao) SpringUtils.getBean("demographicDao");
+    	Demographic demographic=demographicDao.getDemographic(demographicNo);
+        String demoName="Not,Assigned";
+        if(demographic!=null)
+            demoName=demographic.getFirstName()+","+demographic.getLastName();
+        request.setAttribute("demoName", demoName);
+        return mapping.findForward("doclabPreview");
+    }
+
+
      public ActionForward prepareForIndexPage(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
         HttpSession session=request.getSession();
         try{if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");}
@@ -243,11 +304,7 @@ public class DmsInboxManageAction extends DispatchAction {
     
     ArrayList validlabdocs=new ArrayList();
 
-    for(int i=0;i<labdocs.size();i++){
-        LabResultData data=(LabResultData)labdocs.get(i);
-        //System.out.println("before*** checking privilege, lab doc id="+data.getSegmentID());
-    }
-    DocumentResultsData documentResult=new DocumentResultsData();
+    DocumentResultsDao documentResultsDao=(DocumentResultsDao)SpringUtils.getBean("documentResultsDao");
     //check privilege for documents only
     for(int i=0;i<labdocs.size();i++){
             LabResultData data=(LabResultData)labdocs.get(i);
@@ -264,7 +321,7 @@ public class DmsInboxManageAction extends DispatchAction {
                         String objectName="_queue."+queueid;
                         Vector vec=OscarRoleObjectPrivilege.getPrivilegeProp(objectName);
                         if(OscarRoleObjectPrivilege.checkPrivilege(roleName, (Properties)vec.get(0), (Vector)vec.get(1))
-                                || documentResult.isSentToProvider(docid, providerNo)){
+                                || documentResultsDao.isSentToProvider(docid, providerNo)){
                             //labs is in provider's queue,do nothing                
                            if(isSegmentIDUnique(validlabdocs,data))
                            {validlabdocs.add(data);}
@@ -279,21 +336,17 @@ public class DmsInboxManageAction extends DispatchAction {
             }
     }
     labdocs=validlabdocs;
-    for(int i=0;i<labdocs.size();i++){
-        LabResultData data=(LabResultData)labdocs.get(i);
-        //System.out.println("after checking privilege, lab doc id="+data.getSegmentID());
-    }
     Collections.sort(labdocs);
   
     HashMap labMap = new HashMap();
     LinkedHashMap accessionMap = new LinkedHashMap();
     LabResultData result;
-    //System.out.println("aftasdfasdfing labdocs.size()="+labdocs.size());
+
     for( int i = 0; i < labdocs.size(); i++ ) {
         result = (LabResultData) labdocs.get(i);
         labMap.put(result.segmentID, result);
         ArrayList labNums = new ArrayList();
-        //System.out.println("result.segmentID="+result.segmentID);
+
         if (result.accessionNumber == null || result.accessionNumber.equals("")){
             labNums.add(result.segmentID);
             accessionMap.put("noAccessionNum"+i+result.labType, labNums);
@@ -331,14 +384,8 @@ public class DmsInboxManageAction extends DispatchAction {
         }
     }
     ArrayList labArrays = new ArrayList(accessionMap.values());
-    Iterator iter=accessionMap.entrySet().iterator();
-    //System.out.println("-----------start print accessionmap");
-    //while(iter.hasNext()){
-    //    System.out.println(iter.next());
-    //}
-    //System.out.println("-----------end print accessionmap");
     labdocs.clear();
-    //System.out.println("bbblabdocs.size()="+labdocs.size());
+
     for (int i=0; i < labArrays.size(); i++){
         ArrayList labNums = (ArrayList) labArrays.get(i);
         // must sort through in reverse to keep the labs in the correct order
@@ -346,9 +393,9 @@ public class DmsInboxManageAction extends DispatchAction {
             labdocs.add(labMap.get(labNums.get(j)));
         }
     }
-    //System.out.println("ccc checking labdocs.size()="+labdocs.size());
+
     Collections.sort(labdocs);
-    //System.out.println("ddd checking labdocs.size()="+labdocs.size());
+
     int pageNum = 1;
     if ( request.getParameter("pageNum") != null ) {
         pageNum = Integer.parseInt(request.getParameter("pageNum"));
@@ -360,14 +407,14 @@ public class DmsInboxManageAction extends DispatchAction {
     Hashtable docStatus=new Hashtable();
     Hashtable docType=new Hashtable();
     Hashtable<String,List<String>> ab_NormalDoc=new Hashtable();
-    //System.out.println("after checking labdocs.size()="+labdocs.size());
+
     for(int i=0;i<labdocs.size();i++){
         LabResultData data=(LabResultData)labdocs.get(i);
         List<String> segIDs=new ArrayList();
         String labPatientId=data.getLabPatientId();
         if(labPatientId==null || labPatientId.equals("-1"))
             labPatientId="-1";
-        //System.out.println(labPatientId+"--"+data.patientName);
+
         if(data.isAbnormal()){
             List<String> abns=ab_NormalDoc.get("abnormal");
             if(abns==null){
@@ -388,7 +435,7 @@ public class DmsInboxManageAction extends DispatchAction {
             ab_NormalDoc.put("normal",ns);
         }
         if(patientDocs.containsKey(labPatientId)) {
-            //System.out.println(labPatientId+"--"+patientDocs);
+
             segIDs=(List)patientDocs.get(labPatientId);
             segIDs.add(data.getSegmentID());
             patientDocs.put(labPatientId,segIDs);
@@ -401,7 +448,7 @@ public class DmsInboxManageAction extends DispatchAction {
         docStatus.put(data.getSegmentID(), data.getAcknowledgedStatus());
         docType.put(data.getSegmentID(), data.labType);
     }
-    //System.out.println("docType="+docType);
+
     Integer totalDocs=0;
     Integer totalHL7=0;
     Hashtable<String,List<String>> typeDocLab=new Hashtable();
@@ -409,7 +456,7 @@ public class DmsInboxManageAction extends DispatchAction {
     while(keys.hasMoreElements()){
         String keyDocLabId=((String)keys.nextElement());
         String valType=(String)docType.get(keyDocLabId);
-        //System.out.println("valType val="+valType);
+
         if(valType.equalsIgnoreCase("DOC")){
             if(typeDocLab.containsKey("DOC")){
                 List<String> docids=(List<String>)typeDocLab.get("DOC");
@@ -449,11 +496,10 @@ public class DmsInboxManageAction extends DispatchAction {
         totalNumDocs+=numDoc;
     }
     
-    //System.out.println("patientDocs="+patientDocs);
-    //System.out.println("patientNumDoc="+patientNumDoc);
-    //System.out.println("docStatus="+docStatus);
-    //System.out.println("typeDocLab="+typeDocLab);
-    //System.out.println("ab_NormalDoc="+ab_NormalDoc);
+
+
+
+
     List<String> normals=ab_NormalDoc.get("normal");
     List<String> abnormals=ab_NormalDoc.get("abnormal");
     
@@ -477,8 +523,6 @@ public class DmsInboxManageAction extends DispatchAction {
     request.setAttribute("abnormals", abnormals);
     request.setAttribute("totalNumDocs",totalNumDocs );
     request.setAttribute("patientIdNamesStr",patientIdNamesStr);
-    //System.out.println("labs.size="+labdocs.size());
-    //System.out.println("forward to dms_index");
 
         return mapping.findForward("dms_index");
     }

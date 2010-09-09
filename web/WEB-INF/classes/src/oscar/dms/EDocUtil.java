@@ -162,8 +162,9 @@ public class EDocUtil extends SqlUtilBaseS {
          */
         runPreparedSql(preparedSQL, param);
         String document_no = getLastDocumentNo();
-        String ctlDocumentSql = "INSERT INTO ctl_document VALUES ('" + newDocument.getModule() + "', " + newDocument.getModuleId() + ", " + document_no + ", '" + newDocument.getStatus() + "')";
-        System.out.println("in addDocumentSQL ,add ctl_document: " + ctlDocumentSql);
+        Integer id=Integer.parseInt(getMaxCtlDocId())+1;
+        String ctlDocumentSql = "INSERT INTO ctl_document VALUES ('" + newDocument.getModule() + "', " + newDocument.getModuleId() + ", " + document_no + ", '" + newDocument.getStatus() + "' ,"+id.toString()+" )";
+
         runSQL(ctlDocumentSql);
         return document_no;
     }

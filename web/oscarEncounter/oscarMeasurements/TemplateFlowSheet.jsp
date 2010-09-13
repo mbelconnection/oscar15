@@ -716,7 +716,7 @@ div.recommendations li{
             //graphable="no"
             //value_name="Answer"
 %>
-<div class="preventionSection"  style="overflow: auto;<%=hidden%>" nowrap>
+<div class="preventionSection"  style="overflow: auto;<%=hidden%>" >
     <div style="margin-left: <%=String.valueOf(marginLeft * step)%>px;" class="headPrevention">
         <p class="noborder" <%=extraColour%> title="fade=[on] header=[<%=h2.get("display_name")%>] body=[<%=wrapWithSpanIfNotNull(mi.getWarning(measure),"red")%><%=wrapWithSpanIfNotNull(mi.getRecommendation(measure),"red")%><%=h2.get("guideline")%>]"   >
             <%if(h2.get("graphable") != null && ((String) h2.get("graphable")).equals("yes")){%>

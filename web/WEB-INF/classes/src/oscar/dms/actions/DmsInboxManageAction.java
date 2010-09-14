@@ -31,24 +31,23 @@ import com.quatro.model.security.Secobjectname;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
+
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-
 import org.apache.struts.actions.DispatchAction;
 import org.oscarehr.PMmodule.utility.UtilDateUtilities;
 import org.oscarehr.common.dao.DemographicDao;
@@ -116,7 +115,7 @@ public class DmsInboxManageAction extends DispatchAction {
             List<ProviderInboxItem> routeList=providerInboxRoutingDAO.getProvidersWithRoutingForDocument(LabResultData.DOCUMENT, docId);
             for(ProviderInboxItem pii:routeList){
                 String routingPId=pii.getProviderNo();
-                //System.out.println("routingPId="+routingPId);
+
                 if(!routingPId.equals(createrId) && providerDocs.containsKey(routingPId)){
                     List<EDoc> EDocs=new ArrayList();
                     EDocs=(List<EDoc>)providerDocs.get(routingPId);
@@ -129,12 +128,12 @@ public class DmsInboxManageAction extends DispatchAction {
         Enumeration keys=providerDocs.keys();
         while(keys.hasMoreElements()){
             String key=(String)keys.nextElement();
-            //System.out.println("key="+key);
+
             List<EDoc> EDocs=new ArrayList();
             EDocs=(List<EDoc>)providerDocs.get(key);
             if(EDocs==null || EDocs.size()==0){
                 providerDocs.remove(key);
-                //System.out.println("removed key="+key);
+
             }
         }
 
@@ -163,7 +162,7 @@ public class DmsInboxManageAction extends DispatchAction {
                 docId=Integer.parseInt(docIdStr);
             }
             List<QueueDocumentLink> queueDocLinkList=queueDocumentLinkDAO.getQueueFromDocument(docId);
-            //System.out.println("-------------1----------------------");
+
             for(QueueDocumentLink qdl:queueDocLinkList){
                 Integer qidInt=qdl.getQueueId();
                 String qidStr=qidInt.toString();
@@ -177,7 +176,7 @@ public class DmsInboxManageAction extends DispatchAction {
                 }
             }       
         }
-        //System.out.println("-------------3----------------------");
+
             //remove queues which has no docs linked to
             Enumeration queueIds=queueDocs.keys();
             while(queueIds.hasMoreElements()){
@@ -186,7 +185,6 @@ public class DmsInboxManageAction extends DispatchAction {
                 eDocs=(List<EDoc>)queueDocs.get(queueId);
                 if(eDocs==null || eDocs.size()==0){
                     queueDocs.remove(queueId);
-                    System.out.println("removed queueId="+queueId);
                 }
             }
 
@@ -548,6 +546,36 @@ public class DmsInboxManageAction extends DispatchAction {
             response.getOutputStream().write(jsonObject.toString().getBytes());
         }catch(java.io.IOException ioe){
             ioe.printStackTrace();
+        }
+        return null;
+    }
+
+    public ActionForward isLabLinkedToDemographic(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+        boolean success=false;
+        String demoId=null;
+       try{
+           String qn=request.getParameter("labid");
+           if(qn!=null) {
+               qn=qn.trim();
+               if(qn.length()>0){
+                   CommonLabResultData c=new CommonLabResultData();
+                   demoId= c.getDemographicNo(qn,"HL7");
+                   if(demoId!=null && !demoId.equals("0"))
+                       success=true;
+}
+           }
+       }catch(Exception e){
+           MiscUtils.getLogger().error("Error", e);
+       }
+
+        HashMap hm = new HashMap();
+        hm.put("isLinkedToDemographic", success);
+        hm.put("demoId",demoId);
+        JSONObject jsonObject = JSONObject.fromObject(hm);
+        try{
+            response.getOutputStream().write(jsonObject.toString().getBytes());
+        }catch(java.io.IOException ioe){
+            MiscUtils.getLogger().error("Error", ioe);
         }
         return null;
     }

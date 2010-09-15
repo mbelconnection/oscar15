@@ -70,8 +70,6 @@ public class RptFormQuery {
         if (reportCreator.getWhereJoinClause(tableName, bDemo).length()>0) {
                     reportSql += " and " + reportCreator.getWhereJoinClause(tableName, bDemo);
 	}
-        reportSql += " where " + tableName + ".ID in (" + rltSubQuery + ") and "
-                + reportCreator.getWhereJoinClause(tableName, bDemo);
         return reportSql;
     }
 

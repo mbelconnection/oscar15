@@ -248,7 +248,7 @@ public class BillingReProcessBillAction extends Action {
       }
 
       double dblBillAmount = Double.parseDouble(codePrice);
-      BigDecimal bdFee = new BigDecimal(""+dblBillAmount);//.setScale(2,RoundingMode.HALF_UP);
+      BigDecimal bdFee = new BigDecimal(""+dblBillAmount).setScale(2,RoundingMode.HALF_UP);
 
 
 

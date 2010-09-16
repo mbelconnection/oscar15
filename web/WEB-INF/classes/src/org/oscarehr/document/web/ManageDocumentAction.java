@@ -25,10 +25,6 @@
  */
 package org.oscarehr.document.web;
 
-import java.nio.ByteBuffer;
-
-import com.sun.pdfview.PDFFile;
-import com.sun.pdfview.PDFPage;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.RenderedImage;
@@ -36,15 +32,22 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Date;
+import java.util.HashMap;
+
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import net.sf.json.JSONObject;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
@@ -54,24 +57,25 @@ import org.apache.struts.actions.DispatchAction;
 import org.oscarehr.casemgmt.model.CaseManagementNote;
 import org.oscarehr.casemgmt.model.CaseManagementNoteLink;
 import org.oscarehr.casemgmt.service.CaseManagementManager;
+import org.oscarehr.common.dao.ProviderInboxRoutingDao;
 import org.oscarehr.document.dao.DocumentDAO;
 import org.oscarehr.document.model.CtlDocument;
 import org.oscarehr.document.model.Document;
-import oscar.log.LogAction;
-import oscar.log.LogConst;
-import oscar.util.UtilDateUtilities;
-import org.oscarehr.common.dao.ProviderInboxRoutingDao;
+import org.oscarehr.util.MiscUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import oscar.dms.EDocUtil;
-import oscar.oscarEncounter.data.EctProgram;
-import com.lowagie.text.pdf.PdfReader;
-import java.io.IOException;
-import java.util.HashMap;
-import net.sf.json.JSONObject;
-import oscar.oscarDemographic.data.DemographicData;
-import oscar.oscarLab.ca.on.LabResultData;
 
+import oscar.dms.EDocUtil;
+import oscar.log.LogAction;
+import oscar.log.LogConst;
+import oscar.oscarDemographic.data.DemographicData;
+import oscar.oscarEncounter.data.EctProgram;
+import oscar.oscarLab.ca.on.LabResultData;
+import oscar.util.UtilDateUtilities;
+
+import com.lowagie.text.pdf.PdfReader;
+import com.sun.pdfview.PDFFile;
+import com.sun.pdfview.PDFPage;
 
 /**
  *
@@ -100,7 +104,7 @@ public class ManageDocumentAction extends DispatchAction {
 
 public ActionForward documentUpdateAjax(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response) {
-        //System.out.println("In here DocumentUpdate");
+
          String ret = "";
 
 
@@ -112,42 +116,37 @@ public ActionForward documentUpdateAjax(ActionMapping mapping, ActionForm form,
         LogAction.addLog((String) request.getSession().getAttribute("user"), LogConst.ADD, LogConst.CON_DOCUMENT, documentId, request.getRemoteAddr());
 
         String demog = request.getParameter("demog");
-        String demographicKeyword = request.getParameter("demographicKeyword");
+
         String[] flagproviders = request.getParameterValues("flagproviders");
-        String demoLink=request.getParameter("demoLink");
-        //System.out.println("DOCUMNET " + documentDAO);
-        //System.out.println("link to prov "+demoLink+" demo "+demog);
+        //String demoLink=request.getParameter("demoLink");
+
+
         //TODO: if demoLink is "on", check if msp is in flagproviders, if not save to providerInboxRouting, if yes, don't save.
 
         //DONT COPY THIS !!!
          if (flagproviders !=null && flagproviders.length > 0){ //TODO: THIS NEEDS TO RUN THRU THE  lab forwarding rules!
              try{
                 for(String proNo:flagproviders){
-                    //System.out.println("flagproviders="+flagproviders.length+"; flagproviders="+flagproviders);
-                    for(int i=0;i<flagproviders.length;i++){
-                        System.out.println("element="+flagproviders[i]);
-                    }
-                    System.out.println("proNo="+proNo+"; documentId="+documentId);
                     providerInboxRoutingDAO.addToProviderInbox(proNo, documentId, LabResultData.DOCUMENT);
                 }
-             }catch(Exception e){e.printStackTrace();}
+             }catch(Exception e){MiscUtils.getLogger().error("Error", e);}
         }
         Document d = documentDAO.getDocument(documentId);
-        //System.out.println("aaa " + d);
+
         d.setDocdesc(documentDescription);
         d.setDoctype(docType);
         Date obDate = UtilDateUtilities.StringToDate(observationDate);
-        //System.out.println("Date util " + obDate);
+
         if (obDate != null) {
             d.setObservationdate(obDate);
         }
-        //System.out.println("bbb " + d);
+
         documentDAO.save(d);
-        //System.out.println("Document " + d.getDocfilename() + " desc " + d.getDocdesc());
+
         try {
-            //System.out.println("parse Int " + Integer.parseInt(demog));
+
             CtlDocument ctlDocument = documentDAO.getCtrlDocument(Integer.parseInt(documentId));
-            //System.out.println("CtlDocument1 " + ctlDocument.getModuleId());
+
             ctlDocument.setModuleId(Integer.parseInt(demog));
             documentDAO.saveCtlDocument(ctlDocument);
             //save a document created note
@@ -156,11 +155,11 @@ public ActionForward documentUpdateAjax(ActionMapping mapping, ActionForm form,
                 saveDocNote(request,d.getDocdesc(),demog,documentId);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            MiscUtils.getLogger().error("Error", e);
         }
         if (flagproviders != null) {
             for (String str : flagproviders) {
-                //System.out.println("str " + str);
+
             }
         }
         if (ret != null && !ret.equals("")) {
@@ -173,7 +172,7 @@ public ActionForward documentUpdateAjax(ActionMapping mapping, ActionForm form,
             response.getOutputStream().write(jsonObject.toString().getBytes());
         }
         catch(IOException e){
-            e.printStackTrace();
+            MiscUtils.getLogger().error("Error", e);
         }
         
         return null;
@@ -189,7 +188,7 @@ public ActionForward documentUpdateAjax(ActionMapping mapping, ActionForm form,
             response.getOutputStream().write(jsonObject.toString().getBytes());
         }
         catch(IOException e){
-            e.printStackTrace();
+            MiscUtils.getLogger().error("Error", e);
         }
         
         return null;
@@ -197,7 +196,7 @@ public ActionForward documentUpdateAjax(ActionMapping mapping, ActionForm form,
 
     public ActionForward documentUpdate(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response) {
-        //System.out.println("In here DocumentUpdate");
+
          String ret = "";
 
 
@@ -209,42 +208,37 @@ public ActionForward documentUpdateAjax(ActionMapping mapping, ActionForm form,
         LogAction.addLog((String) request.getSession().getAttribute("user"), LogConst.ADD, LogConst.CON_DOCUMENT, documentId, request.getRemoteAddr());
 
         String demog = request.getParameter("demog");
-        String demographicKeyword = request.getParameter("demographicKeyword");
+
         String[] flagproviders = request.getParameterValues("flagproviders");
-        String demoLink=request.getParameter("demoLink");
-        //System.out.println("DOCUMNET " + documentDAO);
-        //System.out.println("link to prov "+demoLink+" demo "+demog);        
+        //String demoLink=request.getParameter("demoLink");
+
+
         //TODO: if demoLink is "on", check if msp is in flagproviders, if not save to providerInboxRouting, if yes, don't save.
 
         //DONT COPY THIS !!!
          if (flagproviders !=null && flagproviders.length > 0){ //TODO: THIS NEEDS TO RUN THRU THE  lab forwarding rules!
              try{
                 for(String proNo:flagproviders){
-                    //System.out.println("flagproviders="+flagproviders.length+"; flagproviders="+flagproviders);
-                    for(int i=0;i<flagproviders.length;i++){
-                        System.out.println("element="+flagproviders[i]);
-                    }
-                    System.out.println("proNo="+proNo+"; documentId="+documentId);
                     providerInboxRoutingDAO.addToProviderInbox(proNo, documentId, LabResultData.DOCUMENT);
                 }
-             }catch(Exception e){e.printStackTrace();}
+             }catch(Exception e){MiscUtils.getLogger().error("Error", e);}
         }
         Document d = documentDAO.getDocument(documentId);
-        //System.out.println("aaa " + d);
+
         d.setDocdesc(documentDescription);
         d.setDoctype(docType);
         Date obDate = UtilDateUtilities.StringToDate(observationDate);
-        //System.out.println("Date util " + obDate);
+
         if (obDate != null) {
             d.setObservationdate(obDate);
         }
-        //System.out.println("bbb " + d);
+
         documentDAO.save(d);
-        //System.out.println("Document " + d.getDocfilename() + " desc " + d.getDocdesc());
+
         try {
-            //System.out.println("parse Int " + Integer.parseInt(demog));
+
             CtlDocument ctlDocument = documentDAO.getCtrlDocument(Integer.parseInt(documentId));
-            //System.out.println("CtlDocument1 " + ctlDocument.getModuleId());
+
             ctlDocument.setModuleId(Integer.parseInt(demog));
             documentDAO.saveCtlDocument(ctlDocument);
             //save a document created note
@@ -253,13 +247,9 @@ public ActionForward documentUpdateAjax(ActionMapping mapping, ActionForm form,
                 saveDocNote(request,d.getDocdesc(),demog,documentId);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            MiscUtils.getLogger().error("Error", e);
         }
-        if (flagproviders != null) {
-            for (String str : flagproviders) {
-                //System.out.println("str " + str);
-            }
-        }
+        
         if (ret != null && !ret.equals("")) {
             //response.getOutputStream().print(ret);
         }
@@ -299,7 +289,7 @@ public ActionForward documentUpdateAjax(ActionMapping mapping, ActionForm form,
                     String provFirstName=EDocUtil.getProviderInfo("first_name", user_no);
                     String provLastName=EDocUtil.getProviderInfo("last_name", user_no);
                     String strNote="Document"+" "+docDesc+" "+  "created at "+now+" by "+provFirstName+" "+provLastName+".";
-                    //System.out.println("here0 "+strNote);
+
                    // String strNote="Document"+" "+docDesc+" "+  "created at "+now+".";
                     cmn.setNote(strNote);
                     cmn.setSigned(true);
@@ -336,7 +326,14 @@ public ActionForward documentUpdateAjax(ActionMapping mapping, ActionForm form,
         }
         return cacheDir;
     }
-
+    private File hasCacheVersion2(Document d,Integer pageNum){
+        File documentCacheDir = getDocumentCacheDir(oscar.OscarProperties.getInstance().getProperty("DOCUMENT_DIR"));
+        File outfile = new File(documentCacheDir,d.getDocfilename()+"_"+pageNum+".png");
+        if (!outfile.exists()){
+            outfile = null;
+        }
+        return outfile;
+    }
     private File hasCacheVersion(Document d){
         File documentCacheDir = getDocumentCacheDir(oscar.OscarProperties.getInstance().getProperty("DOCUMENT_DIR"));
         File outfile = new File(documentCacheDir,d.getDocfilename()+".png");
@@ -346,13 +343,57 @@ public ActionForward documentUpdateAjax(ActionMapping mapping, ActionForm form,
         return outfile;
     }
 
+public File createCacheVersion2(Document d,Integer pageNum) throws Exception{
+
+        String docdownload = oscar.OscarProperties.getInstance().getProperty("DOCUMENT_DIR");
+        File documentDir = new File(docdownload);
+        File documentCacheDir = getDocumentCacheDir(docdownload);
+        log.debug("Document Dir is a dir"+documentDir.isDirectory());
+
+        File file = new File(documentDir,d.getDocfilename());
+
+        RandomAccessFile raf = new RandomAccessFile(file, "r");
+        FileChannel channel = raf.getChannel();
+        ByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+        PDFFile pdffile = new PDFFile(buf);
+        //long readfile = System.currentTimeMillis() - start;
+        // draw the first page to an image
+        PDFPage ppage = pdffile.getPage(pageNum);
+
+        log.debug("WIDTH " + (int) ppage.getBBox().getWidth() + " height " + (int) ppage.getBBox().getHeight());
+
+        //get the width and height for the doc at the default zoom
+        Rectangle rect = new Rectangle(0, 0,
+                (int) ppage.getBBox().getWidth(),
+                (int) ppage.getBBox().getHeight());
+
+        log.debug("generate the image");
+        Image img = ppage.getImage(
+                rect.width, rect.height, //width & height
+                rect, // clip rect
+                null, // null for the ImageObserver
+                true, // fill background with white
+                true // block until drawing is done
+                );
+
+        log.debug("about to Print to stream");
+        File outfile = new File(documentCacheDir,d.getDocfilename()+"_"+pageNum+".png");
+        OutputStream outs = new FileOutputStream(outfile);
+
+        RenderedImage rendImage = (RenderedImage) img;
+        ImageIO.write(rendImage, "png", outs);
+        outs.flush();
+        outs.close();
+        return outfile;
+
+    }
     public File createCacheVersion(Document d) throws Exception{
 
         String docdownload = oscar.OscarProperties.getInstance().getProperty("DOCUMENT_DIR");
         File documentDir = new File(docdownload);
         File documentCacheDir = getDocumentCacheDir(docdownload);
         log.debug("Document Dir is a dir"+documentDir.isDirectory());
-        //System.out.println("getdocfilename: "+d.getDocfilename());
+
         File file = new File(documentDir,d.getDocfilename());
 
         RandomAccessFile raf = new RandomAccessFile(file, "r");
@@ -392,7 +433,7 @@ public ActionForward documentUpdateAjax(ActionMapping mapping, ActionForm form,
     }
     //PNG version
     public ActionForward view(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception{
-        //System.out.println("in managedocumentaction--view");
+
        try{
            String doc_no = request.getParameter("doc_no");
            log.debug("Document No :"+doc_no);
@@ -404,11 +445,7 @@ public ActionForward documentUpdateAjax(ActionMapping mapping, ActionForm form,
 
         File outfile = hasCacheVersion(d);
         if (outfile == null){
-            System.out.println("No Cache Version");
            outfile = createCacheVersion( d);
-           //System.out.println("outfile after create cache version "+outfile);
-        }else{
-            System.out.println("THERE WAS A CACHE Version "+outfile);
         }
 
         response.setContentType("image/png");
@@ -433,16 +470,67 @@ public ActionForward documentUpdateAjax(ActionMapping mapping, ActionForm form,
         outs.close();
        } 
        catch(java.net.SocketException se){
-            se.printStackTrace();
+            MiscUtils.getLogger().error("Error", se);
        }
        catch(Exception e){
-           e.printStackTrace();
+           MiscUtils.getLogger().error("Error", e);
        }
         return null;
     }
 
+public ActionForward viewDocPage(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception{
+    log.debug("in viewDocPage");
+       try{
+           String doc_no = request.getParameter("doc_no");
+           String pageNum=request.getParameter("curPage");
+           if(pageNum==null){
+               pageNum="0";
+           }
+           Integer pn=Integer.parseInt(pageNum);
+           log.debug("Document No :"+doc_no);
+        LogAction.addLog((String) request.getSession().getAttribute("user"), LogConst.READ, LogConst.CON_DOCUMENT, doc_no, request.getRemoteAddr());
+
+        Document d = documentDAO.getDocument(doc_no);
+        log.debug("Document Name :"+d.getDocfilename());
+        String name=d.getDocfilename()+"_"+pn+".png";
+        log.debug("name "+name);
+
+        File outfile=null;
+
+            outfile = hasCacheVersion2(d,pn);
+            if(outfile!=null){
+                log.debug("got doc from local cache   ");
+            }
+            else{
+               outfile = createCacheVersion2(d,pn);
+               if(outfile!=null){
+                  log.debug("create new doc  ");
+               }
+            }
+        response.setContentType("image/png");
+        ServletOutputStream outs = response.getOutputStream();
+        response.setHeader("Content-Disposition", "attachment;filename=" + d.getDocfilename());
+        BufferedInputStream bfis = new BufferedInputStream(new FileInputStream(outfile));
+        int data;
+        while ((data = bfis.read()) != -1) {
+            outs.write(data);
+            //outs.flush();
+        }
+
+        bfis.close();
+        outs.flush();
+        outs.close();
+       }
+       catch(java.net.SocketException se){
+            MiscUtils.getLogger().error("Error", se);
+       }
+       catch(Exception e){
+           MiscUtils.getLogger().error("Error", e);
+       }
+        return null;
+    }
     public ActionForward view2(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception{
-        //System.out.println("in managedocumentaction--view2222");
+
         //TODO: NEED TO CHECK FOR ACCESS
         String doc_no = request.getParameter("doc_no");
            log.debug("Document No :"+doc_no);
@@ -499,30 +587,30 @@ public ActionForward documentUpdateAjax(ActionMapping mapping, ActionForm form,
 
 
     public ActionForward getDocPageNumber(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-        //System.out.println("in getDocPageNumber");
+
         String doc_no=request.getParameter("doc_no");
         String docdownload = oscar.OscarProperties.getInstance().getProperty("DOCUMENT_DIR");
         //File documentDir = new File(docdownload);
         Document d = documentDAO.getDocument(doc_no);
         String filePath=docdownload+d.getDocfilename();
-        //System.out.println("filePath="+filePath);
+
         int numOfPage=0;
         try{
             PdfReader reader =new PdfReader(filePath);
             numOfPage=reader.getNumberOfPages();
-            //System.out.println("num of pages="+numOfPage);
+
             HashMap hm = new HashMap();
             hm.put("numOfPage", numOfPage);
             JSONObject jsonObject = JSONObject.fromObject(hm);
             response.getOutputStream().write(jsonObject.toString().getBytes());
         }catch(IOException e){
-            e.printStackTrace();
+            MiscUtils.getLogger().error("Error", e);
         }
 
         return null;//execute2(mapping, form, request, response);
     }
         public ActionForward display(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception{
-        //System.out.println("in managedocumentaction--display");
+
         String doc_no = request.getParameter("doc_no");
            log.debug("Document No :"+doc_no);
 
@@ -554,7 +642,7 @@ public ActionForward documentUpdateAjax(ActionMapping mapping, ActionForm form,
         if (contentType == null){
             contentType = "application/pdf";
         }
-        //System.out.println("Content type was set tooo "+contentType);
+
         File file = new File(documentDir,d.getDocfilename());
         response.setContentType(contentType);
         response.setContentLength((int)file.length());

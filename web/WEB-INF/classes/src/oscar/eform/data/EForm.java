@@ -46,7 +46,7 @@ import oscar.util.StringBufferUtils;
 import oscar.util.UtilDateUtilities;
 
 public class EForm extends EFormBase {
-    private static String appointment_no = "";
+    private static String appointment_no = "-1";
     private static String appt_provider = "";
     private static HashMap sql_params = new HashMap();
     private static Log log = LogFactory.getLog(EForm.class);
@@ -105,11 +105,11 @@ public class EForm extends EFormBase {
     }
 
     public void setAppointmentNo(String appointment_no) {
-        this.appointment_no = appointment_no;
+        if (!blank(appointment_no)) this.appointment_no = appointment_no;
     }
 
     public void setApptProvider(String appt_provider) {
-        this.appt_provider = appt_provider;
+        if (!blank(appt_provider)) this.appt_provider = appt_provider;
     }
 
     public void setAction(String pAjaxId) {
@@ -286,10 +286,10 @@ public class EForm extends EFormBase {
                     return null;
                 }
             }
-            if (type.equalsIgnoreCase("count") && var_value==null) type = "countall";
+            if (type.equalsIgnoreCase("count") && var_value==null) type = "countname";
             if (!ref_name.equals("")) {
                 type += "_ref";
-                if (ref_value==null) type += "all";
+                if (ref_value==null) type += "name";
             }
             curAP = EFormLoader.getInstance().getAP("_eform_values_"+type);
             if (curAP!=null) {

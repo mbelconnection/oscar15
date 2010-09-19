@@ -74,7 +74,7 @@ public final class BillingCodeData implements Comparable      {
   String specialty; //| specialty             | varchar(15) | YES  |     | NULL    |                |
   String region; //| region                | varchar(5)  | YES  |     | NULL    |                |
   String anaesthesia; // | anaesthesia
-  String gstFlag;
+  boolean  gstFlag;
 
   /** Creates a new instance of BillingCodeData */
   public BillingCodeData() {

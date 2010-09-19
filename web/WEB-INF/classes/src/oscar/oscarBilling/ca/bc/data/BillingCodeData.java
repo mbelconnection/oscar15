@@ -59,6 +59,8 @@ public final class BillingCodeData implements Comparable      {
    | specialty             | varchar(15) | YES  |     | NULL    |                |
    | region                | varchar(5)  | YES  |     | NULL    |                |
    | anaesthesia           | char(2)     | YES  |     | NULL    |                |
+   | gstFlag               | tinyint(1)  | NO   |     |  0      |                |
+   | termination_date      | date        | YES  |     | 9999-12-31               |
    +-----------------------+-------------+------+-----+---------+----------------+
    */
 
@@ -72,6 +74,7 @@ public final class BillingCodeData implements Comparable      {
   String specialty; //| specialty             | varchar(15) | YES  |     | NULL    |                |
   String region; //| region                | varchar(5)  | YES  |     | NULL    |                |
   String anaesthesia; // | anaesthesia
+  String gstFlag;
 
   /** Creates a new instance of BillingCodeData */
   public BillingCodeData() {
@@ -333,6 +336,22 @@ public final class BillingCodeData implements Comparable      {
    */
   public void setAnaesthesia(java.lang.String anaesthesia) {
     this.anaesthesia = anaesthesia;
+  }
+
+  /**
+   * Getter for property gstFlag.
+   * @return Value of property gstFlag.
+   */
+  public java.lang.String getGstFlag() {
+    return gstFlag;
+  }
+
+  /**
+   * Setter for property gstFlag.
+   * @param GstFlag New value of property gstFlag.
+   */
+  public void setGstFlag(java.lang.String gstFlag) {
+    this.gstFlag = gstFlag;
   }
 
   public int compareTo(Object o) {

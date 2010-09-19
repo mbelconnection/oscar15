@@ -342,7 +342,7 @@ public final class BillingCodeData implements Comparable      {
    * Getter for property gstFlag.
    * @return Value of property gstFlag.
    */
-  public java.lang.String getGstFlag() {
+  public java.lang.Boolean getGstFlag() {
     return gstFlag;
   }
 
@@ -350,7 +350,7 @@ public final class BillingCodeData implements Comparable      {
    * Setter for property gstFlag.
    * @param GstFlag New value of property gstFlag.
    */
-  public void setGstFlag(java.lang.String gstFlag) {
+  public void setGstFlag(java.lang.Boolean gstFlag) {
     this.gstFlag = gstFlag;
   }
 

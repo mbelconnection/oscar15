@@ -233,16 +233,21 @@ import cds.RiskFactorsDocument.RiskFactors;
         
         for(Provider student:students) {
         	//need that student's personal program
-        	Integer pid = programManager.getProgramIdByProgramName("program"+student.getProviderNo());
+        	Integer pid = programManager.getProgramIdByProgramName("program"+student.getProviderNo());        	
         	if(pid == null) {
         		logger.warn("student's program not found");
         		continue;
         	}
+        	logger.info("importing patient for provider " + pid);
+        	
         	Program p = programManager.getProgram(pid);
         	
         	String[] result = importXML(xmlFile,warnings,request,timeShiftInDays,student,p,courseId);
         	logs.addAll(convertLog(result));
         }
+        
+        Util.cleanFile(xmlFile);
+        
         return logs.toArray(new String[logs.size()]);
     }
     
@@ -1517,7 +1522,9 @@ import cds.RiskFactorsDocument.RiskFactors;
 			}
 		}
 		err_demo.addAll(demoRes.getWarningsCollection());
-		Util.cleanFile(xmlFile);
+		if(courseId==0) {
+			Util.cleanFile(xmlFile);
+		}
 
 		return packMsgs(err_demo, err_data, err_summ, err_othe, err_note, warnings);
 	}

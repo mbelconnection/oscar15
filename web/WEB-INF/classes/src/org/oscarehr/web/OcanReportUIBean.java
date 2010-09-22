@@ -288,8 +288,9 @@ public class OcanReportUIBean {
 		for(int x=0;x<actionCount;x++) {
 			int index = x+1;
 			Action action = Action.Factory.newInstance();
+			action.setPriority(index);			
 			action.setDomain(ActionDocument.Action.Domain.Enum.forString(getDomainName(Integer.valueOf(getStaffAnswer(index+"_summary_of_actions_domain",ocanStaffFormData)))));
-			action.setPriority(index);
+			action.setAction(getStaffAnswer(index+"_summary_of_actions_action",ocanStaffFormData));
 			actions.add(action);
 		}
 		actionList.setActionArray(actions.toArray(new Action[actions.size()]));
@@ -309,6 +310,7 @@ public class OcanReportUIBean {
 			referral.setOptimal(Referral.Optimal.Enum.forString(getStaffAnswer(index+"_summary_of_referral_optimal",ocanStaffFormData)));
 			referral.setSpecifyOptimal(getStaffAnswer(index+"_summary_of_referral_optimal_spec",ocanStaffFormData));
 			referral.setActual(Referral.Actual.Enum.forString(getStaffAnswer(index+"_summary_of_referral_actual",ocanStaffFormData)));
+			referral.setSpecifyActual(getStaffAnswer(index+"_summary_of_referral_actual_spec",ocanStaffFormData));
 			referral.setDifferenceReason(Referral.DifferenceReason.Enum.forString(getStaffAnswer(index+"_summary_of_referral_diff",ocanStaffFormData)));
 			referral.setStatus(Referral.Status.Enum.forString(getStaffAnswer(index+"_summary_of_referral_status",ocanStaffFormData)));
 			referrals.add(referral);
@@ -322,6 +324,8 @@ public class OcanReportUIBean {
 	
 	public static PresentingIssueList getPresentingIssueList(List<OcanStaffFormData> ocanStaffFormData) {
 		PresentingIssueList presentingIssueList = PresentingIssueList.Factory.newInstance();
+		
+		presentingIssueList.setOtherIssues(getStaffAnswer("presenting_issues_other",ocanStaffFormData));
 		List<String> answers = getMultipleStaffAnswer("presenting_issues",ocanStaffFormData);
 		List<PresentingIssue> piList = new ArrayList<PresentingIssue>();
 		for(String answer:answers) {
@@ -456,7 +460,7 @@ public class OcanReportUIBean {
 		case 13:
 			DrugUseList drugUseList = getDrugUseList(ocanStaffFormData);
 			domain.setDrugUseList(drugUseList);
-			domain.setStageOfChangeDrugs(StageOfChangeDrugs.Enum.forString(getStaffAnswer("state_of_change_addiction",ocanStaffFormData)));
+			domain.setStageOfChangeDrugs(StageOfChangeDrugs.Enum.forString(getStaffAnswer("state_of_change_drug",ocanStaffFormData)));
 			domain.setDrugsImpact(getStaffAnswer("drug_impact",ocanStaffFormData));
 			break;
 			
@@ -610,13 +614,14 @@ public class OcanReportUIBean {
 	
 	public static MedicationDetail getMedicationDetail(String index, List<OcanStaffFormData> ocanStaffFormData) {
 		MedicationDetail medicationDetail = MedicationDetail.Factory.newInstance();
-		medicationDetail.setIsHelpNeeded(MedicationDetail.IsHelpNeeded.Enum.forString(getStaffAnswer("medication_"+index+"_help_needed",ocanStaffFormData)));
-		medicationDetail.setIsHelpProvided(MedicationDetail.IsHelpProvided.Enum.forString(getStaffAnswer("medication_"+index+"_help_provided",ocanStaffFormData)));
-		medicationDetail.setTakenAsPrescribed(MedicationDetail.TakenAsPrescribed.Enum.forString(getStaffAnswer("medication_"+index+"_taken_as_prescribed",ocanStaffFormData)));
-		medicationDetail.setDosage(getStaffAnswer("medication_"+index+"_dosage",ocanStaffFormData));
+		
 		medicationDetail.setMedicationName(getStaffAnswer("medication_"+index+"_medication",ocanStaffFormData));
 		medicationDetail.setSourceInfo(MedicationDetail.SourceInfo.Enum.forString(getStaffAnswer("medication_"+index+"_source_of_info",ocanStaffFormData)));
-				
+		medicationDetail.setDosage(getStaffAnswer("medication_"+index+"_dosage",ocanStaffFormData));
+		medicationDetail.setTakenAsPrescribed(MedicationDetail.TakenAsPrescribed.Enum.forString(getStaffAnswer("medication_"+index+"_taken_as_prescribed",ocanStaffFormData)));
+		medicationDetail.setIsHelpProvided(MedicationDetail.IsHelpProvided.Enum.forString(getStaffAnswer("medication_"+index+"_help_provided",ocanStaffFormData)));
+		medicationDetail.setIsHelpNeeded(MedicationDetail.IsHelpNeeded.Enum.forString(getStaffAnswer("medication_"+index+"_help_needed",ocanStaffFormData)));
+						
 		return medicationDetail;
 	}
 	
@@ -658,8 +663,8 @@ public class OcanReportUIBean {
 		MISFunction mISFunction = MISFunction.Factory.newInstance();
 		mISFunction.setValue(MISFunction.Value.Enum.forString(getStaffAnswer("serviceUseRecord_functionName"+index,ocanStaffFormData)));
 		mISFunction.setNameOther(getStaffAnswer("serviceUseRecord_functionNameOther"+index,ocanStaffFormData));
-		mISFunction.setSubFunction(getStaffAnswer("serviceUseRecord_functionNumber"+index,ocanStaffFormData));
 		mISFunction.setNumberOther(getStaffAnswer("serviceUseRecord_functionNumberOther"+index,ocanStaffFormData));
+		mISFunction.setSubFunction(getStaffAnswer("serviceUseRecord_functionNumber"+index,ocanStaffFormData));
 		return mISFunction;
 	}
 	
@@ -667,8 +672,8 @@ public class OcanReportUIBean {
 		ServiceOrg serviceOrg = ServiceOrg.Factory.newInstance();
 		serviceOrg.setLHIN(ServiceOrg.LHIN.Enum.forString(getStaffAnswer("serviceUseRecord_orgLHIN"+index,ocanStaffFormData)));
 		serviceOrg.setName(getStaffAnswer("serviceUseRecord_orgName"+index,ocanStaffFormData));
-		serviceOrg.setNameOther(getStaffAnswer("serviceUseRecord_orgNameOther"+index,ocanStaffFormData));
 		serviceOrg.setNumber(getStaffAnswer("serviceUseRecord_orgNumber"+index,ocanStaffFormData));
+		serviceOrg.setNameOther(getStaffAnswer("serviceUseRecord_orgNameOther"+index,ocanStaffFormData));
 		serviceOrg.setNumberOther(getStaffAnswer("serviceUseRecord_orgNumberOther"+index,ocanStaffFormData));
 		return serviceOrg;
 	}
@@ -698,8 +703,8 @@ public class OcanReportUIBean {
 		while(itr.hasNext()) {
 			mc_list.add(Symptom.Enum.forString(itr.next()));
 		}
+		symptomList.setSymptomComments(getStaffAnswer("7_comments",ocanStaffFormData));		
 		symptomList.setSymptomArray(mc_list.toArray(new Symptom.Enum[answers.size()]));
-		
 		//symptomList.setSymptomArray(answers.toArray(new String[answers.size()]));
 		//symptomList.setOtherSymptom(getStaffAnswer("symptom_checklist_other",ocanStaffFormData));
 		return symptomList;
@@ -790,17 +795,19 @@ public class OcanReportUIBean {
 	}
 		*/
 		
-		drugUseList.setInjected(DrugUseList.Injected.Enum.forString(getStaffAnswer("drugUse_rejected",ocanStaffFormData))); 
+		drugUseList.setInjected(DrugUseList.Injected.Enum.forString(getStaffAnswer("drug_injection_freq",ocanStaffFormData)));
 		
-		List<String> drugList = getMultipleStaffAnswer("drug_list",ocanStaffFormData);			
+		List<String> drugList = getDrugList();
+		//List<String> drugList = getMultipleStaffAnswer("drug_list",ocanStaffFormData);			
 		List<DrugUse> drugUse = new ArrayList<DrugUse>(); 	
-		DrugUse du = null;
+		DrugUse du;
 		for(String answer:drugList) {
+			du = null;
 			if(du==null) {
 				du = DrugUse.Factory.newInstance();
 			}		
 			du.setName(DrugUse.Name.Enum.forString(answer));			
-			du.setFrequency(DrugUse.Frequency.Enum.forString(getStaffAnswer("drugUse_frequency",ocanStaffFormData)));
+			du.setFrequency(DrugUse.Frequency.Enum.forString(getStaffAnswer(answer+"_DrugUseFreq",ocanStaffFormData)));
 			drugUse.add(du);
 		}				
 		drugUseList.setDrugUseArray(drugUse.toArray(new DrugUse[drugList.size()]));	
@@ -906,8 +913,8 @@ public class OcanReportUIBean {
 	public static BarriersFindingWorkList convertBarriersFindingWorkList(OcanStaffForm ocanStaffForm, List<OcanStaffFormData> ocanStaffFormData) {
 		BarriersFindingWorkList cntgt = BarriersFindingWorkList.Factory.newInstance();	
 		
-		cntgt.setBarriersComments(getStaffAnswer("5_barriersFindingWork_Comments",ocanStaffFormData));
 		cntgt.setOtherBarriers(getStaffAnswer("5_barriersFindingWork_Other",ocanStaffFormData));
+		cntgt.setBarriersComments(getStaffAnswer("5_barriersFindingWork_Comments",ocanStaffFormData));
 		
 		List<String> answers = getMultipleStaffAnswer("5_barriersFindingWork",ocanStaffFormData);
 		List<BarriersFindingWork.Enum> barrierList = new ArrayList<BarriersFindingWork.Enum>();
@@ -940,8 +947,8 @@ public class OcanReportUIBean {
 		Program program = Program.Factory.newInstance();
 		//program.setName(getStaffAnswer("admissionId",ocanStaffFormData));
 		program.setName(getStaffAnswer("serviceUseRecord_programName"+index,ocanStaffFormData));
-		program.setNameOther(getStaffAnswer("serviceUseRecord_programNameOther"+index,ocanStaffFormData));
 		program.setNumber(getStaffAnswer("serviceUseRecord_programNumber"+index,ocanStaffFormData));
+		program.setNameOther(getStaffAnswer("serviceUseRecord_programNameOther"+index,ocanStaffFormData));
 		program.setNumberOther(getStaffAnswer("serviceUseRecord_programNumberOther"+index,ocanStaffFormData));		
 		return program;
 	}
@@ -1051,9 +1058,10 @@ public class OcanReportUIBean {
 	
 	public static ClientName convertClientName(OcanStaffForm ocanStaffForm, List<OcanStaffFormData> ocanStaffFormData) {
 		ClientName clientName = ClientName.Factory.newInstance();
-		clientName.setLast(ocanStaffForm.getLastName());
 		clientName.setFirst(ocanStaffForm.getFirstName());
-		
+		clientName.setMiddle(getStaffAnswer("middle",ocanStaffFormData));
+		clientName.setLast(ocanStaffForm.getLastName());
+		clientName.setPreferred(getStaffAnswer("preferred",ocanStaffFormData));
 		return clientName;
 	}
 	
@@ -1197,9 +1205,9 @@ public class OcanReportUIBean {
 				for(int index=1; index <=3; index++) {
 				OtherPractitionerContact otherPractitionerContact = OtherPractitionerContact.Factory.newInstance();
 				
+				otherPractitionerContact.setOtherContact(OtherPractitionerContact.OtherContact.Enum.forString(contact));
 				otherPractitionerContact.setPractitionerType(OtherPractitionerContact.PractitionerType.Enum.forString(getStaffAnswer(index+"_otherContactType",ocanStaffFormData)));
 				otherPractitionerContact.setLastSeen(OtherPractitionerContact.LastSeen.Enum.forString(getStaffAnswer(index+"_otherContactLastSeen",ocanStaffFormData)));
-				otherPractitionerContact.setOtherContact(OtherPractitionerContact.OtherContact.Enum.forString(contact));
 				otherPractitionerContact.setContactInfo(convertContactInfo_otherContact(index,ocanStaffFormData));
 				
 				list.add(otherPractitionerContact);
@@ -1269,9 +1277,9 @@ public class OcanReportUIBean {
 		if(getStaffAnswer("firstEntryDateType",ocanStaffFormData)=="") {
 			return firstEntryDate;
 		}
-		firstEntryDate.setAgeType(FirstEntryDate.AgeType.Enum.forString(getStaffAnswer("firstEntryDateType",ocanStaffFormData)));
 		firstEntryDate.setEntryYear(BigInteger.valueOf(Long.valueOf(getStaffAnswer("year_firstEntryDate",ocanStaffFormData)).longValue()));
 		firstEntryDate.setEntryMonth(Integer.valueOf(getStaffAnswer("month_firstEntryDate",ocanStaffFormData)).intValue());
+		firstEntryDate.setAgeType(FirstEntryDate.AgeType.Enum.forString(getStaffAnswer("firstEntryDateType",ocanStaffFormData)));
 		
 		return firstEntryDate;
 	}
@@ -1281,12 +1289,14 @@ public class OcanReportUIBean {
 		if(getStaffAnswer("ageTypeHospitalization",ocanStaffFormData)=="") {
 			return ageHospitalization;
 		}
-		ageHospitalization.setAgeType(AgeHospitalization.AgeType.Enum.forString(getStaffAnswer("ageTypeHospitalization",ocanStaffFormData)));
+		
 		if(getStaffAnswer("ageHospitalization_year",ocanStaffFormData)=="") {
 			ageHospitalization.setYears(BigInteger.valueOf(0));
 		}else {
 			ageHospitalization.setYears(BigInteger.valueOf(Long.valueOf(getStaffAnswer("ageHospitalization_year",ocanStaffFormData)).longValue()));
 		}
+		ageHospitalization.setAgeType(AgeHospitalization.AgeType.Enum.forString(getStaffAnswer("ageTypeHospitalization",ocanStaffFormData)));
+		
 		/*
 		if(getStaffAnswer("ageHospitalization_month",ocanStaffFormData)=="") {
 			ageHospitalization.setMonths(0);
@@ -1300,12 +1310,13 @@ public class OcanReportUIBean {
 	public static AgeOnsetMental convertAgeOnsetMental(OcanStaffForm ocanStaffForm, List<OcanStaffFormData> ocanStaffFormData) {
 		AgeOnsetMental ageOnsetMental = AgeOnsetMental.Factory.newInstance();
 		
-		ageOnsetMental.setAgeType(AgeOnsetMental.AgeType.Enum.forString(getStaffAnswer("ageTypeOnsetMental",ocanStaffFormData)));
 		if(getStaffAnswer("ageOnsetMental_year",ocanStaffFormData)=="") {
 			ageOnsetMental.setYears(BigInteger.valueOf(0));
 		} else {
 			ageOnsetMental.setYears(BigInteger.valueOf(Long.valueOf(getStaffAnswer("ageOnsetMental_year",ocanStaffFormData)).longValue()));
 		}
+		ageOnsetMental.setAgeType(AgeOnsetMental.AgeType.Enum.forString(getStaffAnswer("ageTypeOnsetMental",ocanStaffFormData)));
+		
 		/*
 		if(getStaffAnswer("ageOnsetMental_month",ocanStaffFormData)=="") {
 			ageOnsetMental.setMonths(0);
@@ -1514,7 +1525,7 @@ public class OcanReportUIBean {
 		result.add("372614000");
 		result.add("80288002");
 		result.add("61010005");
-		result.add("410515003");		
+		result.add("OTH");		
 		return result;
 	}
 }

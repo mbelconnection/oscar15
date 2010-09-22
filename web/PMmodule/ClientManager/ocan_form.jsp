@@ -349,7 +349,7 @@ $("document").ready(function(){
 		<tr>
 			<td class="genericTableHeader">Was this OCAN completed by OCAN Lead?</td>
 			<td class="genericTableData">
-				<select name="completedByOCANLead">
+				<select name="completedByOCANLead" id="completedByOCANLead">
 					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "completedByOCANLead", OcanForm.getOcanFormOptions("OCAN Lead Assessment"),prepopulationLevel)%>
 				</select>					
 			</td>			
@@ -2021,7 +2021,7 @@ $("document").ready(function(){
 		<tr>
 			<td class="genericTableHeader">Do you have any concerns about your physical health?</td>
 			<td class="genericTableData">
-				<select name="6_3b" id="6_3b" class="{validate: {required:function(element){return checkForRequired(element.id);}}}">
+				<select name="6_physical_health_concerns" id="6_physical_health_concerns" class="{validate: {required:true}}">
 					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "6_physical_health_concerns", OcanForm.getOcanFormOptions("Physical Health Concerns"),prepopulationLevel)%>
 				</select>					
 			</td>
@@ -2699,33 +2699,16 @@ This information is collected from a variety of sources, including self-report, 
 		<tr>
 			<td class="genericTableHeader">Which of the following drugs have you used? (Select all that apply)</td>
 			<td class="genericTableData">
-				<%=OcanForm.renderAsDrugUseCheckBoxOptions(ocanStaffForm.getId(), "drug_list", OcanForm.getOcanFormOptions("Drug List"),prepopulationLevel)%>						
+				<%=OcanForm.renderAsDrugUseRadioBoxOptions(ocanStaffForm.getId(), "drug_list", OcanForm.getOcanFormOptions("Drug List"),prepopulationLevel)%>						
 			</td>
 		</tr>	
 					
-		<tr>
-			<td class="genericTableHeader">Which of the following drugs have you used? - Frequency</td>
-			<td class="genericTableData">
-				<select name="drugUse_frequency">
-					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "drugUse_frequency", OcanForm.getOcanFormOptions("Frequency of Drug Use"),prepopulationLevel)%>
-				</select>					
-			</td>
-		</tr>	
-		
-		<tr>
-			<td class="genericTableHeader">Has the substance been injected?</td>
-			<td class="genericTableData">
-				<select name="drugUse_rejected">
-					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "drugUse_rejected", OcanForm.getOcanFormOptions("Frequency of Drug Use"),prepopulationLevel)%>
-				</select>					
-			</td>
-		</tr>	
 		
 		<tr>
 			<td class="genericTableHeader">Indicate the stage of change client is at - Optional</td>
 			<td class="genericTableData">
-				<select name="state_of_change_addiction">
-					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "state_of_change_addiction", OcanForm.getOcanFormOptions("Stage of Change - Alcohol"),prepopulationLevel)%>
+				<select name="state_of_change_drug" id="state_of_change_drug">
+					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "state_of_change_drug", OcanForm.getOcanFormOptions("Stage of Change - Alcohol"),prepopulationLevel)%>
 				</select>					
 			</td>
 		</tr>			
@@ -2819,7 +2802,7 @@ This information is collected from a variety of sources, including self-report, 
 		<tr>
 			<td class="genericTableHeader">Indicate the stage of change client is at - Optional</td>
 			<td class="genericTableData">
-				<select name="state_of_change_addiction">
+				<select name="14_state_of_change" id="14_state_of_change">
 					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "14_state_of_change", OcanForm.getOcanFormOptions("Stage of Change - Alcohol"),prepopulationLevel)%>
 				</select>					
 			</td>
@@ -3588,6 +3571,13 @@ This information is collected from a variety of sources, including self-report, 
 			<td class="genericTableHeader">Presenting Issues (Select all that apply)</td>
 			<td class="genericTableData">
 				<%=OcanForm.renderAsCheckBoxOptions(ocanStaffForm.getId(), "presenting_issues", OcanForm.getOcanFormOptions("Presenting Issues"),prepopulationLevel)%>						
+			</td>
+		</tr>
+			
+		<tr>
+			<td class="genericTableHeader">Presenting Issues - Other</td>
+			<td class="genericTableData">
+						<%=OcanForm.renderAsTextArea(ocanStaffForm.getId(),"presenting_issues_other",5,30,prepopulationLevel)%>
 			</td>
 		</tr>
 			

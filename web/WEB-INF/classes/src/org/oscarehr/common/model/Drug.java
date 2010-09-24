@@ -105,7 +105,9 @@ public class Drug extends AbstractModel<Integer> implements Serializable {
         private String remoteFacilityName = null;
 
         public static final String DELETED = "deleted";
-        public static final String DOSE_CHANGE  = "doseChange";
+	public static final String DOSE_CHANGE = "doseChange";
+        public static final String NOT_SELECTED = "notSelected";
+        public static final String UNKNOWN = "unknown";
         public static final String ADVERSE_REACTION = "adverseReaction";
         public static final String ALLERGY = "allergy";
         public static final String INEFFECTIVE_TREATMENT = "ineffectiveTreatment";
@@ -128,26 +130,15 @@ public class Drug extends AbstractModel<Integer> implements Serializable {
             return false;
         }
 
-        public boolean isDiscontinued(){
-            if(isArchived() && (DOSE_CHANGE.equals(getArchivedReason()) ||
-                                ADVERSE_REACTION.equals(getArchivedReason()) ||
-                                ALLERGY.equals(getArchivedReason())  ||
-                                INEFFECTIVE_TREATMENT.equals(getArchivedReason()) ||
-                                PRESCRIBING_ERROR.equals(getArchivedReason())  ||
-                                NO_LONGER_NECESSARY.equals(getArchivedReason()) ||
-                                SIMPLIFYING_TREATMENT.equals(getArchivedReason()) ||
-                                PATIENT_REQUEST.equals(getArchivedReason()) ||
-                                NEW_SCIENTIFIC_EVIDENCE.equals(getArchivedReason()) ||
-                                INCREASED_RISK_BENEFIT_RATIO.equals(getArchivedReason())  ||
-                                DISCONTINUED_BY_ANOTHER_PHYSICIAN.equals(getArchivedReason()) ||
-                                COST.equals(getArchivedReason())  ||
-                                DRUG_INTERACTION.equals(getArchivedReason())  ||
-                                OTHER.equals(getArchivedReason()) )){
+	public boolean isDiscontinued() {
+            String ar=getArchivedReason();
+		if (isArchived()
+		        && (UNKNOWN.equals(ar)|| NOT_SELECTED.equals(ar) || DOSE_CHANGE.equals(ar) || ADVERSE_REACTION.equals(ar) || ALLERGY.equals(ar) || INEFFECTIVE_TREATMENT.equals(ar) || PRESCRIBING_ERROR.equals(ar) || NO_LONGER_NECESSARY.equals(ar) || SIMPLIFYING_TREATMENT.equals(ar) || PATIENT_REQUEST.equals(ar) || NEW_SCIENTIFIC_EVIDENCE.equals(ar)
+		                || INCREASED_RISK_BENEFIT_RATIO.equals(ar) || DISCONTINUED_BY_ANOTHER_PHYSICIAN.equals(ar) || COST.equals(ar) || DRUG_INTERACTION.equals(ar) || OTHER.equals(ar))) {
             return true;
             }
             return false;
         }
-
 
 	public String getProviderNo() {
     	return providerNo;

@@ -359,13 +359,13 @@ public class OcanReportUIBean {
 	
 		NeedRating needRating = convertNeedRating(domainNumber,ocanStaffForm,ocanStaffFormData, ocanClientForm, ocanClientFormData);
 		domain.setNeedRating(needRating);
-		if(needRating.getStaff() != 0 && needRating.getStaff() != 9) {
+		//if(needRating.getStaff() != 0 && needRating.getStaff() != 9) {
 			//2,3a,3b
 			domain.setInformalHelpRecvd(convertInformalHelpRecvd(domainNumber,ocanStaffForm,ocanStaffFormData));
 			domain.setFormalHelpRecvd(convertFormalHelpRecvd(domainNumber,ocanStaffForm,ocanStaffFormData));
 			domain.setFormalHelpNeed(convertFormalHelpNeed(domainNumber,ocanStaffForm,ocanStaffFormData));			
 			
-		}
+		//}
 		
 		
 		switch(domainNumber) {
@@ -514,21 +514,30 @@ public class OcanReportUIBean {
 	public static InformalHelpRecvd convertInformalHelpRecvd(int domainNumber,OcanStaffForm ocanStaffForm, List<OcanStaffFormData> ocanStaffFormData) {
 		InformalHelpRecvd informalHelpRecvd = InformalHelpRecvd.Factory.newInstance();
 		String staffAnswer = getStaffAnswer(domainNumber+"_2",ocanStaffFormData);
-		informalHelpRecvd.setStaff(Byte.valueOf(staffAnswer));		
+		if(staffAnswer!=null && !staffAnswer.equals(""))
+			informalHelpRecvd.setStaff(Byte.valueOf(staffAnswer));	
+		else 
+			informalHelpRecvd.setStaff(Byte.valueOf("0"));
 		return informalHelpRecvd;
 	}
 	
 	public static FormalHelpRecvd convertFormalHelpRecvd(int domainNumber,OcanStaffForm ocanStaffForm, List<OcanStaffFormData> ocanStaffFormData) {
 		FormalHelpRecvd formalHelpRecvd = FormalHelpRecvd.Factory.newInstance();
 		String staffAnswer = getStaffAnswer(domainNumber+"_3a",ocanStaffFormData);
-		formalHelpRecvd.setStaff(Byte.valueOf(staffAnswer));		
+		if(staffAnswer!=null && !staffAnswer.equals(""))
+			formalHelpRecvd.setStaff(Byte.valueOf(staffAnswer));	
+		else
+			formalHelpRecvd.setStaff(Byte.valueOf("0"));
 		return formalHelpRecvd;
 	}
 	
 	public static FormalHelpNeed convertFormalHelpNeed(int domainNumber,OcanStaffForm ocanStaffForm, List<OcanStaffFormData> ocanStaffFormData) {
 		FormalHelpNeed formalHelpNeed = FormalHelpNeed.Factory.newInstance();
 		String staffAnswer = getStaffAnswer(domainNumber+"_3b",ocanStaffFormData);
-		formalHelpNeed.setStaff(Byte.valueOf(staffAnswer));		
+		if(staffAnswer!=null && !staffAnswer.equals(""))
+			formalHelpNeed.setStaff(Byte.valueOf(staffAnswer));	
+		else 
+			formalHelpNeed.setStaff(Byte.valueOf("0"));
 		return formalHelpNeed;
 	}
 
@@ -547,8 +556,10 @@ public class OcanReportUIBean {
 		
 		domainActions.setActionText(getStaffAnswer(domainNumber+"_actions",ocanStaffFormData));
 		domainActions.setByWhom(getStaffAnswer(domainNumber+"_by_whom",ocanStaffFormData));
-		domainActions.setReviewDate(getStaffAnswer(domainNumber+"_review_date",ocanStaffFormData));
-			
+		String reviewDate = getStaffAnswer(domainNumber+"_review_date",ocanStaffFormData);
+		reviewDate = reviewDate.concat("Z");
+		//domainActions.setReviewDate(getStaffAnswer(domainNumber+"_review_date",ocanStaffFormData));
+		domainActions.setReviewDate(reviewDate);
 		return domainActions;
 	}
 	
@@ -1127,7 +1138,9 @@ public class OcanReportUIBean {
 	}
 	public static ClientDOB convertClientDOB(OcanStaffForm ocanStaffForm, List<OcanStaffFormData> ocanStaffFormData) {
 		ClientDOB clientDOB = ClientDOB.Factory.newInstance();	
-		clientDOB.setValue(ocanStaffForm.getDateOfBirth() + "Z");
+		String dob = ocanStaffForm.getDateOfBirth();
+		dob = dob.concat("Z");
+		clientDOB.setValue(dob);		
 		clientDOB.setType(ClientDOB.Type.Enum.forString(getStaffAnswer("clientDOBType",ocanStaffFormData)));
 		return clientDOB;
 	}
@@ -1201,8 +1214,7 @@ public class OcanReportUIBean {
 	public static List<OtherPractitionerContact> convertOtherPractitionerContact(OcanStaffForm ocanStaffForm, List<OcanStaffFormData> ocanStaffFormData) {
 		List<OtherPractitionerContact> list = new ArrayList<OtherPractitionerContact>();
 		String contact = getStaffAnswer("otherContact",ocanStaffFormData);		
-		if(contact.length()>0 && "TRUE".equals(contact)) {
-				for(int index=1; index <=3; index++) {
+		for(int index=1; index <=3; index++) {
 				OtherPractitionerContact otherPractitionerContact = OtherPractitionerContact.Factory.newInstance();
 				
 				otherPractitionerContact.setOtherContact(OtherPractitionerContact.OtherContact.Enum.forString(contact));
@@ -1211,8 +1223,7 @@ public class OcanReportUIBean {
 				otherPractitionerContact.setContactInfo(convertContactInfo_otherContact(index,ocanStaffFormData));
 				
 				list.add(otherPractitionerContact);
-			}
-		}
+		}		
 		return list;
 	}
 	public static ContactInfo convertContactInfo_otherContact(int index,List<OcanStaffFormData> ocanStaffFormData) {
@@ -1232,14 +1243,12 @@ public class OcanReportUIBean {
 	public static List<OtherAgencyContact> convertOtherAgencyContact(OcanStaffForm ocanStaffForm, List<OcanStaffFormData> ocanStaffFormData) {
 		List<OtherAgencyContact> list = new ArrayList<OtherAgencyContact>();
 		String contact = getStaffAnswer("otherAgency",ocanStaffFormData);
-		if(contact.length()>0 && "TRUE".equals(contact)) {
-			for(int index=1; index<=3; index++) {
+		for(int index=1; index<=3; index++) {
 				OtherAgencyContact otherAgencyContact = OtherAgencyContact.Factory.newInstance();
 				otherAgencyContact.setOtherAgency(OtherAgencyContact.OtherAgency.Enum.forString(getStaffAnswer("otherAgency",ocanStaffFormData)));
 				otherAgencyContact.setContactInfo(convertContactInfo_agencyContact(index,ocanStaffFormData));
 				otherAgencyContact.setLastSeen(OtherAgencyContact.LastSeen.Enum.forString(getStaffAnswer(index+"_otherAgencyLastSeen",ocanStaffFormData)));		
 				list.add(otherAgencyContact);
-			}
 		}
 		return list;
 	}

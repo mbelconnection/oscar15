@@ -1280,7 +1280,7 @@ insert into `secRole` values(4, 'locum', 'locum');
 insert into `secRole` values(5, 'nurse', 'nurse');
 insert into `secRole` values(6, 'Vaccine Provider', 'Vaccine Provider');
 insert into `secRole` values(null, 'external', 'External');
-insert into `secRole` values(null, 'er_clerk', 'ER Clerk');
+insert into `secRole` values(null, 'er_clerk', 'ER Clerk'); 
 insert into `secRole` (role_name, description) values('psychiatrist', 'psychiatrist');
 insert into `secRole` (role_name, description) values('RN', 'Registered Nurse');
 insert into `secRole` (role_name, description) values('RPN', 'Registered Practical Nurse');
@@ -1297,7 +1297,9 @@ insert into `secRole` (role_name, description) values('Support Worker', 'Support
 insert into `secRole` (role_name, description) values('Client Service Worker', 'Client Service Worker');
 insert into `secRole` (role_name, description) values('CAISI ADMIN', 'CAISI ADMIN');
 insert into `secRole` (role_name, description) values('Recreation Therapist', 'Recreation Therapist');
-
+insert into `secRole` (role_name, description) values('property staff', 'property staff');
+insert into `secRole` (role_name, description) values('Support Counsellor', 'Support Counsellor');
+INSERT INTO secRole (role_name) VALUES ('remote_access');
 
 insert into `secUserRole` (`provider_no`,`role_name`,`orgcd`,`activeyn`) values('999998', 'doctor', 'R0000001',1);
 insert into `secUserRole` (`provider_no`,`role_name`,`orgcd`,`activeyn`) values('999998', 'admin', 'R0000001',1);
@@ -1361,6 +1363,55 @@ insert into `secObjectName` (`objectName`) values ('_newCasemgmt.calculators');
 insert into `secObjectName` (`objectName`) values ('_newCasemgmt.templates');
 insert into `secObjectName` (`objectName`) values ('_newCasemgmt.cpp');
 insert into  secObjectName values('_queue.1','default',0);
+
+
+-- RFQ: secObjectName
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm.clientSearch', 'Client - Search', 0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm.newClient', 'Client - New Client',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm.mergeRecords', 'Client - Merge Records',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm.caseManagement','PMM - Case Management',0);
+
+-- PMM administration part
+
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.provider', 'Administration - Provider',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.security', 'Administration - Security',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.securityLogReport', 'Administration - Security Log Report',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.unlockAccount', 'Administration - Unlock Account',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.cookieRevolver', 'Administration - Cookie Revolver',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.caisi', 'Administration - Caisi',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.lookupFieldEditor', 'Administration - Lookup Field Editor',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.issueEditor', 'Administration - Issue Editor',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.caisiRoles', 'Administration - Manage Caisi Roles',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.userCreatedForms', 'Administration - User Created Forms',0);
+
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.facilityMessage', 'Administration - Facility Message',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.systemMessage', 'Administration - System Message',0);
+
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm.agencyInformation','Program - Agency Information',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm.manageFacilities','Program - Manage Facilities',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm.staffList','Program - Staff List',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm.programList','Program - Program List',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm.addProgram','Program - Add Program',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm.globalRoleAccess','Program - Global Role Access',0);
+-- insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm.caisiRoles','Program - Caisi Roles',0);
+
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.general','Program - General',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.staff','Program - Staff',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.functionUser','Program - User',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.teams', 'Program - Team', 0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.clients', 'Program - Clients',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.queue', 'Program - Queue',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.access', 'Program - Access',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.bedCheck', 'Program - Bed Check',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.clientStatus', 'Program - Client Status',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.serviceRestrictions', 'Program - Service Restrictions',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values ('_pmm.eidtor','Caisi Intake Editor',0);
+
+-- Quatro Group Report
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_reportRunner', 'Report Runner', 0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_reportWriter', 'Report Writer', 0);
+
+
 
 
 insert into `secObjPrivilege` values('receptionist', '_appointment', 'x', 0, '999998');
@@ -1442,6 +1493,10 @@ insert into `secObjPrivilege` values('doctor','_newCasemgmt.medicalHistory','x',
 insert into `secObjPrivilege` values('doctor','_newCasemgmt.calculators','x',0,'999998');
 insert into `secObjPrivilege` values('doctor','_newCasemgmt.templates','x',0,'999998');
 insert into `secObjPrivilege` values('doctor','_newCasemgmt.cpp','x',0,'999998');
+INSERT INTO secObjPrivilege (roleUserGroup, objectName, privilege, priority, provider_no)
+	VALUES ('doctor', '_reportRunner', 'x', 0, '999998');
+INSERT INTO secObjPrivilege (roleUserGroup, objectName, privilege, priority, provider_no)
+	VALUES ('doctor', '_reportWriter', 'x', 0, '999998');
 
 
 insert into `secObjPrivilege` values('admin', '_admin', 'x', 0, '999998');
@@ -1500,6 +1555,11 @@ insert into `secObjPrivilege` values('admin','_newCasemgmt.medicalHistory','x',0
 insert into `secObjPrivilege` values('admin','_newCasemgmt.calculators','x',0,'999998');
 insert into `secObjPrivilege` values('admin','_newCasemgmt.templates','x',0,'999998');
 insert into `secObjPrivilege` values('admin','_newCasemgmt.cpp','x',0,'999998');
+
+INSERT INTO secObjPrivilege (roleUserGroup, objectName, privilege, priority, provider_no)
+	VALUES ('admin', '_reportRunner', 'x', 0, '999998');
+INSERT INTO secObjPrivilege (roleUserGroup, objectName, privilege, priority, provider_no)
+	VALUES ('admin', '_reportWriter', 'x', 0, '999998');
 
 
 -- for role locum

@@ -73,7 +73,6 @@ vecPageSizeValues.add("PageSize.A6");
 //String reprint = (String)request.getAttribute("rePrint") != null ? (String)request.getAttribute("rePrint") : "false";
 
 String reprint = (String)request.getSession().getAttribute("rePrint") != null ? (String)request.getSession().getAttribute("rePrint") : "false";
-System.out.println("reprint="+reprint);
 
 String createAnewRx;
 if(reprint.equalsIgnoreCase("true") ) {
@@ -129,7 +128,6 @@ if(bMultisites) {
 
 
 } else if(props.getProperty("clinicSatelliteName") != null) {
-    System.out.println("bean.getProviderNo()="+bean.getProviderNo());
     oscar.oscarRx.data.RxProviderData.Provider provider = new oscar.oscarRx.data.RxProviderData().getProvider(bean.getProviderNo());
     ProSignatureData sig = new ProSignatureData();
     boolean hasSig = sig.hasSignature(bean.getProviderNo());
@@ -187,7 +185,7 @@ if (pharmacy != null) {
     function resetStash(){
                var url="<c:out value="${ctx}"/>" + "/oscarRx/deleteRx.do?parameterValue=clearStash";
                var data = "";
-               new Ajax.Request(url, {method: 'post',parameters:data,asynchronous:false,onSuccess:function(transport){
+               new Ajax.Request(url, {method: 'post',parameters:data,onSuccess:function(transport){
                             updateCurrentInteractions();
                 }});
                parent.document.getElementById('rxText').innerHTML="";//make pending prescriptions disappear.
@@ -196,7 +194,7 @@ if (pharmacy != null) {
     function resetReRxDrugList(){
         var url="<c:out value="${ctx}"/>" + "/oscarRx/deleteRx.do?parameterValue=clearReRxDrugList";
                var data = "";
-               new Ajax.Request(url, {method: 'post',parameters:data,asynchronous:false,onSuccess:function(transport){
+               new Ajax.Request(url, {method: 'post',parameters:data,onSuccess:function(transport){
                 }});
     }
     function updateCurrentInteractions(){
@@ -425,13 +423,7 @@ function toggleView(form) {
                                         "location=no, menubar=no, toolbar=no, scrollbars=yes, status=yes, resizable=yes");
                                 }                              
 
-                             /*    function printPharmacyInfo(){
-                                    $("listPharmacy").show();
-                                }
-                                function hidePharmacyInfo(){
-                                    $("listPharmacy").hide();
-                                }
-                                */
+
                                 function printPharmacy(id,name){
                                     //ajax call to get all info about a pharmacy
                                     //use json to write to html
@@ -439,7 +431,7 @@ function toggleView(form) {
                                     var data="method=getPharmacyInfo&pharmacyId="+id;
                                     new Ajax.Request(url, {method: 'get',parameters:data, onSuccess:function(transport){
                                         var json=transport.responseText.evalJSON();
-                                            oscarLog("json: "+json);
+
                                             if(json!=null){
                                                 var text=json.name+"<br>"+json.address+"<br>"+json.city+","+json.province+","
                                                     +json.postalCode+"<br>Tel:"+json.phone1+","+json.phone2+"<br>Fax:"+json.fax+"<br>Email:"+json.email+"<br>Note:"+json.notes;                                                
@@ -450,14 +442,13 @@ function toggleView(form) {
                                     
                                 }
                                 function expandPreview(text){
-                                    oscarLog(text);
                                     parent.document.getElementById('lightwindow_container').style.width="840px";
                                     parent.document.getElementById('lightwindow_contents').style.width="820px";
                                     document.getElementById('preview').style.width="580px";
                                     frames['preview'].document.getElementById('pharmInfo').innerHTML=text;
                                     //frames['preview'].document.getElementById('removePharm').show();
                                     $("selectedPharmacy").innerHTML='<bean:message key="oscarRx.printPharmacyInfo.paperSizeWarning"/>';
-                                    //$("listPharmacy").hide();
+
                                 }
                                 function reducePreview(){
                                     parent.document.getElementById('lightwindow_container').style.width="680px";
@@ -465,7 +456,6 @@ function toggleView(form) {
                                     document.getElementById('preview').style.width="420px";
                                     frames['preview'].document.getElementById('pharmInfo').innerHTML="";
                                     $("selectedPharmacy").innerHTML="";
-                                    oscarLog(document.getElementById("selectedPharmacy").innerHTML);
                                 }
                             </script>
 
@@ -547,11 +537,6 @@ function toggleView(form) {
                                                 </span>
 
                                             </td>
-                                            <%--<td><span><input id="selectPharmacyButton" type=button value="<bean:message key='oscarRx.printPharmacyInfo.selectPharmacyButton'/>" class="ControlPushButton" style="width:120px;"
-                                                             onclick="javascript:printPharmacyInfo();"/>
-                                                </span>
-
-                                            </td>--%>
                                         </tr><%}%>
                                         <tr>
                                             <td>
@@ -560,7 +545,6 @@ function toggleView(form) {
                                         </tr>
 
                                         <%
-                                        //System.out.println("reprint in additionalNotes="+request.getSession().getAttribute("rePrint"));
                         if (request.getSession().getAttribute("rePrint") == null ){%>
 
                                         <tr>
@@ -612,22 +596,7 @@ function toggleView(form) {
 		<td width="100%" height="0%" colspan="2">&nbsp;</td>
 	</tr>
 </table>
-<%--
-<!div id="listPharmacy" style="position: absolute; left: 1px; top: 1px; width: 300px; height: 311px; display:none; border:2px outset blue; z-index: 1; background-color: white;">
-    <bean:message key="oscarRx.printPharmacyInfo.selectPharmacyInfo"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="hidePharmacyInfo();" style="text-align:right;text-decoration:none" href="javascript:void(0);">X</a>
-    <br>
-  <%
-  RxPharmacyData pharmacy=new RxPharmacyData();
-  List<Pharmacy> pharmList=pharmacy.getAllPharmacies();
-  for(Pharmacy pharm:pharmList){
-    String name=pharm.name;
-    String id=pharm.ID;
-%>
-<a id="<%=id%>" onclick="printPharmacy('<%=id%>','<%=name%>')" href="javascript:void(0);"><%=name%></a><br/>
-    <%}%>
     
-</div>
---%>
 </div>
 </body>
 </html:html>

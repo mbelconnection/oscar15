@@ -73,7 +73,6 @@ vecPageSizeValues.add("PageSize.A6");
 //String reprint = (String)request.getAttribute("rePrint") != null ? (String)request.getAttribute("rePrint") : "false";
 
 String reprint = (String)request.getSession().getAttribute("rePrint") != null ? (String)request.getSession().getAttribute("rePrint") : "false";
-System.out.println("reprint="+reprint);
 
 String createAnewRx;
 if(reprint.equalsIgnoreCase("true") ) {
@@ -129,7 +128,6 @@ if(bMultisites) {
 
 
 } else if(props.getProperty("clinicSatelliteName") != null) {
-    System.out.println("bean.getProviderNo()="+bean.getProviderNo());
     oscar.oscarRx.data.RxProviderData.Provider provider = new oscar.oscarRx.data.RxProviderData().getProvider(bean.getProviderNo());
     ProSignatureData sig = new ProSignatureData();
     boolean hasSig = sig.hasSignature(bean.getProviderNo());
@@ -187,7 +185,7 @@ if (pharmacy != null) {
     function resetStash(){
                var url="<c:out value="${ctx}"/>" + "/oscarRx/deleteRx.do?parameterValue=clearStash";
                var data = "";
-               new Ajax.Request(url, {method: 'post',parameters:data,asynchronous:false,onSuccess:function(transport){
+               new Ajax.Request(url, {method: 'post',parameters:data,onSuccess:function(transport){
                             updateCurrentInteractions();
                 }});
                parent.document.getElementById('rxText').innerHTML="";//make pending prescriptions disappear.
@@ -196,7 +194,7 @@ if (pharmacy != null) {
     function resetReRxDrugList(){
         var url="<c:out value="${ctx}"/>" + "/oscarRx/deleteRx.do?parameterValue=clearReRxDrugList";
                var data = "";
-               new Ajax.Request(url, {method: 'post',parameters:data,asynchronous:false,onSuccess:function(transport){
+               new Ajax.Request(url, {method: 'post',parameters:data,onSuccess:function(transport){
                 }});
     }
     function updateCurrentInteractions(){
@@ -547,7 +545,6 @@ function toggleView(form) {
                                         </tr>
 
                                         <%
-                                        //System.out.println("reprint in additionalNotes="+request.getSession().getAttribute("rePrint"));
                         if (request.getSession().getAttribute("rePrint") == null ){%>
 
                                         <tr>

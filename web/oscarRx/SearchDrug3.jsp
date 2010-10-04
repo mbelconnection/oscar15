@@ -97,8 +97,6 @@
                 longterm_acute_inactive_external=false;
             }
 
-            //System.out.println("usefav="+usefav);
-            //System.out.println("reRxDrugId="+reRxDrugId);
             RxPharmacyData pharmacyData = new RxPharmacyData();
             RxPharmacyData.Pharmacy pharmacy;
             pharmacy = pharmacyData.getPharmacyFromDemographic(Integer.toString(bean.getDemographicNo()));
@@ -491,7 +489,7 @@ function checkFav(){
     function represcribeOnLoad(drugId){
         var data="drugId="+drugId;
         var url= "<c:out value="${ctx}"/>" + "/oscarRx/rePrescribe2.do?method=saveReRxDrugIdToStash";
-        new Ajax.Updater('rxText',url, {method:'get',parameters:data,asynchronous:false,evalScripts:true,insertion: Insertion.Bottom,
+        new Ajax.Updater('rxText',url, {method:'get',parameters:data,evalScripts:true,insertion: Insertion.Bottom,
             onSuccess:function(transport){
             }});
 
@@ -1011,7 +1009,7 @@ function changeLt(drugId){
                  data="elementId="+elementId+"&propertyValue="+$(elementId).value;
              else
                  data="elementId="+elementId+"&propertyValue="+$(elementId).innerHTML;
-             new Ajax.Request(url, {method: 'post',parameters:data,asynchronous:false});
+             new Ajax.Request(url, {method: 'post',parameters:data});
          }
     }
     function lookNonEdittable(elementId){
@@ -1110,6 +1108,7 @@ function changeLt(drugId){
                var params = "demographicNo=<%=bean.getDemographicNo()%>&rand="+ran_number;  //hack to get around ie caching the page
                new Ajax.Request(url, {method: 'post',parameters:params});
     }
+
     function reprint2(scriptNo){
         var data="scriptNo="+scriptNo;
         var url= "<c:out value="${ctx}"/>" + "/oscarRx/rePrescribe2.do?method=reprint2";
@@ -1125,7 +1124,7 @@ function changeLt(drugId){
     function deletePrescribe(randomId){
         var data="randomId="+randomId;
         var url="<c:out value="${ctx}"/>" + "/oscarRx/rxStashDelete.do?parameterValue=deletePrescribe";
-        new Ajax.Request(url, {method: 'get',parameters:data,asynchronous:false,onSuccess:function(transport){
+        new Ajax.Request(url, {method: 'get',parameters:data,onSuccess:function(transport){
                 updateCurrentInteractions();
                 if($('deleteOnCloseRxBox').value=='true'){
                     deleteRxOnCloseRxBox(randomId);
@@ -1137,7 +1136,7 @@ function changeLt(drugId){
 
             var data="randomId="+randomId;
             var url="<c:out value="${ctx}"/>" + "/oscarRx/deleteRx.do?parameterValue=DeleteRxOnCloseRxBox";
-            new Ajax.Request(url, {method: 'get',parameters:data,asynchronous:false,onSuccess:function(transport){
+            new Ajax.Request(url, {method: 'get',parameters:data,onSuccess:function(transport){
                      var json=transport.responseText.evalJSON();
                      if(json!=null){
                              var id=json.drugId;
@@ -1401,13 +1400,13 @@ function popForm2(){
      function callAdditionWebService(url,id){
          var ran_number=Math.round(Math.random()*1000000);
          var params = "demographicNo=<%=bean.getDemographicNo()%>&rand="+ran_number;  //hack to get around ie caching the page
-         var updater=new Ajax.Updater(id,url, {method:'get',parameters:params,asynchronous:false,insertion: Insertion.Bottom,evalScripts:true});
+         var updater=new Ajax.Updater(id,url, {method:'get',parameters:params,insertion: Insertion.Bottom,evalScripts:true});
      }
 
      function callReplacementWebService(url,id){
               var ran_number=Math.round(Math.random()*1000000);
               var params = "demographicNo=<%=bean.getDemographicNo()%>&rand="+ran_number;  //hack to get around ie caching the page
-              var updater=new Ajax.Updater(id,url, {method:'get',parameters:params,asynchronous:false,evalScripts:true});
+              var updater=new Ajax.Updater(id,url, {method:'get',parameters:params,evalScripts:true});
          }
           //callReplacementWebService("InteractionDisplay.jsp",'interactionsRx');
           <oscar:oscarPropertiesCheck property="MYDRUGREF_DS" value="yes">
@@ -1623,7 +1622,7 @@ function updateReRxDrugId(elementId){
         }else if(drugId!=null){
             var data="drugId="+drugId;
             var url= "<c:out value="${ctx}"/>" + "/oscarRx/rePrescribe2.do?method=represcribe2";
-            new Ajax.Updater('rxText',url, {method:'get',parameters:data,asynchronous:false,evalScripts:true,
+            new Ajax.Updater('rxText',url, {method:'get',parameters:data,evalScripts:true,
                 insertion: Insertion.Bottom,onSuccess:function(transport){
                     updateCurrentInteractions();
                 }});

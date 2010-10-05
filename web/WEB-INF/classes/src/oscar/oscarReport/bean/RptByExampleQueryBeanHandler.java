@@ -56,7 +56,7 @@ public class RptByExampleQueryBeanHandler {
     public Collection getFavoriteCollection(String providerNo){
         try {
             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
-            String sql = "SELECT * from reportByExamplesFavorite WHERE providerNo='" + providerNo + "'ORDER BY name";
+            String sql = "SELECT * from reportByExamplesFavorite WHERE providerNo='" + providerNo + "' ORDER BY name";
             System.out.println("Sql Statement: " + sql);
             ResultSet rs;
             

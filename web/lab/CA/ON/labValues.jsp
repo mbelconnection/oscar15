@@ -7,11 +7,6 @@
 <%
 
 
-
-System.out.println(" test name "+request.getParameter("testName"));
-System.out.println(" demo "+request.getParameter("demo"));
-System.out.println(" labType  "+request.getParameter("labType"));
-
 String labType = request.getParameter("labType");
 String demographicNo = request.getParameter("demo");
 String testName = request.getParameter("testName");
@@ -65,7 +60,7 @@ System.out.println("idididid "+list);
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <html:base />
-<title><%=""/*lab.pLastName*/%>, <%=""/*lab.pFirstName*/%> <bean:message
+<title><%=""%>, <%=""%> <bean:message
 	key="oscarMDS.segmentDisplay.title" /></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" type="text/css"
@@ -88,6 +83,15 @@ function popupStart(vheight,vwidth,varpage,windowname) {
 </script>
 
 <body>
+
+  <%  if(demographic==null){%>
+
+<script language="JavaScript">
+alert("The demographic number is not valid");
+window.close();
+</script>
+    
+    <%} else{%>
 <form name="acknowledgeForm" method="post"
 	action="../../../oscarMDS/UpdateStatus.do">
 
@@ -181,17 +185,7 @@ function popupStart(vheight,vwidth,varpage,windowname) {
 			<tr>
 				<td colspan="4" height="7">&nbsp;</td>
 			</tr>
-			<!--tr>
-                                <td bgcolor="#FFCC00" width="200" height="22" valign="bottom">
-                                    <div class="Title2">
-                                        <%=""/*gResults.groupName*/%>
-                                        
-                                    </div>
-                                </td>
-                                <td align="right" bgcolor="#FFCC00" width="100">&nbsp;</td>
-                                <td width="9">&nbsp;</td>
-                                <td width="*">&nbsp;</td>
-                            </tr-->
+	
 		</table>
 
 		<table width="100%" border="0" cellspacing="0" cellpadding="2"
@@ -211,7 +205,7 @@ function popupStart(vheight,vwidth,varpage,windowname) {
 				<td width="15%" align="middle" valign="bottom" class="Cell"><bean:message
 					key="oscarMDS.segmentDisplay.formDateTimeCompleted" /></td>
 			</tr>
-			<%  int linenum = 0;
+			<%  int linenum = 0;                        
                             if (list != null){ 
                                 System.out.println("list . size "+list.size());
                                for (int i = 0 ;  i < list.size(); i++){
@@ -259,6 +253,6 @@ function popupStart(vheight,vwidth,varpage,windowname) {
 </table>
 
 </form>
-
+<%}%>
 </body>
 </html>

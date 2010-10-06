@@ -82,8 +82,9 @@ public class OcanStaffFormDao extends AbstractDao<OcanStaffForm> {
 		
 		@SuppressWarnings("unchecked")
 		List<OcanStaffForm> results=query.getResultList();
-		//return(results);
+		return(results);
 		
+		/*
 		List<OcanStaffForm> list = new ArrayList<OcanStaffForm>();
 		int clientId_0=0;
 		for(OcanStaffForm res:results) {
@@ -94,5 +95,6 @@ public class OcanStaffFormDao extends AbstractDao<OcanStaffForm> {
 			}
 		}
 		return list;
+		*/
     }
 }

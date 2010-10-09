@@ -80,7 +80,6 @@ $('document').ready(function() {
 
 <script>
 function changeOrgLHIN(selectBox) {
-	//annie
 		var newCount = $("#center_count").val(); 
 
 		var selectBoxId = selectBox.id;
@@ -156,7 +155,7 @@ function changeNumberOfcentres() {
 <script>
 $("document").ready(function() {
 
-	$("#generate_summary_of_actions").click(function(){ alert("annie:");
+	$("#generate_summary_of_actions").click(function(){ 
 		$("#summary_of_actions_block").innerHTML='';
 		var count=0;
 		var domains = '';

@@ -113,7 +113,7 @@ public class OcanForm {
 		return(results);
 	}
 	
-	public static List<OcanStaffFormData> getStaffAnswers(Integer ocanStaffFormId, String question, int prepopulationLevel)
+	private static List<OcanStaffFormData> getStaffAnswers(Integer ocanStaffFormId, String question, int prepopulationLevel)
 	{
 		if(prepopulationLevel != OcanForm.PRE_POPULATION_LEVEL_ALL) {
 			return(new ArrayList<OcanStaffFormData>()); 

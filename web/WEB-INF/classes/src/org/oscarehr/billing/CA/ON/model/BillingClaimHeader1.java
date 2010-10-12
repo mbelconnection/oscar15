@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Iterator;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -37,6 +38,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.PostPersist;
 
 import org.oscarehr.common.model.AbstractModel;
 
@@ -461,5 +463,15 @@ public class BillingClaimHeader1 extends AbstractModel<Integer> implements Seria
         this.demographic_name = demographic_name;
     }
 
-
+    @PostPersist
+    public void postPersist() {
+        System.out.println("POST PERSIST");
+        Iterator<BillingItem> i = this.billingItems.iterator();
+        BillingItem item;
+        while(i.hasNext()) {
+            item = i.next();
+            item.setCh1_id(id);
+            System.out.println("Set ch1_id to " + item.getCh1_id());
+        }
+    }
 }

@@ -31,7 +31,7 @@ import oscar.util.UtilDateUtilities;
  */
 public class MessageUploader {
     
-    Logger logger = Logger.getLogger(MessageUploader.class);
+   private static Logger logger = Logger.getLogger(MessageUploader.class);
     
     /**
      * Creates a new instance of MessageUploader
@@ -42,7 +42,7 @@ public class MessageUploader {
     /**
      *  Insert the lab into the proper tables of the database
      */
-    public String routeReport(String type, String hl7Body,int fileId) throws Exception{
+    public static String routeReport(String type, String hl7Body,int fileId) throws Exception{
         
         String retVal = "";
         try{
@@ -145,7 +145,7 @@ public class MessageUploader {
     /**
      *  Attempt to match the doctors from the lab to a provider
      */
-    private void providerRouteReport(String labId, ArrayList docNums, Connection conn, String altProviderNo, String labType) throws Exception {
+    private static void providerRouteReport(String labId, ArrayList docNums, Connection conn, String altProviderNo, String labType) throws Exception {
         
         ArrayList providerNums = new ArrayList();
         PreparedStatement pstmt;
@@ -184,7 +184,7 @@ public class MessageUploader {
      *  Attempt to match the patient from the lab to a demographic, return the patients provider
      *  which is to be used then no other provider can be found to match the patient to.
      */
-    private String patientRouteReport(String labId, String lastName, String firstName, String sex, String dob, String hin, Connection conn) throws SQLException {
+    private static String patientRouteReport(String labId, String lastName, String firstName, String sex, String dob, String hin, Connection conn) throws SQLException {
         
         String sql;
         String demo = "0";
@@ -282,7 +282,7 @@ public class MessageUploader {
      *  Used when errors occur to clean the database of labs that have not been
      *  inserted into all of the necessary tables
      */
-    public void clean(int fileId){
+    public static void clean(int fileId){
         
         try{
             

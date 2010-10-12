@@ -10,7 +10,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.oscarehr.common.Gender;
 import org.oscarehr.common.model.Demographic;
-//import org.oscarehr.common.model.ProfessionalSpecialist;
 import org.oscarehr.common.model.Provider;
 import org.oscarehr.util.MiscUtils;
 
@@ -20,7 +19,6 @@ import ca.uhn.hl7v2.model.v25.datatype.CX;
 import ca.uhn.hl7v2.model.v25.datatype.DT;
 import ca.uhn.hl7v2.model.v25.datatype.DTM;
 import ca.uhn.hl7v2.model.v25.datatype.FT;
-import ca.uhn.hl7v2.model.v25.datatype.PLN;
 import ca.uhn.hl7v2.model.v25.datatype.XAD;
 import ca.uhn.hl7v2.model.v25.datatype.XCN;
 import ca.uhn.hl7v2.model.v25.datatype.XPN;
@@ -28,14 +26,14 @@ import ca.uhn.hl7v2.model.v25.datatype.XTN;
 import ca.uhn.hl7v2.model.v25.segment.MSH;
 import ca.uhn.hl7v2.model.v25.segment.NTE;
 import ca.uhn.hl7v2.model.v25.segment.PID;
-import ca.uhn.hl7v2.model.v25.segment.PRD;
 import ca.uhn.hl7v2.model.v25.segment.ROL;
 import ca.uhn.hl7v2.model.v25.segment.SFT;
 
 public final class DataTypeUtils {
 	private static final Logger logger = MiscUtils.getLogger();
-
-	public static final String HL7_VERSION_ID = "2.6";
+	public static final String HEALTH_NUMBER = "HEALTH_NUMBER";
+	public static final String CHART_NUMBER = "CHART_NUMBER";
+	public static final String HL7_VERSION_ID = "2.5";
 	public static final int NTE_COMMENT_MAX_SIZE = 65536;
 	public static final String ACTION_ROLE_SENDER = "SENDER";
 	public static final String ACTION_ROLE_RECEIVER = "RECEIVER";

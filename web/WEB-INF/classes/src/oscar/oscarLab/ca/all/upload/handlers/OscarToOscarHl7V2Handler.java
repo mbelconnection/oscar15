@@ -38,7 +38,7 @@ import ca.uhn.hl7v2.model.v25.message.ADT_A09;
 public class OscarToOscarHl7V2Handler implements MessageHandler {
 	private Logger logger = MiscUtils.getLogger();
 
-	public String parse( String fileName, int fileId) {
+	public String parse(String fileName, int fileId) {
 		
 		try {
 	        byte[] dataBytes=FileUtils.readFileToByteArray(new File(fileName));
@@ -46,17 +46,20 @@ public class OscarToOscarHl7V2Handler implements MessageHandler {
 	        logger.debug("Incoming HL7 Message : \n"+dataString);
 	        
 			AbstractMessage message=OscarToOscarUtils.pipeParserParse(dataString);
+
 			if (message instanceof ADT_A09) 
 			{
 				AdtA09Handler.handle((ADT_A09) message);
 			}
-			
+			else
+			{
+				MessageUploader.routeReport(OscarToOscarUtils.UPLOAD_MESSAGE_TYPE, dataString, fileId);
+			}
 			
 			return("success");
 		} catch (Exception e) {
 	        logger.error("Unexpected error.", e);
-
-	        new MessageUploader().clean(fileId);
+	        MessageUploader.clean(fileId);
 	        throw(new RuntimeException(e));
         }
     }

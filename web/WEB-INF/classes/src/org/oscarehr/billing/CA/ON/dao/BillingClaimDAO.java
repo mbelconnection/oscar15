@@ -25,9 +25,10 @@ package org.oscarehr.billing.CA.ON.dao;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Calendar;
 import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
+
+import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
@@ -253,6 +254,30 @@ public class BillingClaimDAO extends AbstractDao<BillingClaimHeader1> {
         }
         total.setScale(2, BigDecimal.ROUND_UP);
         return total.toString();
+    }
+
+    public int getDaysSinceBilled(String serviceCode, String demographic_no) {
+        String sql = "select b from BillingClaimHeader1 h1, BillingItem b where b.ch1_id = h1.id and b.service_code = :code and" +
+                " h1.demographic_no = :demo and h1.status != 'D' order by h1.billing_date desc limit 1";
+        Query q = entityManager.createQuery(sql);
+        q.setParameter("code", serviceCode);        
+        q.setParameter("demo", new Integer(demographic_no));
+        List billingClaims = q.getResultList();
+        int numdays = -1;
+
+        if( billingClaims.size() > 0 ) {
+            BillingItem i = (BillingItem)billingClaims.get(0);
+            Calendar billdate = Calendar.getInstance();
+            billdate.setTime(i.getService_date());
+            
+            long milliBilldate = billdate.getTimeInMillis();
+            long milliToday = Calendar.getInstance().getTimeInMillis();
+            long day = 1000*60*60*24;
+            numdays = (int)((milliToday/day) - (milliBilldate/day));
+
+        }
+
+        return numdays;
     }
 
     /**

@@ -74,10 +74,7 @@ public class LabUploadAction extends Action {
             if (validateSignature(clientKey, signature, file)) {
                 logger.debug("Validated Successfully");
                 HandlerClassFactory f = new HandlerClassFactory();
-System.err.println("----- type:"+type);
                 MessageHandler msgHandler = f.getHandler(type);
-System.err.println("----------1 "+msgHandler);
-if (msgHandler!=null) System.err.println("----------2 "+msgHandler.getClass().getName());
                 
                 is = new FileInputStream(file);
                 FileUploadCheck fileC = new FileUploadCheck();

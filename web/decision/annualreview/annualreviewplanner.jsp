@@ -194,13 +194,12 @@
 	<tr>
 		<td width="20%" valign='top'>
 		<%
-            out.println(risks.doStuff(new String("../webapps/" + oscarVariables.getProperty("project_home") + 
-                    "/decision/annualreview/desannualreviewplannerrisk.xml")));
+            out.println(risks.doStuff(new String(oscarVariables.getProperty("tomcat_path") +"webapps/"+ oscarVariables.getProperty("project_home") + "/decision/annualreview/desannualreviewplannerrisk.xml")));
 %>
 		</td>
 		<td>
 		<%
-            out.println(checklist.doStuff(new String("../webapps/" + oscarVariables.getProperty("project_home") + 
+            out.println(checklist.doStuff(new String(oscarVariables.getProperty("tomcat_path") +"webapps/"+ oscarVariables.getProperty("project_home") + 
                     "/decision/annualreview/desannualreviewplannerriskchecklist.xml"), riskDataBean));
 %>
 		

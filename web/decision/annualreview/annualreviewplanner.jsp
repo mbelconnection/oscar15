@@ -130,9 +130,9 @@
 %> <xml id="xml_list"> <planner> <%= risk_content %> <%= checklist_content %>
 </planner> </xml> <%
         //set the riskdata bean from xml file
-        Properties   savedar1risk1 = risks.getRiskName("../../decision/annualreview/desannualreviewplannerrisk.xml");
+        Properties   savedar1risk1 = risks.getRiskName(oscarVariables.getProperty("tomcat_path") +"webapps/"+ oscarVariables.getProperty("project_home") + "/decision/annualreview/desannualreviewplannerrisk.xml");
         StringBuffer tt;
-        System.out.println("jsp :" + "../../decision/annualreview/desannualreviewplannerrisk.xml");
+        System.out.println("jsp :" + oscarVariables.getProperty("tomcat_path") +"webapps/"+ oscarVariables.getProperty("project_home") + "/decision/annualreview/desannualreviewplannerrisk.xml");
 
         for (Enumeration e = savedar1risk1.propertyNames(); e.hasMoreElements(); ) {
           tt = new StringBuffer().append(e.nextElement());
@@ -192,12 +192,12 @@
 	<tr>
 		<td width="20%" valign='top'>
 		<%
-            out.println(risks.doStuff(new String("../../decision/annualreview/desannualreviewplannerrisk.xml")));
+            out.println(risks.doStuff(oscarVariables.getProperty("tomcat_path") +"webapps/"+ oscarVariables.getProperty("project_home") + "/decision/annualreview/desannualreviewplannerrisk.xml"));
 %>
 		</td>
 		<td>
 		<%
-            out.println(checklist.doStuff(new String("../../decision/annualreview/desannualreviewplannerriskchecklist.xml"), riskDataBean));
+            out.println(checklist.doStuff(oscarVariables.getProperty("tomcat_path") +"webapps/"+ oscarVariables.getProperty("project_home") + "/decision/annualreview/desannualreviewplannerriskchecklist.xml", riskDataBean));
 %>
 		
 	</tr>

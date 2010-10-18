@@ -5,11 +5,13 @@
 
 package org.oscarehr.decisionSupport.model;
 
+import java.util.List;
+
 /**
  *
  * @author apavel
  */
-public class DSConsequence {
+public class DSConsequence {    
     public enum ConsequenceType {warning, java}
     
     public enum ConsequenceStrength {warning, recommendation}
@@ -19,6 +21,7 @@ public class DSConsequence {
     private ConsequenceType consequenceType;
     private ConsequenceStrength consequenceStrength;
     private String text;
+    private List<Object> objConsequence;
 
     /**
      * @return the text
@@ -60,5 +63,19 @@ public class DSConsequence {
      */
     public void setConsequenceStrength(ConsequenceStrength consequenceStrength) {
         this.consequenceStrength = consequenceStrength;
+    }
+
+    /**
+     * @return the objConsequence
+     */
+    public List<Object> getObjConsequence() {
+        return objConsequence;
+    }
+
+    /**
+     * @param objConsequence the objConsequence to set
+     */
+    public void setObjConsequence(List<Object> objConsequence) {
+        this.objConsequence = objConsequence;
     }
 }

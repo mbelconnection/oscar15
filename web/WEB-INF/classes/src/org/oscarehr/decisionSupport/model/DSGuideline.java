@@ -43,8 +43,10 @@ public abstract class DSGuideline {
 
     //following are populated by parsing
     private String title;
+    private List<DSParameter> parameters;
     private List<DSCondition> conditions;
     private List<DSConsequence> consequences;
+
     private boolean parsed = false;
 
     public String getTitle() {
@@ -97,7 +99,7 @@ public abstract class DSGuideline {
         this.title = newGuideline.getTitle();
         this.conditions = newGuideline.getConditions();
         this.consequences = newGuideline.getConsequences();
-        
+        this.parameters = newGuideline.getParameters();
     }
 
     public boolean isParsed() {
@@ -246,6 +248,20 @@ public abstract class DSGuideline {
      */
     public void setStatus(char status) {
         this.status = status;
+    }
+
+    /**
+     * @return the parameters
+     */
+    public List<DSParameter> getParameters() {
+        return parameters;
+    }
+
+    /**
+     * @param parameters the parameters to set
+     */
+    public void setParameters(List<DSParameter> parameters) {
+        this.parameters = parameters;
     }
 
 

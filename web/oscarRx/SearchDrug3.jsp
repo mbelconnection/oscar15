@@ -672,16 +672,22 @@ body {
                                             <td>
                                                 <div class="DivContentSectionHead">
                                                     <bean:message key="SearchDrug.section2Title" />
-                                                    &nbsp;&nbsp;
+                                                    &nbsp;
                                                     <a href="javascript:popupWindow(720,700,'PrintDrugProfile2.jsp','PrintDrugProfile')"><bean:message key="SearchDrug.Print"/></a>
-                                                    &nbsp;&nbsp;
+                                                    &nbsp;
                                                     <a href="#" onclick="$('reprint').toggle();return false;"><bean:message key="SearchDrug.Reprint"/></a>
-                                                    &nbsp;&nbsp;
+                                                    &nbsp;
                                                     <a href="javascript:void(0);"name="cmdRePrescribe"  onclick="javascript:RePrescribeLongTerm();" style="width: 200px" ><bean:message key="SearchDrug.msgReprescribeLongTermMed"/></a>
-                                                    &nbsp;&nbsp;
-                                                    <a href="javascript:popupWindow(720,920,'chartDrugProfile.jsp?demographic_no=<%=bean.getDemographicNo()%>','PrintDrugProfile2')">Timeline Drug Profile</a>
-                                                    &nbsp;&nbsp;
-                                                    <a href="javascript: void(0);" onclick="callReplacementWebService('GetmyDrugrefInfo.do?method=view','interactionsRxMyD');" >DS run</a>
+                                                    &nbsp;
+                                                    <a href="javascript:popupWindow(720,920,'chartDrugProfile.jsp?demographic_no=<%=bean.getDemographicNo()%>','PrintDrugProfile2')"><bean:message key="SearchDrug.TimelineDrugProfile"/></a>
+                                                    &nbsp;
+                                                    <a href="javascript: void(0);" onclick="callReplacementWebService('GetmyDrugrefInfo.do?method=view','interactionsRxMyD');" ><bean:message key="SearchDrug.DSRun"/></a>
+                                         <oscar:oscarPropertiesCheck property="MY_OSCAR" value="yes">
+						<indivo:indivoRegistered demographic="<%=String.valueOf(bean.getDemographicNo())%>" provider="<%=bean.getProviderNo()%>">
+							&nbsp;
+                                                        <a href="javascript: phrActionPopup('../oscarRx/SendToPhr.do?demoId=<%=Integer.toString(bean.getDemographicNo())%>', 'sendRxToPhr');"><bean:message key="SearchDrug.SendToPHR"/></a>
+						</indivo:indivoRegistered>
+					</oscar:oscarPropertiesCheck>
                                                 </div>
 
                                             </td>

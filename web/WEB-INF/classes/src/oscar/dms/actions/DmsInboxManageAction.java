@@ -49,6 +49,8 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DispatchAction;
+import org.oscarehr.PMmodule.dao.SecUserRoleDao;
+import org.oscarehr.PMmodule.model.SecUserRole;
 import org.oscarehr.PMmodule.utility.UtilDateUtilities;
 import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.dao.DocumentResultsDao;
@@ -76,6 +78,7 @@ public class DmsInboxManageAction extends DispatchAction {
     private ProviderInboxRoutingDao providerInboxRoutingDAO=null;
     private QueueDocumentLinkDao queueDocumentLinkDAO=null;
     private SecObjectNameDao secObjectNameDao=null;
+    private SecUserRoleDao secUserRoleDao = (SecUserRoleDao) SpringUtils.getBean("secUserRoleDao");
     public void setProviderInboxRoutingDAO(ProviderInboxRoutingDao providerInboxRoutingDAO){
         this.providerInboxRoutingDAO = providerInboxRoutingDAO;
     }
@@ -111,7 +114,7 @@ public class DmsInboxManageAction extends DispatchAction {
                 providerDocs.put(createrId, EDocs);            }
             String docId=eDoc.getDocId();
             providerList.add(createrId);
-            //System.out.println("docId="+docId);
+
             List<ProviderInboxItem> routeList=providerInboxRoutingDAO.getProvidersWithRoutingForDocument(LabResultData.DOCUMENT, docId);
             for(ProviderInboxItem pii:routeList){
                 String routingPId=pii.getProviderNo();
@@ -274,7 +277,7 @@ public class DmsInboxManageAction extends DispatchAction {
         HttpSession session=request.getSession();
         try{if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");}
         catch(Exception e){e.printStackTrace();}
-        String roleName = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
+        
 
     //oscar.oscarMDS.data.MDSResultsData mDSData = new oscar.oscarMDS.data.MDSResultsData();
     CommonLabResultData comLab = new CommonLabResultData();
@@ -289,6 +292,17 @@ public class DmsInboxManageAction extends DispatchAction {
     if ( ackStatus == null ) { ackStatus = "N"; } // default to new labs only
     if ( providerNo == null ) { providerNo = ""; }
     if ( searchProviderNo == null ) { searchProviderNo = providerNo; }
+        String roleName="";
+    List<SecUserRole> roles=secUserRoleDao.getUserRoles(searchProviderNo);
+    for(SecUserRole r:roles){
+        if(roleName.length()==0){
+            roleName=r.getRoleName();
+
+        }else{
+            roleName+=","+r.getRoleName();
+        }
+    }
+    roleName+=","+searchProviderNo;
     //mDSData.populateMDSResultsData2(searchProviderNo, demographicNo, request.getParameter("fname"), request.getParameter("lname"), request.getParameter("hnum"), ackStatus);
     //HashMap<String,String> docQueue=comLab.getDocumentQueueLinks();
     List<QueueDocumentLink> qd=queueDocumentLinkDAO.getQueueDocLinks();
@@ -298,7 +312,7 @@ public class DmsInboxManageAction extends DispatchAction {
         Integer n=qdl.getQueueId();
         docQueue.put(i.toString(), n.toString());
     }
-    ArrayList labdocs = comLab.populateLabResultsData(searchProviderNo, demographicNo, request.getParameter("fname"), request.getParameter("lname"), request.getParameter("hnum"), ackStatus,scannedDocStatus);
+    ArrayList labdocs = comLab.populateLabResultsDataInboxIndexPage(searchProviderNo, demographicNo, request.getParameter("fname"), request.getParameter("lname"), request.getParameter("hnum"), ackStatus,scannedDocStatus);
     
     ArrayList validlabdocs=new ArrayList();
 
@@ -312,23 +326,41 @@ public class DmsInboxManageAction extends DispatchAction {
                 String queueid=docQueue.get(docid);
                 if(queueid!=null){ 
                     queueid=queueid.trim();
-                    if(queueid.equals("1") && isSegmentIDUnique(validlabdocs,data)){
+                    //if doc sent to default queue and no valid provider, include it if it's unique
+                    if(queueid.equals("1")&&!documentResultsDao.isSentToValidProvider(docid) && isSegmentIDUnique(validlabdocs,data)){
                         validlabdocs.add(data);
                     }
-                    else{
-                        String objectName="_queue."+queueid;
-                        Vector vec=OscarRoleObjectPrivilege.getPrivilegeProp(objectName);
+                    //if doc sent to default queue && valid provider, check if it's sent to this provider, if yes include it
+                    else if(queueid.equals("1")&&documentResultsDao.isSentToValidProvider(docid)
+                            &&documentResultsDao.isSentToProvider(docid, searchProviderNo)&&isSegmentIDUnique(validlabdocs,data))
+                    {
+                        validlabdocs.add(data);
+                    }
+                    //if doc setn to non-default queue and valid provider, check if provider is in the queue or equal to the provider
+                    else if(!queueid.equals("1")&&documentResultsDao.isSentToValidProvider(docid)){
+                        Vector vec=OscarRoleObjectPrivilege.getPrivilegeProp("_queue."+queueid);
                         if(OscarRoleObjectPrivilege.checkPrivilege(roleName, (Properties)vec.get(0), (Vector)vec.get(1))
-                                || documentResultsDao.isSentToProvider(docid, providerNo)){
+                                || documentResultsDao.isSentToProvider(docid, searchProviderNo)){
                             //labs is in provider's queue,do nothing                
                            if(isSegmentIDUnique(validlabdocs,data))
-                           {validlabdocs.add(data);}
-                        }else{
-                            //lab should be removed because it's not in provider's queue                
+                           {
+                                validlabdocs.add(data);
                         }        
                    }
                 }
-            }else{
+                    //if doc sent to non default queue and no valid provider, check if provider is in the non default queue
+                    else if(!queueid.equals("1")&&!documentResultsDao.isSentToValidProvider(docid)){
+                        Vector vec=OscarRoleObjectPrivilege.getPrivilegeProp("_queue."+queueid);
+                        if(OscarRoleObjectPrivilege.checkPrivilege(roleName, (Properties)vec.get(0), (Vector)vec.get(1))){
+                            //labs is in provider's queue,do nothing
+                           if(isSegmentIDUnique(validlabdocs,data)){
+                               validlabdocs.add(data);
+                           }
+
+                        }
+                    }
+                }
+            }else{//add lab
                 if(isSegmentIDUnique(validlabdocs,data))
                            {validlabdocs.add(data);}
             }
@@ -513,6 +545,14 @@ public class DmsInboxManageAction extends DispatchAction {
     request.setAttribute("typeDocLab",typeDocLab );
     request.setAttribute("demographicNo", demographicNo);
     request.setAttribute("ackStatus",ackStatus );
+    
+        System.out.print("start");
+    for(int i=0;i<labdocs.size();i++){
+        LabResultData data=(LabResultData)labdocs.get(i);
+        System.out.print("--"+data.segmentID);
+    }
+        System.out.println();
+        System.out.println("end");
     request.setAttribute("labdocs", labdocs);
     request.setAttribute("patientNumDoc", patientNumDoc);
     request.setAttribute("totalDocs",totalDocs );

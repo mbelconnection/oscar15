@@ -125,6 +125,7 @@
 	<bean id="receptionistSuperDao" class="oscar.dao.ReceptionistDao" autowire="byName" />
 	<bean id="providerSuperDao" class="oscar.dao.ProviderDao" autowire="byName" />
 	<bean id="adminSuperDao" class="oscar.dao.AdminDao" autowire="byName" />
+        <bean id="rourke2009Dao" class="oscar.form.dao.Rourke2009DAO" autowire="byName" />
 
 	<!-- OSCAR Desicion Support -->
 	<bean id="dsService" class="org.oscarehr.decisionSupport.service.DSServiceMyDrugref">

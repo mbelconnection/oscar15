@@ -50,6 +50,10 @@
             <form-property name="search" type="java.lang.String" />
             <form-property name="referral" type="org.oscarehr.common.model.Billingreferral" />
         </form-bean>
+        <form-bean name="DxresearchReportForm" type="org.apache.struts.validator.DynaValidatorForm">
+			<form-property name="quicklistname" type="java.lang.String" />
+			<form-property name="codesystem" type="java.lang.String" />
+	</form-bean>
         <form-bean name="annotationForm" type="org.apache.struts.validator.DynaValidatorForm">
             <form-property name="oAnnotation" type="org.oscarehr.common.model.OscarAnnotation" />
         </form-bean>
@@ -1959,6 +1963,10 @@
             <forward name="list" path="/admin/billingreferralAdmin.jsp" />
             <forward name="detail" path="/admin/billingreferralAdminDetail.jsp" />
         </action>
+
+        <action path="/report/DxresearchReport" name="DxresearchReportForm" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method" scope="request">
+            <forward name="editdesc" path="/oscarReport/editCodeDesc.jsp" />
+	</action>
         
         <action path="/OscarAnnotation" name="annotationForm" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method" scope="request">
             <forward name="success" path="/close.jsp" />

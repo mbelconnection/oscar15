@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Vector;
+import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarResearch.oscarDxResearch.util.dxResearchCodingSystem;
@@ -152,5 +153,25 @@ public class dxQuickListItemsHandler {
         }
         return v;
     }
+
+    public static void updatePatientCodeDesc( String type, String code, String desc )
+    {
+      String sql = String.format( "update %s set description = '%s' where %s = '%s'", type, desc, type, code );
+      DBHandler db = null;
+      try
+      {
+        db = new DBHandler(DBHandler.OSCAR_DATA);
+        db.RunSQL( sql );
+      }
+      catch ( Exception e )
+      {
+        MiscUtils.getLogger().error("Error", e);
+      }
+      finally
+      {
+        ;
+      }
+
+    }    
 }
 

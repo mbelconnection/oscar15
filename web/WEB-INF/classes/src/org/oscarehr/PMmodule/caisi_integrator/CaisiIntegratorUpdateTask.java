@@ -77,6 +77,7 @@ import org.oscarehr.caisi_integrator.ws.PreventionExtTransfer;
 import org.oscarehr.caisi_integrator.ws.ProgramWs;
 import org.oscarehr.caisi_integrator.ws.ProviderTransfer;
 import org.oscarehr.caisi_integrator.ws.ProviderWs;
+import org.oscarehr.caisi_integrator.ws.Role;
 import org.oscarehr.caisi_integrator.ws.SetConsentTransfer;
 import org.oscarehr.casemgmt.dao.CaseManagementIssueDAO;
 import org.oscarehr.casemgmt.dao.CaseManagementNoteDAO;
@@ -363,7 +364,7 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 			List<SecUserRole> roles=secUserRoleDao.getUserRoles(providerId);
 			for (SecUserRole role : roles)
 			{
-				providerTransfer.getRoles().add(role.getRoleName());
+				providerTransfer.getRoles().add(Role.fromValue(role.getRoleName()));
 			}
 			
 			// add to list
@@ -805,6 +806,9 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 
                     cachedBillingOnItem.setCaisiDemographicId(demographicId);
                     cachedBillingOnItem.setCaisiProviderId(billingCh1.getProvider_no());
+                    cachedBillingOnItem.setApptProviderId(billingCh1.getApptProvider_no());
+                    cachedBillingOnItem.setAsstProviderId(billingCh1.getAsstProvider_no());
+                    cachedBillingOnItem.setAppointmentId(billingCh1.getAppointment_no());
                     cachedBillingOnItem.setDx(billingItem.getDx());
                     cachedBillingOnItem.setDx1(billingItem.getDx1());
                     cachedBillingOnItem.setDx2(billingItem.getDx2());

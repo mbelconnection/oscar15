@@ -187,7 +187,7 @@
             function resetReRxDrugList(){
                 var url="<c:out value="${ctx}"/>" + "/oscarRx/deleteRx.do?parameterValue=clearReRxDrugList";
                        var data = "";
-                       new Ajax.Request(url, {method: 'post',parameters:data,asynchronous:false,onSuccess:function(transport){
+                       new Ajax.Request(url, {method: 'post',parameters:data,onSuccess:function(transport){
                         }});
             }
             function onPrint(cfgPage) {
@@ -1087,7 +1087,7 @@ function changeLt(drugId){
     function resetStash(){
                var url="<c:out value="${ctx}"/>" + "/oscarRx/deleteRx.do?parameterValue=clearStash";
                var data = "";
-               new Ajax.Request(url, {method: 'post',parameters:data,asynchronous:false,onSuccess:function(transport){
+               new Ajax.Request(url, {method: 'post',parameters:data,onSuccess:function(transport){
                             updateCurrentInteractions();
             }});
                $('rxText').innerHTML="";//make pending prescriptions disappear.
@@ -1173,7 +1173,11 @@ function changeLt(drugId){
         var url= "<c:out value="${ctx}"/>" + "/oscarRx/useFavorite.do?parameterValue=useFav2";
         new Ajax.Updater('rxText',url, {method:'get',parameters:data,asynchronous:true,evalScripts:true,insertion: Insertion.Bottom});
     }
-
+    function calculateRxData(randomId){
+        var dummie=parseIntr($('instructions_'+randomId));
+        if(dummie)
+            updateQty($('quantity_'+randomId));
+    }
    function Delete2(element){        
 
         if(confirm('Are you sure you wish to delete the selected prescriptions?')==true){
@@ -1444,7 +1448,7 @@ YAHOO.example.FnMultipleFields = function(){
                     var ran_number=Math.round(Math.random()*1000000);
                     var name=encodeURIComponent(arr.name);                   
                     var params = "demographicNo=<%=bean.getDemographicNo()%>&drugId="+arr.id+"&text="+name+"&randomId="+ran_number;  //hack to get around ie caching the page
-                    new Ajax.Updater('rxText',url, {method:'get',parameters:params,asynchronous:false,evalScripts:true,
+                   new Ajax.Updater('rxText',url, {method:'get',parameters:params,evalScripts:true,
                         insertion: Insertion.Bottom,onSuccess:function(transport){
                             updateCurrentInteractions();
                         }});
@@ -1615,7 +1619,7 @@ function updateReRxDrugId(elementId){
         var drugId=ar[1];
         if(drugId!=null && $("reRxCheckBox_"+drugId).checked==true){
             var url= "<c:out value="${ctx}"/>" + "/oscarRx/rePrescribe2.do?method=represcribeMultiple";
-            new Ajax.Updater('rxText',url, {method:'get',parameters:data,asynchronous:false,evalScripts:true,
+            new Ajax.Updater('rxText',url, {method:'get',parameters:data,evalScripts:true,
                 insertion: Insertion.Bottom,onSuccess:function(transport){
                     updateCurrentInteractions();
                 }});

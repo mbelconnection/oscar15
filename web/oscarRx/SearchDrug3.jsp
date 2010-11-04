@@ -1177,7 +1177,11 @@ function changeLt(drugId){
         var url= "<c:out value="${ctx}"/>" + "/oscarRx/useFavorite.do?parameterValue=useFav2";
         new Ajax.Updater('rxText',url, {method:'get',parameters:data,asynchronous:true,evalScripts:true,insertion: Insertion.Bottom});
     }
-
+    function calculateRxData(randomId){
+        var dummie=parseIntr($('instructions_'+randomId));
+        if(dummie)
+            updateQty($('quantity_'+randomId));
+    }
    function Delete2(element){
 
         if(confirm('Are you sure you wish to delete the selected prescriptions?')==true){

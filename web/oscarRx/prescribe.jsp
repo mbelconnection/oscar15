@@ -9,12 +9,10 @@
 <%@page import="oscar.oscarRx.util.*" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
     <%
-System.out.println("***### IN prescribe.jsp");
 
 List<RxPrescriptionData.Prescription> listRxDrugs=(List)request.getAttribute("listRxDrugs");
 oscar.oscarRx.pageUtil.RxSessionBean bean = (oscar.oscarRx.pageUtil.RxSessionBean)request.getSession().getAttribute("RxSessionBean");
 
-System.out.println("listRxDrugs="+listRxDrugs);
 if(listRxDrugs!=null){
             String specStr=RxUtil.getSpecialInstructions();
 
@@ -68,7 +66,6 @@ if(listRxDrugs!=null){
          else{
              quantityText=quantity+" "+rx.getUnitName();
          }
-         //System.out.println("unitName="+unitName+";;quantityText="+quantityText);
          String duration        = rx.getDuration();
          String method          = rx.getMethod();
          String outsideProvName = rx.getOutsideProviderName();
@@ -184,7 +181,7 @@ if(listRxDrugs!=null){
 
         <script type="text/javascript">
             $('drugName_'+'<%=rand%>').value=decodeURIComponent(encodeURIComponent('<%=drugName%>'));
-
+            calculateRxData('<%=rand%>');
             handleEnter=function handleEnter(inField, ev){
                 var charCode;
                 if(ev && ev.which)

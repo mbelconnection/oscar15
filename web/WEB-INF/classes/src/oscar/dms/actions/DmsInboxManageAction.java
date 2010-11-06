@@ -62,6 +62,7 @@ import org.oscarehr.util.SpringUtils;
 import oscar.dms.EDoc;
 import org.oscarehr.common.dao.QueueDao;
 import org.oscarehr.common.model.Demographic;
+import org.oscarehr.document.dao.DocumentDAO;
 import org.oscarehr.util.MiscUtils;
 import oscar.dms.EDocUtil;
 import oscar.oscarLab.ca.all.Hl7textResultsData;
@@ -79,6 +80,7 @@ public class DmsInboxManageAction extends DispatchAction {
     private QueueDocumentLinkDao queueDocumentLinkDAO=null;
     private SecObjectNameDao secObjectNameDao=null;
     private SecUserRoleDao secUserRoleDao = (SecUserRoleDao) SpringUtils.getBean("secUserRoleDao");
+    private QueueDao queueDAO=(QueueDao)SpringUtils.getBean("queueDao");
     public void setProviderInboxRoutingDAO(ProviderInboxRoutingDao providerInboxRoutingDAO){
         this.providerInboxRoutingDAO = providerInboxRoutingDAO;
     }
@@ -155,7 +157,7 @@ public class DmsInboxManageAction extends DispatchAction {
             String queueId=(String)ht.get("id");
             queueDocs.put(queueId, EDocs);
         }
-        System.out.println("queueDocs="+queueDocs);
+        MiscUtils.getLogger().debug("queueDocs="+queueDocs);
         for(int i=0;i<privatedocs.size();i++){
             EDoc eDoc=privatedocs.get(i);
             List queueList=new ArrayList();
@@ -169,12 +171,12 @@ public class DmsInboxManageAction extends DispatchAction {
             for(QueueDocumentLink qdl:queueDocLinkList){
                 Integer qidInt=qdl.getQueueId();
                 String qidStr=qidInt.toString();
-                System.out.println("qid in link="+qidStr);
+                MiscUtils.getLogger().debug("qid in link="+qidStr);
                 if(queueDocs.containsKey(qidStr)){
                     List<EDoc> EDocs=new ArrayList();
                     EDocs=(List<EDoc>)queueDocs.get(qidStr);
                     EDocs.add(eDoc);
-                    System.out.println("add edoc id to queue id="+eDoc.getDocId());
+                    MiscUtils.getLogger().debug("add edoc id to queue id="+eDoc.getDocId());
                     queueDocs.put(qidStr, EDocs);
                 }
             }       
@@ -188,6 +190,7 @@ public class DmsInboxManageAction extends DispatchAction {
                 eDocs=(List<EDoc>)queueDocs.get(queueId);
                 if(eDocs==null || eDocs.size()==0){
                     queueDocs.remove(queueId);
+                    MiscUtils.getLogger().debug("removed queueId="+queueId);
                 }
             }
 
@@ -273,11 +276,13 @@ public class DmsInboxManageAction extends DispatchAction {
     }
 
 
+
      public ActionForward prepareForIndexPage(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
         HttpSession session=request.getSession();
         try{if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");}
-        catch(Exception e){e.printStackTrace();}
+        catch(Exception e){MiscUtils.getLogger().error("Error", e);}
         
+        //can't use userrole from session, because it changes if provider A search for provider B's documents
 
     //oscar.oscarMDS.data.MDSResultsData mDSData = new oscar.oscarMDS.data.MDSResultsData();
     CommonLabResultData comLab = new CommonLabResultData();
@@ -440,6 +445,7 @@ public class DmsInboxManageAction extends DispatchAction {
 
     for(int i=0;i<labdocs.size();i++){
         LabResultData data=(LabResultData)labdocs.get(i);
+
         List<String> segIDs=new ArrayList();
         String labPatientId=data.getLabPatientId();
         if(labPatientId==null || labPatientId.equals("-1"))
@@ -473,7 +479,7 @@ public class DmsInboxManageAction extends DispatchAction {
             segIDs.add(data.getSegmentID());
             patientDocs.put(labPatientId, segIDs);
             patientIdNames.put(labPatientId, data.patientName);
-            patientIdNamesStr+=';'+labPatientId+'='+data.patientName;
+            patientIdNamesStr+=";"+labPatientId+"="+data.patientName;
         }
         docStatus.put(data.getSegmentID(), data.getAcknowledgedStatus());
         docType.put(data.getSegmentID(), data.labType);
@@ -545,14 +551,6 @@ public class DmsInboxManageAction extends DispatchAction {
     request.setAttribute("typeDocLab",typeDocLab );
     request.setAttribute("demographicNo", demographicNo);
     request.setAttribute("ackStatus",ackStatus );
-    
-        System.out.print("start");
-    for(int i=0;i<labdocs.size();i++){
-        LabResultData data=(LabResultData)labdocs.get(i);
-        System.out.print("--"+data.segmentID);
-    }
-        System.out.println();
-        System.out.println("end");
     request.setAttribute("labdocs", labdocs);
     request.setAttribute("patientNumDoc", patientNumDoc);
     request.setAttribute("totalDocs",totalDocs );
@@ -576,7 +574,7 @@ public class DmsInboxManageAction extends DispatchAction {
                 addQueueSecObjectName(qn,queueDao.getLastId());
            }
        }catch(Exception e){
-           e.printStackTrace();
+           MiscUtils.getLogger().error("Error", e);
        }
 
         HashMap hm = new HashMap();
@@ -585,7 +583,7 @@ public class DmsInboxManageAction extends DispatchAction {
         try{
             response.getOutputStream().write(jsonObject.toString().getBytes());
         }catch(java.io.IOException ioe){
-            ioe.printStackTrace();
+            MiscUtils.getLogger().error("Error", ioe);
         }
         return null;
     }
@@ -620,4 +618,125 @@ public class DmsInboxManageAction extends DispatchAction {
         return null;
     }
 
+
+    public ActionForward updateDocStatusInQueue(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+            String docid=request.getParameter("docid");
+            if(docid!=null){
+                if(!queueDocumentLinkDAO.setStatusInactive(Integer.parseInt(docid))){
+                    MiscUtils.getLogger().error("failed to set status in queue document link to be inactive");
+}
+            }
+            return null;
+    }
+
+      //return a hastable containing queue id to queue name, a hashtable of queue id and a list of document nos.
+    //forward to documentInQueus.jsp
+    public ActionForward getDocumentsInQueues(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+        HttpSession session=request.getSession();
+        try{if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");}
+        catch(Exception e){MiscUtils.getLogger().error("Error", e);}
+        String providerNo =  (String) session.getAttribute("user");
+        String searchProviderNo = request.getParameter("searchProviderNo");
+        String ackStatus = request.getParameter("status");
+
+
+    if ( ackStatus == null ) { ackStatus = "N"; } // default to new labs only
+    if ( providerNo == null ) { providerNo = ""; }
+    if ( searchProviderNo == null ) { searchProviderNo = providerNo; }
+
+        String patientIdNamesStr="";
+        List<QueueDocumentLink> qs=queueDocumentLinkDAO.getActiveQueueDocLink();
+        Hashtable queueDocNos=new Hashtable();
+        Hashtable docType=new Hashtable();
+        Hashtable<Integer,List> patientDocs=new Hashtable();
+        DocumentDAO documentDAO=(DocumentDAO) SpringUtils.getBean("documentDAO");
+                Demographic demo =new Demographic();
+                List docsWithPatient=new ArrayList();
+                Hashtable patientIdNames=new Hashtable();//lbData.patientName = demo.getLastName()+ ", "+demo.getFirstName();
+                List<Integer> patientIds=new ArrayList();
+                Integer demoNo;
+                Hashtable docStatus=new Hashtable();
+                String patientIdStr="";
+                StringBuffer patientIdBuf=new StringBuffer();
+                Hashtable typeDocLab=new Hashtable();
+                List ListDocIds=new ArrayList();
+        for(QueueDocumentLink q:qs){
+             int qid=q.getQueueId();
+             int docid=q.getDocId();
+             ListDocIds.add(docid);
+             docType.put(docid,"DOC");
+             demo=documentDAO.getDemoFromDocNo(Integer.toString(docid));
+             if(demo==null)
+                 demoNo=-1;
+             else
+                demoNo=demo.getDemographicNo();
+             if(!patientIds.contains(demoNo))
+                 patientIds.add(demoNo);
+             if(!patientIdNames.containsKey(demoNo)){
+                 if(demoNo==-1){
+                     patientIdNames.put(demoNo,"Not, Assigned");
+                     patientIdNamesStr+=";"+demoNo+"="+"Not, Assigned";
+                 }
+                 else{
+                    patientIdNames.put(demoNo, demo.getLastName()+", "+demo.getFirstName());
+                    patientIdNamesStr+=";"+demoNo+"="+demo.getLastName()+", "+demo.getFirstName();
+                 }
+
+
+            }
+             List providers=providerInboxRoutingDAO.getProvidersWithRoutingForDocument("DOC",Integer.toString(docid) );
+             if(providers.size()>0){
+                 ProviderInboxItem pii=(ProviderInboxItem)providers.get(0);
+                 docStatus.put(docid, pii.getStatus());
+             }
+             if(patientDocs.containsKey(demoNo)){
+                 docsWithPatient=patientDocs.get(demoNo);
+                 docsWithPatient.add(docid);
+                 patientDocs.put(demoNo,docsWithPatient);
+             }else{
+                 docsWithPatient=new ArrayList();
+                 docsWithPatient.add(docid);
+                 patientDocs.put(demoNo, docsWithPatient);
+             }
+             if(queueDocNos.containsKey(qid)){
+
+                 List<Integer> ds= (List<Integer>)queueDocNos.get(qid);
+                 ds.add(docid);
+                 queueDocNos.put(qid, ds);
+
+             }else{
+                 List<Integer> ds=new ArrayList();
+                 ds.add(docid);
+                 queueDocNos.put(qid, ds);
+             }
+        }
+        Integer dn=0;
+        for(int i=0;i<patientIds.size();i++){
+            dn=patientIds.get(i);
+            patientIdBuf.append(dn);
+            if(i!=patientIds.size()-1)
+                patientIdBuf.append(",");
+        }
+        patientIdStr=patientIdBuf.toString();
+        typeDocLab.put("DOC", ListDocIds);
+        List normals=ListDocIds;//assume all documents are normal
+        List abnormals=new ArrayList();
+        request.setAttribute("typeDocLab", typeDocLab);
+        request.setAttribute("docStatus", docStatus);
+        request.setAttribute("patientDocs",patientDocs );
+        request.setAttribute("patientIdNames",patientIdNames );
+        request.setAttribute("docType", docType);
+        request.setAttribute("patientIds", patientIds);
+        request.setAttribute("patientIdStr",patientIdStr );
+        request.setAttribute("normals", normals);
+        request.setAttribute("abnormals", abnormals);
+        request.setAttribute("queueDocNos", queueDocNos);
+        request.setAttribute("patientIdNamesStr",patientIdNamesStr);
+        request.setAttribute("queueIdNames", queueDAO.getQueuesHashtable());
+        request.setAttribute("providerNo", providerNo);
+        request.setAttribute("searchProviderNo", searchProviderNo);
+        return mapping.findForward("document_in_queues");
+
+
+    }
 }

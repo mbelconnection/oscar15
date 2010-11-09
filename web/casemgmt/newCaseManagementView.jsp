@@ -568,7 +568,7 @@
   		<div id="n<%=note.getNoteId()%>">
 		<%
 	       //display last saved note for editing
-	       if (note.getNoteId().intValue() == savedId)
+	       if (note.getNoteId() !=null && !"".equals(note.getNoteId()) && note.getNoteId().equals(savedId))
 			{
 				found = true;
 		%> 

@@ -211,6 +211,13 @@ objectName="_admin,_admin.reporting" rights="r" reverse="<%=true%>">
                                 </tr>
                             </tbody>
                         </table>
+                        <table border="0">
+                            <thead>
+                                <tr>
+                                    <th>Total Number(s): <%= (Integer) session.getAttribute("Counter")%></th>
+                                </tr>
+                            </thead>
+                       </table>
 
                         Filter: &nbsp;&nbsp;
                         <label>

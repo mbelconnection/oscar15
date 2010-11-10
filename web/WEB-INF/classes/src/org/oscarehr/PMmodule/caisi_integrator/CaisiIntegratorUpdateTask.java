@@ -364,7 +364,8 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 			List<SecUserRole> roles=secUserRoleDao.getUserRoles(providerId);
 			for (SecUserRole role : roles)
 			{
-				providerTransfer.getRoles().add(Role.fromValue(role.getRoleName()));
+                                Role integratorRole=IntegratorRoleUtils.getIntegratorRole(role.getRoleName());
+                                if (integratorRole!=null) providerTransfer.getRoles().add(integratorRole);
 			}
 			
 			// add to list

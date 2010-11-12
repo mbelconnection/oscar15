@@ -102,6 +102,9 @@ if(listRxDrugs!=null){
                     String prnStr="";
                     if(prn)
                         prnStr="prn";
+                drugName=drugName.replace("'", "\\'");
+                drugName=drugName.replace("\"","\\\"");
+
 %>
 
 <fieldset style="margin-top:2px;width:580px;" id="set_<%=rand%>">
@@ -181,8 +184,8 @@ if(listRxDrugs!=null){
 
 </fieldset>
 
-        <script type="text/javascript">
-            $('drugName_'+'<%=rand%>').value=decodeURIComponent(encodeURIComponent('<%=drugName%>'));            
+        <script type="text/javascript">                     
+            $('drugName_'+'<%=rand%>').value=decodeURIComponent(encodeURIComponent('<%=drugName%>'));
             calculateRxData('<%=rand%>');
             handleEnter=function handleEnter(inField, ev){
                 var charCode;

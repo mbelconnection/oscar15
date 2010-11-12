@@ -100,6 +100,9 @@ if(listRxDrugs!=null){
                     String prnStr="";
                     if(prn)
                         prnStr="prn";
+                drugName=drugName.replace("'", "\\'");
+                drugName=drugName.replace("\"","\\\"");
+
 %>
 
 <fieldset style="margin-top:2px;width:580px;" id="set_<%=rand%>">

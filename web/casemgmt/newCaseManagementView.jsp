@@ -562,13 +562,13 @@
 			time1 = System.currentTimeMillis();
 			boolean editWarn = !note.isSigned() && !note.getProviderNo().equals(provNo);
 	%>
-		<div id="nc<%=idx+1%>" class="note"><input type="hidden" id="signed<%=note.getNoteId()%>" value="<%=note.isSigned()%>"> <input type="hidden" id="full<%=note.getNoteId()%>" value="<%=fulltxt || (note.getNoteId() !=null && note.getNoteId().equals(savedId))%>"> <input type="hidden"
+		<div id="nc<%=idx+1%>" class="note"><input type="hidden" id="signed<%=note.getNoteId()%>" value="<%=note.isSigned()%>"> <input type="hidden" id="full<%=note.getNoteId()%>" value="<%=fulltxt || (note.getNoteId() !=null && note.getNoteId() == savedId)%>"> <input type="hidden"
 			id="bgColour<%=note.getNoteId()%>" value="<%=bgColour%>"> <input type="hidden" id="editWarn<%=note.getNoteId()%>" value="<%=editWarn%>">
 
   		<div id="n<%=note.getNoteId()%>">
 		<%
 	       //display last saved note for editing
-	       if (note.getNoteId() !=null && !"".equals(note.getNoteId()) && note.getNoteId().equals(savedId))
+	       if (note.getNoteId() !=null && !"".equals(note.getNoteId()) && note.getNoteId() == savedId)
 			{
 				found = true;
 		%> 

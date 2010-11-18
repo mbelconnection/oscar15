@@ -115,6 +115,12 @@ else {
     System.out.println("in else, provider no="+provider.getProviderNo());
 }
 
+String providerPhone = null;
+org.oscarehr.common.model.Provider pprovider = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProvider;
+if(pprovider.getWorkPhone() != null && pprovider.getWorkPhone().length()>0) {
+	providerPhone = pprovider.getWorkPhone();
+}
+
 
 oscar.oscarRx.data.RxPatientData.Patient patient = new oscar.oscarRx.data.RxPatientData().getPatient(bean.getDemographicNo());
 
@@ -163,15 +169,22 @@ System.out.println(provider.getClinicName().replaceAll("\\(\\d{6}\\)",""));
                                                             <input type="hidden" name="clinicName"
                                                                     value="<%= StringEscapeUtils.escapeHtml(clinicTitle.replaceAll("(<br>)","\\\n")) %>" />
                                                             <input type="hidden" name="clinicPhone"
-                                                                    value="<%= StringEscapeUtils.escapeHtml(provider.getClinicPhone()) %>" />
+                                                                    value="<%= StringEscapeUtils.escapeHtml(providerPhone==null?provider.getClinicPhone():providerPhone) %>" />
                                                             <input type="hidden" name="clinicFax"
                                                                     value="<%= StringEscapeUtils.escapeHtml(provider.getClinicFax()) %>" />
                                                     </c:when>
                                                     <c:otherwise>
+                                                    		<%
+                                                    			String phone = providerPhone;
+                                                    			if(phone == null) {
+                                                    				phone = (String)session.getAttribute("infirmaryView_programTel");
+                                                    			}
+                                                    			request.setAttribute("phone",phone);
+                                                    		%>
                                                             <input type="hidden" name="clinicName"
                                                                     value="<c:out value="${infirmaryView_programAddress}"/>" />
                                                             <input type="hidden" name="clinicPhone"
-                                                                    value="<c:out value="${infirmaryView_programTel}"/>" />
+                                                                    value="<c:out value="${phone}"/>" />
                                                             <input type="hidden" name="clinicFax"
                                                                     value="<c:out value="${infirmaryView_programFax}"/>" />
                                                     </c:otherwise>
@@ -196,15 +209,23 @@ System.out.println(provider.getClinicName().replaceAll("\\(\\d{6}\\)",""));
                                                             <%= provider.getClinicAddress() %><br>
                                                             <%= provider.getClinicCity() %>&nbsp;&nbsp;<%=provider.getClinicProvince()%>&nbsp;&nbsp;
                                                 <%= provider.getClinicPostal() %><br>
-                                                <bean:message key="RxPreview.msgTel"/>: <%= provider.getClinicPhone() %><br>
+                                                <bean:message key="RxPreview.msgTel"/>: <%= providerPhone==null?provider.getClinicPhone():providerPhone %><br>
                                                 <oscar:oscarPropertiesCheck property="RXFAX" value="yes">
                                                     <bean:message key="RxPreview.msgFax"/>: <%= provider.getClinicFax() %><br>
                                                 </oscar:oscarPropertiesCheck>
                                                     </c:when>
                                                     <c:otherwise>
+                                                    <%
+                                                    			String phone = providerPhone;
+                                                    			if(phone == null) {
+                                                    				phone = (String)session.getAttribute("infirmaryView_programTel");
+                                                    			}
+                                                    			request.setAttribute("phone",phone);
+                                                    		%>
+                                                    		
                                                             <c:out value="${infirmaryView_programAddress}" escapeXml="false" />
                                                             <br />
-                                                    <bean:message key="RxPreview.msgTel"/>: <c:out value="${infirmaryView_programTel}" />
+                                                    <bean:message key="RxPreview.msgTel"/>: <c:out value="${phone}" />
                                                             <br />
                                                             <oscar:oscarPropertiesCheck property="RXFAX" value="yes">
                                                         <bean:message key="RxPreview.msgFax"/>: <c:out value="${infirmaryView_programFax}" />

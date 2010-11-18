@@ -82,6 +82,11 @@ if(reprint.equalsIgnoreCase("true") ) {
 else
     createAnewRx = "javascript:clearPending('')";
 
+String providerPhone = null;
+org.oscarehr.common.model.Provider pprovider = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProvider;
+if(pprovider.getWorkPhone() != null && pprovider.getWorkPhone().length()>0) {
+	providerPhone = pprovider.getWorkPhone();
+}
 // for satellite clinics
 Vector vecAddressName = null;
 Vector vecAddress = null;
@@ -121,7 +126,11 @@ if(bMultisites) {
 	for (int i=0;i<sites.size();i++) {
 		Site s = sites.get(i);
         vecAddressName.add(s.getName());
-        vecAddress.add("<b>"+doctorName+"</b><br>"+s.getName()+"<br>"+s.getAddress() + "<br>" + s.getCity() + ", " + s.getProvince() + " " + s.getPostal() + "<br>"+rb.getString("RxPreview.msgTel")+": " + s.getPhone() + "<br>"+rb.getString("RxPreview.msgFax")+": " + s.getFax());
+        String phone = s.getPhone();
+        if(providerPhone !=null) {
+        	phone = providerPhone;
+        }
+        vecAddress.add("<b>"+doctorName+"</b><br>"+s.getName()+"<br>"+s.getAddress() + "<br>" + s.getCity() + ", " + s.getProvince() + " " + s.getPostal() + "<br>"+rb.getString("RxPreview.msgTel")+": " + phone + "<br>"+rb.getString("RxPreview.msgFax")+": " + s.getFax());
         if (s.getName().equals(location))
         	session.setAttribute("RX_ADDR",String.valueOf(i));
 	}
@@ -154,7 +163,11 @@ if(bMultisites) {
 
     for(int i=0; i<temp0.length; i++) {
         vecAddressName.add(temp0[i]);
-        vecAddress.add("<b>"+doctorName+"</b><br>"+temp0[i]+"<br>"+temp1[i] + "<br>" + temp2[i] + ", " + temp3[i] + " " + temp4[i] + "<br>"+rb.getString("RxPreview.msgTel")+": " + temp5[i] + "<br>"+rb.getString("RxPreview.msgFax")+": " + temp6[i]);
+        String phone = temp5[i];
+        if(providerPhone != null) {
+        	phone = providerPhone;
+        }
+        vecAddress.add("<b>"+doctorName+"</b><br>"+temp0[i]+"<br>"+temp1[i] + "<br>" + temp2[i] + ", " + temp3[i] + " " + temp4[i] + "<br>"+rb.getString("RxPreview.msgTel")+": " + phone + "<br>"+rb.getString("RxPreview.msgFax")+": " + temp6[i]);
     }
 
     for(int h=0;h<vecAddressName.size();h++){
@@ -163,6 +176,7 @@ if(bMultisites) {
     }
     System.out.println(provider.getClinicName().replaceAll("\\(\\d{6}\\)",""));
 }
+
 String comment = (String) request.getSession().getAttribute("comment");
 RxPharmacyData pharmacyData = new RxPharmacyData();
 RxPharmacyData.Pharmacy pharmacy;

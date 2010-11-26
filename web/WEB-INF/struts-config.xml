@@ -242,6 +242,7 @@
             <form-property name="rxDefaultQuantityProperty" type="org.oscarehr.common.model.UserProperty" />
             <form-property name="rxProfileViewProperty" type="org.oscarehr.common.model.UserProperty" />
             <form-property name="rxUseRx3Property" type="org.oscarehr.common.model.UserProperty" />
+            <form-property name="rxShowPatientDOBProperty" type="org.oscarehr.common.model.UserProperty"/>
         </form-bean>
         <form-bean name="setMyOscarIdForm" type="org.apache.struts.action.DynaActionForm">
             <form-property name="myOscarLoginId" type="java.lang.String" />
@@ -1181,6 +1182,7 @@
             <forward name="genRxDefaultQuantity"     path="/provider/setGenRxDefaultQuantityProperty.jsp"/>
             <forward name="genRxProfileView"     path="/provider/setGenRxProfileViewProperty.jsp"/>
             <forward name="genRxUseRx3"     path="/provider/setToUseRx3.jsp"/>
+            <forward name="genShowPatientDOB" path="/provider/setShowPatientDOB.jsp"/>
         </action>
         <action input="/provider/providerIndivoIdSetter.jsp" name="setMyOscarIdForm" path="/setMyOscarId" scope="request" type="oscar.oscarProvider.pageUtil.ProEditMyOscarIdAction">
             <forward name="success" path="/provider/providerIndivoIdSetter.jsp" />

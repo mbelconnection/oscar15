@@ -104,7 +104,7 @@ if(session.getValue("user") == null)
 			key="${providermsgEdit}" /> <c:out value="${rxPageSizeProperty.value}" />
                 <html:form action="/setProviderStaleDate.do">
 			<input type="hidden" name="method" value="<c:out value="${method}"/>">
-                        <html:checkbox property="rxShowPatientDOBProperty.checked">Use Rx3</html:checkbox>
+                        <html:checkbox property="rxShowPatientDOBProperty.checked">Show patient's date of birth</html:checkbox>
                    <br/>
                    <html:submit property="btnApply"/>
 		</html:form> <%}else {%> <bean-el:message key="${providermsgSuccess}" /> <br>

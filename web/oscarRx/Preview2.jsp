@@ -8,7 +8,9 @@
 <%@ page import="oscar.oscarProvider.data.*, oscar.log.*"%>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@ page import="org.apache.log4j.Logger" %>
-<%@ page import="oscar.*,java.lang.*,java.util.Date"%>
+<%@ page import="oscar.*,java.lang.*,java.util.Date,oscar.oscarRx.util.RxUtil,org.springframework.web.context.WebApplicationContext,
+         org.springframework.web.context.support.WebApplicationContextUtils,
+         org.oscarehr.common.dao.UserPropertyDAO,org.oscarehr.common.model.UserProperty"%>
 <% response.setHeader("Cache-Control","no-cache");%>
 
 <!--
@@ -86,11 +88,11 @@ String signingProvider;
 if( rePrint != null && rePrint.equalsIgnoreCase("true") ) {
     bean = (oscar.oscarRx.pageUtil.RxSessionBean)session.getAttribute("tmpBeanRX");
     signingProvider = bean.getStashItem(0).getProviderNo();
-    System.out.println("in if, signingProvider="+signingProvider);
+    //System.out.println("in if, signingProvider="+signingProvider);
     rxDate = bean.getStashItem(0).getRxDate();
-    System.out.println("RX DATE " + rxDate);
+    //System.out.println("RX DATE " + rxDate);
     provider = new oscar.oscarRx.data.RxProviderData().getProvider(signingProvider);
-    System.out.println("in if, provider no="+provider.getProviderNo());
+    //System.out.println("in if, provider no="+provider.getProviderNo());
     session.setAttribute("tmpBeanRX", null);
     String ip = request.getRemoteAddr();System.out.println("in if, ip="+ip);
     //LogAction.addLog((String) session.getAttribute("user"), LogConst.UPDATE, LogConst.CON_PRESCRIPTION, String.valueOf(bean.getDemographicNo()), ip);
@@ -100,7 +102,7 @@ else {
 
     //set Date to latest in stash
     Date tmp;
-    System.out.println("bean.getStashSize()="+bean.getStashSize());
+    //System.out.println("bean.getStashSize()="+bean.getStashSize());
 
     for( int idx = 0; idx < bean.getStashSize(); ++idx ) {
         tmp = bean.getStashItem(idx).getRxDate();
@@ -113,7 +115,7 @@ else {
     signingProvider = bean.getProviderNo();
     //System.out.println("in else , signingProvider="+signingProvider);
     provider = new oscar.oscarRx.data.RxProviderData().getProvider(bean.getProviderNo());
-    System.out.println("in else, provider no="+provider.getProviderNo());
+    //System.out.println("in else, provider no="+provider.getProviderNo());
 }
 
 
@@ -140,9 +142,17 @@ System.out.println("pracNo="+pracNo);
 String strUser = (String)session.getAttribute("user");System.out.println("strUser="+strUser);
 ProviderData user = new ProviderData(strUser);System.out.println("user="+user);
 System.out.println(provider.getClinicName().replaceAll("\\(\\d{6}\\)",""));
+String patientDOBStr=RxUtil.DateToString(patient.getDOB(), "MMM d, yyyy") ;
+boolean showPatientDOB=false;
 
+//check if user prefer to show dob in print
+WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getSession().getServletContext());
+UserPropertyDAO userPropertyDAO = (UserPropertyDAO) ctx.getBean("UserPropertyDAO");
+UserProperty prop = userPropertyDAO.getProp(signingProvider, UserProperty.RX_SHOW_PATIENT_DOB);
+if(prop!=null && prop.getValue().equalsIgnoreCase("yes")){
+    showPatientDOB=true;
+}
 %>
-<!--test-->
 <html:form action="/form/formname" styleId="preview2Form">
 
     <p id="pharmInfo" style="float:right;">
@@ -179,6 +189,8 @@ System.out.println(provider.getClinicName().replaceAll("\\(\\d{6}\\)",""));
                                                     </c:otherwise>
                                             </c:choose> <input type="hidden" name="patientName"
                                                     value="<%= StringEscapeUtils.escapeHtml(patient.getFirstName())+ " " +StringEscapeUtils.escapeHtml(patient.getSurname()) %>" />
+                                            <input type="hidden" name="patientDOB" value="<%= StringEscapeUtils.escapeHtml(patientDOBStr) %>" />
+                                            <input type="hidden" name="showPatientDOB" value="<%=showPatientDOB%>"
                                             <input type="hidden" name="patientAddress"
                                                     value="<%= StringEscapeUtils.escapeHtml(patient.getAddress()) %>" />
                                             <input type="hidden" name="patientCityPostal"
@@ -219,7 +231,7 @@ System.out.println(provider.getClinicName().replaceAll("\\(\\d{6}\\)",""));
                                             <table width=100% cellspacing=0 cellpadding=0>
                                                     <tr>
                                                             <td align=left valign=top><br>
-                                                            <%= patient.getFirstName() %> <%= patient.getSurname() %><br>
+                                                                <%= patient.getFirstName() %> <%= patient.getSurname() %> <%if(showPatientDOB){%>&nbsp;&nbsp; DOB:<%= StringEscapeUtils.escapeHtml(patientDOBStr) %> <%}%><br>
                                                             <%= patient.getAddress() %><br>
                                                             <%= patient.getCity() %> <%= patient.getPostal() %><br>
                                                             <%= patient.getPhone() %><br>

@@ -77,6 +77,7 @@ public class FluReport implements PreventionReport {
              PreventionReportDisplay prd = new PreventionReportDisplay();
              prd.demographicNo = demo;
              prd.bonusStatus = "N";
+             prd.billStatus = "N";
              
              Date[] begendDates =  getStartEndDate(asofDate);
              Date beginingOfYear  =begendDates[0]; 
@@ -108,9 +109,9 @@ public class FluReport implements PreventionReport {
                 
               
                 
-//                if ( h.get("refused") != null && ((String) h.get("refused")).equals("1")){
-//                   refused = true;
-//                }
+                if ( h.get("refused") != null && ((String) h.get("refused")).equals("1")){
+                   refused = true;
+                }
                 
                 String prevDateStr = (String) h.get("prevention_date");
                 
@@ -168,10 +169,17 @@ public class FluReport implements PreventionReport {
                 log.debug("bonusEl start date "+beginingOfYear+ " "+beginingOfYear.before(prevDate));
                 log.debug("bonusEl end date "+endOfYear+ " "+endOfYear.after(prevDate));                
                 log.debug("ASOFDATE "+asofDate);
-                if (!refused && beginingOfYear.before(prevDate) && endOfYear.after(prevDate) && isOfAge(demo,asofDate)){
-                   prd.bonusStatus = "Y";
-                   done++;
+                if (beginingOfYear.before(prevDate) && endOfYear.after(prevDate) && isOfAge(demo,asofDate)){
+                    if( refused ) {
+                        prd.billStatus = "Y";
+                    }
+                    else {
+                        prd.bonusStatus = "Y";
+                        prd.billStatus = "Y";
+                        done++;
+                    }
                 }
+
                 //outcomes        
                 log.debug("due Date "+dueDate.toString()+" cutoffDate "+cutoffDate.toString()+" prevDate "+prevDate.toString());
                 log.debug("due Date  ("+dueDate.toString()+" ) After Prev ("+prevDate.toString() +" ) "+dueDate.after(prevDate));
@@ -251,30 +259,6 @@ public class FluReport implements PreventionReport {
           log.debug("set returnReport "+returnReport);
           return h;
     }
-    
-   
-    
-    
-    
-    
-    boolean ineligible(Hashtable h){
-       boolean ret =false;
-       if ( h.get("refused") != null && ((String) h.get("refused")).equals("2")){
-          ret = true;
-       }
-       return ret;
-   }
-    
-    
-   boolean ineligible(ArrayList list){
-       for (int i =0; i < list.size(); i ++){
-           Hashtable h = (Hashtable) list.get(i);
-           if (ineligible(h)){
-               return true;
-           }
-       }
-       return false;
-   } 
    
    boolean isOfAge(String d,Date asofDate){
         boolean isAge = true;
@@ -285,7 +269,7 @@ public class FluReport implements PreventionReport {
         Calendar bonusEl = Calendar.getInstance();
         bonusEl.setTime(asofDate); 
         int year = bonusEl.get(Calendar.YEAR);
-        Calendar cal = new GregorianCalendar(year, Calendar.DECEMBER, 31);
+        Calendar cal = new GregorianCalendar(year, Calendar.JANUARY, 1);
         cal.add(Calendar.YEAR,-65);
         Date cutoff = cal.getTime();
         log.debug("FLU CUT OFFDOB YEAR IS "+cutoff);

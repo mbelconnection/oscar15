@@ -269,7 +269,7 @@ public class FluReport implements PreventionReport {
         Calendar bonusEl = Calendar.getInstance();
         bonusEl.setTime(asofDate); 
         int year = bonusEl.get(Calendar.YEAR);
-        Calendar cal = new GregorianCalendar(year, Calendar.JANUARY, 1);
+        Calendar cal = new GregorianCalendar(year, Calendar.DECEMBER, 31);
         cal.add(Calendar.YEAR,-65);
         Date cutoff = cal.getTime();
         log.debug("FLU CUT OFFDOB YEAR IS "+cutoff);

@@ -80,10 +80,11 @@ public class CdsForm4 {
 	public static String getClientGenderAsCdsOption(Integer clientId) {
 		Demographic demographic = demographicDao.getDemographicById(clientId);
 		if (demographic != null && demographic.getSex() != null) {
+			
 			String gender=demographic.getSex();
-			if (Gender.F.equals(gender)) return("008-02");
-			else if (Gender.M.equals(gender)) return("008-01");
-			else if (Gender.O.equals(gender) || Gender.T.equals(gender)) return("008-03");
+			if (Gender.F.toString().equals(gender)) return("008-02");
+			else if (Gender.M.toString().equals(gender)) return("008-01");
+			else if (Gender.O.toString().equals(gender) || Gender.T.toString().equals(gender)) return("008-03");
 			else return("008-04");
 		} else {
 			return (null);
@@ -113,7 +114,7 @@ public class CdsForm4 {
 		List<CdsFormOption> results = cdsFormOptionDao.findByVersionAndCategory("4", category);
 		return (results);
 	}
-
+		
 	public static String renderSelectQuestion(boolean multiple, boolean dropDown, boolean forPrint, Integer cdsClientFormId, String question, List<CdsFormOption> options) {
 		if (!forPrint) {
 			StringBuilder sb = new StringBuilder();
@@ -203,17 +204,21 @@ public class CdsForm4 {
 		List<CdsClientFormData> existingAnswers = getAnswers(cdsClientFormId, question);
 
 		StringBuilder sb = new StringBuilder();
-
+		boolean alreadyHaveOneChecked = false;
 		for (CdsFormOption option : options) {
 			String htmlEscapedName = StringEscapeUtils.escapeHtml(option.getCdsDataCategoryName());
 			String lengthLimitedEscapedName = limitLengthAndEscape(option.getCdsDataCategoryName());
 			
-			String selected ="";
-			if (CdsClientFormData.containsAnswer(existingAnswers, option.getCdsDataCategory()) || option.getCdsDataCategory().equals(defaultSelected))
+			String selected ="";			
+			if (CdsClientFormData.containsAnswer(existingAnswers, option.getCdsDataCategory()))
 			{
 				selected="checked=\"checked\"";
+				alreadyHaveOneChecked = true;
+			} 
+			else if(!alreadyHaveOneChecked && option.getCdsDataCategory().equals(defaultSelected)) {
+				selected="checked=\"checked\"";
 			}
-
+				
 			sb.append("<div title=\"" + htmlEscapedName + "\"><input type=\"radio\" " + selected + " name=\"" + question + "\" value=\"" + StringEscapeUtils.escapeHtml(option.getCdsDataCategory()) + "\" /> " + lengthLimitedEscapedName + "</div>");
 		}
 

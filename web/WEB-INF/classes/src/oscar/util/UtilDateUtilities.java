@@ -232,7 +232,7 @@ public class UtilDateUtilities {
        return i;
    }
 
-
+    
     //This if probably not the most effiecent way to calcu
     /**
      * Gets the number of months between two date objects
@@ -241,6 +241,7 @@ public class UtilDateUtilities {
      * @return the number of months
      */
     public static long getNumDays(Date dStart, Date dEnd) {
+       if (dStart==null || dEnd==null) return(0);
        long msDifference = dEnd.getTime() - dStart.getTime();
        long daysDifference = msDifference / (1000*60*60*24);
        return daysDifference;

@@ -1015,10 +1015,17 @@ public class OcanReportUIBean {
 			clientRecord.setCompletedByOCANLead(CompletedByOCANLead.Enum.forString(getStaffAnswer("completedByOCANLead",ocanStaffFormData)));
 		}
 		clientRecord.setClientName(convertClientName(ocanStaffForm,ocanStaffFormData));
+		
 		clientRecord.setClientAddress(convertClientAddress(ocanStaffForm,ocanStaffFormData));
-		clientRecord.setClientEmailAddress(getStaffAnswer("email",ocanStaffFormData));
+		if(!"TRUE".equalsIgnoreCase(getStaffAnswer("consumerAnonymous",ocanStaffFormData))) {
+				clientRecord.setClientEmailAddress(getStaffAnswer("email",ocanStaffFormData));
+		}else{
+			clientRecord.setClientEmailAddress("");
+		}
 		clientRecord.setClientPhone(convertClientPhone(ocanStaffForm,ocanStaffFormData));
 		clientRecord.setClientHealthCardInfo(convertClientHealthCardInfo(ocanStaffForm,ocanStaffFormData));
+		
+		
 		clientRecord.setClientCulture(ClientCulture.Enum.forString(getStaffAnswer("culture",ocanStaffFormData)));
 		clientRecord.setConsumerSelfAxCompleted(ConsumerSelfAxCompleted.Enum.forString(getStaffAnswer("consumerSelfAxCompleted",ocanStaffFormData)));
 		clientRecord.setReasonConsumerSelfAxNotCompletedList(convertReasonConsumerSelfAxNotCompletedList(ocanStaffFormData));
@@ -1030,7 +1037,13 @@ public class OcanReportUIBean {
 		clientRecord.setServiceRecipientLHIN(ServiceRecipientLHIN.Enum.forString(getStaffAnswer("service_recipient_lhin",ocanStaffFormData)));
 		clientRecord.setClientDOB(convertClientDOB(ocanStaffForm, ocanStaffFormData));		
 		clientRecord.setGender(Gender.Enum.forString(ocanStaffForm.getGender()));		
-		clientRecord.setMaritalStatus(MaritalStatus.Enum.forString(getStaffAnswer("marital_status",ocanStaffFormData)));
+		
+		if(!"TRUE".equalsIgnoreCase(getStaffAnswer("consumerAnonymous",ocanStaffFormData))) {
+			clientRecord.setMaritalStatus(MaritalStatus.Enum.forString(getStaffAnswer("marital_status",ocanStaffFormData)));
+		}else{
+			clientRecord.setMaritalStatus(MaritalStatus.Enum.forString(""));
+		}
+		
 		clientRecord.setServiceUseRecordList(convertServiceUseRecordList(ocanStaffFormData));
 		clientRecord.setClientCapacity(convertClientCapacity(ocanStaffForm,ocanStaffFormData));
 		clientRecord.setAgeOnsetMental(convertAgeOnsetMental(ocanStaffForm,ocanStaffFormData));
@@ -1111,19 +1124,19 @@ public class OcanReportUIBean {
 	
 	public static ClientAddress convertClientAddress(OcanStaffForm ocanStaffForm, List<OcanStaffFormData> ocanStaffFormData) {
 		ClientAddress clientAddress = ClientAddress.Factory.newInstance();
-		
-		clientAddress.setLine1(ocanStaffForm.getAddressLine1());
-		clientAddress.setLine2(ocanStaffForm.getAddressLine2());
-		clientAddress.setCity(ocanStaffForm.getCity());
-		clientAddress.setProvince(ClientAddress.Province.Enum.forString(ocanStaffForm.getProvince()));
-		clientAddress.setPostalCode(ocanStaffForm.getPostalCode());
-		/*
-		clientAddress.setLine1("");
-		clientAddress.setLine2("");
-		clientAddress.setCity("");
-		clientAddress.setProvince("");
-		clientAddress.setPostalCode("");
-		*/
+		if(!"TRUE".equalsIgnoreCase(getStaffAnswer("consumerAnonymous",ocanStaffFormData))) {
+			clientAddress.setLine1(ocanStaffForm.getAddressLine1());
+			clientAddress.setLine2(ocanStaffForm.getAddressLine2());
+			clientAddress.setCity(ocanStaffForm.getCity());
+			clientAddress.setProvince(ClientAddress.Province.Enum.forString(ocanStaffForm.getProvince()));
+			clientAddress.setPostalCode(ocanStaffForm.getPostalCode());
+		} else {			
+			clientAddress.setLine1("");
+			clientAddress.setLine2("");
+			clientAddress.setCity("");
+			clientAddress.setProvince(ClientAddress.Province.Enum.forString(""));
+			clientAddress.setPostalCode("");
+		}
 		return clientAddress;
 	}
 	
@@ -1157,16 +1170,27 @@ public class OcanReportUIBean {
 	
 	public static ClientPhone convertClientPhone(OcanStaffForm ocanStaffForm, List<OcanStaffFormData> ocanStaffFormData) {
 		ClientPhone clientPhone = ClientPhone.Factory.newInstance();	
-		clientPhone.setNumber(ocanStaffForm.getPhoneNumber());
-		clientPhone.setExtension(getStaffAnswer("extension",ocanStaffFormData));
+		if(!"TRUE".equalsIgnoreCase(getStaffAnswer("consumerAnonymous",ocanStaffFormData))) {
+			clientPhone.setNumber(ocanStaffForm.getPhoneNumber());
+			clientPhone.setExtension(getStaffAnswer("extension",ocanStaffFormData));
+		}else{
+			clientPhone.setNumber("");
+			clientPhone.setExtension("");
+		}
 		return clientPhone;
 	}
 	
 	public static ClientHealthCardInfo convertClientHealthCardInfo(OcanStaffForm ocanStaffForm,List<OcanStaffFormData> ocanStaffFormData) {
 		ClientHealthCardInfo clientHealthCardInfo = ClientHealthCardInfo.Factory.newInstance();	
-		clientHealthCardInfo.setNumber(ocanStaffForm.getHcNumber());
-		clientHealthCardInfo.setVersion(ocanStaffForm.getHcVersion());
-		clientHealthCardInfo.setIssuingTerritory(ClientHealthCardInfo.IssuingTerritory.Enum.forString(getStaffAnswer("issuingTerritory",ocanStaffFormData)));
+		if(!"TRUE".equalsIgnoreCase(getStaffAnswer("consumerAnonymous",ocanStaffFormData))) {
+			clientHealthCardInfo.setNumber(ocanStaffForm.getHcNumber());
+			clientHealthCardInfo.setVersion(ocanStaffForm.getHcVersion());
+			clientHealthCardInfo.setIssuingTerritory(ClientHealthCardInfo.IssuingTerritory.Enum.forString(getStaffAnswer("issuingTerritory",ocanStaffFormData)));
+		}else{
+			clientHealthCardInfo.setNumber("");
+			clientHealthCardInfo.setVersion("");
+			clientHealthCardInfo.setIssuingTerritory(ClientHealthCardInfo.IssuingTerritory.Enum.forString(""));
+		}
 		return clientHealthCardInfo;
 	}
 	public static ClientDOB convertClientDOB(OcanStaffForm ocanStaffForm, List<OcanStaffFormData> ocanStaffFormData) {
@@ -1450,8 +1474,14 @@ public class OcanReportUIBean {
 	
 	public static String getFilename(int year, int month, int increment) {
 		LoggedInInfo loggedInInfo = LoggedInInfo.loggedInInfo.get();
-	
-		return "OCAN" +  year + ( (month<10)?("0"+month):(month) )+ loggedInInfo.loggedInInfo.get().currentFacility.getOcanServiceOrgNumber() +  ( (increment<10)?("0"+increment):(increment) ) + ".xml";
+		GregorianCalendar cal=new GregorianCalendar();
+		year = cal.get(GregorianCalendar.YEAR);
+		month = cal.get(GregorianCalendar.MONTH)+1;
+		int date = cal.get(GregorianCalendar.DATE);
+		int hour = cal.get(GregorianCalendar.HOUR_OF_DAY);
+		int min = cal.get(GregorianCalendar.MINUTE);
+		 
+		return "OCAN" +  year + ( (month<10)?("0"+month):(month) )+ ((date<10)?("0"+date):(date)) + ((hour<10)?("0"+hour):(hour))+ ((min<10)?("0"+min):(min))+loggedInInfo.loggedInInfo.get().currentFacility.getOcanServiceOrgNumber() +  ( (increment<10)?(".00"+increment):(increment) ) + ".xml";
 	}
 	
 	private static Date getStartDate(int year, int month) {

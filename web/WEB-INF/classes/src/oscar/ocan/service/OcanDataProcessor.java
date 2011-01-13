@@ -137,6 +137,7 @@ public class OcanDataProcessor {
 		OCANSubmissionRecord r1 = of.createOCANSubmissionRecord();
 		r1.setAssessmentID(process.assessmentId);
 		r1.setAssessmentStatus("Complete");
+		
 		r1.setStartDate(XMLGregorianCalendarImpl.parse(client.getCInstructions().getCStartDate()+"Z"));
 		r1.setCompletionDate(XMLGregorianCalendarImpl.parse(client.getCInstructions().getCStartDate()+"Z"));
 

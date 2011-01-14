@@ -33,12 +33,15 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DispatchAction;
 import org.oscarehr.PMmodule.dao.ProviderDao;
 import org.oscarehr.PMmodule.service.ProviderManager;
+import org.oscarehr.PMmodule.web.OcanForm;
 import org.oscarehr.common.dao.FacilityDao;
+import org.oscarehr.common.dao.OcanStaffFormDao;
 import org.oscarehr.common.dao.UserPropertyDAO;
 import org.oscarehr.common.model.Facility;
 import org.oscarehr.common.model.Provider;
 import org.oscarehr.common.model.UserProperty;
 import org.oscarehr.decisionSupport.service.DSService;
+import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.util.SessionConstants;
 import org.oscarehr.util.SpringUtils;
 import org.springframework.context.ApplicationContext;
@@ -65,7 +68,8 @@ public final class LoginAction extends DispatchAction {
 
     private ProviderManager providerManager = (ProviderManager) SpringUtils.getBean("providerManager");
     private FacilityDao facilityDao = (FacilityDao) SpringUtils.getBean("facilityDao");
-    
+    private static OcanStaffFormDao ocanStaffFormDao = (OcanStaffFormDao) SpringUtils.getBean("ocanStaffFormDao");
+	
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         String ip = request.getRemoteAddr();
@@ -79,6 +83,9 @@ public final class LoginAction extends DispatchAction {
             request.getSession().setAttribute(SessionConstants.CURRENT_FACILITY, facility);
             String username=(String)request.getSession().getAttribute("user");
             LogAction.addLog(username, LogConst.LOGIN, LogConst.CON_LOGIN, "facilityId="+facilityIdString, ip);
+            if(facility.isEnableOcanForms()) {
+            	request.getSession().setAttribute("ocanWarningWindow", OcanForm.getOcanWarningMessage(facility.getId()));
+            }
             return mapping.findForward(nextPage);
         }
 
@@ -175,6 +182,7 @@ public final class LoginAction extends DispatchAction {
                     	newDocArr.add(providerNo);
                     	session.setAttribute("CaseMgmtUsers", newDocArr);
                     }
+                    
                 }
             }
 
@@ -239,6 +247,9 @@ public final class LoginAction extends DispatchAction {
                 Facility facility=facilityDao.find(facilityIds.get(0));
                 request.getSession().setAttribute("currentFacility", facility);
                 LogAction.addLog(strAuth[0], LogConst.LOGIN, LogConst.CON_LOGIN, "facilityId="+facilityIds.get(0), ip);
+                if(facility.isEnableOcanForms()) {
+                	request.getSession().setAttribute("ocanWarningWindow", OcanForm.getOcanWarningMessage(facility.getId()));
+                }
             }
             else {
         		List facilities = facilityDao.findAll(true);
@@ -251,7 +262,7 @@ public final class LoginAction extends DispatchAction {
         			LogAction.addLog(strAuth[0], LogConst.LOGIN, LogConst.CON_LOGIN, "facilityId="+first_id, ip);
             	}
             }
-
+            
             if( pvar.getProperty("LOGINTEST","").equalsIgnoreCase("yes")) {
                 String proceedURL = mapping.findForward(where).getPath();
                 request.getSession().setAttribute("proceedURL", proceedURL);               
@@ -279,4 +290,6 @@ public final class LoginAction extends DispatchAction {
 	public ApplicationContext getAppContext() {
 		return WebApplicationContextUtils.getWebApplicationContext(getServlet().getServletContext());
 	}
+	
+	
 }

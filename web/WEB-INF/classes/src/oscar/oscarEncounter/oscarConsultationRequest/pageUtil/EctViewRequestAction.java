@@ -50,9 +50,9 @@ package oscar.oscarEncounter.oscarConsultationRequest.pageUtil;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Calendar;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -64,18 +64,18 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.PMmodule.dao.ProviderDao;
-import org.oscarehr.common.dao.ConsultationRequestDao;
-import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.dao.Hl7TextMessageDao;
 import org.oscarehr.common.hl7.v2.oscar_to_oscar.DataTypeUtils;
 import org.oscarehr.common.hl7.v2.oscar_to_oscar.OscarToOscarUtils;
 import org.oscarehr.common.hl7.v2.oscar_to_oscar.RefI12;
-import org.oscarehr.common.model.ConsultationRequest;
 import org.oscarehr.common.model.Demographic;
+import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.model.Hl7TextMessage;
 import org.oscarehr.common.model.ProfessionalSpecialist;
 import org.oscarehr.common.model.Provider;
+import org.oscarehr.PMmodule.dao.ProviderDao;
+import org.oscarehr.common.model.ConsultationRequest;
+import org.oscarehr.common.dao.ConsultationRequestDao;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 
@@ -123,6 +123,7 @@ public class EctViewRequestAction extends Action {
             cal.setTime(consult.getAppointmentTime());
             Integer hr = cal.get(Calendar.HOUR_OF_DAY);
             hr = hr == 0 ? 12 : hr;
+            hr = hr > 12 ? hr - 12: hr;
             thisForm.setAppointmentHour(String.valueOf(hr));
             thisForm.setAppointmentMinute(String.valueOf(cal.get(Calendar.MINUTE)));
             
@@ -150,7 +151,7 @@ public class EctViewRequestAction extends Action {
             DemographicDao demoDao = (DemographicDao)SpringUtils.getBean("demographicDao");
             Demographic demo = demoDao.getDemographicById(consult.getDemographicId());
 
-            thisForm.setPatientAddress(demo.getAddress());
+            thisForm.setPatientAddress(demo.getAddress() + "<br>" + demo.getCity() + ", " + demo.getProvince() + "<br>" + demo.getPostal());
             thisForm.setPatientDOB(demo.getFormattedDob());
             thisForm.setPatientHealthNum(demo.getHin());
             thisForm.setPatientHealthCardVersionCode(demo.getVer());
@@ -163,7 +164,7 @@ public class EctViewRequestAction extends Action {
             thisForm.setPatientAge(demo.getAge());
 
             ProviderDao provDao = (ProviderDao)SpringUtils.getBean("providerDao");
-            Provider prov = provDao.getProvider(demo.getProviderNo());
+            Provider prov = provDao.getProvider(consult.getProviderNo());
             thisForm.setProviderName(prov.getFormattedName());
 
             thisForm.seteReferral(false);

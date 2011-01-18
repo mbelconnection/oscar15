@@ -39,48 +39,16 @@
 
 
 <%@page
-	import="java.util.ArrayList, java.util.Collections, java.util.List, java.util.*, oscar.dms.*, oscar.oscarEncounter.pageUtil.*,oscar.oscarEncounter.data.*, oscar.OscarProperties, oscar.util.StringUtils, oscar.oscarLab.ca.on.*"%>
+	import="java.util.ArrayList,java.util.Collections,java.util.List,oscar.dms.*,oscar.oscarEncounter.pageUtil.*,oscar.oscarEncounter.data.*,oscar.OscarProperties,oscar.util.StringUtils,oscar.oscarLab.ca.on.*"%>
 <%@page
 	import="org.oscarehr.casemgmt.service.CaseManagementManager,org.oscarehr.casemgmt.model.CaseManagementNote,org.oscarehr.casemgmt.model.Issue,org.oscarehr.common.model.UserProperty,org.oscarehr.common.dao.UserPropertyDAO,org.springframework.web.context.support.*,org.springframework.web.context.*"%>
 
-<%@page import="org.oscarehr.common.dao.SiteDao"%>
-<%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
-<%@page import="org.oscarehr.common.model.Site"%>
 <%@page import="org.oscarehr.util.WebUtils"%>
 <%@page import="oscar.oscarEncounter.oscarConsultationRequest.pageUtil.EctConsultationFormRequestForm"%>
 <%@page import="oscar.oscarEncounter.oscarConsultationRequest.pageUtil.EctConsultationFormRequestUtil"%>
 <%@page import="oscar.oscarDemographic.data.DemographicData"%>
 <%@page import="oscar.oscarEncounter.oscarConsultationRequest.pageUtil.EctViewRequestAction"%>
 <%@page import="org.oscarehr.util.MiscUtils"%><html:html locale="true">
-<%! boolean bMultisites=org.oscarehr.common.IsPropertiesOn.isMultisitesEnable(); %>
-<%
-	//multi-site support
-	String appNo = (String) request.getParameter("appNo");
-	appNo = (appNo==null ? "" : appNo);
-	
-	String defaultSiteName = "";
-	Integer defaultSiteId = 0;
-	Vector<String> vecAddressName = new Vector<String>() ;
-	Vector<String> bgColor = new Vector<String>() ;
-	Vector<Integer> siteIds = new Vector<Integer>();
-	if (bMultisites) {
-		SiteDao siteDao = (SiteDao)WebApplicationContextUtils.getWebApplicationContext(application).getBean("siteDao");
-		
-		List<Site> sites = siteDao.getActiveSitesByProviderNo((String) session.getAttribute("user"));
-		if (sites != null) {
-			for (Site s:sites) {
-				   siteIds.add(s.getSiteId());
-		           vecAddressName.add(s.getName());	
-		           bgColor.add(s.getBgColor());
-		 	}
-		}
-		
-		if (appNo != "") {
-			defaultSiteName = siteDao.getSiteNameByAppointmentNo(appNo);
-		}
-	}
-%>
-
 
 <%
 	String demo = request.getParameter("de");
@@ -239,7 +207,7 @@ text-align: right;
 
 <script language="JavaScript" type="text/javascript">
 
-var servicesName = new Array();   		// used as a cross reference table for name and number
+var servicesName = new Object();   		// used as a cross reference table for name and number
 var services = new Array();				// the following are used as a 2D table for makes and models
 var specialists = new Array();
 
@@ -258,7 +226,8 @@ function initMaster() {
 //==========
 function K( serviceNumber, service ){
 
-	servicesName[service] = new ServicesName(serviceNumber);
+	//servicesName[service] = new ServicesName(serviceNumber);
+        servicesName[service] = serviceNumber;
 	services[serviceNumber] = new Service( );
 }
 //-------------------------------------------------------------------
@@ -477,7 +446,19 @@ function initService(ser){
 	var isSel = 0;
 	var strSer = new String(ser);
 
-	for (aIdx in servicesName){
+        $H(servicesName).each(function(pair){
+              var opt = document.createElement("option");
+              opt.textContent = pair.key;
+              opt.value = pair.value;
+              if( pair.value == strSer ) {
+                opt.selected = true;
+                fillSpecialistSelect1( pair.value );
+              }
+              $("service").options.add(opt);
+
+        });
+
+/*	for (aIdx in servicesName){
 	   var serNBR = servicesName[aIdx].serviceNumber;
    	   document.EctConsultationFormRequestForm.service.options[ i ] = new Option( aIdx, serNBR );
 	   if (serNBR == strSer){
@@ -491,8 +472,8 @@ function initService(ser){
 	      document.EctConsultationFormRequestForm.service.options[ 0 ].selected = true;
 	   }
 	   i++;
+	}*/
 	}
-}
 //-------------------------------------------------------------------
 
 /////////////////////////////////////////////////////////////////////
@@ -560,6 +541,11 @@ function enableDisableRemoteReferralButton(form, disabled)
 	if (button!=null) button.disabled=disabled;
 	button=form.submitAndSendElectronically;
 	if (button!=null) button.disabled=disabled;
+
+        var button=form.updateAndSendElectronicallyTop;
+	if (button!=null) button.disabled=disabled;
+	button=form.submitAndSendElectronicallyTop;
+	if (button!=null) button.disabled=disabled;
 }
 
 //-->
@@ -615,6 +601,7 @@ function checkForm(submissionVal,formName){
      document.EctConsultationFormRequestForm.service.focus();
      return false;
   }
+  $("saved").value = "true";
   document.forms[formName].submission.value=submissionVal;
   document.forms[formName].submit();
   return true;
@@ -777,6 +764,13 @@ function fetchAttached() {
 
 }
 
+function checksave() {
+    var saved = $F("saved");
+    if( saved == "false" ) {
+        return "You are about to close the consult WITHOUT saving. Are you sure you want to exit?";
+    }
+}
+window.onbeforeunload = checksave;
 </script>
 <%=WebUtils.popErrorMessagesAsAlert(session)%>
 <link rel="stylesheet" type="text/css" href="../encounterStyles.css">
@@ -792,15 +786,10 @@ function fetchAttached() {
 		if (requestId != null)
 		{
 			EctViewRequestAction.fillFormValues(thisForm, new Integer(requestId));
-                thisForm.setSiteName(consultUtil.siteName);
-                defaultSiteName = consultUtil.siteName ;
-
 		}
 		else if (segmentId != null)
 		{
 			EctViewRequestAction.fillFormValues(thisForm, segmentId);
-                thisForm.setSiteName(consultUtil.siteName);
-                defaultSiteName = consultUtil.siteName ;
 		}
 		else if (request.getAttribute("validateError") == null)
 		{
@@ -827,9 +816,7 @@ function fetchAttached() {
 			thisForm.setSendTo(team);
 			//thisForm.setConcurrentProblems(demographic.EctInfo.getOngoingConcerns());
 			thisForm.setAppointmentYear(year);
-        		if (bMultisites) {
-	        		thisForm.setSiteName(defaultSiteName);
-        		}
+
 		}
 		
 		if (thisForm.iseReferral())
@@ -846,6 +833,7 @@ function fetchAttached() {
 	<input type="hidden" name="demographicNo" value="<%=demo%>">
 	<input type="hidden" name="requestId" value="<%=requestId%>">
 	<input type="hidden" name="documents" value="">
+        <input type="hidden" id="saved" value="false">
 	<!--  -->
 	<table class="MainTable" id="scrollNumber1" name="encounterTable">
 		<tr class="MainTableTopRow">
@@ -980,6 +968,51 @@ function fetchAttached() {
 
 				<!----Start new rows here-->
 				<tr>
+					<td class="tite4" colspan=2>
+					<%
+						if (request.getAttribute("id") != null)
+								{
+					%>
+						<input name="update" type="button" value="<bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.btnUpdate"/>" onclick="return checkForm('Update Consultation Request','EctConsultationFormRequestForm');" />
+						<input name="updateAndPrint" type="button" value="<bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.btnUpdateAndPrint"/>" onclick="return checkForm('Update Consultation Request And Print Preview','EctConsultationFormRequestForm');" />
+						<input name="updateAndSendElectronicallyTop" type="button" value="<bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.btnUpdateAndSendElectronicReferral"/>" onclick="return checkForm('Update_esend','EctConsultationFormRequestForm');" />
+						<%
+							if (props.getProperty("faxEnable", "").equalsIgnoreCase("yes"))
+										{
+						%>
+						<input name="updateAndFax" type="button" value="<bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.btnUpdateAndFax"/>" onclick="return checkForm('Update And Fax','EctConsultationFormRequestForm');" />
+						<%
+							}
+						%>
+					<%
+						}
+								else
+								{
+					%>
+						<input name="submitSaveOnly" type="button" value="<bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.btnSubmit"/>" onclick="return checkForm('Submit Consultation Request','EctConsultationFormRequestForm'); " />
+						<input name="submitAndPrint" type="button" value="<bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.btnSubmitAndPrint"/>" onclick="return checkForm('Submit Consultation Request And Print Preview','EctConsultationFormRequestForm'); " />
+						<input name="submitAndSendElectronicallyTop" type="button" value="<bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.btnSubmitAndSendElectronicReferral"/>" onclick="return checkForm('Submit_esend','EctConsultationFormRequestForm');" />
+						<%
+							if (props.getProperty("faxEnable", "").equalsIgnoreCase("yes"))
+										{
+						%>
+						<input name="submitAndFax" type="button" value="<bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.btnSubmitAndFax"/>" onclick="return checkForm('Submit And Fax','EctConsultationFormRequestForm');" />
+						<%
+							}
+						%>
+					<%
+						}
+
+						if (thisForm.iseReferral())
+						{
+							%>
+								<input type="button" value="Send eResponse" onclick="$('saved').value='true';document.location='<%=thisForm.getOruR01UrlString(request)%>'" />
+							<%
+						}
+						%>
+					</td>
+                                </tr>
+                                <tr>
 					<td>
 
 					<table border=0 width="100%">
@@ -1003,7 +1036,7 @@ function fetchAttached() {
 							<td class="tite4"><bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.formService" />:
 							</td>
 							<td align="right" class="tite1">
-								<html:select property="service" onchange="fillSpecialistSelect(this);">
+								<html:select styleId="service" property="service" onchange="fillSpecialistSelect(this);">
 								<!-- <option value="-1">------ <bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.formServSelect"/> ------</option>
 					<option/>
 				    	<option/>
@@ -1192,25 +1225,6 @@ function fetchAttached() {
 							</table>
 							</td>
 						</tr>
-						<%if (bMultisites) { %>
-						<tr>
-							<td  class="tite4">
-								<bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.siteName" />:							
-							</td>
-							<td>
-								<html:select property="siteName" onchange='this.style.backgroundColor=this.options[this.selectedIndex].style.backgroundColor'>
-						            <%  for (int i =0; i < vecAddressName.size();i++){
-						                 String te = (String) vecAddressName.get(i);
-						                 String bg = (String) bgColor.get(i);	
-						                 if (te.equals(defaultSiteName))
-						                	 defaultSiteId = siteIds.get(i);
-						            %>
-						                    <html:option value="<%=te%>" style='<%="background-color: "+bg%>'> <%=te%> </html:option>
-						            <%  }%>	
-							</html:select>
-							</td>
-						</tr>
-						<%} %>
 					</table>
 					</td>
 					<td valign="top" cellspacing="1" class="tite4">
@@ -1385,7 +1399,6 @@ function fetchAttached() {
 <%
 	String aburl2 = "/EyeForm.do?method=specialConRequest&demographicNo=" + demo + "&appNo=" + request.getParameter("appNo");
 					if (requestId != null) aburl2 += "&requestId=" + requestId;
-if (defaultSiteId!=0) aburl2+="&site="+defaultSiteId;
 %>
 <html:hidden property="specialencounterFlag" value="true"/>
 <plugin:include componentName="specialencounterComp" absoluteUrl="<%=aburl2 %>"></plugin:include>
@@ -1470,7 +1483,7 @@ if (defaultSiteId!=0) aburl2+="&site="+defaultSiteId;
 						if (thisForm.iseReferral())
 						{
 							%>
-								<input type="button" value="Send eResponse" onclick="document.location='<%=thisForm.getOruR01UrlString(request)%>'" />
+								<input type="button" value="Send eResponse" onclick="$('saved').value='true';document.location='<%=thisForm.getOruR01UrlString(request)%>'" />
 							<%
 						}
 						%>

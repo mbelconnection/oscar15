@@ -5,6 +5,7 @@
     var case_program_id;
     var caisiEnabled = false;
     var passwordEnabled = false;
+    var requireIssue = true;
 
     var X       = 10;
     var small   = 60;
@@ -1853,7 +1854,7 @@ function ajaxSaveNote(div,noteId,noteTxt) {
     }
 
     if( caisiEnabled ) {
-        if( !issueIsAssigned() ) {
+    	if( requireIssue && !issueIsAssigned() ) {
             alert(assignIssueError);
             return false;
         }
@@ -1915,7 +1916,7 @@ function savePage(method, chain) {
     }
 
     if( caisiEnabled ) {
-        if( !issueIsAssigned() ) {
+    	if( requireIssue && !issueIsAssigned() ) {
             alert(assignIssueError);
             return false;
         }

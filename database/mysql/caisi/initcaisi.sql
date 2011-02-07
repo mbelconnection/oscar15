@@ -2630,13 +2630,16 @@ create table OcanFormOption
 create table OcanStaffForm
 (
         id int primary key auto_increment,
+        assessmentId int,
         ocanFormVersion varchar(16) not null,
         ocanType varchar(20) not null,
         index(ocanFormVersion),
-        providerNo varchar(6) not null,
+        providerNo varchar(6),
+        clientFormProviderNo varchar(6),
         signed tinyint not null,
         index(signed),
-        created datetime not null,
+        created datetime,
+        clientFormCreated datetime,
         facilityId int not null,
         clientId int not null,
         index(facilityId, clientId),
@@ -2666,6 +2669,7 @@ create table OcanStaffForm
 	clientCompletionDate date,
 	gender varchar(10),
 	providerName varchar(100),
+	clientFormProviderName varchar(100),
 	index(startDate),
 	index(completionDate)
 );

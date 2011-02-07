@@ -143,6 +143,19 @@ public class OcanStaffFormDao extends AbstractDao<OcanStaffForm> {
 		*/
     }
     
+    public List<OcanStaffForm> findUnsubmittedOcanForms(Integer facilityId) {
+		
+		String sqlCommand="select x from OcanStaffForm x where x.facilityId=?1 and x.assessmentStatus=?2 and x.submissionId=0 order by x.created DESC";
+
+		Query query = entityManager.createQuery(sqlCommand);
+		query.setParameter(1, facilityId);
+		query.setParameter(2, "Completed");
+		
+		@SuppressWarnings("unchecked")
+		List<OcanStaffForm> results=query.getResultList();
+		return(results);				
+    }
+    
     public List<OcanStaffForm> findAllByFacility(Integer facilityId) {
 
 		String sqlCommand = "select x from OcanStaffForm x where x.facilityId=?1 order by x.created desc";
@@ -155,6 +168,19 @@ public class OcanStaffFormDao extends AbstractDao<OcanStaffForm> {
 		
 		return (results);
 	}
+    
+    public List<OcanStaffForm> findBySubmissionId(Integer facilityId,Integer submissionId) {
+    	String sqlCommand = "select x from OcanStaffForm x where x.facilityId=?1 and x.submissionId=?2 order by x.created desc";
+
+		Query query = entityManager.createQuery(sqlCommand);
+		query.setParameter(1, facilityId);		
+		query.setParameter(2, submissionId);
+				
+		@SuppressWarnings("unchecked")
+		List<OcanStaffForm> results=query.getResultList();
+		
+		return (results);
+    }
     
     
 }

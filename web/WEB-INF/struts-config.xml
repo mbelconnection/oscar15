@@ -2124,6 +2124,9 @@
             <forward name="success" path="/PMmodule/Admin/migrateCaisiRoles.jsp" redirect="true"/>
         </action>
 
+        <action path="/OcanIarSubmit" type="org.oscarehr.web.OcanIarSubmitAction" parameter="method" scope="request">            
+        </action>
+
     </action-mappings>
     <controller processorClass="org.apache.struts.tiles.TilesRequestProcessor" maxFileSize="20M"/>
     <message-resources parameter="oscarResources" null="false"/>

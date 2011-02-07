@@ -613,6 +613,7 @@ div.logoutBox {
 			<li><html:link page="/oscarReport/cds_4_report_form.jsp"><bean:message key="admin.admin.cdsRpt"/></html:link></li>
 			<li><html:link page="/oscarReport/mis_report_form.jsp"><bean:message key="admin.admin.misRpt"/></html:link></li>
 			<li><html:link page="/oscarReport/ocan_report_form.jsp"><bean:message key="admin.admin.ocanRpt"/></html:link></li>
+			<li><html:link page="/oscarReport/ocan_iar.jsp"><bean:message key="admin.admin.ocanIarRpt"/></html:link></li>
 			<oscar:oscarPropertiesCheck property="SERVERLOGGING" value="yes">
 				<li><a href="#"
 					onclick="popupPage(600,900, &quot;<html:rewrite page="/admin/oscarLogging.jsp"/>&quot;)"><bean:message key="admin.admin.serverLog"/></a></li>

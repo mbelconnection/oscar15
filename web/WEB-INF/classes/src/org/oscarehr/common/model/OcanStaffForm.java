@@ -69,6 +69,8 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 	
 	private String providerName;
 	
+	private int submissionId;
+	
 	public OcanStaffForm() {
 		province = "ON";
 		setAssessmentStatus("In Progress");
@@ -372,5 +374,14 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 	public void setProviderName(String providerName) {
 		this.providerName = providerName;
 	}
+
+	public int getSubmissionId() {
+		return submissionId;
+	}
+
+	public void setSubmissionId(int submissionId) {
+		this.submissionId = submissionId;
+	}
+	
 	
 }

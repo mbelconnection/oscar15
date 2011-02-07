@@ -38,8 +38,14 @@
 
 <h1>OCAN Export Report - v2.0.6</h1>
 
+<script>
+	function submitIAR() {
+		document.getElementById("ocanForm").action="ocan_report_export_iar.jsp";
+	}
+
+</script>
 				
-<form method="post" action="ocan_report_export.jsp">
+<form method="post" id="ocanForm" action="ocan_report_export.jsp">
 	<table class="borderedTableAndCells">
 		<tr>
 			<td>OCAN Type </td>			
@@ -138,6 +144,7 @@
 			<td></td>
 			<td><input type="submit" value="Download Report" /></td>
 		</tr>
+		
 	</table>	
 </form>
 

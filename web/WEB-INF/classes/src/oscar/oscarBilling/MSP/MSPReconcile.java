@@ -33,8 +33,6 @@ import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 public class MSPReconcile{    
@@ -56,9 +54,9 @@ public class MSPReconcile{
     public Properties currentC12Records(){
         Properties p = new Properties();
         try {            
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select t_officefolioclaimno, t_exp1,t_exp2,t_exp3,t_exp4,t_exp5,t_exp6,t_exp7  from teleplanC12 where status != 'E'";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             while(rs.next()){
                     try{
                       int i  = Integer.parseInt(rs.getString("t_officefolioclaimno"));  // this kludge rids leading zeros   
@@ -74,12 +72,12 @@ public class MSPReconcile{
                       String s = Integer.toString(i);
                       p.put(s,def);
                     }catch(NumberFormatException intEx){
-                        MiscUtils.getLogger().debug("Had trouble Parsing int from "+rs.getString("t_officeno"));
+                        System.out.println("Had trouble Parsing int from "+rs.getString("t_officeno"));
                     }
             }            
             rs.close();
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }        
         return p;
     }
@@ -89,9 +87,9 @@ public class MSPReconcile{
         String s = "";
          int i = 0;
         try {                       
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select t_exp1,t_exp2,t_exp3,t_exp4,t_exp5,t_exp6,t_exp7 teleplanS00 where t_mspctlno = '"+forwardZero(billingNo,7)+"'";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             while(rs.next()){             
                       String exp[] = new String[7];  
                           exp[0] = rs.getString("t_exp1");
@@ -106,9 +104,9 @@ public class MSPReconcile{
             }            
             rs.close();
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
-        if ( i > 1 ){  MiscUtils.getLogger().debug(" billingNo "+billingNo +" had " + i + "rows in the table"); }
+        if ( i > 1 ){  System.out.println(" billingNo "+billingNo +" had " + i + "rows in the table"); }
         return s;
     }
      
@@ -132,7 +130,7 @@ public class MSPReconcile{
                 Properties errorsProps = new Properties();
                 if (count > 0) {                
                    try {            
-                                                              
+                      DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);                                        
                       String sql = "select distinct t_officeno, t_exp1,t_exp2,t_exp3,t_exp4,t_exp5,t_exp6,t_exp7 from teleplanS00 where t_officeno in (";
                     
                       for (int i = 0; i < justBillingMaster.size() ; i++){
@@ -144,7 +142,7 @@ public class MSPReconcile{
                       }
                       sql += ")";
                       
-                      ResultSet rs = DBHandler.GetSQL(sql);
+                      ResultSet rs = db.GetSQL(sql);
                       while(rs.next()){
                          try{
                             int i  = Integer.parseInt(rs.getString("t_officeno"));  // this kludge rids leading zeros   
@@ -160,11 +158,11 @@ public class MSPReconcile{
                             String s = Integer.toString(i);
                             errorsProps.put(s,def);
                          }catch(NumberFormatException intEx){
-                            MiscUtils.getLogger().debug("Had trouble Parsing int from "+rs.getString("t_mspctlno"));
+                            System.out.println("Had trouble Parsing int from "+rs.getString("t_mspctlno"));
                          }
                       }            
                       rs.close();                   }catch(Exception e){
-                      MiscUtils.getLogger().error("Error", e);
+                      e.printStackTrace();
                    }
                 }   
             return errorsProps;
@@ -174,19 +172,19 @@ public class MSPReconcile{
     public ArrayList getSequenceNumbers(String billingNo){
         ArrayList retval = new ArrayList();
         try {            
-            
-            ResultSet rs = DBHandler.GetSQL("select t_dataseq from teleplanC12 where t_officefolioclaimno = '"+forwardZero(billingNo,7)+"'");
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL("select t_dataseq from teleplanC12 where t_officefolioclaimno = '"+forwardZero(billingNo,7)+"'");
             while(rs.next()){   
               //String exp[] = new String[7];  
               retval.add(rs.getString("t_dataseq"));                                     
             }
-            rs = DBHandler.GetSQL("select t_dataseq from teleplanS00 where t_officeno = '"+forwardZero(billingNo,7)+"'");
+            rs = db.GetSQL("select t_dataseq from teleplanS00 where t_officeno = '"+forwardZero(billingNo,7)+"'");
             while(rs.next()){   
               retval.add(rs.getString("t_dataseq"));                                     
             }
             rs.close();
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return retval;
     }
@@ -228,8 +226,8 @@ public class MSPReconcile{
         billSearch.justBillingMaster = new ArrayList();
         
         try {            
-            
-            ResultSet  rs = DBHandler.GetSQL(p);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet  rs = db.GetSQL(p);
             while(rs.next()){
             Bill b = new Bill();
               b.billing_no = rs.getString("billing_no");
@@ -255,7 +253,7 @@ public class MSPReconcile{
             }
             rs.close();
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return billSearch;
     }
@@ -269,8 +267,8 @@ public class MSPReconcile{
   
         ArrayList list = new ArrayList();
         try {            
-            
-            ResultSet  rs = DBHandler.GetSQL(p);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet  rs = db.GetSQL(p);
             while(rs.next()){
             Bill b = new Bill();
               b.billing_no = rs.getString("billing_no");
@@ -293,7 +291,7 @@ public class MSPReconcile{
             }
             rs.close();
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return list;
     }    
@@ -340,8 +338,8 @@ public class MSPReconcile{
         } catch (IOException e) {
         }        
         try {            
-            
-            ResultSet rs = DBHandler.GetSQL("select distinct t_dataseq, t_exp1,t_exp2,t_exp3,t_exp4,t_exp5,t_exp6,t_exp7 from teleplanC12 where t_officefolioclaimno = '"+forwardZero(billingNo,7)+"'");
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL("select distinct t_dataseq, t_exp1,t_exp2,t_exp3,t_exp4,t_exp5,t_exp6,t_exp7 from teleplanC12 where t_officefolioclaimno = '"+forwardZero(billingNo,7)+"'");
             while(rs.next()){   
               String exp[] = new String[7];  
               String seq = rs.getString("t_dataseq");
@@ -360,7 +358,7 @@ public class MSPReconcile{
             }
             rs.close();
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return retval;        
     }
@@ -370,10 +368,10 @@ public class MSPReconcile{
         Properties p = new Properties();
         try {
             p.load(new FileInputStream("/home/jay/documents/PEMP/mspEditCodes.properties"));
-        } catch (IOException e) { MiscUtils.getLogger().error("Error", e); }        
+        } catch (IOException e) { e.printStackTrace(); }        
         try {            
-            
-            ResultSet rs = DBHandler.GetSQL("select distinct t_dataseq, t_exp1,t_exp2,t_exp3,t_exp4,t_exp5,t_exp6,t_exp7 from teleplanS00 where t_officeno = '"+forwardZero(billingNo,7)+"'");
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL("select distinct t_dataseq, t_exp1,t_exp2,t_exp3,t_exp4,t_exp5,t_exp6,t_exp7 from teleplanS00 where t_officeno = '"+forwardZero(billingNo,7)+"'");
             while(rs.next()){   
               String exp[] = new String[7];  
               String seq = rs.getString("t_dataseq");
@@ -392,7 +390,7 @@ public class MSPReconcile{
             }
             rs.close();
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return retval;        
     }
@@ -403,8 +401,8 @@ public class MSPReconcile{
         String value = null;
         boolean foundBill = false;
         try {            
-            
-            ResultSet rs = DBHandler.GetSQL("select * from billingmaster where billingmaster_no = '"+billingNo+"'");
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL("select * from billingmaster where billingmaster_no = '"+billingNo+"'");
             if(rs.next()){   
                 p = new Properties();                
                 ResultSetMetaData md = rs.getMetaData();                
@@ -417,8 +415,8 @@ public class MSPReconcile{
             }
             rs.close();
         }catch(Exception e){
-            MiscUtils.getLogger().debug("name: "+name+" value: "+value);
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println("name: "+name+" value: "+value);
+            e.printStackTrace();
         }        
         return p;
     }    
@@ -429,14 +427,14 @@ public class MSPReconcile{
         String currStat ="";
         String newStat = "";
         try {            
-            
-            ResultSet rs = DBHandler.GetSQL("select billingstatus from billingmaster where billingmaster_no = '"+billingNo+"'");
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL("select billingstatus from billingmaster where billingmaster_no = '"+billingNo+"'");
             if(rs.next()){            
                currStat = rs.getString("billingstatus");
             }		
             rs.close();
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }                         
         if (!currStat.equals(SETTLED)){
             if (stat.equals(REJECTED)){
@@ -468,15 +466,15 @@ public class MSPReconcile{
             }
         }else{
          updated = false; 
-         MiscUtils.getLogger().debug("billing No "+billingNo+" is settled, will not be updated");
+         System.out.println("billing No "+billingNo+" is settled, will not be updated");
         }            
         if (updated){
             try {              
-                
-                MiscUtils.getLogger().debug("Updating billing no "+billingNo+" to "+newStat);
-                DBHandler.RunSQL("update billingmaster set billingstatus = '"+newStat+"' where billingmaster_no = '"+billingNo+"'");
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+                System.out.println("Updating billing no "+billingNo+" to "+newStat);
+                db.RunSQL("update billingmaster set billingstatus = '"+newStat+"' where billingmaster_no = '"+billingNo+"'");
             }catch(Exception e){
-                MiscUtils.getLogger().error("Error", e);
+                e.printStackTrace();
             }
         }
         return updated;

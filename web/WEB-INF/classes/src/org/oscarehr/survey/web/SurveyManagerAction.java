@@ -37,7 +37,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -61,12 +62,11 @@ import org.oscarehr.surveymodel.SurveyDocument;
 import org.oscarehr.surveymodel.PossibleAnswersDocument.PossibleAnswers;
 import org.oscarehr.surveymodel.SelectDocument.Select;
 import org.oscarehr.util.LoggedInInfo;
-import org.oscarehr.util.MiscUtils;
 
 
 
 public class SurveyManagerAction extends AbstractSurveyAction {
-	private static Logger log = MiscUtils.getLogger();
+	private Log log = LogFactory.getLog(getClass());
 
 	private SurveyManager surveyManager;
 	private SurveyTestManager surveyTestManager;
@@ -395,8 +395,8 @@ public class SurveyManagerAction extends AbstractSurveyAction {
 		DynaActionForm surveyForm = (DynaActionForm)form;
 		SurveyDocument model = (SurveyDocument)surveyForm.get("model");
 		SurveyManagerFormBean formBean = (SurveyManagerFormBean)surveyForm.get("web");
-
-                
+		
+		String pageName = formBean.getPage();
 		SurveyDocument.Survey survey = model.getSurvey();
 		int pageNumber = Integer.parseInt(request.getParameter("id"));
 		
@@ -981,7 +981,7 @@ public class SurveyManagerAction extends AbstractSurveyAction {
 			response.setHeader("Content-Disposition", strProjectInfoPageHeader);
 			this.oscarFormManager.generateCSV(Long.valueOf(id), response.getOutputStream());
 		}catch(IOException e) {
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -995,7 +995,7 @@ public class SurveyManagerAction extends AbstractSurveyAction {
 			response.setHeader("Content-Disposition", strProjectInfoPageHeader);
 			this.oscarFormManager.generateInverseCSV(Long.valueOf(id), response.getOutputStream());
 		}catch(IOException e) {
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 		}
 		return null;
 	}

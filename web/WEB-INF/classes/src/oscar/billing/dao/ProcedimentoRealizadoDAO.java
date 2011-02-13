@@ -27,8 +27,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.oscarehr.util.MiscUtils;
+import java.util.Properties;
 
 import oscar.billing.model.ProcedimentoRealizado;
 import oscar.oscarDB.DBHandler;
@@ -37,6 +36,10 @@ import oscar.util.DateUtils;
 
 
 public class ProcedimentoRealizadoDAO extends DAO {
+    public ProcedimentoRealizadoDAO(Properties pvar) throws SQLException {
+        super(pvar);
+    }
+
 
 	/**
 	 * Lists all done procedures within a given appointment.
@@ -52,19 +55,19 @@ public class ProcedimentoRealizadoDAO extends DAO {
             "where pr.co_procedimento = p.co_procedimento and " +
             "pr.appointment_no = " + id;
             
-        MiscUtils.getLogger().debug(sql);
+        System.out.println(sql);
 
-        
+        DBHandler db = getDb();
 
         try {
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             
             // for each procedure found, assemble the 
             // object and put it in the list
             while (rs.next()) {
                 ProcedimentoRealizado pr = new ProcedimentoRealizado();
                 pr.getCadProcedimentos().setCoProcedimento(rs.getLong(1));
-                pr.getCadProcedimentos().setDsProcedimento(oscar.Misc.getString(rs, 2));
+                pr.getCadProcedimentos().setDsProcedimento(db.getString(rs,2));
                 pr.setDtRealizacao(rs.getDate(3,
                         DateUtils.getDateFormatter().getCalendar()));
                 pr.getTpAtendimento().setCoTipoatendimento(rs.getLong(4));
@@ -91,11 +94,11 @@ public class ProcedimentoRealizadoDAO extends DAO {
         	"SET co_tipo_atendimento = '" + atType + "' " +
         	"WHERE appointment_no = " + id;
         	
-        MiscUtils.getLogger().debug(sql);
+        System.out.println(sql);
 
-        
+        DBHandler db = getDb();
         try {
-            DBHandler.RunSQL(sql);
+            db.RunSQL(sql);
         } finally {
         }
 

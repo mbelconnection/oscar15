@@ -8,9 +8,7 @@ import java.util.GregorianCalendar;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.oscarehr.common.model.Clinic;
 import org.oscarehr.common.model.Demographic;
-import org.oscarehr.common.model.ProfessionalSpecialist;
 import org.oscarehr.common.model.Provider;
 import org.oscarehr.util.MiscUtils;
 
@@ -32,14 +30,14 @@ public final class OruR01 {
 	
 	public static class ObservationData {
 		/**
-		 * subject i.e. "wcb_form"
+		 * dataName i.e. "wcb_form"
 		 */
-		public String subject;
+		public String dataName;
 		
 		/**
-		 * textMessage can be any text
+		 * textData can be any text
 		 */
-		public String textMessage;
+		public String textData;
 		
 		/**
 		 * dataFileName is meant to be the file name for the binary data. This field is important and required if binary data is provided because the extention of the file name determines the type of binary data, i.e. foo.jpg lets us know it's a jpg.
@@ -52,19 +50,14 @@ public final class OruR01 {
 		public byte[] binaryData;
 	}
 
-	private OruR01()
-	{
-		// not meant to be instantiated
-	}
-	
 	/**
 	 * This method is essentially used to make an ORU_R01 containing pretty much any random data.
 	 * @throws UnsupportedEncodingException 
 	 */
-	public static ORU_R01 makeOruR01(Clinic clinic, Demographic demographic, ObservationData observationData, Provider sendingProvider, ProfessionalSpecialist receivingProfessionalSpecialist) throws HL7Exception, UnsupportedEncodingException {
+	public static ORU_R01 makeOruR01(String facilityName, Demographic demographic, ObservationData observationData, Provider sendingProvider, Provider receivingProvider) throws HL7Exception, UnsupportedEncodingException {
 		ORU_R01 observationMsg = new ORU_R01();
 
-		DataTypeUtils.fillMsh(observationMsg.getMSH(), new Date(), clinic.getClinicName(), "ORU", "R01", "ORU_R01", DataTypeUtils.HL7_VERSION_ID);
+		DataTypeUtils.fillMsh(observationMsg.getMSH(), new Date(), facilityName, "ORU", "R01", "ORU_R01", DataTypeUtils.HL7_VERSION_ID);
 		DataTypeUtils.fillSft(observationMsg.getSFT(), BuildInfo.getBuildTag(), BuildInfo.getBuildDate());
 
 		ORU_R01_PATIENT_RESULT patientResult = observationMsg.getPATIENT_RESULT(0);
@@ -75,8 +68,8 @@ public final class OruR01 {
 		fillNtesWithObservationData(orderObservation, observationData);
 
 		// use ROL for the sending and receiving provider
-		DataTypeUtils.fillRol(orderObservation.getROL(0), sendingProvider, clinic, DataTypeUtils.ACTION_ROLE_SENDER);
-		DataTypeUtils.fillRol(orderObservation.getROL(1), receivingProfessionalSpecialist, DataTypeUtils.ACTION_ROLE_RECEIVER);
+		DataTypeUtils.fillRol(orderObservation.getROL(0), sendingProvider, DataTypeUtils.ACTION_ROLE_SENDER);
+		DataTypeUtils.fillRol(orderObservation.getROL(1), receivingProvider, DataTypeUtils.ACTION_ROLE_RECEIVER);
 
 		return (observationMsg);
 	}
@@ -88,17 +81,17 @@ public final class OruR01 {
 
 		int nteCounter = 0;
 		
-		if (observationData.textMessage!=null)
+		if (observationData.textData!=null)
 		{
 			NTE nte = orderObservation.getNTE(nteCounter);
-			DataTypeUtils.fillNte(nte, observationData.subject, TEXT_DATA_FILENAME_PLACEHOLDER, observationData.textMessage.getBytes());
+			DataTypeUtils.fillNte(nte, observationData.dataName, TEXT_DATA_FILENAME_PLACEHOLDER, observationData.textData.getBytes());
 			nteCounter++;
 		}
 		
 		if (observationData.binaryData!=null)
 		{
 			NTE nte = orderObservation.getNTE(nteCounter);
-			DataTypeUtils.fillNte(nte, observationData.subject, observationData.binaryDataFileName, observationData.binaryData);
+			DataTypeUtils.fillNte(nte, observationData.dataName, observationData.binaryDataFileName, observationData.binaryData);
 		}
 	}
 
@@ -140,12 +133,12 @@ public final class OruR01 {
 	private static void fillObservationDataFromNte(ObservationData observationData, NTE nte) throws UnsupportedEncodingException {
 		
 		String temp=nte.getCommentType().getText().getValue();
-		if (temp!=null) observationData.subject = temp;
+		if (temp!=null) observationData.dataName = temp;
 		
 		temp=nte.getCommentType().getNameOfCodingSystem().getValue();
 		if (TEXT_DATA_FILENAME_PLACEHOLDER.equals(temp))
 		{
-			observationData.textMessage=new String(DataTypeUtils.getNteCommentsAsSingleDecodedByteArray(nte), MiscUtils.ENCODING);
+			observationData.textData=new String(DataTypeUtils.getNteCommentsAsSingleDecodedByteArray(nte), MiscUtils.ENCODING);
 		}
 		else
 		{
@@ -158,36 +151,30 @@ public final class OruR01 {
 		// this is here just to test some of the above functions since 
 		// we are not using junit tests...
 		
-		Clinic clinic=new Clinic();
-		clinic.setClinicName("test clinic");
-		clinic.setClinicAddress("123 my street");
-		clinic.setClinicCity("my city");
-		clinic.setClinicProvince("bc");
-		clinic.setClinicPhone("12345");
-
 		Demographic demographic = new Demographic();
 		demographic.setLastName("test LN");
 		demographic.setLastName("test FN");
 		demographic.setBirthDay(new GregorianCalendar(1960, 2, 3));
 
 		ObservationData observationData = new ObservationData();
-		observationData.subject="txt test";
-		observationData.textMessage="once upon a time";
+		observationData.dataName="txt test";
+		observationData.textData="once upon a time";
 		observationData.binaryDataFileName="/tmp/oscar.properties";
-		byte[] b=FileUtils.readFileToByteArray(new File(observationData.binaryDataFileName));
+		byte[] b=FileUtils.readFileToByteArray(new File(observationData.binaryDataFileName));;
 		observationData.binaryData = b;
+		
 
 		Provider sender = new Provider();
 		sender.setProviderNo("111");
 		sender.setLastName("sender ln");
 		sender.setFirstName("sender fn");
 
-		ProfessionalSpecialist receiver = new ProfessionalSpecialist();
+		Provider receiver = new Provider();
+		receiver.setProviderNo("222");
 		receiver.setLastName("receiver ln");
 		receiver.setFirstName("receiver fn");
-		receiver.setProfessionalLetters("Dr");
 
-		ORU_R01 observationMsg = makeOruR01(clinic, demographic, observationData, sender, receiver);
+		ORU_R01 observationMsg = makeOruR01("facility name", demographic, observationData, sender, receiver);
 
 		String messageString = OscarToOscarUtils.pipeParser.encode(observationMsg);
 		logger.info(messageString);

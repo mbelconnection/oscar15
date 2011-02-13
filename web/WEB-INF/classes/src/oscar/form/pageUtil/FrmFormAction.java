@@ -34,7 +34,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.validator.GenericValidator;
-import org.apache.log4j.Logger;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -43,10 +42,6 @@ import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.apache.xmlrpc.XmlRpcClient;
 import org.apache.xmlrpc.XmlRpcException;
-import org.oscarehr.common.dao.EncounterFormDao;
-import org.oscarehr.common.model.EncounterForm;
-import org.oscarehr.util.MiscUtils;
-import org.oscarehr.util.SpringUtils;
 
 import oscar.OscarProperties;
 import oscar.form.FrmRecordHelp;
@@ -54,6 +49,7 @@ import oscar.form.data.FrmData;
 import oscar.form.util.FrmToXMLUtil;
 import oscar.oscarDB.DBHandler;
 import oscar.oscarDemographic.data.DemographicData;
+import oscar.oscarEncounter.data.EctFormData;
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementTypesBean;
 import oscar.oscarEncounter.oscarMeasurements.bean.EctValidationsBean;
 import oscar.oscarEncounter.oscarMeasurements.pageUtil.EctValidation;
@@ -64,8 +60,6 @@ import oscar.util.UtilDateUtilities;
 
 public class FrmFormAction extends Action {
     
-	private static Logger logger=MiscUtils.getLogger();
-	
     /**
      * To create a new form which can write to measurement and osdsf, you need to ...
      * Create a xml file with all the measurement types named <formName>.xml (check form/VTForm.xml as an example)
@@ -83,9 +77,9 @@ public class FrmFormAction extends Action {
                              
         ActionMessages errors = new ActionMessages();    
         boolean valid = true;          
-        logger.debug("FrmFormAction is called "+currentMem());        
+        System.out.println("FrmFormAction is called "+currentMem());        
         
-        logger.debug("current mem 1 "+currentMem());
+        System.out.println("current mem 1 "+currentMem());
         FrmFormForm frm = (FrmFormForm) form;               
         
         HttpSession session = request.getSession();        
@@ -93,30 +87,30 @@ public class FrmFormAction extends Action {
         request.getSession().setAttribute("EctSessionBean", bean);
         
         String formName = (String) frm.getValue("formName"); 
-        logger.debug("formNme Top "+formName);
+        System.out.println("formNme Top "+formName);
         String formId = (String) frm.getValue("formId");
         String dateEntered = UtilDateUtilities.DateToString(UtilDateUtilities.Today(),_dateFormat);
         String timeStamp = UtilDateUtilities.DateToString(UtilDateUtilities.Today(),"yyyy-MM-dd hh:mm:ss");
         //String visitCod = UtilDateUtilities.DateToString(UtilDateUtilities.Today(),"yyyyMMdd");
         String today = UtilDateUtilities.DateToString(UtilDateUtilities.Today(),"yyyy-MM-dd");
                         
-        logger.debug("current mem 2 "+currentMem());
+        System.out.println("current mem 2 "+currentMem());
         
         Properties props = new Properties();
         EctFormProp formProp = EctFormProp.getInstance();
         Vector measurementTypes = formProp.getMeasurementTypes();
-        logger.debug("num measurements "+measurementTypes.size());
+        System.out.println("num measurements "+measurementTypes.size());
         String demographicNo = null;
         String providerNo = (String) session.getAttribute("user");
         if ( bean != null)
             demographicNo = bean.getDemographicNo();                        
         
-        logger.debug("current mem 3 "+currentMem());
+        System.out.println("current mem 3 "+currentMem());
         
         errors.clear();
         valid = true;
         
-        logger.debug("current mem 4 "+currentMem());
+        System.out.println("current mem 4 "+currentMem());
         
         String submit = request.getParameter("submit");
         
@@ -126,7 +120,7 @@ public class FrmFormAction extends Action {
         //Validate each measurement
         long startTime = System.currentTimeMillis();
         
-        logger.debug("current mem 5 "+currentMem());
+        System.out.println("current mem 5 "+currentMem());
         for(int i=0; i<measurementTypes.size(); i++){
             mt = (EctMeasurementTypesBean) measurementTypes.elementAt(i);
             validation = (EctValidationsBean) mt.getValidationRules().elementAt(0);
@@ -147,15 +141,15 @@ public class FrmFormAction extends Action {
         } 
         valid = ectValidation.isDate((String) frm.getValue("visitCod"));
         
-        logger.debug("current mem 6 "+currentMem());
+        System.out.println("current mem 6 "+currentMem());
         long endTime = System.currentTimeMillis();
         long delTime = endTime - startTime;
-        logger.debug("Time spent on validation: " + Long.toString(delTime));
+        System.out.println("Time spent on validation: " + Long.toString(delTime));
 
         if(valid){
             DemographicData demoData = new DemographicData();
             DemographicData.Demographic demo = demoData.getDemographic(demographicNo);
-            logger.debug("is valid, procede write to table");
+            System.out.println("is valid, procede write to table");
             //Store form information as properties for saving to form table
             props.setProperty("demographic_no", demographicNo);
             props.setProperty("provider_no", providerNo);
@@ -166,7 +160,7 @@ public class FrmFormAction extends Action {
             props.setProperty("givenName", demo.getFirstName());
             
             String diagnosisVT = org.apache.commons.lang.StringEscapeUtils.escapeSql((String) frm.getValue("diagnosisVT"));
-
+            //System.out.println("diagnosisVT >"+diagnosisVT+"< form val >"+frm.getValue("diagnosisVT"));
             String subjective = org.apache.commons.lang.StringEscapeUtils.escapeSql((String) frm.getValue("subjective"));
             String objective = org.apache.commons.lang.StringEscapeUtils.escapeSql((String) frm.getValue("objective"));
             String assessment = org.apache.commons.lang.StringEscapeUtils.escapeSql((String) frm.getValue("assessment"));
@@ -178,10 +172,11 @@ public class FrmFormAction extends Action {
             props.setProperty("Objective", objective);
             props.setProperty("Assessment", assessment);
             props.setProperty("Plan", plan);
-
+            //System.out.println("diagnosis: " + props.getProperty("diagnosis"));
+           
             startTime = System.currentTimeMillis();
             for(int i=0; i<measurementTypes.size(); i++){
-                logger.debug("current mem 7.1."+i+" "+currentMem()); 
+                System.out.println("current mem 7.1."+i+" "+currentMem()); 
                 mt = (EctMeasurementTypesBean) measurementTypes.elementAt(i);
                 validation = (EctValidationsBean) mt.getValidationRules().elementAt(0);
                 String type = mt.getType();
@@ -200,14 +195,14 @@ public class FrmFormAction extends Action {
                 String comments = (String) frm.getValue(type+"Comments");
                 comments = org.apache.commons.lang.StringEscapeUtils.escapeSql(comments);
                 
-                logger.debug("type: " + type + " inputValue: " + inputValue);
+                System.out.println("type: " + type + " inputValue: " + inputValue);
                 //parse the checkbox value
                 inputValue = parseCheckBoxValue(inputValue, validation.getName());
                 
                 //Write to Measurement Table
-
+                //System.out.println("write2Measurement type: " + type + " inputValue: " + inputValue);
                 if(inputValue!=null){
-                    if(submit.equalsIgnoreCase("exit") && !inputValue.equalsIgnoreCase(""))
+                    if(submit.equalsIgnoreCase("exit") && !inputValue.equalsIgnoreCase(""))                    //System.out.println("write to measurement table: " + mt.getType());
                         write2MeasurementTable(demographicNo, providerNo, mt, inputValue, observationDate, comments);                
                 }
                 
@@ -216,7 +211,8 @@ public class FrmFormAction extends Action {
                     props.setProperty(type+"LastData", lastData);
                 if(lastDataEnteredDate!=null)
                     props.setProperty(type+"LastDataEnteredDate", lastDataEnteredDate);
-
+                //System.out.println("type: " + type + " input: " + inputValue);
+                
                 props.setProperty(type+"Date", observationDate==null?dateEntered:observationDate);
                 props.setProperty(type+"Comments", comments==null?"":comments);                
                     
@@ -237,30 +233,30 @@ public class FrmFormAction extends Action {
                         }
                     }
                 }
-                logger.debug("current mem 7.2."+i+" "+currentMem()); 
+                System.out.println("current mem 7.2."+i+" "+currentMem()); 
             }
             endTime = System.currentTimeMillis();
             delTime = endTime - startTime;
-            logger.debug("Time spent on write2Measurements: " + Long.toString(delTime));
+            System.out.println("Time spent on write2Measurements: " + Long.toString(delTime));
             
             //Store the the form table for keeping the current record            
-            logger.debug("current mem 8 "+currentMem()); 
+            System.out.println("current mem 8 "+currentMem()); 
             try{
                 String sql = "SELECT * FROM form"+formName + " WHERE demographic_no='"+demographicNo + "' AND ID=0";
                 FrmRecordHelp frh = new FrmRecordHelp();
                 frh.setDateFormat(_dateFormat);
                 (frh).saveFormRecord(props, sql);
             }catch(SQLException e){
-                logger.error("Error", e);
+                System.out.println(e.getMessage());
             }
             
-            logger.debug("current mem 9 "+currentMem()); 
+            System.out.println("current mem 9 "+currentMem()); 
             //Send to Mils thru xml-rpc            
             Properties nameProps = convertName(formName);
             String xmlData = FrmToXMLUtil.convertToXml(measurementTypes, nameProps, props);
             String decisionSupportURL = connect2OSDSF(xmlData);
             request.setAttribute("decisionSupportURL", decisionSupportURL);
-            logger.debug("current mem 9 "+currentMem()); 
+            System.out.println("current mem 9 "+currentMem()); 
         }else{                             
             //return to the orignal form
             return (new ActionForward("/form/SetupForm.do?formName="+formName+"&formId=0"));
@@ -270,22 +266,28 @@ public class FrmFormAction extends Action {
         //forward to the for with updated formId  
         
         
-        logger.debug("submit value: " + submit);
+        System.out.println("submit value: " + submit);
         if(submit.equalsIgnoreCase("exit")){
             String toEChart = "[" + timeStamp + ".: Vascular Tracker] \n\n" ;
+//                                + "Subjective: \n \t" + (String) frm.getValue("subjective") + "\n"
+//                                + "Objective: \n \t" + (String) frm.getValue("objective") + "\n"
+//                                + "Assessment: \n \t" + (String) frm.getValue("assessment") + "\n"
+//                                + "Plan: \n \t" + (String) frm.getValue("plan") + "\n"
+//                                + "Diagnosis: \n \t" + (String) frm.getValue("diagnosisVT") + "\n\n"
+//                                + "[end of Vascular Tracker] \n";
+            //request.setAttribute("diagnosisVT", org.apache.commons.lang.StringEscapeUtils.escapeJavaScript(toEChart));
             request.setAttribute("diagnosisVT", "See Vascular Tracker Template");
             return (new ActionForward("/form/formSaveAndExit.jsp"));
         }
-        logger.debug("formName from Frm ForamAction"+formName);
-        EncounterFormDao encounterFormDao=(EncounterFormDao)SpringUtils.getBean("encounterFormDao");
-        EncounterForm encounterForm=encounterFormDao.find("../form/SetupForm.do?formName="+formName+"&demographic_no=");
-        String formNameByFormTable = encounterForm.getFormName();
-        logger.debug("formNameByFormTable"+formNameByFormTable);
+        EctFormData fData = new EctFormData();
+        System.out.println("formName from Frm ForamAction"+formName);
+        String formNameByFormTable = fData.getFormNameByFormTable("../form/SetupForm.do?formName="+formName+"&demographic_no=");
+        System.out.println("formNameByFormTable"+formNameByFormTable);
         String[] formPath = {"","0"};
         try{
             formPath = (new FrmData()).getShortcutFormValue(demographicNo, formNameByFormTable);    
         }catch(SQLException e){            
-            logger.error("Error", e);
+            e.printStackTrace();
         }
         return (new ActionForward("/form/SetupForm.do?formName="+formName+"&formId="+formPath[1]));
     }
@@ -302,7 +304,8 @@ public class FrmFormAction extends Action {
         String inputValueName = mt.getType()+"Value";   
         String inputDateName = mt.getType()+"Date";
         String regExp = validation.getRegularExp();
-
+        
+        //System.out.println("Input Value of " + mt.getType() + ":" + inputValue);
         double dMax = Double.parseDouble(validation.getMaxValue()==null?"0":validation.getMaxValue());
         double dMin = Double.parseDouble(validation.getMinValue()==null?"0":validation.getMinValue());
         int iMax = Integer.parseInt(validation.getMaxLength()==null?"0":validation.getMaxLength());
@@ -362,9 +365,9 @@ public class FrmFormAction extends Action {
                                         EctMeasurementTypesBean mt, String inputValue, 
                                         String dateObserved, String comments){
         boolean newDataAdded = false;
-
+        //System.out.println("writing to Measurement: " + mt.getType() + " value: " + inputValue + " dateObserved: " + dateObserved);
         try{
-                
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);    
             org.apache.commons.validator.GenericValidator gValidator = new org.apache.commons.validator.GenericValidator();
             if(!gValidator.isBlankOrNull(inputValue)){
                 //Find if the same data has already been entered into the system
@@ -372,7 +375,7 @@ public class FrmFormAction extends Action {
                             + "' AND type='" + mt.getType() + "' AND dataField='"+inputValue 
                             + "' AND measuringInstruction='" + mt.getMeasuringInstrc() + "' AND comments='" + comments
                             + "' AND dateObserved='" + dateObserved + "'";
-                ResultSet rs = DBHandler.GetSQL(sql);
+                ResultSet rs = db.GetSQL(sql);
                 if(!rs.next()){
                     newDataAdded = true;
                     //Write to the Dababase if all input values are valid                        
@@ -380,13 +383,13 @@ public class FrmFormAction extends Action {
                             +"(type, demographicNo, providerNo, dataField, measuringInstruction, comments, dateObserved, dateEntered)"
                             +" VALUES ('"+mt.getType()+"','"+demographicNo+"','"+providerNo+"','"+inputValue+"','"
                             + mt.getMeasuringInstrc() +"','"+comments+"','"+dateObserved+"', now())";                           
-                    DBHandler.RunSQL(sql);
+                    db.RunSQL(sql);
                 }
                 rs.close();                
             }
         }
         catch(SQLException e){
-            logger.error("Error", e);
+            System.out.println(e.getMessage());
         }
         return newDataAdded;
     }
@@ -404,19 +407,19 @@ public class FrmFormAction extends Action {
         try{            
             XmlRpcClient xmlrpc = new XmlRpcClient(osdsfRPCURL);
             String result = (String) xmlrpc.execute("vt.getAndSaveRlt", data2OSDSF);
-            logger.debug("Reverse result: " + result);
+            System.out.println("Reverse result: " + result);
             return result;
         }
         catch(XmlRpcException e){
-            logger.error("Error", e);
+            e.printStackTrace();
             return null;
         }
         catch(IOException e){
-            logger.error("Error", e);
+            e.printStackTrace();
             return null;
         }
         /*catch(MalformedURLException e){
-            logger.error("Error", e);
+            e.printStackTrace();
         }*/        
     }
     
@@ -426,21 +429,21 @@ public class FrmFormAction extends Action {
         try {
                 osdsf.load(is);
         } catch (Exception e) {
-                logger.debug("Error, file " + formName + ".properties not found.");			
+                System.out.println("Error, file " + formName + ".properties not found.");			
         }
 
         try{
                 is.close();
         } catch (IOException e) {
-                logger.debug("IO error.");
-                logger.error("Error", e);
+                System.out.println("IO error.");
+                e.printStackTrace();
         }
         return osdsf;
     }
    
         
     private String parseCheckBoxValue(String inputValue, String validationName){        
-
+        //System.out.println("validationName: " + validationName);
         if(validationName.equalsIgnoreCase("Yes/No")){
             /*if(inputValue==null)
                 inputValue="no";

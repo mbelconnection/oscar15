@@ -11,9 +11,7 @@ package org.oscarehr.common.dao;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.persistence.Query;
-
 import org.apache.log4j.Logger;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.Document;
@@ -38,7 +36,7 @@ public class DocumentResultsDao extends AbstractDao<Document>{
     public DocumentResultsDao() {
         super(Document.class);
     }
-
+        
     public boolean isSentToValidProvider(String docNo){//check if document attached to any existing provider
         if(docNo!=null){
             int dn=Integer.parseInt(docNo.trim());
@@ -63,7 +61,7 @@ public class DocumentResultsDao extends AbstractDao<Document>{
                 }
                 else return false;
             }catch(Exception e){
-                MiscUtils.getLogger().error("Error", e);
+                e.printStackTrace();
                 return false;
             }
         }else return false;
@@ -264,13 +262,13 @@ public class DocumentResultsDao extends AbstractDao<Document>{
                 if(lbData.getPatientName().equalsIgnoreCase("Not, Assigned"))
                     lbData.setLabPatientId("-1");
                 logger.debug("DOCU<ENT "+lbData.isMatchedToPatient());
-                lbData.accessionNumber = "";//oscar.Misc.getString(rs,"accessionNum");
+                lbData.accessionNumber = "";//db.getString(rs,"accessionNum");
 
-                lbData.resultStatus = "N";//;oscar.Misc.getString(rs,"result_status");
+                lbData.resultStatus = "N";//;db.getString(rs,"result_status");
                 if (lbData.resultStatus.equals("A"))
                     lbData.abn = true;
 
-                lbData.dateTime = d.getObservationdate().toString();//oscar.Misc.getString(rs,"observationdate");
+                lbData.dateTime = d.getObservationdate().toString();//db.getString(rs,"observationdate");
                 lbData.setDateObj(d.getObservationdate());
 
                 //priority
@@ -289,8 +287,8 @@ public class DocumentResultsDao extends AbstractDao<Document>{
                     lbData.priority = "----";
                 }
 
-                lbData.requestingClient = "";//oscar.Misc.getString(rs,"requesting_client");
-                lbData.reportStatus =  "F";//oscar.Misc.getString(rs,"report_status");
+                lbData.requestingClient = "";//db.getString(rs,"requesting_client");
+                lbData.reportStatus =  "F";//db.getString(rs,"report_status");
 
                 // the "C" is for corrected excelleris labs
                 if (lbData.reportStatus != null && (lbData.reportStatus.equals("F") || lbData.reportStatus.equals("C"))){

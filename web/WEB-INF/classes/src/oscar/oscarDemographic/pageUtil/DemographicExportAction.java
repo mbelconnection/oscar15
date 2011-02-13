@@ -28,6 +28,7 @@
 
 package oscar.oscarDemographic.pageUtil;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -42,7 +43,6 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDemographic.data.DemographicData;
 import oscar.oscarDemographic.data.DemographicExt;
@@ -60,7 +60,9 @@ public class DemographicExportAction extends Action {
 
    public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)  {
       String setName = request.getParameter("patientSet");      
-
+       
+      //System.out.println("setName "+setName);
+       
       DemographicSets dsets = new DemographicSets();
       ArrayList list = dsets.getDemographicSet(setName);
       ArrayList list2 = dsets.getDemographicSet(setName);
@@ -76,13 +78,13 @@ public class DemographicExportAction extends Action {
       
       PreventionDisplayConfig pdc = PreventionDisplayConfig.getInstance();//new PreventionDisplayConfig();         
       ArrayList prevList  = pdc.getPreventions();
-
+      //System.out.println("size"+prevList.size());
       for (int k =0 ; k < prevList.size(); k++){
              Hashtable a = (Hashtable) prevList.get(k);   
-
+             //System.out.println("layout ="+a.get("layout")+"<");
              if (a != null && a.get("layout") != null &&  a.get("layout").equals("injection")){
                 inject.add((String) a.get("name"));
-
+                //System.out.println("added "+a.get("name")+"<");
              }	     	
       }
       
@@ -99,7 +101,7 @@ public class DemographicExportAction extends Action {
       DemographicExt ext = new DemographicExt();
       
       for(int i = 0 ; i < list.size(); i++){
-
+         //System.out.println(i+" "+currentMem());
          String demoNo = (String) list.get(i);         
          DemographicData.Demographic demographic = d.getDemographic(demoNo);
          
@@ -128,7 +130,9 @@ public class DemographicExportAction extends Action {
          telephone.setAttribute("type","Home");
          telephone.setAttribute("number",demographic.getPhone());
          addAttrIfNotNull("extension",(String) demoExt.get("hPhoneExt"), telephone);
-
+                                        
+         //System.out.println(demoExt.get("homePhoneExt"));
+         
          demographicInfo.addContent(telephone);
          
          telephone= new Element("telephone");
@@ -144,7 +148,7 @@ public class DemographicExportAction extends Action {
          ArrayList prevList2 = pd.getPreventionData(demoNo);                           
          for (int k =0 ; k < prevList2.size(); k++){
              Hashtable a = (Hashtable) prevList2.get(k);  
-
+             //System.out.println("name  is "+a.get("type"));
              if (a != null && inject.contains((String) a.get("type")) ){
                 Element imm = new Element("Immunizations");
                 addAttrIfNotNull("type",(String) a.get("type"), imm);
@@ -193,19 +197,25 @@ public class DemographicExportAction extends Action {
          }
          labs = null;
       }
-
+   
+      //System.out.println("Done now going to print it");
+      
+      
       XMLOutputter outp = new XMLOutputter();
       outp.setFormat(Format.getPrettyFormat());
             
       try{
-
+      //outp.output(doc, System.out);
          response.setContentType("application/octet-stream");
          response.setHeader("Content-Disposition", "attachment; filename=\"export-"+setName+"-"+UtilDateUtilities.getToday("yyyy-mm-dd.hh.mm.ss")+".xml\"" );
          
          
       outp.output(doc, response.getOutputStream());
-      }catch(Exception e2){MiscUtils.getLogger().error("Error", e2);}
-
+      }catch(Exception e2){e2.printStackTrace();}
+      
+      //System.out.println(list.size());
+      
+      
       return null;
       //return mapping.findForward("success");
    }  
@@ -241,6 +251,23 @@ public class DemographicExportAction extends Action {
    }
       
    public DemographicExportAction() {
+   }
+   
+   public void getMembers(Object obj){
+      Class cls = obj.getClass();
+      Method[] methods = cls.getMethods();
+      for (int i=0; i < methods.length; i++){
+         Class ret = methods[i].getReturnType();
+         Class[] params = methods[i].getParameterTypes();
+         System.out.print(ret.getName()+" ");
+         System.out.print(methods[i].getName());
+         System.out.print("(");
+         for (int j=0; j<params.length; j++){
+            System.out.print(" "+params[j].getName());
+         }
+         System.out.println(")");
+      }
+      
    }
    
    public String currentMem(){        

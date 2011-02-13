@@ -31,8 +31,6 @@ package oscar.login;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.oscarehr.util.MiscUtils;
-
 /**
  * Class LoginViewTypeHlp : read mapping file from loginView.properties
  * 2003-01-05
@@ -61,8 +59,8 @@ public class LoginViewTypeHlp extends Properties{
 			load(is);
 			is.close(); 
 		} catch(Exception e) {
-			MiscUtils.getLogger().debug("*** No ViewType File ***");
-			MiscUtils.getLogger().error("Error", e);
+			System.out.println("*** No ViewType File ***");
+			e.printStackTrace();
 		}
 	}
 

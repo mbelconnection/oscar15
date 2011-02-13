@@ -28,11 +28,12 @@
 
 package oscar.oscarBilling.ca.on.OHIP;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Hashtable;
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,7 +42,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarBilling.ca.on.data.BillingCodeData;
 
@@ -56,10 +56,10 @@ public class ScheduleOfBenefitsUpdateAction extends Action {
       if ( changes != null ){
          BillingCodeData bc = new BillingCodeData();
          ArrayList list = new ArrayList();
-         MiscUtils.getLogger().debug("changes #"+changes.length);
+         System.out.println("changes #"+changes.length);
          
          for ( int i = 0 ; i < changes.length; i++){
-            MiscUtils.getLogger().debug(changes[i]);            
+            System.out.println(changes[i]);            
             String[] change = changes[i].split("\\|");
             if (change != null && change.length == 5){
                //change[0] // billing code
@@ -99,13 +99,13 @@ public class ScheduleOfBenefitsUpdateAction extends Action {
                h.put("code",change[0]);
                h.put("value",change[1]);
                list.add(h);
-
+               //System.out.println(change.length);
                //for ( int j = 0; j < change.length; j++){
-
+               //   System.out.println(j+" "+change[j]);
                //}
                request.setAttribute("changes",list);
             }else{
-               MiscUtils.getLogger().debug("test was null");
+               System.out.println("test was null");
             }
          
          }

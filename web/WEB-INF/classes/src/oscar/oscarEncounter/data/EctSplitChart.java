@@ -35,8 +35,6 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Vector;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 /**
@@ -55,12 +53,12 @@ public class EctSplitChart {
       Vector vec = null;//
       try{              
          vec = new Vector();
-         
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
          String sql = "select eChartId, timeStamp from eChart where demographicNo= '"+demographicNo+"'  and subject = 'SPLIT CHART' order by timeStamp ";
-         ResultSet rs = DBHandler.GetSQL(sql);
+         ResultSet rs = db.GetSQL(sql);
          while(rs.next()) {
             String[] s = new String[2];
-             s[0] = oscar.Misc.getString(rs, "eChartId");            
+             s[0] = db.getString(rs,"eChartId");            
              Timestamp timestamp = rs.getTimestamp("timeStamp");             
              java.util.Date d = new java.util.Date(timestamp.getTime());
              
@@ -72,7 +70,7 @@ public class EctSplitChart {
          rs.close();
          
       }catch(SQLException e){
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace();
          vec = null;
       }
       return vec;

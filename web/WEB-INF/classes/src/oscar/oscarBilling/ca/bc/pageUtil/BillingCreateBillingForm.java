@@ -27,15 +27,16 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
-import org.oscarehr.util.MiscUtils;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public final class BillingCreateBillingForm extends ActionForm {
-  private static final Logger _log = MiscUtils.getLogger();
+  private static final Log _log = LogFactory.getLog(BillingCreateBillingForm.class);
 
   private String[] service;
   private String xml_provider, xml_location, xml_billtype;
@@ -716,7 +717,7 @@ public final class BillingCreateBillingForm extends ActionForm {
   public ActionErrors validate(ActionMapping mapping,
                                HttpServletRequest request) {
     ActionErrors errors = new ActionErrors();
-    
+    oscar.util.StringUtils ut = new oscar.util.StringUtils();
 
    this.refertype1 = this.xml_refer1.equals("")?"":this.refertype1;
    this.refertype2 = this.xml_refer2.equals("")?"":this.refertype2;

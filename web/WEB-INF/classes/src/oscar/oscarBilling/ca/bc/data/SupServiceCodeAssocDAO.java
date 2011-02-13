@@ -33,9 +33,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 import oscar.util.SqlUtils;
 
@@ -110,7 +107,7 @@ public class SupServiceCodeAssocDAO {
    */
   public void saveOrUpdateServiceCodeAssociation(String primaryCode,
                                                  String secondaryCode) {
-    
+    DBHandler db = null;
     ResultSet rs = null;
     String primaryCodeId = this.getBillingServiceValue(primaryCode,
         this.VALUE_BY_CODE);
@@ -118,22 +115,22 @@ public class SupServiceCodeAssocDAO {
         this.VALUE_BY_CODE);
 
     try {
-      
-      rs = DBHandler.GetSQL(
+      db = new DBHandler(DBHandler.OSCAR_DATA);
+      rs = db.GetSQL(
           "select billingServiceNo,billingServiceTrayNo from billing_trayfees where billingServiceNo = " +
           primaryCodeId);
 
       PreparedStatement stmt = null;
       //Record exists so perform an update
       if (rs.next()) {
-        stmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(
+        stmt = DBHandler.getConnection().prepareStatement(
             "update billing_trayfees set billingServiceTrayNo = ? where billingServiceNo=?");
         stmt.setString(1, secondaryCodeId);
         stmt.setString(2, primaryCodeId);
       }
       else {
         //create a new record
-        stmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(
+        stmt = DBHandler.getConnection().prepareStatement(
             "insert into billing_trayfees(billingServiceNo,billingServiceTrayNo) " +
             "values(?,?)");
         stmt.setString(1, primaryCodeId);
@@ -142,15 +139,18 @@ public class SupServiceCodeAssocDAO {
       stmt.execute();
     }
     catch (Exception e) {
-      MiscUtils.getLogger().error("Error", e);
+      e.printStackTrace();
     }
     finally {
       try {
+        if (db != null) {
+        }
         if (rs != null) {
           rs.close();
         }
       }
-      catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+      catch (SQLException ex) {
+        ex.printStackTrace();
       }
     }
   }
@@ -188,13 +188,13 @@ public class SupServiceCodeAssocDAO {
   public void deleteServiceCodeAssociation(String id) {
     String qry = "delete from billing_trayfees where id = " +
         id;
-    
+    DBHandler db = null;
     try {
-      
-    	DBHandler.RunSQL(qry);
+      db = new DBHandler(DBHandler.OSCAR_DATA);
+      db.RunSQL(qry);
     }
     catch (Exception e) {
-      MiscUtils.getLogger().error("Error", e);
+      e.printStackTrace();
     }
   }
 }

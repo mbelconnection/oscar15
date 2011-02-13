@@ -5,19 +5,19 @@ import java.sql.Timestamp;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.DynaActionForm;
 import org.apache.struts.actions.DispatchAction;
 import org.oscarehr.PMmodule.model.HealthSafety;
-import org.oscarehr.PMmodule.service.HealthSafetyManager;
 import org.oscarehr.common.model.Provider;
-import org.oscarehr.util.MiscUtils;
+import org.oscarehr.PMmodule.service.HealthSafetyManager;
 
 public class HealthSafetyAction extends DispatchAction {
-	private static Logger log = MiscUtils.getLogger();
+	private static Log log = LogFactory.getLog(HealthSafetyAction.class);
 
     private HealthSafetyManager healthSafetyManager=null;
     

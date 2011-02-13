@@ -3,7 +3,6 @@ package oscar.oscarLab.ca.all.pageUtil;
 import java.io.IOException;
 import java.util.GregorianCalendar;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,12 +13,11 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.upload.FormFile;
-import org.oscarehr.common.dao.ClinicDAO;
 import org.oscarehr.common.dao.ProfessionalSpecialistDao;
+import org.oscarehr.common.hl7.v2.oscar_to_oscar.DataTypeUtils;
 import org.oscarehr.common.hl7.v2.oscar_to_oscar.OruR01;
 import org.oscarehr.common.hl7.v2.oscar_to_oscar.SendingUtils;
 import org.oscarehr.common.hl7.v2.oscar_to_oscar.OruR01.ObservationData;
-import org.oscarehr.common.model.Clinic;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.ProfessionalSpecialist;
 import org.oscarehr.common.model.Provider;
@@ -44,8 +42,8 @@ public class OruR01UploadAction extends Action {
 	        Demographic demographic=getDemographicObject(oruR01UploadForm); 
 	        
 	        ObservationData observationData=new ObservationData();
-	        observationData.subject=oruR01UploadForm.getSubject();
-	        observationData.textMessage=oruR01UploadForm.getTextMessage();
+	        observationData.dataName=oruR01UploadForm.getDataName();
+	        observationData.textData=oruR01UploadForm.getTextData();
 	        observationData.binaryDataFileName=formFile.getFileName();
 	        observationData.binaryData=formFile.getFileData();
 	        
@@ -53,17 +51,13 @@ public class OruR01UploadAction extends Action {
 
 	    	ProfessionalSpecialistDao professionalSpecialistDao=(ProfessionalSpecialistDao)SpringUtils.getBean("professionalSpecialistDao");
 	    	ProfessionalSpecialist professionalSpecialist=professionalSpecialistDao.find(oruR01UploadForm.getProfessionalSpecialistId());
+	        Provider receivingProvider=DataTypeUtils.getReceivingProvider(professionalSpecialist);
 	        
-	    	ClinicDAO clinicDAO=(ClinicDAO) SpringUtils.getBean("clinicDAO");
-	    	Clinic clinic=clinicDAO.getClinic();
-	    	
-	        ORU_R01 hl7Message=OruR01.makeOruR01(clinic, demographic, observationData, sendingProvider, professionalSpecialist);
+	        ORU_R01 hl7Message=OruR01.makeOruR01(loggedInInfo.currentFacility.getName(), demographic, observationData, sendingProvider, receivingProvider);
 	        
-	        int statusCode=SendingUtils.send(hl7Message, professionalSpecialist);
+	        SendingUtils.send(hl7Message, professionalSpecialist);
 	        
-	        if (HttpServletResponse.SC_OK==statusCode) WebUtils.addInfoMessage(request.getSession(), "Data successfully send.");
-	        else throw(new ServletException("Error sending data. response code="+statusCode));
-	        
+	        WebUtils.addInfoMessage(request.getSession(), "Data successfully send.");
         } catch (Exception e) {
 	        logger.error("Unexpected error.", e);
 	        WebUtils.addErrorMessage(request.getSession(), "An error occurred while sending this data, please try again or send this manually.");

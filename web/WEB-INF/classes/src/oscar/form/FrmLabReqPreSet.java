@@ -41,7 +41,7 @@ public class FrmLabReqPreSet {
 
                 return props;
         }
-
+        
         static void DMSet(Properties props){
             props.setProperty("b_glucose","checked");
             props.setProperty("b_glucose_fasting","checked");
@@ -53,7 +53,7 @@ public class FrmLabReqPreSet {
             props.setProperty("b_lipidAssessment","checked");
             props.setProperty("aci","\n Fast for 12 hours");
         }
-        
+
         static void AnteNatalSet(Properties props) {
             props.setProperty("b_urinalysis","checked");
             props.setProperty("h_cbc", "checked");

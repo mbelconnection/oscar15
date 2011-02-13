@@ -35,7 +35,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -43,25 +42,25 @@ public class EctConDeleteServicesAction extends Action {
    
    public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
    throws ServletException, IOException {
-      MiscUtils.getLogger().debug("Delete Services Action Jackson");
+      System.out.println("Delete Services Action Jackson");
       EctConDeleteServicesForm frm = (EctConDeleteServicesForm)form;
       String servs[] = frm.getService();
       if(servs.length > 0) {
-         StringBuilder stringBuffer = new StringBuilder();
+         StringBuffer stringBuffer = new StringBuffer();
          for(int i = 0; i < servs.length; i++)
             if(i == servs.length - 1)
-               stringBuffer.append(String.valueOf(String.valueOf((new StringBuilder(" serviceId = '")).append(servs[i]).append("' "))));
+               stringBuffer.append(String.valueOf(String.valueOf((new StringBuffer(" serviceId = '")).append(servs[i]).append("' "))));
             else
-               stringBuffer.append(String.valueOf(String.valueOf((new StringBuilder(" serviceId = '")).append(servs[i]).append("' or "))));
+               stringBuffer.append(String.valueOf(String.valueOf((new StringBuffer(" serviceId = '")).append(servs[i]).append("' or "))));
          
          try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "update consultationServices set active = '02' where ".concat(String.valueOf(String.valueOf(stringBuffer.toString())));
-            MiscUtils.getLogger().debug("sql = ".concat(String.valueOf(String.valueOf(sql))));
-            DBHandler.RunSQL(sql);
+            System.out.println("sql = ".concat(String.valueOf(String.valueOf(sql))));
+            db.RunSQL(sql);
          }
          catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
          }
       }
       return mapping.findForward("success");

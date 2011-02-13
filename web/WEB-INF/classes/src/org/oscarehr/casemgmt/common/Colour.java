@@ -20,13 +20,4 @@ public class Colour {
     public static final String messages = "DDDD00";
     public static final String measurements = "344887";
     public static final String rx="C3C3C3";
-    public static final String allergy="FF9933";
-    public static final String omed="CCDDAA";
-    public static final String riskFactors="993333";
-    public static final String familyHistory="006600";
-    public static final String issues="CC9900";
-    public static final String socialHistory="996633";
-    public static final String medicalHistory="996633";
-    public static final String ongoingConcerns="996633";
-    public static final String reminders="996633";
 }

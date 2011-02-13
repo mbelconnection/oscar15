@@ -26,7 +26,6 @@
 package org.oscarehr.common.dao;
 
 import java.util.List;
-
 import org.oscarehr.common.model.OtherId;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -44,14 +43,6 @@ public class OtherIdDAO extends HibernateDaoSupport {
 		List<OtherId> otherIdList = this.getHibernateTemplate().find(
 				"from OtherId where tableName=? and tableId=? and otherKey=? and deleted=false order by id desc limit 1",
 				new Object[] {tableName, tableId, otherKey});
-		return otherIdList.size()>0 ? otherIdList.get(0) : null;
-	}
-	
-	public OtherId searchTable(Integer tableName, String otherKey, String otherValue){
-		//Get a list of OtherIds in reverse order
-		List<OtherId> otherIdList = this.getHibernateTemplate().find(
-				"from OtherId where tableName=? and otherKey=? and otherId=? and deleted=false order by id desc limit 1",
-				new Object[] {tableName, otherKey, otherValue});
 		return otherIdList.size()>0 ? otherIdList.get(0) : null;
 	}
 

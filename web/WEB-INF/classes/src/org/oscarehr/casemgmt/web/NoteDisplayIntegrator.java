@@ -17,7 +17,6 @@ import org.oscarehr.casemgmt.model.CaseManagementNoteLink;
 import org.oscarehr.casemgmt.model.Issue;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
-
 import oscar.oscarRx.data.RxPrescriptionData;
 
 public class NoteDisplayIntegrator implements NoteDisplay {
@@ -172,12 +171,4 @@ public class NoteDisplayIntegrator implements NoteDisplay {
 	public CaseManagementNoteLink getNoteLink() {
 		return null;
 	}
-
-	public boolean isCpp() {
-	    return false;
-    }
-
-	public boolean isEncounterForm() {
-	    return false;
-    }
 }

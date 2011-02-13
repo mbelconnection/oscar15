@@ -25,13 +25,16 @@
 
 package oscar.oscarReport.reportByTemplate;
 
+import java.io.StringWriter;
 import java.sql.ResultSet;
+import java.sql.Date;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
+
+import com.Ostermiller.util.CSVPrinter;
 
 /**
  *
@@ -73,7 +76,7 @@ public class ThirdApptTimeReporter implements Reporter{
             return false;
         }
 
-        StringBuilder providerList = new StringBuilder();
+        StringBuffer providerList = new StringBuffer();
         for( int idx = 0; idx < providers.length; ++idx ) {
             providerList.append("'" + providers[idx] + "'");
             if( idx < providers.length - 1) {
@@ -88,10 +91,10 @@ public class ThirdApptTimeReporter implements Reporter{
         ResultSet rs = null;
         ResultSet rs2 = null;
         int unbooked = 0;
-
+        //System.out.println("SCHEDULE SQL " + scheduleSQL);
         try {
-            
-            rs = DBHandler.GetSQL(scheduleSQL);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            rs = db.GetSQL(scheduleSQL);
             int duration;
             String timecodes, code;
             String tmpApptSQL;           
@@ -106,13 +109,13 @@ public class ThirdApptTimeReporter implements Reporter{
             boolean codeMatch;
             while(rs.next() && numAppts < third) {
                 timecodes = rs.getString("timecode"); 
-
+                //System.out.println("TIME CODES " + timecodes);
                 duration = dayMins/timecodes.length();
-
+                //System.out.println("DURATION " + duration);
                 schedDate = rs.getString("sdate");
                 tmpApptSQL = "select start_time, end_time from appointment where provider_no = '" + rs.getString("provider_no") + "' and status not like '%C%' and appointment_date = '" + schedDate + "' order by start_time asc";
-
-                rs2 = DBHandler.GetSQL(tmpApptSQL);
+                // System.out.println("APPT SQL " + tmpApptSQL);                        
+                rs2 = db.GetSQL(tmpApptSQL);
                 codePos = 0;
                 latestApptHour = latestApptMin = 0;
                 unbooked = 0;
@@ -125,7 +128,7 @@ public class ThirdApptTimeReporter implements Reporter{
                         apptTime = rs2.getString("start_time");
                         apptHour_s = Integer.parseInt(apptTime.substring(0,2));
                         apptMin_s = Integer.parseInt(apptTime.substring(3,5));
-
+                        //System.out.println("iHours " + iHours + " = " + apptHour_s + " iMins " + iMins + " = " + apptMin_s);                     
                         if( iHours == apptHour_s && iMins == apptMin_s ) {
                             apptTime = rs2.getString("end_time");
                             apptHour_e = Integer.parseInt(apptTime.substring(0,2));
@@ -148,7 +151,7 @@ public class ThirdApptTimeReporter implements Reporter{
                         
                         if( code.equals(schedSymbols[schedIdx]) ) {                        
                             codeMatch = true;
-                            MiscUtils.getLogger().debug("codeMatched " + codeMatch);
+                            System.out.println("codeMatched " + codeMatch);
                             if( iHours > latestApptHour || (iHours == latestApptHour && iMins > latestApptMin)) {
                                 unbooked += duration;
 
@@ -179,14 +182,14 @@ public class ThirdApptTimeReporter implements Reporter{
             
             String calcDaysSQL = "select datediff('" + schedDate + "','" + date_from + "')";
             if( numAppts == third ) {
-                rs = DBHandler.GetSQL(calcDaysSQL);
+                rs = db.GetSQL(calcDaysSQL);
                 if( rs.next() ) {
                     numDays = rs.getInt(1);
                 }
             }
             
         }catch(Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
             
         }
         rsHtml = makeHTML(numDays,date_from, schedDate);

@@ -34,15 +34,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.cookierevolver.CRFactory;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
-
 /**
  * @author Dennis Langdeau
  */
 public class LoginFilter implements Filter {
-
-	private static final Logger logger=MiscUtils.getLogger();
 
 	private static final String[] EXEMPT_URLS = { 
 		"/images/", 
@@ -55,16 +50,13 @@ public class LoginFilter implements Filter {
 		"/logout.jsp",
 		"/index.jsp",
 		"/loginfailed.jsp",
-		"/index.html",
-		"/eformViewForPdfGenerationServlet"
+		"/index.html"
 	};
 
 	/*
 	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
 	 */
 	public void init(FilterConfig config) throws ServletException {
-		logger.info("Starting Filter : "+getClass().getSimpleName());
-		
 		if (!CRHelper.isCRFrameworkEnabled()) {
 			CRFactory.getConfig().setProperty("cr.disabled", "true");
 		}
@@ -74,8 +66,6 @@ public class LoginFilter implements Filter {
 	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-		logger.debug("Entering LoginFilter.doFilter()");
-
 		if (!CRHelper.isCRFrameworkEnabled()) {
 			HttpServletRequest httpRequest = (HttpServletRequest) request;
 			HttpServletResponse httpResponse = (HttpServletResponse) response;
@@ -97,7 +87,6 @@ public class LoginFilter implements Filter {
 			}
 		}
 
-		logger.debug("LoginFilter chainning");
 		chain.doFilter(request, response);
 	}
 

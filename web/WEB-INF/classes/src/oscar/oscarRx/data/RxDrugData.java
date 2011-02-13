@@ -28,8 +28,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarRx.util.RxDrugRef;
 
 public class RxDrugData {
@@ -75,7 +73,7 @@ public class RxDrugData {
           public DrugMonograph(){};
           
           public DrugMonograph(Hashtable hash){
-              MiscUtils.getLogger().debug(hash);
+              System.out.println(hash);
               name    = (String) hash.get("name");
               atc     = (String) hash.get("atc");
               product = (String) hash.get("product");
@@ -85,7 +83,7 @@ public class RxDrugData {
               if(drugRoute!=null){
                   for (int i=0;i<drugRoute.size();i++){
                       String r=(String)drugRoute.get(i);
-
+                      //System.out.println(r);
                       route.add(r);
                   }
               }
@@ -171,7 +169,7 @@ public class RxDrugData {
             this.name = (String) h.get("name");
             //this.type = (String) h.get("category");//type
             this.type = ((Integer) h.get("category")).toString();
-            MiscUtils.getLogger().debug("pkey "+pKey+" name "+name+" type "+type);
+            System.out.println("pkey "+pKey+" name "+name+" type "+type);
             //d.tag  = (Tag)    h.get("tag");
         }
         
@@ -545,7 +543,7 @@ public class RxDrugData {
                  String str = (String) alli.get(k);
                  int id = Integer.parseInt(str);
                  li.add(allerg[id]);
-                 MiscUtils.getLogger().debug(str);
+                 System.out.println(str);
               }
               
            }
@@ -554,10 +552,10 @@ public class RxDrugData {
         
 //        if (actualAllergies != null){
 //           for (int i =0; i < actualAllergies.length; i++){
-
+//              System.out.println(i+" "+actualAllergies[i].getAllergy().getDESCRIPTION()+" "+actualAllergies[i].getAllergy().getTYPECODE());              
 //           }
 //        }else{
-
+//           System.out.println("ACTUAL ALLERGIES == NULL");
 //        }
         
         return actualAllergies;
@@ -571,7 +569,7 @@ public class RxDrugData {
         RxDrugRef d = new RxDrugRef();
         for(int i = 0; i < atcCodes.size(); i++){
            String ss = (String) atcCodes.get(i);
-           MiscUtils.getLogger().debug(ss);           
+           System.out.println(ss);           
         }
         
         v = d.getInteractions(atcCodes);
@@ -587,11 +585,11 @@ public class RxDrugData {
             inact.significance = (String) h.get("significance");
             inact.comment = (String) h.get("comment");
             lst.add(inact);
-            MiscUtils.getLogger().debug("affectingDrug"+inact.affectingdrug);
+            System.out.println("affectingDrug"+inact.affectingdrug);
         }
-        MiscUtils.getLogger().debug(lst.size());
+        System.out.println(lst.size());
         arr = (Interaction[])lst.toArray(arr);
-        MiscUtils.getLogger().debug(arr.length);
+        System.out.println(arr.length);
         return arr;
      }
      

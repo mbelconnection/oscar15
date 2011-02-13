@@ -80,6 +80,7 @@ public class CdsForm4 {
 	public static String getClientGenderAsCdsOption(Integer clientId) {
 		Demographic demographic = demographicDao.getDemographicById(clientId);
 		if (demographic != null && demographic.getSex() != null) {
+			
 			String gender=demographic.getSex();
 			if (Gender.F.toString().equals(gender)) return("008-02");
 			else if (Gender.M.toString().equals(gender)) return("008-01");
@@ -113,7 +114,7 @@ public class CdsForm4 {
 		List<CdsFormOption> results = cdsFormOptionDao.findByVersionAndCategory("4", category);
 		return (results);
 	}
-
+		
 	public static String renderSelectQuestion(boolean multiple, boolean dropDown, boolean forPrint, Integer cdsClientFormId, String question, List<CdsFormOption> options) {
 		if (!forPrint) {
 			StringBuilder sb = new StringBuilder();
@@ -217,7 +218,7 @@ public class CdsForm4 {
 			else if(!alreadyHaveOneChecked && option.getCdsDataCategory().equals(defaultSelected)) {
 				selected="checked=\"checked\"";
 			}
-
+				
 			sb.append("<div title=\"" + htmlEscapedName + "\"><input type=\"radio\" " + selected + " name=\"" + question + "\" value=\"" + StringEscapeUtils.escapeHtml(option.getCdsDataCategory()) + "\" /> " + lengthLimitedEscapedName + "</div>");
 		}
 

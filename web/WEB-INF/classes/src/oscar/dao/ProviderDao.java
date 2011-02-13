@@ -1,12 +1,8 @@
 package oscar.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.oscarehr.util.DbConnectionFilter;
 import org.springframework.jdbc.core.RowMapper;
 
 /**
@@ -28,7 +24,7 @@ public class ProviderDao extends OscarSuperDao {
 			{"search_tickler","select * from tickler where demographic_no=? and service_date<=? and status='A' order by service_date desc"},
 			{"search_studycount","select count(ds.study_no) from demographicstudy ds, study s where ds.demographic_no=? and ds.study_no=s.study_no and s.current1='1'"},
 			{"search_study","select s.* from demographicstudy d, study s where demographic_no=? and d.study_no = s.study_no limit 1 "},
-			{"searchappointmentday", "select appointment_no,provider_no, start_time,end_time,name,demographic_no,reason,notes,status,program_id,location from appointment where provider_no=? and appointment_date=? and program_id=? order by start_time, status desc "},
+			{"searchappointmentday", "select appointment_no,provider_no, start_time,end_time,name,demographic_no,reason,notes,status,program_id from appointment where provider_no=? and appointment_date=? and program_id=? order by start_time, status desc "},
 			{"searchmygroupcount", "select count(provider_no) from mygroup where mygroup_no=? "},
 			{"searchmygroupprovider", "select provider_no, last_name, first_name from mygroup where mygroup_no=? "},
 			{"searchmygroupall", "select * from mygroup order by mygroup_no"},
@@ -36,8 +32,13 @@ public class ProviderDao extends OscarSuperDao {
 			{"searchmygroupno", "select mygroup_no from mygroup group by mygroup_no order by mygroup_no"},
             {"deletegroupmember", "delete from mygroup where mygroup_no=? and provider_no=?"},
             {"savemygroup", "insert into mygroup (mygroup_no,provider_no,last_name,first_name) values(?,?,?,?)" },
-            {"updateapptstatus", "update appointment set status=?, lastupdateuser=?, updatedatetime=now() where appointment_no=? "},
-            {"archive_appt", "insert into appointmentArchive (select * from appointment where appointment_no=?)"},
+            {"updateapptstatus", "update appointment set status=? where appointment_no=? "},
+
+            {"updatepreference", "update preference set start_hour=?, end_hour=?, every_min=?, mygroup_no=?, default_servicetype=?, color_template=? where provider_no=? "},
+            {"add_preference", "insert into preference (provider_no, start_hour, end_hour, every_min, mygroup_no, default_servicetype, color_template) values (?, ?, ?, ?, ?, ?, ?)"},
+
+            {"updatepreference_newtickler", "update preference set start_hour=?, end_hour=?, every_min=?, mygroup_no=?, default_servicetype=?, color_template=?, new_tickler_warning_window=? , default_caisi_pmm=? where provider_no=? "},
+			{"add_preference_newtickler", "insert into preference (provider_no, start_hour, end_hour, every_min, mygroup_no, default_servicetype, color_template, new_tickler_warning_window, default_caisi_pmm) values (?, ?, ?, ?, ?, ?, ?, ?, ?)"},
 
             {"search_demograph", "select *  from demographic where demographic_no=?"},
             {"search_encounter", "select * from encounter where demographic_no = ? order by encounter_date desc, encounter_time desc"},
@@ -95,13 +96,7 @@ public class ProviderDao extends OscarSuperDao {
 
 		    {"search_provider", "select provider_no, last_name, first_name from provider where last_name like ? and first_name like ? order by last_name"}, 
 		    {"search_providersgroup", "select mygroup_no, last_name, first_name from mygroup where last_name like ? and first_name like ? order by last_name, first_name, mygroup_no"}, 
-		    {"search_mygroup", "select mygroup_no from mygroup where mygroup_no like ? group by mygroup_no order by mygroup_no"},
-		    //multi-site query, schedule day view page
-			{"site_searchmygroupcount", "select count(provider_no) from mygroup where mygroup_no=?  and provider_no in (select ps.provider_no from providersite ps inner join site s on ps.site_id = s.site_id where s.name = ?)"},
-			{"site_search_numgrpscheduledate", "select count(scheduledate.provider_no) from mygroup, scheduledate where mygroup_no = ? and scheduledate.sdate=? and mygroup.provider_no=scheduledate.provider_no and scheduledate.available = '1'  and scheduledate.status = 'A'  and mygroup.provider_no in (select ps.provider_no from providersite ps inner join site s on ps.site_id = s.site_id where s.name = ?) "},
-			{"site_searchmygroupprovider", "select provider_no, last_name, first_name from mygroup where mygroup_no=?  and provider_no in (select ps.provider_no from providersite ps inner join site s on ps.site_id = s.site_id where s.name = ?)"},
-			{"site_search_scheduledate_datep", "select * from scheduledate where sdate between ? and ? and status = 'A' and provider_no in (select ps.provider_no from providersite ps inner join site s on ps.site_id = s.site_id where s.name = ?) order by sdate" },
-		    
+		    {"search_mygroup", "select mygroup_no from mygroup where mygroup_no like ? group by mygroup_no order by mygroup_no"}, 
 	};
 
 	/**
@@ -118,21 +113,5 @@ public class ProviderDao extends OscarSuperDao {
 	@Override
 	protected Map<String, RowMapper> getRowMappers() {
 		return rowMappers;
-	}
-	
-	public static void updateAppointmentStatus(Integer appointmentId, String newStatus) throws SQLException
-	{
-		Connection c=DbConnectionFilter.getThreadLocalDbConnection();
-		try
-		{
-			PreparedStatement ps=c.prepareStatement("update appointment set status=? where appointment_no=?");
-			ps.setString(1, newStatus);
-			ps.setInt(2, appointmentId);
-			ps.executeUpdate();
-		}
-		finally
-		{
-			DbConnectionFilter.releaseThreadLocalDbConnection();
-		}
 	}
 }

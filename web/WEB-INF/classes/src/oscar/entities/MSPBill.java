@@ -27,8 +27,6 @@ package oscar.entities;
 import java.util.Date;
 import java.util.Enumeration;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.util.UtilDateUtilities;
 
 /**
@@ -399,7 +397,7 @@ public class MSPBill {
       dt = formatter.parse(this.serviceDate);
     }
     catch (Exception e) {
-      MiscUtils.getLogger().error("Error", e);
+      e.printStackTrace();
     }
     oscar.util.DateUtils ut = new oscar.util.DateUtils();
     long daysOld = ut.getDifDays(new Date(), dt);
@@ -531,10 +529,10 @@ public class MSPBill {
         }
       }
       else{
-        MiscUtils.getLogger().debug("null sum=" + this.hashCode());
+        System.out.println("null sum=" + this.hashCode());
       }
     }catch(Exception e){
-      MiscUtils.getLogger().error("Error", e);
+      e.printStackTrace();
     }
     return summary;
   }

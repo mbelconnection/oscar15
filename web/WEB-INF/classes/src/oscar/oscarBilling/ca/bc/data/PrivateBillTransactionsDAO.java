@@ -26,8 +26,6 @@ package oscar.oscarBilling.ca.bc.data;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 import oscar.util.SqlUtils;
 
@@ -41,7 +39,7 @@ import oscar.util.SqlUtils;
  * @version 1.0
  */
 public class PrivateBillTransactionsDAO {
-  
+  DBHandler db = null;
 
   public PrivateBillTransactionsDAO() {
   }
@@ -63,10 +61,11 @@ public class PrivateBillTransactionsDAO {
   public void savePrivateBillTransaction(int billingmaster_no, double amount, int paymentType) {
     String qry = "insert into billing_private_transactions(billingmaster_no,amount_received,creation_date,payment_type_id) values("+ String.valueOf(billingmaster_no) + "," + String.valueOf(amount) +",now()," +  paymentType + ")";
     try {
-      
-    	DBHandler.RunSQL(qry);
+      db = new DBHandler(DBHandler.OSCAR_DATA);
+      db.RunSQL(qry);
     }
-    catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+    catch (SQLException ex) {
+      ex.printStackTrace();
     }
   }
 

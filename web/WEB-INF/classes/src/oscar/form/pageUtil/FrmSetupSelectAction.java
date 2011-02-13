@@ -25,9 +25,7 @@
 package oscar.form.pageUtil;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.Collection;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -38,29 +36,21 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.common.dao.EncounterFormDao;
-import org.oscarehr.common.model.EncounterForm;
-import org.oscarehr.util.SpringUtils;
+
+import oscar.form.bean.FrmBeanHandler;
 
 public class FrmSetupSelectAction extends Action {
 
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException
     {
-    	EncounterFormDao encounterFormDao=(EncounterFormDao)SpringUtils.getBean("encounterFormDao");
-    	List<EncounterForm> forms=encounterFormDao.findAll();
          
-    	TreeMap<Integer, EncounterForm> formShownVector=new TreeMap<Integer, EncounterForm>();
-    	ArrayList<EncounterForm> formHiddenVector=new ArrayList<EncounterForm>();
-    	
-    	for (EncounterForm encounterForm : forms)
-    	{
-    		if (encounterForm.isHidden()) formHiddenVector.add(encounterForm);
-    		else formShownVector.put(encounterForm.getDisplayOrder(),encounterForm);
-    	}
-    	
+        FrmBeanHandler hd = new FrmBeanHandler();
+        Collection formShownVector = hd.getFormShownVector();
+        Collection formHiddenVector = hd.getFormHiddenVector();        
+
         HttpSession session = request.getSession();
-        session.setAttribute( "formShownVector", formShownVector.values() );   
+        session.setAttribute( "formShownVector", formShownVector );   
         session.setAttribute( "formHiddenVector", formHiddenVector ); 
         
         return mapping.findForward("continue");

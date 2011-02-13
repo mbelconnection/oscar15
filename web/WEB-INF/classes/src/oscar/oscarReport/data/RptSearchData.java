@@ -26,8 +26,6 @@
 package oscar.oscarReport.data;
 
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 /**
  *
@@ -45,16 +43,16 @@ public class RptSearchData {
     public java.util.ArrayList getRosterTypes(){
             java.util.ArrayList retval = new java.util.ArrayList();
          try{
-              
+              DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
               java.sql.ResultSet rs;
-              rs = DBHandler.GetSQL("select distinct roster_status from demographic where roster_status is not null order by roster_status");
+              rs = db.GetSQL("select distinct roster_status from demographic where roster_status is not null order by roster_status");
 
               while (rs.next()) {
-                retval.add( oscar.Misc.getString(rs, "roster_status") );
-
+                retval.add( db.getString(rs,"roster_status") );
+                //System.out.println("roster "+db.getString(rs,"roster_status"));
               }
               rs.close();
-            }catch (java.sql.SQLException e){ MiscUtils.getLogger().error("Error", e); }
+            }catch (java.sql.SQLException e){ System.out.println(e.getMessage()); }
             return retval;
     }
 
@@ -63,62 +61,62 @@ public class RptSearchData {
     public java.util.ArrayList getPatientTypes(){
             java.util.ArrayList retval = new java.util.ArrayList();
          try{
-              
+              DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
               java.sql.ResultSet rs;
-              rs = DBHandler.GetSQL("select distinct patient_status from demographic where patient_status is not null order by patient_status");
+              rs = db.GetSQL("select distinct patient_status from demographic where patient_status is not null order by patient_status");
 
               while (rs.next()) {
-                retval.add( oscar.Misc.getString(rs, "patient_status") );
-
+                retval.add( db.getString(rs,"patient_status") );
+                //System.out.println("patient "+db.getString(rs,"patient_status"));
               }
               rs.close();
-            }catch (java.sql.SQLException e){ MiscUtils.getLogger().error("Error", e); }
+            }catch (java.sql.SQLException e){ System.out.println(e.getMessage()); }
             return retval;
     }
 
     public java.util.ArrayList getProvidersWithDemographics(){
             java.util.ArrayList retval = new java.util.ArrayList();
          try{
-              
+              DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
               java.sql.ResultSet rs;
-              rs = DBHandler.GetSQL("select distinct provider_no from demographic order by provider_no");
+              rs = db.GetSQL("select distinct provider_no from demographic order by provider_no");
 
               while (rs.next()) {
-                retval.add( oscar.Misc.getString(rs, "provider_no") );
-
+                retval.add( db.getString(rs,"provider_no") );
+                //System.out.println("patient "+db.getString(rs,"patient_status"));
               }
               rs.close();
-            }catch (java.sql.SQLException e){ MiscUtils.getLogger().error("Error", e); }
+            }catch (java.sql.SQLException e){ System.out.println(e.getMessage()); }
             return retval;
     }
 
     public java.util.ArrayList getQueryTypes(){
             java.util.ArrayList retval = new java.util.ArrayList();
          try{
-              
+              DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
               java.sql.ResultSet rs;
-              rs = DBHandler.GetSQL("select favId, queryName from demographicQueryFavourites where archived = '1' order by queryName");
+              rs = db.GetSQL("select favId, queryName from demographicQueryFavourites where archived = '1' order by queryName");
 
               while (rs.next()) {
                 SearchCriteria sc = new SearchCriteria();
-                sc.id = oscar.Misc.getString(rs, "favId");
-                sc.queryName = oscar.Misc.getString(rs, "queryName");
+                sc.id = db.getString(rs,"favId");
+                sc.queryName = db.getString(rs,"queryName");
 
                 retval.add( sc );
-
+                //System.out.println("patient "+db.getString(rs,"patient_status"));
               }
               rs.close();
-            }catch (java.sql.SQLException e){ MiscUtils.getLogger().error("Error", e); }
+            }catch (java.sql.SQLException e){ System.out.println(e.getMessage()); }
             return retval;
     }
 
     
     public void deleteQueryFavourite(String id){
        try{
-          
-          DBHandler.RunSQL("update demographicQueryFavourites set archived = '0' where favId = '"+id+"'");
+          DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+          db.RunSQL("update demographicQueryFavourites set archived = '0' where favId = '"+id+"'");
        }catch (java.sql.SQLException e){ 
-           MiscUtils.getLogger().error("Error", e);
+           e.printStackTrace();
        }
     }
     

@@ -27,8 +27,6 @@ package oscar.oscarRx.data;
 
 import java.util.Hashtable;
 
-import org.oscarehr.util.MiscUtils;
-
 public class RxAllergyData {
     public Allergy getAllergy(String DESCRIPTION, int HICL_SEQNO, int HIC_SEQNO,
     int AGCSP, int AGCCS, int TYPECODE) {
@@ -306,7 +304,7 @@ public class RxAllergyData {
             try{                
             return new RxDrugData().getGenericName(this.GCN_SEQNO);
             }catch(Exception e){ 
-                MiscUtils.getLogger().error("Error", e);                
+                e.printStackTrace();                
             }
             return "";
         }

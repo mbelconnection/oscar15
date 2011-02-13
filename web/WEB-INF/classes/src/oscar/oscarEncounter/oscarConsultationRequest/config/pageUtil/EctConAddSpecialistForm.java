@@ -48,7 +48,6 @@ public final class EctConAddSpecialistForm extends ActionForm {
 	String eDataOscarKey;
 	String eDataServiceKey;
 	String eDataServiceName;
-        String annotation;
 
 	public EctConAddSpecialistForm() {
 		whichType = 0;
@@ -188,7 +187,6 @@ public final class EctConAddSpecialistForm extends ActionForm {
 		eDataUrl = null;
 		eDataOscarKey = null;
 		eDataServiceKey = null;
-                annotation = null;
 		whichType = 0;
 	}
 
@@ -242,11 +240,5 @@ public final class EctConAddSpecialistForm extends ActionForm {
     	this.eDataServiceName = eDataServiceName;
     }
 
-        public String getAnnotation() {
-            return annotation;
-        }
 
-        public void setAnnotation(String annotation) {
-            this.annotation = annotation;
-        }
 }

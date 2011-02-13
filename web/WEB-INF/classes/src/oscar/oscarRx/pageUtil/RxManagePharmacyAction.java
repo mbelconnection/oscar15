@@ -32,20 +32,18 @@
 package oscar.oscarRx.pageUtil;
 
 import java.io.IOException;
-import java.util.HashMap;
 
+import java.util.HashMap;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
-
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.apache.struts.actions.DispatchAction;
-import org.oscarehr.util.MiscUtils;
 
+import org.apache.struts.actions.DispatchAction;
 import oscar.oscarRx.data.RxPharmacyData;
 import oscar.oscarRx.data.RxPharmacyData.Pharmacy;
 
@@ -83,7 +81,7 @@ public final class RxManagePharmacyAction extends DispatchAction {
 				 HttpServletResponse response)
 	throws IOException, ServletException {
         String pharmacyId=request.getParameter("pharmacyId");
-        MiscUtils.getLogger().debug("pharmacyId="+pharmacyId);
+        System.out.println("pharmacyId="+pharmacyId);
         if(pharmacyId==null) return null;
         RxPharmacyData pharmacyData = new RxPharmacyData();
         Pharmacy pharmacy=pharmacyData.getPharmacy(pharmacyId);
@@ -99,7 +97,7 @@ public final class RxManagePharmacyAction extends DispatchAction {
             hm.put("postalCode", pharmacy.postalCode);
             hm.put("province", pharmacy.province);
             hm.put("notes", pharmacy.notes);
-            MiscUtils.getLogger().debug("in getPharmacyInfo,hm="+hm);
+            System.out.println("in getPharmacyInfo,hm="+hm);
             JSONObject jsonObject = JSONObject.fromObject(hm);
             response.getOutputStream().write(jsonObject.toString().getBytes());
        }

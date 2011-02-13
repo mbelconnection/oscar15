@@ -14,22 +14,21 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.String;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import oscar.eform.actions.DisplayImageAction;
 import oscar.eform.data.EForm;
 import oscar.eform.upload.ImageUploadAction;
@@ -39,7 +38,7 @@ import oscar.eform.upload.ImageUploadAction;
  * @author apavel & not Jay - Jay is too lazy to make this, so he makes Paul do the work for him
  */
 public class EFormExportZip {
-    private static final Logger _log = MiscUtils.getLogger();
+    private Log _log = LogFactory.getLog(EFormExportZip.class);
 
     public void exportForms(List<EForm> eForms, OutputStream os) throws IOException, Exception {
         ZipOutputStream zos = new ZipOutputStream(os);
@@ -66,7 +65,7 @@ public class EFormExportZip {
             if (eForm.getFormCreator()!=null && !eForm.getFormCreator().equals("")) properties.setProperty("form.creator", eForm.getFormCreator());
             else properties.setProperty("form.creator", "Paul");
             if (eForm.getFormDate()!=null && !eForm.getFormDate().equals("")) properties.setProperty("form.date", eForm.getFormDate());
-			if (eForm.getPatientIndependent()==true) properties.setProperty("form.patientIndependent", String.valueOf(eForm.getPatientIndependent()));
+			if (eForm.getPatientIndependent().equals(true)) properties.setProperty("form.patientIndependent", eForm.getPatientIndependent().toString());
 
             //write properties file
             ZipEntry propertiesZipEntry = new ZipEntry(directoryName + "eform.properties");
@@ -91,11 +90,11 @@ public class EFormExportZip {
             int start = 0;
             while (matcher.find(start)) {
                 String match = matcher.group();
-                MiscUtils.getLogger().debug(match);
+                System.out.println(match);
                 start = matcher.end();
                 int length = "${oscar_image_path}".length();
                 String imageFileName = match.substring(length, match.length()-1);
-                MiscUtils.getLogger().debug("Image Name: " + imageFileName);
+                System.out.println("Image Name: " + imageFileName);
                 File imageFile = DisplayImageAction.getImageFile(imageFileName);
                 try {
                     FileInputStream fis = new FileInputStream(imageFile);  //should error out if image not found, in this case, skip the image

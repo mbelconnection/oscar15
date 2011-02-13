@@ -38,11 +38,8 @@ import java.util.Hashtable;
 
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperReport;
-
-import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.OscarDocumentCreator;
+import oscar.oscarDB.DBHandler;
 
 /**
   create table report_letters(
@@ -68,12 +65,12 @@ public class ManageLetters {
     //method to save a new report
     public void saveReport(String providerNo,String reportName,String fileName, byte[] in){
         
-       
+        DBHandler dbhandler = null;
         try {
-
-            
+            //System.out.println("e-DATE: "+date);
+            dbhandler = new DBHandler(DBHandler.OSCAR_DATA);
             String s = "insert into report_letters (provider_no,report_name, file_name,report_file,date_time,archive) values (?,?,?,?,now(),'0')" ;
-            PreparedStatement pstmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(s);
+            PreparedStatement pstmt = DBHandler.getConnection().prepareStatement(s);
             pstmt.setString(1,providerNo);
             pstmt.setString(2,reportName);
             pstmt.setString(3,fileName);
@@ -82,36 +79,36 @@ public class ManageLetters {
             pstmt.close();
             
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
     }
     
     //method to archive an existing report
     public void archiveReport(String id){
-        
+        DBHandler dbhandler = null;
         try {
-
-            
+            //System.out.println("e-DATE: "+date);
+            dbhandler = new DBHandler(DBHandler.OSCAR_DATA);
             String s = "update report_letters set archive = '1' where id =  ?" ;
-            PreparedStatement pstmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(s);
+            PreparedStatement pstmt = DBHandler.getConnection().prepareStatement(s);
             pstmt.setString(1,id);
             pstmt.executeUpdate();
             pstmt.close();
             
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
     }
     
     //method getReport for id
     public JasperReport getReport(String id){
-        
+        DBHandler dbhandler = null;
         JasperReport  jasperReport = null;
         try {
-
-            
+            //System.out.println("e-DATE: "+date);
+            dbhandler = new DBHandler(DBHandler.OSCAR_DATA);
             String s = "select report_file from report_letters where id  = ?" ;
-            PreparedStatement pstmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(s);
+            PreparedStatement pstmt = DBHandler.getConnection().prepareStatement(s);
             pstmt.setString(1,id);
             
             ResultSet rs = pstmt.executeQuery();
@@ -125,7 +122,7 @@ public class ManageLetters {
             pstmt.close();
             
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return jasperReport;
     }
@@ -138,7 +135,7 @@ public class ManageLetters {
             for (int i = 0 ; i < jrp.length; i++){
                 if(!jrp[i].isSystemDefined()){
                     list.add(jrp[i].getName());
-                    MiscUtils.getLogger().debug("JRP "+i+" :"+jrp[i].getName());
+                    System.out.println("JRP "+i+" :"+jrp[i].getName());
                 }
             }
                     
@@ -149,13 +146,13 @@ public class ManageLetters {
     
     //method to write file to stream
     public void writeLetterToStream(String id,OutputStream out){
-        
+        DBHandler dbhandler = null;
         
         try {
-
-            
+            //System.out.println("e-DATE: "+date);
+            dbhandler = new DBHandler(DBHandler.OSCAR_DATA);
             String s = "select report_file from report_letters where id  = ?" ;
-            PreparedStatement pstmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(s);
+            PreparedStatement pstmt = DBHandler.getConnection().prepareStatement(s);
             pstmt.setString(1,id);
             
             ResultSet rs = pstmt.executeQuery();
@@ -176,7 +173,7 @@ public class ManageLetters {
             pstmt.close();
             
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         
         
@@ -188,13 +185,13 @@ public class ManageLetters {
     
     //method to list active reports
     public ArrayList getActiveReportList(){
-        
+        DBHandler dbhandler = null;
         ArrayList list = new ArrayList();
         try {
-
-            
+            //System.out.println("e-DATE: "+date);
+            dbhandler = new DBHandler(DBHandler.OSCAR_DATA);
             String s = "select ID, provider_no , report_name, file_name, date_time from report_letters where archive = '0' order by date_time,report_name" ;
-            PreparedStatement pstmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(s);
+            PreparedStatement pstmt = DBHandler.getConnection().prepareStatement(s);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()){
                list.add(getHashFromResultSet(rs));
@@ -203,19 +200,19 @@ public class ManageLetters {
             pstmt.close();
             
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return list;
     }   
     
     public Hashtable getReportData(String id){
-        
+        DBHandler dbhandler = null;
         Hashtable h = null;
         try {
-
-           
+            //System.out.println("e-DATE: "+date);
+            dbhandler = new DBHandler(DBHandler.OSCAR_DATA);
             String s = "select ID, provider_no , report_name, file_name, date_time from report_letters where ID = ?" ;
-            PreparedStatement pstmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(s);
+            PreparedStatement pstmt = DBHandler.getConnection().prepareStatement(s);
             pstmt.setString(1,id);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()){
@@ -224,7 +221,7 @@ public class ManageLetters {
             rs.close();
             pstmt.close();
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return h;
     }
@@ -253,12 +250,12 @@ public class ManageLetters {
          */
     public void logLetterCreated(String providerNo,String reportId,String[] demos){
         
-         
+         DBHandler dbhandler = null;
         try {
-
-            
+            //System.out.println("e-DATE: "+date);
+            dbhandler = new DBHandler(DBHandler.OSCAR_DATA);
             String s = "insert into log_letters (provider_no,report_id, log, date_time) values (?,?,?,now())" ;
-            PreparedStatement pstmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(s);
+            PreparedStatement pstmt = DBHandler.getConnection().prepareStatement(s);
             pstmt.setString(1,providerNo);
             pstmt.setString(2,reportId);
             pstmt.setString(3,serializeDemographic(demos));
@@ -267,13 +264,13 @@ public class ManageLetters {
             pstmt.close();
             
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         
     }
     
     private String serializeDemographic(String[] demos){
-        StringBuilder serialString = new StringBuilder();
+        StringBuffer serialString = new StringBuffer();
         if(demos != null){
             for ( int i = 0; i < demos.length; i++){
                 serialString.append(demos[i]);

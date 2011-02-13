@@ -6,7 +6,6 @@
 package oscar.oscarRx.dao;
 
 import java.util.List;
-
 import oscar.oscarRx.model.Favorites;
 import oscar.oscarRx.model.Favoritesprivilege;
 

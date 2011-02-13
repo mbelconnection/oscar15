@@ -27,8 +27,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 public class EctRemoteAttachments
@@ -50,24 +48,24 @@ public class EctRemoteAttachments
         dates = new ArrayList();
         try
         {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
             String sql ="Select * from remoteAttachments where demographic_no = '"+demoNo+"' order by date";
-            MiscUtils.getLogger().debug("sql message "+sql);
-            rs = DBHandler.GetSQL(sql); 
-            //for(rs = DBHandler.GetSQL(String.valueOf(String.valueOf((new StringBuilder("SELECT * FROM remoteAttachments WHERE demographic_no = '")).append(demoNo).append("' order by date ")))); rs.next(); dates.add(oscar.Misc.getString(rs,"date")))
+            System.out.println("sql message "+sql);
+            rs = db.GetSQL(sql); 
+            //for(rs = db.GetSQL(String.valueOf(String.valueOf((new StringBuffer("SELECT * FROM remoteAttachments WHERE demographic_no = '")).append(demoNo).append("' order by date ")))); rs.next(); dates.add(db.getString(rs,"date")))
             while(rs.next())
 	    {
-		dates.add(oscar.Misc.getString(rs, "date"));
-                messageIds.add(oscar.Misc.getString(rs, "messageid"));
-                savedBys.add(oscar.Misc.getString(rs, "savedBy"));
+		dates.add(db.getString(rs,"date"));
+                messageIds.add(db.getString(rs,"messageid"));
+                savedBys.add(db.getString(rs,"savedBy"));
             }
 
             rs.close();
         }
         catch(SQLException e)
         {
-            MiscUtils.getLogger().debug("CrAsH");
+            System.out.println("CrAsH");
         }
     }
 
@@ -76,22 +74,22 @@ public class EctRemoteAttachments
         ArrayList retval = new ArrayList();
         try
         {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
             String sql = "select ocl.locationDesc, mess.thesubject from messagetbl mess, oscarcommlocations ocl where mess.sentByLocation = ocl.locationId and mess.messageid = '"+messId+"' ";
-	    MiscUtils.getLogger().debug("sql ="+sql);
-	    rs = DBHandler.GetSQL(sql);
-//            for(rs = DBHandler.GetSQL(String.valueOf(String.valueOf((new StringBuilder("SELECT ocl.locationDesc, mess.thesubject FROM messagetbl mess, oscarcommlocations ocl where mess.sentByLocation = ocl.locationId and mess.messageid = '")).append(messId).append("'"))));
+	    System.out.println("sql ="+sql);
+	    rs = db.GetSQL(sql);
+//            for(rs = db.GetSQL(String.valueOf(String.valueOf((new StringBuffer("SELECT ocl.locationDesc, mess.thesubject FROM messagetbl mess, oscarcommlocations ocl where mess.sentByLocation = ocl.locationId and mess.messageid = '")).append(messId).append("'"))));
              while ( rs.next()){
-                 retval.add(oscar.Misc.getString(rs, "thesubject"));
-                 retval.add(oscar.Misc.getString(rs, "locationDesc"));
+                 retval.add(db.getString(rs,"thesubject"));
+                 retval.add(db.getString(rs,"locationDesc"));
  	     }
             rs.close();
         }
         catch(SQLException e)
         {
-            MiscUtils.getLogger().debug("CrAsH");
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println("CrAsH");
+            e.printStackTrace();
         }
         return retval;
     }

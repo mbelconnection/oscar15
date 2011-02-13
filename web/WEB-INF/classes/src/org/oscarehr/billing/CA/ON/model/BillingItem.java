@@ -24,7 +24,6 @@ package org.oscarehr.billing.CA.ON.model;
 
 import java.io.Serializable;
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -68,7 +67,7 @@ public class BillingItem  extends AbstractModel<Integer> implements Serializable
     public void setId(Integer id) {
         this.id = id;
     }
-
+   
     /**
      * @return the transc_id
      */
@@ -234,7 +233,7 @@ public class BillingItem  extends AbstractModel<Integer> implements Serializable
 
     /**
      * @return the ch1_id
-     */
+     */    
     public Integer getCh1_id() {
         return ch1_id;
     }

@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarLab.ca.on.CommonLabResultData;
@@ -147,18 +146,18 @@ public class PathnetLabTest {
     public String getDemographicNumByLabId(String id){
         String ret = null;
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String select_demoNo = "select demographic_no from patientLabRouting where lab_type = 'BCP' and lab_no = '"+id+"'";
-            ResultSet rs  = DBHandler.GetSQL(select_demoNo);
+            ResultSet rs  = db.GetSQL(select_demoNo);
             if(rs.next()){
-                ret = oscar.Misc.getString(rs, "demographic_no");
+                ret = db.getString(rs,"demographic_no");
             }
             if (ret != null && ret.equals("0")){
                 ret = null;
             }
             rs.close();
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return ret;
     }
@@ -169,31 +168,31 @@ public class PathnetLabTest {
         multiLabId = data.getMatchingLabs(labid);
         demographicNo = getDemographicNumByLabId(labid);
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String select_pid_information = "SELECT pid_id, patient_name, external_id, date_of_birth, patient_address, sex, home_number,sending_facility  FROM hl7_pid, hl7_msh WHERE hl7_pid.message_id = '"+labid+"' and hl7_msh.message_id = hl7_pid.message_id";
-            ResultSet rs = DBHandler.GetSQL(select_pid_information);
+            ResultSet rs = db.GetSQL(select_pid_information);
             if(rs.next()){
-                pName = removeCarat(oscar.Misc.getString(rs, "patient_name"));
-                pSex = oscar.Misc.getString(rs, "sex");
-                pHealthNum = oscar.Misc.getString(rs, "external_id");
-                pDOB = getFirstValSpace( oscar.Misc.getString(rs, "date_of_birth") );
-                pPhone = oscar.Misc.getString(rs, "home_number");
-                patientLocation = oscar.Misc.getString(rs, "sending_facility");
-                pid = oscar.Misc.getString(rs, "pid_id");
+                pName = removeCarat(db.getString(rs,"patient_name"));
+                pSex = db.getString(rs,"sex");
+                pHealthNum = db.getString(rs,"external_id");
+                pDOB = getFirstValSpace( db.getString(rs,"date_of_birth") );
+                pPhone = db.getString(rs,"home_number");
+                patientLocation = db.getString(rs,"sending_facility");
+                pid = db.getString(rs,"pid_id");
             }
             rs.close();
             String select_obr_information = "SELECT * from hl7_obr WHERE pid_id = '"+pid+"'";
-            rs = DBHandler.GetSQL(select_obr_information);
+            rs = db.GetSQL(select_obr_information);
             if(rs.next()){
-                serviceDate = oscar.Misc.getString(rs, "results_report_status_change");
-                status = oscar.Misc.getString(rs, "result_status"); //.equals("F") ? "Final" : "Partial")
-                Properties p = sepDocNameNum(oscar.Misc.getString(rs, "ordering_provider"));
+                serviceDate = db.getString(rs,"results_report_status_change");
+                status = db.getString(rs,"result_status"); //.equals("F") ? "Final" : "Partial")
+                Properties p = sepDocNameNum(db.getString(rs,"ordering_provider"));
                 docNum = p.getProperty("num","");
-                accessionNum = justGetAccessionNumber(oscar.Misc.getString(rs, "filler_order_number"));
-                docName = p.getProperty("name",oscar.Misc.getString(rs, "ordering_provider"));
-                String ccs = oscar.Misc.getString(rs, "result_copies_to");
+                accessionNum = justGetAccessionNumber(db.getString(rs,"filler_order_number"));
+                docName = p.getProperty("name",db.getString(rs,"ordering_provider"));
+                String ccs = db.getString(rs,"result_copies_to");
                 String docs[] = ccs.split("~");
-                StringBuilder sb = new StringBuilder();
+                StringBuffer sb = new StringBuffer();
                 for (int i = 0; i < docs.length; i++){
                     sb.append(justGetDocName(docs[i]));
                     if (i < (docs.length - 1)){
@@ -203,7 +202,7 @@ public class PathnetLabTest {
                 ccedDocs = sb.toString();
             }
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
     }
     
@@ -239,22 +238,23 @@ public class PathnetLabTest {
             return ss[1];
     }
     
-  
+    /////////
     public ArrayList getResultsOld(String pid){
         ArrayList list = new ArrayList();
         try{
-            
-            //ResultSet rs = DBHandler.GetSQL(select_lab_results.replaceAll("@pid", pid));
-            ResultSet rs = DBHandler.GetSQL("select diagnostic_service_sect_id, universal_service_id, set_id, obr_id from hl7_obr where pid_id = '"+pid+"' ");
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            //ResultSet rs = db.GetSQL(select_lab_results.replaceAll("@pid", pid));
+            ResultSet rs = db.GetSQL("select diagnostic_service_sect_id, universal_service_id, set_id, obr_id from hl7_obr where pid_id = '"+pid+"' ");
             
             logger.info("select diagnostic_service_sect_id, universal_service_id, set_id, obr_id from hl7_obr where pid_id = '"+pid+"' ");
-           
+            boolean other = true;
+            String section = "";
             while(rs.next()){
                 GroupResults gr = new GroupResults();
-                gr.groupName = oscar.Misc.getString(rs, "diagnostic_service_sect_id")+ " " +oscar.Misc.getString(rs, "universal_service_id").substring(oscar.Misc.getString(rs, "universal_service_id").indexOf("^"));
-                String obrId = oscar.Misc.getString(rs, "obr_id");
+                gr.groupName = db.getString(rs,"diagnostic_service_sect_id")+ " " +db.getString(rs,"universal_service_id").substring(db.getString(rs,"universal_service_id").indexOf("^"));
+                String obrId = db.getString(rs,"obr_id");
                 
-                ResultSet rs2 = DBHandler.GetSQL("select set_id, observation_date_time,observation_result_status, observation_identifier, observation_results, units, reference_range, abnormal_flags, observation_result_status, note as obxnote from hl7_obx where obr_id = '"+obrId+"'");
+                ResultSet rs2 = db.GetSQL("select set_id, observation_date_time,observation_result_status, observation_identifier, observation_results, units, reference_range, abnormal_flags, observation_result_status, note as obxnote from hl7_obx where obr_id = '"+obrId+"'");
                 logger.info("select set_id, observation_identifier, observation_results, units, reference_range, abnormal_flags, observation_result_status, note as obxnote from hl7_obx where obr_id = '"+obrId+"'");
                 while(rs2.next()){
                     LabResult l = new LabResult();
@@ -276,29 +276,31 @@ public class PathnetLabTest {
                 list.add(gr);
             }
             rs.close();
-        }catch(Exception e){MiscUtils.getLogger().error("Error", e);}
+        }catch(Exception e){e.printStackTrace();}
         return list;
     }
+    /////////
     
     public ArrayList getResults(String pid){
         ArrayList list = new ArrayList();
         try{
-            
-            //ResultSet rs = DBHandler.GetSQL(select_lab_results.replaceAll("@pid", pid));
-            ResultSet rs = DBHandler.GetSQL("select diagnostic_service_sect_id, universal_service_id, set_id, obr_id,note from hl7_obr where pid_id = '"+pid+"' ");
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            //ResultSet rs = db.GetSQL(select_lab_results.replaceAll("@pid", pid));
+            ResultSet rs = db.GetSQL("select diagnostic_service_sect_id, universal_service_id, set_id, obr_id,note from hl7_obr where pid_id = '"+pid+"' ");
             logger.info("select diagnostic_service_sect_id, universal_service_id, set_id, obr_id,note from hl7_obr where pid_id = '"+pid+"' ");
-     
+            boolean other = true;
+            String section = "";
             GroupResults gr = null;
             while(rs.next()){
-                String gName = oscar.Misc.getString(rs, "diagnostic_service_sect_id");
+                String gName = db.getString(rs,"diagnostic_service_sect_id");
                 if (gr == null || !gName.equals(gr.groupName)){
                     gr = new GroupResults();
-                    gr.groupName = gName; //oscar.Misc.getString(rs,"diagnostic_service_sect_id"); //+ " " +oscar.Misc.getString(rs,"universal_service_id").substring(oscar.Misc.getString(rs,"universal_service_id").indexOf(" "));
+                    gr.groupName = gName; //db.getString(rs,"diagnostic_service_sect_id"); //+ " " +db.getString(rs,"universal_service_id").substring(db.getString(rs,"universal_service_id").indexOf(" "));
                     list.add(gr);
                 }
-                gr.addHeaderResults(oscar.Misc.getString(rs, "note"));
-                String obrId = oscar.Misc.getString(rs, "obr_id");
-                ResultSet rs2 = DBHandler.GetSQL("select x.set_id, universal_service_id, x.observation_date_time, x.observation_result_status, x.observation_identifier, x.observation_results, x.units, x.reference_range, x.abnormal_flags, x.observation_result_status, x.note as obxnote from hl7_obx x, hl7_obr where hl7_obr.obr_id = '"+obrId+"' and hl7_obr.obr_id = x.obr_id ");
+                gr.addHeaderResults(db.getString(rs,"note"));
+                String obrId = db.getString(rs,"obr_id");
+                ResultSet rs2 = db.GetSQL("select x.set_id, universal_service_id, x.observation_date_time, x.observation_result_status, x.observation_identifier, x.observation_results, x.units, x.reference_range, x.abnormal_flags, x.observation_result_status, x.note as obxnote from hl7_obx x, hl7_obr where hl7_obr.obr_id = '"+obrId+"' and hl7_obr.obr_id = x.obr_id ");
                 logger.info("select x.set_id, universal_service_id, x.observation_date_time, x.observation_result_status, x.observation_identifier, x.observation_results, x.units, x.reference_range, x.abnormal_flags, x.observation_result_status, x.note as obxnote from hl7_obx x, hl7_obr where hl7_obr.obr_id = '"+obrId+"' and hl7_obr.obr_id = x.obr_id ");
                 while(rs2.next()){
                     LabResult l = new LabResult();
@@ -323,10 +325,11 @@ public class PathnetLabTest {
                 rs2.close();
             }
             rs.close();
-        }catch(Exception e){MiscUtils.getLogger().error("Error", e);}
+        }catch(Exception e){e.printStackTrace();}
         return list;
     }
     
+    /////////
     
     
     public class LabResult{
@@ -361,7 +364,7 @@ public class PathnetLabTest {
         
         public String notes = null;
         
-        
+        ///
         public String getReferenceRange(){
             String retval ="";
             if (minimum != null && maximum != null){

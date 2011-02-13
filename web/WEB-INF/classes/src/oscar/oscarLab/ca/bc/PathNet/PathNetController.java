@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
+import oscar.oscarDB.DBHandler;
 import oscar.oscarLab.ca.bc.PathNet.HL7.Message;
 
 /**
@@ -36,7 +37,7 @@ public class PathNetController {
     */
    public static void main(String[] args) {                  
       
-      MiscUtils.getLogger().debug("Running PathNet Client...");
+      System.out.println("Running PathNet Client...");
       if(args.length != 1) {
          logger.info("Usage: PathNet Client pathOfPropertiesFile");	 
          System.exit(1);
@@ -80,13 +81,13 @@ public class PathNetController {
                boolean success = true;
                try {
                   int size = messages.size();
-                  
+                  DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                   String now =
                   new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
                   for (int i = 0; i < size; i++) {
                      Message message = new Message(now);
                      message.Parse((String) messages.get(i));
-                     message.ToDatabase();
+                     message.ToDatabase(db);
                   }
                }
                catch (Exception ex) {

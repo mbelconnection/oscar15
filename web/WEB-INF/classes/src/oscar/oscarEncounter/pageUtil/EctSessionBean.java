@@ -17,8 +17,6 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 import oscar.oscarEncounter.oscarConsultation.data.EctConProviderData;
 import oscar.util.UtilDateUtilities;
@@ -113,7 +111,7 @@ public class EctSessionBean {
     public void setUpEncounterPage() {
         resetAll();
         String tmp;
-        
+        DBHandler db = null;
         String sql;
         ResultSet rs;
 
@@ -124,22 +122,22 @@ public class EctSessionBean {
 
         //This block gets the patient age and
         try {
-            
+            db = new DBHandler(DBHandler.OSCAR_DATA);
             sql = "select * from demographic where demographic_no=" + demographicNo;
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             while (rs.next()) {
-                patientLastName = oscar.Misc.getString(rs, "last_name");
-                patientFirstName = oscar.Misc.getString(rs, "first_name");
-                address = oscar.Misc.getString(rs, "address");
-                city = oscar.Misc.getString(rs, "city");
-                postal = oscar.Misc.getString(rs, "postal");
-                phone = oscar.Misc.getString(rs, "phone");
-                familyDoctorNo = oscar.Misc.getString(rs, "provider_no");
-                yearOfBirth = oscar.Misc.getString(rs, "year_of_birth");
-                monthOfBirth = oscar.Misc.getString(rs, "month_of_birth");
-                dateOfBirth = oscar.Misc.getString(rs, "date_of_birth");
-                roster = oscar.Misc.getString(rs, "roster_status");
-                patientSex = oscar.Misc.getString(rs, "sex");
+                patientLastName = db.getString(rs,"last_name");
+                patientFirstName = db.getString(rs,"first_name");
+                address = db.getString(rs,"address");
+                city = db.getString(rs,"city");
+                postal = db.getString(rs,"postal");
+                phone = db.getString(rs,"phone");
+                familyDoctorNo = db.getString(rs,"provider_no");
+                yearOfBirth = db.getString(rs,"year_of_birth");
+                monthOfBirth = db.getString(rs,"month_of_birth");
+                dateOfBirth = db.getString(rs,"date_of_birth");
+                roster = db.getString(rs,"roster_status");
+                patientSex = db.getString(rs,"sex");
 
                 if (yearOfBirth.equals("null") || yearOfBirth=="") {
                     yearOfBirth = "0";
@@ -152,47 +150,46 @@ public class EctSessionBean {
                 }
             }
             rs.close();
-            
-            if(yearOfBirth!="" && yearOfBirth!=null)
-            	patientAge = UtilDateUtilities
+            UtilDateUtilities dateUtil = new UtilDateUtilities();
+            patientAge = UtilDateUtilities
                     .calcAge(UtilDateUtilities.calcDate(yearOfBirth, monthOfBirth, dateOfBirth));
 
             sql = "select * from appointment where provider_no='" + curProviderNo + "' and appointment_date='"
                     + appointmentDate + "'";
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             while (rs.next()) {
                 tmp = Integer.toString(rs.getInt("appointment_no"));
                 appointmentsIdArray.add(tmp);
-                appointmentsNamesArray.add(oscar.Misc.getString(rs, "name") + " " + oscar.Misc.getString(rs, "start_time"));
-
+                appointmentsNamesArray.add(db.getString(rs,"name") + " " + db.getString(rs,"start_time"));
+                //                System.out.println(tmp);
             }
             rs.close();
             sql = "select * from encountertemplate order by encountertemplate_name";
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             while (rs.next()) {
-                templateNames.add(oscar.Misc.getString(rs, "encountertemplate_name"));
+                templateNames.add(db.getString(rs,"encountertemplate_name"));
             }
             rs.close();
 
             sql = "SELECT groupName from measurementGroupStyle ORDER BY groupName";
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             while (rs.next()) {
-                measurementGroupNames.add(oscar.Misc.getString(rs, "groupName"));
+                measurementGroupNames.add(db.getString(rs,"groupName"));
             }
             rs.close();
 
             sql = "select * from eChart where demographicNo=" + demographicNo + " ORDER BY eChartId DESC";
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             if (rs.next()) {
-                eChartId = oscar.Misc.getString(rs, "eChartId");
+                eChartId = db.getString(rs,"eChartId");
                 eChartTimeStamp = rs.getTimestamp("timeStamp");
-                socialHistory = oscar.Misc.getString(rs, "socialHistory");
-                familyHistory = oscar.Misc.getString(rs, "familyHistory");
-                medicalHistory = oscar.Misc.getString(rs, "medicalHistory");
-                ongoingConcerns = oscar.Misc.getString(rs, "ongoingConcerns");
-                reminders = oscar.Misc.getString(rs, "reminders");
-                encounter = oscar.Misc.getString(rs, "encounter");
-                subject = oscar.Misc.getString(rs, "subject");
+                socialHistory = db.getString(rs,"socialHistory");
+                familyHistory = db.getString(rs,"familyHistory");
+                medicalHistory = db.getString(rs,"medicalHistory");
+                ongoingConcerns = db.getString(rs,"ongoingConcerns");
+                reminders = db.getString(rs,"reminders");
+                encounter = db.getString(rs,"encounter");
+                subject = db.getString(rs,"subject");
             } else {
                 eChartTimeStamp = null;
                 socialHistory = "";
@@ -206,14 +203,14 @@ public class EctSessionBean {
             rs.close();
             if (oscarMsgID != null) {
                 sql = "Select * from messagetbl where messageid = \'" + oscarMsgID + "\' ";
-                rs = DBHandler.GetSQL(sql);
+                rs = db.GetSQL(sql);
                 if (rs.next()) {
-                    String message = (oscar.Misc.getString(rs, "themessage"));
-                    String subject = (oscar.Misc.getString(rs, "thesubject"));
-                    String sentby = (oscar.Misc.getString(rs, "sentby"));
-                    String sentto = (oscar.Misc.getString(rs, "sentto"));
-                    String thetime = (oscar.Misc.getString(rs, "theime"));
-                    String thedate = (oscar.Misc.getString(rs, "thedate"));
+                    String message = (db.getString(rs,"themessage"));
+                    String subject = (db.getString(rs,"thesubject"));
+                    String sentby = (db.getString(rs,"sentby"));
+                    String sentto = (db.getString(rs,"sentto"));
+                    String thetime = (db.getString(rs,"theime"));
+                    String thedate = (db.getString(rs,"thedate"));
                     oscarMsg = "From: " + sentby + "\n" + "To: " + sentto + "\n" + "Date: " + thedate + " " + thetime
                             + "\n" + "Subject: " + subject + "\n" + message;
                 }
@@ -221,7 +218,7 @@ public class EctSessionBean {
             }
 
         } catch (java.sql.SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
     }
 
@@ -238,61 +235,62 @@ public class EctSessionBean {
         templateNames = new ArrayList();
 
         String tmp;
-        
+        DBHandler db = null;
         ResultSet rs;
         String sql;
 
         try {
-            
+            db = new DBHandler(DBHandler.OSCAR_DATA);
             sql = "select * from appointment where appointment_no=" + appointmentNo;
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             while (rs.next()) {
-                demographicNo = oscar.Misc.getString(rs, "demographic_no");
+                demographicNo = db.getString(rs,"demographic_no");
                 this.appointmentNo = appointmentNo;
-                reason = oscar.Misc.getString(rs, "reason");
+                reason = db.getString(rs,"reason");
                 encType = new String("face to face encounter with client");
-                appointmentDate = oscar.Misc.getString(rs, "appointment_date");
-                startTime = oscar.Misc.getString(rs, "start_time");
-                status = oscar.Misc.getString(rs, "status");
+                System.out.println("SETTING FACE TO FACE");
+                appointmentDate = db.getString(rs,"appointment_date");
+                startTime = db.getString(rs,"start_time");
+                status = db.getString(rs,"status");
             }
             rs.close();
         } catch (java.sql.SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         try {
             sql = "select * from appointment where provider_no='" + curProviderNo + "' and appointment_date='"
                     + appointmentDate + "'";
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             while (rs.next()) {
                 tmp = Integer.toString(rs.getInt("appointment_no"));
                 appointmentsIdArray.add(tmp);
-                appointmentsNamesArray.add(oscar.Misc.getString(rs, "name") + " " + oscar.Misc.getString(rs, "start_time"));
+                appointmentsNamesArray.add(db.getString(rs,"name") + " " + db.getString(rs,"start_time"));
             }
             rs.close();
             sql = "select * from encountertemplate order by encountertemplate_name";
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             while (rs.next()) {
-                templateNames.add(oscar.Misc.getString(rs, "encountertemplate_name"));
+                templateNames.add(db.getString(rs,"encountertemplate_name"));
             }
             rs.close();
         } catch (java.sql.SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         try {
-            //            
+            //            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             sql = "select * from eChart where demographicNo='" + demographicNo + "' ORDER BY eChartId DESC limit 1";
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             ;
             if (rs.next()) {
-                eChartId = oscar.Misc.getString(rs, "eChartId");
+                eChartId = db.getString(rs,"eChartId");
                 eChartTimeStamp = rs.getTimestamp("timeStamp");
-                socialHistory = oscar.Misc.getString(rs, "socialHistory");
-                familyHistory = oscar.Misc.getString(rs, "familyHistory");
-                medicalHistory = oscar.Misc.getString(rs, "medicalHistory");
-                ongoingConcerns = oscar.Misc.getString(rs, "ongoingConcerns");
-                reminders = oscar.Misc.getString(rs, "reminders");
-                encounter = oscar.Misc.getString(rs, "encounter");
-                subject = oscar.Misc.getString(rs, "subject");
+                socialHistory = db.getString(rs,"socialHistory");
+                familyHistory = db.getString(rs,"familyHistory");
+                medicalHistory = db.getString(rs,"medicalHistory");
+                ongoingConcerns = db.getString(rs,"ongoingConcerns");
+                reminders = db.getString(rs,"reminders");
+                encounter = db.getString(rs,"encounter");
+                subject = db.getString(rs,"subject");
             } else {
                 eChartTimeStamp = null;
                 socialHistory = "";
@@ -305,27 +303,27 @@ public class EctSessionBean {
             }
             rs.close();
         } catch (java.sql.SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         //apointmentsIdArray and the appointmentsNamesArray are
         //already set up so no need to get them again
         try {
-            //            
+            //            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             sql = "select * from demographic where demographic_no=" + demographicNo;
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             while (rs.next()) {
-                patientLastName = oscar.Misc.getString(rs, "last_name");
-                patientFirstName = oscar.Misc.getString(rs, "first_name");
-                address = oscar.Misc.getString(rs, "address");
-                city = oscar.Misc.getString(rs, "city");
-                postal = oscar.Misc.getString(rs, "postal");
-                phone = oscar.Misc.getString(rs, "phone");
-                familyDoctorNo = oscar.Misc.getString(rs, "provider_no");
-                yearOfBirth = oscar.Misc.getString(rs, "year_of_birth");
-                monthOfBirth = oscar.Misc.getString(rs, "month_of_birth");
-                dateOfBirth = oscar.Misc.getString(rs, "date_of_birth");
-                roster = oscar.Misc.getString(rs, "roster_status");
-                patientSex = oscar.Misc.getString(rs, "sex");
+                patientLastName = db.getString(rs,"last_name");
+                patientFirstName = db.getString(rs,"first_name");
+                address = db.getString(rs,"address");
+                city = db.getString(rs,"city");
+                postal = db.getString(rs,"postal");
+                phone = db.getString(rs,"phone");
+                familyDoctorNo = db.getString(rs,"provider_no");
+                yearOfBirth = db.getString(rs,"year_of_birth");
+                monthOfBirth = db.getString(rs,"month_of_birth");
+                dateOfBirth = db.getString(rs,"date_of_birth");
+                roster = db.getString(rs,"roster_status");
+                patientSex = db.getString(rs,"sex");
                 if (yearOfBirth.equals("null")) {
                     yearOfBirth = "0";
                 }
@@ -337,11 +335,11 @@ public class EctSessionBean {
                 }
             }
             rs.close();
-            
+            UtilDateUtilities dateUtil = new oscar.util.UtilDateUtilities();
             patientAge = UtilDateUtilities
                     .calcAge(UtilDateUtilities.calcDate(yearOfBirth, monthOfBirth, dateOfBirth));
         } catch (java.sql.SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
     }
 
@@ -353,48 +351,48 @@ public class EctSessionBean {
     public void setUpEncounterPage(String echartid, String demographicNo) {
         resetAll();
 
-        
-        
+        String tmp;
+        DBHandler db = null;
         ResultSet rs;
         String sql;
 
         try {
-            
+            db = new DBHandler(DBHandler.OSCAR_DATA);
             sql = "select * from eChart where eChartId = " + echartid + " and demographicNo=" + demographicNo;
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             ;
             if (rs.next()) {
                 eChartId = echartid;
                 eChartTimeStamp = rs.getTimestamp("timeStamp");
-                socialHistory = oscar.Misc.getString(rs, "socialHistory");
-                familyHistory = oscar.Misc.getString(rs, "familyHistory");
-                medicalHistory = oscar.Misc.getString(rs, "medicalHistory");
-                ongoingConcerns = oscar.Misc.getString(rs, "ongoingConcerns");
-                reminders = oscar.Misc.getString(rs, "reminders");
-                encounter = oscar.Misc.getString(rs, "encounter");
-                subject = oscar.Misc.getString(rs, "subject");
+                socialHistory = db.getString(rs,"socialHistory");
+                familyHistory = db.getString(rs,"familyHistory");
+                medicalHistory = db.getString(rs,"medicalHistory");
+                ongoingConcerns = db.getString(rs,"ongoingConcerns");
+                reminders = db.getString(rs,"reminders");
+                encounter = db.getString(rs,"encounter");
+                subject = db.getString(rs,"subject");
             }
             rs.close();
         } catch (java.sql.SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
 
         try {
             sql = "select * from demographic where demographic_no=" + demographicNo;
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             while (rs.next()) {
-                patientLastName = oscar.Misc.getString(rs, "last_name");
-                patientFirstName = oscar.Misc.getString(rs, "first_name");
-                address = oscar.Misc.getString(rs, "address");
-                city = oscar.Misc.getString(rs, "city");
-                postal = oscar.Misc.getString(rs, "postal");
-                phone = oscar.Misc.getString(rs, "phone");
-                familyDoctorNo = oscar.Misc.getString(rs, "provider_no");
-                yearOfBirth = oscar.Misc.getString(rs, "year_of_birth");
-                monthOfBirth = oscar.Misc.getString(rs, "month_of_birth");
-                dateOfBirth = oscar.Misc.getString(rs, "date_of_birth");
-                roster = oscar.Misc.getString(rs, "roster_status");
-                patientSex = oscar.Misc.getString(rs, "sex");
+                patientLastName = db.getString(rs,"last_name");
+                patientFirstName = db.getString(rs,"first_name");
+                address = db.getString(rs,"address");
+                city = db.getString(rs,"city");
+                postal = db.getString(rs,"postal");
+                phone = db.getString(rs,"phone");
+                familyDoctorNo = db.getString(rs,"provider_no");
+                yearOfBirth = db.getString(rs,"year_of_birth");
+                monthOfBirth = db.getString(rs,"month_of_birth");
+                dateOfBirth = db.getString(rs,"date_of_birth");
+                roster = db.getString(rs,"roster_status");
+                patientSex = db.getString(rs,"sex");
                 if (yearOfBirth.equals("null")) {
                     yearOfBirth = "0";
                 }
@@ -406,11 +404,11 @@ public class EctSessionBean {
                 }
             }
             rs.close();
-            
+            UtilDateUtilities dateUtil = new oscar.util.UtilDateUtilities();
             patientAge = UtilDateUtilities
                     .calcAge(UtilDateUtilities.calcDate(yearOfBirth, monthOfBirth, dateOfBirth));
         } catch (java.sql.SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
     }
 

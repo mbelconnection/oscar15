@@ -576,7 +576,7 @@ public class TeleplanCorrectionFormWCB
         try {
             retval = String.valueOf(MyDateFormat.getAge(this.getYearOfBirth(), this.getMonthOfBirth(), this.getDayOfBirth()));
         } catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return retval;
     }
@@ -620,7 +620,7 @@ public class TeleplanCorrectionFormWCB
     //TODO check to see if this works.  i think if you escape a prepared statement you end up with double escaped text
     public String[] getWcb(String billamt) {
 
-        MiscUtils.getLogger().debug("reseting wcb with bill amount " + billamt);
+        System.out.println("reseting wcb with bill amount " + billamt);
 
         DemographicData demoData = new DemographicData();
         DemographicData.Demographic demo = demoData.getDemographic(this.demographicNumber);

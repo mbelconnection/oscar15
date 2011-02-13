@@ -34,7 +34,7 @@ public class SxmlMisc extends Properties {
   //get the xml string 
   public static String createXmlDataString(HttpServletRequest req, String strPrefix) {
     String temp=null, content="";//default is not null
-    StringBuilder sbContent=new StringBuilder("");
+    StringBuffer sbContent=new StringBuffer("");
 	  for (Enumeration e = req.getParameterNames() ; e.hasMoreElements() ;) {
 		  temp=e.nextElement().toString();
 		  if( !temp.startsWith(strPrefix) || req.getParameter(temp).equals("")) continue;
@@ -47,7 +47,7 @@ public class SxmlMisc extends Properties {
   //get a string 
   public static String createDataString(HttpServletRequest req, String strPrefix, String defaultValue, int maxsize) {
     String temp=null;//default is not null
-    //StringBuilder sbContent=new StringBuilder("");
+    //StringBuffer sbContent=new StringBuffer("");
     byte[] abyte = new byte[maxsize];
     int i=0,n=0;
     for (Enumeration e = req.getParameterNames() ; e.hasMoreElements() ;) {
@@ -79,7 +79,7 @@ public class SxmlMisc extends Properties {
   	String val = "";
   	if(s==-1 || e==-1) return val;
   	val = str.substring(s+sTag.length(),e);
-
+  	//System.out.println(str+" - "+s+"  "+e+" - "+val);
   	return val;
   }
   public static String getXmlContent(String str, String sTagValue) {
@@ -123,9 +123,9 @@ public class SxmlMisc extends Properties {
   		s = stemp + s;
   	  str = str.substring(0,s) + newstr + str.substring(s+oldstr.length());
   	  stemp = s+newstr.length();
-
+  	//System.out.println(str+" s="+s+" stemp="+stemp);
   	  s = str.substring(stemp).indexOf(oldstr);
-
+  	//System.out.println(str.substring(stemp)+" s="+s);
   	} 
   	return str;
   }

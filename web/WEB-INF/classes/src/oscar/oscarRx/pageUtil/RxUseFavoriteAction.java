@@ -26,6 +26,7 @@ package oscar.oscarRx.pageUtil;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -36,8 +37,9 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DispatchAction;
-import org.oscarehr.util.MiscUtils;
+import org.apache.struts.util.MessageResources;
 
+import org.oscarehr.util.MiscUtils;
 import oscar.oscarRx.data.RxPrescriptionData;
 import oscar.oscarRx.util.RxUtil;
 
@@ -50,8 +52,10 @@ public final class RxUseFavoriteAction extends DispatchAction {
     HttpServletRequest request,
     HttpServletResponse response)
     throws IOException, ServletException {
-
-
+     //   System.out.println("***###IN RxUseFavoriteAction.java");
+        // Extract attributes we will need
+        Locale locale = getLocale(request);
+        MessageResources messages = getResources(request);
         
         // Setup variables       
         oscar.oscarRx.pageUtil.RxSessionBean bean =
@@ -75,12 +79,12 @@ public final class RxUseFavoriteAction extends DispatchAction {
             rxData.newPrescription(bean.getProviderNo(), bean.getDemographicNo(), fav);
 
             bean.addAttributeName(rx.getAtcCode() + "-" + String.valueOf(bean.getStashIndex()));
-
+          //   System.out.println("***###addStathItem called22");
             bean.setStashIndex(bean.addStashItem(rx));
             request.setAttribute("BoxNoFillFirstLoad", "true");
         }
         catch (Exception e) {
-           MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace(System.out);
         }
         
         return (mapping.findForward("success"));
@@ -91,7 +95,7 @@ public final class RxUseFavoriteAction extends DispatchAction {
     HttpServletRequest request,
     HttpServletResponse response)
     throws IOException, ServletException {
-
+     //  System.out.println("==========***###IN RxUseFavoriteAction.java=============");
         // Setup variables
         oscar.oscarRx.pageUtil.RxSessionBean bean =
         (oscar.oscarRx.pageUtil.RxSessionBean)request.getSession().getAttribute("RxSessionBean");
@@ -103,8 +107,8 @@ public final class RxUseFavoriteAction extends DispatchAction {
         try {
             int favoriteId = Integer.parseInt(request.getParameter("favoriteId"));
             String randomId=request.getParameter("randomId");
-
-
+        //    System.out.println("favoriteId ="+favoriteId);
+         //   System.out.println("randomId ="+randomId);
             RxPrescriptionData rxData =
             new RxPrescriptionData();
 
@@ -134,11 +138,11 @@ public final class RxUseFavoriteAction extends DispatchAction {
             request.setAttribute("BoxNoFillFirstLoad", "true");
         }
         catch (Exception e) {
-           MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace(System.out);
         }
 
         RxUtil.printStashContent(bean);
-
+      //  System.out.println("==========***###END RxUseFavoriteAction.java=============");
         return (mapping.findForward("useFav2"));
     }
 }

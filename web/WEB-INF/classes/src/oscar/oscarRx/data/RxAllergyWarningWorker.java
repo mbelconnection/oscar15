@@ -30,7 +30,6 @@ package oscar.oscarRx.data;
 
 import org.oscarehr.util.DbConnectionFilter;
 import org.oscarehr.util.LoggedInInfo;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarRx.pageUtil.RxSessionBean;
 
@@ -55,7 +54,7 @@ public class RxAllergyWarningWorker extends Thread {
     }
 
     public void run() {
-        MiscUtils.getLogger().debug("STARTING THREAD - RxAllergyWarningWorker ");
+        System.out.println("STARTING THREAD - RxAllergyWarningWorker ");
 
 		LoggedInInfo.setLoggedInInfoToCurrentClassAndMethod();
 
@@ -72,19 +71,19 @@ public class RxAllergyWarningWorker extends Thread {
                     sessionBean.removeFromWorkingAllergyWarnings(atcCode);
                 }
                 else {
-                    MiscUtils.getLogger().debug("What to do will allergies atc codes " + atcCode);
+                    System.out.println("What to do will allergies atc codes " + atcCode);
                 }
             }
         }
         catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         finally {
     		LoggedInInfo.loggedInInfo.remove();
             DbConnectionFilter.releaseAllThreadDbResources();
         }
         long end = System.currentTimeMillis() - start;
-        MiscUtils.getLogger().debug("THREAD ENDING -RxAllergyWarningWorker " + end);
+        System.out.println("THREAD ENDING -RxAllergyWarningWorker " + end);
     }
 
 }

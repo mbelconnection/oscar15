@@ -52,6 +52,10 @@ public class MsgAttachPDFAction extends Action {
 
 		if (frm.getIsPreview()) {
 
+			// testing for new package, cannot pass session control. ??
+			// Doc2PDF.HTMLDOC(request, response, "http://localhost:8084/oscar_mcmaster/oscarEncounter/echarthistoryprint.jsp?echartid=68");
+			// Doc2PDF.parseJSP2PDF( request , response, "http://localhost:8084/oscar_mcmaster/", "" );
+
 			String srcText = frm.getSrcText();
 			Doc2PDF.parseString2PDF(request, response, "<HTML>" + srcText + "</HTML>");
 			frm.setIsPreview(false);
@@ -68,7 +72,7 @@ public class MsgAttachPDFAction extends Action {
 				if (bean != null) {
 
 					if (frm.getIsNew()) {
-						MiscUtils.getLogger().debug("null attachment");
+						System.out.println("null attachment");
 						bean.nullAttachment();
 					}
 

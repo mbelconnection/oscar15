@@ -36,7 +36,6 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.oscarehr.phr.PHRAuthentication;
 import org.oscarehr.phr.service.PHRService;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -57,9 +56,9 @@ public class SetColor extends TagSupport {
 				.getBean("phrService");
         PHRAuthentication phrAuth = (PHRAuthentication) pageContext.getSession().getAttribute(PHRAuthentication.SESSION_PHR_AUTH);
         String providerNo = (String) pageContext.getSession().getAttribute("user");
-
-
-
+        //System.out.println("provider: " + providerNo);
+        //System.out.println("phrAuth: " + phrAuth);
+        //System.out.println("validAuth: " + phrService.validAuthentication(phrAuth));
         try {
             if (phrAuth == null || !phrService.validAuthentication(phrAuth) || providerNo == null) {
                 pageContext.getOut().print(noAuthorizationHtml);
@@ -69,7 +68,7 @@ public class SetColor extends TagSupport {
                 pageContext.getOut().print(noNewMessagesHtml);
             }
         } catch (IOException ioe) {
-            MiscUtils.getLogger().error("Error", ioe);
+            ioe.printStackTrace();
             return SKIP_BODY;
         }
         return EVAL_BODY_INCLUDE;
@@ -79,7 +78,7 @@ public class SetColor extends TagSupport {
         try {
             pageContext.getOut().println(closingHtml);
         } catch (IOException ioe) {
-            MiscUtils.getLogger().error("Error", ioe);
+            ioe.printStackTrace();
         }
         return EVAL_PAGE;
     }

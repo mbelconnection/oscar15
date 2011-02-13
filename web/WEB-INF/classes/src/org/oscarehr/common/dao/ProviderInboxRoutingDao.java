@@ -28,12 +28,9 @@ package org.oscarehr.common.dao;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.oscarehr.common.model.ProviderInboxItem;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
-
 import oscar.oscarDB.DBHandler;
 
 /**
@@ -60,12 +57,14 @@ public class ProviderInboxRoutingDao extends HibernateDaoSupport {
     }
     
     public void addToProviderInbox(String providerNo,String labNo,String labType){
+        System.out.println("Add to PRoviderInbox");
         
         ArrayList<String> listofAdditionalProviders = new ArrayList();
         boolean fileForMainProvider = false;
         //TODO:Replace 
         try{
-           ResultSet rs= DBHandler.GetSQL("select * from incomingLabRules where archive = 0 and provider_no = '"+providerNo+"'");   
+           DBHandler dbh = new DBHandler(DBHandler.OSCAR_DATA);
+           ResultSet rs= dbh.GetSQL("select * from incomingLabRules where archive = 0 and provider_no = '"+providerNo+"'");   
            while(rs.next()){
               String status = rs.getString("status");
               String frwdProvider = rs.getString("frwdProvider_no");
@@ -103,7 +102,7 @@ public class ProviderInboxRoutingDao extends HibernateDaoSupport {
            }
            
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         
        

@@ -34,7 +34,6 @@ import java.util.List;
 import org.oscarehr.common.dao.BillingServiceDao;
 import org.oscarehr.common.model.BillingService;
 import org.oscarehr.util.SpringUtils;
-
 import oscar.Misc;
 import oscar.util.SqlUtils;
 

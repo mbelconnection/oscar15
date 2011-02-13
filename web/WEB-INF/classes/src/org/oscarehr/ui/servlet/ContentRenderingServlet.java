@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.util.MiscUtils;
-import org.oscarehr.web.PrescriptionQrCodeUIBean;
 
 import oscar.log.LogAction;
 import oscar.oscarLab.ca.all.pageUtil.ViewOruR01UIBean;
@@ -30,7 +29,7 @@ public final class ContentRenderingServlet extends HttpServlet {
 	private static Logger logger = MiscUtils.getLogger();
 
 	public enum Source {
-		oruR01, prescriptionQrCode
+		oruR01
 	}
 
 	public class Content {
@@ -73,7 +72,6 @@ public final class ContentRenderingServlet extends HttpServlet {
 
 		try {
 			if (Source.oruR01.name().equals(source)) return (getOruR01Content(request));
-			if (Source.prescriptionQrCode.name().equals(source)) return (getPrescriptionQrCodeContent(request));
 		} catch (Exception e) {
 			logger.error("Unexpected error.", e);
 		}
@@ -97,21 +95,7 @@ public final class ContentRenderingServlet extends HttpServlet {
 	    content.data=viewOruR01UIBean.getFileContents();
 	    
 	    LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
-	    LogAction.addLog(loggedInInfo.loggedInProvider.getProviderNo(), getClass().getSimpleName(), "getOruR01Content", "segmentId="+segmentId);
-	    
-	    return(content);
-    }
-
-	private Content getPrescriptionQrCodeContent(HttpServletRequest request) {
-	    // for prescriptions we need prescriptionId.
-		int prescriptionId=Integer.parseInt(request.getParameter("prescriptionId"));
-	    
-	    Content content=new Content();
-	    content.contentType=getServletContext().getMimeType("prescription_"+prescriptionId+"qr_code.png");
-	    content.data=PrescriptionQrCodeUIBean.getPrescriptionHl7QrCodeImage(prescriptionId);
-	    
-	    LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
-	    LogAction.addLog(loggedInInfo.loggedInProvider.getProviderNo(), getClass().getSimpleName(), "getPrescriptionQrCodeContent", "prescriptionId="+prescriptionId);
+	    LogAction.addLog(loggedInInfo.loggedInProvider.getProviderNo(), getClass().getSimpleName(), "OruR01Content", "segmentId="+segmentId);
 	    
 	    return(content);
     }

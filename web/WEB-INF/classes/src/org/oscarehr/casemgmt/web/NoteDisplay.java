@@ -3,9 +3,7 @@ package org.oscarehr.casemgmt.web;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-
 import org.oscarehr.casemgmt.model.CaseManagementNoteLink;
-
 import oscar.oscarRx.data.RxPrescriptionData;
 
 public interface NoteDisplay {
@@ -86,8 +84,6 @@ public interface NoteDisplay {
 
 	public boolean isEformData();
 
-	public boolean isEncounterForm();
-
 	public CaseManagementNoteLink getNoteLink();
 
 	public RxPrescriptionData.Prescription getRxFromAnnotation(CaseManagementNoteLink cmnl);
@@ -104,5 +100,4 @@ public interface NoteDisplay {
 
 	public boolean isGroupNote();
 
-	public boolean isCpp();
 }

@@ -34,9 +34,8 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.common.dao.EFormDataDao;
-import org.oscarehr.common.model.EFormData;
-import org.oscarehr.util.SpringUtils;
+
+import oscar.eform.EFormUtil;
 
 public class RemEFormAction extends Action {
     
@@ -44,10 +43,7 @@ public class RemEFormAction extends Action {
                                 HttpServletRequest request, HttpServletResponse response) {
          String fdid = request.getParameter("fdid");
          if (!(fdid == null)) {
-        	 EFormDataDao eFormDataDao=(EFormDataDao) SpringUtils.getBean("EFormDataDao");
-        	 EFormData eFormData=eFormDataDao.find(Integer.parseInt(fdid));
-        	 eFormData.setCurrent(false);
-        	 eFormDataDao.merge(eFormData);
+             EFormUtil.removeEForm(fdid);
          }
          return mapping.findForward("success");
     }

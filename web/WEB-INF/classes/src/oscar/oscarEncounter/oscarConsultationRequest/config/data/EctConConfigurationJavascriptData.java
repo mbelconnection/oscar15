@@ -27,8 +27,6 @@ package oscar.oscarEncounter.oscarConsultationRequest.config.data;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 public class EctConConfigurationJavascriptData {
@@ -37,26 +35,26 @@ public class EctConConfigurationJavascriptData {
         //StringQuote str = new StringQuote();
         oscar.oscarMessenger.util.MsgStringQuote str = new oscar.oscarMessenger.util.MsgStringQuote();
 	try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             //String quotedString = UtilMisc.charEscape(jscript,'\\');
             String quotedString = org.apache.commons.lang.StringEscapeUtils.escapeSql(jscript);
 	    String sql = "update specialistsJavascript set javascriptString = '" +quotedString+ "' where setId = '1'";
-            DBHandler.RunSQL(sql);
+            db.RunSQL(sql);
         } catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
     }
 
     public String getJavascript() {
         String retval = null;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select javascriptString from specialistsJavascript where setId = '1'";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if(rs.next())
-                retval = oscar.Misc.getString(rs, "javascriptString");
+                retval = db.getString(rs,"javascriptString");
         } catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         return retval;
     }

@@ -31,10 +31,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 import oscar.oscarReport.data.RptResultStruct;
+import oscar.oscarReport.reportByTemplate.ReportManager;
+import oscar.oscarReport.reportByTemplate.ReportObject;
 import oscar.util.UtilMisc;
 
 import com.Ostermiller.util.CSVPrinter;
@@ -64,8 +64,8 @@ public class SQLReporter implements Reporter {
         String rsHtml = "An SQL querry error has occured";
         String csv = "";
         try {
-            
-            rs = DBHandler.GetSQL(sql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            rs = db.GetSQL(sql);
             rsHtml = RptResultStruct.getStructure2(rs);  //makes html from the result set
             StringWriter swr = new StringWriter();
             CSVPrinter csvp = new CSVPrinter(swr);
@@ -75,7 +75,7 @@ public class SQLReporter implements Reporter {
                                               //this line fixes it but messes up XLS generation.
             //csv = UtilMisc.getCSV(rs);
         } catch (Exception sqe) {
-            MiscUtils.getLogger().error("Error", sqe);
+            sqe.printStackTrace();
         }
         request.getSession().setAttribute("csv", csv);
         request.setAttribute("csv", csv);

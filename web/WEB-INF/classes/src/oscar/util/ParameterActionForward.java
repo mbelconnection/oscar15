@@ -56,7 +56,7 @@ public final class ParameterActionForward extends ActionForward {
     
     public String getPath() {
 
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
 
         sb.append(path);
 

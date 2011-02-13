@@ -35,7 +35,6 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts.util.MessageResources;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarMessenger.data.MsgMessageData;
 import oscar.oscarMessenger.util.MsgDemoMap;
@@ -93,7 +92,7 @@ public class EctDisplayMsgAction extends EctDisplayAction {
                     msgDate = DateUtils.getDate(date, dateFormat, request.getLocale());                                                                                
                 }
                 catch(ParseException e ) {
-                        MiscUtils.getLogger().debug("EctDisplayMsgAction: Error creating date " + e.getMessage());
+                        System.out.println("EctDisplayMsgAction: Error creating date " + e.getMessage());
                         msgDate = "Error";
                         date = null;
                 }                

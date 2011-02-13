@@ -51,16 +51,16 @@ import javax.persistence.PersistenceException;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.WordUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 
 import oscar.oscarDB.DBHandler;
 
 public class SqlUtils {
-	private static Logger logger = MiscUtils.getLogger();
+	private static Log logger = LogFactory.getLog(SqlUtils.class);
 
 	private enum DatabaseTypes {
 		MYSQL, ORACLE, POSTGRESQL
@@ -161,7 +161,7 @@ public class SqlUtils {
 						// store fileHolder as a whole (this way we don't lose file meta-info!)
 					}
 					catch (IOException ioe) {
-						MiscUtils.getLogger().error("Error", ioe);
+						ioe.printStackTrace();
 						logger.info(ioe.toString());
 						throw new SQLException("error storing BLOB in database - " + ioe.toString(), null, 2);
 					}
@@ -224,10 +224,10 @@ public class SqlUtils {
 		ArrayList rec = new ArrayList();
 		int colCount = 0;
 		ResultSet rs = null;
-		
+		DBHandler db = null;
 		try {
-			
-			rs = (ResultSet) DBHandler.GetSQL(qry);
+			db = new DBHandler(DBHandler.OSCAR_DATA);
+			rs = (ResultSet) db.GetSQL(qry);
 			ResultSetMetaData rsmd = rs.getMetaData();
 			colCount = rsmd.getColumnCount();
 
@@ -271,7 +271,7 @@ public class SqlUtils {
 					else {
 						for (Enumeration keys = methodNameMap.keys(); keys.hasMoreElements();) {
 							Integer key = (Integer) keys.nextElement();
-							MiscUtils.getLogger().debug(method[key.intValue()].getName() + " value  " + value.getClass().getName());
+							System.out.println(method[key.intValue()].getName() + " value  " + value.getClass().getName());
 							method[key.intValue()].invoke(obj, new Object[] { value });
 						}
 					}
@@ -281,24 +281,28 @@ public class SqlUtils {
 			}
 		}
 		catch (SQLException e) {
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 		}
 		catch (IllegalAccessException e) {
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 		}
 		catch (InvocationTargetException e) {
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 		}
 		catch (InstantiationException e) {
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 		}
 		finally {
 			try {
+				if (db != null) {
+				}
+
 				if (rs != null) {
 					rs.close();
 				}
 			}
-			catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+			catch (SQLException ex) {
+				ex.printStackTrace();
 			}
 		}
 		return rec;
@@ -337,7 +341,7 @@ public class SqlUtils {
 			}
 		}
 		catch (Exception e) {
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -352,11 +356,11 @@ public class SqlUtils {
 	public static List getQueryResultsList(String qry) {
 		ArrayList records = null;
 		ResultSet rs = null;
-		
+		DBHandler db = null;
 		try {
 			records = new ArrayList();
-			
-			rs = (ResultSet) DBHandler.GetSQL(qry);
+			db = new DBHandler(DBHandler.OSCAR_DATA);
+			rs = (ResultSet) db.GetSQL(qry);
 			int cols = rs.getMetaData().getColumnCount();
 			while (rs.next()) {
 				String[] record = new String[cols];
@@ -368,14 +372,15 @@ public class SqlUtils {
 		}
 		catch (SQLException e) {
 			records = null;
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 		}
 		finally {
 			if (rs != null) {
 				try {
 					rs.close();
 				}
-				catch (SQLException ex1) {MiscUtils.getLogger().error("Error", ex1);
+				catch (SQLException ex1) {
+					ex1.printStackTrace();
 				}
 			}
 			if (records != null) {
@@ -412,11 +417,11 @@ public class SqlUtils {
 	public static List getQueryResultsMapList(String qry) {
 		List records = null;
 		ResultSet rs = null;
-		
+		DBHandler db = null;
 		try {
 			records = new ArrayList();
-			
-			rs = (ResultSet) DBHandler.GetSQL(qry);
+			db = new DBHandler(DBHandler.OSCAR_DATA);
+			rs = (ResultSet) db.GetSQL(qry);
 			int cols = rs.getMetaData().getColumnCount();
 			while (rs.next()) {
 				Properties record = new Properties();
@@ -429,7 +434,7 @@ public class SqlUtils {
 						record.setProperty(columnName, cellValue);
 					}
 					else {
-						MiscUtils.getLogger().debug("Empty key for value: " + cellValue);
+						System.out.println("Empty key for value: " + cellValue);
 					}
 				}
 				records.add(record);
@@ -437,14 +442,15 @@ public class SqlUtils {
 		}
 		catch (SQLException e) {
 			records = null;
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 		}
 		finally {
 			if (rs != null) {
 				try {
 					rs.close();
 				}
-				catch (SQLException ex1) {MiscUtils.getLogger().error("Error", ex1);
+				catch (SQLException ex1) {
+					ex1.printStackTrace();
 				}
 			}
 
@@ -462,7 +468,7 @@ public class SqlUtils {
 	 * @return String - The constructed sql 'in' clause String
 	 */
 	public static String constructInClauseString(String[] criteria, boolean useQuotes) {
-		StringBuilder ret = new StringBuilder();
+		StringBuffer ret = new StringBuffer();
 		String quote = useQuotes == true ? "'" : "";
 		if (criteria.length != 0) {
 			ret.append("in (");
@@ -614,7 +620,7 @@ public class SqlUtils {
 	}
 
 	/**
-	 * deprecated use jpa native queries instead 
+	 * @deprecated use jpa native queries instead 
 	 */
 	public static List<Integer> selectIntList(String sqlCommand) {
 		Connection c = null;
@@ -641,7 +647,7 @@ public class SqlUtils {
 	}
 
 	/**
-	 * deprecated use jpa native queries instead 
+	 * @deprecated use jpa native queries instead 
 	 */
 	public static List<String> selectStringList(String sqlCommand) {
 		Connection c = null;
@@ -669,17 +675,17 @@ public class SqlUtils {
 
 	public static int update(String sqlCommand) {
 		Connection c = null;
-		Statement s = null;
+		PreparedStatement ps = null;
 		try {
 			c = DbConnectionFilter.getThreadLocalDbConnection();
-			s = c.createStatement();
-			return (s.executeUpdate(sqlCommand));
+			ps = c.prepareStatement(sqlCommand);
+			return (ps.executeUpdate());
 		}
 		catch (SQLException e) {
 			throw (new PersistenceException(e));
 		}
 		finally {
-			closeResources(c, s, null);
+			closeResources(c, ps, null);
 		}
 	}
 

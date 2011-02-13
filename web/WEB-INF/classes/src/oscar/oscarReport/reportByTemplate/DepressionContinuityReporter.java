@@ -27,12 +27,10 @@ package oscar.oscarReport.reportByTemplate;
 
 import java.sql.ResultSet;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Set;
-
+import java.util.Iterator;
+import java.util.Properties;
 import javax.servlet.http.HttpServletRequest;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -41,10 +39,10 @@ import oscar.oscarDB.DBHandler;
  * @author rjonasz
  */
 public class DepressionContinuityReporter implements Reporter{
-    private StringBuilder rsHtml = new StringBuilder();
-    private StringBuilder csv = new StringBuilder();
-    private HashMap<String,StringBuilder>demographics = new HashMap<String,StringBuilder>();
-    private HashMap<String,StringBuilder>csvMap = new HashMap<String,StringBuilder>();
+    private StringBuffer rsHtml = new StringBuffer();
+    private StringBuffer csv = new StringBuffer();
+    private HashMap<String,StringBuffer>demographics = new HashMap<String,StringBuffer>();
+    private HashMap<String,StringBuffer>csvMap = new HashMap<String,StringBuffer>();
     /**
      * Creates a new instance of DepressionContinuityReporter
      */
@@ -83,13 +81,13 @@ public class DepressionContinuityReporter implements Reporter{
         ResultSet rs = null;        
         Boolean odd = new Boolean(true);
         try {
-            
-            rs = DBHandler.GetSQL(cohortSQL);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            rs = db.GetSQL(cohortSQL);
 
             rsHtml = this.makeHTMLHeader();
             csv = this.makeCSVHeader();
-            StringBuilder html = new StringBuilder();
-            StringBuilder csvTmp = new StringBuilder();
+            StringBuffer html = new StringBuffer();
+            StringBuffer csvTmp = new StringBuffer();
             String curDemo = null;
             while(rs.next() ) {
                 if( curDemo == null ) {
@@ -105,7 +103,7 @@ public class DepressionContinuityReporter implements Reporter{
                     demographics.put(curDemo, html);
                     csvMap.put(curDemo, csvTmp);
                     html = this.addCodeEntry(rs, odd);
-                    csvTmp = new StringBuilder(this.csvCodeEntry(rs));
+                    csvTmp = new StringBuffer(this.csvCodeEntry(rs));
                 }
                 curDemo = rs.getString(1);
             }
@@ -114,11 +112,11 @@ public class DepressionContinuityReporter implements Reporter{
                 csvMap.put(curDemo, csvTmp);
             }
 
-            this.addAppt(apptSQL, curDemo, odd);
+            this.addAppt(db, apptSQL, curDemo, odd);
 
             rsHtml.append("</table>");
         }catch(Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
             
         }
         
@@ -130,8 +128,8 @@ public class DepressionContinuityReporter implements Reporter{
         return true;
     }
 
-    private StringBuilder addCodeEntry(ResultSet rs, Boolean odd) throws Exception {
-         StringBuilder html = new StringBuilder("<tr class=\"");
+    private StringBuffer addCodeEntry(ResultSet rs, Boolean odd) throws Exception {
+         StringBuffer html = new StringBuffer("<tr class=\"");
         if( odd ) {
             html.append("reportRow1\">");
         }
@@ -152,12 +150,12 @@ public class DepressionContinuityReporter implements Reporter{
         return csvCode;
     }
 
-    private void addAppt(String apptSQL, String curDemo, Boolean odd) throws Exception {
+    private void addAppt(DBHandler db, String apptSQL, String curDemo, Boolean odd) throws Exception {
         ResultSet rs2 = null;
 
         Set<String>setDemo = demographics.keySet();
         Iterator<String>iter = setDemo.iterator();
-        StringBuilder demos = new StringBuilder();
+        StringBuffer demos = new StringBuffer();
         while(iter.hasNext()) {
             demos.append(iter.next());
             if( iter.hasNext() ) {
@@ -167,12 +165,12 @@ public class DepressionContinuityReporter implements Reporter{
 
         String apptSQLwDemo;
         apptSQLwDemo = apptSQL.replaceAll("\\?", demos.toString());
-        MiscUtils.getLogger().debug(apptSQLwDemo);
-        rs2 = DBHandler.GetSQL(apptSQLwDemo);        
+        System.out.println(apptSQLwDemo);
+        rs2 = db.GetSQL(apptSQLwDemo);        
         String rxName, rxPrescriber, tmpDemo = "";
         while(rs2.next()) {
             if( !tmpDemo.equals(rs2.getString(7))) {
-                MiscUtils.getLogger().debug(rs2.getString(7));
+                System.out.println(rs2.getString(7));
                 rsHtml.append(demographics.get(rs2.getString(7)));
                 csv.append(csvMap.get(rs2.getString(7)));
                 tmpDemo = rs2.getString(7);
@@ -211,14 +209,14 @@ public class DepressionContinuityReporter implements Reporter{
         }
 
         if( curDemo != null && tmpDemo.equals("") ) {
-            MiscUtils.getLogger().debug(curDemo);
+            System.out.println(curDemo);
             rsHtml.append(demographics.get(curDemo));
             csv.append(csvMap.get(curDemo));
         }
     }
 
-    private StringBuilder makeHTMLHeader() {
-        StringBuilder html = new StringBuilder("<table class=\"reportTable\">\n");
+    private StringBuffer makeHTMLHeader() {
+        StringBuffer html = new StringBuffer("<table class=\"reportTable\">\n");
         html.append("<th class=\"reportHeader\">ID</th><th class=\"reportHeader\">Date of Code</th><th class=\"reportHeader\">Dx Code</th>"
                 + "<th class=\"reportHeader\">Date of Visit</th><th class=\"reportHeader\">Provider Seen</th><th class=\"reportHeader\">MRP</th>"
                 + "<th class=\"reportHeader\">Billing Code</th><th class=\"reportHeader\">Rx Name</th><th class=\"reportHeader\">Prescriber</th>");
@@ -226,8 +224,8 @@ public class DepressionContinuityReporter implements Reporter{
         return html;
     }
 
-    private StringBuilder makeCSVHeader() {
-        StringBuilder cvs = new StringBuilder("ID,Date of Code,Dx Code,Date of Visit,Provider Seen,MRP,Billing Code,Rx Name,Prescriber\n");
+    private StringBuffer makeCSVHeader() {
+        StringBuffer cvs = new StringBuffer("ID,Date of Code,Dx Code,Date of Visit,Provider Seen,MRP,Billing Code,Rx Name,Prescriber\n");
         return cvs;
     }
 

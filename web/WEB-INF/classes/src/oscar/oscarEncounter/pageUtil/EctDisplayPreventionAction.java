@@ -39,6 +39,7 @@ import oscar.oscarPrevention.Prevention;
 import oscar.oscarPrevention.PreventionDS;
 import oscar.oscarPrevention.PreventionData;
 import oscar.oscarPrevention.PreventionDisplayConfig;
+import oscar.util.DateUtils;
 import oscar.util.OscarRoleObjectPrivilege;
 import oscar.util.StringUtils;
 
@@ -87,13 +88,14 @@ public class EctDisplayPreventionAction extends EctDisplayAction {
         ArrayList prevList = pdc.getPreventions();
         Hashtable warningTable = p.getWarningMsgs();    
         
-         
-       
+        int hash; 
+        String dbFormat = "yyyy-MM-dd";
+        String serviceDateStr;
         String highliteColour = "FF0000";
         String inelligibleColour = "FF6600";
         String pendingColour = "FF00FF";
         Date date = null;
-        //Date defaultDate = new Date(System.currentTimeMillis());
+        Date defaultDate = new Date(System.currentTimeMillis());
         url += "; return false;";
         ArrayList warnings = new ArrayList();
         ArrayList items = new ArrayList();
@@ -111,8 +113,17 @@ public class EctDisplayPreventionAction extends EctDisplayAction {
                     result = (String)hExt.get("result");
 
                     date = (Date)hdata.get("prevention_date_asDate");
+                    System.out.println("Prevention Date " +  date);
                     item.setDate(date);
-                    
+                    if( date == null ) {
+                        serviceDateStr = "";
+                        //item.setDate(defaultDate);
+                    }
+                    else {    
+                        serviceDateStr = DateUtils.getDate(date, dateFormat, request.getLocale());
+                        //item.setDate(date);
+                    }
+
                     if( hdata.get("refused").equals("2") ) {
                         item.setColour(inelligibleColour);
                     }
@@ -121,6 +132,8 @@ public class EctDisplayPreventionAction extends EctDisplayAction {
                     }
                 }
                 else {
+                    serviceDateStr = "";
+                    //item.setDate(defaultDate);
                     item.setDate(null);
                 }                                                                
                 

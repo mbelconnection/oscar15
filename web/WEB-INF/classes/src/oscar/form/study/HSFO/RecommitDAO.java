@@ -9,9 +9,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
-
+import oscar.oscarDB.DBHandler;
 import oscar.oscarDemographic.data.DemographicData;
 import oscar.oscarDemographic.data.DemographicData.Demographic;
 /**
@@ -28,11 +26,13 @@ public class RecommitDAO {
 	     String sqlstatement ="select * from hsfo_recommit_schedule ";
 	     if (statusFlag) sqlstatement+="where status='D' ";
 	     sqlstatement+="order by id desc";
+	     DBHandler db =null;
 	     ResultSet rs = null;
 	     RecommitSchedule reSchedule=null;
 	     SimpleDateFormat sf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	     try {
-	            Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
+	            db = new DBHandler(DBHandler.OSCAR_DATA);
+	            Connection connect = DBHandler.getConnection();
 	            st = connect.prepareStatement(sqlstatement);
 	            st.execute();
 	            rs = st.getResultSet();
@@ -40,31 +40,29 @@ public class RecommitDAO {
 	            if (rs.next()){
 	            	reSchedule=new RecommitSchedule();
 	            	reSchedule.setId(new Integer(rs.getInt("id")));
-	            	reSchedule.setStatus(oscar.Misc.getString(rs, "status"));
-	            	reSchedule.setMemo(oscar.Misc.getString(rs, "memo"));
-	            	reSchedule.setSchedule_time(sf.parse(oscar.Misc.getString(rs, "schedule_time")));
-	            	reSchedule.setUser_no(oscar.Misc.getString(rs, "user_no"));
+	            	reSchedule.setStatus(db.getString(rs,"status"));
+	            	reSchedule.setMemo(db.getString(rs,"memo"));
+	            	reSchedule.setSchedule_time(sf.parse(db.getString(rs,"schedule_time")));
+	            	reSchedule.setUser_no(db.getString(rs,"user_no"));
 	            	reSchedule.setCheck_flag(rs.getBoolean("check_flag"));
 	            }
 				
 				
 	     }catch (SQLException se) {
-	            MiscUtils.getLogger().debug("SQL Error while getting the latest record from the hsfo_xml_recommit table : "+ se.toString());
+	            System.out.println("SQL Error while getting the latest record from the hsfo_xml_recommit table : "+ se.toString());
 	        }catch (Exception ne) {
-	            MiscUtils.getLogger().debug("Other Error while getting the latest record from the hsfo_xml_recommit table : "+ ne.toString());
+	            System.out.println("Other Error while getting the latest record from the hsfo_xml_recommit table : "+ ne.toString());
 	        }finally {
 	        	if (rs != null)
 	    			try {
 	    				
 	    				rs.close();
 	    			} catch (SQLException e) {
-                                    MiscUtils.getLogger().error("Error", e);
 				}
 				if (st != null)
 					try {
 						st.close();
 					} catch (SQLException e) {
-                                            MiscUtils.getLogger().error("Error", e);
 					}
 			}
 	        return reSchedule;
@@ -75,11 +73,11 @@ public class RecommitDAO {
 	     String sqlstatement ="update hsfo_recommit_schedule set id=?, status=?, "+
 	     		"memo=?, schedule_time=?,user_no=?,check_flag=? where id=?";
 	     SimpleDateFormat sf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	     
+	     DBHandler db =null;
 	     
 	     try {
-	    	
-	         Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
+	    	 db = new DBHandler(DBHandler.OSCAR_DATA);
+	         Connection connect = DBHandler.getConnection();
 	         st = connect.prepareStatement(sqlstatement);
 	         st.setString(1,rd.getId().toString());
 	         st.setString(2,rd.getStatus());
@@ -90,16 +88,15 @@ public class RecommitDAO {
 	         st.setString(7, rd.getId().toString());
 	         st.executeUpdate();
 	     }catch (SQLException se) {
-	         MiscUtils.getLogger().debug("SQL Error while update the latest record to the hsfo_xml_recommit table : "+ se.toString());
+	         System.out.println("SQL Error while update the latest record to the hsfo_xml_recommit table : "+ se.toString());
 	     }catch (Exception ne) {
-	         MiscUtils.getLogger().debug("Other Error while update the latest record to the hsfo_xml_recommit table : "+ ne.toString());
+	         System.out.println("Other Error while update the latest record to the hsfo_xml_recommit table : "+ ne.toString());
 	     }finally {
 	        	
 	    	 if (st != null)
 				try {
 						st.close();
 					} catch (SQLException e) {
-                                            MiscUtils.getLogger().error("Error", e);
 					}
 			}
 	     
@@ -110,11 +107,11 @@ public class RecommitDAO {
 	     String sqlstatement ="insert into hsfo_recommit_schedule set status=?, "+
 	     		"memo=?, schedule_time=?,user_no=?,check_flag=?";
 	     SimpleDateFormat sf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	     
+	     DBHandler db =null;
 	     
 	     try {
-	    	
-	         Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
+	    	 db = new DBHandler(DBHandler.OSCAR_DATA);
+	         Connection connect = DBHandler.getConnection();
 	         st = connect.prepareStatement(sqlstatement);
 	         
 	         st.setString(1,rd.getStatus());
@@ -125,16 +122,15 @@ public class RecommitDAO {
 	         
 	         st.executeUpdate();
 	     }catch (SQLException se) {
-	         MiscUtils.getLogger().debug("SQL Error while insert a new record to the hsfo_xml_recommit table : "+ se.toString());
+	         System.out.println("SQL Error while insert a new record to the hsfo_xml_recommit table : "+ se.toString());
 	     }catch (Exception ne) {
-	         MiscUtils.getLogger().debug("Other Error while insert a new record to the hsfo_xml_recommit table : "+ ne.toString());
+	         System.out.println("Other Error while insert a new record to the hsfo_xml_recommit table : "+ ne.toString());
 	     }finally {
 	        	
 	    	 if (st != null)
 				try {
 						st.close();
 					} catch (SQLException e) {
-                                            MiscUtils.getLogger().error("Error", e);
 					}
 			}
 	     

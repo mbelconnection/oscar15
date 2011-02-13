@@ -69,14 +69,13 @@ import org.oscarehr.caisi_integrator.ws.ReferralWs;
 import org.oscarehr.common.dao.FacilityDao;
 import org.oscarehr.common.dao.FunctionalCentreDao;
 import org.oscarehr.common.model.FunctionalCentre;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.quatro.service.security.RolesManager;
 
 public class ProgramManagerAction extends BaseAction {
 
-	private static final Logger logger = MiscUtils.getLogger();
+	private static final Logger logger = org.apache.log4j.LogManager.getLogger(ProgramManagerAction.class);
 
 	private ClientRestrictionManager clientRestrictionManager;
 	private FacilityDao facilityDao = null;
@@ -186,7 +185,7 @@ public class ProgramManagerAction extends BaseAction {
 	}
 
 	public ActionForward programSignatures(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-		//DynaActionForm programForm = (DynaActionForm) form;
+		DynaActionForm programForm = (DynaActionForm) form;
 		String programId = request.getParameter("programId");
 		if (programId != null) {
 			// List<ProgramSignature> pss = programManager.getProgramSignatures(Integer.valueOf(programId));
@@ -505,7 +504,7 @@ public class ProgramManagerAction extends BaseAction {
 	}
 
 	public ActionForward removeBedCheckTime(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-		
+		String id = request.getParameter("id");
 		String removeId = request.getParameter("removeId");
 
 		bedCheckTimeManager.removeBedCheckTime(Integer.valueOf(removeId));
@@ -651,7 +650,7 @@ public class ProgramManagerAction extends BaseAction {
 		try {
 			program.setFacilityId(Integer.parseInt(request.getParameter("program.facilityId")));
 		} catch (NumberFormatException e) {
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 		}
 
 		if (request.getParameter("program.allowBatchAdmission") == null) {

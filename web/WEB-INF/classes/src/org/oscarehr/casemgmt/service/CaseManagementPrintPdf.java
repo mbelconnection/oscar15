@@ -27,21 +27,20 @@ package org.oscarehr.casemgmt.service;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Date;
 import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oscarehr.casemgmt.model.CaseManagementNote;
-import org.oscarehr.util.MiscUtils;
 
-import oscar.OscarProperties;
 import oscar.oscarClinic.ClinicData;
+import oscar.OscarProperties;
 
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
@@ -55,8 +54,9 @@ import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.ColumnText;
 import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.pdf.PdfPageEventHelper;
+import java.io.OutputStream;
 
 /**
  *
@@ -64,7 +64,7 @@ import com.lowagie.text.pdf.PdfWriter;
  */
 public class CaseManagementPrintPdf {
     
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(CaseManagementPrintPdf.class);
     
     private HttpServletRequest request;
     private OutputStream os;
@@ -78,46 +78,16 @@ public class CaseManagementPrintPdf {
     
     private SimpleDateFormat formatter;
     
-    public final int LINESPACING = 1;
-    public final float LEADING = 12;
-    public final float FONTSIZE = 10;
-    public final int NUMCOLS = 2;
+    private final int LINESPACING = 1;
+    private final float LEADING = 12;
+    private final float FONTSIZE = 10;
+    private final int NUMCOLS = 2;
     
     /** Creates a new instance of CaseManagementPrintPdf */
     public CaseManagementPrintPdf(HttpServletRequest request, OutputStream os) {
         this.request = request;
         this.os = os;
         formatter = new SimpleDateFormat("dd-MMM-yyyy");           
-    }
-    
-    public HttpServletRequest getRequest() {
-    	return request;
-    }
-    
-    public OutputStream getOutputStream() {
-    	return os;
-    }
-    
-    public Font getFont() {
-    	return font;
-    }
-    public SimpleDateFormat getFormatter() {
-    	return formatter;
-    }
-    
-    public Document getDocument() {
-    	return document;
-    }
-    
-    public boolean getNewPage() {
-    	return newPage;
-    }
-    public void setNewPage(boolean b) {
-    	this.newPage = b;
-    }
-    
-    public BaseFont getBaseFont() {
-    	return bf;
     }
     
     public void printDocHeaderFooter() throws IOException, DocumentException {
@@ -131,7 +101,7 @@ public class CaseManagementPrintPdf {
         //Create the font we are going to print to        
         bf = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
         font = new Font(bf, FONTSIZE, Font.NORMAL);
-       
+        float leading = font.leading(LINESPACING);
         
         //set up document title and header
         ResourceBundle propResource = ResourceBundle.getBundle("oscarResources");
@@ -230,8 +200,8 @@ public class CaseManagementPrintPdf {
         oscar.oscarRx.data.RxPrescriptionData prescriptData = new oscar.oscarRx.data.RxPrescriptionData();
         oscar.oscarRx.data.RxPrescriptionData.Prescription [] arr = {};
         arr = prescriptData.getUniquePrescriptionsByPatient(Integer.parseInt(demoNo));
-       
-        
+        long now = System.currentTimeMillis();
+        long month = 1000L * 60L * 60L * 24L * 30L;
         Font curFont;
         for(int idx = 0; idx < arr.length; ++idx ) {
             oscar.oscarRx.data.RxPrescriptionData.Prescription drug = arr[idx];
@@ -273,8 +243,8 @@ public class CaseManagementPrintPdf {
         
         Font obsfont = new Font(bf, FONTSIZE, Font.UNDERLINE);
                 
-       
-       
+        float lworkingYcoord, rworkingYcoord;
+        int written;
         
         Paragraph p = new Paragraph();
         p.setAlignment(Paragraph.ALIGN_CENTER);
@@ -432,7 +402,7 @@ public class CaseManagementPrintPdf {
             cb.saveState();
             
             String strFooter = promoTxt + " " + formatter.format(now);
-           
+            float textSize = font.getBaseFont().getWidthPoint(strFooter,FONTSIZE);
             float textBase = document.bottom();
             cb.beginText();
             cb.setFontAndSize(font.getBaseFont(),FONTSIZE);

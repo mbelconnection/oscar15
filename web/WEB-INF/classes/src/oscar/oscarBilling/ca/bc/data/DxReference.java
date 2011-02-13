@@ -40,20 +40,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
-import org.oscarehr.util.SpringUtils;
-
-import oscar.entities.BillingDxCode;
+import oscar.oscarDB.DBHandler;
 import oscar.util.UtilDateUtilities;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.oscarehr.util.SpringUtils;
+import oscar.entities.BillingDxCode;
 
 /**
  *
  * @author jay
  */
 public class DxReference {
-    private static final Logger _log = MiscUtils.getLogger();
+    private static final Log _log = LogFactory.getLog(DxReference.class);
     BillingDxCodeDAO dxCode = (BillingDxCodeDAO) SpringUtils.getBean("BillingDxCodeDAO");
 
     /** Creates a new instance of DxReference */
@@ -75,8 +75,8 @@ public class DxReference {
        ArrayList list = new ArrayList(); 
        String nsql ="select dx_code1, dx_code2, dx_code3,service_date from billingmaster where demographic_no = ? and billingstatus != 'D' order by service_date desc";
        try {
-            
-            PreparedStatement pstmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(nsql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            PreparedStatement pstmt = DBHandler.getConnection().prepareStatement(nsql);
             pstmt.setString(1,demo);
             ResultSet rs = pstmt.executeQuery();
             Map m = new HashMap();
@@ -102,7 +102,7 @@ public class DxReference {
             }
             pstmt.close();
        }catch (SQLException e) {
-          MiscUtils.getLogger().error("Error", e);
+          e.printStackTrace();
        }
        Collections.sort(list);
        

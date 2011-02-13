@@ -36,10 +36,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.common.dao.DemographicDao;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+import org.oscarehr.common.dao.DemographicDao;
 import oscar.Misc;
 import oscar.entities.Billingmaster;
 import oscar.entities.WCB;
@@ -56,11 +56,11 @@ import oscar.oscarProvider.data.ProviderData;
 public class TeleplanFileWriter {
     
     
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(TeleplanFileWriter.class);
     
     
-    StringBuilder mspFileStr = null;
-    StringBuilder mspHtmlStr = null;
+    StringBuffer mspFileStr = null;
+    StringBuffer mspHtmlStr = null;
     int sequenceNum = 0;
     ArrayList billingToBeMarkedAsBilled = null;
     ArrayList billingmasterToBeMarkedAsBilled = null;
@@ -72,11 +72,12 @@ public class TeleplanFileWriter {
     private DemographicDao demographicDAO = null;
     
     public CheckBillingData checkData = new CheckBillingData();
+    Misc misc = new Misc();
     
     /** Creates a new instance of TeleplanFileWriter */
     public TeleplanFileWriter() {
-        mspFileStr = new StringBuilder();
-        mspHtmlStr = new StringBuilder();
+        mspFileStr = new StringBuffer();
+        mspHtmlStr = new StringBuffer();
         sequenceNum = getLastSequenceNumber();
         billingToBeMarkedAsBilled = new ArrayList();
         billingmasterToBeMarkedAsBilled = new ArrayList();
@@ -139,8 +140,8 @@ public class TeleplanFileWriter {
         
         String logNo =  getNextSequenceNumber() ;
         log.debug("LogNo :"+logNo);
-        String headerLine = "VS1" + dataCenterId + Misc.forwardZero(logNo,7) + "V6242" + "OSCAR_MCMASTER           " + "V1.1      " + "20030930" + "OSCAR MCMASTER                          " + "(905) 575-1300 " + Misc.space(25) + Misc.space(57) + "\r";
-        String errorMsg = checkData.checkVS1("VS1" , dataCenterId , Misc.forwardZero(logNo,7) , "V6242" , "OSCAR_MCMASTER           " , "V1.1      " , "20030930" , "OSCAR MCMASTER                          " , "(905) 575-1300 " , Misc.space(25) , Misc.space(57));
+        String headerLine = "VS1" + dataCenterId + misc.forwardZero(logNo,7) + "V6242" + "OSCAR_MCMASTER           " + "V1.1      " + "20030930" + "OSCAR MCMASTER                          " + "(905) 575-1300 " + misc.space(25) + misc.space(57) + "\r";
+        String errorMsg = checkData.checkVS1("VS1" , dataCenterId , misc.forwardZero(logNo,7) , "V6242" , "OSCAR_MCMASTER           " , "V1.1      " , "20030930" , "OSCAR MCMASTER                          " , "(905) 575-1300 " , misc.space(25) , misc.space(57));
         setLog(logNo, headerLine);
         
         appendToHTML(HtmlTeleplanHelper.htmlHeaderGen(errorMsg));
@@ -220,7 +221,7 @@ public class TeleplanFileWriter {
         
             //setMasDAO(new BillingmasterDAO());
            //log.debug
-            MiscUtils.getLogger().debug("creating WCB teleplan record for claim "+billing_no);
+            System.out.println("creating WCB teleplan record for claim "+billing_no);
            List billMasterList = billingmasterDAO.getBillingMasterByBillingNo(billing_no);
            Billingmaster bm = (Billingmaster) billMasterList.get(0);
            
@@ -230,7 +231,7 @@ public class TeleplanFileWriter {
             
            WCB wcbForm = billingmasterDAO.getWCBForm(""+bm.getWcbId());
                
-           MiscUtils.getLogger().debug("BM "+bm+" WCB "+wcbForm + " for "+billing_no);
+           System.out.println("BM "+bm+" WCB "+wcbForm + " for "+billing_no);
            
            WCBTeleplanSubmission wcbSub = new WCBTeleplanSubmission();
            wcbSub.setDemographicDao(demographicDAO);
@@ -245,7 +246,7 @@ public class TeleplanFileWriter {
            claims.addToTotal(bm.getBillingAmountBigDecimal());        
            
            
-           MiscUtils.getLogger().debug("FORM NEEDED ?"+wcbSub.isFormNeeded(bm ));
+           System.out.println("FORM NEEDED ?"+wcbSub.isFormNeeded(bm ));
            if(wcbSub.isFormNeeded(bm)){
                
                 String logNo = getNextSequenceNumber();
@@ -313,7 +314,7 @@ public class TeleplanFileWriter {
            List billMasterList = masDAO.getBillingMasterByBillingNo(billing_no);
            Billingmaster bm = (Billingmaster) billMasterList.get(0);
            
-           MiscUtils.getLogger().debug("FORM NEEDED ?"+sb.isFormNeeded());
+           System.out.println("FORM NEEDED ?"+sb.isFormNeeded());
            if(sb.isFormNeeded()){
                
                 String logNo = getNextSequenceNumber();
@@ -374,7 +375,7 @@ public class TeleplanFileWriter {
         for (int i= 0; i < billMasterList.size(); i++){
             Billingmaster bm = (Billingmaster) billMasterList.get(i);
             bm.setDatacenter(dataCenterId);
-
+            //System.out.println(bm.toString());
             claims.increaseClaims();
             String logNo = getNextSequenceNumber();  
             String dataLine = getClaimDetailRecord(bm,logNo);  //NEED TO IMPLEMENT this method
@@ -430,10 +431,10 @@ public class TeleplanFileWriter {
     //This should be moved out of this class
     private List getBilling(String providerInsNo,Date startDate, Date endDate) throws Exception{
         ArrayList list = new ArrayList();      
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         String query = "select * from billing where provider_ohip_no='"+ providerInsNo+"' and (status='O' or status='W') and billingtype != 'Pri' ";
         log.debug("billing query "+query);
-        ResultSet rs = DBHandler.GetSQL(query);
+        ResultSet rs = db.GetSQL(query);
         while (rs.next()){
             HashMap map = new HashMap();
             map.put("billing_no",rs.getString("billing_no"));
@@ -448,12 +449,12 @@ public class TeleplanFileWriter {
        String retval = "1";
        try{
           retval = new java.math.BigDecimal(str).setScale(0,BigDecimal.ROUND_UP).toString();
-       }catch(Exception e){ MiscUtils.getLogger().error("Error", e);}
+       }catch(Exception e){ e.printStackTrace();}
        return retval;
     }
     
     public String getClaimDetailRecord(Billingmaster bm ,String logNo) {
-        StringBuilder dLine = new StringBuilder(); 
+        StringBuffer dLine = new StringBuffer(); 
             dLine.append(Misc.forwardSpace(bm.getClaimcode(),3));                       //p00   3
             dLine.append(Misc.forwardSpace(bm.getDatacenter(),5));                      //p02   5
             dLine.append(Misc.forwardZero(logNo,7));                                    //p04   7

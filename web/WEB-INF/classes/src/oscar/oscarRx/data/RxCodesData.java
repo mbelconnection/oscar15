@@ -28,8 +28,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 public class RxCodesData {
@@ -42,21 +40,21 @@ public class RxCodesData {
         ArrayList lst = new ArrayList();
         
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
             String sql = "SELECT * FROM ctl_frequency";
             
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             
             while (rs.next()) {
-                lst.add(new FrequencyCode(rs.getInt("freqid"), oscar.Misc.getString(rs, "freqcode"), oscar.Misc.getString(rs, "dailymin"), oscar.Misc.getString(rs, "dailymax")));
+                lst.add(new FrequencyCode(rs.getInt("freqid"), db.getString(rs,"freqcode"), db.getString(rs,"dailymin"), db.getString(rs,"dailymax")));
             }
             
             rs.close();
             arr = (FrequencyCode[])lst.toArray(arr);
             
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         
         return arr;
@@ -67,20 +65,20 @@ public class RxCodesData {
         ArrayList lst = new ArrayList();
         
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
             String sql = "SELECT * FROM ctl_specialinstructions";
             
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             
             while (rs.next()) {
-                lst.add(oscar.Misc.getString(rs, "description"));
+                lst.add(db.getString(rs,"description"));
             }
             
             rs.close();
             arr = (String[])lst.toArray(arr);
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         
         return arr;

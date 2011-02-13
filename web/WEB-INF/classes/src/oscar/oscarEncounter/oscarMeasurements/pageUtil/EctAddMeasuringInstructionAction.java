@@ -33,6 +33,7 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
@@ -41,7 +42,6 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.apache.struts.util.MessageResources;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 import oscar.oscarDB.DBHandler;
@@ -55,7 +55,7 @@ public class EctAddMeasuringInstructionAction extends Action {
     {
         EctAddMeasuringInstructionForm frm = (EctAddMeasuringInstructionForm) form;
 
-        
+        HttpSession session = request.getSession();
         request.getSession().setAttribute("EctAddMeasuringInstructionForm", frm);
         
         MsgStringQuote str = new MsgStringQuote();
@@ -63,7 +63,7 @@ public class EctAddMeasuringInstructionAction extends Action {
         List messages = new LinkedList();
         
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
             String typeDisplayName = frm.getTypeDisplayName();
             String measuringInstrc = frm.getMeasuringInstrc();
@@ -90,7 +90,7 @@ public class EctAddMeasuringInstructionAction extends Action {
                 return (new ActionForward(mapping.getInput()));
             
             String sql = "SELECT measuringInstruction FROM measurementType WHERE measuringInstruction='" + str.q(measuringInstrc) +"' AND typeDisplayName='" + str.q(typeDisplayName) + "'";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             rs.next();
             
             if(rs.getRow()>0){
@@ -102,18 +102,18 @@ public class EctAddMeasuringInstructionAction extends Action {
             
             rs.close();
             sql = "SELECT * FROM measurementType WHERE typeDisplayName='" + str.q(typeDisplayName) +"'";
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             rs.next();
             
-            String type = oscar.Misc.getString(rs, "type");
-            String typeDesc = oscar.Misc.getString(rs, "typeDescription");            
+            String type = db.getString(rs,"type");
+            String typeDesc = db.getString(rs,"typeDescription");            
             
             //Write to database
             sql = "INSERT INTO measurementType"
                 +"(type, typeDisplayName, typeDescription, measuringInstruction, validation)"
                 +" VALUES ('"+str.q(type)+"','"+str.q(typeDisplayName)+"','"+str.q(typeDesc)+"','"+str.q(measuringInstrc)+"','"
                 + str.q(validation)+"')";
-            DBHandler.RunSQL(sql);
+            db.RunSQL(sql);
 
 
             /* select the correct db specific command */
@@ -129,14 +129,14 @@ public class EctAddMeasuringInstructionAction extends Action {
                 throw new SQLException("ERROR: Database " + db_type + " unrecognized.");
 
             rs.close();
-            rs = DBHandler.GetSQL(dbSpecificCommand);
+            rs = db.GetSQL(dbSpecificCommand);
             if(rs.next())
                 requestId = Integer.toString(rs.getInt(1));
                 
         }
         catch(SQLException e)
         {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }            
         
         MessageResources mr = getResources(request);

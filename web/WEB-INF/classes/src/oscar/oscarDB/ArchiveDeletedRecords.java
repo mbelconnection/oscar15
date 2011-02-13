@@ -34,7 +34,6 @@ import java.sql.SQLException;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.jdom.Document;
 import org.jdom.output.XMLOutputter;
-import org.oscarehr.util.MiscUtils;
 
 /**
  * This class is used to archive deleted or updated rows that won't be used again.
@@ -79,8 +78,8 @@ public class ArchiveDeletedRecords {
     
     public int recordRowsToBeDeleted(String sql,String provNo,String table){
         try {
-               
-            ResultSet rs = DBHandler.GetSQL(sql);            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);   
+            ResultSet rs = db.GetSQL(sql);            
             if ( rs.next()){
                String xmlStr = getStringXmlFromResultSet(rs);
                addRowsToModifiedTable(null,provNo,ArchiveDeletedRecords.DELETE,table,null,xmlStr);
@@ -88,14 +87,14 @@ public class ArchiveDeletedRecords {
             rs.close();
         }
         catch(Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return 0;
     }
     
     private void addRowsToModifiedTable(String demoNo,String provNo,String modType,String table,String rowId,String resultSet){
         try {
-               
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);   
             String insertSql = "insert into table_modification (demographic_no,provider_no,modification_type,table_name,row_id,resultSet,modification_date) " +
                                " values ('"+StringEscapeUtils.escapeSql(demoNo)+"', " +
                                " '"+StringEscapeUtils.escapeSql(provNo)+"', " +
@@ -105,11 +104,11 @@ public class ArchiveDeletedRecords {
                                " '"+StringEscapeUtils.escapeSql(resultSet)+"', " +                               
                                "  now()" +
                                ")";            
-            MiscUtils.getLogger().debug(insertSql);
-            DBHandler.RunSQL(insertSql);
+            System.out.println(insertSql);
+            db.RunSQL(insertSql);
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }        
     }
     

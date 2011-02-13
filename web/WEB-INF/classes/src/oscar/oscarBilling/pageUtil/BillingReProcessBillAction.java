@@ -38,7 +38,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 import oscar.oscarDB.DBHandler;
@@ -52,6 +51,7 @@ public class BillingReProcessBillAction extends Action {
     HttpServletRequest request,
     HttpServletResponse response)
     throws IOException, ServletException {
+        System.out.print("BillingReProcessBillAction Jackson");
         if(request.getSession().getAttribute("user") == null  ){
             return (mapping.findForward("Logout"));
         }
@@ -61,9 +61,9 @@ public class BillingReProcessBillAction extends Action {
         GregorianCalendar now=new GregorianCalendar();
         int curYear = now.get(Calendar.YEAR);
         int curMonth = (now.get(Calendar.MONTH)+1);
-        int curDay = now.get(Calendar.DAY_OF_MONTH);  
+        int curDay = now.get(Calendar.DAY_OF_MONTH);
         String curDate = String.valueOf(curYear) + "-" + String.valueOf(curMonth) + "-" + String.valueOf(curDay);
-       
+        String billingid = "";
         String dataCenterId = OscarProperties.getInstance().getProperty("dataCenterId");                                                
         
         String billingmasterNo = frm.getBillingmasterNo();
@@ -113,6 +113,7 @@ public class BillingReProcessBillAction extends Action {
         String serviceStartTime =frm.getStartTime();//f
         String serviceEndTime = frm.getFinishTime();//f
         String birthDate = demo.getDob();//d
+        String office_number = "";
         String correspondenceCode = frm.getCorrespondenceCode();//f
         String claimComment = frm.getShortComment();//f
         
@@ -136,6 +137,7 @@ public class BillingReProcessBillAction extends Action {
         String hcType = demo.getHCType(); //d
         String billRegion =OscarProperties.getInstance().getProperty("billregion");
         ////
+            String billType = request.getParameter("billType");  
             
         String submit = frm.getSubmit();
         String secondSQL = null;
@@ -219,17 +221,17 @@ public class BillingReProcessBillAction extends Action {
                         + "oin_postalcode = '"+oinPostalcode+"'  "
                         +" where billingmaster_no  = '"+billingmasterNo+"'";
             
-            MiscUtils.getLogger().debug("\n"+sql+"\n");
+            System.out.println("\n"+sql+"\n");
             try {                                                
-               
-               DBHandler.RunSQL(sql);
+               DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+               db.RunSQL(sql);
                if (secondSQL != null){
-                    MiscUtils.getLogger().debug(secondSQL);
-                    DBHandler.RunSQL(secondSQL);
+                    System.out.println(secondSQL);
+                    db.RunSQL(secondSQL);
                }
-               MiscUtils.getLogger().debug("sql "+sql);
+               System.out.println("sql "+sql);
             } catch (SQLException e3) {
-               MiscUtils.getLogger().debug(e3.getMessage());
+               System.out.println(e3.getMessage());
             }
          
         request.setAttribute("billing_no", billingmasterNo);
@@ -238,7 +240,7 @@ public class BillingReProcessBillAction extends Action {
     
     public String convertDate8Char(String s){
         String sdate = "00000000", syear="", smonth="", sday="";
-        MiscUtils.getLogger().debug("s=" + s);
+        System.out.println("s=" + s);
         if (s != null){
             
             if (s.indexOf("-") != -1){
@@ -256,13 +258,13 @@ public class BillingReProcessBillAction extends Action {
                 }
                 
                 
-                MiscUtils.getLogger().debug("Year" + syear + " Month" + smonth + " Day" + sday);
+                System.out.println("Year" + syear + " Month" + smonth + " Day" + sday);
                 sdate = syear + smonth + sday;
                 
             }else{
                 sdate = s;
             }
-            MiscUtils.getLogger().debug("sdate:" + sdate);
+            System.out.println("sdate:" + sdate);
         }else{
             sdate="00000000";
             

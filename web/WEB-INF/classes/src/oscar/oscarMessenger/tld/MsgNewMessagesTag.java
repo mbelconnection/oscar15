@@ -27,8 +27,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 
@@ -52,18 +50,18 @@ public class MsgNewMessagesTag extends TagSupport{
   public int doStartTag() throws JspException {
 
    try{
-      
+      DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
       java.sql.ResultSet rs;
    //   String sdaf = new String("sdf");
       String sql = new String("select count(*) from messagelisttbl where provider_no = '"+ providerNo +"' and status = 'new' ");
-      rs = DBHandler.GetSQL(sql);
+      rs = db.GetSQL(sql);
       while (rs.next()) {
          numNewMessages = (rs.getInt(1));
-
+         // System.out.println(numNewMessages);
       }
      rs.close();
 
-   }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+   }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
 
    try{
       JspWriter out = pageContext.getOut();
@@ -74,7 +72,7 @@ public class MsgNewMessagesTag extends TagSupport{
       else{
          out.print("<font FACE=\"VERDANA,ARIAL,HELVETICA\" SIZE=\"2\" color=\"black\">msg</font>  ");
       }
-   } catch(Exception p){ MiscUtils.getLogger().error("Error", p);}
+   } catch(Exception p){p.printStackTrace(System.out);}
   return(SKIP_BODY);
   }//doStartTag
 

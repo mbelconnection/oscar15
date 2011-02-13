@@ -34,8 +34,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 /**
@@ -68,26 +66,26 @@ public class SQLDenominator implements Denominator{
     public List getDenominatorList() {
         ArrayList list = new ArrayList();
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             if (replaceableValues != null){
-                MiscUtils.getLogger().debug("has replaceablevalues"+replaceableValues.size());
-                MiscUtils.getLogger().debug("before replace \n"+sql);
+                System.out.println("has replaceablevalues"+replaceableValues.size());
+                System.out.println("before replace \n"+sql);
                 exeSql = replaceAll(sql, replaceableValues);
             }else{              
-                MiscUtils.getLogger().debug("doesn't have replaceablevalues");
+                System.out.println("doesn't have replaceablevalues");
                 exeSql = sql;
-                MiscUtils.getLogger().debug("sql "+sql);
+                System.out.println("sql "+sql);
             }
             
-            ResultSet rs = DBHandler.GetSQL(exeSql);
-            MiscUtils.getLogger().debug("SQL Statement: " + exeSql);
+            ResultSet rs = db.GetSQL(exeSql);
+            System.out.println("SQL Statement: " + exeSql);
             while(rs.next()){
-               String toAdd = oscar.Misc.getString(rs, resultString);
+               String toAdd = db.getString(rs,resultString);
                list.add(toAdd);
             }
             rs.close();
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return list;
     }
@@ -112,8 +110,9 @@ public class SQLDenominator implements Denominator{
         while(e.hasMoreElements()){
            String processString = (String) e.nextElement();         
            String replaceValue = (String) replacers.get(processString);
+           System.out.println ("key :"+processString+" value :"+replaceValue);
            str = str.replaceAll("\\$\\{"+processString+"\\}", replaceValue);
-           MiscUtils.getLogger().debug(str);
+           System.out.println(str);
            
         }
         return str;
@@ -126,7 +125,7 @@ public class SQLDenominator implements Denominator{
     public void parseReplaceValues(String str){
         if (str != null){
             try{
-                MiscUtils.getLogger().debug("parsing string "+str);
+                System.out.println("parsing string "+str);
                 if (str.indexOf(",") != -1){
                 replaceKeys = str.split(",");
                 }else{
@@ -134,7 +133,7 @@ public class SQLDenominator implements Denominator{
                     replaceKeys[0] = str;
                 }
             }catch(Exception e){
-                MiscUtils.getLogger().error("Error", e);
+                e.printStackTrace();
             }
         }
     }

@@ -26,14 +26,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oscarehr.PMmodule.model.BedCheckTime;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 public class BedCheckTimeDAO extends HibernateDaoSupport {
 
-    private static final Logger log=MiscUtils.getLogger();
+    private static final Log log = LogFactory.getLog(BedCheckTimeDAO.class);
 
     public boolean bedCheckTimeExists(Integer programId, Date time) {
         List bedCheckTimes = getHibernateTemplate().find("from BedCheckTime where programId = ? and time = ?", new Object[] {programId, time});

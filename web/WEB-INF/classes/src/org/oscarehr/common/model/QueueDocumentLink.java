@@ -58,7 +58,7 @@ public class QueueDocumentLink {
     }
     public void setStatus(String s){
         this.status=s;
-    }
+}
     public String getStatus(){
         return this.status;
     }

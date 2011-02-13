@@ -38,7 +38,6 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 import oscar.util.UtilXML;
@@ -57,14 +56,14 @@ public class ReportManager {
         String sql = "SELECT templateid, templatetitle, templatedescription FROM reportTemplates WHERE active=1";
         ArrayList reports = new ArrayList();
         try {
-            
-            ResultSet rs = DBHandler.GetSQL(sql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL(sql);
             while (rs.next()) {
                 ReportObjectGeneric curReport = new ReportObjectGeneric(rs.getString("templateid"), rs.getString("templatetitle"), rs.getString("templatedescription"));
                 reports.add(curReport);
             }
         } catch (SQLException sqe) {
-            MiscUtils.getLogger().error("Error", sqe);
+            sqe.printStackTrace();
         }
         return reports;
     }
@@ -76,8 +75,8 @@ public class ReportManager {
         String sql = "SELECT * FROM reportTemplates WHERE templateId='" + templateid + "'";
         ReportObjectGeneric curReport = new ReportObjectGeneric();
         try {
-            
-            ResultSet rs = DBHandler.GetSQL(sql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()) {
                 String templatetitle = rs.getString("templatetitle");
                 String templatedescription = rs.getString("templatedescription");
@@ -86,15 +85,15 @@ public class ReportManager {
                 curReport.setDescription(templatedescription);
             }
         } catch (SQLException sqe) {
-            MiscUtils.getLogger().error("Error", sqe);
+            sqe.printStackTrace();
         }
         return curReport;
     }
     public ReportObject getReportTemplate(String templateid) {
         String sql = "SELECT * FROM reportTemplates WHERE templateId='" + templateid + "'";
         try {
-            
-            ResultSet rs = DBHandler.GetSQL(sql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()) {
                 String templatetitle = rs.getString("templatetitle");
                 String templatedescription = rs.getString("templatedescription");
@@ -119,7 +118,8 @@ public class ReportManager {
                         ArrayList choices = new ArrayList();
                         String paramquery = param.getChildText("param-query"); //if retrieving choices from the DB
                         if (paramquery != null) {
-                            ResultSet rschoices = DBHandler.GetSQL(paramquery);
+                            DBHandler db2 = new DBHandler(DBHandler.OSCAR_DATA);
+                            ResultSet rschoices = db2.GetSQL(paramquery);
                             while (rschoices.next()) {
                                 String choiceid = rschoices.getString(1);
                                 String choicetext = rschoices.getString(2);
@@ -146,7 +146,7 @@ public class ReportManager {
                 return new ReportObjectGeneric(templateid, "Template Not Found");
             }
         } catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
             return new ReportObjectGeneric(templateid, "Parameter Parsing Exception: check the configuration file");
         }
         /*
@@ -169,13 +169,13 @@ public class ReportManager {
     public String getSQL(String templateId) {
         String sql = "SELECT templatesql FROM reportTemplates WHERE templateid='" + templateId + "'";
         try {
-            
-            ResultSet rs = DBHandler.GetSQL(sql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()) {
                 return rs.getString("templatesql");
             } else return "";
         } catch (SQLException sqe) {
-            MiscUtils.getLogger().error("Error", sqe);
+            sqe.printStackTrace();
             return "";
         }
     }
@@ -184,12 +184,12 @@ public class ReportManager {
         String sql = "SELECT templatexml FROM reportTemplates WHERE templateid='" + templateid + "'";
         String xml = "";
         try {
-            
-            ResultSet rs = DBHandler.GetSQL(sql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()) xml = rs.getString("templatexml");
             if (xml == null) xml = "";
         } catch (SQLException sqe) {
-            MiscUtils.getLogger().error("Error", sqe);
+            sqe.printStackTrace();
         }
         return xml;
     }
@@ -199,11 +199,11 @@ public class ReportManager {
         String sqlinsert = "INSERT INTO reportTemplates VALUES ('globalxml', 'Global XML file', '', '', '" +
                 StringEscapeUtils.escapeSql(UtilXML.unescapeXML(xmltext)) + "', 0)";
         try {
-            
-            DBHandler.RunSQL(sqldelete);
-            DBHandler.RunSQL(sqlinsert);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            db.RunSQL(sqldelete);
+            db.RunSQL(sqlinsert);
         } catch (SQLException sqe) {
-            MiscUtils.getLogger().error("Error", sqe);
+            sqe.printStackTrace();
         }
         return loadInReports();
     }
@@ -256,18 +256,18 @@ CREATE TABLE reportTemplates (
                 }
                 String sql = "INSERT INTO reportTemplates (templatetitle, templatedescription, templatesql, templatexml, active) " +
                         "VALUES ('" + templateTitle + "', '" + templateDescription + "', '" + querysql + "', '" + reportXML + "', " + activeint + ")";
-
+                //System.out.println("sql: " + sql);
                 try {
-                    
-                    DBHandler.RunSQL(sql);
+                    DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+                    db.RunSQL(sql);
                 } catch (SQLException sqe) {
-                    MiscUtils.getLogger().error("Error", sqe);
-                    MiscUtils.getLogger().debug("Report Error Caught: assumed duplicate report id");
+                    sqe.printStackTrace();
+                    System.out.println("Report Error Caught: assumed duplicate report id");
                     return "Database Error: check for duplicate report id on the '" + templateTitle + "' report";
                 }
             }
         } catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
             return "Error parsing template file.";
         }
         
@@ -335,16 +335,16 @@ CREATE TABLE reportTemplates (
                         "templatesql='" + querysql + "', templatexml='" + templateXMLstr + "', active=" + activeint + ", type= '" + type + "' WHERE templateid='" + templateId + "'";                        
 
                 try {
-                    
-                    DBHandler.RunSQL(sql);
+                    DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+                    db.RunSQL(sql);
                 } catch (SQLException sqe) {
-                    MiscUtils.getLogger().error("Error", sqe);
-                    MiscUtils.getLogger().debug("Report Template Writing Error Caught");
+                    sqe.printStackTrace();
+                    System.out.println("Report Template Writing Error Caught");
                     return "Database Error: Could not write to database";
                 }
             }
         } catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
             return "Error parsing template file, make sure the root element is set.";
         }
         return "Saved Successfully";
@@ -353,10 +353,10 @@ CREATE TABLE reportTemplates (
     public String deleteTemplate(String templateid) {
         String sql = "DELETE FROM reportTemplates WHERE templateid='" + templateid + "'";
         try {
-            
-            DBHandler.RunSQL(sql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            db.RunSQL(sql);
         } catch (SQLException sqe) {
-            MiscUtils.getLogger().error("Error", sqe);
+            sqe.printStackTrace();
             return "Database Error: Could not delete template";
         }
         return "";
@@ -367,7 +367,7 @@ CREATE TABLE reportTemplates (
             Document templateXMLdoc = readXml(templateXML);
             return addUpdateTemplate(null, templateXMLdoc);
         } catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
             return "Error: Error parsing file, make sure the root element is set.";
         }
     }
@@ -377,7 +377,7 @@ CREATE TABLE reportTemplates (
             Document templateXMLdoc = readXml(templateXML);
             return addUpdateTemplate(templateId, templateXMLdoc);
         } catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
             return "Error: Error parsing file";
         }
     }

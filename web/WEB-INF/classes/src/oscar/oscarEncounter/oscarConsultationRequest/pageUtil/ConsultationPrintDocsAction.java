@@ -38,7 +38,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 import oscar.util.ConcatPDF;
@@ -68,7 +67,8 @@ public class ConsultationPrintDocsAction extends Action {
             response.setHeader("Content-Disposition", "attachment; filename=\"combinedPDF-"+UtilDateUtilities.getToday("yyyy-mm-dd.hh.mm.ss")+".pdf\"");
             try {
                 ConcatPDF.concat(alist,response.getOutputStream());            
-            } catch (IOException ex) {MiscUtils.getLogger().error("Error", ex);
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }            
             return null;
         }

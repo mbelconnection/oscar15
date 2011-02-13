@@ -22,24 +22,23 @@
 package org.oscarehr.billing.CA.ON.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-
-import javax.persistence.CascadeType;
+import java.util.ArrayList;
+import java.util.Iterator;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.PostPersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.OneToMany;
+import javax.persistence.CascadeType;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.PostPersist;
 
 import org.oscarehr.common.model.AbstractModel;
 
@@ -51,7 +50,7 @@ import org.oscarehr.common.model.AbstractModel;
 @Entity
 @Table(name = "billing_on_cheader1")
 public class BillingClaimHeader1 extends AbstractModel<Integer> implements Serializable {
-
+    
     private Integer id;
     private Integer header_id;
     private String transc_id;
@@ -89,12 +88,12 @@ public class BillingClaimHeader1 extends AbstractModel<Integer> implements Seria
     private String clinic;
 
     private List<BillingItem>billingItems = new ArrayList<BillingItem>();
-
+    
     /** Creates a new instance of BillingClaimHeader1 */
     public BillingClaimHeader1() {
-
+        
     }
-
+    
     @Override
     @Id()
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -109,7 +108,7 @@ public class BillingClaimHeader1 extends AbstractModel<Integer> implements Seria
     public void setRec_id(String id) {
         this.rec_id = id;
     }
-
+    
     @Column(length = 1)
     public String getRec_id() {
         return rec_id;
@@ -118,15 +117,15 @@ public class BillingClaimHeader1 extends AbstractModel<Integer> implements Seria
     public String getTransc_id() {
         return this.transc_id;
     }
-
+    
     public void setTransc_id(String id) {
         this.transc_id = id;
     }
-
+    
     public int getHeader_id() {
         return this.header_id;
     }
-
+    
     public void setHeader_id(int id) {
         this.header_id = id;
     }
@@ -465,12 +464,14 @@ public class BillingClaimHeader1 extends AbstractModel<Integer> implements Seria
     }
 
     @PostPersist
-    public void postPersist() {        
+    public void postPersist() {
+        System.out.println("POST PERSIST");
         Iterator<BillingItem> i = this.billingItems.iterator();
         BillingItem item;
         while(i.hasNext()) {
             item = i.next();
-            item.setCh1_id(id);           
+            item.setCh1_id(id);
+            System.out.println("Set ch1_id to " + item.getCh1_id());
         }
     }
 }

@@ -30,7 +30,6 @@ package oscar.dms.actions;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -38,9 +37,6 @@ import org.apache.struts.action.ActionMapping;
 import org.oscarehr.phr.PHRConstants;
 import org.oscarehr.phr.model.PHRDocument;
 import org.oscarehr.phr.service.PHRService;
-import org.oscarehr.util.LoggedInInfo;
-import org.oscarehr.util.MiscUtils;
-import org.oscarehr.util.SpringUtils;
 
 import oscar.dms.EDoc;
 import oscar.dms.EDocUtil;
@@ -48,56 +44,62 @@ import oscar.oscarDemographic.data.DemographicData;
 import oscar.oscarProvider.data.ProviderData;
 
 /**
+ *
  * @author rjonasz
- */
+ */ 
 public class SendDocToPhrAction extends Action {
+    
+    PHRService phrService = null;
+    PHRConstants phrConstants = null;
+    
+    public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
 
-	private static final Logger logger = MiscUtils.getLogger();
+        String[] files = request.getParameterValues("docNo");
+        String curUser = request.getParameter("curUser");
+        String error = null;
+        System.out.println("SendDoctoPHRactionCalled!!!");
+        if( files != null && curUser != null ) {
+            
+            System.out.println("Preparing to send " + files.length + " files");
+            EDocUtil docData = new EDocUtil();                        
+            
+            DemographicData.Demographic demo = new DemographicData().getDemographic(request.getParameter("demoId"));
+            ProviderData prov = new ProviderData(curUser);
 
-	public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-
-		logger.debug("called execute()");
-
-		String[] files = request.getParameterValues("docNo");
-		String demographicId=request.getParameter("demoId");
-		
-		if (files != null) {
-
-			logger.debug("Preparing to send " + files.length + " files");
-
-			DemographicData.Demographic demo = new DemographicData().getDemographic(demographicId);
-			LoggedInInfo loggedInfo=LoggedInInfo.loggedInInfo.get();
-			ProviderData prov = new ProviderData(loggedInfo.loggedInProvider.getProviderNo());
-
-			for (int idx = 0; idx < files.length; ++idx) {
-				logger.debug("sending file : "+files[idx]);
-				EDoc doc = EDocUtil.getDoc(files[idx]);
-				addOrUpdate(request, demo, prov, doc);
-			}
-
-		}
-		return mapping.findForward("finished");
-	}
-
-	private static void addOrUpdate(HttpServletRequest request, DemographicData.Demographic demo, ProviderData prov, EDoc doc) {
-		logger.debug("called addOrUpdate()");
-
-		PHRService phrService = (PHRService) SpringUtils.getBean("phrService");
-		
-		try {
-	    	if (phrService.isIndivoRegistered(PHRConstants.DOCTYPE_BINARYDATA(), doc.getDocId())) {
-	    		// update
-	    		logger.debug("called update");
-	    		String phrIndex = phrService.getPhrIndex(PHRConstants.DOCTYPE_BINARYDATA(), doc.getDocId());
-	    		phrService.sendUpdateBinaryData(prov, demo.getChartNo(), PHRDocument.TYPE_DEMOGRAPHIC, demo.getPin(), doc, phrIndex);
-	    	} else {
-	    		// add
-	    		logger.debug("called add");
-	    		phrService.sendAddBinaryData(prov, demo.getChartNo(), PHRDocument.TYPE_DEMOGRAPHIC, demo.getPin(), doc);
-	    	}
-	    } catch (Exception e) {
-	    	logger.error("Error", e);
-	    	request.setAttribute("error_msg", e.getMessage());
-	    }
+                        
+            for( int idx = 0; idx < files.length; ++idx ) {
+                EDoc doc = docData.getDoc(files[idx]);
+                try {
+                    if(phrService.isIndivoRegistered(phrConstants.DOCTYPE_BINARYDATA(), doc.getDocId())) {                   
+                        //update
+                        String phrIndex = phrService.getPhrIndex(phrConstants.DOCTYPE_BINARYDATA(), doc.getDocId());
+                        phrService.sendUpdateBinaryData(prov, demo.getChartNo(), PHRDocument.TYPE_DEMOGRAPHIC, demo.getPin(), doc, phrIndex);
+                    } else {       
+                        //add
+                        phrService.sendAddBinaryData(prov, demo.getChartNo(), PHRDocument. TYPE_DEMOGRAPHIC, demo.getPin(), doc);
+                    }
+                    //throw new Exception("Error: Cannot marshal the document");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    error = e.getMessage();
+                }
+            }
+        
+        }
+        request.setAttribute("error_msg", error);
+        return mapping.findForward("finished");
     }
+    
+    /** Creates a new instance of Send2IndivoAction */
+    public SendDocToPhrAction() {
+    }
+    
+    public void setPhrService(PHRService pServ){
+        this.phrService = pServ;
+    }
+    
+    public void setPhrConstants(PHRConstants pConst) {
+        this.phrConstants = pConst;
+    }
+    
 }

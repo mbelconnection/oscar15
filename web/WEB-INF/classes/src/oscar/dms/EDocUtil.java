@@ -31,16 +31,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oscarehr.PMmodule.service.ProgramManager;
 import org.oscarehr.casemgmt.dao.CaseManagementNoteLinkDAO;
 import org.oscarehr.casemgmt.model.CaseManagementNoteLink;
-import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 
 import oscar.MyDateFormat;
@@ -51,8 +51,8 @@ import oscar.util.SqlUtilBaseS;
 import oscar.util.UtilDateUtilities;
 
 // all SQL statements here
-public final class EDocUtil extends SqlUtilBaseS {
-    static Logger log=MiscUtils.getLogger();
+public class EDocUtil extends SqlUtilBaseS {
+    static Log log = LogFactory.getLog(EDocUtil.class);
 
     public static final String PUBLIC = "public";
     public static final String PRIVATE = "private";
@@ -88,7 +88,7 @@ public final class EDocUtil extends SqlUtilBaseS {
             }
         }
         catch (SQLException sqe) {
-            MiscUtils.getLogger().error("Error", sqe);
+            sqe.printStackTrace();
         }
         return moduleName;
     }
@@ -101,7 +101,7 @@ public final class EDocUtil extends SqlUtilBaseS {
             if (rs.next()) info = rs.getString(fieldName);
         }
         catch (SQLException sqe) {
-            MiscUtils.getLogger().error("Error", sqe);
+            sqe.printStackTrace();
         }
         return info;
     }
@@ -118,7 +118,7 @@ public final class EDocUtil extends SqlUtilBaseS {
             }
         }
         catch (SQLException sqe) {
-            MiscUtils.getLogger().error("Error", sqe);
+            sqe.printStackTrace();
         }
         return doctypes;
     }
@@ -126,15 +126,12 @@ public final class EDocUtil extends SqlUtilBaseS {
 
     public static void addCaseMgmtNoteLink(CaseManagementNoteLink cmnl) {
 		caseManagementNoteLinkDao.save(cmnl);
-        MiscUtils.getLogger().debug("ADD CASEMGMT NOTE LINK : Id=" + cmnl.getId());
+        System.out.println("ADD CASEMGMT NOTE LINK : Id=" + cmnl.getId());
     }
 
-    /**
-     * @return the new documentId
-     */
     public static String addDocumentSQL(EDoc newDocument) {
-        String preparedSQL = "INSERT INTO document (doctype, docdesc, docxml, docfilename, doccreator, source, responsible, program_id, updatedatetime, status, contenttype, public1, observationdate,number_of_pages,appointment_no) VALUES (?,?,?, ?,?,?, ?,?,?, ?,?,?,?,?,?)";
-        DBPreparedHandlerParam[] param = new DBPreparedHandlerParam[15];
+        String preparedSQL = "INSERT INTO document (doctype, docdesc, docxml, docfilename, doccreator, source, responsible, program_id, updatedatetime, status, contenttype, public1, observationdate,number_of_pages) VALUES (?,?,?, ?,?,?, ?,?,?, ?,?,?,?,?)";
+        DBPreparedHandlerParam[] param = new DBPreparedHandlerParam[14];
         int counter = 0;
         param[counter++] = new DBPreparedHandlerParam(newDocument.getType());
         param[counter++] = new DBPreparedHandlerParam(newDocument.getDescription());
@@ -154,7 +151,6 @@ public final class EDocUtil extends SqlUtilBaseS {
         java.sql.Date od2 = MyDateFormat.getSysDate(newDocument.getObservationDate());
         param[counter++] = new DBPreparedHandlerParam(od2);
         param[counter++] = new DBPreparedHandlerParam(newDocument.getNumberOfPages());
-        param[counter++] = new DBPreparedHandlerParam(newDocument.getAppointmentNo());
 
         /*
          * String documentSql = "INSERT INTO document (doctype, docdesc, docxml, docfilename, doccreator, updatedatetime, status, contenttype, public1, observationdate) " + "VALUES ('" +
@@ -162,28 +158,26 @@ public final class EDocUtil extends SqlUtilBaseS {
          * org.apache.commons.lang.StringEscapeUtils.escapeSql(newDocument.getHtml()) + "', '" + org.apache.commons.lang.StringEscapeUtils.escapeSql(newDocument.getFileName()) + "', '" + newDocument.getCreatorId() + "', '" + newDocument.getDateTimeStamp() +
          * "', '" + newDocument.getStatus() + "', '" + newDocument.getContentType() + "', '" + newDocument.getDocPublic() + "', '" + newDocument.getObservationDate() + "')";
          *
-         * String document_no = runSQLinsert(documentSql); MiscUtils.getLogger().debug("addDoc: " + documentSql);
+         * String document_no = runSQLinsert(documentSql); System.out.println("addDoc: " + documentSql);
          */
-        
         runPreparedSql(preparedSQL, param);
         String document_no = getLastDocumentNo();
         String ctlDocumentSql = "INSERT INTO ctl_document (module,module_id,document_no,status) VALUES ('" + newDocument.getModule() + "', " + newDocument.getModuleId() + ", " + document_no + ", '" + newDocument.getStatus() + "'  )";
-       
-        MiscUtils.getLogger().debug("in addDocumentSQL ,add ctl_document: " + ctlDocumentSql);
+
         runSQL(ctlDocumentSql);
         return document_no;
     }
 
-   
+
     public static void detachDocConsult(String docNo, String consultId) {
         String sql = "UPDATE consultdocs SET deleted = 'Y' WHERE requestId = " + consultId + " AND document_no = " + docNo + " AND doctype = 'D'";
-        MiscUtils.getLogger().debug("detachDoc: " + sql);
+        System.out.println("detachDoc: " + sql);
         runSQL(sql);
     }
 
     public static void attachDocConsult(String providerNo, String docNo, String consultId) {
         String sql = "INSERT INTO consultdocs (requestId,document_no,doctype,attach_date, provider_no) VALUES(" + consultId + "," + docNo + ",'D', now(), '" + providerNo + "')";
-        MiscUtils.getLogger().debug("attachDoc: " + sql);
+        System.out.println("attachDoc: " + sql);
         runSQL(sql);
     }
 
@@ -224,7 +218,7 @@ public final class EDocUtil extends SqlUtilBaseS {
     }
 
     public static void indivoRegister(EDoc doc) {
-        StringBuilder sql = new StringBuilder("INSERT INTO indivoDocs (oscarDocNo, indivoDocIdx, docType, dateSent, `update`) VALUES(" + doc.getDocId() + ",'" + doc.getIndivoIdx() + "','document',now(),");
+        StringBuffer sql = new StringBuffer("INSERT INTO indivoDocs (oscarDocNo, indivoDocIdx, docType, dateSent, `update`) VALUES(" + doc.getDocId() + ",'" + doc.getIndivoIdx() + "','document',now(),");
 
         if (doc.isInIndivo()) sql.append("'U')");
         else sql.append("'I')");
@@ -245,10 +239,10 @@ public final class EDocUtil extends SqlUtilBaseS {
      * Fetches all consult docs attached to specific consultation
      */
     public static ArrayList<EDoc> listDocs(String demoNo, String consultationId, boolean attached) {
-        String sql = "SELECT DISTINCT d.document_no, d.doccreator, d.source, d.responsible, d.program_id, d.doctype, d.docdesc, d.observationdate, d.status, d.docfilename, d.contenttype, d.reviewer, d.reviewdatetime, d.appointment_no FROM document d, ctl_document c "
+        String sql = "SELECT DISTINCT d.document_no, d.doccreator, d.source, d.responsible, d.program_id, d.doctype, d.docdesc, d.observationdate, d.status, d.docfilename, d.contenttype, d.reviewer, d.reviewdatetime FROM document d, ctl_document c "
                 + "WHERE d.status=c.status AND d.status != 'D' AND c.document_no=d.document_no AND " + "c.module='demographic' AND c.module_id = " + demoNo;
 
-        String attachQuery = "SELECT d.document_no, d.doccreator, d.source, d.responsible, d.program_id, d.doctype, d.docdesc, d.observationdate, d.status, d.docfilename, d.contenttype, d.reviewer, d.reviewdatetime, d.appointment_no FROM document d, consultdocs cd " +
+        String attachQuery = "SELECT d.document_no, d.doccreator, d.source, d.responsible, d.program_id, d.doctype, d.docdesc, d.observationdate, d.status, d.docfilename, d.contenttype, d.reviewer, d.reviewdatetime FROM document d, consultdocs cd " +
 		"WHERE d.document_no = cd.document_no AND " + "cd.requestId = "+consultationId+" AND cd.doctype = 'D' AND cd.deleted IS NULL";
 
         ArrayList<EDoc> resultDocs = new ArrayList<EDoc>();
@@ -267,8 +261,6 @@ public final class EDocUtil extends SqlUtilBaseS {
 		currentdoc.setResponsibleId(rsGetString(rs, "responsible"));
                 String temp = rsGetString(rs, "program_id");
                 if (temp != null && temp.length()>0) currentdoc.setProgramId(Integer.valueOf(temp));
-                temp = rsGetString(rs, "appointment_no");
-                if (temp != null && temp.length()>0) currentdoc.setAppointmentNo(Integer.valueOf(temp));
                 currentdoc.setType(rsGetString(rs, "doctype"));
                 currentdoc.setStatus(rsGetString(rs, "status").charAt(0));
                 currentdoc.setObservationDate(rsGetString(rs, "observationdate"));
@@ -291,8 +283,6 @@ public final class EDocUtil extends SqlUtilBaseS {
 		    currentdoc.setResponsibleId(rsGetString(rs, "responsible"));
                     String temp = rsGetString(rs, "program_id");
                     if (temp != null && temp.length()>0) currentdoc.setProgramId(Integer.valueOf(temp));
-                    temp = rsGetString(rs, "appointment_no");
-                    if (temp != null && temp.length()>0) currentdoc.setAppointmentNo(Integer.valueOf(temp));
                     currentdoc.setType(rsGetString(rs, "doctype"));
                     currentdoc.setStatus(rsGetString(rs, "status").charAt(0));
                     currentdoc.setObservationDate(rsGetString(rs, "observationdate"));
@@ -307,7 +297,7 @@ public final class EDocUtil extends SqlUtilBaseS {
 
         }
         catch (SQLException sqe) {
-            MiscUtils.getLogger().error("Error", sqe);
+            sqe.printStackTrace();
         }
 
         if (OscarProperties.getInstance().getBooleanProperty("FILTER_ON_FACILITY", "true")) {
@@ -323,7 +313,7 @@ public final class EDocUtil extends SqlUtilBaseS {
 
     public static EDoc getEDocFromDocId(String docId){
          String sql = "SELECT DISTINCT c.module, c.module_id, d.doccreator, d.source, d.responsible, d.program_id, "
-                + "d.status, d.docdesc, d.docfilename, d.doctype, d.document_no, d.updatedatetime, d.contenttype, d.observationdate, d.reviewer, d.reviewdatetime, d.appointment_no " +
+                + "d.status, d.docdesc, d.docfilename, d.doctype, d.document_no, d.updatedatetime, d.contenttype, d.observationdate, d.reviewer, d.reviewdatetime " +
 		"FROM document d, ctl_document c WHERE "
                 + " c.document_no=d.document_no AND c.document_no='" + docId + "'";
         sql = sql + " ORDER BY " + EDocUtil.SORT_OBSERVATIONDATE;//default sort
@@ -332,7 +322,7 @@ public final class EDocUtil extends SqlUtilBaseS {
         EDoc currentdoc = new EDoc();
         try {
           if(rs.first()){
-      
+
                 currentdoc.setModule(rsGetString(rs, "module"));
                 currentdoc.setModuleId(rsGetString(rs, "module_id"));
                 currentdoc.setDocId(rsGetString(rs, "document_no"));
@@ -343,8 +333,6 @@ public final class EDocUtil extends SqlUtilBaseS {
 		currentdoc.setResponsibleId(rsGetString(rs, "responsible"));
                 String temp = rsGetString(rs, "program_id");
                 if (temp != null && temp.length()>0) currentdoc.setProgramId(Integer.valueOf(temp));
-                temp = rsGetString(rs, "appointment_no");
-                if (temp != null && temp.length()>0) currentdoc.setAppointmentNo(Integer.valueOf(temp));
                 currentdoc.setDateTimeStamp(rsGetString(rs, "updatedatetime"));
                 currentdoc.setFileName(rsGetString(rs, "docfilename"));
                 currentdoc.setStatus(rsGetString(rs, "status").charAt(0));
@@ -352,19 +340,19 @@ public final class EDocUtil extends SqlUtilBaseS {
                 currentdoc.setObservationDate(rsGetString(rs, "observationdate"));
 		currentdoc.setReviewerId(rsGetString(rs, "reviewer"));
 		currentdoc.setReviewDateTime(rsGetString(rs, "reviewdatetime"));
-    
-      
+
+
             rs.close();
           }
         }
         catch (SQLException sqe) {
-            MiscUtils.getLogger().error("Error", sqe);
+           sqe.printStackTrace();
         }
 
         return currentdoc;
     }
     public static ArrayList<EDoc> listDocsPreviewInbox(List<String> docIds){
-     
+
         ArrayList<EDoc> resultDocs = new ArrayList<EDoc>();
         for(String docId:docIds){
             EDoc currentdoc = new EDoc();
@@ -378,7 +366,7 @@ public final class EDocUtil extends SqlUtilBaseS {
         // docType = null or = "all" to show all doctypes
         // select publicDoc and sorting from static variables for this class i.e. sort=EDocUtil.SORT_OBSERVATIONDATE
         // sql base (prefix) to avoid repetition in the if-statements
-        String sql = "SELECT DISTINCT c.module, c.module_id, d.doccreator, d.source, d.responsible, d.program_id, d.status, d.docdesc, d.docfilename, d.doctype, d.document_no, d.updatedatetime, d.contenttype, d.observationdate, d.reviewer, d.reviewdatetime, d.appointment_no " +
+        String sql = "SELECT DISTINCT c.module, c.module_id, d.doccreator, d.source, d.responsible, d.program_id, d.status, d.docdesc, d.docfilename, d.doctype, d.document_no, d.updatedatetime, d.contenttype, d.observationdate, d.reviewer, d.reviewdatetime " +
 		"FROM document d, ctl_document c WHERE c.document_no=d.document_no AND c.module='" + module + "'";
         // if-statements to select the where condition (suffix)
         if (publicDoc.equals(PUBLIC)) {
@@ -398,6 +386,7 @@ public final class EDocUtil extends SqlUtilBaseS {
         }
 
         sql = sql + " ORDER BY " + sort;
+        log.info("sql list: " + sql);
         ResultSet rs = getSQL(sql);
         ArrayList<EDoc> resultDocs = new ArrayList<EDoc>();
         try {
@@ -413,8 +402,6 @@ public final class EDocUtil extends SqlUtilBaseS {
 		currentdoc.setResponsibleId(rsGetString(rs, "responsible"));
                 String temp = rsGetString(rs, "program_id");
                 if (temp != null && temp.length()>0) currentdoc.setProgramId(Integer.valueOf(temp));
-                temp = rsGetString(rs, "appointment_no");
-                if (temp != null && temp.length()>0) currentdoc.setAppointmentNo(Integer.valueOf(temp));
                 currentdoc.setDateTimeStamp(rsGetString(rs, "updatedatetime"));
                 currentdoc.setFileName(rsGetString(rs, "docfilename"));
                 currentdoc.setStatus(rsGetString(rs, "status").charAt(0));
@@ -427,7 +414,7 @@ public final class EDocUtil extends SqlUtilBaseS {
             rs.close();
         }
         catch (SQLException sqe) {
-            MiscUtils.getLogger().error("Error", sqe);
+            sqe.printStackTrace();
         }
 
         if (OscarProperties.getInstance().getBooleanProperty("FILTER_ON_FACILITY", "true")) {
@@ -440,7 +427,7 @@ public final class EDocUtil extends SqlUtilBaseS {
     public ArrayList<EDoc> getUnmatchedDocuments(String creator, String responsible, Date startDate, Date endDate, boolean unmatchedDemographics){
        ArrayList<EDoc> list = new ArrayList();
        //boolean matchedDemographics = true;
-       String sql= "SELECT DISTINCT c.module, c.module_id, d.doccreator, d.source, d.responsible, d.program_id, d.status, d.docdesc, d.docfilename, d.doctype, d.document_no, d.updatedatetime, d.contenttype, d.observationdate, d.appointment_no FROM document d, ctl_document c WHERE c.document_no=d.document_no AND c.module='demographic' and doccreator = ? and responsible = ? and updatedatetime >= ?  and updatedatetime <= ?";
+       String sql= "SELECT DISTINCT c.module, c.module_id, d.doccreator, d.source, d.responsible, d.program_id, d.status, d.docdesc, d.docfilename, d.doctype, d.document_no, d.updatedatetime, d.contenttype, d.observationdate FROM document d, ctl_document c WHERE c.document_no=d.document_no AND c.module='demographic' and doccreator = ? and responsible = ? and updatedatetime >= ?  and updatedatetime <= ?";
        if (unmatchedDemographics){
            sql += " and c.module_id = -1 ";
        }
@@ -450,17 +437,17 @@ public final class EDocUtil extends SqlUtilBaseS {
        try{
             java.sql.Date  sDate =  new java.sql.Date(startDate.getTime());
             java.sql.Date eDate  = new java.sql.Date(endDate.getTime());
-            MiscUtils.getLogger().debug("Creator "+creator+" start "+sDate + " end "+eDate);
+            System.out.println("Creator "+creator+" start "+sDate + " end "+eDate);
 
-            Connection c=DbConnectionFilter.getThreadLocalDbConnection();
-            PreparedStatement ps =  c.prepareStatement(sql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            PreparedStatement ps =  DBHandler.getConnection().prepareStatement(sql);
             ps.setString(1,creator);
 	    ps.setString(2,responsible);
             ps.setDate(3,new java.sql.Date(startDate.getTime()));
             ps.setDate(4,new java.sql.Date(endDate.getTime()));
             ResultSet rs = ps.executeQuery();
             while (rs.next()){
-               MiscUtils.getLogger().debug("DOCFILENAME "+rs.getString("docfilename"));
+               System.out.println("DOCFILENAME "+rs.getString("docfilename"));
                 EDoc currentdoc = new EDoc();
                 currentdoc.setModule(rsGetString(rs, "module"));
                 currentdoc.setModuleId(rsGetString(rs, "module_id"));
@@ -472,8 +459,6 @@ public final class EDocUtil extends SqlUtilBaseS {
 		currentdoc.setResponsibleId(rsGetString(rs, "responsible"));
                 String temp = rsGetString(rs, "program_id");
                 if (temp != null && temp.length()>0) currentdoc.setProgramId(Integer.valueOf(temp));
-                temp = rsGetString(rs, "appointment_no");
-                if (temp != null && temp.length()>0) currentdoc.setAppointmentNo(Integer.valueOf(temp));
                 currentdoc.setDateTimeStamp(rsGetString(rs, "updatedatetime"));
                 currentdoc.setFileName(rsGetString(rs, "docfilename"));
                 currentdoc.setStatus(rsGetString(rs, "status").charAt(0));
@@ -484,7 +469,7 @@ public final class EDocUtil extends SqlUtilBaseS {
             }
             rs.close();
        }catch(Exception e){
-           MiscUtils.getLogger().error("Error", e);
+           e.printStackTrace();
        }
        //mysql> SELECT DISTINCT c.module, c.module_id, d.doccreator, d.source, d.program_id, d.status, d.docdesc, d.docfilename, d.doctype, d.document_no, d.updatedatetime, d.contenttype, d.observationdate FROM document d, ctl_document c WHERE c.document_no=d.document_no AND c.module='demographic' and module_id = -1
        return list;
@@ -517,8 +502,6 @@ public final class EDocUtil extends SqlUtilBaseS {
 		currentdoc.setResponsibleId(rsGetString(rs, "responsible"));
                 String temp = rsGetString(rs, "program_id");
                 if (temp != null && temp.length()>0) currentdoc.setProgramId(Integer.valueOf(temp));
-                temp = rsGetString(rs, "appointment_no");
-                if (temp != null && temp.length()>0) currentdoc.setAppointmentNo(Integer.valueOf(temp));
                 currentdoc.setDateTimeStamp(rsGetString(rs, "updatedatetime"));
                 currentdoc.setContentType(rsGetString(rs, "contenttype"));
                 currentdoc.setObservationDate(rsGetString(rs, "observationdate"));
@@ -529,7 +512,7 @@ public final class EDocUtil extends SqlUtilBaseS {
             rs.close();
         }
         catch (SQLException sqe) {
-            MiscUtils.getLogger().error("Error", sqe);
+            sqe.printStackTrace();
         }
 
         if (OscarProperties.getInstance().getBooleanProperty("FILTER_ON_FACILITY", "true")) {
@@ -549,7 +532,7 @@ public final class EDocUtil extends SqlUtilBaseS {
             }
         }
         catch (SQLException sqe) {
-            MiscUtils.getLogger().error("Error", sqe);
+            sqe.printStackTrace();
         }
         return modules;
     }
@@ -599,7 +582,7 @@ public final class EDocUtil extends SqlUtilBaseS {
             rs.close();
         }
         catch (SQLException sqe) {
-            MiscUtils.getLogger().error("Error", sqe);
+            sqe.printStackTrace();
         }
         return currentdoc;
     }
@@ -607,15 +590,16 @@ public final class EDocUtil extends SqlUtilBaseS {
     public String getDocumentName(String id) {
         String filename = null;
         try {
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select docfilename from document where document_no = '" + id + "'";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()) {
                 filename = oscar.Misc.getString(rs, "docfilename");
             }
             rs.close();
         }
         catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return filename;
     }
@@ -629,7 +613,8 @@ public final class EDocUtil extends SqlUtilBaseS {
         try {
             String sql = "select status from ctl_document where document_no=" + documentNo;
             String status = "";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()) {
                 status = rs.getString("status");
             }
@@ -645,7 +630,7 @@ public final class EDocUtil extends SqlUtilBaseS {
 
         }
         catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
     }
 
@@ -688,7 +673,8 @@ public final class EDocUtil extends SqlUtilBaseS {
         String add_record_string2 = "insert into ctl_document values ('demographic',?,?,'A')";
         int key = 0;
 
-        Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+        Connection conn = DBHandler.getConnection();
         PreparedStatement add_record = conn.prepareStatement(add_record_string1);
 
         add_record.setString(1, docType);
@@ -727,30 +713,32 @@ public final class EDocUtil extends SqlUtilBaseS {
     public static String getLastDocumentNo() {
         String documentNo = null;
         try {
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select max(document_no) from document";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()) {
                 documentNo = oscar.Misc.getString(rs, 1);
             }
             rs.close();
         }        catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return documentNo;
     }
 public static String getLastDocumentDesc() {
         String docDesc=null;
         try {
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String docNumber=EDocUtil.getLastDocumentNo();
 
             String sql = "select docdesc from document where document_no="+docNumber;
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()) {
                  docDesc= oscar.Misc.getString(rs, 1);
             }
             rs.close();
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
 
         return docDesc;
@@ -759,15 +747,15 @@ public static String getLastDocumentDesc() {
     public static String getLastNoteId() {
         String noteId = null;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select max(note_id) from casemgmt_note";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()) {
                 noteId = oscar.Misc.getString(rs, 1);
             }
             rs.close();
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return noteId;
     }
@@ -785,9 +773,12 @@ public static String getLastDocumentDesc() {
             fis.read(fdata);
             fis.close();
 
-        }        catch (NullPointerException ex) {MiscUtils.getLogger().error("Error", ex);
-        }        catch (FileNotFoundException ex) {MiscUtils.getLogger().error("Error", ex);
-        }        catch (IOException ex) {MiscUtils.getLogger().error("Error", ex);
+        }        catch (NullPointerException ex) {
+            ex.printStackTrace();
+        }        catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        }        catch (IOException ex) {
+            ex.printStackTrace();
         }
 
         return fdata;
@@ -798,9 +789,9 @@ public static String getLastDocumentDesc() {
     public static boolean getDocReviewFlag(String docId){
     	boolean flag=false;
     	try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select reviewed_flag from doc_manager where id="+docId;
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()) {
                 String reviewed = oscar.Misc.getString(rs, "reviewed_flag");
                 if (reviewed!=null&&"1".equalsIgnoreCase(reviewed.trim()))
@@ -809,7 +800,7 @@ public static String getLastDocumentDesc() {
             rs.close();
         }
         catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
     	return flag;
     }
@@ -817,9 +808,9 @@ public static String getLastDocumentDesc() {
     public static boolean getDocUrgentFlag(String docId){
     	boolean flag=false;
     	try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select urgent from doc_manager where id="+docId;
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()) {
                 String urgent = oscar.Misc.getString(rs, "urgent");
                 if (urgent!=null&&"1".equalsIgnoreCase(urgent.trim()))
@@ -828,7 +819,7 @@ public static String getLastDocumentDesc() {
             rs.close();
         }
         catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
     	return flag;
     }
@@ -865,7 +856,8 @@ public static String getLastDocumentDesc() {
 					doc.setFileName(rs.getString("docfilename"));
 					doc.setStatus(rs.getString("status").charAt(0));
 				}
-			} catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+			} catch (SQLException ex) {
+				ex.printStackTrace();
 			}
 		}
 		return doc;

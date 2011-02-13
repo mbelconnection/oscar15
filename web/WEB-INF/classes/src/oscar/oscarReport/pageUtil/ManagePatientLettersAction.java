@@ -40,13 +40,13 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperReport;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.upload.FormFile;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarReport.data.ManageLetters;
 
@@ -56,7 +56,7 @@ import oscar.oscarReport.data.ManageLetters;
  */
 public class ManagePatientLettersAction extends Action {
     
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(ManagePatientLettersAction.class);
     
     /** Creates a new instance of GeneratePatientLetters */
     public ManagePatientLettersAction() {
@@ -90,9 +90,12 @@ public class ManagePatientLettersAction extends Action {
         
             ManageLetters manageLetters = new ManageLetters();
             manageLetters.saveReport( (String) request.getSession().getAttribute("user"), reportName,fFile.getFileName(), fileData);
-        } catch (FileNotFoundException ex) {MiscUtils.getLogger().error("Error", ex);
-        } catch (IOException ex) {MiscUtils.getLogger().error("Error", ex);
-        } catch (JRException ex) {MiscUtils.getLogger().error("Error", ex);
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } catch (JRException ex) {
+            ex.printStackTrace();
         }
 
         if (log.isTraceEnabled()) { log.trace("End of ManagePatientLetters Action");}

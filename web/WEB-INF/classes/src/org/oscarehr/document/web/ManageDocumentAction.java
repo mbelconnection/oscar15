@@ -48,7 +48,8 @@ import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -82,7 +83,7 @@ import com.sun.pdfview.PDFPage;
  */
 public class ManageDocumentAction extends DispatchAction {
 
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(ManageDocumentAction.class);
 
     private DocumentDAO documentDAO = null;
     private ProviderInboxRoutingDao  providerInboxRoutingDAO = null;
@@ -115,7 +116,7 @@ public ActionForward documentUpdateAjax(ActionMapping mapping, ActionForm form,
         LogAction.addLog((String) request.getSession().getAttribute("user"), LogConst.ADD, LogConst.CON_DOCUMENT, documentId, request.getRemoteAddr());
 
         String demog = request.getParameter("demog");
-        
+
         String[] flagproviders = request.getParameterValues("flagproviders");
         //String demoLink=request.getParameter("demoLink");
 
@@ -173,7 +174,7 @@ public ActionForward documentUpdateAjax(ActionMapping mapping, ActionForm form,
         catch(IOException e){
             MiscUtils.getLogger().error("Error", e);
         }
-
+        
         return null;
 
     }
@@ -189,7 +190,7 @@ public ActionForward documentUpdateAjax(ActionMapping mapping, ActionForm form,
         catch(IOException e){
             MiscUtils.getLogger().error("Error", e);
         }
-
+        
         return null;
     }
 
@@ -207,7 +208,7 @@ public ActionForward documentUpdateAjax(ActionMapping mapping, ActionForm form,
         LogAction.addLog((String) request.getSession().getAttribute("user"), LogConst.ADD, LogConst.CON_DOCUMENT, documentId, request.getRemoteAddr());
 
         String demog = request.getParameter("demog");
-        
+
         String[] flagproviders = request.getParameterValues("flagproviders");
         //String demoLink=request.getParameter("demoLink");
 
@@ -248,7 +249,7 @@ public ActionForward documentUpdateAjax(ActionMapping mapping, ActionForm form,
         } catch (Exception e) {
             MiscUtils.getLogger().error("Error", e);
         }
-
+        
         if (ret != null && !ret.equals("")) {
             //response.getOutputStream().print(ret);
         }

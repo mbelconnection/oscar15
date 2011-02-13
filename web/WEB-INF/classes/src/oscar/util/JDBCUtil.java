@@ -41,7 +41,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.xerces.parsers.DOMParser;
-import org.oscarehr.util.MiscUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -74,7 +73,7 @@ public class JDBCUtil
           {
              String columnName = strEscUtils.escapeXml(rsmd.getColumnName(i));
              String value      = strEscUtils.escapeXml(oscar.Misc.getString(rs,i));
-
+             //System.out.println(columnName+": "+value );
              Element node      = doc.createElement(columnName);
              node.appendChild(doc.createTextNode(value));
              row.appendChild(node);
@@ -95,12 +94,11 @@ public class JDBCUtil
             StreamResult result = new StreamResult(os);
             
             transformer.transform(source, result); 
-            MiscUtils.getLogger().debug("Next is to call zip function!");
-            zip z = new zip();
-            z.write2Zip("xml");
+            System.out.println("Next is to call zip function!");
+            zip z = new zip("xml");
         }
         catch(Exception e){            
-            MiscUtils.getLogger().debug(e.getMessage() + "cannot saveAsXML");
+            System.out.println(e.getMessage() + "cannot saveAsXML");
             File newXML = new File(fileName);
             newXML.delete();
         }     
@@ -123,19 +121,19 @@ public class JDBCUtil
             String formName = fileName.substring(0,indexForm);
             String demographicNo = fileName.substring(indexForm+1, indexDemo);
             String timeStamp = fileName.substring(indexDemo+1,indexTimeStamp);
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             
             //check if the data existed in the database already...
             String sql = "SELECT * FROM " + formName + " WHERE demographic_no='"
                          + demographicNo + "' AND formEdited='" + timeStamp + "'";
-            MiscUtils.getLogger().debug(sql);
-            ResultSet rs = DBHandler.GetSQL(sql);
+            System.out.println(sql);
+            ResultSet rs = db.GetSQL(sql);
             if(!rs.first()){
                 rs.close();
                 sql = "SELECT * FROM " + formName + " WHERE demographic_no='"
                         + demographicNo + "' AND ID='0'";
-                MiscUtils.getLogger().debug("sql: " + sql);
-                rs = DBHandler.GetSQL(sql, true);  
+                System.out.println("sql: " + sql);
+                rs = db.GetSQL(sql, true);  
                 rs.moveToInsertRow();        
                 //To validate or not
                 parser.setFeature( "http://xml.org/sax/features/validation",validation ); 
@@ -148,7 +146,7 @@ public class JDBCUtil
         }   
         catch(Exception e)
         {
-            MiscUtils.getLogger().debug("Errors " + e);
+            System.out.println("Errors " + e);
             
         }
 
@@ -167,11 +165,12 @@ public class JDBCUtil
             if (next!=null){
                 type = next.getNodeType();
                 if (type == next.TEXT_NODE){
-
+                    //System.out.println(next.getNodeValue());             
                     value = next.getNodeValue();
                 }
             }
 
+            //System.out.println(name + ": " + value);
             if(!name.equalsIgnoreCase("Results")&&!name.equalsIgnoreCase("Row")&&!name.equalsIgnoreCase("ID"))
                 rs.updateString(name, value);
         }

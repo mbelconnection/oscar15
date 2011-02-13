@@ -39,8 +39,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarBilling.ca.bc.Teleplan.TeleplanSequenceDAO;
 import oscar.oscarBilling.ca.bc.data.BillActivityDAO;
 import oscar.oscarBilling.ca.bc.data.BillingmasterDAO;
@@ -81,7 +79,7 @@ public class TeleplanSubmission {
 
     
     public String toString(){
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
         sb.append("msp file content\n");
         sb.append(this.getMspFile());
         sb.append("\n");
@@ -136,7 +134,7 @@ public class TeleplanSubmission {
            htmlFile = new File(directory,fileName+".html");
            mspFile  = new File(directory,fileName);
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
             throw new Exception("Could not open file "+dirToSaveFiles+fileName +" does "+dirToSaveFiles+ " exist ?",e);
         }
         
@@ -193,10 +191,10 @@ public class TeleplanSubmission {
     private void markListAsBilled(List list){
         String query = "update billing set status = 'B' where billing_no in ("+ StringUtils.getCSV(list) +")"; 
         try {             
-           
-        	DBHandler.RunSQL(query);
+           DBHandler dbhandler = new DBHandler(DBHandler.OSCAR_DATA);
+           dbhandler.RunSQL(query);
         }catch (SQLException sqlexception) {
-           MiscUtils.getLogger().debug(sqlexception.getMessage());
+           System.out.println(sqlexception.getMessage());
         }
     }
     

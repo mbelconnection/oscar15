@@ -32,24 +32,23 @@ package org.oscarehr.phr.web;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionRedirect;
 import org.apache.struts.actions.DispatchAction;
-import org.oscarehr.phr.PHRAuthentication;
+import org.oscarehr.phr.PHRConstants;
 import org.oscarehr.phr.dao.PHRActionDAO;
 import org.oscarehr.phr.dao.PHRDocumentDAO;
 import org.oscarehr.phr.indivo.service.accesspolicies.IndivoAPService;
 import org.oscarehr.phr.model.PHRAction;
 import org.oscarehr.phr.service.PHRService;
-import org.oscarehr.util.MiscUtils;
-
+import org.oscarehr.phr.PHRAuthentication;
 import oscar.oscarDemographic.data.DemographicData;
 
 
@@ -61,11 +60,12 @@ import oscar.oscarDemographic.data.DemographicData;
  */
 public class PHRUserManagementAction extends DispatchAction {  
     
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(PHRUserManagementAction.class);
     
     PHRDocumentDAO phrDocumentDAO;
     PHRActionDAO phrActionDAO;
     PHRService phrService;
+    PHRConstants phrConstants;
     
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
        return super.execute(mapping, form, request, response);
@@ -81,6 +81,10 @@ public class PHRUserManagementAction extends DispatchAction {
     
     public void setPhrActionDAO(PHRActionDAO phrActionDAO) {
         this.phrActionDAO = phrActionDAO;
+    }
+    
+    public void setPhrConstants(PHRConstants phrConstants) {
+        this.phrConstants = phrConstants;
     }
     
     public void setPhrService(PHRService phrService) {
@@ -118,7 +122,7 @@ public class PHRUserManagementAction extends DispatchAction {
             phrService.sendUserRegistration(ht, (String) request.getSession().getAttribute("user"));
             //if all is well, add the "pin" in the demographic screen
             String demographicNo = request.getParameter("demographicNo");
-            
+            DemographicData.Demographic demographic = new DemographicData().getDemographic(demographicNo);
             DemographicData dd = new DemographicData();
             dd.setDemographicPin(demographicNo, request.getParameter("username"));
         } catch (Exception e) {

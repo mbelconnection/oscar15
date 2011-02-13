@@ -27,10 +27,9 @@ package oscar.oscarEncounter.oscarMeasurements.util;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jdom.Element;
-import org.oscarehr.util.MiscUtils;
 
 
 /**
@@ -38,7 +37,7 @@ import org.oscarehr.util.MiscUtils;
  * @author jaygallagher
  */
 public class Recommendation {
-    private static final Logger log=MiscUtils.getLogger();
+    private static final Log log = LogFactory.getLog(Recommendation.class);
     
     private String strength = null;
     private String text = null;

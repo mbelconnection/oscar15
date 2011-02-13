@@ -27,22 +27,23 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.DynaActionForm;
+import org.oscarehr.common.model.Demographic;
 import org.oscarehr.PMmodule.service.ClientManager;
 import org.oscarehr.PMmodule.service.IntakeAManager;
 import org.oscarehr.PMmodule.service.IntakeCManager;
 import org.oscarehr.PMmodule.web.formbean.ClientSearchFormBean;
 import org.oscarehr.PMmodule.web.formbean.PreIntakeForm;
-import org.oscarehr.common.model.Demographic;
-import org.oscarehr.util.MiscUtils;
+import org.oscarehr.PMmodule.web.utils.UserRoleUtils;
 
 public class IntakeAction extends BaseAction {
 
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(IntakeAction.class);
     private ClientManager clientManager;
     private IntakeAManager intakeAManager;
     private IntakeCManager intakeCManager;

@@ -35,8 +35,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 /**
@@ -52,16 +50,16 @@ public class LabTag extends TagSupport {
    
    public int doStartTag() throws JspException    {
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = new String("select count(*) from providerLabRouting where provider_no = '"+ providerNo +"' and status = 'N'");            
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             while (rs.next()) {
                numNewLabs = (rs.getInt(1));
             }
 
             rs.close();
         }      catch(SQLException e)        {
-           MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace(System.out);
         }
         try        {
             JspWriter out = super.pageContext.getOut();            
@@ -69,7 +67,8 @@ public class LabTag extends TagSupport {
                 out.print("<span class='tabalert'>  ");
             else
                 out.print("<span>  ");
-        } catch(Exception p) {MiscUtils.getLogger().error("Error",p);
+        } catch(Exception p) {
+            p.printStackTrace(System.out);
         }        
         return(EVAL_BODY_INCLUDE);
     }
@@ -93,7 +92,8 @@ public class LabTag extends TagSupport {
               out.print("<sup>"+numNewLabs+"</sup></span>");
           else
               out.print("</span>");
-       }catch(Exception p) {MiscUtils.getLogger().error("Error",p);
+       }catch(Exception p) {
+            p.printStackTrace(System.out);
        }
        return EVAL_PAGE;
     }

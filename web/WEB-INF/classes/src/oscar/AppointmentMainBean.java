@@ -153,7 +153,7 @@ public class AppointmentMainBean {
 	  	sqlQuery = dbSQL.getDef(dboperation,"");
     	rs = dbPH.queryResults(sqlQuery, aKeyword);
 	  }
-
+	//  System.out.println("sqlQuery=" + sqlQuery);  
   	return rs;
   }
 
@@ -168,7 +168,7 @@ public class AppointmentMainBean {
 	  	sqlQuery = dbSQL.getDef(dboperation,"");
   	    rs = dbPH.queryResults_paged(sqlQuery, aKeyword, iOffSet);
 	  }
-
+   // System.out.println("sqlQuery=" + sqlQuery);
 	return rs;
 }
 
@@ -288,6 +288,10 @@ public class AppointmentMainBean {
       return dbPH.queryResults(sqlQuery);
     }
 
+  // Don't forget to clean up!
+  public void closePstmtConn() throws SQLException {
+    dbPH.closePstmt();
+  }
   public String getString(ResultSet rs, java.lang.String columnName) throws SQLException
   {
   	return Misc.getString(rs, columnName);

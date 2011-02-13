@@ -5,14 +5,10 @@
 package org.oscarehr.common.dao;
 
 import java.util.List;
-
 import org.hibernate.Session;
-import org.hibernate.criterion.Expression;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-import org.oscarehr.common.model.Billingreferral;
-import org.oscarehr.util.MiscUtils;
+import org.hibernate.criterion.*;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+import org.oscarehr.common.model.Billingreferral;
 
 /**
  *
@@ -28,7 +24,7 @@ public class BillingreferralDao extends HibernateDaoSupport {
             session = getSession();
             cList = session.createCriteria(Billingreferral.class).add(Expression.eq("referralNo", referral_no)).addOrder(Order.asc("referralNo")).list();
         } catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         } finally {
             if (session != null) {
                 releaseSession(session);
@@ -50,7 +46,7 @@ public class BillingreferralDao extends HibernateDaoSupport {
             session = getSession();
             cList = session.createCriteria(Billingreferral.class).add(Restrictions.like("lastName", "%" + last_name + "%")).add(Restrictions.like("firstName", "%" + first_name + "%")).addOrder(Order.asc("lastName")).list();
         } catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         } finally {
             if (session != null) {
                 releaseSession(session);

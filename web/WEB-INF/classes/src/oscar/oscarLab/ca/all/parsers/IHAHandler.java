@@ -9,11 +9,23 @@
 
 package oscar.oscarLab.ca.all.parsers;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
 
+import oscar.util.UtilDateUtilities;
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.Segment;
+import ca.uhn.hl7v2.model.Structure;
+import ca.uhn.hl7v2.parser.Parser;
+import ca.uhn.hl7v2.parser.PipeParser;
+import ca.uhn.hl7v2.util.Terser;
+import ca.uhn.hl7v2.validation.impl.NoValidation;
 
 /**
  *
@@ -58,7 +70,7 @@ public class IHAHandler extends DefaultGenericHandler implements MessageHandler 
 //        
 //        Parser p = new PipeParser();
 //        p.setValidationContext(new NoValidation());
-
+//        System.out.println("ABOUT TO PARSE \n"+hl7Body);
 //        // force parsing as a generic message by changing the message structure
 //        hl7Body = hl7Body.replaceAll("R01", "");
 //        msg = p.parse(hl7Body.replaceAll( "\n", "\r\n"));

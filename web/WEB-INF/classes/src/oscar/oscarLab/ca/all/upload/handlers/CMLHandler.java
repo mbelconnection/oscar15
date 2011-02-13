@@ -11,7 +11,6 @@ package oscar.oscarLab.ca.all.upload.handlers;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarLab.ca.all.upload.MessageUploader;
 import oscar.oscarLab.ca.all.util.Utilities;
@@ -34,7 +33,7 @@ public class CMLHandler implements MessageHandler {
 		} catch (Exception e) {
 			MessageUploader.clean(fileId);
 			logger.error("Could not upload message: ", e);
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 			return null;
 		}
 		return ("success");

@@ -31,16 +31,15 @@ import java.io.OutputStream;
 import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.upload.FormFile;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.OscarProperties;
 import oscar.oscarTags.TagObject;
 import oscar.util.UtilDateUtilities;
 
 public class EDoc extends TagObject implements Comparable {
-	private static final Logger logger = MiscUtils.getLogger();
+	private static Log _log = LogFactory.getLog(EDoc.class);
 
 	private String docId;
 	private String description = "";
@@ -65,8 +64,7 @@ public class EDoc extends TagObject implements Comparable {
 	private String indivoIdx = null;
 	private boolean indivoRegistered = false;
 	private int numberOfPages = 0;
-	private Integer appointmentNo = -1;
-	
+
 	/** Creates a new instance of EDoc */
 	public EDoc() {
 	}
@@ -148,7 +146,7 @@ public class EDoc extends TagObject implements Comparable {
 		try {
 			os = new FileOutputStream(getFilePath());
 		} catch (FileNotFoundException fnfe) {
-			logger.error("Could not write to the document container", fnfe);
+			_log.error("Could not write to the document container", fnfe);
 			throw fnfe;
 		}
 		return os;
@@ -170,7 +168,7 @@ public class EDoc extends TagObject implements Comparable {
 				os.write(buf, 0, i);
 			}
 		} catch (IOException ioe) {
-			MiscUtils.getLogger().error("Error", ioe);
+			ioe.printStackTrace();
 			if (is != null) is.close();
 			if (os != null) os.close();
 			throw ioe;
@@ -358,16 +356,6 @@ public class EDoc extends TagObject implements Comparable {
 
 	public void setProgramId(Integer programId) {
 		this.programId = programId;
-	}
-	
-	
-
-	public Integer getAppointmentNo() {
-		return appointmentNo;
-	}
-
-	public void setAppointmentNo(Integer appointmentNo) {
-		this.appointmentNo = appointmentNo;
 	}
 
 	public Date getDateTimeStampAsDate() {

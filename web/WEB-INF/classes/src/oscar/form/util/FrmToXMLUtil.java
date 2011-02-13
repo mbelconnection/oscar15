@@ -35,7 +35,6 @@ import noNamespace.SitePatientVisitRecordsDocument;
 
 import org.apache.xmlbeans.XmlCalendar;
 import org.apache.xmlbeans.XmlOptions;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementTypesBean;
@@ -133,46 +132,46 @@ public class FrmToXMLUtil{
                 mt = (EctMeasurementTypesBean) measurementTypes.elementAt(i);
                 String itemName = mt.getType();
                 String methodCall = (String) nameProps.get(itemName+"Value");
-                MiscUtils.getLogger().debug("method "+methodCall);
+                System.out.println("method "+methodCall);
                 org.apache.commons.validator.GenericValidator gValidator = new org.apache.commons.validator.GenericValidator();
                 
                 if(mt.getType().equalsIgnoreCase("BP") && !gValidator.isBlankOrNull(dataProps.getProperty("SBPValue"))){
                     methodCall = (String) nameProps.get("SBPValue");
                     if (methodCall != null){
                        cls = visit.getClass();
-
+                       //System.out.println("calling addNew"+methodCall);
                        addNewMethod  = cls.getMethod("addNew"+methodCall, new Class[] {});
 
                        obj = addNewMethod.invoke(visit,new Object[]{});
 
                        value = dataProps.getProperty("SBPValue");
-
+                       //System.out.println(itemName + " who "+who+" how "+how+ " when "+when+ " value "+value);            
                        setWhoWhatWhereWhen(obj,how,who,when,value);
                     }
                     methodCall = (String) nameProps.get("DBPValue");
                     if (methodCall != null){
                        cls = visit.getClass();
-
+                       //System.out.println("calling addNew"+methodCall);
                        addNewMethod  = cls.getMethod("addNew"+methodCall, new Class[] {});
 
                        obj = addNewMethod.invoke(visit,new Object[]{});
 
                        value = dataProps.getProperty("DBPValue");
-
+                       //System.out.println(itemName + " who "+who+" how "+how+ " when "+when+ " value "+value);            
                        setWhoWhatWhereWhen(obj,how,who,when,value);
                     }
                     methodCall = (String) nameProps.get("BPDate");
-
+                    //System.out.println("method "+methodCall);
                     if (methodCall != null){                                       
 
                        cls = visit.getClass();
-
+                       //System.out.println("calling addNew"+methodCall);
                        addNewMethod  = cls.getMethod("addNew"+methodCall, new Class[] {});
 
                        obj = addNewMethod.invoke(visit,new Object[]{});
 
                        value = dataProps.getProperty(itemName+"Date");
-
+                       //System.out.println(itemName + "Date: who "+who+" how "+how+ " when "+when+ " value "+value);            
                        setWhoWhatWhereWhen(obj,how,who,when,value);
                     } 
                     
@@ -181,31 +180,31 @@ public class FrmToXMLUtil{
                 else if (methodCall != null && !gValidator.isBlankOrNull(dataProps.getProperty(itemName+"Value"))){                                                                               
 
                    cls = visit.getClass();
-
+                   //System.out.println("calling addNew"+methodCall);
                    addNewMethod  = cls.getMethod("addNew"+methodCall, new Class[] {});
 
                    obj = addNewMethod.invoke(visit,new Object[]{});
 
                    value = dataProps.getProperty(itemName+"Value");
                    value = translate(value, methodCall);
-                   MiscUtils.getLogger().debug(itemName + " who "+who+" how "+how+ " when "+when+ " value "+value);            
+                   System.out.println(itemName + " who "+who+" how "+how+ " when "+when+ " value "+value);            
                    setWhoWhatWhereWhen(obj,how,who,when,value);
 
                    //String date = dataProps.getProperty(itemName+"Date");
                    //setWhoWhatWhereWhen(obj,how,who,when,date);
 
                     methodCall = (String) nameProps.get(itemName+"Date");
-
+                    //System.out.println("method "+methodCall);
                     if (methodCall != null){                                       
 
                        cls = visit.getClass();
-
+                       //System.out.println("calling addNew"+methodCall);
                        addNewMethod  = cls.getMethod("addNew"+methodCall, new Class[] {});
 
                        obj = addNewMethod.invoke(visit,new Object[]{});
 
                        value = dataProps.getProperty(itemName+"Date");
-
+                       //System.out.println(itemName + "Date: who "+who+" how "+how+ " when "+when+ " value "+value);            
                        setWhoWhatWhereWhen(obj,how,who,when,value);
                     } 
                 }
@@ -236,21 +235,22 @@ public class FrmToXMLUtil{
                                         
         }
         catch(NoSuchMethodException e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         catch(IllegalAccessException e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
 
+      //System.out.println(" number of records "+vec.size());  
       xmlStr = xmlStr + visitDocument.xmlText(xmlOptions);
       
-      MiscUtils.getLogger().debug("*********************************************************************************");
-      MiscUtils.getLogger().debug("************************** XML GENERATED BY OSCAR *******************************");
-      MiscUtils.getLogger().debug("*********************************************************************************");
-      MiscUtils.getLogger().debug(xmlStr);
+      System.out.println("*********************************************************************************");
+      System.out.println("************************** XML GENERATED BY OSCAR *******************************");
+      System.out.println("*********************************************************************************");
+      System.out.println(xmlStr);
       return xmlStr;
    }
    
@@ -336,6 +336,23 @@ public class FrmToXMLUtil{
       return i;
    }
    
+   public static void getMembers(Object obj){
+     Class cls = obj.getClass();
+     //Method[] methods = cls.getDeclaredMethods();
+     Method[] methods = cls.getMethods();
+          for (int i=0; i < methods.length; i++){
+                //if(methods[i].getName().startsWith("get")){
+           Class[] params = methods[i].getParameterTypes();
+                   System.out.print(methods[i].getName());
+           System.out.print("(");
+           for (int j=0; j < params.length; j++){
+              System.out.print(" "+params[j].getName());
+           }
+           System.out.println(")");
+        //}
+     }     
+  }
+   
    private static String translate(String input, String xmlName){
         if(xmlName.startsWith("B")){
             if(input.equalsIgnoreCase("yes")){
@@ -365,17 +382,18 @@ public class FrmToXMLUtil{
    private static String getFluShotBillingDate(String demoNo) {
         String s = null;
         try {
+                DBHandler dbhandler = new DBHandler(DBHandler.OSCAR_DATA);
                 String s1 = "select b.billing_no, b.billing_date from billing b, billingdetail bd where b.demographic_no='"
                                 + demoNo
                                 + "' and bd.billing_no=b.billing_no and (bd.service_code='G590A' or bd.service_code='G591A') "
                                 + " and bd.status<>'D' and b.status<>'D' order by b.billing_date desc limit 0,1";
-                ResultSet rs = DBHandler.GetSQL(s1);
-
+                ResultSet rs = dbhandler.GetSQL(s1);
+                //System.out.println("flushot: " + s1);
                 if (rs.next())
-                        s = oscar.Misc.getString(rs, "billing_date");
+                        s = dbhandler.getString(rs,"billing_date");
                 rs.close();
             } catch (SQLException sqlexception) {
-                MiscUtils.getLogger().debug(sqlexception.getMessage());
+                System.out.println(sqlexception.getMessage());
         }
         return s;
     }

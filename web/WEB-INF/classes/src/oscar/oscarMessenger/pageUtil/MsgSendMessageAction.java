@@ -24,6 +24,7 @@
 // -----------------------------------------------------------------------------------------------------------------------
 package oscar.oscarMessenger.pageUtil;
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +35,7 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-import org.oscarehr.util.MiscUtils;
+import org.apache.struts.util.MessageResources;
 
 import oscar.OscarProperties;
 import oscar.oscarDB.DBHandler;
@@ -47,9 +48,10 @@ public class MsgSendMessageAction extends Action {
 				 HttpServletRequest request,
 				 HttpServletResponse response)
 	throws IOException, ServletException {
-
+            // System.out.println("now in the SendMessageaction jackson");
             // Extract attributes we will need
-            
+            Locale locale = getLocale(request);
+            MessageResources messages = getResources(request);
 
             // Setup variables
             ActionMessages errors = new ActionMessages();
@@ -63,7 +65,7 @@ public class MsgSendMessageAction extends Action {
             subject.trim();
 
             if (message.length() == 0){
-
+              // System.out.println("i got called");
               //errors.add(ActionErrors.GLOBAL_ERROR,
                 //       new ActionError("error.message.missing"));
                 //errors.add(
@@ -71,7 +73,7 @@ public class MsgSendMessageAction extends Action {
             }
 
             if (providers.length == 0){
-
+                // System.out.println("i got called");
               //errors.add(ActionErrors.GLOBAL_ERROR,
                 //       new ActionError("error.provider.missing"));
 
@@ -80,15 +82,15 @@ public class MsgSendMessageAction extends Action {
             }
 
             if (true)/*(!errors.empty())*/ {
-
+              // System.out.println("there were errors");
 	      saveErrors(request, errors);
             ActionForward actionForward = new ActionForward(mapping.getInput());
-
-
-
+            // System.out.println(mapping.getInput());
+            // System.out.println(actionForward.toString());
+            // System.out.println("name ="+ actionForward.getName()+" path = "+actionForward.getPath());
             actionForward.setName(mapping.getInput());
-
-
+            // System.out.println(actionForward.toString());
+            // System.out.println("name ="+ actionForward.getName()+" path = "+actionForward.getPath());
 	    //return ( actionForward(mapping.getInput()));
             //return (actionForward);
 
@@ -101,8 +103,8 @@ public class MsgSendMessageAction extends Action {
             //create a string with all the providers it will be sent too
 
             String sql = "select first_name, last_name from provider where ";
-            StringBuilder temp = new StringBuilder(sql);
-            StringBuilder sentToWho = new StringBuilder("Sent to : ");
+            StringBuffer temp = new StringBuffer(sql);
+            StringBuffer sentToWho = new StringBuffer("Sent to : ");
 
 
 
@@ -121,19 +123,19 @@ public class MsgSendMessageAction extends Action {
 
             try
             {
-              
+              DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
               java.sql.ResultSet rs;
 
-              rs = DBHandler.GetSQL(sql);
+              rs = db.GetSQL(sql);
               while (rs.next()) {
-
-              sentToWho.append(" "+oscar.Misc.getString(rs, "first_name") +" " +oscar.Misc.getString(rs, "last_name")+". ");
-              //providerFirstName.add(oscar.Misc.getString(rs,"first_name"));
-              //providerLastName.add(oscar.Misc.getString(rs,"last_name"));
+              // System.out.println(db.getString(rs,"first_name"));
+              sentToWho.append(" "+db.getString(rs,"first_name") +" " +db.getString(rs,"last_name")+". ");
+              //providerFirstName.add(db.getString(rs,"first_name"));
+              //providerLastName.add(db.getString(rs,"last_name"));
               }
         rs.close();
 
-      }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+      }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
 
        MsgSentMessageForm  trial = new MsgSentMessageForm();
         trial.setSample(sentToWho.toString());
@@ -143,35 +145,35 @@ public class MsgSendMessageAction extends Action {
 
       try
             {
-              
+              DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
               java.sql.ResultSet rs;
               //String sql = "insert into messagetbl (thedate,thetime,themessage,thesubject,sentby,sentto) values ('today','now','"+message+"','"+subject+"','jay','"+sentToWho+"' ";
-              DBHandler.RunSQL("insert into messagetbl (thedate,theime,themessage,thesubject,sentby,sentto) values ('today','now','"+message+"','"+subject+"','jay','"+sentToWho+"') ");
+              db.RunSQL("insert into messagetbl (thedate,theime,themessage,thesubject,sentby,sentto) values ('today','now','"+message+"','"+subject+"','jay','"+sentToWho+"') ");
 
 	      /* Choose the right command to recover the messageid inserted above */
 	      OscarProperties prop = OscarProperties.getInstance();
 	      String db_type = prop.getProperty("db_type").trim();
 	      if (db_type.equalsIgnoreCase("mysql")) {
-		rs = DBHandler.GetSQL("SELECT LAST_INSERT_ID() ");
+		rs = db.GetSQL("SELECT LAST_INSERT_ID() ");
 	      } else if (db_type.equalsIgnoreCase("postgresql")) {
-		rs = DBHandler.GetSQL("SELECT CURRVAL('messagetbl_int_seq')");
+		rs = db.GetSQL("SELECT CURRVAL('messagetbl_int_seq')");
 	      } else
 	      throw new java.sql.SQLException("ERROR: Database " + db_type + " unrecognized");
-
-              String messageid = oscar.Misc.getString(rs, 1);
+              // System.out.println(db.getString(rs,1));
+              String messageid = db.getString(rs,1);
 
               for (int i =0 ; i < providers.length ; i++)
               {
-
-                DBHandler.RunSQL("insert into messagelisttbl (message,provider_no,status) values ('"+messageid+"','"+providers[i]+"','new')");
+                // System.out.println("sending too"+providers[i]);
+                db.RunSQL("insert into messagelisttbl (message,provider_no,status) values ('"+messageid+"','"+providers[i]+"','new')");
               }
         rs.close();
 
-      }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
-
+      }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
+            // System.out.println("the subject "+subject+ "this is the message "+message+"<=");
             // for (int i =0 ; i < providers.length ; i++)
             // {
-
+            //   System.out.println("sending too"+providers[i]);
             // }
 
             //servlet.getServletContext().setAttribute("SendMessageFormId", sentToWho);
@@ -180,7 +182,7 @@ public class MsgSendMessageAction extends Action {
             //request.setAttribute(sentToWho.toString(),demoAgain.SentMessageForm);
             //servlet.getServletContext().setAttribute("SentMessageProvs",sentToWho.toString());
             request.setAttribute("SentMessageProvs",sentToWho.toString());
-
+            // System.out.println("about to leave");
             return (mapping.findForward("success"));
     }
 }

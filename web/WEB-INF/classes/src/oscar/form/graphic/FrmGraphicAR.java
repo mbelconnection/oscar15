@@ -32,8 +32,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.util.UtilDateUtilities;
 
 /**
@@ -86,7 +84,7 @@ public class FrmGraphicAR {
 		if (weight.length() == 0) return "-1";
 
 		int N=weight.length();
-		StringBuilder sb=new StringBuilder(N);
+		StringBuffer sb=new StringBuffer(N);
 		for(int i=0;i<N;i++){
 			char c=weight.charAt(i);
 			if(c=='.')sb.append(".");
@@ -106,7 +104,7 @@ public class FrmGraphicAR {
         GregorianCalendar eg = getCalendarObj(eDate);
 
         int n = (int) ((eg.getTimeInMillis() - sg.getTimeInMillis() + eg.get(Calendar.DST_OFFSET) )/(24 * 60 * 60 * 1000) );
-
+        //System.out.println( eg.get(Calendar.DST_OFFSET) + " | " + sg.get(Calendar.DST_OFFSET) );
         nWeek = n / 7 ;
         nWeekDay = n % 7;
         fWeek = n / 7.f;
@@ -122,6 +120,6 @@ public class FrmGraphicAR {
 
     public static void main(String[] arg) {
         FrmGraphicAR test = new FrmGraphicAR();
-        MiscUtils.getLogger().debug(test.getWeekByEDB("2002-12-10", "2002-7-24") + " : " + test.getWeekFormat() + test.getStartDate("2002-12-10") + UtilDateUtilities.StringToDate("2002-7-24"));
+        System.out.println(test.getWeekByEDB("2002-12-10", "2002-7-24") + " : " + test.getWeekFormat() + test.getStartDate("2002-12-10") + UtilDateUtilities.StringToDate("2002-7-24"));
     }
 }

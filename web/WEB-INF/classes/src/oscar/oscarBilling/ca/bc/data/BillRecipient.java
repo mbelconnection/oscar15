@@ -29,8 +29,6 @@ package oscar.oscarBilling.ca.bc.data;
 
 import java.util.Date;
 
-import org.oscarehr.util.MiscUtils;
-
 
 public class BillRecipient {
   private Integer id;
@@ -47,7 +45,7 @@ public class BillRecipient {
 
   
   public void setId(int id){
-      MiscUtils.getLogger().debug("int id");
+      System.out.println("int id");
       this.id = new Integer(id);
   }
 

@@ -41,7 +41,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
-import org.oscarehr.util.MiscUtils;
 
 public class DocumentUploadServlet extends HttpServlet {
 
@@ -75,9 +74,9 @@ public class DocumentUploadServlet extends HttpServlet {
 				}
 			}
 		} catch (FileUploadException e) {
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 		} catch (Exception e) {
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 		}
 		DocumentBean documentBean = new DocumentBean();
 		request.setAttribute("documentBean", documentBean);

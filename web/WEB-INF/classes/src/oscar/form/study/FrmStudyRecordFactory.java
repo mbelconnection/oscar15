@@ -25,8 +25,6 @@ package oscar.form.study;
 
 import java.io.IOException;
 
-import org.oscarehr.util.MiscUtils;
-
 public class FrmStudyRecordFactory {
     public FrmStudyRecord factory (String which) throws IOException {
         String fullName = "oscar.form.study.FrmStudy" + which + "Record"; // get reference to the class            
@@ -36,11 +34,11 @@ public class FrmStudyRecordFactory {
             Class classDefinition = Class.forName( fullName );         
             myClass = (FrmStudyRecord) classDefinition.newInstance(); 
         } catch (InstantiationException e) {
-            MiscUtils.getLogger().debug(e);
+            System.out.println(e);
         } catch (IllegalAccessException e) {
-            MiscUtils.getLogger().debug(e);
+            System.out.println(e);
         } catch (ClassNotFoundException e) {
-            MiscUtils.getLogger().debug(e);
+            System.out.println(e);
         }
         
         return myClass;

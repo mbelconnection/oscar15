@@ -8,11 +8,10 @@ package org.oscarehr.phr.web;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -20,11 +19,10 @@ import org.apache.struts.actions.DispatchAction;
 import org.oscarehr.PMmodule.service.ProviderManager;
 import org.oscarehr.casemgmt.service.CaseManagementManager;
 import org.oscarehr.casemgmt.web.CaseManagementEntryAction;
+import org.oscarehr.phr.model.PHRBinaryData;
 import org.oscarehr.phr.model.PHRDocument;
 import org.oscarehr.phr.service.PHRService;
-import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
-
 import oscar.dms.EDoc;
 import oscar.dms.EDocFactory;
 import oscar.dms.EDocUtil;
@@ -38,7 +36,7 @@ import oscar.oscarProvider.data.ProviderData;
  * @author apavel
  */
 public class PHRGenericSendToPhrAction extends DispatchAction {
-    private static final Logger logger= MiscUtils.getLogger();
+    private static Log _log = LogFactory.getLog(PHRGenericSendToPhrAction.class);
     private PHRService phrService;
 
     @Override
@@ -92,7 +90,7 @@ public class PHRGenericSendToPhrAction extends DispatchAction {
         String labId = request.getParameter("labId");
         String subject = request.getParameter("subject");
         String message = request.getParameter("message");
-        
+        String errorMessage = null;
         DemographicData demographicData = new DemographicData();
         String recipientPhrId = demographicData.getDemographic(demographicNo).getIndivoId();
         int recipientType = PHRDocument.TYPE_DEMOGRAPHIC;
@@ -109,7 +107,7 @@ public class PHRGenericSendToPhrAction extends DispatchAction {
         EDocFactory.Status status = EDocFactory.Status.SENT;
         Date observationDate = new Date();
         String reviewerId = null;
-       
+        String reviewDateTime = null;
         EDocFactory.Module docModule = EDocFactory.Module.demographic;
         String docModuleId = demographicNo;
 
@@ -162,7 +160,7 @@ public class PHRGenericSendToPhrAction extends DispatchAction {
             ProviderData senderProviderData = new ProviderData(providerNo);
 
             EDoc eDoc = EDocUtil.getDoc(documentNo);
-            
+            PHRBinaryData phrBinaryData = new PHRBinaryData();
             String actionIndex = phrService.sendAddBinaryData(senderProviderData, demographicNo, recipientType, recipientPhrId, eDoc) + "";
 
             ArrayList<String> eDocAttachmentActionId = new ArrayList();
@@ -174,7 +172,7 @@ public class PHRGenericSendToPhrAction extends DispatchAction {
             return mapping.findForward("loginPage");
             
         } catch (Exception e) {
-            logger.error("Could not send document to PHR", e);
+            _log.error("Could not send document to PHR", e);
             request.setAttribute("error_msg", "Error: " + e.getMessage());
             return mapping.findForward("loginPage");
         }

@@ -82,8 +82,8 @@ public class ProviderLabRouting {
     public static Hashtable getInfo(String lab_no) throws SQLException {
 	Hashtable info = new Hashtable();
 	String sql = "SELECT * FROM providerLabRouting WHERE lab_no='"+lab_no+"'";
-	
-	ResultSet rs = DBHandler.GetSQL(sql);
+	DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+	ResultSet rs = db.GetSQL(sql);
 	
 	if (rs.next()) {
 	    info.put("lab_no", lab_no);

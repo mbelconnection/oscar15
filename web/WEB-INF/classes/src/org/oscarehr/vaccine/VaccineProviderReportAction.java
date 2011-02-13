@@ -6,7 +6,8 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -17,11 +18,11 @@ import org.oscarehr.PMmodule.service.ClientManager;
 import org.oscarehr.PMmodule.service.GenericIntakeManager;
 import org.oscarehr.PMmodule.web.BaseAction;
 import org.oscarehr.common.model.Demographic;
+import org.oscarehr.er.ReceptionistReportAction;
 import org.oscarehr.util.LoggedInInfo;
-import org.oscarehr.util.MiscUtils;
 
 public class VaccineProviderReportAction extends BaseAction {
-	private static Logger log = MiscUtils.getLogger();
+	private static Log log = LogFactory.getLog(ReceptionistReportAction.class);
 
 	private ClientManager clientManager;
 	private GenericIntakeManager genericIntakeManager;
@@ -93,6 +94,7 @@ public class VaccineProviderReportAction extends BaseAction {
 		for (Entry<String, String> entry : quickIntake.getAnswerKeyValues().entrySet()) {
 		   String key = entry.getKey();
 		   String value = entry.getValue();
+		   System.out.println(key + "=" + value);
 		}
 
 		return mapping.findForward("report");

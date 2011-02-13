@@ -34,7 +34,6 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DispatchAction;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarLab.ca.on.CommonLabResultData;
 
@@ -59,13 +58,13 @@ public class FileLabsAction extends DispatchAction {
       ArrayList listFlaggedLabs = new ArrayList();
 
       if(flaggedLabs != null && labTypes != null){
-         for (int i = 0; i < flaggedLabs.length; i++){            
+         for (int i = 0; i < flaggedLabs.length; i++){
             for (int j = 0; j < labTypes.length; j++){
                String s =  request.getParameter("labType"+flaggedLabs[i]+labTypes[j]);
 
                if (s != null){  //This means that the lab was of this type.
                   String[] la =  new String[] {flaggedLabs[i],labTypes[j]}; 
-                  MiscUtils.getLogger().debug("ADDING lab "+flaggedLabs[i]+" of lab type "+labTypes[j]);
+                  System.out.println("ADDING lab "+flaggedLabs[i]+" of lab type "+labTypes[j]);
                   listFlaggedLabs.add(la);
                   j = labTypes.length;
 
@@ -76,7 +75,7 @@ public class FileLabsAction extends DispatchAction {
       
       String newURL = "";
       
-
+      
          CommonLabResultData.fileLabs(listFlaggedLabs, providerNo);
          newURL = mapping.findForward("success").getPath();
          newURL = newURL + "&providerNo="+providerNo+"&searchProviderNo="+searchProviderNo+"&status="+status;
@@ -103,5 +102,5 @@ public class FileLabsAction extends DispatchAction {
       CommonLabResultData.fileLabs(listFlaggedLabs, providerNo);
 
       return null;
-}
+   }
 }

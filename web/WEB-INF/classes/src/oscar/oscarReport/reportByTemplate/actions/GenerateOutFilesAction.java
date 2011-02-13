@@ -36,7 +36,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import com.Ostermiller.util.CSVParser;
 
@@ -59,13 +58,13 @@ public class GenerateOutFilesAction extends Action {
             try {
                 response.getWriter().write(csv);
             } catch (Exception ioe) {
-                MiscUtils.getLogger().error("Error", ioe);
+                ioe.printStackTrace();
             }
             return null;
         }
         action = request.getParameter("getXLS");
         if (action != null) {
-            MiscUtils.getLogger().debug("Generating Spread Sheet file for the 'report by template' module ..");
+            System.out.println("Generating Spread Sheet file for the 'report by template' module ..");
             response.setContentType("application/octet-stream");
             response.setHeader("Content-Disposition", "attachment; filename=\"oscarReport.xls\"");
             String[][] data = CSVParser.parse(csv);
@@ -85,7 +84,7 @@ public class GenerateOutFilesAction extends Action {
             try {    
                 wb.write(response.getOutputStream());
             } catch(Exception e) {
-                MiscUtils.getLogger().error("Error", e);   
+                e.printStackTrace();   
             }
             return null;
         }

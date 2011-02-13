@@ -27,8 +27,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 /**
 *This classes main function ConsultReportGenerate collects a group of patients with consults in the last specified date
@@ -40,15 +38,15 @@ public class RptMeasurementsData {
      *
      * @return number or Patients seen in Integer
      ******************************************************************************************/  
-    public int getNbPatientSeen(String startDateA, String endDateA){
+    public int getNbPatientSeen(DBHandler db, String startDateA, String endDateA){
         
         int nbPatient = 0;
         
         try{
             String sql = "SELECT DISTINCT demographicNo FROM measurements WHERE dateObserved >= '" + startDateA + "' AND dateObserved <= '" + endDateA + "'";
             ResultSet rs;
-            rs = DBHandler.GetSQL(sql);
-            MiscUtils.getLogger().debug("SQL Statement: " + sql);
+            rs = db.GetSQL(sql);
+            System.out.println("SQL Statement: " + sql);
             rs.last();
             nbPatient = rs.getRow();
 
@@ -57,7 +55,7 @@ public class RptMeasurementsData {
         }
         catch(SQLException e)
         {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
 
         return nbPatient;
@@ -69,16 +67,16 @@ public class RptMeasurementsData {
      *
      * @return ArrayList which contain the result in String format
      ******************************************************************************************/      
-    public ArrayList getPatientsSeen(String startDate, String endDate){
+    public ArrayList getPatientsSeen(DBHandler db, String startDate, String endDate){
 
         ArrayList patients = new ArrayList();
         
         try{
             String sql = "SELECT DISTINCT demographicNo  FROM measurements WHERE dateObserved >= '" + startDate + "' AND dateObserved <= '" + endDate + "'";
-            MiscUtils.getLogger().debug("SQL Statement: " + sql);
+            System.out.println("SQL Statement: " + sql);
             ResultSet rs;
             
-            for(rs=DBHandler.GetSQL(sql); rs.next();){            
+            for(rs=db.GetSQL(sql); rs.next();){            
                 String patient = rs.getString("demographicNo");
                 patients.add(patient);                
             }
@@ -86,7 +84,7 @@ public class RptMeasurementsData {
         }
         catch(SQLException e)
         {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
        
         return patients;

@@ -27,15 +27,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.PMmodule.model.Formintakec;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oscarehr.common.model.Demographic;
-import org.oscarehr.util.MiscUtils;
+import org.oscarehr.PMmodule.model.Formintakec;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 public class IntakeCDao extends HibernateDaoSupport {
 
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(IntakeCDao.class);
 
     public Formintakec getCurrentForm(Integer demographicNo) {
         if (demographicNo == null || demographicNo.intValue() <= 0) {

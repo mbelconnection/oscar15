@@ -34,7 +34,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -49,11 +48,11 @@ public final class EctInsertTemplateAction extends Action {
         String templateName = (String) request.getParameter("templateName");
             
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT encountertemplate_value FROM encountertemplate WHERE encountertemplate_name='" + templateName + "'";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()){
-                String encounterTmpValue = oscar.Misc.getString(rs, "encountertemplate_value");                   
+                String encounterTmpValue = db.getString(rs,"encountertemplate_value");                   
                 encounterTmpValue = encounterTmpValue.replaceAll("\\\\", "\\\\u005C"); // replace \ with unicode equiv.
                 encounterTmpValue = encounterTmpValue.replaceAll("\"", "\\\\u0022"); // replace " with unicode equiv.
                 encounterTmpValue = encounterTmpValue.replaceAll("'", "\\\\u0027"); // replace ' with unicode equiv.
@@ -66,7 +65,7 @@ public final class EctInsertTemplateAction extends Action {
         }
         catch(SQLException e)
         {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }            
         
         String version = (String)request.getParameter("version");

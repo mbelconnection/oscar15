@@ -28,12 +28,13 @@
 
 package oscar.oscarEncounter.oscarMeasurements.util;
 
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Calendar;
+import java.text.DateFormat;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import oscar.oscarDemographic.data.DemographicData;
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBean;
@@ -44,7 +45,7 @@ import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBeanHandle
  * @author jay
  */
 public class MeasurementDSHelper {
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(MeasurementDSHelper.class);
     
     EctMeasurementsDataBean mdb = null;
     java.util.Date dob = null;
@@ -54,10 +55,6 @@ public class MeasurementDSHelper {
     private boolean inRange =false;
     /** Creates a new instance of MeasurementDSHelper */
     public MeasurementDSHelper() {
-    }
-
-    public void log(String logMessage){
-        log.debug(logMessage);
     }
     
     public MeasurementDSHelper(String demo){
@@ -117,7 +114,7 @@ public class MeasurementDSHelper {
         try{
             equal = mdb.getDataField().equalsIgnoreCase(str);
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
             problem = true;
         }
         return equal;
@@ -129,7 +126,7 @@ public class MeasurementDSHelper {
         try{
            ret = Double.parseDouble(mdb.getDataField());
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
             problem =true;
         }  
         log.debug("DOUBLE val : "+ret);
@@ -143,7 +140,7 @@ public class MeasurementDSHelper {
            log.debug("Trying to parse "+data);
            ret = Double.parseDouble(  data.split(delimiter)[number]  );
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
             problem = true;
         }
         return ret;

@@ -22,10 +22,8 @@
 
 package oscar.appt;
 
-import java.util.Date;
-import java.util.List;
-
 import org.oscarehr.common.model.OscarAppointment;
+import java.util.List;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 public class AppointmentDao extends HibernateDaoSupport {
@@ -34,17 +32,6 @@ public class AppointmentDao extends HibernateDaoSupport {
         String queryStr = "FROM OscarAppointment a WHERE a.demographic_no = "+demographicNo+" ORDER BY a.appointment_no";
 
         @SuppressWarnings("unchecked")
-        List<OscarAppointment> rs = getHibernateTemplate().find(queryStr);
-
-        return rs;
-    }
-
-    public List<OscarAppointment> findByDateRange(Date startTime, Date endTime) {
-		java.sql.Date startSqlDate=new java.sql.Date(startTime.getTime());
-		java.sql.Date endSqlDate=new java.sql.Date(endTime.getTime());
-    	String queryStr = "FROM OscarAppointment a WHERE a.appointment_date >= '"+startSqlDate + "' and a.appointment_date < '"+endSqlDate+'\'';
-
-		@SuppressWarnings("unchecked")
         List<OscarAppointment> rs = getHibernateTemplate().find(queryStr);
 
         return rs;

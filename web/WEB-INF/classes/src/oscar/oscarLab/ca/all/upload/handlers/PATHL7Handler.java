@@ -14,7 +14,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -51,7 +50,7 @@ public class PATHL7Handler implements MessageHandler {
 				}
 			} catch (Exception e) {
 				logger.error("Could not upload PATHL7 message", e);
-				MiscUtils.getLogger().error("Error", e);
+				e.printStackTrace();
 				MessageUploader.clean(fileId);
 				return null;
 			}

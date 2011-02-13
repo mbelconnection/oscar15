@@ -35,7 +35,6 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.oscarehr.common.dao.DocumentResultsDao;
-import org.oscarehr.util.DbConnectionFilter;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 
@@ -69,8 +68,8 @@ public class CommonLabResultData {
         return new String[] {"MDS","CML","BCP","HL7","DOC"};
     }
 
-    public ArrayList<LabResultData> populateLabResultsData(String demographicNo, String reqId, boolean attach) {
-        ArrayList<LabResultData> labs = new ArrayList<LabResultData>();
+    public ArrayList populateLabResultsData(String demographicNo, String reqId, boolean attach) {
+        ArrayList labs = new ArrayList();
         oscar.oscarMDS.data.MDSResultsData mDSData = new oscar.oscarMDS.data.MDSResultsData();
 
         OscarProperties op = OscarProperties.getInstance();
@@ -82,21 +81,21 @@ public class CommonLabResultData {
 
 
         if( cml != null && cml.trim().equals("yes")){
-            ArrayList<LabResultData> cmlLabs = mDSData.populateCMLResultsData(demographicNo, reqId, attach);
+            ArrayList cmlLabs = mDSData.populateCMLResultsData(demographicNo, reqId, attach);
             labs.addAll(cmlLabs);
         }
         if (mds != null && mds.trim().equals("yes")){
-            ArrayList<LabResultData> mdsLabs = mDSData.populateMDSResultsData2(demographicNo, reqId, attach);
+            ArrayList mdsLabs = mDSData.populateMDSResultsData2(demographicNo, reqId, attach);
             labs.addAll(mdsLabs);
         }
         if (pathnet != null && pathnet.trim().equals("yes")){
             PathnetResultsData pathData = new PathnetResultsData();
-            ArrayList<LabResultData> pathLabs = pathData.populatePathnetResultsData(demographicNo, reqId, attach);
+            ArrayList pathLabs = pathData.populatePathnetResultsData(demographicNo, reqId, attach);
             labs.addAll(pathLabs);
         }
         if (hl7text != null && hl7text.trim().equals("yes")){
             Hl7textResultsData hl7Data = new Hl7textResultsData();
-            ArrayList<LabResultData> hl7Labs = hl7Data.populateHL7ResultsData(demographicNo, reqId, attach);
+            ArrayList hl7Labs = hl7Data.populateHL7ResultsData(demographicNo, reqId, attach);
             labs.addAll(hl7Labs);
         }
 
@@ -183,7 +182,7 @@ public class CommonLabResultData {
             }
         }
 
-        if(scannedDocStatus !=null && (scannedDocStatus.equals("O")  || scannedDocStatus.equals("I")  || scannedDocStatus.equals(""))){          
+        if(scannedDocStatus !=null && (scannedDocStatus.equals("O")  || scannedDocStatus.equals("I")  || scannedDocStatus.equals(""))){
 
             DocumentResultsDao documentResultsDao= (DocumentResultsDao) SpringUtils.getBean("documentResultsDao");
             ArrayList docs = documentResultsDao.populateDocumentResultsData(providerNo, demographicNo, patientFirstName, patientLastName, patientHealthNumber, status);
@@ -205,9 +204,9 @@ public class CommonLabResultData {
 
             if(rs.next()){  //
 
-                String id = oscar.Misc.getString(rs, "id");
+                String id = db.getString(rs,"id");
                 sql = "update providerLabRouting set status='"+status+"', comment=? where id = '"+id+"'";
-                if (!oscar.Misc.getString(rs, "status").equals("A")){
+                if (!db.getString(rs,"status").equals("A")){
 
                     db.queryExecute(sql, new String[] { comment });
 
@@ -242,12 +241,12 @@ public class CommonLabResultData {
 
         String sql = "select provider.first_name, provider.last_name, provider.provider_no, providerLabRouting.status, providerLabRouting.comment, providerLabRouting.timestamp from provider, providerLabRouting where provider.provider_no = providerLabRouting.provider_no and providerLabRouting.lab_no='"+labId+"' and providerLabRouting.lab_type = '"+labType+"'";
         try{
-            
-            ResultSet rs = DBHandler.GetSQL(sql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL(sql);
             logger.info(sql);
             while(rs.next()){
-                statusArray.add( new ReportStatus(oscar.Misc.getString(rs, "first_name")+" "+oscar.Misc.getString(rs, "last_name"), oscar.Misc.getString(rs, "provider_no"), descriptiveStatus(oscar.Misc.getString(rs, "status")), oscar.Misc.getString(rs, "comment"), oscar.Misc.getString(rs, "timestamp"), labId ) );
-                //statusArray.add( new ReportStatus(oscar.Misc.getString(rs,"first_name")+" "+oscar.Misc.getString(rs,"last_name"), oscar.Misc.getString(rs,"provider_no"), descriptiveStatus(oscar.Misc.getString(rs,"status")), oscar.Misc.getString(rs,"comment"), rs.getTimestamp("timestamp").getTime(), labId ) );
+                statusArray.add( new ReportStatus(db.getString(rs,"first_name")+" "+db.getString(rs,"last_name"), db.getString(rs,"provider_no"), descriptiveStatus(db.getString(rs,"status")), db.getString(rs,"comment"), db.getString(rs,"timestamp"), labId ) );
+                //statusArray.add( new ReportStatus(db.getString(rs,"first_name")+" "+db.getString(rs,"last_name"), db.getString(rs,"provider_no"), descriptiveStatus(db.getString(rs,"status")), db.getString(rs,"comment"), rs.getTimestamp("timestamp").getTime(), labId ) );
             }
             rs.close();
         }catch(Exception e){
@@ -268,12 +267,12 @@ public class CommonLabResultData {
     public static String searchPatient(String labNo,String labType) {
         String retval = "0";
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
             String sql = "select demographic_no from patientLabRouting where lab_no='"+labNo+"' and lab_type = '"+labType+"'";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if(rs.next()){
-                retval = oscar.Misc.getString(rs, "demographic_no");
+                retval = db.getString(rs,"demographic_no");
             }
         }catch(Exception e){
             Logger l = Logger.getLogger(CommonLabResultData.class);
@@ -287,7 +286,7 @@ public class CommonLabResultData {
         boolean result = false;
 
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
             // update pateintLabRouting for labs with the same accession number
             CommonLabResultData data = new CommonLabResultData();
@@ -296,11 +295,11 @@ public class CommonLabResultData {
 
                 // delete old entries
                 String sql = "delete from patientLabRouting where lab_no='"+labArray[i]+"' and lab_type = '"+labType+"'";
-                result = DBHandler.RunSQL(sql);
+                result = db.RunSQL(sql);
 
                 // add new entries
                 sql = "insert into patientLabRouting (lab_no, demographic_no,lab_type) values ('"+labArray[i]+"', '"+demographicNo+"','"+labType+"')";
-                result = DBHandler.RunSQL(sql);
+                result = db.RunSQL(sql);
 
                 // add labs to measurements table
                 populateMeasurementsTable(labArray[i], demographicNo, labType);
@@ -321,10 +320,10 @@ public class CommonLabResultData {
         boolean result;
 
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
             String[] providersArray = selectedProviders.split(",");
-           
+            String insertString = "";
             CommonLabResultData data = new CommonLabResultData();
             ProviderLabRouting plr = new ProviderLabRouting();
            //MiscUtils.getLogger().info(flaggedLabs.size()+"--");
@@ -345,13 +344,13 @@ public class CommonLabResultData {
                         }
                         insertString = insertString + "('" + providersArray[j] + "','" + labIds[k]+ "','N','"+labType+"')";
                          */
-                        plr.route(labIds[k], providersArray[j], DbConnectionFilter.getThreadLocalDbConnection(), labType);
+                        plr.route(labIds[k], providersArray[j], DBHandler.getConnection(), labType);
                     }
 
                     // delete old entries
                     String sql = "delete from providerLabRouting where provider_no='0' and lab_type= '"+labType+"' and lab_no = '"+labIds[k]+"'";
 
-                    result = DBHandler.RunSQL(sql);
+                    result = db.RunSQL(sql);
 
                 }
 
@@ -361,7 +360,7 @@ public class CommonLabResultData {
 
             // add new entries
             //String sql = "insert ignore into providerLabRouting (provider_no, lab_no, status,lab_type) values "+insertString;
-            //result = DBHandler.RunSQL(sql);
+            //result = db.RunSQL(sql);
             return true;
         }catch(Exception e){
             Logger l = Logger.getLogger(CommonLabResultData.class);
@@ -372,7 +371,8 @@ public class CommonLabResultData {
 
     ////
     public static boolean fileLabs(ArrayList flaggedLabs, String provider) {
-        
+        boolean result;
+        ArrayList matchingLabs;
         CommonLabResultData data = new CommonLabResultData();
 
         Properties props = OscarProperties.getInstance();
@@ -420,10 +420,10 @@ public class CommonLabResultData {
     public String getDemographicNo(String labId,String labType){
         String demoNo = null;
         try{
-            
-            ResultSet rs = DBHandler.GetSQL("select demographic_no from patientLabRouting where lab_no = '"+labId+"' and lab_type = '"+labType+"'");
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL("select demographic_no from patientLabRouting where lab_no = '"+labId+"' and lab_type = '"+labType+"'");
             if (rs.next()){
-                String d = oscar.Misc.getString(rs, "demographic_no");
+                String d = db.getString(rs,"demographic_no");
                 if ( !"0".equals(d)){
                     demoNo = d;
                 }
@@ -431,7 +431,7 @@ public class CommonLabResultData {
             rs.close();
 
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return demoNo;
     }
@@ -439,10 +439,11 @@ public class CommonLabResultData {
     public boolean isDocLinkedWithPatient(String labId,String labType){
         boolean ret=false;
         try{
+            DBHandler db=new DBHandler(DBHandler.OSCAR_DATA);
             String sql="select module_id from ctl_document where document_no="+labId+" and module='demographic'";
-            ResultSet rs=DBHandler.GetSQL(sql);
+            ResultSet rs=db.GetSQL(sql);
             if(rs.next()){
-                String mi=oscar.Misc.getString(rs, "module_id");
+                String mi=db.getString(rs, "module_id");
                 if(mi!=null && !mi.trim().equals("-1")){
                     ret=true;
                 }
@@ -456,12 +457,12 @@ public class CommonLabResultData {
     public boolean isLabLinkedWithPatient(String labId,String labType){
         boolean ret = false;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select demographic_no from patientLabRouting where lab_no = '"+labId+"' and lab_type  = '"+labType+"' ";
 
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if(rs.next()){
-                String demo =  oscar.Misc.getString(rs, "demographic_no");
+                String demo =  db.getString(rs,"demographic_no");
                 if(demo != null && !demo.trim().equals("0") ){
                     ret = true;
                 }
@@ -477,9 +478,9 @@ public class CommonLabResultData {
     public int getAckCount(String labId, String labType){
         int ret = 0;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select count(*) from providerLabRouting where lab_no = '"+labId+"' and lab_type  = '"+labType+"' and status='A'";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if(rs.next()){
                 ret = rs.getInt(1);
             }

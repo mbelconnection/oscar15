@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.Properties;
 
-import org.oscarehr.util.MiscUtils;
 import org.w3c.dom.Document;
 
 import oscar.OscarProperties;
@@ -38,9 +37,9 @@ public class FrmRecordHelp {
     public Properties getFormRecord(String sql) //int demographicNo, int existingID)
             throws SQLException {
         Properties props = new Properties();
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
-        ResultSet rs = DBHandler.GetSQL(sql);
+        ResultSet rs = db.GetSQL(sql);
         if (rs.next()) {
             ResultSetMetaData md = rs.getMetaData();
             for (int i = 1; i <= md.getColumnCount(); i++) {
@@ -57,7 +56,7 @@ public class FrmRecordHelp {
                 else if (md.getColumnTypeName(i).equalsIgnoreCase("timestamp"))
                     value = UtilDateUtilities.DateToString(rs.getTimestamp(i), "yyyy/MM/dd HH:mm:ss");
                 else
-                    value = oscar.Misc.getString(rs, i);
+                    value = db.getString(rs,i);
 
                 if (value != null)
                     props.setProperty(name, value);
@@ -68,16 +67,17 @@ public class FrmRecordHelp {
     }
 
     public synchronized int saveFormRecord(Properties props, String sql) throws SQLException {
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
-        ResultSet rs = DBHandler.GetSQL(sql, true);
+        ResultSet rs = db.GetSQL(sql, true);
         rs.moveToInsertRow();
         rs = updateResultSet(props, rs, true);
         rs.insertRow();
         String saveAsXml = OscarProperties.getInstance().getProperty("save_as_xml", "false");
+        //System.out.println("the value of save_as_xml is: " + saveAsXml);
 
         if (saveAsXml.equalsIgnoreCase("true")) {
-
+            //System.out.println("savs as XML");
             String demographicNo = props.getProperty("demographic_no");
             int index = sql.indexOf("form");
             int spaceIndex = sql.indexOf(" ", index);
@@ -95,7 +95,7 @@ public class FrmRecordHelp {
                 Document doc = JDBCUtil.toDocument(rs);
                 JDBCUtil.saveAsXML(doc, fileName);
             } catch (Exception e) {
-                MiscUtils.getLogger().error("Error", e);
+                System.out.println(e.getMessage());
             }
         }
         rs.close();
@@ -114,7 +114,7 @@ public class FrmRecordHelp {
         } else {
             throw new SQLException("ERROR: Database " + db_type + " unrecognized.");
         }
-        rs = DBHandler.GetSQL(sql);
+        rs = db.GetSQL(sql);
         if (rs.next())
             ret = rs.getInt(1);
         rs.close();
@@ -138,7 +138,7 @@ public class FrmRecordHelp {
                 if (value != null) {
                     if (value.equalsIgnoreCase("on") || value.equalsIgnoreCase("checked='checked'")) {
                         rs.updateInt(name, 1);   
-
+                        //System.out.println(name + "   - " + md.getColumnTypeName(i) + value);
                     } else {
                         rs.updateInt(name, 0);
                     }
@@ -190,9 +190,9 @@ public class FrmRecordHelp {
 
     //for page form
     public void updateFormRecord(Properties props, String sql) throws SQLException {
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
-        ResultSet rs = DBHandler.GetSQL(sql, true);
+        ResultSet rs = db.GetSQL(sql, true);
         //rs.relative(0);
 
         rs = updateResultSet(props, rs, false);
@@ -203,9 +203,9 @@ public class FrmRecordHelp {
 
     public Properties getPrintRecord(String sql) throws SQLException {
         Properties props = new Properties();
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
-        ResultSet rs = DBHandler.GetSQL(sql);
+        ResultSet rs = db.GetSQL(sql);
         if (rs.next()) {
             ResultSetMetaData md = rs.getMetaData();
             for (int i = 1; i <= md.getColumnCount(); i++) {
@@ -220,7 +220,7 @@ public class FrmRecordHelp {
                 } else if (md.getColumnTypeName(i).equalsIgnoreCase("date"))
                     value = UtilDateUtilities.DateToString(rs.getDate(i), _dateFormat);
                 else
-                    value = oscar.Misc.getString(rs, i);
+                    value = db.getString(rs,i);
 
                 if (value != null)
                     props.setProperty(name, value);

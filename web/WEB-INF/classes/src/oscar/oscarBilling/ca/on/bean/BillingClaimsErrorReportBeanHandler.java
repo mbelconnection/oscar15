@@ -30,8 +30,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Vector;
 
-import org.oscarehr.util.MiscUtils;
-
 public class BillingClaimsErrorReportBeanHandler {
     
     Vector claimsErrorReportBeanVector = new Vector();
@@ -142,7 +140,7 @@ public class BillingClaimsErrorReportBeanHandler {
             }
         }
         catch (IOException ioe) {
-            MiscUtils.getLogger().error("Error", ioe);         
+            ioe.printStackTrace();         
         }
         catch (StringIndexOutOfBoundsException ioe) {
             verdict = false;   

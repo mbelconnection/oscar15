@@ -33,15 +33,20 @@ import oscar.oscarDB.DBHandler;
 import oscar.util.UtilXML;
 
 class Location {
+    private DBHandler db;
+
+    public Location(DBHandler db) {
+        this.db = db;
+    }
 
     public Element getLocal(Document doc) throws SQLException {
         Element local = doc.createElement("local");
 
-        ResultSet rs = DBHandler.GetSQL("SELECT * FROM oscarcommlocations WHERE current1 = 1");
+        ResultSet rs = db.GetSQL("SELECT * FROM oscarcommlocations WHERE current1 = 1");
         if(rs.next()) {
             UtilXML.addNode(local, "locationId", String.valueOf(rs.getInt("locationId")));
-            UtilXML.addNode(local, "locationDesc", oscar.Misc.getString(rs, "locationDesc"));
-            UtilXML.addNode(local, "locationAuth", oscar.Misc.getString(rs, "locationAuth"));
+            UtilXML.addNode(local, "locationDesc", db.getString(rs,"locationDesc"));
+            UtilXML.addNode(local, "locationAuth", db.getString(rs,"locationAuth"));
         }
         rs.close();
 
@@ -51,7 +56,7 @@ class Location {
     public Element getRemotes(Document doc) throws SQLException {
         Element remoteLocations = doc.createElement("recipients");
 
-        ResultSet rs = DBHandler.GetSQL("SELECT * FROM oscarcommlocations WHERE current1 = 0");
+        ResultSet rs = db.GetSQL("SELECT * FROM oscarcommlocations WHERE current1 = 0");
         while(rs.next()) {
             UtilXML.addNode(remoteLocations, "remote").setAttribute("locationId", String.valueOf(rs.getInt("locationId")));
         }

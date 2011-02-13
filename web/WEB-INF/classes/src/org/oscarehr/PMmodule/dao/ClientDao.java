@@ -30,15 +30,20 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
+import org.hibernate.JDBCException;
 import org.hibernate.Query;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Expression;
@@ -47,21 +52,25 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.oscarehr.PMmodule.model.Admission;
-import org.oscarehr.PMmodule.web.formbean.ClientListsReportFormBean;
-import org.oscarehr.PMmodule.web.formbean.ClientSearchFormBean;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.DemographicExt;
+import org.oscarehr.PMmodule.model.ProgramProvider;
 import org.oscarehr.common.model.Provider;
+import org.oscarehr.PMmodule.web.formbean.ClientListsReportFormBean;
+import org.oscarehr.PMmodule.web.formbean.ClientSearchFormBean;
 import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import oscar.MyDateFormat;
+
+import com.quatro.common.KeyConstants;
+import com.quatro.util.Utility;
+import oscar.OscarProperties;
 import oscar.util.SqlUtils;
 
 public class ClientDao extends HibernateDaoSupport {
 
-	private Logger log=MiscUtils.getLogger();
+	private Log log = LogFactory.getLog(ClientDao.class);
 
 	private static final int LIST_PROCESSING_CHUNK_SIZE=64;
 
@@ -115,13 +124,14 @@ public class ClientDao extends HibernateDaoSupport {
 		String lastNameL = "";
 		String bedProgramId = "";
 		String assignedToProviderNo = "";
-		
-		
+		String admitDateFromCond = "";
+		String admitDateToCond = "";
 		String active = "";
 		String gender = "";
-		
-		
+		String AND = " and ";
+		String WHERE = " where ";
 		String sql = "";
+		String sql2 = "";
 		
 		//@SuppressWarnings("unchecked")
 		List results = null;
@@ -154,7 +164,10 @@ public class ClientDao extends HibernateDaoSupport {
 			}
 		    return results;
 		}
-
+		LogicalExpression condAlias1 = null;
+		LogicalExpression condAlias2 = null;
+		LogicalExpression condFirstName = null;
+		LogicalExpression condLastName = null;
 		if (firstName.length() > 0) {
 //			sql = "(LEFT(SOUNDEX(first_name),4) = LEFT(SOUNDEX('" + firstName + "'),4))";
 //			sql2 = "(LEFT(SOUNDEX(alias),4) = LEFT(SOUNDEX('" + firstName + "'),4))";
@@ -237,20 +250,20 @@ public class ClientDao extends HibernateDaoSupport {
 		String lastName = "";
 		String firstNameL = "";
 		String lastNameL = "";
-		
-		
-		
+		String bedProgramIdCond = "";
+		String admitDateFromCond = "";
+		String admitDateToCond = "";
 		String active = "";
 		String gender = "";
-		
-		
+		String AND = " and ";
+		String WHERE = " where ";
 		String sql = "";
 		String sql2 = "";
 		
 		@SuppressWarnings("unchecked")
 		List<Demographic> results = null;
 
-		
+		boolean isOracle = OscarProperties.getInstance().getDbType().equals("oracle");
 		if (bean.getFirstName() != null && bean.getFirstName().length() > 0) {
 			firstName = bean.getFirstName();
 			firstName = StringEscapeUtils.escapeSql(firstName);
@@ -330,8 +343,10 @@ public class ClientDao extends HibernateDaoSupport {
 			criteria.add(Expression.eq("Ver", bean.getHealthCardVersion()));
 		}
 		
+		if(bean.getBedProgramId() != null && bean.getBedProgramId().length() > 0) {
+			bedProgramIdCond = " program_id = " + bean.getBedProgramId();
+		}
 		
-
 // -------- start splice from 1.31 for 2270307
 		DetachedCriteria subq = DetachedCriteria.forClass(Admission.class)
 	    .setProjection(Property.forName("ClientId") );
@@ -789,27 +804,4 @@ public class ClientDao extends HibernateDaoSupport {
 	}
 
 
-    public List<Demographic> getClientsByChartNo(String chartNo) {
-    	String queryStr = " FROM Demographic d where d.ChartNo=?";
-	    @SuppressWarnings("unchecked")
-		List<Demographic> rs = getHibernateTemplate().find(queryStr,new Object[]{chartNo});
-
-		if (log.isDebugEnabled()) {
-			log.debug("getClientsByChartNo: # of results=" + rs.size());
-		}
-
-		return rs;
-    }
-    
-    public List<Demographic> getClientsByHealthCard(String num, String type) {
-    	String queryStr = " FROM Demographic d where d.Hin=? and d.HcType=?";
-	    @SuppressWarnings("unchecked")
-		List<Demographic> rs = getHibernateTemplate().find(queryStr,new Object[]{num,type});
-
-		if (log.isDebugEnabled()) {
-			log.debug("getClientsByHealthCard: # of results=" + rs.size());
-		}
-
-		return rs;
-    }
 }

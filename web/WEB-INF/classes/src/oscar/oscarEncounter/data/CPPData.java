@@ -36,9 +36,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 import oscar.util.UtilDateUtilities;
 
@@ -115,8 +112,8 @@ public class CPPData {
       String sql= "insert into cpp (demographic_no,provider_no,socialFam,ongoingCon,medHist,reminder,riskfactor,otherMed,otherAller,medsList,allergyList,divArr,created) values (?,?,?,?,?,?,?,?,?,?,?,?,?) "  ;
                               
       try{
-         
-         Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+         Connection conn = DBHandler.getConnection();
          PreparedStatement ps=  conn.prepareStatement(sql);
          ps.setString(1, demoNo);
          ps.setString(2, provNo);
@@ -134,7 +131,7 @@ public class CPPData {
          ps.execute();         
          ps.close();
       }catch(Exception e){
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace();
          //inserted = false;
       }                        
                         
@@ -145,25 +142,25 @@ public class CPPData {
    public HashMap getCPPData(String demoNo){
       HashMap hm = new HashMap();
       String sql= "select * from cpp  where demographic_no = '"+demoNo+"' order by id desc limit 1";
-      MiscUtils.getLogger().debug(sql);
+      System.out.println(sql);
       try{
-         
-         ResultSet rs =  DBHandler.GetSQL(sql);
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+         ResultSet rs =  db.GetSQL(sql);
          if(rs.next()){
    
-            String providerNo = oscar.Misc.getString(rs, "provider_no");
-            String socialFam = oscar.Misc.getString(rs, "socialFam");
-            String ongoingCon = oscar.Misc.getString(rs, "ongoingCon");
-            String medHist = oscar.Misc.getString(rs, "medHist");
-            String reminder = oscar.Misc.getString(rs, "reminder");
-            String riskfactor = oscar.Misc.getString(rs, "riskfactor"); 
-            String otherMed = oscar.Misc.getString(rs, "otherMed");
-            String otherAller = oscar.Misc.getString(rs, "otherAller");
+            String providerNo = db.getString(rs,"provider_no");
+            String socialFam = db.getString(rs,"socialFam");
+            String ongoingCon = db.getString(rs,"ongoingCon");
+            String medHist = db.getString(rs,"medHist");
+            String reminder = db.getString(rs,"reminder");
+            String riskfactor = db.getString(rs,"riskfactor"); 
+            String otherMed = db.getString(rs,"otherMed");
+            String otherAller = db.getString(rs,"otherAller");
             
-            String medsList = oscar.Misc.getString(rs, "medsList");  
-            String allegryList = oscar.Misc.getString(rs, "allergyList");              
-            String divArr = oscar.Misc.getString(rs, "divArr");
-            String created= oscar.Misc.getString(rs, "created");                                                               
+            String medsList = db.getString(rs,"medsList");  
+            String allegryList = db.getString(rs,"allergyList");              
+            String divArr = db.getString(rs,"divArr");
+            String created= db.getString(rs,"created");                                                               
             
             hm.put("providerNo",providerNo);
             hm.put("socialFam",socialFam);
@@ -181,7 +178,7 @@ public class CPPData {
                         
          }
       }catch(Exception e){
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace();
          //inserted = false;
       }                        
       return hm;

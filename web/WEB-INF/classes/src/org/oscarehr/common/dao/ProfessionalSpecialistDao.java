@@ -38,12 +38,9 @@ public class ProfessionalSpecialistDao extends AbstractDao<ProfessionalSpecialis
 		super(ProfessionalSpecialist.class);
 	}
 
-	/**
-	 * Sorted by lastname,firstname
-	 */
     public List<ProfessionalSpecialist> findAll()
 	{
-		Query query = entityManager.createQuery("select x from "+modelClass.getSimpleName()+" x order by x.lastName,x.firstName");
+		Query query = entityManager.createQuery("select x from "+modelClass.getSimpleName()+" x");
 		
 		@SuppressWarnings("unchecked")
 		List<ProfessionalSpecialist> results=query.getResultList();
@@ -51,21 +48,4 @@ public class ProfessionalSpecialistDao extends AbstractDao<ProfessionalSpecialis
 		return(results);
 	}
 
-	/**
-	 * Sorted by lastname,firstname
-	 */
-    public List<ProfessionalSpecialist> findByEDataUrlNotNull()
-	{
-		Query query = entityManager.createQuery("select x from "+modelClass.getSimpleName()+" x where x.eDataUrl is not null order by x.lastName,x.firstName");
-		
-		@SuppressWarnings("unchecked")
-		List<ProfessionalSpecialist> results=query.getResultList();
-		
-		return(results);
-	}
-    
-    public boolean hasRemoteCapableProfessionalSpecialists()
-    {
-    	return(findByEDataUrlNotNull().size()>0);
-    }
 }

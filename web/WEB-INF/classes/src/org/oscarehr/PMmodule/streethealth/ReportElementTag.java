@@ -12,12 +12,12 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class ReportElementTag extends TagSupport {
 
-	private Logger logger = MiscUtils.getLogger();
+	Log logger = LogFactory.getLog(ReportElementTag.class);
 	private static final long serialVersionUID = -239992499220455498L;
 	private String question;
 	private String answers;

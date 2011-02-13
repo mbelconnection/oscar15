@@ -36,7 +36,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarEncounter.immunization.config.data.EctImmHeading;
 import oscar.oscarEncounter.immunization.config.data.EctImmImmunizationSetWriter;
@@ -61,7 +60,7 @@ public class EctImmCreateImmunizationSetConfigAction extends Action {
       String setName = ((EctImmCreateImmunizationSetConfigForm)form).getName();
       String headers = "true";
       String str;
-      for(; e.hasMoreElements(); MiscUtils.getLogger().debug("str ".concat(String.valueOf(String.valueOf(str))))) {
+      for(; e.hasMoreElements(); System.out.println("str ".concat(String.valueOf(String.valueOf(str))))) {
          str = (String)e.nextElement();
          if(str.startsWith("heading")) {
             headingVec.add(str);
@@ -77,7 +76,8 @@ public class EctImmCreateImmunizationSetConfigAction extends Action {
          else
             flag1 = false;
       }
-
+      
+      //System.out.println(String.valueOf(String.valueOf((new StringBuffer("There are: headings = ")).append(headingVec.size()).append(" imms = ").append(immunizationVec.size()).append(" yearAge = ").append(yearAgeVec.size()))));
       int flag = 0;
       Vector headingVector = new Vector();
       headingVector.setSize(headingVec.size());
@@ -98,7 +98,7 @@ public class EctImmCreateImmunizationSetConfigAction extends Action {
             forTheCol = Integer.parseInt(shouldBeCol);
          }
          catch(Exception colE) {
-            MiscUtils.getLogger().debug("Kick'm out");
+            System.out.println("Kick'm out");
          }
          header.col = forTheCol;
          headingVector.setElementAt(header, header.col - 1);
@@ -118,7 +118,7 @@ public class EctImmCreateImmunizationSetConfigAction extends Action {
             forTheRow = Integer.parseInt(shouldBeRow);
          }
          catch(Exception colE) {
-            MiscUtils.getLogger().debug("Kick'm out");
+            System.out.println("Kick'm out");
          }
          String immVal = request.getParameter(immName);
          immVal = immVal.trim();
@@ -130,7 +130,7 @@ public class EctImmCreateImmunizationSetConfigAction extends Action {
       
       for(int q = 0; q < immunizationVector.size(); q++) {
          EctImmImmunizations immunization = (EctImmImmunizations)immunizationVector.elementAt(q);
-
+         //System.out.println(String.valueOf(String.valueOf((new StringBuffer("immunization ")).append(immunization.immunizationName).append(" at row index ").append(immunization.row).append(" q = ").append(q))));
       }
       
       Vector yearAgeVector = new Vector();
@@ -148,11 +148,11 @@ public class EctImmCreateImmunizationSetConfigAction extends Action {
             intCol = Integer.parseInt(colToBeParsed);
          }
          catch(Exception rowAndCole) {
-            MiscUtils.getLogger().debug("kickum out");
+            System.out.println("kickum out");
          }
          EctImmImmunizations immunizations = (EctImmImmunizations)immunizationVector.elementAt(intRow - 1);
          immunizations.indexAge.add(colToBeParsed);
-
+         //System.out.println(String.valueOf(String.valueOf((new StringBuffer("year Age ")).append(yearAgeName).append(" subbedString ").append(subbedString).append(" the row i get ").append(rowToBeParsed).append(" the col i get ").append(colToBeParsed))));
       }
       
       EctImmImmunizationSetWriter immunizationSetWriter = new EctImmImmunizationSetWriter();

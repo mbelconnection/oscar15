@@ -22,16 +22,16 @@
 
 package org.oscarehr.billing.CA.model;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
+import org.oscarehr.common.model.AbstractModel;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
-import org.oscarehr.common.model.AbstractModel;
+import java.math.BigDecimal;
+import java.io.Serializable;
 /**
  *
  * @author rjonasz

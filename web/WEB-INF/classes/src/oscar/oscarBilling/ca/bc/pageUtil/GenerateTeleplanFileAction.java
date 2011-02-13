@@ -38,10 +38,11 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.common.dao.DemographicDao;
-import org.oscarehr.util.MiscUtils;
-import org.oscarehr.util.SpringUtils;
 
+import org.oscarehr.common.dao.DemographicDao;
+import org.oscarehr.util.SpringUtils;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import oscar.Misc;
 import oscar.OscarProperties;
 import oscar.oscarBilling.ca.bc.MSP.TeleplanFileWriter;
@@ -71,7 +72,7 @@ public class GenerateTeleplanFileAction extends Action{
                                ActionForm form,
                                HttpServletRequest request,
                                HttpServletResponse response) throws Exception{
-        MiscUtils.getLogger().debug("SimulateTeleplanAction2 action jackson");
+        System.out.println("SimulateTeleplanAction2 action jackson");
     
         String home_dir = OscarProperties.getInstance().getProperty("HOME_DIR");
         String dataCenterId = OscarProperties.getInstance().getProperty("dataCenterId");
@@ -93,6 +94,8 @@ public class GenerateTeleplanFileAction extends Action{
             pdArr[i] = new ProviderData(provNo);
         }
         
+        System.out.print("sending "+pdArr.length+ " to submission");
+        
         //This needs to be replaced for sim
         boolean testRun = false;
         //To prevent multiple submissions being generated at the same time
@@ -103,7 +106,7 @@ public class GenerateTeleplanFileAction extends Action{
             DemographicDao demographicDao = (DemographicDao) SpringUtils.getBean("demographicDao");    //ctx.getBean("demographicDao");
             TeleplanFileWriter teleplanWr = new TeleplanFileWriter();  
             teleplanWr.setBillingmasterDAO(billingmasterDAO);
-            MiscUtils.getLogger().debug("\ndemographic DAO -->"+demographicDao);
+            System.out.println("\ndemographic DAO -->"+demographicDao);
             teleplanWr.setDemographicDao(demographicDao);
             TeleplanSubmission submission = teleplanWr.getSubmission(testRun,pdArr,dataCenterId);
 
@@ -114,8 +117,8 @@ public class GenerateTeleplanFileAction extends Action{
             //Create Filename
             String filename = "H"+bActDao.getMonthCode()+UtilDateUtilities.getToday("yyMMdd_HHmmss")+"_"+Misc.forwardZero(batchCount,3);
             
-            MiscUtils.getLogger().debug("filename: "+filename+ " home_dir "+home_dir);
-            MiscUtils.getLogger().debug(submission.toString());
+            System.out.println("filename: "+filename+ " home_dir "+home_dir);
+            System.out.println(submission.toString());
             
             
             /*
@@ -128,7 +131,7 @@ public class GenerateTeleplanFileAction extends Action{
             submission.commit( filename, home_dir,bActDao.getMonthCode(), batchCount, providerNo);
             
             }catch(Exception e){
-                MiscUtils.getLogger().error("Error", e);
+                e.printStackTrace();
                 request.setAttribute("error",e.getMessage());
             }
         }

@@ -36,7 +36,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarEncounter.oscarMeasurements.bean.EctTypeDisplayNameBeanHandler;
 
@@ -50,7 +49,7 @@ public class EctSetupAddMeasurementGroupAction extends Action {
         request.getSession().setAttribute("EctSetupAddMeasurementGroupForm", frm);
         
         String groupName = (String) frm.getValue("groupName");
-        MiscUtils.getLogger().debug("The selected groupName is: " + groupName);
+        System.out.println("The selected groupName is: " + groupName);
         
         EctTypeDisplayNameBeanHandler hd = new EctTypeDisplayNameBeanHandler(groupName, false);
         Collection existingTypeDisplayName = hd.getTypeDisplayNameVector();

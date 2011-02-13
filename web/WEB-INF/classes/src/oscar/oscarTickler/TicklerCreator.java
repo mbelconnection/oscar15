@@ -32,8 +32,6 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 public class TicklerCreator {
@@ -54,12 +52,13 @@ public class TicklerCreator {
       String sql = "insert into tickler (demographic_no, message, status, update_date, service_date, creator, priority, task_assigned_to) " +
           " values(" + demoNo + " ,'" + message + "','A',now(),'" + nowDate +
           "','" + provNo + "','4','" + provNo + "')";
-      
+      DBHandler db = null;
       try {
-        
-        DBHandler.RunSQL(sql);
+        db = new DBHandler(DBHandler.OSCAR_DATA);
+        db.RunSQL(sql);
       }
-      catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+      catch (SQLException ex) {
+        ex.printStackTrace();
       }
     }
   }
@@ -76,20 +75,22 @@ public class TicklerCreator {
     String sql = "select * from tickler where demographic_no = " + demoNo +
         " and message = '" + message + "'" +
         " and status = 'A'";
-    
+    DBHandler db = null;
     ResultSet rs = null;
     try {
-      
-      rs = DBHandler.GetSQL(sql);
+      db = new DBHandler(DBHandler.OSCAR_DATA);
+      rs = db.GetSQL(sql);
       return rs.next();
     }
-    catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+    catch (SQLException ex) {
+      ex.printStackTrace();
     }
     finally {
       try {
         rs.close();
       }
-      catch (SQLException ex1) {MiscUtils.getLogger().error("Error", ex1);
+      catch (SQLException ex1) {
+        ex1.printStackTrace();
       }
     }
     return false;
@@ -101,12 +102,13 @@ public class TicklerCreator {
         demoNo + "'" +
         " and message like '%" + remString + "%'" +
         " and status = 'A'";
-    
+    DBHandler db = null;
     try {
-      
-      DBHandler.RunSQL(sql);
+      db = new DBHandler(DBHandler.OSCAR_DATA);
+      db.RunSQL(sql);
     }
-    catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+    catch (SQLException ex) {
+      ex.printStackTrace();
     }
   }
 
@@ -127,13 +129,14 @@ public class TicklerCreator {
     qry += cdmPatientNos.size()==0 ? "0" : "";
 
     qry += ") and message like '%" + remString + "%' and status = 'A'";
-    
-
+    DBHandler db = null;
+    //System.out.println(qry);
     try {
-      
-      DBHandler.RunSQL(qry);
+      db = new DBHandler(DBHandler.OSCAR_DATA);
+      db.RunSQL(qry);
     }
-    catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+    catch (SQLException ex) {
+      ex.printStackTrace();
     }
   }
 }

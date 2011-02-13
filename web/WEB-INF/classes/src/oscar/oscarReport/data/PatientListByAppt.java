@@ -1,4 +1,5 @@
 /*
+ * PatientListByAppt.java
  *
  * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved. *
  * This software is published under the GPL GNU General Public License.
@@ -52,12 +53,12 @@ public class PatientListByAppt extends HttpServlet {
     throws ServletException, IOException {
         response.setContentType("plain/text");
         response.setHeader("Content-disposition", "attachment; filename=patientlist.txt");
-        
+
         String drNo = request.getParameter("provider_no");
         String datefrom = request.getParameter("date_from");
         String dateto = request.getParameter("date_to");
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             
             java.sql.ResultSet rs;
             String sql = "select d.last_name, d.first_name, d.phone,  d.phone2, "+
@@ -78,27 +79,28 @@ public class PatientListByAppt extends HttpServlet {
             }
             sql = sql + "order by a.appointment_date";
 
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             
             PrintStream ps = new PrintStream(response.getOutputStream());
 
               while(rs.next()){
-               ps.print(oscar.Misc.getString(rs, 1)+",");
-               ps.print(oscar.Misc.getString(rs, 2)+",");
-               ps.print(oscar.Misc.getString(rs, 3)+",");
-               ps.print(oscar.Misc.getString(rs, 4)+",");
-               ps.print(oscar.Misc.getString(rs, 6)+",");
-               ps.print(oscar.Misc.getString(rs, 5)+",");
-               ps.print(oscar.Misc.getString(rs, 7).replaceAll("\r\n","")+",");
-               ps.print(oscar.Misc.getString(rs, 9)+" ");
+               ps.print(db.getString(rs,1)+",");
+               ps.print(db.getString(rs,2)+",");
+               ps.print(db.getString(rs,3)+",");
+               ps.print(db.getString(rs,4)+",");
+               ps.print(db.getString(rs,6)+",");
+               ps.print(db.getString(rs,5)+",");
+               ps.print(db.getString(rs,7).replaceAll("\r\n","")+",");
+               ps.print(db.getString(rs,9)+" ");
                ps.print(rs.getString(8)+",");
                ps.print(rs.getString(10));
                ps.print("\n");
             }
             ps.println("");
         }
-        catch(SQLException e){
-            MiscUtils.getLogger().error("Error", e);
+        catch(SQLException e)
+        {
+            System.out.println(e.getMessage());
         } 
     }
     

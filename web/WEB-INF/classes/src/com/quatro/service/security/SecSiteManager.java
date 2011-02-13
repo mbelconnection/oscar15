@@ -9,11 +9,10 @@
  *     <Quatro Group Software Systems inc.>  <OSCAR Team>
  *******************************************************************************/
 package com.quatro.service.security;
-import java.util.Calendar;
-import java.util.Random;
-
-import com.quatro.dao.security.SecSiteDao;
+import java.util.*;
 import com.quatro.model.security.SecSiteValue;
+import com.quatro.dao.security.SecSiteDao;
+import com.quatro.util.Utility;
 public class SecSiteManager {
 	SecSiteDao _dao = null;
 	

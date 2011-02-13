@@ -12,9 +12,9 @@ package com.quatro.model;
 
 import java.util.Calendar;
 
-import oscar.MyDateFormat;
-
 import com.quatro.common.KeyConstants;
+
+import oscar.MyDateFormat;
 
 /**
  * Incident entity.

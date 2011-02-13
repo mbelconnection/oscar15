@@ -34,8 +34,6 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.apache.commons.collections.KeyValue;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBeanHandler;
 import oscar.oscarMDS.data.ProviderData;
 
@@ -117,7 +115,7 @@ public class ReportEvaluator {
         try{
            percentage = ( (float) getNumeratorCount() / (float) getDenominatorCount() ) * 100;
         }catch(java.lang.ArithmeticException arithEx){
-        	MiscUtils.getLogger().error("Error", arithEx);
+            arithEx.printStackTrace();
             //request.setAttribute("divisionByZero",denominatorId);
             percentage = 0;
         }
@@ -144,7 +142,7 @@ public class ReportEvaluator {
     
     
     public String getName(){
-        StringBuilder  name = new StringBuilder();
+        StringBuffer  name = new StringBuffer();
         name.append(numerator.getNumeratorName());
         name.append("/");
         name.append(denominator.getDenominatorName());
@@ -154,7 +152,7 @@ public class ReportEvaluator {
            Hashtable repVals = denominator.getReplaceableValues();
            for (int i = 0; i < repKeys.length;i++){
                //provider_no:999998  if key is provider_no look up provider name
-               MiscUtils.getLogger().debug("repKeys "+repKeys[i]);
+               System.out.println("repKeys "+repKeys[i]);
                if (repKeys[i] != null && repKeys[i].equals("provider_no")){
                   name.append("Provider: "+getProviderStringName(""+repVals.get(repKeys[i])));        
                }else{

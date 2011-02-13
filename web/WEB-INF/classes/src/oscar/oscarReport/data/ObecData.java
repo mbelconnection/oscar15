@@ -66,15 +66,15 @@ public class ObecData {
 			eDate = "9999/12/31";
 		}
 		try {
-			
+			DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 			String sql = "select d.demographic_no, d.last_name, d.first_name, LEFT(d.address, 32) as address, LEFT(d.city, 30) as city, d.postal, d.hin, d.ver, d.province from appointment a, demographic d where a.demographic_no=d.demographic_no and d.hin <> '' and a.appointment_date>= '" + sDate + "' and appointment_date<='" + eDate + "' and (d.province='Ontario' or d.province='ON' or d.province='ONTARIO') group by d.demographic_no order by d.last_name";
-			ResultSet rs = DBHandler.GetSQL(sql);
+			ResultSet rs = db.GetSQL(sql);
 			while (rs.next()) {
 				count = count + 1;
 				if (count == 1) {
-					retval = retval + "OBEC01" + space(oscar.Misc.getString(rs, "hin"), 10) + space(oscar.Misc.getString(rs, "ver"), 2) + "\r";
+					retval = retval + "OBEC01" + space(db.getString(rs, "hin"), 10) + space(db.getString(rs, "ver"), 2) + "\r";
 				} else {
-					retval = retval + "\n" + "OBEC01" + space(oscar.Misc.getString(rs, "hin"), 10) + space(oscar.Misc.getString(rs, "ver"), 2) + "\r";
+					retval = retval + "\n" + "OBEC01" + space(db.getString(rs, "hin"), 10) + space(db.getString(rs, "ver"), 2) + "\r";
 				}
 			}
 			rs.close();
@@ -84,8 +84,8 @@ public class ObecData {
 				filename = writeFile(retval, pp);
 			}
 		} catch (SQLException e) {
-			MiscUtils.getLogger().debug("There has been an error while retrieving a Obec");
-			MiscUtils.getLogger().error("Error", e);
+			System.out.println("There has been an error while retrieving a Obec");
+			System.out.println(e.getMessage());
 		}
 
 		return filename;
@@ -118,8 +118,8 @@ public class ObecData {
 		String obecFilename = "";
 
 		try {
-			
-			
+			int fileCount = 0;
+			String home_dir;
 			String oscar_home = pp.getProperty("DOCUMENT_DIR");
 			Calendar calendar = new GregorianCalendar();
 			String randomDate = String.valueOf(calendar.get(Calendar.SECOND)) + String.valueOf(calendar.get(Calendar.MILLISECOND));

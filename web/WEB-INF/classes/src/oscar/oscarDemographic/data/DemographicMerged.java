@@ -16,8 +16,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
-import org.oscarehr.util.DbConnectionFilter;
 
+import oscar.oscarDB.DBHandler;
 import oscar.util.UtilDateUtilities;
 
 /**
@@ -33,8 +33,8 @@ public class DemographicMerged {
     }
     
     public void Merge(String demographic_no, String head) throws SQLException{
-        
-        Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+        Connection conn = DBHandler.getConnection();
         
         String sql = "insert into demographic_merged (demographic_no, merged_to) values (?,?)";
         PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -58,8 +58,8 @@ public class DemographicMerged {
     
     public void UnMerge(String demographic_no, String curUser_no) throws SQLException{
         
-        
-        Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+        Connection conn = DBHandler.getConnection();
         
         String sql = "update demographic_merged set deleted=1 where demographic_no=?";
         PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -77,9 +77,9 @@ public class DemographicMerged {
         String priority = "";
         String provider_no = "";
         while (rs.next()) {
-            privilege = oscar.Misc.getString(rs, "privilege");
-            priority = oscar.Misc.getString(rs, "priority");
-            provider_no = oscar.Misc.getString(rs, "provider_no");
+            privilege = db.getString(rs,"privilege");
+            priority = db.getString(rs,"priority");
+            provider_no = db.getString(rs,"provider_no");
         }
         pstmt.close();
         
@@ -106,8 +106,8 @@ public class DemographicMerged {
     }
     
     public String getHead(String demographic_no) throws SQLException{
-        
-        Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+        Connection conn = DBHandler.getConnection();
         ResultSet rs;
         String head = null;
         
@@ -117,7 +117,7 @@ public class DemographicMerged {
         pstmt.setInt(1, Integer.parseInt(demographic_no));
         rs = pstmt.executeQuery();
         if(rs.next())
-            head = oscar.Misc.getString(rs, "merged_to");
+            head = db.getString(rs,"merged_to");
         
         pstmt.close();
         if (head != null)
@@ -131,8 +131,8 @@ public class DemographicMerged {
     
     public ArrayList getTail(String demographic_no) throws SQLException{
         
-        
-        Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+        Connection conn = DBHandler.getConnection();
         ResultSet rs;
         ArrayList tailArray = new ArrayList();
         
@@ -142,7 +142,7 @@ public class DemographicMerged {
         pstmt.setInt(1, Integer.parseInt(demographic_no));
         rs = pstmt.executeQuery();
         while(rs.next()){
-            tailArray.add(oscar.Misc.getString(rs, "demographic_no"));
+            tailArray.add(db.getString(rs,"demographic_no"));
         }
         
         pstmt.close();

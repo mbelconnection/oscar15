@@ -25,18 +25,19 @@ package org.oscarehr.PMmodule.utility;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oscarehr.PMmodule.model.Admission;
+import org.oscarehr.common.model.Demographic;
 import org.oscarehr.PMmodule.service.AdmissionManager;
 import org.oscarehr.PMmodule.service.ClientManager;
-import org.oscarehr.common.model.Demographic;
-import org.oscarehr.util.MiscUtils;
+import org.oscarehr.PMmodule.service.ProviderManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class CheckForMultipleBedAdmissions {
 
-	protected final Logger log = MiscUtils.getLogger();
+	protected final Log log = LogFactory.getLog(getClass());
 	
     protected ApplicationContext ctx = null;
     
@@ -47,7 +48,7 @@ public class CheckForMultipleBedAdmissions {
     
     public void run() throws Exception {
     	//get a list of providers
-    	
+    	ProviderManager providerManager = (ProviderManager)ctx.getBean("providerManager");
     	AdmissionManager admissionManager = (AdmissionManager)ctx.getBean("admissionManager");
     	ClientManager clientManager = (ClientManager)ctx.getBean("clientManager");
     	
@@ -60,16 +61,24 @@ public class CheckForMultipleBedAdmissions {
     }
 
     private void doReport(Demographic client, List currentAdmissions) {
-    	
+    	int numBedPrograms = 0;
  		for(Iterator iter2=currentAdmissions.iterator();iter2.hasNext();) {
 			Admission admission = (Admission)iter2.next();
 			if(admission.getProgramName() == null) {
+				System.out.println("Error: can't find program " + admission.getProgramId());
 				return;
 			}
 			if(admission.getProgramType().equals("Bed")) {
-				
+				numBedPrograms++;
 			}
 		}
+		if(numBedPrograms == 0) {
+			System.out.println(client.getDemographicNo() + " is not in a bed program");
+		}
+		if(numBedPrograms > 1) {
+			System.out.println(client.getDemographicNo() + " is in " + numBedPrograms + " bed programs");        		
+		}
+		
     }
     public static void main(String args[]) throws Exception {
     	CheckForMultipleBedAdmissions prog = new CheckForMultipleBedAdmissions();

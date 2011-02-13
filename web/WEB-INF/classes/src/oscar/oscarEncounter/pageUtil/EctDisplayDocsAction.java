@@ -37,7 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.struts.util.MessageResources;
-import org.oscarehr.util.MiscUtils;
+import org.oscarehr.util.SessionConstants;
 
 import oscar.dms.EDoc;
 import oscar.dms.EDocUtil;
@@ -90,7 +90,7 @@ public class EctDisplayDocsAction extends EctDisplayAction {
     Dao.setRightURL(url);
     Dao.setRightHeadingID(cmd); //no menu so set div id to unique id for this action
 
-    StringBuilder javascript = new StringBuilder("<script type=\"text/javascript\">");
+    StringBuffer javascript = new StringBuffer("<script type=\"text/javascript\">");
     String js = "";
     ArrayList docList = EDocUtil.listDocs("demographic", bean.demographicNo, null, EDocUtil.PRIVATE, EDocUtil.SORT_OBSERVATIONDATE, "active");
     String dbFormat = "yyyy-MM-dd";
@@ -124,7 +124,7 @@ public class EctDisplayDocsAction extends EctDisplayAction {
             serviceDateStr = DateUtils.getDate(date, dateFormat, request.getLocale());
         }
         catch(ParseException ex ) {
-            MiscUtils.getLogger().debug("EctDisplayDocsAction: Error creating date " + ex.getMessage());
+            System.out.println("EctDisplayDocsAction: Error creating date " + ex.getMessage());
             serviceDateStr = "Error";
             date = null;
         }

@@ -37,13 +37,10 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
-import org.oscarehr.util.SpringUtils;
 
 import oscar.OscarProperties;
 import oscar.oscarBilling.ca.bc.data.BillingHistoryDAO;
 import oscar.oscarDB.DBHandler;
-import oscar.service.OscarSuperManager;
 
 public class BillingSaveBillingAction
     extends Action {
@@ -77,14 +74,21 @@ public class BillingSaveBillingAction
     String dataCenterId = OscarProperties.getInstance().getProperty(
         "dataCenterId");
 
-    //change appointment status
-    MiscUtils.getLogger().debug("appointment_no: " + bean.getApptNo());
-    MiscUtils.getLogger().debug("BillStatus:" + billStatus);
-    OscarSuperManager oscarSuperManager = (OscarSuperManager)SpringUtils.getBean("oscarSuperManager");
-    oscarSuperManager.update("appointmentDao", "archive_appt", new Object[]{bean.getApptNo()});
-    oscarSuperManager.update("appointmentDao", "updatestatusc", new Object[]{billStatus,bean.getCreator(),bean.getApptNo()});
+    System.out.println("appointment_no: " + bean.getApptNo());
+    System.out.println("BillStatus:" + billStatus);
+    String sql = "update appointment set status='" + billStatus +
+        "' where appointment_no='" + bean.getApptNo() + "'";
 
-    String sql = "insert into billing (billing_no,demographic_no, provider_no,appointment_no, demographic_name,hin,update_date, billing_date, total, status, dob, visitdate, visittype, provider_ohip_no, apptProvider_no, creator)";
+    try {
+      DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+      db.RunSQL(sql);
+
+    }
+    catch (SQLException e) {
+      System.out.println(e.getMessage());
+    }
+
+    sql = "insert into billing (billing_no,demographic_no, provider_no,appointment_no, demographic_name,hin,update_date, billing_date, total, status, dob, visitdate, visittype, provider_ohip_no, apptProvider_no, creator)";
     sql = sql + " values('\\N','" + bean.getPatientNo() + "', '" +
         bean.getBillingProvider() + "', '" + bean.getApptNo() + "','" +
         bean.getPatientName() + "','" + bean.getPatientPHN() + "','" + curDate +
@@ -94,10 +98,10 @@ public class BillingSaveBillingAction
         bean.getBillingPracNo() + "','" + bean.getApptProviderNo() + "','" +
         bean.getCreator() + "')";
     try {
-      
-      DBHandler.RunSQL(sql);
-      rs = DBHandler.GetSQL("SELECT LAST_INSERT_ID()");
-
+      DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+      db.RunSQL(sql);
+      rs = db.GetSQL("SELECT LAST_INSERT_ID()");
+      //      System.out.println(rs.getString(1));
       if (rs.next()) {
         billingid = rs.getString(1);
       }
@@ -105,7 +109,7 @@ public class BillingSaveBillingAction
 
     }
     catch (SQLException e) {
-      MiscUtils.getLogger().error("Error", e);
+      System.out.println(e.getMessage());
     }
 
     ArrayList billItem = bean.getBillItem();
@@ -215,9 +219,9 @@ public class BillingSaveBillingAction
               + "'')";
           try {
 
-            
-            DBHandler.RunSQL(sql);
-            rs = DBHandler.GetSQL("SELECT LAST_INSERT_ID()");
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            db.RunSQL(sql);
+            rs = db.GetSQL("SELECT LAST_INSERT_ID()");
 
             /**
              * @todo Don't forget to verify that this is the correct billingmaster_no
@@ -231,9 +235,9 @@ public class BillingSaveBillingAction
             this.createBillArchive(billingMasterNo++, "O");
           }
           catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
           }
-          MiscUtils.getLogger().debug(sql);
+          System.out.println(sql);
         }
         else {
 
@@ -285,9 +289,9 @@ public class BillingSaveBillingAction
               "', '', '', '" + bean.getPatientPostal() + "')";
 
           try {
-            
-            DBHandler.RunSQL(sql);
-            rs = DBHandler.GetSQL("SELECT LAST_INSERT_ID()");
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            db.RunSQL(sql);
+            rs = db.GetSQL("SELECT LAST_INSERT_ID()");
             /**
              * @todo Don't forget to verify that this is the correct billingmaster_no
              */
@@ -300,19 +304,21 @@ public class BillingSaveBillingAction
             this.createBillArchive(billingMasterNo++, "O");
           }
           catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
           }
-          MiscUtils.getLogger().debug(sql);
+          System.out.println(sql);
         }
       }
     }
+
+    //      System.out.println("Service count : "+ billItem.size());
 
     return (mapping.findForward("success"));
   }
 
   public String convertDate8Char(String s) {
     String sdate = "00000000", syear = "", smonth = "", sday = "";
-    MiscUtils.getLogger().debug("s=" + s);
+    System.out.println("s=" + s);
     if (s != null) {
 
       if (s.indexOf("-") != -1) {
@@ -329,14 +335,14 @@ public class BillingSaveBillingAction
           sday = "0" + sday;
         }
 
-        MiscUtils.getLogger().debug("Year" + syear + " Month" + smonth + " Day" + sday);
+        System.out.println("Year" + syear + " Month" + smonth + " Day" + sday);
         sdate = syear + smonth + sday;
 
       }
       else {
         sdate = s;
       }
-      MiscUtils.getLogger().debug("sdate:" + sdate);
+      System.out.println("sdate:" + sdate);
     }
     else {
       sdate = "00000000";

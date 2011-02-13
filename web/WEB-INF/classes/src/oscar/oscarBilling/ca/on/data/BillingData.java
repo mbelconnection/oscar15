@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -81,10 +80,10 @@ public class BillingData {
 				+ startDateQuery
 				+ endDateQuery
 				+ demoQuery;
-		MiscUtils.getLogger().debug("bill status query " + p);
+		System.out.println("bill status query " + p);
 		try {
-			
-			ResultSet rs = DBHandler.GetSQL(p);
+			DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+			ResultSet rs = db.GetSQL(p);
 			while (rs.next()) {
 				Hashtable h = new Hashtable();
 				h.put("billing_no", "" + rs.getInt("billing_no"));
@@ -99,7 +98,7 @@ public class BillingData {
 			}
 			rs.close();
 		} catch (Exception e) {
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 		}
 		return list;
 	}

@@ -24,6 +24,7 @@
 // -----------------------------------------------------------------------------------------------------------------------
 package oscar.oscarMessenger.pageUtil;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -34,7 +35,7 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
+import org.apache.struts.util.MessageResources;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarMessenger.util.MsgDemoMap;
@@ -47,16 +48,17 @@ public class MsgViewMessageAction extends Action {
 				 HttpServletRequest request,
 				 HttpServletResponse response)
 	throws IOException, ServletException {
-
+        // System.out.println("in view message action jackson");
         // Extract attributes we will need
-        
+        Locale locale = getLocale(request);
+        MessageResources messages = getResources(request);
 
         oscar.oscarMessenger.pageUtil.MsgSessionBean bean = (oscar.oscarMessenger.pageUtil.MsgSessionBean)request.getSession().getAttribute("msgSessionBean");
         String providerNo= null;
         if(bean!=null)
             providerNo = bean.getProviderNo();
         else
-            MiscUtils.getLogger().debug("MsgSessionBean is null");
+            System.out.println("MsgSessionBean is null");
         
         String messageNo = request.getParameter("messageID");  
         String messagePosition = request.getParameter("messagePosition");
@@ -76,24 +78,24 @@ public class MsgViewMessageAction extends Action {
         int  i = 1;
 
         try{
-           
+           DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
            java.sql.ResultSet rs;
            
               //print out message
               String sql = new String("Select * from messagetbl where messageid = \'"+messageNo+"\' ");
-              rs = DBHandler.GetSQL(sql);
+              rs = db.GetSQL(sql);
 
               if (rs.next()) {
                  String attach, pdfAttach;
-                 String message = (oscar.Misc.getString(rs, "themessage"));
-                 String subject = (oscar.Misc.getString(rs, "thesubject"));
-                 String sentby  = (oscar.Misc.getString(rs, "sentby"));
-                 String sentto  = (oscar.Misc.getString(rs, "sentto"));
-                 String thetime = (oscar.Misc.getString(rs, "theime"));
-                 String thedate = (oscar.Misc.getString(rs, "thedate"));
-                 String att     = oscar.Misc.getString(rs, "attachment");
-                 String pdfAtt     = oscar.Misc.getString(rs, "pdfattachment");
-
+                 String message = (db.getString(rs,"themessage"));
+                 String subject = (db.getString(rs,"thesubject"));
+                 String sentby  = (db.getString(rs,"sentby"));
+                 String sentto  = (db.getString(rs,"sentto"));
+                 String thetime = (db.getString(rs,"theime"));
+                 String thedate = (db.getString(rs,"thedate"));
+                 String att     = db.getString(rs,"attachment");
+                 String pdfAtt     = db.getString(rs,"pdfattachment");
+                 // System.out.println("attach "+att);
                  if (att == null || att.equals("null") ){
                     attach ="0";
                  }else{
@@ -106,6 +108,9 @@ public class MsgViewMessageAction extends Action {
                  }else{
                     pdfAttach ="1";
                  }
+
+                 // System.out.println("the message "+message+" "+subject);
+                 
 
                  request.setAttribute("viewMessageMessage",message);
                  request.setAttribute("viewMessageSubject",subject);
@@ -124,14 +129,14 @@ public class MsgViewMessageAction extends Action {
                      request.setAttribute("orderBy", orderBy);
                  }
                                   
-                 MiscUtils.getLogger().debug("viewMessagePosition: " + messagePosition + "IsLastMsg: " + request.getAttribute("viewMessageIsLastMsg"));
+                 System.out.println("viewMessagePosition: " + messagePosition + "IsLastMsg: " + request.getAttribute("viewMessageIsLastMsg"));
               }
               else{
                  i=0; // somethin wrong no message there
               }
 
               if (i == 1){
-                 DBHandler.RunSQL("update messagelisttbl set status = \'read\' where provider_no = \'"+providerNo+"\' and message = \'"+messageNo+"\' and status not like 'del'");
+                 db.RunSQL("update messagelisttbl set status = \'read\' where provider_no = \'"+providerNo+"\' and message = \'"+messageNo+"\' and status not like 'del'");
               }
               
               if (linkMsgDemo !=null && demographic_no!=null){
@@ -148,7 +153,7 @@ public class MsgViewMessageAction extends Action {
 
         }
         catch (java.sql.SQLException e){ 
-           MiscUtils.getLogger().error("Error", e); 
+            e.printStackTrace(System.out); 
         }
         
         request.setAttribute("today", oscar.util.UtilDateUtilities.getToday("dd-MMM-yyyy"));

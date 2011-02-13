@@ -28,7 +28,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.util.LabelValueBean;
 import org.oscarehr.PMmodule.dao.SurveyDAO;
 import org.oscarehr.PMmodule.dao.SurveySecurityDao;
@@ -45,13 +46,12 @@ import org.oscarehr.surveymodel.Question;
 import org.oscarehr.surveymodel.Section;
 import org.oscarehr.surveymodel.SurveyDocument;
 import org.oscarehr.util.LoggedInInfo;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public class SurveyManagerImpl implements SurveyManager, CustomReportDataSource {
 
-	Logger log=MiscUtils.getLogger();
+	Log log = LogFactory.getLog(SurveyManagerImpl.class);
 	
 	private SurveyDAO surveyDAO;
 	
@@ -176,7 +176,7 @@ public class SurveyManagerImpl implements SurveyManager, CustomReportDataSource 
             	SurveyDocument model = SurveyDocument.Factory.parse(new StringReader(xml));
             	return model.getSurvey();
             }catch(Exception e) {
-            	MiscUtils.getLogger().error("Error", e);
+            	e.printStackTrace();
             }
 		}
 		return null;

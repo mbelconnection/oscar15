@@ -33,8 +33,8 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import oscar.oscarEncounter.oscarMeasurements.util.WriteNewMeasurements;
 import oscar.util.UtilDateUtilities;
@@ -44,7 +44,7 @@ import oscar.util.UtilDateUtilities;
  * @author jay
  */
 public class FollowupManagement {
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(FollowupManagement.class);
     final public String LETTER1 = "L1";
     final public String LETTER2 = "L2";
     final public String PHONE1 = "P1";

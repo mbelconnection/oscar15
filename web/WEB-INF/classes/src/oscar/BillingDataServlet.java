@@ -32,8 +32,6 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
-import org.oscarehr.util.MiscUtils;
-
 
 public class BillingDataServlet extends HttpServlet implements java.io.Serializable
 {
@@ -89,7 +87,7 @@ public class BillingDataServlet extends HttpServlet implements java.io.Serializa
 
       catch (Throwable theException)
       {
-    	  MiscUtils.getLogger().error("Error", theException);
+         theException.printStackTrace();
       }
    }
 }

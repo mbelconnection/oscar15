@@ -27,8 +27,6 @@ package oscar.oscarEncounter.immunization.config.data;
 import java.util.Arrays;
 import java.util.Vector;
 
-import org.oscarehr.util.MiscUtils;
-
 public class EctImmImmunizations
 {
 
@@ -47,7 +45,7 @@ public class EctImmImmunizations
             }
             catch(Exception ee)
             {
-                MiscUtils.getLogger().debug("kick'em out");
+                System.out.println("kick'em out");
             }
             tempIntArray[r] = intVal;
         }
@@ -55,7 +53,7 @@ public class EctImmImmunizations
         Arrays.sort(tempIntArray);
         for(int r = 0; r < tempIntArray.length; r++)
         {
-            MiscUtils.getLogger().debug(String.valueOf(String.valueOf((new StringBuilder("line ")).append(r).append(" value ").append(tempIntArray[r]))));
+            System.out.println(String.valueOf(String.valueOf((new StringBuffer("line ")).append(r).append(" value ").append(tempIntArray[r]))));
             indexAge.setElementAt(Integer.toString(tempIntArray[r]), r);
         }
 

@@ -77,7 +77,7 @@ public  class MsgRemoteMessageData extends Thread{
          * @return
          */
          String getXMLMessage(String messageID){
-            StringBuilder XMLstring;
+            StringBuffer XMLstring;
             message    = new String();
             subject    = new String();
             sentby     = new String();
@@ -92,14 +92,14 @@ public  class MsgRemoteMessageData extends Thread{
 
 
 
-            XMLstring = new StringBuilder("<?xml version=\"1.0\" ?>\n <message>\n ");
+            XMLstring = new StringBuffer("<?xml version=\"1.0\" ?>\n <message>\n ");
 
             try{
-               
+               DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                java.sql.ResultSet rs_message, rs_whotoo;
                String sql_message = new String("Select * from messagetbl where messageid = '"+messageID+"'");
                String sql_whotoo = new String("Select * from messagelisttbl where message = '"+messageID+"'");
-               rs_message = DBHandler.GetSQL(sql_message);
+               rs_message = db.GetSQL(sql_message);
 
                if (rs_message.next()){
                   message   = replaceIllegalCharacters(rs_message.getString("themessage"));
@@ -112,6 +112,7 @@ public  class MsgRemoteMessageData extends Thread{
                   theAttach = (rs_message.getString("attachment"));
                   //theaction = (rs_message.getString("actionstatus"));
                }
+               // System.out.println("THE ATTACHMENT IS >"+theAttach+"<");
 
                if (theAttach != null && !theAttach.equals("null")){
                int getit = theAttach.indexOf('\n');
@@ -121,7 +122,7 @@ public  class MsgRemoteMessageData extends Thread{
                }
 
 
-               rs_whotoo = DBHandler.GetSQL(sql_whotoo);
+               rs_whotoo = db.GetSQL(sql_whotoo);
 
                while (rs_whotoo.next()){
                   providerNo.add(rs_whotoo.getString("provider_no"));
@@ -159,11 +160,11 @@ public  class MsgRemoteMessageData extends Thread{
                fileWriter.write(XMLstring.toString());
                fileWriter.close();
                }
-               catch(java.io.IOException io){ MiscUtils.getLogger().error("Error", io); }
+               catch(java.io.IOException io){ io.printStackTrace(System.out); }
 
                rs_message.close();
                rs_whotoo.close();
-            }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+            }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
 
             return XMLstring.toString();
          }
@@ -202,7 +203,7 @@ public  class MsgRemoteMessageData extends Thread{
         private void defunctMessage(){
         //sendMessage2(String message, String subject,String userName,String sentToWho,String userNo,java.util.ArrayList providers )
         java.util.ArrayList aList = new java.util.ArrayList();
-        StringBuilder stringBuffer = new StringBuilder("This message could not be delivered to remote Providers. \nPlease try again\n\n");
+        StringBuffer stringBuffer = new StringBuffer("This message could not be delivered to remote Providers. \nPlease try again\n\n");
         MsgProviderData providerData = new MsgProviderData();
         providerData.locationId = currentLocation;
         providerData.providerNo = sentbyNo;

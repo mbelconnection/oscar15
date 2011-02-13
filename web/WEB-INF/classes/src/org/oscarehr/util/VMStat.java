@@ -31,13 +31,14 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 /**
  * 
  */
 public class VMStat {
-	private static final Logger logger = MiscUtils.getLogger();
+	private static final Logger logger = LogManager.getLogger(VMStat.class);
 
 	private static Timer timer = new Timer(VMStat.class.getName(), true);
 	private static TimerTask timerTask = null;

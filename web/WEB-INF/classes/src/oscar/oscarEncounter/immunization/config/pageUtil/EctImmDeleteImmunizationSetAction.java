@@ -34,7 +34,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -44,23 +43,23 @@ public class EctImmDeleteImmunizationSetAction extends Action {
    throws ServletException, IOException {
       EctImmDeleteImmunizationSetForm frm = (EctImmDeleteImmunizationSetForm)form;
       String sets[] = frm.getImmuSets();
-      StringBuilder stringBuffer = new StringBuilder(" Update config_Immunization set archived = 1 where ");
+      StringBuffer stringBuffer = new StringBuffer(" Update config_Immunization set archived = 1 where ");
       for(int i = 0; i < sets.length; i++) {
-         MiscUtils.getLogger().debug(String.valueOf(String.valueOf((new StringBuilder("set len ")).append(sets.length - 1).append(" i = ").append(i))));
+         System.out.println(String.valueOf(String.valueOf((new StringBuffer("set len ")).append(sets.length - 1).append(" i = ").append(i))));
          if(i == sets.length - 1)
             stringBuffer.append("setId = ".concat(String.valueOf(String.valueOf(sets[i]))));
          else
-            stringBuffer.append(String.valueOf(String.valueOf((new StringBuilder("setId = ")).append(sets[i]).append(" or "))));
+            stringBuffer.append(String.valueOf(String.valueOf((new StringBuffer("setId = ")).append(sets[i]).append(" or "))));
       }
       
       if(sets.length > 0)
          try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = stringBuffer.toString();
-            DBHandler.RunSQL(sql);
+            db.RunSQL(sql);
          }
          catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
          }
       return mapping.findForward("success");
    }

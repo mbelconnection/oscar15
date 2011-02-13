@@ -27,7 +27,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TimerTask;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oscarehr.PMmodule.model.Admission;
 import org.oscarehr.PMmodule.model.ProgramProvider;
 import org.oscarehr.PMmodule.model.SecUserRole;
@@ -42,7 +43,7 @@ import org.oscarehr.util.ShutdownException;
 
 public class ErProgramDischargeTask extends TimerTask {
 
-    private static final Logger log=MiscUtils.getLogger();
+    private static final Log log = LogFactory.getLog(ErProgramDischargeTask.class);
 
     private ProviderManager providerManager;
 

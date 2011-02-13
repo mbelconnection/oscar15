@@ -12,6 +12,7 @@ package com.quatro.util;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -21,7 +22,8 @@ import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
 import org.oscarehr.PMmodule.model.FieldDefinition;
-import org.oscarehr.util.MiscUtils;
+
+import com.quatro.common.KeyConstants;
 
 public class Utility {
     public static boolean IsEmpty(String pStr)
@@ -329,7 +331,7 @@ public class Utility {
     }
     public static String getEscapedPattern(String str)
     {
-    	StringBuilder sb = new StringBuilder();
+    	StringBuffer sb = new StringBuffer();
     	for (int i=0; i< str.length(); i++)
     	{
     		String c  = str.substring(i,i+1); 
@@ -348,7 +350,7 @@ public class Utility {
     {
     	String patternEsc = getEscapedPattern(pattern);
     	String[] buff = str.split(patternEsc);
-    	StringBuilder sb = new StringBuilder();
+    	StringBuffer sb = new StringBuffer();
     	sb.append(buff[0]);
     	for(int i=1; i<buff.length;i++)
     	{
@@ -366,7 +368,7 @@ public class Utility {
     public static String merge(String[] str, String sep)
     {
     	if (str == null || str.length ==0) return "";
-    	StringBuilder sb = new StringBuilder();
+    	StringBuffer sb = new StringBuffer();
     	sb.append(str[0]);
     	for(int i=1; i<str.length;i++)
     	{
@@ -421,16 +423,23 @@ public class Utility {
 				}
 				in.close();
 
-			} catch (Exception e) {
-				MiscUtils.getLogger().error("Uh oh, got an IOException error!", e);
+			} catch (IOException e) {
+				// catch io errors from FileInputStream or readLine()
+				System.out.println("Uh oh, got an IOException error!"
+						+ e.getMessage());
+
 			} 
+			catch(Exception ex){
+				System.out.println(" from read template!"
+						+ ex.getMessage());
+			}
 			finally {
 				if (in != null)
 					in.close();
 			}
 
 		} catch (Exception e) {
-			MiscUtils.getLogger().error("Error", e);
+			// log.warn(e);
 		}
 
 		return list;

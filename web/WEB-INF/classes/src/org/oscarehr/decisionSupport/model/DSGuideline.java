@@ -8,10 +8,9 @@ package org.oscarehr.decisionSupport.model;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jdom.JDOMException;
-import org.oscarehr.util.MiscUtils;
 
 /**
  *
@@ -23,13 +22,13 @@ public abstract class DSGuideline {
         ACTIVE('A'),
         INACTIVE('I'),
         FAILED('F');
-
+        
         private char statusChar;
         private Status(char statusChar) { this.statusChar = statusChar; }
         private char getStatusChar() { return this.statusChar; }
     }*/
 
-    private static Logger _log = MiscUtils.getLogger();
+    protected static Log _log = LogFactory.getLog(DSGuideline.class);
     protected int id;
     protected String uuid;
     protected Integer version;
@@ -40,7 +39,7 @@ public abstract class DSGuideline {
     protected Date dateStart;
     protected Date dateDecomissioned;
     protected char status;
-
+    
 
     //following are populated by parsing
     private String title;

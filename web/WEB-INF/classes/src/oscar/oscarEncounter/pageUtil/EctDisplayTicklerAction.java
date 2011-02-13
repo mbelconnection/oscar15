@@ -35,7 +35,6 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts.util.MessageResources;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarTickler.TicklerData;
 import oscar.util.DateUtils;
@@ -113,8 +112,8 @@ public class EctDisplayTicklerAction extends EctDisplayAction {
     
      Dao.sortItems(NavBarDisplayDAO.DATESORT);
  }catch( Exception e ) {
-     MiscUtils.getLogger().debug("Error retrieving " + cmd + " : " + e.getMessage());
-     MiscUtils.getLogger().error("Error", e);
+     System.out.println("Error retrieving " + cmd + " : " + e.getMessage());
+     e.printStackTrace();
      return false;
  }
     return true;

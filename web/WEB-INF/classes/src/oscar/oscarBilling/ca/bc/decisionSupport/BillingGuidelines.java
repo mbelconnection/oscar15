@@ -32,15 +32,17 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.HashMap;
 
-import org.apache.log4j.Logger;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.oscarehr.decisionSupport.model.DSConsequence;
 import org.oscarehr.decisionSupport.model.DSGuideline;
 import org.oscarehr.decisionSupport.model.DSGuidelineFactory;
 import org.oscarehr.decisionSupport.model.DecisionSupportException;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 
@@ -51,7 +53,7 @@ import oscar.OscarProperties;
  */
 public class BillingGuidelines  {
 
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(BillingGuidelines.class);
 
     private List<DSGuideline> billingGuideLines = null ;
     
@@ -64,7 +66,7 @@ public class BillingGuidelines  {
     String[] filenamesON= {"ON250.xml","ON428.xml"};
     String[] filenameON250 = {"ON250.xml"};
     String[] filenameON428 = {"ON428.xml"};
-   
+
    
     /**
      * Creates a new instance of MeasurementTemplateFlowSheetConfig
@@ -79,9 +81,9 @@ public class BillingGuidelines  {
     static public BillingGuidelines getInstance(String code) {
         if (measurementTemplateFlowSheetConfig.billingGuideLines == null || !code.equals(region)) {
             try {
-                region = code;
+                region = code;                
                 measurementTemplateFlowSheetConfig.loadGuidelines(region);
-
+                
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -95,7 +97,7 @@ public class BillingGuidelines  {
             try {
                 region = tmpRegion;
                 measurementTemplateFlowSheetConfig.loadGuidelines(region);
-
+                
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -109,30 +111,30 @@ public class BillingGuidelines  {
     void loadGuidelines(String regionCode) throws FileNotFoundException {
         log.debug("LOADING FLOWSSHEETS");
         billingGuideLines = new ArrayList();
-
+        
         String[] filenames = filenameMap.get(regionCode);
         if( filenames != null ) {
-        for (String filename : filenames) {
-            DSGuideline guideline = null;
-            StringBuilder sb = new StringBuilder();
-            try{
+            for (String filename : filenames) {
+                DSGuideline guideline = null;
+                StringBuffer sb = new StringBuffer();
+                try{
                     String streamToGet = "oscar/oscarBilling/ca/decisionSupport/"+filename;
-                log.debug("Trying to get "+streamToGet);
-                BufferedReader in = new BufferedReader(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(streamToGet)));
-                String str;
-                while ((str = in.readLine()) != null) {
-                    sb.append(str+"\n");
+                    log.debug("Trying to get "+streamToGet);
+                    BufferedReader in = new BufferedReader(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(streamToGet)));
+                    String str;
+                    while ((str = in.readLine()) != null) {
+                        sb.append(str+"\n");
+                    }
+                    in.close();
+                    DSGuidelineFactory dsFactory = new DSGuidelineFactory();
+                    log.debug("xml "+sb.toString());
+                    guideline = dsFactory.createGuidelineFromXml(sb.toString());
+                    billingGuideLines.add(guideline);
+                }catch(Exception e){
+                    e.printStackTrace();
                 }
-                in.close();
-                DSGuidelineFactory dsFactory = new DSGuidelineFactory();
-                log.debug("xml "+sb.toString());
-                guideline = dsFactory.createGuidelineFromXml(sb.toString());
-                billingGuideLines.add(guideline);
-            }catch(Exception e){
-                MiscUtils.getLogger().error("Error", e);
             }
         }
-    }
         else {
             throw new RuntimeException("bill code not found");
         }

@@ -44,7 +44,6 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.upload.FormFile;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarReport.reportByTemplate.ReportManager;
 
@@ -64,7 +63,7 @@ public class UploadTemplates extends Action {
             xml = new String(bytes);
          } catch (IOException ioe) {
              message = "Exception: File Not Found";
-             MiscUtils.getLogger().error("Error", ioe);
+             ioe.printStackTrace();
          }
          ReportManager reportManager = new ReportManager();
          if (action.equals("add")) {

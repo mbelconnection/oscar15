@@ -30,8 +30,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 public class PatientData
@@ -40,27 +38,27 @@ public class PatientData
     public Patient getPatient(String demographicNo)
         throws SQLException
     {
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         ResultSet rs;
         Patient p = null;
 
         try
         {
-            rs = DBHandler.GetSQL("SELECT patientName, dOB, healthNumber, sex, homePhone, "
+            rs = db.GetSQL("SELECT patientName, dOB, healthNumber, sex, homePhone, "
                 + "altPatientID "
                 + "FROM mdsPID WHERE segmentID = " + demographicNo);
 
             if(rs.next())
             {
-                p = new Patient(oscar.Misc.getString(rs, "patientName"), oscar.Misc.getString(rs, "dOB"),
-                    oscar.Misc.getString(rs, "healthNumber"), oscar.Misc.getString(rs, "sex"),
-                    oscar.Misc.getString(rs, "homePhone"), oscar.Misc.getString(rs, "altPatientID"));
+                p = new Patient(db.getString(rs,"patientName"), db.getString(rs,"dOB"),
+                    db.getString(rs,"healthNumber"), db.getString(rs,"sex"),
+                    db.getString(rs,"homePhone"), db.getString(rs,"altPatientID"));
             }
 
             rs.close();
         } catch(SQLException e)
         {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
 	    }
 
         return p;

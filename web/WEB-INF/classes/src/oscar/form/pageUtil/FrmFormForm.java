@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.struts.action.ActionForm;
-import org.oscarehr.util.MiscUtils;
 
 public final class FrmFormForm extends ActionForm {
  
@@ -31,8 +30,8 @@ public final class FrmFormForm extends ActionForm {
    
    public FrmFormForm(){
       howmany++;
-      MiscUtils.getLogger().debug("FrmFormForm gets instantiated howmany = "+howmany+" ");
-      MiscUtils.getLogger().debug("FrmFormForm currentMem = "+currentMem());
+      System.out.println("FrmFormForm gets instantiated howmany = "+howmany+" ");
+      System.out.println("FrmFormForm currentMem = "+currentMem());
    }
     //Using map-backed method to get the value of each field
     //key: the field property
@@ -40,7 +39,7 @@ public final class FrmFormForm extends ActionForm {
     private Map values = new HashMap();
 
     public void setValue(String key, Object value) {
-       MiscUtils.getLogger().debug("adding key "+key+" value "+value+" Size of FrmFormForm "+values.size());
+       System.out.println("adding key "+key+" value "+value+" Size of FrmFormForm "+values.size());
         values.put(key, value);
     }
 
@@ -50,8 +49,8 @@ public final class FrmFormForm extends ActionForm {
     
     public void finalize(){
        howmany--;
-       MiscUtils.getLogger().debug("FrmFormForm gets finalized howmany = "+howmany+" ");
-       MiscUtils.getLogger().debug("FrmFormForm currentMem = "+currentMem());
+       System.out.println("FrmFormForm gets finalized howmany = "+howmany+" ");
+       System.out.println("FrmFormForm currentMem = "+currentMem());
     }
         
     public String currentMem(){        

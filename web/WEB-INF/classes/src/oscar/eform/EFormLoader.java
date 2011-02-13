@@ -29,13 +29,12 @@ package oscar.eform;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Vector;
 
 import org.apache.commons.digester.Digester;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.eform.data.DatabaseAP;
 
@@ -48,7 +47,7 @@ public class EFormLoader {
         if (_instance == null) {
             _instance = new EFormLoader();
             parseXML();
-            MiscUtils.getLogger().debug("NumElements ====" + eFormAPs.size());
+            System.out.println("NumElements ====" + eFormAPs.size());
         }
         return _instance;
     }
@@ -142,7 +141,7 @@ public class EFormLoader {
           }
           digester.parse(fs);
           fs.close();
-      } catch (Exception e) { MiscUtils.getLogger().error("Error", e); }
+      } catch (Exception e) { e.printStackTrace(); }
     }
     
  }

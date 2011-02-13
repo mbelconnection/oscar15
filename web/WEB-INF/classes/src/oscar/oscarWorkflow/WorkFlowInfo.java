@@ -32,8 +32,6 @@ package oscar.oscarWorkflow;
 import java.util.Date;
 import java.util.Hashtable;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.util.UtilDateUtilities;
 
 /**
@@ -55,14 +53,14 @@ public class WorkFlowInfo {
     }
     
     public WorkFlowInfo(Hashtable h){ 
-       MiscUtils.getLogger().debug("loading data...");
+       System.out.println("loading data...");
        this.setID((String)            h.get("ID"));
        this.setWorkflowType((String)  h.get("workflow_type"));        
        this.setCreateDateTime((Date)  h.get("create_date_time") );
        this.setDemographicNo((String) h.get("demographic_no") );
        this.setCompletionDate((Date)  h.get("completion_date"));
        this.setCurrentState((String)  h.get("current_state"));
-       MiscUtils.getLogger().debug("data loaded...");
+       System.out.println("data loaded...");
     }
 
     public String getID() {
@@ -134,7 +132,7 @@ public class WorkFlowInfo {
     public int getGestationAge(){
         //TODO: WHAT HAPPENS WITH NO EDD???
         int ret = -1;
-        MiscUtils.getLogger().debug("GEST "+this.completionDate);
+        System.out.println("GEST "+this.completionDate);
         if(this.completionDate != null){
            ret = UtilDateUtilities.calculateGestationAge( UtilDateUtilities.now(), this.completionDate);
         }

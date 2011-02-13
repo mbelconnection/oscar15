@@ -27,8 +27,6 @@ package oscar.oscarProvider.data;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 /**
@@ -57,27 +55,27 @@ public class ProviderFaxUpdater {
        DBHandler db;
        
        try {
-        
+        db = new DBHandler(DBHandler.OSCAR_DATA);
        
         sql = "SELECT value FROM property WHERE name = '" + faxColName + "' AND provider_no = '" + provider + "'";
-        rs = DBHandler.GetSQL(sql);
+        rs = db.GetSQL(sql);
             
         if( rs.next() ) {
-            faxNum = oscar.Misc.getString(rs, "value");
+            faxNum = db.getString(rs,"value");
         }
         
         if( faxNum.equals("") ) {
             sql = "SELECT clinic_fax FROM clinic";
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             
             if( rs.next() ) {
-                faxNum = oscar.Misc.getString(rs, "clinic_fax");
+                faxNum = db.getString(rs,"clinic_fax");
             }
         }
         
        }
        catch( SQLException ex ) {
-           MiscUtils.getLogger().error("Error", ex);           
+           System.out.println(ex.getMessage());           
        }
        
        return faxNum;
@@ -88,7 +86,7 @@ public class ProviderFaxUpdater {
    public boolean setFax(String fax) {
        DBHandler db;
        String sql;
-       
+       ResultSet rs;
        boolean ret = true;
        
        try {
@@ -98,11 +96,11 @@ public class ProviderFaxUpdater {
         else
            sql = "INSERT INTO property (name,value,provider_no) VALUES('" + faxColName + "', '" + fax + "', '" + provider + "')";
         
-        
-        DBHandler.RunSQL(sql);
+        db = new DBHandler(DBHandler.OSCAR_DATA);
+        db.RunSQL(sql);
        
        }catch( SQLException ex ) {
-           MiscUtils.getLogger().debug("Error adding fax number: " + ex.getMessage());
+           System.out.println("Error adding fax number: " + ex.getMessage());
            ret = false;
        }
        
@@ -114,10 +112,10 @@ public class ProviderFaxUpdater {
        String sql;
        ResultSet rs;       
               
-       
+       db = new DBHandler(DBHandler.OSCAR_DATA);
        sql = "SELECT value FROM property WHERE name = '" + faxColName + "' AND provider_no = '" + provider + "'";
        
-       rs = DBHandler.GetSQL(sql);
+       rs = db.GetSQL(sql);
        
        return rs.next();              
        

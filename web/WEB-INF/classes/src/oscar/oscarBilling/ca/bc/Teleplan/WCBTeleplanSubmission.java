@@ -28,22 +28,20 @@ package oscar.oscarBilling.ca.bc.Teleplan;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.model.Demographic;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.Misc;
 import oscar.OscarProperties;
-import oscar.entities.Billingmaster;
 import oscar.entities.WCB;
+import oscar.entities.Billingmaster;
 /**
  *
  * @author jaygallagher
  */
 public class WCBTeleplanSubmission {
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(WCBTeleplanSubmission.class);
     
     private DemographicDao demographicDao = null;
     
@@ -92,7 +90,7 @@ public class WCBTeleplanSubmission {
     
     
     public String validate(WCB wcb,Billingmaster bm){
-        StringBuilder m = new StringBuilder();
+        StringBuffer m = new StringBuffer();
         
         try {
             Integer.parseInt(bm.getDxCode1() );
@@ -176,11 +174,11 @@ public class WCBTeleplanSubmission {
 
   private String replaceExtendedAskiiValues(String s){
        log.debug("s "+s.length());
-       StringBuilder sb = new StringBuilder();
+       StringBuffer sb = new StringBuffer();
        for (int i =0; i < s.length(); i++){
            char c = s.charAt(i);
            int j = (int) c;
-           MiscUtils.getLogger().debug(j+" : "+c);
+           System.out.println(j+" : "+c);
            if(j < 32 || j > 126){
               c = '?';
            }
@@ -266,7 +264,7 @@ public class WCBTeleplanSubmission {
     
     
    private String Claim(String logNo, String billedAmount, String feeitem,String correspondenceCode,Billingmaster bm,WCB wcb) {
-      StringBuilder dLine = new StringBuilder();
+      StringBuffer dLine = new StringBuffer();
       log.debug("Demographic "+demographicDao+"   "+bm.getDemographicNo());
       Demographic d = demographicDao.getDemographic(""+bm.getDemographicNo()); 
        

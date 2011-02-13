@@ -9,11 +9,12 @@
  *     <Quatro Group Software Systems inc.>  <OSCAR Team>
  *******************************************************************************/
 package com.quatro.service.security;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+
+import org.oscarehr.PMmodule.service.RoomDemographicManager;
 
 import com.quatro.common.KeyConstants;
+import com.quatro.dao.LookupDao;
 import com.quatro.model.LookupCodeValue;
 import com.quatro.model.security.UserAccessValue;
 import com.quatro.service.LookupManager;

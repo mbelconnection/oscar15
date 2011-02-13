@@ -6,6 +6,7 @@
  */
 package oscar.oscarLab.ca.bc.PathNet.HL7.V2_3;
 
+import oscar.oscarDB.DBHandler;
 import oscar.oscarLab.ca.bc.PathNet.HL7.Node;
 /*
  * Copyright (c) 2001-2002. Andromedia. All Rights Reserved. *
@@ -38,7 +39,7 @@ public class NTE extends oscar.oscarLab.ca.bc.PathNet.HL7.Node {
       return super.Parse(line, 0, 1);
    }
    
-   public int ToDatabase(int parent)
+   public int ToDatabase(DBHandler db, int parent)
    {return 0;}
    
    protected String getInsertSql(int parent) {

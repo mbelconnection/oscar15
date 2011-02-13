@@ -33,7 +33,6 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts.util.MessageResources;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.util.DateUtils;
 import oscar.util.OscarRoleObjectPrivilege;
@@ -68,7 +67,7 @@ public class EctDisplayAllergyAction extends EctDisplayAction {
         Dao.setRightHeadingID(cmd);  //no menu so set div id to unique id for this action 
         
         //grab all of the diseases associated with patient and add a list item for each
-        
+        String dbFormat = "yyyy-MM-dd";
         String serviceDateStr;
         Date date; 
         oscar.oscarRx.data.RxPatientData.Patient.Allergy[] allergies;
@@ -101,8 +100,8 @@ public class EctDisplayAllergyAction extends EctDisplayAction {
         
         }
         catch( SQLException e ) {
-            MiscUtils.getLogger().debug("ERROR FETCHING ALLERGIES");
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println("ERROR FETCHING ALLERGIES");
+            e.printStackTrace();
             return false;
         }
         return true;     

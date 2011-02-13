@@ -31,8 +31,6 @@ package oscar.oscarBilling.data;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.OscarProperties;
 import oscar.oscarDB.DBHandler;
 /**
@@ -45,8 +43,8 @@ public class BillingONDataHelp {
 	public synchronized int saveBillingRecord(String sql) {
 		int ret = 0;
 		try {
-			
-			boolean bDone = DBHandler.RunSQL(sql);
+			DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+			boolean bDone = db.RunSQL(sql);
 
 			/*
 			 * if db_type = mysql return LAST_INSERT_ID() but if db_type =
@@ -64,12 +62,12 @@ public class BillingONDataHelp {
 				throw new SQLException("ERROR: Database " + db_type
 						+ " unrecognized.");
 			}
-			ResultSet rs = DBHandler.GetSQL(sql);
+			ResultSet rs = db.GetSQL(sql);
 			if (rs.next())
 				ret = rs.getInt(1);
 			rs.close();
 		} catch (SQLException e) {
-			MiscUtils.getLogger().error("Error", e);
+			System.out.println(e.getMessage());
 		}
 		return ret;
 	}
@@ -77,10 +75,10 @@ public class BillingONDataHelp {
 	public synchronized boolean updateDBRecord(String sql) {
 		boolean ret = false;
 		try {
-			
-			ret = DBHandler.RunSQL(sql);
+			DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+			ret = db.RunSQL(sql);
 		} catch (SQLException e) {
-			MiscUtils.getLogger().error("Error", e);
+			System.out.println(e.getMessage());
 		}
 		return ret;
 	}
@@ -88,10 +86,10 @@ public class BillingONDataHelp {
 	public synchronized ResultSet searchDBRecord(String sql) {
 		ResultSet ret = null;
 		try {
-			
-			ret = DBHandler.GetSQL(sql);
+			DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+			ret = db.GetSQL(sql);
 		} catch (SQLException e) {
-			MiscUtils.getLogger().error("Error", e);
+			System.out.println(e.getMessage());
 		}
 		return ret;
 	}
@@ -99,13 +97,13 @@ public class BillingONDataHelp {
 	public synchronized ResultSet searchDBRecord_paged(String sql, int iOffSet) {
 		ResultSet ret = null;
 		try {
-			
-			ret = DBHandler.GetSQL(sql);
+			DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+			ret = db.GetSQL(sql);
 	        for(int i=1; i<=iOffSet; i++){
 	            if(ret.next()==false) break;
 	        }
 		} catch (SQLException e) {
-			MiscUtils.getLogger().error("Error", e);
+			System.out.println(e.getMessage());
 		}
 		return ret;
 	}

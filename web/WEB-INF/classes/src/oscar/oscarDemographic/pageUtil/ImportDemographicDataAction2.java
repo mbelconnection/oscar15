@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -55,12 +56,13 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.upload.FormFile;
 import org.jdom.Element;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import oscar.appt.ApptStatusData;
 import oscar.dms.EDocUtil;
+import oscar.log.LogAction;
+import oscar.log.model.Log;
 import oscar.oscarDemographic.data.DemographicData;
 import oscar.oscarDemographic.data.DemographicExt;
 import oscar.oscarDemographic.data.DemographicRelationship;
@@ -145,15 +147,15 @@ public class ImportDemographicDataAction2 extends Action {
 
 	} catch (Exception e) {
 	    warnings.add("Error processing file: " + imp.getFileName());
-	    MiscUtils.getLogger().error("Error", e);
+	    e.printStackTrace();
 	}
         request.setAttribute("warnings",warnings);
 	if (importLog!=null) request.setAttribute("importlog",importLog.getPath());
         
-        MiscUtils.getLogger().debug("warnings size "+warnings.size());
+        System.out.println("warnings size "+warnings.size());
         for( int i = 0; i < warnings.size(); i++ ){
            String str = (String) warnings.get(i);
-           MiscUtils.getLogger().debug(str);
+           System.out.println(str);
         }
         return mapping.findForward("success");
     }
@@ -241,7 +243,7 @@ public class ImportDemographicDataAction2 extends Action {
 		    eff_date = getCalDate(healthCard.getExpirydate());
 		} catch (Exception e) {
 		    errWarnings.add("Error! Invalid health card expiry date!");
-		    MiscUtils.getLogger().error("Error", e);
+		    e.printStackTrace();
 		}
 	    }
 	    String address="", city="", province="", postalCode="";
@@ -920,18 +922,17 @@ public class ImportDemographicDataAction2 extends Action {
 		 * Read data from xml *
 		 **********************/
 		
-// umm this doesn't do anything, you declare and empty list and iterate through it. I'm commenting it out for now
-//		/***** Write to database *****/
-//		ArrayList<Log> lglist = new ArrayList<Log>();
-//		
-//		/************************
-//		 * Put data into lglist *
-//		 ************************/
-//		for (Log lg : lglist) {
-//		    Timestamp dt = Timestamp.valueOf(lg.getDateTime().toString());
-//		    LogAction.addFullLog(dt, lg.getProviderNo(), lg.getAction(), lg.getContent(), lg.getContentId(), lg.getIp());
-//		}
+		/***** Write to database *****/
+		ArrayList<Log> lglist = new ArrayList<Log>();
 		
+		/************************
+		 * Put data into lglist *
+		 ************************/
+		
+		for (Log lg : lglist) {
+		    Timestamp dt = Timestamp.valueOf(lg.getDateTime().toString());
+		    LogAction.addFullLog(dt, lg.getProviderNo(), lg.getAction(), lg.getContent(), lg.getContentId(), lg.getIp());
+		}
 		/***** Write to database *****/
 		
 		/***** Write to file *****/
@@ -953,7 +954,7 @@ public class ImportDemographicDataAction2 extends Action {
 	    
 	} catch (Exception e) {
 	    errWarnings.addAll(demoRes.getWarningsCollection());
-	    MiscUtils.getLogger().error("Error", e);
+	    e.printStackTrace();
 	}
 	if (demoNo.equals("")) {
 	    return null;
@@ -1193,14 +1194,14 @@ public class ImportDemographicDataAction2 extends Action {
        return ret;
     }
     
-    void appendIfNotNull(StringBuilder s, String name, String object){
+    void appendIfNotNull(StringBuffer s, String name, String object){
         if (object != null){
             s.append(name+": "+object+"\n");
         }
     }
 
     String getLabDline( cds.LaboratoryResultsDocument.LaboratoryResults labRes){
-        StringBuilder s = new StringBuilder();
+        StringBuffer s = new StringBuffer();
         appendIfNotNull(s,"LaboratoryName",labRes.getLaboratoryName());
         appendIfNotNull(s,"TestNameReportedByLab", labRes.getTestNameReportedByLab());
         appendIfNotNull(s,"LabTestCode",labRes.getLabTestCode()); 

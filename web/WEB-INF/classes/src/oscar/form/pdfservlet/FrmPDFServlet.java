@@ -96,13 +96,14 @@ public class FrmPDFServlet extends HttpServlet {
      */
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws javax.servlet.ServletException,
             java.io.IOException {
-      
+        DocumentException ex = null;
+        
         ByteArrayOutputStream baosPDF = null;
         
         try {
             baosPDF = generatePDFDocumentBytes(req, this.getServletContext());
             
-            StringBuilder sbFilename = new StringBuilder();
+            StringBuffer sbFilename = new StringBuffer();
             sbFilename.append("filename_");
             //sbFilename.append(System.currentTimeMillis());
             sbFilename.append(".pdf");
@@ -116,7 +117,7 @@ public class FrmPDFServlet extends HttpServlet {
             
             // The Content-disposition value will be inline
             
-            StringBuilder sbContentDispValue = new StringBuilder();
+            StringBuffer sbContentDispValue = new StringBuffer();
             sbContentDispValue.append("inline; filename="); //inline - display
             // the pdf file
             // directly rather
@@ -244,19 +245,19 @@ public class FrmPDFServlet extends HttpServlet {
             }
             
             String[] cfgVal = null;
-            StringBuilder tempName = null;
+            StringBuffer tempName = null;
             String tempValue = null;
             
             // get the print prop values
             Properties props = new Properties();
-            StringBuilder temp = new StringBuilder("");
+            StringBuffer temp = new StringBuffer("");
             for (Enumeration e = req.getParameterNames(); e.hasMoreElements();) {
-                temp = new StringBuilder(e.nextElement().toString());
+                temp = new StringBuffer(e.nextElement().toString());
                 props.setProperty(temp.toString(), req.getParameter(temp.toString()));
             }
             
             for (Enumeration e = req.getAttributeNames(); e.hasMoreElements(); ) {
-                temp = new StringBuilder(e.nextElement().toString());
+                temp = new StringBuffer(e.nextElement().toString());
                 props.setProperty(temp.toString(), req.getAttribute(temp.toString()).toString());
             }
             
@@ -326,7 +327,7 @@ public class FrmPDFServlet extends HttpServlet {
                 
                 String[] fontType;
                 for (Enumeration e = printCfg[i - 1].propertyNames(); e.hasMoreElements();) {
-                    tempName = new StringBuilder(e.nextElement().toString());
+                    tempName = new StringBuffer(e.nextElement().toString());
                     cfgVal = printCfg[i - 1].getProperty(tempName.toString()).split(" *, *");
                     
                     if( cfgVal[4].indexOf(";") > -1 ) {
@@ -461,10 +462,18 @@ public class FrmPDFServlet extends HttpServlet {
                 
                 //graphic
                 if ((graphicPageArray.contains(Integer.toString(i)) || i == 1 && graphicPageArray.size() == 0 ) && cfgGraphicFileNo > 0) {
-                   
+                    boolean bFormAR = false;
                     int origX = 0;
                     int origY = 0;
-                   
+                    String nMaxPixX = "0";
+                    String nMaxPixY = "0";
+                    String fStartX = "0f";
+                    String fEndX = "0f";
+                    String fStartY = "0f";
+                    String fEndY = "0f";
+                    
+                    String dateFormat = null;
+                    String fEDB = null;
                     String className = null;
                     
                     for (int k = 0; k < cfgGraphicFileNo; k++) {
@@ -473,7 +482,7 @@ public class FrmPDFServlet extends HttpServlet {
                         Properties args = new Properties();
                         
                         for (Enumeration e = graphicCfg[k].propertyNames(); e.hasMoreElements();) {
-                            tempName = new StringBuilder(e.nextElement().toString());
+                            tempName = new StringBuffer(e.nextElement().toString());
                             tempValue = graphicCfg[k].getProperty(tempName.toString()).trim();
                             if (tempName.toString().equals("__finalEDB"))
                                 args.setProperty(tempName.toString(), props.getProperty(tempValue));
@@ -518,7 +527,7 @@ public class FrmPDFServlet extends HttpServlet {
                         }
                         
                         for (Enumeration e = gProp.propertyNames(); e.hasMoreElements();) {
-                            tempName = new StringBuilder(e.nextElement().toString());
+                            tempName = new StringBuffer(e.nextElement().toString());
                             tempValue = gProp.getProperty(tempName.toString(), "");
                             if (tempValue.equals(""))
                                 continue;
@@ -540,7 +549,7 @@ public class FrmPDFServlet extends HttpServlet {
                             // height - 751f, 1f);//cb.circle(52f, height - 609f,
                             // 1f);
                             for (Enumeration e = gProp.propertyNames(); e.hasMoreElements();) {
-                                tempName = new StringBuilder(e.nextElement().toString());
+                                tempName = new StringBuffer(e.nextElement().toString());
                                 tempValue = gProp.getProperty(tempName.toString(), "");
                                 if (tempValue.equals(""))
                                     continue;
@@ -566,7 +575,7 @@ public class FrmPDFServlet extends HttpServlet {
                                 cb.setRGBColorStrokeF(255f, 0f, 0f);
                             }
                             for (Enumeration e = gProp.propertyNames(); e.hasMoreElements();) {
-                                tempName = new StringBuilder(e.nextElement().toString());
+                                tempName = new StringBuffer(e.nextElement().toString());
                                 tempValue = gProp.getProperty(tempName.toString(), "");
                                 if (tempValue.equals(""))
                                     continue;

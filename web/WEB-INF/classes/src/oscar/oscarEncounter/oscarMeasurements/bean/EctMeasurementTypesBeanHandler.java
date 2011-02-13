@@ -26,10 +26,9 @@ package oscar.oscarEncounter.oscarMeasurements.bean;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ResourceBundle;
+import java.util.Locale;
 import java.util.Vector;
-
-import org.oscarehr.util.MiscUtils;
+import java.util.ResourceBundle;
 
 import oscar.oscarDB.DBHandler;
 
@@ -53,20 +52,20 @@ public class EctMeasurementTypesBeanHandler {
         
         boolean verdict = true;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
             String sql = "SELECT * FROM measurementType ORDER BY type";              
             ResultSet rs;        
-            for(rs = DBHandler.GetSQL(sql); rs.next(); )
+            for(rs = db.GetSQL(sql); rs.next(); )
             {                
-                String validation = oscar.Misc.getString(rs, "validation");
+                String validation = db.getString(rs,"validation");
                 String sqlValidation = "SELECT name FROM validations WHERE id='" + validation + "'";
-                ResultSet rsValidation = DBHandler.GetSQL(sqlValidation);
+                ResultSet rsValidation = db.GetSQL(sqlValidation);
                 if (rsValidation.next()){
-                    EctMeasurementTypesBean measurementTypes = new EctMeasurementTypesBean(rs.getInt("id"), oscar.Misc.getString(rs, "type"), 
-                                                                                           oscar.Misc.getString(rs, "typeDisplayName"), 
-                                                                                           oscar.Misc.getString(rs, "typeDescription"), 
-                                                                                           oscar.Misc.getString(rs, "measuringInstruction"), 
+                    EctMeasurementTypesBean measurementTypes = new EctMeasurementTypesBean(rs.getInt("id"), db.getString(rs,"type"), 
+                                                                                           db.getString(rs,"typeDisplayName"), 
+                                                                                           db.getString(rs,"typeDescription"), 
+                                                                                           db.getString(rs,"measuringInstruction"), 
                                                                                            rsValidation.getString("name"));   
                     measurementTypeVector.add(measurementTypes);
                 }
@@ -76,7 +75,7 @@ public class EctMeasurementTypesBeanHandler {
             rs.close();
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;
@@ -86,15 +85,15 @@ public class EctMeasurementTypesBeanHandler {
         
         boolean verdict = true;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sqlMGr = "SELECT typeDisplayName FROM measurementGroup WHERE name='" + groupName + "'ORDER BY typeDisplayName";            
             ResultSet rsMGr;
  
-            for(rsMGr = DBHandler.GetSQL(sqlMGr); rsMGr.next();){
+            for(rsMGr = db.GetSQL(sqlMGr); rsMGr.next();){
                 String typeDisplayName  = rsMGr.getString("typeDisplayName");
                 String sqlMT = "SELECT * FROM measurementType WHERE typeDisplayName = '" + typeDisplayName + "'";                
                 ResultSet rsMT;        
-                for(rsMT = DBHandler.GetSQL(sqlMT); rsMT.next(); )
+                for(rsMT = db.GetSQL(sqlMT); rsMT.next(); )
                 {                
                     EctMeasuringInstructionBean mInstrc = new EctMeasuringInstructionBean(rsMT.getString("measuringInstruction"));                    
                     measuringInstrcVector.add(mInstrc);
@@ -104,12 +103,12 @@ public class EctMeasurementTypesBeanHandler {
                 //Get the data last entered for the current measurement type
                 String sqlData = "SELECT * FROM measurements WHERE demographicNo='"+ demo + "' AND type ='" + rsMT.getString("type")
                                  + "' ORDER BY dateEntered DESC LIMIT 1";
-                ResultSet rsData = DBHandler.GetSQL(sqlData);
+                ResultSet rsData = db.GetSQL(sqlData);
                 boolean hasPreviousData = false;
                 if(rsData.next()){
                     String providerNo = rsData.getString("providerNo");
                     String sqlProvider = "SELECT * FROM provider WHERE provider_no='" + providerNo + "'";
-                    ResultSet rsProvider = DBHandler.GetSQL(sqlProvider);
+                    ResultSet rsProvider = db.GetSQL(sqlProvider);
                     String pFname = "";
                     String pLname = "";
                     if(rsProvider.next()){
@@ -170,7 +169,7 @@ public class EctMeasurementTypesBeanHandler {
             rsMGr.close();
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;

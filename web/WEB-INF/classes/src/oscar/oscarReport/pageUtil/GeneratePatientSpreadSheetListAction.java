@@ -39,7 +39,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDemographic.data.DemographicData;
 import oscar.oscarDemographic.data.DemographicData.Demographic;
@@ -58,7 +57,7 @@ public class GeneratePatientSpreadSheetListAction  extends Action {
        
     String[] demos = request.getParameterValues("demo");
        
-    MiscUtils.getLogger().debug("Generating Spread Sheet file ..");
+    System.out.println("Generating Spread Sheet file ..");
     response.setContentType("application/octet-stream");
     response.setHeader("Content-Disposition", "attachment; filename=\"patientlist_spreadsheet-"+UtilDateUtilities.getToday("yyyy-mm-dd.hh.mm.ss")+".xls\"");
                 
@@ -85,7 +84,7 @@ public class GeneratePatientSpreadSheetListAction  extends Action {
     try{    
        wb.write(response.getOutputStream());
     }catch(Exception e){
-       MiscUtils.getLogger().error("Error", e);   
+       e.printStackTrace();   
     }   
        return null;
    }

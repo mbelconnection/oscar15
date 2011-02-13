@@ -26,8 +26,6 @@ package oscar.oscarMDS.data;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 public class ProviderData {
@@ -58,7 +56,7 @@ public class ProviderData {
                     return subStrings[1];
                 }
             } catch (Exception e) {
-                MiscUtils.getLogger().debug("Error in ProviderData: "+e.toString());
+                System.out.println("Error in ProviderData: "+e.toString());
                 return name.replace('^', ' ');
             }
         } else {
@@ -69,21 +67,21 @@ public class ProviderData {
     
     public static ArrayList getProviderList () {
         try {            
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ArrayList result = new ArrayList();
             
             String sql = "select provider_no, first_name, last_name from provider where provider_type='doctor' order by last_name , first_name";
-            ResultSet rs = DBHandler.GetSQL(sql);            
+            ResultSet rs = db.GetSQL(sql);            
             while ( rs.next() ) {
                 ArrayList provider = new ArrayList();
-                provider.add(oscar.Misc.getString(rs, "provider_no"));
-                provider.add(oscar.Misc.getString(rs, "first_name"));
-                provider.add(oscar.Misc.getString(rs, "last_name"));
+                provider.add(db.getString(rs,"provider_no"));
+                provider.add(db.getString(rs,"first_name"));
+                provider.add(db.getString(rs,"last_name"));
                 result.add(provider);
             }
             return result;
         }catch(Exception e){
-            MiscUtils.getLogger().debug("exception in ProviderData:"+e);
+            System.out.println("exception in ProviderData:"+e);
             return null;
         }        
     }
@@ -91,39 +89,39 @@ public class ProviderData {
     
     public static ArrayList getProviderListWithLabNo () {
         try {            
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ArrayList result = new ArrayList();
             
             String sql = "select provider_no, first_name, last_name from provider where provider_type='doctor'  and ohip_no != '' order by last_name , first_name";
-            ResultSet rs = DBHandler.GetSQL(sql);            
+            ResultSet rs = db.GetSQL(sql);            
             while ( rs.next() ) {
                 ArrayList provider = new ArrayList();
-                provider.add(oscar.Misc.getString(rs, "provider_no"));
-                provider.add(oscar.Misc.getString(rs, "first_name"));
-                provider.add(oscar.Misc.getString(rs, "last_name"));
+                provider.add(db.getString(rs,"provider_no"));
+                provider.add(db.getString(rs,"first_name"));
+                provider.add(db.getString(rs,"last_name"));
                 result.add(provider);
             }
             return result;
         }catch(Exception e){
-            MiscUtils.getLogger().debug("exception in ProviderData:"+e);
+            System.out.println("exception in ProviderData:"+e);
             return null;
         }        
     }
     
     public static String getProviderName(String providerNo) {
            try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             
                                     
             String sql = "select first_name, last_name from provider where provider_no='"+providerNo+"'";
-            ResultSet rs = DBHandler.GetSQL(sql);            
+            ResultSet rs = db.GetSQL(sql);            
             if ( rs.next() ) {            
-                return ( oscar.Misc.getString(rs, "first_name") + " " + oscar.Misc.getString(rs, "last_name") );            
+                return ( db.getString(rs,"first_name") + " " + db.getString(rs,"last_name") );            
             } else {                            
                 return "";
             }
         }catch(Exception e){
-            MiscUtils.getLogger().debug("exception in ProviderData:"+e);
+            System.out.println("exception in ProviderData:"+e);
             return null;
         }        
     }

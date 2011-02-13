@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.quatro.web.lookup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +23,7 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.DynaActionForm;
+import org.apache.struts.actions.DispatchAction;
 import org.oscarehr.PMmodule.web.BaseAction;
 
 import com.quatro.model.LookupCodeValue;

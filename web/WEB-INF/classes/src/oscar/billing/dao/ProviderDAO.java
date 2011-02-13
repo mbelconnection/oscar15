@@ -28,8 +28,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.billing.model.Provider;
 import oscar.oscarDB.DBHandler;
 import oscar.util.DAO;
@@ -37,6 +35,7 @@ import oscar.util.DAO;
 
 public class ProviderDAO extends DAO {
     public ProviderDAO(Properties pvar) throws SQLException {
+        super(pvar);
     }
 
     public ArrayList list(int type) throws SQLException {
@@ -51,11 +50,11 @@ public class ProviderDAO extends DAO {
 
         sql = sql + " order by first_name, last_name";
 
-        
+        DBHandler db = getDb();
 
         try {
-            ResultSet rs = DBHandler.GetSQL(sql);
-            MiscUtils.getLogger().debug("sql " + sql);
+            ResultSet rs = db.GetSQL(sql);
+            System.out.println("sql " + sql);
             
             Provider provider = new Provider();
             provider.setProviderNo("0");
@@ -65,9 +64,9 @@ public class ProviderDAO extends DAO {
 
             while (rs.next()) {
                 provider = new Provider();
-                provider.setProviderNo(oscar.Misc.getString(rs, 1));
-                provider.setLastName(oscar.Misc.getString(rs, 2));
-                provider.setFirstName(oscar.Misc.getString(rs, 3));
+                provider.setProviderNo(db.getString(rs,1));
+                provider.setLastName(db.getString(rs,2));
+                provider.setFirstName(db.getString(rs,3));
                 list.add(provider);
             }
         } finally {

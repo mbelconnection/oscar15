@@ -27,13 +27,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Properties;
 
-import org.oscarehr.util.MiscUtils;
-
+import oscar.oscarDB.DBHandler;
 import oscar.oscarDB.DBPreparedHandler;
 
 
 public class DAO {
+
+    public DAO(Properties pvar) throws SQLException {
+    }
 
     protected void close(ResultSet rs) {
         if (rs != null) {
@@ -62,7 +65,7 @@ public class DAO {
             try {
                 conn.close();
             } catch (SQLException e) {
-                MiscUtils.getLogger().error("Error", e);
+                e.printStackTrace();
             }
 
             conn = null;
@@ -74,11 +77,18 @@ public class DAO {
             try {
                 conn.rollback();
             } catch (SQLException e) {
-                MiscUtils.getLogger().error("Error", e);
+                e.printStackTrace();
             }
 
             conn = null;
         }
+    }
+
+    /**
+     * @return
+     */
+    public DBHandler getDb() throws SQLException {
+        return new DBHandler(DBHandler.OSCAR_DATA);
     }
 
     /**

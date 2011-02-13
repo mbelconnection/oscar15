@@ -22,11 +22,11 @@ import org.oscarehr.common.dao.Hl7TextMessageDao;
 import org.oscarehr.common.hl7.v2.oscar_to_oscar.DataTypeUtils;
 import org.oscarehr.common.model.Hl7TextInfo;
 import org.oscarehr.common.model.Hl7TextMessage;
-import org.oscarehr.util.DbConnectionFilter;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 
 import oscar.OscarProperties;
+import oscar.oscarDB.DBHandler;
 import oscar.oscarLab.ca.all.Hl7textResultsData;
 import oscar.oscarLab.ca.all.parsers.Factory;
 import oscar.oscarLab.ca.all.parsers.MessageHandler;
@@ -127,8 +127,8 @@ public final class MessageUploader {
 			hl7TextInfo.setAccessionNumber(accessionNum);
 			hl7TextInfoDao.persist(hl7TextInfo);
 
-			String demProviderNo = patientRouteReport(insertID, lastName, firstName, sex, dob, hin, DbConnectionFilter.getThreadLocalDbConnection());
-			providerRouteReport(String.valueOf(insertID), docNums, DbConnectionFilter.getThreadLocalDbConnection(), demProviderNo, type);
+			String demProviderNo = patientRouteReport(insertID, lastName, firstName, sex, dob, hin, DBHandler.getConnection());
+			providerRouteReport(String.valueOf(insertID), docNums, DBHandler.getConnection(), demProviderNo, type);
 			retVal = h.audit();
 		} catch (Exception e) {
 			logger.error("Error uploading lab to database");
@@ -261,8 +261,8 @@ public final class MessageUploader {
 
 		try {
 
-			
-			Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
+			DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+			Connection conn = DBHandler.getConnection();
 			PreparedStatement pstmt;
 
 			ResultSet rs;
@@ -280,9 +280,9 @@ public final class MessageUploader {
 					pstmt = conn.prepareStatement(sql);
 					rs = pstmt.executeQuery();
 					if (rs.next()) {
-						sql = "INSERT INTO recyclebin (provider_no, updatedatetime, table_name, keyword, table_content) " + "VALUES ('0', '" + UtilDateUtilities.getToday("yyyy-MM-dd HH:mm:ss") + "', 'hl7TextInfo', '" + lab_id + "', " + "'<id>" + oscar.Misc.getString(rs, "id") + "</id>" + "<lab_no>" + lab_id + "</lab_no>" + "<sex>" + oscar.Misc.getString(rs, "sex") + "</sex>" + "<health_no>" + oscar.Misc.getString(rs, "health_no") + "</health_no>" + "<result_status>" + oscar.Misc.getString(rs, "result_status") + "</result_status>"
-						        + "<final_result_count>" + oscar.Misc.getString(rs, "final_result_count") + "</final_result_count>" + "<obr_date>" + oscar.Misc.getString(rs, "obr_date") + "</obr_date>" + "<priority>" + oscar.Misc.getString(rs, "priority") + "</priority>" + "<requesting_client>" + oscar.Misc.getString(rs, "requesting_client") + "</requesting_client>" + "<discipline>" + oscar.Misc.getString(rs, "discipline") + "</discipline>" + "<last_name>" + oscar.Misc.getString(rs, "last_name") + "</last_name>" + "<first_name>"
-						        + oscar.Misc.getString(rs, "first_name") + "</first_name>" + "<report_status>" + oscar.Misc.getString(rs, "report_status") + "</report_status>" + "<accessionNum>" + oscar.Misc.getString(rs, "accessionNum") + "</accessionNum>')";
+						sql = "INSERT INTO recyclebin (provider_no, updatedatetime, table_name, keyword, table_content) " + "VALUES ('0', '" + UtilDateUtilities.getToday("yyyy-MM-dd HH:mm:ss") + "', 'hl7TextInfo', '" + lab_id + "', " + "'<id>" + db.getString(rs, "id") + "</id>" + "<lab_no>" + lab_id + "</lab_no>" + "<sex>" + db.getString(rs, "sex") + "</sex>" + "<health_no>" + db.getString(rs, "health_no") + "</health_no>" + "<result_status>" + db.getString(rs, "result_status") + "</result_status>"
+						        + "<final_result_count>" + db.getString(rs, "final_result_count") + "</final_result_count>" + "<obr_date>" + db.getString(rs, "obr_date") + "</obr_date>" + "<priority>" + db.getString(rs, "priority") + "</priority>" + "<requesting_client>" + db.getString(rs, "requesting_client") + "</requesting_client>" + "<discipline>" + db.getString(rs, "discipline") + "</discipline>" + "<last_name>" + db.getString(rs, "last_name") + "</last_name>" + "<first_name>"
+						        + db.getString(rs, "first_name") + "</first_name>" + "<report_status>" + db.getString(rs, "report_status") + "</report_status>" + "<accessionNum>" + db.getString(rs, "accessionNum") + "</accessionNum>')";
 
 						pstmt = conn.prepareStatement(sql);
 						pstmt.executeUpdate();
@@ -300,7 +300,7 @@ public final class MessageUploader {
 					pstmt = conn.prepareStatement(sql);
 					rs = pstmt.executeQuery();
 					if (rs.next()) {
-						sql = "INSERT INTO recyclebin (provider_no, updatedatetime, table_name, keyword, table_content) " + "VALUES ('0', '" + UtilDateUtilities.getToday("yyyy-MM-dd HH:mm:ss") + "', 'hl7TextMessage', '" + lab_id + "', " + "'<lab_id>" + oscar.Misc.getString(rs, "lab_id") + "</lab_id>" + "<message>" + oscar.Misc.getString(rs, "message") + "</message>" + "<type>" + oscar.Misc.getString(rs, "type") + "</type>" + "<fileUploadCheck_id>" + oscar.Misc.getString(rs, "fileUploadCheck_id") + "</fileUploadCheck_id>')";
+						sql = "INSERT INTO recyclebin (provider_no, updatedatetime, table_name, keyword, table_content) " + "VALUES ('0', '" + UtilDateUtilities.getToday("yyyy-MM-dd HH:mm:ss") + "', 'hl7TextMessage', '" + lab_id + "', " + "'<lab_id>" + db.getString(rs, "lab_id") + "</lab_id>" + "<message>" + db.getString(rs, "message") + "</message>" + "<type>" + db.getString(rs, "type") + "</type>" + "<fileUploadCheck_id>" + db.getString(rs, "fileUploadCheck_id") + "</fileUploadCheck_id>')";
 
 						pstmt = conn.prepareStatement(sql);
 						pstmt.executeUpdate();
@@ -318,8 +318,8 @@ public final class MessageUploader {
 					pstmt = conn.prepareStatement(sql);
 					rs = pstmt.executeQuery();
 					if (rs.next()) {
-						sql = "INSERT INTO recyclebin (provider_no, updatedatetime, table_name, keyword, table_content) " + "VALUES ('0', '" + UtilDateUtilities.getToday("yyyy-MM-dd HH:mm:ss") + "', 'providerLabRouting', '" + lab_id + "', " + "'<provider_no>" + oscar.Misc.getString(rs, "provider_no") + "</provider_no>" + "<lab_no>" + oscar.Misc.getString(rs, "lab_no") + "</lab_no>" + "<status>" + oscar.Misc.getString(rs, "status") + "</status>" + "<comment>" + oscar.Misc.getString(rs, "comment") + "</comment>" + "<timestamp>"
-						        + oscar.Misc.getString(rs, "timestamp") + "</timestamp>" + "<lab_type>" + oscar.Misc.getString(rs, "lab_type") + "</lab_type>" + "<id>" + oscar.Misc.getString(rs, "id") + "</id>')";
+						sql = "INSERT INTO recyclebin (provider_no, updatedatetime, table_name, keyword, table_content) " + "VALUES ('0', '" + UtilDateUtilities.getToday("yyyy-MM-dd HH:mm:ss") + "', 'providerLabRouting', '" + lab_id + "', " + "'<provider_no>" + db.getString(rs, "provider_no") + "</provider_no>" + "<lab_no>" + db.getString(rs, "lab_no") + "</lab_no>" + "<status>" + db.getString(rs, "status") + "</status>" + "<comment>" + db.getString(rs, "comment") + "</comment>" + "<timestamp>"
+						        + db.getString(rs, "timestamp") + "</timestamp>" + "<lab_type>" + db.getString(rs, "lab_type") + "</lab_type>" + "<id>" + db.getString(rs, "id") + "</id>')";
 
 						pstmt = conn.prepareStatement(sql);
 						pstmt.executeUpdate();
@@ -337,7 +337,7 @@ public final class MessageUploader {
 					pstmt = conn.prepareStatement(sql);
 					rs = pstmt.executeQuery();
 					if (rs.next()) {
-						sql = "INSERT INTO recyclebin (provider_no, updatedatetime, table_name, keyword, table_content) " + "VALUES ('0', '" + UtilDateUtilities.getToday("yyyy-MM-dd HH:mm:ss") + "', 'patientLabRouting', '" + lab_id + "', " + "'<demographic_no>" + oscar.Misc.getString(rs, "demographic_no") + "</demographic_no>" + "<lab_no>" + oscar.Misc.getString(rs, "lab_no") + "</lab_no>" + "<lab_type>" + oscar.Misc.getString(rs, "lab_type") + "</lab_type>" + "<id>" + oscar.Misc.getString(rs, "id") + "</id>')";
+						sql = "INSERT INTO recyclebin (provider_no, updatedatetime, table_name, keyword, table_content) " + "VALUES ('0', '" + UtilDateUtilities.getToday("yyyy-MM-dd HH:mm:ss") + "', 'patientLabRouting', '" + lab_id + "', " + "'<demographic_no>" + db.getString(rs, "demographic_no") + "</demographic_no>" + "<lab_no>" + db.getString(rs, "lab_no") + "</lab_no>" + "<lab_type>" + db.getString(rs, "lab_type") + "</lab_type>" + "<id>" + db.getString(rs, "id") + "</id>')";
 
 						pstmt = conn.prepareStatement(sql);
 						pstmt.executeUpdate();
@@ -401,8 +401,8 @@ public final class MessageUploader {
 				pstmt = conn.prepareStatement(sql);
 				rs = pstmt.executeQuery();
 				if (rs.next()) {
-					sql = "INSERT INTO recyclebin (provider_no, updatedatetime, table_name, keyword, table_content) " + "VALUES ('0', '" + UtilDateUtilities.getToday("yyyy-MM-dd HH:mm:ss") + "', 'fileUploadCheck', '" + fileId + "', " + "'<id>" + oscar.Misc.getString(rs, "id") + "</id>" + "<provider_no>" + oscar.Misc.getString(rs, "provider_no") + "</provider_no>" + "<filename>" + oscar.Misc.getString(rs, "filename") + "</filename>" + "<md5sum>" + oscar.Misc.getString(rs, "md5sum") + "</md5sum>" + "<datetime>"
-					        + oscar.Misc.getString(rs, "date_time") + "</datetime>')";
+					sql = "INSERT INTO recyclebin (provider_no, updatedatetime, table_name, keyword, table_content) " + "VALUES ('0', '" + UtilDateUtilities.getToday("yyyy-MM-dd HH:mm:ss") + "', 'fileUploadCheck', '" + fileId + "', " + "'<id>" + db.getString(rs, "id") + "</id>" + "<provider_no>" + db.getString(rs, "provider_no") + "</provider_no>" + "<filename>" + db.getString(rs, "filename") + "</filename>" + "<md5sum>" + db.getString(rs, "md5sum") + "</md5sum>" + "<datetime>"
+					        + db.getString(rs, "date_time") + "</datetime>')";
 
 					pstmt = conn.prepareStatement(sql);
 					pstmt.executeUpdate();

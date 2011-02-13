@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.apache.commons.lang.StringUtils;
-import org.oscarehr.util.MiscUtils;
 
 import com.quatro.common.KeyConstants;
 
@@ -138,7 +137,7 @@ public class MyDateFormat {
 	//from 8:20pm to 20:20:00, 9:9am to 09:09:00, 8:20 to 08:20:00
 	public static String getTimeXX_XX_XX(String aXX_XXampm) {
 		String temp="\\N"; //mySQL = null
-		int hour=0;
+		int hour=0, min=0;
 		
 		aXX_XXampm=aXX_XXampm.trim().toLowerCase();
 		int i1=aXX_XXampm.indexOf(58); //":" ascii is 58
@@ -148,7 +147,7 @@ public class MyDateFormat {
 			//t2=aXX_XXampm.indexOf(58);
 			if(aXX_XXampm.endsWith("am")) {
 				temp=temp.substring(0,temp.length()-2).trim();
-
+				//System.out.println(hour+" :"+temp);
 				temp=getDigitalXX(hour)+":"+getDigitalXX(Integer.parseInt(temp))+":00";
 			} else if(aXX_XXampm.endsWith("pm")) {
 				temp=temp.substring(0,temp.length()-2).trim();
@@ -156,7 +155,7 @@ public class MyDateFormat {
 				temp=getDigitalXX(hour==12?12:(hour+12))+":"+getDigitalXX(Integer.parseInt(temp))+":00";
 			} else {
 				temp=temp.trim();
-
+				//System.out.println(hour+" :"+temp);
 				temp=getDigitalXX(hour)+":"+getDigitalXX(Integer.parseInt(temp))+":00";
 			}
 		}
@@ -210,7 +209,7 @@ public class MyDateFormat {
         }
             catch (Exception e)
             {
-                MiscUtils.getLogger().debug("Invalid Date - the input date is in wrong format or out of range");
+                System.out.println("Invalid Date - the input date is in wrong format or out of range");
                 return null;
             }
 	}
@@ -250,7 +249,7 @@ public class MyDateFormat {
         }
             catch (Exception e)
             {
-                MiscUtils.getLogger().debug("Invalid Date - the input date is in wrong format or out of range");
+                System.out.println("Invalid Date - the input date is in wrong format or out of range");
                 return null;
             }
 	}
@@ -360,7 +359,7 @@ public class MyDateFormat {
         }
         catch (Exception e)
         {
-            MiscUtils.getLogger().debug("Invalid Date - the input date is in wrong format or out of range");
+            System.out.println("Invalid Date - the input date is in wrong format or out of range");
             return null;
         }
     }
@@ -404,7 +403,7 @@ public class MyDateFormat {
         }
         catch (Exception e)
         {
-            MiscUtils.getLogger().debug("Invalid Date - the input date is in wrong format or out of range");
+            System.out.println("Invalid Date - the input date is in wrong format or out of range");
             return null;
         }
     }
@@ -418,7 +417,7 @@ public class MyDateFormat {
 	//from  20:20:00to 08:20pm,  09:09:00 to 09:09am, or 20:20 to 08:20pm
 	public static String getTimeXX_XXampm(String aXX_XX_XX) {
 		String temp=null; //mySQL = null
-		int hour=0;
+		int hour=0, min=0;
 		
 		aXX_XX_XX=aXX_XX_XX.trim().toLowerCase();
 		int i1=aXX_XX_XX.indexOf(58); //":" ascii is 58

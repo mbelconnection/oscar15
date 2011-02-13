@@ -3,8 +3,6 @@ package oscar.oscarResearch.oscarDxResearch.bean;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 public class dxCodeHandler {
@@ -17,16 +15,16 @@ public class dxCodeHandler {
       
     	try {
             ResultSet rs;
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT " + codingSystem +",description FROM " + codingSystem + " WHERE " + codingSystem + " = '" + code + "'";
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             if(rs.next()){
-            	result = oscar.Misc.getString(rs, "description"); 
+            	result = db.getString(rs,"description"); 
             }
             rs.close();
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);            
+            System.out.println(e.getMessage());            
         }
         return result;
     }   

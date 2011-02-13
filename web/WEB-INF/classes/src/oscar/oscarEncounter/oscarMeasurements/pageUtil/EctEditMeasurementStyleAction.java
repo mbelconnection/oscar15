@@ -36,7 +36,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -55,7 +54,7 @@ public class EctEditMeasurementStyleAction extends Action {
         
         changeCSS(groupName, styleSheet);
         
-        MiscUtils.getLogger().debug("The selected style sheet is: " + styleSheet);                        
+        System.out.println("The selected style sheet is: " + styleSheet);                        
         HttpSession session = request.getSession();
         session.setAttribute( "groupName", groupName);
         
@@ -71,13 +70,13 @@ public class EctEditMeasurementStyleAction extends Action {
     private void changeCSS(String inputGroupName, String styleSheet){
         
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "UPDATE measurementGroupStyle SET cssID ='" + styleSheet + "' WHERE groupName='" + inputGroupName + "'";
-            MiscUtils.getLogger().debug("Sql Statement: " + sql);
-            DBHandler.RunSQL(sql);
+            System.out.println("Sql Statement: " + sql);
+            db.RunSQL(sql);
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);            
+            System.out.println(e.getMessage());            
         }        
     }
 }

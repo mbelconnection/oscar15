@@ -234,7 +234,7 @@ public class CaseManagementIssue extends BaseObject {
 		 * You cannot say the first write access is false then all others will be false too
 		 * Not sure why we have cacheKey here. But it surely caused one bug:
 		 * If one client had counselor issues and doctor issues, all issues would be grayed out for the counselor if the counselor didn't have "write doctor issues" access right.
-		 * In this case, only doctor issues should be grayed out. 
+		 * In this case, only doctor issues would be grayed out. 
 		
 		Boolean result=writeAccessCache.get(cacheKey);
 		if (result==null)

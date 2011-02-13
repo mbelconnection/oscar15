@@ -43,7 +43,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.form.FrmRecord;
 import oscar.form.FrmRecordFactory;
@@ -99,7 +98,7 @@ import oscar.util.UtilDateUtilities;
 public class FrmFormRHPreventionAction extends Action{
     
     public ActionForward execute(ActionMapping mapping,ActionForm form,HttpServletRequest request,HttpServletResponse response){    
-        MiscUtils.getLogger().debug("FrmFormRHPrevention Action");
+        System.out.println("FrmFormRHPrevention Action");
         
         // <action path="/form/AddRHWorkFlow" scope="request" name="FrmForm" type="oscar.form.pageUtil.FrmFormAddRHWorkFlowAction">
         String demographicNo = request.getParameter("demographic_no");
@@ -111,7 +110,7 @@ public class FrmFormRHPreventionAction extends Action{
         String workflowId = request.getParameter("workflowId");
         String state = request.getParameter("state");
         
-        MiscUtils.getLogger().debug("FrmFormRHPreventionAction demographic "+demographicNo);
+        System.out.println("FrmFormRHPreventionAction demographic "+demographicNo);
         ActionForward af = mapping.findForward("success");
         
         int workId = -1;
@@ -122,18 +121,18 @@ public class FrmFormRHPreventionAction extends Action{
         ArrayList currentWorkFlows = flow.getActiveWorkFlowList(demographicNo);
 
         String dateToParse = request.getParameter("edd");
-        MiscUtils.getLogger().debug("New workflow for "+demographicNo+" EDD "+dateToParse);
+        System.out.println("New workflow for "+demographicNo+" EDD "+dateToParse);
         Date endDate = UtilDateUtilities.StringToDate(dateToParse);   
 
         //Currently open work flows ?
         if(currentWorkFlows != null && currentWorkFlows.size() > 0){
-            MiscUtils.getLogger().debug("size of current workflows "+currentWorkFlows.size());
+            System.out.println("size of current workflows "+currentWorkFlows.size());
             request.setAttribute("currentWorkFlow",currentWorkFlows.get(0));
              Hashtable h = (Hashtable) currentWorkFlows.get(0);
              String currentId = (String) h.get("ID");
              if (workflowId != null ){
             //LOG CHANGE NOW
-                MiscUtils.getLogger().debug("Changing workflow for  "+demographicNo+ " to "+state);
+                System.out.println("Changing workflow for  "+demographicNo+ " to "+state);
                 
                 WorkFlowState wfs = new WorkFlowState();
                 
@@ -171,14 +170,16 @@ public class FrmFormRHPreventionAction extends Action{
                 newID = rec.saveFormRecord(props);
                 LogAction.addLog((String) request.getSession().getAttribute("user"), LogConst.ADD, request.getParameter("form_class"), "" + newID, ip);
             }catch(Exception factEx){
-            	MiscUtils.getLogger().error("Error", factEx);
+                factEx.printStackTrace();
+
             }
 
             request.setAttribute("demographic_no",demographicNo); 
             where = af.getPath();
             try {
                 where = rec.createActionURL(where, "save", demographicNo, "" + newID);
-            } catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
             }
         
             af = new ActionForward(where);

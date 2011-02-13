@@ -36,18 +36,18 @@ public class FrmAnnualV2Record  extends FrmRecord {
         Properties props = new Properties();
 
         if(existingID <= 0) {
-			
+			DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT demographic_no, CONCAT(last_name, ', ', first_name) AS pName, "
                 + "year_of_birth, month_of_birth, date_of_birth "
                 + "FROM demographic WHERE demographic_no = " + demographicNo;
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if(rs.next()) {
-                props.setProperty("demographic_no", oscar.Misc.getString(rs, "demographic_no"));
-                props.setProperty("pName", oscar.Misc.getString(rs, "pName"));
+                props.setProperty("demographic_no", db.getString(rs,"demographic_no"));
+                props.setProperty("pName", db.getString(rs,"pName"));
                 props.setProperty("formDate", UtilDateUtilities.DateToString(UtilDateUtilities.Today(), "yyyy/MM/dd"));
                 props.setProperty("formCreated", UtilDateUtilities.DateToString(UtilDateUtilities.Today(), "yyyy/MM/dd"));
                 //props.setProperty("formEdited", UtilDateUtilities.DateToString(UtilDateUtilities.Today(), "yyyy/MM/dd"));
-                java.util.Date dob = UtilDateUtilities.calcDate(oscar.Misc.getString(rs, "year_of_birth"), oscar.Misc.getString(rs, "month_of_birth"), oscar.Misc.getString(rs, "date_of_birth"));
+                java.util.Date dob = UtilDateUtilities.calcDate(db.getString(rs,"year_of_birth"), db.getString(rs,"month_of_birth"), db.getString(rs,"date_of_birth"));
                 props.setProperty("age", String.valueOf(UtilDateUtilities.calcAge(dob)));
             }
             rs.close();

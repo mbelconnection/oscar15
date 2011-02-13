@@ -28,8 +28,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 public class RptMeasuringInstructionBeanHandler {
@@ -44,11 +42,11 @@ public class RptMeasuringInstructionBeanHandler {
         
         boolean verdict = true;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT measuringInstruction FROM measurementType WHERE typeDisplayName='" + measurementType + "'";
-            MiscUtils.getLogger().debug("Sql Statement: " + sql);
+            System.out.println("Sql Statement: " + sql);
             ResultSet rs;
-            for(rs = DBHandler.GetSQL(sql); rs.next(); )
+            for(rs = db.GetSQL(sql); rs.next(); )
             {
                 RptMeasuringInstructionBean measuringInstrc = new RptMeasuringInstructionBean(rs.getString("measuringInstruction"));
                 measuringInstrcVector.add(measuringInstrc);
@@ -57,7 +55,7 @@ public class RptMeasuringInstructionBeanHandler {
             rs.close();
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;

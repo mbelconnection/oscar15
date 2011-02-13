@@ -25,12 +25,12 @@ package org.oscarehr.PMmodule.utility;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
 
 public class MigrateStaffAssignments {
-	private static  final Logger log = MiscUtils.getLogger();
+	protected final Log log = LogFactory.getLog(getClass());
     protected int nurseRoleId = 0;
     protected int doctorRoleId = 0;
     
@@ -44,20 +44,20 @@ public class MigrateStaffAssignments {
     	Statement stmt = DbConnectionFilter.getThreadLocalDbConnection().createStatement();
     	stmt.execute("SELECT * FROM provider_role_program");
     	ResultSet rs = stmt.getResultSet();
-    	
+    	int count = 0;
     	while(rs.next()) {
     		long providerNo = rs.getInt("provider_no");
     		long programId = rs.getInt("program_id");
     		long group_id = rs.getInt("group_id");
     		if(programExists(programId) && providerExists(providerNo)) {
-
+    			//System.out.println(providerNo + "," +programId + "," + group_id);
     			this.addProgramProvider(programId,providerNo,group_id);
     		}
     
-    		
+    		count++;
     	}
     	rs.close();
-
+    	//System.out.println("# of entries = " + count);
     }
     
     public boolean programExists(long programId) throws Exception {
@@ -69,6 +69,7 @@ public class MigrateStaffAssignments {
     	if(num >0) {
     		return true;
     	}
+    	System.out.println("program doesn't exist: " + programId);
 		return false;
     }
 
@@ -81,6 +82,7 @@ public class MigrateStaffAssignments {
     	if(num >0) {
     		return true;
     	}
+    	System.out.println("provider doesn't exist: " + providerNo);
 		return false;
     }
     

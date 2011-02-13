@@ -27,7 +27,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.caisi.tickler.prepared.PreparedTickler;
-import org.oscarehr.util.MiscUtils;
 
 public abstract class AbstractPreparedTickler implements PreparedTickler {
 
@@ -41,9 +40,9 @@ public abstract class AbstractPreparedTickler implements PreparedTickler {
 				}
 			}	
 		}catch(InvocationTargetException e) {
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 		}catch(IllegalAccessException e) {
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 		}
 	}
 

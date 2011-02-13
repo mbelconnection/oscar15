@@ -5,7 +5,7 @@
 
 package org.oscarehr.decisionSupport.model.conditionValue;
 
-import org.oscarehr.decisionSupport.model.DecisionSupportException;
+import org.oscarehr.decisionSupport.model.*;
 
 /**
  *
@@ -23,7 +23,7 @@ public class DSValueString extends DSValue {
     
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
+        StringBuffer result = new StringBuffer();
         if (this.getValueType() != null) result.append(this.getValueType() + ":");
         if (this.getValueUnit() == null) {  //shouldn't be a unit anyways, otherwise must be a number, so should do statement (i.e. =5 kg)
             result.append("'" + this.getValue() + "'");

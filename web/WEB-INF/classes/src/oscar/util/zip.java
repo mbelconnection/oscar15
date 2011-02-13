@@ -31,21 +31,14 @@ import java.io.FileOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.OscarProperties;
 public class zip
 {
-    /**
-     * default contructor
-     * this constructor is used to avoid unused local variables/for clean code
-     */
-    zip(){}
     zip(String fileformat){
         write2Zip(fileformat);
     }
     public void write2Zip(String fileformat){
-        MiscUtils.getLogger().debug("writing to Zip");
+        System.out.println("writing to Zip");
         try {
             BufferedInputStream origin = null;
             int BUFFER = 1024;
@@ -59,7 +52,7 @@ public class zip
             String files[] = f.list();
 
             for (int i=0; i<files.length; i++) {
-                MiscUtils.getLogger().debug("Adding: "+files[i]);
+                System.out.println("Adding: "+files[i]);
                 if(files[i].endsWith("."+fileformat)){
                     FileInputStream fi = new FileInputStream(form_record_path+files[i]);
                     origin = new BufferedInputStream(fi, BUFFER);
@@ -75,7 +68,7 @@ public class zip
             out.close();
         } 
         catch(Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }    
     }
 }

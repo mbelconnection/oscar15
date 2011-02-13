@@ -34,7 +34,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 public final class BillingAction extends Action {
     
@@ -80,7 +79,7 @@ public final class BillingAction extends Action {
                 bean.setApptStatus(request.getParameter("status"));
                 request.getSession().setAttribute("billingSessionBean", bean);
 
-                MiscUtils.getLogger().debug("PatientName is:" + bean.getPatientName());
+                System.out.println("PatientName is:" + bean.getPatientName());
             }else{
                 bean = (oscar.oscarBilling.pageUtil.BillingSessionBean)request.getSession().getAttribute("billingSessionBean");
             }

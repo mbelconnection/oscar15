@@ -34,8 +34,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarPrevention.Prevention;
 import oscar.oscarPrevention.PreventionDS;
 import oscar.oscarPrevention.PreventionData;
@@ -59,18 +57,18 @@ public class PreventionTag extends TagSupport {
 	PreventionDS pf = PreventionDS.getInstance();
 	pf.getMessages(p);
         }catch(Exception e){
-           MiscUtils.getLogger().error("Error", e);
+           e.printStackTrace();
         }
 	ArrayList warnings = p.getWarnings();      
-	
-        StringBuilder sb = new StringBuilder();
+	ArrayList recomendations = p.getReminder();
+        StringBuffer sb = new StringBuffer();
         if (warnings != null){
            numWarnings = warnings.size();
            for (int i = 0; i < warnings.size(); i++){
               sb.append((String) warnings.get(i));
               sb.append("\n");
            }
-
+           //System.out.println("the number of warnings "+numWarnings);           
         }
         String title = sb.toString();
         try{
@@ -80,7 +78,7 @@ public class PreventionTag extends TagSupport {
             else
                 out.print("<span>  ");
         } catch(Exception eWriter) {
-        	MiscUtils.getLogger().error("Error", eWriter);
+            eWriter.printStackTrace(System.out);
         }        
         return(EVAL_BODY_INCLUDE);
     }
@@ -100,7 +98,8 @@ public class PreventionTag extends TagSupport {
        try{
           JspWriter out = super.pageContext.getOut();         
           out.print("</span>");
-       }catch(Exception p) {MiscUtils.getLogger().error("Error",p);
+       }catch(Exception p) {
+            p.printStackTrace(System.out);
        }
        return EVAL_PAGE;
     }

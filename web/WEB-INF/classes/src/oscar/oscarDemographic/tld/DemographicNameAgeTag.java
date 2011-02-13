@@ -28,8 +28,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDemographic.data.DemographicNameAgeString;
 
 public class DemographicNameAgeTag extends TagSupport {
@@ -53,7 +51,8 @@ public class DemographicNameAgeTag extends TagSupport {
        try{
           JspWriter out = super.pageContext.getOut();          
           out.print(nameage);                          
-       } catch(Exception p) {MiscUtils.getLogger().error("Error",p);
+       } catch(Exception p) {
+          p.printStackTrace(System.out);
        }
        return(SKIP_BODY);
     }

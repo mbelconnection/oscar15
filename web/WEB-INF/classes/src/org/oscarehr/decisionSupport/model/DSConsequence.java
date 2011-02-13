@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author apavel
  */
-public class DSConsequence {
+public class DSConsequence {    
     public enum ConsequenceType {warning, java}
     
     public enum ConsequenceStrength {warning, recommendation}
@@ -70,7 +70,7 @@ public class DSConsequence {
      */
     public List<Object> getObjConsequence() {
         return objConsequence;
-}
+    }
 
     /**
      * @param objConsequence the objConsequence to set

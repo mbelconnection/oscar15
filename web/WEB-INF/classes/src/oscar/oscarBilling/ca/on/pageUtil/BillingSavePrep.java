@@ -17,15 +17,14 @@
 package oscar.oscarBilling.ca.on.pageUtil;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
+import java.util.Map;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarBilling.ca.on.data.BillingClaimHeader1Data;
 import oscar.oscarBilling.ca.on.data.BillingDataHlp;
@@ -69,8 +68,8 @@ public class BillingSavePrep {
 	}
 
 	// set appt to B
-	public boolean updateApptStatus(String apptNo, String status, String userNo) {
-		boolean ret = (new JdbcBillingPageUtil()).updateApptStatus(apptNo, status, userNo);
+	public boolean updateApptStatus(String apptNo, String status) {
+		boolean ret = (new JdbcBillingPageUtil()).updateApptStatus(apptNo, status);
 		return ret;
 	}
 
@@ -375,7 +374,7 @@ public class BillingSavePrep {
 	// 1-hin 2-ver
 	private String[] getHinVer(String val) {
 		String[] ret = { "", "" };
-		MiscUtils.getLogger().debug("Hinver: " + val);
+		System.out.println("Hinver: " + val);
 		if (val != null) {
 			for (int i = 0; i < val.length(); i++) {
 				if (("" + val.charAt(i)).matches("\\d")) {

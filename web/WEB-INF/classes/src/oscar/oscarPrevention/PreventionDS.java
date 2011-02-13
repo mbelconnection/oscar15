@@ -32,11 +32,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.drools.RuleBase;
 import org.drools.WorkingMemory;
 import org.drools.io.RuleBaseLoader;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 
@@ -45,7 +45,7 @@ import oscar.OscarProperties;
  * @author Jay Gallagher
  */
 public class PreventionDS {
-   private static Logger log = MiscUtils.getLogger();
+   private static Log log = LogFactory.getLog(PreventionDS.class);
    static PreventionDS preventionDS= new PreventionDS();
    static boolean loaded = false;
    static RuleBase ruleBase = null;
@@ -81,7 +81,7 @@ public class PreventionDS {
          ruleBase = RuleBaseLoader.loadFromUrl( url );
         }
       }catch(Exception e){
-         MiscUtils.getLogger().error("Error", e);                
+         e.printStackTrace();                
       }
       loaded = true;             
    }
@@ -92,7 +92,7 @@ public class PreventionDS {
          WorkingMemory workingMemory = ruleBase.newWorkingMemory();
          workingMemory.assertObject(p);
          workingMemory.fireAllRules();
-      }catch(Exception e){MiscUtils.getLogger().error("Error", e); throw new Exception("ERROR: Drools ",e);}
+      }catch(Exception e){e.printStackTrace(); throw new Exception("ERROR: Drools ",e);}
          return p;
    }
 

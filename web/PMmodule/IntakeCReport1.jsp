@@ -19,6 +19,8 @@
 <%@ page import="java.util.Date"%>
 
 <%
+	response.setHeader("Cache-Control", "no-cache");
+
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	
 	String[][] dataList = new String[335][15];
@@ -33,6 +35,7 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Street Health Mental Health Report</title>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 <link rel="stylesheet" type="text/css"
 	href="<html:rewrite page="/css/intakeC.css" />" />
 <script language="JavaScript"

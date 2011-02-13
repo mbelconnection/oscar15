@@ -6,15 +6,12 @@
 package org.oscarehr.common.dao;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
-
 import javax.persistence.Query;
-
+import org.springframework.stereotype.Repository;
 import org.oscarehr.common.model.Queue;
 import org.oscarehr.util.MiscUtils;
-import org.springframework.stereotype.Repository;
 
 /**
  *
@@ -26,16 +23,16 @@ public class QueueDao extends AbstractDao<Queue>{
         super(Queue.class);
     }
 
-    public HashMap getHashMapOfQueues(){
+    public Hashtable getQueuesHashtable(){
         String q="select q from Queue q";
         Query query=entityManager.createQuery(q);
-        List<Queue> result=new ArrayList<Queue>();
+        List<Queue> result=new ArrayList();
         result=query.getResultList();
-        HashMap<Integer,String> hm=new HashMap<Integer,String>();
+        Hashtable ht=new Hashtable();
         for(Queue que:result){
-            hm.put(que.getId(),que.getName());
+            ht.put(que.getId(),que.getName());
         }
-        return hm;
+        return ht;
     }
     public List<Hashtable> getQueues(){
         String q="select q from Queue q";

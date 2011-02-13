@@ -30,11 +30,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.billing.cad.dao.CadProcedimentoDAO;
 import oscar.billing.cad.dao.CidDAO;
@@ -50,7 +50,7 @@ import oscar.util.OscarAction;
 
 
 public class ProcedimentoRealizadoAction extends OscarAction {
-    private static Logger logger = MiscUtils.getLogger();
+    private static Logger logger = LogManager.getLogger(ProcedimentoRealizadoAction.class);
 
     public ActionForward execute(ActionMapping mapping, ActionForm form,
         HttpServletRequest request, HttpServletResponse response) {
@@ -95,6 +95,7 @@ public class ProcedimentoRealizadoAction extends OscarAction {
                 myforward = performGravar(mapping, form, request, response);
             }
         } else if ("INIT".equalsIgnoreCase(myaction)) {
+			System.out.println(" [ProcedimentoRealizadoAction] Vai chamar Init");
             myforward = performInit(mapping, form, request, response);
         } else if ("DEL_PROC".equalsIgnoreCase(myaction)) {
             myforward = performDeleteProcedimento(mapping, form, request,
@@ -119,9 +120,11 @@ public class ProcedimentoRealizadoAction extends OscarAction {
 
         try {
             String appId = request.getParameter("appId");
+			System.out.println(" [ProcedimentoRealizadoAction] appId = " + appId);
 
             if (appId == null || appId.trim().length() <= 0) {
                 generalError(request, "faturamento.notfound");
+				System.out.println(" [ProcedimentoRealizadoAction] faturamento.notfound");
 
                 return mapping.findForward("failure");
             }
@@ -129,11 +132,12 @@ public class ProcedimentoRealizadoAction extends OscarAction {
             form.clear();
             logger.debug(" [ProcedimentoRealizadoAction] Limpou form");
 
-            FatFormulariosDAO formDAO = new FatFormulariosDAO();
-            AppointmentDAO appDAO = new AppointmentDAO();
-            ProcedimentoRealizadoDAO prDAO = new ProcedimentoRealizadoDAO();
-            DiagnosticoDAO diagDAO = new DiagnosticoDAO();
-            TipoAtendimentoDAO tpAtendDAO = new TipoAtendimentoDAO();
+            FatFormulariosDAO formDAO = new FatFormulariosDAO(getPropertiesDb(request));
+            AppointmentDAO appDAO = new AppointmentDAO(getPropertiesDb(request));
+            ProcedimentoRealizadoDAO prDAO = new ProcedimentoRealizadoDAO(
+            	getPropertiesDb(request));
+            DiagnosticoDAO diagDAO = new DiagnosticoDAO(getPropertiesDb(request));
+            TipoAtendimentoDAO tpAtendDAO = new TipoAtendimentoDAO(getPropertiesDb(request));
 
             //Obter appointment
             form.setAppointment(appDAO.retrieve(appId));
@@ -179,7 +183,8 @@ public class ProcedimentoRealizadoAction extends OscarAction {
         ProcedimentoRealizadoForm form = (ProcedimentoRealizadoForm) actionForm;
 
         try {
-            FatFormulariosDAO formDAO = new FatFormulariosDAO();
+            FatFormulariosDAO formDAO = new FatFormulariosDAO(getPropertiesDb(
+                        request));
 
             //selecionar procedimentos do formulario XXX
             Vector v = new Vector(formDAO.listProcedimentoByForm(String.valueOf(
@@ -206,7 +211,8 @@ public class ProcedimentoRealizadoAction extends OscarAction {
         ProcedimentoRealizadoForm form = (ProcedimentoRealizadoForm) actionForm;
 
         try {
-            FatFormulariosDAO formDAO = new FatFormulariosDAO();
+            FatFormulariosDAO formDAO = new FatFormulariosDAO(getPropertiesDb(
+                        request));
 
             //inserir procedimentos selecionados nos realizados
             form.getAppointment().addProcedimentos(formDAO.listProcedimentoByProc(
@@ -252,7 +258,8 @@ public class ProcedimentoRealizadoAction extends OscarAction {
 		ProcedimentoRealizadoForm form = (ProcedimentoRealizadoForm) actionForm;
 
 		try {
-			CidDAO diagDAO = new CidDAO();
+			CidDAO diagDAO = new CidDAO(getPropertiesDb(
+						request));
 						
 			//inserir diagnostico
 			CadCid diag = diagDAO.retrieve(form.getCoCid().trim());
@@ -301,8 +308,9 @@ public class ProcedimentoRealizadoAction extends OscarAction {
 
         ProcedimentoRealizadoForm form = (ProcedimentoRealizadoForm) actionForm;
         try {
-			AppointmentDAO appDAO = new AppointmentDAO();
-			ProcedimentoRealizadoDAO procRDAO = new ProcedimentoRealizadoDAO();
+			AppointmentDAO appDAO = new AppointmentDAO(getPropertiesDb(request));
+			ProcedimentoRealizadoDAO procRDAO = 
+				new ProcedimentoRealizadoDAO(getPropertiesDb(request));
 			
             // gravar procedimentos realizados e diagnosticos - save
             appDAO.billing(form.getAppointment());
@@ -329,7 +337,8 @@ public class ProcedimentoRealizadoAction extends OscarAction {
 		ProcedimentoRealizadoForm form = (ProcedimentoRealizadoForm) actionForm;
 
 		try {
-			CadProcedimentoDAO procDAO = new CadProcedimentoDAO();
+			CadProcedimentoDAO procDAO = new CadProcedimentoDAO(getPropertiesDb(
+						request));
 						
 			//inserir procedimento
 			CadProcedimentos proc = procDAO.retrieve(String.valueOf(form.getCadProcedimentos().getCoProcedimento()));

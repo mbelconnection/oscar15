@@ -39,7 +39,6 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -90,13 +89,13 @@ public class EctDefineNewMeasurementGroupAction extends Action {
     private boolean write2Database(String inputGroupName, String styleSheet){
         boolean isWrite2Database = true;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT groupName from measurementGroupStyle ORDER BY groupName";
-            MiscUtils.getLogger().debug("Sql Statement: " + sql);
+            System.out.println("Sql Statement: " + sql);
             ResultSet rs;
-            for(rs = DBHandler.GetSQL(sql); rs.next(); )
+            for(rs = db.GetSQL(sql); rs.next(); )
             {
-                String groupName = oscar.Misc.getString(rs, "groupName");
+                String groupName = db.getString(rs,"groupName");
                 if (inputGroupName.compareTo(groupName)==0){
                     isWrite2Database = false;
                     break;
@@ -106,11 +105,11 @@ public class EctDefineNewMeasurementGroupAction extends Action {
             
             if (isWrite2Database){
                 sql = "INSERT INTO measurementGroupStyle(groupName, cssID) VALUES ('" + inputGroupName + "','" + styleSheet + "')";
-                DBHandler.RunSQL(sql);
+                db.RunSQL(sql);
             }
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);            
+            System.out.println(e.getMessage());            
         }
         return isWrite2Database;
     }

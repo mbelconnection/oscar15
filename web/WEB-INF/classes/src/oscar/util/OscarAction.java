@@ -36,7 +36,6 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.oscarehr.util.MiscUtils;
 
 
 public abstract class OscarAction extends Action {
@@ -58,7 +57,7 @@ public abstract class OscarAction extends Action {
         aes.add(ActionMessages.GLOBAL_MESSAGE,
             new ActionMessage(error, e.getMessage()));
         saveErrors(request, aes);
-        MiscUtils.getLogger().error("Error", e);
+        e.printStackTrace();
         logger.error("Erro - ", e);
     }
 
@@ -99,7 +98,7 @@ public abstract class OscarAction extends Action {
         aes.add(ActionMessages.GLOBAL_MESSAGE,
             new ActionMessage("erro.geral", e.getMessage()));
         saveErrors(request, aes);
-        MiscUtils.getLogger().error("Error", e);
+        e.printStackTrace();
         logger.error("Erro - " + e.getMessage());
     }
 
@@ -109,7 +108,7 @@ public abstract class OscarAction extends Action {
         aes.add(ActionMessages.GLOBAL_MESSAGE,
             new ActionMessage(error, e.getMessage(), param));
         saveErrors(request, aes);
-        MiscUtils.getLogger().error("Error", e);
+        e.printStackTrace();
         logger.error("Erro - " + e.getMessage());
     }
 

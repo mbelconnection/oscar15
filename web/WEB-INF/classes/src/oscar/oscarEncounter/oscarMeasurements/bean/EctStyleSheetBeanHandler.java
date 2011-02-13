@@ -29,8 +29,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Vector;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 public class EctStyleSheetBeanHandler {
@@ -45,20 +43,20 @@ public class EctStyleSheetBeanHandler {
         
         boolean verdict = true;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT * from measurementCSSLocation ORDER BY cssID";
-            MiscUtils.getLogger().debug("Sql Statement: " + sql);
+            System.out.println("Sql Statement: " + sql);
             ResultSet rs;
-            for(rs = DBHandler.GetSQL(sql); rs.next(); )
+            for(rs = db.GetSQL(sql); rs.next(); )
             {
-                EctStyleSheetBean location = new EctStyleSheetBean(oscar.Misc.getString(rs, "location"), rs.getInt("cssID"));
+                EctStyleSheetBean location = new EctStyleSheetBean(db.getString(rs,"location"), rs.getInt("cssID"));
                 styleSheetNameVector.add(location);
             }
 
             rs.close();
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;

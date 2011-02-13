@@ -16,17 +16,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.oscarehr.common.model.Demographic;
 import org.oscarehr.PMmodule.model.Intake;
 import org.oscarehr.PMmodule.model.IntakeAnswer;
 import org.oscarehr.PMmodule.service.StreetHealthReportManager;
 import org.oscarehr.PMmodule.web.BaseAction;
-import org.oscarehr.common.model.Demographic;
 import org.oscarehr.util.LoggedInInfo;
-import org.oscarehr.util.MiscUtils;
+import org.oscarehr.util.SessionConstants;
 
 /**
  * 
@@ -35,7 +36,7 @@ import org.oscarehr.util.MiscUtils;
  */
 public class StreetHealthIntakeReportAction extends BaseAction {
 	
-	private static Logger log = MiscUtils.getLogger();
+	private static Log log = LogFactory.getLog(StreetHealthIntakeReportAction.class);
 	
 	private static final String SDF_PATTERN = "yyyy-MM-dd";
 	private static final String COHORT_CRITICAL_YM = "-03-31";
@@ -753,7 +754,7 @@ public class StreetHealthIntakeReportAction extends BaseAction {
 	            int numDaysHospitalized=0;
 	            int numPsychHospitalizations=0;
 	            int numDeclined = 0;
-	            
+	            int numNotBeenHosp = 0;
 	            
 	            for(HospitalizationBean hospitalization:hospitalizations) {
 	            	try {
@@ -1008,7 +1009,7 @@ public class StreetHealthIntakeReportAction extends BaseAction {
     private Date stringToDate(String date, String pattern){
     	try {
     		return new SimpleDateFormat(pattern).parse(date);
-    	}catch(ParseException e) {MiscUtils.getLogger().error("Error", e);}
+    	}catch(ParseException e) {e.printStackTrace();}
     	return null;
     }
     

@@ -34,36 +34,33 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
-import org.oscarehr.util.SpringUtils;
 
 import oscar.OscarProperties;
 import oscar.log.LogAction;
 import oscar.log.LogConst;
 import oscar.oscarDB.DBHandler;
 import oscar.oscarSurveillance.SurveillanceMaster;
-import oscar.service.OscarSuperManager;
 import oscar.util.UtilDateUtilities;
 
 public class EctSaveEncounterAction
     extends Action {
-    static Logger log=MiscUtils.getLogger(); 
+    static Log log = LogFactory.getLog(EctSaveEncounterAction.class); 
   
   private String getLatestID(String demoNo) throws
     SQLException  {
-      
+      DBHandler dbhandler = new DBHandler(DBHandler.OSCAR_DATA);
       String sql = "select MAX(eChartId) as maxID from eChart where demographicNo = " + demoNo;
-      ResultSet rs = DBHandler.GetSQL(sql);
+      ResultSet rs = dbhandler.GetSQL(sql);
       String latestID = null;
       
       if (rs.next()) {
-          latestID = oscar.Misc.getString(rs, "maxID");
+          latestID = dbhandler.getString(rs,"maxID");
       }
       rs.close();
 
@@ -80,7 +77,7 @@ public class EctSaveEncounterAction
         latestID = getLatestID(demographicNo);
       }
       catch (SQLException sqlexception) {
-        MiscUtils.getLogger().debug(sqlexception.getMessage());
+        System.out.println(sqlexception.getMessage());
         return true;
       }
       
@@ -109,7 +106,7 @@ public class EctSaveEncounterAction
       catch  (NumberFormatException e) {
           // already handled the null/empy string case, so shouldn't ever get this
           // exception.
-          MiscUtils.getLogger().error("Error", e);
+          System.out.println(e.getMessage());
           return true;
       }
  }
@@ -189,7 +186,7 @@ public class EctSaveEncounterAction
         sessionbean.template = "";
       }
       catch (Exception e) {
-        MiscUtils.getLogger().error("Error", e);
+        e.printStackTrace();
       }
      
       //This code is synchronized to ensure that only one person is modifying the same patient
@@ -211,9 +208,11 @@ public class EctSaveEncounterAction
               return actionmapping.findForward("concurrencyError");
           }
 
+          DBHandler dbhandler = null;
           try {             
+            dbhandler = new DBHandler(DBHandler.OSCAR_DATA);
             String s = "insert into eChart (timeStamp, demographicNo,providerNo,subject,socialHistory,familyHistory,medicalHistory,ongoingConcerns,reminders,encounter) values (?,?,?,?,?,?,?,?,?,?)" ;
-            PreparedStatement pstmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(s);
+            PreparedStatement pstmt = DBHandler.getConnection().prepareStatement(s);
                 pstmt.setTimestamp(1,new java.sql.Timestamp(date.getTime())); 
                 pstmt.setString(2,sessionbean.demographicNo);  
                 pstmt.setString(3,sessionbean.providerNo); 
@@ -239,42 +238,41 @@ public class EctSaveEncounterAction
             if (sessionbean.status != null && !sessionbean.status.equals("")) {
               oscar.appt.ApptStatusData as = new oscar.appt.ApptStatusData();
               as.setApptStatus(sessionbean.status);
-              OscarSuperManager oscarSuperManager = (OscarSuperManager)SpringUtils.getBean("oscarSuperManager");
-
-
               if (httpservletrequest.getParameter("btnPressed").equals(
                   "Sign,Save and Exit")) {
-                  oscarSuperManager.update("appointmentDao", "archive_appt", new Object[]{sessionbean.appointmentNo});
-                  oscarSuperManager.update("appointmentDao", "updatestatusc", new Object[]{as.signStatus(),sessionbean.providerNo,sessionbean.appointmentNo});
+                s = "update appointment set status='" + as.signStatus() +
+                    "' where appointment_no=" + sessionbean.appointmentNo;
+                dbhandler.RunSQL(s);
               }
               if (httpservletrequest.getParameter("btnPressed").equals(
                   "Verify and Sign")) {
-                  oscarSuperManager.update("appointmentDao", "archive_appt", new Object[]{sessionbean.appointmentNo});
-                  oscarSuperManager.update("appointmentDao", "updatestatusc", new Object[]{as.verifyStatus(),sessionbean.providerNo,sessionbean.appointmentNo});
+                s = "update appointment set status='" + as.verifyStatus() +
+                    "' where appointment_no=" + sessionbean.appointmentNo;
+                dbhandler.RunSQL(s);
               }
             }
           }
           catch (SQLException sqlexception) {
-            MiscUtils.getLogger().debug(sqlexception.getMessage());
+            System.out.println(sqlexception.getMessage());
           }
       }  //end of the synchronization block
     }
 
     try { // save enc. window sizes
-      
+      DBHandler dbhandler = new DBHandler(DBHandler.OSCAR_DATA);
       String s = "delete from encounterWindow where provider_no='" +
           sessionbean.providerNo + "'";
-      DBHandler.RunSQL(s);
+      dbhandler.RunSQL(s);
       s = "insert into encounterWindow (provider_no, rowOneSize, rowTwoSize, presBoxSize, rowThreeSize) values ('" +
           sessionbean.providerNo + "', '" +
           httpservletrequest.getParameter("rowOneSize") + "', '" +
           httpservletrequest.getParameter("rowTwoSize") + "', '" +
           httpservletrequest.getParameter("presBoxSize") + "', '" +
           httpservletrequest.getParameter("rowThreeSize") + "')";
-      DBHandler.RunSQL(s);
+      dbhandler.RunSQL(s);
     }
     catch (Exception e) {
-     MiscUtils.getLogger().error("Error", e);
+      e.printStackTrace(System.out);
     }
 
     String forward = null;

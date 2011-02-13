@@ -23,21 +23,19 @@
  */
 package oscar.form;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Properties;
-
+import java.util.Date;
+import java.util.Calendar;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
+import oscar.util.UtilDateUtilities;
+import org.oscarehr.util.SpringUtils;
 import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.util.MiscUtils;
-import org.oscarehr.util.SpringUtils;
-
-import oscar.form.dao.Rourke2009DAO;
 import oscar.form.model.FormRourke2009;
-import oscar.util.UtilDateUtilities;
+import oscar.form.dao.Rourke2009DAO;
 
 public class FrmRourke2009Record extends FrmRecord {
     public Properties getFormRecord(int demographicNo, int existingID)

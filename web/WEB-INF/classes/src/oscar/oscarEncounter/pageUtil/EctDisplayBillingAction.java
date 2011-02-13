@@ -32,15 +32,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts.util.MessageResources;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 import oscar.oscarBilling.ca.bc.MSP.MSPReconcile;
 import oscar.oscarBilling.ca.on.data.BillingClaimHeader1Data;
+
+//import oscar.oscarSecurity.CookieSecurity;
 import oscar.oscarBilling.ca.on.data.BillingItemData;
 import oscar.oscarBilling.ca.on.data.JdbcBillingReviewImpl;
 
@@ -77,7 +77,7 @@ public class EctDisplayBillingAction extends EctDisplayAction {
                      aL   = dbObj.getBillingHist(bean.demographicNo, 10, 0, null);
                 }catch(Exception e){
 
-                    MiscUtils.getLogger().error("Error", e);
+                    e.printStackTrace();
                 }
                 int nItems=0;
                 for(int i=0; i<aL.size(); i=i+2) {
@@ -86,7 +86,8 @@ public class EctDisplayBillingAction extends EctDisplayAction {
                         nItems++;
                         BillingClaimHeader1Data obj = (BillingClaimHeader1Data) aL.get(i);
                         BillingItemData itObj = (BillingItemData) aL.get(i+1);
-                        
+                        String strBillType = obj.getPay_program();
+
                         NavBarDisplayDAO.Item item = Dao.Item();
 
                         String dbFormat = "yyyy-MM-dd";
@@ -95,7 +96,7 @@ public class EctDisplayBillingAction extends EctDisplayAction {
                             date = (Date)formatter.parse(obj.getBilling_date());
                         }
                         catch(ParseException e ) {
-                                MiscUtils.getLogger().debug("EctDisplayMsgAction: Error creating date " + e.getMessage());
+                                System.out.println("EctDisplayMsgAction: Error creating date " + e.getMessage());
                                 date = null;
                         }                
 
@@ -129,7 +130,7 @@ public class EctDisplayBillingAction extends EctDisplayAction {
                 MSPReconcile.BillSearch bSearch = msp.getBills("%", null, null ,null,bean.demographicNo);//,true,true,true,true);
                 ArrayList list = bSearch.list;
                 
-                MiscUtils.getLogger().debug("list size for bills is "+list.size());
+                System.out.println("list size for bills is "+list.size());
                 
 //                JdbcBillingReviewImpl dbObj = new JdbcBillingReviewImpl();
 //                List aL = null;
@@ -137,7 +138,7 @@ public class EctDisplayBillingAction extends EctDisplayAction {
 //                     aL   = dbObj.getBillingHist(bean.demographicNo, 10, 0, null);
 //                }catch(Exception e){
 //
-//                    MiscUtils.getLogger().error("Error", e);
+//                    e.printStackTrace();
 //                }
                 int nItems=0;
                 for(int i=0; i<list.size(); i++) {
@@ -147,6 +148,7 @@ public class EctDisplayBillingAction extends EctDisplayAction {
                         
                         MSPReconcile.Bill b = (MSPReconcile.Bill) list.get(i);
                         
+                        String strBillType = b.getBillingtype();
                         
                         if (b != null && !b.reason.equals("D")){
                             NavBarDisplayDAO.Item item = Dao.Item();
@@ -157,7 +159,7 @@ public class EctDisplayBillingAction extends EctDisplayAction {
                                 date = (Date)formatter.parse(b.getApptDate());
                             }
                             catch(ParseException e ) {
-                                    MiscUtils.getLogger().debug("EctDisplayMsgAction: Error creating date " + e.getMessage());
+                                    System.out.println("EctDisplayMsgAction: Error creating date " + e.getMessage());
                                     date = null;
                             }                
 

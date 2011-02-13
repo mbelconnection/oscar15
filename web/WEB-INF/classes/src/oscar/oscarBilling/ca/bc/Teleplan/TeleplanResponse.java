@@ -37,8 +37,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import oscar.OscarProperties;
 
@@ -47,7 +47,7 @@ import oscar.OscarProperties;
  * @author jay
  */
 public class TeleplanResponse {
-    static Logger log=MiscUtils.getLogger();
+    static Log log = LogFactory.getLog(TeleplanResponse.class);
     private String transactionNo = null;
     private String result = null;
     private String filename = null;
@@ -98,7 +98,7 @@ public class TeleplanResponse {
             
            
         } catch (IOException e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
     }
 	

@@ -37,8 +37,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.util.LabelValueBean;
 import org.oscarehr.PMmodule.caisi_integrator.CaisiIntegratorManager;
 import org.oscarehr.PMmodule.dao.ClientDao;
@@ -57,6 +57,7 @@ import org.oscarehr.caisi_integrator.ws.CachedDemographicNote;
 import org.oscarehr.caisi_integrator.ws.CachedFacility;
 import org.oscarehr.caisi_integrator.ws.DemographicWs;
 import org.oscarehr.casemgmt.dao.AllergyDAO;
+import org.oscarehr.casemgmt.dao.ApptDAO;
 import org.oscarehr.casemgmt.dao.CaseManagementCPPDAO;
 import org.oscarehr.casemgmt.dao.CaseManagementIssueDAO;
 import org.oscarehr.casemgmt.dao.CaseManagementNoteDAO;
@@ -64,6 +65,7 @@ import org.oscarehr.casemgmt.dao.CaseManagementNoteExtDAO;
 import org.oscarehr.casemgmt.dao.CaseManagementNoteLinkDAO;
 import org.oscarehr.casemgmt.dao.CaseManagementTmpSaveDAO;
 import org.oscarehr.casemgmt.dao.EchartDAO;
+import org.oscarehr.casemgmt.dao.EncounterFormDAO;
 import org.oscarehr.casemgmt.dao.EncounterWindowDAO;
 import org.oscarehr.casemgmt.dao.HashAuditDAO;
 import org.oscarehr.casemgmt.dao.IssueDAO;
@@ -91,7 +93,6 @@ import org.oscarehr.common.model.UserProperty;
 import org.oscarehr.dx.dao.DxResearchDAO;
 import org.oscarehr.dx.model.DxResearch;
 import org.oscarehr.util.LoggedInInfo;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import oscar.OscarProperties;
@@ -118,8 +119,10 @@ public class CaseManagementManager {
 	private CaseManagementCPPDAO caseManagementCPPDAO;
 	private AllergyDAO allergyDAO;
 	private PrescriptionDAO prescriptionDAO;
+	private EncounterFormDAO encounterFormDAO;
 	private MessagetblDAO messagetblDAO;
 	private EchartDAO echartDAO;
+	private ApptDAO apptDAO;
 	private ProviderDao providerDAO;
 	private ClientDao demographicDao;
 	private ProviderSignitureDao providerSignitureDao;
@@ -136,7 +139,7 @@ public class CaseManagementManager {
 
 	private boolean enabled;
 
-	private static final Logger logger = MiscUtils.getLogger();
+	private static final Log logger = LogFactory.getLog(CaseManagementManager.class);
 
 	/*
 	* check to see if issue has been saved for this demo beforeif it has return issue; else return null
@@ -168,6 +171,11 @@ public class CaseManagementManager {
 			if (providers == null) providers = new ArrayList<Provider>();
 			note.setEditors(providers);
 		}
+	}
+
+	public void updateAppointment(String apptId, String status, String type) {
+
+		apptDAO.updateAppointmentStatus(apptId, status, type);
 	}
 
 	public UserProperty getUserProperty(String provider_no, String name) {
@@ -512,6 +520,10 @@ public class CaseManagementManager {
 		}
 
 		return (null);
+	}
+
+	public List getEncounterFormBeans() {
+		return encounterFormDAO.getAllForms();
 	}
 
 	public List getMsgBeans(Integer demographicNo) {
@@ -957,8 +969,6 @@ public class CaseManagementManager {
 	 * @param demoNo demographic to search for
 	 */
 	public List getIssueHistory(String issueIds, String demoNo) {
-		issueIds=StringUtils.trimToNull(issueIds);
-		if (issueIds==null) return(new ArrayList());
 		return this.caseManagementNoteDAO.getIssueHistory(issueIds, demoNo);
 	}
 
@@ -1369,6 +1379,14 @@ public class CaseManagementManager {
 		this.echartDAO = echartDAO;
 	}
 
+	public void setApptDAO(ApptDAO apptDAO) {
+		this.apptDAO = apptDAO;
+	}
+
+	public void setEncounterFormDAO(EncounterFormDAO dao) {
+		this.encounterFormDAO = dao;
+	}
+
 	public void setMessagetblDAO(MessagetblDAO dao) {
 		this.messagetblDAO = dao;
 	}
@@ -1508,7 +1526,7 @@ public class CaseManagementManager {
          * @return Formatted String
          */
         public String getTemplateSignature(String template,ResourceBundle rc,Map<String,String> map){
-            StringBuilder ret = new StringBuilder();
+            StringBuffer ret = new StringBuffer();
             int tagstart = -2;
             int tagend;
             int currentPosition = 0;
@@ -1547,10 +1565,10 @@ public class CaseManagementManager {
 		// if (providerSignitureDao.isOnSig(cproviderNo))
 		tempS = providerSignitureDao.getProviderSig(cproviderNo);
 		if (tempS != null && !"".equals(tempS.trim())) userName = tempS;
-                
+
 		ResourceBundle resourceBundle = ResourceBundle.getBundle("oscarResources", locale);
 		String signature;
-                if (userName != null && !"".equals(userName.trim())) {
+		if (userName != null && !"".equals(userName.trim())) {
                     try{
                         HashMap map = new HashMap();
                         map.put("DATE",dt.format(now));
@@ -1568,9 +1586,9 @@ public class CaseManagementManager {
                             throw new Exception("No Signature type defined");
 			}
                     }catch(Exception eSignature){
-                        signature = "[Unknown Signature Type Requested]";
+				signature = "[Unknown Signature Type Requested]";
                         logger.error("Signature error while signing note ",eSignature);
-                    }
+			}
 		} else {
 			signature = "\n[" + dt.format(now) + "]\n";
 		}

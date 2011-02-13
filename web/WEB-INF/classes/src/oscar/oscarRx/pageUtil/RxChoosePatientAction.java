@@ -25,6 +25,7 @@ package oscar.oscarRx.pageUtil;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -34,12 +35,12 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.util.MessageResources;
+
 import org.oscarehr.common.dao.UserPropertyDAO;
 import org.oscarehr.common.model.UserProperty;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
 import oscar.OscarProperties;
 import oscar.oscarRx.data.RxPatientData;
 
@@ -48,11 +49,11 @@ public final class RxChoosePatientAction extends Action {
     private static UserPropertyDAO userPropertyDAO;
 
     public void p(String s) {
-        MiscUtils.getLogger().debug(s);
+        System.out.println(s);
     }
 
     public void p(String s, String s2) {
-        MiscUtils.getLogger().debug(s + "=" + s2);
+        System.out.println(s + "=" + s2);
     }
 
     public ActionForward execute(ActionMapping mapping,
@@ -60,8 +61,10 @@ public final class RxChoosePatientAction extends Action {
             HttpServletRequest request,
             HttpServletResponse response)
             throws IOException, ServletException {
-
-
+        //   System.out.println("***IN RxChoosePatientAction.java");
+        // Extract attributes we will need
+        Locale locale = getLocale(request);
+        MessageResources messages = getResources(request);
         //   p("locale",locale.toString());
         //     p("messages",messages.toString());
         // Setup variables
@@ -101,7 +104,7 @@ public final class RxChoosePatientAction extends Action {
         if(patient!=null) {
             request.getSession().setAttribute("Patient", patient);
             if(OscarProperties.getInstance().getBooleanProperty("RX3", "yes")||providerUseRx3){//if rx3 is set to yes.
-                MiscUtils.getLogger().debug("successRX3");
+                System.out.println("successRX3");
                 //set the profile view
                 UserProperty prop = userPropertyDAO.getProp(provider, UserProperty.RX_PROFILE_VIEW);
                 if (prop != null) {
@@ -119,10 +122,10 @@ public final class RxChoosePatientAction extends Action {
                                 hm.put(va[i].trim(), false);
                             }
                         }
-
+                        //System.out.println("in choosepatient hm=" + hm);
                         request.getSession().setAttribute("profileViewSpec", hm);
                     } catch (Exception e) {
-                        MiscUtils.getLogger().error("Error", e);
+                        e.printStackTrace();
                     }
                     return (mapping.findForward("successRX3"));
                 } else {

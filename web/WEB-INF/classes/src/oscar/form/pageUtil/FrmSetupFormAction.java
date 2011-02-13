@@ -43,7 +43,6 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.xmlrpc.XmlRpcClient;
 import org.apache.xmlrpc.XmlRpcException;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 import oscar.form.data.FrmVTData;
@@ -77,7 +76,7 @@ public final class FrmSetupFormAction extends Action {
          * Add the form description to encounterForm table of the database
          **/
         //System.gc();
-        MiscUtils.getLogger().debug("SetupFormAction is called");
+        System.out.println("SetupFormAction is called");
         HttpSession session = request.getSession(true);
                 
         FrmFormForm frm = (FrmFormForm) form;        
@@ -125,7 +124,7 @@ public final class FrmSetupFormAction extends Action {
         }
         
         try {            
-            MiscUtils.getLogger().debug("formId=" + formId + "opening " + formName + ".xml");
+            System.out.println("formId=" + formId + "opening " + formName + ".xml");
             InputStream is = getClass().getResourceAsStream("/../../form/" + formName + ".xml");
             Vector measurementTypes = EctFindMeasurementTypeUtil.checkMeasurmentTypes(is, formName);
             EctMeasurementTypesBean mt;            
@@ -137,7 +136,7 @@ public final class FrmSetupFormAction extends Action {
             props.setProperty("provider_no", providerNo);
             //String xmlData = FrmToXMLUtil.convertToXml(measurementTypes, nameProps, props);
             String decisionSupportURL = getPatientRlt(demo);
-            MiscUtils.getLogger().debug("decisionSupportURL" + decisionSupportURL);
+            System.out.println("decisionSupportURL" + decisionSupportURL);
             request.setAttribute("decisionSupportURL", StringEscapeUtils.escapeHtml(decisionSupportURL));
             
             //Get the most updated data from Miles"            
@@ -195,7 +194,7 @@ public final class FrmSetupFormAction extends Action {
                                     date = date.equalsIgnoreCase("")?"0001-01-01":date;
                                                                         
                                     String dObsMeas = mt.getLastDateObserved()==null?"0001-01-01":mt.getLastDateObserved();                                     
-                                    MiscUtils.getLogger().debug(mt.getType() + " Miles: " + date + " Measurements: " + dObsMeas);
+                                    System.out.println(mt.getType() + " Miles: " + date + " Measurements: " + dObsMeas);
                                     Date milesDate = UtilDateUtilities.StringToDate(date, _dateFormat);
                                     Date obsMeasDate = UtilDateUtilities.StringToDate(dObsMeas, _dateFormat);
                                     
@@ -231,16 +230,16 @@ public final class FrmSetupFormAction extends Action {
         }
         /*
         catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         /*catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);            
+            e.printStackTrace();            
         } */       
         catch (IOException e) {
-                MiscUtils.getLogger().debug("IO error.");
-                MiscUtils.getLogger().debug("Error, file " + formName + ".xml not found.");
-                MiscUtils.getLogger().debug("This file must be placed at web/form");
-                MiscUtils.getLogger().error("Error", e);
+                System.out.println("IO error.");
+                System.out.println("Error, file " + formName + ".xml not found.");
+                System.out.println("This file must be placed at web/form");
+                e.printStackTrace();
         }                        
         return (new ActionForward("/form/form"+formName+".jsp"));        
     }
@@ -249,7 +248,7 @@ public final class FrmSetupFormAction extends Action {
         RxPatientData pData = new RxPatientData();
         List drugs = new LinkedList();
         String fluShot = getFluShotBillingDate(demographicNo);
-
+        //System.out.println("getFluShotBillingDate: " + fluShot);
         if(fluShot!=null)
             drugs.add(fluShot + "     Flu Shot");
             
@@ -263,7 +262,7 @@ public final class FrmSetupFormAction extends Action {
             }
         }
         catch(SQLException e){
-            MiscUtils.getLogger().error("Error", e);   
+            e.printStackTrace();   
         }
         return drugs;
     }
@@ -282,7 +281,7 @@ public final class FrmSetupFormAction extends Action {
             }
         }
         catch(SQLException e){
-            MiscUtils.getLogger().error("Error", e);   
+            e.printStackTrace();   
         }
         return allergyLst;
     }
@@ -290,17 +289,18 @@ public final class FrmSetupFormAction extends Action {
     private String getFluShotBillingDate(String demoNo) {
         String s = null;
         try {
+                DBHandler dbhandler = new DBHandler(DBHandler.OSCAR_DATA);
                 String s1 = "select b.billing_no, b.billing_date from billing b, billingdetail bd where b.demographic_no='"
                                 + demoNo
                                 + "' and bd.billing_no=b.billing_no and (bd.service_code='G590A' or bd.service_code='G591A') "
                                 + " and bd.status<>'D' and b.status<>'D' order by b.billing_date desc limit 0,1";
-                ResultSet rs = DBHandler.GetSQL(s1);
-
+                ResultSet rs = dbhandler.GetSQL(s1);
+                //System.out.println("flushot: " + s1);
                 if (rs.next())
-                        s = oscar.Misc.getString(rs, "billing_date");
+                        s = dbhandler.getString(rs,"billing_date");
                 rs.close();
             } catch (SQLException sqlexception) {
-                MiscUtils.getLogger().debug(sqlexception.getMessage());
+                System.out.println(sqlexception.getMessage());
         }
         return s;
     }
@@ -311,14 +311,14 @@ public final class FrmSetupFormAction extends Action {
             
             if(formId!=null){
                 if(Integer.parseInt(formId)>0){
-                    
+                    DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                     String sql = "SELECT * FROM form" + formName + " WHERE ID='" + formId + "' AND demographic_no='" + demographicNo + "'";
-                    ResultSet rs = DBHandler.GetSQL(sql);
+                    ResultSet rs = db.GetSQL(sql);
                     if(rs.next()) {
                         ResultSetMetaData md = rs.getMetaData();
                         for(int i = 1; i <= md.getColumnCount(); i++)  {
                                 String name = md.getColumnName(i);
-                                String value = oscar.Misc.getString(rs, i);
+                                String value = db.getString(rs,i);
                                 if(value != null)	
                                     props.setProperty(name, value);
                         }
@@ -331,7 +331,7 @@ public final class FrmSetupFormAction extends Action {
                 return null;
         }
         catch(SQLException e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return props;
     }
@@ -341,7 +341,7 @@ public final class FrmSetupFormAction extends Action {
         data2OSDSF.add("patientCod");
         data2OSDSF.add(demographicNo);
         String osdsfRPCURL = OscarProperties.getInstance().getProperty("osdsfRPCURL", null);
-        MiscUtils.getLogger().debug("osdsfRPCURL getPatientRlt(): " + osdsfRPCURL);
+        System.out.println("osdsfRPCURL getPatientRlt(): " + osdsfRPCURL);
         if (osdsfRPCURL == null){
             return null;
         }
@@ -349,19 +349,19 @@ public final class FrmSetupFormAction extends Action {
         try{
             XmlRpcClient xmlrpc = new XmlRpcClient(osdsfRPCURL);
             String result = (String) xmlrpc.execute("vt.getAndSaveRlt", data2OSDSF);
-            MiscUtils.getLogger().debug("Reverse result: " + result);
+            System.out.println("Reverse result: " + result);
             return result;
         }
         catch(XmlRpcException e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
             return null;
         }
         catch(IOException e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
             return null;
         }                
         catch(Exception e){
-           MiscUtils.getLogger().error("Error", e);
+           e.printStackTrace();
            return null;
         }
     }
@@ -372,7 +372,7 @@ public final class FrmSetupFormAction extends Action {
             ret.addElement(demographicNo);
             
         String osdsfRPCURL = OscarProperties.getInstance().getProperty("osdsfRPCURL", null);
-        MiscUtils.getLogger().debug("osdsfRPCURL getMostRecentRecord(): " + osdsfRPCURL);
+        System.out.println("osdsfRPCURL getMostRecentRecord(): " + osdsfRPCURL);
         if (osdsfRPCURL == null){
             return null;
         }
@@ -380,15 +380,15 @@ public final class FrmSetupFormAction extends Action {
         try{
             XmlRpcClient xmlrpc = new XmlRpcClient(osdsfRPCURL);
             String result = (String) xmlrpc.execute("vt.getMostRecentRecord", ret);
-            MiscUtils.getLogger().debug("Reverse result: " + result);
+            System.out.println("Reverse result: " + result);
             return result;
         }
         catch(XmlRpcException e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
             return null;
         }
         catch(IOException e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
             return null;
         }               
     }
@@ -401,35 +401,35 @@ public final class FrmSetupFormAction extends Action {
         try {
                 osdsf.load(is);
         } catch (Exception e) {
-                MiscUtils.getLogger().debug("Error, file " + formName + ".properties not found.");			
+                System.out.println("Error, file " + formName + ".properties not found.");			
         }
 
         try{
                 is.close();
         } catch (IOException e) {
-                MiscUtils.getLogger().debug("IO error.");
-                MiscUtils.getLogger().error("Error", e);
+                System.out.println("IO error.");
+                e.printStackTrace();
         }
         return osdsf;
     }
     
     private void addLastData(EctMeasurementTypesBean mt,  String demo){
         try{
-                        
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);            
             //get last value and its observation date                
             String sqlData = "SELECT dataField, dateEntered FROM measurements WHERE demographicNo='"+ demo + "' AND type ='" + mt.getType()
                              + "' AND measuringInstruction='" + mt.getMeasuringInstrc() + "' ORDER BY dateEntered DESC limit 1";
 
-            ResultSet rs = DBHandler.GetSQL(sqlData);
+            ResultSet rs = db.GetSQL(sqlData);
             if(rs.next()){
-                mt.setLastData(oscar.Misc.getString(rs, "dataField"));
-                mt.setLastDateEntered(oscar.Misc.getString(rs, "dateEntered"));                
+                mt.setLastData(db.getString(rs,"dataField"));
+                mt.setLastDateEntered(db.getString(rs,"dateEntered"));                
             }
                             
             rs.close();
         }
         catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         
     }

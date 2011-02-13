@@ -51,7 +51,6 @@ public final class OscarToOscarHl7V2Handler implements MessageHandler {
 		
 		if (message instanceof REF_I12) chainnedMessageAdapter=new RefI12Handler((REF_I12) message);
 		else if (message instanceof ORU_R01) chainnedMessageAdapter=new OruR01Handler((ORU_R01) message);
-		else logger.error("Recevied unsupported message type : "+message.getClass().getSimpleName());
 	}
 
 	public String audit() {

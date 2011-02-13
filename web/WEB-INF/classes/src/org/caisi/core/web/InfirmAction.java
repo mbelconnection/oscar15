@@ -54,8 +54,8 @@ public class InfirmAction extends BaseAction
 	{
 		logger.debug("====> inside showProgram action.");
 
-		
-
+		String clientStatusId = request.getParameter("infirmaryView_clientStatusId");
+		//System.out.println("clientStatusId=" + clientStatusId);
 		HttpSession se = request.getSession();	
 		se.setAttribute("infirmaryView_initflag", "true");
 		String providerNo=(String) se.getAttribute("user");				
@@ -65,7 +65,7 @@ public class InfirmAction extends BaseAction
 		//if (memob!=null) memob.clear();
 		
 		List programBean;
-		
+		List programBean_oscarClinic;
 		String archiveView = (String)request.getSession().getAttribute("archiveView");
 		/*
 		if(archiveView != null && archiveView.equals("true")){

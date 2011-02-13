@@ -24,6 +24,7 @@
 // -----------------------------------------------------------------------------------------------------------------------
 package oscar.oscarEncounter.oscarMeasurements.pageUtil;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -45,7 +46,6 @@ import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.apache.struts.upload.FormFile;
 import org.apache.struts.util.MessageResources;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 import oscar.oscarDB.DBHandler;
@@ -91,19 +91,20 @@ public class EctAddMeasurementStyleSheetAction extends Action {
         
         try {
             
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT * FROM measurementCSSLocation WHERE location='" + file.getFileName() + "'";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if(rs.next()){
                 return false;
             }
             //retrieve the file data
-
+            ByteArrayOutputStream baos = new
+            ByteArrayOutputStream();
             InputStream stream = file.getInputStream();                    
             String place= OscarProperties.getInstance().getProperty("oscarMeasurement_css_upload_path");
             
             if(!place.endsWith("/"))
-                    place = new StringBuilder(place).insert(place.length(),"/").toString();
+                    place = new StringBuffer(place).insert(place.length(),"/").toString();
             retVal = place+file.getFileName();
 
             //write the file to the file specified
@@ -118,17 +119,17 @@ public class EctAddMeasurementStyleSheetAction extends Action {
         }
         catch (FileNotFoundException fnfe) {
             
-            MiscUtils.getLogger().debug("File not found");
-            MiscUtils.getLogger().error("Error", fnfe);            
+            System.out.println("File not found");
+            fnfe.printStackTrace();            
             return isAdded=false;
             
         }
         catch (IOException ioe) {
-            MiscUtils.getLogger().error("Error", ioe);
+            ioe.printStackTrace();
             return isAdded=false;
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);            
+            System.out.println(e.getMessage());            
         } 
         return isAdded;
     }
@@ -142,13 +143,13 @@ public class EctAddMeasurementStyleSheetAction extends Action {
     */
     private void write2Database(String fileName){
          try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "INSERT INTO measurementCSSLocation(location) VALUES('" + fileName + "')";
-            MiscUtils.getLogger().debug("Sql Statement: " + sql);
-            DBHandler.RunSQL(sql);
+            System.out.println("Sql Statement: " + sql);
+            db.RunSQL(sql);
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);            
+            System.out.println(e.getMessage());            
         }       
     }
     

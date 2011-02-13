@@ -39,7 +39,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 import oscar.oscarClinic.ClinicData;
@@ -63,7 +62,7 @@ public class EctConsultationFaxAction extends Action {
       String curUser_no = (String) request.getSession().getAttribute("user");
       
       if(curUser_no == null){
-         MiscUtils.getLogger().debug("EJECTING");
+         System.out.println("EJECTING");
          return mapping.findForward("eject");
       }
       
@@ -72,7 +71,7 @@ public class EctConsultationFaxAction extends Action {
       FaxClientLog faxClientLog = new FaxClientLog(curUser_no);
       
       EctConsultationFaxForm frm = (EctConsultationFaxForm)form;
-      MiscUtils.getLogger().debug("Provider = "+curUser_no+" has requested to send a fax");
+      System.out.println("Provider = "+curUser_no+" has requested to send a fax");
       String requestId          = frm.getRequestId();
       String sendingProvider    = curUser_no;
       String locationId         = getLocationId();
@@ -198,19 +197,19 @@ public class EctConsultationFaxAction extends Action {
          
          try{
             if (reply){
-               MiscUtils.getLogger().debug("Job Id "+OSFc.getJobId());
+               System.out.println("Job Id "+OSFc.getJobId());
                request.setAttribute("jobId",OSFc.getJobId());
-               MiscUtils.getLogger().debug("Request Id "+OSFc.getRequestId());
+               System.out.println("Request Id "+OSFc.getRequestId());
                request.setAttribute("requestId",OSFc.getRequestId());
                faxClientLog.setFaxRequestId(OSFc.getJobId(),OSFc.getRequestId());
             }else{
-               MiscUtils.getLogger().debug("Error Message "+OSFc.getErrorMessage());
+               System.out.println("Error Message "+OSFc.getErrorMessage());
                request.setAttribute("oscarFaxError",OSFc.getErrorMessage());
                faxClientLog.setResult(OSFc.getErrorMessage());
             }
          }catch(Exception e4){
-        	 MiscUtils.getLogger().error("Error", e4);
-            MiscUtils.getLogger().debug("Fax Service has Returned a Fatal Error ");
+            e4.printStackTrace();
+            System.out.println("Fax Service has Returned a Fatal Error ");
             request.setAttribute("oscarFaxError","Fax Service Is currently not available, please contact your Oscar Fax Administrator");
             faxClientLog.setResult("FAX SERVICE RETURNED NULL");
          }
@@ -222,9 +221,9 @@ public class EctConsultationFaxAction extends Action {
          
          
       } catch(Throwable e) {
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace();
       }
-      MiscUtils.getLogger().debug("Client Has Finished Running");
+      System.out.println("Client Has Finished Running");
       
       
       
@@ -238,14 +237,14 @@ public class EctConsultationFaxAction extends Action {
    String getLocationId(){
       String retval = "";
       try {
-         
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
          String sql = "select locationId from oscarcommlocations where current1 = '1' ";
-         ResultSet rs = DBHandler.GetSQL(sql);
+         ResultSet rs = db.GetSQL(sql);
          if(rs.next())
-            retval = oscar.Misc.getString(rs, "locationId");
+            retval = db.getString(rs,"locationId");
       }
       catch(SQLException e) {
-         MiscUtils.getLogger().error("Error", e);
+         System.out.println(e.getMessage());
       }
       return retval;
    }

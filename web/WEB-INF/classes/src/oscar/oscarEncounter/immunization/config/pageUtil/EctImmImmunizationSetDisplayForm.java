@@ -25,14 +25,13 @@
 package oscar.oscarEncounter.immunization.config.pageUtil;
 
 import org.apache.struts.action.ActionForm;
-import org.oscarehr.util.MiscUtils;
 
 public final class EctImmImmunizationSetDisplayForm extends ActionForm
 {
 
     public String getSetId()
     {
-        MiscUtils.getLogger().debug("get setId ".concat(String.valueOf(String.valueOf(setId))));
+        System.out.println("get setId ".concat(String.valueOf(String.valueOf(setId))));
         if(setId == null)
             setId = new String();
         return setId;
@@ -40,7 +39,7 @@ public final class EctImmImmunizationSetDisplayForm extends ActionForm
 
     public void setSetId(String str)
     {
-        MiscUtils.getLogger().debug("set setId".concat(String.valueOf(String.valueOf(setId))));
+        System.out.println("set setId".concat(String.valueOf(String.valueOf(setId))));
         setId = str;
     }
 

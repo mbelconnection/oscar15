@@ -21,9 +21,8 @@
 */
 package org.oscarehr.PMmodule.model;
 
-import java.io.Serializable;
-
 import org.oscarehr.common.model.Provider;
+import java.io.Serializable;
 
 /**
  * This is the object class that relates to the program_functional_user table. Any customizations belong here.

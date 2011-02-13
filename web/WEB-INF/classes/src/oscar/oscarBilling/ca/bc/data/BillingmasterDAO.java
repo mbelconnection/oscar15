@@ -36,13 +36,11 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
 import oscar.entities.Billing;
 import oscar.entities.Billingmaster;
 import oscar.entities.WCB;
@@ -56,7 +54,7 @@ import oscar.util.StringUtils;
 @Repository
 @Transactional(propagation=Propagation.REQUIRES_NEW)
 public class BillingmasterDAO {
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(BillingmasterDAO.class);
 
     @PersistenceContext
     protected EntityManager entityManager = null;
@@ -147,7 +145,7 @@ public class BillingmasterDAO {
         if (formID == null){
             return null;
         }
-        MiscUtils.getLogger().debug("\nFORM ID "+formID);
+        System.out.println("\nFORM ID "+formID);
         return entityManager.find(WCB.class,Integer.parseInt(formID));
     }
     
@@ -159,10 +157,10 @@ public class BillingmasterDAO {
     public void markListAsBilled(List list){                    //TODO: Should be set form CONST var
         String query = "update billingmaster set billingstatus = 'B' where billingmaster_no in ("+ StringUtils.getCSV(list) +")"; 
         try {             
-           
-        	DBHandler.RunSQL(query);
+           DBHandler dbhandler = new DBHandler(DBHandler.OSCAR_DATA);
+           dbhandler.RunSQL(query);
         }catch (SQLException sqlexception) {
-           MiscUtils.getLogger().debug(sqlexception.getMessage());
+           System.out.println(sqlexception.getMessage());
         }
     }
     

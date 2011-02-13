@@ -5,28 +5,27 @@
 
 package org.oscarehr.decisionSupport.model;
 
+import org.oscarehr.decisionSupport.model.conditionValue.DSValue;
+import org.oscarehr.decisionSupport.model.impl.drools.DSGuidelineDrools;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-import org.oscarehr.decisionSupport.model.conditionValue.DSValue;
-import org.oscarehr.decisionSupport.model.impl.drools.DSGuidelineDrools;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 /**
  *
  * @author apavel
  */
 public class DSGuidelineFactory {
-    private static Logger _log = MiscUtils.getLogger();
+    protected static Log _log = LogFactory.getLog(DSGuidelineFactory.class);
     public DSGuideline createGuidelineFromXml(String xml) throws DecisionSupportParseException {
        if (xml == null || xml.equals("")) throw new DecisionSupportParseException("Xml not set");
         SAXBuilder parser = new SAXBuilder();
@@ -141,7 +140,7 @@ public class DSGuidelineFactory {
             if (consequenceType == DSConsequence.ConsequenceType.warning) {
                 String strengthStr = consequenceElement.getAttributeValue("strength");
                 if( strengthStr == null ) {
-                    strengthStr = "warning";
+                    strengthStr = "warning";                    
                 }
                 DSConsequence.ConsequenceStrength strength = null;
                 //try to resolve strength type
@@ -152,7 +151,7 @@ public class DSGuidelineFactory {
                     String knownStrengths = StringUtils.join(DSConsequence.ConsequenceStrength.values(), ",");
                     throw new DecisionSupportParseException(guidelineTitle, "Unknown strength: " + strengthStr + ". Allowed: " + knownStrengths, iae);
                 }
-            }
+            } 
             dsConsequence.setText(consequenceElement.getText());
             dsConsequences.add(dsConsequence);
         }

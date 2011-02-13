@@ -7,11 +7,10 @@ package org.oscarehr.decisionSupport.web;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -21,8 +20,6 @@ import org.oscarehr.decisionSupport.model.DSDemographicAccess;
 import org.oscarehr.decisionSupport.model.DSGuideline;
 import org.oscarehr.decisionSupport.model.DSGuidelineFactory;
 import org.oscarehr.decisionSupport.service.DSService;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDemographic.data.DemographicData;
 
 /**
@@ -30,7 +27,7 @@ import oscar.oscarDemographic.data.DemographicData;
  * @author apavel
  */
 public class DSGuidelineAction extends DispatchAction {
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(DSGuidelineAction.class);
     private DSService dsService;
 
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {

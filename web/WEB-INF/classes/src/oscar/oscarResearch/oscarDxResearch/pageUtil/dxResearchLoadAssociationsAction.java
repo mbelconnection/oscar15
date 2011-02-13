@@ -13,7 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -27,7 +28,6 @@ import org.oscarehr.casemgmt.service.CaseManagementManager;
 import org.oscarehr.common.dao.DxDao;
 import org.oscarehr.common.model.DxAssociation;
 import org.oscarehr.dx.dao.DxResearchDAO;
-import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 
 import oscar.oscarResearch.oscarDxResearch.bean.dxAssociationBean;
@@ -38,7 +38,7 @@ import com.Ostermiller.util.ExcelCSVPrinter;
 
 public class dxResearchLoadAssociationsAction extends DispatchAction {
 
-	private static Logger logger = MiscUtils.getLogger();
+	private static Log logger = LogFactory.getLog(dxResearchLoadAssociationsAction.class);
 	private DxDao dxDao = (DxDao) SpringUtils.getBean("dxDao");
 
     public ActionForward getAllAssociations(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
@@ -116,6 +116,9 @@ public class dxResearchLoadAssociationsAction extends DispatchAction {
     {
     	dxAssociationBean f = (dxAssociationBean)form;
     	FormFile formFile = f.getFile();
+    	String filename=formFile.getFileName();
+    	int filesize=formFile.getFileSize();
+    	String contentType=formFile.getContentType();
     	
     	String[][] data = ExcelCSVParser.parse(new InputStreamReader(formFile.getInputStream()));
     	
@@ -160,13 +163,13 @@ public class dxResearchLoadAssociationsAction extends DispatchAction {
     	
     	//get all certain issues
     	List<CaseManagementIssue> certainIssues = cmiDao.getAllCertainIssues();
-    	MiscUtils.getLogger().debug("certain issues found=" + certainIssues.size());
+    	System.out.println("certain issues found=" + certainIssues.size());
     	for(CaseManagementIssue issue:certainIssues) {
     		Issue iss = issueDao.getIssue(issue.getIssue().getId());
-    		MiscUtils.getLogger().debug("checking " + iss.getType() + "," +iss.getCode());
+    		System.out.println("checking " + iss.getType() + "," +iss.getCode());
     		DxAssociation assoc = dxDao.findAssociation(iss.getType(), iss.getCode());
     		if(assoc != null) {
-    			MiscUtils.getLogger().debug("match");
+    			System.out.println("match");
     			//we now have a certain issue which matches an association.
     			cmMgr.saveToDx(issue.getDemographic_no(), assoc.getDxCode(), assoc.getDxCodeType(), true);
     			recordsAdded++;

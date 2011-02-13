@@ -30,22 +30,22 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.oscarehr.decisionSupport.model.DSConsequence;
-import org.oscarehr.util.MiscUtils;
 
+import org.oscarehr.decisionSupport.model.DSConsequence;
 import oscar.oscarBilling.ca.bc.MSP.ServiceCodeValidationLogic;
 import oscar.oscarBilling.ca.bc.decisionSupport.BillingGuidelines;
 import oscar.util.SqlUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public final class BillingAction extends Action {
-  private static Logger _log = MiscUtils.getLogger();
+  protected static Log _log = LogFactory.getLog(BillingAction.class);
   private ServiceCodeValidationLogic vldt = new ServiceCodeValidationLogic();
   public ActionForward execute(ActionMapping mapping,
                                ActionForm form,
@@ -74,7 +74,7 @@ public final class BillingAction extends Action {
         //If newWCBClaim == 1, this action was invoked from the WCB form
         //Therefore, we need to set the appropriate parameters to set up the subsequent bill
         if ("1".equals(newWCBClaim)) {
-          
+          WCBForm wcbForm = (WCBForm) request.getSession().getAttribute("WCBForm");
           frm.setXml_billtype("WCB");
           
           List l = (List) request.getAttribute("billingcodes");
@@ -94,7 +94,7 @@ public final class BillingAction extends Action {
         bean = new oscar.oscarBilling.ca.bc.pageUtil.BillingSessionBean();
         fillBean(request, bean);
         if(request.getAttribute("serviceDate") != null){
-            MiscUtils.getLogger().debug("service Date set to the appointment Date"+(String) request.getAttribute("serviceDate"));
+            System.out.println("service Date set to the appointment Date"+(String) request.getAttribute("serviceDate"));
            bean.setApptDate((String) request.getAttribute("serviceDate"));
         }
 
@@ -110,7 +110,7 @@ public final class BillingAction extends Action {
                 errors.add("",new ActionMessage("message.custom",dscon.getText()));
            }
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
       }else if ("true".equals(encounter)) {
         bean = (oscar.oscarBilling.ca.bc.pageUtil.BillingSessionBean) request.
@@ -186,11 +186,11 @@ public final class BillingAction extends Action {
       }
     }
     if (codeLastBilled > 365) {
-        MiscUtils.getLogger().debug("adding code last billed "+code);
+        System.out.println("adding code last billed "+code);
       errors.add("",new ActionMessage("oscar.billing.CA.BC.billingBC.error.codeLastBilled",new String[] {String.valueOf(codeLastBilled), code}));
     }
     else if (codeLastBilled == -1) {
-        MiscUtils.getLogger().debug("adding code never billed "+code);
+        System.out.println("adding code never billed "+code);
       errors.add("",new ActionMessage("oscar.billing.CA.BC.billingBC.error.codeNeverBilled",new String[] {code}));
     }
   }

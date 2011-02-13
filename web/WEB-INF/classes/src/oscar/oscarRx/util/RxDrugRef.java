@@ -146,7 +146,7 @@ public class RxDrugRef {
 
      public Hashtable getDrug2(String pKey, Boolean boolVal)throws Exception{
          Vector params = new Vector();
-         MiscUtils.getLogger().debug("Adding to params for get_drug_2 :"+pKey+" - "+boolVal);
+         System.out.println("Adding to params for get_drug_2 :"+pKey+" - "+boolVal);
          params.addElement(pKey);
          params.addElement(boolVal);
          Vector vec = (Vector) callWebserviceLite("get_drug_2",params);
@@ -183,9 +183,11 @@ public class RxDrugRef {
          Vector params = new Vector();
          params.addElement(pKey);
 
+        // System.out.println("pkey for RxDrugRef.getGenericName :"+pKey);
          Vector vec = (Vector) callWebserviceLite("get_generic_name",params);
        //  if (vec == null || vec.isEmpty()){
 
+       //      System.out.println("going to throw an error from RxDrugRef.getGenericName "+pKey);
         //     return null;
        //  }
          Hashtable returnVal = (Hashtable) vec.get(0);         
@@ -355,7 +357,7 @@ public class RxDrugRef {
      }
      
      private Object callWebservice(String procedureName,Vector params) {
-        MiscUtils.getLogger().debug("#CALLDRUGREF-"+procedureName);
+        System.out.println("#CALLDRUGREF-"+procedureName);
          Object object = null;
          try{
             XmlRpcClient server = new XmlRpcClient(server_url);
@@ -369,10 +371,10 @@ public class RxDrugRef {
      }
      
      private Object callWebserviceLite(String procedureName,Vector params) throws Exception{
-
+        // System.out.println("#CALLDRUGREF-"+procedureName);
          Object object = null;
          try{
-
+            // System.out.println("server_url :"+server_url);
             XmlRpcClientLite server = new XmlRpcClientLite(server_url);
             object = server.execute(procedureName, params);
          }catch (XmlRpcException exception) {
@@ -768,7 +770,7 @@ public class RxDrugRef {
             Enumeration e = ((Hashtable) obj).keys();
             while (e.hasMoreElements()){
                String s = (String) e.nextElement();
-               MiscUtils.getLogger().debug(s+" "+((Hashtable) obj).get(s)+" "+((Hashtable) obj).get(s).getClass().getName());
+               System.out.println(s+" "+((Hashtable) obj).get(s)+" "+((Hashtable) obj).get(s).getClass().getName());
             }
          }
          

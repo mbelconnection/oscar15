@@ -38,8 +38,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.DocumentBean;
 
 public class DocumentTeleplanReportUploadServlet extends HttpServlet{
@@ -58,10 +56,10 @@ public class DocumentTeleplanReportUploadServlet extends HttpServlet{
         
         count=request.getContentType().indexOf('=');
         String temp = request.getContentType().substring(count+1);
-        String filename = "test.txt", foldername="", fileheader="", forwardTo="";
-        
+        String filename = "test.txt", fileoldname="", foldername="", fileheader="", forwardTo="", function="", function_id="", filedesc="", creator="", doctype="", docxml="";
+        String home_dir="", doc_forward="";
         String userHomePath = System.getProperty("user.home", "user.dir");
-        MiscUtils.getLogger().debug(userHomePath);
+        System.out.println(userHomePath);
         
         File pFile = new File(userHomePath, backupfilepath+".properties");
         
@@ -89,7 +87,7 @@ public class DocumentTeleplanReportUploadServlet extends HttpServlet{
         boolean bfbo = true;
         boolean benddata = false;
         boolean bf = false;
-        
+        byte boundary[] = temp.getBytes();
         
         while (bf?true:((count = sis.readLine(data, 0, BUFFER)) != -1)) {
             bf = false;
@@ -115,7 +113,7 @@ public class DocumentTeleplanReportUploadServlet extends HttpServlet{
                     filename = new String(data1);
                     if(filename.length()>2 && filename.indexOf("filename")!=-1) {
                         filename = filename.substring(filename.lastIndexOf('\\')+1,filename.lastIndexOf('\"'));
-
+                        //System.out.println("filename: "+filename);
                         fileheader = filename;
                         fos = new FileOutputStream(foldername+ filename);
                         dest = new BufferedOutputStream(fos, BUFFER);

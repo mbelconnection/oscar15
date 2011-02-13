@@ -5,22 +5,21 @@
 
 package org.oscarehr.decisionSupport.model.conditionValue;
 
+import org.oscarehr.decisionSupport.model.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.oscarehr.decisionSupport.model.DecisionSupportException;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  *
  * @author apavel
  */
 public abstract class DSValue {
-    private static final Logger _log = MiscUtils.getLogger();
+    private static final Log _log = LogFactory.getLog(DSValue.class);
 
     private String valueType;
     private String valueUnit;
@@ -60,7 +59,7 @@ public abstract class DSValue {
 
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
+        StringBuffer result = new StringBuffer();
         if (this.getValueType() != null) result.append(this.getValueType() + ":");
         result.append(this.getValue());
         if (this.getValueUnit() != null) result.append(" " + this.getValueUnit());

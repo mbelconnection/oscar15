@@ -34,8 +34,6 @@ import java.sql.SQLException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 /**
@@ -51,24 +49,24 @@ public class UnclaimedLabTag extends TagSupport {
    
    public int doStartTag() throws JspException    {
         try {
-
-            
+            //System.out.println("starting UnclaimedLabTag");
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = new String("select count(*) from providerLabRouting where provider_no = '0' and status = 'N'");            
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             while (rs.next()) {
                numNewLabs = (rs.getInt(1));
-
+               //System.out.println("Un claimed Labs" +numNewLabs);
             }
             rs.close();
         }catch(SQLException e){
-          MiscUtils.getLogger().error("Error", e);
+           e.printStackTrace(System.out);
         }
         
         if(numNewLabs > 0){
-
+           //System.out.println("EVAL_BODY_INCLUDE");
            return(EVAL_BODY_INCLUDE);
         }else{
-
+           //System.out.println("SKIP BODY");
            return(SKIP_BODY);                        
         }
     }

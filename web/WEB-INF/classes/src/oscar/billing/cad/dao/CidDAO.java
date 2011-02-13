@@ -23,22 +23,23 @@
  */
 package oscar.billing.cad.dao;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
+import java.util.Properties;
 
 import oscar.billing.cad.model.CadCid;
 import oscar.oscarDB.DBHandler;
+import oscar.oscarDB.DBPreparedHandlerAdvanced;
 import oscar.util.DAO;
 
 
 public class CidDAO extends DAO {
+    public CidDAO(Properties pvar) throws SQLException {
+        super(pvar);
+    }
 
     public CadCid retrieve(String id) throws SQLException {
         CadCid cid = new CadCid();
@@ -47,10 +48,10 @@ public class CidDAO extends DAO {
             "where co_cid = '" +
             id + "'";
 
-        
+        DBHandler db = getDb();
 
         try {
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
 
             if (rs.next()) {
                 cid.setCoCid(rs.getString(1));
@@ -77,25 +78,21 @@ public class CidDAO extends DAO {
 
 		sql = sql + " order by ds_cid";
 
-		Connection c=DbConnectionFilter.getThreadLocalDbConnection();
-		PreparedStatement pstmCid = c.prepareStatement(sql);
+		DBPreparedHandlerAdvanced db = new DBPreparedHandlerAdvanced();
+		PreparedStatement pstmCid = db.getPrepareStatement(sql);
 
 		try {
-			ResultSet rs = pstmCid.executeQuery();
+			ResultSet rs = db.executeQuery(pstmCid);
 			beans = new ArrayList();
 
 			while (rs.next()) {
 				CadCid bean = new CadCid();
-				String temp=rs.getString("co_cid");
-				if (temp==null) temp="";
-				bean.setCoCid(temp);
-				
-				temp=rs.getString("ds_cid");
-				if (temp==null) temp="";
-				bean.setDsCid(temp);
+				bean.setCoCid(db.getString(rs,"co_cid"));
+				bean.setDsCid(db.getString(rs,"ds_cid"));
 				beans.add(bean);
 			}
-		} catch (Exception err) {MiscUtils.getLogger().error("Error", err);
+		} catch (Exception err) {
+			err.printStackTrace();
 			throw new SQLException(err.getMessage());
 		}
 

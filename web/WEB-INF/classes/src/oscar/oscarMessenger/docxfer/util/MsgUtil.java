@@ -29,7 +29,7 @@ public class MsgUtil
 {
     public static String replaceQuote(String Expression)
     {
-        StringBuilder sb = new java.lang.StringBuilder(Expression);
+        StringBuffer sb = new java.lang.StringBuffer(Expression);
 
         for (int i =0 ; i < sb.length(); i++){
             if (sb.charAt(i) == '\'' || sb.charAt(i) == '\\'){

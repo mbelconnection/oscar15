@@ -30,7 +30,7 @@ import org.apache.struts.action.ActionMessages;
 import org.apache.struts.action.DynaActionForm;
 import org.oscarehr.PMmodule.service.LogManager;
 import org.oscarehr.PMmodule.web.admin.BaseAdminAction;
-import org.oscarehr.util.MiscUtils;
+import org.apache.struts.actions.DispatchAction;
 
 import com.quatro.common.KeyConstants;
 import com.quatro.model.security.NoAccessException;
@@ -38,8 +38,13 @@ import com.quatro.model.security.SecProvider;
 import com.quatro.model.security.Security;
 import com.quatro.model.security.Secuserrole;
 import com.quatro.service.LookupManager;
+import com.quatro.service.ORGManager;
+import com.quatro.service.security.RolesManager;
+import com.quatro.service.security.SecurityManager;
 import com.quatro.service.security.UsersManager;
-import com.quatro.util.Utility;
+import com.quatro.model.LookupCodeValue;
+import com.quatro.service.LookupManager;
+import com.quatro.util.*;
 public class UserManagerAction extends BaseAdminAction {
 
 	private LogManager logManager;
@@ -423,7 +428,7 @@ public class UserManagerAction extends BaseAdminAction {
 	}
 	
 	private String encryptPassword(String password) throws NoSuchAlgorithmException{
-		StringBuilder sbTemp = new StringBuilder();
+		StringBuffer sbTemp = new StringBuffer();
 		byte[] pwd = password.getBytes();
 		
 		md = MessageDigest.getInstance("SHA");
@@ -614,7 +619,7 @@ public class UserManagerAction extends BaseAdminAction {
 		}
 		catch(Exception e)
 		{
-			MiscUtils.getLogger().error("Error", e);
+			System.out.println(e.getMessage());
 			// duplicate detected;
 		}
 		if(!(hasBlanks || hasDuplicates)){

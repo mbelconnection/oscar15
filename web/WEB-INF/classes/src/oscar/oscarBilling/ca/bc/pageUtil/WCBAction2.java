@@ -28,19 +28,15 @@ package oscar.oscarBilling.ca.bc.pageUtil;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DispatchAction;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
 import oscar.entities.WCB;
 import oscar.oscarBilling.ca.bc.data.BillingmasterDAO;
 import oscar.util.UtilDateUtilities;
@@ -65,7 +61,7 @@ public class WCBAction2 extends DispatchAction {
         if (request.getSession().getAttribute("user") == null) {
             return (mapping.findForward("Logout"));
         }
-        MiscUtils.getLogger().debug("In WCBAction2 Jackson");
+        System.out.println("In WCBAction2 Jackson");
 
         //Get rid of this
         WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getSession().getServletContext());
@@ -88,7 +84,7 @@ public class WCBAction2 extends DispatchAction {
 
 
         if (request.getParameter("saveAndClose") != null) {
-            MiscUtils.getLogger().debug("QUITINN");
+            System.out.println("QUITINN");
             request.setAttribute("WCBFormId",wcb.getId());
             return mapping.findForward("saveAndClose");
         }
@@ -114,7 +110,7 @@ public class WCBAction2 extends DispatchAction {
         }
 
 
-        MiscUtils.getLogger().debug("OVER AND OUT.");
+        System.out.println("OVER AND OUT.");
         return (mapping.getInputForward());
     }
 }

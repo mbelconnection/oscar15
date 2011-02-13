@@ -31,8 +31,8 @@ package oscar.oscarBilling.ca.bc.Teleplan;
 
 import java.sql.ResultSet;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import oscar.oscarDB.DBHandler;
 
@@ -41,7 +41,7 @@ import oscar.oscarDB.DBHandler;
  * @author jay
  */
 public class TeleplanMessagesDAO {
-    static Logger log=MiscUtils.getLogger();
+    static Log log = LogFactory.getLog(TeleplanSequenceDAO.class);
     
     /** Creates a new instance of TeleplanSequenceDAO */
     public TeleplanMessagesDAO() {
@@ -49,35 +49,35 @@ public class TeleplanMessagesDAO {
     
     private void setMessage(String sequenceNum){
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String query = "insert into property (name,value) values ('teleplan_message','"+sequenceNum+"') " ;
-            DBHandler.RunSQL(query);           
+            db.RunSQL(query);           
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
     }
     
     private void updateMessage(String sequenceNum){
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String query = "update property set value = '"+sequenceNum+"' where name = 'teleplan_message' " ;
-            DBHandler.RunSQL(query);            
+            db.RunSQL(query);            
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
     }
     
     private boolean hasMessage(){
         boolean hasSequence = false;
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String query = "select value from property where name = 'teleplan_message' " ;
-            ResultSet rs = DBHandler.GetSQL(query); 
+            ResultSet rs = db.GetSQL(query); 
             if(rs.next()){
                 hasSequence = true;
             }
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return hasSequence;
     }

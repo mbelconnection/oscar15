@@ -25,19 +25,25 @@
 
 package oscar.oscarEncounter.pageUtil;
 
+import java.net.MalformedURLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.util.MessageResources;
 import org.oscarehr.PMmodule.caisi_integrator.CaisiIntegratorManager;
 import org.oscarehr.caisi_integrator.ws.CachedDemographicIssue;
+import org.oscarehr.caisi_integrator.ws.CachedDemographicNote;
+import org.oscarehr.caisi_integrator.ws.NoteIssue;
 import org.oscarehr.casemgmt.dao.IssueDAO;
 import org.oscarehr.casemgmt.model.CaseManagementIssue;
+import org.oscarehr.casemgmt.model.Issue;
 import org.oscarehr.casemgmt.service.CaseManagementManager;
 import org.oscarehr.util.LoggedInInfo;
-import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 
 import oscar.util.StringUtils;
@@ -51,7 +57,7 @@ public class EctDisplayIssuesAction extends EctDisplayAction {
 	private IssueDAO issueDao=(IssueDAO) SpringUtils.getBean("IssueDAO");
 	
 	private CaseManagementManager caseManagementMgr;
-	private static Logger log = MiscUtils.getLogger();
+	private static Log log = LogFactory.getLog(EctDisplayIssuesAction.class);
 
 	public void setCaseManagementManager(CaseManagementManager caseManagementMgr) {
 		this.caseManagementMgr = caseManagementMgr;

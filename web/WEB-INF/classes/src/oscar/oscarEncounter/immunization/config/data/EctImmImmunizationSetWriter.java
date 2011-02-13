@@ -75,6 +75,7 @@ public class EctImmImmunizationSetWriter
 
         }
 
+        //System.out.println(UtilXML.toXML(doc));
         EctImmImmunizationSetData immunizationSetData = new EctImmImmunizationSetData();
         immunizationSetData.addImmunizationSet(setName, doc, providerNo);
     }

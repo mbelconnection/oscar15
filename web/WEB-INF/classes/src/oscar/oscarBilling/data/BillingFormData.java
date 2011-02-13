@@ -27,8 +27,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 
@@ -53,7 +51,7 @@ public class BillingFormData {
             ArrayList lst = new ArrayList();
             BillingService billingservice;
 
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
             String sql;
 
@@ -65,7 +63,8 @@ public class BillingFormData {
             + "c.service_code and b.region='" + billRegion +"' and c.service_group='"
             + serviceGroup + "' and c.servicetype='" + serviceType + "' order by c.service_order";
 
-            rs = DBHandler.GetSQL(sql);
+            //System.out.println("getServiceList "+sql);
+            rs = db.GetSQL(sql);
 
             while(rs.next()) {
                 billingservice = new BillingService(rs.getString("service_code"), rs.getString("description"),
@@ -77,7 +76,7 @@ public class BillingFormData {
             arr = (BillingService[])lst.toArray(arr);
 
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
 
 
@@ -93,7 +92,7 @@ public class BillingFormData {
             ArrayList lst = new ArrayList();
             Diagnostic diagnostic;
 
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
             String sql;
 
@@ -104,8 +103,8 @@ public class BillingFormData {
             + "ctl_diagcode c WHERE d.diagnostic_code=c.diagnostic_code and "
             + "d.region='" + billRegion +"' and c.servicetype='" + serviceType + "'";
 
-            MiscUtils.getLogger().debug("getDiagnosticList "+sql);
-            rs = DBHandler.GetSQL(sql);
+            System.out.println("getDiagnosticList "+sql);
+            rs = db.GetSQL(sql);
 
             while(rs.next()) {
                 diagnostic = new Diagnostic(rs.getString("diagnostic_code"), rs.getString("description"));
@@ -116,7 +115,7 @@ public class BillingFormData {
             arr = (Diagnostic[])lst.toArray(arr);
 
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
 
 
@@ -133,7 +132,7 @@ public class BillingFormData {
             ArrayList lst = new ArrayList();
             Location location;
 
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
             String sql;
 
@@ -143,8 +142,8 @@ public class BillingFormData {
             sql = "SELECT billinglocation,billinglocation_desc FROM billinglocation "
             + " WHERE region='" + billRegion +"'";
 
-            MiscUtils.getLogger().debug(" getLocationList "+sql);
-            rs = DBHandler.GetSQL(sql);
+            System.out.println(" getLocationList "+sql);
+            rs = db.GetSQL(sql);
 
             while(rs.next()) {
                 location = new Location(rs.getString("billinglocation"), rs.getString("billinglocation_desc"));
@@ -155,7 +154,7 @@ public class BillingFormData {
             arr = (Location[])lst.toArray(arr);
 
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
 
 
@@ -172,7 +171,7 @@ public class BillingFormData {
             ArrayList lst = new ArrayList();
             BillingVisit billingvisit;
 
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
             String sql;
 
@@ -181,9 +180,9 @@ public class BillingFormData {
 
             sql = "SELECT visittype,visit_desc FROM billingvisit "
             + " WHERE region='" + billRegion +"'";
-            MiscUtils.getLogger().debug("getVisitType"+sql);
+            System.out.println("getVisitType"+sql);
 
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
 
             while(rs.next()) {
                 billingvisit = new BillingVisit(rs.getString("visittype"), rs.getString("visit_desc"));
@@ -194,7 +193,7 @@ public class BillingFormData {
             arr = (BillingVisit[])lst.toArray(arr);
 
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
 
 
@@ -211,7 +210,7 @@ public class BillingFormData {
             ArrayList lst = new ArrayList();
             BillingPhysician billingphysician;
 
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
             String sql;
 
@@ -220,9 +219,9 @@ public class BillingFormData {
 
             sql = "SELECT p.last_name, p.first_name, p.provider_no FROM provider p "
             + " WHERE p.ohip_no <>''";
-            MiscUtils.getLogger().debug("getProviderList "+sql);
+            System.out.println("getProviderList "+sql);
 
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
 
             while(rs.next()) {
                 billingphysician = new BillingPhysician(rs.getString("last_name")+", "+rs.getString("first_name"), rs.getString("provider_no"));
@@ -233,7 +232,7 @@ public class BillingFormData {
             arr = (BillingPhysician[])lst.toArray(arr);
 
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
 
 
@@ -252,7 +251,7 @@ public class BillingFormData {
             ArrayList lst = new ArrayList();
             BillingForm billingForm;
 
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
             String sql;
 
@@ -262,8 +261,8 @@ public class BillingFormData {
             sql = "select servicetype_name, servicetype from ctl_billingservice "
             + "group by servicetype, servicetype_name";
 
-            MiscUtils.getLogger().debug("getFormList "+sql);
-            rs = DBHandler.GetSQL(sql);
+            System.out.println("getFormList "+sql);
+            rs = db.GetSQL(sql);
 
             while(rs.next()) {
                 billingForm = new BillingForm(rs.getString("servicetype_name"), rs.getString("servicetype"));
@@ -274,7 +273,7 @@ public class BillingFormData {
             arr = (BillingForm[])lst.toArray(arr);
 
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
 
 
@@ -440,7 +439,7 @@ public class BillingFormData {
         String provider_n="";
         try{
 
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
             String sql;
 
@@ -450,8 +449,8 @@ public class BillingFormData {
             sql = "SELECT last_name, first_name from provider where provider_no='" + provider_no + "'";
 
 
-            rs = DBHandler.GetSQL(sql);
-            MiscUtils.getLogger().debug("getProviderName "+sql);
+            rs = db.GetSQL(sql);
+            System.out.println("getProviderName "+sql);
             while(rs.next()) {
 
                 provider_n = rs.getString("last_name")+", " + rs.getString("first_name");
@@ -460,7 +459,7 @@ public class BillingFormData {
 
 
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         return provider_n;
 
@@ -472,7 +471,7 @@ public class BillingFormData {
         String prac_no="";
         try{
 
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
             String sql;
 
@@ -482,8 +481,8 @@ public class BillingFormData {
             sql = "SELECT ohip_no from provider where provider_no='" + provider_no + "'";
 
 
-            rs = DBHandler.GetSQL(sql);
-            MiscUtils.getLogger().debug("getPracNo "+sql);
+            rs = db.GetSQL(sql);
+            System.out.println("getPracNo "+sql);
 
             while(rs.next()) {
 
@@ -493,7 +492,7 @@ public class BillingFormData {
 
 
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         return prac_no;
 
@@ -505,7 +504,7 @@ public class BillingFormData {
         String prac_no="";
         try{
 
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
             String sql;
 
@@ -514,8 +513,8 @@ public class BillingFormData {
 
             sql = "SELECT billing_no from provider where provider_no='" + provider_no + "'";
 
-            MiscUtils.getLogger().debug("getGroupNo "+sql);
-            rs = DBHandler.GetSQL(sql);
+            System.out.println("getGroupNo "+sql);
+            rs = db.GetSQL(sql);
 
             while(rs.next()) {
 
@@ -525,7 +524,7 @@ public class BillingFormData {
 
 
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         return prac_no;
 
@@ -537,20 +536,20 @@ public class BillingFormData {
     public String getDiagDesc(String dx, String reg){
         String dxdesc="";
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
             String sql;
             // SELECT b.service_code, b.description , b.value, b.percentage FROM BillingForm b, ctl_BillingForm c WHERE b.service_code=c.service_code and b.region='BC' and c.service_group='Group1';
             sql = "SELECT description from diagnosticcode where diagnostic_code='" + dx + "' and region='" + reg + "'";
 
-            rs = DBHandler.GetSQL(sql);
-            MiscUtils.getLogger().debug("getDiagDesc "+sql);
+            rs = db.GetSQL(sql);
+            System.out.println("getDiagDesc "+sql);
             while(rs.next()) {
                 dxdesc = rs.getString("description");
             }
             rs.close();
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         return dxdesc;
     }
@@ -559,17 +558,17 @@ public class BillingFormData {
     public String getServiceDesc(String code, String reg){
         String codeDesc="";
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
             String sql;
             sql = "select description from billingservice where service_code = '"+code+"' and region = '"+reg+"' ";
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             while(rs.next()) {
                 codeDesc = rs.getString("description");
             }
             rs.close();
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         return codeDesc;
     }
@@ -581,12 +580,12 @@ public class BillingFormData {
         String ret = "";
 
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
             String sql = "SELECT service_group_name FROM ctl_billingservice WHERE service_group='"
             + serviceGroup +"'";
 
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
 
             if(rs.next()) {
                 ret = rs.getString("service_group_name");
@@ -594,7 +593,7 @@ public class BillingFormData {
 
             rs.close();
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
 
         return ret;

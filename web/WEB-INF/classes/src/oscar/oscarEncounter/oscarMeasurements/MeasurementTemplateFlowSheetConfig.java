@@ -41,15 +41,14 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.drools.RuleBase;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
-import org.oscarehr.common.model.FlowSheetCustomization;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.beans.factory.InitializingBean;
 
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementTypeBeanHandler;
@@ -59,6 +58,7 @@ import oscar.oscarEncounter.oscarMeasurements.data.ImportMeasurementTypes;
 import oscar.oscarEncounter.oscarMeasurements.util.DSCondition;
 import oscar.oscarEncounter.oscarMeasurements.util.Recommendation;
 import oscar.oscarEncounter.oscarMeasurements.util.RuleBaseCreator;
+import org.oscarehr.common.model.FlowSheetCustomization;
 import oscar.oscarEncounter.oscarMeasurements.util.TargetColour;
 
 /**
@@ -66,7 +66,7 @@ import oscar.oscarEncounter.oscarMeasurements.util.TargetColour;
  */
 public class MeasurementTemplateFlowSheetConfig implements InitializingBean {
 
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(MeasurementTemplateFlowSheetConfig.class);
 
     private List<File> flowSheets;
     
@@ -223,6 +223,7 @@ public class MeasurementTemplateFlowSheetConfig implements InitializingBean {
             List<Attribute> attr = e.getAttributes();
             for (Attribute att : attr) {
                 h.put(att.getName(), att.getValue());
+                //System.out.print("DDDDDDD "+att.getName()+" "+att.getValue() );
             }
             FlowSheetItem item = new FlowSheetItem(h);
             Node node = new Node();
@@ -255,7 +256,7 @@ public class MeasurementTemplateFlowSheetConfig implements InitializingBean {
                             //ds.add(getRuleBaseElement("" + h.get("measurement_type")+ruleCount,"" + h.get("measurement_type"), recoHash));
                             ds.add(new Recommendation(reco,"" + h.get("measurement_type")+ruleCount,"" + h.get("measurement_type")));
                        }
-                       MiscUtils.getLogger().debug(""+ h.get("measurement_type")+ " adding ds  "+ds);
+                       System.out.println(""+ h.get("measurement_type")+ " adding ds  "+ds);
                        //d.addDSElement(""+ h.get("measurement_type"),ds);
                        item.setRecommendations(ds);
                     }
@@ -352,6 +353,7 @@ public class MeasurementTemplateFlowSheetConfig implements InitializingBean {
             
             ///
             XMLOutputter outp = new XMLOutputter();
+            //outp.output(root, System.out);
  
             
             ///
@@ -367,10 +369,88 @@ public class MeasurementTemplateFlowSheetConfig implements InitializingBean {
             List<Element> elements = root.getChildren();
             List<Element> items = root.getChildren("item");
             List<Node> aItems = new ArrayList<Node>();
+//            for (Element e : elements ) {
+                processItems(elements, aItems, null, d);
+                d.setItemHeirarchy(aItems);
+//                List<Attribute> attr = e.getAttributes();
 
-            processItems(elements, aItems, null, d);
-            d.setItemHeirarchy(aItems);
-
+//                Hashtable<String, String> h = new Hashtable<String, String>();
+//               for (Attribute att : attr) {
+//                    h.put(att.getName(), att.getValue());
+                    //System.out.print("DDDDDDD "+att.getName()+" "+att.getValue() );
+//               }
+//                FlowSheetItem item = new FlowSheetItem(h);
+//                if (h.get("measurement_type") != null) {
+//
+//                    log.debug("ADDING " + h.get("measurement_type"));
+//                    //d.addMeasurement("" + h.get("measurement_type"));
+//                    //d.addMeasurementInfo("" + h.get("measurement_type"), mType.getMeasurementType("" + h.get("measurement_type")));
+//                    //d.addMeasurementFlowSheetInfo("" + h.get("measurement_type"), h);
+//
+//
+//                    int ruleCount = 0;
+//                    Element rules  = e.getChild("rules");
+//                    if (rules !=null){
+//                       List<Element> recomends = rules.getChildren("recommendation");
+//                       List ds = new ArrayList();
+//                       for(Element reco: recomends){
+//                           ruleCount++;
+//                           //Hashtable recoHash =  getRecommendationHash( reco);
+//                            //ds.add(getRuleBaseElement("" + h.get("measurement_type")+ruleCount,"" + h.get("measurement_type"), recoHash));
+//                            ds.add(new Recommendation(reco,"" + h.get("measurement_type")+ruleCount,"" + h.get("measurement_type")));
+//                       }
+//                       System.out.println(""+ h.get("measurement_type")+ " adding ds  "+ds);
+//                       //d.addDSElement(""+ h.get("measurement_type"),ds);
+//                       item.setRecommendations(ds);
+//                    }
+//                    //<rules>
+//                    //  <recommendation between="3m-6m">Blood Glucose hasn't been reviewed in $NUMMONTHS months"</recommendation>
+//                    //  <warning gt="6m">Blood Glucose hasn't been reviewed in $NUMMONTHS months</warning>
+//                    //  <warning eq="-1">Blood Glucose hasn't been reviewed</warning>
+//                    //</rules>
+//
+//                    /*
+//                     <ruleset>
+//                        <rule indicationColor="HIGH">
+//                            <condition>m.getDataAsDouble() &gt;= 7</condition>
+//                        </rule>
+//                        <rule indicationColor="HIGH">
+//                            <condition type="getDataAsDouble"  value="&lt;= 2" />
+//                            <condition type="getDataAsDouble"  value="&gt;= 0.07"/>
+//                        </rule>
+//                     </ruleset>
+//                     */
+//                    Element rulesets = e.getChild("ruleset");
+//                    List<TargetColour> rs = new ArrayList();
+//                    if (rulesets != null){
+//                        List<Element> rulez = rulesets.getChildren("rule");
+//                        if (rulez != null){
+//                            for(Element r: rulez){
+//                                rs.add(new TargetColour(r));
+//                                //r.getAttributeValue("indicatorColour");
+//                            }
+//                        }
+//
+//                    }
+//
+//                    log.debug(" meas "+h.get("measurement_type")+"  size "+rs.size());
+//
+//                    if (rs.size() > 0){
+//                        item.setTargetColour(rs);
+//                    }
+//
+//                }// else {
+                 //   d.addMeasurement("" + h.get("prevention_type"));
+                 //   d.addMeasurementFlowSheetInfo("" + h.get("prevention_type"), h);
+                //}
+                //log.debug("ADDING ITEM "+item);
+                //d.addListItem(item);
+                
+                
+                
+                //prevList.add(h);
+                //prevHash.put(h.get("name"), h);
+            //}
             if (root.getAttribute("name") != null) {
                 d.setName(root.getAttribute("name").getValue());
             }
@@ -403,7 +483,7 @@ public class MeasurementTemplateFlowSheetConfig implements InitializingBean {
             }
 
         } catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
 
         d.loadRuleBase();
@@ -493,7 +573,7 @@ public class MeasurementTemplateFlowSheetConfig implements InitializingBean {
             txt = txt.replaceAll("\\$NUMMONTHS", NUMMONTHS);
             log.debug("TEXT "+txt);
             consequence ="m.add"+consequenceType+"(\""+measurement+"\",\""+txt+"\");";
-            //consequence ="MiscUtils.getLogger().debug(\"HAPPY TO BE WORKING\");";
+            //consequence ="System.out.println(\"HAPPY TO BE WORKING\");";
             
         }
         
@@ -542,7 +622,7 @@ public class MeasurementTemplateFlowSheetConfig implements InitializingBean {
             personalizedFlowsheet.loadRuleBase();
             return personalizedFlowsheet;
             }catch(Exception e){
-                MiscUtils.getLogger().error("Error", e);
+                e.printStackTrace();
             }
         }
         log.debug("Returning normal flowsheet");
@@ -570,7 +650,7 @@ public class MeasurementTemplateFlowSheetConfig implements InitializingBean {
 //                
 //            return personalizedFlowsheet;
 //            }catch(Exception e){
-//                MiscUtils.getLogger().error("Error", e);
+//                e.printStackTrace();
 //            }
 //        }
 //            
@@ -601,12 +681,17 @@ public class MeasurementTemplateFlowSheetConfig implements InitializingBean {
             
             ByteArrayOutputStream byteArrayout = new ByteArrayOutputStream();
             outp.output(va, byteArrayout);
+            
+            //System.out.println("FLOWSHEET EXPORT "+mFlowsheet.getDisplayName());
+            //outp.output(va,System.out);
  
             InputStream is = new ByteArrayInputStream(byteArrayout.toByteArray());
 
             EctMeasurementTypeBeanHandler mType = new EctMeasurementTypeBeanHandler();
             MeasurementFlowSheet d = createflowsheet(mType,is);
-
+            
+            //System.out.println("NOW LOOKS LIKE");
+            //outp.output(getExportFlowsheet( d),System.out);
             return d;
             
     }
@@ -622,7 +707,7 @@ public class MeasurementTemplateFlowSheetConfig implements InitializingBean {
             List<Attribute> attr = root.getAttributes();
                 Hashtable<String, String> h = new Hashtable<String, String>();
                 for (Attribute att : attr) {
-                    h.put(att.getName(), att.getValue());
+                    h.put(att.getName(), att.getValue());//System.out.print(att.getName()+" "+att.getValue() );
                 }
                 item = new FlowSheetItem(h);
                 
@@ -665,7 +750,7 @@ public class MeasurementTemplateFlowSheetConfig implements InitializingBean {
                     
                     
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
          return item;     
     }

@@ -24,7 +24,6 @@
  */
 
 package oscar.oscarReport.data;
-import org.oscarehr.util.MiscUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -43,7 +42,7 @@ public class RptDemographicQueryLoader {
         String qId = frm.getSavedQuery();
         RptDemographicReportForm dRF = new RptDemographicReportForm();
         try{
-                  
+                  DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                   java.sql.ResultSet rs;
                   String mSelect         = null;
                   String mAge           = null;
@@ -61,20 +60,21 @@ public class RptDemographicQueryLoader {
 
 
 
-                  rs = DBHandler.GetSQL("select * from demographicQueryFavourites where favId = '"+qId+"'");                  
-
+                  rs = db.GetSQL("select * from demographicQueryFavourites where favId = '"+qId+"'");                  
+                  //System.out.println("select * from demographicQueryFavourites where favId = '"+qId+"'");                  
                   if (rs.next()){
-                        mSelect         = oscar.Misc.getString(rs, "selects");
-                        mAge            = oscar.Misc.getString(rs, "age");
-                        mStartYear      = oscar.Misc.getString(rs, "startYear");
-                        mEndYear        = oscar.Misc.getString(rs, "endYear");
-                        mFirstName      = oscar.Misc.getString(rs, "firstName");
-                        mLastName       = oscar.Misc.getString(rs, "lastName");
-                        mRosterStatus   = oscar.Misc.getString(rs, "rosterStatus");
-                        mSex            = oscar.Misc.getString(rs, "sex");
-                        mProviderNo     = oscar.Misc.getString(rs, "providerNo");
-                        mPatientStatus  = oscar.Misc.getString(rs, "patientStatus");
+                        mSelect         = db.getString(rs,"selects");
+                        mAge            = db.getString(rs,"age");
+                        mStartYear      = db.getString(rs,"startYear");
+                        mEndYear        = db.getString(rs,"endYear");
+                        mFirstName      = db.getString(rs,"firstName");
+                        mLastName       = db.getString(rs,"lastName");
+                        mRosterStatus   = db.getString(rs,"rosterStatus");
+                        mSex            = db.getString(rs,"sex");
+                        mProviderNo     = db.getString(rs,"providerNo");
+                        mPatientStatus  = db.getString(rs,"patientStatus");
                   }
+                  //System.out.println("selects = "+mSelect);
 
                   if (mSelect != null && mSelect.length() != 0){
                     String[] t = fromXMLtoArray(mSelect);
@@ -116,7 +116,7 @@ public class RptDemographicQueryLoader {
                     String[] t = fromXMLtoArray(mPatientStatus);
                     dRF.setPatientStatus(t);
                   }
-       }catch (java.sql.SQLException e){ MiscUtils.getLogger().error("Error", e); }
+       }catch (java.sql.SQLException e){ System.out.println(e.getMessage()); }
 
 
 
@@ -125,7 +125,7 @@ public class RptDemographicQueryLoader {
     }
 
      String[] fromXMLtoArray(String xStr){
-
+        //System.out.println("xStr "+xStr);
         Document doc = MsgCommxml.parseXML(xStr);
 
         Element docRoot = doc.getDocumentElement();

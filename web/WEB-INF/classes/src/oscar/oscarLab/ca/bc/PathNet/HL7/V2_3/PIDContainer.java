@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import org.apache.log4j.Logger;
 import org.oscarehr.util.MiscUtils;
 
+import oscar.oscarDB.DBHandler;
 import oscar.oscarLab.ca.bc.PathNet.HL7.Node;
 /*
  * Copyright (c) 2001-2002. Andromedia. All Rights Reserved. *
@@ -68,11 +69,11 @@ public class PIDContainer extends Node {
    
    //This method calls the ORC.ToDatabase if the orc object is not null
    //Then calls the obr.ToDatabase method
-   public int ToDatabase(int parent)throws SQLException {
+   public int ToDatabase(DBHandler db, int parent)throws SQLException {
       if(this.orc != null) {
-         this.orc.ToDatabase(parent);
+         this.orc.ToDatabase(db, parent);
       }
-      this.obr.ToDatabase(parent);
+      this.obr.ToDatabase(db, parent);
       return 0;
    }
    

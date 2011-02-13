@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.entities.PaymentType;
 import oscar.oscarBilling.ca.bc.MSP.MSPBillingNote;
 import oscar.oscarBilling.ca.bc.data.BillRecipient;
@@ -91,7 +89,7 @@ public class BillingViewBean {
   private String defaultPayeeLastName;
   public void loadBilling(String billing_no) {
     try {
-      
+      DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
       ResultSet rs;
       String sql;
 
@@ -100,8 +98,8 @@ public class BillingViewBean {
       sql = sql + "b.dx_expansion, b.service_location, b.referral_flag1, b.referral_no1, b.referral_flag2, b.referral_no2, b.time_call, b.service_start_time, b.service_end_time, b.birth_date, b.office_number, b.correspondence_code, b.claim_comment,b.paymentMethod ";
       sql = sql + "from billingmaster b, billing bi where bi.billing_no=b.billing_no and b.billing_no='" +
           billing_no + "'";
-      MiscUtils.getLogger().debug(sql);
-      rs = DBHandler.GetSQL(sql);
+      System.out.println(sql);
+      rs = db.GetSQL(sql);
 
       while (rs.next()) {
 
@@ -136,7 +134,7 @@ public class BillingViewBean {
 
     }
     catch (SQLException e) {
-      MiscUtils.getLogger().error("Error", e);
+      System.out.println(e.getMessage());
     }
 
   }
@@ -154,9 +152,9 @@ public class BillingViewBean {
    * @param paymentMethod String - The paymentMethod code
    */
   public void updateBill(String billingNo,String payeeNo) {
-    
+    DBHandler db = null;
     try {
-      
+      db = new DBHandler(DBHandler.OSCAR_DATA);
       List billingMasterNos = SqlUtils.getQueryResultsList(
           "select billingmaster_no from billingmaster where billing_no = " +
           billingNo);
@@ -165,14 +163,14 @@ public class BillingViewBean {
         for (int i = 0; i < billingMasterNos.size(); i++) {
           String[] values = (String[]) billingMasterNos.get(i);
           String billingMasternum = values[0];
-          DBHandler.RunSQL("update billingmaster set payee_no = '" + payeeNo + "' " +
+          db.RunSQL("update billingmaster set payee_no = '" + payeeNo + "' " +
                     " where billingmaster_no = " + billingMasternum + "");
 
         }
       }
     }
     catch (Exception e) {
-      MiscUtils.getLogger().error("Error", e);
+      e.printStackTrace();
     }
   }
 
@@ -181,12 +179,12 @@ public class BillingViewBean {
   }
 
   public String getMessageNotesByBillingNo(String billingNo) {
-    
+    DBHandler db = null;
     ResultSet rs = null;
-    StringBuilder res = new StringBuilder();
+    StringBuffer res = new StringBuffer();
     try {
-      
-      rs = DBHandler.GetSQL(
+      db = new DBHandler(DBHandler.OSCAR_DATA);
+      rs = db.GetSQL(
           "select billingmaster_no from billingmaster where billing_no = " +
           billingNo);
       ArrayList billingMasterNos = new ArrayList();
@@ -195,7 +193,8 @@ public class BillingViewBean {
         res.append(new BillingNote().getNote(this.getBillingMasterNo()));
       }
     }
-    catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+    catch (SQLException ex) {
+      ex.printStackTrace();
     }
 
     return res.toString();
@@ -616,11 +615,11 @@ public class BillingViewBean {
   public List getPaymentTypes() {
     ArrayList types = new ArrayList();
     String sql = "select * from billing_payment_type";
-    
+    DBHandler db = null;
     ResultSet rs = null;
     try {
-      
-      rs = DBHandler.GetSQL(sql);
+      db = new DBHandler(DBHandler.OSCAR_DATA);
+      rs = db.GetSQL(sql);
 
       while (rs.next()) {
         PaymentType tp = new PaymentType();
@@ -629,13 +628,15 @@ public class BillingViewBean {
         types.add(tp);
       }
     }
-    catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+    catch (SQLException ex) {
+      ex.printStackTrace();
     }
     finally {
       try {
         rs.close();
       }
-      catch (SQLException ex1) {MiscUtils.getLogger().error("Error", ex1);
+      catch (SQLException ex1) {
+        ex1.printStackTrace();
       }
     }
 

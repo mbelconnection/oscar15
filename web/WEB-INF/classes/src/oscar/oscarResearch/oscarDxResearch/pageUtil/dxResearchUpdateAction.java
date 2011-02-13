@@ -34,7 +34,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 import oscar.util.ParameterActionForward;
@@ -53,20 +52,20 @@ public class dxResearchUpdateAction extends Action {
         String nowDate = UtilDateUtilities.DateToString(UtilDateUtilities.now(), "yyyy/MM/dd"); 
         
         try{
-                        
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);            
             String sql = "";
             if (status.equals("C")){
                 sql = "update dxresearch set update_date='"+nowDate + "', status='C' where dxresearch_no='"+did+"'";
-                DBHandler.RunSQL(sql);
+                db.RunSQL(sql);
             }
             else if (status.equals("D")){
                 sql = "update dxresearch set update_date='"+nowDate + "', status='D' where dxresearch_no='"+did+"'";
-                DBHandler.RunSQL(sql);
+                db.RunSQL(sql);
             }
         }
 
         catch(SQLException e){
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }                                    
         
         ParameterActionForward forward = new ParameterActionForward(mapping.findForward("success"));

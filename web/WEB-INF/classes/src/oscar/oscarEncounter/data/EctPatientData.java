@@ -30,8 +30,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 import oscar.util.UtilDateUtilities;
 
@@ -40,33 +38,35 @@ public class EctPatientData {
     public static String getProviderNo(String demographicNo) {
         String ret = "";
         try {
-            
-            ResultSet rs = DBHandler.GetSQL("SELECT provider_no FROM demographic WHERE demographic_no = "
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db
+                    .GetSQL("SELECT provider_no FROM demographic WHERE demographic_no = "
                             + demographicNo);
             if (rs.next())
-                ret = oscar.Misc.getString(rs, "provider_no");
+                ret = db.getString(rs,"provider_no");
             rs.close();
         } catch (SQLException e) {
-            MiscUtils.getLogger().debug("error - EctPatientData.getProviderNo");
+            System.out.println("error - EctPatientData.getProviderNo");
         }
         return ret;
     }
 
     public Patient getPatient(String demographicNo) throws SQLException {
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         Patient p = null;
         try {
-            ResultSet rs = DBHandler.GetSQL("SELECT demographic_no, last_name, first_name, sex, year_of_birth, month_of_birth, date_of_birth, address, city, postal, phone, roster_status FROM demographic WHERE demographic_no = "
+            ResultSet rs = db
+                    .GetSQL("SELECT demographic_no, last_name, first_name, sex, year_of_birth, month_of_birth, date_of_birth, address, city, postal, phone, roster_status FROM demographic WHERE demographic_no = "
                             + demographicNo);
             if (rs.next())
-                p = new Patient(rs.getInt("demographic_no"), oscar.Misc.getString(rs, "last_name"), oscar.Misc.getString(rs, "first_name"),
-                        oscar.Misc.getString(rs, "sex"), UtilDateUtilities.calcDate(oscar.Misc.getString(rs, "year_of_birth"), rs
-                                .getString("month_of_birth"), oscar.Misc.getString(rs, "date_of_birth")),
-                        oscar.Misc.getString(rs, "address"), oscar.Misc.getString(rs, "city"), oscar.Misc.getString(rs, "postal"), oscar.Misc.getString(rs, "phone"),
-                        oscar.Misc.getString(rs, "roster_status"));
+                p = new Patient(rs.getInt("demographic_no"), db.getString(rs,"last_name"), db.getString(rs,"first_name"),
+                        db.getString(rs,"sex"), UtilDateUtilities.calcDate(db.getString(rs,"year_of_birth"), rs
+                                .getString("month_of_birth"), db.getString(rs,"date_of_birth")),
+                        db.getString(rs,"address"), db.getString(rs,"city"), db.getString(rs,"postal"), db.getString(rs,"phone"),
+                        db.getString(rs,"roster_status"));
             rs.close();
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         return p;
     }
@@ -164,26 +164,26 @@ public class EctPatientData {
 
             private void init() {
                 try {
-                    
+                    DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                     ResultSet rs;
 
                     String sql = "select * from eChart where demographicNo=" + demographicNo
                             + " ORDER BY eChartId DESC";
 //                            + " ORDER BY eChartId DESC limit 1";
-                    rs = DBHandler.GetSQL(sql);
+                    rs = db.GetSQL(sql);
                     if (rs.next()) {
                         this.eChartTimeStamp = rs.getTimestamp("timeStamp");
-                        this.socialHistory = oscar.Misc.getString(rs, "socialHistory");
-                        this.familyHistory = oscar.Misc.getString(rs, "familyHistory");
-                        this.medicalHistory = oscar.Misc.getString(rs, "medicalHistory");
-                        this.ongoingConcerns = oscar.Misc.getString(rs, "ongoingConcerns");
-                        this.reminders = oscar.Misc.getString(rs, "reminders");
-                        this.encounter = oscar.Misc.getString(rs, "encounter");
-                        this.subject = oscar.Misc.getString(rs, "subject");
+                        this.socialHistory = db.getString(rs,"socialHistory");
+                        this.familyHistory = db.getString(rs,"familyHistory");
+                        this.medicalHistory = db.getString(rs,"medicalHistory");
+                        this.ongoingConcerns = db.getString(rs,"ongoingConcerns");
+                        this.reminders = db.getString(rs,"reminders");
+                        this.encounter = db.getString(rs,"encounter");
+                        this.subject = db.getString(rs,"subject");
                     }
                     rs.close();
                 } catch (SQLException e) {
-                    MiscUtils.getLogger().error("Error", e);
+                    System.out.println(e.getMessage());
                 }
             }
 

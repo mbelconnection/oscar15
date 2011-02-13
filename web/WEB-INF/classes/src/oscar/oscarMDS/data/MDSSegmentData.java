@@ -60,7 +60,7 @@ public class MDSSegmentData {
         String labID = "";
         int mdsOBXNum = 0;
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
             
             // Get the header info
@@ -68,19 +68,19 @@ public class MDSSegmentData {
             sql = "select mdsMSH.dateTime, mdsMSH.messageConID, min(mdsZFR.reportFormStatus) as reportFormStatus from mdsMSH, mdsZFR where "+
                     "mdsMSH.segmentID = mdsZFR.segmentID and mdsMSH.segmentID='"+segmentID+"' group by mdsMSH.segmentID";
             
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             if (rs.next()) {
                 GregorianCalendar cal = new GregorianCalendar(Locale.ENGLISH);
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
-                String d = oscar.Misc.getString(rs, "dateTime");
+                String d = db.getString(rs,"dateTime");
                 
                 // boneheaded calendar numbers months from 0
                 cal.set(Integer.parseInt(d.substring(0,4)), Integer.parseInt(d.substring(5,7))-1, Integer.parseInt(d.substring(8,10)));
                 
                 reportDate = dateFormat.format(cal.getTime());
-                reportStatus = ( oscar.Misc.getString(rs, "reportFormStatus").equals("1") ? "Final" : "Partial" );
-                clientNo = oscar.Misc.getString(rs, "messageConID").split("-")[0];
-                accessionNo = oscar.Misc.getString(rs, "messageConID").split("-")[1];
+                reportStatus = ( db.getString(rs,"reportFormStatus").equals("1") ? "Final" : "Partial" );
+                clientNo = db.getString(rs,"messageConID").split("-")[0];
+                accessionNo = db.getString(rs,"messageConID").split("-")[1];
             }
             rs.close();
             
@@ -89,9 +89,9 @@ public class MDSSegmentData {
             
             sql = "select labID from mdsZLB where segmentID='"+this.segmentID+"'";
             
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             while(rs.next()){
-                labID = oscar.Misc.getString(rs, "labID");
+                labID = db.getString(rs,"labID");
             }
             rs.close();
             
@@ -99,9 +99,9 @@ public class MDSSegmentData {
             
             sql = "select * from mdsPV1 where segmentID='"+this.segmentID+"'";
             
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             if (rs.next()) {
-                providers = new ProviderData(oscar.Misc.getString(rs, "refDoctor"), oscar.Misc.getString(rs, "conDoctor"), oscar.Misc.getString(rs, "admDoctor"));
+                providers = new ProviderData(db.getString(rs,"refDoctor"), db.getString(rs,"conDoctor"), db.getString(rs,"admDoctor"));
             } else {
                 providers = new ProviderData("", "", "");
             }
@@ -111,9 +111,9 @@ public class MDSSegmentData {
             
             sql = "select provider.first_name, provider.last_name, provider.provider_no, providerLabRouting.status, providerLabRouting.comment, providerLabRouting.timestamp from provider, providerLabRouting where provider.provider_no = providerLabRouting.provider_no and providerLabRouting.lab_no='"+this.segmentID+"' and providerLabRouting.lab_type='MDS'";
             
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             while(rs.next()){
-                statusArray.add( new ReportStatus(oscar.Misc.getString(rs, "first_name")+" "+oscar.Misc.getString(rs, "last_name"), oscar.Misc.getString(rs, "provider_no"), descriptiveStatus(oscar.Misc.getString(rs, "status")), oscar.Misc.getString(rs, "comment"), oscar.Misc.getString(rs, "timestamp"), this.segmentID ) );
+                statusArray.add( new ReportStatus(db.getString(rs,"first_name")+" "+db.getString(rs,"last_name"), db.getString(rs,"provider_no"), descriptiveStatus(db.getString(rs,"status")), db.getString(rs,"comment"), db.getString(rs,"timestamp"), this.segmentID ) );
             }
             rs.close();
             
@@ -122,9 +122,9 @@ public class MDSSegmentData {
             Hashtable mnemonics = new Hashtable();
             sql = "select * from mdsZMN where segmentID='"+this.segmentID+"'";
             
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             while(rs.next()){
-                mnemonics.put(oscar.Misc.getString(rs, "resultMnemonic"), new Mnemonics(oscar.Misc.getString(rs, "reportName"), oscar.Misc.getString(rs, "units"), oscar.Misc.getString(rs, "referenceRange")));
+                mnemonics.put(db.getString(rs,"resultMnemonic"), new Mnemonics(db.getString(rs,"reportName"), db.getString(rs,"units"), db.getString(rs,"referenceRange")));
             }
             rs.close();
             
@@ -133,33 +133,33 @@ public class MDSSegmentData {
             Hashtable notes = new Hashtable();
             sql = "select * from mdsNTE where segmentID='"+this.segmentID+"'";
             
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             while (rs.next()){
-                if (notes.get(oscar.Misc.getString(rs, "associatedOBX")) == null) {
-                    notes.put(oscar.Misc.getString(rs, "associatedOBX"), new ArrayList());
+                if (notes.get(db.getString(rs,"associatedOBX")) == null) {
+                    notes.put(db.getString(rs,"associatedOBX"), new ArrayList());
                 }
-                if (oscar.Misc.getString(rs, "sourceOfComment").equals("M")) {
+                if (db.getString(rs,"sourceOfComment").equals("M")) {
                     
-                    ((ArrayList)notes.get(oscar.Misc.getString(rs, "associatedOBX"))).add(new String(oscar.Misc.getString(rs, "comment").substring(3)));
+                    ((ArrayList)notes.get(db.getString(rs,"associatedOBX"))).add(new String(db.getString(rs,"comment").substring(3)));
                 } else {
-                    if (oscar.Misc.getString(rs, "sourceOfComment").equals("MC")) {
-                        sql = "select * from mdsZMC where segmentID='"+this.segmentID+"' and setID='"+oscar.Misc.getString(rs, "comment").substring(1)+"'";
+                    if (db.getString(rs,"sourceOfComment").equals("MC")) {
+                        sql = "select * from mdsZMC where segmentID='"+this.segmentID+"' and setID='"+db.getString(rs,"comment").substring(1)+"'";
                         ResultSet rs2;
-                        rs2 = DBHandler.GetSQL(sql);
+                        rs2 = db.GetSQL(sql);
                         if (rs2.getFetchSize() == 0) {
-                            sql = "select * from mdsZMC where segmentID='"+this.segmentID+"' and setID like '%"+oscar.Misc.getString(rs, "comment").substring(1, oscar.Misc.getString(rs, "comment").length()-1)+"%'";
-                            rs2 = DBHandler.GetSQL(sql);
+                            sql = "select * from mdsZMC where segmentID='"+this.segmentID+"' and setID like '%"+db.getString(rs,"comment").substring(1, db.getString(rs,"comment").length()-1)+"%'";
+                            rs2 = db.GetSQL(sql);
                         }
                         while (rs2.next()) {
-                            ((ArrayList)notes.get(oscar.Misc.getString(rs, "associatedOBX"))).add(new String(rs2.getString("messageCodeDesc")));
+                            ((ArrayList)notes.get(db.getString(rs,"associatedOBX"))).add(new String(rs2.getString("messageCodeDesc")));
                         }
                         rs2.close();
                         
-                        //logger.info("Found message note in MC format.  Comment:"+oscar.Misc.getString(rs,"comment"));
-                        // ((ArrayList)notes.get(oscar.Misc.getString(rs,"associatedOBX"))).add(new String("MC - not yet implemented"));
+                        //logger.info("Found message note in MC format.  Comment:"+db.getString(rs,"comment"));
+                        // ((ArrayList)notes.get(db.getString(rs,"associatedOBX"))).add(new String("MC - not yet implemented"));
                     } else {
-                        logger.info("Found message note in unknown format.  Format:"+oscar.Misc.getString(rs, "sourceOfComment"));
-                        ((ArrayList)notes.get(oscar.Misc.getString(rs, "associatedOBX"))).add(new String("Unknown note format!"));
+                        logger.info("Found message note in unknown format.  Format:"+db.getString(rs,"sourceOfComment"));
+                        ((ArrayList)notes.get(db.getString(rs,"associatedOBX"))).add(new String("Unknown note format!"));
                     }
                 }
             }
@@ -170,15 +170,15 @@ public class MDSSegmentData {
             sql = "select reportGroupDesc,reportGroupID,count(reportGroupID),reportGroupHeading,reportSequence from mdsZRG where segmentID='"+this.segmentID+"' group by reportGroupDesc, reportGroupID order by reportSequence";
             
             
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             while(rs.next()){
-                if (rs.getInt("count(reportGroupID)") == 1 && !oscar.Misc.getString(rs, "reportGroupHeading").equals("")) {
-                    String[] rGH = { oscar.Misc.getString(rs, "reportGroupHeading") };
-                    headersArray.add(new Headers(oscar.Misc.getString(rs, "reportGroupDesc"),oscar.Misc.getString(rs, "reportGroupID"), rGH));
+                if (rs.getInt("count(reportGroupID)") == 1 && !db.getString(rs,"reportGroupHeading").equals("")) {
+                    String[] rGH = { db.getString(rs,"reportGroupHeading") };
+                    headersArray.add(new Headers(db.getString(rs,"reportGroupDesc"),db.getString(rs,"reportGroupID"), rGH));
                 } else if (rs.getInt("count(reportGroupID)") > 1) {
-                    sql = "select reportGroupHeading from mdsZRG where segmentID='"+this.segmentID+"' and reportGroupID='"+oscar.Misc.getString(rs, "reportGroupID")+"' order by reportSequence";
+                    sql = "select reportGroupHeading from mdsZRG where segmentID='"+this.segmentID+"' and reportGroupID='"+db.getString(rs,"reportGroupID")+"' order by reportSequence";
                     ResultSet rs2;
-                    rs2 = DBHandler.GetSQL(sql);
+                    rs2 = db.GetSQL(sql);
                     ArrayList tempArray = new ArrayList();
                     while (rs2.next()) {
                         tempArray.add(rs2.getString("reportGroupHeading"));
@@ -186,9 +186,9 @@ public class MDSSegmentData {
                     rs2.close();
                     String[] reportGroupHeading = new String[tempArray.size()];
                     reportGroupHeading = (String[]) tempArray.toArray(reportGroupHeading);
-                    headersArray.add(new Headers(oscar.Misc.getString(rs, "reportGroupDesc"),oscar.Misc.getString(rs, "reportGroupID"), reportGroupHeading));
+                    headersArray.add(new Headers(db.getString(rs,"reportGroupDesc"),db.getString(rs,"reportGroupID"), reportGroupHeading));
                 } else {
-                    headersArray.add(new Headers(oscar.Misc.getString(rs, "reportGroupDesc"),oscar.Misc.getString(rs, "reportGroupID"), null));
+                    headersArray.add(new Headers(db.getString(rs,"reportGroupDesc"),db.getString(rs,"reportGroupID"), null));
                 }
             }
             rs.close();
@@ -198,22 +198,22 @@ public class MDSSegmentData {
             for(int i = 0;i< headersArray.size();i++){
                 
                 sql = "select resultCode from mdsZMN where segmentID='"+this.segmentID+"' and reportGroup='"+((Headers)headersArray.get(i)).reportSequence+"'";
-                rs=DBHandler.GetSQL(sql);
+                rs=db.GetSQL(sql);
                 queryString = "";
                 while(rs.next()){
                     if (queryString.length() == 0) {
-                        queryString = "observationSubID like '%"+oscar.Misc.getString(rs, "resultCode")+"%'";
+                        queryString = "observationSubID like '%"+db.getString(rs,"resultCode")+"%'";
                     } else {
-                        queryString = queryString.concat(" or observationSubID like '%"+oscar.Misc.getString(rs, "resultCode")+"%'");
+                        queryString = queryString.concat(" or observationSubID like '%"+db.getString(rs,"resultCode")+"%'");
                     }
                 }
                 rs.close();
                 
                 sql = "select distinct mdsOBX.associatedOBR, mdsOBR.observationDateTime from mdsOBX, mdsOBR where mdsOBX.segmentID = mdsOBR.segmentID and mdsOBX.associatedOBR = mdsOBR.obrID and mdsOBX.segmentID='"+this.segmentID+"' and ("+queryString+") order by associatedOBR";
                 
-                rs=DBHandler.GetSQL(sql);
+                rs=db.GetSQL(sql);
                 while(rs.next()){
-                    ((Headers)headersArray.get(i)).groupedReportsArray.add(new GroupedReports(oscar.Misc.getString(rs, "associatedOBR"), oscar.Misc.getString(rs, "observationDateTime"), queryString));
+                    ((Headers)headersArray.get(i)).groupedReportsArray.add(new GroupedReports(db.getString(rs,"associatedOBR"), db.getString(rs,"observationDateTime"), queryString));
                 }
                 rs.close();
             }
@@ -227,23 +227,23 @@ public class MDSSegmentData {
                     associatedOBR =((GroupedReports)((Headers)headersArray.get(i)).groupedReportsArray.get(j)).associatedOBR;
                     queryString =((GroupedReports)((Headers)headersArray.get(i)).groupedReportsArray.get(j)).queryString;
                     sql = "select * from mdsOBX where segmentID='"+this.segmentID+"' and associatedOBR='"+associatedOBR+"' and ("+queryString+")";
-                    rs = DBHandler.GetSQL(sql);
+                    rs = db.GetSQL(sql);
                     while(rs.next()){
                         
-                        mdsOBXNum=Integer.parseInt(oscar.Misc.getString(rs, "obxID"));
-                        thisOBXMnemonics.update((Mnemonics)mnemonics.get(oscar.Misc.getString(rs, "observationIden").substring(1,oscar.Misc.getString(rs, "observationIden").indexOf('^'))));
+                        mdsOBXNum=Integer.parseInt(db.getString(rs,"obxID"));
+                        thisOBXMnemonics.update((Mnemonics)mnemonics.get(db.getString(rs,"observationIden").substring(1,db.getString(rs,"observationIden").indexOf('^'))));
                         
                         
                         ((GroupedReports)((Headers)headersArray.get(i)).groupedReportsArray.get(j)).resultsArray.add(
                                 new Results(thisOBXMnemonics.reportName,
                                 thisOBXMnemonics.referenceRange,
                                 thisOBXMnemonics.units,
-                                oscar.Misc.getString(rs, "observationValue"),
-                                oscar.Misc.getString(rs, "abnormalFlags"),
-                                oscar.Misc.getString(rs, "observationIden"),
-                                oscar.Misc.getString(rs, "observationResultStatus"),
+                                db.getString(rs,"observationValue"),
+                                db.getString(rs,"abnormalFlags"),
+                                db.getString(rs,"observationIden"),
+                                db.getString(rs,"observationResultStatus"),
                                 (ArrayList)notes.get(Integer.toString(mdsOBXNum)),
-                                oscar.Misc.getString(rs, "producersID").substring(0,oscar.Misc.getString(rs, "producersID").indexOf('^')) ));
+                                db.getString(rs,"producersID").substring(0,db.getString(rs,"producersID").indexOf('^')) ));
                         
                     }
                     rs.close();

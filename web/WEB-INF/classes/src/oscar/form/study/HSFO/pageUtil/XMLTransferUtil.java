@@ -1394,13 +1394,15 @@ public class XMLTransferUtil
 				doc = null;
 		}
 
+		// System.out.println(doc.xmlText());
+
 		return doc;
 
 	}
 
 	public String printErrors(ArrayList validationErrors)
 	{
-		StringBuilder sb = new StringBuilder(
+		StringBuffer sb = new StringBuffer(
 				"++++++++++++Invalid XML!++++++++++++\n");
 
 		sb.append("Errors discovered during validation: \n");
@@ -1518,7 +1520,7 @@ public class XMLTransferUtil
 		{
 			int result = httpclient.executeMethod(post);
 			// Display status code
-
+			// System.out.println("Response status code: " + result);
 			if (result != 200)
 			{
 				ArrayList rList = new ArrayList();

@@ -370,7 +370,7 @@ public class BillingClaimHeader1Data {
      */
     public String getSettle_date() {
         return settle_date;
-    }
+}
 
     /**
      * @param settle_date the settle_date to set

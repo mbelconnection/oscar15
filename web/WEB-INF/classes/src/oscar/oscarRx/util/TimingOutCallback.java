@@ -19,11 +19,9 @@
 package oscar.oscarRx.util;
 
 import java.net.URL;
-
 import org.apache.xmlrpc.AsyncCallback;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.XmlRpcRequest;
-import org.oscarehr.util.MiscUtils;
 
 
 /**
@@ -38,9 +36,9 @@ import org.oscarehr.util.MiscUtils;
  *   try {
  *       return callback.waitForResponse();
  *   } catch (TimeoutException e) {
- *       MiscUtils.getLogger().debug("No response from server.");
+ *       System.out.println("No response from server.");
  *   } catch (Exception e) {
- *       MiscUtils.getLogger().debug("Server returned an error message.");
+ *       System.out.println("Server returned an error message.");
  *   }
  * </pre>
  */
@@ -101,7 +99,7 @@ public class TimingOutCallback implements AsyncCallback {
 
     public synchronized void handleResult(Object arg0, URL arg1, String arg2) {
         responseSeen = true;
-        MiscUtils.getLogger().debug("arg2"+arg2);
+        System.out.println("arg2"+arg2);
         result = arg0;
          this.notify();
         //throw new UnsupportedOperationException("Not supported yet.");
@@ -109,7 +107,7 @@ public class TimingOutCallback implements AsyncCallback {
 
     public synchronized void handleError(Exception arg0, URL arg1, String arg2) {
         responseSeen = true;
-        MiscUtils.getLogger().error("Error", arg0);
+        arg0.printStackTrace();
         error = arg0;
         this.notify();
         //throw new UnsupportedOperationException("Not supported yet.");

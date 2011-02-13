@@ -22,30 +22,31 @@
 
 package org.oscarehr.billing.CA.ON.dao;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Calendar;
+import java.math.BigDecimal;
 
 import javax.persistence.Query;
 
-import org.oscarehr.PMmodule.dao.ProviderDao;
-import org.oscarehr.billing.CA.ON.model.BillingClaimHeader1;
-import org.oscarehr.billing.CA.ON.model.BillingItem;
-import org.oscarehr.billing.CA.ON.model.BillingPercLimit;
-import org.oscarehr.billing.CA.dao.GstControlDao;
-import org.oscarehr.billing.CA.model.GstControl;
-import org.oscarehr.common.dao.AbstractDao;
-import org.oscarehr.common.dao.BillingServiceDao;
-import org.oscarehr.common.dao.DemographicDao;
-import org.oscarehr.common.model.BillingService;
-import org.oscarehr.common.model.Demographic;
-import org.oscarehr.common.model.Provider;
 import org.springframework.stereotype.Repository;
 
-import oscar.OscarProperties;
+import org.oscarehr.billing.CA.ON.model.BillingClaimHeader1;
+import org.oscarehr.billing.CA.ON.model.BillingItem;
+import org.oscarehr.common.dao.AbstractDao;
+
 import oscar.oscarBilling.ca.on.data.BillingDataHlp;
+import org.oscarehr.common.dao.DemographicDao;
+import org.oscarehr.common.model.Demographic;
+import org.oscarehr.billing.CA.ON.model.BillingPercLimit;
+import org.oscarehr.PMmodule.dao.ProviderDao;
+import org.oscarehr.common.model.Provider;
+import org.oscarehr.common.dao.BillingServiceDao;
+import org.oscarehr.common.model.BillingService;
+import org.oscarehr.billing.CA.dao.GstControlDao;
+import org.oscarehr.billing.CA.model.GstControl;
+import oscar.OscarProperties;
 
 /**
  *
@@ -60,7 +61,7 @@ public class BillingClaimDAO extends AbstractDao<BillingClaimHeader1> {
     private GstControlDao gstControlDao;
 
     public BillingClaimDAO() {
-        super(BillingClaimHeader1.class);
+        super(BillingClaimHeader1.class);       
     }
 
     public void setBillingServiceDao(BillingServiceDao billServiceDAO) {
@@ -168,7 +169,7 @@ public class BillingClaimDAO extends AbstractDao<BillingClaimHeader1> {
         return header1;
     }
 
-    private void addItems(BillingClaimHeader1 h1, List<String>codes, List<String>dxcodes, Date serviceDate) {
+    private void addItems(BillingClaimHeader1 h1, List<String>codes, List<String>dxcodes, Date serviceDate) {        
 
         BillingService billingservice = null;
         BillingItem item = null;
@@ -214,13 +215,13 @@ public class BillingClaimDAO extends AbstractDao<BillingClaimHeader1> {
         BigDecimal gst;
         BigDecimal gstTotal;
         BigDecimal total = new BigDecimal(0.0);
-        BigDecimal percent = new BigDecimal(0.0);
+        BigDecimal percent = new BigDecimal(0.0);        
         BillingPercLimit billingPerc;
         ArrayList<BillingService> aPercentCodes = new ArrayList<BillingService>();
         BillingService billingservice = null;
         for( String code : codes ) {
             billingservice = billServiceDAO.searchBillingCode(code, "ON", serviceDate);
-
+            
             if( !billingservice.getPercentage().equalsIgnoreCase("")) {
                 //billingPerc = billingservice
                 aPercentCodes.add(billingservice);
@@ -259,7 +260,7 @@ public class BillingClaimDAO extends AbstractDao<BillingClaimHeader1> {
         String sql = "select b from BillingClaimHeader1 h1, BillingItem b where b.ch1_id = h1.id and b.service_code = :code and" +
                 " h1.demographic_no = :demo and h1.status != 'D' order by h1.billing_date desc limit 1";
         Query q = entityManager.createQuery(sql);
-        q.setParameter("code", serviceCode);
+        q.setParameter("code", serviceCode);        
         q.setParameter("demo", new Integer(demographic_no));
         List billingClaims = q.getResultList();
         int numdays = -1;
@@ -268,7 +269,7 @@ public class BillingClaimDAO extends AbstractDao<BillingClaimHeader1> {
             BillingItem i = (BillingItem)billingClaims.get(0);
             Calendar billdate = Calendar.getInstance();
             billdate.setTime(i.getService_date());
-
+            
             long milliBilldate = billdate.getTimeInMillis();
             long milliToday = Calendar.getInstance().getTimeInMillis();
             long day = 1000*60*60*24;

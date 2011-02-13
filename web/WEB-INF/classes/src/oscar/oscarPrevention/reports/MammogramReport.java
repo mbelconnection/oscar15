@@ -39,8 +39,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBean;
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBeanHandler;
@@ -53,7 +53,7 @@ import oscar.util.UtilDateUtilities;
  * @author jay
  */
 public class MammogramReport implements PreventionReport{
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(MammogramReport.class);
     /** Creates a new instance of MammogramReport */
     public MammogramReport() {
     }
@@ -300,7 +300,7 @@ public class MammogramReport implements PreventionReport{
               
               Collection followupData = measurementDataHandler.getMeasurementsDataVector();
               //NO Contact
-
+              System.out.print("fluFollowupData size = "+followupData.size());
               if ( followupData.size() == 0 ){
                   prd.nextSuggestedProcedure = this.LETTER1;
                   return this.LETTER1;
@@ -357,7 +357,7 @@ public class MammogramReport implements PreventionReport{
               EctMeasurementsDataBeanHandler measurementDataHandler = new EctMeasurementsDataBeanHandler(prd.demographicNo,measurementType);
               log.debug("getting followup data for "+prd.demographicNo);
               Collection followupData = measurementDataHandler.getMeasurementsDataVector();
-
+              System.out.print("fluFollowupData size = "+followupData.size());
               if ( followupData.size() > 0 ){
                   EctMeasurementsDataBean measurementData = (EctMeasurementsDataBean) followupData.iterator().next();
                   prd.lastFollowup = measurementData.getDateObservedAsDate();
@@ -375,7 +375,7 @@ public class MammogramReport implements PreventionReport{
               EctMeasurementsDataBeanHandler measurementDataHandler = new EctMeasurementsDataBeanHandler(prd.demographicNo,measurementType);
               log.debug("getting followup data for "+prd.demographicNo);
               Collection followupData = measurementDataHandler.getMeasurementsDataVector();
-
+              System.out.print("fluFollowupData size = "+followupData.size());
               if ( followupData.size() > 0 ){
                   EctMeasurementsDataBean measurementData = (EctMeasurementsDataBean) followupData.iterator().next();
                   prd.lastFollowup = measurementData.getDateObservedAsDate();

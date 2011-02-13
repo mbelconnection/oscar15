@@ -15,9 +15,6 @@ import java.sql.SQLException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 /**
@@ -26,8 +23,6 @@ import oscar.oscarDB.DBHandler;
  */
 public class programExclusiveViewTag extends TagSupport {
     
-	private static Logger logger=MiscUtils.getLogger();
-	
     /**
 	 * Creates a new instance of programExclusiveViewTag
 	 */
@@ -53,15 +48,16 @@ public class programExclusiveViewTag extends TagSupport {
     
     public int doStartTag() throws JspException    {
         try {
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = new String("SELECT exclusiveView FROM program WHERE id = (SELECT program_id FROM provider_default_program WHERE provider_no='" + providerNo + "')");
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
 	    if (rs.next()) {
-		exclusiveView = oscar.Misc.getString(rs, 1);
+		exclusiveView = db.getString(rs,1);
                 if (exclusiveView.equals("")) exclusiveView = "no";
 	    }
             rs.close();
         }      catch(SQLException e)        {
-        	logger.error("Error", e);
+            e.printStackTrace(System.out);
         }
 	
 	/* For the time being, only the Appointment/Oscar view can be set exclusive.

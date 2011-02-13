@@ -36,14 +36,14 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts.util.MessageResources;
-import org.oscarehr.common.dao.UserPropertyDAO;
-import org.oscarehr.common.model.UserProperty;
-import org.oscarehr.util.MiscUtils;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import oscar.util.DateUtils;
 import oscar.util.OscarRoleObjectPrivilege;
 import oscar.util.StringUtils;
+
+import org.oscarehr.common.dao.UserPropertyDAO;
+import org.oscarehr.common.model.UserProperty;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 
 /**
@@ -54,9 +54,7 @@ public class EctDisplayConsultAction extends EctDisplayAction {
     private String cmd = "consultation";
  
     public boolean getInfo(EctSessionBean bean, HttpServletRequest request, NavBarDisplayDAO Dao, MessageResources messages) {
-
-    	String appointmentNo = bean.appointmentNo;
-    	
+            
        boolean a = true;
        Vector v = OscarRoleObjectPrivilege.getPrivilegeProp("_newCasemgmt.consultations");
        String roleName = (String)request.getSession().getAttribute("userrole") + "," + (String) request.getSession().getAttribute("user");
@@ -72,7 +70,7 @@ public class EctDisplayConsultAction extends EctDisplayAction {
             
             //set the right hand heading link\
             winName = "newConsult" + bean.demographicNo;
-            url = "popupPage(700,960,'" + winName + "','" + request.getContextPath() + "/oscarEncounter/oscarConsultationRequest/ConsultationFormRequest.jsp?de=" + bean.demographicNo + "&teamVar=&appNo="+appointmentNo+"'); return false;";
+            url = "popupPage(700,960,'" + winName + "','" + request.getContextPath() + "/oscarEncounter/oscarConsultationRequest/ConsultationFormRequest.jsp?de=" + bean.demographicNo + "&teamVar='); return false;";
             Dao.setRightURL(url);        
             Dao.setRightHeadingID(cmd);  //no menu so set div id to unique id for this action 
             
@@ -96,6 +94,8 @@ public class EctDisplayConsultAction extends EctDisplayAction {
             if (timeperiod != null){
                    countback = Integer.parseInt(timeperiod);
                    countback = countback * -1;
+                   cal.add(Calendar.MONTH,countback );
+
             }
             cal.add(Calendar.MONTH,countback );
             Date cutoffDate = cal.getTime();
@@ -119,7 +119,7 @@ public class EctDisplayConsultAction extends EctDisplayAction {
                     }
                 }
                 catch(ParseException ex ) {
-                    MiscUtils.getLogger().debug("EctDisplayConsultationAction: Error creating date " + ex.getMessage());
+                    System.out.println("EctDisplayConsultationAction: Error creating date " + ex.getMessage());
                     serviceDateStr = "Error";
                     date = null;
                 }

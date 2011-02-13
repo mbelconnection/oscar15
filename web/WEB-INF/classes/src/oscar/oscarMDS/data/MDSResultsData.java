@@ -55,12 +55,12 @@ public class MDSResultsData {
     public ArrayList reportStatus;
     
     
-    public ArrayList<LabResultData> labResults;
+    public ArrayList labResults;
     
     /**
      *Lists labs predicated on relationship to patient's consultation
      */
-    public ArrayList<LabResultData> populateCMLResultsData(String demographicNo, String consultationId, boolean attached) {
+    public ArrayList populateCMLResultsData(String demographicNo, String consultationId, boolean attached) {
         String sql = "SELECT lpp.id, lpp.collection_date, lpp.accession_num, patientLabRouting.id AS labId FROM labPatientPhysicianInfo lpp, patientLabRouting"
                 +" WHERE patientLabRouting.lab_type = 'CML' AND lpp.id = patientLabRouting.lab_no AND"
                 +" patientLabRouting.demographic_no="+demographicNo;
@@ -68,31 +68,31 @@ public class MDSResultsData {
         String attachQuery = "SELECT document_no FROM consultdocs, patientLabRouting WHERE patientLabRouting.id = consultdocs.document_no AND " +
                 "consultdocs.requestId = " + consultationId + " AND consultdocs.doctype = 'L' AND consultdocs.deleted IS NULL ORDER BY document_no";
         
-        labResults = new ArrayList<LabResultData>();
-        ArrayList<LabResultData> attachedLabs = new ArrayList<LabResultData>();
+        labResults = new ArrayList();
+        ArrayList attachedLabs = new ArrayList();
         
         try {
-            
-            ResultSet rs = DBHandler.GetSQL(attachQuery);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL(attachQuery);
             
             while(rs.next()) {
                 LabResultData lbData = new LabResultData(LabResultData.CML);
                 lbData.labType = LabResultData.CML;
-                lbData.labPatientId = oscar.Misc.getString(rs, "document_no");
+                lbData.labPatientId = db.getString(rs,"document_no");
                 attachedLabs.add(lbData);
             }
             rs.close();
             
             
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             LabResultData lbData = new LabResultData(LabResultData.CML);
             LabResultData.CompareId c = lbData.getComparatorId();
             while(rs.next()){
                 
                 lbData.labType = LabResultData.CML;
-                lbData.labPatientId = oscar.Misc.getString(rs, "labId");
-                lbData.segmentID = oscar.Misc.getString(rs, "id");
-                lbData.dateTime = oscar.Misc.getString(rs, "collection_date");
+                lbData.labPatientId = db.getString(rs,"labId");
+                lbData.segmentID = db.getString(rs,"id");
+                lbData.dateTime = db.getString(rs,"collection_date");
                 lbData.setDateObj( UtilDateUtilities.getDateFromString(lbData.dateTime, "dd-MMM-yy") );
                 
                 if( attached && Collections.binarySearch(attachedLabs, lbData, c) >= 0 )
@@ -127,7 +127,7 @@ public class MDSResultsData {
         // select lpp.patient_health_num, concat(lpp.patient_last_name,',',lpp.patient_first_name), lpp.patient_sex, lpp.doc_name, lpp.collection_date, lpp.lab_status from labPatientPhysicianInfo lpp;
         String sql = "";
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             if ( demographicNo == null) {
                 // note to self: lab reports not found in the providerLabRouting table will not show up - need to ensure every lab is entered in providerLabRouting, with '0'
                 // for the provider number if unable to find correct provider
@@ -151,38 +151,38 @@ public class MDSResultsData {
             
             
             logger.info(sql);
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             while(rs.next()){
                 LabResultData lbData = new LabResultData(LabResultData.CML);
                 
                 lbData.labType = LabResultData.CML;
                 
-                lbData.segmentID = oscar.Misc.getString(rs, "id");
+                lbData.segmentID = db.getString(rs,"id");
                 
                 if (demographicNo == null && !providerNo.equals("0")) {
-                    lbData.acknowledgedStatus = oscar.Misc.getString(rs, "status");
+                    lbData.acknowledgedStatus = db.getString(rs,"status");
                 } else {
                     lbData.acknowledgedStatus ="U";
                 }
                 
                 
-                lbData.healthNumber = oscar.Misc.getString(rs, "patient_health_num");
-                lbData.patientName = oscar.Misc.getString(rs, "patientName");
-                lbData.sex = oscar.Misc.getString(rs, "patient_sex");
+                lbData.healthNumber = db.getString(rs,"patient_health_num");
+                lbData.patientName = db.getString(rs,"patientName");
+                lbData.sex = db.getString(rs,"patient_sex");
                 
                 
                 lbData.resultStatus = "0"; //TODO
-                // solve lbData.resultStatus.add(oscar.Misc.getString(rs,"abnormalFlag"));
+                // solve lbData.resultStatus.add(db.getString(rs,"abnormalFlag"));
                 
-                lbData.dateTime = oscar.Misc.getString(rs, "collection_date");
+                lbData.dateTime = db.getString(rs,"collection_date");
                 lbData.setDateObj( UtilDateUtilities.getDateFromString(lbData.dateTime, "dd-MMM-yy") );
                 
                 //priority
                 lbData.priority = "----";
                 
-                lbData.requestingClient = oscar.Misc.getString(rs, "doc_name");
-                lbData.reportStatus =  oscar.Misc.getString(rs, "lab_status");
-                lbData.accessionNumber = oscar.Misc.getString(rs, "accession_num");
+                lbData.requestingClient = db.getString(rs,"doc_name");
+                lbData.reportStatus =  db.getString(rs,"lab_status");
+                lbData.accessionNumber = db.getString(rs,"accession_num");
                 
                 if (lbData.reportStatus != null && lbData.reportStatus.equals("F")){
                     lbData.finalRes = true;
@@ -190,9 +190,9 @@ public class MDSResultsData {
                     lbData.finalRes = false;
                 }
                 
-                //if ( oscar.Misc.getString(rs,"reportGroupDesc").startsWith("MICRO") ) {
+                //if ( db.getString(rs,"reportGroupDesc").startsWith("MICRO") ) {
                 //   discipline.add("Microbiology");
-                //} else if ( oscar.Misc.getString(rs,"reportGroupDesc").startsWith("DIAGNOSTIC IMAGING") ) {
+                //} else if ( db.getString(rs,"reportGroupDesc").startsWith("DIAGNOSTIC IMAGING") ) {
                 //   discipline.add("Diagnostic Imaging");
                 //} else {
                 lbData.discipline = "Hem/Chem/Other";
@@ -212,11 +212,11 @@ public class MDSResultsData {
     public int findCMLAdnormalResults(String labId){
         int count = 0;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             
             String sql = "select id from labTestResults where abn = 'A' and labPatientPhysicianInfo_id = '"+labId+"'";
             
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             while(rs.next()){
                 count++;
             }
@@ -251,7 +251,7 @@ public class MDSResultsData {
         String sql = "";
         
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             if ( demographicNo == null) {
                 // note to self: lab reports not found in the providerLabRouting table will not show up - need to ensure every lab is entered in providerLabRouting, with '0'
                 // for the provider number if unable to find correct provider
@@ -275,26 +275,26 @@ public class MDSResultsData {
                         "AND patientLabRouting.demographic_no='"+demographicNo+"' group by mdsMSH.segmentID";
             }
             
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             while(rs.next()){
                 segmentID.add(Integer.toString(rs.getInt("segmentID")));
                 if (demographicNo == null && !providerNo.equals("0")) {
-                    acknowledgedStatus.add(oscar.Misc.getString(rs, "status"));
+                    acknowledgedStatus.add(db.getString(rs,"status"));
                 } else {
                     acknowledgedStatus.add("U");
                 }
                 
-                healthNumber.add(oscar.Misc.getString(rs, "healthNumber"));
-                patientName.add(beautifyName(oscar.Misc.getString(rs, "patientName")));
-                sex.add(oscar.Misc.getString(rs, "sex"));
-                resultStatus.add(oscar.Misc.getString(rs, "abnormalFlag"));
-                dateTime.add(oscar.Misc.getString(rs, "dateTime"));
+                healthNumber.add(db.getString(rs,"healthNumber"));
+                patientName.add(beautifyName(db.getString(rs,"patientName")));
+                sex.add(db.getString(rs,"sex"));
+                resultStatus.add(db.getString(rs,"abnormalFlag"));
+                dateTime.add(db.getString(rs,"dateTime"));
                 
-                switch ( oscar.Misc.getString(rs, "quantityTiming").charAt(0) ) {
+                switch ( db.getString(rs,"quantityTiming").charAt(0) ) {
                     case 'C' : priority.add("Critical"); break;
                     case 'S' : priority.add("Stat\\Urgent"); break;
                     case 'U' : priority.add("Unclaimed"); break;
-                    case 'A' : if ( oscar.Misc.getString(rs, "quantityTiming").startsWith("AL") ) {
+                    case 'A' : if ( db.getString(rs,"quantityTiming").startsWith("AL") ) {
                         priority.add("Alert");
                     } else {
                         priority.add("ASAP");
@@ -303,12 +303,12 @@ public class MDSResultsData {
                     default: priority.add("Routine"); break;
                 }
                 
-                requestingClient.add(ProviderData.beautifyProviderName(oscar.Misc.getString(rs, "refDoctor")));
-                reportStatus.add(oscar.Misc.getString(rs, "reportFormStatus"));
+                requestingClient.add(ProviderData.beautifyProviderName(db.getString(rs,"refDoctor")));
+                reportStatus.add(db.getString(rs,"reportFormStatus"));
                 
-                if ( oscar.Misc.getString(rs, "reportGroupDesc").startsWith("MICRO") ) {
+                if ( db.getString(rs,"reportGroupDesc").startsWith("MICRO") ) {
                     discipline.add("Microbiology");
-                } else if ( oscar.Misc.getString(rs, "reportGroupDesc").startsWith("DIAGNOSTIC IMAGING") ) {
+                } else if ( db.getString(rs,"reportGroupDesc").startsWith("DIAGNOSTIC IMAGING") ) {
                     discipline.add("Diagnostic Imaging");
                 } else {
                     discipline.add("Hem/Chem/Other");
@@ -320,7 +320,7 @@ public class MDSResultsData {
         }
     }
     
-    public ArrayList<LabResultData> populateMDSResultsData2(String demographicNo, String consultationId, boolean attached) {
+    public ArrayList populateMDSResultsData2(String demographicNo, String consultationId, boolean attached) {
         String sql = "SELECT patientLabRouting.id, mdsMSH.segmentID, mdsMSH.dateTime, mdsZRG.reportGroupDesc " +
                 "FROM " +
                 "patientLabRouting "+
@@ -332,33 +332,33 @@ public class MDSResultsData {
         String attachQuery = "SELECT document_no FROM consultdocs, patientLabRouting WHERE patientLabRouting.id = consultdocs.document_no AND " +
                 "consultdocs.requestId = " + consultationId + " AND consultdocs.doctype = 'L' AND consultdocs.deleted IS NULL";
         
-        labResults = new ArrayList<LabResultData>();
-        ArrayList<LabResultData> attachedLabs = new ArrayList<LabResultData>();
+        labResults = new ArrayList();
+        ArrayList attachedLabs = new ArrayList();
         
         try {
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             
-            
-            ResultSet rs = DBHandler.GetSQL(attachQuery);
+            ResultSet rs = db.GetSQL(attachQuery);
             while(rs.next()) {
                 LabResultData lbData = new LabResultData(LabResultData.EXCELLERIS);
-                lbData.labPatientId = oscar.Misc.getString(rs, "document_no");
+                lbData.labPatientId = db.getString(rs,"document_no");
                 attachedLabs.add(lbData);
             }
             rs.close();
             
             LabResultData lData = new LabResultData(LabResultData.MDS);
             LabResultData.CompareId c = lData.getComparatorId();
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             
             while(rs.next()) {
                 lData = new LabResultData(LabResultData.MDS);
                 lData.segmentID = Integer.toString(rs.getInt("segmentID"));
-                lData.labPatientId = oscar.Misc.getString(rs, "id");
+                lData.labPatientId = db.getString(rs,"id");
                 
-                lData.dateTime = oscar.Misc.getString(rs, "dateTime");
+                lData.dateTime = db.getString(rs,"dateTime");
                 lData.setDateObj(UtilDateUtilities.getDateFromString(lData.dateTime, "yyyy-MM-dd HH:mm:ss"));
                 
-                String reportGroupDesc = oscar.Misc.getString(rs, "reportGroupDesc");
+                String reportGroupDesc = db.getString(rs,"reportGroupDesc");
                 if ( reportGroupDesc != null && reportGroupDesc.startsWith("MICRO") ) {
                     lData.discipline = "Microbiology";
                 } else if ( reportGroupDesc != null && reportGroupDesc.startsWith("DIAGNOSTIC IMAGING") ) {
@@ -395,7 +395,7 @@ public class MDSResultsData {
         String seqId = null;  //for debugging purposes
         
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             
             if ( demographicNo == null) {
                 // note to self: lab reports not found in the providerLabRouting table will not show up - need to ensure every lab is entered in providerLabRouting, with '0'
@@ -433,29 +433,29 @@ public class MDSResultsData {
             }
             
             logger.info("sql "+sql);
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             while(rs.next()){
                 LabResultData lData = new LabResultData(LabResultData.MDS);
                 lData.segmentID = Integer.toString(rs.getInt("segmentID"));
                 seqId = lData.segmentID;
                 
                 if (demographicNo == null && !providerNo.equals("0")) {
-                    lData.acknowledgedStatus = oscar.Misc.getString(rs, "status");
+                    lData.acknowledgedStatus = db.getString(rs,"status");
                 } else {
                     lData.acknowledgedStatus = "U";
                 }
                 
-                lData.healthNumber = oscar.Misc.getString(rs, "healthNumber");
-                lData.patientName = beautifyName(oscar.Misc.getString(rs, "patientName"));
-                lData.sex = oscar.Misc.getString(rs, "sex");
-                lData.resultStatus = oscar.Misc.getString(rs, "abnormalFlag");
+                lData.healthNumber = db.getString(rs,"healthNumber");
+                lData.patientName = beautifyName(db.getString(rs,"patientName"));
+                lData.sex = db.getString(rs,"sex");
+                lData.resultStatus = db.getString(rs,"abnormalFlag");
                 if(lData.resultStatus == null){
                     lData.resultStatus = "0";
                 }
-                lData.dateTime = oscar.Misc.getString(rs, "dateTime");
+                lData.dateTime = db.getString(rs,"dateTime");
                 lData.setDateObj(UtilDateUtilities.getDateFromString(lData.dateTime, "yyyy-MM-dd HH:mm:ss"));
                 
-                String quantityTimimg = oscar.Misc.getString(rs, "quantityTiming");
+                String quantityTimimg = db.getString(rs,"quantityTiming");
                 if(quantityTimimg != null){
                     switch ( quantityTimimg.charAt(0) ) {
                         case 'C' : lData.priority = "Critical"; break;
@@ -473,8 +473,8 @@ public class MDSResultsData {
                     lData.priority = "Routine";
                 }
                 
-                lData.requestingClient = ProviderData.beautifyProviderName(oscar.Misc.getString(rs, "refDoctor"));
-                lData.reportStatus = oscar.Misc.getString(rs, "reportFormStatus");
+                lData.requestingClient = ProviderData.beautifyProviderName(db.getString(rs,"refDoctor"));
+                lData.reportStatus = db.getString(rs,"reportFormStatus");
                 
                 if (lData.reportStatus != null && lData.reportStatus.equals("0")){
                     lData.finalRes = false;
@@ -486,7 +486,7 @@ public class MDSResultsData {
                 if (  !lData.resultStatus.equals("0") ){
                     lData.abn = true;
                 }
-                String reportGroupDesc = oscar.Misc.getString(rs, "reportGroupDesc");
+                String reportGroupDesc = db.getString(rs,"reportGroupDesc");
                 
                 if ( reportGroupDesc != null && reportGroupDesc.startsWith("MICRO") ) {
                     lData.discipline = "Microbiology";
@@ -497,7 +497,7 @@ public class MDSResultsData {
                 }
                 
                 //lData.accessionNumber = findMDSAccessionNumber(lData.segmentID);
-                String accessionNum = oscar.Misc.getString(rs, "accessionNum");
+                String accessionNum = db.getString(rs,"accessionNum");
                 lData.accessionNumber = justGetAccessionNumber(accessionNum);
                 
                 // must reverse the order of the labs based on the final result count when
@@ -524,11 +524,11 @@ public class MDSResultsData {
     public String findMDSAccessionNumber(String labId){
         String  ret = "";
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql ="select messageConID from mdsMSH where segmentID = '"+labId+"'";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             while(rs.next()){
-                ret = justGetAccessionNumber(oscar.Misc.getString(rs, "messageConID"));
+                ret = justGetAccessionNumber(db.getString(rs,"messageConID"));
             }
             rs.close();
         }catch(Exception e){
@@ -540,11 +540,11 @@ public class MDSResultsData {
     public String findCMLAccessionNumber(String labId){
         String  ret = "";
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql ="select accession_num from labPatientPhysicianInfo where id = '"+labId+"'";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             while(rs.next()){
-                ret = oscar.Misc.getString(rs, "accession_num");
+                ret = db.getString(rs,"accession_num");
             }
             rs.close();
         }catch(Exception e){
@@ -558,14 +558,14 @@ public class MDSResultsData {
         //String accessionNum = findCMLAccessionNumber(labId);
         int monthsBetween = 0;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             //String sql = "select filler_order_number from hl7_orc orc, hl7_pid pid where orc.pid_id = pid.pid_id and pid.message_id = '"+labId+"'";
             String sql = "SELECT DISTINCT lpp.id, lpp.service_date, lpp2.service_date as labDate from labPatientPhysicianInfo lpp, labPatientPhysicianInfo lpp2, labReportInformation tr where lpp.accession_num = lpp2.accession_num and lpp2.id='"+labId+"' and tr.id=lpp.labReportInfo_id order by tr.print_date, tr.print_time";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             
             while (rs.next()){
-                Date dateA = UtilDateUtilities.StringToDate(oscar.Misc.getString(rs, "service_date"), "yyyyMMdd");
-                Date dateB = UtilDateUtilities.StringToDate(oscar.Misc.getString(rs, "labDate"), "yyyyMMdd");
+                Date dateA = UtilDateUtilities.StringToDate(db.getString(rs,"service_date"), "yyyyMMdd");
+                Date dateB = UtilDateUtilities.StringToDate(db.getString(rs,"labDate"), "yyyyMMdd");
                 if (dateA.before(dateB)){
                     monthsBetween = UtilDateUtilities.getNumMonths(dateA, dateB);
                 }else{
@@ -575,9 +575,9 @@ public class MDSResultsData {
                 if (monthsBetween < 4){
 
                         if (ret.equals(""))
-                            ret = oscar.Misc.getString(rs, "id");
+                            ret = db.getString(rs,"id");
                         else
-                            ret = ret+","+oscar.Misc.getString(rs, "id");
+                            ret = ret+","+db.getString(rs,"id");
                     
                 }
             }
@@ -598,16 +598,16 @@ public class MDSResultsData {
         
         ArrayList labs = new ArrayList();
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql ="select a.segmentID, a.messageConID, a.dateTime, b.dateTime as labDate from mdsMSH a, mdsMSH b where a.messageConID like '%"+accessionNum+"%' and b.segmentID='"+labId+"' order by a.messageConID";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             while(rs.next()){
                 
                 //MDS labs recycle accessoin numbers every two years, accession
                 //numbers for a lab should have lab dates within a year of eachother
                 //even this is a large timespan
-                Date dateA = UtilDateUtilities.StringToDate(oscar.Misc.getString(rs, "dateTime"), "yyyy-MM-dd hh:mm:ss");
-                Date dateB = UtilDateUtilities.StringToDate(oscar.Misc.getString(rs, "labDate"), "yyyy-MM-dd hh:mm:ss");
+                Date dateA = UtilDateUtilities.StringToDate(db.getString(rs,"dateTime"), "yyyy-MM-dd hh:mm:ss");
+                Date dateB = UtilDateUtilities.StringToDate(db.getString(rs,"labDate"), "yyyy-MM-dd hh:mm:ss");
                 if (dateA.before(dateB)){
                     monthsBetween = UtilDateUtilities.getNumMonths(dateA, dateB);
                 }else{
@@ -616,9 +616,9 @@ public class MDSResultsData {
                 
                 if (monthsBetween < 4){
                     if (ret.equals(""))
-                        ret = oscar.Misc.getString(rs, "segmentID");
+                        ret = db.getString(rs,"segmentID");
                     else
-                        ret = ret+","+oscar.Misc.getString(rs, "segmentID");
+                        ret = ret+","+db.getString(rs,"segmentID");
                 }
             }
             rs.close();
@@ -667,7 +667,7 @@ public class MDSResultsData {
         boolean result;
         
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             
             String[] providersArray = selectedProviders.split(",");
             String insertString = "";
@@ -688,11 +688,11 @@ public class MDSResultsData {
             
             // delete old entries
             String sql = "delete from providerLabRouting where provider_no='0' and lab_no in ("+deleteString+")";
-            result = DBHandler.RunSQL(sql);
+            result = db.RunSQL(sql);
             
             // add new entries
             sql = "insert ignore into providerLabRouting (provider_no, lab_no, status) values "+insertString;
-            result = DBHandler.RunSQL(sql);
+            result = db.RunSQL(sql);
             return result;
         }catch(Exception e){
             Logger l = Logger.getLogger(MDSResultsData.class);
@@ -703,12 +703,12 @@ public class MDSResultsData {
     
     public static String searchPatient(String labNo) {
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             
             String sql = "select demographic_no from patientLabRouting where lab_no='"+labNo+"'";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             rs.next();
-            return oscar.Misc.getString(rs, "demographic_no");
+            return db.getString(rs,"demographic_no");
         }catch(Exception e){
             Logger l = Logger.getLogger(MDSResultsData.class);
             l.error("exception in MDSResultsData.searchPatient()", e);
@@ -720,15 +720,15 @@ public class MDSResultsData {
         boolean result;
         
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             
             // delete old entries
             String sql = "delete from patientLabRouting where lab_no='"+labNo+"'";
-            result = DBHandler.RunSQL(sql);
+            result = db.RunSQL(sql);
             
             // add new entries
             sql = "insert into patientLabRouting (lab_no, demographic_no) values ('"+labNo+"', '"+demographicNo+"')";
-            result = DBHandler.RunSQL(sql);
+            result = db.RunSQL(sql);
             return result;
         }catch(Exception e){
             Logger l = Logger.getLogger(MDSResultsData.class);

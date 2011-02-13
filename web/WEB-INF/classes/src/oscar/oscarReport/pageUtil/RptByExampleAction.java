@@ -36,7 +36,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarReport.bean.RptByExampleQueryBeanHandler;
@@ -59,9 +58,9 @@ public class RptByExampleAction extends Action {
         Collection favorites = hd.getFavoriteCollection(providerNo);       
         request.setAttribute("favorites", favorites);        
                 
-        
+        String bgcolor = "#ddddff";
         String sql = frm.getSql();
-        
+        String pros = "";
         
         if (sql!= null){            
             write2Database(sql, providerNo);
@@ -84,8 +83,8 @@ public class RptByExampleAction extends Action {
     public void write2Database(String query, String providerNo){
         if (query!=null && query.compareTo("")!=0){
             try {
-                
-                
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+                oscar.oscarReport.data.RptByExampleData exampleData  = new oscar.oscarReport.data.RptByExampleData();
                 StringEscapeUtils strEscUtils = new StringEscapeUtils();
                 
                 //query = exampleData.replaceSQLString (";","",query);
@@ -94,10 +93,10 @@ public class RptByExampleAction extends Action {
                 query = strEscUtils.escapeSql(query);
                 
                 String sql = "INSERT INTO reportByExamples(providerNo, query, date) VALUES('" + providerNo + "','" + query + "', NOW())";
-                DBHandler.RunSQL(sql);
+                db.RunSQL(sql);
             }
             catch(SQLException e) {
-                MiscUtils.getLogger().error("Error", e);            
+                System.out.println(e.getMessage());            
             }
         }
     }

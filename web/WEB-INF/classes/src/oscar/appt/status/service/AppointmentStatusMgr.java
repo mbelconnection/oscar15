@@ -6,7 +6,6 @@
 package oscar.appt.status.service;
 
 import java.util.List;
-
 import oscar.appt.status.model.AppointmentStatus;
 
 /**

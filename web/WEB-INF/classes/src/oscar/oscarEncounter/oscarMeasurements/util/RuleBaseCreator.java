@@ -26,24 +26,23 @@
 package oscar.oscarEncounter.oscarMeasurements.util;
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.log4j.Logger;
+import java.util.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.drools.RuleBase;
 import org.drools.io.RuleBaseLoader;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.oscarehr.util.MiscUtils;
+import oscar.oscarEncounter.oscarMeasurements.util.DSCondition;
 
 /**
  * Class used to create Drools XML files
  * @author jaygallagher
  */
 public class RuleBaseCreator {
-    private static final Logger log=MiscUtils.getLogger();
+    private static final Log log = LogFactory.getLog(RuleBaseCreator.class);
     
     Namespace namespace = Namespace.getNamespace("http://drools.org/rules");
     Namespace javaNamespace = Namespace.getNamespace("java", "http://drools.org/semantics/java");
@@ -81,18 +80,18 @@ public class RuleBaseCreator {
         list.add(new DSCondition("getLastDateRecordedInMonths", "REBG", ">=", "3"));
         list.add(new DSCondition("getLastDateRecordedInMonths", "REBG", "<", "6"));
 
-        Element ruleElement = getRule("REBG1", "oscar.oscarEncounter.oscarMeasurements.MeasurementInfo", list, "MiscUtils.getLogger().debug(\"REBG 1 getting called\");");
+        Element ruleElement = getRule("REBG1", "oscar.oscarEncounter.oscarMeasurements.MeasurementInfo", list, "System.out.println(\"REBG 1 getting called\");");
         elementList.add(ruleElement);
 
         list = new ArrayList();
         list.add(new DSCondition("getLastDateRecordedInMonths", "REBG", ">", "6"));
-        ruleElement = getRule("REBG2", "oscar.oscarEncounter.oscarMeasurements.MeasurementInfo", list, "MiscUtils.getLogger().debug(\"REBG 1 getting called\");");
+        ruleElement = getRule("REBG2", "oscar.oscarEncounter.oscarMeasurements.MeasurementInfo", list, "System.out.println(\"REBG 1 getting called\");");
         elementList.add(ruleElement);
 
 
         list = new ArrayList();
         list.add(new DSCondition("getLastDateRecordedInMonths", "REBG", "==", "-1"));
-        ruleElement = getRule("REBG3", "oscar.oscarEncounter.oscarMeasurements.MeasurementInfo", list, "MiscUtils.getLogger().debug(\"REBG 1 getting called\");");
+        ruleElement = getRule("REBG3", "oscar.oscarEncounter.oscarMeasurements.MeasurementInfo", list, "System.out.println(\"REBG 1 getting called\");");
         elementList.add(ruleElement);
     }
 

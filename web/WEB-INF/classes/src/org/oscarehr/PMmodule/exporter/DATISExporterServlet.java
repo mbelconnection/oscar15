@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class DATISExporterServlet extends HttpServlet {
@@ -113,25 +112,29 @@ public class DATISExporterServlet extends HttpServlet {
 			}
 			
 		} catch(Throwable t) {
-			log.error("Error", t);
+			log.error(t);
+			t.printStackTrace();
 			try {
 				response.getWriter().print("An Error Occured during DATIS Export operation. Please check server log for details.");
 			} catch (IOException e) {
-				MiscUtils.getLogger().error("Error", e);
+				log.error(e);
+				e.printStackTrace();
 			}
 		} finally {
 			if(fis != null) {
 				try {
 					fis.close();
 				} catch (IOException e) {
-					MiscUtils.getLogger().error("Error", e);
+					log.error(e);
+					e.printStackTrace();
 				}
 			}
 			if(dir != null) {
 				try {
 					removeFiles(dir);
 				} catch (IOException e) {
-					MiscUtils.getLogger().error("Error", e);
+					log.error(e);
+					e.printStackTrace();
 				}
 			}
 		}

@@ -29,8 +29,6 @@ import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Properties;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBeanHandler;
 import oscar.util.UtilDateUtilities;
@@ -42,39 +40,39 @@ public class FrmRhImmuneGlobulinRecord extends FrmRecord {
 		throws SQLException {
 		Properties props = new Properties();
                 
-                
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                 ResultSet rs;
                 String sql;
 
 		if (existingID <= 0) {			
 			sql = "SELECT * FROM demographic WHERE demographic_no = "
                               + demographicNo;
-			rs = DBHandler.GetSQL(sql);
+			rs = db.GetSQL(sql);
 			if (rs.next()) {
-                                java.util.Date dob = UtilDateUtilities.calcDate(oscar.Misc.getString(rs, "year_of_birth"), oscar.Misc.getString(rs, "month_of_birth"), oscar.Misc.getString(rs, "date_of_birth"));
-				props.setProperty("demographic_no",oscar.Misc.getString(rs, "demographic_no"));
+                                java.util.Date dob = UtilDateUtilities.calcDate(db.getString(rs,"year_of_birth"), db.getString(rs,"month_of_birth"), db.getString(rs,"date_of_birth"));
+				props.setProperty("demographic_no",db.getString(rs,"demographic_no"));
 				props.setProperty("formCreated",UtilDateUtilities.DateToString(UtilDateUtilities.Today(),_dateFormat));	
                                 props.setProperty("dob", UtilDateUtilities.DateToString(dob,"yyyy-MM-dd"));
-                                props.setProperty("sex", oscar.Misc.getString(rs, "sex"));
-                                props.setProperty("phone", oscar.Misc.getString(rs, "phone"));
+                                props.setProperty("sex", db.getString(rs,"sex"));
+                                props.setProperty("phone", db.getString(rs,"phone"));
                                 
-                                String lastname = oscar.Misc.getString(rs, "last_name");
-                                MiscUtils.getLogger().debug("last name "+lastname);
+                                String lastname = db.getString(rs,"last_name");
+                                System.out.println("last name "+lastname);
                                 props.setProperty("motherSurname",lastname);
-                                props.setProperty("motherFirstname",oscar.Misc.getString(rs, "first_name")); 
-                                props.setProperty("motherHIN",oscar.Misc.getString(rs, "hin"));
-                                props.setProperty("motherVC",oscar.Misc.getString(rs, "ver"));
-                                props.setProperty("motherCity",oscar.Misc.getString(rs, "city"));
-                                props.setProperty("motherProvince",oscar.Misc.getString(rs, "province"));
-                                props.setProperty("motherPostalCode",oscar.Misc.getString(rs, "postal"));
+                                props.setProperty("motherFirstname",db.getString(rs,"first_name")); 
+                                props.setProperty("motherHIN",db.getString(rs,"hin"));
+                                props.setProperty("motherVC",db.getString(rs,"ver"));
+                                props.setProperty("motherCity",db.getString(rs,"city"));
+                                props.setProperty("motherProvince",db.getString(rs,"province"));
+                                props.setProperty("motherPostalCode",db.getString(rs,"postal"));
                                 
                                 
                                 
-                                props.setProperty("motherAddress",oscar.Misc.getString(rs, "address")); 
+                                props.setProperty("motherAddress",db.getString(rs,"address")); 
                                                 
                                 Hashtable measurementHash = EctMeasurementsDataBeanHandler.getLast(""+demographicNo, "BLDT");
     
-                               
+                                String bloodType = null;// (String) measurementHash.get("value");
                                 if (measurementHash != null && measurementHash.get("value") != null){
                                     props.setProperty("motherABO",(String) measurementHash.get("value")); 
                                 }
@@ -91,11 +89,11 @@ public class FrmRhImmuneGlobulinRecord extends FrmRecord {
 					+ demographicNo
 					+ " AND ID = "
 					+ existingID;
-			rs = DBHandler.GetSQL(sql);
+			rs = db.GetSQL(sql);
 
                         if(rs.next())
                         {
-                            MiscUtils.getLogger().debug("getting metaData");
+                            System.out.println("getting metaData");
                             ResultSetMetaData md = rs.getMetaData();
 
                             for(int i=1; i<=md.getColumnCount(); i++)
@@ -103,19 +101,19 @@ public class FrmRhImmuneGlobulinRecord extends FrmRecord {
                                 String name = md.getColumnName(i);
 
                                 String value;
-                                    MiscUtils.getLogger().debug(" name = "+name+" type = "+md.getColumnTypeName(i)+" scale = "+md.getScale(i));
+                                    System.out.println(" name = "+name+" type = "+md.getColumnTypeName(i)+" scale = "+md.getScale(i));
                                 if(md.getColumnTypeName(i).equalsIgnoreCase("TINY"))           
                                 {
 
                                     if(rs.getInt(i)==1)
                                     {
                                         value = "checked='checked'";
-                                        MiscUtils.getLogger().debug("checking "+name);
+                                        System.out.println("checking "+name);
                                     }
                                     else
                                     {
                                         value = "";
-                                        MiscUtils.getLogger().debug("not checking "+name);
+                                        System.out.println("not checking "+name);
                                     }
                                 }
                                 else
@@ -126,7 +124,7 @@ public class FrmRhImmuneGlobulinRecord extends FrmRecord {
                                     }
                                     else
                                     {
-                                        value = oscar.Misc.getString(rs, i);
+                                        value = db.getString(rs,i);
                                     }
                                 }
 

@@ -39,8 +39,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import oscar.oscarDemographic.data.DemographicData;
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBean;
@@ -54,7 +54,7 @@ import oscar.util.UtilDateUtilities;
  * @author jay
  */
 public class FluReport implements PreventionReport {
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(FluReport.class);
     /** Creates a new instance of FluReport */
     public FluReport() {
     }
@@ -109,9 +109,9 @@ public class FluReport implements PreventionReport {
                 
               
                 
-//                if ( h.get("refused") != null && ((String) h.get("refused")).equals("1")){
-//                   refused = true;
-//                }
+                if ( h.get("refused") != null && ((String) h.get("refused")).equals("1")){
+                   refused = true;
+                }
                 
                 String prevDateStr = (String) h.get("prevention_date");
                 
@@ -179,6 +179,7 @@ public class FluReport implements PreventionReport {
                         done++;
                     }
                 }
+
                 //outcomes        
                 log.debug("due Date "+dueDate.toString()+" cutoffDate "+cutoffDate.toString()+" prevDate "+prevDate.toString());
                 log.debug("due Date  ("+dueDate.toString()+" ) After Prev ("+prevDate.toString() +" ) "+dueDate.after(prevDate));
@@ -219,7 +220,7 @@ public class FluReport implements PreventionReport {
                 EctMeasurementsDataBeanHandler measurementData = new EctMeasurementsDataBeanHandler(prd.demographicNo,"FLUF");
                 log.debug("getting FLUF data for "+prd.demographicNo);
                 Collection fluFollowupData = measurementData.getMeasurementsDataVector();
-
+                System.out.print("fluFollowupData size = "+fluFollowupData.size());
                 if ( fluFollowupData.size() > 0 ){
                       EctMeasurementsDataBean fluData = (EctMeasurementsDataBean) fluFollowupData.iterator().next();
                       log.debug("fluData "+fluData.getDataField());
@@ -258,30 +259,6 @@ public class FluReport implements PreventionReport {
           log.debug("set returnReport "+returnReport);
           return h;
     }
-    
-   
-    
-    
-    
-    
-    boolean ineligible(Hashtable h){
-       boolean ret =false;
-       if ( h.get("refused") != null && ((String) h.get("refused")).equals("2")){
-          ret = true;
-       }
-       return ret;
-   }
-    
-    
-   boolean ineligible(ArrayList list){
-       for (int i =0; i < list.size(); i ++){
-           Hashtable h = (Hashtable) list.get(i);
-           if (ineligible(h)){
-               return true;
-           }
-       }
-       return false;
-   } 
    
    boolean isOfAge(String d,Date asofDate){
         boolean isAge = true;
@@ -375,7 +352,7 @@ public class FluReport implements PreventionReport {
               
               Collection fluFollowupData = measurementData.getMeasurementsDataVector();
               //NO Contact
-
+              System.out.print("fluFollowupData size = "+fluFollowupData.size());
               if ( fluFollowupData.size() == 0 ){
                   prd.nextSuggestedProcedure = this.LETTER1;
                   return this.LETTER1;
@@ -414,7 +391,7 @@ public class FluReport implements PreventionReport {
               EctMeasurementsDataBeanHandler measurementData = new EctMeasurementsDataBeanHandler(prd.demographicNo,"FLUF");
               log.debug("getting FLUF data for "+prd.demographicNo);
               Collection fluFollowupData = measurementData.getMeasurementsDataVector();
-
+              System.out.print("fluFollowupData size = "+fluFollowupData.size());
               if ( fluFollowupData.size() > 0 ){
                   EctMeasurementsDataBean fluData = (EctMeasurementsDataBean) fluFollowupData.iterator().next();
                   log.debug("fluData "+fluData.getDataField());
@@ -431,7 +408,7 @@ public class FluReport implements PreventionReport {
               EctMeasurementsDataBeanHandler measurementDataHandler = new EctMeasurementsDataBeanHandler(prd.demographicNo,"FLUF");
               log.debug("getting followup data for "+prd.demographicNo);
               Collection followupData = measurementDataHandler.getMeasurementsDataVector();
-
+              System.out.print("fluFollowupData size = "+followupData.size());
               if ( followupData.size() > 0 ){
                   EctMeasurementsDataBean measurementData = (EctMeasurementsDataBean) followupData.iterator().next();
                   prd.lastFollowup = measurementData.getDateObservedAsDate();

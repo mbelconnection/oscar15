@@ -29,20 +29,13 @@ import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
-
 public final class UtilDict extends Properties {
-	private static final Logger logger=MiscUtils.getLogger();
-	
   //it is a help class, case insensitive for the name
   public String getDef(String name) {
     return getDef(name,"");
   }
   public String getDef(String name, String dflt) {
-	String result=getProperty(name.toUpperCase(),dflt);
-	logger.debug("key="+name+", value="+result);
-  	return(result);
+  	return (getProperty(name.toUpperCase(),dflt) );
   }
   public String getShortDef(String name, String dflt, int nLimit) {
   	String val=getProperty(name.toUpperCase(),dflt);

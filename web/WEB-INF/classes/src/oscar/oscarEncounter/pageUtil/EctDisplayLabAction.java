@@ -28,6 +28,8 @@ package oscar.oscarEncounter.pageUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Properties;
+import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,6 +38,7 @@ import org.apache.struts.util.MessageResources;
 import oscar.oscarLab.ca.on.CommonLabResultData;
 import oscar.oscarLab.ca.on.LabResultData;
 import oscar.util.DateUtils;
+import oscar.util.OscarRoleObjectPrivilege;
 import oscar.util.StringUtils;
 
 //import oscar.oscarSecurity.CookieSecurity;
@@ -76,13 +79,13 @@ public class EctDisplayLabAction extends EctDisplayAction {
         LabResultData result;
         String labDisplayName;
         //String bgcolour = "FFFFCC";
-        StringBuilder func; 
+        StringBuffer func; 
         int hash;
         for( int idx = 0; idx < labs.size(); ++idx ) {
             result = (LabResultData) labs.get(idx);
             Date date = result.getDateObj();
             String formattedDate = DateUtils.getDate(date,dateFormat,request.getLocale());               
-            func = new StringBuilder("popupPage(700,960,'");
+            func = new StringBuffer("popupPage(700,960,'");
             
             if ( result.isMDS() ){ 
                 labDisplayName = result.getDiscipline();               

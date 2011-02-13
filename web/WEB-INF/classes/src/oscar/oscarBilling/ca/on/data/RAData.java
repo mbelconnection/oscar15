@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -55,8 +54,8 @@ public class RAData {
         ArrayList list = new ArrayList();
         String sql = "Select * from radetail where billing_no = '" + StringEscapeUtils.escapeSql(billingNo) + "'";
         try {
-            
-            ResultSet rs = DBHandler.GetSQL(sql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL(sql);
             while (rs.next()) {
                 Hashtable h = new Hashtable();
                 h.put("radetail_no", rs.getString("radetail_no"));
@@ -75,7 +74,7 @@ public class RAData {
             }
             rs.close();
         } catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return list;
     }
@@ -85,8 +84,8 @@ public class RAData {
         String sql = "Select * from radetail where billing_no = '" + StringEscapeUtils.escapeSql(billingNo) + "'";
         sql += " and service_date='" + service_date + "' and providerohip_no='" + ohip_no + "'";
         try {
-            
-            ResultSet rs = DBHandler.GetSQL(sql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL(sql);
             while (rs.next()) {
                 Hashtable h = new Hashtable();
                 h.put("radetail_no", rs.getString("radetail_no"));
@@ -105,13 +104,13 @@ public class RAData {
             }
             rs.close();
         } catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return list;
     }
 
     public String getErrorCodes(ArrayList a) {
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
         for (int i = 0; i < a.size(); i++) {
             Hashtable h = (Hashtable) a.get(i);
             sb.append(h.get("error_code"));
@@ -130,8 +129,8 @@ public class RAData {
                 amount = amount.trim();
                 valueToAdd = new BigDecimal(amount).setScale(2, BigDecimal.ROUND_HALF_UP);
             } catch (Exception badValueException) {
-                MiscUtils.getLogger().debug(" Error calculating value for " + h.get("billing_no"));
-                MiscUtils.getLogger().error("Error", badValueException);
+                System.out.println(" Error calculating value for " + h.get("billing_no"));
+                badValueException.printStackTrace();
             }
             total = total.add(valueToAdd);
         }
@@ -151,8 +150,8 @@ public class RAData {
                 amount = amount.trim();
                 valueToAdd = new BigDecimal(amount).setScale(2, BigDecimal.ROUND_HALF_UP);
             } catch (Exception badValueException) {
-                MiscUtils.getLogger().debug(" Error calculating value for " + h.get("billing_no"));
-                MiscUtils.getLogger().error("Error", badValueException);
+                System.out.println(" Error calculating value for " + h.get("billing_no"));
+                badValueException.printStackTrace();
             }
             total = total.add(valueToAdd);
         }
@@ -163,8 +162,8 @@ public class RAData {
         boolean ret = false;
         String sql = "Select error_code from radetail where billing_no = '" + StringEscapeUtils.escapeSql(billingNo) + "'";
         try {
-            
-            ResultSet rs = DBHandler.GetSQL(sql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL(sql);
             while (rs.next()) {
                 if (errorCode.equals(rs.getString("error_code"))) {
                     ret = true;
@@ -173,7 +172,7 @@ public class RAData {
             }
             rs.close();
         } catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return ret;
     }

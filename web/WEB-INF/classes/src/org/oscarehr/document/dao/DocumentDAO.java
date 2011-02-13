@@ -33,7 +33,6 @@ import org.hibernate.criterion.Expression;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.document.model.CtlDocument;
 import org.oscarehr.document.model.Document;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 /**
@@ -50,7 +49,7 @@ public class DocumentDAO extends HibernateDaoSupport {
     public void save(Document document){
         getHibernateTemplate().saveOrUpdate(document);
     }
-
+    
     public Demographic getDemoFromDocNo(String docNo){//return null if no demographic linked to this document
         Demographic d=null;
         Integer i=Integer.parseInt(docNo);
@@ -72,7 +71,7 @@ public class DocumentDAO extends HibernateDaoSupport {
 	    c=c.add(Expression.eq("id.documentNo", docId));
 	    cList=c.list();
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }finally{
             if (session != null){
                releaseSession(session);
@@ -90,7 +89,7 @@ public class DocumentDAO extends HibernateDaoSupport {
     public void saveCtlDocument(CtlDocument ctlDocument){
 
         getHibernateTemplate().update(ctlDocument);
-
+        
     }
     
 }

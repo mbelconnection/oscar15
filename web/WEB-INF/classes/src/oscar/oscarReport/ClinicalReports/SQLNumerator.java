@@ -31,8 +31,6 @@ package oscar.oscarReport.ClinicalReports;
 import java.sql.ResultSet;
 import java.util.Hashtable;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 /**
@@ -71,7 +69,7 @@ public class SQLNumerator implements Numerator {
                  outputfields[0] = str;
               }
            }catch(Exception e){
-              MiscUtils.getLogger().error("Error", e);
+              e.printStackTrace();
            }
         }
     }
@@ -89,11 +87,11 @@ public class SQLNumerator implements Numerator {
     //TODO:Do i change this to pull fields out of the query?
     public boolean evaluateOLD(String demographicNo) {
         boolean evalTrue = false;
-        
+        DBHandler db = null;
         try{
-            
-            ResultSet rs = DBHandler.GetSQL(sql.replaceAll("\\$\\{"+processString+"\\}", demographicNo));   
-            MiscUtils.getLogger().debug("SQL Statement: " + sql);
+            db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL(sql.replaceAll("\\$\\{"+processString+"\\}", demographicNo));   
+            System.out.println("SQL Statement: " + sql);
             while(rs.next()){
                int count = rs.getInt(identifier);
                if (count > 0){
@@ -101,10 +99,10 @@ public class SQLNumerator implements Numerator {
                    evalTrue = true;
                }
             }
-            MiscUtils.getLogger().debug("demo "+demographicNo+" eval: "+evalTrue);
+            System.out.println("demo "+demographicNo+" eval: "+evalTrue);
             rs.close();
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         
         return evalTrue;
@@ -116,28 +114,28 @@ public class SQLNumerator implements Numerator {
     // change to get a list of params 
     public boolean evaluate(String demographicNo) {
         boolean evalTrue = false;
-        
+        DBHandler db = null;
         outputValues = null;
         try{
-            
-            ResultSet rs = DBHandler.GetSQL(sql.replaceAll("\\$\\{"+processString+"\\}", demographicNo));   
-            MiscUtils.getLogger().debug("SQL Statement: " + sql);
+            db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL(sql.replaceAll("\\$\\{"+processString+"\\}", demographicNo));   
+            System.out.println("SQL Statement: " + sql);
             if(rs.next()){
                 evalTrue = true;
                 if (outputfields != null){
                     outputValues = new Hashtable();
                     for (int i = 0; i < outputfields.length; i++){
-                        outputValues.put(outputfields[i],oscar.Misc.getString(rs, outputfields[i]));
+                        outputValues.put(outputfields[i],db.getString(rs,outputfields[i]));
                     }
                     outputValues.put("_evaluation",new Boolean(evalTrue));
                 }
                 //for 
                 
             }
-            MiscUtils.getLogger().debug("demo "+demographicNo+" eval: "+evalTrue);
+            System.out.println("demo "+demographicNo+" eval: "+evalTrue);
             rs.close();
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         
         return evalTrue;
@@ -169,7 +167,7 @@ public class SQLNumerator implements Numerator {
     public void parseReplaceValues(String str){
         if (str != null){
             try{
-                MiscUtils.getLogger().debug("parsing string "+str);
+                System.out.println("parsing string "+str);
                 if (str.indexOf(",") != -1){
                 replaceKeys = str.split(",");
                 }else{
@@ -177,7 +175,7 @@ public class SQLNumerator implements Numerator {
                     replaceKeys[0] = str;
                 }
             }catch(Exception e){
-                MiscUtils.getLogger().error("Error", e);
+                e.printStackTrace();
             }
         }
     }

@@ -35,7 +35,8 @@ import javax.xml.ws.WebServiceException;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -66,14 +67,13 @@ import org.oscarehr.casemgmt.dao.ClientImageDAO;
 import org.oscarehr.casemgmt.model.ClientImage;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.util.LoggedInInfo;
-import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SessionConstants;
 
 import oscar.OscarProperties;
 
 public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 
-	private static Logger LOG = MiscUtils.getLogger();
+	private static Log LOG = LogFactory.getLog(GenericIntakeEditAction.class);
 	// Forwards
 	private static final String EDIT = "edit";
 	private static final String PRINT = "print";
@@ -114,6 +114,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		}
 
 		List<IntakeNodeJavascript> jsLocation = genericIntakeManager.getIntakeNodeJavascriptLocation(intake.getNode().getQuestionId());
+		System.out.println("Javascript Location=" + jsLocation);
 		
 		LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
 		
@@ -191,6 +192,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		}
 		
 		List<IntakeNodeJavascript> jsLocation = genericIntakeManager.getIntakeNodeJavascriptLocation(intake.getNode().getQuestionId());
+		System.out.println("Javascript Location=" + jsLocation);
 
 		Demographic client = new Demographic();
 		
@@ -275,7 +277,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		}
 		
 		List<IntakeNodeJavascript> jsLocation = genericIntakeManager.getIntakeNodeJavascriptLocation(intake.getNode().getQuestionId());
-		
+		System.out.println("Javascript Location=" + jsLocation);
 		
 
 		setBeanProperties(formBean, intake, getClient(clientId), providerNo, Agency.getLocalAgency().areHousingProgramsVisible(intakeType), Agency.getLocalAgency()
@@ -331,7 +333,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		}
 
 		List<IntakeNodeJavascript> jsLocation = genericIntakeManager.getIntakeNodeJavascriptLocation(intake.getNode().getQuestionId());
-		
+		System.out.println("Javascript Location=" + jsLocation);
 		
 		
 		setBeanProperties(formBean, intake, getClient(clientId), providerNo, false, false, false, null, null, null, facilityId,null,jsLocation);
@@ -468,7 +470,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 			saveErrors(request, messages);
 		}
 		catch (AdmissionException e) {
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 			LOG.error(e);
 
 			ActionMessages messages = new ActionMessages();
@@ -483,7 +485,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		}
 
 		List<IntakeNodeJavascript> jsLocation = genericIntakeManager.getIntakeNodeJavascriptLocation(intake.getNode().getQuestionId());
-		
+		System.out.println("Javascript Location=" + jsLocation);
 		
 		setBeanProperties(formBean, intake, client, providerNo, Agency.getLocalAgency().areHousingProgramsVisible(intakeType), Agency.getLocalAgency().areServiceProgramsVisible(
 				intakeType), Agency.getLocalAgency().areExternalProgramsVisible(intakeType), getCurrentBedCommunityProgramId(client.getDemographicNo()),

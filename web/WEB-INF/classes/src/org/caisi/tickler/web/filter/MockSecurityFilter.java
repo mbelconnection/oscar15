@@ -34,12 +34,12 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class MockSecurityFilter implements Filter {
 
-	private static Logger log = MiscUtils.getLogger();
+	private static Log log = LogFactory.getLog(MockSecurityFilter.class);
 
 	   public void init(FilterConfig config) throws ServletException {
 	        // TODO Auto-generated method stub

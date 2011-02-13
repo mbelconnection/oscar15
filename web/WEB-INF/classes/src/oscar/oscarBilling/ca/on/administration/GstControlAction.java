@@ -22,7 +22,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -38,21 +37,21 @@ public class GstControlAction extends Action{
     public void writeDatabase( String percent){
         try {
                 String sql;
-                
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                 sql = "Update gstControl set gstPercent = " + percent + ";";
-                DBHandler.RunSQL(sql);   
+                db.RunSQL(sql);   
             }
         catch(SQLException e) {
-                MiscUtils.getLogger().error("Error", e);            
+                System.out.println(e.getMessage());            
         }
     }
     
     public Properties readDatabase() throws SQLException{
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         Properties props = new Properties();
         String sql = "Select gstPercent from gstControl;";
         
-        ResultSet rs = DBHandler.GetSQL(sql);
+        ResultSet rs = db.GetSQL(sql);
         if(rs.next()){
             props.setProperty("gstPercent", rs.getString("gstPercent"));
         }

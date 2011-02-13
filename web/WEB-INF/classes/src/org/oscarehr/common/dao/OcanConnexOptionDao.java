@@ -104,5 +104,4 @@ public class OcanConnexOptionDao extends AbstractDao<OcanConnexOption> {
 		return result;
 	}
 	
-	
 }

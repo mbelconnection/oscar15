@@ -31,8 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.oscarehr.util.MiscUtils;
-
+import oscar.OscarProperties;
 import oscar.oscarDB.DBHandler;
 
 public class EctValidation{
@@ -50,19 +49,19 @@ public class EctValidation{
     public ResultSet getValidationType(String inputType, String mInstrc){
         ResultSet rs = null;
         try{
-                                
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);                
                 String sql = "SELECT validation FROM measurementType WHERE type = '"+ inputType + "'AND measuringInstruction='" + mInstrc + "'"; 
-                rs = DBHandler.GetSQL(sql);
+                rs = db.GetSQL(sql);
                 if (rs.next()){
-                    String validation = oscar.Misc.getString(rs, "validation");                
+                    String validation = db.getString(rs,"validation");                
                     rs.close();
 
                     sql = "SELECT * FROM validations where id=" + validation;
-                    rs = DBHandler.GetSQL(sql);
+                    rs = db.GetSQL(sql);
                 }
         }
         catch(SQLException e){
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         
         return rs;
@@ -73,12 +72,12 @@ public class EctValidation{
         boolean validation = true; 
         org.apache.commons.validator.GenericValidator gValidator = new org.apache.commons.validator.GenericValidator();
         
-        MiscUtils.getLogger().debug("matchRegExp function is called.");
+        System.out.println("matchRegExp function is called.");
         
         if (!gValidator.isBlankOrNull(regExp) && !gValidator.isBlankOrNull(inputValue)){
-            MiscUtils.getLogger().debug("both the regExp and inputValue is not blank nor null.");
+            System.out.println("both the regExp and inputValue is not blank nor null.");
             if(!inputValue.matches(regExp)){
-                MiscUtils.getLogger().debug("Regexp not matched");                                            
+                System.out.println("Regexp not matched");                                            
                 validation=false;
                 
             }
@@ -96,7 +95,8 @@ public class EctValidation{
         if ((dMax!=0) || (dMin!=0)){
             if(gValidator.isDouble(inputValue)){
                 double dValue = Double.parseDouble(inputValue);
-                
+                String min = Double.toString(dMin);
+                String max = Double.toString(dMax);
                 if (!gValidator.isInRange(dValue, dMin, dMax)){                                       
                     validation=false;
                 }
@@ -174,14 +174,14 @@ public class EctValidation{
          boolean validation = true;    
          
          if(matchRegExp(regExp, inputValue)){
-            MiscUtils.getLogger().debug("/");
+            System.out.println("/");
             int slashIndex = inputValue.indexOf("/");
-            MiscUtils.getLogger().debug(slashIndex);
+            System.out.println(slashIndex);
             if (slashIndex >= 0){
                 String systolic = inputValue.substring(0, slashIndex);
                 String diastolic = inputValue.substring(slashIndex+1);
-                MiscUtils.getLogger().debug("The systolic value is " + systolic);
-                MiscUtils.getLogger().debug("The diastolic value is " + diastolic);
+                System.out.println("The systolic value is " + systolic);
+                System.out.println("The diastolic value is " + diastolic);
                 int iSystolic = Integer.parseInt(systolic);
                 int iDiastolic = Integer.parseInt(diastolic);
                 if( iDiastolic > iSystolic){                    
@@ -204,17 +204,17 @@ public class EctValidation{
     public String getCssPath(String inputGroupName){
         String cssLocation = null;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT * from measurementGroupStyle where groupName = '" + inputGroupName + "'";
-            MiscUtils.getLogger().debug("Sql Statement: " + sql);
+            System.out.println("Sql Statement: " + sql);
             ResultSet rs;
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             if(rs.next()){
-                String cssId = oscar.Misc.getString(rs, "cssID");
+                String cssId = db.getString(rs,"cssID");
                 rs.close();   
                 
                 sql = "SELECT * from measurementCSSLocation where cssID = '" + cssId + "'";
-                rs = DBHandler.GetSQL(sql);
+                rs = db.GetSQL(sql);
                 if(rs.next()){
                     String place = "StreamStyleSheet.do?cssfilename="; // Streams by default
 
@@ -228,18 +228,18 @@ public class EctValidation{
                      * if (downloadMethod == null || !(downloadMethod.equalsIgnoreCase("stream"))) {
                      *    place = OscarProperties.getInstance().getProperty("oscarMeasurement_css");
                      *    if(!place.endsWith("/"))
-                     *       place = new StringBuilder(place).insert(place.length(),"/").toString();
+                     *       place = new StringBuffer(place).insert(place.length(),"/").toString();
                      * } else {
                      *    place = "StreamStyleSheet.do?cssfilename=";
                      * }
                      */
 
-                    cssLocation = place+oscar.Misc.getString(rs, "location");
+                    cssLocation = place+db.getString(rs,"location");
                 }
             }
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);            
+            System.out.println(e.getMessage());            
         }
 
         return cssLocation;
@@ -253,24 +253,24 @@ public class EctValidation{
     public String getCssName(String inputGroupName){
         String cssName = null;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT * from measurementGroupStyle where groupName = '" + inputGroupName + "'";
-            MiscUtils.getLogger().debug("Sql Statement: " + sql);
+            System.out.println("Sql Statement: " + sql);
             ResultSet rs;
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             if(rs.next()){
-                String cssId = oscar.Misc.getString(rs, "cssID");
+                String cssId = db.getString(rs,"cssID");
                 rs.close();   
                 
                 sql = "SELECT * from measurementCSSLocation where cssID = '" + cssId + "'";
-                rs = DBHandler.GetSQL(sql);
+                rs = db.GetSQL(sql);
                 if(rs.next()){                    
-                    cssName = oscar.Misc.getString(rs, "location");
+                    cssName = db.getString(rs,"location");
                 }
             }
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);            
+            System.out.println(e.getMessage());            
         }
 
         return cssName;

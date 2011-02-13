@@ -31,7 +31,6 @@ package oscar.oscarWorkflow;
 
 import org.drools.RuleBase;
 import org.drools.WorkingMemory;
-import org.oscarehr.util.MiscUtils;
 
 /**
  *
@@ -54,7 +53,7 @@ public class WorkFlowDS {
          WorkingMemory workingMemory = ruleBase.newWorkingMemory();
          workingMemory.assertObject(w);
          workingMemory.fireAllRules();
-      }catch(Exception e){MiscUtils.getLogger().error("Error", e); throw new Exception("ERROR: Drools ",e);}
+      }catch(Exception e){e.printStackTrace(); throw new Exception("ERROR: Drools ",e);}
          return w;
    }
 

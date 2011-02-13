@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.quatro.common;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import javax.servlet.jsp.JspException;
@@ -141,7 +142,7 @@ public class DatePickerTag extends BaseInputTag{
         if (property == null) return null;
 
         if (indexed) {
-        	StringBuffer results = new StringBuffer();
+           StringBuffer results = new StringBuffer();
            prepareIndex(results, pre_name);
            results.append(property);
            return results.toString();

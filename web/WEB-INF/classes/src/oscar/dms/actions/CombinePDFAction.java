@@ -38,7 +38,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 import oscar.dms.EDocUtil;
@@ -55,7 +54,7 @@ public class CombinePDFAction extends Action {
         String[] files = request.getParameterValues("docNo");
         ArrayList alist = new ArrayList();
         if (files != null){
-            MiscUtils.getLogger().debug("size = "+files.length);
+            System.out.println("size = "+files.length);
             EDocUtil docData = new EDocUtil();
             for (int i =0 ; i < files.length ; i++){
                String path = OscarProperties.getInstance().getProperty("DOCUMENT_DIR");
@@ -67,7 +66,8 @@ public class CombinePDFAction extends Action {
                 response.setHeader("Content-Disposition", "attachment; filename=\"combinedPDF-"+UtilDateUtilities.getToday("yyyy-MM-dd.hh.mm.ss")+".pdf\"");
                 try {
                     ConcatPDF.concat(alist,response.getOutputStream());            
-                } catch (IOException ex) {MiscUtils.getLogger().error("Error", ex);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
                 }            
                 return null;
             }

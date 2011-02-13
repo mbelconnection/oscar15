@@ -111,7 +111,6 @@ import org.oscarehr.common.model.OcanStaffForm;
 import org.oscarehr.common.model.Provider;
 import org.oscarehr.survey.model.oscar.OscarFormInstance;
 import org.oscarehr.util.LoggedInInfo;
-import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 import org.oscarehr.util.WebUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -122,7 +121,7 @@ import com.quatro.service.LookupManager;
 
 public class ClientManagerAction extends BaseAction {
 
-	private static final Logger logger = MiscUtils.getLogger();
+	private static final Logger logger = org.apache.log4j.LogManager.getLogger(ClientManagerAction.class);
 
 	private HealthSafetyManager healthSafetyManager;
 	private ClientRestrictionManager clientRestrictionManager;
@@ -508,7 +507,7 @@ public class ClientManagerAction extends BaseAction {
 
 				request.setAttribute("program", program);
 			} catch (Exception e) {
-				MiscUtils.getLogger().error("Error", e);
+				e.printStackTrace();
 			}
 		}
 
@@ -1229,7 +1228,7 @@ public class ClientManagerAction extends BaseAction {
 				try {
 					admissionManager.processAdmission(Integer.valueOf(demographicNo), getProviderNo(request), programManager.getProgram(String.valueOf(program.getProgramId())), null, admissionNotes);
 				} catch (Exception e) {
-					MiscUtils.getLogger().error("Error", e);
+					e.printStackTrace();
 					ActionMessages messages = new ActionMessages();
 					messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("admit.error", e.getMessage()));
 					saveMessages(request, messages);
@@ -1402,7 +1401,7 @@ public class ClientManagerAction extends BaseAction {
 			else
 				request.setAttribute("selfOcanStaffForm",null);
 			
-			//FULL OCAN Staff/Client Assessment
+			//CORE OCAN Staff/Client Assessment
 			OcanStaffForm coreOcanStaffForm = ocanStaffFormDao.findLatestByFacilityClient(facilityId,Integer.valueOf(demographicNo),"CORE");
 			if(coreOcanStaffForm!=null && coreOcanStaffForm.getAssessmentStatus().equals("In Progress"))
 				request.setAttribute("coreOcanStaffForm", coreOcanStaffForm);
@@ -1574,6 +1573,8 @@ public class ClientManagerAction extends BaseAction {
 			//FULL OCAN Forms
 			List<OcanStaffForm> ocanStaffForms = ocanStaffFormDao.findByFacilityClient(facilityId, clientId,"FULL");
 			request.setAttribute("ocanStaffForms", ocanStaffForms);
+			//List<OcanStaffForm> ocanClientForms = ocanStaffFormDao.findByFacilityClient(facilityId, clientId);
+			//request.setAttribute("ocanClientForms", ocanClientForms);	
 			
 			//SELF+CORE OCAN Forms
 			List<OcanStaffForm> selfOcanStaffForms = ocanStaffFormDao.findByFacilityClient(facilityId, clientId,"SELF");

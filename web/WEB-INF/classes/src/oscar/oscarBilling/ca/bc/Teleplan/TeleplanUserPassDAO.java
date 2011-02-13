@@ -31,8 +31,8 @@ package oscar.oscarBilling.ca.bc.Teleplan;
 
 import java.sql.ResultSet;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import oscar.oscarDB.DBHandler;
 
@@ -41,7 +41,7 @@ import oscar.oscarDB.DBHandler;
  * @author jay
  */
 public class TeleplanUserPassDAO {
-    static Logger log=MiscUtils.getLogger();
+    static Log log = LogFactory.getLog(TeleplanUserPassDAO.class);
     
     /** Creates a new instance of TeleplanSequenceDAO */
     public TeleplanUserPassDAO() {
@@ -49,42 +49,42 @@ public class TeleplanUserPassDAO {
     
     private void setUsername(String username){
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String query = "insert into property (name,value) values ('teleplan_username','"+username+"') " ;
-            DBHandler.RunSQL(query);           
+            db.RunSQL(query);           
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
     }
     
     private void setPassword(String password){
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String query = "insert into property (name,value) values ('teleplan_password','"+password+"') " ;
-            DBHandler.RunSQL(query);           
+            db.RunSQL(query);           
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
     }
     
     
     private void updateUsername(String username){
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String query = "update property set value = '"+username+"' where name = 'teleplan_username' " ;
-            DBHandler.RunSQL(query);            
+            db.RunSQL(query);            
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
     }
     
     private void updatePassword(String password){
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String query = "update property set value = '"+password+"' where name = 'teleplan_password' " ;
-            DBHandler.RunSQL(query);            
+            db.RunSQL(query);            
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
     }
     
@@ -95,15 +95,15 @@ public class TeleplanUserPassDAO {
     private boolean hasUsername(){
         boolean hasSequence = false;
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String query = "select value from property where name = 'teleplan_username' " ;
-            ResultSet rs = DBHandler.GetSQL(query); 
+            ResultSet rs = db.GetSQL(query); 
             if(rs.next()){
                 log.debug("has user Sequence"+rs.getString("value"));
                 hasSequence = true;
             }
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return hasSequence;
     }
@@ -111,15 +111,15 @@ public class TeleplanUserPassDAO {
     private boolean hasPassword(){
         boolean hasSequence = false;
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String query = "select value from property where name = 'teleplan_password' " ;
-            ResultSet rs = DBHandler.GetSQL(query); 
+            ResultSet rs = db.GetSQL(query); 
             if(rs.next()){
                 log.debug("has pass Sequence"+rs.getString("value"));
                 hasSequence = true;
             }
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return hasSequence;
     }
@@ -147,21 +147,21 @@ public class TeleplanUserPassDAO {
     public String[] getUsernamePassword(){
         String[] str = new String[2];
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String query = "select value from property where name = 'teleplan_username' " ;
-            ResultSet rs = DBHandler.GetSQL(query); 
+            ResultSet rs = db.GetSQL(query); 
             if(rs.next()){
                 str[0] = rs.getString("value");
             }
             rs.close();
             query = "select value from property where name = 'teleplan_password' " ;
-            rs = DBHandler.GetSQL(query); 
+            rs = db.GetSQL(query); 
             if(rs.next()){
                 str[1] = rs.getString("value");
             }
             rs.close();
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return str;
     }

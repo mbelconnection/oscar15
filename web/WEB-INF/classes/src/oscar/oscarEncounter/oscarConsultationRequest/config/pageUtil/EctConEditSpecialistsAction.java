@@ -24,6 +24,8 @@
 package oscar.oscarEncounter.oscarConsultationRequest.config.pageUtil;
 
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 import javax.servlet.ServletException;
@@ -38,8 +40,10 @@ import org.oscarehr.common.dao.ProfessionalSpecialistDao;
 import org.oscarehr.common.model.ProfessionalSpecialist;
 import org.oscarehr.util.SpringUtils;
 
+import oscar.oscarDB.DBHandler;
+
 public class EctConEditSpecialistsAction extends Action {
-	@Override
+	
 	public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ProfessionalSpecialistDao professionalSpecialistDao=(ProfessionalSpecialistDao)SpringUtils.getBean("professionalSpecialistDao");
 
@@ -82,7 +86,6 @@ public class EctConEditSpecialistsAction extends Action {
 		request.setAttribute("eDataOscarKey", professionalSpecialist.geteDataOscarKey());
 		request.setAttribute("eDataServiceKey", professionalSpecialist.geteDataServiceKey());
 		request.setAttribute("eDataServiceName", professionalSpecialist.geteDataServiceName());
-                request.setAttribute("annotation", professionalSpecialist.getAnnotation());
 		request.setAttribute("upd", new Integer(updater));
 		EctConConstructSpecialistsScriptsFile constructSpecialistsScriptsFile = new EctConConstructSpecialistsScriptsFile();
 		request.setAttribute("verd", constructSpecialistsScriptsFile.makeFile());

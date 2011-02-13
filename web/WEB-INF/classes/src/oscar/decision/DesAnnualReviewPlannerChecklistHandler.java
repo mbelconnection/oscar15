@@ -16,7 +16,6 @@ package oscar.decision;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import org.oscarehr.util.MiscUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -37,13 +36,13 @@ public class DesAnnualReviewPlannerChecklistHandler extends DefaultHandler {
     public DesAnnualReviewPlannerChecklistHandler(Properties savedltcrisks) {
         savedar1params = savedltcrisks;
         for (Enumeration e = savedar1params.propertyNames() ; e.hasMoreElements() ;) {
-            MiscUtils.getLogger().debug("x :");
-            MiscUtils.getLogger().debug("&& :" + e.nextElement());
+            System.out.println("x :");
+            System.out.println("&& :" + e.nextElement());
         }
     }
 
     public void setDocumentLocator(Locator locator) {
-
+        // System.out.println(" * setDocumentLocator() called");
         this.locator = locator;
     }
 
@@ -51,7 +50,9 @@ public class DesAnnualReviewPlannerChecklistHandler extends DefaultHandler {
         results = "<table width='100%' border='0' cellpadding='0' cellspaceing='0' BGCOLOR='#009966'>";
         results += "<tr><td width='5%'><font color='yellow'><B>Done</B></font></td><td width='5%'><font color='yellow'><B>N/A</B></font></td><td align='center' width='90%' ><font size=-1 color='#FFFFFF'>Long Term Care Checklist Based on Presented Risk Factors</font></td></tr></table>";
         results += "<center><table width='100%' border='0' cellpadding='0' CELLSPACING='0' BGCOLOR='ivory' datasrc='#xml_list'><tr><td>\n";
-        MiscUtils.getLogger().debug("savedar1params: " + savedar1params);
+        System.out.println("savedar1params: " + savedar1params);
+        //System.out.println("savedar1.params.getProperty('002'):
+        // "+savedar1params.getProperty("002"));
     }
 
     public void endDocument() throws SAXException {
@@ -59,21 +60,21 @@ public class DesAnnualReviewPlannerChecklistHandler extends DefaultHandler {
     }
 
     public void processingInstruction(String target, String data) throws SAXException {
-        MiscUtils.getLogger().debug("PI: Target: " + target + " and Data: " + data);
+        System.out.println("PI: Target: " + target + " and Data: " + data);
     }
 
     public void startPrefixMapping(String prefix, String uri) {
-
+        // System.out.println("Mapping starts for prefix " + prefix + " mapped to URI " + uri);
     }
 
     public void endPrefixMapping(String prefix) {
-
+        // System.out.println("Mapping ends for prefix " + prefix);
     }
 
     public void startElement(String namespaceURI, String localName, String rawName, Attributes atts)
             throws SAXException {
-        MiscUtils.getLogger().debug("startElement: localName " + localName + " rawName " + rawName);
-        String starttag, endtag, riskName, clName;
+        System.out.println("startElement: localName " + localName + " rawName " + rawName);
+        String starttag, endtag, savedriskname, riskName, clName;
 
         if ((rawName.toLowerCase()).equals("section")) {
             sectionno = "";
@@ -92,11 +93,11 @@ public class DesAnnualReviewPlannerChecklistHandler extends DefaultHandler {
             for (int i = 0; i < atts.getLength(); i++) {
                 if (atts.getQName(i) == "riskname") { //not riskname
                     riskName = atts.getValue(i);
-                    MiscUtils.getLogger().debug("Mapping ends for prefix :" + riskName);
+                    System.out.println("Mapping ends for prefix :" + riskName);
                     
                     for (Enumeration e = savedar1params.propertyNames() ; e.hasMoreElements() ;) {
-                        MiscUtils.getLogger().debug("x :");
-                        MiscUtils.getLogger().debug("&& :" + e.nextElement());
+                        System.out.println("x :");
+                        System.out.println("&& :" + e.nextElement());
                     }
                     
                     starttag = "<checklist_" + riskName + ">";
@@ -105,7 +106,7 @@ public class DesAnnualReviewPlannerChecklistHandler extends DefaultHandler {
                     // sxmlrisks.getXmlContent(risks,starttag,endtag); if (savedriskname != null &&
                     // savedriskname.compareTo("checked")==0){
                     if (savedar1params.getProperty(riskName) != null) {
-
+                        //System.out.println("getProperty ends for prefix :" + savedar1params.getProperty(riskName));
                         display = true;
                         break;
                     }
@@ -193,19 +194,19 @@ public class DesAnnualReviewPlannerChecklistHandler extends DefaultHandler {
 
     public void characters(char[] ch, int start, int length) throws SAXException {
         String s = new String(ch, start, length);
-
+        // System.out.println("characters: " + s);
         if (display) {
             results += s;
         }
     }
 
     public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
-        new String(ch, start, length);
-
+        String s = new String(ch, start, length);
+        // System.out.println("ignorableWhiteSpace: [" + s + "]");
     }
 
     public void skippedEntity(String name) throws SAXException {
-        MiscUtils.getLogger().debug("Skipping entity " + name);
+        System.out.println("Skipping entity " + name);
     }
 
     public String getResults() {

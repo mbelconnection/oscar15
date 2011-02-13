@@ -26,6 +26,8 @@
 
 package oscar.dms.actions;
 
+import com.quatro.dao.security.SecObjectNameDao;
+import com.quatro.model.security.Secobjectname;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -53,25 +55,21 @@ import org.oscarehr.PMmodule.utility.UtilDateUtilities;
 import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.dao.DocumentResultsDao;
 import org.oscarehr.common.dao.ProviderInboxRoutingDao;
-import org.oscarehr.common.dao.QueueDao;
 import org.oscarehr.common.dao.QueueDocumentLinkDao;
-import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.ProviderInboxItem;
 import org.oscarehr.common.model.QueueDocumentLink;
+import org.oscarehr.util.SpringUtils;
+import oscar.dms.EDoc;
+import org.oscarehr.common.dao.QueueDao;
+import org.oscarehr.common.model.Demographic;
 import org.oscarehr.document.dao.DocumentDAO;
 import org.oscarehr.util.MiscUtils;
-import org.oscarehr.util.SpringUtils;
-
-import oscar.dms.EDoc;
 import oscar.dms.EDocUtil;
 import oscar.oscarLab.ca.all.Hl7textResultsData;
 import oscar.oscarLab.ca.on.CommonLabResultData;
 import oscar.oscarLab.ca.on.LabResultData;
 import oscar.oscarProvider.data.ProviderData;
 import oscar.util.OscarRoleObjectPrivilege;
-
-import com.quatro.dao.security.SecObjectNameDao;
-import com.quatro.model.security.Secobjectname;
 
 /**
  *
@@ -89,15 +87,15 @@ public class DmsInboxManageAction extends DispatchAction {
     public void setQueueDocumentLinkDAO(QueueDocumentLinkDao queueDocumentLinkDAO){
         this.queueDocumentLinkDAO=queueDocumentLinkDAO;
     }
-
+    
     public void setSecObjectNameDao(SecObjectNameDao secObjectNameDao){
         this.secObjectNameDao=secObjectNameDao;
     }
     public ActionForward unspecified(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
         
-        
+
         return null;
-       }
+    }
     private void setProviderDocsInSession(ArrayList<EDoc> privatedocs,HttpServletRequest request){
         ArrayList providers = ProviderData.getProviderListOfAllTypes();
         Hashtable providerDocs=new Hashtable();
@@ -222,7 +220,7 @@ public class DmsInboxManageAction extends DispatchAction {
         }
         return unique;
     }
-    
+
     public ActionForward previewPatientDocLab(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
         String demographicNo=request.getParameter("demog");
         String docs=request.getParameter("docs");
@@ -232,7 +230,7 @@ public class DmsInboxManageAction extends DispatchAction {
         String ackStatus=request.getParameter("ackStatus");
         ArrayList<EDoc> docPreview=new ArrayList();
         ArrayList labPreview=new ArrayList();
-    
+
         if(docs.length()==0){
             //do nothing
         }else{
@@ -245,9 +243,9 @@ public class DmsInboxManageAction extends DispatchAction {
             }
             if(didList.size()>0)
                 docPreview=EDocUtil.listDocsPreviewInbox(didList);
-            
+
         }
-        
+
         if(labs.length()==0){
             //do nothing
         }else{
@@ -257,12 +255,12 @@ public class DmsInboxManageAction extends DispatchAction {
                 if(labids.length>0)
                     ls.add(labids[i]);
             }
-            
+
             Hl7textResultsData hrd=new Hl7textResultsData();
             if(ls.size()>0)
                 labPreview=hrd.getNotAckLabsFromLabNos(ls);
         }
-        
+
         request.setAttribute("docPreview",docPreview);
         request.setAttribute("labPreview",labPreview);
         request.setAttribute("providerNo", providerNo);
@@ -279,7 +277,7 @@ public class DmsInboxManageAction extends DispatchAction {
 
 
 
-    public ActionForward prepareForIndexPage(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+     public ActionForward prepareForIndexPage(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
         HttpSession session=request.getSession();
         try{if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");}
         catch(Exception e){MiscUtils.getLogger().error("Error", e);}
@@ -304,7 +302,7 @@ public class DmsInboxManageAction extends DispatchAction {
     for(SecUserRole r:roles){
         if(roleName.length()==0){
             roleName=r.getRoleName();
-            
+
         }else{
             roleName+=","+r.getRoleName();
         }
@@ -320,7 +318,7 @@ public class DmsInboxManageAction extends DispatchAction {
         docQueue.put(i.toString(), n.toString());
     }
     ArrayList labdocs = comLab.populateLabResultsData(searchProviderNo, demographicNo, request.getParameter("fname"), request.getParameter("lname"), request.getParameter("hnum"), ackStatus,scannedDocStatus);
-
+    
     ArrayList validlabdocs=new ArrayList();
 
     DocumentResultsDao documentResultsDao=(DocumentResultsDao)SpringUtils.getBean("documentResultsDao");
@@ -330,7 +328,7 @@ public class DmsInboxManageAction extends DispatchAction {
             if(data.isDocument()){
                String docid=data.getSegmentID();
 
-                String queueid=docQueue.get(docid);                
+                String queueid=docQueue.get(docid);
                 if(queueid!=null){ 
                     queueid=queueid.trim();
                     //if doc sent to default queue and no valid provider, include it if it's unique
@@ -348,13 +346,13 @@ public class DmsInboxManageAction extends DispatchAction {
                         Vector vec=OscarRoleObjectPrivilege.getPrivilegeProp("_queue."+queueid);
                         if(OscarRoleObjectPrivilege.checkPrivilege(roleName, (Properties)vec.get(0), (Vector)vec.get(1))
                                 || documentResultsDao.isSentToProvider(docid, searchProviderNo)){
-                            //labs is in provider's queue,do nothing
+                            //labs is in provider's queue,do nothing                
                            if(isSegmentIDUnique(validlabdocs,data))
                            {
                                 validlabdocs.add(data);
-                           }
-                        }
-                    }
+                        }        
+                   }
+                }
                     //if doc sent to non default queue and no valid provider, check if provider is in the non default queue
                     else if(!queueid.equals("1")&&!documentResultsDao.isSentToValidProvider(docid)){
                         Vector vec=OscarRoleObjectPrivilege.getPrivilegeProp("_queue."+queueid);
@@ -363,7 +361,7 @@ public class DmsInboxManageAction extends DispatchAction {
                            if(isSegmentIDUnique(validlabdocs,data)){
                                validlabdocs.add(data);
                            }
-                                
+
                         }
                     }
                 }
@@ -533,7 +531,7 @@ public class DmsInboxManageAction extends DispatchAction {
         patientNumDoc.put(key, numDoc);
         totalNumDocs+=numDoc;
     }
-
+    
 
 
 
@@ -602,7 +600,7 @@ public class DmsInboxManageAction extends DispatchAction {
                    demoId= c.getDemographicNo(qn,"HL7");
                    if(demoId!=null && !demoId.equals("0"))
                        success=true;
-               }
+}
            }
        }catch(Exception e){
            MiscUtils.getLogger().error("Error", e);
@@ -626,7 +624,7 @@ public class DmsInboxManageAction extends DispatchAction {
             if(docid!=null){
                 if(!queueDocumentLinkDAO.setStatusInactive(Integer.parseInt(docid))){
                     MiscUtils.getLogger().error("failed to set status in queue document link to be inactive");
-                }
+}
             }
             return null;
     }
@@ -648,20 +646,20 @@ public class DmsInboxManageAction extends DispatchAction {
 
         String patientIdNamesStr="";
         List<QueueDocumentLink> qs=queueDocumentLinkDAO.getActiveQueueDocLink();
-        HashMap<Integer,List<Integer>> queueDocNos=new HashMap<Integer,List<Integer>>();
-        HashMap<Integer,String> docType=new HashMap<Integer,String>();
-        HashMap<Integer,List<Integer>> patientDocs=new HashMap<Integer,List<Integer>>();
+        Hashtable queueDocNos=new Hashtable();
+        Hashtable docType=new Hashtable();
+        Hashtable<Integer,List> patientDocs=new Hashtable();
         DocumentDAO documentDAO=(DocumentDAO) SpringUtils.getBean("documentDAO");
                 Demographic demo =new Demographic();
-                List<Integer> docsWithPatient=new ArrayList<Integer>();
-                HashMap<Integer,String> patientIdNames=new HashMap<Integer,String>();//lbData.patientName = demo.getLastName()+ ", "+demo.getFirstName();
-                List<Integer> patientIds=new ArrayList<Integer>();
+                List docsWithPatient=new ArrayList();
+                Hashtable patientIdNames=new Hashtable();//lbData.patientName = demo.getLastName()+ ", "+demo.getFirstName();
+                List<Integer> patientIds=new ArrayList();
                 Integer demoNo;
-                HashMap<Integer,String> docStatus=new HashMap<Integer,String>();
+                Hashtable docStatus=new Hashtable();
                 String patientIdStr="";
-                StringBuilder patientIdBud=new StringBuilder();
-                HashMap<String,List<Integer>> typeDocLab=new HashMap<String,List<Integer>>();
-                List<Integer> ListDocIds=new ArrayList<Integer>();
+                StringBuffer patientIdBuf=new StringBuffer();
+                Hashtable typeDocLab=new Hashtable();
+                List ListDocIds=new ArrayList();
         for(QueueDocumentLink q:qs){
              int qid=q.getQueueId();
              int docid=q.getDocId();
@@ -686,7 +684,7 @@ public class DmsInboxManageAction extends DispatchAction {
 
 
             }
-             List<ProviderInboxItem> providers=providerInboxRoutingDAO.getProvidersWithRoutingForDocument("DOC",Integer.toString(docid) );
+             List providers=providerInboxRoutingDAO.getProvidersWithRoutingForDocument("DOC",Integer.toString(docid) );
              if(providers.size()>0){
                  ProviderInboxItem pii=(ProviderInboxItem)providers.get(0);
                  docStatus.put(docid, pii.getStatus());
@@ -696,33 +694,33 @@ public class DmsInboxManageAction extends DispatchAction {
                  docsWithPatient.add(docid);
                  patientDocs.put(demoNo,docsWithPatient);
              }else{
-                 docsWithPatient=new ArrayList<Integer>();
+                 docsWithPatient=new ArrayList();
                  docsWithPatient.add(docid);
                  patientDocs.put(demoNo, docsWithPatient);
              }
              if(queueDocNos.containsKey(qid)){
-                 
+
                  List<Integer> ds= (List<Integer>)queueDocNos.get(qid);
                  ds.add(docid);
                  queueDocNos.put(qid, ds);
 
              }else{
-                 List<Integer> ds=new ArrayList<Integer>();
+                 List<Integer> ds=new ArrayList();
                  ds.add(docid);
                  queueDocNos.put(qid, ds);
-             }             
+             }
         }
         Integer dn=0;
         for(int i=0;i<patientIds.size();i++){
             dn=patientIds.get(i);
-            patientIdBud.append(dn);
+            patientIdBuf.append(dn);
             if(i!=patientIds.size()-1)
-                patientIdBud.append(",");
+                patientIdBuf.append(",");
         }
-        patientIdStr=patientIdBud.toString();
+        patientIdStr=patientIdBuf.toString();
         typeDocLab.put("DOC", ListDocIds);
-        List<Integer> normals=ListDocIds;//assume all documents are normal
-        List<Integer> abnormals=new ArrayList<Integer>();
+        List normals=ListDocIds;//assume all documents are normal
+        List abnormals=new ArrayList();
         request.setAttribute("typeDocLab", typeDocLab);
         request.setAttribute("docStatus", docStatus);
         request.setAttribute("patientDocs",patientDocs );
@@ -734,11 +732,11 @@ public class DmsInboxManageAction extends DispatchAction {
         request.setAttribute("abnormals", abnormals);
         request.setAttribute("queueDocNos", queueDocNos);
         request.setAttribute("patientIdNamesStr",patientIdNamesStr);
-        request.setAttribute("queueIdNames", queueDAO.getHashMapOfQueues());
+        request.setAttribute("queueIdNames", queueDAO.getQueuesHashtable());
         request.setAttribute("providerNo", providerNo);
         request.setAttribute("searchProviderNo", searchProviderNo);
         return mapping.findForward("document_in_queues");
-    
-        
+
+
     }
 }

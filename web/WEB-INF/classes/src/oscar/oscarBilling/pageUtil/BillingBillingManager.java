@@ -28,8 +28,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 
@@ -54,12 +52,12 @@ public class BillingBillingManager {
                 
                 
                 
-                
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                 ResultSet rs;
                 String sql = "SELECT b.service_code, b.description , b.value, b.percentage "
                            + "FROM billingservice b WHERE b.service_code='" + service_code + "'";
                 
-                rs = DBHandler.GetSQL(sql);
+                rs = db.GetSQL(sql);
                 
                 while(rs.next()) {
                     billingitem = new BillingItem(rs.getString("service_code"), rs.getString("description"),
@@ -74,7 +72,7 @@ public class BillingBillingManager {
             arr = (BillingItem[])lst.toArray(arr);
             
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         
         
@@ -88,7 +86,7 @@ public class BillingBillingManager {
         ArrayList billingItemsArray = new ArrayList();
         
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;            
             //oscar.oscarBilling.pageUtil.BillingBillingManager bbm = new oscar.oscarBilling.pageUtil.BillingBillingManager();
             
@@ -97,8 +95,8 @@ public class BillingBillingManager {
             sql = sql + "clarification_code, anatomical_area, after_hour, new_program, billing_code, bill_amount, payment_mode, service_date, service_to_day, submission_code, extended_submission_code, dx_code1, dx_code2, dx_code3, ";
             sql = sql + "dx_expansion, service_location, referral_flag1, referral_no1, referral_flag2, referral_no2, time_call, service_start_time, service_end_time, birth_date, office_number, correspondence_code, claim_comment ";
             sql = sql + "from billingmaster where billing_no='" + billing_no+"'";
-            MiscUtils.getLogger().debug(sql);
-            rs = DBHandler.GetSQL(sql);
+            System.out.println(sql);
+            rs = db.GetSQL(sql);
             
             while(rs.next()){
                 BillingItem billingItem = new BillingItem(rs.getString("billing_code"),rs.getString("billing_unit"));
@@ -109,7 +107,7 @@ public class BillingBillingManager {
             
             rs.close();
             
-        } catch (SQLException e){ MiscUtils.getLogger().error("Error", e);  }
+        } catch (SQLException e){ System.out.println(e.getMessage());  }
         
         return billingItemsArray;
         
@@ -233,7 +231,7 @@ public class BillingBillingManager {
         for (int i=0; i< ar.size(); i++){
             BillingItem bi = (BillingItem) ar.get(i);
             grandtotal += bi.getLineTotal();
-            MiscUtils.getLogger().debug("total:" + grandtotal);
+            System.out.println("total:" + grandtotal);
         }
         BigDecimal bdFee = new BigDecimal(grandtotal).setScale(2, BigDecimal.ROUND_HALF_UP);
         return bdFee.toString();
@@ -299,7 +297,7 @@ public class BillingBillingManager {
         
         public void fill(){
             try{
-                
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                 ResultSet rs;
                 String sql;
                 
@@ -307,8 +305,8 @@ public class BillingBillingManager {
                 
                 sql = "SELECT b.service_code, b.description , b.value, b.percentage "
                 + "FROM billingservice b WHERE b.service_code='" + service_code + "'";
-                MiscUtils.getLogger().debug(sql);
-                rs = DBHandler.GetSQL(sql);
+                System.out.println(sql);
+                rs = db.GetSQL(sql);
                 
                 while(rs.next()){
                     this.description =  rs.getString("description");
@@ -320,7 +318,7 @@ public class BillingBillingManager {
                 
                 rs.close();
                 
-            } catch (SQLException e){ MiscUtils.getLogger().error("Error", e);  }
+            } catch (SQLException e){ System.out.println(e.getMessage());  }
             
         }
         public double getLineTotal() {

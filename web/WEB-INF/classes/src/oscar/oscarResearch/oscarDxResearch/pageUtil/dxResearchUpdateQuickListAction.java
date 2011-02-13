@@ -38,7 +38,6 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -59,7 +58,7 @@ public class dxResearchUpdateQuickListAction extends Action {
         try{
             
             
-                        
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);            
             String sql;
             
             if(forward.equals("add")){
@@ -79,7 +78,7 @@ public class dxResearchUpdateQuickListAction extends Action {
                         //need to validate the dxresearch code before write to the database
                         sql = "select * from "+codingSystem+" where "+codingSystem+" like '" + xml_research[i] +"'";
                         
-                        ResultSet rsCode = DBHandler.GetSQL(sql);
+                        ResultSet rsCode = db.GetSQL(sql);
 
                         if(!rsCode.next() || rsCode==null){
                             valid = false;
@@ -89,11 +88,11 @@ public class dxResearchUpdateQuickListAction extends Action {
                         }
                         else{
                             sql = "select * from quickList where quickListName = '" + quickListName + "' AND dxResearchCode='"+xml_research[i]+"' AND codingSystem='"+codingSystem+"'";
-                            ResultSet rs = DBHandler.GetSQL(sql);                            
+                            ResultSet rs = db.GetSQL(sql);                            
                             if(!rs.next()){                                                            
                                 sql = "insert into quickList (quickListName, dxResearchCode, createdByProvider, codingSystem) values('"
                                         + quickListName +"','" + xml_research[i] + "','" + curUser +"', '"+codingSystem+"')";
-                                DBHandler.RunSQL(sql);
+                                db.RunSQL(sql);
                             }
                         }
                         
@@ -107,7 +106,7 @@ public class dxResearchUpdateQuickListAction extends Action {
                     for(int i=0; i<removedItems.length; i++){
                         itemValues = removedItems[i].split(",");
                         sql = "Delete from quickList where quickListName = '"+ quickListName + "' AND dxResearchCode = '"+itemValues[1]+"' AND codingSystem = '" + itemValues[0] + "'";
-                        DBHandler.RunSQL(sql);
+                        db.RunSQL(sql);
                     }
                 }
             }
@@ -117,7 +116,7 @@ public class dxResearchUpdateQuickListAction extends Action {
         }
         catch(SQLException e)
         {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }    
 
         if(!valid){

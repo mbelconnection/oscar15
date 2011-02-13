@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
-import org.hibernate.SQLQuery;
 import org.hibernate.criterion.Expression;
+import org.hibernate.SQLQuery;
 import org.hibernate.criterion.Order;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -58,6 +58,7 @@ public class AppointmentStatusDAOHibernate extends HibernateDaoSupport
                 continue;
             sql = "select count(*) as total from appointment where status like"+ "'"+apptStatus.getStatus()+"%' ";
             sql = sql + "collate latin1_general_cs";
+            System.out.println(sql);
             query = getSession().createSQLQuery(sql);
             query.addScalar("total", Hibernate.INTEGER);
             iUsuage = (Integer) query.uniqueResult();

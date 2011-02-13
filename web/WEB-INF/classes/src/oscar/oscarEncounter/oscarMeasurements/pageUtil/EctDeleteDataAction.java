@@ -38,7 +38,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 import oscar.oscarDB.DBHandler;
@@ -54,28 +53,32 @@ public class EctDeleteDataAction extends Action {
         String[] deleteCheckbox = frm.getDeleteCheckbox();
  
         GregorianCalendar now=new GregorianCalendar(); 
-
+        int curYear = now.get(Calendar.YEAR);
+        int curMonth = (now.get(Calendar.MONTH)+1);
+        int curDay = now.get(Calendar.DAY_OF_MONTH);
         String dateDeleted = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.get(Calendar.DATE) ;
+
+        boolean valid = true;
                 
         try{
-                                                                                                
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);                                                                                    
             
             if(deleteCheckbox != null){
                 for(int i=0; i<deleteCheckbox.length; i++){
-                    MiscUtils.getLogger().debug(deleteCheckbox[i]);
+                    System.out.println(deleteCheckbox[i]);
                     String sql = "SELECT * FROM `measurements` WHERE id='"+ deleteCheckbox[i] +"'";                                        
-                    MiscUtils.getLogger().debug(" sql statement "+sql);
-                    ResultSet rs = DBHandler.GetSQL(sql);
+                    System.out.println(" sql statement "+sql);
+                    ResultSet rs = db.GetSQL(sql);
                     if(rs.next()){
                         sql = "INSERT INTO measurementsDeleted"
                              +"(type, demographicNo, providerNo, dataField, measuringInstruction, comments, dateObserved, dateEntered, dateDeleted)"
-                             +" VALUES ('"+oscar.Misc.getString(rs, "type")+"','"+oscar.Misc.getString(rs, "demographicNo")+"','"+oscar.Misc.getString(rs, "providerNo")+"','"
-                             + oscar.Misc.getString(rs, "dataField")+"','" + oscar.Misc.getString(rs, "measuringInstruction")+"','"+oscar.Misc.getString(rs, "comments")+"','"
-                             + oscar.Misc.getString(rs, "dateObserved")+"','"+oscar.Misc.getString(rs, "dateEntered")+"','"+dateDeleted+"')";
-                        DBHandler.RunSQL(sql);
+                             +" VALUES ('"+db.getString(rs,"type")+"','"+db.getString(rs,"demographicNo")+"','"+db.getString(rs,"providerNo")+"','"
+                             + db.getString(rs,"dataField")+"','" + db.getString(rs,"measuringInstruction")+"','"+db.getString(rs,"comments")+"','"
+                             + db.getString(rs,"dateObserved")+"','"+db.getString(rs,"dateEntered")+"','"+dateDeleted+"')";
+                        db.RunSQL(sql);
                         rs.close();
                         sql = "DELETE FROM `measurements` WHERE id='"+ deleteCheckbox[i] +"'"; 
-                        DBHandler.RunSQL(sql);
+                        db.RunSQL(sql);
                     }
                 }
             }
@@ -96,7 +99,7 @@ public class EctDeleteDataAction extends Action {
 
         catch(SQLException e)
         {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
                 
         if(frm.getType()!=null){

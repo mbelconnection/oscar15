@@ -25,6 +25,7 @@ package oscar.oscarMDS.pageUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +36,7 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarLab.ca.on.CommonLabResultData;
 
@@ -57,9 +59,9 @@ public class ReportReassignAction extends Action {
         
         String[] flaggedLabs = request.getParameterValues("flaggedLabs");
         String selectedProviders = request.getParameter("selectedProviders");
-       // String labType = request.getParameter("labType");
+        String labType = request.getParameter("labType");
         String ajax=request.getParameter("ajax");
-        //Hashtable htable = new Hashtable();
+        Hashtable htable = new Hashtable();
         String[] labTypes = CommonLabResultData.getLabTypes();
         ArrayList listFlaggedLabs = new ArrayList();
        /* Enumeration em=request.getParameterNames();
@@ -110,7 +112,7 @@ public class ReportReassignAction extends Action {
         }
         else{
             //MiscUtils.getLogger().info("else");
-            return (new ActionForward(newURL));
-        }
+        return (new ActionForward(newURL));
     }
+}
 }

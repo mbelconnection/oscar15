@@ -28,7 +28,6 @@ package oscar.util;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.oscarehr.util.MiscUtils;
 
 /**
  * <p>Title:BeanUtil </p>
@@ -54,11 +53,14 @@ public String getPropertyValue(Object bean, String fieldName) {
   try {
     value = ut.getProperty(bean, fieldName);
   }
-  catch (NoSuchMethodException ex) {MiscUtils.getLogger().error("Error", ex);
+  catch (NoSuchMethodException ex) {
+    ex.printStackTrace();
   }
-  catch (InvocationTargetException ex) {MiscUtils.getLogger().error("Error", ex);
+  catch (InvocationTargetException ex) {
+    ex.printStackTrace();
   }
-  catch (IllegalAccessException ex) {MiscUtils.getLogger().error("Error", ex);
+  catch (IllegalAccessException ex) {
+    ex.printStackTrace();
   }
   return value;
 }

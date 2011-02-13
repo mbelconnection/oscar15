@@ -26,7 +26,6 @@ package oscar.oscarMessenger.data;
 
 import javax.servlet.jsp.JspWriter;
 
-import org.oscarehr.util.MiscUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -70,17 +69,18 @@ public class MsgAddressBook {
       String retval = new String();
       CurrentLocationName = new String();
       try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             java.sql.ResultSet rs;
             String sql = new String("select locationDesc, addressBook from oscarcommlocations where current1 = 1");
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             if (rs.next()){
-               retval = oscar.Misc.getString(rs, "addressBook");
-               CurrentLocationName = oscar.Misc.getString(rs, "locationDesc");
+               retval = db.getString(rs,"addressBook");
+               CurrentLocationName = db.getString(rs,"locationDesc");
             }
             rs.close();
-         }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+         }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
 
+         // System.out.println("myAddressBook :"+retval);
       return retval;
    }
    //---------------------------------------------------------------------------
@@ -95,17 +95,17 @@ public class MsgAddressBook {
       remoteLocationId        = new java.util.Vector();
 
       try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             java.sql.ResultSet rs;
             String sql = new String("select locationDesc, locationId, addressBook from oscarcommlocations where current1 = 0");
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             while (rs.next()){
-               vector.add(oscar.Misc.getString(rs, "addressBook"));
-               remoteLocationDesc.add(oscar.Misc.getString(rs, "locationDesc"));
-               remoteLocationId.add(oscar.Misc.getString(rs, "locationId"));
+               vector.add(db.getString(rs,"addressBook"));
+               remoteLocationDesc.add(db.getString(rs,"locationDesc"));
+               remoteLocationId.add(db.getString(rs,"locationId"));
             }
             rs.close();
-      }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+      }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
 
 
       return vector;
@@ -124,7 +124,7 @@ public class MsgAddressBook {
       depth++;
 
       Element element = (Element) node;
-
+      // System.out.println("desc = "+element.getAttribute("desc")+"<br>");
       try{
          if (depth > 2){
             if ((element.getTagName()).equals("group")){
@@ -188,16 +188,16 @@ public class MsgAddressBook {
             }
          }
 
-       }catch(Exception e){MiscUtils.getLogger().error("Error", e); }
+       }catch(Exception e){ e.printStackTrace(System.out); }
    }
 //------------------------------------------------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////////////
    public void displayRemoteNodes(Node node,JspWriter out,int depth,String[] thePros,int remoId, java.util.Vector locationVector){
       depth++;
-
+      // System.out.println("\n\nIM IN REMOTE NODES!!!!!"+(String)remoteLocationId.elementAt(remoId)+"!!!!!!!\n\n");
       Element element = (Element) node;
-
+      // System.out.println("desc = "+element.getAttribute("desc")+"<br>");
       try{
          if (depth > 2){
             if ((element.getTagName()).equals("group")){
@@ -230,11 +230,11 @@ public class MsgAddressBook {
             }
 
          }else{
-               MiscUtils.getLogger().debug("Im here");
+               System.out.println("Im here");
                int binSearch = java.util.Arrays.binarySearch(thePros,element.getAttribute("id")) ;
-               MiscUtils.getLogger().debug("the binsearch returned "+binSearch+" there are "+locationVector.size()+" in the locationVector ");
+               System.out.println("the binsearch returned "+binSearch+" there are "+locationVector.size()+" in the locationVector ");
                if ( ( binSearch > 0 ) && ( ( (String) locationVector.elementAt(binSearch) ).equals( (String) remoteLocationId.elementAt(remoId)  ) )){
-               MiscUtils.getLogger().debug("i found it at = "+locationVector.elementAt(binSearch));
+               System.out.println("i found it at = "+locationVector.elementAt(binSearch));
                   out.print("<input type=\"checkbox\" name=provider value="+element.getAttribute("id")+"@"+((String)remoteLocationId.elementAt(remoId))+" checked > "+element.getAttribute("desc")+"\n");
                }else{
                   out.print("<input type=\"checkbox\" name=provider value="+element.getAttribute("id")+"@"+((String)remoteLocationId.elementAt(remoId))+"  ><font color=#ff5900>"+element.getAttribute("desc")+"</font>\n");
@@ -261,16 +261,16 @@ public class MsgAddressBook {
             }
          }
 
-       }catch(Exception e){MiscUtils.getLogger().error("Error", e); }
+       }catch(Exception e){ e.printStackTrace(System.out); }
    }
 //------------------------------------------------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////////////
    public void displayRemoteNodes2(Node node,JspWriter out,int depth,oscar.oscarMessenger.data.MsgReplyMessageData reData,int remoId, java.util.Vector locationVector){
       depth++;
-
+      // System.out.println("\n\nIM IN REMOTE NODES!!!!!"+(String)remoteLocationId.elementAt(remoId)+"!!!!!!!\n\n");
       Element element = (Element) node;
-
+      // System.out.println("desc = "+element.getAttribute("desc")+"<br>");
       try{
          if (depth > 2){
             if ((element.getTagName()).equals("group")){
@@ -303,11 +303,11 @@ public class MsgAddressBook {
             }
 
          }else{
-
+               //System.out.println("Im here");
                //int binSearch = java.util.Arrays.binarySearch(thePros,element.getAttribute("id")) ;
-
+               //System.out.println("the binsearch returned "+binSearch+" there are "+locationVector.size()+" in the locationVector ");
                //if ( ( binSearch > 0 ) && ( ( (String) locationVector.elementAt(binSearch) ).equals( (String) remoteLocationId.elementAt(remoId)  ) )){
-
+               //System.out.println("i found it at = "+locationVector.elementAt(binSearch));
                if (reData.remoContains((String) element.getAttribute("id"), (String) remoteLocationId.elementAt(remoId)) ){
                   out.print("<input type=\"checkbox\" name=provider value="+element.getAttribute("id")+"@"+((String)remoteLocationId.elementAt(remoId))+" checked > "+element.getAttribute("desc")+"\n");
                }else{
@@ -335,7 +335,7 @@ public class MsgAddressBook {
             }
          }
 
-       }catch(Exception e){MiscUtils.getLogger().error("Error", e); }
+       }catch(Exception e){ e.printStackTrace(System.out); }
    }
 //------------------------------------------------------------------------------------------------------------
 

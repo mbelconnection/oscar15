@@ -37,7 +37,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarEncounter.oscarMeasurements.bean.EctStyleSheetBeanHandler;
@@ -54,7 +53,7 @@ public class EctSelectMeasurementGroupAction extends Action {
         String groupName = frm.getSelectedGroupName();
         String forward = frm.getForward();
         
-        MiscUtils.getLogger().debug("The forward message is: " + forward);
+        System.out.println("The forward message is: " + forward);
         
         HttpSession session = request.getSession();
         session.setAttribute( "groupName", groupName);
@@ -88,15 +87,15 @@ public class EctSelectMeasurementGroupAction extends Action {
     private void deleteGroup(String inputGroupName){
         
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "DELETE FROM measurementGroupStyle WHERE groupName='" + inputGroupName + "'";
-            MiscUtils.getLogger().debug("Sql Statement: " + sql);
-            DBHandler.RunSQL(sql);            
+            System.out.println("Sql Statement: " + sql);
+            db.RunSQL(sql);            
             sql = "DELETE FROM measurementGroup WHERE name='" + inputGroupName + "'";
-            DBHandler.RunSQL(sql);
+            db.RunSQL(sql);
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);            
+            System.out.println(e.getMessage());            
         }        
     }
 }

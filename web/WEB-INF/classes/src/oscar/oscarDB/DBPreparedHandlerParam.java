@@ -4,10 +4,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 
 
-/**
- * deprecated Use JPA instead, no new code should be written against this class.
- */
-public final class DBPreparedHandlerParam {
+public class DBPreparedHandlerParam {
    private Date dateValue;
    private String stringValue;
    private int intValue;
@@ -53,13 +50,13 @@ public final class DBPreparedHandlerParam {
    }
 
    public Date getDateValue() {
-
+//          System.out.println("DBPreparedHandlerParam.getDateValue "+dateValue);
 	  return dateValue;
    }
 
    
    public Timestamp getTimestampValue() {
-
+//          System.out.println("DBPreparedHandlerParam.getTimestampValue "+timestampValue);
 	  return this.timestampValue;
    }
 

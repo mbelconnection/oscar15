@@ -31,11 +31,13 @@ package org.oscarehr.phr.web;
 
 import java.util.Calendar;
 
+import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -43,14 +45,13 @@ import org.apache.struts.action.ActionRedirect;
 import org.apache.struts.actions.DispatchAction;
 import org.oscarehr.phr.PHRAuthentication;
 import org.oscarehr.phr.service.PHRService;
-import org.oscarehr.util.MiscUtils;
 
 /**
  *
  * @author jay
  */
 public class PHRLoginAction extends DispatchAction {
-     private static Logger log = MiscUtils.getLogger();
+     private static Log log = LogFactory.getLog(PHRLoginAction.class);
      PHRService phrService;
     
     /**
@@ -87,7 +88,7 @@ public class PHRLoginAction extends DispatchAction {
        try {
            phrAuth = phrService.authenticate(providerNo, request.getParameter("phrPassword"));
        } catch (Exception e) {
-           MiscUtils.getLogger().error("Error", e);
+           e.printStackTrace();
             /*if ((e.getCause() != null && e.getCause().getClass() == java.net.ConnectException.class)
             || (e.getCause() != null && e.getCause().getClass() == java.net.NoRouteToHostException.class)
             || (e.getCause() != null && e.getCause().getClass(). == )) {*/

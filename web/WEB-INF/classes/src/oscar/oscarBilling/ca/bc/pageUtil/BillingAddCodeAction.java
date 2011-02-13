@@ -25,6 +25,7 @@ package oscar.oscarBilling.ca.bc.pageUtil;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +35,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarBilling.ca.bc.data.BillingCodeData;
 
@@ -47,7 +47,7 @@ public final class BillingAddCodeAction
                                HttpServletResponse response) throws IOException,
       ServletException {
 
-    
+    Locale locale = getLocale(request);
 
     if (request.getSession().getAttribute("user") == null) {
       return (mapping.findForward("Logout"));
@@ -55,7 +55,7 @@ public final class BillingAddCodeAction
 
     BillingAddCodeForm frm = (BillingAddCodeForm) form;
 
-    
+    String codeId = frm.getCodeId();
     String code = frm.getCode();
     String pCode = code;
     String desc = frm.getDesc();
@@ -88,21 +88,21 @@ public final class BillingAddCodeAction
     if (whereTo == null || whereTo.equals("")) {
       if (added) {
         retval = mapping.findForward("success");
-        MiscUtils.getLogger().debug("success");
+        System.out.println("success");
       }
       else {
         retval = mapping.findForward("normalCodeError");
-        MiscUtils.getLogger().debug("nCE");
+        System.out.println("nCE");
       }
     }
     else {
       if (added) {
         retval = mapping.findForward("private");
-        MiscUtils.getLogger().debug("pri");
+        System.out.println("pri");
       }
       else {
         retval = mapping.findForward("privateCodeError");
-        MiscUtils.getLogger().debug("privCodErr");
+        System.out.println("privCodErr");
       }
     }
 

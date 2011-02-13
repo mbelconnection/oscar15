@@ -38,8 +38,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 /**
@@ -64,14 +62,16 @@ public class NextApptTag extends TagSupport {
        Date nextApptDate = null;
        if (demoNo != null && !demoNo.equalsIgnoreCase("") && !demoNo.equalsIgnoreCase("null")){
            try {
+              DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+//              String sql = "select * from appointment where demographic_no = '"+demoNo+"' and status not like '%C%' and appointment_date >= now() order by appointment_date limit 1";
               String sql = "select * from appointment where demographic_no = '"+demoNo+"' and status not like '%C%' and appointment_date >= now() order by appointment_date";
-              ResultSet rs = DBHandler.GetSQL(sql);
+              ResultSet rs = db.GetSQL(sql);
               if (rs.next()) {
                  nextApptDate = rs.getDate("appointment_date");
               }
               rs.close();
            }catch(SQLException e)        {
-             MiscUtils.getLogger().error("Error", e);
+              e.printStackTrace(System.out);
            } 
        }    
        String s = "";
@@ -82,7 +82,8 @@ public class NextApptTag extends TagSupport {
           }
           JspWriter out = super.pageContext.getOut();          
           out.print(s);                          
-       }catch(Exception p) {MiscUtils.getLogger().error("Error",p);
+       }catch(Exception p) {
+          p.printStackTrace(System.out);
        }
        return(SKIP_BODY);
     }

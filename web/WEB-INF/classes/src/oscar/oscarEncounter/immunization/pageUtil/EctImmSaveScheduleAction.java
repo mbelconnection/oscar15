@@ -36,7 +36,6 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.util.MessageResources;
-import org.oscarehr.util.MiscUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -68,14 +67,14 @@ public final class EctImmSaveScheduleAction extends Action {
             NodeList rows = set.getElementsByTagName("row");
             for(int j = 0; j < rows.getLength(); j++) {
                Element row = (Element)rows.item(j);
-               String sRow = String.valueOf(String.valueOf((new StringBuilder("tdSet")).append(i).append("_Row").append(j)));
+               String sRow = String.valueOf(String.valueOf((new StringBuffer("tdSet")).append(i).append("_Row").append(j)));
                if(row.getAttribute("name").length() == 0 || row.getAttribute("name") == null)
                   row.setAttribute("name", request.getParameter(String.valueOf(String.valueOf(sRow)).concat("_name_text")));
                NodeList cells = row.getElementsByTagName("cell");
                for(int k = 0; k < cells.getLength(); k++) {
                   Element cell = (Element)cells.item(k);
                   String index = cell.getAttribute("index");
-                  String sCell = String.valueOf(String.valueOf((new StringBuilder(String.valueOf(String.valueOf(sRow)))).append("_Col").append(index)));
+                  String sCell = String.valueOf(String.valueOf((new StringBuffer(String.valueOf(String.valueOf(sRow)))).append("_Col").append(index)));
                   String givenDate = request.getParameter(String.valueOf(String.valueOf(sCell)).concat("_givenDate"));
                   String refusedDate = request.getParameter(String.valueOf(String.valueOf(sCell)).concat("_refusedDate"));
                   String lot = request.getParameter(String.valueOf(String.valueOf(sCell)).concat("_lot"));
@@ -104,7 +103,8 @@ public final class EctImmSaveScheduleAction extends Action {
          String providerNo = (String)request.getSession().getAttribute("user");
          imm.saveImmunizations(demographicNo, providerNo, sXML);
       }
-      catch(Exception ex) {MiscUtils.getLogger().error("Error", ex);
+      catch(Exception ex) {
+         ex.printStackTrace();
          throw new ServletException("Exception occurred in SaveScheduleAction", ex);
       }
       

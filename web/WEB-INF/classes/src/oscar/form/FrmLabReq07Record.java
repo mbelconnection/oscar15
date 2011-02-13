@@ -57,15 +57,15 @@ public class FrmLabReq07Record extends FrmRecord {
             }
 
             //get local clinic information
-        	
+        	DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT clinic_name, clinic_address, clinic_city, clinic_province, clinic_postal, clinic_phone, clinic_fax FROM clinic";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()) {
-            	props.setProperty("clinicName",oscar.Misc.getString(rs, "clinic_name"));
-            	props.setProperty("clinicProvince",oscar.Misc.getString(rs, "clinic_province"));
-                props.setProperty("clinicAddress", oscar.Misc.getString(rs, "clinic_address"));
-                props.setProperty("clinicCity", oscar.Misc.getString(rs, "clinic_city"));
-                props.setProperty("clinicPC", oscar.Misc.getString(rs, "clinic_postal"));
+            	props.setProperty("clinicName",db.getString(rs,"clinic_name"));
+            	props.setProperty("clinicProvince",db.getString(rs,"clinic_province"));
+                props.setProperty("clinicAddress", db.getString(rs,"clinic_address"));
+                props.setProperty("clinicCity", db.getString(rs,"clinic_city"));
+                props.setProperty("clinicPC", db.getString(rs,"clinic_postal"));
             }
             rs.close();
 
@@ -82,7 +82,7 @@ public class FrmLabReq07Record extends FrmRecord {
         String demoProvider = props.getProperty("demoProvider", "");
         String xmlSpecialtyCode = "<xml_p_specialty_code>";
         String xmlSpecialtyCode2 = "</xml_p_specialty_code>";
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         ResultSet rs = null;
         String sql = null;
 
@@ -92,10 +92,10 @@ public class FrmLabReq07Record extends FrmRecord {
                 // from provider table
                 sql = "SELECT CONCAT(last_name, ', ', first_name) AS provName, ohip_no, comments "
                         + "FROM provider WHERE provider_no = '" + provNo + "'";
-                rs = DBHandler.GetSQL(sql);
+                rs = db.GetSQL(sql);
 
                 if (rs.next()) {
-                    String comments = oscar.Misc.getString(rs, "comments");                    
+                    String comments = db.getString(rs,"comments");                    
                     String strSpecialtyCode = "00";
                     if( comments.indexOf(xmlSpecialtyCode) != -1 ) {
                         strSpecialtyCode = comments.substring(comments.indexOf(xmlSpecialtyCode) + xmlSpecialtyCode.length(), comments.indexOf(xmlSpecialtyCode2));
@@ -104,9 +104,9 @@ public class FrmLabReq07Record extends FrmRecord {
                             strSpecialtyCode = "00";
                         }
                     }
-                    String num = oscar.Misc.getString(rs, "ohip_no");
-                    props.setProperty("reqProvName", oscar.Misc.getString(rs, "provName"));
-                    props.setProperty("provName", oscar.Misc.getString(rs, "provName"));
+                    String num = db.getString(rs,"ohip_no");
+                    props.setProperty("reqProvName", db.getString(rs,"provName"));
+                    props.setProperty("provName", db.getString(rs,"provName"));
                     props.setProperty("practitionerNo", "0000-" + num + "-" + strSpecialtyCode);
                 }
                 rs.close();
@@ -114,11 +114,11 @@ public class FrmLabReq07Record extends FrmRecord {
                 // from provider table
                 sql = "SELECT CONCAT(last_name, ', ', first_name) AS provName, ohip_no, comments FROM provider WHERE provider_no = '"
                         + provNo + "'";
-                rs = DBHandler.GetSQL(sql);
+                rs = db.GetSQL(sql);
                 
                 String num = "";
                 if (rs.next()) {
-                    String comments = oscar.Misc.getString(rs, "comments");
+                    String comments = db.getString(rs,"comments");
                     String strSpecialtyCode = "00";
                     if( comments.indexOf(xmlSpecialtyCode) != -1 ) {
                         strSpecialtyCode = comments.substring(comments.indexOf(xmlSpecialtyCode)+xmlSpecialtyCode.length(), comments.indexOf(xmlSpecialtyCode2));
@@ -127,8 +127,8 @@ public class FrmLabReq07Record extends FrmRecord {
                             strSpecialtyCode = "00";
                         }
                     }
-                    num = oscar.Misc.getString(rs, "ohip_no");
-                    props.setProperty("reqProvName", oscar.Misc.getString(rs, "provName"));                    
+                    num = db.getString(rs,"ohip_no");
+                    props.setProperty("reqProvName", db.getString(rs,"provName"));                    
                     props.setProperty("practitionerNo", "0000-" + num + "-" + strSpecialtyCode);
                 }
                 rs.close();
@@ -136,14 +136,14 @@ public class FrmLabReq07Record extends FrmRecord {
                 // from provider table
                 sql = "SELECT CONCAT(last_name, ', ', first_name) AS provName, ohip_no FROM provider WHERE provider_no = "
                         + demoProvider;
-                rs = DBHandler.GetSQL(sql);
+                rs = db.GetSQL(sql);
 
                 if (rs.next()) {
                     if( num.equals("") ) {
-                        num = oscar.Misc.getString(rs, "ohip_no");
+                        num = db.getString(rs,"ohip_no");
                         props.setProperty("practitionerNo", "0000-"+num+"-00");
                     }
-                    props.setProperty("provName", oscar.Misc.getString(rs, "provName"));
+                    props.setProperty("provName", db.getString(rs,"provName"));
                     
                 }
                 rs.close();
@@ -151,13 +151,13 @@ public class FrmLabReq07Record extends FrmRecord {
         }
         //get local clinic information
         sql = "SELECT clinic_name, clinic_address, clinic_city, clinic_postal, clinic_province, clinic_phone, clinic_fax FROM clinic";
-        rs = DBHandler.GetSQL(sql);
+        rs = db.GetSQL(sql);
         if (rs.next()) {
-        	props.setProperty("clinicName",oscar.Misc.getString(rs, "clinic_name"));
-        	props.setProperty("clinicProvince",oscar.Misc.getString(rs, "clinic_province"));
-            props.setProperty("clinicAddress", oscar.Misc.getString(rs, "clinic_address"));
-            props.setProperty("clinicCity", oscar.Misc.getString(rs, "clinic_city"));
-            props.setProperty("clinicPC", oscar.Misc.getString(rs, "clinic_postal"));
+        	props.setProperty("clinicName",db.getString(rs,"clinic_name"));
+        	props.setProperty("clinicProvince",db.getString(rs,"clinic_province"));
+            props.setProperty("clinicAddress", db.getString(rs,"clinic_address"));
+            props.setProperty("clinicCity", db.getString(rs,"clinic_city"));
+            props.setProperty("clinicPC", db.getString(rs,"clinic_postal"));
             
         }
         rs.close();

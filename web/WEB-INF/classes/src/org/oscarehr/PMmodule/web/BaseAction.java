@@ -61,9 +61,6 @@ import com.quatro.model.security.NoAccessException;
 import com.quatro.service.security.SecurityManager;
 import com.quatro.service.security.UserAccessManager;
 
-/**
- * deprecated do not use this class anymore, there's no good reason for this classes existance. Action classes should generally speaking stand on their own without a common super class. If utilities are required, then a utility class should be made, not a super class.
- */
 public abstract class BaseAction extends DispatchAction {
 	
 	protected static final String PARAM_START = "?";
@@ -170,7 +167,7 @@ public abstract class BaseAction extends DispatchAction {
 		return attribute;
 	}
 	
-	protected ActionForward createRedirectForward(ActionMapping mapping, String forwardName, StringBuffer parameters) {
+	protected ActionForward createRedirectForward(ActionMapping mapping, String forwardName, StringBuilder parameters) {
 		ActionForward forward = mapping.findForward(forwardName);
 		StringBuilder path = new StringBuilder(forward.getPath());
 		path.append(parameters);
@@ -250,9 +247,9 @@ public abstract class BaseAction extends DispatchAction {
 	}
 	
 	protected ActionForward createRedirectForward(ActionMapping mapping,
-			String forwardName, StringBuilder parameters) {
+			String forwardName, StringBuffer parameters) {
 		ActionForward forward = mapping.findForward(forwardName);
-		StringBuilder path = new StringBuilder(forward.getPath());
+		StringBuffer path = new StringBuffer(forward.getPath());
 		path.append(parameters);
 
 		return new RedirectingActionForward(path.toString());

@@ -6,14 +6,28 @@
 package org.oscarehr.phr.tests;
 
 import java.util.Date;
-
+import javax.xml.datatype.XMLGregorianCalendar;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.indivo.xml.talk.AuthenticateResultType;
 import org.oscarehr.phr.PHRAuthentication;
+import org.oscarehr.phr.indivo.IndivoAuthentication;
+import oscar.oscarEncounter.data.EctProviderData;
 
 /**
  *
  * @author apavel
  */
 public class TestAuthentication implements PHRAuthentication {
+    private static Log log = LogFactory.getLog(IndivoAuthentication.class);
+
+    public static Log getLog() {
+        return log;
+    }
+
+    public static void setLog(Log aLog) {
+        log = aLog;
+    }
     private String providerNo = null;
     private String token = null;
     private String userId = null;

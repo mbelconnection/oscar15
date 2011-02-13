@@ -38,11 +38,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -65,6 +64,7 @@ import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.Range;
 import org.jfree.data.gantt.Task;
 import org.jfree.data.gantt.TaskSeries;
 import org.jfree.data.gantt.TaskSeriesCollection;
@@ -75,9 +75,6 @@ import org.jfree.data.xy.DefaultOHLCDataset;
 import org.jfree.data.xy.OHLCDataItem;
 import org.jfree.data.xy.XYDataset;
 import org.oscarehr.PMmodule.utility.UtilDateUtilities;
-import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBean;
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBeanHandler;
@@ -89,7 +86,7 @@ import oscar.oscarLab.ca.on.CommonLabTestValues;
  */
 public class MeasurementGraphAction2 extends Action {
 
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(MeasurementGraphAction2.class);
 
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws IOException {
         log.debug("In MeasurementGraphAction2");
@@ -97,7 +94,7 @@ public class MeasurementGraphAction2 extends Action {
         if (userrole == null) {
             response.sendRedirect("../logout.jsp");
         }
-        
+        String roleName$ = (String) userrole + "," + (String) request.getSession().getAttribute("user");
 
         String demographicNo = request.getParameter("demographic_no");
         String typeIdName = request.getParameter("type");
@@ -244,7 +241,7 @@ public class MeasurementGraphAction2 extends Action {
                         dataItems.add(new OHLCDataItem(mdb.getDateObservedAsDate(), open, high, low, close, volume));                   
                     }
                 }catch(Exception et){
-                	MiscUtils.getLogger().error("Error", et);
+                    et.printStackTrace();
                 }
                 
             }
@@ -263,7 +260,7 @@ public class MeasurementGraphAction2 extends Action {
         plot.setDataset(1, dataset);
         
         plot.getDomainAxis().setAutoRange(true);
-        
+        Range rang = plot.getDataRange(plot.getRangeAxis());
 
         log.debug("LEN " + plot.getDomainAxis().getLowerBound() + " ddd " + plot.getDomainAxis().getUpperMargin() + " eee " + plot.getDomainAxis().getLowerMargin());
             //plot.getDomainAxis().setUpperMargin(plot.getDomainAxis().getUpperMargin()*6);
@@ -340,7 +337,7 @@ public class MeasurementGraphAction2 extends Action {
             XYPlot plot = chart.getXYPlot();
 
             plot.getDomainAxis().setAutoRange(true);
-            
+            Range rang = plot.getDataRange(plot.getRangeAxis());
 
 
             log.debug("LEN " + plot.getDomainAxis().getLowerBound() + " ddd " + plot.getDomainAxis().getUpperMargin() + " eee " + plot.getDomainAxis().getLowerMargin());
@@ -461,7 +458,7 @@ public class MeasurementGraphAction2 extends Action {
             
             XYPlot plot = chart.getXYPlot();
             plot.getDomainAxis().setAutoRange(true);
-           
+            Range rang = plot.getDataRange(plot.getRangeAxis());
 
             log.debug("LEN " + plot.getDomainAxis().getLowerBound() + " ddd " + plot.getDomainAxis().getUpperMargin() + " eee " + plot.getDomainAxis().getLowerMargin());
             plot.getDomainAxis().setUpperMargin(plot.getDomainAxis().getUpperMargin()*6);
@@ -550,7 +547,7 @@ public class MeasurementGraphAction2 extends Action {
             
             XYPlot plot = chart.getXYPlot();
             plot.getDomainAxis().setAutoRange(true);
-           
+            Range rang = plot.getDataRange(plot.getRangeAxis());
 
             log.debug("LEN " + plot.getDomainAxis().getLowerBound() + " ddd " + plot.getDomainAxis().getUpperMargin() + " eee " + plot.getDomainAxis().getLowerMargin());
             plot.getDomainAxis().setUpperMargin(plot.getDomainAxis().getUpperMargin()*6);
@@ -599,16 +596,16 @@ public class MeasurementGraphAction2 extends Action {
             
             CommonLabTestValues comVal =  new CommonLabTestValues();
             ArrayList<Hashtable> list = null;
-            MiscUtils.getLogger().debug(" lab type >"+labType+"< >"+labType.equals("loinc")+"<"+testName+" "+identifier);
+            System.out.println(" lab type >"+labType+"< >"+labType.equals("loinc")+"<"+testName+" "+identifier);
             if (labType.equals("loinc")){
               try{  
-              
-              Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
+              DBHandler db =  new DBHandler(DBHandler.OSCAR_DATA);
+              Connection conn = DBHandler.getConnection();
               list = comVal.findValuesByLoinc2(demographicNo, identifier, conn );
-              MiscUtils.getLogger().debug("List ->"+list.size());
+              System.out.println("List ->"+list.size());
               conn.close();
               }catch(Exception ed){
-            	  MiscUtils.getLogger().error("Error", ed);
+                  ed.printStackTrace();
               }
             }else{
                list = comVal.findValuesForTest(labType, demographicNo, testName, identifier);
@@ -656,7 +653,7 @@ public class MeasurementGraphAction2 extends Action {
             
             XYPlot plot = chart.getXYPlot();
             plot.getDomainAxis().setAutoRange(true);
-            
+            Range rang = plot.getDataRange(plot.getRangeAxis());
 
             log.debug("LEN " + plot.getDomainAxis().getLowerBound() + " ddd " + plot.getDomainAxis().getUpperMargin() + " eee " + plot.getDomainAxis().getLowerMargin());
             plot.getDomainAxis().setUpperMargin(plot.getDomainAxis().getUpperMargin()*6);
@@ -770,7 +767,7 @@ public class MeasurementGraphAction2 extends Action {
                         dataItems.add(new OHLCDataItem(mdb.getDateObservedAsDate(), open, high, low, close, volume));                   
                     }
                 }catch(Exception et){
-                	MiscUtils.getLogger().error("Error", et);
+                    et.printStackTrace();
                 }
             }
             dataset.addSeries(newSeries);
@@ -782,7 +779,7 @@ public class MeasurementGraphAction2 extends Action {
             
             XYPlot plot = chart.getXYPlot();
             plot.getDomainAxis().setAutoRange(true);
-           
+            Range rang = plot.getDataRange(plot.getRangeAxis());
 
             log.debug("LEN " + plot.getDomainAxis().getLowerBound() + " ddd " + plot.getDomainAxis().getUpperMargin() + " eee " + plot.getDomainAxis().getLowerMargin());
             plot.getDomainAxis().setUpperMargin(plot.getDomainAxis().getUpperMargin()*6);
@@ -917,7 +914,7 @@ public class MeasurementGraphAction2 extends Action {
      * Just Drugs
      */
     JFreeChart ChartMeds(String demographicNo,String patientName, String chartTitle,String[] drugs) {
-            MiscUtils.getLogger().debug("In ChartMeds");
+            System.out.println("In ChartMeds");
             org.jfree.data.time.TimeSeriesCollection dataset = new org.jfree.data.time.TimeSeriesCollection();
             JFreeChart chart = ChartFactory.createTimeSeriesChart(chartTitle, "Days", "MEDS", dataset, true, true, true);
 
@@ -964,9 +961,9 @@ public class MeasurementGraphAction2 extends Action {
     private  Hashtable getMeasurementsExt(Integer measurementId) throws SQLException {
 	Hashtable hash = new Hashtable();
 	if (measurementId!=null) {
-	    
+	    DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 	    String sql = "SELECT * FROM measurementsExt WHERE measurement_id=" + measurementId;
-	    ResultSet rs = DBHandler.GetSQL(sql);
+	    ResultSet rs = db.GetSQL(sql);
 
 	    while (rs.next()) {
 		hash.put(rs.getString("keyval"),rs.getString("val"));

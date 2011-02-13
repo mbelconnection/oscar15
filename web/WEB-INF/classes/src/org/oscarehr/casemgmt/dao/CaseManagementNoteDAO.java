@@ -40,7 +40,8 @@ import java.util.UUID;
 
 import javax.persistence.PersistenceException;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -52,7 +53,6 @@ import org.oscarehr.casemgmt.model.CaseManagementSearchBean;
 import org.oscarehr.common.model.Provider;
 import org.oscarehr.util.DbConnectionFilter;
 import org.oscarehr.util.EncounterUtil;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import oscar.OscarProperties;
@@ -60,7 +60,7 @@ import oscar.util.SqlUtils;
 
 public class CaseManagementNoteDAO extends HibernateDaoSupport {
 
-	private static Logger log = MiscUtils.getLogger();
+	private static Log log = LogFactory.getLog(CaseManagementNoteDAO.class);
 
 	@SuppressWarnings("unchecked")
     public List<Provider> getEditors(CaseManagementNote note) {
@@ -114,7 +114,7 @@ public class CaseManagementNoteDAO extends HibernateDaoSupport {
 			}
 			catch (ParseException e) {
 				d = cal.getTime();
-				MiscUtils.getLogger().error("Error", e);
+				e.printStackTrace();
 			}
 		}
 		else {
@@ -148,7 +148,7 @@ public class CaseManagementNoteDAO extends HibernateDaoSupport {
 		catch (ParseException e) {
 			GregorianCalendar cal = new GregorianCalendar(1970, 1, 1);
 			d = cal.getTime();
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 		}
 		String hql = "select distinct cmn from CaseManagementNote cmn join cmn.issues i where i.issue_id in (" + list
 				+ ") and cmn.demographic_no = ?  and cmn.id in (select max(cmn.id) from cmn where cmn.observation_date >= ? GROUP BY uuid) ORDER BY cmn.observation_date asc";
@@ -428,6 +428,7 @@ public class CaseManagementNoteDAO extends HibernateDaoSupport {
 
     //used by decision support to search through the notes for a string
 	public List<CaseManagementNote> searchDemographicNotes(String demographic_no, String searchString) {
+		String list = null;
 		String hql = "select distinct cmn from CaseManagementNote cmn where cmn.id in (select max(cmn.id) from cmn where cmn.demographic_no = ? GROUP BY uuid) and cmn.demographic_no = ? and cmn.note like ? and cmn.archived = 0";
 
 		List<CaseManagementNote> result = getHibernateTemplate().find(hql, new Object[] {demographic_no, demographic_no, searchString });

@@ -25,14 +25,13 @@
 package oscar.oscarEncounter.oscarConsultationRequest.config.pageUtil;
 
 import org.apache.struts.action.ActionForm;
-import org.oscarehr.util.MiscUtils;
 
 public final class EctConEditSpecialistsForm extends ActionForm
 {
 
     public String getSpecId()
     {
-        MiscUtils.getLogger().debug("getter Specid");
+        System.out.println("getter Specid");
         if(specId == null)
             specId = new String();
         return specId;
@@ -40,13 +39,13 @@ public final class EctConEditSpecialistsForm extends ActionForm
 
     public void setSpecId(String str)
     {
-        MiscUtils.getLogger().debug("setter specId");
+        System.out.println("setter specId");
         specId = str;
     }
 
     public String getDelete()
     {
-        MiscUtils.getLogger().debug("getter delete");
+        System.out.println("getter delete");
         if(delete == null)
             delete = new String();
         return delete;
@@ -54,13 +53,13 @@ public final class EctConEditSpecialistsForm extends ActionForm
 
     public void setDelete(String str)
     {
-        MiscUtils.getLogger().debug("setter delete");
+        System.out.println("setter delete");
         delete = str;
     }
 
     public String[] getSpecialists()
     {
-        MiscUtils.getLogger().debug("getter specialists");
+        System.out.println("getter specialists");
         if(specialists == null)
             specialists = new String[0];
         return specialists;
@@ -68,7 +67,7 @@ public final class EctConEditSpecialistsForm extends ActionForm
 
     public void setSpecialists(String str[])
     {
-        MiscUtils.getLogger().debug("setter specialists");
+        System.out.println("setter specialists");
         specialists = str;
     }
 

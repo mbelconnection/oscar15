@@ -24,45 +24,35 @@
 package oscar.oscarRx.pageUtil;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.Vector;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+
+import java.util.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.actions.DispatchAction;
 import org.apache.struts.util.MessageResources;
-import org.apache.xmlrpc.XmlRpcClientLite;
-import org.oscarehr.common.dao.UserDSMessagePrefsDAO;
-import org.oscarehr.common.dao.UserPropertyDAO;
-import org.oscarehr.common.model.UserDSMessagePrefs;
-import org.oscarehr.common.model.UserProperty;
-import org.oscarehr.util.MiscUtils;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import oscar.OscarProperties;
+import org.apache.xmlrpc.*;
 import oscar.oscarRx.util.MyDrugrefComparator;
-import oscar.oscarRx.util.RxUtil;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.context.WebApplicationContext;
+import org.oscarehr.common.dao.*;
+import org.oscarehr.common.model.*;
+import oscar.OscarProperties;
 import oscar.oscarRx.util.TimingOutCallback;
 import oscar.oscarRx.util.TimingOutCallback.TimeoutException;
+import oscar.oscarRx.util.RxUtil;
 
 public final class RxMyDrugrefInfoAction extends DispatchAction {
 
-    private static final Logger log2 = MiscUtils.getLogger();
+    private static Log log2 = LogFactory.getLog(RxMyDrugrefInfoAction.class);
     //return interactions about current pending prescriptions
     public ActionForward findInteractingDrugList (ActionMapping mapping,ActionForm form,HttpServletRequest request,HttpServletResponse response)throws IOException, ServletException {
-        MiscUtils.getLogger().debug("in findInteractingDrugList");
+        System.out.println("in findInteractingDrugList");
         oscar.oscarRx.pageUtil.RxSessionBean bean = (oscar.oscarRx.pageUtil.RxSessionBean) request.getSession().getAttribute("RxSessionBean");
          if (bean == null) {
                 response.sendRedirect("error.html");
@@ -73,13 +63,13 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
         UserPropertyDAO  propDAO =  (UserPropertyDAO) ctx.getBean("UserPropertyDAO");
         String provider = (String) request.getSession().getAttribute("user");
         String retStr=RxUtil.findInterDrugStr(propDAO,provider,bean);
-
+            //System.out.println("retStr="+retStr);
         bean.setInteractingDrugList(retStr);
           /*  int pp=23;
             if(pp==23)
                 throw new Exception();*/
      }catch(Exception e){
-        MiscUtils.getLogger().error("Error", e);
+        e.printStackTrace();
         ResourceBundle prop = ResourceBundle.getBundle("oscarResources");
         String failedMsg=prop.getString("oscarRx.MyDrugref.InteractingDrugs.error.msgFailed");
         bean.setInteractingDrugList(failedMsg);
@@ -88,30 +78,30 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
     }
 
     public ActionForward view(ActionMapping mapping,ActionForm form,HttpServletRequest request,HttpServletResponse response)throws IOException, ServletException {
-        MiscUtils.getLogger().debug("in view RxMyDrugrefInfoAction");
+        System.out.println("in view RxMyDrugrefInfoAction");
         try{
 
         long start = System.currentTimeMillis();
         String target=(String)request.getParameter("target");
-        if(target==null) MiscUtils.getLogger().debug("target is null");
-        else if(target.equals("interactionsRx")) MiscUtils.getLogger().debug("target is interactionsRx");
+        if(target==null) System.out.println("target is null");
+        else if(target.equals("interactionsRx")) System.out.println("target is interactionsRx");
         String provider = (String) request.getSession().getAttribute("user");
 
         WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(getServlet().getServletContext());
         UserPropertyDAO  propDAO =  (UserPropertyDAO) ctx.getBean("UserPropertyDAO");
         UserDSMessagePrefsDAO  dsmessageDAO =  (UserDSMessagePrefsDAO) ctx.getBean("UserDSMessagePrefsDAO");
-        MiscUtils.getLogger().debug("hideResources is before "+request.getSession().getAttribute("hideResources"));
+        System.out.println("hideResources is before "+request.getSession().getAttribute("hideResources"));
         Hashtable dsPrefs=new Hashtable();
         if (request.getSession().getAttribute("hideResources") == null){
-
+            //System.out.println("hideResources attribute is null ");
             dsPrefs = dsmessageDAO.getHashofMessages(provider,UserDSMessagePrefs.MYDRUGREF);
-
+            //System.out.println("dsPrefs="+dsPrefs);
         }
         UserProperty prop = propDAO.getProp(provider, UserProperty.MYDRUGREF_ID);
         String myDrugrefId = null;
         if (prop != null){
             myDrugrefId = prop.getValue();
-
+           // System.out.println(myDrugrefId);
         }
 
         RxSessionBean bean = (RxSessionBean) request.getSession().getAttribute("RxSessionBean");
@@ -128,25 +118,25 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
         for (String command : str){
             try{
                 Vector v = getMyDrugrefInfo(command,  codes,myDrugrefId) ;
-
+               // System.out.println("v in for loop: "+v);
                 if (v !=null && v.size() > 0){
                     all.addAll(v);
                 }
-
+                //System.out.println("after all.addAll(v): "+all);
             }catch(Exception e){
                 log2.debug("command :"+command+" "+e.getMessage());
-                MiscUtils.getLogger().error("Error", e);
+                e.printStackTrace();
             }
         }
         Collections.sort(all, new MyDrugrefComparator());
-        MiscUtils.getLogger().debug(all);
+        System.out.println(all);
         //loop through all to add interaction to each warning
         try{
             for(int i=0;i<all.size();i++){
                 Hashtable ht=(Hashtable)all.get(i);
-                MiscUtils.getLogger().debug("**ht="+ht);
+                System.out.println("**ht="+ht);
                 String effect=(String)ht.get("effect");
-                MiscUtils.getLogger().debug("**effect="+effect);
+                System.out.println("**effect="+effect);
                 String interactStr="";
                if(effect!=null){
                     if(effect.equals("a"))
@@ -166,10 +156,10 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
                     interactStr=ht.get("name")+" "+effect+" "+ht.get("drug2");
                }
                 ht.put("interactStr", interactStr);
-                MiscUtils.getLogger().debug("ineractStr="+interactStr);
+                System.out.println("ineractStr="+interactStr);
             }
         }catch(NullPointerException npe){
-            MiscUtils.getLogger().error("Error", npe);
+            npe.printStackTrace();
         }
         //Vector idWarningVec=new Vector();
         Vector<Hashtable> allRetVec=new Vector();
@@ -185,7 +175,7 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
                 //idWarningVec.add(idWarning);
             }
         }
-        MiscUtils.getLogger().debug("currentIdWarnings is  "+currentIdWarnings);
+        System.out.println("currentIdWarnings is  "+currentIdWarnings);
         //set session attribute hiddenResources if it was null
         if(dsPrefs!=null && dsPrefs.size()>0){
             Hashtable hiddenR=new Hashtable();
@@ -229,7 +219,7 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
         if(target!=null && target.equals("interactionsRx")) return mapping.findForward("updateInteractions");
         else return mapping.findForward("success");
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
             return mapping.findForward("failure");
     }
     }
@@ -247,7 +237,7 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
     }
 
     public ActionForward setWarningToHide(ActionMapping mapping,ActionForm form,HttpServletRequest request,HttpServletResponse response)throws IOException, ServletException {
-
+         //System.out.println("in setWarningToHide");
         WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(getServlet().getServletContext());
         UserDSMessagePrefsDAO  dsmessageDAO =  (UserDSMessagePrefsDAO) ctx.getBean("UserDSMessagePrefsDAO");
 
@@ -255,7 +245,7 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
         String provider = (String) request.getSession().getAttribute("user");
         String postId = request.getParameter("resId");
         String date = request.getParameter("updatedat");
-        
+        String elementId=postId+"."+date;
 
         long datel = Long.parseLong(date);
         Date updatedatId = new Date();
@@ -282,6 +272,7 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
         pref.setResourceUpdatedDate(updatedatId);
         pref.setArchived(Boolean.TRUE);
         request.getSession().setAttribute("hideResources", h);
+        //System.out.println("hideResources is after "+request.getSession().getAttribute("hideResources"));
 
         dsmessageDAO.saveProp(pref);
 
@@ -289,14 +280,14 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
     }
 
     public ActionForward setWarningToShow(ActionMapping mapping,ActionForm form,HttpServletRequest request,HttpServletResponse response)throws IOException, ServletException {
-
+         //System.out.println("in setWarningToShow");
         WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(getServlet().getServletContext());
         UserDSMessagePrefsDAO  dsmessageDAO =  (UserDSMessagePrefsDAO) ctx.getBean("UserDSMessagePrefsDAO");
 
         String provider = (String) request.getSession().getAttribute("user");
         String resId = request.getParameter("resId");
         String date = request.getParameter("updatedat");
-      
+        String elementId=resId+"."+date;
 
         long datel = Long.parseLong(date);
         Date updatedatId = new Date();
@@ -310,7 +301,7 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
         }
         Hashtable h = (Hashtable) request.getSession().getAttribute("hideResources");
         h.remove("mydrugref"+resId);
-        MiscUtils.getLogger().debug("provider,UserDSMessagePrefs.MYDRUGREF , postId, updatedatId :"+provider+"--"+UserDSMessagePrefs.MYDRUGREF +"--"+ resId+"--"+ updatedatId);
+        System.out.println("provider,UserDSMessagePrefs.MYDRUGREF , postId, updatedatId :"+provider+"--"+UserDSMessagePrefs.MYDRUGREF +"--"+ resId+"--"+ updatedatId);
         setShowDSMessage(dsmessageDAO, provider, resId, updatedatId);
         request.getSession().setAttribute("hideResources", h);       
 
@@ -326,10 +317,10 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
 
 
     public Vector getMyDrugrefInfo(String command, Vector drugs,String myDrugrefId) throws Exception {
-
+      //  System.out.println("in getMyDrugrefInfo");
         removeNullFromVector(drugs);
         Vector params = new Vector();
-
+        //System.out.println("2command,drugs,myDrugrefId= "+command+"--"+drugs+"--"+myDrugrefId);
         params.addElement(command);
         params.addElement(drugs);
 
@@ -343,21 +334,21 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
         Object obj =  callWebserviceLite("Fetch",params);
         log2.debug("RETURNED "+obj);
         if (obj instanceof Vector){
-
+            //System.out.println("obj is instance of vector");
             vec = (Vector) obj;
-
+           // System.out.println(vec);
         }else if(obj instanceof Hashtable){
-
+            //System.out.println("obj is instace of hashtable");
             Object holbrook = ((Hashtable) obj).get("Holbrook Drug Interactions");
             if (holbrook instanceof Vector){
-
+                //System.out.println("holbrook is instance of vector ");
                 vec = (Vector) holbrook;
-
+                //System.out.println(vec);
             }
             Enumeration e = ((Hashtable) obj).keys();
             while (e.hasMoreElements()){
                 String s = (String) e.nextElement();
-
+                //System.out.println(s);
                 log2.debug(s+" "+((Hashtable) obj).get(s)+" "+((Hashtable) obj).get(s).getClass().getName());
             }
         }
@@ -370,7 +361,7 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
         Object object = null;
 
         String server_url = OscarProperties.getInstance().getProperty("MY_DRUGREF_URL","http://mydrugref.org/backend/api");
-
+        //System.out.println("server_url: "+server_url);
         TimingOutCallback callback = new TimingOutCallback(10 * 1000);
         try{
             log2.debug("server_url :"+server_url);

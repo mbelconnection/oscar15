@@ -24,14 +24,14 @@ package org.oscarehr.PMmodule.dao;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oscarehr.PMmodule.model.HealthSafety;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 public class HealthSafetyDao extends HibernateDaoSupport {
 
-    private Logger log=MiscUtils.getLogger();
+    private Log log = LogFactory.getLog(HealthSafetyDao.class);
 
     public HealthSafety getHealthSafetyByDemographic(Long demographicNo) {
         if (demographicNo == null || demographicNo.intValue() <= 0) {

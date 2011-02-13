@@ -25,9 +25,10 @@
 
 package oscar.oscarReport.ClinicalReports;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
+import java.util.Enumeration;
 
 import oscar.oscarReport.data.DemographicSets;
 

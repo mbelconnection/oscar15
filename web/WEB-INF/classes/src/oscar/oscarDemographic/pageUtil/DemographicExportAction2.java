@@ -39,6 +39,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
@@ -57,7 +58,6 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.xmlbeans.GDateBuilder;
 import org.apache.xmlbeans.XmlCalendar;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -889,11 +889,12 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
 		    inFiles = demoNo+"-"+demoName+"-"+UtilDateUtilities.getToday("yyyy-MM-dd.HH.mm.ss")+".xml";
 		    files[i] = new File(directory,inFiles);
 		}catch(Exception e){
-		    MiscUtils.getLogger().error("Error", e);
+		    e.printStackTrace();
 		}
 		try {
 			omdCdsDoc.save(files[i]);
-		} catch (IOException ex) {MiscUtils.getLogger().error("Error", ex);
+		} catch (IOException ex) {
+			ex.printStackTrace();
 			throw new Exception("Cannot write .xml file(s) to export directory.\n Please check directory permissions.");
 		}
 	    }
@@ -1067,7 +1068,8 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
 	ZipOutputStream zout = null;	
 	try {		
 		zout = new ZipOutputStream(new FileOutputStream(exports[0].getParent()+"/"+zipFileName));
-	} catch (IOException ex) {MiscUtils.getLogger().error("Error", ex);
+	} catch (IOException ex) {
+		ex.printStackTrace();
 		throw new Exception("Error: Cannot create ZIP file");
 	}
 
@@ -1078,13 +1080,15 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
 	    FileInputStream fin = null;
 	    try {
 		    fin = new FileInputStream(filePath);
-	    } catch (FileNotFoundException ex) {MiscUtils.getLogger().error("Error", ex);
+	    } catch (FileNotFoundException ex) {
+		    ex.printStackTrace();
 		    throw new Exception("Error: While zipping, Export File not found - " + fileName);
 	    }
 	    try {
 		    // Add ZIP entry to output stream
 		    zout.putNextEntry(new ZipEntry(fileName));
-	    } catch (IOException ex) {MiscUtils.getLogger().error("Error", ex);
+	    } catch (IOException ex) {
+		    ex.printStackTrace();
 		    throw new Exception("Error: Cannot add file to ZIP - " + fileName);
 	    }
 
@@ -1092,25 +1096,29 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
 	    int len;
 	    try {
 		    while ((len = fin.read(buf)) > 0) zout.write(buf, 0, len);
-	    } catch (IOException ex) {MiscUtils.getLogger().error("Error", ex);
+	    } catch (IOException ex) {
+		    ex.printStackTrace();
 		    throw new Exception("Error: Cannot write data to ZIP - " + fileName);
 	    }
 	    try {
 		    // Complete the entry
 		    zout.closeEntry();
-	    } catch (IOException ex) {MiscUtils.getLogger().error("Error", ex);
+	    } catch (IOException ex) {
+		    ex.printStackTrace();
 		    throw new Exception("Error: Cannot complete ZIP entry - " + fileName);
 	    }
 	    try {
 		    fin.close();
-	    } catch (IOException ex) {MiscUtils.getLogger().error("Error", ex);
+	    } catch (IOException ex) {
+		    ex.printStackTrace();
 		    throw new Exception("Error: Cannot close input file - " + fileName);
 	    }
 	}
 	try {
 		// Complete the ZIP file
 		zout.close();
-	} catch (IOException ex) {MiscUtils.getLogger().error("Error", ex);
+	} catch (IOException ex) {
+		ex.printStackTrace();
 		throw new Exception("Error: Cannot close ZIP file");
 	}
 	return true;
@@ -1294,6 +1302,22 @@ public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServlet
     public DemographicExportAction2() {
     }
    
+    public void getMembers(Object obj){
+	Class cls = obj.getClass();
+	Method[] methods = cls.getMethods();
+	for (int i=0; i < methods.length; i++){
+	    Class ret = methods[i].getReturnType();
+	    Class[] params = methods[i].getParameterTypes();
+	    System.out.print(ret.getName()+" ");
+	    System.out.print(methods[i].getName());
+	    System.out.print("(");
+	    for (int j=0; j<params.length; j++){
+		System.out.print(" "+params[j].getName());
+	    }
+	    System.out.println(")");
+	}
+    }
+    
     public String currentMem(){        
 	long total = Runtime.getRuntime().totalMemory();
 	long free  = Runtime.getRuntime().freeMemory();

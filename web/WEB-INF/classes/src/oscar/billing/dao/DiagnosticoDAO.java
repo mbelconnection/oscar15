@@ -27,8 +27,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.oscarehr.util.MiscUtils;
+import java.util.Properties;
 
 import oscar.billing.model.Diagnostico;
 import oscar.oscarDB.DBHandler;
@@ -36,6 +35,9 @@ import oscar.util.DAO;
 
 
 public class DiagnosticoDAO extends DAO {
+    public DiagnosticoDAO(Properties pvar) throws SQLException {
+        super(pvar);
+    }
 
     public List list(String id) throws SQLException {
         ArrayList list = new ArrayList();
@@ -43,21 +45,23 @@ public class DiagnosticoDAO extends DAO {
             "from cad_diagnostico diag, cad_cid cid " +
             "where diag.co_cid = cid.co_cid and " + "diag.appointment_no = " +
             id;
-		MiscUtils.getLogger().debug(sql);
-        
+		System.out.println(sql);
+        DBHandler db = getDb();
 
-        ResultSet rs = DBHandler.GetSQL(sql);
+        try {
+            ResultSet rs = db.GetSQL(sql);
 
-        while (rs.next()) {
-            Diagnostico diagnostico = new Diagnostico();
-            diagnostico.getCadCid().setCoCid(oscar.Misc.getString(rs, 1));
-            diagnostico.getCadCid().setDsCid(oscar.Misc.getString(rs, 2));
-            diagnostico.getAppointment().setAppointmentNo(Long.parseLong(id));
-			diagnostico.setSave(true);
+            while (rs.next()) {
+                Diagnostico diagnostico = new Diagnostico();
+                diagnostico.getCadCid().setCoCid(db.getString(rs,1));
+                diagnostico.getCadCid().setDsCid(db.getString(rs,2));
+                diagnostico.getAppointment().setAppointmentNo(Long.parseLong(id));
+				diagnostico.setSave(true);
 
-            list.add(diagnostico);
+                list.add(diagnostico);
+            }
+        } finally {
         }
- 
 
         return list;
     }

@@ -23,7 +23,6 @@
 package org.oscarehr.casemgmt.dao;
 
 import java.util.List;
-
 import org.oscarehr.casemgmt.model.CaseManagementNoteLink;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 

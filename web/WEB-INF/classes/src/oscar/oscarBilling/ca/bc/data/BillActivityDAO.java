@@ -37,10 +37,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.entities.Billactivity;
+import oscar.oscarDB.DBHandler;
 import oscar.util.SqlUtils;
 
 /**
@@ -99,9 +97,11 @@ public class BillActivityDAO {
          //beginningOfYear.set(Calendar.MONTH,0);
          beginningOfYear.set(Calendar.DAY_OF_YEAR,1);
          /////
+         DBHandler dbhandler = null;
          try {             
+            dbhandler = new DBHandler(DBHandler.OSCAR_DATA);
             String s = "select * from billactivity where monthCode=? and groupno=? and updatedatetime > ? and status <> 'D' order by batchcount";
-            PreparedStatement pstmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(s);
+            PreparedStatement pstmt = DBHandler.getConnection().prepareStatement(s);
                 pstmt.setString(1,getMonthCode(d));
                 pstmt.setString(2,billinggroup_no);
                 pstmt.setDate(3,new java.sql.Date(beginningOfYear.getTime().getTime())); 
@@ -115,7 +115,7 @@ public class BillActivityDAO {
                 batchCount = String.valueOf(fileCount);    
             pstmt.close();
          }catch (SQLException sqlexception) {
-            MiscUtils.getLogger().debug(sqlexception.getMessage());
+            System.out.println(sqlexception.getMessage());
          }
         return batchCount;
     }
@@ -141,11 +141,14 @@ public class BillActivityDAO {
     */
     public int saveBillactivity(String monthCode,String batchCount,String htmlFilename, String mspFilename, String providerNo, String htmlFile,String mspFile, Date date,int records, String fileTotal ){
         int id = 0;
+        ////
+        DBHandler dbhandler = null;
         try {             
+           dbhandler = new DBHandler(DBHandler.OSCAR_DATA);
                                                          //1 2 3 4 5 6 7 8 9 0 1 2 3     
            String query = "insert into billactivity (monthCode,batchcount,htmlfilename,ohipfilename,providerohipno,groupno,creator,htmlcontext,ohipcontext,claimrecord,updatedatetime,status,total ) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
         
-           PreparedStatement pstmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(query);
+           PreparedStatement pstmt = DBHandler.getConnection().prepareStatement(query);
         
             pstmt.setString(1,monthCode);
             pstmt.setString(2,batchCount);
@@ -169,18 +172,20 @@ public class BillActivityDAO {
             
             pstmt.close();
         }catch (SQLException sqlexception) {
-           MiscUtils.getLogger().debug(sqlexception.getMessage());
+           System.out.println(sqlexception.getMessage());
         }
         ////
         return id;
     }
     
     public void setStatusToSent(Billactivity b){
+        DBHandler dbhandler = null;
         try {             
+           dbhandler = new DBHandler(DBHandler.OSCAR_DATA);
                                                          //1 2 3 4 5 6 7 8 9 0 1 2 3     
            String query = "update billactivity set status = ?, sentdate = ? where id = ? ";
         
-           PreparedStatement pstmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(query);
+           PreparedStatement pstmt = DBHandler.getConnection().prepareStatement(query);
         
             pstmt.setString(1,b.SENT);
             pstmt.setDate(2,new java.sql.Date(new Date().getTime()));
@@ -189,7 +194,7 @@ public class BillActivityDAO {
 
             pstmt.close();
         }catch (SQLException sqlexception) {
-           MiscUtils.getLogger().debug(sqlexception.getMessage());
+           System.out.println(sqlexception.getMessage());
         }
     }
     

@@ -34,7 +34,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -45,19 +44,19 @@ public class EctConDisplayServiceAction extends Action {
       EctConDisplayServiceForm displayServiceForm = (EctConDisplayServiceForm)form;
       String serviceId = displayServiceForm.getServiceId();
       String specialists[] = displayServiceForm.getSpecialists();
-      MiscUtils.getLogger().debug("service id ".concat(String.valueOf(String.valueOf(serviceId))));
-      MiscUtils.getLogger().debug("num specs".concat(String.valueOf(String.valueOf(specialists.length))));
+      System.out.println("service id ".concat(String.valueOf(String.valueOf(serviceId))));
+      System.out.println("num specs".concat(String.valueOf(String.valueOf(specialists.length))));
       try {
-         
-         String sql = String.valueOf(String.valueOf((new StringBuilder("delete from serviceSpecialists where serviceId = '")).append(serviceId).append("'")));
-         DBHandler.RunSQL(sql);
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+         String sql = String.valueOf(String.valueOf((new StringBuffer("delete from serviceSpecialists where serviceId = '")).append(serviceId).append("'")));
+         db.RunSQL(sql);
          for(int i = 0; i < specialists.length; i++) {
-            sql = String.valueOf(String.valueOf((new StringBuilder("insert into serviceSpecialists (serviceId,specId) values ('")).append(serviceId).append("','").append(specialists[i]).append("')")));
-            DBHandler.RunSQL(sql);
+            sql = String.valueOf(String.valueOf((new StringBuffer("insert into serviceSpecialists (serviceId,specId) values ('")).append(serviceId).append("','").append(specialists[i]).append("')")));
+            db.RunSQL(sql);
          }
       }
       catch(SQLException e) {
-         MiscUtils.getLogger().error("Error", e);
+         System.out.println(e.getMessage());
       }
       EctConConstructSpecialistsScriptsFile constructSpecialistsScriptsFile = new EctConConstructSpecialistsScriptsFile();
       constructSpecialistsScriptsFile.makeString(request.getLocale());

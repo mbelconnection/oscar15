@@ -35,8 +35,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import org.apache.commons.digester.Digester;
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xml.sax.SAXException;
 
 import oscar.OscarProperties;
@@ -46,7 +46,7 @@ import oscar.OscarProperties;
  * @author Jay Gallagher
  */
 public   class SurveillanceMaster {
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(SurveillanceMaster.class);
    
    static SurveillanceMaster surveillanceMaster = new SurveillanceMaster();
    static boolean loaded = false;
@@ -216,6 +216,7 @@ public   class SurveillanceMaster {
             if (input == null){
                log.error("OSCAR SURVEILLANCE ERROR:  could not find file :"+filename,eio);
             }
+            //eio.printStackTrace(); 
             surveyList = new ArrayList();
             surveyTable = new Hashtable();
          }

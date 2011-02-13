@@ -31,7 +31,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -47,15 +48,17 @@ import org.oscarehr.PMmodule.service.ProgramManager;
 import org.oscarehr.PMmodule.service.ProviderManager;
 import org.oscarehr.PMmodule.web.BaseAction;
 import org.oscarehr.PMmodule.web.formbean.StaffEditProgramContainer;
+import org.oscarehr.PMmodule.web.formbean.StaffManagerViewFormBean;
 import org.oscarehr.common.dao.FacilityDao;
 import org.oscarehr.common.dao.SecRoleDao;
 import org.oscarehr.common.model.Facility;
 import org.oscarehr.common.model.Provider;
 import org.oscarehr.util.LoggedInInfo;
-import org.oscarehr.util.MiscUtils;
+
+import com.quatro.service.security.RolesManager;
 
 public class StaffManagerAction extends BaseAction {
-	private static Logger log = MiscUtils.getLogger();
+	private static Log log = LogFactory.getLog(StaffManagerAction.class);
 	
 	private FacilityDao facilityDao=null;
 
@@ -150,8 +153,8 @@ public class StaffManagerAction extends BaseAction {
 	}
 	
 	public ActionForward list(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-		//DynaActionForm providerForm = (DynaActionForm)form;
-		//StaffManagerViewFormBean formBean = (StaffManagerViewFormBean)providerForm.get("view");
+		DynaActionForm providerForm = (DynaActionForm)form;
+		StaffManagerViewFormBean formBean = (StaffManagerViewFormBean)providerForm.get("view");
 		
 		//request.setAttribute("providers",providerManager.getProviders());
 		//changed to get all active providers

@@ -32,8 +32,6 @@ package oscar.oscarBilling.ca.bc.MSP;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.Misc;
 import oscar.oscarDB.DBHandler;
 import oscar.util.UtilMisc;
@@ -73,8 +71,8 @@ public class MSPBillingNote {
                         "'"+UtilMisc.mysqlEscape(note)+"'," +
                         "'1')";
       
-      
-      DBHandler.RunSQL(notesql);                    
+      DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+                db.RunSQL(notesql);                    
    }
    
    /**
@@ -86,8 +84,8 @@ public class MSPBillingNote {
       Note n = new Note();
       String notesql = "select * from billingnote where billingmaster_no = '"+billingmaster_no+"' and note_type = '1' order by createdate desc limit 1";
       try{
-      
-      ResultSet rs = DBHandler.GetSQL(notesql);
+      DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+      ResultSet rs = db.GetSQL(notesql);
       if(rs.next()){
          n.setBillingnote_no(rs.getString("billingnote_no"));
          n.setBillingmaster_no(rs.getString("billingmaster_no"));
@@ -97,7 +95,7 @@ public class MSPBillingNote {
       }
       rs.close();                    
       }catch (Exception e){
-         MiscUtils.getLogger().error("Error", e);        
+         e.printStackTrace();        
       }
       return n;
    }
@@ -107,14 +105,14 @@ public class MSPBillingNote {
       String retStr = "";
       String notesql = "select note from billingnote where billingmaster_no = '"+billingmaster_no+"' and note_type = '1' order by createdate desc limit 1 ";
       try{
-         
-         ResultSet rs = DBHandler.GetSQL(notesql);
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+         ResultSet rs = db.GetSQL(notesql);
          if(rs.next()){
             retStr = rs.getString("note");
          }
          rs.close();                    
          }catch (Exception e){
-            MiscUtils.getLogger().error("Error", e);        
+            e.printStackTrace();        
          }
       return retStr;
    }
@@ -132,13 +130,14 @@ public class MSPBillingNote {
    Seventh - NOTE-DATA-LINE (400)
    */
    public static String getN01(String dataCenterNum,String dataCenterSeqNum,String payeeNum,String practitionerNum,String noteType,String note){
-      MiscUtils.getLogger().debug("LOOKATME:"+note);
-      String s = "N01" + Misc.forwardZero(dataCenterNum,5)
-                       + Misc.forwardZero(dataCenterSeqNum, 7)
-                       + Misc.forwardZero(payeeNum, 5)
-                       + Misc.forwardZero(practitionerNum, 5)
-                       + Misc.forwardSpace(noteType,1)
-                       + Misc.forwardSpace(Misc.stripLineBreaks(note),400);      
+      System.out.println("LOOKATME:"+note);
+      Misc misc = new Misc();
+      String s = "N01" + misc.forwardZero(dataCenterNum,5)
+                       + misc.forwardZero(dataCenterSeqNum, 7)
+                       + misc.forwardZero(payeeNum, 5)
+                       + misc.forwardZero(practitionerNum, 5)
+                       + misc.forwardSpace(noteType,1)
+                       + misc.forwardSpace(Misc.stripLineBreaks(note),400);      
       return s;      
    }
    

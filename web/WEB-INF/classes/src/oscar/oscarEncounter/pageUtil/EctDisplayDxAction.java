@@ -35,7 +35,6 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts.util.MessageResources;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarResearch.oscarDxResearch.bean.dxResearchBean;
 import oscar.oscarResearch.oscarDxResearch.bean.dxResearchBeanHandler;
@@ -96,7 +95,7 @@ public class EctDisplayDxAction extends EctDisplayAction {
                 item.setDate(date);
             }
             catch(ParseException ex ) {
-                MiscUtils.getLogger().debug("EctDisplayDxAction: Error creating date " + ex.getMessage());
+                System.out.println("EctDisplayDxAction: Error creating date " + ex.getMessage());
                 serviceDateStr = "Error";
                 //date = new Date(System.currentTimeMillis());
                 date = null;

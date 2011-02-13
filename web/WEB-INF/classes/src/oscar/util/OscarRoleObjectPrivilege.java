@@ -45,12 +45,20 @@
 
 package oscar.util;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.Vector;
 
 import javax.servlet.jsp.PageContext;
 
-import org.oscarehr.util.MiscUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -65,10 +73,10 @@ public class OscarRoleObjectPrivilege {
         Vector ret = new Vector();
         Properties prop = new Properties();
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             java.sql.ResultSet rs;
             String [] objectNames  = getVecObjectName(objName);
-            StringBuilder objectWhere = new StringBuilder();
+            StringBuffer objectWhere = new StringBuffer();
             for (int i = 0; i < objectNames.length; i++){
                 if (i < (objectNames.length - 1)){
                    objectWhere.append(" objectName = '"+objectNames[i]+"' or ");
@@ -79,18 +87,18 @@ public class OscarRoleObjectPrivilege {
             
             String sql = new String("select roleUserGroup,privilege from secObjPrivilege where "+ objectWhere.toString() +" order by priority desc");
 
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             Vector roleInObj = new Vector();
             while (rs.next()) {
-                prop.setProperty(oscar.Misc.getString(rs, "roleUserGroup"), oscar.Misc.getString(rs, "privilege"));
-                roleInObj.add(oscar.Misc.getString(rs, "roleUserGroup"));
+                prop.setProperty(db.getString(rs,"roleUserGroup"), db.getString(rs,"privilege"));
+                roleInObj.add(db.getString(rs,"roleUserGroup"));
             }
             ret.add(prop);
             ret.add(roleInObj);
 
             rs.close();
         } catch (java.sql.SQLException e) {
-           MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace(System.out);
         }
         return ret;
     }
@@ -132,7 +140,7 @@ public class OscarRoleObjectPrivilege {
             return x.compareToIgnoreCase(propPrivilege) >= 0;
         }
         catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
             return(false);
         }
     }

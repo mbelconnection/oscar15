@@ -40,7 +40,6 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.apache.struts.util.MessageResources;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 import oscar.oscarDB.DBHandler;
@@ -65,7 +64,7 @@ public class RptInitializeFrequencyOfRelevantTestsCDMReportAction extends Action
         String endDateA = frm.getEndDateA();
         int nbPatient = 0; 
         try{
-                  
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);  
                 if(!validate(frm, request)){                    
                     return (new ActionForward(mapping.getInput()));
                 }
@@ -73,13 +72,13 @@ public class RptInitializeFrequencyOfRelevantTestsCDMReportAction extends Action
                 
                 addHeading(headings, request);
                 if(patientSeenCheckbox!=null){
-                    nbPatient = mData.getNbPatientSeen(startDateA, endDateA);  
+                    nbPatient = mData.getNbPatientSeen(db, startDateA, endDateA);  
                     String msg = mr.getMessage("oscarReport.CDMReport.msgPatientSeen", Integer.toString(nbPatient), startDateA, endDateA); 
-                    MiscUtils.getLogger().debug(msg);
+                    System.out.println(msg);
                     reportMsg.add(msg);
                     reportMsg.add("");
                 }
-                getFrequenceOfTestPerformed(frm, reportMsg, request);
+                getFrequenceOfTestPerformed(db, frm, reportMsg, request);
                 
                 String title = mr.getMessage("oscarReport.CDMReport.msgFrequencyOfRelevantTestsBeingPerformed");
                 request.setAttribute("title", title);
@@ -102,7 +101,7 @@ public class RptInitializeFrequencyOfRelevantTestsCDMReportAction extends Action
         
         catch(SQLException e)
         {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         return mapping.findForward("success");
     }
@@ -115,22 +114,22 @@ public class RptInitializeFrequencyOfRelevantTestsCDMReportAction extends Action
      private ArrayList addHeading(ArrayList headings, HttpServletRequest request){
          MessageResources mr = getResources(request);
          /*String hd = mr.getMessage("oscarReport.CDMReport.msgStartDate");
-         MiscUtils.getLogger().debug(hd);
+         System.out.println(hd);
          headings.add(hd);
          hd = mr.getMessage("oscarReport.CDMReport.msgEndDate");
-         MiscUtils.getLogger().debug(hd);
+         System.out.println(hd);
          headings.add(hd);
          hd = mr.getMessage("oscarReport.CDMReport.msgTest");
-         MiscUtils.getLogger().debug(hd);
+         System.out.println(hd);
          headings.add(hd);
          hd = mr.getMessage("oscarReport.CDMReport.msgMeasuringInstruction");
-         MiscUtils.getLogger().debug(hd);
+         System.out.println(hd);
          headings.add(hd);*/
          String hd = mr.getMessage("oscarReport.CDMReport.msgFrequency");
-         MiscUtils.getLogger().debug(hd);
+         System.out.println(hd);
          headings.add(hd);
          hd = mr.getMessage("oscarReport.CDMReport.msgPercentage");
-         MiscUtils.getLogger().debug(hd);
+         System.out.println(hd);
          headings.add(hd);         
          return headings;
      }
@@ -181,7 +180,7 @@ public class RptInitializeFrequencyOfRelevantTestsCDMReportAction extends Action
      *
      * @return ArrayList which contain the result in String format
      ******************************************************************************************/      
-    private ArrayList getFrequenceOfTestPerformed(RptInitializeFrequencyOfRelevantTestsCDMReportForm frm, ArrayList percentageMsg, HttpServletRequest request){
+    private ArrayList getFrequenceOfTestPerformed(DBHandler db, RptInitializeFrequencyOfRelevantTestsCDMReportForm frm, ArrayList percentageMsg, HttpServletRequest request){
         String[] startDateD = frm.getStartDateD();
         String[] endDateD = frm.getEndDateD();         
         int[] exactly = frm.getExactly(); 
@@ -205,7 +204,7 @@ public class RptInitializeFrequencyOfRelevantTestsCDMReportAction extends Action
                     String measurementType = (String) frm.getValue("measurementTypeD"+ctr);                    
                     String sNumMInstrc = (String) frm.getValue("mNbInstrcsD"+ctr);
                     int iNumMInstrc = Integer.parseInt(sNumMInstrc);                    
-                    ArrayList patients = mData.getPatientsSeen(startDate, endDate);
+                    ArrayList patients = mData.getPatientsSeen(db, startDate, endDate);
                     int nbPatients = patients.size();
                     
                     for(int j=0; j<iNumMInstrc; j++){
@@ -227,7 +226,7 @@ public class RptInitializeFrequencyOfRelevantTestsCDMReportAction extends Action
                                              + "'AND type='"+ measurementType + "'AND measuringInstruction='"+ mInstrc 
                                              + "' AND demographicNo=" + "'" + patient + "'";
                                 
-                                ResultSet rs = DBHandler.GetSQL(sql);  
+                                ResultSet rs = db.GetSQL(sql);  
                                 if (rs.next())
                                     nbTest = rs.getInt("nbTest");                              
                                 rs.close();
@@ -258,7 +257,7 @@ public class RptInitializeFrequencyOfRelevantTestsCDMReportAction extends Action
                                                 " (" + Double.toString(exactPercentage) + "%)",
                                                 Integer.toString(exact)};
                             String msg = mr.getMessage("oscarReport.CDMReport.msgFrequencyOfRelevantTestsExact", param0);                              
-                            MiscUtils.getLogger().debug(msg);
+                            System.out.println(msg);
                             percentageMsg.add(msg);
                             String[] param1 = {   startDate, 
                                                 endDate,
@@ -268,7 +267,7 @@ public class RptInitializeFrequencyOfRelevantTestsCDMReportAction extends Action
                                                 " (" + Double.toString(morePercentage) + "%)",
                                                 Integer.toString(more)};
                             msg = mr.getMessage("oscarReport.CDMReport.msgFrequencyOfRelevantTestsMoreThan", param1); 
-                            MiscUtils.getLogger().debug(msg);
+                            System.out.println(msg);
                             percentageMsg.add(msg); 
                             String[] param2 = {   startDate, 
                                                 endDate,
@@ -278,7 +277,7 @@ public class RptInitializeFrequencyOfRelevantTestsCDMReportAction extends Action
                                                 " (" + Double.toString(lessPercentage) + "%)",
                                                 Integer.toString(less)};
                             msg = mr.getMessage("oscarReport.CDMReport.msgFrequencyOfRelevantTestsLessThan", param2); 
-                            MiscUtils.getLogger().debug(msg);
+                            System.out.println(msg);
                             percentageMsg.add(msg); 
                             percentageMsg.add("");
                         }
@@ -287,11 +286,11 @@ public class RptInitializeFrequencyOfRelevantTestsCDMReportAction extends Action
             }
             catch(SQLException e)
             {
-                MiscUtils.getLogger().error("Error", e);
+                System.out.println(e.getMessage());
             }
         }
         else{
-            MiscUtils.getLogger().debug("guideline checkbox is null");
+            System.out.println("guideline checkbox is null");
         }
         return percentageMsg;
     }

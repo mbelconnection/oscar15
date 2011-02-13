@@ -39,8 +39,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBean;
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBeanHandler;
@@ -53,7 +53,7 @@ import oscar.util.UtilDateUtilities;
  * @author jay
  */
 public class FOBTReport implements PreventionReport{
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(FOBTReport.class);
 
 
     /** Creates a new instance of MammogramReport */
@@ -307,7 +307,7 @@ public class FOBTReport implements PreventionReport{
               
               Collection followupData = measurementDataHandler.getMeasurementsDataVector();
               //NO Contact
-              
+              System.out.print("fluFollowupData size = "+followupData.size());
               if ( followupData.size() == 0 ){
                   prd.nextSuggestedProcedure = this.LETTER1;
                   return this.LETTER1;

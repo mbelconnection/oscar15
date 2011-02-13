@@ -9,7 +9,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -17,13 +18,12 @@ import org.apache.struts.actions.DispatchAction;
 import org.apache.struts.upload.FormFile;
 import org.oscarehr.learning.StudentImporter;
 import org.oscarehr.learning.StudentInfo;
-import org.oscarehr.util.MiscUtils;
 
 import com.Ostermiller.util.ExcelCSVParser;
 
 public class StudentImportAction extends DispatchAction {
 
-	private static Logger logger = MiscUtils.getLogger();
+	private static Log logger = LogFactory.getLog(StudentImportAction.class);
 	
 	/*
 	 * Import
@@ -47,6 +47,10 @@ public class StudentImportAction extends DispatchAction {
 		logger.info("upload student data");
     	StudentImportBean f = (StudentImportBean)form;
     	FormFile formFile = f.getFile();
+    	String filename=formFile.getFileName();
+    	int filesize=formFile.getFileSize();
+    	String contentType=formFile.getContentType();
+    	
     	String[][] data = ExcelCSVParser.parse(new InputStreamReader(formFile.getInputStream()));
     	
     	List<StudentInfo> studentInfoList = new ArrayList<StudentInfo>();

@@ -26,6 +26,7 @@ package oscar.util;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,7 +74,7 @@ public class Doc2PDF {
 
             tidy.parse(in, tidyout);
 
-            MiscUtils.getLogger().debug(tidyout.toString());
+            System.out.println(tidyout.toString());
             String documentTxt = AddAbsoluteTag(request, tidyout.toString(), uri);
 
             PrintPDFFromHTMLString(response, documentTxt);
@@ -136,10 +137,10 @@ public class Doc2PDF {
     // Main entry for htmldoc class
     public static void HTMLDOC(HttpServletRequest request, HttpServletResponse response, String url)// I - Command-line args
     {
-        //String server_name, // SERVER_NAME env var
-        //server_port, // SERVER_PORT env var
-        //path_info, // PATH_INFO env var
-        String query_string, // QUERY_STRING env var
+        String server_name, // SERVER_NAME env var
+        server_port, // SERVER_PORT env var
+        path_info, // PATH_INFO env var
+        query_string, // QUERY_STRING env var
         filename; // File to convert
 
         filename = url;
@@ -209,6 +210,8 @@ public class Doc2PDF {
 
     public static void SavePDF2File(String fileName, String docBin) {
 
+        FileOutputStream fos;
+        DataOutputStream ds;
         try {
 
             FileOutputStream ostream = new FileOutputStream(fileName);
@@ -222,7 +225,7 @@ public class Doc2PDF {
 
         }
         catch (IOException ioe) {
-            MiscUtils.getLogger().debug("IO error: " + ioe);
+            System.out.println("IO error: " + ioe);
         }
     }
 
@@ -233,7 +236,7 @@ public class Doc2PDF {
 
             URL url = new URI(uri + ";jsessionid=" + jsessionid).toURL();
 
-            MiscUtils.getLogger().debug(" " + uri + ";jsessionid=" + jsessionid);
+            System.out.println(" " + uri + ";jsessionid=" + jsessionid);
 
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 

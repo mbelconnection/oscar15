@@ -31,8 +31,6 @@ import java.util.ResourceBundle;
 
 import javax.servlet.jsp.JspWriter;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 /**
  * <p>Title: </p>
@@ -54,15 +52,15 @@ public class MsgMessengerGroupData {
       if (Integer.parseInt(grpNo) > 0){
          try{
 
-              
+              DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
               java.sql.ResultSet rs;
               String sql = new String("select groupDesc from groups_tbl where groupID = '"+grpNo+"'");
-              rs = DBHandler.GetSQL(sql);
+              rs = db.GetSQL(sql);
                  if (rs.next()){
-                    retval = oscar.Misc.getString(rs, "groupDesc");
+                    retval = db.getString(rs,"groupDesc");
                  }
               rs.close();
-         }catch (Exception e){MiscUtils.getLogger().error("Error", e); }
+         }catch (Exception e){ e.printStackTrace(System.out); }
       }
 
 
@@ -72,36 +70,36 @@ public class MsgMessengerGroupData {
    public String parentDirectory(String grpNo){
          String retval = new String();
          try{
-           
+           DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
            java.sql.ResultSet rs;
            String sql = new String("select parentID from groups_tbl where groupID = '"+grpNo+"'");
-           rs = DBHandler.GetSQL(sql);
+           rs = db.GetSQL(sql);
               if (rs.next()){
-                 //out.print("<a href=\"Admin.jsp?groupNo="+oscar.Misc.getString(rs,"parentID")+"\">Click here to got the parent group</a><br>");
-                 retval = oscar.Misc.getString(rs, "parentID");
+                 //out.print("<a href=\"Admin.jsp?groupNo="+db.getString(rs,"parentID")+"\">Click here to got the parent group</a><br>");
+                 retval = db.getString(rs,"parentID");
               }
            rs.close();
-         }catch (Exception e){MiscUtils.getLogger().error("Error", e); }
+         }catch (Exception e){ e.printStackTrace(System.out); }
       return retval;
    }
 
 //////////////////--------------------------------------------------------------
 
    public String printGroups(String groupNo){
-      StringBuilder stringBuffer = new StringBuilder();
+      StringBuffer stringBuffer = new StringBuffer();
       numGroups = 0;
       try{
-           
+           DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
            java.sql.ResultSet rs;
            String sql = new String("select * from groups_tbl where parentID = '"+groupNo+"'");
-           rs = DBHandler.GetSQL(sql);
+           rs = db.GetSQL(sql);
               while (rs.next()){
-                 //out.print("<a href=\"Admin.jsp?groupNo="+oscar.Misc.getString(rs,"groupID")+"\">"+oscar.Misc.getString(rs,"groupDesc")+"</a><br>");
-                 stringBuffer.append("<a href=\"MessengerAdmin.jsp?groupNo="+oscar.Misc.getString(rs, "groupID")+"\">"+oscar.Misc.getString(rs, "groupDesc")+"</a><br>");
+                 //out.print("<a href=\"Admin.jsp?groupNo="+db.getString(rs,"groupID")+"\">"+db.getString(rs,"groupDesc")+"</a><br>");
+                 stringBuffer.append("<a href=\"MessengerAdmin.jsp?groupNo="+db.getString(rs,"groupID")+"\">"+db.getString(rs,"groupDesc")+"</a><br>");
                  numGroups++;
               }
            rs.close();
-      }catch (Exception e){MiscUtils.getLogger().error("Error", e); }
+      }catch (Exception e){ e.printStackTrace(System.out); }
    return stringBuffer.toString();
    }
 
@@ -111,15 +109,15 @@ public class MsgMessengerGroupData {
 
       groupMemberVector = new java.util.Vector();
       try{
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         java.sql.ResultSet rs;
         String sql = new String("select * from groupMembers_tbl where groupID = '"+grpNo+"'");
-        rs = DBHandler.GetSQL(sql);
+        rs = db.GetSQL(sql);
         while (rs.next()){
-          groupMemberVector.add(oscar.Misc.getString(rs, "provider_No"));
+          groupMemberVector.add(db.getString(rs,"provider_No"));
         }
         rs.close();
-      }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+      }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
 
       return groupMemberVector;
    }
@@ -130,42 +128,42 @@ public class MsgMessengerGroupData {
          java.util.Vector vector = membersInGroups(grpNo);
 
          try{
-              
+              DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
               java.sql.ResultSet rs;
               String sql = new String("select * from provider order by last_name");
-              rs = DBHandler.GetSQL(sql);
+              rs = db.GetSQL(sql);
               while (rs.next()){
                   out.print("   <tr>");
                   out.print("      <td>");
-                 if ( vector.contains(oscar.Misc.getString(rs, "provider_no")) ){
-                       out.print("<input type=\"checkbox\" name=providers value="+oscar.Misc.getString(rs, "provider_no")+" checked >");
+                 if ( vector.contains(db.getString(rs,"provider_no")) ){
+                       out.print("<input type=\"checkbox\" name=providers value="+db.getString(rs,"provider_no")+" checked >");
                  }else{
-                       out.print("<input type=\"checkbox\" name=providers value="+oscar.Misc.getString(rs, "provider_no")+">");
+                       out.print("<input type=\"checkbox\" name=providers value="+db.getString(rs,"provider_no")+">");
                  }
                   out.print("      </td>");
                   out.print("      <td>");
-                  out.print(oscar.Misc.getString(rs, "last_name"));
+                  out.print(db.getString(rs,"last_name"));
                   out.print("      </td>");
                   out.print("      <td>");
-                  out.print(oscar.Misc.getString(rs, "first_name"));
+                  out.print(db.getString(rs,"first_name"));
                   out.print("      </td>");
                   out.print("      <td>");
 
                   String strProviderType = new String();
                   ResourceBundle oscarR = ResourceBundle.getBundle("oscarResources",locale);
                   
-                  if (oscar.Misc.getString(rs, "provider_type").equals("doctor")) {
+                  if (db.getString(rs,"provider_type").equals("doctor")) {
                   	strProviderType = oscarR.getString("admin.provider.formType.optionDoctor");
-                  }else if (oscar.Misc.getString(rs, "provider_type").equals("receptionist")) {
+                  }else if (db.getString(rs,"provider_type").equals("receptionist")) {
                   	strProviderType = oscarR.getString("admin.provider.formType.optionReceptionist");
-                  }else if (oscar.Misc.getString(rs, "provider_type").equals("nurse")) {
+                  }else if (db.getString(rs,"provider_type").equals("nurse")) {
                   	strProviderType = oscarR.getString("admin.provider.formType.optionNurse");
-                  }else if (oscar.Misc.getString(rs, "provider_type").equals("resident")) {	
+                  }else if (db.getString(rs,"provider_type").equals("resident")) {	
                   	strProviderType = oscarR.getString("admin.provider.formType.optionResident");
-                  }else if (oscar.Misc.getString(rs, "provider_type").equals("admin")) {
+                  }else if (db.getString(rs,"provider_type").equals("admin")) {
                   	strProviderType = oscarR.getString("admin.provider.formType.optionAdmin");
                   }else{
-                  	strProviderType = oscar.Misc.getString(rs, "provider_type");
+                  	strProviderType = db.getString(rs,"provider_type");
                   }
 
                   out.print(strProviderType);
@@ -178,32 +176,32 @@ public class MsgMessengerGroupData {
 
 
               rs.close();
-          }catch (Exception e){MiscUtils.getLogger().error("Error", e); }
+          }catch (Exception e){ e.printStackTrace(System.out); }
 
    }
 
    public String printAllBelowGroups(String grpNo){
-      StringBuilder stringBuffer = new StringBuilder();
+      StringBuffer stringBuffer = new StringBuffer();
       int untilZero = Integer.parseInt(grpNo);
 
          try{
-           
+           DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
            java.sql.ResultSet rs;
 
            while (untilZero != 0){
               String sql = new String("select groupID, parentID, groupDesc from groups_tbl where groupID = '"+Integer.toString(untilZero)+"'");
-              rs = DBHandler.GetSQL(sql);
+              rs = db.GetSQL(sql);
                  if (rs.next()){
 
-                  untilZero = Integer.parseInt(oscar.Misc.getString(rs, "parentID"));
-                  stringBuffer.insert(0," <a href=\"MessengerAdmin.jsp?groupNo="+oscar.Misc.getString(rs, "groupID")+"\"> > "+oscar.Misc.getString(rs, "groupDesc")+"</a>");
+                  untilZero = Integer.parseInt(db.getString(rs,"parentID"));
+                  stringBuffer.insert(0," <a href=\"MessengerAdmin.jsp?groupNo="+db.getString(rs,"groupID")+"\"> > "+db.getString(rs,"groupDesc")+"</a>");
                  }
                  else{
                   untilZero = 0;
                  }
               rs.close();
            }
-         }catch (Exception e){MiscUtils.getLogger().error("Error", e); }
+         }catch (Exception e){ e.printStackTrace(System.out); }
          stringBuffer.insert(0,"<a href=\"MessengerAdmin.jsp?groupNo=0\">Root</a>");
          return stringBuffer.toString();
    }

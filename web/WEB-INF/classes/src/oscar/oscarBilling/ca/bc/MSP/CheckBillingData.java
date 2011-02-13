@@ -391,7 +391,7 @@ public class CheckBillingData {
 
 
     public String checkC02(String billingNo, Billingmaster bm){
-        StringBuilder ret = new StringBuilder();
+        StringBuffer ret = new StringBuffer();
         ret.append(checkLength(bm.getClaimcode(), 3,
                 "C02:P00 Rec Code In Wrong! ")); //P00
         // 3

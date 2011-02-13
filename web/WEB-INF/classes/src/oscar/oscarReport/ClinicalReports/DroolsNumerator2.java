@@ -33,13 +33,12 @@ import java.io.FileInputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Hashtable;
+
 import java.util.Iterator;
 import java.util.Map.Entry;
-
 import org.drools.RuleBase;
 import org.drools.WorkingMemory;
 import org.drools.io.RuleBaseLoader;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 import oscar.oscarEncounter.oscarMeasurements.MeasurementFlowSheet;
@@ -86,7 +85,7 @@ public class DroolsNumerator2 implements Numerator{
             Iterator terator = replaceableValues.entrySet().iterator();
             while(terator.hasNext()){
                 Entry en = (Entry) terator.next();
-                MiscUtils.getLogger().debug("IN DROOLS2 key "+en.getKey()+" val "+en.getValue());
+                System.out.println("IN DROOLS2 key "+en.getKey()+" val "+en.getValue());
             }
             
             String measurement = (String) replaceableValues.get("measurements");
@@ -113,26 +112,27 @@ public class DroolsNumerator2 implements Numerator{
 //            EctMeasurementsDataBeanHandler ect = new EctMeasurementsDataBeanHandler(demographicNo, measurement);
 //           Collection v = ect.getMeasurementsDataVector();
 //           measurementList.add(new ArrayList(v));
-
+//            
+            System.out.println("new MeasurementDSHelper class");
             MeasurementDSHelper dshelper = new MeasurementDSHelper(demographicNo);
             dshelper.setMeasurement(measurement);
             
             
-            MiscUtils.getLogger().debug("new working mem");
+            System.out.println("new working mem");
             WorkingMemory workingMemory = ruleBase.newWorkingMemory();
             
-            MiscUtils.getLogger().debug("assertObject");
+            System.out.println("assertObject");
             
             workingMemory.assertObject(dshelper);
             
           
-            MiscUtils.getLogger().debug("fireAllRules");
+            System.out.println("fireAllRules");
             workingMemory.fireAllRules();
             evalTrue = dshelper.isInRange();
           
-            MiscUtils.getLogger().debug("right before catch");
+            System.out.println("right before catch");
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return evalTrue;
     }
@@ -156,7 +156,7 @@ public class DroolsNumerator2 implements Numerator{
             //if (measurementDirPath.charAt(measurementDirPath.length()) != /)
             File file = new File(OscarProperties.getInstance().getProperty("MEASUREMENT_DS_DIRECTORY")+string);
                if(file.isFile() || file.canRead()) {
-                   MiscUtils.getLogger().debug("Loading from file "+file.getName());
+                   System.out.println("Loading from file "+file.getName());
                    FileInputStream fis = new FileInputStream(file);
                    measurementRuleBase = RuleBaseLoader.loadFromInputStream(fis);
                    fileFound = true;
@@ -165,11 +165,11 @@ public class DroolsNumerator2 implements Numerator{
 
             if (!fileFound){                  
              URL url = MeasurementFlowSheet.class.getResource( "/oscar/oscarEncounter/oscarMeasurements/flowsheets/decisionSupport/"+string );  //TODO: change this so it is configurable;
-             MiscUtils.getLogger().debug("loading from URL "+url.getFile());            
+             System.out.println("loading from URL "+url.getFile());            
              measurementRuleBase = RuleBaseLoader.loadFromUrl( url );
             }
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);                
+            e.printStackTrace();                
         }
         return measurementRuleBase;        
     }
@@ -188,7 +188,7 @@ public class DroolsNumerator2 implements Numerator{
                  outputfields[0] = str;
               }
            }catch(Exception e){
-              MiscUtils.getLogger().error("Error", e);
+              e.printStackTrace();
            }
         }
     }
@@ -208,7 +208,7 @@ public class DroolsNumerator2 implements Numerator{
     public void parseReplaceValues(String str){
         if (str != null){
             try{
-                MiscUtils.getLogger().debug("parsing string "+str);
+                System.out.println("parsing string "+str);
                 if (str.indexOf(",") != -1){
                 replaceKeys = str.split(",");
                 }else{
@@ -216,7 +216,7 @@ public class DroolsNumerator2 implements Numerator{
                     replaceKeys[0] = str;
                 }
             }catch(Exception e){
-                MiscUtils.getLogger().error("Error", e);
+                e.printStackTrace();
             }
         }
     }

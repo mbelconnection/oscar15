@@ -29,7 +29,7 @@ package oscar.eform.data;
 
 import java.util.Properties;
 
-import oscar.util.StringBuilderUtils;
+import oscar.util.StringBufferUtils;
 import oscar.util.UtilDateUtilities;
 
 public class EFormBase {
@@ -46,33 +46,30 @@ public class EFormBase {
     protected String providerNo;
     protected String formDate;
     protected String formTime;
-    protected boolean patientIndependent=false;;
-    protected String roleType;
+    protected Boolean patientIndependent;
     
     public EFormBase() {
         
     }
     
     public EFormBase(String fid, String formName, String formSubject, 
-            String formFileName, String formHtml, String roleType) {
+            String formFileName, String formHtml) {
         this.fid = fid;
         this.formName = formName;
         this.formSubject = formSubject;
         this.formHtml = formHtml;
         this.formFileName = formFileName;
-        this.roleType = roleType;
         dateTimeStamp();
     }
     
     public EFormBase(String fid, String formName, String formSubject,
-            String formFileName, String formHtml, boolean patientIndependent, String roleType) {
+            String formFileName, String formHtml, Boolean patientIndependent) {
         this.fid = fid;
         this.formName = formName;
         this.formSubject = formSubject;
         this.formHtml = formHtml;
         this.formFileName = formFileName;
         this.patientIndependent = patientIndependent;
-        this.roleType = roleType;
         dateTimeStamp();
     }
 
@@ -80,11 +77,11 @@ public class EFormBase {
         Properties prop = oscar.OscarProperties.getInstance();
         String projHome = prop.getProperty("project_home");
         String output = "../eform/displayImage.do?imagefile=";
-        StringBuilder html = new StringBuilder(formHtml);
-        int pointer = StringBuilderUtils.indexOfIgnoreCase(html, imageMarker, 0);
+        StringBuffer html = new StringBuffer(formHtml);
+        int pointer = StringBufferUtils.indexOfIgnoreCase(html, imageMarker, 0);
         while (pointer >= 0) {
             html = html.replace(pointer, pointer+imageMarker.length(), output);
-            pointer = StringBuilderUtils.indexOfIgnoreCase(html, imageMarker, 0);
+            pointer = StringBufferUtils.indexOfIgnoreCase(html, imageMarker, 0);
         }
         formHtml = html.toString();
     }
@@ -113,12 +110,6 @@ public class EFormBase {
     }
     public void setFormName(String formName) {
         this.formName = formName;
-    }
-    public String getRoleType() {
-        return roleType;
-    }
-    public void setRoleType(String roleType) {
-        this.roleType = roleType;
     }
     public String getFormHtml() {
         return formHtml;
@@ -171,11 +162,11 @@ public class EFormBase {
         return this.formCreator;
     }
 
-    public boolean getPatientIndependent() {
+    public Boolean getPatientIndependent() {
         return this.patientIndependent;
     }
 
-    public void setPatientIndependent(boolean patientIndependent) {
+    public void setPatientIndependent(Boolean patientIndependent) {
         this.patientIndependent = patientIndependent;
     }
 }

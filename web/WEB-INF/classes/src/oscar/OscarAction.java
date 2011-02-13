@@ -38,7 +38,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.struts.action.Action;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBPreparedHandler;
 
@@ -85,7 +84,7 @@ public class OscarAction
    * @param response HttpServletResponse
    * @param docName String
    * @param docType String
-   * @return StringBuilder
+   * @return StringBuffer
    */
   public void cfgHeader(HttpServletResponse response, String docName,
                         String docType) {
@@ -113,7 +112,8 @@ public class OscarAction
     try {
       outputStream = response.getOutputStream();
     }
-    catch (IOException ex) {MiscUtils.getLogger().error("Error", ex);
+    catch (IOException ex) {
+      ex.printStackTrace();
     }
     return outputStream;
   }

@@ -35,7 +35,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -61,27 +60,27 @@ public final class EctViewAttachmentAction extends Action {
     String sentBy     = null;
 
 
-    MiscUtils.getLogger().debug("mess id = "+mesId);
+    System.out.println("mess id = "+mesId);
 
     try{
-       
+       DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
        ResultSet rs;
 
 
-       rs = DBHandler.GetSQL("SELECT m.thesubject, m.theime, m.thedate, m.attachment, m.themessage, m.sentBy, ocl.locationDesc  "
+       rs = db.GetSQL("SELECT m.thesubject, m.theime, m.thedate, m.attachment, m.themessage, m.sentBy, ocl.locationDesc  "
                      +"FROM messagetbl m, oscarcommlocations ocl where m.sentByLocation = ocl.locationId and "
                      +" messageid = '"+mesId+"'");
        if(rs.next()){
-          remoteName = oscar.Misc.getString(rs, "locationDesc");
-          themessage = oscar.Misc.getString(rs, "themessage");
-          theime     = oscar.Misc.getString(rs, "theime");
-          thedate    = oscar.Misc.getString(rs, "thedate");
-          attachment = oscar.Misc.getString(rs, "attachment");
-          thesubject = oscar.Misc.getString(rs, "thesubject");
-          sentBy     = oscar.Misc.getString(rs, "sentBy");
+          remoteName = db.getString(rs,"locationDesc");
+          themessage = db.getString(rs,"themessage");
+          theime     = db.getString(rs,"theime");
+          thedate    = db.getString(rs,"thedate");
+          attachment = db.getString(rs,"attachment");
+          thesubject = db.getString(rs,"thesubject");
+          sentBy     = db.getString(rs,"sentBy");
        }
        rs.close();
-    }catch(SQLException e){MiscUtils.getLogger().debug("CrAsH"); MiscUtils.getLogger().error("Error", e);}
+    }catch(SQLException e){System.out.println("CrAsH"); e.printStackTrace();}
 
     request.setAttribute("remoteName",remoteName);
     request.setAttribute("themessage",themessage);

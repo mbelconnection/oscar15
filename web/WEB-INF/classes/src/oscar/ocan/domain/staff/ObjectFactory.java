@@ -9,7 +9,6 @@
 package oscar.ocan.domain.staff;
 
 import java.math.BigInteger;
-
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;

@@ -38,12 +38,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.oscarehr.common.dao.ProviderPreferenceDao;
-import org.oscarehr.common.model.ProviderPreference;
-import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
-import org.oscarehr.util.SpringUtils;
-
 import oscar.oscarDB.DBHandler;
 
 /**
@@ -128,19 +122,19 @@ public class ProviderData {
    public List getProviderListWithInsuranceNo(String insurerNo){
         ArrayList list = new ArrayList();
         try {
-                
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                 ResultSet rs;
                 String sql = "select * from provider where provider_type='doctor' and ohip_no like '"+insurerNo+"' and ohip_no != '' order by last_name";
 
-                rs = DBHandler.GetSQL(sql);
+                rs = db.GetSQL(sql);
                 while  (rs.next()) {
-                   list.add(oscar.Misc.getString(rs, "provider_no"));
+                   list.add(db.getString(rs,"provider_no"));
                 }
 
                 rs.close();
                                
             } catch (SQLException e) {
-                MiscUtils.getLogger().error("Error", e);
+                System.out.println(e.getMessage());
             }         
         return list;
    }
@@ -149,45 +143,45 @@ public class ProviderData {
    
    public void getProvider(String providerNo){
           try {
-                
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                 ResultSet rs;
                 String sql = "SELECT * FROM provider WHERE provider_no = '" + providerNo +"'";
 
-                rs = DBHandler.GetSQL(sql);
+                rs = db.GetSQL(sql);
 
                 if (rs.next()) {
-                   this.provider_no = oscar.Misc.getString(rs, "provider_no");
-                   this.last_name = oscar.Misc.getString(rs, "last_name");
-                   this.first_name = oscar.Misc.getString(rs, "first_name");
-                   this.provider_type = oscar.Misc.getString(rs, "provider_type");
-                   this.specialty = oscar.Misc.getString(rs, "specialty");
-                   this.team = oscar.Misc.getString(rs, "team");
-                   this.sex= oscar.Misc.getString(rs, "sex");
-                   this.dob= oscar.Misc.getString(rs, "dob");
-                   this.address= oscar.Misc.getString(rs, "address");
-                   this.phone= oscar.Misc.getString(rs, "phone");
-                   this.work_phone= oscar.Misc.getString(rs, "work_phone");
-                   this.ohip_no= oscar.Misc.getString(rs, "ohip_no");
-                   this.rma_no= oscar.Misc.getString(rs, "rma_no");
-                   this.billing_no= oscar.Misc.getString(rs, "billing_no");
-                   this.hso_no= oscar.Misc.getString(rs, "hso_no");
-                   this.status= oscar.Misc.getString(rs, "status");
-                   this.comments= oscar.Misc.getString(rs, "comments");
-                   this.provider_activity= oscar.Misc.getString(rs, "provider_activity");
-                   this.practitionerNo= oscar.Misc.getString(rs, "practitionerNo");
-                   this.init= oscar.Misc.getString(rs, "init");
-                   this.job_title= oscar.Misc.getString(rs, "job_title");
-                   this.email= oscar.Misc.getString(rs, "email");
-                   this.title= oscar.Misc.getString(rs, "title");
-                   this.lastUpdateUser= oscar.Misc.getString(rs, "lastUpdateUser");
-                   this.lastUpdateDate= oscar.Misc.getString(rs, "lastUpdateDate");
-                   this.signed_confidentiality= oscar.Misc.getString(rs, "signed_confidentiality");
+                   this.provider_no = db.getString(rs, "provider_no");
+                   this.last_name = db.getString(rs, "last_name");
+                   this.first_name = db.getString(rs, "first_name");
+                   this.provider_type = db.getString(rs, "provider_type");
+                   this.specialty = db.getString(rs, "specialty");
+                   this.team = db.getString(rs, "team");
+                   this.sex= db.getString(rs, "sex");
+                   this.dob= db.getString(rs, "dob");
+                   this.address= db.getString(rs, "address");
+                   this.phone= db.getString(rs, "phone");
+                   this.work_phone= db.getString(rs, "work_phone");
+                   this.ohip_no= db.getString(rs, "ohip_no");
+                   this.rma_no= db.getString(rs, "rma_no");
+                   this.billing_no= db.getString(rs, "billing_no");
+                   this.hso_no= db.getString(rs, "hso_no");
+                   this.status= db.getString(rs, "status");
+                   this.comments= db.getString(rs, "comments");
+                   this.provider_activity= db.getString(rs, "provider_activity");
+                   this.practitionerNo= db.getString(rs, "practitionerNo");
+                   this.init= db.getString(rs, "init");
+                   this.job_title= db.getString(rs, "job_title");
+                   this.email= db.getString(rs, "email");
+                   this.title= db.getString(rs, "title");
+                   this.lastUpdateUser= db.getString(rs, "lastUpdateUser");
+                   this.lastUpdateDate= db.getString(rs, "lastUpdateDate");
+                   this.signed_confidentiality= db.getString(rs, "signed_confidentiality");
                 }
 
                 rs.close();
                                
             } catch (SQLException e) {
-                MiscUtils.getLogger().error("Error", e);
+                System.out.println(e.getMessage());
             }            
       
    }
@@ -553,7 +547,7 @@ public class ProviderData {
    //TODO: Add a cache of providers
    public static ArrayList getProviderList (boolean inactive) {
         try {            
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ArrayList result = new ArrayList();
             String active = " and status = '1' ";
             if (inactive){
@@ -561,18 +555,18 @@ public class ProviderData {
             }
             
             String sql = "select provider_no, first_name, last_name, ohip_no from provider where provider_type='doctor' "+active+" order by last_name , first_name";
-            ResultSet rs = DBHandler.GetSQL(sql);            
+            ResultSet rs = db.GetSQL(sql);            
             while ( rs.next() ) {
                 Hashtable provider = new Hashtable();
-                provider.put("providerNo",oscar.Misc.getString(rs, "provider_no"));
-                provider.put("firstName",oscar.Misc.getString(rs, "first_name"));
-                provider.put("lastName",oscar.Misc.getString(rs, "last_name"));
-		provider.put("ohipNo",oscar.Misc.getString(rs, "ohip_no"));
+                provider.put("providerNo",db.getString(rs,"provider_no"));
+                provider.put("firstName",db.getString(rs,"first_name"));
+                provider.put("lastName",db.getString(rs,"last_name"));
+		provider.put("ohipNo",db.getString(rs,"ohip_no"));
                 result.add(provider);
             }
             return result;
         }catch(Exception e){
-            MiscUtils.getLogger().debug("exception in ProviderData:"+e);
+            System.out.println("exception in ProviderData:"+e);
             return null;
         }        
     }
@@ -594,17 +588,18 @@ public class ProviderData {
        if(lastname!=null && firstname!=null)
            sql+="last_name like '"+lastname+ "%' AND first_name like '"+firstname+"%' ";
        try{
-           ResultSet rs=DBHandler.GetSQL(sql);
+           DBHandler db=new DBHandler(DBHandler.OSCAR_DATA);
+           ResultSet rs=db.GetSQL(sql);
            while(rs.next()){
                Hashtable provider=new Hashtable();
-               provider.put("providerNo", oscar.Misc.getString(rs, "provider_no"));
-               provider.put("firstName", oscar.Misc.getString(rs, "first_name"));
-               provider.put("lastName", oscar.Misc.getString(rs, "last_name"));
+               provider.put("providerNo", db.getString(rs, "provider_no"));
+               provider.put("firstName", db.getString(rs, "first_name"));
+               provider.put("lastName", db.getString(rs, "last_name"));
                retList.add(provider);
            }
            return retList;
        }catch(SQLException se){
-           MiscUtils.getLogger().error("Error", se);
+           se.printStackTrace();
            return null;
        }
    
@@ -612,26 +607,26 @@ public class ProviderData {
    }
    public static ArrayList getProviderListOfAllTypes (boolean inactive) {
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ArrayList result = new ArrayList();
-            String active = "where status = '1'";
+            String active = " status = '1' ";
             if (inactive){
                active = "";
             }
 
-            String sql = "select provider_no, first_name, last_name, ohip_no from provider "+active+" order by last_name , first_name";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            String sql = "select provider_no, first_name, last_name, ohip_no from provider where "+active+" order by last_name , first_name";
+            ResultSet rs = db.GetSQL(sql);
             while ( rs.next() ) {
                 Hashtable provider = new Hashtable();
-                provider.put("providerNo",oscar.Misc.getString(rs, "provider_no"));
-                provider.put("firstName",oscar.Misc.getString(rs, "first_name"));
-                provider.put("lastName",oscar.Misc.getString(rs, "last_name"));
-		provider.put("ohipNo",oscar.Misc.getString(rs, "ohip_no"));
+                provider.put("providerNo",db.getString(rs,"provider_no"));
+                provider.put("firstName",db.getString(rs,"first_name"));
+                provider.put("lastName",db.getString(rs,"last_name"));
+		provider.put("ohipNo",db.getString(rs,"ohip_no"));
                 result.add(provider);
             }
             return result;
         }catch(Exception e){
-            MiscUtils.getLogger().debug("exception in ProviderData:"+e);
+            System.out.println("exception in ProviderData:"+e);
             return null;
         }
     }
@@ -647,18 +642,18 @@ public class ProviderData {
               
     public static String getProviderName(String providerNo) {
            try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             
                                     
             String sql = "select first_name, last_name from provider where provider_no='"+providerNo+"'";
-            ResultSet rs = DBHandler.GetSQL(sql);            
+            ResultSet rs = db.GetSQL(sql);            
             if ( rs.next() ) {            
-                return ( oscar.Misc.getString(rs, "first_name") + " " + oscar.Misc.getString(rs, "last_name") );            
+                return ( db.getString(rs,"first_name") + " " + db.getString(rs,"last_name") );            
             } else {                            
                 return "";
             }
         }catch(Exception e){
-            MiscUtils.getLogger().debug("exception in ProviderData:"+e);
+            System.out.println("exception in ProviderData:"+e);
             return null;
         }        
     }
@@ -669,17 +664,24 @@ public class ProviderData {
     }
  
     public void initMyOscarId() {
-         this.myOscarId = ProviderMyOscarIdData.getMyOscarId(this.getProviderNo());
+         ProviderMyOscarIdData myOscar = new ProviderMyOscarIdData(this.getProviderNo());
+         this.myOscarId = myOscar.getMyOscarId();
     }
     private String myOscarId = null;
     
     public String getDefaultBillingView(String providerNo){
-    	
-    	ProviderPreferenceDao providerPreferenceDao=(ProviderPreferenceDao)SpringUtils.getBean("providerPreferenceDao");
-    	ProviderPreference providerPreference=providerPreferenceDao.find(providerNo);
-    	
-    	if (providerPreference!=null) return(providerPreference.getDefaultServiceType());
-    	else return(null);
+        String defaultView = null;
+         try {
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            String sql = "select default_servicetype from preference where provider_no='" + providerNo + "'";
+            ResultSet rs = db.GetSQL(sql);   
+               if (rs.next() && db.getString(rs,"default_servicetype")!=null) {
+		   defaultView = db.getString(rs,"default_servicetype");
+               } 
+         }catch (Exception e){
+             e.printStackTrace();
+         }
+         return defaultView;
     }
 
 
@@ -754,13 +756,14 @@ public class ProviderData {
             return null;
         }
         try {
-            
-            ResultSet rs = DBHandler.GetSQL(sql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()) {
-                providerNo = oscar.Misc.getString(rs, 1);
+                providerNo = db.getString(rs, 1);
             }
             rs.close();
-        } catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
         return providerNo;
    }
@@ -780,8 +783,8 @@ public class ProviderData {
                                       "and title=?          and lastUpdateUser=?    and lastUpdateDate=? " + 
                                       "and signed_confidentiality=?     where provider_no=?";
             }
-            
-            Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            Connection conn = DBHandler.getConnection();
             PreparedStatement write_rec = conn.prepareStatement(sql);
             
             Integer i = update ? 1 : 2;
@@ -822,7 +825,8 @@ public class ProviderData {
             }
             write_rec.close();
             rs.close();
-        } catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
         return key;
     }

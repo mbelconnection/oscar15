@@ -37,8 +37,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
+import oscar.oscarDB.DBHandler;
 
 /**
  *Class used by the HSFO Study
@@ -64,12 +63,12 @@ public class HSFODAO {
                 "(SiteCode,Patient_Id,FName,LName,BirthDate,Sex,PostalCode,Height,Height_unit,Ethnic_White,Ethnic_Black,Ethnic_EIndian,Ethnic_Pakistani,Ethnic_SriLankan,Ethnic_Bangladeshi,Ethnic_Chinese,Ethnic_Japanese,Ethnic_Korean,Ethnic_Hispanic,Ethnic_FirstNation,Ethnic_Other,Ethnic_Refused,Ethnic_Unknown,PharmacyName,PharmacyLocation,Sel_TimeAgoDx,EmrHCPId,ConsentDate)" +
                 "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) " ;
         
-        MiscUtils.getLogger().debug(sqlstatement);
-        
+        System.out.println(sqlstatement);
+        DBHandler db = null;
 		
         try {
-            
-            Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
+            db = new DBHandler(DBHandler.OSCAR_DATA);
+            Connection connect = DBHandler.getConnection();
             st = connect.prepareStatement(sqlstatement);
             
             st.setString(1,patientData.getSiteCode());
@@ -103,17 +102,16 @@ public class HSFODAO {
             st.executeUpdate();
             st.clearParameters();
         }catch (SQLException se) {
-            MiscUtils.getLogger().debug("SQL Error while inserting into the database : "+ se.toString());
-            MiscUtils.getLogger().error("Error", se);
+            System.out.println("SQL Error while inserting into the database : "+ se.toString());
+            se.printStackTrace();
         }catch (Exception ne) {
-            MiscUtils.getLogger().debug("Other Error while inserting into the database : "+ ne.toString());
-            MiscUtils.getLogger().error("Error", ne);
+            System.out.println("Other Error while inserting into the database : "+ ne.toString());
+            ne.printStackTrace();
         }finally {			
 			if (st != null)
 				try {
 					st.close();
 				} catch (SQLException e) {
-                                    MiscUtils.getLogger().error("Error", e);
 			}
 		}
     }
@@ -150,11 +148,11 @@ public class HSFODAO {
                 ",EmrHCPId = ? " + //27'" +  patientData.getEmrHCPId() +
                 ",ConsentDate = ? " + //28'" + new java.sql.Date(patientData.getConsentDate().getTime()) +
                 " WHERE Patient_Id= ? ";  //29'" + patientData.getPatient_Id() +"'";
-        MiscUtils.getLogger().debug(sqlstatement);
-        
+        System.out.println(sqlstatement);
+        DBHandler db =null;
         try {
-           
-            Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
+            db = new DBHandler(DBHandler.OSCAR_DATA);
+            Connection connect = DBHandler.getConnection();
             st = connect.prepareStatement(sqlstatement);
             
             ///
@@ -170,7 +168,7 @@ public class HSFODAO {
             st.setBoolean(10,patientData.isEthnic_White());
             st.setBoolean(11,patientData.isEthnic_Black());
             st.setBoolean(12,patientData.isEthnic_EIndian());
-            MiscUtils.getLogger().debug("RIGHT BEFIRE UPDATE "+patientData.isEthnic_Pakistani() );
+            System.out.println("RIGHT BEFIRE UPDATE "+patientData.isEthnic_Pakistani() );
             st.setBoolean(13,patientData.isEthnic_Pakistani() );
             st.setBoolean(14,patientData.isEthnic_SriLankan());
             st.setBoolean(15,patientData.isEthnic_Bangladeshi() );
@@ -193,16 +191,15 @@ public class HSFODAO {
             st.executeUpdate();
             st.clearParameters();
         }catch (SQLException se) {
-            MiscUtils.getLogger().debug("SQL Error while inserting into the database : "+ se.toString());
+            System.out.println("SQL Error while inserting into the database : "+ se.toString());
         }catch (Exception ne) {
-            MiscUtils.getLogger().debug("Other Error while inserting into the database : "+ ne.toString());
+            System.out.println("Other Error while inserting into the database : "+ ne.toString());
         }finally {
 			
 			if (st != null)
 				try {
 					st.close();
 				} catch (SQLException e) {
-                                    MiscUtils.getLogger().error("Error", e);
 			}
 		}
         
@@ -213,17 +210,17 @@ public class HSFODAO {
 		 
             PreparedStatement st = null;
 	    String sqlstatement ="UPDATE form_hsfo_visit SET locked=true where ID=" + ID;
-	    MiscUtils.getLogger().debug(sqlstatement);
-	   
+	    System.out.println(sqlstatement);
+	    DBHandler db=null;
 	    try {
-                
-                Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
+                db = new DBHandler(DBHandler.OSCAR_DATA);
+                Connection connect = DBHandler.getConnection();
 	        st = connect.prepareStatement(sqlstatement);
 	        st.executeUpdate();
             }catch (SQLException se) {
-				MiscUtils.getLogger().debug("SQL Error while inserting into the database : "+ se.toString());
+				System.out.println("SQL Error while inserting into the database : "+ se.toString());
 	    }catch (Exception ne) {
-			 MiscUtils.getLogger().debug("Other Error while inserting into the database : "+ ne.toString());
+			 System.out.println("Other Error while inserting into the database : "+ ne.toString());
        	    }
 	    	finally {
 			
@@ -232,7 +229,6 @@ public class HSFODAO {
 	    				st.clearParameters();
 	    				st.close();
 	    			} catch (SQLException e) {
-                                    MiscUtils.getLogger().error("Error", e);
 				}
 		}
 	    //st.close();
@@ -243,12 +239,12 @@ public class HSFODAO {
         PreparedStatement st = null;
         String sqlstatement ="select distinct VisitDate_Id  from form_hsfo_visit where demographic_no = ? " ;
         int i = 0;
-        MiscUtils.getLogger().debug(sqlstatement);
-       
+        System.out.println(sqlstatement);
+        DBHandler db =null;
         ResultSet rs=null;
         try {
-            
-            Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
+            db = new DBHandler(DBHandler.OSCAR_DATA);
+            Connection connect = DBHandler.getConnection();
             st = connect.prepareStatement(sqlstatement);
             st.setString(1,demographic_no);
             rs = st.executeQuery();
@@ -256,9 +252,9 @@ public class HSFODAO {
                 i++;
             }
         }catch (SQLException se) {
-                            MiscUtils.getLogger().debug("SQL Error while inserting into the database : "+ se.toString());
+                            System.out.println("SQL Error while inserting into the database : "+ se.toString());
         }catch (Exception ne) {
-                     MiscUtils.getLogger().debug("Other Error while inserting into the database : "+ ne.toString());
+                     System.out.println("Other Error while inserting into the database : "+ ne.toString());
         }
         finally {
         	if (rs != null)
@@ -266,14 +262,12 @@ public class HSFODAO {
     				
     				rs.close();
     			} catch (SQLException e) {
-                            MiscUtils.getLogger().error("Error", e);
 			}
     		if (st != null)
     			try {
     				st.clearParameters();
     				st.close();
     			} catch (SQLException e) {
-                            MiscUtils.getLogger().error("Error", e);
 			}
         }
         
@@ -294,12 +288,12 @@ public class HSFODAO {
             boolean hasLockedVisit = false; 
             PreparedStatement st = null;
 	    String sqlstatement ="select * from form_hsfo_visit where locked=true and demographic_no = ?";
-	    MiscUtils.getLogger().debug(sqlstatement);
-	    
+	    System.out.println(sqlstatement);
+	    DBHandler db=null;
 	    ResultSet rs =null;
 	    try {
-                
-                Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
+                db = new DBHandler(DBHandler.OSCAR_DATA);
+                Connection connect = DBHandler.getConnection();
 	        st = connect.prepareStatement(sqlstatement);
                 st.setString(1,demographic_no);
 	        rs = st.executeQuery();
@@ -307,9 +301,9 @@ public class HSFODAO {
                     hasLockedVisit = true;
                 }
             }catch (SQLException se) {
-				MiscUtils.getLogger().debug("SQL Error while inserting into the database : "+ se.toString());
+				System.out.println("SQL Error while inserting into the database : "+ se.toString());
 	    }catch (Exception ne) {
-			 MiscUtils.getLogger().debug("Other Error while inserting into the database : "+ ne.toString());
+			 System.out.println("Other Error while inserting into the database : "+ ne.toString());
        	    }
 	    	finally {
 	    	if (rs != null)
@@ -317,14 +311,12 @@ public class HSFODAO {
 	    				
 	    				rs.close();
 	    			} catch (SQLException e) {
-                                    MiscUtils.getLogger().error("Error", e);
 				}
     		if (st != null)
     			try {
     				
     				st.close();
     			} catch (SQLException e) {
-                            MiscUtils.getLogger().error("Error", e);
 			}
     		
         }
@@ -381,11 +373,11 @@ public class HSFODAO {
                 "?,?,?,?,?,?,?,?,?,?," +
                 "?,?,?,?)";
                 
-        MiscUtils.getLogger().debug(sqlstatement);
-        
+        System.out.println(sqlstatement);
+        DBHandler db =null;
         try {
-            
-            Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
+            db = new DBHandler(DBHandler.OSCAR_DATA);
+            Connection connect = DBHandler.getConnection();
             st = connect.prepareStatement(sqlstatement);
             //////
             
@@ -494,11 +486,11 @@ public class HSFODAO {
             st.clearParameters();
             //st.close();
         }catch (SQLException se) {
-            MiscUtils.getLogger().error("Error", se);
-            MiscUtils.getLogger().debug("SQL Error while inserting into the database : "+ se.toString());
+            se.printStackTrace();
+            System.out.println("SQL Error while inserting into the database : "+ se.toString());
         }catch (Exception ne) {
-            MiscUtils.getLogger().error("Error", ne);
-            MiscUtils.getLogger().debug("Other Error while inserting into the database : "+ ne.toString());
+            ne.printStackTrace();
+            System.out.println("Other Error while inserting into the database : "+ ne.toString());
         }
         finally {
 			
@@ -507,7 +499,6 @@ public class HSFODAO {
     				
     				st.close();
     			} catch (SQLException e) {
-                            MiscUtils.getLogger().error("Error", e);
 			}
         }
         return id;
@@ -524,11 +515,11 @@ public class HSFODAO {
 	public void updatePatientDx(String patientId, int hsfoRxDx) {
 		String sql = "UPDATE hsfo_patient SET RxDx=?  WHERE Patient_Id=?";
 
-		
+		DBHandler db = null;
 		PreparedStatement ps = null;
 		try {
-			
-			Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
+			db = new DBHandler(DBHandler.OSCAR_DATA);
+			Connection connect = DBHandler.getConnection();
 			ps = connect.prepareStatement(sql);
 			ps.setInt(1, hsfoRxDx);
 			ps.setString(2, patientId);
@@ -543,7 +534,6 @@ public class HSFODAO {
 				try {
 					ps.close();
 				} catch (SQLException e) {
-                                    MiscUtils.getLogger().error("Error", e);
 				}
 		}
 	
@@ -563,12 +553,12 @@ public class HSFODAO {
 		
 		String sql = "SELECT RxDx FROM hsfo_patient WHERE Patient_Id=?";
 
-		
+		DBHandler db = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			
-			Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
+			db = new DBHandler(DBHandler.OSCAR_DATA);
+			Connection connect = DBHandler.getConnection();
 			ps = connect.prepareStatement(sql);
 			ps.setString(1, patientId);
 
@@ -587,13 +577,11 @@ public class HSFODAO {
 				try {
 					rs.close();
 				} catch (SQLException e) {
-                                    MiscUtils.getLogger().error("Error", e);
 				}
 			if (ps != null)
 				try {
 					ps.close();
 				} catch (SQLException e) {
-                                    MiscUtils.getLogger().error("Error", e);
 				}
 		}
 
@@ -603,16 +591,16 @@ public class HSFODAO {
         
         
         String query = "SELECT * FROM hsfo_patient WHERE Patient_Id='" + ID + "'";
-        MiscUtils.getLogger().debug("query: " + query);
-       
+        System.out.println("query: " + query);
+        DBHandler db =null;
         Statement sql =null;
         ResultSet result =null;
         try {
-            
-            Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
+            db = new DBHandler(DBHandler.OSCAR_DATA);
+            Connection connect = DBHandler.getConnection();
             sql = connect.createStatement();
             result = sql.executeQuery(query);
-            MiscUtils.getLogger().debug("here " + query);
+            System.out.println("here " + query);
             // retrieve results and store into registrationData object
             while(result.next() ) {
                 
@@ -645,30 +633,28 @@ public class HSFODAO {
                 patientData.setEmrHCPId(result.getString("EmrHCPId"));
                 patientData.setConsentDate(result.getDate("ConsentDate"));
                 
-                MiscUtils.getLogger().debug("ID:" + result.getString("Patient_Id") + " Name:" + result.getString("FName"));
-                MiscUtils.getLogger().debug(patientData.getPatient_Id() + patientData.getFName() + patientData.getLName());
+                System.out.println("ID:" + result.getString("Patient_Id") + " Name:" + result.getString("FName"));
+                System.out.println(patientData.getPatient_Id() + patientData.getFName() + patientData.getLName());
                 
             }
             //result.close();
             //sql.close();
         }catch (SQLException se) {
-            MiscUtils.getLogger().debug("SQL Error while retreiving from the database : "+ se.toString());
+            System.out.println("SQL Error while retreiving from the database : "+ se.toString());
         }catch (Exception ne) {
-            MiscUtils.getLogger().debug("Other Error while retreiving to the database : "+ ne.toString());
+            System.out.println("Other Error while retreiving to the database : "+ ne.toString());
         }finally {
         	if (result != null)
     			try {
     				
     				result.close();
     			} catch (SQLException e) {
-                            MiscUtils.getLogger().error("Error", e);
 			}
     		if (sql != null)
     			try {
     				
     				sql.close();
     			} catch (SQLException e) {
-                            MiscUtils.getLogger().error("Error", e);
 			}
         }
         return patientData;
@@ -680,41 +666,39 @@ public class HSFODAO {
         boolean isFirstRecord = true;
         
         String query = "SELECT FName FROM hsfo_patient WHERE Patient_Id='" + ID + "'";
-        MiscUtils.getLogger().debug("query: " + query);
-       
+        System.out.println("query: " + query);
+        DBHandler db =null;
         Statement sql =null;
         ResultSet result =null;
         try {
-           
-           Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
+           db = new DBHandler(DBHandler.OSCAR_DATA);
+           Connection connect = DBHandler.getConnection();
            sql = connect.createStatement();
            result = sql.executeQuery(query);
-           MiscUtils.getLogger().debug("here " + query);
+           System.out.println("here " + query);
            // retrieve results and store into registrationData object
-           MiscUtils.getLogger().debug("first");
+           System.out.println("first");
            if(result.next() ) {
               isFirstRecord = false;
            }
 //           result.close();
 //           sql.close();
         }catch (SQLException se) {
-            MiscUtils.getLogger().debug("SQL Error while retreiving from the database : "+ se.toString());
+            System.out.println("SQL Error while retreiving from the database : "+ se.toString());
         }catch (Exception ne) {
-            MiscUtils.getLogger().debug("Other Error while retreiving to the database : "+ ne.toString());
+            System.out.println("Other Error while retreiving to the database : "+ ne.toString());
         }finally {
         	if (result != null)
     			try {
     				
     				result.close();
     			} catch (SQLException e) {
-                            MiscUtils.getLogger().error("Error", e);
 			}
     		if (sql != null)
     			try {
     				
     				sql.close();
     			} catch (SQLException e) {
-                            MiscUtils.getLogger().error("Error", e);
 			}
         }
         return isFirstRecord;
@@ -728,7 +712,7 @@ public class HSFODAO {
                 visitData.setVisitDate_Id(result.getDate("VisitDate_Id"));
                 visitData.setDrugcoverage(result.getString("Drugcoverage"));
                 visitData.setSBP(result.getInt("SBP"));
-                MiscUtils.getLogger().debug("Retrieved sbp " + visitData.getSBP());
+                System.out.println("Retrieved sbp " + visitData.getSBP());
                 visitData.setSBP_goal(result.getInt("SBP_goal"));
                 visitData.setDBP(result.getInt("DBP"));
                 visitData.setDBP_goal(result.getInt("DBP_goal"));
@@ -820,14 +804,14 @@ public class HSFODAO {
     }
     public List retrieveVisitRecord(String ID) throws SQLException {
         
-        
+        PatientList StorageList = new PatientList();
         List patientList = new LinkedList();
-        
+        DBHandler db =null;
         PreparedStatement query =null;
         ResultSet rs =null;
         try {
-            
-            Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
+            db = new DBHandler(DBHandler.OSCAR_DATA);
+            Connection connect = DBHandler.getConnection();
             
             query = connect.prepareStatement("SELECT * FROM form_hsfo_visit where ID in (SELECT max(ID) FROM form_hsfo_visit WHERE Patient_Id = ? group by VisitDate_Id)");
             query.setString(1,ID);
@@ -841,23 +825,21 @@ public class HSFODAO {
 //            query.close();
 //            
         }catch (SQLException se) {
-            MiscUtils.getLogger().debug("SQL Error while retreiving from the database : "+ se.toString());
+            System.out.println("SQL Error while retreiving from the database : "+ se.toString());
         }catch (Exception ne) {
-            MiscUtils.getLogger().debug("Other Error while retreiving to the database : "+ ne.toString());
+            System.out.println("Other Error while retreiving to the database : "+ ne.toString());
         }finally {
         	if (rs != null)
     			try {
     				
     				rs.close();
     			} catch (SQLException e) {
-                            MiscUtils.getLogger().error("Error", e);
 			}
     		if (query != null)
     			try {
     				
     				query.close();
     			} catch (SQLException e) {
-                            MiscUtils.getLogger().error("Error", e);
 			}
         }
         
@@ -869,13 +851,13 @@ public class HSFODAO {
     
     public VisitData retrieveLatestRecord(Date visitdate,String demographic_no) throws SQLException {
 		 VisitData visitData = new VisitData();
-                 
-                 Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
+                 DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+                 Connection connect = DBHandler.getConnection();
 		 Statement sql = connect.createStatement();
 		 //String query = "SELECT MAX(FormEdited) as Max FROM form_hsfo_Visit WHERE VisitDate_Id='" + visitdate + "' and demographic_no = '"+demographic_no+"' ";
 		 String query = "SELECT ID FROM form_hsfo_Visit WHERE VisitDate_Id='" + visitdate + "' and demographic_no = '"+demographic_no+"' ";
 		 
-                 MiscUtils.getLogger().debug("query1: " + query);
+                 System.out.println("query1: " + query);
 		 String timestamp="";
 		 try {
 		 try {
@@ -883,16 +865,16 @@ public class HSFODAO {
 		 // retrieve results and store into registrationData object
 		 while(result.next() ) {
 				timestamp =(result.getString("ID"));
-				MiscUtils.getLogger().debug("Max timestamp:" + result.getString("Max"));
+				System.out.println("Max timestamp:" + result.getString("Max"));
 		 }
 		 }catch (SQLException se) {
-				MiscUtils.getLogger().debug("SQL Error while retreiving from the database : "+ se.toString());
+				System.out.println("SQL Error while retreiving from the database : "+ se.toString());
 		 }catch (Exception ne) {
-			 MiscUtils.getLogger().debug("Other Error while retreiving to the database : "+ ne.toString());
+			 System.out.println("Other Error while retreiving to the database : "+ ne.toString());
 		 }
 		 
 		 String query2 = "SELECT DISTINCT * FROM form_hsfo_Visit WHERE ID='" + timestamp +"'";
-		 MiscUtils.getLogger().debug("query2: " + query2);
+		 System.out.println("query2: " + query2);
 		 try {
 		 ResultSet result = sql.executeQuery(query2);
 		 // retrieve results and store into registrationData object
@@ -993,9 +975,9 @@ public class HSFODAO {
 				visitData.setLocked(result.getBoolean("Locked"));  	
 		 }
 		 }catch (SQLException se) {
-				MiscUtils.getLogger().debug("SQL Error while retreiving from the database : "+ se.toString());
+				System.out.println("SQL Error while retreiving from the database : "+ se.toString());
 		 }catch (Exception ne) {
-			 MiscUtils.getLogger().debug("Other Error while retreiving to the database : "+ ne.toString());
+			 System.out.println("Other Error while retreiving to the database : "+ ne.toString());
 		 }
 		 }finally {
 	        	
@@ -1004,7 +986,6 @@ public class HSFODAO {
 	    				
 	    				sql.close();
 	    			} catch (SQLException e) {
-                                    MiscUtils.getLogger().error("Error", e);
 				}
 	        }
 		
@@ -1016,25 +997,25 @@ public class HSFODAO {
      public boolean isRecordExists(Date visitdate,String demographicNo) {
          boolean isRecordExists = false;
          PreparedStatement sql =null;
-         
+         DBHandler db = null;
          try{
             int ID=0;
-            
-            Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
+            db = new DBHandler(DBHandler.OSCAR_DATA);
+            Connection connect = DBHandler.getConnection();
             String query = "SELECT ID FROM form_hsfo_visit WHERE VisitDate_Id= ? and demographic_no = ?";
             sql = connect.prepareStatement(query);
             sql.setDate(1,new java.sql.Date(visitdate.getTime()));
             sql.setString(2,demographicNo);
-            MiscUtils.getLogger().debug("query: " + query);
+            System.out.println("query: " + query);
              
             ResultSet result = sql.executeQuery();
             if(result.next() ) {
                 isRecordExists = true;
             }
-            MiscUtils.getLogger().debug("ID retrieved: " + ID); 
+            System.out.println("ID retrieved: " + ID); 
 //            sql.close();
          }catch(Exception e ){
-                MiscUtils.getLogger().error("Error", e);
+                
          }finally {
 	        	
 	    		if (sql != null)
@@ -1042,7 +1023,6 @@ public class HSFODAO {
 	    				
 	    				sql.close();
 	    			} catch (SQLException e) {
-                                    MiscUtils.getLogger().error("Error", e);
 				}
 	        }
         return isRecordExists;
@@ -1053,11 +1033,11 @@ public class HSFODAO {
      
      public VisitData retrieveSelectedRecord(int ID) throws SQLException {
 		 VisitData visitData = new VisitData();
-                 
-                 Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
+                 DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+                 Connection connect = DBHandler.getConnection();
 		 Statement sql = connect.createStatement();
 		 String query = "SELECT DISTINCT * FROM form_hsfo_visit WHERE  ID = " + ID;;
-		 MiscUtils.getLogger().debug("query: " + query);
+		 System.out.println("query: " + query);
 		 try {
 		 ResultSet result = sql.executeQuery(query);
 		 // retrieve results and store into registrationData object
@@ -1159,9 +1139,9 @@ public class HSFODAO {
 	    	
 		 }
 		 }catch (SQLException se) {
-				MiscUtils.getLogger().debug("SQL Error while retreiving from the database : "+ se.toString());
+				System.out.println("SQL Error while retreiving from the database : "+ se.toString());
 		 }catch (Exception ne) {
-			 MiscUtils.getLogger().debug("Other Error while retreiving to the database : "+ ne.toString());
+			 System.out.println("Other Error while retreiving to the database : "+ ne.toString());
 		 }finally {
 	        	
 	    		if (sql != null)
@@ -1169,7 +1149,6 @@ public class HSFODAO {
 	    				
 	    				sql.close();
 	    			} catch (SQLException e) {
-                                    MiscUtils.getLogger().error("Error", e);
 				}
 	        }
 	     return visitData;
@@ -1180,15 +1159,15 @@ public class HSFODAO {
     public List getAllPatientId(){
     	List reList=new ArrayList();
     	String query = "SELECT Distinct Patient_Id FROM hsfo_patient";
-    	
+    	DBHandler db =null;
     	Statement sql=null;
     	ResultSet result =null;
         try {
-           
-            Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
+            db = new DBHandler(DBHandler.OSCAR_DATA);
+            Connection connect = DBHandler.getConnection();
             sql = connect.createStatement();
             result = sql.executeQuery(query);
-            MiscUtils.getLogger().debug("here " + query);
+            System.out.println("here " + query);
             // retrieve results and store into registrationData object
             while(result.next() ) {
             	reList.add(result.getString(1));
@@ -1196,23 +1175,21 @@ public class HSFODAO {
 //            result.close();
 //            sql.close();
         }catch (SQLException se) {
-            MiscUtils.getLogger().debug("SQL Error while retreiving from the database : "+ se.toString());
+            System.out.println("SQL Error while retreiving from the database : "+ se.toString());
         }catch (Exception ne) {
-            MiscUtils.getLogger().debug("Other Error while retreiving to the database : "+ ne.toString());
+            System.out.println("Other Error while retreiving to the database : "+ ne.toString());
         }finally {
         	if (result != null)
     			try {
     				
     				result.close();
     			} catch (SQLException e) {
-                            MiscUtils.getLogger().error("Error", e);
 			}
     		if (sql != null)
     			try {
     				
     				sql.close();
     			} catch (SQLException e) {
-                            MiscUtils.getLogger().error("Error", e);
 			}
         }
     	return reList;
@@ -1222,17 +1199,17 @@ public class HSFODAO {
         
         
         String query = "SELECT * FROM form_hsfo_visit where ID in (SELECT max(ID) FROM form_hsfo_visit WHERE Patient_Id='" + ID + "' group by VisitDate_Id)";
-        
+        DBHandler db =null;
     	Statement sql=null;
     	ResultSet result =null;
         
         List patientList = new LinkedList();
         try {
-            
-            Connection connect = DbConnectionFilter.getThreadLocalDbConnection();
+            db = new DBHandler(DBHandler.OSCAR_DATA);
+            Connection connect = DBHandler.getConnection();
             sql = connect.createStatement();
             result = sql.executeQuery(query);
-            MiscUtils.getLogger().debug("here " + query);
+            System.out.println("here " + query);
             // retrieve results and store into registrationData object
             
             while(result.next() ) {
@@ -1391,23 +1368,21 @@ public class HSFODAO {
 //            result.close();
 //            sql.close();
         }catch (SQLException se) {
-            MiscUtils.getLogger().debug("SQL Error while retreiving from the database : "+ se.toString());
+            System.out.println("SQL Error while retreiving from the database : "+ se.toString());
         }catch (Exception ne) {
-            MiscUtils.getLogger().debug("Other Error while retreiving to the database : "+ ne.toString());
+            System.out.println("Other Error while retreiving to the database : "+ ne.toString());
         }finally {
         	if (result != null)
     			try {
     				
     				result.close();
     			} catch (SQLException e) {
-                            MiscUtils.getLogger().error("Error", e);
 			}
     		if (sql != null)
     			try {
     				
     				sql.close();
     			} catch (SQLException e) {
-                            MiscUtils.getLogger().error("Error", e);
 			}
         }
         
@@ -1415,3 +1390,142 @@ public class HSFODAO {
     }
 
 }
+
+
+
+//
+// public void updateVisit(VisitData visitData) throws SQLException {
+//        
+//        String TC_DHL = "";
+//        if (visitData.getTC_HDL_LabresultsDate() != null && !visitData.getTC_HDL_LabresultsDate().equals("")) {
+//            TC_DHL = "'" + visitData.getTC_HDL_LabresultsDate() + "',";
+//        } else {
+//            TC_DHL = visitData.getTC_HDL_LabresultsDate() + ",";
+//        }
+//        String LDL = "";
+//        if (visitData.getLDL_LabresultsDate() != null && !visitData.getLDL_LabresultsDate().equals("")) {
+//            LDL ="LDL_LabresultsDate ='" + visitData.getLDL_LabresultsDate() + "',";
+//        } else {
+//            LDL = "LDL_LabresultsDate =" +visitData.getLDL_LabresultsDate() + ",";
+//        }
+//        String HDL = "";
+//        if (visitData.getHDL_LabresultsDate() != null && !visitData.getHDL_LabresultsDate().equals("")) {
+//            HDL ="HDL_LabresultsDate ='" + visitData.getHDL_LabresultsDate() + "',";
+//        } else {
+//            HDL = "HDL_LabresultsDate ="+ visitData.getHDL_LabresultsDate() + ",";
+//        }
+//        String A1C = "";
+//        if (visitData.getA1C_LabresultsDate() != null && !visitData.getA1C_LabresultsDate().equals("")) {
+//            A1C = "A1C_LabresultsDate ='" + visitData.getA1C_LabresultsDate() + "',Locked =";
+//        } else {
+//            A1C =  "A1C_LabresultsDate =" + visitData.getA1C_LabresultsDate() + ",Locked =";
+//        }
+//        PreparedStatement st = null;
+//        String sqlstatement ="UPDATE form_hsfo_visit SET Patient_Id ='" +
+//                visitData.getPatient_Id() + "',VisitDate_Id ='" +
+//                visitData.getVisitDate_Id() + "',Drugcoverage ='" +
+//                visitData.getDrugcoverage() + "',SBP =" +
+//                visitData.getSBP() + ",SBP_goal =" +
+//                visitData.getSBP_goal() + ",DBP =" +
+//                visitData.getDBP() + ",DBP_goal =" +
+//                visitData.getDBP_goal() + ",Bptru_used ='" +
+//                visitData.getBptru_used() + "',Weight =" +
+//                visitData.getWeight() + ",Weight_unit ='" +
+//                visitData.getWeight_unit() + "',Waist =" +
+//                visitData.getWaist() + ",Waist_unit ='" +
+//                visitData.getWaist_unit() + "',TC_HDL =" +
+//                visitData.getTC_HDL() + ",LDL =" +
+//                visitData.getLDL() + ",HDL =" +
+//                visitData.getHDL() + ",A1C =" +
+//                visitData.getA1C() + ",Nextvisit ='" +
+//                visitData.getNextvisit() + "',Bpactionplan =" +
+//                visitData.isBpactionplan() + ",PressureOff =" +
+//                visitData.isPressureOff() + ",PatientProvider =" +
+//                visitData.isPatientProvider() + ",ABPM =" +
+//                visitData.isABPM() + ",Home =" +
+//                visitData.isHome() + ",CommunityRes =" +
+//                visitData.isCommunityRes() + ",ProRefer =" +
+//                visitData.isProRefer() + ",HtnDxType ='" +
+//                visitData.getHtnDxType() + "',Dyslipid =" +
+//                visitData.isDyslipid() + ",Diabetes =" +
+//                visitData.isDiabetes() + ",KidneyDis =" +
+//                visitData.isKidneyDis() + ",Obesity =" +
+//                visitData.isObesity() + ",CHD =" +
+//                visitData.isCHD() + ",Stroke_TIA =" +
+//                visitData.isStroke_TIA() + ",Risk_weight =" +
+//                visitData.isRisk_weight() + ",Risk_activity =" +
+//                visitData.isRisk_activity() + ",Risk_diet =" +
+//                visitData.isRisk_diet() + ",Risk_smoking =" +
+//                visitData.isRisk_smoking() + ",Risk_alcohol =" +
+//                visitData.isRisk_alcohol() + ",Risk_stress =" +
+//                visitData.isRisk_stress() + ",PtView ='" +
+//                visitData.getPtView() + "',Change_importance =" +
+//                visitData.getChange_importance() + ",Change_confidence =" +
+//                visitData.getChange_confidence() + ",exercise_minPerWk =" +
+//                visitData.getExercise_minPerWk() + ",smoking_cigsPerDay =" +
+//                visitData.getSmoking_cigsPerDay() + ",alcohol_drinksPerWk =" +
+//                visitData.getAlcohol_drinksPerWk() + ",sel_DashDiet ='" +
+//                visitData.getSel_DashDiet() + "',sel_HighSaltFood ='" +
+//                visitData.getSel_HighSaltFood() + "',sel_Stressed ='" +
+//                visitData.getSel_Stressed() + "',LifeGoal ='" +
+//                visitData.getLifeGoal() + "',FamHx_Htn =" +
+//                visitData.isFamHx_Htn() + ",FamHx_Dyslipid =" +
+//                visitData.isFamHx_Dyslipid() + ",FamHx_Diabetes =" +
+//                visitData.isFamHx_Diabetes() + ",FamHx_KidneyDis =" +
+//                visitData.isFamHx_KidneyDis() + ",FamHx_Obesity =" +
+//                visitData.isFamHx_Obesity() + ",FamHx_CHD =" +
+//                visitData.isFamHx_CHD() + ",FamHx_Stroke_TIA =" +
+//                visitData.isFamHx_Stroke_TIA() + ",Diuret_rx =" +
+//                visitData.isDiuret_rx() + ",Diuret_SideEffects =" +
+//                visitData.isDiuret_SideEffects() + ",Diuret_RxDecToday ='" +
+//                visitData.getDiuret_RxDecToday() + "',Ace_rx =" +
+//                visitData.isAce_rx() + ",Ace_SideEffects =" +
+//                visitData.isAce_SideEffects() + ",Ace_RxDecToday ='" +
+//                visitData.getAce_RxDecToday() + "',Arecept_rx =" +
+//                visitData.isArecept_rx() + ",Arecept_SideEffects =" +
+//                visitData.isArecept_SideEffects() + ",Arecept_RxDecToday ='" +
+//                visitData.getArecept_RxDecToday() + "',Beta_rx =" +
+//                visitData.isBeta_rx() + ",Beta_SideEffects =" +
+//                visitData.isBeta_SideEffects() + ",Beta_RxDecToday ='" +
+//                visitData.getBeta_RxDecToday() + "',Calc_rx =" +
+//                visitData.isCalc_rx() + ",Calc_SideEffects =" +
+//                visitData.isCalc_SideEffects() + ",Calc_RxDecToday ='" +
+//                visitData.getCalc_RxDecToday() + "',Anti_rx =" +
+//                visitData.isAnti_rx() + ",Anti_SideEffects =" +
+//                visitData.isAnti_SideEffects() + ",Anti_RxDecToday ='" +
+//                visitData.getAnti_RxDecToday() + "',Statin_rx =" +
+//                visitData.isStatin_rx() + ",Statin_SideEffects =" +
+//                visitData.isStatin_SideEffects() + ",Statin_RxDecToday ='" +
+//                visitData.getStatin_RxDecToday() + "',Lipid_rx =" +
+//                visitData.isLipid_rx() + ",Lipid_SideEffects =" +
+//                visitData.isLipid_SideEffects() + ",Lipid_RxDecToday ='" +
+//                visitData.getLipid_RxDecToday() + "',Hypo_rx =" +
+//                visitData.isHypo_rx() + ",Hypo_SideEffects =" +
+//                visitData.isHypo_SideEffects() + ",Hypo_RxDecToday ='" +
+//                visitData.getHypo_RxDecToday() + "',Insul_rx =" +
+//                visitData.isInsul_rx() + ",Insul_SideEffects =" +
+//                visitData.isInsul_SideEffects() + ",Insul_RxDecToday ='" +
+//                visitData.getInsul_RxDecToday() + "',Often_miss =" +
+//                visitData.getOften_miss() + ",Herbal ='" +
+//                visitData.getHerbal() + "',TC_HDL_LabresultsDate =" +
+//                TC_DHL +
+//                LDL+
+//                HDL +
+//                A1C +
+//                visitData.isLocked() + " WHERE Patient_Id='" + visitData.getPatient_Id() +"'";
+//        System.out.println(sqlstatement);
+//        try {
+//            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+//            Connection connect = db.getConnection();
+//            st = connect.prepareStatement(sqlstatement);
+//            st.executeUpdate();
+//            st.clearParameters();
+//            st.close();
+//        }catch (SQLException se) {
+//            System.out.println("SQL Error while inserting into the database : "+ se.toString());
+//        }catch (Exception ne) {
+//            System.out.println("Other Error while inserting into the database : "+ ne.toString());
+//        }
+//        
+//    }
+//   

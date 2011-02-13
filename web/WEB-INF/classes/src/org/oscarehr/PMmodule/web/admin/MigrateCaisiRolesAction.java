@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,7 +24,6 @@ import org.oscarehr.PMmodule.dao.RoleDAO;
 import org.oscarehr.PMmodule.model.SecUserRole;
 import org.oscarehr.PMmodule.service.ProgramManager;
 import org.oscarehr.PMmodule.service.ProviderManager;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -33,7 +33,7 @@ import com.quatro.service.security.RolesManager;
 
 public class MigrateCaisiRolesAction extends BaseAdminAction {
 
-	private static final Logger logger = MiscUtils.getLogger();
+	private static final Logger logger = org.apache.log4j.LogManager.getLogger(MigrateCaisiRolesAction.class);
 
 	//private CaisiRoleManager caisiRoleMgr;
 	private RolesManager oscarRolesMgr;
@@ -117,7 +117,8 @@ public class MigrateCaisiRolesAction extends BaseAdminAction {
 		 * 
 		 */
 		try {
-			ResultSet rs = DBHandler.GetSQL("SELECT * FROM program_provider");
+			DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+			ResultSet rs = db.GetSQL("SELECT * FROM program_provider");
 			while(rs.next()) {
 				long programId = rs.getInt("program_id");
 				String providerNo = rs.getString("provider_no");
@@ -176,9 +177,9 @@ public class MigrateCaisiRolesAction extends BaseAdminAction {
 			rs.close();
 			
 			//default_role_access
-			rs = DBHandler.GetSQL("SELECT * FROM default_role_access a,access_type b where a.access_id = b.access_id");
+			rs = db.GetSQL("SELECT * FROM default_role_access a,access_type b where a.access_id = b.access_id");
 			while(rs.next()) {
-				
+				long id = rs.getLong("id");
 				int role_id = rs.getInt("role_id");
 				String access_name = rs.getString("name");
 				
@@ -190,9 +191,9 @@ public class MigrateCaisiRolesAction extends BaseAdminAction {
 			rs.close();
 			
 			//program_access_roles
-			rs = DBHandler.GetSQL("SELECT * FROM program_access_roles");
+			rs = db.GetSQL("SELECT * FROM program_access_roles");
 			while(rs.next()) {
-				
+				long id = rs.getLong("id");
 				int role_id = rs.getInt("role_id");
 				
 				Mapping mappedRole = mappingMap.get((long)role_id);
@@ -203,9 +204,9 @@ public class MigrateCaisiRolesAction extends BaseAdminAction {
 			rs.close();
 			
 			//casemgmt_note
-			rs = DBHandler.GetSQL("SELECT * FROM casemgmt_note");
+			rs = db.GetSQL("SELECT * FROM casemgmt_note");
 			while(rs.next()) {
-				
+				long id = rs.getLong("note_id");
 				int role_id = rs.getInt("reporter_caisi_role");
 				Mapping mappedRole = mappingMap.get((long)role_id);
 				if(mappedRole == null) {
@@ -269,7 +270,8 @@ public class MigrateCaisiRolesAction extends BaseAdminAction {
 		result.setMappings(mappings);
 		
 		try {
-			ResultSet rs = DBHandler.GetSQL("SELECT * FROM program_provider");
+			DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+			ResultSet rs = db.GetSQL("SELECT * FROM program_provider");
 			while(rs.next()) {
 				long programId = rs.getInt("program_id");
 				String providerNo = rs.getString("provider_no");
@@ -278,10 +280,10 @@ public class MigrateCaisiRolesAction extends BaseAdminAction {
 				//1
 				if(mappingMap.get(caisiRoleId)==null || mappingMap.get(caisiRoleId).getOscarRole()==null) {
 					//delete
-					ppDao.deleteProgramProvider(rs.getLong("id"));					
+					ppDao.deleteProgramProvider(rs.getLong("id"));
 				} else {
 					//change
-					DBHandler.RunSQL("update program_provider set role_id=" + mappingMap.get(caisiRoleId).getOscarRole().getId() + " where id=" + rs.getLong("id"));					
+					db.RunSQL("update program_provider set role_id=" + mappingMap.get(caisiRoleId).getOscarRole().getId() + " where id=" + rs.getLong("id"));					
 				}
 				
 				//2
@@ -319,23 +321,23 @@ public class MigrateCaisiRolesAction extends BaseAdminAction {
 				} 								
 			}
 			//default_role_access
-			rs = DBHandler.GetSQL("SELECT * FROM default_role_access");
+			rs = db.GetSQL("SELECT * FROM default_role_access");
 			while(rs.next()) {
 				long id = rs.getLong("id");
 				int role_id = rs.getInt("role_id");
 				
 				Mapping mappedRole = mappingMap.get((long)role_id);
 				if(mappedRole == null) {
-					DBHandler.RunSQL("delete from default_role_access where id = " + id);
+					db.RunSQL("delete from default_role_access where id = " + id);
 					logger.info("delete from default_role_access where id = " + id);
 				} else {
-					DBHandler.RunSQL("update default_role_access set role_id=" + mappedRole.getOscarRole().getId() + " where id=" + id);
+					db.RunSQL("update default_role_access set role_id=" + mappedRole.getOscarRole().getId() + " where id=" + id);
 					logger.info("update default_role_access set role_id=" + mappedRole.getOscarRole().getId() + " where id=" + id);
 				}
 			}		
 			rs.close();
 			
-			rs = DBHandler.GetSQL("SELECT * FROM program_access_roles");
+			rs = db.GetSQL("SELECT * FROM program_access_roles");
 			List<String> valuesToAdd = new ArrayList<String>();
 			while(rs.next()) {
 				long id = rs.getLong("id");
@@ -343,22 +345,22 @@ public class MigrateCaisiRolesAction extends BaseAdminAction {
 				
 				Mapping mappedRole = mappingMap.get((long)role_id);
 				if(mappedRole == null) {
-					//DBHandler.RunSQL("delete from program_access_roles where id="+id + " and role_id=" + role_id);
+					//db.RunSQL("delete from program_access_roles where id="+id + " and role_id=" + role_id);
 				} else {
-					//DBHandler.RunSQL("insert into program_access_roles  values (" + id + ","+mappedRole.getOscarRole().getId() + ")");
+					//db.RunSQL("insert into program_access_roles  values (" + id + ","+mappedRole.getOscarRole().getId() + ")");
 					valuesToAdd.add(id + "," + mappedRole.getOscarRole().getId());
 				}
 			}
-			DBHandler.RunSQL("delete from program_access_roles");
+			db.RunSQL("delete from program_access_roles");
 			for(String vta:valuesToAdd) {
 				String[] p = vta.split(",");
-				DBHandler.RunSQL("insert into program_access_roles  values (" +p[0] + "," + p[1] + ")");
+				db.RunSQL("insert into program_access_roles  values (" +p[0] + "," + p[1] + ")");
 				logger.info("insert into program_access_roles  values (" +p[0] + "," + p[1] + ")");
 			}
 			
 			rs.close();
 
-			rs = DBHandler.GetSQL("SELECT * FROM casemgmt_note");
+			rs = db.GetSQL("SELECT * FROM casemgmt_note");
 			while(rs.next()) {
 				long id = rs.getLong("note_id");
 				int role_id = rs.getInt("reporter_caisi_role");
@@ -367,7 +369,7 @@ public class MigrateCaisiRolesAction extends BaseAdminAction {
 					//we don't remove notes.
 					
 				} else {
-					DBHandler.RunSQL("update casemgmt_note set reporter_caisi_role="+mappedRole.getOscarRole().getId() + " where note_id="+id);
+					db.RunSQL("update casemgmt_note set reporter_caisi_role="+mappedRole.getOscarRole().getId() + " where note_id="+id);
 					logger.info("update casemgmt_note set reporter_caisi_role="+mappedRole.getOscarRole().getId() + " where note_id="+id);
 				}
 			}
@@ -375,7 +377,7 @@ public class MigrateCaisiRolesAction extends BaseAdminAction {
 			logger.info("Migrated caisi roles to oscar roles successfully!");
 			
 		} catch(SQLException e) {
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 			logger.error(e);
 			result.setStatus("error");
 		}

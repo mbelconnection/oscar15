@@ -18,8 +18,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.OscarProperties;
 
 /*
@@ -104,7 +102,7 @@ public class ICLUtilities {
             String place= props.getProperty("DOCUMENT_DIR");
             
             if(!place.endsWith("/"))
-                place = new StringBuilder(place).insert(place.length(),"/").toString();
+                place = new StringBuffer(place).insert(place.length(),"/").toString();
             retVal = place+"LabUpload."+filename.replaceAll(".enc", "")+"."+(new Date()).getTime();
             
             //write the  file to the file specified
@@ -119,11 +117,11 @@ public class ICLUtilities {
             //close the stream
             stream.close();
         }catch (FileNotFoundException fnfe) {
-            MiscUtils.getLogger().error("Error", fnfe);
+            fnfe.printStackTrace();
             return retVal;
             
         }catch (IOException ioe) {
-            MiscUtils.getLogger().error("Error", ioe);
+            ioe.printStackTrace();
             return retVal;
         }
         return retVal;

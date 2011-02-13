@@ -31,7 +31,7 @@ package oscar.util;
 
 
 /*
- * $Id: ConcatPDF.java,v 1.4 2010-07-12 20:04:12 tedleung Exp $
+ * $Id: ConcatPDF.java,v 1.2 2008-03-18 19:41:35 tedleung Exp $
  * $Name:  $
  *
  * This code is free software. It may only be copied or modified
@@ -56,8 +56,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.oscarehr.util.MiscUtils;
-
 import com.lowagie.text.Document;
 import com.lowagie.text.pdf.PRAcroForm;
 import com.lowagie.text.pdf.PdfCopy;
@@ -73,7 +71,7 @@ public class ConcatPDF {
         OutputStream os = new FileOutputStream(filename);
         concat(alist,os);
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
     }
     
@@ -94,7 +92,7 @@ public class ConcatPDF {
             String outFile = "/Users/jay/test.pdf";
             Document document = null;
             PdfCopy  writer = null;
-            MiscUtils.getLogger().debug("Size of list = "+alist.size());
+            System.out.println("Size of list = "+alist.size());
             while (f < alist.size()) {
                 // we create a reader for a certain document
                 String name = (String) alist.get(f);
@@ -110,7 +108,7 @@ public class ConcatPDF {
                     master.addAll(bookmarks);
                 }
                 pageOffset += n;
-                MiscUtils.getLogger().debug("There are " + n + " pages in " + name);
+                System.out.println("There are " + n + " pages in " + name);
 
                 if (f == 0) {
                     // step 1: creation of a document-object
@@ -126,7 +124,7 @@ public class ConcatPDF {
                     ++i;
                     page = writer.getImportedPage(reader, i);
                     writer.addPage(page);
-                    MiscUtils.getLogger().debug("Processed page " + i);
+                    System.out.println("Processed page " + i);
                 }
                 PRAcroForm form = reader.getAcroForm();
                 if (form != null)
@@ -139,7 +137,7 @@ public class ConcatPDF {
             document.close();
         }
         catch(Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
     }
    

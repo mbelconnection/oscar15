@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 /**
@@ -82,13 +80,14 @@ public class BillingAssociationPersistence {
     String qry =
         "insert into ctl_servicecodes_dxcodes(service_code,dxcode) values('" +
         svc + "','" + dx + "')";
-    
+    DBHandler db = null;
     try {
-      
-      ret = DBHandler.RunSQL(qry);
+      db = new DBHandler(DBHandler.OSCAR_DATA);
+      ret = db.RunSQL(qry);
 
     }
-    catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+    catch (SQLException ex) {
+      ex.printStackTrace();
     }
     return ret;
   }
@@ -102,12 +101,13 @@ public class BillingAssociationPersistence {
     boolean ret = false;
     String qry = "delete from ctl_servicecodes_dxcodes where service_code = '" +
         svcCode + "'";
-    
+    DBHandler db = null;
     try {
-      
-      ret = DBHandler.RunSQL(qry);
+      db = new DBHandler(DBHandler.OSCAR_DATA);
+      ret = db.RunSQL(qry);
     }
-    catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+    catch (SQLException ex) {
+      ex.printStackTrace();
 
     }
     return ret;
@@ -120,12 +120,12 @@ public class BillingAssociationPersistence {
    */
   public List getServiceCodeAssocs() {
     ArrayList list = new ArrayList();
-    
+    DBHandler db = null;
     ResultSet rs = null;
     try {
       String qry = "select * from ctl_servicecodes_dxcodes";
-      
-      rs = DBHandler.GetSQL(qry);
+      db = new DBHandler(DBHandler.OSCAR_DATA);
+      rs = db.GetSQL(qry);
       String curSvcCode = "";
       ServiceCodeAssociation assoc = new ServiceCodeAssociation();
       //create the first object to establish an initial reference service code
@@ -145,14 +145,16 @@ public class BillingAssociationPersistence {
         curSvcCode = svcCode;
       }
     }
-    catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+    catch (SQLException ex) {
+      ex.printStackTrace();
 
     }
     finally {
       try {
         rs.close();
       }
-      catch (SQLException ex1) {MiscUtils.getLogger().error("Error", ex1);
+      catch (SQLException ex1) {
+        ex1.printStackTrace();
       }
     }
     return list;
@@ -202,23 +204,25 @@ public class BillingAssociationPersistence {
    */
   public boolean recordExists(String qry) {
     boolean ret = false;
-    
+    DBHandler db = null;
     ResultSet rs = null;
     try {
-      
-      rs = DBHandler.GetSQL(qry);
+      db = new DBHandler(DBHandler.OSCAR_DATA);
+      rs = db.GetSQL(qry);
       if (rs.next()) {
         ret = true;
       }
     }
-    catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+    catch (SQLException ex) {
+      ex.printStackTrace();
 
     }
     finally {
         try {
           rs.close();
         }
-        catch (SQLException ex1) {MiscUtils.getLogger().error("Error", ex1);
+        catch (SQLException ex1) {
+          ex1.printStackTrace();
         }
       }
 
@@ -232,29 +236,31 @@ public class BillingAssociationPersistence {
    */
   public ServiceCodeAssociation getServiceCodeAssocByCode(String svcCode) {
     ServiceCodeAssociation assoc = new ServiceCodeAssociation();
-    
+    DBHandler db = null;
     ResultSet rs = null;
     try {
       String qry =
           "select * from ctl_servicecodes_dxcodes where service_code = '" +
           svcCode + "'";
-      
-      rs = DBHandler.GetSQL(qry);
+      db = new DBHandler(DBHandler.OSCAR_DATA);
+      rs = db.GetSQL(qry);
 
       while (rs.next()) {
-        
+        String code = rs.getString(2);
         String dxcode = rs.getString(3);
         assoc.addDXCode(dxcode);
         assoc.setServiceCode(svcCode);
       }
     }
-    catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+    catch (SQLException ex) {
+      ex.printStackTrace();
     }
     finally {
         try {
           rs.close();
         }
-        catch (SQLException ex1) {MiscUtils.getLogger().error("Error", ex1);
+        catch (SQLException ex1) {
+          ex1.printStackTrace();
         }
       }
 

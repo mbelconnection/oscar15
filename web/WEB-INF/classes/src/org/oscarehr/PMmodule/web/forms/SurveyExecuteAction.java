@@ -38,7 +38,8 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -69,11 +70,10 @@ import org.oscarehr.surveymodel.Page;
 import org.oscarehr.surveymodel.Question;
 import org.oscarehr.surveymodel.SurveyDocument;
 import org.oscarehr.surveymodel.SurveyDocument.Survey;
-import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SessionConstants;
 
 public class SurveyExecuteAction extends DispatchAction {
-    private static Logger log = MiscUtils.getLogger();
+    private Log log = LogFactory.getLog(getClass());
 
     private SurveyManager surveyManager;
     private CaseManagementManager cmeManager;
@@ -643,14 +643,14 @@ public class SurveyExecuteAction extends DispatchAction {
 
         if (caisiObject.equals("Current Medications")) {
             List<Drug> meds = cmeManager.getPrescriptions(demographic_no, true);
-            StringBuilder str = new StringBuilder();
+            StringBuffer str = new StringBuffer();
             for (Drug med : meds) {
                 str.append(med.getSpecial().replaceAll("\r\n", " ")).append("\r\n");
             }
             data.getValues().put(key, str.toString());
         } else if (caisiObject.equals("Current Issues")) {
             List issues = cmeManager.getIssues(Integer.parseInt(demographic_no), false);
-            StringBuilder str = new StringBuilder();
+            StringBuffer str = new StringBuffer();
             for (Iterator iter = issues.iterator(); iter.hasNext();) {
                 CaseManagementIssue issue = (CaseManagementIssue) iter.next();
                 str.append(issue.getIssue().getDescription()).append("\r\n");
@@ -658,7 +658,7 @@ public class SurveyExecuteAction extends DispatchAction {
             data.getValues().put(key, str.toString());
         } else if (caisiObject.equals("Allergies")) {
             List allergies = cmeManager.getAllergies(demographic_no);
-            StringBuilder str = new StringBuilder();
+            StringBuffer str = new StringBuffer();
             for (Iterator iter = allergies.iterator(); iter.hasNext();) {
                 Allergy med = (Allergy) iter.next();
                 str.append(med.getDescription()).append(" ").append(med.getReaction()).append("\r\n");

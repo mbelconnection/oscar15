@@ -26,8 +26,6 @@ package oscar.oscarMessenger.pageUtil;
 
 import java.util.Hashtable;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 public class MsgDisplayMessagesBean {
@@ -99,15 +97,15 @@ public class MsgDisplayMessagesBean {
   public String getCurrentLocationId(){
         if (currentLocationId == null){
             try{
-              
+              DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
               java.sql.ResultSet rs;
-              rs = DBHandler.GetSQL("select locationId from oscarcommlocations where current1 = '1'");
+              rs = db.GetSQL("select locationId from oscarcommlocations where current1 = '1'");
 
               if (rs.next()) {
-                currentLocationId = oscar.Misc.getString(rs, "locationId");
+                currentLocationId = db.getString(rs,"locationId");
               }
               rs.close();
-            }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+            }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
         }
         return currentLocationId;
   }
@@ -268,22 +266,22 @@ public class MsgDisplayMessagesBean {
      int index = 0;
      
      try{
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         java.sql.ResultSet rs;
 
         String sql = new String("select message, status from messagelisttbl where provider_no = '"+ providerNo+"' and status not like \'del\' and remoteLocation = '"+getCurrentLocationId()+"' order by message");
-        rs = DBHandler.GetSQL(sql);
+        rs = db.GetSQL(sql);
 
         while (rs.next()) {
            messagePosition.add(Integer.toString(index));
-           messageid.add( oscar.Misc.getString(rs, "message")  );
-           status.add( oscar.Misc.getString(rs, "status")  );
+           messageid.add( db.getString(rs,"message")  );
+           status.add( db.getString(rs,"status")  );
            index++;
         }
 
        rs.close();
 
-    }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+    }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
 
   }//getMessageIDs
 ////////////////////////////////////////////////////////////////////////////////
@@ -311,7 +309,7 @@ public class MsgDisplayMessagesBean {
         }
         orderBy += desc + ", m.messageid desc";
      }   
-     MiscUtils.getLogger().debug("order "+order+" orderby "+orderBy);
+     System.out.println("order "+order+" orderby "+orderBy);
      return orderBy; 
   }
   
@@ -328,9 +326,9 @@ public class MsgDisplayMessagesBean {
      String[] searchCols = {"m.thesubject", "m.themessage", "m.sentby", "m.sentto"};
 
      try{
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         java.sql.ResultSet rs;
-        //String messageLimit="";
+        String messageLimit="";
         
 /*        if (moreMessages.equals("false"))
         {messageLimit=" Limit "+initialDisplay;}
@@ -343,22 +341,22 @@ public class MsgDisplayMessagesBean {
         + " left outer join msgDemoMap map on map.messageID = m.messageid "
         +" where ml.provider_no = '"+ providerNo+"' and status not like \'del\' and remoteLocation = '"+getCurrentLocationId()+"' "
         +" and ml.message = m.messageid " + getSQLSearchFilter(searchCols) + " order by " + getOrderBy(orderby));
-        MiscUtils.getLogger().debug(sql);
-        rs = DBHandler.GetSQL(sql);
+        System.out.println(sql);
+        rs = db.GetSQL(sql);
         int idx = 0;
         while (rs.next()) {
         	idx ++;
             if (moreMessages.equals("false") && idx > initialDisplay) break;
             oscar.oscarMessenger.data.MsgDisplayMessage dm = new oscar.oscarMessenger.data.MsgDisplayMessage();
-            dm.status     = oscar.Misc.getString(rs, "status");
-            dm.messageId  = oscar.Misc.getString(rs, "message");
-            dm.thesubject = oscar.Misc.getString(rs, "thesubject");
-            dm.thedate    = oscar.Misc.getString(rs, "thedate");
-            dm.theime    = oscar.Misc.getString(rs, "theime");
-            dm.sentby     = oscar.Misc.getString(rs, "sentby");
-            dm.demographic_no = oscar.Misc.getString(rs, "demographic_no");
-            String att    = oscar.Misc.getString(rs, "attachment");
-            String pdfAtt    = oscar.Misc.getString(rs, "pdfattachment");
+            dm.status     = db.getString(rs,"status");
+            dm.messageId  = db.getString(rs,"message");
+            dm.thesubject = db.getString(rs,"thesubject");
+            dm.thedate    = db.getString(rs,"thedate");
+            dm.theime    = db.getString(rs,"theime");
+            dm.sentby     = db.getString(rs,"sentby");
+            dm.demographic_no = db.getString(rs,"demographic_no");
+            String att    = db.getString(rs,"attachment");
+            String pdfAtt    = db.getString(rs,"pdfattachment");
             
             if (att == null || att.equals("null") ){
               dm.attach = "0";
@@ -376,7 +374,7 @@ public class MsgDisplayMessagesBean {
 
        rs.close();
 
-    }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+    }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
 
     return msg;
   }
@@ -396,7 +394,7 @@ public java.util.Vector estDemographicInbox(){
      String[] searchCols = {"m.thesubject", "m.themessage", "m.sentby", "m.sentto"};
 
      try{
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         java.sql.ResultSet rs;
 
         //String sql = new String("select ml.message, ml.status, m.thesubject, m.thedate, m.theime, m.attachment, m.pdfattachment, m.sentby  from messagelisttbl ml, messagetbl m, msgDemoMap map"
@@ -408,23 +406,23 @@ public java.util.Vector estDemographicInbox(){
               "and m.messageid = map.messageID " + getSQLSearchFilter(searchCols) + " order by "+getOrderBy(orderby);
         
         
-        MiscUtils.getLogger().debug("this "+sql);
-        rs = DBHandler.GetSQL(sql);
+        System.out.println("this "+sql);
+        rs = db.GetSQL(sql);
 
         while (rs.next()) {
 
            oscar.oscarMessenger.data.MsgDisplayMessage dm = new oscar.oscarMessenger.data.MsgDisplayMessage();
-           dm.status     = "    ";//oscar.Misc.getString(rs,"status");
-           dm.messageId  = oscar.Misc.getString(rs, "messageid");
+           dm.status     = "    ";//db.getString(rs,"status");
+           dm.messageId  = db.getString(rs,"messageid");
            dm.messagePosition  = Integer.toString(index);
-           dm.thesubject = oscar.Misc.getString(rs, "thesubject");
-           dm.thedate    = oscar.Misc.getString(rs, "thedate");
-           dm.theime    = oscar.Misc.getString(rs, "theime");
-           dm.sentby     = oscar.Misc.getString(rs, "sentby");
-           dm.demographic_no = oscar.Misc.getString(rs, "demographic_no");
+           dm.thesubject = db.getString(rs,"thesubject");
+           dm.thedate    = db.getString(rs,"thedate");
+           dm.theime    = db.getString(rs,"theime");
+           dm.sentby     = db.getString(rs,"sentby");
+           dm.demographic_no = db.getString(rs, "demographic_no");
            
-           String att    = oscar.Misc.getString(rs, "attachment");
-           String pdfAtt    = oscar.Misc.getString(rs, "pdfattachment");
+           String att    = db.getString(rs,"attachment");
+           String pdfAtt    = db.getString(rs,"pdfattachment");
               if (att == null || att.equals("null") ){
                 dm.attach = "0";
               }else{
@@ -448,7 +446,7 @@ public java.util.Vector estDemographicInbox(){
 
        rs.close();
 
-    }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+    }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
 
     return msg;
   }
@@ -473,7 +471,7 @@ public java.util.Vector estDemographicInbox(){
      String[] searchCols = {"m.thesubject", "m.themessage", "m.sentby", "m.sentto"};
 
      try{
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         java.sql.ResultSet rs;
 
         String sql = new String("select map.messageID is null as isnull, map.demographic_no, ml.message, ml.status, m.thesubject, m.thedate, m.theime, m.attachment, m.pdfattachment, m.sentby  from messagelisttbl ml, messagetbl m "
@@ -481,21 +479,21 @@ public java.util.Vector estDemographicInbox(){
         +" where provider_no = '"+ providerNo+"' and status like \'del\' and remoteLocation = '"+getCurrentLocationId()+"' "
         +" and ml.message = m.messageid " + getSQLSearchFilter(searchCols) + " order by "+getOrderBy(orderby));
         
-        rs = DBHandler.GetSQL(sql);
+        rs = db.GetSQL(sql);
 
         while (rs.next()) {
 
            oscar.oscarMessenger.data.MsgDisplayMessage dm = new oscar.oscarMessenger.data.MsgDisplayMessage();
            dm.status     = "deleted";
-           dm.messageId  = oscar.Misc.getString(rs, "message");
-           dm.thesubject = oscar.Misc.getString(rs, "thesubject");
-           dm.thedate    = oscar.Misc.getString(rs, "thedate");
-           dm.theime    = oscar.Misc.getString(rs, "theime");
-           dm.sentby     = oscar.Misc.getString(rs, "sentby");
-           dm.demographic_no = oscar.Misc.getString(rs, "demographic_no");
+           dm.messageId  = db.getString(rs,"message");
+           dm.thesubject = db.getString(rs,"thesubject");
+           dm.thedate    = db.getString(rs,"thedate");
+           dm.theime    = db.getString(rs,"theime");
+           dm.sentby     = db.getString(rs,"sentby");
+           dm.demographic_no = db.getString(rs, "demographic_no");
            
-           String att    = oscar.Misc.getString(rs, "attachment");
-           String pdfAtt    = oscar.Misc.getString(rs, "pdfattachment");
+           String att    = db.getString(rs,"attachment");
+           String pdfAtt    = db.getString(rs,"pdfattachment");
               if (att == null || att.equals("null") ){
                 dm.attach = "0";
               }else{
@@ -508,11 +506,13 @@ public java.util.Vector estDemographicInbox(){
               }
               msg.add(dm);
 
+           // System.out.println("message "+db.getString(rs,"message")+" status "+db.getString(rs,"status"));
+
         }
 
        rs.close();
 
-    }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+    }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
 
     return msg;
   }
@@ -526,28 +526,29 @@ public java.util.Vector estDemographicInbox(){
    * in the messagelisttbl
    */
   void getDeletedMessageIDs(){
-
+    // System.out.println("In deleted MEssages");
      String providerNo= this.getProviderNo();
 
      messageid = new java.util.Vector();
      status  = new java.util.Vector();
      try{
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         java.sql.ResultSet rs;
 
         String sql = new String("select message from messagelisttbl where provider_no = '"+ providerNo+"' and status like \'del\' and remoteLocation = '"+getCurrentLocationId()+"'");
-        rs = DBHandler.GetSQL(sql);
+        rs = db.GetSQL(sql);
         int cou = 0;
         while (rs.next()) {
-           messageid.add( oscar.Misc.getString(rs, "message")  );
+           messageid.add( db.getString(rs,"message")  );
            status.add("deleted");
            cou++;
         }
+        // System.out.println("cou "+cou+" messageid size "+messageid.size()+" for "+providerNo);
 
        rs.close();
 
-    }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
-
+    }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
+    // System.out.println("LEaving deleted messages ID this is the size ive got "+messageid.size());
   }//getDeletedMessageIDs
 
   /**
@@ -555,7 +556,7 @@ public java.util.Vector estDemographicInbox(){
    * in the messagelisttbl
    */
   void getSentMessageIDs(){
-
+    // System.out.println("In sent MEssages");
      String providerNo= this.getProviderNo();
 
      messageid = new java.util.Vector();
@@ -565,26 +566,27 @@ public java.util.Vector estDemographicInbox(){
      ime  = new java.util.Vector();
      subject  = new java.util.Vector();
      try{
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         java.sql.ResultSet rs;
 
         String sql = new String("select messageid, thedate,  theime, thesubject, sentby from messagetbl where sentbyNo = '"+ providerNo+"' and sentByLocation = '"+getCurrentLocationId()+"'");
-        rs = DBHandler.GetSQL(sql);
+        rs = db.GetSQL(sql);
         int cou = 0;
         while (rs.next()) {
-           messageid.add( oscar.Misc.getString(rs, "messageid")  );
+           messageid.add( db.getString(rs,"messageid")  );
            status.add("sent");
-           sentby.add(oscar.Misc.getString(rs, "sentby"));
-           date.add(oscar.Misc.getString(rs, "thedate"));
-           ime.add(oscar.Misc.getString(rs, "theime"));
-           subject.add(oscar.Misc.getString(rs, "thesubject"));
+           sentby.add(db.getString(rs,"sentby"));
+           date.add(db.getString(rs,"thedate"));
+           ime.add(db.getString(rs,"theime"));
+           subject.add(db.getString(rs,"thesubject"));
            cou++;
         }
+        // System.out.println("cou "+cou+" messageid size "+messageid.size()+" for "+providerNo);
 
        rs.close();
 
-    }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
-
+    }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
+    // System.out.println("LEaving deleted messages ID this is the size ive got "+messageid.size());
   }//getSentMessageIDs
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -600,26 +602,26 @@ public java.util.Vector estDemographicInbox(){
 
 
      try{
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         java.sql.ResultSet rs;
 
         String sql = new String("select map.messageID is null as isnull, map.demographic_no, m.messageid as status, m.messageid as message , thedate, theime, thesubject, sentby, sentto, attachment, pdfattachment from messagetbl m left outer join msgDemoMap map on map.messageID = m.messageid where sentbyNo = '"+ providerNo+"' and sentByLocation = '"+getCurrentLocationId()+"'  " + getSQLSearchFilter(searchCols) + " order by "+getOrderBy(orderby));
 
-        rs = DBHandler.GetSQL(sql);
+        rs = db.GetSQL(sql);
 
         while (rs.next()) {
 
            oscar.oscarMessenger.data.MsgDisplayMessage dm = new oscar.oscarMessenger.data.MsgDisplayMessage();
            dm.status     = "sent";
-           dm.messageId  = oscar.Misc.getString(rs, "status");
-           dm.thesubject = oscar.Misc.getString(rs, "thesubject");
-           dm.thedate    = oscar.Misc.getString(rs, "thedate");
-           dm.theime    = oscar.Misc.getString(rs, "theime");
-           dm.sentby     = oscar.Misc.getString(rs, "sentby");
-           dm.sentto     = oscar.Misc.getString(rs, "sentto");
-           dm.demographic_no = oscar.Misc.getString(rs, "demographic_no");
-           String att    = oscar.Misc.getString(rs, "attachment");
-           String pdfAtt    = oscar.Misc.getString(rs, "pdfattachment");           
+           dm.messageId  = db.getString(rs,"status");
+           dm.thesubject = db.getString(rs,"thesubject");
+           dm.thedate    = db.getString(rs,"thedate");
+           dm.theime    = db.getString(rs,"theime");
+           dm.sentby     = db.getString(rs,"sentby");
+           dm.sentto     = db.getString(rs,"sentto");
+           dm.demographic_no = db.getString(rs, "demographic_no");
+           String att    = db.getString(rs,"attachment");
+           String pdfAtt    = db.getString(rs,"pdfattachment");           
               if (att == null || att.equals("null") ){
                 dm.attach = "0";
               }else{
@@ -633,11 +635,13 @@ public java.util.Vector estDemographicInbox(){
            
            msg.add(dm);
 
+           //System.out.println("message "+db.getString(rs,"message")+" status "+db.getString(rs,"status"));
+
         }
 
        rs.close();
 
-    }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+    }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
 
     return msg;
   }
@@ -656,18 +660,19 @@ public java.util.Vector estDemographicInbox(){
    * the Message header Info
    */
   void getInfo(){
-
+    // System.out.println("Get Info called ms = "+messageid.size());
      sentby  = new java.util.Vector();
      date    = new java.util.Vector();
      subject = new java.util.Vector();
      attach  = new java.util.Vector();
      String att;
      try{
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         java.sql.ResultSet rs;
 
+        // System.out.println("Messages in getInfo = "+messageid.size());
         //make search string
-        StringBuilder stringBuffer = new StringBuilder();
+        StringBuffer stringBuffer = new StringBuffer();
         for ( int i = 0; i < messageid.size() ; i++){
             if (messageid.size()-1 == i){
                 stringBuffer.append(" messageid = '"+messageid.get(i)+"' ");
@@ -679,13 +684,13 @@ public java.util.Vector estDemographicInbox(){
 //        for ( int i = 0; i < messageid.size() ; i++){
 //           String sql = new String("select thesubject, thedate ,sentby from messagetbl where messageid = "+ messageid.get(i) );
            String sql = new String("select thesubject, thedate, theime ,sentby, attachment from messagetbl where "+stringBuffer.toString()+" order by thedate");
-           rs = DBHandler.GetSQL(sql);
+           rs = db.GetSQL(sql);
            while (rs.next()) {
-              sentby.add( oscar.Misc.getString(rs, "sentby")  );
-              date.add( oscar.Misc.getString(rs, "thedate")  );
-              ime.add( oscar.Misc.getString(rs, "theime")  );
-              subject.add ( oscar.Misc.getString(rs, "thesubject") );
-              att = oscar.Misc.getString(rs, "attachment");
+              sentby.add( db.getString(rs,"sentby")  );
+              date.add( db.getString(rs,"thedate")  );
+              ime.add( db.getString(rs,"theime")  );
+              subject.add ( db.getString(rs,"thesubject") );
+              att = db.getString(rs,"attachment");
               if (att == null || att.equals("null") ){
                 attach.add("0");
               }else{
@@ -694,7 +699,7 @@ public java.util.Vector estDemographicInbox(){
            }//while
         rs.close();
 
-    }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+    }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
   } //getInfo
 
 }//DisplayMessageBean

@@ -40,15 +40,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.oscarehr.PMmodule.common.PassIntakeFormVars;
+import org.oscarehr.common.model.Demographic;
 import org.oscarehr.PMmodule.model.Formintakec;
 import org.oscarehr.PMmodule.web.formbean.IntakeCHospitalization;
-import org.oscarehr.common.model.Demographic;
-import org.oscarehr.util.MiscUtils;
 
 /**
  * create IntakeCReport1 Action
@@ -56,7 +56,7 @@ import org.oscarehr.util.MiscUtils;
  * @author zhouke
  */
 public class IntakeCMentalHealthReportAction extends BaseAction {
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(IntakeCMentalHealthReportAction.class);
 
     private static final String SDF_PATTERN = "yyyy-MM-dd";
 
@@ -3756,7 +3756,7 @@ public class IntakeCMentalHealthReportAction extends BaseAction {
             out2.close();
         }
         catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
     }
 

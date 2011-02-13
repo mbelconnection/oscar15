@@ -34,12 +34,12 @@ import java.util.Hashtable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarReport.data.ManageLetters;
 
@@ -52,7 +52,7 @@ import oscar.oscarReport.data.ManageLetters;
  */
 public class DownloadPatientLettersAction extends Action {
     
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(ManagePatientLettersAction.class);
     
     /** Creates a new instance of GeneratePatientLetters */
     public DownloadPatientLettersAction() {   
@@ -69,7 +69,8 @@ public class DownloadPatientLettersAction extends Action {
             response.addHeader("Content-Disposition", "attachment;filename=" + filename);
             response.addHeader("Content-Disposition", "attachment;filename=report.txt" );   
             manageLetters.writeLetterToStream(fileId,response.getOutputStream());
-        } catch (Exception ex) {MiscUtils.getLogger().error("Error", ex);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         
         if (log.isTraceEnabled()) { log.trace("End of DownloadPatientLettersAction Action");}

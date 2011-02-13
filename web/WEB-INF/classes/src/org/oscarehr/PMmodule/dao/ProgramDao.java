@@ -23,16 +23,19 @@
 package org.oscarehr.PMmodule.dao;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
+import org.hibernate.Hibernate;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.oscarehr.PMmodule.model.Program;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import oscar.OscarProperties;
@@ -42,7 +45,7 @@ import com.quatro.util.Utility;
 
 public class ProgramDao extends HibernateDaoSupport {
 
-    private static final Logger log=MiscUtils.getLogger();
+    private static final Log log = LogFactory.getLog(ProgramDao.class);
 
     public boolean isBedProgram(Integer programId) {
         boolean result = false;
@@ -603,18 +606,5 @@ public class ProgramDao extends HibernateDaoSupport {
     	Program p1 = getProgram(programId1);
     	Program p2 = getProgram(programId2);
     	return(p1.getFacilityId()==p2.getFacilityId());
-    }
-    
-    public Program getProgramBySiteSpecificField(String value) {
-        Program result = null;
-
-        @SuppressWarnings("unchecked")
-        List<Program> results = getHibernateTemplate().find("from Program p where p.siteSpecificField = ?", new Object[]{value});
-
-        if (!results.isEmpty()) {
-            result = results.get(0);
-        }
-
-        return result;
     }
 }

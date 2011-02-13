@@ -35,7 +35,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -61,13 +60,15 @@ public class MsgProceedAction extends Action {
     id = frm.getId();
     //id = oscar.oscarMessenger.docxfer.util.xml.decode64(id);
 
+    // System.out.println("demo "+demoId+" id "+id);
+
     try{
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         java.sql.ResultSet rs;
 
         String sel = "select * from remoteAttachments where demographic_no = '"+demoId+"' and messageid = '"+id+"' ";
-
-        rs = DBHandler.GetSQL(sel);
+// System.out.println("select state "+sel);
+        rs = db.GetSQL(sel);
 
         if (rs.next()){
             rs.close();
@@ -76,12 +77,12 @@ public class MsgProceedAction extends Action {
             rs.close();
             String sql = "insert into remoteAttachments (demographic_no,messageid, savedBy,date,time) values "
             +"('"+demoId+"','"+id+"','"+bean.getUserName()+"','today', 'now')";
-            DBHandler.RunSQL(sql);
+            db.RunSQL(sql);
             request.setAttribute("confMessage","2");
 
         }
 
-    }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+    }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
 
     bean.nullAttachment();
 

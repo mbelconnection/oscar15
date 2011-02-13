@@ -26,8 +26,6 @@ package oscar.oscarWaitingList;
 
 import java.sql.ResultSet;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 /*
  * This class is an interface with the file WEB-INF/classes
@@ -48,18 +46,18 @@ public class WaitingList{
 	}
 
     public boolean checkWaitingListTable(){       
-       
+       DBHandler db = null;
        ResultSet rs = null;
        try{
-           
+           db = new DBHandler(DBHandler.OSCAR_DATA);
            String sql = "SELECT count(*) FROM waitingListName where is_history = 'N' ";
 //           String sql = "SELECT * FROM waitingListName where is_history = 'N' limit 1 ";
-           rs = DBHandler.GetSQL(sql);
+           rs = db.GetSQL(sql);
            rs.next();
            int count = rs.getInt(1);
            return count > 0;
        } catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
             return false;
        }finally{
     	   try{
@@ -67,7 +65,7 @@ public class WaitingList{
     			   rs.close(); 
     		   }
     	   }catch(Exception ex2){
-    		   MiscUtils.getLogger().debug("WaitingList.checkWaitingListTable():" + ex2.getMessage()); 
+    		   System.out.println("WaitingList.checkWaitingListTable():" + ex2.getMessage()); 
     	   }
        }
     }

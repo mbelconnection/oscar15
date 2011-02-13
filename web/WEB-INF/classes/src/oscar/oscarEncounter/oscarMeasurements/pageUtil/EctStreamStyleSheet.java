@@ -35,11 +35,11 @@ import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DownloadAction;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 
@@ -49,7 +49,7 @@ import oscar.OscarProperties;
  */
 public class EctStreamStyleSheet extends DownloadAction{
     
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(EctStreamStyleSheet.class);
     
     /** Creates a new instance of DisplayImageAction */
     public EctStreamStyleSheet() {
@@ -73,18 +73,18 @@ public class EctStreamStyleSheet extends DownloadAction{
            }
            file = new File(directory,fileName);
            //String canonicalPath = file.getParentFile().getCanonicalPath(); //absolute path of the retrieved file
-
+           //System.out.println("absolutepath: " + canonicalPath);
            if (!directory.equals(file.getParentFile())) {
                log.warn("SECURITY WARNING: Illegal file path detected, client attempted to navigate away from the file directory");
                throw new Exception("Could not open file " + fileName + ".  Check the file path"); 
            }
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
             throw new Exception("Could not open file "+home_dir+fileName +" does "+home_dir+ " exist ?",e);
         }
         //gets content type from image extension
         String contentType = new MimetypesFileTypeMap().getContentType(file);
-
+        //System.out.println("content type:" + contentType);
         return new FileStreamInfo(contentType, file);   
     }   
 }

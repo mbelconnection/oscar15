@@ -37,12 +37,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarBilling.ca.bc.MSP.MSPReconcile;
 import oscar.oscarBilling.ca.bc.data.BillRecipient;
@@ -54,7 +54,7 @@ import oscar.oscarBilling.ca.bc.data.BillingNote;
  */
 public final class BillingUpdateBillingAction
     extends Action {
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(BillingUpdateBillingAction.class);
   HttpServletRequest request;
   public ActionForward execute(ActionMapping mapping,
                                ActionForm form,
@@ -82,7 +82,7 @@ public final class BillingUpdateBillingAction
       n.addNoteFromBillingNo(frm.getBillingNo(), creator, frm.getMessageNotes());
     }
     catch (Exception e) {
-      MiscUtils.getLogger().error("Error", e);
+      e.printStackTrace();
     }
 
     return mapping.findForward("success");

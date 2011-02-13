@@ -75,6 +75,7 @@ public class SystemMessageAction extends DispatchAction {
 			request.getSession().setAttribute("systemMessageId","");
 		}
 		
+		
 		return mapping.findForward("edit");
 	}
 

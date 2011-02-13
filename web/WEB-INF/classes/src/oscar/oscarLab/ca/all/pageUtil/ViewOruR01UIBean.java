@@ -112,15 +112,15 @@ public final class ViewOruR01UIBean {
 		return(DateFormatUtils.ISO_DATE_FORMAT.format(demographic.getBirthDay()));
 	}
 	
-	public String getSubjectForDisplay()
+	public String getDataNameForDisplay()
 	{
-		return(StringEscapeUtils.escapeHtml(observationData.subject));
+		return(StringEscapeUtils.escapeHtml(observationData.dataName));
 	}
 	
-	public String getTextMessageForDisplay()
+	public String getTextDataForDisplay()
 	{
-		if (observationData.textMessage==null) return("");
-		return(StringEscapeUtils.escapeHtml(observationData.textMessage));
+		if (observationData.textData==null) return("");
+		return(StringEscapeUtils.escapeHtml(observationData.textData));
 	}
 
 	public boolean hasBinaryFile()

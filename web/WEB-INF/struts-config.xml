@@ -478,11 +478,10 @@
 		<form-bean name="testBookForm" type="org.apache.struts.validator.DynaValidatorForm">
 			<form-property name="data" type="org.oscarehr.eyeform.model.TestBookRecord" />
 		</form-bean>
-				
+		
 		<form-bean name="followUpForm2" type="org.apache.struts.validator.DynaValidatorForm">
 			<form-property name="followup" type="org.oscarehr.eyeform.model.FollowUp" />
 		</form-bean>
-                <form-bean name="PatientEndYearStatementForm" type="oscar.oscarBilling.ca.on.pageUtil.PatientEndYearStatementForm" />
 
 	</form-beans>
 
@@ -872,8 +871,7 @@
 		<action path="/oscarEncounter/displayIssues" scope="request" type="org.springframework.web.struts.DelegatingActionProxy"></action>
 		<action path="/oscarEncounter/displayDecisionSupportAlerts" scope="request" type="oscar.oscarEncounter.pageUtil.EctDisplayDecisionSupportAlertsAction"></action>
 		<action path="/report/printLabDaySheetAction" type="oscar.oscarReport.pageUtil.printLabDaySheetAction"></action>
-		<action path="/oscarEncounter/displayDiagrams" scope="request" type="oscar.oscarEncounter.pageUtil.EctDisplayDiagramAction"></action>
-		
+
 		<action path="/oscarEncounter/decisionSupport/guidelineAction" scope="request" parameter="method" type="org.springframework.web.struts.DelegatingActionProxy">
 			<forward name="guidelineList" path="/oscarEncounter/decisionSupport/guidelineList.jsp" />
 			<forward name="guidelineDetail" path="/oscarEncounter/decisionSupport/guidelineDetail.jsp" />
@@ -1261,7 +1259,7 @@
 			<forward name="error" path="/provider/providerColourErr.jsp" />
 			<forward name="eject" path="/index.jsp" />
 		</action>
-                <action input="/oscarEncounter/Index.jsp" path="/oscarResearch/oscarDxResearch/setupDxResearch" scope="request" type="oscar.oscarResearch.oscarDxResearch.pageUtil.dxSetupResearchAction">
+		<action input="/oscarEncounter/Index.jsp" path="/oscarResearch/oscarDxResearch/setupDxResearch" scope="request" type="oscar.oscarResearch.oscarDxResearch.pageUtil.dxSetupResearchAction">
 			<forward name="success" path="/oscarResearch/oscarDxResearch/dxResearch.jsp" />
 		</action>
 		<action input="/oscarResearch/oscarDxResearch/dxResearch.jsp" name="dxResearchForm" path="/oscarResearch/oscarDxResearch/dxResearch" scope="request" type="oscar.oscarResearch.oscarDxResearch.pageUtil.dxResearchAction">
@@ -1990,18 +1988,7 @@
 			<forward name="form" path="/eyeform/followup.jsp" />
 			<forward name="success" path="/eyeform/success.jsp" />
 		</action>
-		
-		<action path="/eyeform/Eyeform" type="org.oscarehr.eyeform.web.EyeformAction" parameter="method" scope="request" validate="false" input="/eyeform/followup.jsp" name="followUpForm2">
-			<forward name="conreqcc" path="/eyeform/conreqcc.jsp" />
-			<forward name="conspecial" path="/eyeform/conspecial.jsp" />				
-		</action>
 
-		<action path="/casemgmt/ExtPrintRegistry" type="org.oscarehr.casemgmt.web.ExtPrintRegistryAction" parameter="method" scope="request">			
-		</action>
-		
-		<action path="/casemgmt/RegisterCppCode" type="org.oscarehr.casemgmt.web.RegisterCppCode" parameter="method" scope="request">			
-		</action>
-		
 		<!-- END OSCAR Report By Template -->
 
 		<action path="/ArchiveView" type="org.springframework.web.struts.DelegatingActionProxy" scope="request" parameter="method">
@@ -2090,8 +2077,6 @@
 		<action path="/phr/Logout" name="FrmForm" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method" scope="request">
 		</action>
 		<action path="/phrExchange" name="FrmForm" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method" scope="request">
-                    <forward name="success" path="/oscarRx/displayMedsFromPhr.jsp" />
-                    <forward name="displayPrevViewed" path="/oscarRx/displayUnsavedMeds.jsp"/>
 		</action>
 		<action path="/phr/UserManagement" name="FrmForm" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method" scope="request">
 			<forward name="registrationResult" path="/phr/indivo/RegisterIndivoResult.jsp" />
@@ -2158,10 +2143,6 @@
 		<action parameter="method" path="/PMmodule/Admin/MigrateCaisiRoles" scope="request" type="org.springframework.web.struts.DelegatingActionProxy">
 			<forward name="success" path="/PMmodule/Admin/migrateCaisiRoles.jsp" redirect="true" />
 		</action>
-                <action input="/billing/CA/ON/endYearStatement.jsp" name="PatientEndYearStatementForm" path="/billing/CA/ON/endYearStatement" scope="request" type="oscar.oscarBilling.ca.on.pageUtil.PatientEndYearStatementAction" validate="false">
-                    <forward name="success" path="/billing/CA/ON/endYearStatement.jsp"/>
-                    <forward name="failure" path="/billing/CA/ON/endYearStatement.jsp"/>
-                </action>
 
 	</action-mappings>
 	<controller processorClass="org.apache.struts.tiles.TilesRequestProcessor" maxFileSize="20M" />

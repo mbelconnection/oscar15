@@ -99,16 +99,7 @@ public class ProviderDao extends HibernateDaoSupport {
 		}
 		return rs;
 	}
-        public List<Provider> getProviderFromFirstLastName(String firstname,String lastname){
-            firstname=firstname.trim();
-            lastname=lastname.trim();
-            String s="From Provider p where p.FirstName=? and p.LastName=?";
-            ArrayList paramList=new ArrayList();
-            paramList.add(firstname);
-            paramList.add(lastname);
-            Object params[]=paramList.toArray(new Object[paramList.size()]);
-            return getHibernateTemplate().find(s,params);
-        }
+
     public List getActiveProviders(Integer programId) {
         ArrayList paramList = new ArrayList();
 
@@ -296,20 +287,4 @@ public class ProviderDao extends HibernateDaoSupport {
     public void saveProvider( Provider provider) {        
         this.getHibernateTemplate().save(provider);
     }
-    
-	public Provider getProviderByPractitionerNo(String practitionerNo) {
-		if (practitionerNo == null || practitionerNo.length() <= 0) {
-			throw new IllegalArgumentException();
-		}
-
-		List<Provider> providerList = getHibernateTemplate().find("From Provider p where p.practitionerNo=?",new Object[]{practitionerNo});
-	
-		if(providerList.size()>1) {
-			logger.warn("Found more than 1 provider with practitionerNo="+practitionerNo);
-		}
-		if(providerList.size()>0)
-			return providerList.get(0);
-
-		return null;
-	}
 }

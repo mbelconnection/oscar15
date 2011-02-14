@@ -30,14 +30,11 @@
 <%
 	int startYear = Integer.parseInt(request.getParameter("startYear"));
 	int startMonth = Integer.parseInt(request.getParameter("startMonth"));
-	int endYear = Integer.parseInt(request.getParameter("endYear"));
-	int endMonth = Integer.parseInt(request.getParameter("endMonth"));
-	String ocanType = (String)request.getParameter("ocanType");
 	
 	response.setHeader("Content-Disposition", "attachment; filename="+OcanReportUIBean.getFilename(startYear,startMonth,1));
 	
 	
-	OcanReportUIBean.writeXmlExportData(startYear, startMonth,endYear, endMonth, 1,response.getOutputStream(),ocanType);
+	OcanReportUIBean.writeXmlExportData(startYear, startMonth, 1,response.getOutputStream());
 	
 	response.getOutputStream().flush();
 %>

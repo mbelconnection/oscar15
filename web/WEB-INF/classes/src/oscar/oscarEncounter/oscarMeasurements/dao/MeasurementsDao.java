@@ -21,8 +21,4 @@ public interface MeasurementsDao {
 	
 	public HashMap<String,Measurements> getMeasurements(String demo, String[] types);
 	
-	public List<Measurements> getMeasurements(String demo);
-	
-	public List<Measurements> getMeasurements(String demo,Date startDate, Date endDate);
-	
 }

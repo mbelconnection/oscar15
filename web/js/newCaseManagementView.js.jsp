@@ -1975,14 +1975,6 @@ function savePage(method, chain) {
 		eval(func + "()");
 	});
 	
-	
-	jQuery("[submit_addon]").each(function()
-    		   {    		   	
-    		     jQuery("#"+jQuery(this).attr('submit_addon')).click();
-    		   }
-    		 );
-       
-	
     /*var frm = document.forms["caseManagementViewForm"];
     var url = ctx + "/CaseManagementView.do";
     var objAjax = new Ajax.Request (
@@ -2461,7 +2453,6 @@ function autoCompleteShowMenuCPP(element, update) {
         var selected = ctx + "/oscarEncounter/graphics/printerGreen.png";
         var unselected = ctx + "/oscarEncounter/graphics/printer.png";
 
-		
         if( $F(item) == "true" ) {
             $(img).src = unselected;
             $(item).value = "false";
@@ -2620,8 +2611,7 @@ function autoCompleteShowMenuCPP(element, update) {
         var msnote;
         var pos;
 
-        for( idx = 0; idx <= numNotes; ++idx ) {    
-        	if($("nc"+idx) == null) continue;    
+        for( idx = 0; idx <= numNotes; ++idx ) {
             notesDiv = $("nc" + idx).down('div');
             noteId = notesDiv.id.substr(1);  //get note id
             if(noteId==0) continue;
@@ -2682,9 +2672,6 @@ function autoCompleteShowMenuCPP(element, update) {
         var frm = document.forms["caseManagementEntryForm"];
 
         frm.method.value = "print";
-        
-        frm.pStartDate.value = $F("printStartDate");
-        frm.pEndDate.value = $F("printEndDate");
         frm.submit();
 
 
@@ -2804,4 +2791,3 @@ function autoCompleteShowMenuCPP(element, update) {
             Event.stop(e);
         }
     }
-    

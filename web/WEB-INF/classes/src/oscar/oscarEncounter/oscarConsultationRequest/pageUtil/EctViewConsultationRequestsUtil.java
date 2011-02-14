@@ -25,23 +25,25 @@
 
 package oscar.oscarEncounter.oscarConsultationRequest.pageUtil;
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Vector;
+import java.util.List;
+import java.util.Calendar;
 
 import org.apache.commons.lang.time.DateFormatUtils;
-import org.oscarehr.PMmodule.dao.ProviderDao;
-import org.oscarehr.common.dao.ConsultationRequestDao;
-import org.oscarehr.common.dao.ConsultationServiceDao;
-import org.oscarehr.common.dao.DemographicDao;
-import org.oscarehr.common.dao.ProfessionalSpecialistDao;
-import org.oscarehr.common.model.ConsultationRequest;
-import org.oscarehr.common.model.ConsultationServices;
-import org.oscarehr.common.model.Demographic;
-import org.oscarehr.common.model.ProfessionalSpecialist;
-import org.oscarehr.common.model.Provider;
+
 import org.oscarehr.util.MiscUtils;
+import org.oscarehr.common.model.ConsultationRequest;
+import org.oscarehr.common.dao.ConsultationRequestDao;
+import org.oscarehr.common.model.Demographic;
+import org.oscarehr.common.dao.DemographicDao;
+import org.oscarehr.PMmodule.dao.ProviderDao;
+import org.oscarehr.common.model.Provider;
+import org.oscarehr.common.dao.ProfessionalSpecialistDao;
+import org.oscarehr.common.model.ProfessionalSpecialist;
+import org.oscarehr.common.dao.ConsultationServiceDao;
+import org.oscarehr.common.model.ConsultationServices;
+
 import org.oscarehr.util.SpringUtils;
 
 public class EctViewConsultationRequestsUtil {         
@@ -62,21 +64,17 @@ public class EctViewConsultationRequestsUtil {
       return estConsultationVecByTeam(team,showCompleted,null,null,null,null,null);
    }  
             
-   private boolean bMultisites=org.oscarehr.common.IsPropertiesOn.isMultisitesEnable();
-   
    public boolean estConsultationVecByTeam(String team,boolean showCompleted,Date startDate, Date endDate,String orderby,String desc,String searchDate) {       
       ids = new Vector<String>();
       status = new Vector<String>();
       patient = new Vector<String>();
       provider = new Vector<String>();
-      providerNo = new Vector();
       teams = new Vector<String>();
       service = new Vector<String>();
       vSpecialist = new Vector<String>();
       urgency = new Vector<String>();
       date = new Vector<String>();
       demographicNo = new Vector<String>();
-      siteName = new Vector<String>();
       this.patientWillBook = new Vector<String>();
       apptDate = new Vector<String>();
       followUpDate = new Vector<String>();
@@ -107,11 +105,9 @@ public class EctViewConsultationRequestsUtil {
               if( providerId != null && !providerId.equals("")) {
                   prov = providerDao.getProvider(demo.getProviderNo());
                   providerName = prov.getFormattedName();
-                  providerNo.add(prov.getProviderNo());
               }
               else {
                   providerName = "N/A";
-                  providerNo.add("-1");
               }
 
               if( consult.getProfessionalSpecialist() == null ) {
@@ -131,7 +127,6 @@ public class EctViewConsultationRequestsUtil {
               service.add(services.getServiceDesc());
               vSpecialist.add(specialistName);
               urgency.add(consult.getUrgency());
-              siteName.add(consult.getSiteName());
               teams.add(consult.getSendTo());
               cal.setTime(consult.getAppointmentDate());
               date1 = cal.getTime();
@@ -224,8 +219,6 @@ public class EctViewConsultationRequestsUtil {
    public Vector<String> apptDate;
    public Vector<String> patientWillBook;
    public Vector<String> urgency;
-   public Vector<String> followUpDate;
-   public Vector<String> providerNo;   
-   public Vector<String> siteName;
+   public Vector<String> followUpDate;;
    
 }

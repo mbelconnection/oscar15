@@ -7,18 +7,9 @@
 <%
 	int currentDemographicId=Integer.parseInt(request.getParameter("demographicId"));	
 	int prepopulationLevel = OcanForm.PRE_POPULATION_LEVEL_ALL;
-	String ocanType = request.getParameter("ocanType");
-	int ocanStaffFormId =0;
-	if(request.getParameter("ocanStaffFormId")!=null && request.getParameter("ocanStaffFormId")!="") {
-		ocanStaffFormId = Integer.parseInt(request.getParameter("ocanStaffFormId"));
-	}
-	//canStaffForm ocanStaffForm=OcanForm.getOcanStaffForm(currentDemographicId, prepopulationLevel,ocanType);		
-	OcanStaffForm ocanStaffForm = null;
-	if(ocanStaffFormId != 0) {
-		ocanStaffForm=OcanForm.getOcanStaffForm(Integer.valueOf(request.getParameter("ocanStaffFormId")));
-	}else {
-		ocanStaffForm=OcanForm.getOcanStaffForm(currentDemographicId,prepopulationLevel,ocanType);		
-	}
+	
+	OcanStaffForm ocanStaffForm=OcanForm.getOcanStaffForm(currentDemographicId, prepopulationLevel);		
+
 	int medicationNumber = Integer.parseInt(request.getParameter("medication_num"));
 %>
 <div id="medication_<%=medicationNumber%>">
@@ -26,7 +17,7 @@
 		<tr>
 			<td class="genericTableHeader">Medication</td>
 			<td class="genericTableData">
-				<%=OcanForm.renderAsTextField(ocanStaffForm.getId(), "medication_"+medicationNumber+"_medication", 128,prepopulationLevel)%>	
+				<%=OcanForm.renderAsTextField(ocanStaffForm.getId(), "medication_"+medicationNumber+"_medication", 25,prepopulationLevel)%>	
 			</td>								
 		</tr>
 		<tr>
@@ -40,7 +31,7 @@
 		<tr>
 			<td class="genericTableHeader">Dosage</td>
 			<td class="genericTableData">
-				<%=OcanForm.renderAsTextField(ocanStaffForm.getId(), "medication_"+medicationNumber+"_dosage", 128,prepopulationLevel)%>	
+				<%=OcanForm.renderAsTextField(ocanStaffForm.getId(), "medication_"+medicationNumber+"_dosage", 25,prepopulationLevel)%>	
 			</td>								
 		</tr>
 		<tr>

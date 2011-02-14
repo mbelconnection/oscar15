@@ -7,18 +7,8 @@
 <%
 	int currentDemographicId=Integer.parseInt(request.getParameter("demographicId"));	
 	int prepopulationLevel = OcanForm.PRE_POPULATION_LEVEL_ALL;
-	String ocanType = request.getParameter("ocanType");
-	int ocanStaffFormId =0;
-	if(request.getParameter("ocanStaffFormId")!=null && request.getParameter("ocanStaffFormId")!="") {
-		ocanStaffFormId = Integer.parseInt(request.getParameter("ocanStaffFormId"));
-	}
-	//OcanStaffForm ocanStaffForm=OcanForm.getOcanStaffForm(currentDemographicId, prepopulationLevel,ocanType);		
-	OcanStaffForm ocanStaffForm = null;
-	if(ocanStaffFormId != 0) {
-		ocanStaffForm=OcanForm.getOcanStaffForm(Integer.valueOf(request.getParameter("ocanStaffFormId")));
-	}else {
-		ocanStaffForm=OcanForm.getOcanStaffForm(currentDemographicId,prepopulationLevel,ocanType);		
-	}
+	OcanStaffForm ocanStaffForm=OcanForm.getOcanStaffForm(currentDemographicId, prepopulationLevel);		
+
 	int size=0;
 	try {
 		size = Integer.parseInt(request.getParameter("size"));
@@ -29,7 +19,6 @@
 	String[] domainsAsArray = domains.split(",");
 %>
 <%if(size>0){  %>
-
 <table>	
 	<tr>
 		<td width="10%">Priority</td>
@@ -51,7 +40,7 @@
 		</select>
 	</td>
 	<td>
-		<%=OcanForm.renderAsSoATextArea(ocanStaffForm.getId(),x+"_summary_of_actions_action",5,50,prepopulationLevel)%>							
+		<%=OcanForm.renderAsSoATextArea(ocanStaffForm.getId(),x+"_summary_of_actions_action",5,30,prepopulationLevel)%>							
 	</td>
 </tr>		
 

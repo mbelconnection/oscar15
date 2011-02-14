@@ -116,7 +116,7 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>3.0.11</version> <!-- can't change this version until we fix our code to stop using the 3.0.11 glitches -->
+			<version>5.1.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -257,9 +257,9 @@
 			<version>1.0.5</version>
 		</dependency>
 		<dependency>
-			<groupId>taglibs</groupId>
+			<groupId>standard</groupId>
 			<artifactId>standard</artifactId>
-			<version>1.1.2</version>
+			<version>UNKNOWN</version>
 		</dependency>
 
 		<!-- pdf / lowagie -->
@@ -622,13 +622,6 @@
 			<version>0.9.13</version>
 		</dependency>
 
-		<!-- *sigh* I have no clue what this is -->
-		<dependency>
-			<groupId>rx</groupId>
-			<artifactId>rx</artifactId>
-			<version>UNKNOWN</version>
-		</dependency>
-
 	</dependencies>
 
 	<build>
@@ -675,22 +668,16 @@
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>set_timestamp</id>
+						<id>set_build_time</id>
 						<phase>process-classes</phase>
+						<configuration>
+							<tasks>
+								<ant antfile="ant_pom_tasks.xml" target="set_build_time" />
+							</tasks>
+						</configuration>
 						<goals>
 							<goal>run</goal>
 						</goals>
-						<configuration>
-							<tasks>
-								<tstamp>
-									<format property="build.dateTime.value" pattern="yyyy-MM-dd hh:mm aa" />
-								</tstamp>
-
-								<echo message="build time : ${build.dateTime.value}" />
-
-								<replace file="target/classes/build.properties" token="${build.dateTime}" value="${build.dateTime.value}" />
-							</tasks>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>

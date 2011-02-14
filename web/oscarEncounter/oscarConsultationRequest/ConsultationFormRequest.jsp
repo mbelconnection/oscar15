@@ -39,48 +39,16 @@
 
 
 <%@page
-	import="java.util.ArrayList, java.util.Collections, java.util.List, java.util.*, oscar.dms.*, oscar.oscarEncounter.pageUtil.*,oscar.oscarEncounter.data.*, oscar.OscarProperties, oscar.util.StringUtils, oscar.oscarLab.ca.on.*"%>
+	import="java.util.ArrayList,java.util.Collections,java.util.List,oscar.dms.*,oscar.oscarEncounter.pageUtil.*,oscar.oscarEncounter.data.*,oscar.OscarProperties,oscar.util.StringUtils,oscar.oscarLab.ca.on.*"%>
 <%@page
 	import="org.oscarehr.casemgmt.service.CaseManagementManager,org.oscarehr.casemgmt.model.CaseManagementNote,org.oscarehr.casemgmt.model.Issue,org.oscarehr.common.model.UserProperty,org.oscarehr.common.dao.UserPropertyDAO,org.springframework.web.context.support.*,org.springframework.web.context.*"%>
 
-<%@page import="org.oscarehr.common.dao.SiteDao"%>
-<%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
-<%@page import="org.oscarehr.common.model.Site"%>
 <%@page import="org.oscarehr.util.WebUtils"%>
 <%@page import="oscar.oscarEncounter.oscarConsultationRequest.pageUtil.EctConsultationFormRequestForm"%>
 <%@page import="oscar.oscarEncounter.oscarConsultationRequest.pageUtil.EctConsultationFormRequestUtil"%>
 <%@page import="oscar.oscarDemographic.data.DemographicData"%>
 <%@page import="oscar.oscarEncounter.oscarConsultationRequest.pageUtil.EctViewRequestAction"%>
 <%@page import="org.oscarehr.util.MiscUtils"%><html:html locale="true">
-<%! boolean bMultisites=org.oscarehr.common.IsPropertiesOn.isMultisitesEnable(); %>
-<%
-	//multi-site support
-	String appNo = (String) request.getParameter("appNo");
-	appNo = (appNo==null ? "" : appNo);
-	
-	String defaultSiteName = "";
-	Integer defaultSiteId = 0;
-	Vector<String> vecAddressName = new Vector<String>() ;
-	Vector<String> bgColor = new Vector<String>() ;
-	Vector<Integer> siteIds = new Vector<Integer>();
-	if (bMultisites) {
-		SiteDao siteDao = (SiteDao)WebApplicationContextUtils.getWebApplicationContext(application).getBean("siteDao");
-		
-		List<Site> sites = siteDao.getActiveSitesByProviderNo((String) session.getAttribute("user"));
-		if (sites != null) {
-			for (Site s:sites) {
-				   siteIds.add(s.getSiteId());
-		           vecAddressName.add(s.getName());	
-		           bgColor.add(s.getBgColor());
-		 	}
-		}
-		
-		if (appNo != "") {
-			defaultSiteName = siteDao.getSiteNameByAppointmentNo(appNo);
-		}
-	}
-%>
-
 
 <%
 	String demo = request.getParameter("de");
@@ -141,13 +109,6 @@
 
 		OscarProperties props = OscarProperties.getInstance();
 %><head>
-<c:set var="ctx" value="${pageContext.request.contextPath}" scope="request"/>
-<script>
-	var ctx = '<%=request.getContextPath()%>';
-	var requestId = '<%=request.getParameter("requestId")%>';
-	var demographicNo = '<%=demo%>';
-	var appointmentNo = '<%=appNo%>';
-</script>	
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/global.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery_oscar_defaults.js"></script>
@@ -163,23 +124,6 @@
        adding a calendar a matter of 1 or 2 lines of code. -->
 <script type="text/javascript"
 	src="<%=request.getContextPath()%>/share/calendar/calendar-setup.js"></script>
-	
-   <script src="<c:out value="${ctx}/js/jquery.js"/>"></script>
-   <script>
-     jQuery.noConflict();
-   </script>
-   
-	
-   <%
-      
- 	String customScript = OscarProperties.getInstance().getProperty("cme_js");
-   if(customScript != null && customScript.length()>0) {
-	%>
-		<script src="<c:out value="${ctx}"/>/js/custom/<%=customScript%>-conreq.js"></script>	
-	<%   	   
-   }      
-   %>
-   
 <title><bean:message
 	key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.title" />
 </title>
@@ -820,12 +764,13 @@ function fetchAttached() {
 
 }
 
-function addCCName(){
-        if (document.EctConsultationFormRequestForm.ext_cc.value.length<=0)
-                document.EctConsultationFormRequestForm.ext_cc.value=document.EctConsultationFormRequestForm.docName.value;
-        else document.EctConsultationFormRequestForm.ext_cc.value+="; "+document.EctConsultationFormRequestForm.docName.value;
+function checksave() {
+    var saved = $F("saved");
+    if( saved == "false" ) {
+        return "You are about to close the consult WITHOUT saving. Are you sure you want to exit?";
+    }
 }
-
+window.onbeforeunload = checksave;
 </script>
 <%=WebUtils.popErrorMessagesAsAlert(session)%>
 <link rel="stylesheet" type="text/css" href="../encounterStyles.css">
@@ -841,15 +786,10 @@ function addCCName(){
 		if (requestId != null)
 		{
 			EctViewRequestAction.fillFormValues(thisForm, new Integer(requestId));
-                thisForm.setSiteName(consultUtil.siteName);
-                defaultSiteName = consultUtil.siteName ;
-
 		}
 		else if (segmentId != null)
 		{
 			EctViewRequestAction.fillFormValues(thisForm, segmentId);
-                thisForm.setSiteName(consultUtil.siteName);
-                defaultSiteName = consultUtil.siteName ;
 		}
 		else if (request.getAttribute("validateError") == null)
 		{
@@ -876,9 +816,7 @@ function addCCName(){
 			thisForm.setSendTo(team);
 			//thisForm.setConcurrentProblems(demographic.EctInfo.getOngoingConcerns());
 			thisForm.setAppointmentYear(year);
-        		if (bMultisites) {
-	        		thisForm.setSiteName(defaultSiteName);
-        		}
+
 		}
 		
 		if (thisForm.iseReferral())
@@ -889,15 +827,12 @@ function addCCName(){
 				</SCRIPT>
 			<%
 		}
-		
-		
 	%>
 
 	<input type="hidden" name="providerNo" value="<%=providerNo%>">
 	<input type="hidden" name="demographicNo" value="<%=demo%>">
 	<input type="hidden" name="requestId" value="<%=requestId%>">
 	<input type="hidden" name="documents" value="">
-	<input type="hidden" name="ext_appNo" value="<%=request.getParameter("appNo") %>">
         <input type="hidden" id="saved" value="false">
 	<!--  -->
 	<table class="MainTable" id="scrollNumber1" name="encounterTable">
@@ -1290,25 +1225,6 @@ function addCCName(){
 							</table>
 							</td>
 						</tr>
-						<%if (bMultisites) { %>
-						<tr>
-							<td  class="tite4">
-								<bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.siteName" />:							
-							</td>
-							<td>
-								<html:select property="siteName" onchange='this.style.backgroundColor=this.options[this.selectedIndex].style.backgroundColor'>
-						            <%  for (int i =0; i < vecAddressName.size();i++){
-						                 String te = (String) vecAddressName.get(i);
-						                 String bg = (String) bgColor.get(i);	
-						                 if (te.equals(defaultSiteName))
-						                	 defaultSiteId = siteIds.get(i);
-						            %>
-						                    <html:option value="<%=te%>" style='<%="background-color: "+bg%>'> <%=te%> </html:option>
-						            <%  }%>	
-							</html:select>
-							</td>
-						</tr>
-						<%} %>
 					</table>
 					</td>
 					<td valign="top" cellspacing="1" class="tite4">
@@ -1356,7 +1272,7 @@ function addCCName(){
 							<td class="tite3"><%=thisForm.getPatientHealthNum()%>&nbsp;<%=thisForm.getPatientHealthCardVersionCode()%>&nbsp;<%=thisForm.getPatientHealthCardType()%>
 							</td>
 						</tr>
-						<tr id="conReqSendTo">
+						<tr>
 							<td class="tite4"><bean:message
 								key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.msgSendTo" />:
 							</td>
@@ -1374,7 +1290,7 @@ function addCCName(){
 								%>
 							</html:select></td>
 						</tr>
-						
+
 <!--add for special encounter-->
 <plugin:hideWhenCompExists componentName="specialencounterComp" reverse="true">
 <special:SpecialEncounterTag moduleName="eyeform">
@@ -1471,7 +1387,7 @@ function addCCName(){
 
 					</td>
 				</tr>
-				<tr id="trConcurrentProblems">
+				<tr>
 					<td colspan=2><html:textarea cols="90" rows="3"
 						property="concurrentProblems">
 
@@ -1483,7 +1399,6 @@ function addCCName(){
 <%
 	String aburl2 = "/EyeForm.do?method=specialConRequest&demographicNo=" + demo + "&appNo=" + request.getParameter("appNo");
 					if (requestId != null) aburl2 += "&requestId=" + requestId;
-if (defaultSiteId!=0) aburl2+="&site="+defaultSiteId;
 %>
 <html:hidden property="specialencounterFlag" value="true"/>
 <plugin:include componentName="specialencounterComp" absoluteUrl="<%=aburl2 %>"></plugin:include>
@@ -1528,9 +1443,6 @@ if (defaultSiteId!=0) aburl2+="&site="+defaultSiteId;
 					<td colspan=2><html:textarea cols="90" rows="3"
 						property="allergies"></html:textarea></td>
 				</tr>
-				
-				
-				
 
 				<tr>
 					<td colspan=2><input type="hidden" name="submission" value="">

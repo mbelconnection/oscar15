@@ -1058,13 +1058,6 @@ public class RxPrescriptionData {
             special_instruction=s;
         }
 
-
-        public boolean isLongTerm(){
-            return longTerm;
-        }
-
-
-
         public boolean isDiscontinuedLatest(){
             return this.discontinuedLatest;
         }
@@ -1432,9 +1425,7 @@ public class RxPrescriptionData {
                 this.setNosubs(true);
             }
         }
-        public boolean isPrn(){//conventional name for getter of boolean variable
-            return this.prn;
-        }
+
         public boolean getPrn() {
             return this.prn;
         }
@@ -1466,9 +1457,7 @@ public class RxPrescriptionData {
         public void setLongTerm(boolean lt) {
             this.longTerm = lt;
         }
-        public boolean isPastMed() {
-            return this.pastMed;
-        }
+
         public boolean getPastMed() {
             return this.pastMed;
         }
@@ -1648,9 +1637,6 @@ public class RxPrescriptionData {
                 }
 
                 try{
-                    if(this.getDuration()!=null&&this.getDuration().trim().length()==0){
-                        this.setDuration("0");
-                    }
                     if (this.getDuration()!=null && !this.getDuration().equalsIgnoreCase("null") && Integer.parseInt(this.getDuration()) > 1) {
                         ret += "s";
                     }

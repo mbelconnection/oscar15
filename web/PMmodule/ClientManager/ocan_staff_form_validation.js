@@ -1,5 +1,4 @@
 $("document").ready(function() {
-	
 	$("input[name='immigration_issues'][value='4']").change(function(){
 		if($("input[name='immigration_issues'][value='4']").attr('checked') == true) {
 			$("input[name='immigration_issues'][value='3']").attr('checked',true);
@@ -15,8 +14,6 @@ $("document").ready(function() {
 		$("input[name='immigration_issues'][value='3']").attr('readonly','readonly');
 		$("input[name='immigration_issues'][value='3']").attr('disabled','disabled');
 	}
-	
-	
 	
 	$("input[name='presenting_issues'][value='OTH']").change(function() {
 		if($("input[name='presenting_issues'][value='OTH']").attr('checked') == true) {
@@ -37,13 +34,6 @@ $("document").ready(function() {
 		}		
 	});
 	
-	$("#assessment_status").each(function() {
-		if($("#assessment_status").val() == 'Completed') {
-			$("#assessment_status").attr('disabled','disabled');			
-		}
-	});
-	
-			
 	$("#reasonForAssessment").change(function() {
 		if($("#reasonForAssessment").val() == 'OTHR') {
 			$("#reason_for_assessment_other").attr('disabled','');
@@ -52,28 +42,6 @@ $("document").ready(function() {
 			$("#reason_for_assessment_other").attr('disabled','disabled');
 			$("#reason_for_assessment_other").val("");
 		}
-		
-		var demographicId1=$("#clientId").val();;
-		var reasonForAssessment1 = $("#reasonForAssessment").val();
-		var params={demographicId1:demographicId1,reasonForAssessment1:reasonForAssessment1};
-
-		$("#reasonForAssessmentBlock")
-		.load("ocan_check_assessment_type.jsp?", params, function(data){
-			
-			 $('#reasonForAssessmentBlock').hide();
-
-			if(data.match("ia_false")){				
-				alert("You can not create a new initial assessment for this client for now. It already exists in the system.");
-				$("#reasonForAssessment").val('').attr("selected", "selected");
-			} else if(data.match("ra_false")){				
-				alert("You can not do reassessment for this client for now.");
-				$("#reasonForAssessment").val('').attr("selected", "selected");
-			} else if(data.match("ia_exists_false")){				
-				alert("You must create an initial assessment first.");
-				$("#reasonForAssessment").val('').attr("selected", "selected");
-			} 
-		});
-
 	});
 	
 	$("#reasonForAssessment").each(function() {
@@ -83,7 +51,6 @@ $("document").ready(function() {
 			$("#reason_for_assessment_other").attr('disabled','disabled');
 			$("#reason_for_assessment_other").val("");
 		}
-		
 	});
 	
 	$("#consumerSelfAxCompleted").change(function() {
@@ -181,33 +148,6 @@ $("document").ready(function() {
 	
 	});
 	
-	$("#hospitalized_mental_illness").change(function() { 
-		if($("#hospitalized_mental_illness").val()=='TRUE'){ 
-			$("#hospitalized_mental_illness_admissions").attr('disabled','');
-			$("#hospitalized_mental_illness_admissions").val("");
-			$("#hospitalized_mental_illness_days").attr('disabled','');
-			$("#hospitalized_mental_illness_days").val("");
-		} else {
-			$("#hospitalized_mental_illness_admissions").attr('disabled','disabled');
-			$("#hospitalized_mental_illness_admissions").val("");	
-			$("#hospitalized_mental_illness_days").attr('disabled','disabled');
-			$("#hospitalized_mental_illness_days").val("");
-		}
-	});	
-	
-	$("#hospitalized_mental_illness").each(function() { 
-		if($("#hospitalized_mental_illness").val()=='TRUE'){ 
-			$("#hospitalized_mental_illness_admissions").attr('disabled','');
-			$("#hospitalized_mental_illness_days").attr('disabled','');
-		} else {
-			$("#hospitalized_mental_illness_admissions").attr('disabled','disabled');
-			$("#hospitalized_mental_illness_admissions").val("");
-			$("#hospitalized_mental_illness_days").attr('disabled','disabled');
-			$("#hospitalized_mental_illness_days").val("");
-		}
-	});
-			
-			
 	$("#6_physical_health_concerns").change(function() { 
 		if($("#6_physical_health_concerns").val()=='TRUE'){ 
 			$("input[name='6_physical_health_details'][value='118254002']").attr('disabled','');
@@ -532,7 +472,7 @@ $("document").ready(function() {
 
 function submitOcanForm() {
 	var status = document.getElementById('assessment_status').value;
-	if(status != 'Completed') {
+	if(status == 'Active') {
 		$('#ocan_staff_form').unbind('submit').submit();		
 		return true;
 	}
@@ -540,7 +480,7 @@ function submitOcanForm() {
 		alert('Validation failed. Please check all required fields highlighted');
 		return false;
 	}
-	
+
 	if(!validateStartAndCompletionDates()) {
 		return false;
 	}
@@ -567,12 +507,18 @@ function submitOcanForm() {
 			return false;
 		}		
 	}
-	
+	/*
+	if($("#clientDOBType").val().length == 0) {	
+		alert('Date of Birth - Please choose the type of date of birth');
+		$("#clientDOBType").focus();
+		return false;				
+	}
+	*/
 	
 	var newCount = $("#center_count").val(); 
 	var ocanLeadNumber = 0;
 	for(var x=1;x<=newCount;x++) { 
-		if($("#serviceUseRecord_exitDate"+x).val().length != 0) {		
+		if($("#exitDate"+x).val().length != 0) {		
 			if($("#serviceUseRecord_exitDisposition"+x).val().length==0) {			
 				alert('Exit Disposition - Please specify one');
 				$("#serviceUseRecord_exitDisposition"+x).focus();
@@ -599,15 +545,14 @@ function submitOcanForm() {
 		
 	}	
 	
-	
-	if($("#reasonForAssessment").val() == 'OTHR') {		
-		if($("#reason_for_assessment_other").val().length==0) {			
-			alert('Reason for assessment - Please specify other');
-			$("#reason_for_assessment_other").focus();
-			return false;
-		}		
+	if($("#reasonForAssessment").val() == 'OTHR') {
+			if($("#reason_for_assessment_other").val().length == 0) {
+				alert('Reason for Reason for OCAN -- please specify other');
+				$("#reason_for_assessment_other").focus();
+				return false;
+			}			
 	}
-	
+		
 		
 	if($("#consumerSelfAxCompleted").val() == 'FALSE') {
 		if($("input[name='reasonConsumerSelfAxNotCompletedList'][value='CMFLVL']").attr('checked') == false &&
@@ -630,11 +575,42 @@ function submitOcanForm() {
 				$("#otherReason").focus();
 				return false;
 			}
-	}	
 		
+	}	
+	
+	if($("#reasonForAssessment").val() == 'OTHR') {		
+		if($("#reason_for_assessment_other").val().length==0) {			
+			alert('Reason for assessment - Please specify other');
+			$("#reason_for_assessment_other").focus();
+			return false;
+		}		
+	}
+	
+	if($("#power_attorney_property").val() == 'TRUE') {
+		if($("#power_attorney_property_additional_information").val().length == 0) {
+			alert('Client Capacity - please provider additional information');
+			$("#power_attorney_property_additional_information").focus();
+			return false;
+		}
+	}
 	
 	
+	if($("#power_attorney_personal_care").val() == 'TRUE') {
+		if($("#power_attorney_personal_care_additional_information").val().length == 0) {
+			alert('Client Capacity - please provider additional information');
+			$("#power_attorney_personal_care_additional_information").focus();
+			return false;
+		}
+	}
 	
+	if($("#court_appointed_guardian").val() == 'TRUE') {
+		if($("#court_appointed_guardian_additional_information").val().length == 0) {
+			alert('Client Capacity - please provider additional information');
+			$("#court_appointed_guardian_additional_information").focus();
+			return false;
+		}
+	}
+
 	if($("input[name='immigration_issues'][value='8']").attr('checked') == true) {
 		if($("#immigration_issues_other").val().length == 0) {
 			alert('Immigration issues - please provider other');
@@ -723,21 +699,6 @@ function submitOcanForm() {
 	}	
 	
 
-		
-	if($("#hospitalized_mental_illness").val()=='TRUE') {
-		if($("#hospitalized_mental_illness_admissions").val().length == 0) {
-			alert('Please input - Total Number of Admissions for Mental Health Reasons');
-			$("#hospitalized_mental_illness_admissions").focus();
-			return false;
-		}
-		if($("#hospitalized_mental_illness_days").val().length == 0) {
-			alert('Please input - Total Number of Hospitalization Days for Mental Health Reasons');
-			$("#hospitalized_mental_illness_days").focus();
-			return false;
-		}
-	}	
-	
-	
 	
 	var ppCount=0;
 	$("input[name='presenting_issues']").each(function(){	
@@ -748,21 +709,11 @@ function submitOcanForm() {
 	
 	if(ppCount==0) {
 		alert('You must choose atleast 1 presenting issue');
-		$("input[name='presenting_issues']").focus();
 		return false;
 	}
 	
 	
-	if($("#assessment_status").val() == 'Completed') {
-		var r = comfirm("Are you sure you have completed this assessment?");
-		if(r == true) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-		
+	//alert('submitting');
 	return true;
 }
 

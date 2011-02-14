@@ -1,11 +1,5 @@
 package org.oscarehr.PMmodule.web;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.oscarehr.common.dao.OcanClientFormDao;
 import org.oscarehr.common.dao.OcanClientFormDataDao;
@@ -43,74 +37,27 @@ public class OcanFormAction {
 		return(ocanStaffForm);
 	}
 	
-	public static OcanStaffForm createOcanStaffForm(String ocanStaffFormId, Integer clientId, boolean signed)
-	{
+	public static void saveOcanStaffForm(OcanStaffForm ocanStaffForm) {
 		LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
-		OcanStaffForm ocanStaffForm=new OcanStaffForm();
-		if(ocanStaffFormId==null || "".equals(ocanStaffFormId) || "null".equals(ocanStaffFormId) || "0".equals(ocanStaffFormId)) {
-			
-			//ocanStaffForm.setAdmissionId(admissionId);
-			ocanStaffForm.setAssessmentId(ocanStaffForm.getId());
-			ocanStaffForm.setOcanFormVersion("1.2");		
-			ocanStaffForm.setClientId(clientId);
-			ocanStaffForm.setFacilityId(loggedInInfo.currentFacility.getId());			
-			ocanStaffForm.setSigned(signed);
-		} else {
-			ocanStaffForm = OcanForm.getOcanStaffForm(Integer.valueOf(ocanStaffFormId));
-		}
-		return(ocanStaffForm);
-	}
-	
-	public static void saveOcanStaffForm(OcanStaffForm ocanStaffForm) {			
-		if(ocanStaffFormDao.findOcanStaffFormById(ocanStaffForm.getId())==null) {
-			ocanStaffFormDao.persist(ocanStaffForm);
-			ocanStaffForm.setAssessmentId(ocanStaffForm.getId());
-			ocanStaffFormDao.merge(ocanStaffForm);
-		} else {
-			ocanStaffForm.setId(null);
-			ocanStaffFormDao.persist(ocanStaffForm);
-		}
-		
+		ocanStaffForm.setProviderNo(loggedInInfo.loggedInProvider.getProviderNo());
+		ocanStaffForm.setProviderName(loggedInInfo.loggedInProvider.getFormattedName());
+		ocanStaffFormDao.persist(ocanStaffForm);
 	}
 	
 	public static void addOcanStaffFormData(Integer ocanStaffFormId, String question, String answer)
 	{
 		answer=StringUtils.trimToNull(answer);
-		if (answer==null || answer=="") return;
-		OcanStaffFormData ocanStaffFormData;
-		//if(ocanStaffFormDataDao.findByQuestion(ocanStaffFormId, question).isEmpty()) {
-			ocanStaffFormData=new OcanStaffFormData();
-			ocanStaffFormData.setOcanStaffFormId(ocanStaffFormId);
-			ocanStaffFormData.setQuestion(question);
-			ocanStaffFormData.setAnswer(answer);			
-			ocanStaffFormDataDao.persist(ocanStaffFormData); //create
-		//} else {
-		//	ocanStaffFormData = ocanStaffFormDataDao.findLatestByQuestion(ocanStaffFormId, question);
-		//	ocanStaffFormData.setOcanStaffFormId(ocanStaffFormId);
-		//	ocanStaffFormData.setQuestion(question);
-		//	ocanStaffFormData.setAnswer(answer);			
-		//	ocanStaffFormDataDao.merge(ocanStaffFormData); //update
-		//}
+		if (answer==null) return;
 		
-	}
-/*	
-	public static void updateOcanStaffFormData(Integer ocanStaffFormId, String question, String answer)
-	{
-		OcanStaffFormData ocanStaffFormData;
+		OcanStaffFormData ocanStaffFormData=new OcanStaffFormData();
 		
-		ocanStaffFormData=new OcanStaffFormData();
 		ocanStaffFormData.setOcanStaffFormId(ocanStaffFormId);
 		ocanStaffFormData.setQuestion(question);
 		ocanStaffFormData.setAnswer(answer);
 		
-		if(ocanStaffFormDataDao.findByQuestion(ocanStaffFormId, question).size()<=0) {
-			ocanStaffFormDataDao.persist(ocanStaffFormData); //create	
-		} else {
-			ocanStaffFormData.setId(ocanStaffFormDataDao.findByQuestion(ocanStaffFormId, question).get(0).getId());
-			ocanStaffFormDataDao.merge(ocanStaffFormData); //update	
-		}
+		ocanStaffFormDataDao.persist(ocanStaffFormData);
 	}
-*/	
+	
 	
 	
 	
@@ -149,6 +96,4 @@ public class OcanFormAction {
 		
 		ocanClientFormDataDao.persist(ocanClientFormData);
 	}
-	
-
 }

@@ -18,7 +18,6 @@ public final class ResponseDefaultsFilter implements Filter
 {
 	private static final Logger logger = MiscUtils.getLogger();
 	private static final String ENCODING="UTF-8";
-
 	
 	@Override
 	public void init(FilterConfig arg0) throws ServletException

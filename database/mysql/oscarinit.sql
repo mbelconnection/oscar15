@@ -280,7 +280,6 @@ CREATE TABLE consultationRequests (
   urgency char(2) default NULL,
   patientWillBook tinyint(1),
   followUpDate date default NULL,
-  site_name varchar(255),
   PRIMARY KEY  (requestId)
 ) ;
 
@@ -6145,10 +6144,10 @@ CREATE TABLE mdsZRG (
 --
 CREATE TABLE measurements(
   id int UNSIGNED AUTO_INCREMENT,
-  type varchar(50) NOT NULL,
+  type varchar(4) NOT NULL,
   demographicNo int(10) NOT NULL default '0', 
   providerNo varchar(6) NOT NULL default '',
-  dataField  varchar(50) NOT NULL,
+  dataField  varchar(20) NOT NULL,
   measuringInstruction varchar(255) NOT NULL,  
   comments varchar(255) NOT NULL, 
   dateObserved datetime NOT NULL, 
@@ -7994,8 +7993,6 @@ CREATE TABLE `site` (
   `province` varchar(25) default '',
   `postal` varchar(10) default '',
   `status` tinyint(4) NOT NULL default '0',
-  `providerId_from` int null,
-  `providerId_to` int null,
   PRIMARY KEY  (`site_id`),
   UNIQUE KEY `unique_name` (`name`),
   UNIQUE KEY `unique_shortname` (`short_name`)
@@ -8157,40 +8154,35 @@ CREATE TABLE `eyeform_followup` (
   `followup_provider` varchar(100) ,
   `date` timestamp ,
   `type` varchar(25),
-  `urgency` varchar(50),
-  `comment` text,
   PRIMARY KEY (`id`)
 );
 
 
 CREATE TABLE `eyeform_macro` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `label` varchar(255) NOT NULL,
+  `label` varchar(255) COLLATE utf8_bin NOT NULL,
   `display_order` tinyint(4) NOT NULL,
-  `impression` text,
+  `impression` text COLLATE utf8_bin,
   `followup_no` smallint(5),
-  `followup_unit` varchar(50),
-  `followup_doctor` varchar(6),
-  `followup_reason` varchar(255) ,
-  `tickler_staff` varchar(6) ,
-  `billing_visit_type` varchar(50) ,
-  `billing_visit_location` varchar(50) ,
-  `billing_codes` text,
-  `billing_dxcode` varchar(50),
-  `billing_total` varchar(50) ,
-  `billing_comment` varchar(255),
-  `billing_billtype` varchar(50)  ,
-  `billing_pay_method` varchar(50) ,
-  `billing_billto` varchar(50) ,
-  `billing_remitto` varchar(50) ,
-  `billing_gstBilledTotal` varchar(50)  ,
-  `billing_payment` varchar(50),
-  `billing_refund` varchar(50),
-  `billing_gst` varchar(50),
-  `test_records` text,
-  `discharge` varchar(20),
-  `stat` varchar(20),
-  `opt` varchar(20),
+  `followup_unit` varchar(50) COLLATE utf8_bin ,
+  `followup_doctor` varchar(6) COLLATE utf8_bin ,
+  `followup_reason` varchar(255) COLLATE utf8_bin ,
+  `tickler_staff` varchar(6) COLLATE utf8_bin ,
+  `billing_visit_type` varchar(50) COLLATE utf8_bin,
+  `billing_visit_location` varchar(50) COLLATE utf8_bin ,
+  `billing_codes` text COLLATE utf8_bin,
+  `billing_dxcode` varchar(50) COLLATE utf8_bin ,
+  `billing_total` varchar(50) COLLATE utf8_bin ,
+  `billing_comment` varchar(255) COLLATE utf8_bin ,
+  `billing_billtype` varchar(50) COLLATE utf8_bin ,
+  `billing_pay_method` varchar(50) COLLATE utf8_bin ,
+  `billing_billto` varchar(50) COLLATE utf8_bin ,
+  `billing_remitto` varchar(50) COLLATE utf8_bin ,
+  `billing_gstBilledTotal` varchar(50) COLLATE utf8_bin ,
+  `billing_payment` varchar(50) COLLATE utf8_bin ,
+  `billing_refund` varchar(50) COLLATE utf8_bin ,
+  `billing_gst` varchar(50) COLLATE utf8_bin ,
+  `test_records` text COLLATE utf8_bin,
   PRIMARY KEY (`id`)
 );
 
@@ -8267,27 +8259,3 @@ CREATE TABLE `testbookrecord` (
   `status` varchar(2) ,
   PRIMARY KEY (`id`)
 );
-
-
-CREATE TABLE `issue` (
-  `issue_id` int(10) NOT NULL auto_increment,
-  `code` varchar(20) NOT NULL,
-  `description` varchar(255) NOT NULL,
-  `role` varchar(100) NOT NULL,
-  `update_date` datetime NOT NULL,
-  `priority` CHAR(10) DEFAULT NULL,
-  `type` VARCHAR(32) DEFAULT NULL,
-  PRIMARY KEY  (`issue_id`),
-  index(code)
-);
-
-create table consultationRequestExt(
- id int(10) NOT NULL auto_increment,
- requestId int(10) NOT NULL,
- name varchar(100) NOT NULL,
- value varchar(100) NOT NULL,
- dateCreated date not null,
- primary key(id),
- key(requestId)
-);
-

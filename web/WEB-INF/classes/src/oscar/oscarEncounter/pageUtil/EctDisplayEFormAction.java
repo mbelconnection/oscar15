@@ -27,7 +27,6 @@ package oscar.oscarEncounter.pageUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
@@ -80,12 +79,12 @@ public class EctDisplayEFormAction extends EctDisplayAction {
 	
 	        StringBuilder javascript = new StringBuilder("<script type=\"text/javascript\">");        
 	        String js = ""; 
-	        ArrayList<HashMap<String, ? extends Object>> eForms = EFormUtil.listEForms(EFormUtil.NAME, EFormUtil.CURRENT, roleName);
+	        ArrayList<Hashtable<String,Object>> eForms = EFormUtil.listEForms(EFormUtil.NAME, EFormUtil.CURRENT, roleName);
 	        String key;
 	        int hash;
 	        String BGCOLOUR = request.getParameter("hC");
 	        for( int i = 0; i < eForms.size(); ++i ) {
-	        	HashMap<String, ? extends Object> curform = eForms.get(i);
+	            Hashtable<String,Object> curform = eForms.get(i);
 	            winName = (String)curform.get("formName") + bean.demographicNo;            
 	            hash = Math.abs(winName.hashCode());
 	            url = "popupPage(700,800,'"+hash+"','"+request.getContextPath()+"/eform/efmformadd_data.jsp?fid="+curform.get("fid")+"&demographic_no="+bean.demographicNo+"&appointment="+bean.appointmentNo+"&parentAjaxId="+cmd+"','FormA"+i+"');";

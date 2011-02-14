@@ -159,7 +159,7 @@ function updateAjax() {
       </tr>      
       
 <%
-  ArrayList<HashMap<String, ? extends Object>> eForms;
+  ArrayList eForms;
   if (groupView.equals("") || groupView.equals("default")) {
       eForms = EFormUtil.listEForms(orderBy, EFormUtil.CURRENT, roleName$);
   } else {
@@ -167,7 +167,7 @@ function updateAjax() {
   }
   if (eForms.size() > 0) {
       for (int i=0; i<eForms.size(); i++) {
-    	  HashMap<String, ? extends Object> curForm = eForms.get(i);
+        Hashtable curForm = (Hashtable) eForms.get(i);
 %>
       <tr bgcolor="<%= ((i%2) == 1)?"#F2F2F2":"white"%>">
 	    <td width="30%" style="padding-left: 7px">

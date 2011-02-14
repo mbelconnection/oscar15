@@ -1385,31 +1385,11 @@ public class ClientManagerAction extends BaseAction {
 
 			request.setAttribute("referrals", getReferralsForSummary(Integer.parseInt(demographicNo), facilityId));
 			
-			//FULL OCAN Staff/Client Assessment
-			OcanStaffForm ocanStaffForm = ocanStaffFormDao.findLatestByFacilityClient(facilityId,Integer.valueOf(demographicNo),"FULL");
-			if(ocanStaffForm!=null && ocanStaffForm.getAssessmentStatus().equals("In Progress"))
-				request.setAttribute("ocanStaffForm", ocanStaffForm);
-			else
-				request.setAttribute("ocanStaffForm",null);
-			
-			//OcanClientForm ocanClientForm = ocanClientFormDao.findLatestByFacilityClient(facilityId,Integer.valueOf(demographicNo));
-			//request.setAttribute("ocanClientForm", ocanClientForm);	
-			
-			//SELF+CORE OCAN Staff/Client Assessment
-			OcanStaffForm selfOcanStaffForm = ocanStaffFormDao.findLatestByFacilityClient(facilityId,Integer.valueOf(demographicNo),"SELF");
-			if(selfOcanStaffForm!=null && selfOcanStaffForm.getAssessmentStatus().equals("In Progress"))
-				request.setAttribute("selfOcanStaffForm", selfOcanStaffForm);
-			else
-				request.setAttribute("selfOcanStaffForm",null);
-			
-			//FULL OCAN Staff/Client Assessment
-			OcanStaffForm coreOcanStaffForm = ocanStaffFormDao.findLatestByFacilityClient(facilityId,Integer.valueOf(demographicNo),"CORE");
-			if(coreOcanStaffForm!=null && coreOcanStaffForm.getAssessmentStatus().equals("In Progress"))
-				request.setAttribute("coreOcanStaffForm", coreOcanStaffForm);
-			else
-				request.setAttribute("coreOcanStaffForm",null);
-			
-			
+			//OCAN Staff/Client Assessment
+			OcanStaffForm ocanStaffForm = ocanStaffFormDao.findLatestByFacilityClient(facilityId,Integer.valueOf(demographicNo));
+			OcanClientForm ocanClientForm = ocanClientFormDao.findLatestByFacilityClient(facilityId,Integer.valueOf(demographicNo));
+			request.setAttribute("ocanStaffForm", ocanStaffForm);
+			request.setAttribute("ocanClientForm", ocanClientForm);	
 			
 			//CDS
 			CdsClientForm cdsClientForm = cdsClientFormDao.findLatestByFacilityClient(facilityId, Integer.valueOf(demographicNo));
@@ -1571,17 +1551,12 @@ public class ClientManagerAction extends BaseAction {
 			List<CdsClientForm> cdsForms = cdsClientFormDao.findByFacilityClient(facilityId, clientId);
 			request.setAttribute("cdsForms", cdsForms);
 			
-			//FULL OCAN Forms
-			List<OcanStaffForm> ocanStaffForms = ocanStaffFormDao.findByFacilityClient(facilityId, clientId,"FULL");
+			//OCAN Forms
+			List<OcanStaffForm> ocanStaffForms = ocanStaffFormDao.findByFacilityClient(facilityId, clientId);
+			List<OcanClientForm> ocanClientForms = ocanClientFormDao.findByFacilityClient(facilityId, clientId);
 			request.setAttribute("ocanStaffForms", ocanStaffForms);
+			request.setAttribute("ocanClientForms", ocanClientForms);	
 			
-			//SELF+CORE OCAN Forms
-			List<OcanStaffForm> selfOcanStaffForms = ocanStaffFormDao.findByFacilityClient(facilityId, clientId,"SELF");
-			request.setAttribute("selfOcanStaffForms", selfOcanStaffForms);
-			
-			//CORE OCAN Forms
-			List<OcanStaffForm> coreOcanStaffForms = ocanStaffFormDao.findByFacilityClient(facilityId, clientId,"CORE");
-			request.setAttribute("coreOcanStaffForms", coreOcanStaffForms);
 			
 		}
 

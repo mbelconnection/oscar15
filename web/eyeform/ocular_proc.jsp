@@ -17,7 +17,7 @@
 		
 </head>
 <body>
-Enter Ocular Procedure
+Book Ocular Procedure
 <br />
 
 <html:form action="/eyeform/OcularProc.do">
@@ -81,7 +81,7 @@ Enter Ocular Procedure
 				
 				
 							&nbsp;&nbsp;&nbsp;&nbsp;
-							<html:submit value="Submit" />
+							<html:submit value="Book Procedure" />
 						
 				&nbsp;&nbsp;&nbsp;&nbsp;
 				<input type="button" name="cancel" value="Cancel" onclick="window.close()" />

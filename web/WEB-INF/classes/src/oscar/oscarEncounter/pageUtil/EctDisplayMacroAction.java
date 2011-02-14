@@ -92,8 +92,7 @@ public class EctDisplayMacroAction extends EctDisplayAction {
         item.setLinkTitle(itemHeader);        
         item.setTitle(itemHeader);
         int hash = Math.abs(winName.hashCode());        
-       // url = "popupPage(500,900,'" + hash + "','" + request.getContextPath() + "/eyeform/Macro.do?macro.id="+ sh.getId() +"'); return false;";
-        url = "runMacro("+sh.getId()+","+appointmentNo+");return false;";
+        url = "popupPage(500,900,'" + hash + "','" + request.getContextPath() + "/eyeform/Macro.do?macro.id="+ sh.getId() +"'); return false;";        
         item.setURL(url);               
         Dao.addItem(item);
     }

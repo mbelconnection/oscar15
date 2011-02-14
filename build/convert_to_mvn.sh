@@ -28,7 +28,6 @@ cp -r ../web/WEB-INF/classes/src/{*.java,com,filters,net,org,oscar} ${main_dir}/
 
 # copy resources over 
 cp ../web/WEB-INF/classes/{*.properties,*.xml,src/*.properties} ${main_dir}/resources
-cp -r ../web/WEB-INF/classes/hapi_libs ${main_dir}/resources
 pushd ../web/WEB-INF/classes/src/
 zip -qr /tmp/xml.zip {com,oscar,org,META-INF} -i \*.xml \*.drl
 popd
@@ -53,9 +52,6 @@ mkdir -p mvn/local_repo
 ./mvn_install.sh -DgroupId=org.indivo -DartifactId=indivo-protocol -Dversion=3.0-SNAPSHOT -Dfile=../web/WEB-INF/lib/indivo-protocol-3.0-SNAPSHOT.jar
 ./mvn_install.sh -DgroupId=org.indivo -DartifactId=indivo-security-core -Dversion=3.2-SNAPSHOT -Dfile=../web/WEB-INF/lib/indivo-security-core-3.2-SNAPSHOT.jar
 ./mvn_install.sh -DgroupId=org.indivo -DartifactId=indivo-security-model -Dversion=3.2-SNAPSHOT -Dfile=../web/WEB-INF/lib/indivo-security-model-3.2-SNAPSHOT.jar
-
-# jcharts doesn't have right version in maven
-./mvn_install.sh -DgroupId=mysql -DartifactId=mysql-connector-java -Dversion=3.0.11 -Dfile=../web/WEB-INF/lib/mysql-connector-java-3.0.11-stable-bin.jar
 
 # jcharts doesn't have right version in maven
 ./mvn_install.sh -DgroupId=net.sf.jcharts -DartifactId=krysalis-jCharts -Dversion=0.7.5 -Dfile=../web/WEB-INF/lib/jCharts-0.7.5.jar
@@ -119,5 +115,5 @@ mkdir -p mvn/local_repo
 # plugin-framework... oh boy... we can't get rid of this quick enough
 ./mvn_install.sh -DgroupId=pluginframework -DartifactId=pluginframework -Dversion=0.9.13 -Dfile=../web/WEB-INF/lib/pluginframework-0.9.13.jar
 
-# rx.jar gah, why do we keep adding these things?
-./mvn_install.sh -DgroupId=rx -DartifactId=rx -Dversion=UNKNOWN -Dfile=../web/WEB-INF/lib/rx.jar
+# standard.jar ... no comment, refactoring needed in the future
+./mvn_install.sh -DgroupId=standard -DartifactId=standard -Dversion=UNKNOWN -Dfile=../web/WEB-INF/lib/standard.jar

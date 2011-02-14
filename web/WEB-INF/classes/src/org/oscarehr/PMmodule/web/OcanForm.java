@@ -1,8 +1,6 @@
 package org.oscarehr.PMmodule.web;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,14 +12,12 @@ import org.oscarehr.PMmodule.model.Admission;
 import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.dao.OcanClientFormDao;
 import org.oscarehr.common.dao.OcanClientFormDataDao;
-import org.oscarehr.common.dao.OcanConnexOptionDao;
 import org.oscarehr.common.dao.OcanFormOptionDao;
 import org.oscarehr.common.dao.OcanStaffFormDao;
 import org.oscarehr.common.dao.OcanStaffFormDataDao;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.OcanClientForm;
 import org.oscarehr.common.model.OcanClientFormData;
-import org.oscarehr.common.model.OcanConnexOption;
 import org.oscarehr.common.model.OcanFormOption;
 import org.oscarehr.common.model.OcanStaffForm;
 import org.oscarehr.common.model.OcanStaffFormData;
@@ -41,7 +37,6 @@ public class OcanForm {
 	private static OcanStaffFormDataDao ocanStaffFormDataDao = (OcanStaffFormDataDao) SpringUtils.getBean("ocanStaffFormDataDao");	
 	private static OcanClientFormDao ocanClientFormDao = (OcanClientFormDao) SpringUtils.getBean("ocanClientFormDao");
 	private static OcanClientFormDataDao ocanClientFormDataDao = (OcanClientFormDataDao) SpringUtils.getBean("ocanClientFormDataDao");
-	private static OcanConnexOptionDao ocanConnexOptionDao = (OcanConnexOptionDao) SpringUtils.getBean("ocanConnexOptionDao");
 	
 	
 	public static Demographic getDemographic(String demographicId)
@@ -55,25 +50,22 @@ public class OcanForm {
 		return ocanStaffForm;
 	}
 	
-		
-	public static OcanStaffForm getOcanStaffForm(Integer clientId, int prepopulationLevel,String ocanType)
+	public static OcanStaffForm getOcanStaffForm(Integer clientId, int prepopulationLevel)
 	{
 		LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
 		
 		OcanStaffForm ocanStaffForm=null;
 		
 		if(prepopulationLevel != OcanForm.PRE_POPULATION_LEVEL_NONE) {
-			ocanStaffForm=ocanStaffFormDao.findLatestByFacilityClient(loggedInInfo.currentFacility.getId(), clientId, ocanType);
+			ocanStaffForm=ocanStaffFormDao.findLatestByFacilityClient(loggedInInfo.currentFacility.getId(), clientId);
 		}
 
-		if (ocanStaffForm==null || "Completed".equals(ocanStaffForm.getAssessmentStatus()))			
+		if (ocanStaffForm==null)
 		{
 			ocanStaffForm=new OcanStaffForm();
 			ocanStaffForm.setAddressLine2("");
 			
 			if(prepopulationLevel != OcanForm.PRE_POPULATION_LEVEL_NONE) {
-				ocanStaffForm.setAssessmentId(ocanStaffForm.getId());
-				
 				Demographic demographic=demographicDao.getDemographicById(clientId);		
 				ocanStaffForm.setLastName(demographic.getLastName());
 				ocanStaffForm.setFirstName(demographic.getFirstName());	
@@ -86,7 +78,6 @@ public class OcanForm {
 				ocanStaffForm.setHcNumber(demographic.getHin());
 				ocanStaffForm.setHcVersion(demographic.getVer());
 				ocanStaffForm.setDateOfBirth(demographic.getFormattedDob());
-				ocanStaffForm.setClientDateOfBirth(demographic.getFormattedDob());
 				ocanStaffForm.setGender(convertGender(demographic.getSex()));
 			}				             
 		}
@@ -121,41 +112,7 @@ public class OcanForm {
 		return(results);
 	}
 	
-	public static List<OcanConnexOption> getOcanConnexOrgOptions(String LHIN_code)
-	{
-		List<OcanConnexOption> results=ocanConnexOptionDao.findByLHINCode(LHIN_code);
-		return(results);
-	}
-	
-	public static List<OcanConnexOption> getOcanConnexProgramOptions(String LHIN_code, String orgName)
-	{
-		List<OcanConnexOption> results=ocanConnexOptionDao.findByLHINCodeOrgName(LHIN_code, orgName);
-		return(results);
-	}
-	
-	public static String getOcanConnexOrgNumber(String LHIN_code, String optionId)
-	{
-		//List<OcanConnexOption> results=ocanConnexOptionDao.findByLHINCodeOrgName(LHIN_code, orgName);
-		//return(results.get(0).getOrgNumber());
-		OcanConnexOption result = ocanConnexOptionDao.findByID(Integer.valueOf(optionId));
-		return result.getOrgNumber();
-	}
-	
-	public static String getOcanConnexProgramName(String LHIN_code, String optionId)
-	{
-		OcanConnexOption result = ocanConnexOptionDao.findByID(Integer.valueOf(optionId));
-		return result.getProgramName();
-	}
-	
-	public static String getOcanConnexProgramNumber(String LHIN_code, String optionId)
-	{
-		//List<OcanConnexOption> results=ocanConnexOptionDao.findByLHINCodeOrgNameProgramName(LHIN_code, orgName, programName);
-		//return(results.get(0).getProgramNumber());
-		OcanConnexOption result = ocanConnexOptionDao.findByID(Integer.valueOf(optionId));
-		return result.getProgramNumber();
-	}
-	
-	public static List<OcanStaffFormData> getStaffAnswers(Integer ocanStaffFormId, String question, int prepopulationLevel)
+	private static List<OcanStaffFormData> getStaffAnswers(Integer ocanStaffFormId, String question, int prepopulationLevel)
 	{
 		if(prepopulationLevel != OcanForm.PRE_POPULATION_LEVEL_ALL) {
 			return(new ArrayList<OcanStaffFormData>()); 
@@ -165,16 +122,15 @@ public class OcanForm {
 		return(ocanStaffFormDataDao.findByQuestion(ocanStaffFormId, question));
 	}
 	
-	private static List<OcanStaffFormData> getClientAnswers(Integer ocanClientFormId, String question, int prepopulationLevel)
+	private static List<OcanClientFormData> getClientAnswers(Integer ocanClientFormId, String question, int prepopulationLevel)
 	{
 		if(prepopulationLevel != OcanForm.PRE_POPULATION_LEVEL_ALL) {
-			return(new ArrayList<OcanStaffFormData>()); 
+			return(new ArrayList<OcanClientFormData>()); 
 		}
 		
-		if (ocanClientFormId==null) return(new ArrayList<OcanStaffFormData>()); 
+		if (ocanClientFormId==null) return(new ArrayList<OcanClientFormData>()); 
 			
-		//return(ocanClientFormDataDao.findByQuestion(ocanClientFormId, question));
-		return(ocanStaffFormDataDao.findByQuestion(ocanClientFormId, question));
+		return(ocanClientFormDataDao.findByQuestion(ocanClientFormId, question));
 	}
 	
 	public static String renderAsDate(Integer ocanStaffFormId, String question, boolean required, int prepopulationLevel)
@@ -192,7 +148,7 @@ public class OcanForm {
 			List<OcanStaffFormData> existingAnswers=getStaffAnswers(ocanStaffFormId, question, prepopulationLevel);
 			if(existingAnswers.size()>0) {value = existingAnswers.get(0).getAnswer();}
 		} else {
-			List<OcanStaffFormData> existingAnswers=getClientAnswers(ocanStaffFormId, question, prepopulationLevel);
+			List<OcanClientFormData> existingAnswers=getClientAnswers(ocanStaffFormId, question, prepopulationLevel);
 			if(existingAnswers.size()>0) {value = existingAnswers.get(0).getAnswer();}
 		}
 		if(required) {className="{validate: {required:true}}";}
@@ -211,7 +167,7 @@ public class OcanForm {
 		if(existingAnswers.size()>0) {value = existingAnswers.get(0).getAnswer();}
 		if(value.equals("")) {value =defaultValue;}
 		if(required) {className="{validate: {required:true}}";}
-		return "<input type=\"text\" value=\"" + value + "\" id=\""+question+"\" name=\""+question+"\" onfocus=\"this.blur()\" readonly=\"readonly\" class=\""+className+"\"/> <img title=\"Calendar\" id=\"cal_"+question+"\" src=\"../../images/cal.gif\" alt=\"Calendar\" border=\"0\"><script type=\"text/javascript\">Calendar.setup({inputField:'"+question+"',ifFormat :'%Y-%m-%d',button :'cal_"+question+"',align :'cr',singleClick :true,firstDay :1});</script><img src=\"../../images/icon_clear.gif\" border=\"0\"/ onclick=\"clearDate('"+question+"');\">";
+		return "<input type=\"text\" value=\"" + value + "\" id=\""+question+"\" name=\""+question+"\" onfocus=\"this.blur()\" readonly=\"readonly\" class=\""+className+"\"/> <img title=\"Calendar\" id=\"cal_"+question+"\" src=\"../../images/cal.gif\" alt=\"Calendar\" border=\"0\"><script type=\"text/javascript\">Calendar.setup({inputField:'"+question+"',ifFormat :'%Y-%m-%d',button :'cal_"+question+"',align :'cr',singleClick :true,firstDay :1});</script>";
 	}	
 	
 	public static List<Admission> getAdmissions(Integer clientId) {
@@ -246,7 +202,7 @@ public class OcanForm {
 	public static String renderAsSelectOptions(Integer ocanStaffFormId, String question, List<OcanFormOption> options, int prepopulationLevel, boolean clientForm)
 	{
 		List<OcanStaffFormData> existingStaffAnswers=null;
-		List<OcanStaffFormData> existingClientAnswers=null;
+		List<OcanClientFormData> existingClientAnswers=null;
 		if(!clientForm)
 			existingStaffAnswers = getStaffAnswers(ocanStaffFormId, question, prepopulationLevel);
 		else
@@ -263,81 +219,13 @@ public class OcanForm {
 			if(!clientForm)
 				selected=(OcanStaffFormData.containsAnswer(existingStaffAnswers, option.getOcanDataCategoryValue())?"selected=\"selected\"":"");
 			else
-				selected=(OcanStaffFormData.containsAnswer(existingClientAnswers, option.getOcanDataCategoryValue())?"selected=\"selected\"":"");
+				selected=(OcanClientFormData.containsAnswer(existingClientAnswers, option.getOcanDataCategoryValue())?"selected=\"selected\"":"");
 			
 			sb.append("<option "+selected+" value=\""+StringEscapeUtils.escapeHtml(option.getOcanDataCategoryValue())+"\" title=\""+htmlEscapedName+"\">"+htmlEscapedName+"</option>");
 		}
 		
 		return(sb.toString());
 	}
-	
-	
-	public static String renderAsConnexOrgNameSelectOptions(Integer ocanStaffFormId, String question, List<OcanConnexOption> options, int prepopulationLevel)
-	{
-		return renderAsConnexOrgNameSelectOptions(ocanStaffFormId,question, options, prepopulationLevel, false);
-	}
-	public static String renderAsConnexOrgNameSelectOptions(Integer ocanStaffFormId, String question, List<OcanConnexOption> options, int prepopulationLevel, boolean clientForm)
-	{	//save connex option Id in orgName to make it identified.
-		List<OcanStaffFormData> existingStaffAnswers=null;		
-		existingStaffAnswers = getStaffAnswers(ocanStaffFormId, question, prepopulationLevel);
-		String actualOrgName = null;
-		if(existingStaffAnswers!=null && existingStaffAnswers.size()>0) {
-			actualOrgName = existingStaffAnswers.get(0).getAnswer();
-			
-		}
-		StringBuilder sb=new StringBuilder();
-
-		sb.append("<option value=\"\">Select an answer</option>");
-		for (OcanConnexOption option : options)
-		{
-			String htmlEscapedName=StringEscapeUtils.escapeHtml(option.getOrgName());
-			
-			String selected=null;
-			
-			//selected=(OcanStaffFormData.containsAnswer(existingStaffAnswers, option.getOrgName())?"selected=\"selected\"":"");
-			//sb.append("<option "+selected+" value=\""+StringEscapeUtils.escapeHtml(option.getOrgName())+"\" title=\""+htmlEscapedName+"\">"+htmlEscapedName+"</option>");
-			selected = String.valueOf(option.getId()).equalsIgnoreCase(actualOrgName)?"selected=\"selected\"":"";
-			sb.append("<option "+selected+" value=\""+StringEscapeUtils.escapeHtml(String.valueOf(option.getId()))+"\" title=\""+htmlEscapedName+"\">"+htmlEscapedName+"</option>");
-		}
-		
-		return(sb.toString());
-	}
-	
-	
-	
-	public static String renderAsConnexProgramNameSelectOptions(Integer ocanStaffFormId, String question, List<OcanConnexOption> options, int prepopulationLevel)
-	{
-		return renderAsConnexProgramNameSelectOptions(ocanStaffFormId,question, options, prepopulationLevel, false);
-	}
-	public static String renderAsConnexProgramNameSelectOptions(Integer ocanStaffFormId, String question, List<OcanConnexOption> options, int prepopulationLevel, boolean clientForm)
-	{
-		List<OcanStaffFormData> existingStaffAnswers=null;
-		List<OcanStaffFormData> existingClientAnswers=null;
-		if(!clientForm)
-			existingStaffAnswers = getStaffAnswers(ocanStaffFormId, question, prepopulationLevel);
-		else
-			existingClientAnswers = getClientAnswers(ocanStaffFormId, question, prepopulationLevel);
-
-		StringBuilder sb=new StringBuilder();
-
-		sb.append("<option value=\"\">Select an answer</option>");
-		for (OcanConnexOption option : options)
-		{
-			String htmlEscapedName=StringEscapeUtils.escapeHtml(option.getProgramName());
-			
-			String selected=null;
-			if(!clientForm)
-				selected=(OcanStaffFormData.containsAnswer(existingStaffAnswers, option.getProgramName())?"selected=\"selected\"":"");
-			else
-				selected=(OcanStaffFormData.containsAnswer(existingClientAnswers, option.getProgramName())?"selected=\"selected\"":"");
-			
-			sb.append("<option "+selected+" value=\""+StringEscapeUtils.escapeHtml(option.getProgramName())+"\" title=\""+htmlEscapedName+"\">"+htmlEscapedName+"</option>");
-		}
-		
-		return(sb.toString());
-	}
-	
-	
 	
 	public static String renderAsProvinceSelectOptions(OcanStaffForm ocanStaffForm)
 	{
@@ -358,28 +246,6 @@ public class OcanForm {
 		
 		return(sb.toString());
 	}
-	
-	public static String renderAsAssessmentStatusSelectOptions(OcanStaffForm ocanStaffForm)
-	{
-		String assessmentStatus = ocanStaffForm.getAssessmentStatus();
-		if(assessmentStatus==null) assessmentStatus = "In Progress";
-		List<OcanFormOption> options = getOcanFormOptions("OCAN Assessment Status");
-		
-		StringBuilder sb=new StringBuilder();
-
-		for (OcanFormOption option : options)
-		{
-			String htmlEscapedName=StringEscapeUtils.escapeHtml(option.getOcanDataCategoryName());
-			//String lengthLimitedEscapedName=limitLengthAndEscape(option.getOcanDataCategoryName());
-			String selected=assessmentStatus.equals(option.getOcanDataCategoryValue())?"selected=\"selected\"":"";
-
-			sb.append("<option "+selected+" value=\""+StringEscapeUtils.escapeHtml(option.getOcanDataCategoryValue())+"\" title=\""+htmlEscapedName+"\">"+htmlEscapedName+"</option>");
-		}
-		
-		return(sb.toString());
-	}
-	
-	
 	public static String renderAsDomainSelectOptions(Integer ocanStaffFormId, String question, List<OcanFormOption> options, String[] valuesToInclude, int prepopulationLevel)
 	{
 		List<OcanStaffFormData> existingAnswers=getStaffAnswers(ocanStaffFormId, question ,prepopulationLevel);
@@ -426,7 +292,7 @@ public class OcanForm {
 			useDefaultValue=true;
 		}
 		StringBuilder sb=new StringBuilder();
-		sb.append("<option value=\"\">Select an answer</option>");
+
 		for (OcanFormOption option : options)
 		{
 			String htmlEscapedName=StringEscapeUtils.escapeHtml(option.getOcanDataCategoryName());
@@ -446,7 +312,6 @@ public class OcanForm {
 		return(sb.toString());
 	}	
 	
-	
 	public static String renderAsTextArea(Integer ocanStaffFormId, String question, int rows, int cols, int prepopulationLevel)
 	{
 		return renderAsTextArea(ocanStaffFormId, question, rows, cols, prepopulationLevel, false);
@@ -455,7 +320,7 @@ public class OcanForm {
 	public static String renderAsTextArea(Integer ocanStaffFormId, String question, int rows, int cols, int prepopulationLevel, boolean clientForm)
 	{
 		List<OcanStaffFormData> existingAnswers= null;
-		List<OcanStaffFormData> existingClientAnswers=null;
+		List<OcanClientFormData> existingClientAnswers=null;
 
 		StringBuilder sb=new StringBuilder();
 
@@ -492,26 +357,6 @@ public class OcanForm {
 		return(sb.toString());
 	}
 	
-	public static String renderAsOrgProgramNumberTextField(Integer ocanStaffFormId, String question, String answer, int size, int prepopulationLevel)
-	{
-		return renderAsOrgProgramNumberTextField(ocanStaffFormId, question, answer, size, prepopulationLevel, false);
-	}
-	
-	public static String renderAsOrgProgramNumberTextField(Integer ocanStaffFormId, String question, String answer, int size, int prepopulationLevel, boolean clientForm)
-	{
-		List<OcanStaffFormData> existingAnswers=getStaffAnswers(ocanStaffFormId, question, prepopulationLevel);
-
-		String value = "";
-		if(existingAnswers.size()>0) {
-			value = existingAnswers.get(0).getAnswer();
-		}
-		StringBuilder sb=new StringBuilder();
-
-		sb.append("<input type=\"text\" name=\""+question+"\" id=\""+question+"\" readonly size=\"" + size + "\" value=\""+answer+"\"/>");
-		
-		return(sb.toString());
-	}
-	
 	public static String renderAsTextField(Integer ocanStaffFormId, String question, int size, int prepopulationLevel)
 	{
 		return renderAsTextField(ocanStaffFormId, question, size, prepopulationLevel, false);
@@ -527,24 +372,7 @@ public class OcanForm {
 		}
 		StringBuilder sb=new StringBuilder();
 
-		sb.append("<input type=\"text\" name=\""+question+"\" id=\""+question+"\" size=\"" + size + "\" maxlength=\"" + size +"\" value=\""+value+"\"/>");
-		
-		return(sb.toString());
-	}
-	
-	public static String renderAsTextField(Integer ocanStaffFormId, String question, String defaultValue, int size, int prepopulationLevel)
-	{
-		List<OcanStaffFormData> existingAnswers=getStaffAnswers(ocanStaffFormId, question, prepopulationLevel);
-
-		String value = "";
-		if(existingAnswers.size()>0) {
-			value = existingAnswers.get(0).getAnswer();
-		} else {
-			value = defaultValue;
-		}
-		StringBuilder sb=new StringBuilder();
-
-		sb.append("<input type=\"text\" name=\""+question+"\" id=\""+question+"\" size=\"" + size + "\" maxlength=\"" + size +"\" value=\""+value+"\"/>");
+		sb.append("<input type=\"text\" name=\""+question+"\" id=\""+question+"\" size=\"" + size + "\" value=\""+value+"\"/>");
 		
 		return(sb.toString());
 	}
@@ -793,123 +621,5 @@ public class OcanForm {
 		return(sb.toString());
 	}
 
-	public static Date getAssessmentCompletionDate(Date completionDate, Date clientCompletionDate) {
-		if(clientCompletionDate==null || completionDate.after(clientCompletionDate)) {
-			return completionDate;
-		} else {
-			return clientCompletionDate;
-		}
-	}
-	
-	public static Date getAssessmentStartDate(Date startDate, Date clientStartDate) {
-		if(clientStartDate==null || startDate.before(clientStartDate)) {
-			return startDate;
-		} else {
-			return clientStartDate;
-		}
-	}	
-	
-	public static boolean afterCurrentDateAddMonth(Date date1, int month) {
-		Calendar cal = Calendar.getInstance(); 
-		cal.add(Calendar.MONTH,month);
-		if(cal.getTime().after(date1)) {
-			return true;
-		} else {
-			return false;
-		}
-			
-	}
-	
-	public static boolean canCreateInitialAssessment(Integer clientId) {
-		
-		boolean result = false;
-		
-		LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
-		
-		OcanStaffForm ocanStaffForm = ocanStaffFormDao.findLatestCompletedInitialOcan(loggedInInfo.currentFacility.getId(),clientId);	
-		if(ocanStaffForm!=null) {						
-			OcanStaffForm ocanStaffForm1 = ocanStaffFormDao.findLatestCompletedDischargedAssessment(loggedInInfo.currentFacility.getId(), clientId);
-			if(ocanStaffForm1!=null) {
-				Date completionDate = getAssessmentCompletionDate(ocanStaffForm1.getCompletionDate(),ocanStaffForm1.getClientCompletionDate());
-				result = afterCurrentDateAddMonth(completionDate, -3);				
-			}
-		} else {
-			result = true;
-		}
-		
-		return result;
-	}
 
-	public static boolean haveInitialAssessment(Integer clientId) {
-		
-		boolean result = false;
-		
-		LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
-		
-		OcanStaffForm ocanStaffForm = ocanStaffFormDao.findLatestCompletedInitialOcan(loggedInInfo.currentFacility.getId(),clientId);	
-		if(ocanStaffForm!=null) {						
-			result = true;
-		} 
-		
-		return result;
-	}
-
-	public static String getOcanWarningMessage(Integer facilityId) {
-				
-		StringBuilder messages = new StringBuilder();
-		messages.append("You need to do OCAN reassessment for the clients whose IDs are: ");
-		
-		int doReassessment = 0;
-		
-		List<Demographic> demographicList = demographicDao.getDemographics();
-		ocanStaffFormDao.findAllByFacility(facilityId);
-		for(Demographic demographic: demographicList) {
-			Integer clientId = demographic.getDemographicNo();
-			if(isItTimeToDoReassessment(facilityId, clientId)){
-				messages.append(clientId+" , ");
-				doReassessment ++;
-			}		
-		}
-		if(doReassessment>0) {
-			messages.delete(messages.length()-3, messages.length());
-			return messages.toString();
-		} else {
-			return null;
-		}
-	}
-	
-	public static boolean isItTimeToDoReassessment(Integer facilityId,Integer clientId) {
-		
-		boolean result = false;
-		
-		OcanStaffForm ocanStaffForm1 = ocanStaffFormDao.findLatestCompletedInitialOcan(facilityId,clientId);	
-		
-		OcanStaffForm ocanStaffForm = null;
-		ocanStaffForm = ocanStaffFormDao.findLatestCompletedReassessment(facilityId,clientId);	
-				
-		Date startDate = null;
-		if(ocanStaffForm!=null) {
-			startDate = OcanForm.getAssessmentStartDate(ocanStaffForm.getStartDate(),ocanStaffForm.getClientStartDate());
-		} else if(ocanStaffForm1!=null) {			
-			startDate = OcanForm.getAssessmentStartDate(ocanStaffForm1.getStartDate(),ocanStaffForm1.getClientStartDate());			
-		} else {
-			return result;
-		}
-		
-		return OcanForm.afterCurrentDateAddMonth(startDate, -6);		
-			
-	}
-	
-	public static OcanStaffForm getLastCompletedOcanForm(Integer clientId)
-	{
-		LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
-			
-		OcanStaffForm ocanStaffForm = ocanStaffFormDao.getLastCompletedOcanForm(loggedInInfo.currentFacility.getId(), clientId);
-		
-		return ocanStaffForm;
-	}		
-
-	public static List<OcanStaffFormData> getOcanFormDataByFormId(Integer ocanStaffFormId) {
-		return ocanStaffFormDataDao.findByForm(ocanStaffFormId);		
-	}
 }

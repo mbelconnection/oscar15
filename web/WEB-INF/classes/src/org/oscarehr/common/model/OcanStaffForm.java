@@ -28,21 +28,13 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
- 
-	private Integer assessmentId;
-	
+
 	private String ocanFormVersion=null;
-	private String ocanType=null;
-	
 	private String providerNo = null;
-	private String clientFormProviderNo = null;
 	private boolean signed=false;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date created;
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date clientFormCreated;
+	private Date created = new Date();
 	
 	private Integer facilityId=null;
 	private Integer clientId=null;
@@ -51,61 +43,35 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 	
 	private String lastName;
 	private String firstName;
-	private String addressLine1="";
-	private String addressLine2="";
-	private String city="";
+	private String addressLine1;
+	private String addressLine2;
+	private String city;
 	private String province;
-	private String postalCode="";
-	private String phoneNumber="";
-	private String email="";
-	private String hcNumber="";
-	private String hcVersion="";
+	private String postalCode;
+	private String phoneNumber;
+	private String email;
+	private String hcNumber;
+	private String hcVersion;
 	private String dateOfBirth;
-	private String clientDateOfBirth;
 	private String gender;
 	
 	private String assessmentStatus;
 	private Date startDate;
 	private Date completionDate;
-	private Date clientStartDate;
-	private Date clientCompletionDate;
-	
-
 	private String reasonForAssessment;
 	
 	private String providerName;
-	private String clientFormProviderName;
-	
-	private int submissionId;
 	
 	public OcanStaffForm() {
-		province = "ON";
-		setAssessmentStatus("In Progress");
+		province = "ON";		
 	}
 	
 	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
-	
-	public Integer getAssessmentId() {
-		return assessmentId;
-	}
-
-	public void setAssessmentId(Integer assessmentId) {
-		this.assessmentId = assessmentId;
-	}
-
 	public Date getCreated() {
 		return created;
-	}
-
-	
-	public Date getClientFormCreated() {
-		return clientFormCreated;
 	}
 
 	public String getOcanFormVersion() {
@@ -116,14 +82,6 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
     	this.ocanFormVersion = cdsFormVersion;
     }
 
-	public String getOcanType() {
-		return ocanType;
-	}
-
-	public void setOcanType(String ocanType) {
-		this.ocanType = ocanType;
-	}
-
 	public String getProviderNo() {
     	return providerNo;
     }
@@ -131,15 +89,6 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 	public void setProviderNo(String providerNo) {
     	this.providerNo = providerNo;
     }
-
-	
-	public String getClientFormProviderNo() {
-		return clientFormProviderNo;
-	}
-
-	public void setClientFormProviderNo(String clientFormProviderNo) {
-		this.clientFormProviderNo = clientFormProviderNo;
-	}
 
 	public boolean isSigned() {
     	return signed;
@@ -198,13 +147,13 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 	{
 		throw(new UnsupportedOperationException("Remove is not allowed for this type of item."));
 	}
-/*
+
 	@PreUpdate
 	protected void jpaPreventUpdate()
 	{
 		throw(new UnsupportedOperationException("Update is not allowed for this type of item."));
 	}
-*/
+
 	public String getLastName() {
 		return lastName;
 	}
@@ -300,23 +249,11 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 	public void setDateOfBirth(String dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
-	
-	public String getClientDateOfBirth() {
-		return clientDateOfBirth;
-	}
 
-	public void setClientDateOfBirth(String clientDateOfBirth) {
-		this.clientDateOfBirth = clientDateOfBirth;
-	}
-	
 	public void setCreated(Date created) {
 		this.created = created;
 	}
 
-	public void setClientFormCreated(Date clientFormCreated) {
-		this.clientFormCreated = clientFormCreated;
-	}
-	
 	public String getAssessmentStatus() {
 		return assessmentStatus;
 	}
@@ -340,22 +277,6 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 	public void setCompletionDate(Date completionDate) {
 		this.completionDate = completionDate;
 	}
-	
-	public Date getClientStartDate() {
-		return clientStartDate;
-	}
-
-	public void setClientStartDate(Date clientStartDate) {
-		this.clientStartDate = clientStartDate;
-	}
-
-	public Date getClientCompletionDate() {
-		return clientCompletionDate;
-	}
-
-	public void setClientCompletionDate(Date clientCompletionDate) {
-		this.clientCompletionDate = clientCompletionDate;
-	}
 
 	public String getFormattedStartDate() {
 		Date d = getStartDate();
@@ -370,20 +291,7 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		return formatter.format(d);
 	}
-	public String getFormattedClientStartDate() {
-		Date d = getClientStartDate();
-		if(d==null) {return "";}
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		return formatter.format(d);
-	}
-	
-	public String getFormattedClientCompletionDate() {
-		Date d = getClientCompletionDate();
-		if(d==null) {return "";}
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		return formatter.format(d);
-	}
-	
+
 	public String getReasonForAssessment() {
 		return reasonForAssessment;
 	}
@@ -407,26 +315,5 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 	public void setProviderName(String providerName) {
 		this.providerName = providerName;
 	}
-
-
-	public String getClientFormProviderName() {
-		return clientFormProviderName;
-	}
-
-	public void setClientFormProviderName(String clientFormProviderName) {
-		this.clientFormProviderName = clientFormProviderName;
-	}
-	
-
-
-	public int getSubmissionId() {
-		return submissionId;
-	}
-
-	public void setSubmissionId(int submissionId) {
-		this.submissionId = submissionId;
-	}
-	
-
 	
 }

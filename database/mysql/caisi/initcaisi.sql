@@ -1588,6 +1588,18 @@ CREATE TABLE `intake_answer` (
 -- Table structure for table `issue`
 --
 
+CREATE TABLE `issue` (
+  `issue_id` int(10) NOT NULL auto_increment,
+  `code` varchar(20) NOT NULL default '',
+  `description` varchar(255) NOT NULL default '',
+  `role` varchar(100) NOT NULL default '',
+  `update_date` datetime NOT NULL default '0000-00-00 00:00:00',
+  `priority` CHAR(10) DEFAULT NULL,
+  `type` VARCHAR(32) DEFAULT NULL,
+  PRIMARY KEY  (`issue_id`),
+	index(code)
+);
+
 --
 -- Table structure for table `program`
 --
@@ -2614,16 +2626,12 @@ create table OcanFormOption
 create table OcanStaffForm
 (
         id int primary key auto_increment,
-        assessmentId int,
         ocanFormVersion varchar(16) not null,
-        ocanType varchar(20) not null,
         index(ocanFormVersion),
-        providerNo varchar(6),
-        clientFormProviderNo varchar(6),
+        providerNo varchar(6) not null,
         signed tinyint not null,
         index(signed),
-        created datetime,
-        clientFormCreated datetime,
+        created datetime not null,
         facilityId int not null,
         clientId int not null,
         index(facilityId, clientId),
@@ -2643,18 +2651,13 @@ create table OcanStaffForm
         hcNumber varchar(100),
         hcVersion varchar(100),
         dateOfBirth varchar(100),
-        clientDateOfBirth varchar(10),
         reasonForAssessment varchar(100),
 	assessmentStatus varchar(40),
 	index(assessmentStatus),
 	startDate date,
-	clientStartDate date,
 	completionDate date,
-	clientCompletionDate date,
-	gender varchar(10),
+	gender varchar(10) not null,
 	providerName varchar(100),
-	clientFormProviderName varchar(100),
-	submissionId int,
 	index(startDate),
 	index(completionDate)
 );
@@ -2764,23 +2767,3 @@ CREATE TABLE `GroupNoteLink` (
   KEY `active` (`active`)
 );
 
-
-create table OcanConnexOption (
-	id int primary key auto_increment,
-	LHINCode varchar(3) NOT NULL,
-	orgLHIN varchar(100) NOT NULL,
-	orgName varchar(100) NOT NULL,
-	orgNumber varchar(5) NOT NULL,
-	programName varchar(100) NOT NULL,
-	programNumber varchar(5) NOT NULL
-);
-
-
-create table OcanSubmissionLog (
-submissionId int primary key auto_increment,
-submitDateTime timestamp,
-result varchar(255),
-transactionId varchar(100),
-resultMessage text,
-submissionData longtext
-);

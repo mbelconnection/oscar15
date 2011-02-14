@@ -64,18 +64,18 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.PMmodule.dao.ProviderDao;
-import org.oscarehr.common.dao.ConsultationRequestDao;
-import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.dao.Hl7TextMessageDao;
 import org.oscarehr.common.hl7.v2.oscar_to_oscar.DataTypeUtils;
 import org.oscarehr.common.hl7.v2.oscar_to_oscar.OscarToOscarUtils;
 import org.oscarehr.common.hl7.v2.oscar_to_oscar.RefI12;
-import org.oscarehr.common.model.ConsultationRequest;
 import org.oscarehr.common.model.Demographic;
+import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.model.Hl7TextMessage;
 import org.oscarehr.common.model.ProfessionalSpecialist;
 import org.oscarehr.common.model.Provider;
+import org.oscarehr.PMmodule.dao.ProviderDao;
+import org.oscarehr.common.model.ConsultationRequest;
+import org.oscarehr.common.dao.ConsultationRequestDao;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 
@@ -151,7 +151,7 @@ public class EctViewRequestAction extends Action {
             DemographicDao demoDao = (DemographicDao)SpringUtils.getBean("demographicDao");
             Demographic demo = demoDao.getDemographicById(consult.getDemographicId());
 
-            thisForm.setPatientAddress(demo.getAddress());
+            thisForm.setPatientAddress(demo.getAddress() + "<br>" + demo.getCity() + ", " + demo.getProvince() + "<br>" + demo.getPostal());
             thisForm.setPatientDOB(demo.getFormattedDob());
             thisForm.setPatientHealthNum(demo.getHin());
             thisForm.setPatientHealthCardVersionCode(demo.getVer());

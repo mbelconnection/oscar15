@@ -63,8 +63,6 @@
 		</map>
 		<subclass name="PHRMessage"
 			discriminator-value="urn:org:indivo:document:classification:message" />
-                <subclass name="PHRMedication"
-			discriminator-value="urn:org:indivo:document:classification:medical:medication" />
 
 	</class>
 </hibernate-mapping>

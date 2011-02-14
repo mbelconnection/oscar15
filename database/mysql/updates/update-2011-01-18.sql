@@ -1,9 +1,2 @@
-create table consultationRequestExt(
- id int(10) NOT NULL auto_increment, 
- requestId int(10) NOT NULL, 
- name varchar(100) NOT NULL,
- value varchar(100) NOT NULL,
- dateCreated date not null,
- primary key(id),
- key(requestId)
-);
+update consultationRequests c left outer join professionalSpecialists p on p.specId = c.specId set c.specId = NULL where p.specId is null;
+update consultationRequests set patientWillBook = false where patientWillBook != true and patientWillBook != false;

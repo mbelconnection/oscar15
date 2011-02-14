@@ -94,9 +94,8 @@ public class Demographic implements Serializable {
 
 	private int activeCount = 0;
 	private int hsAlertCount = 0;
-        private String displayName=null;
 
-        private Provider provider;
+        private Provider provider;    
 
     /**
      * @return the rosterDate
@@ -187,12 +186,6 @@ public class Demographic implements Serializable {
 		initialize();
 	}
 
-        public String getDisplayName(){
-            if(displayName==null){
-                displayName=getLastName() + ", " + getFirstName();
-                return displayName;
-            }else return displayName;
-        }
 	/**
 	 * Return the unique identifier of this class
 	 * 

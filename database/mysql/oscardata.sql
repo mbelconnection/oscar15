@@ -1031,7 +1031,7 @@ INSERT INTO mygroup VALUES ('IT Support','88888','Support','IT',NULL);
 INSERT INTO oscarcommlocations VALUES (145,'Oscar Users',NULL,1,'<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<addressBook><group><group desc=\"doc\" id=\"17\"><address desc=\"Chan, David\" id=\"174\"/><address desc=\"oscardoc, doctor\" id=\"999998\"/></group><group desc=\"receptionist\" id=\"18\"><address desc=\"oscarrep, receptionist\" id=\"999999\"/><address desc=\"Support, IT\" id=\"88888\"/></group><group desc=\"admin\" id=\"19\"><address desc=\"oscaradmin, admin\" id=\"999997\"/></group><address desc=\"Chan, David\" id=\"174\"/><address desc=\"oscaradmin, admin\" id=\"999997\"/><address desc=\"oscardoc, doctor\" id=\"999998\"/><address desc=\"oscarrep, receptionist\" id=\"999999\"/><address desc=\"Support, IT\" id=\"88888\"/></group></addressBook>',NULL);
 
 
-insert into ProviderPreference (providerNo, startHour, endHour, everyMin, myGroupNo, colourTemplate, defaultCaisiPmm, defaultNewOscarCme, printQrCodeOnPrescriptions, lastUpdated, appointmentScreenFormNameDisplayLength) values ('999998','8','18','15','.default','deepblue','disabled','disabled', 0, now(), 3);
+insert into ProviderPreference (providerNo, startHour, endHour, everyMin, myGroupNo, colourTemplate, defaultCaisiPmm, defaultNewOscarCme, printQrCodeOnPrescriptions, lastUpdated) values ('999998','8','18','15','.default','deepblue','disabled','disabled', 0, now());
 
 --
 -- Dumping data for table 'provider'
@@ -1753,10 +1753,3 @@ SELECT
 	 (SELECT MAX(role_no) from `secRole`)  +  1 AS role_no
 	,'Partner Doctor' AS role_name
 	,'Partner Doctor' AS `description`;
-
-
-insert into issue (code,description,role,update_date,priority,type) values ('PastOcularHistory','Past Ocular History','nurse',now(),NULL,'system');
-insert into issue (code,description,role,update_date,priority,type) values ('DiagnosticNotes','Diagnostic Notes','nurse',now(),NULL,'system');
-insert into issue (code,description,role,update_date,priority,type) values ('OcularMedication','Ocular Medication','nurse',now(),NULL,'system');
-insert into issue (code,description,role,update_date,priority,type) values ('PatientLog','Patient Log','nurse',now(),NULL,'system');
-insert into issue (`code`,`description`,`role`,`update_date`) Values('CurrentHistory','Current History', 'nurse', now());

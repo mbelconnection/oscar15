@@ -53,7 +53,7 @@ List<SpecsHistory> specs = (List<SpecsHistory>)request.getAttribute("specs");
 <html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
-<title>Specs History
+<title>Ocular Procedures
 </title>
 <html:base />
 
@@ -108,11 +108,10 @@ function BackToOscar()
                                     for (int i = 0; i < specs.size(); i++){
                                     String type      = (String) specs.get(i).getType();     
                                     String date = specs.get(i).getDateStr();
-                                    String formula = specs.get(i).toString();
                                 %>
 					<tr>
 						<td ><%=type %></td>
-						<td ><%=formula %></td>
+						<td >TODO</td>
 						<td ><%=date%></td>											
 					</tr>
 					<%}%>

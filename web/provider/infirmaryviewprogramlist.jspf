@@ -34,7 +34,7 @@ function submitProgram(ctrl) {
 	var url = "<%=providerurlString%>"+"&infirmaryView_programId="+ctrl.value+"&GoToCaisiViewFromOscarView=true";	
 	document.location.href = url;
 }
-function submitStatus(ctrl) {// only place other than infirmaction.java to set infirmaryView_clientStatusId
+function submitStatus(ctrl) {
 	var programCtrl = document.getElementById("bedprogram_no");
 	document.location.href = "<%=providerurlString%>"+"&infirmaryView_programId="+programCtrl.value+"&infirmaryView_clientStatusId="+ctrl.value+"&GoToCaisiViewFromOscarView=true";
 }
@@ -119,7 +119,8 @@ function submitStatus(ctrl) {// only place other than infirmaction.java to set i
 	</select>
 	<caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">
 		<caisi:ProgramExclusiveView providerNo="<%=curUser_no%>" value="no">
-			<a href='providercontrol.jsp?infirmaryView_isOscar=true&GoToCaisiViewFromOscarView=false&<%=session.getAttribute("infirmaryView_OscarQue") %>'>|
+			<a
+				href='providercontrol.jsp?infirmaryView_isOscar=true&GoToCaisiViewFromOscarView=false&<%=session.getAttribute("infirmaryView_OscarQue") %>'>|
 			Oscar View</a>
 		</caisi:ProgramExclusiveView>
 	</caisi:isModuleLoad>

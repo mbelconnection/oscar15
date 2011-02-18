@@ -55,6 +55,7 @@ public class LoggedInUserFilter implements javax.servlet.Filter
 			x.currentFacility=(Facility) session.getAttribute(SessionConstants.CURRENT_FACILITY);
 			x.loggedInProvider=(Provider) session.getAttribute(SessionConstants.LOGGED_IN_PROVIDER);
 			x.initiatingCode=request.getRequestURI();
+			x.caisiProgramId = (String) session.getAttribute(SessionConstants.CURRENT_PROGRAM_ID);
 			LoggedInInfo.loggedInInfo.set(x);
 			
 			chain.doFilter(tmpRequest, tmpResponse);

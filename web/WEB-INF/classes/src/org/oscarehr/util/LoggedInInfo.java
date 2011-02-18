@@ -2,6 +2,7 @@ package org.oscarehr.util;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.log4j.Logger;
+import org.oscarehr.PMmodule.model.Program;
 import org.oscarehr.common.model.Facility;
 import org.oscarehr.common.model.Provider;
 
@@ -20,6 +21,7 @@ public class LoggedInInfo
 	public Facility currentFacility=null;
 	public Provider loggedInProvider=null;
 	public String initiatingCode=null;
+	public String caisiProgramId=null;
 		
 	public String toString()
 	{

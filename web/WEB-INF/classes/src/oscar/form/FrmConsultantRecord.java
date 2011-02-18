@@ -4,6 +4,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.oscarehr.PMmodule.dao.ProgramDao;
+import org.oscarehr.PMmodule.model.Program;
+import org.oscarehr.util.LoggedInInfo;
+import org.oscarehr.util.SpringUtils;
+
 import oscar.OscarProperties;
 import oscar.oscarDB.DBHandler;
 import oscar.util.UtilDateUtilities;
@@ -35,16 +40,31 @@ public class FrmConsultantRecord extends FrmRecord {
 			props.setProperty("p_healthcard", db.getString(rs,"hic"));
         	}
             	rs.close();
-	
-		sql = "SELECT clinic_name, clinic_address, CONCAT(clinic_city, ', ', clinic_province, ' ', clinic_postal) AS clinic_address2, clinic_phone, clinic_fax FROM clinic";
-		rs = db.GetSQL(sql);
-		if (rs.next()) {
-			props.setProperty("cl_name", db.getString(rs,"clinic_name"));
-			props.setProperty("cl_address1", db.getString(rs,"clinic_address"));
-			props.setProperty("cl_address2", db.getString(rs,"clinic_address2"));
-			props.setProperty("cl_phone", db.getString(rs,"clinic_phone"));
-			props.setProperty("cl_fax", db.getString(rs,"clinic_fax"));
-		}
+
+	        boolean caisi = OscarProperties.getInstance().isCaisiLoaded();
+	        if(caisi) {
+	        	String programId = LoggedInInfo.loggedInInfo.get().caisiProgramId;
+	        	ProgramDao programDao = (ProgramDao)SpringUtils.getBean("programDao");
+	        	Program program = programDao.getProgram(Integer.parseInt(programId));
+	        	if(program != null) {
+	        		props.setProperty("cl_name", program.getName());
+					props.setProperty("cl_address1", program.getAddress());
+					props.setProperty("cl_address2", "");
+					props.setProperty("cl_phone", program.getPhone());
+					props.setProperty("cl_fax", program.getFax());
+	        	}
+	        	
+	        } else {        
+				sql = "SELECT clinic_name, clinic_address, CONCAT(clinic_city, ', ', clinic_province, ' ', clinic_postal) AS clinic_address2, clinic_phone, clinic_fax FROM clinic";
+				rs = db.GetSQL(sql);
+				if (rs.next()) {
+					props.setProperty("cl_name", db.getString(rs,"clinic_name"));
+					props.setProperty("cl_address1", db.getString(rs,"clinic_address"));
+					props.setProperty("cl_address2", db.getString(rs,"clinic_address2"));
+					props.setProperty("cl_phone", db.getString(rs,"clinic_phone"));
+					props.setProperty("cl_fax", db.getString(rs,"clinic_fax"));
+				}
+	        }
 		rs.close();
         	} else {
             		String sql = "SELECT * FROM formConsult WHERE demographic_no = " + demographicNo + " AND ID = " + existingID;

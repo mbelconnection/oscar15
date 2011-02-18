@@ -17,10 +17,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.oscarehr.PMmodule.dao.ProgramDao;
+import org.oscarehr.PMmodule.model.Program;
 import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.model.Demographic;
+import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.util.SpringUtils;
 
+import oscar.OscarProperties;
 import oscar.oscarDB.DBHandler;
 import oscar.util.UtilDateUtilities;
 
@@ -57,17 +61,32 @@ public class FrmLabReq07Record extends FrmRecord {
             }
 
             //get local clinic information
-        	DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
-            String sql = "SELECT clinic_name, clinic_address, clinic_city, clinic_province, clinic_postal, clinic_phone, clinic_fax FROM clinic";
-            ResultSet rs = db.GetSQL(sql);
-            if (rs.next()) {
-            	props.setProperty("clinicName",db.getString(rs,"clinic_name"));
-            	props.setProperty("clinicProvince",db.getString(rs,"clinic_province"));
-                props.setProperty("clinicAddress", db.getString(rs,"clinic_address"));
-                props.setProperty("clinicCity", db.getString(rs,"clinic_city"));
-                props.setProperty("clinicPC", db.getString(rs,"clinic_postal"));
+            boolean caisi = OscarProperties.getInstance().isCaisiLoaded();
+            if(caisi) {
+            	String programId = LoggedInInfo.loggedInInfo.get().caisiProgramId;
+            	ProgramDao programDao = (ProgramDao)SpringUtils.getBean("programDao");
+            	Program program = programDao.getProgram(Integer.parseInt(programId));
+            	if(program != null) {
+            		props.setProperty("clinicName",program.getName());
+	            	props.setProperty("clinicProvince","");
+	                props.setProperty("clinicAddress", program.getAddress());
+	                props.setProperty("clinicCity", "");
+	                props.setProperty("clinicPC","");
+            	}
+            	
+            } else {            
+	        	DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+	            String sql = "SELECT clinic_name, clinic_address, clinic_city, clinic_province, clinic_postal, clinic_phone, clinic_fax FROM clinic";
+	            ResultSet rs = db.GetSQL(sql);
+	            if (rs.next()) {
+	            	props.setProperty("clinicName",db.getString(rs,"clinic_name"));
+	            	props.setProperty("clinicProvince",db.getString(rs,"clinic_province"));
+	                props.setProperty("clinicAddress", db.getString(rs,"clinic_address"));
+	                props.setProperty("clinicCity", db.getString(rs,"clinic_city"));
+	                props.setProperty("clinicPC", db.getString(rs,"clinic_postal"));
+	            }
+	            rs.close();
             }
-            rs.close();
 
         } else {
             String sql = "SELECT * FROM formLabReq07 WHERE demographic_no = " + demographicNo + " AND ID = "
@@ -152,17 +171,32 @@ public class FrmLabReq07Record extends FrmRecord {
             }
         }
         //get local clinic information
-        sql = "SELECT clinic_name, clinic_address, clinic_city, clinic_postal, clinic_province, clinic_phone, clinic_fax FROM clinic";
-        rs = db.GetSQL(sql);
-        if (rs.next()) {
-        	props.setProperty("clinicName",db.getString(rs,"clinic_name"));
-        	props.setProperty("clinicProvince",db.getString(rs,"clinic_province"));
-            props.setProperty("clinicAddress", db.getString(rs,"clinic_address"));
-            props.setProperty("clinicCity", db.getString(rs,"clinic_city"));
-            props.setProperty("clinicPC", db.getString(rs,"clinic_postal"));
-            
+        boolean caisi = OscarProperties.getInstance().isCaisiLoaded();
+        if(caisi) {
+        	String programId = LoggedInInfo.loggedInInfo.get().caisiProgramId;
+        	ProgramDao programDao = (ProgramDao)SpringUtils.getBean("programDao");
+        	Program program = programDao.getProgram(Integer.parseInt(programId));
+        	if(program != null) {
+        		props.setProperty("clinicName",program.getName());
+            	props.setProperty("clinicProvince","");
+                props.setProperty("clinicAddress", program.getAddress());
+                props.setProperty("clinicCity", "");
+                props.setProperty("clinicPC","");
+        	}
+        } else {
+        	
+	        sql = "SELECT clinic_name, clinic_address, clinic_city, clinic_postal, clinic_province, clinic_phone, clinic_fax FROM clinic";
+	        rs = db.GetSQL(sql);
+	        if (rs.next()) {
+	        	props.setProperty("clinicName",db.getString(rs,"clinic_name"));
+	        	props.setProperty("clinicProvince",db.getString(rs,"clinic_province"));
+	            props.setProperty("clinicAddress", db.getString(rs,"clinic_address"));
+	            props.setProperty("clinicCity", db.getString(rs,"clinic_city"));
+	            props.setProperty("clinicPC", db.getString(rs,"clinic_postal"));
+	            
+	        }
+	        rs.close();
         }
-        rs.close();
 
         return props;
     }

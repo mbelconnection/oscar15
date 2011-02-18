@@ -1138,20 +1138,35 @@ if ( PatStat.equals(Dead) ) {%>
 								key="demographic.demographiceditdemographic.formDoctor" />
 							<% } %>: <b><%=providerBean.getProperty(apptMainBean.getString(rs,"provider_no"),"")%></b>
 							</li>
-							<li><bean:message
-								key="demographic.demographiceditdemographic.formNurse" />: <b><%=providerBean.getProperty(resident,"")%></b>
+							<li>
+							<% if(oscarProps.getProperty("demographicLabelNurse") != null) { out.print(oscarProps.getProperty("demographicLabelNurse","")); } else { %>
+							<bean:message
+								key="demographic.demographiceditdemographic.formNurse" />
+							<% } %>: <b><%=providerBean.getProperty(resident,"")%></b>							
 							</li>
-							<li><bean:message
-								key="demographic.demographiceditdemographic.formMidwife" />: <b><%=providerBean.getProperty(midwife,"")%></b>
+							<li>
+							<% if(oscarProps.getProperty("demographicLabelMidwife") != null) { out.print(oscarProps.getProperty("demographicLabelMidwife","")); } else { %>
+							<bean:message
+								key="demographic.demographiceditdemographic.formMidwife" />
+							<% } %>: <b><%=providerBean.getProperty(midwife,"")%></b>														
 							</li>
-							<li><bean:message
-								key="demographic.demographiceditdemographic.formResident" />:<b>
-							<%=providerBean.getProperty(nurse,"")%></b></li>
-							<li><bean:message
-								key="demographic.demographiceditdemographic.formRefDoc" />: <b><%=rd%></b>
+							<li>
+							<% if(oscarProps.getProperty("demographicLabelResident") != null) { out.print(oscarProps.getProperty("demographicLabelResident","")); } else { %>
+							<bean:message
+								key="demographic.demographiceditdemographic.formResident" />
+							<% } %>: <b><%=providerBean.getProperty(nurse,"")%></b>								
 							</li>
-							<li><bean:message
-								key="demographic.demographiceditdemographic.formRefDocNo" />: <b><%=rdohip%></b>
+							<li>
+							<% if(oscarProps.getProperty("demographicLabelRefDoc") != null) { out.print(oscarProps.getProperty("demographicLabelRefDoc","")); } else { %>
+							<bean:message
+								key="demographic.demographiceditdemographic.formRefDoc" />
+							<% } %>:<b><%=rd%></b>
+							</li>
+							<li>
+							<% if(oscarProps.getProperty("demographicLabelRefDocNo") != null) { out.print(oscarProps.getProperty("demographicLabelRefDocNo","")); } else { %>
+							<bean:message
+								key="demographic.demographiceditdemographic.formRefDocNo" />
+							<% } %>: <b><%=rdohip%></b>
 							</li>
 						</ul>
 						</div>
@@ -1721,8 +1736,10 @@ if(oscarVariables.getProperty("demographicExt") != null) {
 									<%=Misc.getShortStr( (rsdemo.getString("last_name")+","+rsdemo.getString("first_name")),"",nStrShowLen)%></option>
 									<% } %>
 								</select></td>
-								<td align="right" nowrap><b><bean:message
-									key="demographic.demographiceditdemographic.formNurse" />: </b></td>
+								<td align="right" nowrap><b><% if(oscarProps.getProperty("demographicLabelNurse") != null) { out.print(oscarProps.getProperty("demographicLabelNurse","")); } else { %>
+								<bean:message
+									key="demographic.demographiceditdemographic.formNurse" />
+								<% } %>: </b></td>
 								<td align="left"><select name="resident"
 									style="width: 200px">
 									<option value=""></option>
@@ -1738,8 +1755,10 @@ if(oscarVariables.getProperty("demographicExt") != null) {
 								</select></td>
 							</tr>
 							<tr valign="top">
-								<td align="right" nowrap><b><bean:message
-									key="demographic.demographiceditdemographic.formMidwife" />: </b></td>
+								<td align="right" nowrap><b><% if(oscarProps.getProperty("demographicLabelMidwife") != null) { out.print(oscarProps.getProperty("demographicLabelMidwife","")); } else { %>
+								<bean:message
+									key="demographic.demographiceditdemographic.formMidwife" />
+								<% } %>: </b></td>
 								<td align="left"><select name="midwife"
 									style="width: 200px">
 									<option value=""></option>
@@ -1753,8 +1772,10 @@ if(oscarVariables.getProperty("demographicExt") != null) {
 									<%=Misc.getShortStr( (rsdemo.getString("last_name")+","+rsdemo.getString("first_name")),"",nStrShowLen)%></option>
 									<% } %>
 								</select></td>
-								<td align="right"><b><bean:message
-									key="demographic.demographiceditdemographic.formResident" />:</b></td>
+								<td align="right"><b><% if(oscarProps.getProperty("demographicLabelResident") != null) { out.print(oscarProps.getProperty("demographicLabelResident","")); } else { %>
+								<bean:message
+									key="demographic.demographiceditdemographic.formResident" />
+								<% } %>: </b></td>
 								<td align="left"><select name="nurse" style="width: 200px">
 									<option value=""></option>
 									<%
@@ -1770,8 +1791,10 @@ if(oscarVariables.getProperty("demographicExt") != null) {
 							</tr>
 
 							<tr valign="top">
-								<td align="right" nowrap><b><bean:message
-									key="demographic.demographiceditdemographic.formRefDoc" />: </b></td>
+								<td align="right" nowrap><b><% if(oscarProps.getProperty("demographicLabelRefDoc") != null) { out.print(oscarProps.getProperty("demographicLabelRefDoc","")); } else { %>
+								<bean:message
+									key="demographic.demographiceditdemographic.formRefDoc" />
+								<% } %>: </b></td>
 								<td align="left">
 								<% if(oscarProps.getProperty("isMRefDocSelectList", "").equals("true") ) {
                                   		// drop down list
@@ -1823,8 +1846,10 @@ document.updatedelete.r_doctor_ohip.value = refNo;
 </script> <% } else {%> <input type="text" name="r_doctor" size="30" maxlength="40"
 									value="<%=rd%>"> <% } %>
 								</td>
-								<td align="right" nowrap><b><bean:message
-									key="demographic.demographiceditdemographic.formRefDocNo" />: </b></td>
+								<td align="right" nowrap><b><% if(oscarProps.getProperty("demographicLabelRefDocNo") != null) { out.print(oscarProps.getProperty("demographicLabelRefDocNo","")); } else { %>
+								<bean:message
+									key="demographic.demographiceditdemographic.formRefDocNo" />
+								<% } %>: </b></td>
 								<td align="left"><input type="text" name="r_doctor_ohip"
 									size="20" maxlength="6" value="<%=rdohip%>"> <% if("ON".equals(prov)) { %>
 								<a

@@ -23,11 +23,12 @@
   *
   * This software was written for the
   * Department of Family Medicine
-  * McMaster University
+  * McMaster Unviersity
   * Hamilton
   * Ontario, Canada
   */
 -->
+<%@page language="java" contentType="text/html"%>
 <%@taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
@@ -110,6 +111,7 @@
     loadFromSession = "y";
   }
   if (loadFromSession == null) {
+    System.out.println("RemovingAttribute from Session");
     request.getSession().removeAttribute("BillingCreateBillingForm");
   }
 
@@ -495,6 +497,7 @@ function grabEnter(event,callb){
 }
 
 </SCRIPT>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <script language="JavaScript">
 <!--
 <!--
@@ -575,8 +578,8 @@ function setCodeToChecked(svcCode){
         if (myform.service[i].value == svcCode) {
             var wasAbleToAddCode = addCodeToList(svcCode);
             if(wasAbleToAddCode){
-               myform.service[i].checked = true;
-               codeset = true;
+            myform.service[i].checked = true;
+            codeset = true;
             }
             return;
         }
@@ -709,6 +712,7 @@ function checkifSet(icd9,feeitem,extrafeeitem){
 <!-- above here -->
 <%
 List<String> wcbneeds = (List) request.getAttribute("WCBFormNeeds");
+System.out.println("Setting form needed "+wcbneeds);
 if(wcbneeds != null){%>
 <div>
     <h3>WCB Form needs:</h3>
@@ -744,6 +748,7 @@ if(wcbneeds != null){%>
     if (apDate != null && apDate.trim().length() == 0) {
       thisForm.setXml_appointment_date(bean.getApptDate());
     }
+    System.out.println("app date " + thisForm.getXml_appointment_date());
     if (bean != null && bean.getBillType() != null) {
       thisForm.setXml_billtype(bean.getBillType());
     }
@@ -755,6 +760,7 @@ if(wcbneeds != null){%>
     }
     thisForm.setCorrespondenceCode(bean.getCorrespondenceCode());
     oscar.oscarBilling.ca.bc.data.BillingPreferencesDAO dao = new oscar.oscarBilling.ca.bc.data.BillingPreferencesDAO();
+    System.out.println("(String) thisForm.getXml_provider()=" + (String) thisForm.getXml_provider());
     oscar.oscarBilling.ca.bc.data.BillingPreference pref = null;
     //checking for a bug where the passed in provider number is actually "none" rather than numeral 0
     if (oscar.util.StringUtils.isNumeric(thisForm.getXml_provider())) {
@@ -1325,8 +1331,8 @@ if(wcbneeds != null){%>
                         <input type="checkbox" name="ignoreWarn"/> Ignore Warnings &nbsp;
                   </td>
                 </tr>
-                
-                <tr>
+
+                  <tr>
                   <td align="left">
                     <html:select property="correspondenceCode" onchange="correspondenceNote();">
                       <html:option value="0">No Correspondence</html:option>
@@ -1337,7 +1343,7 @@ if(wcbneeds != null){%>
                   </td>
                   <td align="right">
                     <input type="submit" name="Submit" value="Continue">
-                    <input type="button" name="Button" value="Cancel" onClick="window.close();">                 
+                    <input type="button" name="Button" value="Cancel" onClick="window.close();">
                   </td>
                 </tr>
                 <tr>

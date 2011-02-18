@@ -18,7 +18,7 @@
 * 
 * This software was written for the 
 * Department of Family Medicine 
-* McMaster University 
+* McMaster Unviersity 
 * Hamilton 
 * Ontario, Canada 
 */
@@ -41,7 +41,7 @@ if(props.getProperty("isNewONbilling", "").equals("true")) {
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
 <jsp:useBean id="SxmlMisc" class="oscar.SxmlMisc" scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 
 <%
 GregorianCalendar now=new GregorianCalendar();
@@ -88,6 +88,8 @@ session.setAttribute("ohipdownload", ohipdownload);
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Billing Report</title>
+<meta http-equiv="Content-Type"
+	content="text/html; charset=charset=iso-8859-1">
 <script language="JavaScript" type="text/JavaScript">
 <!--
 
@@ -271,6 +273,7 @@ while(rslocal.next()){
 
 	<%
 }
+apptMainBean.closePstmtConn();
 %>
 
 </table>

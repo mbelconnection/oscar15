@@ -43,8 +43,8 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import oscar.OscarProperties;
 
@@ -53,7 +53,7 @@ import oscar.OscarProperties;
  * @author jay
  */
 public class TeleplanAPI {
-    static Logger log=MiscUtils.getLogger();
+    static Log log = LogFactory.getLog(TeleplanAPI.class);
     	
     public static String ExternalActionLogon      = "AsignOn";
     public static String ExternalActionLogoff     = "AsignOff";
@@ -122,7 +122,7 @@ public class TeleplanAPI {
             TeleplanResponseDAO trDAO = new TeleplanResponseDAO();
             trDAO.save(tr);
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return tr; 
             //display(in);
@@ -133,7 +133,7 @@ public class TeleplanAPI {
         try{ 
             PostMethod filePost = new PostMethod(url); 
             filePost.setRequestEntity( new MultipartRequestEntity(parts, filePost.getParams()) );  
-            
+            int status = httpclient.executeMethod(filePost);
             InputStream in = filePost.getResponseBodyAsStream();
             tr = new TeleplanResponse();
             tr.processResponseStream(in); 
@@ -141,7 +141,7 @@ public class TeleplanAPI {
             trDAO.save(tr);
 
             }catch(Exception e){
-                MiscUtils.getLogger().error("Error", e);
+                e.printStackTrace();
             }
             return tr; 
     }

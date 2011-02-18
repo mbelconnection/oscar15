@@ -33,12 +33,14 @@
 	String[] cfgGraphic = null;
 	if(request.getParameterValues("__cfgGraphicFile")!=null) {
 		cfgGraphic = request.getParameterValues("__cfgGraphicFile");
+		//System.out.println("vvvvvvvvvvvvvvvvvvvvv");
 	}
 
   //response.sendRedirect("../form/createpdf");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
+<% response.setHeader("Cache-Control","no-cache");%>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>CDC US Growth Charts</title>
@@ -84,6 +86,7 @@
 <%
 	for (Enumeration e = prop.propertyNames() ; e.hasMoreElements() ;) {
 		String temp = e.nextElement().toString();
+		//System.out.println(temp);
 		String[] str = temp.split("date_|age_|stature_|weight_|comment_|bmi_");
 		int nC = Integer.parseInt(str[1]);
 		if(nC>=nS && nC<=nE) {
@@ -96,6 +99,7 @@
 			String baseValue = prop.getProperty(newName, "");
 			prop.setProperty(newName,newValue);
 			prop.setProperty(baseName,baseValue);
+			//System.out.println(temp + " : " + tempName);
 		}
 	}
 

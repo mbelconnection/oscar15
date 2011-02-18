@@ -33,8 +33,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
+import oscar.oscarDB.DBHandler;
 
 /**
  +------------------+---------+------+-----+---------+----------------+
@@ -58,12 +57,12 @@ public class TeleplanLogDAO {
     
     public void save(TeleplanLog tl){
          try {
-           
-            PreparedStatement pstmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(nsql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            PreparedStatement pstmt = DBHandler.getConnection().prepareStatement(nsql);
             executeUpdate(pstmt,tl);
             pstmt.close();
          }catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
          }
     }
     
@@ -77,16 +76,17 @@ public class TeleplanLogDAO {
     
     public void save(List list){
         try {
-            
-            PreparedStatement pstmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(nsql);
-            MiscUtils.getLogger().debug("LOG LIST SIZE"+list.size());
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            PreparedStatement pstmt = DBHandler.getConnection().prepareStatement(nsql);
+            System.out.println("LOG LIST SIZE"+list.size());
             for (int i = 0; i < list.size(); i++){
                 TeleplanLog tl = (TeleplanLog) list.get(i);
                 executeUpdate(pstmt,tl);
             }
             pstmt.close();
          }catch (SQLException e) {
-            MiscUtils.getLogger().error("LOG LIST NULL?"+list, e);
+            System.out.append("LOG LIST NULL?"+list); 
+            e.printStackTrace();
          }
         
     }

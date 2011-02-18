@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -39,7 +39,7 @@
 	errorPage="errorpage.jsp"%>
 <jsp:useBean id="demosummaryBean" class="oscar.AppointmentMainBean"
 	scope="page" />
-
+<%@ include file="../admin/dbconnection.jsp"%>
 <%
   String [][] dbQueries=new String[][] {
     {"search_detail", "select * from demographic where demographic_no=?"},
@@ -64,6 +64,7 @@
     
     for(int i=0;i<=ii;i++) {
       if(request.getParameter("encounter_no"+i)==null) {
+// System.out.println("      1     ");
         continue;
       }
        
@@ -95,6 +96,8 @@
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>PATIENT SUMMARY</title>
 <link rel="stylesheet" href="../web.css">
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 <script language="JavaScript">
 <!--
 
@@ -216,6 +219,7 @@
 			color="blue"> <%
      String historysubject = rsdemo.getString("subject")==null?"No Subject":rsdemo.getString("subject").equals("")?"No Subject":rsdemo.getString("subject");
      StringTokenizer st=new StringTokenizer(historysubject,":");
+     //System.out.println(" history = " + historysubject);
      String strForm="", strTemplateURL="";
      while (st.hasMoreTokens()) {
        strForm = (new String(st.nextToken())).trim();
@@ -235,6 +239,7 @@
 		<%
      }
    }     
+   demosummaryBean.closePstmtConn();
 %>
 		</td>
 	</tr>

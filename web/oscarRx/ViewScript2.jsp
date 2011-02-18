@@ -1,3 +1,5 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page language="java"%>
 <%@ page import="oscar.oscarProvider.data.*, oscar.oscarRx.data.*,oscar.oscarRx.data.RxPharmacyData.Pharmacy,oscar.OscarProperties, oscar.oscarClinic.ClinicData, java.util.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
@@ -6,6 +8,8 @@
 <%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %>
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security" %>
 <%@ taglib uri="/WEB-INF/indivo-tag.tld" prefix="indivo" %>
+<% response.setHeader("Cache-Control","no-cache");%>
+
 <!--
 /*
  *
@@ -26,7 +30,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -78,6 +82,11 @@ if(reprint.equalsIgnoreCase("true") ) {
 else
     createAnewRx = "javascript:clearPending('')";
 
+String providerPhone = null;
+org.oscarehr.common.model.Provider pprovider = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProvider;
+if(pprovider.getWorkPhone() != null && pprovider.getWorkPhone().length()>0) {
+	providerPhone = pprovider.getWorkPhone();
+}
 // for satellite clinics
 Vector vecAddressName = null;
 Vector vecAddress = null;
@@ -117,7 +126,11 @@ if(bMultisites) {
 	for (int i=0;i<sites.size();i++) {
 		Site s = sites.get(i);
         vecAddressName.add(s.getName());
-        vecAddress.add("<b>"+doctorName+"</b><br>"+s.getName()+"<br>"+s.getAddress() + "<br>" + s.getCity() + ", " + s.getProvince() + " " + s.getPostal() + "<br>"+rb.getString("RxPreview.msgTel")+": " + s.getPhone() + "<br>"+rb.getString("RxPreview.msgFax")+": " + s.getFax());
+        String phone = s.getPhone();
+        if(providerPhone !=null) {
+        	phone = providerPhone;
+        }
+        vecAddress.add("<b>"+doctorName+"</b><br>"+s.getName()+"<br>"+s.getAddress() + "<br>" + s.getCity() + ", " + s.getProvince() + " " + s.getPostal() + "<br>"+rb.getString("RxPreview.msgTel")+": " + phone + "<br>"+rb.getString("RxPreview.msgFax")+": " + s.getFax());
         if (s.getName().equals(location))
         	session.setAttribute("RX_ADDR",String.valueOf(i));
 	}
@@ -150,9 +163,20 @@ if(bMultisites) {
 
     for(int i=0; i<temp0.length; i++) {
         vecAddressName.add(temp0[i]);
-        vecAddress.add("<b>"+doctorName+"</b><br>"+temp0[i]+"<br>"+temp1[i] + "<br>" + temp2[i] + ", " + temp3[i] + " " + temp4[i] + "<br>"+rb.getString("RxPreview.msgTel")+": " + temp5[i] + "<br>"+rb.getString("RxPreview.msgFax")+": " + temp6[i]);
+        String phone = temp5[i];
+        if(providerPhone != null) {
+        	phone = providerPhone;
+        }
+        vecAddress.add("<b>"+doctorName+"</b><br>"+temp0[i]+"<br>"+temp1[i] + "<br>" + temp2[i] + ", " + temp3[i] + " " + temp4[i] + "<br>"+rb.getString("RxPreview.msgTel")+": " + phone + "<br>"+rb.getString("RxPreview.msgFax")+": " + temp6[i]);
     }
+
+    for(int h=0;h<vecAddressName.size();h++){
+        System.out.print(", vecAddressName: "+vecAddressName.get(h));
+        System.out.print(",vecAddress"+vecAddress.get(h));
+    }
+    System.out.println(provider.getClinicName().replaceAll("\\(\\d{6}\\)",""));
 }
+
 String comment = (String) request.getSession().getAttribute("comment");
 RxPharmacyData pharmacyData = new RxPharmacyData();
 RxPharmacyData.Pharmacy pharmacy;
@@ -201,13 +225,12 @@ if (pharmacy != null) {
                                         }});
                             }});
     }
-    
-    function onPrint2(method, scriptId) {
+    function onPrint2(method) {
         var useSC=false;
         var scAddress="";
         var rxPageSize=$('printPageSize').value;
         //console.log("rxPagesize  "+rxPageSize);
-
+        
 
   <% if(vecAddressName != null) {
     %>
@@ -218,7 +241,7 @@ if (pharmacy != null) {
             }
 <%       }
       }%>
-              var action="../form/createcustomedpdf?__title=Rx&__method=" +  method+"&useSC="+useSC+"&scAddress="+scAddress+"&rxPageSize="+rxPageSize+"&scriptId="+scriptId;
+              var action="../form/createcustomedpdf?__title=Rx&__method=" +  method+"&useSC="+useSC+"&scAddress="+scAddress+"&rxPageSize="+rxPageSize;
             document.getElementById("preview").contentWindow.document.getElementById("preview2Form").action = action;
             document.getElementById("preview").contentWindow.document.getElementById("preview2Form").target="_blank";
             document.getElementById("preview").contentWindow.document.getElementById("preview2Form").submit();
@@ -367,7 +390,7 @@ function toggleView(form) {
 <div id="bodyView" style="display: none">
 <% } else { %>
 <div id="bodyView">
-<% } %>
+<% } %> 
 
 
 <table border="0" cellpadding="0" cellspacing="0"
@@ -387,7 +410,7 @@ function toggleView(form) {
 		</td>
 	</tr>
 
-			<tr>
+	<tr>
 		<td width="100%" class="leftGreyLine" height="100%" valign="top">
 		<table style="border-collapse: collapse" bordercolor="#111111"
 			width="100%" height="100%">
@@ -396,25 +419,25 @@ function toggleView(form) {
 				<td width=420px>
 				<div class="DivContentPadding"><!-- src modified by vic, hsfo -->
 				<iframe id='preview' name='preview' width=420px height=10000px
-					src="<%= dx<0?"Preview2.jsp?scriptId="+request.getParameter("scriptId")+"&rePrint="+reprint:dx==7?"HsfoPreview.jsp?dxCode=7":"about:blank" %>"
+					src="<%= dx<0?"Preview2.jsp?rePrint="+reprint:dx==7?"HsfoPreview.jsp?dxCode=7":"about:blank" %>"
 					align=center border=0 frameborder=0></iframe></div>
 				</td>
 
 				<td valign=top><html:form action="/oscarRx/clearPending">
 					<html:hidden property="action" value="" />
-				</html:form>
+				</html:form> 
                                     <script type="text/javascript">
                                 function clearPending(action){
                                     document.forms.RxClearPendingForm.action.value = action;
                                     document.forms.RxClearPendingForm.submit();
                                 }
-
+                           
                                 function ShowDrugInfo(drug){
                                     window.open("drugInfo.do?GN=" + escape(drug), "_blank",
                                         "location=no, menubar=no, toolbar=no, scrollbars=yes, status=yes, resizable=yes");
-                                }
+                                }                              
 
-         
+
                                 function printPharmacy(id,name){
                                     //ajax call to get all info about a pharmacy
                                     //use json to write to html
@@ -425,12 +448,12 @@ function toggleView(form) {
 
                                             if(json!=null){
                                                 var text=json.name+"<br>"+json.address+"<br>"+json.city+","+json.province+","
-                                                    +json.postalCode+"<br>Tel:"+json.phone1+","+json.phone2+"<br>Fax:"+json.fax+"<br>Email:"+json.email+"<br>Note:"+json.notes;
+                                                    +json.postalCode+"<br>Tel:"+json.phone1+","+json.phone2+"<br>Fax:"+json.fax+"<br>Email:"+json.email+"<br>Note:"+json.notes;                                                
                                                     text+='<br><br><a style="text-align:center;" onclick="parent.reducePreview();" href="javascript:void(0);">Remove Pharmacy Info</a>';
-                                                expandPreview(text);
+                                                expandPreview(text);                                                
                                             }
                                         }});
-
+                                    
                                 }
                                 function expandPreview(text){
                                     parent.document.getElementById('lightwindow_container').style.width="840px";
@@ -439,7 +462,7 @@ function toggleView(form) {
                                     frames['preview'].document.getElementById('pharmInfo').innerHTML=text;
                                     //frames['preview'].document.getElementById('removePharm').show();
                                     $("selectedPharmacy").innerHTML='<bean:message key="oscarRx.printPharmacyInfo.paperSizeWarning"/>';
-      
+
                                 }
                                 function reducePreview(){
                                     parent.document.getElementById('lightwindow_container').style.width="680px";
@@ -493,13 +516,11 @@ function toggleView(form) {
                                         </tr>
 					<tr>
 						<!--td width=10px></td-->
-						<td>
-						<span>
-							<input type=button value="Print PDF" class="ControlPushButton" style="width: 120px" onClick="<%=reprint.equalsIgnoreCase("true") ? "javascript:return onPrint2('rePrint', "+request.getParameter("scriptId")+");" : "javascript:return onPrint2('print', "+request.getParameter("scriptId")+");" %>" />
-						</span>
-						</td>
+						<td><span><input type=button
+							value="Print PDF" class="ControlPushButton"
+							style="width: 120px" onClick="<%=reprint.equalsIgnoreCase("true") ? "javascript:return onPrint2('rePrint');" : "javascript:return onPrint2('print');" %>" /></span></td>
 					</tr>
-					<tr>
+                                        <tr>
 						<!--td width=10px></td-->
 						<td><span><input type=button
 							value="Create New Prescription" class="ControlPushButton"
@@ -519,7 +540,7 @@ function toggleView(form) {
 							onClick="javascript:printIframe();" /></span></td>
 					</tr>
 					<tr>
-						<td><span><input type=button
+					<td><span><input type=button
 							<%=reprint.equals("true")?"disabled='true'":""%> value="<bean:message key="ViewScript.msgPrintPasteEmr"/>"
 							class="ControlPushButton" style="width: 120px"
 							onClick="javascript:printPaste2Parent();" /></span></td>
@@ -529,7 +550,7 @@ function toggleView(form) {
                                                              onclick="printPharmacy('<%=prefPharmacyId%>','<%=prefPharmacy%>');"/>
                                                 </span>
 
-                                            </td>                                            
+                                            </td>
                                         </tr><%}%>
                                         <tr>
                                             <td>
@@ -589,7 +610,7 @@ function toggleView(form) {
 		<td width="100%" height="0%" colspan="2">&nbsp;</td>
 	</tr>
 </table>
-
+    
 </div>
 </body>
 </html:html>

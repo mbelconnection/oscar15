@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -108,6 +108,7 @@
   subject = request.getParameter("xml_subjectprefix")==null?"":".: " ; //(request.getParameter("xml_subjectprefix") +": ") ;
   subject += request.getParameter("xml_subject")+ " |"+ request.getParameter("attachmentdisplay");
   
+  //System.out.println(subject+content);
   String[] param =new String[7];
   param[0]=request.getParameter("demographic_no");
 	param[1]=curYear+"-"+(curMonth)+"-"+curDay; //request.getParameter("encounter_date");

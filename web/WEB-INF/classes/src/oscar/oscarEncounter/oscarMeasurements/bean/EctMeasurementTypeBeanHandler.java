@@ -31,8 +31,8 @@ package oscar.oscarEncounter.oscarMeasurements.bean;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarEncounter.oscarMeasurements.data.MeasurementTypes;
@@ -42,7 +42,7 @@ import oscar.oscarEncounter.oscarMeasurements.data.MeasurementTypes;
  * @author jay
  */
 public class EctMeasurementTypeBeanHandler {
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(EctMeasurementTypeBeanHandler.class);
     
     /** Creates a new instance of EctMeasurementTypeBeanHandler */
     public EctMeasurementTypeBeanHandler() {
@@ -53,21 +53,44 @@ public class EctMeasurementTypeBeanHandler {
         MeasurementTypes mt =  MeasurementTypes.getInstance();
         return mt.getByType(mType);
         
+//        EctMeasurementTypesBean ret = null;
+//        try {
+//            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+//
+//            String sql = "SELECT * FROM measurementType where type = '"+mType+"'";   
+//            //System.out.println(sql);
+//            ResultSet rs = db.GetSQL(sql);        
+//            while(rs.next()){                
+//               System.out.println("validation "+db.getString(rs,"validation"));  
+//               ret = new EctMeasurementTypesBean(rs.getInt("id"), db.getString(rs,"type"), 
+//                                                 db.getString(rs,"typeDisplayName"), 
+//                                                 db.getString(rs,"typeDescription"), 
+//                                                 db.getString(rs,"measuringInstruction"), 
+//                                                 //getValidation(db.getString(rs,"validation"))); 
+//                                                 db.getString(rs,"validation")); 
+//               ret.setValidationName(getValidation(db.getString(rs,"validation")));
+//            }
+//            rs.close();            
+//        }
+//        catch(SQLException e) {
+//            System.out.println(e.getMessage());
+//        }
+//        return ret;
     }
     
     public String getValidation(String val){
         String validation = null;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sqlValidation = "SELECT name FROM validations WHERE id='"+val+"'";
-            ResultSet rs = DBHandler.GetSQL(sqlValidation);
+            ResultSet rs = db.GetSQL(sqlValidation);
             if (rs.next()){ 
-                validation = oscar.Misc.getString(rs, "name");
-
+                validation = db.getString(rs,"name");
+                //System.out.println("setting validation to "+validation);
             }
             rs.close();
         }catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return validation;
     }

@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -30,6 +30,7 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="dms.docViewerHead.title" /></title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-2">
 </head>
 
 <body bgcolor="#486ebd" text="#000000" topmargin="0">

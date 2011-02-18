@@ -1,10 +1,8 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi"%>
-<%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
-
 <%@ page
-	import="java.util.*, oscar.oscarProvider.data.*"%>
+	import="java.util.*, oscar.oscarProvider.data.ProviderBillCenter"%>
 
 <%
   if(session.getAttribute("user") == null)
@@ -17,35 +15,7 @@
   //includeing the provider name and a month calendar
 
   java.util.Locale vLocale =(java.util.Locale)session.getAttribute(org.apache.struts.Globals.LOCALE_KEY);
-
-  ArrayList<Hashtable> list = ProviderData.getProviderListOfAllTypes(true);
-  ArrayList<Integer> providerList = new ArrayList<Integer>();
-  for (Hashtable h : list) {
-      String pn = (String)h.get("providerNo");
-      providerList.add(Integer.valueOf(pn));
-  }
-
-  String suggestProviderNo = "";
-  for (Integer i=1; i<1000000; i++) {
-      if (!providerList.contains(i)) {
-          suggestProviderNo = i.toString();
-          break;
-      }
-  }
-  suggestProviderNo = "000000".substring(suggestProviderNo.length()) + suggestProviderNo;
 %>
-
-<%
-    if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
-    String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
-    
-    boolean isSiteAccessPrivacy=false;
-%>
-
-<security:oscarSec objectName="_site_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%isSiteAccessPrivacy=true; %>
-</security:oscarSec>
-
 <!--
 /*
  *
@@ -66,7 +36,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -78,6 +48,7 @@
 <%@page import="org.oscarehr.common.model.Site"%><html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<meta http-equiv="Cache-Control" content="no-cache" />
 <title><bean:message key="admin.provideraddrecordhtm.title" /></title>
 <link rel="stylesheet" href="../web.css">
 <script LANGUAGE="JavaScript">
@@ -130,8 +101,7 @@ function upCaseCtrl(ctrl) {
 		<%if(OscarProperties.getInstance().isProviderNoAuto()){ %> <input
 			type="text" name="provider_no" maxlength="6" readonly="readonly"
 			value="-new-"> <%} else {%> <input type="text"
-			name="provider_no" maxlength="6"> <input type="button" value=<bean:message key="admin.provideraddrecordhtm.suggest"/>
-                        onclick="provider_no.value='<%=suggestProviderNo%>'"<%}%>
+			name="provider_no" maxlength="6"> <%}%>
 		</td>
 	</tr>
 	<tr>
@@ -157,7 +127,7 @@ function upCaseCtrl(ctrl) {
 		</td>
 		<td>
 <% SiteDao siteDao = (SiteDao)WebApplicationContextUtils.getWebApplicationContext(application).getBean("siteDao");
-List<Site> sites = ( isSiteAccessPrivacy ? siteDao.getActiveSitesByProviderNo(curProvider_no) : siteDao.getAllActiveSites()); 
+List<Site> sites = siteDao.getAllActiveSites(); 
 for (int i=0; i<sites.size(); i++) {
 %>		
 	<input type="checkbox" name="sites" value="<%= sites.get(i).getSiteId() %>"><%= sites.get(i).getName() %><br />
@@ -229,7 +199,8 @@ for (int i=0; i<sites.size(); i++) {
 			<td align="right"><bean:message key="admin.provider.formDOB" />(<font
 				size="-1"><i><bean:message
 				key="admin.provideraddrecordhtm.dateFormat" /></i></font>):</td>
-			<td><input type="text" name="dob" maxlength="11"></td>
+			<td><input type="text" name="dob" value="0001-01-01"
+				maxlength="11"></td>
 		</tr>
 		<tr>
 			<td align="right"><bean:message key="admin.provider.formAddress" />:

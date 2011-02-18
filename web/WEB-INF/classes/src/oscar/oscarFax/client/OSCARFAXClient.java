@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -37,8 +37,6 @@ import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPEnvelope;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
-
-import org.oscarehr.util.MiscUtils;
 /**
  *
  * @author  Jay
@@ -60,7 +58,7 @@ public class OSCARFAXClient {
             
             mf = MessageFactory.newInstance();
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
     }
     
@@ -86,6 +84,7 @@ public class OSCARFAXClient {
     public boolean handleResponse(SOAPMessage msg){
         boolean retval = false;
         try{
+            msg.writeTo(System.out);
             SOAPEnvelope enve = msg.getSOAPPart().getEnvelope();
             SOAPBody bod1 = enve.getBody();
                                              
@@ -103,7 +102,7 @@ public class OSCARFAXClient {
                    oscarSoapMessageError = getTheValue(soapElement,  enve, "ErrorMessage");                    
                 }
             }
-        }catch(Exception e){MiscUtils.getLogger().error("Error", e);}
+        }catch(Exception e){e.printStackTrace();}
             
         return retval;
     }
@@ -111,15 +110,14 @@ public class OSCARFAXClient {
     public String getTheValue(SOAPElement sbe,SOAPEnvelope enve,String name){        
         String retval = null;
         String currNode= null;
-
+        //System.out.println("sbe = "+sbe.getElementName().getLocalName());
         try{
             Iterator subMain = sbe.getChildElements(enve.createName(name));
             if (subMain.hasNext()){            
                 SOAPElement SBE2 = ( SOAPElement )  subMain.next();                
                 retval = SBE2.getValue();                    
             }                              
-        }catch(Exception e){
-        	MiscUtils.getLogger().error("I had probs with "+currNode, e);}
+        }catch(Exception e){System.out.print("I had probs with "+currNode);}
         return retval;
     }  
     

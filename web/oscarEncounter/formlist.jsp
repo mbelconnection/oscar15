@@ -1,5 +1,7 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
+
+<%@ page language="java"%>
 <%@ page
 	import="oscar.util.UtilMisc,oscar.oscarEncounter.data.*,java.net.*,java.util.*"%>
 <%
@@ -11,10 +13,12 @@
 	String strLimit2="10";  
 	if(request.getParameter("limit1")!=null) strLimit1 = request.getParameter("limit1");  
 	if(request.getParameter("limit2")!=null) strLimit2 = request.getParameter("limit2");
+
+	response.setHeader("Cache-Control","no-cache");
 %>
 
 <%
-	EctFormData.Form[] forms = EctFormData.getForms();
+	EctFormData.Form[] forms = new EctFormData().getForms();
 	oscar.util.UtilDateUtilities dateConvert = new oscar.util.UtilDateUtilities();
 %>
 <!--  
@@ -37,7 +41,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -112,13 +116,14 @@ function popupPageK(page) {
 		EctFormData.Form frm = forms[j];
 		String table = frm.getFormTable();
                 table = org.apache.commons.lang.StringEscapeUtils.escapeSql(table);
+		//EctFormData.PatientForm[] pforms = new EctFormData().getPatientForms(demoNo, table, Integer.parseInt(strLimit1),Integer.parseInt(strLimit2));
                                 
 		EctFormData.PatientForm[] pforms;
                 if( table.length() == 0 ) {
                     pforms = new EctFormData.PatientForm[0];
                 }
                 else {
-                    pforms = EctFormData.getPatientForms(demoNo, table);
+                    pforms = new EctFormData().getPatientForms(demoNo, table);
                 }
 		int nItems = 0;
 

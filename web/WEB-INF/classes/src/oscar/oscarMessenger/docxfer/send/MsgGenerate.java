@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the
 // * Department of Family Medicine
-// * McMaster University
+// * McMaster Unviersity
 // * Hamilton
 // * Ontario, Canada
 // *
@@ -28,8 +28,6 @@ package oscar.oscarMessenger.docxfer.send;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -41,8 +39,6 @@ import oscar.oscarDB.DBHandler;
 import oscar.oscarMessenger.docxfer.util.MsgCommxml;
 
 public class MsgGenerate {
-    private static Logger logger=MiscUtils.getLogger(); 
-
     int demographicNo;
     int itemId;
     
@@ -55,14 +51,14 @@ public class MsgGenerate {
         Document doc = MsgCommxml.newDocument();
         Element docRoot = MsgCommxml.addNode(doc, "root");
         
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         
         Document cfg = null;
         try {
             cfg = MsgCommxml.parseXMLFile("/DocXferConfig.xml");
         }
         catch (Exception ex) {
-        	logger.error("", ex);
+            ex.printStackTrace(System.err);
         }
         
         Element cfgRoot = cfg.getDocumentElement();
@@ -72,7 +68,8 @@ public class MsgGenerate {
             
             if(tbl.getNodeType() == Node.ELEMENT_NODE) {
                 if(((Element)tbl).getTagName().equals("table")) {
-                    Element newTable = constructTable((Element)tbl, doc);
+                    Element newTable = constructTable((Element)tbl, doc, db);
+                    //                 System.err.println("test "+newTable.getNodeName()+" has childs ? = "+newTable.hasChildNodes());
                     if (newTable.hasChildNodes()){
                         docRoot.appendChild(newTable);
                     }
@@ -82,7 +79,7 @@ public class MsgGenerate {
         return doc;
     }
     
-    private Element constructTable(Element cfgTable, Document doc)
+    private Element constructTable(Element cfgTable, Document doc, DBHandler db)
     throws java.sql.SQLException {
         Element table = doc.createElement("table");
         
@@ -94,7 +91,7 @@ public class MsgGenerate {
         }
         
         String sql = this.constructSQL(cfgTable);
-        ResultSet rs = DBHandler.GetSQL(sql);
+        ResultSet rs = db.GetSQL(sql);
         ResultSetMetaData meta = rs.getMetaData();
         
         Element cfgItem = (Element)cfgTable.getElementsByTagName("item").item(0);
@@ -116,7 +113,7 @@ public class MsgGenerate {
                     String fldData = "";
                     try {
                         
-                        fldData = oscar.Misc.getString(rs, i);
+                        fldData = db.getString(rs,i);
                         
                         if(fldData==null) fldData = "";
                         
@@ -143,7 +140,7 @@ public class MsgGenerate {
             }
             
             {
-                String value = oscar.Misc.getString(rs, "fldItem");
+                String value = db.getString(rs,"fldItem");
                 if(value==null) value="";
                 item.setAttribute("value", value);
             }
@@ -154,7 +151,7 @@ public class MsgGenerate {
                 
                 fld.setAttribute("name", cfgFld.getAttribute("name"));
                 fld.setAttribute("sql", cfgFld.getAttribute("sql"));
-                String value = oscar.Misc.getString(rs, ("fld" + i));
+                String value = db.getString(rs,"fld" + i);
                 if(value==null) value="";
                 fld.setAttribute("value", value);
             }
@@ -186,7 +183,8 @@ public class MsgGenerate {
         if(cfgTable.getAttribute("sqlOrder").length()>0) {
             sql += " ORDER BY " + cfgTable.getAttribute("sqlOrder");
         }
-
+        
+        // System.out.println(sql);
         return sql;
     }
 }

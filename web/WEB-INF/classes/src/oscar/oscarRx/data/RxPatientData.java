@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -31,8 +31,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 public class RxPatientData {
@@ -44,31 +42,31 @@ public class RxPatientData {
       Patient[] arr = {};     
       ArrayList lst = new ArrayList();      
       try {         
-                  
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);         
          ResultSet rs;         
          Patient p;         
-         rs = DBHandler.GetSQL(
+         rs = db.GetSQL(
          "SELECT demographic_no, last_name, first_name, sex, year_of_birth, "         
          + "month_of_birth, date_of_birth, address, city, postal, phone "         
          + "FROM demographic WHERE last_name LIKE '"         
          + surname + "%' AND first_name LIKE '" + firstName + "%'");
          
          while (rs.next()) {            
-            p = new Patient(rs.getInt("demographic_no"), oscar.Misc.getString(rs, "last_name"),            
-            oscar.Misc.getString(rs, "first_name"), oscar.Misc.getString(rs, "sex"),            
-            calcDate(oscar.Misc.getString(rs, "year_of_birth"),
-            oscar.Misc.getString(rs, "month_of_birth"),            
-            oscar.Misc.getString(rs, "date_of_birth")),            
-            oscar.Misc.getString(rs, "address"), oscar.Misc.getString(rs, "city"),
-            oscar.Misc.getString(rs, "postal"),            
-            oscar.Misc.getString(rs, "phone"), oscar.Misc.getString(rs, "hin"));            
+            p = new Patient(rs.getInt("demographic_no"), db.getString(rs,"last_name"),            
+            db.getString(rs,"first_name"), db.getString(rs,"sex"),            
+            calcDate(db.getString(rs,"year_of_birth"),
+            db.getString(rs,"month_of_birth"),            
+            db.getString(rs,"date_of_birth")),            
+            db.getString(rs,"address"), db.getString(rs,"city"),
+            db.getString(rs,"postal"),            
+            db.getString(rs,"phone"), db.getString(rs,"hin"));            
             lst.add(p);            
          }         
          rs.close();         
          arr = (Patient[]) lst.toArray(arr);         
       }
       catch (SQLException e) {         
-         MiscUtils.getLogger().error("Error", e);         
+         System.out.println(e.getMessage());         
       }      
       return arr;
       
@@ -77,30 +75,30 @@ public class RxPatientData {
    /* Patient Information */
    
    public Patient getPatient(int demographicNo) throws java.sql.SQLException {      
-            
+      DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);      
       ResultSet rs;      
       Patient p = null;      
       try {         
-         rs = DBHandler.GetSQL(
+         rs = db.GetSQL(
          "SELECT demographic_no, last_name, first_name, sex, year_of_birth, "         
          + "month_of_birth, date_of_birth, address, city, postal, phone,hin "         
          + "FROM demographic WHERE demographic_no = " + demographicNo);
          
          if (rs.next()) {            
-            p = new Patient(rs.getInt("demographic_no"), oscar.Misc.getString(rs, "last_name"),            
-            oscar.Misc.getString(rs, "first_name"), oscar.Misc.getString(rs, "sex"),            
-            calcDate(oscar.Misc.getString(rs, "year_of_birth"),
-            oscar.Misc.getString(rs, "month_of_birth"),            
-            oscar.Misc.getString(rs, "date_of_birth")),            
-            oscar.Misc.getString(rs, "address"), oscar.Misc.getString(rs, "city"),
-            oscar.Misc.getString(rs, "postal"),            
-            oscar.Misc.getString(rs, "phone"), oscar.Misc.getString(rs, "hin"));            
-            MiscUtils.getLogger().debug(oscar.Misc.getString(rs, "first_name"));
+            p = new Patient(rs.getInt("demographic_no"), db.getString(rs,"last_name"),            
+            db.getString(rs,"first_name"), db.getString(rs,"sex"),            
+            calcDate(db.getString(rs,"year_of_birth"),
+            db.getString(rs,"month_of_birth"),            
+            db.getString(rs,"date_of_birth")),            
+            db.getString(rs,"address"), db.getString(rs,"city"),
+            db.getString(rs,"postal"),            
+            db.getString(rs,"phone"), db.getString(rs,"hin"));            
+            System.out.println(db.getString(rs,"first_name"));
          }         
          rs.close();         
       }
       catch (SQLException e) {         
-         MiscUtils.getLogger().error("Error", e);         
+         System.out.println(e.getMessage());         
       }
       
       return p;      
@@ -108,36 +106,34 @@ public class RxPatientData {
    
    
    public Patient getPatient(String demographicNo) throws java.sql.SQLException {      
-            
+      DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);      
       ResultSet rs;      
       Patient p = null;      
       try {         
-         rs = DBHandler.GetSQL(
+         rs = db.GetSQL(
          "SELECT demographic_no, last_name, first_name, sex, year_of_birth, "         
          + "month_of_birth, date_of_birth, address, city, postal, phone,hin "         
          + "FROM demographic WHERE demographic_no = " + demographicNo);
          
          if (rs.next()) {            
-            p = new Patient(rs.getInt("demographic_no"), oscar.Misc.getString(rs, "last_name"),            
-            oscar.Misc.getString(rs, "first_name"), oscar.Misc.getString(rs, "sex"),            
-            calcDate(oscar.Misc.getString(rs, "year_of_birth"),
-            oscar.Misc.getString(rs, "month_of_birth"),            
-            oscar.Misc.getString(rs, "date_of_birth")),            
-            oscar.Misc.getString(rs, "address"), oscar.Misc.getString(rs, "city"),
-            oscar.Misc.getString(rs, "postal"),            
-            oscar.Misc.getString(rs, "phone"), oscar.Misc.getString(rs, "hin"));            
+            p = new Patient(rs.getInt("demographic_no"), db.getString(rs,"last_name"),            
+            db.getString(rs,"first_name"), db.getString(rs,"sex"),            
+            calcDate(db.getString(rs,"year_of_birth"),
+            db.getString(rs,"month_of_birth"),            
+            db.getString(rs,"date_of_birth")),            
+            db.getString(rs,"address"), db.getString(rs,"city"),
+            db.getString(rs,"postal"),            
+            db.getString(rs,"phone"), db.getString(rs,"hin"));            
          }         
          rs.close();         
       }
       catch (SQLException e) {         
-         MiscUtils.getLogger().error("Error", e);         
+         System.out.println(e.getMessage());         
       }
       
       return p;      
    }
-   private java.util.Date calcDate(String year, String month, String day) {   
-	   if (year==null || month==null || day==null) return(null);
-	   
+   private java.util.Date calcDate(String year, String month, String day) {      
       int iYear = Integer.parseInt(year);
       int iMonth = Integer.parseInt(month) - 1;      
       int iDay = Integer.parseInt(day);
@@ -242,31 +238,31 @@ public class RxPatientData {
       public Allergy getAllergy(int id) {
            Allergy allergy = null;
            try {            
-                        
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);            
             ResultSet rs;                        
             
-            rs = DBHandler.GetSQL("SELECT * FROM allergies WHERE allergyid  = " + String.valueOf(id));
+            rs = db.GetSQL("SELECT * FROM allergies WHERE allergyid  = " + String.valueOf(id));
             
             if(rs.next()) {               
                allergy = new Allergy(rs.getInt("allergyid"), rs.getDate("entry_date"),               
-               oscar.Misc.getString(rs, "DESCRIPTION"),
+               db.getString(rs,"DESCRIPTION"),
                rs.getInt("HICL_SEQNO"), rs.getInt("HIC_SEQNO"),               
                rs.getInt("AGCSP"), rs.getInt("AGCCS"),
                rs.getInt("TYPECODE"));
                               
-               allergy.getAllergy().setReaction(oscar.Misc.getString(rs, "reaction"));
+               allergy.getAllergy().setReaction(db.getString(rs,"reaction"));
 	       allergy.getAllergy().setStartDate(rs.getDate("start_date"));
-               allergy.getAllergy().setAgeOfOnset(oscar.Misc.getString(rs, "age_of_onset"));
-               allergy.getAllergy().setSeverityOfReaction(oscar.Misc.getString(rs, "severity_of_reaction"));
-               allergy.getAllergy().setOnSetOfReaction(oscar.Misc.getString(rs, "onset_of_reaction"));
-               allergy.getAllergy().setRegionalIdentifier(oscar.Misc.getString(rs, "regional_identifier"));
+               allergy.getAllergy().setAgeOfOnset(db.getString(rs,"age_of_onset"));
+               allergy.getAllergy().setSeverityOfReaction(db.getString(rs,"severity_of_reaction"));
+               allergy.getAllergy().setOnSetOfReaction(db.getString(rs,"onset_of_reaction"));
+               allergy.getAllergy().setRegionalIdentifier(db.getString(rs,"regional_identifier"));
                               
             }            
             rs.close();            
             
          }
          catch (SQLException e) {            
-            MiscUtils.getLogger().error("Error", e);            
+            System.out.println(e.getMessage());            
          }  
            
          return allergy;
@@ -276,25 +272,25 @@ public class RxPatientData {
          Allergy[] arr = {};         
          LinkedList lst = new LinkedList();         
          try {            
-                        
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);            
             ResultSet rs;            
             Allergy allergy;
             
-            rs = DBHandler.GetSQL("SELECT * FROM allergies WHERE demographic_no = '" + getDemographicNo() + "' and archived = '0' ORDER BY DESCRIPTION");
+            rs = db.GetSQL("SELECT * FROM allergies WHERE demographic_no = '" + getDemographicNo() + "' and archived = '0' ORDER BY DESCRIPTION");
             
             while (rs.next()) {               
                allergy = new Allergy(rs.getInt("allergyid"), rs.getDate("entry_date"),               
-               oscar.Misc.getString(rs, "DESCRIPTION"),
+               db.getString(rs,"DESCRIPTION"),
                rs.getInt("HICL_SEQNO"), rs.getInt("HIC_SEQNO"),               
                rs.getInt("AGCSP"), rs.getInt("AGCCS"),
                rs.getInt("TYPECODE"));
                               
-               allergy.getAllergy().setReaction(oscar.Misc.getString(rs, "reaction"));
+               allergy.getAllergy().setReaction(db.getString(rs,"reaction"));
 	       allergy.getAllergy().setStartDate(rs.getDate("start_date"));
-               allergy.getAllergy().setAgeOfOnset(oscar.Misc.getString(rs, "age_of_onset"));
-               allergy.getAllergy().setSeverityOfReaction(oscar.Misc.getString(rs, "severity_of_reaction"));
-               allergy.getAllergy().setOnSetOfReaction(oscar.Misc.getString(rs, "onset_of_reaction"));
-               allergy.getAllergy().setRegionalIdentifier(oscar.Misc.getString(rs, "regional_identifier"));
+               allergy.getAllergy().setAgeOfOnset(db.getString(rs,"age_of_onset"));
+               allergy.getAllergy().setSeverityOfReaction(db.getString(rs,"severity_of_reaction"));
+               allergy.getAllergy().setOnSetOfReaction(db.getString(rs,"onset_of_reaction"));
+               allergy.getAllergy().setRegionalIdentifier(db.getString(rs,"regional_identifier"));
                
                lst.add(allergy);               
             }            
@@ -302,7 +298,7 @@ public class RxPatientData {
             arr = (Allergy[]) lst.toArray(arr);            
          }
          catch (SQLException e) {            
-            MiscUtils.getLogger().error("Error", e);            
+            System.out.println(e.getMessage());            
          }
          
          return arr;         
@@ -314,7 +310,7 @@ public class RxPatientData {
             allergy = new Allergy(0, entryDate, allergyCode);            
             allergy.Save();                               
          }catch (SQLException e) {            
-            MiscUtils.getLogger().error("Error", e);                               
+            System.out.println(e.getMessage());                               
          }  
          return allergy;     
       }
@@ -322,11 +318,11 @@ public class RxPatientData {
       public boolean deleteAllergy(int allergyId) {         
          boolean b = false;
          try {            
-                        
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);            
             String sql = "update allergies set archived = '1'  WHERE allergyid = '"+allergyId+"'";            
-            b = DBHandler.RunSQL(sql);                                  
+            b = db.RunSQL(sql);                                  
          }catch (SQLException e) {            
-            MiscUtils.getLogger().error("Error", e);            
+            System.out.println(e.getMessage());            
             b = false;            
          }
          return b;
@@ -336,18 +332,18 @@ public class RxPatientData {
          Disease[] arr = {};         
          LinkedList lst = new LinkedList();         
          try {            
-                        
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);            
             ResultSet rs;            
             Disease d;            
-            rs = DBHandler.GetSQL("SELECT * FROM diseases WHERE demographic_no = '" + getDemographicNo()+"'");            
+            rs = db.GetSQL("SELECT * FROM diseases WHERE demographic_no = '" + getDemographicNo()+"'");            
             while (rs.next()) {               
-               d = new Disease(rs.getInt("diseaseid"), oscar.Misc.getString(rs, "ICD9_E"),rs.getDate("entry_date"));               
+               d = new Disease(rs.getInt("diseaseid"), db.getString(rs,"ICD9_E"),rs.getDate("entry_date"));               
                lst.add(d);               
             }            
             rs.close();            
             arr = (Disease[]) lst.toArray(arr);            
          }catch (SQLException e) {            
-            MiscUtils.getLogger().error("Error", e);            
+            System.out.println(e.getMessage());            
          }         
          return arr;         
       }
@@ -360,9 +356,9 @@ public class RxPatientData {
       
       //TODO should not delete
       public boolean deleteDisease(int diseaseId) throws SQLException {         
-                  
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);         
          String sql = "DELETE FROM diseases WHERE diseaseid = " + diseaseId;         
-         boolean b = DBHandler.RunSQL(sql);         
+         boolean b = db.RunSQL(sql);         
          return b;         
       }
       
@@ -416,8 +412,15 @@ public class RxPatientData {
          public RxAllergyData.Allergy getAllergy() {            
             return this.allergy;            
          }
-                  
+         
          public boolean Save() throws SQLException {            
+            boolean b = false;            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);            
+            b = this.Save(db);            
+            return b;            
+         }
+         
+         public boolean Save(DBHandler db) throws SQLException {            
             boolean b;            
             String sql;            
             if (this.getAllergyId() == 0) {               
@@ -439,10 +442,10 @@ public class RxPatientData {
                + this.allergy.getOnSetOfReaction()+"','"
                + this.allergy.getRegionalIdentifier()+"')";
                
-               b = DBHandler.RunSQL(sql);
+               b = db.RunSQL(sql);
                
                sql = "SELECT Max(allergyid) FROM allergies";               
-               ResultSet rs = DBHandler.GetSQL(sql);
+               ResultSet rs = db.GetSQL(sql);
                
                if (rs.next()) {                  
                   this.allergyId = rs.getInt(1);                  
@@ -466,7 +469,7 @@ public class RxPatientData {
                + "onset_of_reaction = '"+allergy.getOnSetOfReaction() + "' "
                + "WHERE allergyid = " + this.getAllergyId();
                
-               b = DBHandler.RunSQL(sql);               
+               b = db.RunSQL(sql);               
             }
             
             return b;            
@@ -511,8 +514,8 @@ public class RxPatientData {
          
          public boolean Save() throws SQLException {            
             boolean b = false;            
-                        
-            b = this.Save();            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);            
+            b = this.Save(db);            
             return b;            
          }
          
@@ -523,10 +526,10 @@ public class RxPatientData {
                sql = "INSERT INTO diseases (demographic_no, ICD9, entry_date) "               
                + "VALUES (" + Patient.this.getDemographicNo() + ", '"               
                + this.getICD9() + "', '" + this.getEntryDate() + "')";               
-               b = DBHandler.RunSQL(sql);               
+               b = db.RunSQL(sql);               
                
                sql = "SELECT Max(diseaseid) FROM diseases";               
-               ResultSet rs = DBHandler.GetSQL(sql);
+               ResultSet rs = db.GetSQL(sql);
                
                if (rs.next()) {                  
                   this.diseaseId = rs.getInt(1);                  
@@ -537,7 +540,7 @@ public class RxPatientData {
                sql = "UPDATE diseases SET ICD9 = '" + this.getICD9() + "', "               
                + "entry_date = '" + this.getEntryDate().toString() + "' "               
                + "WHERE diseaseid = " + this.getDiseaseId();               
-               b = DBHandler.RunSQL(sql);               
+               b = db.RunSQL(sql);               
             }
             
             return b;            

@@ -41,7 +41,6 @@
     {
     	// do nothing it's okay to not have this parameter
     }
-    int count_issues_display=0;
 %>
 <html>
 <head>
@@ -105,8 +104,8 @@
 			return true;
 		}
 	}
-	function validateIssuecheck(issueSize){
-		var i=0; 
+	function validateIssuecheck(){
+		var i=0;
 		for (i=0;i<issueSize;i++)
 		{
 			//alert("checked="+document.caseManagementEntryForm.elements["issueCheckList["+i+"].checked"].checked);
@@ -155,7 +154,7 @@
 			return false;
 	}
 		
-	function validateSave(count_issues_display){
+	function validateSave(){
 	
 		var str1="You cannot save a note when there is no issue checked, please add an issue or check a currently available issue before save." ;
 		var str2="Are you sure that you want to sign and save without changing the status of any of the issues?";
@@ -164,7 +163,7 @@
 		if (!validateEnounter()){
 			alert(str3); return false;
 		}
-		if (!validateIssuecheck(count_issues_display)){ 
+		if (!validateIssuecheck()){
 			alert(str1); return false;
 		}
 		if (!validateSignStatus()){
@@ -181,12 +180,6 @@
 		return true;
 	}
 
-	function toggleGroupNote(el) {
-		var checked = el.checked;
-		if(checked == true) {
-			alert('show group dialog');	
-		}
-	}
 </script>
 
 <script language="JavaScript">
@@ -343,7 +336,6 @@ if (pId==null) pId="";
 			
 			if (!resolved || showResolved)
 			{
-				count_issues_display++;
 				counter++;
 			%>
 
@@ -425,8 +417,8 @@ if (pId==null) pId="";
 		}
 		else
 		{
-			%>	
-			<input id="showResolved" type="button" value="Show Resolved Issues" onclick="document.location='CaseManagementEntry.do?method=edit&note_edit=new&from=casemgmt&demographicNo=<%=request.getParameter("demographicNo")%>&providerNo=<%=request.getParameter("providerNo")%>&showResolved=true'" />
+			%>
+				<input id="showResolved" type="button" value="Show Resolved Issues" onclick="document.location=document.location.href+'&amp;showResolved=true'" />
 			<%
 		}
 	%>
@@ -491,12 +483,7 @@ if (pId==null) pId="";
 			<td class="fieldTitle">include checked issues in note</td>
 			<td class="fieldValue"><html:checkbox property="includeIssue" onchange="setChangeFlag(true);" /></td>
 		</tr>
-<!-- commented out on Oct 4, 2010
-		<tr>
-			<td class="fieldTitle">Group Note</td>
-			<td class="fieldValue"><html:checkbox property="groupNote" onchange="setChangeFlag(true);toggleGroupNote(this);" /></td>
-		</tr>
- -->	
+
       <caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">
 		<c:if test="${param.from=='casemgmt' || requestScope.from=='casemgmt'}" >
 		<c:url value="${sessionScope.billing_url}" var="url"/>
@@ -521,9 +508,9 @@ if (pId==null) pId="";
 		<tr>
 			<td class="fieldValue" colspan="2">
 			<input type="submit" value="Save"
-				onclick="this.form.method.value='save';return validateSave(<%=count_issues_display%>);"> 
+				onclick="this.form.method.value='save';return validateSave();"> 
 			<input type="submit"
-				value="Save and Exit" onclick="this.form.method.value='saveAndExit';if (validateSave(<%=count_issues_display%>)) {return true;}else return false;">
+				value="Save and Exit" onclick="this.form.method.value='saveAndExit';if (validateSave()) {return true;}else return false;">
 			<input type="submit" 
 			    value="cancel" onclick = "this.form.method.value='cancel';return true;">
 			</td>

@@ -43,7 +43,6 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DispatchAction;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.form.study.HSFO.HSFODAO;
 import oscar.form.study.HSFO.PatientData;
@@ -102,7 +101,7 @@ public class SaveRegistrationAction extends DispatchAction{
             try {
                 parsedDate = formater.parse(dateStr);
             } catch (ParseException pe) {
-                MiscUtils.getLogger().debug("Error parsing date");
+                System.out.println("Error parsing date");
             }
         }
         return parsedDate;
@@ -114,7 +113,7 @@ public class SaveRegistrationAction extends DispatchAction{
 //        //HttpSession session = request.getSession();
 //
 //        //grab values of the form fields
-
+//        System.out.println("in submitservlet");
 //        String SiteCode = request.getParameter("SiteCode");
 //        SiteCode = "20";
 //
@@ -135,9 +134,9 @@ public class SaveRegistrationAction extends DispatchAction{
 //            java.sql.Date result = new java.sql.Date(parsedDate.getTime());
 //            BirthDate = result;
 //        } catch (ParseException pe) {
-
+//            System.out.println("Error parsing date");
 //        }
-
+//        System.out.println(BirthDate.toString());
 //
 //        String Sex = request.getParameter("Sex");
 //        String PostalCode = request.getParameter("PostalCode");
@@ -177,7 +176,7 @@ public class SaveRegistrationAction extends DispatchAction{
 //            java.sql.Date result = new java.sql.Date(parsedDate.getTime());
 //            VisitDate_Id = result;
 //        } catch (ParseException pe) {
-
+//            System.out.println("Error parsing date");
 //        }
 //
 //        String Drugcoverage = request.getParameter("Drugcoverage");
@@ -318,14 +317,14 @@ public class SaveRegistrationAction extends DispatchAction{
 //        boolean locked = isStringEqual(request,"Submit");;
 //
 //        String isfirstrecord = request.getParameter("isFirstRecord");
-
+//        System.out.println("save " +isfirstrecord);
 //        boolean firstrecord = false;
 //        if (isfirstrecord != null && isfirstrecord.equals("true")) {
 //            firstrecord = true;
 //        }
-
+//        System.out.println("firstrecord = " + firstrecord);
 //
-
+//        System.out.println(FName + "  " + LName);
 //
 //        // create object
 //        PatientData patientData = new PatientData();
@@ -360,8 +359,8 @@ public class SaveRegistrationAction extends DispatchAction{
 //                EmrHCPId,
 //                consentDate);
 //
-
-
+//        System.out.println(patientData.getFName());
+//        System.out.println(patientData.getLName());
 //
 //        VisitData visitData = new VisitData();
 //        // store data in object
@@ -467,14 +466,14 @@ public class SaveRegistrationAction extends DispatchAction{
 //                dao.insertPatient(patientData);
 //                dao.insertVisit(visitData, (String) request.getSession().getAttribute("user"));
 //            } catch (SQLException e) {
-//                MiscUtils.getLogger().error("Error", e);
+//                e.printStackTrace();
 //            }
 //        } else {
 //            try {
 //                dao.updatePatient(patientData);
 //                dao.insertVisit(visitData, (String) request.getSession().getAttribute("user"));
 //            } catch (SQLException e) {
-//                MiscUtils.getLogger().error("Error", e);
+//                e.printStackTrace();
 //            }
 //        }
 //
@@ -484,11 +483,11 @@ public class SaveRegistrationAction extends DispatchAction{
 //
     public ActionForward flowsheet(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
         
-        MiscUtils.getLogger().debug("in submitfollowupservlet");
+        System.out.println("in submitfollowupservlet");
         int ID = Integer.parseInt(request.getParameter("ID"));
         
         
-        MiscUtils.getLogger().debug("Record ID received: " + ID);
+        System.out.println("Record ID received: " + ID);
         String Patient_Id = request.getParameter("Patient_Id").toString().trim();
         
         
@@ -515,9 +514,9 @@ public class SaveRegistrationAction extends DispatchAction{
             java.sql.Date result = new java.sql.Date(parsedDate.getTime());
             BirthDate = result;
         } catch (ParseException pe) {
-            MiscUtils.getLogger().debug("Error parsing date");
+            System.out.println("Error parsing date");
         }
-        MiscUtils.getLogger().debug(BirthDate.toString());
+        System.out.println(BirthDate.toString());
         
         String Sex = request.getParameter("Sex");
         String PostalCode = request.getParameter("PostalCode");
@@ -528,9 +527,9 @@ public class SaveRegistrationAction extends DispatchAction{
         boolean Ethnic_White =  isStringEqual(request,"Ethnic_White");
         boolean Ethnic_Black = isStringEqual(request,"Ethnic_Black");
         boolean Ethnic_EIndian = isStringEqual(request,"Ethnic_EIndian");
-        MiscUtils.getLogger().debug("Ethnic_Pakistani should be equal "+request.getParameter("Ethnic_Pakistani"));
+        System.out.println("Ethnic_Pakistani should be equal "+request.getParameter("Ethnic_Pakistani"));
         boolean Ethnic_Pakistani = isStringEqual(request,"Ethnic_Pakistani");
-        MiscUtils.getLogger().debug("Ethnic_Pakistani "+Ethnic_Pakistani);
+        System.out.println("Ethnic_Pakistani "+Ethnic_Pakistani);
         boolean Ethnic_SriLankan = isStringEqual(request,"Ethnic_SriLankan");
         boolean Ethnic_Bangladeshi = isStringEqual(request,"Ethnic_Bangladeshi");
         boolean Ethnic_Chinese = isStringEqual(request,"Ethnic_Chinese");
@@ -563,9 +562,9 @@ public class SaveRegistrationAction extends DispatchAction{
             java.sql.Date result = new java.sql.Date(parsedDate.getTime());
             VisitDate_Id = result;
         } catch (ParseException pe) {
-            MiscUtils.getLogger().debug("Error parsing date");
+            System.out.println("Error parsing date");
         }
-        MiscUtils.getLogger().debug("35");
+        System.out.println("35");
         String Drugcoverage = request.getParameter("Drugcoverage");
         int SBP = getIntFromRequest(request,"SBP");
         int SBP_goal = getIntFromRequest(request,"SBP_goal");
@@ -690,16 +689,16 @@ public class SaveRegistrationAction extends DispatchAction{
         String consentDate_year = request.getParameter("consentDate_year");
         String consentDate_month = request.getParameter("consentDate_month");
         String consentDate_day = request.getParameter("consentDate_day");
-        MiscUtils.getLogger().debug("consentDate_year "+consentDate_year+"  consentDate_month "+consentDate_month +" consentDate_day "+consentDate_day);
+        System.out.println("consentDate_year "+consentDate_year+"  consentDate_month "+consentDate_month +" consentDate_day "+consentDate_day);
         
         Date consentDate = getDate(formater,consentDate_year,consentDate_month,consentDate_day);
-        MiscUtils.getLogger().debug(consentDate);
+        System.out.println(consentDate);
         
 //		determine if data should be locked
         String savestring = request.getParameter("Save");
-        MiscUtils.getLogger().debug("save: " + savestring);
+        System.out.println("save: " + savestring);
         String submitstring = request.getParameter("Submit");
-        MiscUtils.getLogger().debug("submit: " + submitstring);
+        System.out.println("submit: " + submitstring);
         boolean locked = false;
         
         
@@ -834,7 +833,7 @@ public class SaveRegistrationAction extends DispatchAction{
                 A1C_LabresultsDate,
                 locked);
         
-        MiscUtils.getLogger().debug("record id set as: " + visitData.getID());
+        System.out.println("record id set as: " + visitData.getID());
         //XMLTranslate translator = new XMLTranslate();
         
         //translator.run(patientData, visitData);
@@ -845,23 +844,63 @@ public class SaveRegistrationAction extends DispatchAction{
         try {
             dao.savePatient(patientData);
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
-
+        //
+        
+        
+        System.out.println("insert new record");
         try {
            int insertId = dao.insertVisit(visitData,(String) request.getSession().getAttribute("user"));
-           MiscUtils.getLogger().debug(" insert ID to "+insertId);
+           System.out.println(" insert ID to "+insertId);
            request.setAttribute("formId",new Integer(insertId));
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
+        
+//		if (submitstring !=null && submitstring.equals("Submit")){
+//                    //update old record to locked
+//                    System.out.println("Submit selected: lock previous record and insert new record");
+//                    try {
+//                            dao.lockVisit(visitData.getID());
+//                            dao.insertVisit(visitData,(String) request.getSession().getAttribute("user"));
+//                    } catch (SQLException e) {
+//                            // TODO Auto-generated catch block
+//                            e.printStackTrace();
+//                    }
+//
+//		}else{ //'save' record by updating db
+//                    //check if a record already exists, if not insert
+//                    System.out.println("Save and continue editing selected");
+//                    boolean isrecordexists = dao.isRecordExists(visitData.getVisitDate_Id(),visitData.getPatient_Id());
+//
+//
+////                    System.out.println("does record already exists: "+ isrecordexists);
+////                    if (isrecordexists == true){
+////                            System.out.println("update record");
+////                            try {
+////                                    dao.updateVisit(visitData);
+////                            } catch (SQLException e) {
+////                                    e.printStackTrace();
+////                            }
+////                    }else{
+//                            System.out.println("insert new record");
+//                            try {
+//                                    dao.insertVisit(visitData,(String) request.getSession().getAttribute("user"));
+//                            } catch (SQLException e) {
+//                                e.printStackTrace();
+//                            }
+////                    }
+//
+//		}
+        
         
         request.setAttribute("demographic_no", visitData.getPatient_Id());
         request.setAttribute("visitDate", visitData.getVisitDate_Id());
         //request.setAttribute("fromURL", "SubmitFollowup");
-        MiscUtils.getLogger().debug("Save "+request.getParameter("Save"));
+        System.out.println("Save "+request.getParameter("Save"));
         if(request.getParameter("Save") != null && request.getParameter("Save").equals("Save and Exit")){
-            MiscUtils.getLogger().debug("forward exit");
+            System.out.println("forward exit");
             return mapping.findForward("exit");
         }
         
@@ -869,3 +908,13 @@ public class SaveRegistrationAction extends DispatchAction{
     }
     
 }
+
+
+
+
+/////OLD CODE SECTION 1
+
+
+
+
+/////

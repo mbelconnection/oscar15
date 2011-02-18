@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -44,10 +44,10 @@ userlastname = (String) session.getAttribute("userlastname");
 %>
 
 <%@ page import="java.sql.*"%>
-
+<%@ include file="../../../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="../../dbBilling.jspf"%>
+<%@ include file="../../dbBilling.jsp"%>
 
 
 <%
@@ -112,7 +112,7 @@ recordAffected = apptMainBean.queryExecuteUpdate(param2,"save_bill_record");
 //	  int[] demo_no = new int[1]; demo_no[0]=Integer.parseInt(request.getParameter("demographic_no")); int rowsAffected = apptMainBean.queryExecuteUpdate(demo_no,param,request.getParameter("dboperation"));
   
 if (rowsAffected ==1) {
-	//change the status to billed {"updateapptstatus", "update appointment set status=? where appointment_no=? //provider_no=? and appointment_date=? and start_time=?"},
+	//apptMainBean.closePstmtConn();//change the status to billed {"updateapptstatus", "update appointment set status=? where appointment_no=? //provider_no=? and appointment_date=? and start_time=?"},
 	String[] param1 =new String[2];
 	param1[0]="B";
 	param1[1]=request.getParameter("appointment_no");
@@ -122,7 +122,9 @@ if (rowsAffected ==1) {
 	if (rsdemo.next()) {    
        billSaved = true;
    }
+   apptMainBean.closePstmtConn();
    
+   System.out.println(request.getParameter("goPrev"));
    if ( request.getParameter("goPrev") != null && request.getParameter("goPrev").equals("goPrev") && billSaved){ 
       response.sendRedirect("../../../../../oscarPrevention/AddPreventionData.jsp?prevention=Flu&demographic_no="+demoNo);
    }

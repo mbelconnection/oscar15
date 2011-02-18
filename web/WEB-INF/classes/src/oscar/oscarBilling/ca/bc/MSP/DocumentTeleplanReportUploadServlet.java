@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -38,8 +38,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.DocumentBean;
 import oscar.OscarProperties;
@@ -47,8 +47,8 @@ import oscar.OscarProperties;
 public class DocumentTeleplanReportUploadServlet extends HttpServlet{
     final static int BUFFER = 2048;
     public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException  {
-        
-        
+        int c;
+        int count;
         byte data[] = new byte[BUFFER];
         byte data1[] = new byte[BUFFER/2];
         byte data2[] = new byte[BUFFER/2];
@@ -58,12 +58,12 @@ public class DocumentTeleplanReportUploadServlet extends HttpServlet{
         HttpSession session = request.getSession(true);
         String backupfilepath = ((String) session.getAttribute("homepath"))!=null?((String) session.getAttribute("homepath")):"null" ;
         
-        
-        
-        String foldername="", fileheader="", forwardTo="";
-        
+        count=request.getContentType().indexOf('=');
+        String temp = request.getContentType().substring(count+1);
+        String filename = "test.txt", fileoldname="", foldername="", fileheader="", forwardTo="", function="", function_id="", filedesc="", creator="", doctype="", docxml="";
+        String home_dir="", doc_forward="";
         String userHomePath = System.getProperty("user.home", "user.dir");
-        MiscUtils.getLogger().debug(userHomePath);
+        System.out.println(userHomePath);
         
         Properties ap = OscarProperties.getInstance();
         
@@ -73,7 +73,7 @@ public class DocumentTeleplanReportUploadServlet extends HttpServlet{
         //
          if (forwardTo == null || forwardTo.length() < 1) return;
 
-        
+        boolean isMultipart = FileUpload.isMultipartContent(request);
         //		 Create a new file upload handler
         DiskFileUpload upload = new DiskFileUpload();
 
@@ -88,12 +88,12 @@ public class DocumentTeleplanReportUploadServlet extends HttpServlet{
                 if (item.isFormField()) {
                     //String name = item.getFieldName();
                     //String value = item.getString(); 
-
+                    //System.out.println("Fieldname: " + item.getFieldName());
                 } else {
                     String pathName = item.getName();  
                     String [] fullFile = pathName.split("[/|\\\\]");
             		File savedFile = new File(foldername, fullFile[fullFile.length-1]);
-
+                    //System.out.println(item.getName() + "fullFile: " + fullFile[fullFile.length-1]);
                     fileheader = fullFile[fullFile.length-1];
             		
             		item.write(savedFile);
@@ -101,10 +101,10 @@ public class DocumentTeleplanReportUploadServlet extends HttpServlet{
             }
         } catch (FileUploadException e) {
             // TODO Auto-generated catch block
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         //
         
@@ -147,7 +147,7 @@ public class DocumentTeleplanReportUploadServlet extends HttpServlet{
                     filename = new String(data1);
                     if(filename.length()>2 && filename.indexOf("filename")!=-1) {
                         filename = filename.substring(filename.lastIndexOf('\\')+1,filename.lastIndexOf('\"'));
-
+                        //System.out.println("filename: "+filename);
                         fileheader = filename;
                         fos = new FileOutputStream(foldername+ filename);
                         dest = new BufferedOutputStream(fos, BUFFER);

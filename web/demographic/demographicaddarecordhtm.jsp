@@ -8,11 +8,9 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 
-<%@ page
-	import="java.util.*, java.sql.*, oscar.*, oscar.oscarDemographic.data.ProvinceNames, oscar.oscarWaitingList.WaitingList"
+<%@ page import="java.util.*, java.sql.*, oscar.*, oscar.oscarDemographic.data.ProvinceNames, oscar.oscarWaitingList.WaitingList"
 	errorPage="errorpage.jsp"%>
-<%@ page
-	import="org.springframework.web.context.*,org.springframework.web.context.support.*,org.oscarehr.common.dao.*,org.oscarehr.common.model.*"%>
+<%@ page import="org.springframework.web.context.*,org.springframework.web.context.support.*,org.oscarehr.common.dao.*,org.oscarehr.common.model.*"%>
 <jsp:useBean id="providerBean" class="java.util.Properties"
 	scope="session" />
 <jsp:useBean id="addDemoBean" class="oscar.AppointmentMainBean"
@@ -53,26 +51,6 @@
   CountryCodeDAO ccDAO =  (CountryCodeDAO) ctx.getBean("countryCodeDAO");
 
   List<CountryCode> countryList = ccDAO.getAllCountryCodes();
-
-  // Used to retrieve properties from user (i.e. HC_Type & default_sex)
-  UserPropertyDAO userPropertyDAO = (UserPropertyDAO) ctx.getBean("UserPropertyDAO");
-
-  String HCType = "";
-  // Determine if curUser has selected a default HC Type
-  UserProperty HCTypeProp = userPropertyDAO.getProp(curUser_no,  UserProperty.HC_TYPE);
-  if (HCTypeProp != null) {
-     HCType = HCTypeProp.getValue();
-  } else {
-     // If there is no user defined property, then determine if the hctype system property is activated
-     HCType = props.getProperty("hctype","");
-     if (HCType == null || HCType.equals("")) {
-           // The system property is not activated, so use the billregion
-           String billregion = props.getProperty("billregion", "");
-           HCType = billregion;
-     }
-  }
-  // Use this value as the default value for province, as well
-  String defaultProvince = HCType;
 %>
 <!--
 /*
@@ -104,6 +82,8 @@
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message
 	key="demographic.demographicaddrecordhtm.title" /></title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <!-- calendar stylesheet -->
 <link rel="stylesheet" type="text/css" media="all"
 	href="../share/calendar/calendar.css" title="win2k-cold-1" />
@@ -122,10 +102,6 @@
 <script type="text/javascript" src="<%=request.getContextPath() %>/js/check_hin.js"></script>
 
 <link rel="stylesheet" href="../web.css" />
-
-<!-- Stylesheet for zdemographicfulltitlesearch.jsp -->
-<link rel="stylesheet" type="text/css" href="../share/css/searchBox.css" />
-
 <link rel="stylesheet" type="text/css" media="all" href="../share/css/extractedFromPages.css"  />
 <script language="JavaScript">
 
@@ -358,41 +334,6 @@ function checkTitleSex(ttl) {
 	else if (ttl=="MR" || ttl=="MSSR") document.adddemographic.sex.selectedIndex=0;
 }
 
-function removeAccents(s){
-        var r=s.toLowerCase();
-        r = r.replace(new RegExp("\\s", 'g'),"");
-        r = r.replace(new RegExp("[àáâãäå]", 'g'),"a");
-        r = r.replace(new RegExp("ç", 'g'),"c");
-        r = r.replace(new RegExp("[èéêë]", 'g'),"e");
-        r = r.replace(new RegExp("[ìíîï]", 'g'),"i");
-        r = r.replace(new RegExp("ñ", 'g'),"n");
-        r = r.replace(new RegExp("[òóôõö]", 'g'),"o");
-        r = r.replace(new RegExp("[ùúûü]", 'g'),"u");
-        r = r.replace(new RegExp("[ýÿ]", 'g'),"y");
-        r = r.replace(new RegExp("\\W", 'g'),"");
-        return r;
-}
-
-function autoFillHin(){
-   var hcType = document.getElementById('hc_type').value;
-   var hin = document.getElementById('hin').value;
-   if(	hcType == 'QC' && hin == ''){
-   	  var last = document.getElementById('last_name').value;
-   	  var first = document.getElementById('first_name').value;
-      var yob = document.getElementById('year_of_birth').value;
-      var mob = document.getElementById('month_of_birth').value;
-      var dob = document.getElementById('date_of_birth').value;
-
-   	  last = removeAccents(last.substring(0,3)).toUpperCase();
-   	  first = removeAccents(first.substring(0,1)).toUpperCase();
-   	  yob = yob.substring(2,4);
-
-      document.getElementById('hin').value = last + first + yob + mob + dob;
-      hin.focus();
-      hin.value = hin.value;
-   }
-}
-
 </script>
 </head>
 <!-- Databases have alias for today. It is not necessary give the current date -->
@@ -417,25 +358,25 @@ function autoFillHin(){
     <tr>
       <td align="right"> <b><bean:message key="demographic.demographicaddrecordhtm.formLastName"/><font color="red">:</font> </b></td>
       <td align="left">
-        <input type="text" name="last_name" id="last_name" onBlur="upCaseCtrl(this)" size=30 />
+        <input type="text" name="last_name" onBlur="upCaseCtrl(this)" size=30 />
       </td>
       <td align="right"><b><bean:message key="demographic.demographicaddrecordhtm.formFirstName"/><font color="red">:</font> </b> </td>
       <td align="left">
-        <input type="text" name="first_name" id="first_name" onBlur="upCaseCtrl(this)"  size=30>
+        <input type="text" name="first_name" onBlur="upCaseCtrl(this)"  size=30>
       </td>
     </tr>
     <tr>
-	<td align="right"><b><bean:message key="demographic.demographicaddrecordhtm.msgDemoLanguage"/>: <font color="red">:</font></b></td>
+	<td align="right"><b>Language<font color="red">:</font></b></td>
 	<td align="left">
 	    <select name="official_lang">
-		<option value="English" <%= vLocale.getLanguage().equals("en") ? " selected":"" %>><bean:message key="demographic.demographiceaddrecordhtm.msgEnglish"/></option>
-		<option value="French"  <%= vLocale.getLanguage().equals("fr") ? " selected":"" %>><bean:message key="demographic.demographiceaddrecordhtm.msgFrench"/></option>
+		<option value="English">English</option>
+		<option value="French">French</option>
 	    </select>
 	    &nbsp;&nbsp;
-	    <b><bean:message key="demographic.demographicaddrecordhtm.msgSpoken"/>:</b>
+	    <b>Spoken:</b>
 	    <input name="spoken_lang" size="15" />
 	</td>
-	<td align="right"><b><bean:message key="demographic.demographicaddrecordhtm.msgDemoTitle"/><font color="red">:</font></b></td>
+	<td align="right"><b>Title<font color="red">:</font></b></td>
 	<td align="left">
 	    <select name="title" onchange="checkTitleSex(value);">
                 <option value="" selected><bean:message key="demographic.demographicaddrecordhtm.msgNotSet"/></option>
@@ -545,86 +486,87 @@ function autoFillHin(){
 				<% if (vLocale.getCountry().equals("BR")) { %> <input type="text"
 					name="province" value="<%=props.getProperty("billregion", "ON")%>">
 				<% } else { %> <select name="province">
+					<% String billregion = props.getProperty("billregion", ""); %>
 					<option value="OT"
-						<%=defaultProvince.equals("")||defaultProvince.equals("OT")?" selected":""%>>Other</option>
+						<%=billregion.equals("")||billregion.equals("OT")?" selected":""%>>Other</option>
 					<%-- <option value="">None Selected</option> --%>
 					<% if (pNames.isDefined()) {
                    for (ListIterator li = pNames.listIterator(); li.hasNext(); ) {
                        String province = (String) li.next(); %>
 					<option value="<%=province%>"
-						<%=province.equals(defaultProvince)?" selected":""%>><%=li.next()%></option>
+						<%=province.equals(billregion)?" selected":""%>><%=li.next()%></option>
 					<% } %>
 					<% } else { %>
-					<option value="AB" <%=defaultProvince.equals("AB")?" selected":""%>>AB-Alberta</option>
-					<option value="BC" <%=defaultProvince.equals("BC")?" selected":""%>>BC-British Columbia</option>
-					<option value="MB" <%=defaultProvince.equals("MB")?" selected":""%>>MB-Manitoba</option>
-					<option value="NB" <%=defaultProvince.equals("NB")?" selected":""%>>NB-New Brunswick</option>
-					<option value="NL" <%=defaultProvince.equals("NL")?" selected":""%>>NL-Newfoundland & Labrador</option>
-					<option value="NT" <%=defaultProvince.equals("NT")?" selected":""%>>NT-Northwest Territory</option>
-					<option value="NS" <%=defaultProvince.equals("NS")?" selected":""%>>NS-Nova Scotia</option>
-					<option value="NU" <%=defaultProvince.equals("NU")?" selected":""%>>NU-Nunavut</option>
-					<option value="ON" <%=defaultProvince.equals("ON")?" selected":""%>>ON-Ontario</option>
-					<option value="PE" <%=defaultProvince.equals("PE")?" selected":""%>>PE-Prince Edward Island</option>
-					<option value="QC" <%=defaultProvince.equals("QC")?" selected":""%>>QC-Quebec</option>
-					<option value="SK" <%=defaultProvince.equals("SK")?" selected":""%>>SK-Saskatchewan</option>
-					<option value="YT" <%=defaultProvince.equals("YT")?" selected":""%>>YT-Yukon</option>
-					<option value="US" <%=defaultProvince.equals("US")?" selected":""%>>US resident</option>
-					<option value="US-AK" <%=defaultProvince.equals("US-AK")?" selected":""%>>US-AK-Alaska</option>
-					<option value="US-AL" <%=defaultProvince.equals("US-AL")?" selected":""%>>US-AL-Alabama</option>
-					<option value="US-AR" <%=defaultProvince.equals("US-AR")?" selected":""%>>US-AR-Arkansas</option>
-					<option value="US-AZ" <%=defaultProvince.equals("US-AZ")?" selected":""%>>US-AZ-Arizona</option>
-					<option value="US-CA" <%=defaultProvince.equals("US-CA")?" selected":""%>>US-CA-California</option>
-					<option value="US-CO" <%=defaultProvince.equals("US-CO")?" selected":""%>>US-CO-Colorado</option>
-					<option value="US-CT" <%=defaultProvince.equals("US-CT")?" selected":""%>>US-CT-Connecticut</option>
-					<option value="US-CZ" <%=defaultProvince.equals("US-CZ")?" selected":""%>>US-CZ-Canal Zone</option>
-					<option value="US-DC" <%=defaultProvince.equals("US-DC")?" selected":""%>>US-DC-District Of Columbia</option>
-					<option value="US-DE" <%=defaultProvince.equals("US-DE")?" selected":""%>>US-DE-Delaware</option>
-					<option value="US-FL" <%=defaultProvince.equals("US-FL")?" selected":""%>>US-FL-Florida</option>
-					<option value="US-GA" <%=defaultProvince.equals("US-GA")?" selected":""%>>US-GA-Georgia</option>
-					<option value="US-GU" <%=defaultProvince.equals("US-GU")?" selected":""%>>US-GU-Guam</option>
-					<option value="US-HI" <%=defaultProvince.equals("US-HI")?" selected":""%>>US-HI-Hawaii</option>
-					<option value="US-IA" <%=defaultProvince.equals("US-IA")?" selected":""%>>US-IA-Iowa</option>
-					<option value="US-ID" <%=defaultProvince.equals("US-ID")?" selected":""%>>US-ID-Idaho</option>
-					<option value="US-IL" <%=defaultProvince.equals("US-IL")?" selected":""%>>US-IL-Illinois</option>
-					<option value="US-IN" <%=defaultProvince.equals("US-IN")?" selected":""%>>US-IN-Indiana</option>
-					<option value="US-KS" <%=defaultProvince.equals("US-KS")?" selected":""%>>US-KS-Kansas</option>
-					<option value="US-KY" <%=defaultProvince.equals("US-KY")?" selected":""%>>US-KY-Kentucky</option>
-					<option value="US-LA" <%=defaultProvince.equals("US-LA")?" selected":""%>>US-LA-Louisiana</option>
-					<option value="US-MA" <%=defaultProvince.equals("US-MA")?" selected":""%>>US-MA-Massachusetts</option>
-					<option value="US-MD" <%=defaultProvince.equals("US-MD")?" selected":""%>>US-MD-Maryland</option>
-					<option value="US-ME" <%=defaultProvince.equals("US-ME")?" selected":""%>>US-ME-Maine</option>
-					<option value="US-MI" <%=defaultProvince.equals("US-MI")?" selected":""%>>US-MI-Michigan</option>
-					<option value="US-MN" <%=defaultProvince.equals("US-MN")?" selected":""%>>US-MN-Minnesota</option>
-					<option value="US-MO" <%=defaultProvince.equals("US-MO")?" selected":""%>>US-MO-Missouri</option>
-					<option value="US-MS" <%=defaultProvince.equals("US-MS")?" selected":""%>>US-MS-Mississippi</option>
-					<option value="US-MT" <%=defaultProvince.equals("US-MT")?" selected":""%>>US-MT-Montana</option>
-					<option value="US-NC" <%=defaultProvince.equals("US-NC")?" selected":""%>>US-NC-North Carolina</option>
-					<option value="US-ND" <%=defaultProvince.equals("US-ND")?" selected":""%>>US-ND-North Dakota</option>
-					<option value="US-NE" <%=defaultProvince.equals("US-NE")?" selected":""%>>US-NE-Nebraska</option>
-					<option value="US-NH" <%=defaultProvince.equals("US-NH")?" selected":""%>>US-NH-New Hampshire</option>
-					<option value="US-NJ" <%=defaultProvince.equals("US-NJ")?" selected":""%>>US-NJ-New Jersey</option>
-					<option value="US-NM" <%=defaultProvince.equals("US-NM")?" selected":""%>>US-NM-New Mexico</option>
-					<option value="US-NU" <%=defaultProvince.equals("US-NU")?" selected":""%>>US-NU-Nunavut</option>
-					<option value="US-NV" <%=defaultProvince.equals("US-NV")?" selected":""%>>US-NV-Nevada</option>
-					<option value="US-NY" <%=defaultProvince.equals("US-NY")?" selected":""%>>US-NY-New York</option>
-					<option value="US-OH" <%=defaultProvince.equals("US-OH")?" selected":""%>>US-OH-Ohio</option>
-					<option value="US-OK" <%=defaultProvince.equals("US-OK")?" selected":""%>>US-OK-Oklahoma</option>
-					<option value="US-OR" <%=defaultProvince.equals("US-OR")?" selected":""%>>US-OR-Oregon</option>
-					<option value="US-PA" <%=defaultProvince.equals("US-PA")?" selected":""%>>US-PA-Pennsylvania</option>
-					<option value="US-PR" <%=defaultProvince.equals("US-PR")?" selected":""%>>US-PR-Puerto Rico</option>
-					<option value="US-RI" <%=defaultProvince.equals("US-RI")?" selected":""%>>US-RI-Rhode Island</option>
-					<option value="US-SC" <%=defaultProvince.equals("US-SC")?" selected":""%>>US-SC-South Carolina</option>
-					<option value="US-SD" <%=defaultProvince.equals("US-SD")?" selected":""%>>US-SD-South Dakota</option>
-					<option value="US-TN" <%=defaultProvince.equals("US-TN")?" selected":""%>>US-TN-Tennessee</option>
-					<option value="US-TX" <%=defaultProvince.equals("US-TX")?" selected":""%>>US-TX-Texas</option>
-					<option value="US-UT" <%=defaultProvince.equals("US-UT")?" selected":""%>>US-UT-Utah</option>
-					<option value="US-VA" <%=defaultProvince.equals("US-VA")?" selected":""%>>US-VA-Virginia</option>
-					<option value="US-VI" <%=defaultProvince.equals("US-VI")?" selected":""%>>US-VI-Virgin Islands</option>
-					<option value="US-VT" <%=defaultProvince.equals("US-VT")?" selected":""%>>US-VT-Vermont</option>
-					<option value="US-WA" <%=defaultProvince.equals("US-WA")?" selected":""%>>US-WA-Washington</option>
-					<option value="US-WI" <%=defaultProvince.equals("US-WI")?" selected":""%>>US-WI-Wisconsin</option>
-					<option value="US-WV" <%=defaultProvince.equals("US-WV")?" selected":""%>>US-WV-West Virginia</option>
-					<option value="US-WY" <%=defaultProvince.equals("US-WY")?" selected":""%>>US-WY-Wyoming</option>
+					<option value="AB" <%=billregion.equals("AB")?" selected":""%>>AB-Alberta</option>
+					<option value="BC" <%=billregion.equals("BC")?" selected":""%>>BC-British Columbia</option>
+					<option value="MB" <%=billregion.equals("MB")?" selected":""%>>MB-Manitoba</option>
+					<option value="NB" <%=billregion.equals("NB")?" selected":""%>>NB-New Brunswick</option>
+					<option value="NL" <%=billregion.equals("NL")?" selected":""%>>NL-Newfoundland & Labrador</option>
+					<option value="NT" <%=billregion.equals("NT")?" selected":""%>>NT-Northwest Territory</option>
+					<option value="NS" <%=billregion.equals("NS")?" selected":""%>>NS-Nova Scotia</option>
+					<option value="NU" <%=billregion.equals("NU")?" selected":""%>>NU-Nunavut</option>
+					<option value="ON" <%=billregion.equals("ON")?" selected":""%>>ON-Ontario</option>
+					<option value="PE" <%=billregion.equals("PE")?" selected":""%>>PE-Prince Edward Island</option>
+					<option value="QC" <%=billregion.equals("QC")?" selected":""%>>QC-Quebec</option>
+					<option value="SK" <%=billregion.equals("SK")?" selected":""%>>SK-Saskatchewan</option>
+					<option value="YT" <%=billregion.equals("YT")?" selected":""%>>YT-Yukon</option>
+					<option value="US" <%=billregion.equals("US")?" selected":""%>>US resident</option>
+					<option value="US-AK" <%=billregion.equals("US-AK")?" selected":""%>>US-AK-Alaska</option>
+					<option value="US-AL" <%=billregion.equals("US-AL")?" selected":""%>>US-AL-Alabama</option>
+					<option value="US-AR" <%=billregion.equals("US-AR")?" selected":""%>>US-AR-Arkansas</option>
+					<option value="US-AZ" <%=billregion.equals("US-AZ")?" selected":""%>>US-AZ-Arizona</option>
+					<option value="US-CA" <%=billregion.equals("US-CA")?" selected":""%>>US-CA-California</option>
+					<option value="US-CO" <%=billregion.equals("US-CO")?" selected":""%>>US-CO-Colorado</option>
+					<option value="US-CT" <%=billregion.equals("US-CT")?" selected":""%>>US-CT-Connecticut</option>
+					<option value="US-CZ" <%=billregion.equals("US-CZ")?" selected":""%>>US-CZ-Canal Zone</option>
+					<option value="US-DC" <%=billregion.equals("US-DC")?" selected":""%>>US-DC-District Of Columbia</option>
+					<option value="US-DE" <%=billregion.equals("US-DE")?" selected":""%>>US-DE-Delaware</option>
+					<option value="US-FL" <%=billregion.equals("US-FL")?" selected":""%>>US-FL-Florida</option>
+					<option value="US-GA" <%=billregion.equals("US-GA")?" selected":""%>>US-GA-Georgia</option>
+					<option value="US-GU" <%=billregion.equals("US-GU")?" selected":""%>>US-GU-Guam</option>
+					<option value="US-HI" <%=billregion.equals("US-HI")?" selected":""%>>US-HI-Hawaii</option>
+					<option value="US-IA" <%=billregion.equals("US-IA")?" selected":""%>>US-IA-Iowa</option>
+					<option value="US-ID" <%=billregion.equals("US-ID")?" selected":""%>>US-ID-Idaho</option>
+					<option value="US-IL" <%=billregion.equals("US-IL")?" selected":""%>>US-IL-Illinois</option>
+					<option value="US-IN" <%=billregion.equals("US-IN")?" selected":""%>>US-IN-Indiana</option>
+					<option value="US-KS" <%=billregion.equals("US-KS")?" selected":""%>>US-KS-Kansas</option>
+					<option value="US-KY" <%=billregion.equals("US-KY")?" selected":""%>>US-KY-Kentucky</option>
+					<option value="US-LA" <%=billregion.equals("US-LA")?" selected":""%>>US-LA-Louisiana</option>
+					<option value="US-MA" <%=billregion.equals("US-MA")?" selected":""%>>US-MA-Massachusetts</option>
+					<option value="US-MD" <%=billregion.equals("US-MD")?" selected":""%>>US-MD-Maryland</option>
+					<option value="US-ME" <%=billregion.equals("US-ME")?" selected":""%>>US-ME-Maine</option>
+					<option value="US-MI" <%=billregion.equals("US-MI")?" selected":""%>>US-MI-Michigan</option>
+					<option value="US-MN" <%=billregion.equals("US-MN")?" selected":""%>>US-MN-Minnesota</option>
+					<option value="US-MO" <%=billregion.equals("US-MO")?" selected":""%>>US-MO-Missouri</option>
+					<option value="US-MS" <%=billregion.equals("US-MS")?" selected":""%>>US-MS-Mississippi</option>
+					<option value="US-MT" <%=billregion.equals("US-MT")?" selected":""%>>US-MT-Montana</option>
+					<option value="US-NC" <%=billregion.equals("US-NC")?" selected":""%>>US-NC-North Carolina</option>
+					<option value="US-ND" <%=billregion.equals("US-ND")?" selected":""%>>US-ND-North Dakota</option>
+					<option value="US-NE" <%=billregion.equals("US-NE")?" selected":""%>>US-NE-Nebraska</option>
+					<option value="US-NH" <%=billregion.equals("US-NH")?" selected":""%>>US-NH-New Hampshire</option>
+					<option value="US-NJ" <%=billregion.equals("US-NJ")?" selected":""%>>US-NJ-New Jersey</option>
+					<option value="US-NM" <%=billregion.equals("US-NM")?" selected":""%>>US-NM-New Mexico</option>
+					<option value="US-NU" <%=billregion.equals("US-NU")?" selected":""%>>US-NU-Nunavut</option>
+					<option value="US-NV" <%=billregion.equals("US-NV")?" selected":""%>>US-NV-Nevada</option>
+					<option value="US-NY" <%=billregion.equals("US-NY")?" selected":""%>>US-NY-New York</option>
+					<option value="US-OH" <%=billregion.equals("US-OH")?" selected":""%>>US-OH-Ohio</option>
+					<option value="US-OK" <%=billregion.equals("US-OK")?" selected":""%>>US-OK-Oklahoma</option>
+					<option value="US-OR" <%=billregion.equals("US-OR")?" selected":""%>>US-OR-Oregon</option>
+					<option value="US-PA" <%=billregion.equals("US-PA")?" selected":""%>>US-PA-Pennsylvania</option>
+					<option value="US-PR" <%=billregion.equals("US-PR")?" selected":""%>>US-PR-Puerto Rico</option>
+					<option value="US-RI" <%=billregion.equals("US-RI")?" selected":""%>>US-RI-Rhode Island</option>
+					<option value="US-SC" <%=billregion.equals("US-SC")?" selected":""%>>US-SC-South Carolina</option>
+					<option value="US-SD" <%=billregion.equals("US-SD")?" selected":""%>>US-SD-South Dakota</option>
+					<option value="US-TN" <%=billregion.equals("US-TN")?" selected":""%>>US-TN-Tennessee</option>
+					<option value="US-TX" <%=billregion.equals("US-TX")?" selected":""%>>US-TX-Texas</option>
+					<option value="US-UT" <%=billregion.equals("US-UT")?" selected":""%>>US-UT-Utah</option>
+					<option value="US-VA" <%=billregion.equals("US-VA")?" selected":""%>>US-VA-Virginia</option>
+					<option value="US-VI" <%=billregion.equals("US-VI")?" selected":""%>>US-VI-Virgin Islands</option>
+					<option value="US-VT" <%=billregion.equals("US-VT")?" selected":""%>>US-VT-Vermont</option>
+					<option value="US-WA" <%=billregion.equals("US-WA")?" selected":""%>>US-WA-Washington</option>
+					<option value="US-WI" <%=billregion.equals("US-WI")?" selected":""%>>US-WI-Wisconsin</option>
+					<option value="US-WV" <%=billregion.equals("US-WV")?" selected":""%>>US-WV-West Virginia</option>
+					<option value="US-WY" <%=billregion.equals("US-WY")?" selected":""%>>US-WY-Wyoming</option>
 					<% } %>
 				</select> <% } %>
 				</td>
@@ -642,14 +584,12 @@ function autoFillHin(){
 					key="demographic.demographicaddrecordhtm.formPhoneHome" />: </b></td>
 				<td align="left"><input type="text" name="phone"
 					onBlur="formatPhoneNum()"
-					value="<%=props.getProperty("phoneprefix", "905-")%>"> <bean:message
-					key="demographic.demographicaddrecordhtm.Ext" />:<input
+					value="<%=props.getProperty("phoneprefix", "905-")%>"> Ext:<input
 					type="text" name="hPhoneExt" value="" size="4" /></td>
 				<td align="right"><b><bean:message
 					key="demographic.demographicaddrecordhtm.formPhoneWork" />:</b></td>
 				<td align="left"><input type="text" name="phone2"
-					onBlur="formatPhoneNum()" value=""> <bean:message
-					key="demographic.demographicaddrecordhtm.Ext" />:<input type="text"
+					onBlur="formatPhoneNum()" value=""> Ext:<input type="text"
 					name="wPhoneExt" value="" style="display: inline" size="4" /></td>
 			</tr>
 			<tr valign="top">
@@ -687,13 +627,13 @@ function autoFillHin(){
 				<td align="left" nowrap>
 				<table border="0" cellpadding="0" cellspacing="0">
 					<tr>
-						<td><input type="text" name="year_of_birth" size="4" id="year_of_birth"
+						<td><input type="text" name="year_of_birth" size="4"
 							maxlength="4" value="yyyy"
 							onFocus="if(this.value=='yyyy')this.value='';"
 							onBlur="if(this.value=='')this.value='yyyy';"></td>
 						<td>-</td>
 						<td><!--input type="text" name="month_of_birth" size="2" maxlength="2"-->
-                                                    <select name="month_of_birth" id="month_of_birth">
+						<select name="month_of_birth">
 							<option value="01">01
 							<option value="02">02
 							<option value="03">03
@@ -709,7 +649,7 @@ function autoFillHin(){
 						</select></td>
 						<td>-</td>
 						<td><!--input type="text" name="date_of_birth" size="2" maxlength="2"-->
-						<select name="date_of_birth" id="date_of_birth">
+						<select name="date_of_birth">
 							<option value="01">01
 							<option value="02">02
 							<option value="03">03
@@ -750,29 +690,18 @@ function autoFillHin(){
 				<td align="right"><b><bean:message
 					key="demographic.demographicaddrecordhtm.formSex" /><font
 					color="red">:</font></b></td>
-
-				<% // Determine if curUser has selected a default sex in preferences
-                                   UserProperty sexProp = userPropertyDAO.getProp(curUser_no,  UserProperty.DEFAULT_SEX);
-                                   String sex = "";
-                                   if (sexProp != null) {
-                                       sex = sexProp.getValue();
-                                   } else {
-                                       // Access defaultsex system property
-                                       sex = props.getProperty("defaultsex","");
-                                   }
-                                %>
                                 <td align="left"><select name="sex">
-                                    <option value="M"  <%= sex.equals("M") ? " selected": "" %>><bean:message
+                                        <option value="M"><bean:message
                                         key="demographic.demographicaddrecordhtm.formM" /></option>
-                                    <option value="F"  <%= sex.equals("F") ? " selected": "" %>><bean:message
+                                    <option value="F"><bean:message
                                         key="demographic.demographicaddrecordhtm.formF" /></option>
                                 </select></td>
 			</tr>
 			<tr valign="top">
 				<td align="right"><b><bean:message
 					key="demographic.demographicaddrecordhtm.formHIN" />: </b></td>
-				<td align="left" nowrap><input type="text" name="hin" id="hin"
-                                                               size="15" onfocus="autoFillHin()" > <b><bean:message
+				<td align="left" nowrap><input type="text" name="hin"
+					size="15"> <b><bean:message
 					key="demographic.demographicaddrecordhtm.formVer" />: <input
 					type="text" name="ver" value="" size="3" onBlur="upCaseCtrl(this)">
 				</b></td>
@@ -788,96 +717,96 @@ function autoFillHin(){
 					key="demographic.demographicaddrecordhtm.formHCType" />: </b></td>
 				<td>
 				<% if(vLocale.getCountry().equals("BR")) { %> <input type="text"
-					name="hc_type" value=""> <% } else { %>
-				<select name="hc_type" id="hc_type">
+					name="hc_type" value=""> <% } else {%> <% String billregion = props.getProperty("billregion", ""); %>
+				<select name="hc_type">
 					<option value="OT"
-						<%=HCType.equals("")||HCType.equals("OT")?" selected":""%>>Other</option>
+						<%=billregion.equals("")||billregion.equals("OT")?" selected":""%>>Other</option>
 					<% if (pNames.isDefined()) {
                    for (ListIterator li = pNames.listIterator(); li.hasNext(); ) {
                        String province = (String) li.next(); %>
-                       <option value="<%=province%>"<%=province.equals(HCType)?" selected":""%>><%=li.next()%></option>
+                       <option value="<%=province%>"<%=province.equals(billregion)?" selected":""%>><%=li.next()%></option>
                    <% } %>
             <% } else { %>
-		<option value="AB"<%=HCType.equals("AB")?" selected":""%>>AB-Alberta</option>
-		<option value="BC"<%=HCType.equals("BC")?" selected":""%>>BC-British Columbia</option>
-		<option value="MB"<%=HCType.equals("MB")?" selected":""%>>MB-Manitoba</option>
-		<option value="NB"<%=HCType.equals("NB")?" selected":""%>>NB-New Brunswick</option>
-		<option value="NL"<%=HCType.equals("NL")?" selected":""%>>NL-Newfoundland & Labrador</option>
-		<option value="NT"<%=HCType.equals("NT")?" selected":""%>>NT-Northwest Territory</option>
-		<option value="NS"<%=HCType.equals("NS")?" selected":""%>>NS-Nova Scotia</option>
-		<option value="NU"<%=HCType.equals("NU")?" selected":""%>>NU-Nunavut</option>
-		<option value="ON"<%=HCType.equals("ON")?" selected":""%>>ON-Ontario</option>
-		<option value="PE"<%=HCType.equals("PE")?" selected":""%>>PE-Prince Edward Island</option>
-		<option value="QC"<%=HCType.equals("QC")?" selected":""%>>QC-Quebec</option>
-		<option value="SK"<%=HCType.equals("SK")?" selected":""%>>SK-Saskatchewan</option>
-		<option value="YT"<%=HCType.equals("YT")?" selected":""%>>YT-Yukon</option>
-		<option value="US"<%=HCType.equals("US")?" selected":""%>>US resident</option>
-		<option value="US-AK" <%=HCType.equals("US-AK")?" selected":""%>>US-AK-Alaska</option>
-		<option value="US-AL" <%=HCType.equals("US-AL")?" selected":""%>>US-AL-Alabama</option>
-		<option value="US-AR" <%=HCType.equals("US-AR")?" selected":""%>>US-AR-Arkansas</option>
-		<option value="US-AZ" <%=HCType.equals("US-AZ")?" selected":""%>>US-AZ-Arizona</option>
-		<option value="US-CA" <%=HCType.equals("US-CA")?" selected":""%>>US-CA-California</option>
-		<option value="US-CO" <%=HCType.equals("US-CO")?" selected":""%>>US-CO-Colorado</option>
-		<option value="US-CT" <%=HCType.equals("US-CT")?" selected":""%>>US-CT-Connecticut</option>
-		<option value="US-CZ" <%=HCType.equals("US-CZ")?" selected":""%>>US-CZ-Canal Zone</option>
-		<option value="US-DC" <%=HCType.equals("US-DC")?" selected":""%>>US-DC-District Of Columbia</option>
-		<option value="US-DE" <%=HCType.equals("US-DE")?" selected":""%>>US-DE-Delaware</option>
-		<option value="US-FL" <%=HCType.equals("US-FL")?" selected":""%>>US-FL-Florida</option>
-		<option value="US-GA" <%=HCType.equals("US-GA")?" selected":""%>>US-GA-Georgia</option>
-		<option value="US-GU" <%=HCType.equals("US-GU")?" selected":""%>>US-GU-Guam</option>
-		<option value="US-HI" <%=HCType.equals("US-HI")?" selected":""%>>US-HI-Hawaii</option>
-		<option value="US-IA" <%=HCType.equals("US-IA")?" selected":""%>>US-IA-Iowa</option>
-		<option value="US-ID" <%=HCType.equals("US-ID")?" selected":""%>>US-ID-Idaho</option>
-		<option value="US-IL" <%=HCType.equals("US-IL")?" selected":""%>>US-IL-Illinois</option>
-		<option value="US-IN" <%=HCType.equals("US-IN")?" selected":""%>>US-IN-Indiana</option>
-		<option value="US-KS" <%=HCType.equals("US-KS")?" selected":""%>>US-KS-Kansas</option>
-		<option value="US-KY" <%=HCType.equals("US-KY")?" selected":""%>>US-KY-Kentucky</option>
-		<option value="US-LA" <%=HCType.equals("US-LA")?" selected":""%>>US-LA-Louisiana</option>
-		<option value="US-MA" <%=HCType.equals("US-MA")?" selected":""%>>US-MA-Massachusetts</option>
-		<option value="US-MD" <%=HCType.equals("US-MD")?" selected":""%>>US-MD-Maryland</option>
-		<option value="US-ME" <%=HCType.equals("US-ME")?" selected":""%>>US-ME-Maine</option>
-		<option value="US-MI" <%=HCType.equals("US-MI")?" selected":""%>>US-MI-Michigan</option>
-		<option value="US-MN" <%=HCType.equals("US-MN")?" selected":""%>>US-MN-Minnesota</option>
-		<option value="US-MO" <%=HCType.equals("US-MO")?" selected":""%>>US-MO-Missouri</option>
-		<option value="US-MS" <%=HCType.equals("US-MS")?" selected":""%>>US-MS-Mississippi</option>
-		<option value="US-MT" <%=HCType.equals("US-MT")?" selected":""%>>US-MT-Montana</option>
-		<option value="US-NC" <%=HCType.equals("US-NC")?" selected":""%>>US-NC-North Carolina</option>
-		<option value="US-ND" <%=HCType.equals("US-ND")?" selected":""%>>US-ND-North Dakota</option>
-		<option value="US-NE" <%=HCType.equals("US-NE")?" selected":""%>>US-NE-Nebraska</option>
-		<option value="US-NH" <%=HCType.equals("US-NH")?" selected":""%>>US-NH-New Hampshire</option>
-		<option value="US-NJ" <%=HCType.equals("US-NJ")?" selected":""%>>US-NJ-New Jersey</option>
-		<option value="US-NM" <%=HCType.equals("US-NM")?" selected":""%>>US-NM-New Mexico</option>
-		<option value="US-NU" <%=HCType.equals("US-NU")?" selected":""%>>US-NU-Nunavut</option>
-		<option value="US-NV" <%=HCType.equals("US-NV")?" selected":""%>>US-NV-Nevada</option>
-		<option value="US-NY" <%=HCType.equals("US-NY")?" selected":""%>>US-NY-New York</option>
-		<option value="US-OH" <%=HCType.equals("US-OH")?" selected":""%>>US-OH-Ohio</option>
-		<option value="US-OK" <%=HCType.equals("US-OK")?" selected":""%>>US-OK-Oklahoma</option>
-		<option value="US-OR" <%=HCType.equals("US-OR")?" selected":""%>>US-OR-Oregon</option>
-		<option value="US-PA" <%=HCType.equals("US-PA")?" selected":""%>>US-PA-Pennsylvania</option>
-		<option value="US-PR" <%=HCType.equals("US-PR")?" selected":""%>>US-PR-Puerto Rico</option>
-		<option value="US-RI" <%=HCType.equals("US-RI")?" selected":""%>>US-RI-Rhode Island</option>
-		<option value="US-SC" <%=HCType.equals("US-SC")?" selected":""%>>US-SC-South Carolina</option>
-		<option value="US-SD" <%=HCType.equals("US-SD")?" selected":""%>>US-SD-South Dakota</option>
-		<option value="US-TN" <%=HCType.equals("US-TN")?" selected":""%>>US-TN-Tennessee</option>
-		<option value="US-TX" <%=HCType.equals("US-TX")?" selected":""%>>US-TX-Texas</option>
-		<option value="US-UT" <%=HCType.equals("US-UT")?" selected":""%>>US-UT-Utah</option>
-		<option value="US-VA" <%=HCType.equals("US-VA")?" selected":""%>>US-VA-Virginia</option>
-		<option value="US-VI" <%=HCType.equals("US-VI")?" selected":""%>>US-VI-Virgin Islands</option>
-		<option value="US-VT" <%=HCType.equals("US-VT")?" selected":""%>>US-VT-Vermont</option>
-		<option value="US-WA" <%=HCType.equals("US-WA")?" selected":""%>>US-WA-Washington</option>
-		<option value="US-WI" <%=HCType.equals("US-WI")?" selected":""%>>US-WI-Wisconsin</option>
-		<option value="US-WV" <%=HCType.equals("US-WV")?" selected":""%>>US-WV-West Virginia</option>
-		<option value="US-WY" <%=HCType.equals("US-WY")?" selected":""%>>US-WY-Wyoming</option>
+		<option value="AB"<%=billregion.equals("AB")?" selected":""%>>AB-Alberta</option>
+		<option value="BC"<%=billregion.equals("BC")?" selected":""%>>BC-British Columbia</option>
+		<option value="MB"<%=billregion.equals("MB")?" selected":""%>>MB-Manitoba</option>
+		<option value="NB"<%=billregion.equals("NB")?" selected":""%>>NB-New Brunswick</option>
+		<option value="NL"<%=billregion.equals("NL")?" selected":""%>>NL-Newfoundland & Labrador</option>
+		<option value="NT"<%=billregion.equals("NT")?" selected":""%>>NT-Northwest Territory</option>
+		<option value="NS"<%=billregion.equals("NS")?" selected":""%>>NS-Nova Scotia</option>
+		<option value="NU"<%=billregion.equals("NU")?" selected":""%>>NU-Nunavut</option>
+		<option value="ON"<%=billregion.equals("ON")?" selected":""%>>ON-Ontario</option>
+		<option value="PE"<%=billregion.equals("PE")?" selected":""%>>PE-Prince Edward Island</option>
+		<option value="QC"<%=billregion.equals("QC")?" selected":""%>>QC-Quebec</option>
+		<option value="SK"<%=billregion.equals("SK")?" selected":""%>>SK-Saskatchewan</option>
+		<option value="YT"<%=billregion.equals("YT")?" selected":""%>>YT-Yukon</option>
+		<option value="US"<%=billregion.equals("US")?" selected":""%>>US resident</option>
+		<option value="US-AK" <%=billregion.equals("US-AK")?" selected":""%>>US-AK-Alaska</option>
+		<option value="US-AL" <%=billregion.equals("US-AL")?" selected":""%>>US-AL-Alabama</option>
+		<option value="US-AR" <%=billregion.equals("US-AR")?" selected":""%>>US-AR-Arkansas</option>
+		<option value="US-AZ" <%=billregion.equals("US-AZ")?" selected":""%>>US-AZ-Arizona</option>
+		<option value="US-CA" <%=billregion.equals("US-CA")?" selected":""%>>US-CA-California</option>
+		<option value="US-CO" <%=billregion.equals("US-CO")?" selected":""%>>US-CO-Colorado</option>
+		<option value="US-CT" <%=billregion.equals("US-CT")?" selected":""%>>US-CT-Connecticut</option>
+		<option value="US-CZ" <%=billregion.equals("US-CZ")?" selected":""%>>US-CZ-Canal Zone</option>
+		<option value="US-DC" <%=billregion.equals("US-DC")?" selected":""%>>US-DC-District Of Columbia</option>
+		<option value="US-DE" <%=billregion.equals("US-DE")?" selected":""%>>US-DE-Delaware</option>
+		<option value="US-FL" <%=billregion.equals("US-FL")?" selected":""%>>US-FL-Florida</option>
+		<option value="US-GA" <%=billregion.equals("US-GA")?" selected":""%>>US-GA-Georgia</option>
+		<option value="US-GU" <%=billregion.equals("US-GU")?" selected":""%>>US-GU-Guam</option>
+		<option value="US-HI" <%=billregion.equals("US-HI")?" selected":""%>>US-HI-Hawaii</option>
+		<option value="US-IA" <%=billregion.equals("US-IA")?" selected":""%>>US-IA-Iowa</option>
+		<option value="US-ID" <%=billregion.equals("US-ID")?" selected":""%>>US-ID-Idaho</option>
+		<option value="US-IL" <%=billregion.equals("US-IL")?" selected":""%>>US-IL-Illinois</option>
+		<option value="US-IN" <%=billregion.equals("US-IN")?" selected":""%>>US-IN-Indiana</option>
+		<option value="US-KS" <%=billregion.equals("US-KS")?" selected":""%>>US-KS-Kansas</option>
+		<option value="US-KY" <%=billregion.equals("US-KY")?" selected":""%>>US-KY-Kentucky</option>
+		<option value="US-LA" <%=billregion.equals("US-LA")?" selected":""%>>US-LA-Louisiana</option>
+		<option value="US-MA" <%=billregion.equals("US-MA")?" selected":""%>>US-MA-Massachusetts</option>
+		<option value="US-MD" <%=billregion.equals("US-MD")?" selected":""%>>US-MD-Maryland</option>
+		<option value="US-ME" <%=billregion.equals("US-ME")?" selected":""%>>US-ME-Maine</option>
+		<option value="US-MI" <%=billregion.equals("US-MI")?" selected":""%>>US-MI-Michigan</option>
+		<option value="US-MN" <%=billregion.equals("US-MN")?" selected":""%>>US-MN-Minnesota</option>
+		<option value="US-MO" <%=billregion.equals("US-MO")?" selected":""%>>US-MO-Missouri</option>
+		<option value="US-MS" <%=billregion.equals("US-MS")?" selected":""%>>US-MS-Mississippi</option>
+		<option value="US-MT" <%=billregion.equals("US-MT")?" selected":""%>>US-MT-Montana</option>
+		<option value="US-NC" <%=billregion.equals("US-NC")?" selected":""%>>US-NC-North Carolina</option>
+		<option value="US-ND" <%=billregion.equals("US-ND")?" selected":""%>>US-ND-North Dakota</option>
+		<option value="US-NE" <%=billregion.equals("US-NE")?" selected":""%>>US-NE-Nebraska</option>
+		<option value="US-NH" <%=billregion.equals("US-NH")?" selected":""%>>US-NH-New Hampshire</option>
+		<option value="US-NJ" <%=billregion.equals("US-NJ")?" selected":""%>>US-NJ-New Jersey</option>
+		<option value="US-NM" <%=billregion.equals("US-NM")?" selected":""%>>US-NM-New Mexico</option>
+		<option value="US-NU" <%=billregion.equals("US-NU")?" selected":""%>>US-NU-Nunavut</option>
+		<option value="US-NV" <%=billregion.equals("US-NV")?" selected":""%>>US-NV-Nevada</option>
+		<option value="US-NY" <%=billregion.equals("US-NY")?" selected":""%>>US-NY-New York</option>
+		<option value="US-OH" <%=billregion.equals("US-OH")?" selected":""%>>US-OH-Ohio</option>
+		<option value="US-OK" <%=billregion.equals("US-OK")?" selected":""%>>US-OK-Oklahoma</option>
+		<option value="US-OR" <%=billregion.equals("US-OR")?" selected":""%>>US-OR-Oregon</option>
+		<option value="US-PA" <%=billregion.equals("US-PA")?" selected":""%>>US-PA-Pennsylvania</option>
+		<option value="US-PR" <%=billregion.equals("US-PR")?" selected":""%>>US-PR-Puerto Rico</option>
+		<option value="US-RI" <%=billregion.equals("US-RI")?" selected":""%>>US-RI-Rhode Island</option>
+		<option value="US-SC" <%=billregion.equals("US-SC")?" selected":""%>>US-SC-South Carolina</option>
+		<option value="US-SD" <%=billregion.equals("US-SD")?" selected":""%>>US-SD-South Dakota</option>
+		<option value="US-TN" <%=billregion.equals("US-TN")?" selected":""%>>US-TN-Tennessee</option>
+		<option value="US-TX" <%=billregion.equals("US-TX")?" selected":""%>>US-TX-Texas</option>
+		<option value="US-UT" <%=billregion.equals("US-UT")?" selected":""%>>US-UT-Utah</option>
+		<option value="US-VA" <%=billregion.equals("US-VA")?" selected":""%>>US-VA-Virginia</option>
+		<option value="US-VI" <%=billregion.equals("US-VI")?" selected":""%>>US-VI-Virgin Islands</option>
+		<option value="US-VT" <%=billregion.equals("US-VT")?" selected":""%>>US-VT-Vermont</option>
+		<option value="US-WA" <%=billregion.equals("US-WA")?" selected":""%>>US-WA-Washington</option>
+		<option value="US-WI" <%=billregion.equals("US-WI")?" selected":""%>>US-WI-Wisconsin</option>
+		<option value="US-WV" <%=billregion.equals("US-WV")?" selected":""%>>US-WV-West Virginia</option>
+		<option value="US-WY" <%=billregion.equals("US-WY")?" selected":""%>>US-WY-Wyoming</option>
           <% } %>
           </select>
         <% }%>
       </td>
       <td align="right">
-         <b><bean:message key="demographic.demographicaddrecordhtm.msgCountryOfOrigin"/>:</b>
+         <b>Country of Origin:</b>
       </td>
       <td>
           <select name="countryOfOrigin">
-              <option value="-1"><bean:message key="demographic.demographicaddrecordhtm.msgNotSet"/></option>
+              <option value="-1">Not Set</option>
               <%for(CountryCode cc : countryList){ %>
               <option value="<%=cc.getCountryId()%>"><%=cc.getCountryName() %></option>
               <%}%>
@@ -885,7 +814,7 @@ function autoFillHin(){
       </td>
     </tr>
     <tr valign="top">
-	<td  align="right"><b><bean:message key="demographic.demographicaddrecordhtm.msgSIN"/>:</b> </td>
+	<td  align="right"><b> Sin#:</b> </td>
 	<td align="left"  >
 	    <input type="text" name="sin">
 	</td>
@@ -970,6 +899,7 @@ function autoFillHin(){
 									  String	sql   = "select * from billingreferral order by last_name, first_name" ;
 									  oscar.oscarBilling.ca.on.data.BillingONDataHelp dbObj = new oscar.oscarBilling.ca.on.data.BillingONDataHelp();
 									  ResultSet rs1 = dbObj.searchDBRecord(sql);
+										// System.out.println(sql);
 									  Properties prop = null;
 									  Vector vecRef = new Vector();
 									  while (rs1.next()) {
@@ -1012,19 +942,9 @@ document.forms[1].r_doctor_ohip.value = refNo;
 					key="demographic.demographicaddrecordhtm.formReferalDoctorN" />:</b></td>
 				<td align="left" height="10"><input type="text"
 					name="r_doctor_ohip" maxlength="6"> <% if("ON".equals(prov)) { %>
-				<!--<a -->
-                                    <!--add more if-else statements to include other languages for now if en and fr-->
-                                    <% if (vLocale.getLanguage().equals("en")) {%>
-
-					<a href=# onClick ="popupPage(600,750,'http://www.cmq.org/en/RepertoireMembres/Recherche.aspx');return false;"> <bean:message key="demographic.demographicaddrecordhtm.Search"/></a>
-
-                                    <% }else if (vLocale.getLanguage().equals("fr")){%>
-
-                                        <a href=# onClick ="popupPage(600,750,'http://www.cmq.org/fr/RepertoireMembres/Recherche.aspx');return false;"> <bean:message key="demographic.demographicaddrecordhtm.Search"/></a>
-
-                                    <%}%>
-                               <!-- </a> -->
-                                <% } %>
+				<a
+					href="javascript:referralScriptAttach2('r_doctor_ohip','r_doctor')">Search
+				#</a> <% } %>
 				</td>
 			</tr>
 			<tr valign="top">
@@ -1033,16 +953,15 @@ document.forms[1].r_doctor_ohip.value = refNo;
 				<td align="left"><!--input type="text" name="roster_status" onBlur="upCaseCtrl(this)"-->
 				<select name="roster_status" style="width: 160">
 					<option value=""></option>
-					<option value="RO"><bean:message key="demographic.demographicaddrecordhtm.RO-rostered" /></option>
-					<option value="NR"><bean:message key="demographic.demographicaddrecordhtm.NR-notrostered" /></option>
-					<option value="TE"><bean:message key="demographic.demographicaddrecordhtm.TE-terminated" /></option>
-					<option value="FS"><bean:message key="demographic.demographicaddrecordhtm.FS-feeforservice" /></option>
+					<option value="RO">RO - rostered</option>
+					<option value="NR">NR - not rostered</option>
+					<option value="TE">TE - terminated</option>
+					<option value="FS">FS - fee for service</option>
 					<% ResultSet rsstatus1 = addDemoBean.queryResults("search_rsstatus");
              while (rsstatus1.next()) { %>
 					<option value="<%=rsstatus1.getString("roster_status")%>"><%=rsstatus1.getString("roster_status")%></option>
 					<% } // end while %>
-				</select> <input type="button" onClick="newStatus1();" value="<bean:message
-					key="demographic.demographicaddrecordhtm.AddNewRosterStatus"/> " /></td>
+				</select> <input type="button" onClick="newStatus1();" value="Add New" /></td>
 				<td align="right" nowrap><b><bean:message
 					key="demographic.demographicaddrecordhtm.formPCNDateJoined" />: </b></td>
 				<td align="left"><input type="text" name="hc_renew_date_year"
@@ -1058,17 +977,16 @@ document.forms[1].r_doctor_ohip.value = refNo;
 				<% if (vLocale.getCountry().equals("BR")) { %> <input type="text"
 					name="patient_status" value="AC" onBlur="upCaseCtrl(this)">
 				<% } else { %> <select name="patient_status" style="width: 160">
-					<option value="AC"><bean:message key="demographic.demographicaddrecordhtm.AC-Active" /></option>
-					<option value="IN"><bean:message key="demographic.demographicaddrecordhtm.IN-InActive" /></option>
-					<option value="DE"><bean:message key="demographic.demographicaddrecordhtm.DE-Deceased" /></option>
-					<option value="MO"><bean:message key="demographic.demographicaddrecordhtm.MO-Moved" /></option>
-					<option value="FI"><bean:message key="demographic.demographicaddrecordhtm.FI-Fired" /></option>
+					<option value="AC">AC - Active</option>
+					<option value="IN">IN - Inactive</option>
+					<option value="DE">DE - Deceased</option>
+					<option value="MO">MO - Moved</option>
+					<option value="FI">FI - Fired</option>
 					<% ResultSet rsstatus = addDemoBean.queryResults("search_ptstatus");
              while (rsstatus.next()) { %>
 					<option value="<%=rsstatus.getString("patient_status")%>"><%=rsstatus.getString("patient_status")%></option>
 					<% } // end while %>
-				</select> <input type="button" onClick="newStatus();" value="<bean:message
-					key="demographic.demographicaddrecordhtm.AddNewPatient"/> ">
+				</select> <input type="button" onClick="newStatus();" value="Add New">
 				<% } // end if...then...else %>
 				</td>
 				<td align="right"><b><bean:message
@@ -1116,13 +1034,14 @@ document.forms[1].r_doctor_ohip.value = refNo;
 				<td colspan="4">
 				<table border="1" width="100%">
 					<tr valign="top">
-                                            <td align="right" width="15%" nowrap><b> <bean:message key="demographic.demographicaddarecordhtm.msgWaitList"/>: </b></td>
+						<td align="right" width="15%" nowrap><b>Add patient to<br />
+						waiting list: </b></td>
 						<td align="left" width="38%"><select name="list_id">
 							<% if(wLReadonly.equals("")){ %>
 							<option value="0">--Select Waiting List--</option>
 							<%}else{ %>
-							<option value="0"><bean:message key="demographic.demographicaddarecordhtm.optCreateWaitList"/>
-							</option>
+							<option value="0">--Please Create Waiting List Name
+							first--</option>
 							<%} %>
 							<%
                                        ResultSet rsWL = addDemoBean.queryResults("search_waiting_list");
@@ -1133,14 +1052,14 @@ document.forms[1].r_doctor_ohip.value = refNo;
                                        }
                                      %>
 						</select></td>
-						<td align="right" nowrap><b><bean:message key="demographic.demographicaddarecordhtm.msgWaitListNote"/>: </b></td>
+						<td align="right" nowrap><b>Waiting List Note: </b></td>
 						<td align="left"><input type="text" name="waiting_list_note"
 							size="36" <%=wLReadonly%>></td>
 					</tr>
 
 					<tr>
 						<td colspan="2" align="right">&nbsp;</td>
-						<td align="right" nowrap><b><bean:message key="demographic.demographicaddarecordhtm.msgDateOfReq"/>:</b></td>
+						<td align="right" nowrap><b>*Date of request: </b></td>
 						<td align="left"><input type="text"
 							name="waiting_list_referral_date" id="waiting_list_referral_date"
 							value="" size="12" <%=wLReadonly%>> <img
@@ -1240,6 +1159,7 @@ if(oscarVariables.getProperty("demographicExtJScript") != null) { out.println(os
 *
 <font face="Courier New, Courier, mono" size="-1"><bean:message
 	key="demographic.demographicaddrecordhtm.formDateFormat" /> </font>
+<% addDemoBean.closePstmtConn(); %>
 
 <script type="text/javascript">
 Calendar.setup({ inputField : "waiting_list_referral_date", ifFormat : "%Y-%m-%d", showsTime :false, button : "referral_date_cal", singleClick : true, step : 1 });

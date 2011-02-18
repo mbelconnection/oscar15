@@ -18,11 +18,13 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 -->
+
+<%@ page language="java"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
@@ -181,9 +183,11 @@ window.onload = stripe;
                                 <th valign="bottom" class="Header">Desc</th>
                                 <th valign="bottom" class="Header">--</th>
                                 <%
+                                System.out.println("HEHREHRE");
                                 MeasurementMapConfig map = new MeasurementMapConfig();
                                 List<String> types = map.getLabTypes();
                                 types.remove("FLOWSHEET");
+                                System.out.println("and here "+types.size());
                                 for(String type:types){%>
                                 <th valign="bottom" class="Header"><%=type%></th>
                                 <%}%>

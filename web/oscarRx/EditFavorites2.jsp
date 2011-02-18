@@ -1,7 +1,10 @@
+<%@ page language="java"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+<% response.setHeader("Cache-Control","no-cache");%>
+
 <!--
 /*
  *
@@ -22,7 +25,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -132,7 +135,7 @@ int i, j;
             alert('Incorrect entry in field Repeat.');
             err = true;
         }
-
+        
         if(err == false) {
             var data="favoriteId="+favoriteId+"&favoriteName="+favoriteName+"&customName="+customName+"&takeMin="+takeMin+"&takeMax="+takeMax+"&frequencyCode="+frequencyCode+
                 "&duration="+duration+"&durationUnit="+durationUnit+"&quantity="+quantity+"&repeat="+repeat+"&nosubs="+nosubs+"&prn="+prn+"&customInstr="+customInstr+"&special="+special;
@@ -224,8 +227,8 @@ int i, j;
 						<td colspan=2><b>Favorite Name:</b><input type=hidden
 							name="fldFavoriteId<%= i%>" value="<%= f.getFavoriteId() %>" />
 						<input type=text size="50" name="fldFavoriteName<%= i%>"
-							class=tblRow size=80 value="<%= f.getFavoriteName() %>" />&nbsp;&nbsp;&nbsp;
-                                                </td>
+							class=tblRow size=80 value="<%= f.getFavoriteName() %>" />&nbsp;&nbsp;&nbsp;                                                
+                                                </td>                                               
                                                 <td>
                                                     <a id="saveSuccess_<%=i%>" style="display:none;color:red">Changes saved!</a>
                                                 </td>

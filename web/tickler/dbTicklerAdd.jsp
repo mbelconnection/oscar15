@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -27,10 +27,9 @@
 <%@page import="org.springframework.web.context.WebApplicationContext"%>                                
 <%@ taglib uri="/WEB-INF/rewrite-tag.tld" prefix="rewrite" %>
 <%@ page import="java.math.*, java.util.*, java.io.*, java.sql.*, oscar.*, java.net.*,oscar.MyDateFormat,org.caisi.model.*,org.caisi.dao.*,oscar.util.*,org.oscarehr.common.model.*,org.oscarehr.common.dao.*"  %>
-
-
-<%@page import="org.oscarehr.util.MiscUtils"%><jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean" scope="session" /> 
-<%@ include file="dbTicker.jspf" %>
+<%@ include file="../admin/dbconnection.jsp" %>
+<jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean" scope="session" /> 
+<%@ include file="dbTicker.jsp" %>
 <% 
 
 //GregorianCalendar now=new GregorianCalendar();
@@ -68,6 +67,7 @@ Tickler tickler = new Tickler();
    TicklerDAO ticklerDAO = (TicklerDAO) ctx.getBean("ticklerDAOT");
    ticklerDAO.saveTickler(tickler);
     
+   System.out.println("get Tickler ID == "+tickler.getTickler_no()+" >>>>>>>> "+docType+" ======== "+docId);
    
    if (docType != null && docId != null && !docType.trim().equals("") && !docId.trim().equals("")){
        
@@ -81,9 +81,13 @@ Tickler tickler = new Tickler();
              TicklerLinkDAO ticklerLinkDAO = (TicklerLinkDAO) ctx.getBean("ticklerLinkDAO");
              ticklerLinkDAO.save(tLink);
              }catch(Exception e){
-            	 MiscUtils.getLogger().error("No link with this tickler", e);
+                 System.out.println("No link with this tickler");
              }
+      }else{
+          System.out.println("LESS THAN");
       }
+   }else{
+       System.out.println("Whaa happened???");
    }
  
    boolean rowsAffected = true;

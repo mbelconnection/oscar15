@@ -17,7 +17,6 @@ import org.oscarehr.common.dao.IntegratorConsentDao;
 import org.oscarehr.common.model.IntegratorConsent;
 import org.oscarehr.common.model.Provider;
 import org.oscarehr.common.model.IntegratorConsent.ConsentStatus;
-import org.oscarehr.common.model.IntegratorConsent.SignatureStatus;
 import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
@@ -117,11 +116,6 @@ public class ManageConsent {
 		else return (previousConsentToView.getClientConsentStatus() == status);
 	}
 
-	public boolean displayAsSelectedSignatureStatus(SignatureStatus status) {
-		if (previousConsentToView == null) return false;
-		else return (previousConsentToView.getSignatureStatus() == status);
-	}
-	
 	public boolean displayAsSelectedExpiry(int months) {
 		if (previousConsentToView == null) return (months == -1);
 		else {
@@ -146,7 +140,7 @@ public class ManageConsent {
 	public String getPreviousConsentProvider()
 	{
 		Provider provider=providerDao.getProvider(previousConsentToView.getProviderNo());
-		return(provider.getFormattedName());
+		return(provider.getFormattedName()+", "+provider.getProviderType());
 	}
 	
 	public String getPreviousConsentDate()

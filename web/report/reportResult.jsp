@@ -41,12 +41,15 @@ String reportName = (new RptReportItem()).getReportName(reportId);
 
 RptFormQuery formQuery = new RptFormQuery();
 String reportSql = formQuery.getQueryStr(reportId, request);
+System.out.println("SQL: " + reportSql);
 
 RptReportConfigData formConfig = new RptReportConfigData();
 Vector[] vecField = formConfig.getAllFieldNameValue(SAVE_AS, reportId);
 Vector vecFieldCaption = vecField[1];
 Vector vecFieldName = vecField[0];
+//System.out.println("SQL: 1");
 Vector vecFieldValue = (new RptReportCreator()).query(reportSql, vecFieldCaption);
+//System.out.println("SQL: 2");
 
 %>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
@@ -55,6 +58,8 @@ Vector vecFieldValue = (new RptReportCreator()).query(reportSql, vecFieldCaption
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Report List</title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <LINK REL="StyleSheet" HREF="../web.css" TYPE="text/css">
 <script language="JavaScript">
 

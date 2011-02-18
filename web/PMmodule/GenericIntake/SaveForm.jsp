@@ -1,3 +1,5 @@
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
 <%@page import="java.sql.*,oscar.oscarDB.*"%>
 <%@page
 	import="java.util.*,org.oscarehr.PMmodule.dao.*,org.oscarehr.PMmodule.service.*,org.oscarehr.PMmodule.model.*,org.springframework.web.context.support.*,org.springframework.web.context.*"%>
@@ -13,8 +15,8 @@
     } catch(NumberFormatException e) {}
     IntakeNode itn = (IntakeNode) session.getAttribute("intakeNode");
     Integer frmVersion = (Integer) session.getAttribute("form_version");
-    //String publisher = session.getAttribute("publisher").toString();
-    String publisher = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProvider.getFormattedName();
+    String publisher = session.getAttribute("publisher").toString();
+    
     String frmLabel = itn.getLabelStr();
     
     saveNodeLabels(itn, genericIntakeManager);
@@ -48,6 +50,7 @@
 <html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Save Form</title>
 </head>
 <body>
@@ -129,7 +132,6 @@ void copyIntakeNode(IntakeNode org, IntakeNode cpy) {
     cpy.setFormType(org.getFormType());
     cpy.setQuestionId(org.getQuestionId());
     cpy.setRepeating(org.getRepeating());
-    cpy.setCommonList(org.getCommonList());
     cpy.setValidations(org.getValidations());
     if (!org.isIntake() && !org.isPage() && !org.isSection() && !org.isAnswerCompound()) {
         cpy.setEq_to_id(org.getEq_to_id());

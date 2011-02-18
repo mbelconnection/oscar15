@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -34,7 +34,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -48,13 +47,13 @@ public class EctConAddServiceAction extends Action
         String service = addServiceForm.getService();
         try
         {
-            
-            String sql = String.valueOf(String.valueOf((new StringBuilder("insert into consultationServices (serviceDesc,active) values ('")).append(service).append("','1')")));
-            DBHandler.RunSQL(sql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            String sql = String.valueOf(String.valueOf((new StringBuffer("insert into consultationServices (serviceDesc,active) values ('")).append(service).append("','1')")));
+            db.RunSQL(sql);
         }
         catch(SQLException e)
         {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         request.setAttribute("SERVADD", service);
         return mapping.findForward("success");

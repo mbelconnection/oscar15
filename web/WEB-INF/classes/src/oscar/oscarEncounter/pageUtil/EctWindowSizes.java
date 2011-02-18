@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -49,19 +49,19 @@ public class EctWindowSizes {
         
         try {
 
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select * from encounterWindow where provider_no='"+provNo+"'";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             
             rs.next(); // we WANT this to throw an exception if there is no corresponding row in the DB
             
-            props.setProperty("rowOneSize", oscar.Misc.getString(rs, "rowOneSize"));
-            props.setProperty("rowTwoSize", oscar.Misc.getString(rs, "rowTwoSize"));
-            props.setProperty("rowThreeSize", oscar.Misc.getString(rs, "rowThreeSize"));
-            props.setProperty("presBoxSize", oscar.Misc.getString(rs, "presBoxSize"));                                       
+            props.setProperty("rowOneSize", db.getString(rs,"rowOneSize"));
+            props.setProperty("rowTwoSize", db.getString(rs,"rowTwoSize"));
+            props.setProperty("rowThreeSize", db.getString(rs,"rowThreeSize"));
+            props.setProperty("presBoxSize", db.getString(rs,"presBoxSize"));                                       
             rs.close();
         } catch (Exception e) {
-            //MiscUtils.getLogger().error("Error", e);
+            // e.printStackTrace(System.out);
             props.setProperty("rowOneSize", "60");
             props.setProperty("rowTwoSize", "60");
             props.setProperty("rowThreeSize", "378");

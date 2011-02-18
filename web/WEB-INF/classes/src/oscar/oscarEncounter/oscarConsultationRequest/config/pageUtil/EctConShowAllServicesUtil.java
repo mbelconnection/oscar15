@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -27,8 +27,6 @@ package oscar.oscarEncounter.oscarConsultationRequest.config.pageUtil;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -41,9 +39,9 @@ public class EctConShowAllServicesUtil
         serviceDescVec = new Vector();
         try
         {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select * from consultationServices where active = '1' order by serviceDesc";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             while(rs.next()) {
               serviceDescVec.add(rs.getString("serviceDesc"));
               serviceIdVec.add(rs.getString("serviceId"));
@@ -51,7 +49,7 @@ public class EctConShowAllServicesUtil
 
             rs.close();
         }  catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
     }
 

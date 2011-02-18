@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -27,8 +27,6 @@ package oscar.oscarRx.data;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Vector;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarRx.util.RxDrugRef;
 
@@ -43,17 +41,17 @@ public class RxDrugData {
     public class DrugMonograph{
           
          
-          public String name;        // : string. International nonproprietary name (INPN) of this drug (=generic)
+          public String name;        // : string. International nonproprietary name (INPN) of this drug (=�?generic�?)
           public String atc;         //: string. ATC code
           public String regionalIdentifier;
           //     generics : struct. Lists all generic components (usually just one). Key (string) is the generic name, value (integer) is the repective primary key
           public boolean essential;  //: True if this drug is on the WHO essential drug list
           public String product;     //: string. If this drug is not a generic, the product brand name is listed under this key, else this key is not available
           public String action;      //: string. Description of mode of action.
-          public Vector indications; //: array of Indications. Each struct has indication as key, and a struct as value containing the following keys:
+          public Vector indications; //: array of Indications. Each struct has “indication�? as key, and a struct as value containing the following keys:
           public Vector components = new Vector();
           
-          public Vector contraindications; //: array of contraindications. Each struct has contraindication as key, and a struct as value containing the following keys:
+          public Vector contraindications; //: array of contraindications. Each struct has “contraindication�? as key, and a struct as value containing the following keys:
           
           public String[] practice_points; //: array of strings
           public String paediatric_use; //:  string. Describing special considerations in paediatric use
@@ -75,7 +73,7 @@ public class RxDrugData {
           public DrugMonograph(){};
           
           public DrugMonograph(Hashtable hash){
-              MiscUtils.getLogger().debug(hash);
+              System.out.println(hash);
               name    = (String) hash.get("name");
               atc     = (String) hash.get("atc");
               product = (String) hash.get("product");
@@ -85,7 +83,7 @@ public class RxDrugData {
               if(drugRoute!=null){
                   for (int i=0;i<drugRoute.size();i++){
                       String r=(String)drugRoute.get(i);
-
+                      //System.out.println(r);
                       route.add(r);
                   }
               }
@@ -136,8 +134,8 @@ public class RxDrugData {
             int frequency_units; //: integer. 0=not applicable, 1=seconds, 2=minutes, 3=hours, 4=days, 5=weeks, 6=months, 7=years
             int frequency;       //: integer. How often this drug should be administered
             int duration_units; //: integer. Same as frequency_units, additional value 8='times'
-            int duration_minimum; // ; integer. How long a usual course of this drug should be given. -1 is permanent, -2=p.r.n.
-            int duration_maximum; // : integer. -1 is permanent, -2=p.r.n.
+            int duration_minimum; // ; integer. How long a usual course of this drug should be given. -1 is “permanent�?, -2=�?p.r.n.�?
+            int duration_maximum; // : integer. -1 is “permanent�?, “-2�?=�?p.r.n.�?
             boolean constrained;  //: boolean. If true, no automazied dosage suggestion must be generated, prescriber must read comment. (e.g. dosage per body surface etc.)
             String comment;
           }
@@ -171,7 +169,7 @@ public class RxDrugData {
             this.name = (String) h.get("name");
             //this.type = (String) h.get("category");//type
             this.type = ((Integer) h.get("category")).toString();
-            MiscUtils.getLogger().debug("pkey "+pKey+" name "+name+" type "+type);
+            System.out.println("pkey "+pKey+" name "+name+" type "+type);
             //d.tag  = (Tag)    h.get("tag");
         }
         
@@ -545,7 +543,7 @@ public class RxDrugData {
                  String str = (String) alli.get(k);
                  int id = Integer.parseInt(str);
                  li.add(allerg[id]);
-                 MiscUtils.getLogger().debug(str);
+                 System.out.println(str);
               }
               
            }
@@ -554,10 +552,10 @@ public class RxDrugData {
         
 //        if (actualAllergies != null){
 //           for (int i =0; i < actualAllergies.length; i++){
-
+//              System.out.println(i+" "+actualAllergies[i].getAllergy().getDESCRIPTION()+" "+actualAllergies[i].getAllergy().getTYPECODE());              
 //           }
 //        }else{
-
+//           System.out.println("ACTUAL ALLERGIES == NULL");
 //        }
         
         return actualAllergies;
@@ -571,7 +569,7 @@ public class RxDrugData {
         RxDrugRef d = new RxDrugRef();
         for(int i = 0; i < atcCodes.size(); i++){
            String ss = (String) atcCodes.get(i);
-           MiscUtils.getLogger().debug(ss);           
+           System.out.println(ss);           
         }
         
         v = d.getInteractions(atcCodes);
@@ -587,11 +585,11 @@ public class RxDrugData {
             inact.significance = (String) h.get("significance");
             inact.comment = (String) h.get("comment");
             lst.add(inact);
-            MiscUtils.getLogger().debug("affectingDrug"+inact.affectingdrug);
+            System.out.println("affectingDrug"+inact.affectingdrug);
         }
-        MiscUtils.getLogger().debug(lst.size());
+        System.out.println(lst.size());
         arr = (Interaction[])lst.toArray(arr);
-        MiscUtils.getLogger().debug(arr.length);
+        System.out.println(arr.length);
         return arr;
      }
      

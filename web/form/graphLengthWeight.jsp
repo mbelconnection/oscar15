@@ -18,16 +18,19 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 --%>
+
+<%@ page language="java"%>
 <%@ page
 	import="oscar.form.*, oscar.form.data.*, oscar.util.*, java.util.Date"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 
 <html:html locale="true">
+<% response.setHeader("Cache-Control","no-cache");%>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Length & Weight Graph</title>
@@ -49,6 +52,9 @@
     String red = "graphics/redMark.gif";
     String blue = "graphics/blueMark.gif";
 	String chart = ((FrmRourkeRecord) rec).isFemale(demoNo) == true ? "graphics/girlLength36m.jpg" : "graphics/boyLength36m.jpg" ;
+//    props.list(System.out); 
+//    System.out.println("female = "+props.getProperty("female",""));
+//    if(props.getProperty("female", "").equalsIgnoreCase("1"))
 %>
 
 
@@ -66,7 +72,9 @@
         }
         catch(Exception ex)
         {
+//            System.err.println(ex);
         }
+//        System.out.println("age: "+age);
         return age;
     }
 %>

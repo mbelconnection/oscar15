@@ -32,17 +32,15 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.oscarehr.decisionSupport.model.DSConsequence;
 import org.oscarehr.decisionSupport.model.DSGuideline;
 import org.oscarehr.decisionSupport.model.DSGuidelineFactory;
 import org.oscarehr.decisionSupport.model.DecisionSupportException;
-import org.oscarehr.util.MiscUtils;
-
-import oscar.OscarProperties;
 
 /**
  * Class used to Manage BillingGuidelines.
@@ -51,73 +49,47 @@ import oscar.OscarProperties;
  */
 public class BillingGuidelines  {
 
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(BillingGuidelines.class);
 
     private List<DSGuideline> billingGuideLines = null ;
     
    
     static BillingGuidelines measurementTemplateFlowSheetConfig = new BillingGuidelines();
-    static String region = "";
 
-    HashMap<String,String[]> filenameMap = new HashMap<String,String[]>();
-    String[] filenamesBC= {"BC250.xml","BC401a.xml","BC401b.xml","BC428.xml"};
-    String[] filenamesON= {"ON250.xml","ON428.xml"};
-    String[] filenameON250 = {"ON250.xml"};
-    String[] filenameON428 = {"ON428.xml"};
    
    
     /**
      * Creates a new instance of MeasurementTemplateFlowSheetConfig
      */
     private BillingGuidelines() {
-        filenameMap.put("BC", filenamesBC);
-        filenameMap.put("ON", filenamesON);
-        filenameMap.put("250", filenameON250);
-        filenameMap.put("428", filenameON428);
     }
 
-    static public BillingGuidelines getInstance(String code) {
-        if (measurementTemplateFlowSheetConfig.billingGuideLines == null || !code.equals(region)) {
-            try {
-                region = code;
-                measurementTemplateFlowSheetConfig.loadGuidelines(region);
-
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return measurementTemplateFlowSheetConfig;
-    }
 
     static public BillingGuidelines getInstance() {
-        String tmpRegion = OscarProperties.getInstance().getProperty("billregion","");
-        if (measurementTemplateFlowSheetConfig.billingGuideLines == null || !tmpRegion.equals(region)) {
+        if (measurementTemplateFlowSheetConfig.billingGuideLines == null) {
             try {
-                region = tmpRegion;
-                measurementTemplateFlowSheetConfig.loadGuidelines(region);
-
+                measurementTemplateFlowSheetConfig.loadGuidelines();
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
         }
         return measurementTemplateFlowSheetConfig;
     }
+
+    String[] filenames= {"250.xml","401a.xml","401b.xml","428.xml"};
 
     /**
      * Loads all the guidelines from preset files in this package.  This will probably change to load them from a table in the database.
      */
-    void loadGuidelines(String regionCode) throws FileNotFoundException {
+    void loadGuidelines() throws FileNotFoundException {
         log.debug("LOADING FLOWSSHEETS");
         billingGuideLines = new ArrayList();
-
-        String[] filenames = filenameMap.get(regionCode);
-        if( filenames != null ) {
         for (String filename : filenames) {
             DSGuideline guideline = null;
-            StringBuilder sb = new StringBuilder();
+            StringBuffer sb = new StringBuffer();
             try{
-                    String streamToGet = "oscar/oscarBilling/ca/decisionSupport/"+filename;
-                log.debug("Trying to get "+streamToGet);
+                String streamToGet = "oscar/oscarBilling/ca/bc/decisionSupport/"+filename;
+                System.out.println("Trying to get "+streamToGet);
                 BufferedReader in = new BufferedReader(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(streamToGet)));
                 String str;
                 while ((str = in.readLine()) != null) {
@@ -125,22 +97,18 @@ public class BillingGuidelines  {
                 }
                 in.close();
                 DSGuidelineFactory dsFactory = new DSGuidelineFactory();
-                log.debug("xml "+sb.toString());
+                System.out.println("xml "+sb.toString());
                 guideline = dsFactory.createGuidelineFromXml(sb.toString());
                 billingGuideLines.add(guideline);
             }catch(Exception e){
-                MiscUtils.getLogger().error("Error", e);
+                e.printStackTrace();
             }
-        }
-    }
-        else {
-            throw new RuntimeException("bill code not found");
         }
     }
 
 
     public List<DSConsequence> evaluateAndGetConsequences(String demographicNo, String providerNo) {
-        log.debug("passed in provider: " + providerNo + " demographicNo" + demographicNo);
+        System.out.println("passed in provider: " + providerNo + " demographicNo" + demographicNo);
         log.info("Decision Support 'evaluateAndGetConsequences' has been called, reading " + billingGuideLines.size() + " for this provider");
         ArrayList<DSConsequence> allResultingConsequences = new ArrayList();
         for (DSGuideline dsGuideline: billingGuideLines) {

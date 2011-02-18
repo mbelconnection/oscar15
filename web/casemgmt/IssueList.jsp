@@ -18,12 +18,15 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
 // -----------------------------------------------------------------------------------------------------------------------
---%><%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
+--%>
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 <%@page import="org.oscarehr.casemgmt.model.*"%>
 <%@page import="java.util.ArrayList"%>
 

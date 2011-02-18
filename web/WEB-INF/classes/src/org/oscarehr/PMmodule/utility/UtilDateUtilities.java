@@ -79,8 +79,6 @@ public class UtilDateUtilities {
     }
 
     public static Date calcDate(String s, String s1, String s2)    {
-    	if (s==null || s1==null || s2==null) return(null);
-    	
         int i = Integer.parseInt(s);
         int j = Integer.parseInt(s1) - 1;
         int k = Integer.parseInt(s2);
@@ -100,8 +98,6 @@ public class UtilDateUtilities {
      * @return age string ( ie 2 months, 4 years .etc )
      */    
     public static String calcAgeAtDate(Date DOB,Date pointInTime)    {
-    	if (DOB==null) return(null);
-    	
         GregorianCalendar now = new GregorianCalendar();
         now.setTime(pointInTime);
         int curYear = now.get(Calendar.YEAR);
@@ -207,7 +203,7 @@ public class UtilDateUtilities {
      */    
     public static int getNumMonths(Date dStart, Date dEnd) {
        int i = 0;
-
+       //System.out.println("Getting the number of months between "+dStart.toString()+ " and "+dEnd.toString() );        
        Calendar calendar = Calendar.getInstance();
        calendar.setTime(dStart);
        while (calendar.getTime().before(dEnd) || calendar.getTime().equals(dEnd)) {

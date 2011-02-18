@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -30,8 +30,6 @@ package oscar.billing.model;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.billing.cad.model.CadCid;
 import oscar.billing.cad.model.CadProcedimentos;
@@ -363,7 +361,7 @@ public class Appointment {
     public void removeProcedimentos(long id) {
         for (int i = 0; i < procedimentoRealizado.size(); i++) {
             ProcedimentoRealizado pr = (ProcedimentoRealizado) procedimentoRealizado.get(i);
-            MiscUtils.getLogger().debug("pr " +
+            System.out.println("pr " +
                 pr.getCadProcedimentos().getCoProcedimento());
 
             if (pr.getCadProcedimentos().getCoProcedimento() == id) {

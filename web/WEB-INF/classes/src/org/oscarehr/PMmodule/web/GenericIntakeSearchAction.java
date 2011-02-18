@@ -31,7 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.ws.WebServiceException;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -60,7 +61,7 @@ import com.quatro.model.LookupCodeValue;
 
 public class GenericIntakeSearchAction extends BaseGenericIntakeAction {
 
-	private static Logger LOG = MiscUtils.getLogger();
+	private static Log LOG = LogFactory.getLog(GenericIntakeSearchAction.class);
 
 	private static final List<LookupCodeValue> genders = new ArrayList<LookupCodeValue>();
 
@@ -223,8 +224,7 @@ public class GenericIntakeSearchAction extends BaseGenericIntakeAction {
 	public ActionForward createLocal(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
 		GenericIntakeSearchFormBean intakeSearchBean = (GenericIntakeSearchFormBean) form;
 
-		return forwardIntakeEditCreate(mapping, request, Demographic.create(intakeSearchBean.getFirstName(), intakeSearchBean.getLastName(), intakeSearchBean.getGender(), intakeSearchBean.getMonthOfBirth(), intakeSearchBean.getDayOfBirth(), intakeSearchBean.getYearOfBirth(), intakeSearchBean
-        .getHealthCardNumber(), intakeSearchBean.getHealthCardVersion()));
+		return forwardIntakeEditCreate(mapping, request, createClient(intakeSearchBean, true));
 	}
 
 	public ActionForward updateLocal(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
@@ -296,6 +296,11 @@ public class GenericIntakeSearchAction extends BaseGenericIntakeAction {
 		clientSearchBean.setSearchUsingSoundex(true);
 
 		return clientManager.search(clientSearchBean);
+	}
+
+	private Demographic createClient(GenericIntakeSearchFormBean intakeSearchBean, boolean populateDefaultBirthDate) {
+		return Demographic.create(intakeSearchBean.getFirstName(), intakeSearchBean.getLastName(), intakeSearchBean.getGender(), intakeSearchBean.getMonthOfBirth(), intakeSearchBean.getDayOfBirth(), intakeSearchBean.getYearOfBirth(), intakeSearchBean
+		        .getHealthCardNumber(), intakeSearchBean.getHealthCardVersion(), populateDefaultBirthDate);
 	}
 
 	protected ActionForward forwardIntakeEditCreate(ActionMapping mapping, HttpServletRequest request, Demographic client) {

@@ -8,11 +8,12 @@
 	errorPage="../appointment/errorpage.jsp"%>
 <jsp:useBean id="oscarVariables" class="java.util.Properties"
 	scope="session" />
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html>
+<html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Billing</title>
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv=Expires content=-1>
 </head>
 <body>
 busy ...
@@ -52,6 +53,7 @@ busy ...
 
 	String slimit = request.getParameter("d") != null ? request.getParameter("d") : "0";
 	String sql="select * from billing order by billing_no limit " + slimit + ", 1000000";
+ 	//System.out.println(sql);
 	ResultSet rs = dbObj.searchDBRecord(sql);
 	while(rs.next()) {
     	billing_no =id = "" + rs.getInt("billing_no");
@@ -111,8 +113,12 @@ busy ...
 				+ sex + "', '" + province + "', '" + billing_date + "','" +billing_time+"','"+total+"','','"
 				+status+"','','"+visittype+"','"+provider_ohip_no+"','"+provider_rma_no+"','"+apptProvider_no+"','"
 				+asstProvider_no+"','" +creator+"','"+timestamp+"')";
-		 
-		DBHelp.updateDBRecord(sql);
+		 System.out.println(sql);
+		if(!dbObj.updateDBRecord(sql)) {
+			System.out.println("error:" + id);
+		} else {
+			System.out.println("::" + id);
+		}
 	}
 	rs.close();
 	
@@ -142,8 +148,10 @@ busy ...
 		sql="insert into billing_on_item values (" + billing_dt_no + "," + id + ", 'HE', 'T', '" + service_code + "', '" 
 				+ billing_amount + "', '"+billingunit+"','"
 				+ appointment_date + "', '" + diagnostic_code + "', '','','" +status + "',\\N)";
-		if(!DBHelp.updateDBRecord(sql)) {
-			MiscUtils.getLogger().error("error billing_on_item:" + id);
+		if(!dbObj.updateDBRecord(sql)) {
+			System.out.println("error billing_on_item:" + id);
+		} else {
+			System.out.println("billing_on_item::" + id + sql);
 		}
 	}
 	rs.close();
@@ -159,7 +167,10 @@ busy ...
 			else
 				ret[1] += name.charAt(i);
 		}
+	} else {
+		//System.out.println(" no hin!!!");
 	}
+	// System.out.println(ret[0] + " name!" + ret[1]);
 	return ret;
 }
 %>
@@ -174,6 +185,7 @@ busy ...
 	if(amount != null && amount.length()>2) {
 		int n = amount.length();
 		ret = amount.substring(0, (n-2)) + "." + amount.substring(n-2);
+		//System.out.println(ret);
 	} else if(amount != null && amount.length()==2) {
 		ret = "0." + amount;
 	} else if(amount != null && amount.length()==1) {

@@ -28,17 +28,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.oscarehr.PMmodule.model.Admission;
 import org.oscarehr.PMmodule.model.AdmissionSearchBean;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 public class AdmissionDao extends HibernateDaoSupport {
 
-    private Logger log=MiscUtils.getLogger();
+    private Log log = LogFactory.getLog(AdmissionDao.class);
     
     public List<Admission> getAdmissions_archiveView(Integer programId, Integer demographicNo) {
         Admission admission = null;
@@ -403,13 +403,9 @@ public class AdmissionDao extends HibernateDaoSupport {
         return results;
     }
 
-    public Admission getAdmission(int id) {
-    	return(getAdmission(new Long(id)));
-    }
-    
     public Admission getAdmission(Long id) {
 
-        if (id == null) {
+        if (id == null || id <= 0) {
             throw new IllegalArgumentException();
         }
 
@@ -578,27 +574,4 @@ public class AdmissionDao extends HibernateDaoSupport {
         
 		return rs;
     }
-    
-    
-    public boolean wasInProgram(Integer programId, Integer clientId) {
-    	if(getAdmission(programId, clientId)!=null)
-    		return true;
-    	else
-    		return false;
-    
-    }
-    
-    /*
-     * get demographics according to their program, admit time, discharge time, ordered by lastname and first name
-     */
-    public List getActiveAnonymousAdmissions() {
-        // get duplicated clients from this sql
-        String q = "Select a From Demographic d, Admission a " + "Where d.anonymous = ? and (d.PatientStatus=? or d.PatientStatus='' or d.PatientStatus=null) and d.DemographicNo=a.ClientId and a.AdmissionStatus='current' and a.programType != 'community'";                 
-
-        String status = "AC"; // only show active clients
-        List rs = (List) getHibernateTemplate().find(q, new Object[] { "one-time-anonymous",status});
-
-        return rs;
-    }
-   
 }

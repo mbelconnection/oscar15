@@ -39,8 +39,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Hashtable;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import oscar.oscarDemographic.data.DemographicData;
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBean;
@@ -69,7 +69,7 @@ public class ChildImmunizationReport implements PreventionReport{
 
 
 
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(ChildImmunizationReport.class);
     /** Creates a new instance of ChildImmunizationReport */
     public ChildImmunizationReport() {
     }
@@ -132,7 +132,6 @@ public class ChildImmunizationReport implements PreventionReport{
              PreventionReportDisplay prd = new PreventionReportDisplay();
              prd.demographicNo = demo;
              prd.bonusStatus = "N";
-             prd.billStatus = "N";
              if (totalImmunizations == 0){// no info
                 prd.rank = 1;
                 prd.lastDate = "------";
@@ -162,7 +161,7 @@ public class ChildImmunizationReport implements PreventionReport{
                    prevDateStr = (String) hDtap.get("prevention_date");                   
                    try{
                       lastDate = (java.util.Date)formatter.parse(prevDateStr);
-                   }catch (Exception e){MiscUtils.getLogger().error("Error", e);}
+                   }catch (Exception e){e.printStackTrace();}
                 }                
                 /*if(prevs2.size() > 0){
                    Hashtable hHib  = (Hashtable) prevs2.get(prevs2.size()-1);                
@@ -178,7 +177,7 @@ public class ChildImmunizationReport implements PreventionReport{
                          lastDate = prevDate;
                          prevDateStr = hibDateStr;
                       }
-                   }catch (Exception e){MiscUtils.getLogger().error("Error", e);}
+                   }catch (Exception e){e.printStackTrace();}
                    
                 } 
                  */                                               
@@ -196,7 +195,7 @@ public class ChildImmunizationReport implements PreventionReport{
                          lastDate = prevDate;
                          prevDateStr = mmrDateStr;
                       }
-                   }catch (Exception e){MiscUtils.getLogger().error("Error", e);}
+                   }catch (Exception e){e.printStackTrace();}
                 }
                 
                 String numMonths = "------";
@@ -228,7 +227,6 @@ public class ChildImmunizationReport implements PreventionReport{
                     log.debug("twoYearsAfterDOB date "+twoYearsAfterDOB+ " "+lastDate.before(twoYearsAfterDOB) );
                     if (!refused && (totalImmunizations >= recommTotal  ) && lastDate.before(twoYearsAfterDOB) && ( ageInMonths > 24 )){//&& endOfYear.after(prevDate)){                  
                        prd.bonusStatus = "Y";
-                       prd.billStatus = "Y";
                        done++;
                     }
                 }
@@ -300,7 +298,6 @@ public class ChildImmunizationReport implements PreventionReport{
           h.put("inEligible", ""+inList);
           h.put("eformSearch","CHI");
           h.put("followUpType","CIMF");
-          h.put("BillCode", "Q004A");
           log.debug("set returnReport "+returnReport);
           return h;
     }
@@ -341,7 +338,7 @@ public class ChildImmunizationReport implements PreventionReport{
               
               Collection followupData = measurementDataHandler.getMeasurementsDataVector();
               //NO Contact
-              
+              System.out.print("fluFollowupData size = "+followupData.size());
               if ( followupData.size() == 0 ){
                   prd.nextSuggestedProcedure = this.LETTER1;
                   return this.LETTER1;
@@ -391,7 +388,7 @@ public class ChildImmunizationReport implements PreventionReport{
               EctMeasurementsDataBeanHandler measurementDataHandler = new EctMeasurementsDataBeanHandler(prd.demographicNo,measurementType);
               log.debug("getting followup data for "+prd.demographicNo);
               Collection followupData = measurementDataHandler.getMeasurementsDataVector();
-              
+              System.out.print("fluFollowupData size = "+followupData.size());
               if ( followupData.size() > 0 ){
                   EctMeasurementsDataBean measurementData = (EctMeasurementsDataBean) followupData.iterator().next();
                   prd.lastFollowup = measurementData.getDateObservedAsDate();

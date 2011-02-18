@@ -22,7 +22,6 @@
 
 package org.oscarehr.PMmodule.web.admin;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -32,9 +31,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.xml.ws.WebServiceException;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -64,18 +63,16 @@ import org.oscarehr.PMmodule.service.ProgramQueueManager;
 import org.oscarehr.PMmodule.service.RoomDemographicManager;
 import org.oscarehr.PMmodule.web.BaseAction;
 import org.oscarehr.PMmodule.web.formbean.ProgramManagerViewFormBean;
-import org.oscarehr.caisi_integrator.ws.ReferralWs;
 import org.oscarehr.casemgmt.service.CaseManagementManager;
 import org.oscarehr.common.dao.FacilityDao;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.Facility;
 import org.oscarehr.util.LoggedInInfo;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.beans.factory.annotation.Required;
 
 public class ProgramManagerViewAction extends BaseAction {
 
-	private static Logger logger = MiscUtils.getLogger();
+	private static final Log log = LogFactory.getLog(ProgramManagerViewAction.class);
 	private ClientRestrictionManager clientRestrictionManager;
 	private FacilityDao facilityDao = null;
 	private CaseManagementManager caseManagementManager;
@@ -305,24 +302,9 @@ public class ProgramManagerViewAction extends BaseAction {
         return mapping.findForward("view");
     }
 
-	public ActionForward remove_remote_queue(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-		Integer remoteReferralId = Integer.valueOf(request.getParameter("remoteReferralId"));
-
-		try {
-			ReferralWs referralWs = CaisiIntegratorManager.getReferralWs();
-			referralWs.removeReferral(remoteReferralId);
-		} catch (MalformedURLException e) {
-			logger.error("Unexpected error", e);
-		} catch (WebServiceException e) {
-			logger.error("Unexpected error", e);
-		}
-
-		return view(mapping, form, request, response);
-	}
-
 	public ActionForward viewBedReservationChangeReport(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
 		Integer reservedBedId = Integer.valueOf(request.getParameter("reservedBedId"));
-		logger.debug(reservedBedId);
+		System.err.println(reservedBedId);
 
 		// BedDemographicChange[] bedDemographicChanges = bedDemographicManager.getBedDemographicChanges(reservedBedId)
 		request.setAttribute("bedReservationChanges", null);
@@ -356,12 +338,12 @@ public class ProgramManagerViewAction extends BaseAction {
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("admit.success"));
 			saveMessages(request, messages);
 		} catch (ProgramFullException e) {
-			logger.error(e);
+			log.error(e);
 			ActionMessages messages = new ActionMessages();
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("admit.full"));
 			saveMessages(request, messages);
 		} catch (AdmissionException e) {
-			logger.error(e);
+			log.error(e);
 			ActionMessages messages = new ActionMessages();
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("admit.error", e.getMessage()));
 			saveMessages(request, messages);
@@ -414,12 +396,12 @@ public class ProgramManagerViewAction extends BaseAction {
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("admit.success"));
 			saveMessages(request, messages);
 		} catch (ProgramFullException e) {
-			logger.error(e);
+			log.error(e);
 			ActionMessages messages = new ActionMessages();
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("admit.full"));
 			saveMessages(request, messages);
 		} catch (AdmissionException e) {
-			logger.error(e);
+			log.error(e);
 			ActionMessages messages = new ActionMessages();
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("admit.error", e.getMessage()));
 			saveMessages(request, messages);
@@ -471,7 +453,7 @@ public class ProgramManagerViewAction extends BaseAction {
 	}
 
 	public ActionForward batch_discharge(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-		logger.info("do batch discharge");
+		log.info("do batch discharge");
 		String type = request.getParameter("type");
 		String admitToProgramId;
 		if (type != null && type.equalsIgnoreCase("community")) {
@@ -479,7 +461,7 @@ public class ProgramManagerViewAction extends BaseAction {
 		} else if (type != null && type.equalsIgnoreCase("bed")) {
 			admitToProgramId = request.getParameter("batch_discharge_program");
 		} else {
-			logger.warn("Invalid program type for batch discharge");
+			log.warn("Invalid program type for batch discharge");
 			admitToProgramId = "";
 		}
 
@@ -493,7 +475,7 @@ public class ProgramManagerViewAction extends BaseAction {
 				String admissionId = name.substring(8);
 				Admission admission = admissionManager.getAdmission(Long.valueOf(admissionId));
 				if (admission == null) {
-					logger.warn("admission #" + admissionId + " not found.");
+					log.warn("admission #" + admissionId + " not found.");
 					continue;
 				}
 
@@ -507,7 +489,7 @@ public class ProgramManagerViewAction extends BaseAction {
 				if (type != null) {
 					if (type.equals("community")) {
 						Integer clientId = admission.getClientId();
-						
+						String program_type = admission.getProgramType();
 						// if discharged program is service program,
 						// then should check if the client is in one bed program
 						/*
@@ -570,13 +552,13 @@ public class ProgramManagerViewAction extends BaseAction {
 
 		List<Long> dependents = clientManager.getDependentsList(new Long(clientId));
 
-		logger.debug("rejecting from queue: program_id=" + programId + ",clientId=" + clientId);
+		log.debug("rejecting from queue: program_id=" + programId + ",clientId=" + clientId);
 
 		programQueueManager.rejectQueue(programId, clientId, notes, rejectionReason);
 
 		if (dependents != null) {
 			for (Long l : dependents) {
-				logger.debug("rejecting from queue: program_id=" + programId + ",clientId=" + l.intValue());
+				log.debug("rejecting from queue: program_id=" + programId + ",clientId=" + l.intValue());
 				programQueueManager.rejectQueue(programId, l.toString(), notes, rejectionReason);
 			}
 		}
@@ -592,9 +574,9 @@ public class ProgramManagerViewAction extends BaseAction {
 		Program program = programManager.getProgram(String.valueOf(programId));
 		ProgramQueue queue = programQueueManager.getProgramQueue(queueId);
 
-		//int numMembers = program.getNumOfMembers().intValue();
-		//int maxMem = program.getMaxAllowed().intValue();
-		//int familySize = clientManager.getDependents(new Long(clientId)).size();
+		int numMembers = program.getNumOfMembers().intValue();
+		int maxMem = program.getMaxAllowed().intValue();
+		int familySize = clientManager.getDependents(new Long(clientId)).size();
 		// TODO: add warning if this admission ( w/ dependents) will exceed the maxMem
 
 		/*
@@ -603,7 +585,7 @@ public class ProgramManagerViewAction extends BaseAction {
 		if (program.getType().equalsIgnoreCase("bed") && queue != null && !queue.isTemporaryAdmission()) {
 			Admission currentAdmission = admissionManager.getCurrentBedProgramAdmission(Integer.valueOf(clientId));
 			if (currentAdmission != null) {
-				logger.warn("client already in a bed program..doing a discharge/admit if proceeding");
+				log.warn("client already in a bed program..doing a discharge/admit if proceeding");
 				request.setAttribute("current_admission", currentAdmission);
 				Program currentProgram = programManager.getProgram(String.valueOf(currentAdmission.getProgramId()));
 				request.setAttribute("current_program", currentProgram);
@@ -773,8 +755,8 @@ public class ProgramManagerViewAction extends BaseAction {
 			saveMessages(request, messages);
 			return view(mapping, form, request, response);
 		}
-
-
+		// System.out.println("ProgramManagerViewAction.switch_beds(): switchBed1 = " + switchBed1);
+		// System.out.println("ProgramManagerViewAction.switch_beds(): switchBed2 = " + switchBed2);
 		bed1 = bedManager.getBed(Integer.valueOf(switchBed1));
 		bed2 = bedManager.getBed(Integer.valueOf(switchBed2));
 
@@ -798,12 +780,15 @@ public class ProgramManagerViewAction extends BaseAction {
 		latePass1 = bedDemographic1.isLatePass();
 		reservationEnd1 = bedDemographic1.getReservationEnd();
 
+		// System.out.println("ProgramManagerViewAction.switch_beds(): client1 = " + client1);
+		// System.out.println("ProgramManagerViewAction.switch_beds(): client2 = " + client2);
 
 		// Check whether both beds are from same room:
 		if (bed1.getRoomId().intValue() == bed2.getRoomId().intValue()) {
 			isSameRoom = true;
 		}
 
+		// System.out.println("ProgramManagerViewAction.switch_beds(): isSameRoom = " + isSameRoom);
 		if (isSameRoom) {// you can switch beds in same room for any client combination
 			bedDemographicManager.deleteBedDemographic(bedDemographic1);
 			bedDemographicManager.deleteBedDemographic(bedDemographic2);
@@ -826,9 +811,10 @@ public class ProgramManagerViewAction extends BaseAction {
 			isFamilyHead2 = clientManager.isClientFamilyHead(client2);
 			isFamilyDependent1 = clientManager.isClientDependentOfFamily(client1);
 			isFamilyDependent2 = clientManager.isClientDependentOfFamily(client2);
-
-
-
+			// System.out.println("ProgramManagerViewAction.switch_beds(): isFamilyHead1 = " + isFamilyHead1);
+			// System.out.println("ProgramManagerViewAction.switch_beds(): isFamilyHead2 = " + isFamilyHead2);
+			// System.out.println("ProgramManagerViewAction.switch_beds(): isFamilyDependent1 = " + isFamilyDependent1);
+			// System.out.println("ProgramManagerViewAction.switch_beds(): isFamilyDependent2 = " + isFamilyDependent2);
 
 			RoomDemographic roomDemographic1 = roomDemographicManager.getRoomDemographicByDemographic(client1, loggedInInfo.currentFacility.getId());
 			RoomDemographic roomDemographic2 = roomDemographicManager.getRoomDemographicByDemographic(client2, loggedInInfo.currentFacility.getId());
@@ -846,7 +832,8 @@ public class ProgramManagerViewAction extends BaseAction {
 				isIndependent2 = true;
 			}
 
-
+			// System.out.println("ProgramManagerViewAction.switch_beds(): isIndependent1 = " + isIndependent1);
+			// System.out.println("ProgramManagerViewAction.switch_beds(): isIndependent2 = " + isIndependent2);
 			// Check whether both clients are indpendents
 			if (isIndependent1 && isIndependent2) {
 				// Can switch beds and rooms

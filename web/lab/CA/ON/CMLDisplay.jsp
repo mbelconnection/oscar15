@@ -1,4 +1,4 @@
-<%@page errorPage="../provider/errorpage.jsp"%>
+<%@ page language="java" errorPage="../provider/errorpage.jsp"%>
 <%@ page
 	import="java.util.*, oscar.oscarMDS.data.*,oscar.oscarLab.ca.on.CML.*,oscar.oscarLab.LabRequestReportLink,oscar.oscarDB.*,java.sql.*,oscar.log.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
@@ -19,12 +19,12 @@ String reqID = reqIDL==null ? "" : String.valueOf(reqIDL);
 <oscar:oscarPropertiesCheck property="SPEC3" value="yes">
     <%
     String sql = "SELECT demographic_no FROM patientLabRouting WHERE lab_no='"+segmentID+"';";
-
-ResultSet rs = DBHandler.GetSQL(sql);
+DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+ResultSet rs = db.GetSQL(sql);
 String demographicID = "";
 
 while(rs.next()){
-    demographicID = oscar.Misc.getString(rs,"demographic_no");
+    demographicID = db.getString(rs,"demographic_no");
 }
 rs.close();
     
@@ -67,18 +67,18 @@ String AbnFlag = "";
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 -->
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html>
+<html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <html:base />
 <title><%=lab.pLastName%>, <%=lab.pFirstName%> <bean:message
 	key="oscarMDS.segmentDisplay.title" /></title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <script language="javascript" type="text/javascript"
 	src="../../../share/javascript/Oscar.js"></script>
 <link rel="stylesheet" type="text/css"
@@ -246,7 +246,7 @@ function linkreq(rptId, reqId) {
 											key="oscarMDS.segmentDisplay.formAge" />: </strong><%=lab.getAge()%> <%
                                                                 try{
                                                                     lab.getAge();
-                                                                    }catch(Exception e){ MiscUtils.getLogger().error("Error", e); }
+                                                                    }catch(Exception e){ e.printStackTrace(); }
                                                                 
                                                                 %>
 										</div>

@@ -37,7 +37,6 @@ import java.util.List;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
-import org.oscarehr.util.MiscUtils;
 
 /**
  * Parses xml file, creating DosingRecomendation Objects storing them in a hashtable with the ATC code as the key
@@ -61,7 +60,7 @@ public class RenalDosingFactory {
     
     
     static private void loadDosingInformation(){
-        MiscUtils.getLogger().debug("current dosing size "+currentDosingInformation.size());
+        System.out.println("current dosing size "+currentDosingInformation.size());
         if(!loaded){
             String dosing = "oscar/oscarRx/RenalDosing.xml";
             RenalDosingFactory rdf  = new RenalDosingFactory();
@@ -99,12 +98,12 @@ public class RenalDosingFactory {
                         ArrayList recDoses = new ArrayList();
                         for (int d = 0; d < doses.size(); d++){
                             Element dose = (Element) doses.get(d);
-                            MiscUtils.getLogger().debug(dose.getName());
+                            System.out.println(dose.getName());
                             Hashtable h = new Hashtable();
                             String clcrrange = dose.getAttributeValue("clcrrange");
                             String recommendation = dose.getText();
                             
-                            MiscUtils.getLogger().debug("clcrrange "+clcrrange+" recommendation "+recommendation);
+                            System.out.println("clcrrange "+clcrrange+" recommendation "+recommendation);
                             
                             if(recommendation == null){recommendation = "";}
                             if (clcrrange == null){ clcrrange = ""; }
@@ -116,19 +115,19 @@ public class RenalDosingFactory {
                         rec.setDose(recDoses);
                         
                         List moreinformation = e.getChildren("moreinfo");    
-                        StringBuilder sb = new StringBuilder();
+                        StringBuffer sb = new StringBuffer();
                         for (int m = 0; m < moreinformation.size(); m++){
                             Element info = (Element) moreinformation.get(m);
                             sb.append(info.getText());
                         }
                         rec.setMoreinfo(sb.toString());
-                        MiscUtils.getLogger().debug(rec.toString());
+                        System.out.println(rec.toString());
                         currentDosingInformation.put(rec.getAtccode(),rec);
                         
                    }
                    
                 }catch(Exception e){
-                    MiscUtils.getLogger().error("Error", e);
+                    e.printStackTrace();
                 }
                 loaded = true;
             }

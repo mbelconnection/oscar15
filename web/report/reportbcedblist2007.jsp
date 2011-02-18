@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -44,7 +44,7 @@ if(request.getParameter("endDate")!=null) endDate = request.getParameter("endDat
 	scope="page" />
 <jsp:useBean id="providerNameBean" class="java.util.Properties"
 	scope="page" />
-
+<%@ include file="../admin/dbconnection.jsp"%>
 <% 
 String [][] dbQueries=new String[][] { 
 //{"select_bcformar", "select distinct(demographic_no) from formBCAR where c_EDD >= ? and c_EDD <= ? order by c_EDD desc limit ? offset ?"  }, c_phyMid,
@@ -119,13 +119,13 @@ reportMainBean.doConfigure(dbQueries);
   Properties demoProp = new Properties();
     
   String[] param =new String[2];
-  param[0]=startDate;  
-  param[1]=endDate;  
+  param[0]=startDate; //"0001-01-01"; 
+  param[1]=endDate; //"0001-01-01"; 
   String[] paramb = new String[4];
-  paramb[0]=startDate;  
-  paramb[1]=endDate;  
-  paramb[2]=startDate;  
-  paramb[3]=endDate;  
+  paramb[0]=startDate; //"0001-01-01"; 
+  paramb[1]=endDate; //"0001-01-01"; 
+  paramb[2]=startDate; //"0001-01-01"; 
+  paramb[3]=endDate; //"0001-01-01"; 
   int[] itemp1 = new int[2];
   itemp1[1] = Integer.parseInt(strLimit1);
   itemp1[0] = Integer.parseInt(strLimit2);
@@ -139,7 +139,7 @@ reportMainBean.doConfigure(dbQueries);
     nItems++; 
 %>
 	<tr bgcolor="<%=bodd?weakcolor:"white"%>">
-		<td align="center" nowrap><%=reportMainBean.getString(rs,"c_EDD")!=null?reportMainBean.getString(rs,"c_EDD").replace('-','/'):"----/--/--"%></td>
+		<td align="center" nowrap><%=reportMainBean.getString(rs,"c_EDD")!=null?reportMainBean.getString(rs,"c_EDD").replace('-','/'):"0001/01/01"%></td>
 		<td><%=reportMainBean.getString(rs,"c_surname") + ", " + reportMainBean.getString(rs,"c_givenName")%></td>
 		<!--td align="center" ><%=reportMainBean.getString(rs,"demographic_no")%> </td-->
 		<td><%=reportMainBean.getString(rs,"pg1_dateOfBirth")!=null?reportMainBean.getString(rs,"pg1_dateOfBirth"):""%></td>
@@ -154,6 +154,7 @@ reportMainBean.doConfigure(dbQueries);
 	</tr>
 	<%
   }
+  reportMainBean.closePstmtConn();
 %>
 
 </table>

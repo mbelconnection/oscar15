@@ -18,12 +18,17 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 --%>
-<%@ page import="oscar.form.*"%><%
+
+<%@ page language="java"%>
+<%@ page import="oscar.form.*"%>
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+<%
     int demoNo = Integer.parseInt(request.getParameter("demographic_no"));
     int formId = Integer.parseInt(request.getParameter("formId"));    
     

@@ -135,6 +135,7 @@ Feature id : 3040160
                     logger.debug("result "+result);
                 }
                 h =parseReturn(post.getResponseBodyAsStream());
+                //System.out.println(post.getResponseBodyAsString());//onseBodyAsStream());
        }catch(Exception e ){
             logger.debug("searchTripDB" ,e);
        } finally{

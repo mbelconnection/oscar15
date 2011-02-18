@@ -18,11 +18,13 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 --%>
+
+<%@ page language="java"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
@@ -72,6 +74,7 @@ function BackToOscar()
    if (grpNo.equals("")){
      grpNo = "0";
    }
+   // System.out.println("grpNo "+grpNo+"<" );
 
    String currGroupName = adminUtil.getMyName(grpNo);
     currGroupName = adminUtil.printAllBelowGroups(grpNo);

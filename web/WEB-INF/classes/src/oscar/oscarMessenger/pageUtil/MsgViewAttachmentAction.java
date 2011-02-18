@@ -34,7 +34,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -53,16 +52,16 @@ public class MsgViewAttachmentAction extends Action {
     attachId = frm.getAttachId();
 
     try{
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         java.sql.ResultSet rs;
 
         String sql = new String("select attachment from messagetbl where messageid ="+attachId);
-        rs = DBHandler.GetSQL(sql);
+        rs = db.GetSQL(sql);
         while (rs.next()) {
-              att = oscar.Misc.getString(rs, "attachment");
+              att = db.getString(rs,"attachment");
         }//while
         rs.close();
-    }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+    }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
 
     request.setAttribute("Attachment",att);
     request.setAttribute("attId",attachId);

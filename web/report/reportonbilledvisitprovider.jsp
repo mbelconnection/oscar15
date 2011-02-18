@@ -18,7 +18,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -43,6 +43,8 @@
     String number = request.getParameter("providerId");
     String name   = request.getParameter("name" + number);
 
+    System.out.println(number + "  " + name);
+
     String sql = "update secUserRole set role_name='" + name + "' where provider_no='" + number + "'";
 
     dbObj.queryExecuteUpdate(sql);
@@ -55,7 +57,7 @@
     ResultSet  rs    = dbObj.queryResults(query);
 
     while (rs.next()) {
-      prop.setProperty(Misc.getString(rs,"provider_no"), "");
+      prop.setProperty(dbObj.getString(rs,"provider_no"), "");
     }
 
     for (Enumeration e = request.getParameterNames(); e.hasMoreElements(); ) {
@@ -74,8 +76,7 @@
   }
 %>
 <%@page import="oscar.oscarDB.DBPreparedHandler"%>
-
-<%@page import="oscar.Misc"%><html>
+<html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>PROVIDER</title>
@@ -118,29 +119,29 @@ function submit(form) {
       ResultSet rs = dbObj.queryResults(query);
 
       while (rs.next()) {
-        oldRoleProp.setProperty(Misc.getString(rs,"provider_no"), Misc.getString(rs,"role_name"));
-        oldRoleList.add(Misc.getString(rs,"first_name"));
-        oldRoleList.add(Misc.getString(rs,"last_name"));
-        oldRoleList.add(Misc.getString(rs,"role_name"));
-        oldRoleList.add(Misc.getString(rs,"provider_no"));
+        oldRoleProp.setProperty(dbObj.getString(rs,"provider_no"), dbObj.getString(rs,"role_name"));
+        oldRoleList.add(dbObj.getString(rs,"first_name"));
+        oldRoleList.add(dbObj.getString(rs,"last_name"));
+        oldRoleList.add(dbObj.getString(rs,"role_name"));
+        oldRoleList.add(dbObj.getString(rs,"provider_no"));
       }
 
       query = "select * from provider order by first_name, last_name";
       rs = dbObj.queryResults(query);
 
       while (rs.next()) {
-        if (Misc.getString(rs,"last_name").length() < 1 || oldRoleProp.containsKey((Misc.getString(rs,"provider_no")))) {
+        if (dbObj.getString(rs,"last_name").length() < 1 || oldRoleProp.containsKey((dbObj.getString(rs,"provider_no")))) {
           continue;
         }
 
         prop = new Properties();
 
-        prop.setProperty("provider_no", Misc.getString(rs,"provider_no"));
-        prop.setProperty("first_name", Misc.getString(rs,"first_name"));
-        prop.setProperty("last_name", Misc.getString(rs,"last_name"));
-        prop.setProperty("provider_type", Misc.getString(rs,"provider_type"));
-        prop.setProperty("specialty", Misc.getString(rs,"specialty"));
-        prop.setProperty("ohip_no", Misc.getString(rs,"ohip_no"));
+        prop.setProperty("provider_no", dbObj.getString(rs,"provider_no"));
+        prop.setProperty("first_name", dbObj.getString(rs,"first_name"));
+        prop.setProperty("last_name", dbObj.getString(rs,"last_name"));
+        prop.setProperty("provider_type", dbObj.getString(rs,"provider_type"));
+        prop.setProperty("specialty", dbObj.getString(rs,"specialty"));
+        prop.setProperty("ohip_no", dbObj.getString(rs,"ohip_no"));
         vec.add(prop);
       }
 %>

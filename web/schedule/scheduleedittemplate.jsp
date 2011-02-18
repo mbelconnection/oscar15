@@ -18,7 +18,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -42,6 +42,7 @@
   int rowsAffected = 0;
   OscarProperties props = OscarProperties.getInstance();
   int STEP = request.getParameter("step")!=null&&!request.getParameter("step").equals("")?Integer.parseInt(request.getParameter("step")):(props.getProperty("template_time", "").length()>0?Integer.parseInt(props.getProperty("template_time", "")):15);
+  //System.out.println("step:"+STEP);
   if(request.getParameter("dboperation")!=null && (request.getParameter("dboperation").compareTo(" Save ")==0 || request.getParameter("dboperation").equals("Delete") ) ) {
     String pre = request.getParameter("providerid").equals("Public")&&!request.getParameter("name").startsWith("P:")?"P:":"" ;
     String[] param1 =new String[4];
@@ -63,6 +64,8 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="schedule.scheduleedittemplate.title" /></title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <!--link rel="stylesheet" href="../web.css" /-->
 
 <script language="JavaScript">
@@ -95,7 +98,6 @@ function changeGroup(s) {
 	var newGroupNo = s.options[s.selectedIndex].value;
 	newGroupNo = s.options[s.selectedIndex].value;
 	self.location.href = "scheduleedittemplate.jsp?providerid=<%=request.getParameter("providerid")%>&providername=<%=StringEscapeUtils.escapeJavaScript(request.getParameter("providername"))%>&step=" + newGroupNo;
-	
 }
 //-->
 </script>
@@ -129,6 +131,7 @@ function changeGroup(s) {
      rsdemo = scheduleMainBean.queryResults(param, "search_scheduletemplatesingle");
      while (rsdemo.next()) {
        myTempBean.setScheduleTemplateBean(rsdemo.getString("provider_no"),rsdemo.getString("name"),rsdemo.getString("summary"),rsdemo.getString("timecode") );
+       //System.out.println(":"+rsdemo.getString("timecode").length()+rsdemo.getString("timecode")+"|");
      }
    }
    rsdemo = scheduleMainBean.queryResults(param[0], "search_scheduletemplate");

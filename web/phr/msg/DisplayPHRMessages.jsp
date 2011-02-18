@@ -11,9 +11,15 @@
 <%@ taglib uri="/WEB-INF/phr-tag.tld" prefix="phr" %>
 <%@ taglib uri="/WEB-INF/rewrite-tag.tld" prefix="rewrite" %>
 
-<%@ page import="oscar.oscarDemographic.data.DemographicData"%><%@ page import="org.oscarehr.phr.PHRAuthentication"%>
+<%@ page import="oscar.oscarDemographic.data.DemographicData"%>
+
+<%@page contentType="text/html"%>
+<%@page pageEncoding="ISO-8859-1"%>
+
+<%@ page import="org.oscarehr.phr.PHRAuthentication"%>
 <%@ page import="org.oscarehr.phr.model.PHRAction"%>
 <%@ page import="oscar.oscarProvider.data.ProviderData"%>
+<%@ page import="org.oscarehr.phr.indivo.IndivoConstantsImpl"%>
 <%@ page import="org.oscarehr.phr.PHRConstants"%>
 <%@ page import="org.oscarehr.phr.model.PHRMessage"%>
 <%@ page import="org.oscarehr.phr.dao.PHRActionDAO, org.springframework.web.context.support.WebApplicationContextUtils"%>
@@ -45,9 +51,10 @@ pageContext.setAttribute("STATUS_ON_HOLD", PHRAction.STATUS_ON_HOLD);
 pageContext.setAttribute("ACTION_ADD", PHRAction.ACTION_ADD);
 pageContext.setAttribute("ACTION_UPDATE", PHRAction.ACTION_UPDATE);
 
-pageContext.setAttribute("TYPE_BINARYDATA", PHRConstants.DOCTYPE_BINARYDATA());
-pageContext.setAttribute("TYPE_MEDICATION", PHRConstants.DOCTYPE_MEDICATION());
-pageContext.setAttribute("TYPE_ACCESSPOLICIES", PHRConstants.DOCTYPE_ACCESSPOLICIES());
+PHRConstants phrConstants = new IndivoConstantsImpl();
+pageContext.setAttribute("TYPE_BINARYDATA", phrConstants.DOCTYPE_BINARYDATA());
+pageContext.setAttribute("TYPE_MEDICATION", phrConstants.DOCTYPE_MEDICATION());
+pageContext.setAttribute("TYPE_ACCESSPOLICIES", phrConstants.DOCTYPE_ACCESSPOLICIES());
 
 String pageMethod = request.getParameter("method");
 if (pageMethod.equals("delete") || pageMethod.equals("resend")) 
@@ -73,6 +80,7 @@ request.setAttribute("pageMethod",pageMethod);
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="request"/>
 <html>
     <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
         <html:base />
         <link rel="stylesheet" type="text/css" href="../../oscarMessenger/encounterStyles.css">
         <title>
@@ -528,7 +536,7 @@ request.setAttribute("pageMethod",pageMethod);
                                 
                                 <html-el:link action="/phr/PhrMessage?method=read&noreply=yes&comingfrom=viewSentMessages&id=${sMessage.id}"  >
                                    <c:if test='${not empty sMessage.docSubject}'>
-                                    <c:out value="${sMessage.docSubject}"/>
+                                   <c:out value="${sMessage.docSubject}"/>
                                     </c:if>
                                     <c:if test='${empty sMessage.docSubject}'>
                                     No Subject
@@ -567,7 +575,7 @@ request.setAttribute("pageMethod",pageMethod);
                                 
                                 <html-el:link action="/phr/PhrMessage?&method=read&comingfrom=viewArchivedMessages&id=${archivedMessage.id}"  >
                                    <c:if test='${not empty archivedMessage.docSubject}'>
-                                    <c:out value="${archivedMessage.docSubject}"/>
+                                   <c:out value="${archivedMessage.docSubject}"/>
                                    </c:if>
                                    <c:if test='${empty archivedMessage.docSubject}'>
                                     No Subject
@@ -615,7 +623,7 @@ request.setAttribute("pageMethod",pageMethod);
                                 
                                 <html-el:link action="/phr/PhrMessage?&method=read&comingfrom=viewMessages&id=${iMessage.id}"  >
                                    <c:if test='${not empty iMessage.docSubject}'>
-                                    <c:out value="${iMessage.docSubject}"/>
+                                   <c:out value="${iMessage.docSubject}"/>
                                    </c:if>
                                    <c:if test='${empty iMessage.docSubject}'>
                                     No Subject

@@ -1,3 +1,5 @@
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
 <%@page import="java.sql.*,oscar.oscarDB.*"%>
 <%@page
 	import="java.util.*,org.oscarehr.PMmodule.dao.*,org.oscarehr.PMmodule.service.*,org.oscarehr.PMmodule.model.*,org.springframework.web.context.support.*,org.springframework.web.context.*"%>
@@ -22,10 +24,6 @@
     boolean hasRepeating = (theNode.isQuestion()|| theNode.isAnswerCompound()||theNode.isAnswerScalar());
     boolean hasCutPast = (!theNode.isIntake() && !theNode.isPage() && !theNode.isSection() && !theNode.isAnswerCompound() && theNode.getEq_to_id()!=null);
     boolean isDropbox = (theNode.isAnswerChoice() && !theNode.isAnswerBoolean());
-    int typeId = theNode.getNodeTemplate().getType().getId();
-  //  String validations = theNode.getValidations();
-  	String[] validations = request.getParameterValues("validations");    
-    
     if (isDropbox) {
 	session.setAttribute("dropboxNode", theNode);
     }
@@ -49,18 +47,6 @@
 		writeQuestionId(questionIdEdit,theNode);
 	}
 	
-    if(validations != null) {
-    	String validationString="";
-    	for(int x=0;x<validations.length;x++) {
-    		if(x>0) {
-    			validationString += ",";
-    		}
-    		validationString += validations[x];
-    		validationString += ":true";    		
-    	}
-    	theNode.setValidations(validationString);
-    }	
-	
         response.sendRedirect("close.jsp");
         return;
     }
@@ -74,6 +60,7 @@
 <html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Edit Node</title>
 <script type="text/javascript">
 	    function editDropbox() {
@@ -114,15 +101,6 @@ related to past forms</input> <%	} %> <%	if (isDropbox) { %> <br>
 <input type="button" value="Edit Dropbox Items..." onclick="editDropbox();" /> 
 <%	} %>
 <br/>
-
-<%if (typeId >= 4 && typeId <=9) {%>
-<br/><br/>
-Validations:
-<br/>
-<input type="checkbox" name="validations" value="required"/>Required<br/>
-<input type="checkbox" name="validations" value="digits"/>Digits<br/>
-<%}%>
-
 <input type="submit" value="update" /> 
 </form>
 

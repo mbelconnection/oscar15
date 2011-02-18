@@ -20,7 +20,7 @@
 // * 29-09-2004   Ivy Chan        iConcept Technologies   initial version
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.jfree.util.Log;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarWaitingList.util.WLWaitingListUtil;
@@ -52,7 +52,7 @@ public class WLWaitingListBeanHandler {
         
         boolean verdict = true;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             
             String sql = " SELECT CONCAT(d.last_name, ', ', d.first_name) AS patientName, d.demographic_no, " + 
             			 " d.phone, w.listID, w.position, w.note, w.onListSince FROM waitingList w, demographic d " + 
@@ -61,30 +61,30 @@ public class WLWaitingListBeanHandler {
             log.debug(sql);
             ResultSet rs;      
             String onListSinceDateOnly = "";
-            for(rs = DBHandler.GetSQL(sql); rs.next(); )
+            for(rs = db.GetSQL(sql); rs.next(); )
             {                
-            	onListSinceDateOnly = oscar.Misc.getString(rs, "onListSince").substring(0, 10);//2007-01-01
+            	onListSinceDateOnly = db.getString(rs,"onListSince").substring(0, 10);//2007-01-01
             	
-                WLPatientWaitingListBean wLBean = new WLPatientWaitingListBean( oscar.Misc.getString(rs, "demographic_no"),
-                                                                                oscar.Misc.getString(rs, "listID"),
-                                                                                oscar.Misc.getString(rs, "position"),
-                                                                                oscar.Misc.getString(rs, "patientName"), 
-                                                                                oscar.Misc.getString(rs, "phone"),
-                                                                                oscar.Misc.getString(rs, "note"),
+                WLPatientWaitingListBean wLBean = new WLPatientWaitingListBean( db.getString(rs,"demographic_no"),
+                                                                                db.getString(rs,"listID"),
+                                                                                db.getString(rs,"position"),
+                                                                                db.getString(rs,"patientName"), 
+                                                                                db.getString(rs,"phone"),
+                                                                                db.getString(rs,"note"),
                                                                                 onListSinceDateOnly);   
                 waitingListArrayList.add(wLBean);
             }                            
             
             sql = "SELECT * FROM waitingListName where ID="+waitingListID + " AND is_history = 'N' ";
             log.debug(sql);
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             if(rs.next()){
-                waitingListName = oscar.Misc.getString(rs, "name");
+                waitingListName = db.getString(rs,"name");
             }
             rs.close();
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;
@@ -93,26 +93,27 @@ public class WLWaitingListBeanHandler {
     static public void updateWaitingList(String waitingListID) {
                 
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = " SELECT demographic_no FROM waitingList WHERE listID=" + waitingListID + 
                          " AND is_history = 'N' ";
             log.debug(sql);
             ResultSet rs;
             boolean needUpdate = false;
             //go thru all the patient on the list
-            for(rs = DBHandler.GetSQL(sql); rs.next();){
+            for(rs = db.GetSQL(sql); rs.next();){
                 
                 //check if the patient has an appointment already
                 sql = "select a.demographic_no, a.appointment_date, wl.onListSince from appointment a, waitingList wl where a.appointment_date >= wl.onListSince AND a.demographic_no=wl.demographic_no AND a.demographic_no="
-                      + oscar.Misc.getString(rs, "demographic_no") + "";
+                      + db.getString(rs,"demographic_no") + "";
                 log.debug(sql);
-                ResultSet rsCheck = DBHandler.GetSQL(sql);        
+                ResultSet rsCheck = db.GetSQL(sql);        
                 
                 if(rsCheck.next())
                 {                
                     //delete patient from the waitingList
-
-                	WLWaitingListUtil.removeFromWaitingList(waitingListID, oscar.Misc.getString(rs, "demographic_no"));
+                    //System.out.println("patient to be deleted: " + db.getString(rs,"demographic_no"));
+                	
+                	WLWaitingListUtil.removeFromWaitingList(waitingListID, db.getString(rs,"demographic_no"));
                     needUpdate = true;
                 }
                 rsCheck.close();
@@ -123,21 +124,21 @@ public class WLWaitingListBeanHandler {
                 sql = " SELECT * FROM waitingList WHERE listID=" + waitingListID + "  AND is_history = 'N' ORDER BY onListSince";
                 log.debug(sql);
                 int i=1;            
-                for(rs = DBHandler.GetSQL(sql); rs.next();){                    
+                for(rs = db.GetSQL(sql); rs.next();){                    
                     sql =   " UPDATE waitingList SET position="+ i + 
                     		" WHERE listID=" + waitingListID + 
-                            " AND demographic_no=" + oscar.Misc.getString(rs, "demographic_no") +
+                            " AND demographic_no=" + db.getString(rs,"demographic_no") +
                             " AND is_history = 'N' ";
-
+                    //System.out.println("update query from waiting list view: " + sql);
                     log.debug(sql);
-                    DBHandler.RunSQL(sql);
+                    db.RunSQL(sql);
                     i++;
                 }                            
                 rs.close();
             }
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);         
+            System.out.println(e.getMessage());         
         }        
     } 
         

@@ -1,5 +1,4 @@
 
-<%@page import="org.oscarehr.util.MiscUtils"%>
 <%@page import="org.oscarehr.caisi_integrator.ws.ConnectException_Exception"%>
 <%@page import="org.oscarehr.util.WebUtils"%>
 <%@page import="org.oscarehr.caisi_integrator.ws.DuplicateHinExceptionException"%>
@@ -75,7 +74,7 @@
 	}
 	else
 	{
-		MiscUtils.getLogger().error("Unexpected action. qs="+request.getQueryString());
+		LogManager.getLogger(this.getClass()).error("Unexpected action. qs="+request.getQueryString());
 	}
 	
 	response.sendRedirect("manage_hnr_client.jsp?demographicId="+currentDemographicId);

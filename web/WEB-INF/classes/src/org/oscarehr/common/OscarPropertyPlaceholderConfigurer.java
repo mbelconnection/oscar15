@@ -24,12 +24,12 @@ package org.oscarehr.common;
 
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 
 public class OscarPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigurer {
-        private static Logger log = MiscUtils.getLogger();
+        private static Log log = LogFactory.getLog(OscarPropertyPlaceholderConfigurer.class);
 	/* (non-Javadoc)
 	 * @see org.springframework.beans.factory.config.PropertyPlaceholderConfigurer#resolvePlaceholder(java.lang.String, java.util.Properties, int)
 	 */

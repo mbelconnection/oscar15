@@ -17,7 +17,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -25,23 +25,22 @@ package oscar.oscarBilling.ca.bc.pageUtil;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.Locale;
 
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
-
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+
 import org.apache.struts.actions.DispatchAction;
 import org.oscarehr.common.dao.BillingServiceDao;
 import org.oscarehr.common.model.BillingService;
-import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
-
 import oscar.oscarBilling.ca.bc.data.BillingCodeData;
 import oscar.util.UtilDateUtilities;
 
@@ -69,7 +68,7 @@ public final class BillingEditCodeAction extends DispatchAction {
         map.put("termDate",termDate);
         JSONObject jsonObject =   JSONObject.fromObject( itemCode );  //(JSONObject) JSONSerializer.toJSON(itemCode);//
         jsonObject = jsonObject.accumulate("id", id);
-        MiscUtils.getLogger().debug(jsonObject.toString());
+        System.out.println(jsonObject.toString());
         response.getOutputStream().write(jsonObject.toString().getBytes());
         return null;
     }
@@ -92,7 +91,7 @@ public final class BillingEditCodeAction extends DispatchAction {
     HttpServletResponse response)
     throws IOException, ServletException {
 
-        
+        Locale locale = getLocale(request);
 
         if(request.getSession().getAttribute("user") == null  ){
             return (mapping.findForward("Logout"));
@@ -107,9 +106,9 @@ public final class BillingEditCodeAction extends DispatchAction {
         String whereTo =frm.getWhereTo();
         String submitButton = frm.getSubmitButton();
 
-        MiscUtils.getLogger().debug(submitButton);
+        System.out.println(submitButton);
         if (submitButton.equals("Edit")){
-           MiscUtils.getLogger().debug("here with codeid "+codeId);
+           System.out.println("here with codeid "+codeId);
           BillingCodeData bcd = new BillingCodeData();
           bcd.editBillingCode(code,desc, value,codeId);
         }

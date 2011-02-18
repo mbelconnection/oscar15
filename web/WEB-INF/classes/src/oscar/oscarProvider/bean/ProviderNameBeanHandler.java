@@ -20,7 +20,7 @@
 // *
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -31,8 +31,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Vector;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarProvider.data.ProviderData;
@@ -51,18 +49,18 @@ public class ProviderNameBeanHandler {
         
         boolean verdict = true;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT DISTINCT provider_no, provider_type from provider ORDER BY last_name";
-
+            //System.out.println("Sql Statement: " + sql);
             ResultSet rs;
-            for(rs = DBHandler.GetSQL(sql); rs.next(); )
+            for(rs = db.GetSQL(sql); rs.next(); )
             {
-                ProviderData pData = new ProviderData(oscar.Misc.getString(rs, "provider_no"));
-                ProviderNameBean pNameBean = new ProviderNameBean(pData.getLast_name() + ", " + pData.getFirst_name(), oscar.Misc.getString(rs, "provider_no"));
+                ProviderData pData = new ProviderData(db.getString(rs,"provider_no"));
+                ProviderNameBean pNameBean = new ProviderNameBean(pData.getLast_name() + ", " + pData.getFirst_name(), db.getString(rs,"provider_no"));
                 providerNameVector.add(pNameBean);
-                if(oscar.Misc.getString(rs, "provider_type").equalsIgnoreCase("doctor")){
+                if(db.getString(rs,"provider_type").equalsIgnoreCase("doctor")){
                     doctorNameVector.add(pNameBean);
-
+                    //System.out.println("doctor name added");
                 }
                     
             }
@@ -70,7 +68,7 @@ public class ProviderNameBeanHandler {
             rs.close();
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;
@@ -86,17 +84,17 @@ public class ProviderNameBeanHandler {
     
     public void setThisGroupProviderVector(String groupNo){
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select provider_no, last_name, first_name from mygroup where mygroup_no='" + groupNo + "' order by first_name";
             ResultSet rs;
-            for(rs = DBHandler.GetSQL(sql); rs.next(); )
+            for(rs = db.GetSQL(sql); rs.next(); )
             {                
-                ProviderNameBean pNameBean = new ProviderNameBean(oscar.Misc.getString(rs, "last_name") + ", " + oscar.Misc.getString(rs, "first_name"), oscar.Misc.getString(rs, "provider_no"));
+                ProviderNameBean pNameBean = new ProviderNameBean(db.getString(rs,"last_name") + ", " + db.getString(rs,"first_name"), db.getString(rs,"provider_no"));
                 thisGroupProviderVector.add(pNameBean);
             }
         }
          catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);         
+            System.out.println(e.getMessage());         
         }
     }
     

@@ -30,7 +30,6 @@ import java.util.Date;
 import org.apache.commons.codec.binary.Base64;
 import org.caisi.model.BaseObject;
 import org.hibernate.Hibernate;
-import org.oscarehr.util.MiscUtils;
 
 public class ClientImage extends BaseObject {
 	public static final String imageMissingPlaceholderUrl="/images/defaultR_img.jpg";
@@ -98,7 +97,7 @@ public class ClientImage extends BaseObject {
 			try {
 				this.image_data = Base64.decodeBase64(this.blobToByteArray(image_contents));
 			} catch (Exception e) {
-				MiscUtils.getLogger().error("Error", e);
+				e.printStackTrace();
 				this.image_data = null;
 			}
 		}

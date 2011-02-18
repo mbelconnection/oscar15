@@ -30,20 +30,19 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.apache.struts.actions.DispatchAction;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarLab.ca.on.CommonLabResultData;
 
-public class FileLabsAction extends DispatchAction {
+public class FileLabsAction extends Action {
    
    public FileLabsAction() {
    }
    
-   public ActionForward unspecified(ActionMapping mapping,
+   public ActionForward execute(ActionMapping mapping,
    ActionForm form,
    HttpServletRequest request,
    HttpServletResponse response)
@@ -65,7 +64,7 @@ public class FileLabsAction extends DispatchAction {
 
                if (s != null){  //This means that the lab was of this type.
                   String[] la =  new String[] {flaggedLabs[i],labTypes[j]}; 
-                  MiscUtils.getLogger().debug("ADDING lab "+flaggedLabs[i]+" of lab type "+labTypes[j]);
+                  System.out.println("ADDING lab "+flaggedLabs[i]+" of lab type "+labTypes[j]);
                   listFlaggedLabs.add(la);
                   j = labTypes.length;
 
@@ -79,29 +78,11 @@ public class FileLabsAction extends DispatchAction {
 
          CommonLabResultData.fileLabs(listFlaggedLabs, providerNo);
          newURL = mapping.findForward("success").getPath();
-         newURL = newURL + "&providerNo="+providerNo+"&searchProviderNo="+searchProviderNo+"&status="+status;
+         newURL = newURL + "?providerNo="+providerNo+"&searchProviderNo="+searchProviderNo+"&status="+status;
          if (request.getParameter("lname") != null) { newURL = newURL + "&lname="+request.getParameter("lname"); }
          if (request.getParameter("fname") != null) { newURL = newURL + "&fname="+request.getParameter("fname"); }
          if (request.getParameter("hnum")  != null) { newURL = newURL + "&hnum="+request.getParameter("hnum"); }
-         //MiscUtils.getLogger().info(newURL);
+
       return (new ActionForward(newURL));
    }
-
-   public ActionForward fileLabAjax(ActionMapping mapping,
-   ActionForm form,
-   HttpServletRequest request,
-   HttpServletResponse response)
-   throws ServletException, IOException {
-
-      String providerNo = (String) request.getSession().getAttribute("user");
-      String flaggedLab=request.getParameter("flaggedLabId").trim();
-      String labType=request.getParameter("labType").trim();
-
-      ArrayList listFlaggedLabs = new ArrayList();
-      String[] la =  new String[] {flaggedLab,labType};
-      listFlaggedLabs.add(la);
-      CommonLabResultData.fileLabs(listFlaggedLabs, providerNo);
-
-      return null;
-}
 }

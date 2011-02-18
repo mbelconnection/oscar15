@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -32,6 +32,7 @@
 <jsp:useBean id="encPrintBean" class="oscar.AppointmentMainBean"
 	scope="page" />
 
+<%@ include file="../admin/dbconnection.jsp"%>
 <% 
   String [][] dbQueries=new String[][] { 
     {"search_encountersingle", "select * from encounter where encounter_no = ?"},
@@ -45,6 +46,8 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>ENCOUNTER REPORT PRINT</title>
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 <script language="JavaScript">
 <!--
 
@@ -153,6 +156,7 @@
 		<br>
 		<%
  } //end for loop
+ if(rsdemo!=null) encPrintBean.closePstmtConn();
 %>
 		</td>
 	</tr>

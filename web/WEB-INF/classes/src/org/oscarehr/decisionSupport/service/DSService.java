@@ -7,20 +7,19 @@ package org.oscarehr.decisionSupport.service;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oscarehr.decisionSupport.dao.DSGuidelineDAO;
-import org.oscarehr.decisionSupport.model.DSConsequence;
 import org.oscarehr.decisionSupport.model.DSGuideline;
+import org.oscarehr.decisionSupport.model.DSConsequence;
 import org.oscarehr.decisionSupport.model.DecisionSupportException;
-import org.oscarehr.util.MiscUtils;
 
 /**
  *
  * @author apavel
  */
 public abstract class DSService {
-    private static final Logger logger = MiscUtils.getLogger();
+    private static Log _log = LogFactory.getLog(DSService.class);
     protected DSGuidelineDAO dsGuidelineDAO;
 
     public DSService() {
@@ -28,9 +27,9 @@ public abstract class DSService {
     }
 
     public List<DSConsequence> evaluateAndGetConsequences(String demographicNo, String providerNo) {
-        logger.debug("passed in provider: " + providerNo + " demographicNo" + demographicNo);
+        System.out.println("passed in provider: " + providerNo + " demographicNo" + demographicNo);
         List<DSGuideline> dsGuidelines = this.dsGuidelineDAO.getDSGuidelinesByProvider(providerNo);
-        logger.info("Decision Support 'evaluateAndGetConsequences' has been called, reading " + dsGuidelines.size() + " for this provider");
+        _log.info("Decision Support 'evaluateAndGetConsequences' has been called, reading " + dsGuidelines.size() + " for this provider");
         ArrayList<DSConsequence> allResultingConsequences = new ArrayList();
         for (DSGuideline dsGuideline: dsGuidelines) {
             try {
@@ -39,10 +38,10 @@ public abstract class DSService {
                     allResultingConsequences.addAll(newConsequences);
                 }
             } catch (DecisionSupportException dse) {
-                logger.error("Failed to evaluate the patient against guideline, skipping guideline uuid: " + dsGuideline.getUuid(), dse);
+                _log.error("Failed to evaluate the patient against guideline, skipping guideline uuid: " + dsGuideline.getUuid(), dse);
             }
         }
-        logger.info("Decision Support 'evaluateAndGetConsequences' finished, returing " + allResultingConsequences.size() + " consequences");
+        _log.info("Decision Support 'evaluateAndGetConsequences' finished, returing " + allResultingConsequences.size() + " consequences");
         return allResultingConsequences;
     }
 

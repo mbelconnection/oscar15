@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -27,8 +27,6 @@ package oscar.oscarResearch.oscarDxResearch.bean;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarResearch.oscarDxResearch.util.dxResearchCodingSystem;
@@ -45,11 +43,11 @@ public class dxResearchBeanHandler {
         
         boolean verdict = true;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             
             dxResearchCodingSystem codingSys = new dxResearchCodingSystem();
             String[] codingSystems = codingSys.getCodingSystems();                                            
-
+            //System.out.println("Sql Statement: " + sql);
             String sql;
             ResultSet rs;
             for( int idx = 0; idx < codingSystems.length; ++idx ) {
@@ -57,23 +55,23 @@ public class dxResearchBeanHandler {
                 sql = "select d.start_date, d.update_date, c.description, c."+codingSystem+", d.dxresearch_no, d.status from dxresearch d, "+codingSystem+" c " +
                          "where d.dxresearch_code=c."+codingSystem+" and d.status<>'D' and d.demographic_no ='"+ demographicNo +"' and d.coding_system = '"+codingSystem+"'"
                         +" order by d.start_date desc, d.update_date desc";
-                for(rs = DBHandler.GetSQL(sql); rs.next(); )
+                for(rs = db.GetSQL(sql); rs.next(); )
                 {                
-                    dxResearchBean bean = new dxResearchBean(   oscar.Misc.getString(rs, "description"), 
-                                                            oscar.Misc.getString(rs, "dxresearch_no"),
-                                                            oscar.Misc.getString(rs, codingSystem),
-                                                            oscar.Misc.getString(rs, "update_date"),
-                                                            oscar.Misc.getString(rs, "start_date"),
-                                                            oscar.Misc.getString(rs, "status"),
+                    dxResearchBean bean = new dxResearchBean(   db.getString(rs,"description"), 
+                                                            db.getString(rs,"dxresearch_no"),
+                                                            db.getString(rs,codingSystem),
+                                                            db.getString(rs,"update_date"),
+                                                            db.getString(rs,"start_date"),
+                                                            db.getString(rs,"status"),
                                                             codingSystem);
                     dxResearchBeanVector.add(bean);
-
+                    //System.out.println("ichppcode obtained: " + db.getString(rs,"ichppccode") + " " + db.getString(rs,"description"));                
                 }
                 rs.close();
             }
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;

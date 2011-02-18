@@ -28,6 +28,7 @@
  *
  */
  --%>
+<%@ page language="java"%>
 <%@ page
 	import="oscar.util.*, oscar.form.*, oscar.form.data.*,java.util.*,oscar.oscarPrevention.*"%>
 <%@ page
@@ -43,10 +44,13 @@
     String formClass = "RhImmuneGlobulin";
     String formLink = "formRhImmuneGlobulin.jsp";
     
+//insert into encounterForm values ('RH Form', '../form/formRhImmuneGlobulin.jsp?demographic_no=', 'formRhImmuneGlobulin',0);
+
     String demographicNo = request.getParameter("demographic_no");
     if (demographicNo == null){
         demographicNo = (String) request.getAttribute("demographic_no");
     }    
+    System.out.println("demographic_no "+demographicNo);
     int demoNo = Integer.parseInt(demographicNo);
     
     String workflowId = request.getParameter("workflowId");
@@ -98,6 +102,8 @@
  */
 -->
 <html:html locale="true">
+<% response.setHeader("Cache-Control","no-cache");%>
+
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Rh Immune Globulin Injection Reporting Form</title>

@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -38,7 +38,6 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 import oscar.oscarDB.DBHandler;
@@ -54,30 +53,30 @@ public class EctDeleteMeasurementStyleSheetAction extends Action {
         String[] deleteCheckbox = frm.getDeleteCheckbox();
        
         try{
-                                                                                                
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);                                                                                    
             
             if(deleteCheckbox != null){
                 for(int i=0; i<deleteCheckbox.length; i++){
-                    MiscUtils.getLogger().debug(deleteCheckbox[i]);
+                    System.out.println(deleteCheckbox[i]);
                     String sql = "SELECT * FROM measurementGroupStyle WHERE cssID='"+ deleteCheckbox[i] +"'";
-                    MiscUtils.getLogger().debug("SQL: " + sql);
+                    System.out.println("SQL: " + sql);
                     ResultSet rs;
-                    rs = DBHandler.GetSQL(sql);
+                    rs = db.GetSQL(sql);
                     if(rs.next()){
                         sql = "SELECT * FROM measurementCSSLocation WHERE cssID ='" + deleteCheckbox[i] + "'";
-                        rs = DBHandler.GetSQL(sql);
+                        rs = db.GetSQL(sql);
                         if(rs.next()){
                             ActionMessages errors = new ActionMessages();  
                             errors.add(deleteCheckbox[i],
-                            new ActionMessage("error.oscarEncounter.Measurements.cannotDeleteStyleSheet", oscar.Misc.getString(rs, "location")));
+                            new ActionMessage("error.oscarEncounter.Measurements.cannotDeleteStyleSheet", db.getString(rs,"location")));
                             saveErrors(request, errors);
                             return (new ActionForward(mapping.getInput()));
                         }
                     }
                     else{
                         sql = "DELETE  FROM measurementCSSLocation WHERE cssID='"+ deleteCheckbox[i] +"'";                                        
-                        MiscUtils.getLogger().debug(" sql statement "+sql);
-                        DBHandler.RunSQL(sql);                        
+                        System.out.println(" sql statement "+sql);
+                        db.RunSQL(sql);                        
                     }
                 }
             }
@@ -98,7 +97,7 @@ public class EctDeleteMeasurementStyleSheetAction extends Action {
 
         catch(SQLException e)
         {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
  
         return mapping.findForward("success");

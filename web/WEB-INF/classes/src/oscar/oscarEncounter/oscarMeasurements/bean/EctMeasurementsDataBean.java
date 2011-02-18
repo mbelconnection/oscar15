@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -26,8 +26,6 @@ package oscar.oscarEncounter.oscarMeasurements.bean;
 
 import java.util.Calendar;
 import java.util.Date;
-
-import org.oscarehr.util.MiscUtils;
 
 public class EctMeasurementsDataBean{
 
@@ -197,7 +195,7 @@ public class EctMeasurementsDataBean{
     
     private int getNumMonths(Date dStart, Date dEnd) {
         int i = 0;
-        MiscUtils.getLogger().debug("Getting the number of months between "+dStart.toString()+ " and "+dEnd.toString() );        
+        System.out.println("Getting the number of months between "+dStart.toString()+ " and "+dEnd.toString() );        
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(dStart);
         while (calendar.getTime().before(dEnd) || calendar.getTime().equals(dEnd)) {

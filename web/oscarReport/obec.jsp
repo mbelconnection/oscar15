@@ -19,11 +19,12 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 -->
+<%@ page language="java"%>
 <%@ page
 	import="java.math.*, java.util.*, java.sql.*, oscar.*, oscar.util.DateUtils, java.net.*"
 	errorPage="errorpage.jsp"%>
@@ -65,6 +66,8 @@
 <title>oscarReport - OBEC Report</title>
 <link rel="stylesheet" href="oscarReport.css">
 <link rel="stylesheet" type="text/css" media="all" href="../share/css/extractedFromPages.css"  />
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 <script language="JavaScript">
 <!-- 
 

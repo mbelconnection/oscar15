@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -31,7 +31,7 @@
 <%@ page import="java.util.*, java.sql.*" errorPage="errorpage.jsp"%>
 <jsp:useBean id="formHistBean" class="oscar.AppointmentMainBean"
 	scope="page" />
-
+<%@ include file="../admin/dbconnection.jsp"%>
 <%
   String [][] dbQueries=new String[][] {
     {"search_form", "select * from form where demographic_no = ? order by form_date desc, form_time desc, form_no desc"},
@@ -53,6 +53,7 @@
     
     for(int i=0;i<=ii;i++) {
       if(request.getParameter("form_no"+i)==null) {
+// System.out.println("      1     ");
         continue;
       }
       
@@ -84,6 +85,8 @@
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>PATIENT'S FORM</title>
 <link rel="stylesheet" href="../web.css">
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 <script language="JavaScript">
 <!--
 
@@ -122,6 +125,7 @@
 		<%=rsdemo.getString("form_name")%></a></font> by <%=rsdemo.getString("provider_no")%><br>
 		<%
    }     
+   formHistBean.closePstmtConn();
 %>
 		</td>
 	</tr>

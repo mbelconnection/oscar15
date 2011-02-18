@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -32,7 +32,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
 
 public class dbExtract implements Serializable {
 
@@ -64,7 +63,7 @@ public class dbExtract implements Serializable {
         //  pStream.close();
         // }
         // catch (Exception ex) {
-
+        //     System.out.println("Exception : " + ex);
         //   }
     }
 
@@ -77,8 +76,8 @@ public class dbExtract implements Serializable {
             stmt2 = con.createStatement();
         }
         catch (SQLException e) {
-            MiscUtils.getLogger().debug("Cannot get connection ");
-            MiscUtils.getLogger().debug("Exception is: " + e);
+            System.out.println("Cannot get connection ");
+            System.out.println("Exception is: " + e);
         }
 
     }
@@ -92,8 +91,8 @@ public class dbExtract implements Serializable {
             return resultSet;
         }
         catch (SQLException e) {
-            MiscUtils.getLogger().debug("Cannot get connection ");
-            MiscUtils.getLogger().debug("Exception is: " + e);
+            System.out.println("Cannot get connection ");
+            System.out.println("Exception is: " + e);
             return resultSet;
         }
     }
@@ -107,8 +106,8 @@ public class dbExtract implements Serializable {
             return resultSet2;
         }
         catch (SQLException e) {
-            MiscUtils.getLogger().debug("Cannot get connection ");
-            MiscUtils.getLogger().debug("Exception is: " + e);
+            System.out.println("Cannot get connection ");
+            System.out.println("Exception is: " + e);
             return resultSet2;
         }
     }
@@ -122,8 +121,8 @@ public class dbExtract implements Serializable {
             return resultSet3;
         }
         catch (SQLException e) {
-            MiscUtils.getLogger().debug("Cannot get connection ");
-            MiscUtils.getLogger().debug("Exception is: " + e);
+            System.out.println("Cannot get connection ");
+            System.out.println("Exception is: " + e);
             return resultSet3;
         }
     }
@@ -132,7 +131,7 @@ public class dbExtract implements Serializable {
 
         try {
             String SQLup = getUpdateString();
-
+            // System.out.println(SQLup);
             prepStmt = con.createStatement();
             numUpdate = prepStmt.executeUpdate(SQLup);
             con.commit();
@@ -140,8 +139,8 @@ public class dbExtract implements Serializable {
             return numUpdate;
         }
         catch (SQLException e) {
-            MiscUtils.getLogger().debug("Cannot get connection ");
-            MiscUtils.getLogger().debug("Exception is: " + e);
+            System.out.println("Cannot get connection ");
+            System.out.println("Exception is: " + e);
             return numUpdate;
         }
     }
@@ -163,7 +162,7 @@ public class dbExtract implements Serializable {
 
         }
         catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
 
     } //closeConnection ends

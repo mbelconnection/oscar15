@@ -3,13 +3,14 @@ package com.quatro.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Calendar;
 
-import org.oscarehr.PMmodule.dao.ProviderDao;
-import org.oscarehr.PMmodule.model.Program;
-import org.oscarehr.common.model.Facility;
-import org.oscarehr.util.MiscUtils;
+import org.caisi.dao.ProviderDAO;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import oscar.MyDateFormat;
@@ -18,12 +19,18 @@ import oscar.oscarDB.DBPreparedHandler;
 import oscar.oscarDB.DBPreparedHandlerParam;
 
 import com.quatro.common.KeyConstants;
+import com.quatro.model.Attachment;
 import com.quatro.model.FieldDefValue;
 import com.quatro.model.LookupCodeValue;
 import com.quatro.model.LookupTableDefValue;
 import com.quatro.model.LstOrgcd;
 import com.quatro.model.security.SecProvider;
 import com.quatro.util.Utility;
+
+import org.oscarehr.PMmodule.dao.ProviderDao;
+import org.oscarehr.PMmodule.model.Program;
+import org.oscarehr.common.model.Facility;
+import java.util.Calendar;
 
 public class LookupDao extends HibernateDaoSupport {
 
@@ -167,22 +174,22 @@ public class LookupDao extends HibernateDaoSupport {
 			   LookupCodeValue lv = new LookupCodeValue();
 			   lv.setPrefix(tableId);
 			   lv.setCode(rs.getString(1));
-			   lv.setDescription(oscar.Misc.getString(rs, 2));
-			   lv.setActive(Integer.valueOf("0" + oscar.Misc.getString(rs, 3)).intValue()==1);
-			   lv.setOrderByIndex(Integer.valueOf("0" + oscar.Misc.getString(rs, 4)).intValue());
-			   lv.setParentCode(oscar.Misc.getString(rs, 5));
-			   lv.setBuf1(oscar.Misc.getString(rs, 6));
-			   lv.setCodeTree(oscar.Misc.getString(rs, 7));
-			   lv.setLastUpdateUser(oscar.Misc.getString(rs, 8));
-			   lv.setLastUpdateDate(MyDateFormat.getCalendar(oscar.Misc.getString(rs, 9)));
-			   lv.setBuf3(oscar.Misc.getString(rs, 10));
-			   lv.setBuf4(oscar.Misc.getString(rs, 11));
-			   lv.setBuf5(oscar.Misc.getString(rs, 12));
-			   lv.setBuf6(oscar.Misc.getString(rs, 13));
-			   lv.setBuf7(oscar.Misc.getString(rs, 14));
-			   lv.setBuf8(oscar.Misc.getString(rs, 15));
-			   lv.setBuf9(oscar.Misc.getString(rs, 16));
-			   lv.setCodecsv(oscar.Misc.getString(rs, 17));
+			   lv.setDescription(db.getString(rs, 2));
+			   lv.setActive(Integer.valueOf("0" + db.getString(rs, 3)).intValue()==1);
+			   lv.setOrderByIndex(Integer.valueOf("0" + db.getString(rs,4)).intValue());
+			   lv.setParentCode(db.getString(rs, 5));
+			   lv.setBuf1(db.getString(rs,6));
+			   lv.setCodeTree(db.getString(rs, 7));
+			   lv.setLastUpdateUser(db.getString(rs,8));
+			   lv.setLastUpdateDate(MyDateFormat.getCalendar(db.getString(rs, 9)));
+			   lv.setBuf3(db.getString(rs,10));
+			   lv.setBuf4(db.getString(rs,11));
+			   lv.setBuf5(db.getString(rs,12));
+			   lv.setBuf6(db.getString(rs,13));
+			   lv.setBuf7(db.getString(rs,14));
+			   lv.setBuf8(db.getString(rs,15));
+			   lv.setBuf9(db.getString(rs,16));
+			   lv.setCodecsv(db.getString(rs, 17));
 			   list.add(lv);
 			}
 			rs.close();
@@ -202,7 +209,7 @@ public class LookupDao extends HibernateDaoSupport {
 	   }
 	   catch(SQLException e)
 	   {
-		  MiscUtils.getLogger().error("Error", e);
+		  e.printStackTrace();
 	   }
 	   return list;
 	}
@@ -217,7 +224,7 @@ public class LookupDao extends HibernateDaoSupport {
 	    try{
 	      return (LookupTableDefValue)getHibernateTemplate().find(sSQL ,params).get(0);
 	    }catch(Exception ex){
-	    	MiscUtils.getLogger().error("Error", ex);
+	    	ex.printStackTrace();
 	    	return null;
 	    }
 	}
@@ -257,7 +264,7 @@ public class LookupDao extends HibernateDaoSupport {
 				for(int i=0; i< fs.size(); i++) 
 				{
 					FieldDefValue fdv = (FieldDefValue) fs.get(i);
-					String val = oscar.Misc.getString(rs, (i+1));
+					String val = db.getString(rs, i+1);
 					if("D".equals(fdv.getFieldType()))
 						if(fdv.isEditable()) {
 							val = MyDateFormat.getStandardDate(MyDateFormat.getCalendarwithTime(val));
@@ -282,7 +289,7 @@ public class LookupDao extends HibernateDaoSupport {
 		}
 		catch(SQLException e)
 		{
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 		}
 		return fs;
 	}
@@ -310,7 +317,7 @@ public class LookupDao extends HibernateDaoSupport {
 				for(int i=0; i< fs.size(); i++) 
 				{
 					FieldDefValue fdv = (FieldDefValue) fs.get(i);
-					String val = oscar.Misc.getString(rs, (i+1));
+					String val = db.getString(rs, i+1);
 					if("D".equals(fdv.getFieldType()))
 						val = MyDateFormat.getStandardDateTime(MyDateFormat.getCalendarwithTime(val));
 					fdv.setVal(val);
@@ -326,7 +333,7 @@ public class LookupDao extends HibernateDaoSupport {
 		}
 		catch(SQLException e)
 		{
-			MiscUtils.getLogger().error("Error", e);
+			System.out.println(e.getStackTrace());
 		}
 		return codes;
 	}
@@ -336,12 +343,16 @@ public class LookupDao extends HibernateDaoSupport {
 		String sql = "select max(" + idFieldName + ")";
 		sql += " from " + tableName;
 		DBPreparedHandler db = new DBPreparedHandler();
-
-		ResultSet rs = db.queryResults(sql);
-		int id = 0;
-		if (rs.next()) 
-			 id = rs.getInt(1);
-		return id + 1;
+		try {
+			ResultSet rs = db.queryResults(sql);
+			int id = 0;
+			if (rs.next()) 
+				 id = rs.getInt(1);
+			return id + 1;
+		}
+		finally
+		{
+		}
 	}
 	
 	public String SaveCodeValue(boolean isNew, LookupTableDefValue tableDef, List fieldDefList) throws SQLException
@@ -538,8 +549,8 @@ public class LookupDao extends HibernateDaoSupport {
 	}
 	public void SaveAsOrgCode(Program program) throws SQLException
 	{
-		
-		
+		LookupTableDefValue tableDef = this.GetLookupTableDef("ORG");
+		List codeValues = new ArrayList();
 		String  programId = "0000000" + program.getId().toString();
 		programId = "P" + programId.substring(programId.length()-7);
 		String fullCode = "P" + program.getId();
@@ -631,8 +642,8 @@ public class LookupDao extends HibernateDaoSupport {
 	}
 	public void SaveAsOrgCode(Facility facility) throws SQLException
 	{
-		
-		
+		LookupTableDefValue tableDef = this.GetLookupTableDef("ORG");
+		List codeValues = new ArrayList();
 		String  facilityId = "0000000" + facility.getId().toString();
 		facilityId = "F" + facilityId.substring(facilityId.length()-7);
 		String fullCode = "F" + facility.getId();
@@ -667,8 +678,8 @@ public class LookupDao extends HibernateDaoSupport {
 	}
 	public void SaveAsOrgCode(LookupCodeValue orgVal, String tableId) throws SQLException
 	{
-		
-		
+		LookupTableDefValue tableDef = this.GetLookupTableDef("ORG");
+		List codeValues = new ArrayList();
 		String orgPrefix = tableId.substring(0,1);
 		String orgPrefixP = "R1";
 		if ("S".equals(orgPrefix)) orgPrefixP = "O";   //parent of Organization is R, parent of Shelter is O.

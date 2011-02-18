@@ -1,18 +1,3 @@
-<%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
-<%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
-<%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
-<%@ taglib uri="/WEB-INF/oscarProperties-tag.tld" prefix="oscar"%>
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
-<%@ page import="oscar.oscarProvider.data.*, oscar.log.*"%>
-<%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
-<%@ page import="org.apache.log4j.Logger" %>
-
-<%@ page import="oscar.*,java.lang.*,java.util.Date,oscar.oscarRx.util.RxUtil,org.springframework.web.context.WebApplicationContext,
-         org.springframework.web.context.support.WebApplicationContextUtils,
-         org.oscarehr.common.dao.UserPropertyDAO,org.oscarehr.common.model.UserProperty"%>
-
-
-
 <!--
 /*
  *
@@ -33,18 +18,28 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
 -->
 
-<%
-	String scriptid=request.getParameter("scriptId");
-%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page language="java"%>
+<%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
+<%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
+<%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
+<%@ taglib uri="/WEB-INF/oscarProperties-tag.tld" prefix="oscar"%>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
+<%@ page import="oscar.oscarProvider.data.*, oscar.log.*"%>
+<%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
+<%@ page import="org.apache.log4j.Logger" %>
+<%@ page import="oscar.*,java.lang.*,java.util.Date,oscar.oscarRx.util.RxUtil,org.springframework.web.context.WebApplicationContext,
+         org.springframework.web.context.support.WebApplicationContextUtils,
+         org.oscarehr.common.dao.UserPropertyDAO,org.oscarehr.common.model.UserProperty"%>
+<% response.setHeader("Cache-Control","no-cache");%>
 
-
-<%@page import="org.oscarehr.web.PrescriptionQrCodeUIBean"%><html:html locale="true">
+<html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <script type="text/javascript" src="../share/javascript/prototype.js"></script>
@@ -79,20 +74,26 @@
 <body topmargin="0" leftmargin="0" vlink="#0000FF">
 
 <%
+System.out.println("==========================IN Preview2.jsp2=======================");
+
 Date rxDate = oscar.oscarRx.util.RxUtil.Today();
 //String rePrint = request.getParameter("rePrint");
 String rePrint = (String)request.getSession().getAttribute("rePrint");
 //String rePrint = (String)request.getSession().getAttribute("rePrint");
+System.out.println("rePrint"+rePrint);
 oscar.oscarRx.pageUtil.RxSessionBean bean;
 oscar.oscarRx.data.RxProviderData.Provider provider;
 String signingProvider;
 if( rePrint != null && rePrint.equalsIgnoreCase("true") ) {
     bean = (oscar.oscarRx.pageUtil.RxSessionBean)session.getAttribute("tmpBeanRX");
     signingProvider = bean.getStashItem(0).getProviderNo();
+    //System.out.println("in if, signingProvider="+signingProvider);
     rxDate = bean.getStashItem(0).getRxDate();
+    //System.out.println("RX DATE " + rxDate);
     provider = new oscar.oscarRx.data.RxProviderData().getProvider(signingProvider);
-//    session.setAttribute("tmpBeanRX", null);
-    String ip = request.getRemoteAddr();
+    //System.out.println("in if, provider no="+provider.getProviderNo());
+    session.setAttribute("tmpBeanRX", null);
+    String ip = request.getRemoteAddr();System.out.println("in if, ip="+ip);
     //LogAction.addLog((String) session.getAttribute("user"), LogConst.UPDATE, LogConst.CON_PRESCRIPTION, String.valueOf(bean.getDemographicNo()), ip);
 }
 else {
@@ -100,16 +101,26 @@ else {
 
     //set Date to latest in stash
     Date tmp;
+    //System.out.println("bean.getStashSize()="+bean.getStashSize());
 
     for( int idx = 0; idx < bean.getStashSize(); ++idx ) {
         tmp = bean.getStashItem(idx).getRxDate();
+        //System.out.println("in else, tmp="+tmp);
         if( tmp.after(rxDate) ) {
             rxDate = tmp;
         }
     }
     rePrint = "";
     signingProvider = bean.getProviderNo();
+    //System.out.println("in else , signingProvider="+signingProvider);
     provider = new oscar.oscarRx.data.RxProviderData().getProvider(bean.getProviderNo());
+    //System.out.println("in else, provider no="+provider.getProviderNo());
+}
+
+String providerPhone = null;
+org.oscarehr.common.model.Provider pprovider = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProvider;
+if(pprovider.getWorkPhone() != null && pprovider.getWorkPhone().length()>0) {
+	providerPhone = pprovider.getWorkPhone();
 }
 
 
@@ -122,19 +133,22 @@ boolean hasSig = sig.hasSignature(signingProvider);
 String doctorName = "";
 if (hasSig){
    doctorName = sig.getSignature(signingProvider);
+   //System.out.println("in if doctorName="+doctorName);
 }else{
-   doctorName = (provider.getFirstName() + ' ' + provider.getSurname());
+   doctorName = (provider.getFirstName() + ' ' + provider.getSurname());System.out.println("in else doctorName="+doctorName);
 }
 
 doctorName = doctorName.replaceAll("\\d{6}","");
 doctorName = doctorName.replaceAll("\\-","");
+//System.out.println("doctorName="+doctorName);
 
 OscarProperties props = OscarProperties.getInstance();
 
 String pracNo = provider.getPractitionerNo();
-String strUser = (String)session.getAttribute("user");
-ProviderData user = new ProviderData(strUser);
-
+//System.out.println("pracNo="+pracNo);
+String strUser = (String)session.getAttribute("user");System.out.println("strUser="+strUser);
+ProviderData user = new ProviderData(strUser);System.out.println("user="+user);
+System.out.println(provider.getClinicName().replaceAll("\\(\\d{6}\\)",""));
 String patientDOBStr=RxUtil.DateToString(patient.getDOB(), "MMM d, yyyy") ;
 boolean showPatientDOB=false;
 
@@ -147,9 +161,9 @@ if(prop!=null && prop.getValue().equalsIgnoreCase("yes")){
 }
 %>
 <html:form action="/form/formname" styleId="preview2Form">
-
+    
     <p id="pharmInfo" style="float:right;">
-    </p>
+    </p>    
     <table>
         <tr>
             <td>
@@ -168,15 +182,22 @@ if(prop!=null && prop.getValue().equalsIgnoreCase("yes")){
                                                             <input type="hidden" name="clinicName"
                                                                     value="<%= StringEscapeUtils.escapeHtml(clinicTitle.replaceAll("(<br>)","\\\n")) %>" />
                                                             <input type="hidden" name="clinicPhone"
-                                                                    value="<%= StringEscapeUtils.escapeHtml(provider.getClinicPhone()) %>" />
+                                                                    value="<%= StringEscapeUtils.escapeHtml(providerPhone==null?provider.getClinicPhone():providerPhone) %>" />
                                                             <input type="hidden" name="clinicFax"
                                                                     value="<%= StringEscapeUtils.escapeHtml(provider.getClinicFax()) %>" />
                                                     </c:when>
                                                     <c:otherwise>
+                                                    		<%
+                                                    			String phone = providerPhone;
+                                                    			if(phone == null) {
+                                                    				phone = (String)session.getAttribute("infirmaryView_programTel");
+                                                    			}
+                                                    			request.setAttribute("phone",phone);
+                                                    		%>
                                                             <input type="hidden" name="clinicName"
                                                                     value="<c:out value="${infirmaryView_programAddress}"/>" />
                                                             <input type="hidden" name="clinicPhone"
-                                                                    value="<c:out value="${infirmaryView_programTel}"/>" />
+                                                                    value="<c:out value="${phone}"/>" />
                                                             <input type="hidden" name="clinicFax"
                                                                     value="<c:out value="${infirmaryView_programFax}"/>" />
                                                     </c:otherwise>
@@ -203,15 +224,23 @@ if(prop!=null && prop.getValue().equalsIgnoreCase("yes")){
                                                             <%= provider.getClinicAddress() %><br>
                                                             <%= provider.getClinicCity() %>&nbsp;&nbsp;<%=provider.getClinicProvince()%>&nbsp;&nbsp;
                                                 <%= provider.getClinicPostal() %><br>
-                                                <bean:message key="RxPreview.msgTel"/>: <%= provider.getClinicPhone() %><br>
+                                                <bean:message key="RxPreview.msgTel"/>: <%= providerPhone==null?provider.getClinicPhone():providerPhone %><br>
                                                 <oscar:oscarPropertiesCheck property="RXFAX" value="yes">
                                                     <bean:message key="RxPreview.msgFax"/>: <%= provider.getClinicFax() %><br>
                                                 </oscar:oscarPropertiesCheck>
                                                     </c:when>
                                                     <c:otherwise>
+                                                    <%
+                                                    			String phone = providerPhone;
+                                                    			if(phone == null) {
+                                                    				phone = (String)session.getAttribute("infirmaryView_programTel");
+                                                    			}
+                                                    			request.setAttribute("phone",phone);
+                                                    		%>
+                                                    		
                                                             <c:out value="${infirmaryView_programAddress}" escapeXml="false" />
                                                             <br />
-                                                    <bean:message key="RxPreview.msgTel"/>: <c:out value="${infirmaryView_programTel}" />
+                                                    <bean:message key="RxPreview.msgTel"/>: <c:out value="${phone}" />
                                                             <br />
                                                             <oscar:oscarPropertiesCheck property="RXFAX" value="yes">
                                                         <bean:message key="RxPreview.msgFax"/>: <c:out value="${infirmaryView_programFax}" />
@@ -293,44 +322,25 @@ if(prop!=null && prop.getValue().equalsIgnoreCase("yes")){
 
 
                                                     </tr>
-                                                    <% 
-                                                    	 if( rePrint.equalsIgnoreCase("true") && rx != null ) 
-                                                    	 { 
-                                                    	 %>
-		                                                    <tr valign=bottom style="font-size: 6px;">
-		                                                        <td height=25px colspan="2"><bean:message key="RxPreview.msgReprintBy"/> <%=user.getProviderName(strUser)%><span style="float: left;">
-		                                                            <bean:message key="RxPreview.msgOrigPrinted"/>:&nbsp;<%=rx.getPrintDate()%></span> <span
-		                                                                    style="float: right;"><bean:message key="RxPreview.msgTimesPrinted"/>:&nbsp;<%=String.valueOf(rx.getNumPrints())%></span>
-		                                                            <input type="hidden" name="origPrintDate" value="<%=rx.getPrintDate()%>"/>
-		                                                            <input type="hidden" name="numPrints" value="<%=String.valueOf(rx.getNumPrints())%>"/>
-		                                                        </td>
-		                                                    </tr>
-	                                                    <%
-                                     					}
-                                                    
-                                                    	if (PrescriptionQrCodeUIBean.isPrescriptionQrCodeEnabledForCurrentProvider())
-                                                    	{
-                                                    	%>                                                    
-		                                                    <tr>
-			                                                    <td colspan="2">
-			                                                    	<img src="<%=request.getContextPath()%>/contentRenderingServlet/prescription_qr_code_<%=rx.getScript_no()%>.png?source=prescriptionQrCode&prescriptionId=<%=rx.getScript_no()%>" alt="qr_code" />
-			                                                    </td>
-		                                                    </tr>
-                                                    	<%
-                                                    	}
-                                                    	
-                                                    	
-	                                     				if (oscar.OscarProperties.getInstance().getProperty("FORMS_PROMOTEXT") != null)
-	                                     				{
-	                                     				%>
-		                                                    <tr valign=bottom align="center" style="font-size: 9px">
-		                                                            <td height=25px colspan="2"></br>
-		                                                            <%= oscar.OscarProperties.getInstance().getProperty("FORMS_PROMOTEXT") %>
-		                                                            </td>
-		                                                    </tr>
-	                                                    <%
-                                                    	}
-                                                    %>
+                                                    <% if( rePrint.equalsIgnoreCase("true") && rx != null ) { %>
+                                                    <tr valign=bottom style="font-size: 6px;">
+                                                        <td height=25px colspan="2"><bean:message key="RxPreview.msgReprintBy"/> <%=user.getProviderName(strUser)%><span style="float: left;">
+                                                            <bean:message key="RxPreview.msgOrigPrinted"/>:&nbsp;<%=rx.getPrintDate()%></span> <span
+                                                                    style="float: right;"><bean:message key="RxPreview.msgTimesPrinted"/>:&nbsp;<%=String.valueOf(rx.getNumPrints())%></span>
+                                                            <input type="hidden" name="origPrintDate" value="<%=rx.getPrintDate()%>"/>
+                                                            <input type="hidden" name="numPrints" value="<%=String.valueOf(rx.getNumPrints())%>"/>
+                                                        </td>
+                                                    </tr>
+
+                                                    <%
+                                       }
+                                     if (oscar.OscarProperties.getInstance().getProperty("FORMS_PROMOTEXT") != null){%>
+                                                    <tr valign=bottom align="center" style="font-size: 9px">
+                                                            <td height=25px colspan="2"></br>
+                                                            <%= oscar.OscarProperties.getInstance().getProperty("FORMS_PROMOTEXT") %>
+                                                            </td>
+                                                    </tr>
+                                                    <%}%>
                                             </table>
                                             </td>
                                     </tr>

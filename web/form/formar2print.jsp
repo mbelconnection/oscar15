@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -30,6 +30,7 @@
   if(request.getParameter("oox")!=null) oox = Integer.parseInt(request.getParameter("oox"));
   if(request.getParameter("ooy")!=null) ooy = Integer.parseInt(request.getParameter("ooy"));
 %>
+<%@ page language="java"%>
 <%@ page
 	import="java.util.*, java.net.*, oscar.util.*, oscar.form.graphic.*"
 	errorPage="errorpage.jsp"%>
@@ -39,6 +40,8 @@
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>ANTENATAL RECORD 2</title>
 <link rel="stylesheet" href="antenatalRecordPrint.css">
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 <script language="JavaScript">
 <!--
 
@@ -730,6 +733,7 @@ if (!fedb.equals("") ) {
 	        x = (int) ((ox + (dx -19) * width / (11.5 * 2)) -2) ;
 	        y = (int) ((oy - (dy - 11.818) * height / (5.636 * 5)) -1) ;
             urlparam += "&x" + (i-1) + "=" + x + "|" + y;
+			//System.out.println(urlparam);
 		}
 	}
     for (int i = 18; i < 35; i++) {
@@ -740,6 +744,7 @@ if (!fedb.equals("") ) {
 	        x = (int) ((ox + (dx -19) * width / (11.5 * 2)) -2) ;
 	        y = (int) ((oy - (dy - 11.818) * height / (5.636 * 5)) -1) ;
             urlparam += "&x" + (i-1) + "=" + x + "|" + y;
+			//System.out.println(urlparam);
 		}
 	}
 %>

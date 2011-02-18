@@ -18,11 +18,13 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 --%>
+
+<%@ page language="java"%>
 <%@ page import=" java.util.*, org.w3c.dom.*"%>
 <%@ page
 	import="oscar.oscarMessenger.docxfer.send.*,oscar.oscarMessenger.docxfer.util.*"%>
@@ -45,6 +47,9 @@
 String demoNo   = request.getParameter("val2");
 String prov     = request.getParameter("val1");
 
+// System.out.println("select Itemsdemo "+demoNo+" prov "+prov);
+
+
 oscar.oscarMessenger.pageUtil.MsgSessionBean bean = null;
 bean = new oscar.oscarMessenger.pageUtil.MsgSessionBean();
 
@@ -63,8 +68,7 @@ bean.setProviderNo(prov);
 
 
 <link rel="stylesheet" type="text/css" href="../encounterStyles.css">
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html>
+<html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 
@@ -202,8 +206,9 @@ bean.setProviderNo(prov);
         MsgGenerate gen = new MsgGenerate();
 
         xmlDoc = gen.getDocument(demographicNo);
+        // System.out.println("xmlDoc = "+xmlDoc.toString());
     }catch (Exception ex){
-    	MiscUtils.getLogger().error("Error", ex);
+        ex.printStackTrace();
         response.sendRedirect("error.html");
     }
 
@@ -212,6 +217,7 @@ bean.setProviderNo(prov);
     }
 
     Element root = xmlDoc.getDocumentElement();
+    // System.out.println(MsgCommxml.toXML(root));
 
 %>
 <%!
@@ -250,16 +256,20 @@ bean.setProviderNo(prov);
     void DrawTable(Element tbl, JspWriter out)
             throws javax.servlet.jsp.JspException, java.io.IOException{
         NodeList lst = tbl.getChildNodes();
+        //if (lst.getLength() > 0){
 
-        out.print(spanStart + tbl.getAttribute("name") + spanEnd);
-        out.print(tblStart);
+            out.print(spanStart + tbl.getAttribute("name") + spanEnd);
+            out.print(tblStart);
 
-        for(int i=0; i<lst.getLength(); i++){
-            out.print(tblRowStart);
-            DrawItem((Element)lst.item(i), out);
-            out.print(tblRowEnd);
-        }
-        out.print(tblEnd);
+
+            // System.out.println("/n there are "+lst.getLength()+" nodes \n");
+            for(int i=0; i<lst.getLength(); i++){
+                out.print(tblRowStart);
+                DrawItem((Element)lst.item(i), out);
+                out.print(tblRowEnd);
+            }
+            out.print(tblEnd);
+        //}
     }
 
     void DrawItem(Element item, JspWriter out)

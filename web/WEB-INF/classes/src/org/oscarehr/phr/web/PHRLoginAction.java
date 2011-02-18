@@ -31,11 +31,13 @@ package org.oscarehr.phr.web;
 
 import java.util.Calendar;
 
+import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -43,29 +45,28 @@ import org.apache.struts.action.ActionRedirect;
 import org.apache.struts.actions.DispatchAction;
 import org.oscarehr.phr.PHRAuthentication;
 import org.oscarehr.phr.service.PHRService;
-import org.oscarehr.util.MiscUtils;
 
 /**
  *
  * @author jay
  */
 public class PHRLoginAction extends DispatchAction {
-     private static Logger log = MiscUtils.getLogger();
+     private static Log log = LogFactory.getLog(PHRLoginAction.class);
      PHRService phrService;
-    
+
     /**
      * Creates a new instance of PHRLoginAction
      */
     public PHRLoginAction() {
     }
-    
+
     public void setPhrService(PHRService phrService){
         this.phrService = phrService;
     }
-     
+
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
        HttpSession session = request.getSession();
-       
+
        String providerNo = (String) session.getAttribute("user");
        PHRAuthentication phrAuth = null;
        String forwardTo = (String) request.getParameter("forwardto");
@@ -83,11 +84,11 @@ public class PHRLoginAction extends DispatchAction {
            request.setAttribute("phrTechLoginErrorMsg", "No MyOSCAR information in the database");
            return ar;
        }
-       
+
        try {
            phrAuth = phrService.authenticate(providerNo, request.getParameter("phrPassword"));
        } catch (Exception e) {
-           MiscUtils.getLogger().error("Error", e);
+           e.printStackTrace();
             /*if ((e.getCause() != null && e.getCause().getClass() == java.net.ConnectException.class)
             || (e.getCause() != null && e.getCause().getClass() == java.net.NoRouteToHostException.class)
             || (e.getCause() != null && e.getCause().getClass(). == )) {*/
@@ -104,7 +105,7 @@ public class PHRLoginAction extends DispatchAction {
             //log.warn("getname: " + e.getCause().getClass().getName());
             //log.warn("getname2: " + e.getClass().getName());
             //log.warn("service server wrong");
-           
+
            //server probably offline
            log.debug("exception");
            request.setAttribute("phrUserLoginErrorMsg", "Incorrect password");
@@ -119,5 +120,5 @@ public class PHRLoginAction extends DispatchAction {
        ActionRedirect arr = new ActionRedirect(forwardTo);
        log.debug("Correct user/pass, auth success");
        return arr;
-    } 
+    }
 }

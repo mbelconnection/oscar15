@@ -34,12 +34,12 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.filter.ElementFilter;
 import org.jdom.input.SAXBuilder;
-import org.oscarehr.util.MiscUtils;
 
 /**
  * Parses xml file, creating DosingRecomendation Objects storing them in a hashtable with the ATC code as the key
@@ -47,7 +47,7 @@ import org.oscarehr.util.MiscUtils;
  */
 public class LimitedUseLookup {
 
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(LimitedUseLookup.class);
 
     static Hashtable<String, ArrayList> luLookup = new Hashtable();
     static boolean loaded = false;
@@ -112,7 +112,7 @@ public class LimitedUseLookup {
                     }
                 }
             } catch (Exception e) {
-                MiscUtils.getLogger().error("Error", e);
+                e.printStackTrace();
             }
             loaded = true;
         }

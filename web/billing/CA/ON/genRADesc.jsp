@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -35,7 +35,7 @@ if(session.getValue("user") == null) response.sendRedirect("../../../logout.jsp"
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
 <jsp:useBean id="SxmlMisc" class="oscar.SxmlMisc" scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 
 <% 
 String raNo = "", note="", htmlContent="", transaction="", messages="";
@@ -162,6 +162,8 @@ while(rslocal.next()){
 	co_total= SxmlMisc.getXmlContent(rslocal.getString("content"),"<xml_co_total>","</xml_co_total>");
 }
 
+apptMainBean.closePstmtConn();
+
 file.close();
 reader.close();
 input.close();
@@ -170,6 +172,7 @@ input.close();
 <html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<meta http-equiv="Cache-Control" content="no-cache" />
 <title>OSCAR Project</title>
 <link rel="stylesheet" href="../web.css">
 <script LANGUAGE="JavaScript">

@@ -41,7 +41,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarProvider.data.ProviderData;
@@ -54,7 +53,7 @@ public class MsgViewMessageByPositionAction extends Action {
 				 HttpServletRequest request,
 				 HttpServletResponse response)
 	throws IOException, ServletException {
-
+        // System.out.println("in view message action jackson");
         // Extract attributes we will need
         String provNo = (String) request.getSession().getAttribute("user");
         
@@ -70,12 +69,12 @@ public class MsgViewMessageByPositionAction extends Action {
         String orderBy = request.getParameter("orderBy")==null?"date":request.getParameter("orderBy");        
         String messagePosition = request.getParameter("messagePosition");           
         String demographic_no = request.getParameter("demographic_no");   
-        
+        String from = request.getParameter("from")==null?"oscarMessenger":request.getParameter("from");
         MsgDisplayMessagesBean displayMsgBean = new MsgDisplayMessagesBean();
         ParameterActionForward actionforward = new ParameterActionForward(mapping.findForward("success"));
         
         try{
-           
+           DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
            java.sql.ResultSet rs;
            
                 //String sql = new String("select m.messageid from messagelisttbl ml, messagetbl m, msgDemoMap map"
@@ -87,10 +86,10 @@ public class MsgViewMessageByPositionAction extends Action {
                              "and m.messageid = map.messageID  order by "+ displayMsgBean.getOrderBy(orderBy) + " limit " + messagePosition +", 1";
         
                 
-                MiscUtils.getLogger().debug("this ="+sql);
-                rs = DBHandler.GetSQL(sql);
+                System.out.println("this ="+sql);
+                rs = db.GetSQL(sql);
                 if (rs.next()) {                                                                   
-                    actionforward.addParameter("messageID", oscar.Misc.getString(rs, "messageid"));
+                    actionforward.addParameter("messageID", db.getString(rs,"messageid"));
                     actionforward.addParameter("from", "encounter");     
                     actionforward.addParameter("demographic_no", demographic_no);
                     actionforward.addParameter("messagePostion", messagePosition);
@@ -100,7 +99,7 @@ public class MsgViewMessageByPositionAction extends Action {
 
         }
         catch (java.sql.SQLException e){ 
-           MiscUtils.getLogger().error("Error", e); 
+            e.printStackTrace(System.out); 
         }
                                
         return actionforward;

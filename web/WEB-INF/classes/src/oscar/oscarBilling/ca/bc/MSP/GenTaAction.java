@@ -43,7 +43,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 import oscar.oscarDB.DBPreparedHandler;
@@ -771,7 +770,7 @@ class S04{
         t_insurercode= nextline.substring(77,79);
         t_filler= nextline.substring(79,165);
         
-        MiscUtils.getLogger().debug("held "+MSPReconcile.HELD+" office no "+getBillingMasterNo());
+        System.out.println("held "+MSPReconcile.HELD+" office no "+getBillingMasterNo());
         
     }
     

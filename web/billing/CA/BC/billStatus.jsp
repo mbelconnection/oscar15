@@ -27,12 +27,13 @@
  * Ontario, Canada
  */
 -->
+<%@ page language="java" contentType="text/html" %>
 <%@ page import="java.math.*,java.util.*, java.sql.*, oscar.*, java.net.*,oscar.oscarBilling.ca.bc.MSP.*,oscar.util.*" %>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
-<jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean" scope="session" /><jsp:useBean id="SxmlMisc" class="oscar.SxmlMisc" scope="session" />
-<%@ include file="dbBilling.jspf" %>
+<jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean" scope="session" /><jsp:useBean id="SxmlMisc" class="oscar.SxmlMisc" scope="session" /><%@ include file="../../../admin/dbconnection.jsp" %>
+<%@ include file="dbBilling.jsp" %>
 <%
   String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
   java.text.NumberFormat nf = java.text.NumberFormat.getCurrencyInstance();
@@ -80,8 +81,7 @@ boolean adminAccess = false;
     <% adminAccess = true; %>
 </security:oscarSec>
 
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html>
+<html>
 <head>
 <html:base/>
 <title>Invoice List</title>
@@ -336,6 +336,8 @@ function addEvent(elm, evType, fn, useCapture)
 	font-size:9pt;
 }
 </style>
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 <script language="JavaScript">
 <!--
 function popupPage(vheight,vwidth,varpage) { //open a new popup window
@@ -492,6 +494,7 @@ if("true".equals(readonly)){
   </tr>
 </table>
 <% String billTypes = request.getParameter("billTypes");
+System.out.println("billTypes" + billTypes);
 if (billTypes == null){
     billTypes = MSPReconcile.REJECTED;
 }
@@ -556,6 +559,7 @@ billTypes = "%";
 	<th align="center" class="bHeaderData" title="TYPE" >TYPE </th>
 	<%
 		if(!"true".equals(readonly)){
+		System.out.println("READ:"+readonly);
 	%>
     <th align="center" class="bHeaderData" title="PATIENT" >PATIENT</th>
 	<%}%>
@@ -587,6 +591,7 @@ billTypes = "%";
     boolean bodd = true;
     boolean incorrectVal = false;
     boolean paidinCorrectval = false;
+    System.out.println(list.size()+" in this billing list");
 	String currentBillingNo = "";
     for (int i = 0; i < list.size(); i++){
 
@@ -602,7 +607,7 @@ billTypes = "%";
       try{
         valueToAdd = new BigDecimal(b.amount).setScale(2, BigDecimal.ROUND_HALF_UP);
       }catch(Exception badValueException){
-        MiscUtils.getLogger().error(" Error calculating value for "+b.billMasterNo);
+        System.out.println(" Error calculating value for "+b.billMasterNo);
         incorrectVal = true;
       }
       total = total.add(valueToAdd);
@@ -611,7 +616,7 @@ billTypes = "%";
       try{
         valueToPaidAdd = new BigDecimal(pAmount).setScale(2, BigDecimal.ROUND_HALF_UP);
       }catch(Exception badValueException){
-		MiscUtils.getLogger().error(" Error calculating paid value for "+b.billMasterNo);
+        System.out.println(" Error calculating paid value for "+b.billMasterNo);
         paidinCorrectval = true;
       }
       paidTotal = paidTotal.add(valueToPaidAdd);

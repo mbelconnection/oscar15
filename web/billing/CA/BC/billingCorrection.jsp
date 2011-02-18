@@ -42,9 +42,10 @@
 <%@ page
 	import="java.math.*, java.util.*, java.sql.*, oscar.*, java.net.*"
 	errorPage="errorpage.jsp"%>
+<%@ include file="../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 <%
   GregorianCalendar now=new GregorianCalendar();
   int curYear = now.get(Calendar.YEAR);
@@ -71,7 +72,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -80,6 +81,8 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>oscarBilling Correction</title>
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 <script language="JavaScript">
 <!--
 		function setfocus() {
@@ -134,6 +137,7 @@
    return true;
 }
     </script>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 
 
@@ -152,7 +156,7 @@
 	</tr>
 </table>
 <% int bFlag = 0;	String billNo = request.getParameter("billing_no");         if (billNo.compareTo("") == 0 || billNo == null) {         bFlag = 0;         } else {         bFlag =1;         %>
-<%@ include file="billingDataRetrieve.jspf"%>
+<%@ include file="billingDataRetrieve.jsp"%>
 <% } %>
 <table width="100%" border="0" bgcolor="#FFFFFF">
 	<form name="form1" method="post" action="billingCorrection.jsp">
@@ -486,6 +490,7 @@ String proFirst="", proLast="", proOHIP="", proNo="";
  while(rsDiagCode.next()){
   diagDesc = rsDiagCode.getString("description");
   }
+       apptMainBean.closePstmtConn();
     %>
 
 

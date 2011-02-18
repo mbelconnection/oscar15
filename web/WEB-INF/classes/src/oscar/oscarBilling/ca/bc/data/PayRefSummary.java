@@ -17,7 +17,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -25,8 +25,6 @@
 package oscar.oscarBilling.ca.bc.data;
 
 import java.text.NumberFormat;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarBilling.ca.bc.MSP.MSPReconcile;
 
@@ -100,7 +98,7 @@ public class PayRefSummary {
       }
     }
     catch (Exception e) {
-      MiscUtils.getLogger().error("Error", e);
+      e.printStackTrace();
     }
   }
 
@@ -157,7 +155,7 @@ public class PayRefSummary {
       }
     }
     catch (NumberFormatException e) {
-      MiscUtils.getLogger().error("Error", e);
+      e.printStackTrace();
     }
   }
 

@@ -18,7 +18,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -44,7 +44,7 @@
 	scope="page" />
 <jsp:useBean id="namevector" class="java.util.Vector" scope="page" />
 <jsp:useBean id="novector" class="java.util.Vector" scope="page" />
-
+<%@ include file="../admin/dbconnection.jsp"%>
 <% // table demographiccust: cust1 = nurse   cust2 = resident   cust4 = midwife
 
   String [][] dbQueries = new String[1][1];
@@ -88,6 +88,7 @@
 <title><bean:message key="admin.updatedemographicprovider.title" />
 </title>
 </head>
+<meta http-equiv="Cache-Control" content="no-cache">
 <script language="javascript">
 <!-- start javascript ---- check to see if it is really empty in database
 
@@ -151,6 +152,7 @@ function setregexp2() {
       }
       String instrdemo = sbtemp.toString();
       dbQueries[0][1] = dbQueries[0][1] + "("+ instrdemo +")" ;
+      // System.out.println( dbQueries[0][1] );
       updatedpBean.doConfigure(dbQueries,responseTargets);
       rowsAffected = updatedpBean.queryExecuteUpdate(param, "update_residentmultiple");
     } %>
@@ -187,6 +189,7 @@ function setregexp2() {
       }
       String instrdemo = sbtemp.toString();
       dbQueries[1][1] += "("+ instrdemo +")" ;
+      // System.out.println( dbQueries[1][1] );
       updatedpBean.doConfigure(dbQueries,responseTargets);
       rowsAffected = updatedpBean.queryExecuteUpdate(param, "update_nursemultiple");
     } %>
@@ -223,6 +226,7 @@ function setregexp2() {
       }
       String instrdemo = sbtemp.toString();
       dbQueries[2][1] += "("+ instrdemo +")" ;
+      // System.out.println( dbQueries[2][1] );
       updatedpBean.doConfigure(dbQueries,responseTargets);
       rowsAffected = updatedpBean.queryExecuteUpdate(param, "update_midwifemultiple");
     } %>
@@ -414,6 +418,9 @@ function setregexp2() {
 	</form>
 </table>
 
+<%
+    updatedpBean.closePstmtConn();
+%>
 </center>
 </body>
 </html:html>

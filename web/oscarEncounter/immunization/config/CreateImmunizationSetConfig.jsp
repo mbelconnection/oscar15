@@ -18,18 +18,22 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 -->
+
+<%@ page language="java"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
 
 <%
+
         String co = (String) request.getAttribute("cols");
         String ro = (String) request.getAttribute("rows");
+        System.out.println("co ="+co+" ro ="+ro);
         int cols = 0;
         int rows = 0;
     try{
@@ -38,15 +42,12 @@
         rows++;
         cols++;
 
-    }catch(Exception e){
-    	MiscUtils.getLogger().error("there was a boo-boo co="+co+" ro="+ro, e);
-    }
+    }catch(Exception e){System.out.println("there was a boo-boo co="+co+" ro="+ro);}
 
     String setName = ((String) request.getAttribute("name"));
 %>
 
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html:html locale="true">
+<html:html locale="true">
 
 
 <head>

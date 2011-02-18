@@ -59,7 +59,7 @@ public class HnrDataValidation extends AbstractModel<Integer> {
 	}
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id = null;
 	private Integer facilityId = null;
 	private Integer clientId = null;
@@ -112,8 +112,7 @@ public class HnrDataValidation extends AbstractModel<Integer> {
 		this.valid = valid;
 	}
 
-	@Override
-    public Integer getId() {
+	public Integer getId() {
 		return id;
 	}
 

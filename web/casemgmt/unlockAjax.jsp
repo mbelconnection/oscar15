@@ -1,3 +1,6 @@
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-bean"
 	prefix="bean"%>

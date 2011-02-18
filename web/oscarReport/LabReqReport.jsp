@@ -23,6 +23,8 @@
  * Ontario, Canada 
  */
 -->
+
+<%@ page language="java"%>
 <%@ page import="java.util.*,oscar.oscarReport.data.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
@@ -238,7 +240,7 @@ demoData = (RptLabReportData.DemoLabDataStruct)  conData.demoList.get(i);
                     String labType = (String) h.get("labType");
                   //get labs
                     String labURL = "";
-                    
+                    System.out.println("labType "+labType);
                     if ( labType != null && labType.equals("CML") ){ 
                        labURL = "../lab/CA/ON/CMLDisplay.jsp?providerNo="+pros+"&segmentID="+lab_no;                                            
                     }else{ 

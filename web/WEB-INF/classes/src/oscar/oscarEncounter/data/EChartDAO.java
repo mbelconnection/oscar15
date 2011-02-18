@@ -27,8 +27,6 @@ package oscar.oscarEncounter.data;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 import oscar.util.UtilMisc;
 
@@ -59,14 +57,14 @@ public class EChartDAO {
         UtilMisc.charEscape(echart.getOngoingConcerns(), '\'') + "','" +
         UtilMisc.charEscape(echart.getReminders(), '\'') + "','" +
         UtilMisc.charEscape(echart.getEncounter(), '\'') + "')";
-    
+    DBHandler db = null;
     try {
-      
-      DBHandler.RunSQL(qry);
-      MiscUtils.getLogger().debug("qry=" + qry);
+      db = new DBHandler(DBHandler.OSCAR_DATA);
+      db.RunSQL(qry);
+      System.out.println("qry=" + qry);
     }
     catch (SQLException e) {
-      MiscUtils.getLogger().error("Error", e);
+      System.out.println(e.getMessage());
     }
   }
 
@@ -79,30 +77,30 @@ public class EChartDAO {
     Echart echart = null;
 
     try {
-      
+      DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
       ResultSet rs;
       String sql = "select * from eChart where demographicNo=" +
           demographicNo
           + " ORDER BY eChartId DESC";
 //          + " ORDER BY eChartId DESC limit 1";
-      rs = DBHandler.GetSQL(sql);
+      rs = db.GetSQL(sql);
       if (rs.next()) {
         echart = new Echart();
         echart.setTimeStamp(rs.getTimestamp("timeStamp"));
-        echart.setSocialHistory(oscar.Misc.getString(rs, "socialHistory"));
-        echart.setFamilyHistory(oscar.Misc.getString(rs, "familyHistory"));
-        echart.setMedicalHistory(oscar.Misc.getString(rs, "medicalHistory"));
-        echart.setOngoingConcerns(oscar.Misc.getString(rs, "ongoingConcerns"));
-        echart.setReminders(oscar.Misc.getString(rs, "reminders"));
-        echart.setEncounter(oscar.Misc.getString(rs, "encounter"));
-        echart.setSubject(oscar.Misc.getString(rs, "subject"));
+        echart.setSocialHistory(db.getString(rs,"socialHistory"));
+        echart.setFamilyHistory(db.getString(rs,"familyHistory"));
+        echart.setMedicalHistory(db.getString(rs,"medicalHistory"));
+        echart.setOngoingConcerns(db.getString(rs,"ongoingConcerns"));
+        echart.setReminders(db.getString(rs,"reminders"));
+        echart.setEncounter(db.getString(rs,"encounter"));
+        echart.setSubject(db.getString(rs,"subject"));
         echart.setDemographicNo(String.valueOf(demographicNo));
-        echart.setProviderNo(oscar.Misc.getString(rs, "providerNo"));
+        echart.setProviderNo(db.getString(rs,"providerNo"));
       }
       rs.close();
     }
     catch (SQLException e) {
-      MiscUtils.getLogger().error("Error", e);
+      e.printStackTrace();
     }
     return echart;
   }

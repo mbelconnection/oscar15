@@ -20,20 +20,19 @@
  * 
      * This software was written for the 
  * Department of Family Medicine 
- * McMaster University test2
+ * McMaster Unviersity test2
  * Hamilton 
  * Ontario, Canada 
  */
 -->
-<%@page import="oscar.*,oscar.oscarDemographic.data.*,java.util.*,oscar.oscarBilling.ca.bc.Teleplan.*,java.math.BigDecimal,oscar.oscarBilling.ca.bc.data.*,org.oscarehr.common.model.*"%>
+<%@page  import="oscar.*,oscar.oscarDemographic.data.*,java.util.*,oscar.oscarBilling.ca.bc.Teleplan.*,java.math.BigDecimal,oscar.oscarBilling.ca.bc.data.*,org.oscarehr.common.model.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %>
 <%@ taglib uri="/WEB-INF/rewrite-tag.tld" prefix="rewrite" %>
 <%@ page import="org.oscarehr.common.dao.BillingServiceDao,org.oscarehr.util.SpringUtils,org.oscarehr.common.model.*" %>
 <%BillingServiceDao billingServiceDao = (BillingServiceDao) SpringUtils.getBean("billingServiceDao"); %>
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html:html locale="true">
+<html:html locale="true">
 
 <head>
 <title>
@@ -343,7 +342,7 @@ tr.up{
                                     classStyle = "up";
                                 }
                             }catch(Exception e){
-                                MiscUtils.getLogger().error("ERROR: oldfee "+oldFee);
+                                System.out.println("ERROR: oldfee "+oldFee);
                                 classStyle = "error";
                             }
                             

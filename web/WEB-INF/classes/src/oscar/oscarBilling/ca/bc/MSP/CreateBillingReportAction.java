@@ -50,7 +50,6 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarAction;
 import oscar.OscarDocumentCreator;
@@ -201,7 +200,7 @@ public class CreateBillingReportAction extends OscarAction {
                 osc.fillDocumentStream(reportParams, outputStream, docFmt, reportInstream, DbConnectionFilter.getThreadLocalDbConnection());
             }
             catch (SQLException e) {
-                MiscUtils.getLogger().error("Error", e);
+                e.printStackTrace();
             }
 
         }
@@ -243,6 +242,7 @@ public class CreateBillingReportAction extends OscarAction {
 
             for (Iterator iter = billSearch.list.iterator(); iter.hasNext();) {
                 MSPBill item = (MSPBill)iter.next();
+                System.err.println(item.rejectionDate);
             }
             oscar.entities.Provider payProv = msp.getProvider(payee, 1);
             reportParams.put("account", account.equals("ALL")?"ALL":payProv.getFullName());

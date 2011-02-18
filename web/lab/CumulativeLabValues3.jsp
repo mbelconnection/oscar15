@@ -58,14 +58,15 @@ try{
 *   dateList: (dateIdHash)
 *   dateIdHash: (date, lab_no)
     */
-    
+    DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+    Connection conn = db.getConnection();
     for (int i = 0; i < items.size(); i++){
         Element e = (Element) items.get(i);
         String loinc_code = e.getAttributeValue("loinc_code");
         String name = e.getAttributeValue("name");
         if (!loinc_code.equalsIgnoreCase("NULL")){
             LinkedHashMap IdMap = new LinkedHashMap();
-            ArrayList labList = labTests.findValuesByLoinc(demographic_no, loinc_code);
+            ArrayList labList = labTests.findValuesByLoinc(demographic_no, loinc_code, conn);
             for (int j=0; j < labList.size(); j++){
                 Hashtable h = (Hashtable) labList.get(j);
                 String date = ( (String) h.get("date") );
@@ -122,7 +123,7 @@ try{
         nameMap.remove(nameMapKeys[nameMapKeys.length-1]);
     
 }catch(Exception e){
-	MiscUtils.getLogger().error("Error", e);
+    e.printStackTrace();
 }%>
 
 
@@ -130,8 +131,7 @@ try{
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html:html locale="true">
+<html:html locale="true">
 
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>

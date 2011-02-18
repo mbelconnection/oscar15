@@ -22,7 +22,11 @@
  * Hamilton
  * Ontario, Canada
  */
---><%@ include file="/casemgmt/taglibs.jsp"%>
+-->
+
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+<%@ include file="/casemgmt/taglibs.jsp"%>
 <%@page import="java.util.*" %>
 <%
 if(session.getValue("user") == null)
@@ -39,6 +43,7 @@ if(session.getValue("user") == null)
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <html:base />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title><bean-el:message key="${providertitle}" /></title>
 
 <link rel="stylesheet" type="text/css"

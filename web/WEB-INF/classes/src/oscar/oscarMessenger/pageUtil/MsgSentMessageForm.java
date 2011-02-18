@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -29,12 +29,12 @@ public class MsgSentMessageForm extends ActionForm {
   private String sample = "Start2 value";
   //Access sample property
   public String getSample() {
-
+  // System.out.println("imbeingget");
     return sample;
   }
   //Access sample property
   public void setSample(String newValue) {
-
+  // System.out.println("imbeingset");
     if (newValue!=null) {
       sample = newValue;
     }

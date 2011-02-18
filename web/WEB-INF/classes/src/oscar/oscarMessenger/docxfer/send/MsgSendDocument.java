@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -106,6 +106,7 @@ public class MsgSendDocument
         for(int i=0; i<tbls.getLength(); i++){
             Element tbl = (Element)tbls.item(i);
             aList.add(tbl.getAttribute("name"));
+            System.err.println("Name would be "+tbl.getAttribute("name"));
         }
 
         return doc;

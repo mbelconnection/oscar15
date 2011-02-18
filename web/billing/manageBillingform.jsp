@@ -14,7 +14,7 @@ String service_form="", service_name="";
 <%@ include file="../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 <%
   String clinicview = request.getParameter("billingform")==null?oscarVariables.getProperty("default_view"):request.getParameter("billingform");
    String reportAction=request.getParameter("reportAction")==null?"":request.getParameter("reportAction");
@@ -42,7 +42,7 @@ String service_form="", service_name="";
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -104,6 +104,7 @@ function onUnbilled(url) {
 }
 //-->
 </script>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-2">
 </head>
 
 <body leftmargin="0" topmargin="5" rightmargin="0">
@@ -169,11 +170,11 @@ function onUnbilled(url) {
 	</form>
 </table>
 <% if (clinicview.compareTo("000") == 0) { %>
-<%@ include file="manageBillingform_add.jspf"%>
+<%@ include file="manageBillingform_add.jsp"%>
 
 <%} else{ %>
 <% if (clinicview.compareTo("***") == 0) { %>
-<%@ include file="manageBillingform_premium.jspf"%>
+<%@ include file="manageBillingform_premium.jsp"%>
 
 <%} else{ %>
 
@@ -184,7 +185,7 @@ function onUnbilled(url) {
 <% } else {  
 if (reportAction.compareTo("servicecode") == 0) {
 %>
-<%@ include file="manageBillingform_service.jspf"%>
+<%@ include file="manageBillingform_service.jsp"%>
 <%
 } else {
 %>
@@ -192,13 +193,14 @@ if (reportAction.compareTo("servicecode") == 0) {
 <%
 if (reportAction.compareTo("dxcode") == 0) {
 %>
-<%@ include file="manageBillingform_dx.jspf"%>
+<%@ include file="manageBillingform_dx.jsp"%>
 <%
 }}}}}
 %>
 
 
 <%
+ apptMainBean.closePstmtConn();
   %>
 
 <%@ include file="../demographic/zfooterbackclose.jsp"%>

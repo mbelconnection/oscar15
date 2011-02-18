@@ -21,7 +21,6 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.oscarehr.phr.PHRConstants;
 import org.oscarehr.phr.service.PHRService;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDemographic.data.DemographicData;
 import oscar.oscarEncounter.data.EctProviderData;
@@ -34,6 +33,7 @@ import oscar.oscarRx.data.RxPrescriptionData.Prescription;
 public class RxSendToPhrAction extends Action {
     
     PHRService phrService = null;
+    PHRConstants phrConstants = null;
     
     /** Creates a new instance of RxSendToPhr */
     public RxSendToPhrAction() {
@@ -61,36 +61,36 @@ public class RxSendToPhrAction extends Action {
         try {
             patient = rxPatientData.getPatient(Integer.parseInt(demoNo));
         } catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
 
         oscar.oscarRx.data.RxPrescriptionData.Prescription[] prescribedDrugs;                                                               
         prescribedDrugs = patient.getPrescribedDrugs();
         
-        
-        MiscUtils.getLogger().debug("prescribed drugs length" + prescribedDrugs.length);
+        int drugsSent = 0;
+        System.out.println("prescribed drugs length" + prescribedDrugs.length);
         for( int idx = 0; idx < prescribedDrugs.length; ++idx ) {
               Prescription drug = prescribedDrugs[idx];
               if(drug.isCurrent() == true && !drug.isArchived() ){
                   try {
                       // if updating removed because drugs are never edited, only represcribed
-                      /*if (phrService.isIndivoRegistered(PHRConstants.DOCTYPE_MEDICATION(), drug.getDrugId()+"")) {
+                      /*if (phrService.isIndivoRegistered(phrConstants.DOCTYPE_MEDICATION(), drug.getDrugId()+"")) {
                            //if updating
-                           MiscUtils.getLogger().debug("running update");
-                           String phrDrugIndex = phrService.getPhrIndex(PHRConstants.DOCTYPE_MEDICATION(), drug.getDrugId()+"");
+                           System.out.println("running update");
+                           String phrDrugIndex = phrService.getPhrIndex(phrConstants.DOCTYPE_MEDICATION(), drug.getDrugId()+"");
                            phrService.sendUpdateMedication(prov, demoNo, patientMyOscarId, drug, phrDrugIndex);
                            //drug.setIndivoIdx(newIndex);
                       } else { //if adding*/
                       
                       //only add new drugs, no updating old drugs because they cannot be edited
-
-                      if (!phrService.isIndivoRegistered(PHRConstants.DOCTYPE_MEDICATION(), drug.getDrugId()+"")) {
-
+                      //System.out.println("Checking drug: " + drug.getDrugName());
+                      if (!phrService.isIndivoRegistered(phrConstants.DOCTYPE_MEDICATION(), drug.getDrugId()+"")) {
+                          //System.out.println("Entering phrService");
                           phrService.sendAddMedication(prov, demoNo, patientMyOscarId, drug);
                       }
                       //throw new Exception("Error: Cannot marshal the document");
                   } catch (Exception e) {
-                      MiscUtils.getLogger().error("Error", e);
+                      e.printStackTrace();
                       errorMsg = e.getMessage();
                       //errors = true;
                       request.setAttribute("error_msg", errorMsg);
@@ -104,6 +104,10 @@ public class RxSendToPhrAction extends Action {
     
     public void setPhrService(PHRService pServ){
         this.phrService = pServ;
+    }
+    
+    public void setPhrConstants(PHRConstants pConst) {
+        this.phrConstants = pConst;
     }
     
 }

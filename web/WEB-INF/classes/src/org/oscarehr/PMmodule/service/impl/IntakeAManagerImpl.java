@@ -26,19 +26,19 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oscarehr.PMmodule.dao.ClientDao;
 import org.oscarehr.PMmodule.dao.IntakeADao;
+import org.oscarehr.common.model.Demographic;
 import org.oscarehr.PMmodule.model.Formintakea;
 import org.oscarehr.PMmodule.service.IntakeAManager;
-import org.oscarehr.common.model.Demographic;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public class IntakeAManagerImpl extends BaseIntakeManager implements IntakeAManager {
 	
-	private static Logger log = MiscUtils.getLogger();
+	private static Log log = LogFactory.getLog(IntakeAManagerImpl.class);
 	
 	private IntakeADao dao;
 	private ClientDao clientDao;
@@ -98,13 +98,13 @@ public class IntakeAManagerImpl extends BaseIntakeManager implements IntakeAMana
 			client.setPcnIndicator("");
 			client.setPin("");
 			if(form.getYear().equals("")) {
-				form.setYear(null);
+				form.setYear("0001");
 			}
 			if(form.getMonth().equals("")) {
-				form.setMonth(null);
+				form.setMonth("01");
 			}
 			if(form.getDay().equals("")){
-				form.setDay(null);
+				form.setDay("01");
 			}
 			client.setYearOfBirth(form.getYear());
 			client.setMonthOfBirth(form.getMonth());

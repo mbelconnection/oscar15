@@ -1,3 +1,4 @@
+<%@ page language="java"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
@@ -10,6 +11,8 @@
 	reverse="<%=true%>">
 	<%response.sendRedirect("../noRights.html");%>
 </security:oscarSec>
+
+<% response.setHeader("Cache-Control","no-cache");%>
 <logic:notPresent name="RxSessionBean" scope="session">
 	<logic:redirect href="error.html" />
 </logic:notPresent>
@@ -45,7 +48,7 @@ String annotation_display = org.oscarehr.casemgmt.model.CaseManagementNoteLink.D
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */

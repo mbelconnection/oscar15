@@ -23,7 +23,7 @@
  * Ontario, Canada 
  */
 -->
-<%@page import="oscar.oscarReport.data.DemographicSets, oscar.oscarDemographic.data.*,java.util.*,oscar.oscarPrevention.*,oscar.oscarProvider.data.*,oscar.util.*,oscar.oscarReport.ClinicalReports.*,oscar.oscarEncounter.oscarMeasurements.*,oscar.oscarEncounter.oscarMeasurements.bean.*"%>
+<%@page  import="oscar.oscarReport.data.DemographicSets, oscar.oscarDemographic.data.*,java.util.*,oscar.oscarPrevention.*,oscar.oscarProvider.data.*,oscar.util.*,oscar.oscarReport.ClinicalReports.*,oscar.oscarEncounter.oscarMeasurements.*,oscar.oscarEncounter.oscarMeasurements.bean.*"%>
 <%@page import="com.Ostermiller.util.CSVPrinter,java.io.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
@@ -37,6 +37,8 @@
 
             String numeratorId = (String) request.getAttribute("numeratorId");
             String denominatorId = (String) request.getAttribute("denominatorId");
+
+            System.out.println("num " + numeratorId + " denom " + denominatorId);
 
             ClinicalReportManager reports = ClinicalReportManager.getInstance();
 
@@ -169,7 +171,7 @@
                         //console.log(i+" "+document.getElementById(fields_to_turn_on[i]).style.display);
                     }
                 }catch(e){
-                    
+                    //e.printStackTrace();
                 }
           
                 //console.log("going out");
@@ -184,7 +186,7 @@
             
             function processExtraFieldsNumerator(t){
                 var currentDenom = t.options[t.selectedIndex].value; 
-                //console.log(currentDenom);
+               // console.log(currentDenom);
                 //Hide all extra denom fields
                 for (  i = 0 ; i < numerator_fields.length; i++) {
                     document.getElementById(numerator_fields[i]).style.display = 'none'; 
@@ -194,15 +196,15 @@
                     //console.log("fields to turn on " + fields_to_turn_on[0]);
                     //get list of extra 
                     for (  i = 0 ; i < fields_to_turn_on.length; i++) {
-                        //console.log(i+" "+document.getElementById(fields_to_turn_on[i]).style.display);
+                       // console.log(i+" "+document.getElementById(fields_to_turn_on[i]).style.display);
                         document.getElementById(fields_to_turn_on[i]).style.display = ''; 
-                        //console.log(i+" "+document.getElementById(fields_to_turn_on[i]).style.display);
+                      //  console.log(i+" "+document.getElementById(fields_to_turn_on[i]).style.display);
                     }
                 }catch(e){
-                    
+                    //e.printStackTrace();
                 }
           
-                //console.log("going out");
+              //  console.log("going out");
             }
             
             
@@ -286,6 +288,7 @@
                                     <%Object numer_val = "";
                                     if (request.getAttribute("numerator_value") != null){
                                         numer_val =  request.getAttribute("numerator_value") ;
+                                        System.out.println("~~~~~~~~"+numer_val+" ========== "+request.getAttribute("numerator_measurements") );
                                     }
                                     %>
                                     <bean:message key="report.ClinicalReports.msgValue"/> : <input type="text" name="numerator_value" value="<%=numer_val%>"><br> 
@@ -382,10 +385,14 @@
                     System.arraycopy(outputfields, 0, temp, 0, outputfields.length);
                     temp[outputfields.length] = "" + kv.getKey();
                     outputfields = temp;
-                    
+                    System.out.println("k" + kv.getKey() + " v:" + kv.getValue());
                     forView.put(kv.getKey(), kv.getValue());
                 }
+            } else {
+                System.out.println("NO EXTRA VALUES ");
             }
+
+            System.out.println(outputfields);
 
             if (request.getAttribute("list") != null) {
                 DemographicNameAgeString deName = DemographicNameAgeString.getInstance();
@@ -413,7 +420,12 @@
                     <%csvp.writeln(); 
                     ArrayList<Hashtable> list = (ArrayList) request.getAttribute("list");
                     for (Hashtable h : list) {
-                        
+                        System.out.println("h:" + h.size());
+                        Enumeration en = h.keys();
+                        while (en.hasMoreElements()) {
+                            String ssss = (String) en.nextElement();
+                            System.out.println(ssss + " " + h.get(ssss));
+                        }
                         Hashtable demoHash = deName.getNameAgeSexHashtable("" + h.get("_demographic_no"));
                         DemographicData.Demographic demoObj = demoData.getDemographic("" + h.get("_demographic_no"));
 
@@ -509,7 +521,7 @@
         if (obj == null) {
             return "";
         }
-
+        System.out.println(obj.getClass().getName() + " " + obj);
         if (obj instanceof oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBean) {
             oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBean md = (oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBean) obj;
             return md.getDateObserved() + ": " + md.getDataField();
@@ -573,6 +585,7 @@
     
     String sel(String s1, String s2) {
         String ret = "";
+        //System.out.println("s1 "+s1+" s2 "+s2);
         if (s1 != null && s2 != null && s1.equals(s2)) {
             ret = "selected";
         }

@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -86,7 +86,8 @@
 %>
 <h1>Sorry, fail to update !!! <%= request.getParameter("demographic_no") %>.
 <%  
-  } 
+  }
+  apptMainBean.closePstmtConn(); 
 %>
 <p></p>
 <%@ include file="footer2htm.jsp"%>

@@ -12,7 +12,7 @@
 
 <jsp:useBean id="studyBean" class="oscar.AppointmentMainBean"
 	scope="page" />
-
+<%@ include file="../admin/dbconnection.jsp"%>
 <% 
     String [][] dbQueries=new String[][] { 
         {"delete_demostudy", "delete from demographicstudy where demographic_no = ?" }, 
@@ -32,6 +32,7 @@
 		int rowsAffected = studyBean.queryExecuteUpdate(new String[]{demographic_no}, "delete_demostudy");
 		if (study_no != null) {
 			for (int i = 0; i < study_no.length; i++) {
+				//System.out.println(i + " " + study_no[i]);
     			rowsAffected = studyBean.queryExecuteUpdate(new String[]{demographic_no, study_no[i], curUser_no, datetime}, "save_demostudy");
 			}
 		} 
@@ -59,7 +60,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -125,6 +126,7 @@ function setfocus() {
 	</tr>
 	<%
   }
+  studyBean.closePstmtConn();
 %>
 	<tr>
 		<td>&nbsp;</td>

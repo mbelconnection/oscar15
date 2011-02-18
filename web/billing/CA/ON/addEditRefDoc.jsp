@@ -53,7 +53,7 @@
 			sql += " phone='" + request.getParameter("phone") + "', ";
 			sql += " fax='" + request.getParameter("fax") + "' ";
 			sql += "where referral_no='" + referral_no + "'";
-
+			System.out.println(sql);
 			if(dbObj.updateDBRecord(sql)) {
 	  			msg = referral_no + " is updated.<br>" + "Type in a doctor's ref. # and search first to see if it is available.";
 	  			action = "search";
@@ -133,6 +133,7 @@
         String referral_no = request.getParameter("referral_no");
 		String	sql   = "select * from billingreferral where referral_no='" + referral_no + "'";
 		ResultSet rs = dbObj.searchDBRecord(sql);
+System.out.println(sql);
 
 		if (rs.next()) {
 		    prop.setProperty("referral_no", referral_no);
@@ -163,6 +164,8 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Add/Edit Service Code</title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <script language="JavaScript">
 
       <!--

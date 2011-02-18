@@ -19,13 +19,8 @@
 <%
 	String country = request.getLocale().getCountry();
 %>
-<%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
-<%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
-<%@ taglib uri="http://www.caisi.ca/plugin-tag" prefix="plugin" %>
-<%@ taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi" %>
-<%@ taglib uri="/WEB-INF/special_tag.tld" prefix="special" %>
-<%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+<%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
+<%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <!--  
 /*
  * 
@@ -46,7 +41,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -60,19 +55,11 @@
 	key="demographic.demographicappthistory.title" /></title>
 <link rel="stylesheet" type="text/css"
 	href="../share/css/OscarStandardLayout.css">
+<meta http-equiv="Pragma" content="no-cache">
 <script type="text/javascript">
 <!--
 
-function popupPageNew(vheight,vwidth,varpage) {
-  var page = "" + varpage;
-  windowprops = "height="+vheight+",width="+vwidth+",location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=yes";
-  var popup=window.open(page, "demographicprofile", windowprops);
-  if (popup != null) {
-    if (popup.opener == null) {
-      popup.opener = self;
-    }
-  }
-}
+
   
 
 //-->
@@ -133,9 +120,6 @@ function popupPageNew(vheight,vwidth,varpage) {
 					key="demographic.demographicappthistory.msgReason" /></b></TH>
 				<TH width="15%"><b><bean:message
 					key="demographic.demographicappthistory.msgProvider" /></b></TH>
-				<plugin:hideWhenCompExists componentName="specialencounterComp" reverse="true">
-					<TH><b>EYE FORM</b></TH>
-				</plugin:hideWhenCompExists>
 				<TH width="10%"><b><bean:message
 					key="demographic.demographicappthistory.msgComments" /></b></TH>
 			</tr>
@@ -163,23 +147,20 @@ function popupPageNew(vheight,vwidth,varpage) {
       bodd=bodd?false:true; //for the color of rows
       nItems++; //to calculate if it is the end of records
        
-%> 
-<tr bgcolor="<%=bodd?weakColor:"white"%>">
-      <td align="center"><a href=# onClick ="popupPageNew(360,680,'../appointment/appointmentcontrol.jsp?appointment_no=<%=apptMainBean.getString(rs,"appointment_no")%>&displaymode=edit&dboperation=search');return false;" ><%=apptMainBean.getString(rs,"appointment_date")%></a></td>
-      <td align="center"><%=apptMainBean.getString(rs,"start_time")%></td>
-      <td align="center"><%=apptMainBean.getString(rs,"end_time")%></td>
-      <td><%=apptMainBean.getString(rs,"reason")%></td>
-      <td><%=apptMainBean.getString(rs,"last_name")+","+apptMainBean.getString(rs,"first_name")%></td>
-      <plugin:hideWhenCompExists componentName="specialencounterComp" reverse="true">
-      <special:SpecialEncounterTag moduleName="eyeform">      
-      <td><a href="#" onclick="popupPage(800,1000,'<%=request.getContextPath()%>/mod/specialencounterComp/EyeForm.do?method=view&appHis=true&demographicNo=<%=request.getParameter("demographic_no")%>&appNo=<%=rs.getString("appointment_no")%>')">eyeform</a></td>
-      </special:SpecialEncounterTag>
-      </plugin:hideWhenCompExists>
-      <td>&nbsp;<%=apptMainBean.getString(rs,"status")==null?"":(apptMainBean.getString(rs,"status").contains("N")?"No Show":(apptMainBean.getString(rs,"status").equals("C")?"Cancelled":"") ) %></td>
-</tr>
-<%
+%>
+			<tr bgcolor="<%=bodd?weakColor:"white"%>">
+				<td align="center"><a href=#
+					onClick="popupPage(360,680,'../appointment/appointmentcontrol.jsp?appointment_no=<%=apptMainBean.getString(rs,"appointment_no")%>&displaymode=edit&dboperation=search');return false;"><%=apptMainBean.getString(rs,"appointment_date")%></a></td>
+				<td align="center"><%=apptMainBean.getString(rs,"start_time")%></td>
+				<td align="center"><%=apptMainBean.getString(rs,"end_time")%></td>
+				<td><%=apptMainBean.getString(rs,"reason")%></td>
+				<td><%=apptMainBean.getString(rs,"last_name")+","+apptMainBean.getString(rs,"first_name")%></td>
+				<td>&nbsp;<%=apptMainBean.getString(rs,"status")==null?"":(apptMainBean.getString(rs,"status").contains("N")?"No Show":(apptMainBean.getString(rs,"status").equals("C")?"Cancelled":"") ) %></td>
+			</tr>
+			<%
     }
   }
+  apptMainBean.closePstmtConn();
   
 %>
 

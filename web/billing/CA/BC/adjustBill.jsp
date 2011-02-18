@@ -1,3 +1,4 @@
+<%@ page language="java"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
@@ -7,18 +8,19 @@
 <%@page import="java.math.*, java.util.*, java.sql.*, oscar.*, java.net.*,oscar.oscarBilling.ca.bc.MSP.*" %>
 <%@page import="org.springframework.web.context.WebApplicationContext,org.springframework.web.context.support.WebApplicationContextUtils, oscar.entities.*" %>
 <jsp:useBean id="providerBean" class="java.util.Properties" scope="session" />
+<%@ include file="../../../admin/dbconnection.jsp" %>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean" scope="session" />
 
 
 
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 
 <%
   if(session.getValue("user") == null)
     response.sendRedirect("../../../logout.htm");
 
 
-  
+
 
 
   String curUser_no,userfirstname,userlastname;
@@ -136,6 +138,8 @@ if(billNoRow != null && billNoRow.length > 0){
    <script type="text/javascript" src="../../../share/calendar/calendar-setup.js"></script>
    <script type="text/javascript" src="../../../share/javascript/prototype.js"></script>
    <script type="text/javascript" src="../../../share/javascript/Oscar.js"></script>   
+      <meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+      <meta http-equiv="Pragma" content="no-cache">
         <script language="JavaScript">
         if('<%=request.getAttribute("close")%>' == 'true'){
           window.close();
@@ -328,6 +332,8 @@ function calculateFee(){
 }
 
 </script>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
 <style type="text/css">
         td.bCellData{ font-weight:bold; font-family: Arial,Helvetica,sans-serif; }
         th.bHeaderData{ font-weight:bold; font-family: Arial,Helvetica,sans-serif; }
@@ -509,7 +515,7 @@ document.body.insertAdjacentHTML('beforeEnd', WebBrowser);
   <tr bgcolor="#CCCCFF">
     <td colspan="2"  class="bCellData">
        Billing Information  Data Center <%=allFields.getProperty("datacenter")%> Payee Number: <%=allFields.getProperty("payee_no")%> Practitioner Number: <%=allFields.getProperty("practitioner_no")%>
-       Bill Type: <%=bill.getBillingtype()%> 
+       Bill Type: <%=bill.getBillingtype()%>
      </td>
   </tr>
 
@@ -656,6 +662,10 @@ document.body.insertAdjacentHTML('beforeEnd', WebBrowser);
 </table>
 <%
 BillingService billService = bcd.getBillingCodeByCode(allFields.getProperty("billing_code"),billingmaster.getServiceDateAsDate());
+String billValue= "0.00";
+if(billService != null){
+    billValue = billService.getValue();
+}
 %>
 <table width="100%" border=1>
   <tr bgcolor="#CCCCFF">
@@ -672,11 +682,11 @@ BillingService billService = bcd.getBillingCodeByCode(allFields.getProperty("bil
       <td  class="bCellData">
 
         <input type="text" style="font-size:80%;" name="service_code" value="<%=allFields.getProperty("billing_code")%>" size="10" >
-        <input type="button" onClick="javascript:popFeeItemList('ReProcessBilling','service_code');return false;" value="Search/Update"/>
+		 <input type="button" onClick="javascript:popFeeItemList('ReProcessBilling','service_code');return false;" value="Search/Update"/>
       </td>
       <td width="50%"  class="bCellData">
-        <%=billform.getServiceDesc(allFields.getProperty("billing_code"),billRegion)%>   ($<span id="valueDisplay"><%=billService.getValue()%></span>)
-        <input type="hidden" value="<%=billService.getValue()%>" id="billValue"/>
+        <%=billform.getServiceDesc(allFields.getProperty("billing_code"),billRegion)%>   ($<span id="valueDisplay"><%=billValue%></span>)
+        <input type="hidden" value="<%=billValue%>" id="billValue"/>
         <input type="button" value="Recalculate" onclick="calculateFee()"/>
       </td>
       <td  class="bCellData">
@@ -703,6 +713,8 @@ BillingService billService = bcd.getBillingCodeByCode(allFields.getProperty("bil
  </table>
  <table width="100%" border=1>
   <%
+
+   apptMainBean.closePstmtConn();
    %>
 
     <tr>
@@ -742,6 +754,8 @@ BillingService billService = bcd.getBillingCodeByCode(allFields.getProperty("bil
                     Referrals
                   <% String  refCD1 = allFields.getProperty("referral_flag1");
                      String  refCD2 = allFields.getProperty("referral_flag2");
+                     System.out.println(" ref flag1 = "+refCD1);
+                     System.out.println(" ref flag2 = "+refCD2);
                      if (refCD1 == null || refCD1.equals("null")){ refCD1 = "0"; }
                      if (refCD2 == null || refCD2.equals("null")){ refCD2 = "0"; }
                   %>

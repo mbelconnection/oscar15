@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -173,7 +174,7 @@ public class OscarFormDAOHibernate extends HibernateDaoSupport implements
 		
 		int page=1;
 		int section=0;
-		
+		String id="";
 		for(Page p:model.getSurvey().getBody().getPageArray()) {
 			section=0;
 			
@@ -252,9 +253,14 @@ public class OscarFormDAOHibernate extends HibernateDaoSupport implements
 			//we want to match they header keys with these keys.			
 			for(int y=0;y<data.size();y++) {
 				OscarFormData d = (OscarFormData)data.get(y);
-
+				//System.out.println("formdata=" +d.getKey());
 				formMap.put(d.getKey(),d);
 			}
+			/*
+			for(String key:keyMap.keySet()) {
+				System.out.println("header=" + key);
+			}
+			*/
 						
 			
 			//we need to add the client data
@@ -469,7 +475,7 @@ public class OscarFormDAOHibernate extends HibernateDaoSupport implements
 	
 	private String escapeAndQuote(String value){
         String s = StringHelper.replace(value, String.valueOf(quoteChar), String.valueOf(quoteChar) + String.valueOf(quoteChar));
-        return (new StringBuilder(2 + s.length())).append(quoteChar).append(s).append(quoteChar).toString();
+        return (new StringBuffer(2 + s.length())).append(quoteChar).append(s).append(quoteChar).toString();
 	}
 	
 	public void convertFormXMLToDb(Long formId) {

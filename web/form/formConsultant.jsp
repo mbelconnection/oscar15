@@ -1,4 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<%@ page language="java"%>
 <%@ page import="oscar.util.*, oscar.form.*, oscar.form.data.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
@@ -30,11 +31,14 @@
 
 
 <html:html locale="true">
+<% response.setHeader("Cache-Control","no-cache");%>
+
 <link rel="stylesheet" type="text/css" media="all" href="../share/calendar/calendar.css" title="win2k-cold-1" /> 
 <script type="text/javascript" src="../share/calendar/calendar.js"></script>
 <script type="text/javascript" src="../share/calendar/lang/<bean:message key="global.javascript.calendar"/>"></script>                                                            
 <script type="text/javascript" src="../share/calendar/calendar-setup.js"></script> 
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title>Letterhead</title>
 </head>
 <body onload="cleanForm(); start();">

@@ -286,6 +286,7 @@
 	  for(int i=0; i<vecCodeCol1.size(); i++) {
 	  	sql += (i==0?"":" or ") + "service_code='" + ((Properties)vecCodeCol1.get(i)).getProperty("serviceCode") + "'";
 	  }
+	  //System.out.println("vecCodeCol1: " + sql);
 	  rs = dbObj.searchDBRecord(sql);
 	  while (rs.next()) {
 	    propPremium.setProperty(rs.getString("service_code"), "A");
@@ -325,6 +326,7 @@
     propT.setProperty("servicePercentage",rs.getString("percentage"));
 	vecCodeCol3.add(propT);
   }
+//System.out.println(" * ******************************" + sql);
   sql = "select service_code,status from ctl_billingservice_premium where ";
   for(int i=0; i<vecCodeCol3.size(); i++) {
   	sql += (i==0?"":" or ") + "service_code='" + ((Properties)vecCodeCol3.get(i)).getProperty("serviceCode") + "'";
@@ -336,6 +338,7 @@
 
   // create msg
   msg += errorMsg + warningMsg;
+//System.out.println(" * ******************************" + sql);
 
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -344,6 +347,8 @@
 <head>
     <c:set var="ctx" value="${pageContext.request.contextPath}" scope="request"/>	
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="PRIVATE" />
+<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=UTF-8" />
 <title>HospitalBilling</title>
 <link rel="stylesheet" type="text/css" href="billingON.css" />
 
@@ -698,16 +703,6 @@ ctlCount = 0;
 						<input type="text" name="serviceUnit2" size="2" maxlength="2"
 							style=""
 							value="<%=request.getParameter("serviceUnit2")!=null?request.getParameter("serviceUnit2"):""%>"><br>
-                                                 <input type="text" name="serviceDate3" size="5" maxlength="5"
-							value="<%=request.getParameter("serviceDate3")!=null?request.getParameter("serviceDate3"):""%>">x
-						<input type="text" name="serviceUnit3" size="2" maxlength="2"
-							style=""
-							value="<%=request.getParameter("serviceUnit3")!=null?request.getParameter("serviceUnit3"):""%>"><br>
-                                                <input type="text" name="serviceDate4" size="5" maxlength="5"
-							value="<%=request.getParameter("serviceDate4")!=null?request.getParameter("serviceDate4"):""%>">x
-						<input type="text" name="serviceUnit4" size="2" maxlength="2"
-							style=""
-							value="<%=request.getParameter("serviceUnit4")!=null?request.getParameter("serviceUnit4"):""%>">
 						</td>
 						<td valign="top">
 						<table border="0" cellspacing="0" cellpadding="0" width="100%">
@@ -1108,6 +1103,7 @@ ctlCount = 0;
 			for (int i = 0; i < aL.size(); i = i + 2) {
 				BillingClaimHeader1Data obj = (BillingClaimHeader1Data) aL.get(i);
 				BillingItemData iobj = (BillingItemData) aL.get(i + 1);
+				//System.out.println(i + obj.getBilling_date());
 
 				%>
 			<tr <%=i%4==0? "class=\"myGreen\"":""%> align="center">
@@ -1166,6 +1162,7 @@ String getDefaultValue(String paraName, Vector vec, String propName) {
   } else if(vec!=null && vec.size()>0 && vec.get(0)!=null) {
     ret = ((Properties)vec.get(0)).getProperty(propName, "") ;
   }
+  System.out.println("paraName:" + paraName + " propName:" + propName + " :" + ret);
   return ret;
 }
 %>

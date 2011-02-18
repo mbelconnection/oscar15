@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -35,15 +35,16 @@
 <%@ page
 	import="java.math.*, java.util.*, java.sql.*, oscar.*, java.net.*"
 	errorPage="errorpage.jsp"%>
-
+<%@ include file="../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 
 <html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Billing History</title>
+<meta http-equiv="Content-Type" content="text/html; charset=big5">
 </head>
 <% String billNo = request.getParameter("billing_no");
  ResultSet rslocation = null;  
@@ -300,6 +301,7 @@ billUnit = rsBillRec.getString("billingunit");
  while(rsDiagCode.next()){
   diagDesc = rsDiagCode.getString("description");
   }
+       apptMainBean.closePstmtConn();
     %>
 
 	<tr bgcolor="#CCCCCC">

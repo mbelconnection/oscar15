@@ -22,12 +22,13 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 -->
 <%@page contentType="text/xml"%>
+<%@page pageEncoding="UTF-8"%>
 <%@page
 	import="oscar.oscarEncounter.oscarMeasurements.bean.*,oscar.oscarEncounter.oscarMeasurements.data.*"%>
 <%

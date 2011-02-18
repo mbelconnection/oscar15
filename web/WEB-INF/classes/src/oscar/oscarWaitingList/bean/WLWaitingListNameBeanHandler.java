@@ -19,7 +19,7 @@
 // * 29-09-2004   Ivy Chan        iConcept Technologies   initial version
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -30,8 +30,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -48,26 +46,26 @@ public class WLWaitingListNameBeanHandler {
         
         boolean verdict = true;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             
             String sql = " SELECT * FROM waitingListName WHERE group_no='" + groupNo + "' " +
                          " AND is_history='N' order by `name` asc";
             ResultSet rs;
             
-            for(rs = DBHandler.GetSQL(sql); rs.next(); )
+            for(rs = db.GetSQL(sql); rs.next(); )
             {                
-                WLWaitingListNameBean wLBean = new WLWaitingListNameBean(   oscar.Misc.getString(rs, "ID"),
-                                                                            oscar.Misc.getString(rs, "name"),
-                                                                            oscar.Misc.getString(rs, "group_no"),
-                                                                            oscar.Misc.getString(rs, "provider_no"),
-                                                                            oscar.Misc.getString(rs, "create_date"));                   
+                WLWaitingListNameBean wLBean = new WLWaitingListNameBean(   db.getString(rs,"ID"),
+                                                                            db.getString(rs,"name"),
+                                                                            db.getString(rs,"group_no"),
+                                                                            db.getString(rs,"provider_no"),
+                                                                            db.getString(rs,"create_date"));                   
                 waitingListNameList.add(wLBean);
-                waitingListNames.add(oscar.Misc.getString(rs, "name"));
+                waitingListNames.add(db.getString(rs,"name"));
             }                            
             rs.close();
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;

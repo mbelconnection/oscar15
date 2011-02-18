@@ -36,13 +36,11 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
 import oscar.entities.Billing;
 import oscar.entities.Billingmaster;
 import oscar.entities.WCB;
@@ -56,14 +54,14 @@ import oscar.util.StringUtils;
 @Repository
 @Transactional(propagation=Propagation.REQUIRES_NEW)
 public class BillingmasterDAO {
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(BillingmasterDAO.class);
 
     @PersistenceContext
     protected EntityManager entityManager = null;
     /** Creates a new instance of BillingmasterDAO */
     public BillingmasterDAO() {
     }
-
+    
     public List<Billingmaster> getBillingMasterWithStatus(String billingmasterNo,String status){
         log.debug("WHAT IS NULL ? "+billingmasterNo+"  status "+status+"   "+entityManager);
         Query query = entityManager.createQuery("select b from Billingmaster b where b.billingNo = (:billingNo) and billingstatus = (:status)");
@@ -82,7 +80,7 @@ public class BillingmasterDAO {
         List<Billingmaster> list= query.getResultList();
         return list;
     }
-
+    
     public List<Billing> getPrivateBillings(String demographicNo){
         Query query = entityManager.createQuery("select b from Billing b where b.billingtype = 'Pri' and b.demographicNo = (:demographicNo)");
         query.setParameter("demographicNo",Integer.parseInt(demographicNo));
@@ -147,7 +145,7 @@ public class BillingmasterDAO {
         if (formID == null){
             return null;
         }
-        MiscUtils.getLogger().debug("\nFORM ID "+formID);
+        System.out.println("\nFORM ID "+formID);
         return entityManager.find(WCB.class,Integer.parseInt(formID));
     }
     
@@ -155,14 +153,14 @@ public class BillingmasterDAO {
     public Billingmaster getBillingMasterByBillingMasterNo(String billingNo){
         return getBillingmaster(billingNo);
     }
-       
+    
     public void markListAsBilled(List list){                    //TODO: Should be set form CONST var
         String query = "update billingmaster set billingstatus = 'B' where billingmaster_no in ("+ StringUtils.getCSV(list) +")"; 
         try {             
-           
-        	DBHandler.RunSQL(query);
+           DBHandler dbhandler = new DBHandler(DBHandler.OSCAR_DATA);
+           dbhandler.RunSQL(query);
         }catch (SQLException sqlexception) {
-           MiscUtils.getLogger().debug(sqlexception.getMessage());
+           System.out.println(sqlexception.getMessage());
         }
     }
     

@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -26,8 +26,6 @@ package oscar.oscarEncounter.oscarConsultation.data;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -39,13 +37,13 @@ public class EctConProviderData
     public String getTeam(String proNo) {
         String team = null;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select team from provider where provider_no = '" +proNo+ "'";
-            ResultSet rs = DBHandler.GetSQL(sql);
-            if(rs.next()) team = oscar.Misc.getString(rs, "team");
+            ResultSet rs = db.GetSQL(sql);
+            if(rs.next()) team = db.getString(rs,"team");
             rs.close();
         } catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         return team;
     }

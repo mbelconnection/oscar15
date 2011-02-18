@@ -18,7 +18,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -33,7 +33,7 @@ if(session.getAttribute("user") == null ) response.sendRedirect("../../../../../
 <%@ include file="../../../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="dbFLU.jspf"%>
+<%@ include file="dbFLU.jsp"%>
 <%
 GregorianCalendar now=new GregorianCalendar();
 int curYear = now.get(Calendar.YEAR);
@@ -64,6 +64,10 @@ while(rs.next()){
 	billingProvider.add(dbObj.getString(rs,"p.last_name") +","+ dbObj.getString(rs,"p.first_name"));
 }
 
+//System.out.println("size of result: "+ billingProvider.size());
+
+//OscarProperties props = OscarProperties.getInstance();
+//System.out.println("OscarProperties: "+ oscarVariables.getProperty("isNewONbilling", ""));
 String actionPage = "dbAddFluBilling.jsp";
 if(oscarVariables.getProperty("isNewONbilling", "").equals("true")) {
 	actionPage = "onDbAddFluBilling.jsp";
@@ -74,6 +78,8 @@ if(oscarVariables.getProperty("isNewONbilling", "").equals("true")) {
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>FLU BILLING</title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <script language="JavaScript">
 <!--
 
@@ -506,7 +512,7 @@ SPAN.bold {
            //     <%
 
 		   //}
-		  //
+		  // apptMainBean.closePstmtConn();
   --%>
 				</select> </font></td>
 				<td width="26%"><font size="1"
@@ -538,6 +544,7 @@ SPAN.bold {
 					<%=proFirst%></option>
 					<%
 }
+apptMainBean.closePstmtConn();
 %>
 				</select> </font></td>
 				<td width="31%"><font size="1"

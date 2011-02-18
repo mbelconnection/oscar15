@@ -18,11 +18,15 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
---><%@ include file="/casemgmt/taglibs.jsp"%>
+-->
+
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+<%@ include file="/casemgmt/taglibs.jsp"%>
 
 <%
 if(session.getValue("user") == null)
@@ -40,6 +44,7 @@ if(session.getValue("user") == null)
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <html:base />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title><bean-el:message key="${providertitle}" /></title>
 
 <link rel="stylesheet" type="text/css"
@@ -97,9 +102,10 @@ if(session.getValue("user") == null)
 		<td class="MainTableLeftColumn">&nbsp;</td>
 		<td class="MainTableRightColumn">
 		<%if( request.getAttribute("status") == null ){%> <bean-el:message
-			key="${providermsgEdit}" /> <c:out value="${rxPageSizeProperty.value}" /> <html:form
+			key="${providermsgEdit}" /> <c:out value="${rxPageSizeProperty.value}" />
+                <html:form
 			action="/setProviderStaleDate.do">
-			<input type="hidden" name="method" value="<c:out value="${method}"/>">			
+			<input type="hidden" name="method" value="<c:out value="${method}"/>">
 			<!--html:text property="rxPageSizeProperty.value" /-->
                         <html:select property="rxPageSizeProperty.value">
                             <html:option value="PageSize.A4">A4</html:option>

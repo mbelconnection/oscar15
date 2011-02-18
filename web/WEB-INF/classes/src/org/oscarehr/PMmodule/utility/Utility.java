@@ -34,11 +34,11 @@ import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class Utility {
-	private static Logger log = MiscUtils.getLogger();
+	private static Log log = LogFactory.getLog(Utility.class);
 
 	// ################################################################################
 	public Utility() {
@@ -660,8 +660,6 @@ public class Utility {
 
 	// ############################################################################
 	public static Date calcDate(String s, String s1, String s2) {
-		if (s==null || s1==null || s2==null) return(null);
-		
 		int i = Integer.parseInt(s);
 		int j = Integer.parseInt(s1) - 1;
 		int k = Integer.parseInt(s2);
@@ -685,8 +683,6 @@ public class Utility {
 	 * @return age string ( ie 2 months, 4 years .etc )
 	 */
 	public static String calcAgeAtDate(Date DOB, Date pointInTime) {
-		if (DOB==null) return(null);
-		
 		GregorianCalendar now = new GregorianCalendar();
 		now.setTime(pointInTime);
 		int curYear = now.get(Calendar.YEAR);

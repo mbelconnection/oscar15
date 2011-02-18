@@ -689,13 +689,13 @@ lightwindow.prototype = {
 					left: parseFloat($('lightwindow').getStyle('left'))-this.pagePosition.x+'px'
 				});
 			} else {
-
+                               
                                // this.customedHeight=document.getElementById('lightwindow_iframe').contentWindow.document.getElementById('preview').contentWindow.document.getElementById('pwTable').clientHeight+150;
                                var user_defined_height=this._getParameter('lightwindow_height');
                                 $('lightwindow_contents').setStyle({
                                        height:  user_defined_height+'px'
                                });
-
+                     
                                 //oscarLog("lightwindow_contents' height :"+$('lightwindow_contents').getHeight());
                                 //oscarLog("lightwindow_contents' scroll height :"+$('lightwindow_contents').scrollHeight);
 
@@ -1985,7 +1985,7 @@ lightwindow.prototype = {
 	//
 	//  Wrap everything up
 	//
-	_finishWindow : function() {
+	_finishWindow : function() { 
             ////oscarLog("_finishWindow");
 		if (this.windowType == 'external') {
 			// We set the externals source here because it allows for a much smoother animation

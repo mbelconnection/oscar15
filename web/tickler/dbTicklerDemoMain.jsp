@@ -18,16 +18,18 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 -->
 
-
-<%@ page import="java.math.*, java.util.*, java.io.*, java.sql.*, oscar.*, java.net.*,oscar.MyDateFormat"%>
-<jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean" scope="session" />
-<%@ include file="dbTicker.jspf"%>
+<%@ page
+	import="java.math.*, java.util.*, java.io.*, java.sql.*, oscar.*, java.net.*,oscar.MyDateFormat"%>
+<%@ include file="../admin/dbconnection.jsp"%>
+<jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
+	scope="session" />
+<%@ include file="dbTicker.jsp"%>
 <%
  String demoview = request.getParameter("demoview")==null?"all":request.getParameter("demoview") ;
  String parentAjaxId = request.getParameter("parentAjaxId")==null?"":request.getParameter("parentAjaxId");
@@ -38,9 +40,9 @@ String[] temp = request.getParameterValues("checkbox");
 if (temp== null){
 %>
 <jsp:forward page='ticklerDemoMain.jsp'>
-         <jsp:param name="demoview" value='<%=demoview%>' />
-         <jsp:param name="parentAjaxId" value="<%=parentAjaxId%>" />
-         <jsp:param name="updateParent" value="<%=updateParent%>" />
+	<jsp:param name="demoview" value='<%=demoview%>' />
+	<jsp:param name="parentAjaxId" value="<%=parentAjaxId%>" />
+	<jsp:param name="updateParent" value="<%=updateParent%>" />
 </jsp:forward>
 <%}else{
 		//temp=e.nextElement().toString();
@@ -59,9 +61,11 @@ int rowsAffected = apptMainBean.queryExecuteUpdate(param,"update_tickler");
 
 }
 
+apptMainBean.closePstmtConn();
+
 %>
 <jsp:forward page='ticklerDemoMain.jsp'>
-    <jsp:param name="demoview" value='<%=demoview%>' />
-    <jsp:param name="parentAjaxId" value="<%=parentAjaxId%>" />
-    <jsp:param name="updateParent" value="<%=updateParent%>" />
+	<jsp:param name="demoview" value='<%=demoview%>' />
+	<jsp:param name="parentAjaxId" value="<%=parentAjaxId%>" />
+	<jsp:param name="updateParent" value="<%=updateParent%>" />
 </jsp:forward>

@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -27,8 +27,6 @@ package oscar.oscarReport.oscarMeasurements.pageUtil;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -47,22 +45,22 @@ public class RptMeasurementTypesBeanHandler {
         
         boolean verdict = true;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT typeDisplayName FROM measurementGroup WHERE name='" + groupName + "'ORDER BY typeDisplayName";            
             ResultSet rs;
  
-            for(rs = DBHandler.GetSQL(sql); rs.next();){
+            for(rs = db.GetSQL(sql); rs.next();){
                 String typeDisplayName  = rs.getString("typeDisplayName");
                 String sqlMT = "SELECT DISTINCT * FROM measurementType WHERE typeDisplayName = '" + typeDisplayName + "'ORDER BY typeDescription";
-                MiscUtils.getLogger().debug("SQL: " + sqlMT);
-                ResultSet rsMT = DBHandler.GetSQL(sqlMT);
+                System.out.println("SQL: " + sqlMT);
+                ResultSet rsMT = db.GetSQL(sqlMT);
                 if (rsMT.next()){
                     RptMeasurementTypesBean measurementTypes = new RptMeasurementTypesBean(rsMT.getInt("id"), rsMT.getString("type"), 
                                                                                        rsMT.getString("typeDisplayName"), 
                                                                                        rsMT.getString("typeDescription"), 
                                                                                        rsMT.getString("measuringInstruction"), 
                                                                                        rsMT.getString("validation"));
-                MiscUtils.getLogger().debug(rsMT.getString("type"));
+                System.out.println(rsMT.getString("type"));
                 measurementTypeVector.add(measurementTypes);
 
                 RptMeasuringInstructionBeanHandler hd = new RptMeasuringInstructionBeanHandler(typeDisplayName);
@@ -73,7 +71,7 @@ public class RptMeasurementTypesBeanHandler {
             rs.close();
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;

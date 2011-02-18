@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -25,7 +25,7 @@
 package oscar.oscarResearch.oscarDxResearch.bean;
 
 
-public class dxCodeSearchBean implements java.io.Serializable{
+public class dxCodeSearchBean{
 
        String description;       
        String dxSearchCode;              

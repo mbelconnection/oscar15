@@ -1,5 +1,4 @@
-
-<%@page import="org.oscarehr.util.MiscUtils"%><%--
+<%--
  * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved. *
  * This software is published under the GPL GNU General Public License.
  * This program is free software; you can redistribute it and/or
@@ -24,17 +23,19 @@
  * Ontario, Canada
 --%>
 <%@page import="java.util.*,net.sf.json.*,java.io.*,org.apache.xmlrpc.*,oscar.oscarRx.util.*,oscar.oscarRx.data.*"  %><%
+System.out.println("In getInactiveDate");
 String din =  request.getParameter("din");
 String id = request.getParameter("id");
-Vector vec=new Vector();
-try{
-                RxDrugRef drugData = new RxDrugRef();
-                 vec = drugData.getInactiveDate(din);
-    
-    }catch(Exception e){
-    	MiscUtils.getLogger().error("Error", e);
-    }
 
+                RxDrugRef drugData = new RxDrugRef();
+                Vector vec = new Vector();
+                try{
+                    vec=drugData.getInactiveDate(din);
+                
+                }catch(Exception e){
+                    System.out.println(" in getInactiveDate.jsp exception");
+                    e.printStackTrace();
+                }
                 
 
     Hashtable d = new Hashtable();

@@ -25,6 +25,7 @@
 // -----------------------------------------------------------------------------------------------------------------------
 package oscar.oscarMessenger.pageUtil;
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +35,7 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
+import org.apache.struts.util.MessageResources;
 
 import oscar.oscarDB.DBHandler;
 
@@ -46,6 +47,10 @@ public class MsgDisplayMessagesAction extends Action {
 				 HttpServletRequest request,
 				 HttpServletResponse response)
 	throws IOException, ServletException {
+    // System.out.println("in display message action jackson");
+            // Extract attributes we will need
+            Locale locale = getLocale(request);
+            MessageResources messages = getResources(request);
 
             // Setup variables            
             oscar.oscarMessenger.pageUtil.MsgSessionBean bean = null;
@@ -57,7 +62,7 @@ public class MsgDisplayMessagesAction extends Action {
 
             if(request.getParameter("providerNo")!=null & request.getParameter("userName")!=null)
             {
-
+                // System.out.println("in display message action jackson4");
                 bean = new oscar.oscarMessenger.pageUtil.MsgSessionBean();
                 bean.setProviderNo(request.getParameter("providerNo"));
                 bean.setUserName(request.getParameter("userName"));
@@ -92,16 +97,18 @@ public class MsgDisplayMessagesAction extends Action {
                 providerNo= bean.getProviderNo();
                 for (int i =0 ; i < messageNo.length ; i++){
                   try{
-                    
+                    DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+                    java.sql.ResultSet rs;
                     String sql = new String("update messagelisttbl set status = \'del\' where provider_no = \'"+providerNo+"\' and message = \'"+messageNo[i]+"\'");
-                    DBHandler.RunSQL(sql);
-                  }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+                    db.RunSQL(sql);
+                  }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
                 }//for
             }
             else {
-                MiscUtils.getLogger().debug("Unexpected action in MsgDisplayMessagesBean.java");
+                System.out.println("Unexpected action in MsgDisplayMessagesBean.java");
             }
-
+           
+            //System.out.println("findFoward: " + findForward);
     return (mapping.findForward(findForward));
     }
 

@@ -48,528 +48,555 @@
 
 package oscar.oscarEncounter.oscarConsultationRequest.pageUtil;
 
-import java.util.HashMap;
-
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
-import org.oscarehr.util.WebUtils;
 
-public final class EctConsultationFormRequestForm extends ActionForm {
+public final class EctConsultationFormRequestForm
+    extends ActionForm {
 
-	String allergies;
+  public String getProviderNo() {
 
-	String appointmentDay;
+    if (providerNo == null) {
 
-	String appointmentHour;
+      providerNo = new String();
 
-	String appointmentMinute;
+    }
+    return providerNo;
 
-	String appointmentMonth;
+  }
 
-	String appointmentNotes;
+  public void setProviderNo(String str) {
 
-	String appointmentPm;
+    System.out.println("providerNo date has been set");
 
-	String appointmentTime;
+    providerNo = str;
 
-	String appointmentYear;
+  }
 
-	String clinicalInformation;
+  public String getDemographicNo() {
 
-	String concurrentProblems;
+    if (demographicNo == null) {
 
-	String currentMedications;
+      demographicNo = new String();
 
-	String demographicNo;
+    }
+    return demographicNo;
 
-	// Documents attached to this consultation
-	String documents;
+  }
 
-	// Patient Will Book Field, can be either "1" or "0"
-	String patientWillBook;
+  public void setDemographicNo(String str) {
 
-	String providerNo;
+    System.out.println("demographicNo date has been set");
 
-	String reasonForConsultation;
+    demographicNo = str;
 
-	String referalDate;
+  }
 
-	String requestId;
+  public String getRequestId() {
 
-	String sendTo;
+    if (requestId == null) {
 
-	String service;
+      requestId = new String();
 
-	String specialist;
+    }
+    return requestId;
 
-	String status;
+  }
 
-	String submission;
+  public void setRequestId(String str) {
 
-	String urgency;
-	
-	//multi-site
-	String siteName;
+    System.out.println("requestId date has been set");
 
+    requestId = str;
 
-	private String patientFirstName;
-	private String patientLastName;
-	private String patientAddress;
-	private String patientPhone;
-	private String patientWPhone;
-	private String patientDOB;
-	private String patientSex;
-	private String patientHealthNum;
-	private String patientHealthCardVersionCode;
-	private String patientHealthCardType;
-	private String patientAge;
-	private String providerName;
-	private String professionalSpecialistName;
-	private String professionalSpecialistPhone;
-	private String professionalSpecialistAddress;
-        private String followUpDate;
-	private boolean eReferral = false;
-	private Integer hl7TextMessageId;
+  }
 
-	public String getProfessionalSpecialistName() {
-		return (StringUtils.trimToEmpty(professionalSpecialistName));
-	}
+  public String getReferalDate() {
 
-	public void setProfessionalSpecialistName(String professionalSpecialistName) {
-		this.professionalSpecialistName = professionalSpecialistName;
-	}
+    if (referalDate == null) {
 
-	public String getProfessionalSpecialistPhone() {
-		return (StringUtils.trimToEmpty(professionalSpecialistPhone));
-	}
+      referalDate = new String();
 
-	public void setProfessionalSpecialistPhone(String professionalSpecialistPhone) {
-		this.professionalSpecialistPhone = professionalSpecialistPhone;
-	}
+    }
+    return referalDate;
 
-	public String getProfessionalSpecialistAddress() {
-		return (StringUtils.trimToEmpty(professionalSpecialistAddress));
-	}
+  }
 
-	public void setProfessionalSpecialistAddress(String professionalSpecialistAddress) {
-		this.professionalSpecialistAddress = professionalSpecialistAddress;
-	}
-
-	public boolean iseReferral() {
-		return eReferral;
-	}
-
-	public void seteReferral(boolean eReferral) {
-		this.eReferral = eReferral;
-	}
-
-	public String getProviderName() {
-		return (StringUtils.trimToEmpty(providerName));
-	}
-
-	public void setProviderName(String providerName) {
-		this.providerName = providerName;
-	}
-
-	public String getPatientAge() {
-		return (StringUtils.trimToEmpty(patientAge));
-	}
-
-	public void setPatientAge(String patientAge) {
-		this.patientAge = patientAge;
-	}
-
-	public String getAllergies() {
-		return (StringUtils.trimToEmpty(allergies));
-	}
-
-	public String getAppointmentDay() {
-		return (StringUtils.trimToEmpty(appointmentDay));
-	}
-
-	public String getAppointmentHour() {
-		return (StringUtils.trimToEmpty(appointmentHour));
-	}
-
-	public String getAppointmentMinute() {
-		return (StringUtils.trimToEmpty(appointmentMinute));
-	}
-
-	public String getAppointmentMonth() {
-		return (StringUtils.trimToEmpty(appointmentMonth));
-	}
-
-	public String getAppointmentNotes() {
-		return (StringUtils.trimToEmpty(appointmentNotes));
-	}
-
-	public String getAppointmentPm() {
-		return (StringUtils.trimToEmpty(appointmentPm));
-	}
-
-	public String getAppointmentTime() {
-		return (StringUtils.trimToEmpty(appointmentTime));
-	}
-
-	public String getAppointmentYear() {
-		return (StringUtils.trimToEmpty(appointmentYear));
-	}
-
-	public String getClinicalInformation() {
-		return (StringUtils.trimToEmpty(clinicalInformation));
-	}
-
-	public String getConcurrentProblems() {
-		return (StringUtils.trimToEmpty(concurrentProblems));
-	}
-
-	public String getCurrentMedications() {
-		return (StringUtils.trimToEmpty(currentMedications));
-	}
-
-	public String getDemographicNo() {
-		return (StringUtils.trimToEmpty(demographicNo));
-	}
-
-	public String getDocuments() {
-		return documents;
-	}
-
-	public String getPatientWillBook() {
-		return patientWillBook;
-	}
-
-	public String getProviderNo() {
-		return (StringUtils.trimToEmpty(providerNo));
-	}
-
-	public String getReasonForConsultation() {
-		return (StringUtils.trimToEmpty(reasonForConsultation));
-	}
-
-	public String getReferalDate() {
-		return (StringUtils.trimToEmpty(referalDate));
-	}
-
-	public String getRequestId() {
-		return (StringUtils.trimToEmpty(requestId));
-	}
-
-	public String getSendTo() {
-		return (StringUtils.trimToEmpty(sendTo));
-	}
-
-	public String getService() {
-		return (StringUtils.trimToEmpty(service));
-	}
-
-	public String getSpecialist() {
-		return (StringUtils.trimToEmpty(specialist));
-	}
-
-	public String getStatus() {
-		return (StringUtils.trimToEmpty(status));
-	}
-
-	public String getSubmission() {
-		return (StringUtils.trimToEmpty(submission));
-	}
-
-	public String getUrgency() {
-		return (StringUtils.trimToEmpty(urgency));
-	}
-
-	@Override
-	public void reset(ActionMapping mapping, HttpServletRequest request) {
-	}
-
-	public void setAllergies(String str) {
-		allergies = str;
-	}
+  public void setReferalDate(String str) {
 
-	public void setAppointmentDay(String str) {
-		appointmentDay = str;
-	}
+    System.out.println("referal date has been set");
 
-	public void setAppointmentHour(String str) {
-		appointmentHour = str;
-	}
+    referalDate = str;
 
-	public void setAppointmentMinute(String str) {
-		appointmentMinute = str;
-	}
+  }
 
-	public void setAppointmentMonth(String str) {
-		appointmentMonth = str;
-	}
+  public String getService() {
 
-	public void setAppointmentNotes(String str) {
-		appointmentNotes = str;
-	}
+    if (service == null) {
 
-	public void setAppointmentPm(String str) {
-		appointmentPm = str;
-	}
+      service = new String();
 
-	public void setAppointmentTime(String str) {
-		appointmentTime = str;
-	}
+    }
+    return service;
 
-	public void setAppointmentYear(String str) {
-		appointmentYear = str;
-	}
+  }
 
-	public void setClinicalInformation(String str) {
-		clinicalInformation = str;
-	}
+  public void setService(String str) {
 
-	public void setConcurrentProblems(String str) {
-		concurrentProblems = str;
-	}
+    System.out.println("service has been set");
 
-	public void setCurrentMedications(String str) {
-		currentMedications = str;
-	}
+    service = str;
 
-	public void setDemographicNo(String str) {
-		demographicNo = str;
-	}
+  }
 
-	public void setDocuments(String doc) {
-		documents = doc;
-	}
+  public String getSpecialist() {
 
-	public void setPatientWillBook(String str) {
-		this.patientWillBook = str;
-	}
+    if (specialist == null) {
 
-	public void setProviderNo(String str) {
-		providerNo = str;
-	}
+      specialist = new String();
 
-	public void setReasonForConsultation(String str) {
-		reasonForConsultation = str;
-	}
+    }
+    return specialist;
 
-	public void setReferalDate(String str) {
-		referalDate = str;
-	}
+  }
 
-	public void setRequestId(String str) {
-		requestId = str;
-	}
+  public void setSpecialist(String str) {
 
-	public void setSendTo(String str) {
-		sendTo = str;
-	}
+    System.out.println("specialist setter");
 
-	public void setService(String str) {
-		service = str;
-	}
+    specialist = str;
 
-	public void setSpecialist(String str) {
-		specialist = str;
-	}
+  }
 
-	public void setStatus(String str) {
-		status = str;
-	}
+  public String getAppointmentYear() {
 
-	public void setSubmission(String str) {
-		submission = str;
-	}
+    if (appointmentYear == null) {
 
-	public void setUrgency(String str) {
-		urgency = str;
-	}
+      appointmentYear = new String();
 
-	@Override
-	public ActionErrors validate(ActionMapping mapping, HttpServletRequest request) {
+    }
+    return appointmentYear;
 
-		ActionErrors errors = new ActionErrors();
+  }
 
-		if (this.patientWillBook == null || !this.patientWillBook.equals("1")) {
-			this.patientWillBook = "0";
-		}
+  public void setAppointmentYear(String str) {
 
-		if (service == null || service.length() == 0) {
+    System.out.println("appointmentYear setter");
 
-			errors.add("service", new ActionMessage("Errors.service.null"));
+    appointmentYear = str;
 
-		}
-		try {
+  }
 
-			int temp = Integer.parseInt(service);
+  public String getAppointmentMonth() {
 
-			if (temp < 0) {
+    if (appointmentMonth == null) {
 
-				errors.add("service", new ActionMessage("Errors.service.noServiceSelected"));
+      appointmentMonth = new String();
 
-			}
-		}
+    }
+    return appointmentMonth;
 
-		catch (Exception e) {
+  }
 
-			errors.add("fName", new ActionMessage("Errors.service.notNum"));
+  public void setAppointmentMonth(String str) {
 
-		}
+    System.out.println("appointmentMonth setter");
 
-		if (!errors.isEmpty()) {
+    appointmentMonth = str;
 
-			request.setAttribute("validateError", "blah");
+  }
 
-		}
-		return errors;
+  public String getAppointmentDay() {
 
-	}
+    if (appointmentDay == null) {
 
-	public String getPatientName() {
-		return (StringUtils.trimToEmpty(patientLastName + ", " + patientFirstName));
-	}
+      appointmentDay = new String();
 
-	public String getPatientAddress() {
-		return (StringUtils.trimToEmpty(patientAddress));
-	}
+    }
+    return appointmentDay;
 
-	public void setPatientAddress(String patientAddress) {
-		this.patientAddress = patientAddress;
-	}
+  }
 
-	public String getPatientPhone() {
-		return (StringUtils.trimToEmpty(patientPhone));
-	}
+  public void setAppointmentDay(String str) {
 
-	public void setPatientPhone(String patientPhone) {
-		this.patientPhone = patientPhone;
-	}
+    System.out.println("appointmentDay setter");
 
-	public String getPatientWPhone() {
-		return (StringUtils.trimToEmpty(patientWPhone));
-	}
+    appointmentDay = str;
 
-	public void setPatientWPhone(String patientWPhone) {
-		this.patientWPhone = patientWPhone;
-	}
+  }
 
-	public String getPatientDOB() {
-		return (StringUtils.trimToEmpty(patientDOB));
-	}
+  public String getAppointmentTime() {
 
-	public void setPatientDOB(String patientDOB) {
-		this.patientDOB = patientDOB;
-	}
+    if (appointmentTime == null) {
 
-	public String getPatientSex() {
-		return (StringUtils.trimToEmpty(patientSex));
-	}
+      appointmentTime = new String();
 
-	public void setPatientSex(String patientSex) {
-		this.patientSex = patientSex;
-	}
+    }
+    return appointmentTime;
 
-	public String getPatientHealthNum() {
-		return (StringUtils.trimToEmpty(patientHealthNum));
-	}
+  }
 
-	public void setPatientHealthNum(String patientHealthNum) {
-		this.patientHealthNum = patientHealthNum;
-	}
+  public void setAppointmentTime(String str) {
 
-	public String getPatientHealthCardVersionCode() {
-		return (StringUtils.trimToEmpty(patientHealthCardVersionCode));
-	}
+    System.out.println("appointmentTime setter");
 
-	public void setPatientHealthCardVersionCode(String patientHealthCardVersionCode) {
-		this.patientHealthCardVersionCode = patientHealthCardVersionCode;
-	}
+    appointmentTime = str;
 
-	public String getPatientHealthCardType() {
-		return (StringUtils.trimToEmpty(patientHealthCardType));
-	}
+  }
 
-	public void setPatientHealthCardType(String patientHealthCardType) {
-		this.patientHealthCardType = patientHealthCardType;
-	}
+  public String getReasonForConsultation() {
 
-	public Integer getHl7TextMessageId() {
-		return hl7TextMessageId;
-	}
+    if (reasonForConsultation == null) {
 
-	public void setHl7TextMessageId(Integer hl7TextMessageId) {
-		this.hl7TextMessageId = hl7TextMessageId;
-	}
+      reasonForConsultation = new String();
 
-	public String getPatientFirstName() {
-		return patientFirstName;
-	}
+    }
+    return reasonForConsultation;
 
-	public void setPatientFirstName(String patientFirstName) {
-		this.patientFirstName = patientFirstName;
-	}
+  }
 
-	public String getPatientLastName() {
-		return patientLastName;
-	}
+  public void setReasonForConsultation(String str) {
 
-	public void setPatientLastName(String patientLastName) {
-		this.patientLastName = patientLastName;
-	}
+    System.out.println("reasonForConsultation setter");
 
-	/**
-	 * This url will include the context path.
-	 */
-	public String getOruR01UrlString(HttpServletRequest request) {
-		// /lab/CA/ALL/sendOruR01.jsp
+    reasonForConsultation = str;
 
-		StringBuilder sb = new StringBuilder();
+  }
 
-		sb.append(request.getContextPath());
-		sb.append("/lab/CA/ALL/sendOruR01.jsp");
+  public String getClinicalInformation() {
 
-		HashMap<String, Object> queryParameters = new HashMap<String, Object>();
+    if (clinicalInformation == null) {
 
-		// buildQueryString will take null into account
-		queryParameters.put("hl7TextMessageId", hl7TextMessageId);
-		queryParameters.put("clientFirstName", patientFirstName);
-		queryParameters.put("clientLastName", patientLastName);
-		queryParameters.put("clientHin", patientHealthNum);
-		queryParameters.put("clientBirthDate", patientDOB);
-		queryParameters.put("clientGender", patientSex);
+      clinicalInformation = new String();
 
-		sb.append(WebUtils.buildQueryString(queryParameters));
+    }
+    return clinicalInformation;
 
-		return (StringEscapeUtils.escapeHtml(sb.toString()));
-	}
+  }
 
-    /**
-     * @return the followUpDate
-     */
-    public String getFollowUpDate() {
-        return followUpDate;
+  public void setClinicalInformation(String str) {
+
+    System.out.println("clinicalInformation setter");
+
+    clinicalInformation = str;
+
+  }
+
+  public String getConcurrentProblems() {
+
+    if (concurrentProblems == null) {
+
+      concurrentProblems = new String();
+
+    }
+    return concurrentProblems;
+
+  }
+
+  public void setConcurrentProblems(String str) {
+
+    System.out.println("concurrentProblems setter");
+
+    concurrentProblems = str;
+
+  }
+
+  public String getCurrentMedications() {
+
+    if (currentMedications == null) {
+
+      currentMedications = new String();
+
+    }
+    return currentMedications;
+
+  }
+
+  public void setCurrentMedications(String str) {
+
+    System.out.println("currentMedications setter");
+
+    currentMedications = str;
+
+  }
+
+  public String getAllergies() {
+
+    if (allergies == null) {
+
+      allergies = new String();
+
+    }
+    return allergies;
+
+  }
+
+  public void setAllergies(String str) {
+
+    System.out.println("allergies setter = ".concat(String.valueOf(String.
+        valueOf(str))));
+
+    allergies = str;
+
+  }
+
+  public String getSendTo() {
+
+    if (sendTo == null) {
+
+      sendTo = new String();
+
+    }
+    return sendTo;
+
+  }
+
+  public void setSendTo(String str) {
+
+    System.out.println("sendTo setter");
+
+    sendTo = str;
+
+  }
+
+  public String getStatus() {
+
+    if (status == null) {
+
+      status = new String();
+
+    }
+    return status;
+
+  }
+
+  public void setStatus(String str) {
+
+    status = str;
+
+  }
+
+  public String getSubmission() {
+
+    if (submission == null) {
+
+      submission = new String();
+
+    }
+    return submission;
+
+  }
+
+  public void setSubmission(String str) {
+
+    submission = str;
+
+  }
+
+  public String getAppointmentHour() {
+
+    if (appointmentHour == null) {
+
+      appointmentHour = new String();
+
+    }
+    return appointmentHour;
+
+  }
+
+  public void setAppointmentHour(String str) {
+
+    appointmentHour = str;
+
+  }
+
+  public String getAppointmentMinute() {
+
+    if (appointmentMinute == null) {
+
+      appointmentMinute = new String();
+
+    }
+    return appointmentMinute;
+
+  }
+
+  public void setAppointmentMinute(String str) {
+
+    appointmentMinute = str;
+
+  }
+
+  public String getAppointmentPm() {
+
+    if (appointmentPm == null) {
+
+      appointmentPm = new String();
+
+    }
+    return appointmentPm;
+
+  }
+
+  public void setAppointmentPm(String str) {
+
+    appointmentPm = str;
+
+  }
+
+  public String getAppointmentNotes() {
+
+    if (appointmentNotes == null) {
+
+      appointmentNotes = new String();
+
+    }
+    return appointmentNotes;
+
+  }
+
+  public void setAppointmentNotes(String str) {
+
+    appointmentNotes = str;
+
+  }
+
+  public String getUrgency() {
+
+    if (urgency == null) {
+
+      urgency = new String();
+
+    }
+    return urgency;
+
+  }
+
+  public void setUrgency(String str) {
+
+    urgency = str;
+
+  }
+
+  public void reset(ActionMapping mapping, HttpServletRequest request) {
+
+    System.out.println("\nReseting ConsultationFormRequestForm\n");
+
+  }
+
+  public ActionErrors validate(ActionMapping mapping,
+                               HttpServletRequest request) {
+
+    ActionErrors errors = new ActionErrors();
+
+    if (this.patientWillBook==null||!this.patientWillBook.equals("1")) {
+    this.patientWillBook = "0";
+   }
+
+
+    if (service == null || service.length() == 0) {
+
+      errors.add("service", new ActionMessage("Errors.service.null"));
+
+    }
+    try {
+
+      int temp = Integer.parseInt(service);
+
+      if (temp < 0) {
+
+        errors.add("service",
+                   new ActionMessage("Errors.service.noServiceSelected"));
+
+      }
     }
 
-    /**
-     * @param followUpDate the followUpDate to set
-     */
-    public void setFollowUpDate(String followUpDate) {
-        this.followUpDate = followUpDate;
+    catch (Exception e) {
+
+      errors.add("fName", new ActionMessage("Errors.service.notNum"));
+
     }
-	public String getSiteName() {
-    	if (siteName == null) {
-	    	siteName = new String();
-		}
-      	return siteName;
-  	}
+
+    if (!errors.isEmpty()) {
+
+      request.setAttribute("validateError", "blah");
+
+    }
+    return errors;
+
+  }
+
+  public String getPatientWillBook() {
+    return patientWillBook;
+  }
+
+  public void setPatientWillBook(String str) {
+    this.patientWillBook = str;
+
+  }
   
-  	public void setSiteName(String str) {
-	  	this.siteName = str;
-  	}
+  public String getDocuments() {
+    return documents;
+  }
   
+  public void setDocuments(String doc) {
+      documents = doc;
+  }
+
+  String providerNo;
+
+  String demographicNo;
+
+  String requestId;
+
+  String referalDate;
+
+  String service;
+
+  String specialist;
+
+  String appointmentYear;
+
+  String appointmentMonth;
+
+  String appointmentDay;
+
+  String appointmentTime;
+
+  String reasonForConsultation;
+
+  String clinicalInformation;
+
+  String concurrentProblems;
+
+  String currentMedications;
+
+  String allergies;
+
+  String sendTo;
+
+  String status;
+
+  String submission;
+
+
+  String appointmentHour;
+
+  String appointmentMinute;
+
+  String appointmentPm;
+
+  String appointmentNotes;
+
+  String urgency;
+  //Patient Will Book Field, can be either "1" or "0"
+  String patientWillBook;
+  
+  //Documents attached to this consultation
+  String documents;
 
 }

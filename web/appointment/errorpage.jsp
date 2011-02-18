@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -27,13 +27,12 @@
 <%@ page isErrorPage="true"%><!-- only true can access exception object -->
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html:html locale="true">
+<html:html locale="true">
 <body>
 <h1><bean:message key="error.description" /></h1>
 <hr>
 <h2><bean:message key="error.msgException" />:<br>
 <font color=red> <%= exception.toString() %><br>
-<%= exception.getMessage() %> <% MiscUtils.getLogger().error("Error", exception);%> </font></h2>
+<%= exception.getMessage() %> <% exception.printStackTrace();%> </font></h2>
 </body>
 </html:html>

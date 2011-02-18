@@ -18,7 +18,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -40,21 +40,10 @@ if(session.getAttribute("user") == null ) //|| !((String) session.getValue("user
   //instatiate/configure the main bean, forward the request to the output file
 %>
 
-<%
-    if(session.getAttribute("user") == null ) response.sendRedirect("../logout.jsp");
-    String curProvider_no = (String) session.getAttribute("user");
-
-    boolean isSiteAccessPrivacy=false;
-%>
-
-<security:oscarSec objectName="_site_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%isSiteAccessPrivacy=true; %>
-</security:oscarSec>
-
 <%@ page errorPage="errorpage.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-
+<%@ include file="dbconnection.jsp"%>
 
 <%
   String orderby="", limit="", limit1="", limit2="";
@@ -121,12 +110,11 @@ if(session.getAttribute("user") == null ) //|| !((String) session.getValue("user
   String [][] dbQueries=null;
   if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable()){
   dbQueries=new String[][] {
-    {"provider_add_record", "insert into provider (provider_no,last_name,first_name,provider_type,specialty,team,sex,dob,address,phone,work_phone,email,ohip_no,rma_no,billing_no,hso_no,status,comments,provider_activity,practitionerNo,lastUpdateUser,lastUpdateDate) values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,now())" },
+    {"provider_add_record", "insert into provider (provider_no,last_name,first_name,provider_type,specialty,team,sex,dob,address,phone,work_phone,email,ohip_no,rma_no,billing_no,hso_no,status,comments,provider_activity,practitionerNo) values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?)" },
     {"provider_search_titlename", "select provider_no,first_name,last_name,specialty,sex,team,phone,status from provider where "+fieldname+ " "+regularexp+" ? " +orderby + " "+limit},
     {"provider_search_detail", "select * from provider where provider_no=?"},
     {"provider_delete", "delete from provider where provider_no=? and provider_no!='super'"},
-    {"provider_update_record", "update provider set last_name=?,first_name=?, provider_type=?, specialty=?,team=?,sex=?,dob=?, address=?,phone=?,work_phone=?,email=?,ohip_no=?,rma_no=?,billing_no=?,hso_no=?,status=?, comments=?, provider_activity=?, practitionerNo=?, lastUpdateUser=?, lastUpdateDate=now()  where provider_no=? and provider_no!='super'"},
-    {"provider_archive_record", "insert into providerArchive (select * from provider where provider_no=?)" },
+    {"provider_update_record", "update provider set last_name=?,first_name=?, provider_type=?, specialty=?,team=?,sex =?,dob=?, address=?,phone=?,work_phone=?,email=?,ohip_no =?,rma_no=?,billing_no=?,hso_no=?,status=?, comments=?, provider_activity = ?, practitionerNo = ? where provider_no=? and provider_no!='super'"},
     {"search_provider_doc", "select * from provider where provider_type='doctor' and status='1' order by last_name"},
     
     {"demographic_search_titlename", "select demographic_no,first_name,last_name,roster_status,sex,year_of_birth,month_of_birth,date_of_birth  from demographic where "+fieldname+ " "+regularexp+" ? " +orderby + " "+limit},
@@ -135,7 +123,7 @@ if(session.getAttribute("user") == null ) //|| !((String) session.getValue("user
     {"demographic_search_detail_ptbr", "select * from demographic d left outer join demographic_ptbr dptbr on dptbr.demographic_no = d.demographic_no where d.demographic_no=?"},
     {"demographic_update_record", "update demographic set last_name=?,first_name =?,address=?, city=?,province=?,postal=?,phone =?,phone2=?, year_of_birth=?,month_of_birth=?,date_of_birth=?,hin=?,ver=?, roster_status=?, patient_status=?, date_joined=?,  chart_no=?,provider_no=?,sex=? , end_date=?,eff_date=?, pcn_indicator=?,hc_type=? ,hc_renew_date=?, family_doctor=? where  demographic_no=?"},
     {"demographic_update_record_ptbr", "update demographic_ptbr set cpf=?,rg=?,chart_address=?,marriage_certificate=?,birth_certificate=?,marital_state=?,partner_name=?,father_name=?,mother_name=?,district=?,address_no=?,complementary_address=? where  demographic_no=?"},
-    {"demographic_add_record", "insert into demographic (last_name, first_name, address, city, province, postal, phone, phone2, year_of_birth, month_of_birth, date_of_birth, hin, ver, roster_status, patient_status, date_joined, chart_no, provider_no, sex, end_date, eff_date, pcn_indicator, hc_type, hc_renew_date, family_doctor) values (?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?)" }, //26-1 demographic_no auto_increment
+    {"demographic_add_record", "insert into demographic (last_name, first_name, address, city, province, postal, phone, phone2, year_of_birth, month_of_birth, date_of_birth, hin, ver, roster_status, patient_status, date_joined, chart_no, provider_no, sex, end_date, eff_date, pcn_indicator, hc_type, hc_renew_date, family_doctor) values (?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?)" }, //26-1 demographic_no auto_increment
     {"demographic_add_record_ptbr","insert into demographic_ptbr (demographic_no,cpf,rg,chart_address,marriage_certificate,birth_certificate,marital_state,partner_name,father_name,mother_name,district,address_no,complementary_address) values (?,?,?,?,?,?,?,?,?,?,?,?,?)" },
     {"demographic_delete", "delete from demographic where demographic_no=?"},
     {"demographic_search_demoaddno", "select demographic_no from demographic where last_name=? and first_name =? and year_of_birth=? and month_of_birth=? and date_of_birth=? and hin=? and ver=?"},
@@ -151,7 +139,15 @@ if(session.getAttribute("user") == null ) //|| !((String) session.getValue("user
     {"security_update_record2", "update security set user_name=?,password=?,provider_no=?,b_ExpireSet=?,date_ExpireDate=?,b_LocalLockSet=?,b_RemoteLockSet=? where security_no=?" },
     {"security_update_record3", "update security set user_name=?,provider_no=?,pin=?,b_ExpireSet=?,date_ExpireDate=?,b_LocalLockSet=?,b_RemoteLockSet=? where security_no=?" },
     {"security_update_record4", "update security set user_name=?,provider_no=?,b_ExpireSet=?,date_ExpireDate=?,b_LocalLockSet=?,b_RemoteLockSet=? where security_no=?" },
-        
+    
+    {"preference_add_record", "insert into preference (provider_no,start_hour,end_hour,every_min,mygroup_no,default_servicetype,color_template,new_tickler_warning_window) values(?,?,?,?,?,?,?,?)" },
+    {"preference_search_titlename", "select * from preference where "+fieldname+ " "+regularexp+" ? " +orderby + " "+limit},
+    {"preference_search_detail", "select * from preference where preference_no=?"},
+    {"preference_list_servicetype", "select distinct servicetype, servicetype_name from ctl_billingservice where status='A'"},
+    {"preference_delete", "delete from preference where preference_no=?"},
+    {"preference_update_record", "update preference set provider_no=?,start_hour=?,end_hour=?,every_min=?,mygroup_no=?,default_servicetype=?,color_template=?,new_tickler_warning_window=? where preference_no=?" },
+    {"preference_addupdate_record", "update preference set start_hour=?, end_hour=?, every_min=?, mygroup_no=?, default_servicetype=?, color_template=?, new_tickler_warning_window=? where provider_no=? "},
+    
     {"searchmygroupcount", "select count(provider_no) from mygroup where mygroup_no=? "},
     {"searchmygroupprovider", "select provider_no, last_name, first_name from mygroup where mygroup_no=? "},
     {"searchmygroupall", "select * from mygroup order by mygroup_no"},
@@ -164,22 +160,15 @@ if(session.getAttribute("user") == null ) //|| !((String) session.getValue("user
     {"search_rsstatus", "select distinct roster_status from demographic where roster_status != '' and roster_status != 'RO' and roster_status != 'NR' and roster_status != 'TE' and roster_status != 'FS' "},
     {"search_wlstatus", "select * from waitingList where demographic_no=? AND is_history='N' order by onListSince DESC"}, 
     {"search_waiting_list", "select * from waitingListName where group_no='" + session.getAttribute("groupno") +"' AND is_history='N' order by name"}, 
-    //muti-site query
-    {"site_searchproviderall","select p.provider_no, p.last_name, p.first_name from provider p INNER JOIN providersite s ON p.provider_no = s.provider_no WHERE s.site_id IN (SELECT site_id from providersite where provider_no=?) AND p.status='1' order by last_name"},
-    {"site_searchmygroupall" ,"select p.* from mygroup p INNER JOIN providersite s ON p.provider_no = s.provider_no WHERE s.site_id IN (SELECT site_id from providersite where provider_no=?) order by mygroup_no"},
-    {"site_preference_search_titlename", "select p.* from preference p INNER JOIN providersite s ON p.provider_no = s.provider_no where p."+fieldname+ " "+regularexp+" ?  AND s.site_id IN (SELECT site_id from providersite where provider_no= ? ) " +orderby + " "+limit},
-    {"site_security_search_titlename", "select p.* from security p INNER JOIN providersite s ON p.provider_no = s.provider_no where p."+fieldname+ " "+regularexp+" ?  AND s.site_id IN (SELECT site_id from providersite where provider_no= " + curProvider_no + " ) " +orderby + " "+limit},
-    {"site_provider_search_titlename", "select p.provider_no,p.first_name,p.last_name,p.specialty,p.sex,p.team,p.phone,p.status from provider p where "+fieldname+ " "+regularexp+" ? and exists(select * from providersite s where p.provider_no = s.provider_no and s.site_id IN (SELECT site_id from providersite where provider_no=" + curProvider_no + ")) "  +orderby + " "+limit},
-    {"demographic_admin_reports","SELECT demographic_no,first_name,last_name,roster_status,sex,chart_no,year_of_birth,month_of_birth,date_of_birth,provider_no FROM demographic WHERE LOWER(last_name) REGEXP ?  AND patient_status NOT IN ('IN','DE','IC','ID','MO','FI') ORDER BY last_name, first_name"},
+    
   };
 	}else{
 	dbQueries=new String[][] {
-    {"provider_add_record", "insert into provider (provider_no,last_name,first_name,provider_type,specialty,team,sex,dob,address,phone,work_phone,email,ohip_no,rma_no,billing_no,hso_no,status,comments,provider_activity,practitionerNo, lastUpdateUser, lastUpdateDate) values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,now())" },
+    {"provider_add_record", "insert into provider (provider_no,last_name,first_name,provider_type,specialty,team,sex,dob,address,phone,work_phone,email,ohip_no,rma_no,billing_no,hso_no,status,comments,provider_activity,practitionerNo) values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?)" },
     {"provider_search_titlename", "select provider_no,first_name,last_name,specialty,sex,team,phone,status from provider where "+fieldname+ " "+regularexp+" ? " +orderby + " "+limit},
     {"provider_search_detail", "select * from provider where provider_no=?"},
     {"provider_delete", "delete from provider where provider_no=? and provider_no!='super'"},
-    {"provider_update_record", "update provider set last_name=?,first_name=?, provider_type=?, specialty=?,team=?,sex=?,dob=?, address=?,phone=?,work_phone=?,email=?,ohip_no=?,rma_no=?,billing_no=?,hso_no=?,status=?, comments=?, provider_activity=?, practitionerNo=?, lastUpdateUser=?, lastUpdateDate=now()  where provider_no=? and provider_no!='super'"},
-    {"provider_archive_record", "insert into providerArchive (select * from provider where provider_no=?)" },
+    {"provider_update_record", "update provider set last_name=?,first_name=?, provider_type=?, specialty=?,team=?,sex =?,dob=?, address=?,phone=?,work_phone=?,email=?,ohip_no =?,rma_no=?,billing_no=?,hso_no=?,status=?, comments=?, provider_activity = ?, practitionerNo=? where provider_no=? and provider_no!='super'"},
     {"search_provider_doc", "select * from provider where provider_type='doctor' and status='1' order by last_name"},
     
     {"demographic_search_titlename", "select demographic_no,first_name,last_name,roster_status,sex,year_of_birth,month_of_birth,date_of_birth  from demographic where "+fieldname+ " "+regularexp+" ? " +orderby + " "+limit},
@@ -187,8 +176,9 @@ if(session.getAttribute("user") == null ) //|| !((String) session.getValue("user
     {"demographic_search_detail", "select * from demographic where demographic_no=?"},
     {"demographic_update_record", "update demographic set last_name=?,first_name =?,address=?, city=?,province=?,postal=?,phone =?,phone2=?, year_of_birth=?,month_of_birth=?,hin=?,ver=?, roster_status=?, patient_status=?,  chart_no=?,provider_no=?,sex=? , pcn_indicator=?,hc_type=? , family_doctor=?, date_of_birth=?,date_joined=?,end_date=?,eff_date=?,hc_renew_date=? where  demographic_no=?"},
     {"demographic_update_record_ptbr", "update demographic_ptbr set cpf=?,rg=?,chart_address=?,marriage_certificate=?,birth_certificate=?,marital_state=?,partner_name=?,father_name=?,mother_name=?,district=?,address_no=?,complementary_address=? where  demographic_no=?"},
-    {"demographic_add_record", "insert into demographic (last_name, first_name, address, city, province, postal, phone, phone2, year_of_birth, month_of_birth, date_of_birth, hin, ver, roster_status, patient_status, date_joined, chart_no, provider_no, sex, end_date, eff_date, pcn_indicator, hc_type, hc_renew_date, family_doctor) values (?,?,?,?,? ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?)" }, //26-1 demographic_no auto_increment
+    {"demographic_add_record", "insert into demographic (last_name, first_name, address, city, province, postal, phone, phone2, year_of_birth, month_of_birth, date_of_birth, hin, ver, roster_status, patient_status, date_joined, chart_no, provider_no, sex, end_date, eff_date, pcn_indicator, hc_type, hc_renew_date, family_doctor) values (?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?)" }, //26-1 demographic_no auto_increment
     {"demographic_add_record_ptbr","insert into demographic_ptbr (demographic_no,cpf,rg,chart_address,marriage_certificate,birth_certificate,marital_state,partner_name,father_name,mother_name,district,address_no,complementary_address) values (?,?,?,?,?,?,?,?,?,?,?,?,?)" },
+    {"demographic_delete", "delete from demographic where demographic_no=?"},
     {"demographic_search_demoaddno", "select demographic_no from demographic where last_name=? and first_name =? and year_of_birth=? and month_of_birth=? and date_of_birth=? and hin=? and ver=?"},
     {"search_lastfirstnamedob", "select demographic_no from demographic where last_name=? and first_name=? and year_of_birth=? and month_of_birth=? and date_of_birth=?"},
     {"search_demographiccust_alert", "select cust3 from demographiccust where demographic_no = ? " },
@@ -203,6 +193,14 @@ if(session.getAttribute("user") == null ) //|| !((String) session.getValue("user
     {"security_update_record3", "update security set user_name=?,provider_no=?,pin=?,b_ExpireSet=?,date_ExpireDate=?,b_LocalLockSet=?,b_RemoteLockSet=? where security_no=?" },
     {"security_update_record4", "update security set user_name=?,provider_no=?,b_ExpireSet=?,date_ExpireDate=?,b_LocalLockSet=?,b_RemoteLockSet=? where security_no=?" },    
     
+    {"preference_add_record", "insert into preference (provider_no,start_hour,end_hour,every_min,mygroup_no,default_servicetype,color_template) values(?,?,?,?,?,?,?)" },
+    {"preference_search_titlename", "select * from preference where "+fieldname+ " "+regularexp+" ? " +orderby + " "+limit},
+    {"preference_search_detail", "select * from preference where preference_no=?"},
+    {"preference_list_servicetype", "select distinct servicetype, servicetype_name from ctl_billingservice where status='A'"},
+    {"preference_delete", "delete from preference where preference_no=?"},
+    {"preference_update_record", "update preference set provider_no=?,start_hour=?,end_hour=?,every_min=?,mygroup_no=?,default_servicetype=?,color_template=? where preference_no=?" },
+    {"preference_addupdate_record", "update preference set start_hour=?, end_hour=?, every_min=?, mygroup_no=?, default_servicetype=?, color_template=? where provider_no=? "},
+    
     {"searchmygroupcount", "select count(provider_no) from mygroup where mygroup_no=? "},
     {"searchmygroupprovider", "select provider_no, last_name, first_name from mygroup where mygroup_no=? "},
     {"searchmygroupall", "select * from mygroup order by mygroup_no"},
@@ -215,13 +213,7 @@ if(session.getAttribute("user") == null ) //|| !((String) session.getValue("user
     {"search_rsstatus", "select distinct roster_status from demographic where roster_status != '' and roster_status != 'RO' and roster_status != 'NR' and roster_status != 'TE' and roster_status != 'FS' "},
     {"search_wlstatus", "select * from waitingList where demographic_no=? AND is_history='N' order by onListSince DESC"}, 
     {"search_waiting_list", "select * from waitingListName where group_no='" + session.getAttribute("groupno") +"' AND is_history='N' order by name"}, 
-    //muti-site query
-    {"site_searchproviderall","select p.provider_no, p.last_name, p.first_name from provider p INNER JOIN providersite s ON p.provider_no = s.provider_no WHERE s.site_id IN (SELECT site_id from providersite where provider_no=?) AND p.status='1' order by last_name"},
-    {"site_searchmygroupall" ,"select p.* from mygroup p INNER JOIN providersite s ON p.provider_no = s.provider_no WHERE s.site_id IN (SELECT site_id from providersite where provider_no=?) order by mygroup_no"},
-    {"site_preference_search_titlename", "select p.* from preference p INNER JOIN providersite s ON p.provider_no = s.provider_no where p."+fieldname+ " "+regularexp+" ?  AND s.site_id IN (SELECT site_id from providersite where provider_no=?) " +orderby + " "+limit},
-    {"site_security_search_titlename", "select p.* from security p INNER JOIN providersite s ON p.provider_no = s.provider_no where p."+fieldname+ " "+regularexp+" ?  AND s.site_id IN (SELECT site_id from providersite where provider_no= " + curProvider_no + " ) " +orderby + " "+limit},
-    {"site_provider_search_titlename", "select p.provider_no,p.first_name,p.last_name,p.specialty,p.sex,p.team,p.phone,p.status from provider p where "+fieldname+ " "+regularexp+" ? and exists(select * from providersite s where p.provider_no = s.provider_no and s.site_id IN (SELECT site_id from providersite where provider_no=" + curProvider_no + ")) "  +orderby + " "+limit},
-    {"demographic_admin_reports","SELECT demographic_no,first_name,last_name,roster_status,sex,chart_no,year_of_birth,month_of_birth,date_of_birth,provider_no FROM demographic WHERE LOWER(last_name) REGEXP ?  AND patient_status NOT IN ('IN','DE','IC','ID','MO','FI') ORDER BY last_name, first_name"},
+
   };
 }
 
@@ -232,9 +224,12 @@ if(session.getAttribute("user") == null ) //|| !((String) session.getValue("user
     {"Provider_Update" , "providerupdateprovider.jsp"},
     {"Provider_Delete" , "providerdelete.jsp"},
     {"Provider_Update_Record" , "providerupdate.jsp"},
+    {"Demographic_Search" , "demographicsearchresults.jsp"},
+    {"Demographic_Add_Record" , "demographicaddarecord.jsp"},
     {"Demographic_Edit" , "demographiceditdemographic.jsp"},
     {"Demographic_Edit2" , "../demographic/demographiceditdemographic.jsp"},
     {"Demographic_Update" , "demographicupdatearecord.jsp"},
+    {"Demographic_Delete" , "demographicdeletearecord.jsp"},
     {"Demographic_Merge" , "demographicmergerecord.jsp"},
     {"Security_Add_Record" , "securityaddsecurity.jsp"},
     {"Security_Search" , "securitysearchresults.jsp"},
@@ -242,10 +237,11 @@ if(session.getAttribute("user") == null ) //|| !((String) session.getValue("user
     {"Security_Delete" , "securitydelete.jsp"},
     {"Security_Update_Record" , "securityupdate.jsp"},
     {"Preference_Add_Record" , "preferenceaddpreference.jsp"},
+    {"Preference_Add_Record_Pre" , "preferenceaddarecord.jsp"},
     {"Preference_Search" , "preferencesearchresults.jsp"},
+    {"Preference_Update" , "preferenceupdatepreference.jsp"},
     {"Preference_Delete" , "preferencedelete.jsp"},
     {"Preference_Update_Record" , "preferenceupdate.jsp"},
-    {"Demographic_Admin_Reports" , "../demographic/demographicsearch2reportresults.jsp"},
 
     {"displaymygroup" , "admindisplaymygroup.jsp"},
     {"newgroup" , "adminnewgroup.jsp"},

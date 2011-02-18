@@ -37,8 +37,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarBilling.ca.on.data.BillingCodeData;
 
 /**
@@ -55,7 +53,7 @@ public class ScheduleOfBenefits {
    public List processNewFeeSchedule(InputStream is, boolean addNewCodes , boolean addChangedCodes){
       ArrayList changes = new ArrayList();      
       BillingCodeData bc = new BillingCodeData();      
-      StringBuilder codesThatHaveBothGPSpec = new StringBuilder();
+      StringBuffer codesThatHaveBothGPSpec = new StringBuffer();
       
       try {
          InputStreamReader isr = new InputStreamReader(is);
@@ -68,7 +66,8 @@ public class ScheduleOfBenefits {
             total++;
             Hashtable newPricingInfo = breakLine(str);
             Hashtable billingInfo = bc.searchBillingCode((String) newPricingInfo.get("feeCode")+"A");
-
+            //System.out.println("pricing info for code "+newPricingInfo.get("feeCode"));
+            
             BigDecimal gpBD   = getJBD((String) newPricingInfo.get("gpFees"));
             BigDecimal specBD = getJBD((String) newPricingInfo.get("specFee"));
             BigDecimal zeroBD = new BigDecimal("0.00");
@@ -140,11 +139,11 @@ public class ScheduleOfBenefits {
             }            
         }
         in.close();
-
-
-
+        //System.out.println("IN Total : "+total);
+        //System.out.println("new fees "+newfees+ " current fees "+oldfees);
+        //System.out.println("Dual fees \n"+codesThatHaveBothGPSpec.toString());
       } catch (IOException e) {
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace();
       }
       return changes;     
    }
@@ -170,7 +169,7 @@ public class ScheduleOfBenefits {
    }
    
    Hashtable breakLine(String s){
-
+      //System.out.println(s.length()+" "+s);
       Hashtable h = null;
       if ( s != null && s.length() == 75){
          String feeCode            = s.substring(0,4);
@@ -194,9 +193,9 @@ public class ScheduleOfBenefits {
          double dgpFees = Double.parseDouble(gpFees);
          BigDecimal bd = new BigDecimal(dgpFees);
          bd.setScale(2);
-         MiscUtils.getLogger().debug(feeCode+" "+effectiveDate+" "+terminactionDate+" "+gpFees+" "+assistantCompFee+" "+specFee+" "+anaesthetistFee+" "+nonAnaesthetistFee);
-         MiscUtils.getLogger().debug(feeCode+" "+effectiveDate+" "+terminactionDate+" "+getJBD(gpFees)+" "+getJBD(assistantCompFee)+" "+getJBD(specFee)+" "+getJBD(anaesthetistFee)+" "+getJBD(nonAnaesthetistFee));
-         MiscUtils.getLogger().debug(dgpFees+" "+(dgpFees/10000)+" "+bd.toString());
+         System.out.println (feeCode+" "+effectiveDate+" "+terminactionDate+" "+gpFees+" "+assistantCompFee+" "+specFee+" "+anaesthetistFee+" "+nonAnaesthetistFee);
+         System.out.println (feeCode+" "+effectiveDate+" "+terminactionDate+" "+getJBD(gpFees)+" "+getJBD(assistantCompFee)+" "+getJBD(specFee)+" "+getJBD(anaesthetistFee)+" "+getJBD(nonAnaesthetistFee));
+         System.out.println(dgpFees+" "+(dgpFees/10000)+" "+bd.toString());
          
       }
       return h;

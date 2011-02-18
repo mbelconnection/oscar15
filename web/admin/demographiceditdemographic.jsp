@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -42,6 +42,8 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>PATIENT DETAIL INFO - demographiceditdemographic</title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <link rel="stylesheet" href="../web.css" />
 
 <script language="JavaScript">
@@ -67,7 +69,7 @@ function upCaseCtrl(ctrl) {
 	</tr>
 </table>
 
-<%@ include file="../demographic/zdemographicfulltitlesearch.jsp"%>
+<%@ include file="zdemographicfulltitlesearch.jsp"%>
 
 <%
 	GregorianCalendar now=new GregorianCalendar();
@@ -77,6 +79,7 @@ function upCaseCtrl(ctrl) {
   int age=0;
   
   int param = Integer.parseInt(request.getParameter("demographic_no"));
+  // System.out.println("from editcpp : "+ param);
  
   ResultSet rs = apptMainBean.queryResults(param, request.getParameter("dboperation"));
   if(rs==null) {
@@ -246,9 +249,13 @@ NO : <%=apptMainBean.getString(rs,"demographic_no")%></font></b></div>
 			type="submit" name="subbutton" value="Update Record"> <a
 			href='admincontrol.jsp?demographic_no=<%=apptMainBean.getString(rs,"demographic_no")%>&displaymode=Demographic_Delete&dboperation=demographic_delete'>
 		<img src="../images/buttondelete.gif" width="73" height="28"
-			border="0" align="absmiddle" alt="Delete the Record"></a>
+			border="0" align="absmiddle" alt="Delete the Record"></a> <!--input type="button" name="Button" value="Cancel" onclick=self.close();-->
 
-		</div>
+		<%--
+	     if (apptMainBean.getString(rs,"sex").compareTo("F") == 0) {
+         out.println("<input type=\"button\" name=\"Button2\" value=\"Antenatal Care Planner\" onClick=\"window.location='../ob/risks.jsp?demographic_no="+apptMainBean.getString(rs,"demographic_no")+"'\">");
+	     }
+	  --%></div>
 		</td>
 	</tr>
 	</form>
@@ -257,7 +264,7 @@ NO : <%=apptMainBean.getString(rs,"demographic_no")%></font></b></div>
     }
   }
 %>
-<%@ include file="../demographic/footer.jsp"%>
+<%@ include file="footer.jsp"%>
 
 </body>
 </html>

@@ -18,13 +18,13 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 --%>
 
-<%@page contentType='text/xml'
+<%@ page language="java" contentType='text/xml'
 	import="oscar.oscarMessenger.docxfer.send.*, oscar.oscarMessenger.docxfer.util.*"%>
 <%
 
@@ -34,11 +34,13 @@
     while(names.hasMoreElements())
     {
         String name = (String)names.nextElement();
+        // System.out.println("name = "+name);
         if(name.startsWith("item"))
         {
             if(request.getParameter(name).equalsIgnoreCase("on"))
             {
                 checks += name.substring(4) + ",";
+                // System.out.println("checks "+checks);
             }
         }
     }
@@ -47,6 +49,7 @@
     String xmlDoc = oscar.oscarMessenger.docxfer.util.MsgCommxml.decode64(request.getParameter("xmlDoc"));
     java.util.ArrayList aList = new java.util.ArrayList();
     String sXML = MsgCommxml.toXML(new MsgSendDocument().parseChecks2(xmlDoc, checks, aList));
+    // System.out.println(sXML);
 
     oscar.oscarMessenger.pageUtil.MsgSessionBean bean;
     bean = (oscar.oscarMessenger.pageUtil.MsgSessionBean)request.getSession().getAttribute("msgSessionBean");

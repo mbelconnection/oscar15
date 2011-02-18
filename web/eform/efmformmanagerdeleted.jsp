@@ -42,6 +42,7 @@ else if (orderByRequest.equals("file_name")) orderBy = EFormUtil.FILE_NAME;
 <html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<meta http-equiv="Cache-Control" content="no-cache" />
 <title><bean:message key="eform.uploadhtml.title" /></title>
 <link rel="stylesheet" href="../share/css/OscarStandardLayout.css">
 <link rel="stylesheet" href="../share/css/eforms.css">
@@ -158,9 +159,9 @@ else if (orderByRequest.equals("file_name")) orderBy = EFormUtil.FILE_NAME;
 		<th><bean:message key="eform.uploadhtml.msgAction" /></th>
 	</tr>
 	<%
-	ArrayList<HashMap<String, ? extends Object>> eForms = EFormUtil.listEForms(orderBy, EFormUtil.DELETED);
+  ArrayList eForms = EFormUtil.listEForms(orderBy, EFormUtil.DELETED);
   for (int i=0; i<eForms.size(); i++) {
-	  HashMap<String, ? extends Object> curForm =  eForms.get(i);
+      Hashtable curForm = (Hashtable) eForms.get(i);
 %>
 	<tr style="background-color: <%= ((i%2) == 1)?"#F2F2F2":"white"%>;">
 		<td width="25%" style="padding-left: 4px;"><a href="#"

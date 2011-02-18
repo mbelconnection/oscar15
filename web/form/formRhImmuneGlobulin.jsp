@@ -29,6 +29,8 @@
  *
  */
  --%>
+
+<%@ page language="java"%>
 <%@ page
 	import="oscar.util.*, oscar.form.*, oscar.form.data.*,java.util.*,oscar.oscarPrevention.*"%>
 <%@ page
@@ -62,10 +64,13 @@
     String formClass = "RhImmuneGlobulin";
     String formLink = "formRhImmuneGlobulin.jsp";
     
+//insert into encounterForm values ('RH Form', '../form/formRhImmuneGlobulin.jsp?demographic_no=', 'formRhImmuneGlobulin',0);
+
     String demographicNo = request.getParameter("demographic_no");
     if (demographicNo == null){
         demographicNo = (String) request.getAttribute("demographic_no");
     }    
+    System.out.println("demographic_no "+demographicNo);
     int demoNo = Integer.parseInt(demographicNo);
     
     
@@ -116,8 +121,9 @@
  * Ontario, Canada 
  */
 -->
+<html:html locale="true">
+<% response.setHeader("Cache-Control","no-cache");%>
 
-<%@page import="org.oscarehr.util.MiscUtils"%><html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Rh Immune Globulin Injection Reporting Form</title>
@@ -218,6 +224,7 @@
 <%   
              Hashtable h = null;
              String newFlowNeeded = (String) request.getAttribute("newWorkFlowNeeded"); 
+             System.out.println("HERE 1");
            %>
 <div>
 <fieldset><legend>Current Pregnancy </legend> <% 
@@ -229,10 +236,12 @@
                     ArrayList currentWorkFlows = flow.getActiveWorkFlowList(demographicNo);
 
                     if(currentWorkFlows != null && currentWorkFlows.size() > 0){
+                        System.out.println("size of current workflows "+currentWorkFlows.size());
                         request.setAttribute("currentWorkFlow",currentWorkFlows.get(0));
                          h = (Hashtable) currentWorkFlows.get(0);
                     }
                     
+                System.out.println("HERE 2");
                 if(h != null){
                     String gestAge = "";
                     try{
@@ -270,7 +279,7 @@
 		<%}%>
 
 	</select>
-	<%}%>
+	<%} System.out.println("HERE 3");%>
 </fieldset>
 
 <fieldset><legend>Mother's Information</legend> <label>Date
@@ -528,12 +537,12 @@ sample drawn?</label></fieldset>
 <fieldset><legend>Comments</legend> <textarea name="comments"
 	style="width: 45em;"><%=props.getProperty("comments","")%></textarea></fieldset>
 
-<input type="submit" value="Save" /> <% 
+<input type="submit" value="Save" /> <% System.out.println("HERE 4");%> <% 
                 if ( h != null && h.get("ID") != null){ %> <input
 	type="button"
 	onClick="javascript: popup(700,600,'addRhInjection.jsp?demographic_no=<%=demographicNo%>&amp;workflowId=<%=h.get("ID")%>&amp;formId=<%=formId%>','addInjection');"
 	value="Add Injection" /> <%-- a style="color:blue; " href="javascript: function myFunction() {return false; }" onClick="popup(700,600,'addRhInjection.jsp?demographic_no=<%=demographicNo%>&amp;workflowId=<%=h.get("ID")%>&amp;formId=<%=formId%>','addInjection')">Add Injection</a --%>
-<%}%> </html:form>
+<%}%> <% System.out.println("HERE 5");%> </html:form>
 
 <div id="injectionInfo"></div>
 
@@ -587,7 +596,7 @@ sample drawn?</label></fieldset>
                     h.put("completion_date",  new  java.sql.Date( UtilDateUtilities.StringToDate(ddate , "yyyy-MM-dd").getTime() )  );
                         
                 }catch(Exception eo){
-                	MiscUtils.getLogger().error("Error", eo);
+                   eo.printStackTrace();
                 }
              }
 
@@ -619,7 +628,7 @@ sample drawn?</label></fieldset>
                 function deleteCall(){
                     var url = "../oscarPrevention/AddPrevention.do";
                 var data = Form.serialize('deleteForm'); 
-                console.log("deleteCall "+data);
+                //console.log("deleteCall "+data);
                 new Ajax.Request(url, {method: 'post',postBody: data,asynchronous:true,onComplete: getInjectionInformation}); 
                 }
                 

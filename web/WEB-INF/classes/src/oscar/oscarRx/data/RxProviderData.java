@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -26,8 +26,6 @@ package oscar.oscarRx.data;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -37,42 +35,42 @@ public class RxProviderData {
 
         try {
             //Get Provider from database
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
             String sql = "SELECT * FROM provider WHERE provider_no = '" + providerNo + "'";
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
 
             String providerClinicPhone=null, surname=null, firstName=null,  clinicName=null, clinicAddress=null, clinicCity=null, clinicPostal=null, clinicPhone=null, clinicFax=null, clinicProvince=null, practitionerNo=null;
             if (rs.next()) {
-                surname = oscar.Misc.getString(rs, "last_name");
-                firstName = oscar.Misc.getString(rs, "first_name");
-                practitionerNo = oscar.Misc.getString(rs, "practitionerNo");
+                surname = db.getString(rs,"last_name");
+                firstName = db.getString(rs,"first_name");
+                practitionerNo = db.getString(rs,"practitionerNo");
                 if(firstName.indexOf("Dr.")<0) {
                     firstName = "Dr. " + firstName;
                 }
-                providerClinicPhone = oscar.Misc.getString(rs, "work_phone");
+                providerClinicPhone = db.getString(rs,"work_phone");
             }
 
             sql = "SELECT value FROM property WHERE name = 'faxnumber' AND provider_no = '" + providerNo + "'";
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             
             if( rs.next() ) {
-                clinicFax = oscar.Misc.getString(rs, "value");
+                clinicFax = db.getString(rs,"value");
             }
             
             sql = "SELECT * FROM clinic";
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
 
             if (rs.next()) {
-                clinicName = oscar.Misc.getString(rs, "clinic_name");
-                clinicAddress = oscar.Misc.getString(rs, "clinic_address");
-                clinicCity = oscar.Misc.getString(rs, "clinic_city");
-                clinicPostal = oscar.Misc.getString(rs, "clinic_postal");
-                clinicPhone = oscar.Misc.getString(rs, "clinic_phone");
-                clinicProvince = oscar.Misc.getString(rs, "clinic_province");
+                clinicName = db.getString(rs,"clinic_name");
+                clinicAddress = db.getString(rs,"clinic_address");
+                clinicCity = db.getString(rs,"clinic_city");
+                clinicPostal = db.getString(rs,"clinic_postal");
+                clinicPhone = db.getString(rs,"clinic_phone");
+                clinicProvince = db.getString(rs,"clinic_province");
                 
                 if( clinicFax == null )
-                    clinicFax = oscar.Misc.getString(rs, "clinic_fax");
+                    clinicFax = db.getString(rs,"clinic_fax");
             }
 
             if((clinicPhone.length()>15) && (providerClinicPhone != null && !providerClinicPhone.equals(""))) clinicPhone = providerClinicPhone;
@@ -82,7 +80,7 @@ public class RxProviderData {
 
             rs.close();
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
 
         return provider;

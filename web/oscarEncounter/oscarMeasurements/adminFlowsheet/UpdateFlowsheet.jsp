@@ -19,11 +19,14 @@
 *
 * This software was written for the
 * Department of Family Medicine
-* McMaster University test2
+* McMaster Unviersity test2
 * Hamilton
 * Ontario, Canada
 */
---><%@page import="oscar.oscarDemographic.data.*,java.util.*,oscar.oscarPrevention.*,oscar.oscarEncounter.oscarMeasurements.*,oscar.oscarEncounter.oscarMeasurements.bean.*,java.net.*"%>
+-->
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+<%@page  import="oscar.oscarDemographic.data.*,java.util.*,oscar.oscarPrevention.*,oscar.oscarEncounter.oscarMeasurements.*,oscar.oscarEncounter.oscarMeasurements.bean.*,java.net.*"%>
 <%@page import="org.jdom.Element,oscar.oscarEncounter.oscarMeasurements.data.*,org.jdom.output.Format,org.jdom.output.XMLOutputter,oscar.oscarEncounter.oscarMeasurements.util.*,java.io.*" %>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.springframework.web.context.WebApplicationContext"%>
@@ -55,6 +58,7 @@ MeasurementFlowSheet mFlowsheet = templateConfig.getFlowSheet(flowsheet,custList
 long end = System.currentTimeMillis() ;       
 long diff = end - start;
 
+System.out.println(" Flowsheet "+diff);
 Hashtable h2 = mFlowsheet.getMeasurementFlowSheetInfo(measurement);
 List<Recommendation> dsR = mFlowsheet.getDSElements((String) h2.get("measurement_type"));
 FlowSheetItem fsi =mFlowsheet.getFlowSheetItem(measurement);
@@ -494,6 +498,9 @@ div.recommendations li{
 <script type="text/javascript" src="../../share/javascript/boxover.js"></script>
 </body>
 </html:html>
+<% //System.out.println("Template took  "+ (System.currentTimeMillis() - startTime) +" to display");
+
+%>
 <%!
     String refused(Object re){
         String ret = "Given";
@@ -525,6 +532,12 @@ div.recommendations li{
         return ret;
     }
     
+    
+    public void printOutStringLists(List<String> measurements){
+       for (String measurement : measurements){
+          System.out.println(":*:measurement= "+measurement);
+       }
+    }
     
     String s(String s){
     if (s ==null || s.equalsIgnoreCase("null")){

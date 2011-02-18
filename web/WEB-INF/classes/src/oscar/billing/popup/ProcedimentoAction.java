@@ -28,18 +28,18 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.billing.cad.dao.CadProcedimentoDAO;
 import oscar.util.OscarAction;
 import oscar.util.PagerDef;
 
 public class ProcedimentoAction extends OscarAction {
-    private static Logger logger = MiscUtils.getLogger();
+    private static Logger logger = LogManager.getLogger(ProcedimentoAction.class);
 
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
         ActionForward myforward = null;
@@ -93,7 +93,7 @@ public class ProcedimentoAction extends OscarAction {
         ProcedimentoForm form = (ProcedimentoForm)actionForm;
 
         try {
-            CadProcedimentoDAO procDAO = new CadProcedimentoDAO();
+            CadProcedimentoDAO procDAO = new CadProcedimentoDAO(getPropertiesDb(request));
 
             if (request.getParameter("coProc") != null) {
                 form.setCodigoProc(request.getParameter("coProc"));

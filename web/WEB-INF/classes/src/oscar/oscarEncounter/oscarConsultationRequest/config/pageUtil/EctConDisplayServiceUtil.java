@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -27,8 +27,6 @@ package oscar.oscarEncounter.oscarConsultationRequest.config.pageUtil;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -40,16 +38,16 @@ public class EctConDisplayServiceUtil
         String retval = new String();
         try
         {
-            
-            String sql = String.valueOf(String.valueOf((new StringBuilder("select serviceDesc from consultationServices where serviceId = '")).append(serId).append("' order by serviceDesc")));
-            ResultSet rs = DBHandler.GetSQL(sql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            String sql = String.valueOf(String.valueOf((new StringBuffer("select serviceDesc from consultationServices where serviceId = '")).append(serId).append("' order by serviceDesc")));
+            ResultSet rs = db.GetSQL(sql);
             if(rs.next())
-                retval = oscar.Misc.getString(rs, "serviceDesc");
+                retval = db.getString(rs,"serviceDesc");
             rs.close();
         }
         catch(SQLException e)
         {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         return retval;
     }
@@ -68,27 +66,27 @@ public class EctConDisplayServiceUtil
         specIdVec = new Vector();
         try
         {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select * from professionalSpecialists order by lName ";
             ResultSet rs;
-            for(rs = DBHandler.GetSQL(sql); rs.next(); specIdVec.add(oscar.Misc.getString(rs, "specId")))
+            for(rs = db.GetSQL(sql); rs.next(); specIdVec.add(db.getString(rs,"specId")))
             {
-                fNameVec.add(oscar.Misc.getString(rs, "fName"));
-                lNameVec.add(oscar.Misc.getString(rs, "lName"));
-                proLettersVec.add(oscar.Misc.getString(rs, "proLetters"));
-                addressVec.add(oscar.Misc.getString(rs, "address"));
-                phoneVec.add(oscar.Misc.getString(rs, "phone"));
-                faxVec.add(oscar.Misc.getString(rs, "fax"));
-                websiteVec.add(oscar.Misc.getString(rs, "website"));
-                emailVec.add(oscar.Misc.getString(rs, "email"));
-                specTypeVec.add(oscar.Misc.getString(rs, "specType"));
+                fNameVec.add(db.getString(rs,"fName"));
+                lNameVec.add(db.getString(rs,"lName"));
+                proLettersVec.add(db.getString(rs,"proLetters"));
+                addressVec.add(db.getString(rs,"address"));
+                phoneVec.add(db.getString(rs,"phone"));
+                faxVec.add(db.getString(rs,"fax"));
+                websiteVec.add(db.getString(rs,"website"));
+                emailVec.add(db.getString(rs,"email"));
+                specTypeVec.add(db.getString(rs,"specType"));
             }
 
             rs.close();
         }
         catch(SQLException e)
         {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
     }
 
@@ -97,15 +95,15 @@ public class EctConDisplayServiceUtil
         Vector vector = new Vector();
         try
         {
-            
-            String sql = String.valueOf(String.valueOf((new StringBuilder("select * from serviceSpecialists where serviceId = '")).append(serviceId).append("'")));
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            String sql = String.valueOf(String.valueOf((new StringBuffer("select * from serviceSpecialists where serviceId = '")).append(serviceId).append("'")));
             ResultSet rs;
-            for(rs = DBHandler.GetSQL(sql); rs.next(); vector.add(oscar.Misc.getString(rs, "specId")));
+            for(rs = db.GetSQL(sql); rs.next(); vector.add(db.getString(rs,"specId")));
             rs.close();
         }
         catch(SQLException e)
         {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         return vector;
     }
@@ -116,17 +114,17 @@ public class EctConDisplayServiceUtil
         serviceName = new Vector();
         try
         {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select * from consultationServices where active = '1' order by serviceDesc";
             ResultSet rs;
-            for(rs = DBHandler.GetSQL(sql); rs.next(); serviceName.add(oscar.Misc.getString(rs, "serviceDesc")))
-                serviceId.add(oscar.Misc.getString(rs, "serviceId"));
+            for(rs = db.GetSQL(sql); rs.next(); serviceName.add(db.getString(rs,"serviceDesc")))
+                serviceId.add(db.getString(rs,"serviceId"));
 
             rs.close();
         }
         catch(SQLException e)
         {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
     }
 

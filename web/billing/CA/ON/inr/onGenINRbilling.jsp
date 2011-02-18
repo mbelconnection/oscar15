@@ -26,10 +26,10 @@
 <%@ page
 	import="java.util.*,java.sql.*,oscar.util.*,oscar.*,oscar.oscarBilling.ca.on.data.*"
 	errorPage="../../../errorpage.jsp"%>
-
+<%@ include file="../../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="dbINR.jspf"%>
+<%@ include file="dbINR.jsp"%>
 <%//
 			JdbcBillingClaimImpl dbObj = new JdbcBillingClaimImpl();
 			String temp = "";
@@ -210,6 +210,7 @@
 
 				}
 			}
+			apptMainBean.closePstmtConn();
 
 		%>
 <script LANGUAGE="JavaScript">

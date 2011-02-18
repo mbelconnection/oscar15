@@ -20,8 +20,7 @@
 		url = "demo_select.jsp?keyword=" + keyword + "&postTo=" + postTo + (column.equals("")? "" : "&column=" + column),
 		sql = query.replaceAll("@keyword", keyword).replaceAll("@orderby", orderby).replaceAll("@startLimit", startLimit).replaceAll("@column", column);
 %>
-
-<%@page import="oscar.oscarDB.DBHandler"%><html>
+<html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>OSCAR Patient Search</title>
@@ -80,20 +79,21 @@ function PopupReturn(index){
 			href="<%=url%>&orderby=patient_status">Status</a></td>
 	</tr>
 	<%
-	java.sql.ResultSet rs = DBHandler.GetSQL(sql);
+	oscar.oscarDB.DBHandler db = new oscar.oscarDB.DBHandler(oscar.oscarDB.DBHandler.OSCAR_DATA);
+	java.sql.ResultSet rs = db.GetSQL(sql);
 	boolean other = true;
 	int count = 0;
 	while (rs.next()){
 %>
 	<tr class="<%=(other? "LightBG" : "WhiteBG")%>">
 		<td class="Text" align="center"><a
-			href="javascript:PopupReturn('<%=oscar.Misc.getString(rs,"demographic_no")%>')"><%=oscar.Misc.getString(rs,"demographic_no")%></a></td>
-		<td class="Text"><%=oscar.Misc.toUpperLowerCase(oscar.Misc.getString(rs,"last_name"))%></td>
-		<td class="Text"><%=oscar.Misc.toUpperLowerCase(oscar.Misc.getString(rs,"first_name"))%></td>
-		<td class="Text" align="center"><%=oscar.Misc.check(oscar.Misc.getString(rs,"chart_no"), "")%></td>
-		<td class="Text" align="center"><%=oscar.Misc.check(oscar.Misc.getString(rs,"sex"), "")%></td>
-		<td class="Text" align="center" nowrap><%=oscar.Misc.getString(rs,"year_of_birth")+"-"+oscar.Misc.getString(rs,"month_of_birth")+"-"+oscar.Misc.getString(rs,"date_of_birth")%></td>
-		<td class="Text" align="center"><%=oscar.Misc.check(oscar.Misc.getString(rs,"patient_status"), "")%></td>
+			href="javascript:PopupReturn('<%=db.getString(rs,"demographic_no")%>')"><%=db.getString(rs,"demographic_no")%></a></td>
+		<td class="Text"><%=oscar.Misc.toUpperLowerCase(db.getString(rs,"last_name"))%></td>
+		<td class="Text"><%=oscar.Misc.toUpperLowerCase(db.getString(rs,"first_name"))%></td>
+		<td class="Text" align="center"><%=oscar.Misc.check(db.getString(rs,"chart_no"), "")%></td>
+		<td class="Text" align="center"><%=oscar.Misc.check(db.getString(rs,"sex"), "")%></td>
+		<td class="Text" align="center" nowrap><%=db.getString(rs,"year_of_birth")+"-"+db.getString(rs,"month_of_birth")+"-"+db.getString(rs,"date_of_birth")%></td>
+		<td class="Text" align="center"><%=oscar.Misc.check(db.getString(rs,"patient_status"), "")%></td>
 	</tr>
 	<%
 		count++;

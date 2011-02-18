@@ -17,7 +17,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -32,8 +32,6 @@ package oscar.oscarBilling.ca.on.data;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.OscarProperties;
 import oscar.oscarDB.DBHandler;
 
@@ -46,10 +44,10 @@ import oscar.oscarDB.DBHandler;
 public class BillingONDataHelp {
 	public synchronized int saveBillingRecord(String sql) {
 		int ret = 0;
-		
+		DBHandler db = null;
 		try {
-			
-			DBHandler.RunSQL(sql);
+			db = new DBHandler(DBHandler.OSCAR_DATA);
+			db.RunSQL(sql);
 
 			/*
 			 * if db_type = mysql return LAST_INSERT_ID() but if db_type =
@@ -65,38 +63,38 @@ public class BillingONDataHelp {
 			} else {
 				throw new SQLException("ERROR: Database " + db_type + " unrecognized.");
 			}
-			ResultSet rs = DBHandler.GetSQL(sql);
+			ResultSet rs = db.GetSQL(sql);
 			if (rs.next())
 				ret = rs.getInt(1);
 			rs.close();
 		} catch (SQLException e) {
-			MiscUtils.getLogger().error("Error", e);
+			System.out.println(e.getMessage());
 		}
 		return ret;
 	}
 
 	public synchronized boolean updateDBRecord(String sql) {
 		boolean ret = false;
-		
+		DBHandler db = null;
 		try {
-			
-			ret = DBHandler.RunSQL(sql);
+			db = new DBHandler(DBHandler.OSCAR_DATA);
+			ret = db.RunSQL(sql);
 			ret = true;
 		} catch (SQLException e) {
 			ret = false;
-			MiscUtils.getLogger().error("Error", e);
+			System.out.println(e.getMessage());
 		}
 		return ret;
 	}
 
 	public synchronized ResultSet searchDBRecord(String sql) {
 		ResultSet ret = null;
-		
+		DBHandler db = null;
 		try {
-			
-			ret = DBHandler.GetSQL(sql);
+			db = new DBHandler(DBHandler.OSCAR_DATA);
+			ret = db.GetSQL(sql);
 		} catch (SQLException e) {
-			MiscUtils.getLogger().error("Error", e);
+			System.out.println(e.getMessage());
 		}
 		return ret;
 	}

@@ -18,15 +18,18 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 --%>
+
+<%@ page language="java" %>
 <%@ page import="oscar.oscarEncounter.immunization.data.*, oscar.util.*, oscar.oscarDemographic.data.*" %>
 <%@ page import="oscar.oscarEncounter.immunization.pageUtil.*, java.util.*, org.w3c.dom.*" %>
 <%
 oscar.oscarEncounter.pageUtil.EctSessionBean bean = (oscar.oscarEncounter.pageUtil.EctSessionBean)request.getSession().getAttribute("EctSessionBean");
+//System.out.println(bean.demographicNo+" "+ bean.providerNo+"  this is the demoNO *****");
 
 String sDoc = null;
 String demoNo = request.getParameter("demographic_no");
@@ -258,6 +261,7 @@ NodeList sets = root.getElementsByTagName("immunizationSet");
 						<tr>
 							<td class="head">&nbsp;</td>
 							<%
+ System.out.println("***********   are we here?");
                                      for(int j=0; j<columns.getLength(); j++){
                                         Element column = (Element)columns.item(j);%>
 							<td class="head"><%= column.getAttribute("name") %>&nbsp;</td>
@@ -267,6 +271,7 @@ NodeList sets = root.getElementsByTagName("immunizationSet");
 								key="oscarEncounter.immunization.Schedule.msgComments" /></td>
 						</tr>
 						<%}
+System.out.println("****************"+colCount);
                                   Element rowList = (Element)set.getElementsByTagName("rowList").item(0);
                                   NodeList rows = rowList.getElementsByTagName("row");
 
@@ -371,6 +376,8 @@ NodeList sets = root.getElementsByTagName("immunizationSet");
                             s += "</span>";
 
                             s += "<span style='text-align:right;width:15px'><a href=\"javascript:edit('" + id + "', '"+ colName +"');\"><img border=0 src='img/edit.gif' /></a></span>";
+	//s += "<span style='text-align:right;width:15px'><a href=\"javascript:edit(id,colName);\"><img border=0 src='img/edit.gif' /></a></span>";
+	//System.out.println(s);
                             s += "</span>\n";
 
                             return s;

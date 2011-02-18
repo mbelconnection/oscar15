@@ -18,7 +18,7 @@
 	errorPage="errorpage.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="page" />
-
+<%@ include file="../admin/dbconnection.jsp"%>
 <%
   String [][] dbQueries=new String[][] {
 {"search_templatename", "select encountertemplate_name from encountertemplate where encountertemplate_name like ? order by encountertemplate_name" },
@@ -68,20 +68,18 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
 -->
-
-<%@page import="org.oscarehr.common.dao.EncounterTemplateDao"%>
-<%@page import="org.oscarehr.util.SpringUtils"%>
-<%@page import="org.oscarehr.common.model.EncounterTemplate"%>
-<%@page import="org.apache.commons.lang.StringEscapeUtils"%><html:html locale="true">
+<html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="admin.providertemplate.title" /></title>
 <link rel="stylesheet" href="../web.css">
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 <script language="JavaScript">
 <!--
 function setfocus() {
@@ -104,24 +102,22 @@ function setfocus() {
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<form name="edittemplate" method="post" action="providertemplate.jsp">
 	<tr bgcolor=<%=weakcolor%>>
-		<td width="95%" align='right'>
-			<bean:message key="admin.providertemplate.formEdit" /> : 
-			<select name="name">
+		<td width="95%" align='right'><bean:message
+			key="admin.providertemplate.formEdit" />: <select name="name">
 			<%
-				EncounterTemplateDao encounterTemplateDao=(EncounterTemplateDao)SpringUtils.getBean("encounterTemplateDao");
-				List<EncounterTemplate> allTemplates=encounterTemplateDao.findAll();
-	  
-				for (EncounterTemplate encounterTemplate : allTemplates) 
-				{
-					String templateName=StringEscapeUtils.escapeHtml(encounterTemplate.getEncounterTemplateName());
-					%>
-						<option value="<%=templateName%>"><%=templateName%></option>
-					<%
-				}
-			%>
-			</select>
-			<input type="hidden" value="Edit" name="dboperation">
-			<input type="button" value="<bean:message key="admin.providertemplate.btnEdit"/>" name="dboperation" onclick="document.forms['edittemplate'].dboperation.value='Edit'; document.forms['edittemplate'].submit();">
+  ResultSet rsdemo = null;
+  rsdemo = apptMainBean.queryResults("%", "search_templatename");
+  while (rsdemo.next()) {
+%>
+			<option value="<%=rsdemo.getString("encountertemplate_name")%>"><%=rsdemo.getString("encountertemplate_name")%></option>
+			<%
+  }
+%>
+		</select> <input type="hidden" value=" Edit " name="dboperation"> <input
+			type="button"
+			value="<bean:message key="admin.providertemplate.btnEdit"/>"
+			name="dboperation"
+			onclick="document.forms['edittemplate'].dboperation.value=' Edit '; document.forms['edittemplate'].submit();">
 		</td>
 		<td>&nbsp;</td>
 	</tr>
@@ -129,16 +125,17 @@ function setfocus() {
 </table>
 
 <%
-  boolean bEdit=request.getParameter("dboperation")!=null&&request.getParameter("dboperation").equals("Edit")?true:false;
+  boolean bEdit=request.getParameter("dboperation")!=null&&request.getParameter("dboperation").equals(" Edit ")?true:false;
   String tName = null;
   String tValue = null;
   if(bEdit) {
-    ResultSet rsdemo = apptMainBean.queryResults(request.getParameter("name"), "search_template");
+    rsdemo = apptMainBean.queryResults(request.getParameter("name"), "search_template");
     while (rsdemo.next()) {
       tName = UtilMisc.charEscape(rsdemo.getString("encountertemplate_name"), '"');
       tValue = rsdemo.getString("encountertemplate_value");
 	}
   }
+  apptMainBean.closePstmtConn();
 %>
 <center>
 <table width="90%" border="0" cellspacing="2" cellpadding="2">

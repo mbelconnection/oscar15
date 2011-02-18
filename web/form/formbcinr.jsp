@@ -16,6 +16,8 @@
  * 
  */
 -->
+
+<%@ page language="java"%>
 <%@ page
 	import="oscar.form.*, oscar.form.data.*, java.util.*, oscar.util.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
@@ -31,6 +33,7 @@
     int demoNo = Integer.parseInt(request.getParameter("demographic_no"));
     int formId = Integer.parseInt(request.getParameter("formId"));
 	int provNo = Integer.parseInt((String) session.getAttribute("user"));
+	//System.out.println(" here");
 	FrmRecord rec = (new FrmRecordFactory()).factory(formClass);
     java.util.Properties props = rec.getFormRecord(demoNo, formId);
     FrmData fd = new FrmData();
@@ -57,6 +60,8 @@
   if (request.getParameter("view") != null && request.getParameter("view").equals("1")) bView = true; 
 %>
 <html:html locale="true">
+<% response.setHeader("Cache-Control","no-cache");%>
+
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>INR</title>
@@ -589,6 +594,7 @@ function calToday(field) {
 			  vecR.remove(nv);
 		  }
 	  }else {
+		  //System.out.println("h e re" + vecR.size());
 		  if(vecR.size()>0 && formId!=0) {
 			  bgcolor = "bgcolor='pink'";
 			  props.setProperty("date"+i, (String)vecR.get(0));

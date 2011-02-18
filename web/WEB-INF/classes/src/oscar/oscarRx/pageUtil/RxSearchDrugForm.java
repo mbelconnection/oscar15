@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 
 public final class RxSearchDrugForm extends ActionForm {
@@ -44,11 +43,11 @@ public final class RxSearchDrugForm extends ActionForm {
             
     
     public String getAction(){
-        MiscUtils.getLogger().debug("Can i be deleted GETTER getAction RxSearchDrugForm");
+        System.out.println("Can i be deleted GETTER getAction RxSearchDrugForm");
         return "";
     }
     public void getAction(String d){
-        MiscUtils.getLogger().debug("Can i be deleted SETTER getAction RxSearchDrugForm");
+        System.out.println("Can i be deleted SETTER getAction RxSearchDrugForm");
     }
     
     public String getAhfsSearch(){

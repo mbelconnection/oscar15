@@ -25,29 +25,20 @@ package org.oscarehr.common.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
-
-import org.oscarehr.billing.CA.ON.model.BillingPercLimit;
 
 @Entity
 @Table(name = "billingservice")
 public class BillingService extends AbstractModel<Integer> implements Serializable {
 
 	@Id()
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "billingservice_no")
 	private Integer billingserviceNo;
 
@@ -73,13 +64,6 @@ public class BillingService extends AbstractModel<Integer> implements Serializab
 	@Column(name = "termination_date")
 	@Temporal(value = javax.persistence.TemporalType.DATE)
 	private Date terminationDate;
-
-        private Boolean gstFlag;
-
-        @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-        @JoinColumn(name="service_code", referencedColumnName="service_code")
-        @OrderBy("effective_date DESC")
-        private List<BillingPercLimit> billingPercLimit;
 
 	@Override
     public Integer getId() {
@@ -240,45 +224,5 @@ public class BillingService extends AbstractModel<Integer> implements Serializab
 	public void setTerminationDate(Date terminationDate) {
 		this.terminationDate = terminationDate;
 	}
-
-        /**
-     * @return the Billingperc
-     */
-    public BillingPercLimit getBillingPercLimit() {
-
-        if( billingPercLimit != null ) {
-            Date d;
-            for( int idx = 0; idx < billingPercLimit.size(); ++idx) {
-                d = billingPercLimit.get(idx).getEffective_date();
-                if( d.compareTo(this.billingserviceDate) < 0 || d.compareTo(this.billingserviceDate) == 0) {
-                    return billingPercLimit.get(idx);
-                }
-            }
-        }
-
-        return null;
-        
-    }
-
-    /**
-     * @param Billingperc the Billingperc to set
-     */
-    public void setBillingperc(List<BillingPercLimit> Billingperc) {
-        this.billingPercLimit = Billingperc;
-    }
-
-    /**
-     * @return the gstFlag
-     */
-    public Boolean getGstFlag() {
-        return gstFlag;
-    }
-
-    /**
-     * @param gstFlag the gstFlag to set
-     */
-    public void setGstFlag(Boolean gstFlag) {
-        this.gstFlag = gstFlag;
-    }
 
 }

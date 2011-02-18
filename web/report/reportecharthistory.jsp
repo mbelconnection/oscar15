@@ -15,7 +15,7 @@
 	errorPage="../appointment/errorpage.jsp"%>
 <jsp:useBean id="daySheetBean" class="oscar.AppointmentMainBean"
 	scope="page" />
-
+<%@ include file="../admin/dbconnection.jsp"%>
 <%
   String [][] dbQueries=new String[][] {
 //{"search_appt","select appointment_no, appointment_date,start_time, end_time, reason from appointment where demographic_no=? order by ? desc limit ? offset ?" },
@@ -44,7 +44,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -53,6 +53,8 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>ENCOUNTER SHEET</title>
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv=Expires content=-1>
 <link rel="stylesheet" href="../web.css">
 <script language="JavaScript">
 <!--
@@ -145,6 +147,7 @@ function setfocus() {
 	</tr>
 	<%
   }
+  daySheetBean.closePstmtConn();
 %>
 
 </table>

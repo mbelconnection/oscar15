@@ -5,26 +5,23 @@
 
 package org.oscarehr.decisionSupport.model.impl.drools;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.drools.FactException;
 import org.drools.RuleBase;
 import org.drools.WorkingMemory;
 import org.jdom.Element;
 import org.jdom.Namespace;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import org.oscarehr.decisionSupport.model.DSCondition;
 import org.oscarehr.decisionSupport.model.DSConsequence;
 import org.oscarehr.decisionSupport.model.DSDemographicAccess;
 import org.oscarehr.decisionSupport.model.DSGuideline;
-import org.oscarehr.decisionSupport.model.DSParameter;
 import org.oscarehr.decisionSupport.model.DecisionSupportException;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarEncounter.oscarMeasurements.util.RuleBaseCreator;
 
 
@@ -33,7 +30,7 @@ import oscar.oscarEncounter.oscarMeasurements.util.RuleBaseCreator;
  * @author apavel
  */
 public class DSGuidelineDrools extends DSGuideline {
-    private static final Logger log=MiscUtils.getLogger();
+    private static final Log log = LogFactory.getLog(RuleBaseCreator.class);
     
     Namespace namespace = Namespace.getNamespace("http://drools.org/rules");
     Namespace javaNamespace = Namespace.getNamespace("java", "http://drools.org/semantics/java");
@@ -53,27 +50,18 @@ public class DSGuidelineDrools extends DSGuideline {
         DSDemographicAccess dsDemographicAccess = new DSDemographicAccess(demographicNo);
         //put "bob" in working memory
         try {
-
-
-
-
-
+            //System.out.println(dsDemographicAccess.getDemographicNo() + "NO");
+            //System.out.println("a.isAgeAll(\"&gt;=5 y,&lt;611 y\")" + dsDemographicAccess.isAgeAll(">=5 y,<611 y"));
+            //System.out.println("a.hasDxCodesAny(\"icd9:'4438',icd9:'1331'\")" + dsDemographicAccess.hasDxCodesAny("icd9:'4438',icd9:'1331'"));
+            //System.out.println("isSexAny(\"F\")" + dsDemographicAccess.isSexAny("F"));
+            //System.out.println("Note contains: " + dsDemographicAccess.noteContainsAny("test"));
             workingMemory.assertObject(dsDemographicAccess);
 
             for(DSCondition dsc :this.getConditions()){
                 if (dsc.getParam() != null && !dsc.getParam().isEmpty()){
-                    log.debug("PARAM:"+dsc.getParam().toString());
+                    System.out.println("PARAM:"+dsc.getParam().toString());
                     workingMemory.assertObject(dsc.getParam());
                 }
-            }
-
-            List<DSParameter> lDSP = this.getParameters();
-            for( DSParameter dsp: lDSP ) {
-                Class clas = Class.forName(dsp.getStrClass());
-                Constructor constructor = clas.getConstructor();
-                Object obj = constructor.newInstance();
-
-                workingMemory.assertObject(obj);
             }
 
             workingMemory.fireAllRules();
@@ -82,14 +70,8 @@ public class DSGuidelineDrools extends DSGuideline {
                 if (this.getConsequences() == null) return returnDsConsequences;
                 else {
                     for (DSConsequence dsConsequence: this.getConsequences()) {
-                        if (dsConsequence.getConsequenceType() != DSConsequence.ConsequenceType.java) {
+                        if (dsConsequence.getConsequenceType() != DSConsequence.ConsequenceType.java)
                             returnDsConsequences.add(dsConsequence);
-                    }
-                        else if( dsConsequence.getConsequenceType() == DSConsequence.ConsequenceType.java ) {
-                            List<Object> javaConsequences = workingMemory.getObjects();
-                            dsConsequence.setObjConsequence(javaConsequences);
-                            returnDsConsequences.add(dsConsequence);
-                        }
                     }
                     return returnDsConsequences;
                 }
@@ -98,30 +80,13 @@ public class DSGuidelineDrools extends DSGuideline {
             }
         } catch (FactException factException) {
             throw new DecisionSupportException("Unable to assert guideline", factException);
-        } catch( ClassNotFoundException e ) {
-            throw new DecisionSupportException("Unable to instantiate class", e);
-        } catch( NoSuchMethodException e ) {
-            throw new DecisionSupportException("Unable to instantiate class", e);
-        } catch( InstantiationException e ) {
-            throw new DecisionSupportException("Unable to instantiate class", e);
-        } catch( IllegalAccessException e ) {
-            throw new DecisionSupportException("Unable to instantiate class", e);
-        } catch( InvocationTargetException e ) {
-            throw new DecisionSupportException("Unable to instantiate class", e);
         }
     }
 
     public void generateRuleBase() throws DecisionSupportException {
         ArrayList<Element> rules = new ArrayList();
         ArrayList<Element> conditionElements = new ArrayList();
-        ArrayList<Element> lParameterElements = new ArrayList();
         
-
-        for( DSParameter dsParameter: this.getParameters()) {
-            Element parameterElement = this.getDroolsParameter(dsParameter);
-            lParameterElements.add(parameterElement);
-        }
-
         int paramCount=0;
        
         for (DSCondition condition: this.getConditions()) {
@@ -135,44 +100,16 @@ public class DSGuidelineDrools extends DSGuideline {
 
         Element consequencesElement = this.getDroolsConsequences(this.getConsequences());
 
-        rules.add(this.getRule(conditionElements, lParameterElements, consequencesElement));
+        rules.add(this.getRule(conditionElements, consequencesElement));
         
         RuleBaseCreator ruleBaseCreator = new RuleBaseCreator();
         try {
-            
+            XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
+            xmlOutputter.output(rules, System.out);
             _ruleBase = ruleBaseCreator.getRuleBase(this.getTitle(), rules);
         } catch (Exception e) {
             throw new DecisionSupportException("Could not create a rule base for guideline '" + this.getTitle() + "'", e);
         }
-    }
-
-    private Element getRule(List<Element> conditionElements, List<Element> parameterElements, Element consequenceElement) {
-        Element ruleElement = new Element("rule", namespace);
-        ruleElement.setAttribute("name", this.getTitle());
-
-        Element accessClassParameter = new Element("parameter", namespace);
-        accessClassParameter.setAttribute("identifier", "a");
-        Element accessClass = new Element("class", namespace);
-        accessClass.addContent(demographicAccessObjectClassPath);
-        accessClassParameter.addContent(accessClass);
-        ruleElement.addContent(accessClassParameter);
-
-        ruleElement.addContent(parameterElements);
-
-        for (DSCondition condition: this.getConditions()) {
-            if (condition.getParam() != null && !condition.getParam().isEmpty()){
-                Element paramsHashEle = new Element("parameter", namespace);
-                paramsHashEle.setAttribute("identifier", condition.getLabel());
-                Element paramClass = new Element("class", namespace);
-                paramClass.addContent("java.util.Hashtable");
-                paramsHashEle.addContent(paramClass);
-                ruleElement.addContent(paramsHashEle);
-            }
-        }
-
-        ruleElement.addContent(conditionElements);
-        ruleElement.addContent(consequenceElement);
-        return ruleElement;
     }
 
     private Element getRule(List<Element> conditionElements, Element consequenceElement) {
@@ -226,19 +163,9 @@ public class DSGuidelineDrools extends DSGuideline {
         return javaCondition;
     }
 
-    public Element getDroolsParameter(DSParameter dsParameter) throws DecisionSupportException {
-        Element accessClassParameter = new Element("parameter", namespace);
-        accessClassParameter.setAttribute("identifier", dsParameter.getStrAlias());
-        Element accessClass = new Element("class", namespace);
-        accessClass.addContent(dsParameter.getStrClass());
-        accessClassParameter.addContent(accessClass);
-
-        return accessClassParameter;
-    }
-
     public Element getDroolsConsequences(List<DSConsequence> consequences) throws DecisionSupportException {
         Element javaElement = new Element("consequence", javaNamespace);
-        String consequencesStr = "a.setPassedGuideline(true);";
+        String consequencesStr = "System.out.println(\"FINISHED\"); a.setPassedGuideline(true);";
         for (DSConsequence consequence: consequences) {
             if (consequence.getConsequenceType() == DSConsequence.ConsequenceType.java) {
                 consequencesStr = consequencesStr + "\n" + consequence.getText();
@@ -249,3 +176,16 @@ public class DSGuidelineDrools extends DSGuideline {
     }
 
 }
+
+/* exmaple:
+ *     <rule name="A1C">
+        <parameter identifier="m">
+            <class>oscar.oscarEncounter.oscarMeasurements.util.MeasurementDSHelper</class>
+        </parameter>
+        <java:condition>m.getDataAsDouble() &gt;= 7</java:condition>
+        <java:consequence>
+              System.out.println("A1C RULES IS GETTING RUN");
+              m.setIndicationColor("HIGH");
+        </java:consequence>
+    </rule>
+ * */

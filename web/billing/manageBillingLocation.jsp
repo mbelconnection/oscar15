@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -41,7 +41,7 @@ String service_form="", service_name="";
 <%@ include file="../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 
 <%
 String clinicview = request.getParameter("billingform")==null?oscarVariables.getProperty("default_view"):request.getParameter("billingform");
@@ -99,6 +99,7 @@ function refresh() {
 }
 //-->
 </script>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-2">
 </head>
 
 <body leftmargin="0" topmargin="5" rightmargin="0">
@@ -179,7 +180,9 @@ if(rs==null) {
 			</tr>
 			<%
 	}
-}
+}     
+
+apptMainBean.closePstmtConn();
 %>
 
 		</table>

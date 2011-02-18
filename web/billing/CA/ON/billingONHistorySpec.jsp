@@ -30,7 +30,9 @@
   String strToday = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH)+1) + "-" + calendar.get(Calendar.DATE);
   calendar.add(Calendar.DATE, Integer.parseInt(strDay)*(-1));
   String strStartDay = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH)+1) + "-" + calendar.get(Calendar.DATE);;
+  //System.out.println(strToday + "|"+ strStartDay);
 
+//  String dateRange = " and billing_date>='" + strStartDay + "' and billing_date <='" + strToday + "'";
   DBPreparedHandlerParam[] pDateRange= new DBPreparedHandlerParam[2];
   pDateRange[0]= new DBPreparedHandlerParam(MyDateFormat.getSysDate(strStartDay));
   pDateRange[1]= new DBPreparedHandlerParam(MyDateFormat.getSysDate(strToday));
@@ -49,6 +51,9 @@
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>BILLING HISTORY</title>
 <link rel="stylesheet" href="billingON.css">
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
+
 <script language="JavaScript">
 <!--
 

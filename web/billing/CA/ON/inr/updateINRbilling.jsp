@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -30,10 +30,10 @@ if(session.getAttribute("user") == null)    response.sendRedirect("../../../../l
 
 <%@ page
 	import="java.math.*, java.util.*, java.io.*, java.sql.*, oscar.*, java.net.*,oscar.MyDateFormat"%>
-
+<%@ include file="../../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="dbINR.jspf"%>
+<%@ include file="dbINR.jsp"%>
 <%
 
 GregorianCalendar now=new GregorianCalendar();
@@ -63,12 +63,15 @@ ResultSet rsPatient = apptMainBean.queryResults(demono, "search_demographic_deta
  demo_dob = MyDateFormat.getStandardDate(Integer.parseInt(rsPatient.getString("year_of_birth")),Integer.parseInt(rsPatient.getString("month_of_birth")),Integer.parseInt(rsPatient.getString("date_of_birth")));
  demo_hin = rsPatient.getString("hin") + rsPatient.getString("ver").toUpperCase();
    }
+apptMainBean.closePstmtConn();
 
 %>
 <html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>UPDATE INR BILLING</title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <script language="JavaScript">
 <!--
 

@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -37,7 +37,7 @@
 	scope="session" />
 <jsp:useBean id="providerNameBean" class="oscar.Dict" scope="page" />
 <%  if(!reportMainBean.getBDoConfigure()) { %>
-<%@ include file="reportMainBeanConn.jspf"%>
+<%@ include file="reportMainBeanConn.jsp"%>
 <% } %>
 
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
@@ -131,6 +131,7 @@ function setfocus() {
   }
 
 if(reportMainBean.getBDoConfigure()) reportMainBean.setBDoConfigure();
+  reportMainBean.closePstmtConn();
 %>
 
 </table>

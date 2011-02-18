@@ -34,36 +34,38 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.List;
-import java.util.Properties;
-import java.util.Map.Entry;
 
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Properties;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DispatchAction;
+
+
 import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.model.Demographic;
-import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
-
 import oscar.OscarProperties;
 import oscar.entities.Billactivity;
-import oscar.entities.BillingDxCode;
-import oscar.oscarBilling.ca.bc.MSP.MspErrorCodes;
 import oscar.oscarBilling.ca.bc.Teleplan.TeleplanAPI;
 import oscar.oscarBilling.ca.bc.Teleplan.TeleplanCodesManager;
 import oscar.oscarBilling.ca.bc.Teleplan.TeleplanResponse;
-import oscar.oscarBilling.ca.bc.Teleplan.TeleplanSequenceDAO;
 import oscar.oscarBilling.ca.bc.Teleplan.TeleplanService;
 import oscar.oscarBilling.ca.bc.Teleplan.TeleplanUserPassDAO;
+import oscar.oscarBilling.ca.bc.data.BillingDxCodeDAO;
+
+import oscar.entities.BillingDxCode;
+import oscar.oscarBilling.ca.bc.MSP.MspErrorCodes;
+import oscar.oscarBilling.ca.bc.Teleplan.TeleplanSequenceDAO;
 import oscar.oscarBilling.ca.bc.data.BillActivityDAO;
 import oscar.oscarBilling.ca.bc.data.BillingCodeData;
-import oscar.oscarBilling.ca.bc.data.BillingDxCodeDAO;
 import oscar.util.UtilDateUtilities;
 
 /**
@@ -72,7 +74,7 @@ import oscar.util.UtilDateUtilities;
  */
 public class ManageTeleplanAction extends DispatchAction {
     
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(ManageTeleplanAction.class);
     
     /** Creates a new instance of ManageTeleplanAction */
     public ManageTeleplanAction() {
@@ -105,7 +107,7 @@ public class ManageTeleplanAction extends DispatchAction {
     public ActionForward updateBillingCodes(ActionMapping mapping, ActionForm  form,
            HttpServletRequest request, HttpServletResponse response)
            throws Exception {
-        
+
            TeleplanUserPassDAO dao = new TeleplanUserPassDAO();
            String[] userpass = dao.getUsernamePassword();
            TeleplanService tService = new TeleplanService();
@@ -180,13 +182,14 @@ public class ManageTeleplanAction extends DispatchAction {
  */
 //                   else{
 //                       if (dxList.size() > 1){
-
+//                           System.out.println(" THIS SHOULDN'T HAPPEN!!!!!!!!");
 //                           for(BillingDxCode dx :dxList){
-
+//                               System.out.println(dx.getDiagnosticCode()+"DESC>"+desc+":"+dx.getDescription()+">"+dxProp.getProperty(code));
 //                           }
 //                           linesThatShouldnthappen ++;
 //                       }else{
 //                          BillingDxCode dx = dxList.get(0);
+//                          //System.out.println("DESC>"+desc+":"+dx.getDescription());
 //                          existingCodes++;
 //                       }
 //
@@ -206,7 +209,7 @@ public class ManageTeleplanAction extends DispatchAction {
            HttpServletRequest request, HttpServletResponse response)
            throws Exception {
         
-
+           
            TeleplanUserPassDAO dao = new TeleplanUserPassDAO();
            String[] userpass = dao.getUsernamePassword();
            TeleplanService tService = new TeleplanService();
@@ -220,11 +223,11 @@ public class ManageTeleplanAction extends DispatchAction {
            BufferedReader buff = new BufferedReader(new FileReader(file));
 
            String line = null;
-
+           
            boolean start= false;
-           StringBuilder sb = new StringBuilder();
+           StringBuffer sb = new StringBuffer();
            MspErrorCodes errorCodes = new MspErrorCodes();
-
+           
            while ((line = buff.readLine()) != null) {
                line = line.trim();
                if (line != null && line.startsWith("--")){
@@ -234,7 +237,7 @@ public class ManageTeleplanAction extends DispatchAction {
                if (start){
                    if (line.trim().equals("")){
                        String togo = sb.toString();
-                       sb = new StringBuilder();
+                       sb = new StringBuffer();
                        if (!togo.equals("")){
                           errorCodes.put(togo.substring(0,2), togo.substring(4));
                        }
@@ -259,7 +262,7 @@ public class ManageTeleplanAction extends DispatchAction {
            errorCodes.save();
 
            //...I guess pass the errors back to jsp
-           StringBuilder errorStr = new StringBuilder("");
+           StringBuffer errorStr = new StringBuffer("");
            for (Entry error: errorCodes.entrySet()) {
                errorStr.append("Error codes: \n");
                errorStr.append(error.getKey());
@@ -440,7 +443,7 @@ public class ManageTeleplanAction extends DispatchAction {
     public ActionForward changePass(ActionMapping mapping, ActionForm  form,
            HttpServletRequest request, HttpServletResponse response)
            throws Exception {
-           
+           String oldpass  = (String) request.getParameter("oldpass");
            String newpass  = (String) request.getParameter("newpass");
            String confpass = (String) request.getParameter("confpass");
            
@@ -453,7 +456,7 @@ public class ManageTeleplanAction extends DispatchAction {
            
            TeleplanUserPassDAO dao = new TeleplanUserPassDAO();
            String[] userpass = dao.getUsernamePassword();
-           
+           TeleplanService tService = new TeleplanService();
            
            TeleplanAPI tAPI = new TeleplanAPI();
            try{
@@ -526,16 +529,16 @@ public class ManageTeleplanAction extends DispatchAction {
            if (realFile != null && !realFile.trim().equals("")){
                File file = tr.getFile();
                BufferedReader buff = new BufferedReader(new FileReader(file));
-               StringBuilder sb = new StringBuilder();
+               StringBuffer sb = new StringBuffer();
                String line = null;
-               
+               boolean eligible = true;
                while ((line = buff.readLine()) != null) {
 
                   if (line != null && line.startsWith("ELIG_ON_DOS:")){
                       String el = line.substring(12).trim();
                       if(el.equalsIgnoreCase("no")){
                         request.setAttribute("Result","Failure");
-                        
+                        eligible = false;
                         line = "<span style=\"color:red; font-weight:bold;\">"+line+"</span>";
                       }
                   }
@@ -543,12 +546,12 @@ public class ManageTeleplanAction extends DispatchAction {
                   sb.append("<br>");
                }
                request.setAttribute("Msgs", sb.toString());//tr.getMsgs());
-            
+
            }else{
                request.setAttribute("Msgs", tr.getMsgs());
 
            }
-           
+
            //request.setAttribute("message",tr.toString());
            return mapping.findForward("checkElig");
     }

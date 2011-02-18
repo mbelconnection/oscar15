@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -38,13 +38,17 @@ public class SendAddressBookClient {
             throws OscarCommClientException, SQLException {
         boolean ret = false;
         String wsURL = null;
+        DBHandler db = null;
         WebServiceClient client = null;
 
         try {
+            db = new DBHandler(databaseURL, databaseName);
+            System.out.println("");
+
             String sql = "SELECT remoteServerURL FROM oscarcommlocations WHERE current1 = 1";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if(rs.next()) {
-                wsURL = oscar.Misc.getString(rs, "remoteServerURL");
+                wsURL = db.getString(rs,"remoteServerURL");
             }
             rs.close();
         } catch (Exception ex) {
@@ -57,11 +61,11 @@ public class SendAddressBookClient {
             Element request;
             Element response;
 
-            request = createRequest();
+            request = createRequest(db);
             response = client.callSendRequest(request);
 
             if(response!=null) {
-                parseResponse(response);
+                parseResponse(response, db);
                 ret = true;
             }
         } catch (Exception ex) {
@@ -71,28 +75,28 @@ public class SendAddressBookClient {
         return ret;
     }
 
-    private Element createRequest() throws SQLException {
+    private Element createRequest(DBHandler db) throws SQLException {
         Document doc = UtilXML.newDocument();
         Element root = UtilXML.addNode(doc, "request");
 
-        root.appendChild(new Location().getLocal(doc));
-        root.appendChild(new AddressBook().getLocalAddressBook(doc));
+        root.appendChild(new Location(db).getLocal(doc));
+        root.appendChild(new AddressBook(db).getLocalAddressBook(doc));
 
         return root;
     }
 
-    private void parseResponse(Element response) throws SQLException {
+    private void parseResponse(Element response, DBHandler db) throws SQLException {
         NodeList rootChildren = response.getChildNodes();
 
         for(int i=0; i<rootChildren.getLength(); i++) {
             Element element = (Element)rootChildren.item(i);
 
             if(element.getNodeName().equalsIgnoreCase("remoteAddressBooks")) {
-                new AddressBook().setRemoteAddressBooks(element);
+                new AddressBook(db).setRemoteAddressBooks(element);
             }
 
             if(element.getNodeName().equalsIgnoreCase("messageList")) {
-                new Messages().addMessageList(element);
+                new Messages(db).addMessageList(element);
             }
         }
     }

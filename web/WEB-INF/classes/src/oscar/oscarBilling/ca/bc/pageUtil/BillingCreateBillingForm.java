@@ -27,15 +27,13 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
-import org.oscarehr.util.MiscUtils;
 
-public final class BillingCreateBillingForm extends ActionForm {
-  private static final Logger _log = MiscUtils.getLogger();
+public final class BillingCreateBillingForm
+    extends ActionForm {
 
   private String[] service;
   private String xml_provider, xml_location, xml_billtype;
@@ -103,7 +101,7 @@ public final class BillingCreateBillingForm extends ActionForm {
    * @return String, this is the text of the message
    */
   public String getXml_billtype() {
-    _log.debug(this.hashCode());
+    System.out.println(this.hashCode());
     return xml_billtype != null ? xml_billtype : "";
   }
 
@@ -112,7 +110,7 @@ public final class BillingCreateBillingForm extends ActionForm {
    * @param msg String, The text of a message
    */
   public void setXml_billtype(String xml_billtype) {
-    _log.debug(this.hashCode());
+    System.out.println(this.hashCode());
     this.xml_billtype = xml_billtype;
   }
 
@@ -398,7 +396,7 @@ public final class BillingCreateBillingForm extends ActionForm {
    */
   public void reset(ActionMapping mapping, HttpServletRequest request) {
     this.service = null;
-    _log.debug("RESET IS CALLED IN BILLING CREATE BILLING FORM");
+    System.out.println("RESET IS CALLED IN BILLING CREATE BILLING FORM");
     // this.message = null;
     // this.subject = null;
 
@@ -716,7 +714,7 @@ public final class BillingCreateBillingForm extends ActionForm {
   public ActionErrors validate(ActionMapping mapping,
                                HttpServletRequest request) {
     ActionErrors errors = new ActionErrors();
-    
+    oscar.util.StringUtils ut = new oscar.util.StringUtils();
 
    this.refertype1 = this.xml_refer1.equals("")?"":this.refertype1;
    this.refertype2 = this.xml_refer2.equals("")?"":this.refertype2;
@@ -773,7 +771,7 @@ public final class BillingCreateBillingForm extends ActionForm {
       request.setAttribute("newWCBClaim","1");
     }
 
-    _log.debug("About to return errors "+errors.size());
+    System.out.println("About to return errors "+errors.size());
     return errors;
   }
   /**

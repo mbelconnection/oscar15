@@ -3,6 +3,8 @@
     Created on : 9-Jun-2008, 11:03:24 AM
     Author     : apavel
 --%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
    <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
@@ -12,6 +14,7 @@
 
 <html>
     <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Indivo Registration Result</title>
         <link rel="stylesheet" type="text/css" href="../phr.css">
         <style type="text/css">

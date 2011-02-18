@@ -25,7 +25,8 @@ package org.oscarehr.PMmodule.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
@@ -34,14 +35,13 @@ import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.oscarehr.common.model.Provider;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import oscar.OscarProperties;
 import oscar.util.SqlUtils;
 
 public class ProviderDao extends HibernateDaoSupport {
-	private static Logger log = MiscUtils.getLogger();
+	private static Log log = LogFactory.getLog(ProviderDao.class);
 
 	public boolean providerExists(String providerNo) {
 		boolean exists = (((Long) getHibernateTemplate().iterate(
@@ -99,16 +99,7 @@ public class ProviderDao extends HibernateDaoSupport {
 		}
 		return rs;
 	}
-        public List<Provider> getProviderFromFirstLastName(String firstname,String lastname){
-            firstname=firstname.trim();
-            lastname=lastname.trim();
-            String s="From Provider p where p.FirstName=? and p.LastName=?";
-            ArrayList paramList=new ArrayList();
-            paramList.add(firstname);
-            paramList.add(lastname);
-            Object params[]=paramList.toArray(new Object[paramList.size()]);
-            return getHibernateTemplate().find(s,params);
-        }
+
     public List getActiveProviders(Integer programId) {
         ArrayList paramList = new ArrayList();
 
@@ -292,24 +283,4 @@ public class ProviderDao extends HibernateDaoSupport {
     public void updateProvider( Provider provider) {        
         this.getHibernateTemplate().update(provider);
     }
-    
-    public void saveProvider( Provider provider) {        
-        this.getHibernateTemplate().save(provider);
-    }
-    
-	public Provider getProviderByPractitionerNo(String practitionerNo) {
-		if (practitionerNo == null || practitionerNo.length() <= 0) {
-			throw new IllegalArgumentException();
-		}
-
-		List<Provider> providerList = getHibernateTemplate().find("From Provider p where p.practitionerNo=?",new Object[]{practitionerNo});
-	
-		if(providerList.size()>1) {
-			logger.warn("Found more than 1 provider with practitionerNo="+practitionerNo);
-		}
-		if(providerList.size()>0)
-			return providerList.get(0);
-
-		return null;
-	}
 }

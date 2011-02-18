@@ -32,8 +32,7 @@ package oscar.oscarBilling.ca.bc.Teleplan;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
-import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
+import oscar.oscarDB.DBHandler;
 
 /**
  
@@ -59,9 +58,9 @@ public class TeleplanResponseDAO {
     
     public void save(TeleplanResponse tr){
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String query = "insert into teleplan_response_log (transaction_no,result,filename,msgs,real_filename) values (?,?,?,?,?)" ;
-            Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
+            Connection conn = DBHandler.getConnection();
             PreparedStatement pstat = conn.prepareStatement(query);
             pstat.setString(1,tr.getTransactionNo());
             pstat.setString(2,tr.getResult());
@@ -71,7 +70,7 @@ public class TeleplanResponseDAO {
             pstat.executeUpdate();
             pstat.close();
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
     }
 }

@@ -47,7 +47,7 @@ public class RptReportConfigData {
                 + StringEscapeUtils.escapeSql(caption) + "', " + order + ", '"
                 + StringEscapeUtils.escapeSql(table_name) + "', '" + StringEscapeUtils.escapeSql(save) + "')";
         try {
-            ret = DBHelp.updateDBRecord(sql);
+            ret = dbObj.updateDBRecord(sql);
         } catch (SQLException e) {
             _logger.error("insertRecord() : sql = " + sql);
         }
@@ -60,7 +60,7 @@ public class RptReportConfigData {
                 + StringEscapeUtils.escapeSql(name) + "' and caption='" + StringEscapeUtils.escapeSql(caption)
                 + "' and table_name='" + StringEscapeUtils.escapeSql(table_name) + "' and save='"
                 + StringEscapeUtils.escapeSql(save) + "'";
-        ret = DBHelp.updateDBRecord(sql);
+        ret = dbObj.updateDBRecord(sql);
         return ret;
     }
 
@@ -68,10 +68,10 @@ public class RptReportConfigData {
         boolean ret = false;
         String sql = "update reportConfig set order_no=order_no+1 where report_id=" + reportId + " and save='"
                 + StringEscapeUtils.escapeSql(saveAs) + "' and order_no >=" + newPos + " order by order_no desc";
-
-        if (DBHelp.updateDBRecord(sql)) {
+        //System.out.println("updateRecordOrder() : sql = " + sql);
+        if (dbObj.updateDBRecord(sql)) {
             sql = "update reportConfig set order_no=" + newPos + " where id=" + id;
-            ret = DBHelp.updateDBRecord(sql);
+            ret = dbObj.updateDBRecord(sql);
         }
 
         return ret;
@@ -81,7 +81,7 @@ public class RptReportConfigData {
         boolean ret = false;
         String sql = "delete from reportConfig where id=" + recordId;
         try {
-            ret = DBHelp.updateDBRecord(sql);
+            ret = dbObj.updateDBRecord(sql);
         } catch (SQLException e) {
             _logger.error("deleteRecord() : sql = " + sql);
         }
@@ -97,9 +97,9 @@ public class RptReportConfigData {
                 + "' order by order_no, id";
         ResultSet rs = dbObj.searchDBRecord(sql);
         while (rs.next()) {
-
+            //System.out.println(dbObj.getString(rs,"name"));
             if (dbObj.getString(rs,"name").matches(RptTableShadowFieldConst.fieldName)) {
-
+                //System.out.println(dbObj.getString(rs,"name"));
                 continue;
             }
             ret[0].add(dbObj.getString(rs,"table_name") + "." + dbObj.getString(rs,"name"));
@@ -119,9 +119,9 @@ public class RptReportConfigData {
                 + "' order by order_no, id";
         ResultSet rs = dbObj.searchDBRecord(sql);
         while (rs.next()) {
-
+            //System.out.println(dbObj.getString(rs,"name"));
             if (dbObj.getString(rs,"name").matches(RptTableShadowFieldConst.fieldName)) {
-
+                //System.out.println(dbObj.getString(rs,"name"));
                 continue;
             }
             ret.add(dbObj.getString(rs,"caption") + " |" + dbObj.getString(rs,"name"));

@@ -1,21 +1,25 @@
 package oscar.oscarBilling.ca.bc.pageUtil;
 
+import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
+
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
 import oscar.entities.WCB;
 import oscar.oscarBilling.ca.bc.data.BillingmasterDAO;
+import oscar.oscarDB.DBHandler;
+import oscar.util.SqlUtils;
 
 /*
  * Copyright (c) 2001-2002. Andromedia. All Rights Reserved. *
@@ -75,7 +79,7 @@ public final class WCBAction extends Action {
   BillingmasterDAO billingmasterDAO = null;
   
   public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request,HttpServletResponse response)throws Exception, ServletException {
-      MiscUtils.getLogger().debug("In WCBAction Jackson");
+      System.out.println("In WCBAction Jackson");
       
        WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getSession().getServletContext());
      billingmasterDAO = (BillingmasterDAO) ctx.getBean("BillingmasterDAO");
@@ -135,18 +139,21 @@ public final class WCBAction extends Action {
     // WCB wcb = new WCB(); 
       
    // BeanUtils.copyProperties(wcb,frm);  
-
-
+    
+  // System.out.println("FRM "+frm);
+   //System.out.println("WCB "+wcb);
+   
+    
    // billingmasterDAO.save(wcb);
 
     
     
-    MiscUtils.getLogger().debug("WOULD BE A GOOD TIME TO SAVE---  i still get called WCB ACTION");  
+    System.out.println("WOULD BE A GOOD TIME TO SAVE---  i still get called WCB ACTION");  
       
-//    
+//    DBHandler db = null;
 //    try {
-//      
-//      DBHandler.RunSQL(frm.SQL("0", "0"));
+//      db = new DBHandler(DBHandler.OSCAR_DATA);
+//      db.RunSQL(frm.SQL("0", "0"));
 //      List idList = SqlUtils.getQueryResultsList("SELECT max(ID) from wcb");
 //      if(idList!=null){
 //        String[] id = (String[])idList.get(0);
@@ -155,14 +162,14 @@ public final class WCBAction extends Action {
 //
 //    }
 //    catch (SQLException ex) {
-//MiscUtils.getLogger().error("Error", ex);
+//      ex.printStackTrace();
 //    }
 //    finally{
 //      if(db!=null){
 //        try {
 //        }
 //        catch (SQLException ex1) {
-//MiscUtils.getLogger().error("Error", ex1);
+//          ex1.printStackTrace();
 //        }
 //      }
 //    }

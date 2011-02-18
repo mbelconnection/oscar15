@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -31,8 +31,7 @@ if(session.getAttribute("user") == null) response.sendRedirect("../../logout.jsp
 <%@ page contentType="text/xml"%>
 <%@ page
 	import="java.util.*, java.sql.*,  org.w3c.dom.*, oscar.util.*,java.io.*"%>
-
-<%@page import="org.oscarehr.util.MiscUtils"%><jsp:useBean id="studyMapping" class="java.util.Properties" scope="page" />
+<jsp:useBean id="studyMapping" class="java.util.Properties" scope="page" />
 <jsp:useBean id="studyBean" class="oscar.AppointmentMainBean"
 	scope="page" />
 <%@ taglib uri="/WEB-INF/oscarProperties-tag.tld" prefix="oscarProp"%>
@@ -57,6 +56,9 @@ String [][] dbQueries=new String[][] {
 };
 studyBean.doConfigure(dbQueries);
 %>
+
+
+<% response.setHeader("Cache-Control","no-cache");%>
 <%
 String actorTicket = null;
 String actor = "clinic@citizenhealth.ca";
@@ -91,9 +93,7 @@ if(connected){
 	//read the mapping file
     try {
       studyMapping.load(new FileInputStream("../webapps/"+ oscarVariables.getProperty("project_home") +"/form/study/formdiabete2pingmapping.txt")); //change to speciallll name
-    } catch(Exception e) {
-    	MiscUtils.getLogger().error("*** No Mapping File ***", e); 
-    	}
+    } catch(Exception e) {System.out.println("*** No Mapping File ***"); }
 
 	//take data from demographic
     ResultSet rsdemo = studyBean.queryResults(demoNo, "search_demographic");
@@ -140,6 +140,9 @@ if(connected){
 	}
 
 
+    studyBean.closePstmtConn();
+
+
 
 	String [] elementName1 = {"fpVisit", "bloodPressure", "hbA1c", "glucose", "smoking", "exercise", "weight", "medsACE", "medsASA","lipids", "albuminuria", "footCheck", "eyeCheck"} ;
 	String nodeName = "DMRecord";
@@ -180,7 +183,10 @@ if(connected){
 	out.clear();
     out.flush();
 	out.println(UtilXML.toXML(doc, dtdFileName));
+	//out.println("The record was sent to PING server.<br><p><input type='button' name='but' onclick='window.close()' value='Close'>");
+    //System.out.println(UtilXML.toXML(doc));
 
+//	ping.sendCddm(actorTicket, patientPingId,cddmType);
         try{                                        
             ping.sendCddm(actorTicket, patientPingId,cddmType);                                        
         }catch(Exception sendCon){

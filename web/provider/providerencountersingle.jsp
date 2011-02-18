@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -32,6 +32,8 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Single Encounter</title>
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 <script LANGUAGE="JavaScript">
 <!--
 function start(){
@@ -82,7 +84,7 @@ function start(){
 %> <a href=#
 			onClick="popupPage(600,800, '<%=st.nextToken("<").substring(1)%>')">
 		<%=temp%></a> <%
-     st.nextToken(">");
+     st.nextToken(">"); //System.out.println(st.nextToken(">"));
    }
 %>
 		</td>

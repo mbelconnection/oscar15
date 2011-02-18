@@ -37,6 +37,7 @@ import java.util.TimerTask;
 import javax.xml.ws.WebServiceException;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.oscarehr.PMmodule.dao.AdmissionDao;
 import org.oscarehr.PMmodule.dao.ProgramDao;
@@ -89,23 +90,17 @@ import org.oscarehr.casemgmt.model.Issue;
 import org.oscarehr.common.dao.CaseManagementIssueNotesDao;
 import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.dao.DrugDao;
-import org.oscarehr.common.dao.EFormDataDao;
-import org.oscarehr.common.dao.EFormValueDao;
 import org.oscarehr.common.dao.FacilityDao;
-import org.oscarehr.common.dao.GroupNoteDao;
 import org.oscarehr.common.dao.IntegratorConsentDao;
 import org.oscarehr.common.dao.PreventionDao;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.Drug;
-import org.oscarehr.common.model.EFormData;
-import org.oscarehr.common.model.EFormValue;
 import org.oscarehr.common.model.Facility;
-import org.oscarehr.common.model.GroupNoteLink;
 import org.oscarehr.common.model.IntegratorConsent;
-import org.oscarehr.common.model.OscarAppointment;
 import org.oscarehr.common.model.Prevention;
 import org.oscarehr.common.model.Provider;
 import org.oscarehr.common.model.IntegratorConsent.ConsentStatus;
+import org.oscarehr.common.model.OscarAppointment;
 import org.oscarehr.dx.dao.DxResearchDAO;
 import org.oscarehr.dx.model.DxResearch;
 import org.oscarehr.util.DbConnectionFilter;
@@ -116,6 +111,9 @@ import org.oscarehr.util.SpringUtils;
 
 import oscar.OscarProperties;
 import oscar.appt.AppointmentDao;
+import oscar.eform.dao.EformDao;
+import oscar.eform.model.EformData;
+import oscar.eform.model.EformValue;
 import oscar.facility.IntegratorControlDao;
 import oscar.oscarBilling.ca.on.dao.BillingOnItemDao;
 import oscar.oscarBilling.ca.on.model.BillingOnCHeader1;
@@ -131,11 +129,12 @@ import oscar.oscarEncounter.oscarMeasurements.model.Measurementtype;
 
 public class CaisiIntegratorUpdateTask extends TimerTask {
 
-	private static final Logger logger = MiscUtils.getLogger();
+	private static final Logger logger = LogManager.getLogger(CaisiIntegratorUpdateTask.class);
 
 	private static final String INTEGRATOR_UPDATE_PERIOD_PROPERTIES_KEY = "INTEGRATOR_UPDATE_PERIOD";
 
 	private static Timer timer = new Timer("CaisiIntegratorUpdateTask Timer", true);
+	private static TimerTask timerTask = null;
 
 	private FacilityDao facilityDao = (FacilityDao) SpringUtils.getBean("facilityDao");
 	private DemographicDao demographicDao = (DemographicDao) SpringUtils.getBean("demographicDao");
@@ -150,20 +149,16 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 	private PreventionDao preventionDao = (PreventionDao) SpringUtils.getBean("preventionDao");
 	private DrugDao drugDao = (DrugDao) SpringUtils.getBean("drugDao");
 	private SecUserRoleDao secUserRoleDao = (SecUserRoleDao) SpringUtils.getBean("secUserRoleDao");
-	private AdmissionDao admissionDao = (AdmissionDao) SpringUtils.getBean("admissionDao");
-    private AppointmentDao appointmentDao = (AppointmentDao) SpringUtils.getBean("appointmentDao");
-    private IntegratorControlDao integratorControlDao = (IntegratorControlDao) SpringUtils.getBean("integratorControlDao");
-    private MeasurementsHibernateDao measurementsDao = (MeasurementsHibernateDao) SpringUtils.getBean("measurementsDao");
-    private MeasurementsExtDao measurementsExtDao = (MeasurementsExtDao) SpringUtils.getBean("measurementsExtDao");
-    private MeasurementTypeDao measurementTypeDao = (MeasurementTypeDao) SpringUtils.getBean("measurementTypeDao");
-    private MeasurementMapDao measurementMapDao = (MeasurementMapDao) SpringUtils.getBean("measurementMapDao");
-    private DxResearchDAO dxresearchDao = (DxResearchDAO) SpringUtils.getBean("dxResearchDao");
-    private BillingOnItemDao billingOnItemDao = (BillingOnItemDao) SpringUtils.getBean("billingOnItemDao");
-    private EFormValueDao eFormValueDao = (EFormValueDao) SpringUtils.getBean("EFormValueDao");
-    private EFormDataDao eFormDataDao = (EFormDataDao) SpringUtils.getBean("EFormDataDao");
-    private GroupNoteDao groupNoteDao = (GroupNoteDao)SpringUtils.getBean("groupNoteDao");
-    	
-	private static TimerTask timerTask = null;
+	private AdmissionDao admissionDao= (AdmissionDao) SpringUtils.getBean("admissionDao");
+	private AppointmentDao appointmentDao = (AppointmentDao) SpringUtils.getBean("appointmentDao");
+	private IntegratorControlDao integratorControlDao = (IntegratorControlDao) SpringUtils.getBean("integratorControlDao");
+	private MeasurementsHibernateDao measurementsDao = (MeasurementsHibernateDao) SpringUtils.getBean("measurementsDao");
+	private MeasurementsExtDao measurementsExtDao = (MeasurementsExtDao) SpringUtils.getBean("measurementsExtDao");
+	private MeasurementTypeDao measurementTypeDao = (MeasurementTypeDao) SpringUtils.getBean("measurementTypeDao");
+	private MeasurementMapDao measurementMapDao = (MeasurementMapDao) SpringUtils.getBean("measurementMapDao");
+	private DxResearchDAO dxresearchDao = (DxResearchDAO) SpringUtils.getBean("dxResearchDao");
+	private BillingOnItemDao billingOnItemDao = (BillingOnItemDao) SpringUtils.getBean("billingOnItemDao");
+	private EformDao eformDao = (EformDao) SpringUtils.getBean("eformDao");
 
 	static {
 		// ensure cxf uses log4j
@@ -176,7 +171,7 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 			String periodStr = null;
 			try {
 				periodStr = (String) OscarProperties.getInstance().get(INTEGRATOR_UPDATE_PERIOD_PROPERTIES_KEY);
-                                period = Long.parseLong(periodStr);
+				period = Long.parseLong(periodStr);
 			} catch (Exception e) {
 				logger.error("CaisiIntegratorUpdateTask not scheduled, period is missing or invalid properties file : " + INTEGRATOR_UPDATE_PERIOD_PROPERTIES_KEY + '=' + periodStr, e);
 				return;
@@ -219,13 +214,13 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 	}
 
 	public void pushAllFacilities() throws ShutdownException {
-		List<Facility> facilities = facilityDao.findAll(true);
+		List<Facility> facilities = facilityDao.findAll(null);
 
 		for (Facility facility : facilities) {
 			MiscUtils.checkShutdownSignaled();
 
 			try {
-				if (facility.isIntegratorEnabled()) {
+				if (!facility.isDisabled() && facility.isIntegratorEnabled()) {
 					pushAllDataForOneFacility(facility);
 				}
 			} catch (WebServiceException e) {
@@ -242,7 +237,7 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 	}
 
 	private void pushAllDataForOneFacility(Facility facility) throws IOException, IllegalAccessException, InvocationTargetException, ShutdownException {
-		logger.info("Start pushing data for facility : " + facility.getId() + " : " + facility.getName());
+		logger.info("Pushing data for facility : " + facility.getId() + " : " + facility.getName());
 
 		// set working facility
 		LoggedInInfo.loggedInInfo.get().currentFacility=facility;
@@ -278,8 +273,6 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 		
 		// all things updated successfully
 		service.updateMyFacilityLastUpdateDate(currentUpdateDate);
-
-		logger.info("Finished pushing data for facility : " + facility.getId() + " : " + facility.getName());
 	}
 
 	private void pushFacility(Date lastDataUpdated) throws MalformedURLException, IllegalAccessException, InvocationTargetException {
@@ -371,8 +364,8 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 			List<SecUserRole> roles=secUserRoleDao.getUserRoles(providerId);
 			for (SecUserRole role : roles)
 			{
-				Role integratorRole=IntegratorRoleUtils.getIntegratorRole(role.getRoleName());
-				if (integratorRole!=null) providerTransfer.getRoles().add(integratorRole);
+                                Role integratorRole=IntegratorRoleUtils.getIntegratorRole(role.getRoleName());
+                                if (integratorRole!=null) providerTransfer.getRoles().add(integratorRole);
 			}
 			
 			// add to list
@@ -429,7 +422,6 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 		// set demographic info
 		Demographic demographic = demographicDao.getDemographicById(demographicId);
 
-                //The following line copy 6 fields: FirstName,LastName,City,Province,Hin,Sin
 		BeanUtils.copyProperties(demographicTransfer, demographic);
 
 		demographicTransfer.setCaisiDemographicId(demographic.getDemographicNo());
@@ -437,7 +429,7 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 
 		demographicTransfer.setHinType(demographic.getHcType());
 		demographicTransfer.setHinVersion(demographic.getVer());
-		demographicTransfer.setCaisiProviderId(demographic.getProviderNo());
+                demographicTransfer.setCaisiProviderId(demographic.getProviderNo());
 		
 		try
 		{
@@ -507,7 +499,6 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 
 			BeanUtils.copyProperties(cachedDemographicIssue, caseManagementIssue);
 			cachedDemographicIssue.setIssueDescription(issue.getDescription());
-			cachedDemographicIssue.setIssueRole(IntegratorRoleUtils.getIntegratorRole(issue.getRole()));
 
 			issues.add(cachedDemographicIssue);
 		}
@@ -549,7 +540,7 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 
 //		if (cachedAdmissions.size()>0) demographicService.setCachedAdmissions(cachedAdmissions);
 		writeToIntegrator(cachedAdmissions, demographicService, CachedAdmission.class.getName());
-	}
+    }
 
 	private boolean isProgramIdInProgramList(List<Program> programList, int programId) {
 		for (Program p : programList) {
@@ -631,31 +622,8 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 				notesToSend.add(noteToSend);
 			} catch (NumberFormatException e) {
 	            logger.error("Unexpected error. ProgramNo="+localNote.getProgram_no(), e);
-		            }
+            }
 		}
-
-		//add group notes as well.
-		logger.info("checking for group notes for " + demographicId);
-		List<GroupNoteLink> noteLinks = groupNoteDao.findLinksByDemographic(demographicId);
-		logger.info("found " + noteLinks.size() + " group notes for " + demographicId);
-		for(GroupNoteLink noteLink:noteLinks) {
-			int orginalNoteId = noteLink.getNoteId();
-			CaseManagementNote localNote = caseManagementNoteDAO.getNote(Long.valueOf(orginalNoteId));
-			localNote.setDemographic_no(String.valueOf(demographicId));
-			
-			try {
-				// if it's locked or if it's not in this facility ignore it.
-				if (localNote.isLocked() || !programIds.contains(Integer.parseInt(localNote.getProgram_no()))) continue;
-	
-				CachedDemographicNote noteToSend=makeRemoteNote(localNote, issueType);
-				notesToSend.add(noteToSend);
-				logger.info("adding group note to send");
-			} catch (NumberFormatException e) {
-	            logger.error("Unexpected error. ProgramNo="+localNote.getProgram_no(), e);
-            }	
-			
-		}
-		
 		
 //		if (notesToSend.size()>0) service.setCachedDemographicNotes(notesToSend);
 		writeToIntegrator(notesToSend, service, CachedDemographicNote.class.getName());
@@ -666,7 +634,7 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 		CachedDemographicNote note=new CachedDemographicNote();
 		
 		CachedDemographicNoteCompositePk pk=new CachedDemographicNoteCompositePk();
-		pk.setUuid(localNote.getUuid() + ":" + localNote.getDemographic_no());
+		pk.setUuid(localNote.getUuid());
 		note.setCachedDemographicNoteCompositePk(pk);
 		
 		note.setCaisiDemographicId(Integer.parseInt(localNote.getDemographic_no()));
@@ -740,7 +708,7 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 				cachedDemographicDrug.setRepeats(drug.getRepeat());
 				cachedDemographicDrug.setRoute(drug.getRoute());
 				cachedDemographicDrug.setRxDate(drug.getRxDate());
-                                if (drug.getScriptNo()!=null) cachedDemographicDrug.setScriptNo(drug.getScriptNo());
+				if (drug.getScriptNo()!=null) cachedDemographicDrug.setScriptNo(drug.getScriptNo());
 				cachedDemographicDrug.setSpecial(drug.getSpecial());
 				cachedDemographicDrug.setTakeMax(drug.getTakeMax());
 				cachedDemographicDrug.setTakeMin(drug.getTakeMin());
@@ -859,48 +827,48 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
         private void pushEforms(Facility facility, DemographicWs demographicService, Integer demographicId) throws ShutdownException {
             logger.debug("pushing eforms facilityId:" + facility.getId() + ", demographicId:" + demographicId);
 
-            List<EFormData> eformDatas = eFormDataDao.findByDemographicId(demographicId);
+            List<EformData> eformDatas = eformDao.getEformDatabyDemoNo(demographicId);
             if (eformDatas.size()==0) return;
 
             ArrayList<CachedEformData> cachedEformDatas = new ArrayList<CachedEformData>();
-            for (EFormData eformData : eformDatas) {
+            for (EformData eformData : eformDatas) {
                 MiscUtils.checkShutdownSignaled();
 
                 CachedEformData cachedEformData = new CachedEformData();
                 FacilityIdIntegerCompositePk facilityIdIntegerCompositePk = new FacilityIdIntegerCompositePk();
-                facilityIdIntegerCompositePk.setCaisiItemId(eformData.getId());
+                facilityIdIntegerCompositePk.setCaisiItemId(eformData.getFdid());
                 cachedEformData.setFacilityIdIntegerCompositePk(facilityIdIntegerCompositePk);
 
                 cachedEformData.setCaisiDemographicId(demographicId);
-                cachedEformData.setFormDate(eformData.getFormDate());
-                cachedEformData.setFormTime(eformData.getFormTime());
-                cachedEformData.setFormId(eformData.getFormId());
-                cachedEformData.setFormName(eformData.getFormName());
-                cachedEformData.setFormData(eformData.getFormData());
+                cachedEformData.setFormDate(eformData.getForm_date());
+                cachedEformData.setFormTime(eformData.getForm_time());
+                cachedEformData.setFormId(eformData.getFid());
+                cachedEformData.setFormName(eformData.getForm_name());
+                cachedEformData.setFormData(eformData.getForm_data());
                 cachedEformData.setSubject(eformData.getSubject());
-                cachedEformData.setStatus(eformData.isCurrent());
-                cachedEformData.setFormProvider(eformData.getProviderNo());
+                cachedEformData.setStatus(eformData.getStatus());
+                cachedEformData.setFormProvider(eformData.getForm_provider());
 
                 cachedEformDatas.add(cachedEformData);
             }
 
-            List<EFormValue> eFormValues = eFormValueDao.findByDemographicId(demographicId);
-            if (eFormValues.size()==0) return;
+            List<EformValue> eformValues = eformDao.getEformValuebyDemoNo(demographicId);
+            if (eformValues.size()==0) return;
 
             ArrayList<CachedEformValue> cachedEformValues = new ArrayList<CachedEformValue>();
-            for (EFormValue eFormValue : eFormValues) {
+            for (EformValue eformValue : eformValues) {
                 MiscUtils.checkShutdownSignaled();
 
                 CachedEformValue cachedEformValue = new CachedEformValue();
                 FacilityIdIntegerCompositePk facilityIdIntegerCompositePk = new FacilityIdIntegerCompositePk();
-                facilityIdIntegerCompositePk.setCaisiItemId(eFormValue.getId());
+                facilityIdIntegerCompositePk.setCaisiItemId(eformValue.getId());
                 cachedEformValue.setFacilityIdIntegerCompositePk(facilityIdIntegerCompositePk);
 
                 cachedEformValue.setCaisiDemographicId(demographicId);
-                cachedEformValue.setFormId(eFormValue.getFormId());
-                cachedEformValue.setFormDataId(eFormValue.getFormDataId());
-                cachedEformValue.setVarName(eFormValue.getVarName());
-                cachedEformValue.setVarValue(eFormValue.getVarValue());
+                cachedEformValue.setFormId(eformValue.getFid());
+                cachedEformValue.setFormDataId(eformValue.getFdid());
+                cachedEformValue.setVarName(eformValue.getVar_name());
+                cachedEformValue.setVarValue(eformValue.getVar_value());
 
                 cachedEformValues.add(cachedEformValue);
             }
@@ -943,7 +911,6 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 
                 List<MeasurementsExt> measurementExts = measurementsExtDao.getMeasurementsExtByMeasurementId(measurement.getId());
                 for (MeasurementsExt measurementExt : measurementExts) {
-                    MiscUtils.checkShutdownSignaled();
                     CachedMeasurementExt cachedMeasurementExt = new CachedMeasurementExt();
                     FacilityIdIntegerCompositePk fidIntegerCompositePk = new FacilityIdIntegerCompositePk();
                     fidIntegerCompositePk.setCaisiItemId(measurementExt.getId());
@@ -958,7 +925,6 @@ public class CaisiIntegratorUpdateTask extends TimerTask {
 
                 List<Measurementtype> measurementTypes = measurementTypeDao.getByType(measurement.getType());
                 for (Measurementtype measurementType : measurementTypes) {
-                    MiscUtils.checkShutdownSignaled();
                     if (inList(measurementType, cachedMeasurementTypes)) continue;
 
                     CachedMeasurementType cachedMeasurementType = new CachedMeasurementType();

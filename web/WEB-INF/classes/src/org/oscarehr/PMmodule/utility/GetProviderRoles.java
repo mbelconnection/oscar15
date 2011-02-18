@@ -27,12 +27,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oscarehr.PMmodule.model.ProgramProvider;
 import org.oscarehr.PMmodule.service.ProgramManager;
 import org.oscarehr.PMmodule.service.ProviderManager;
 import org.oscarehr.common.model.Provider;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -40,7 +40,7 @@ import com.quatro.model.security.Secrole;
 
 public class GetProviderRoles {
 	
-		private static  final Logger log = MiscUtils.getLogger();
+		protected final Log log = LogFactory.getLog(getClass());
 		
 	    protected ApplicationContext ctx = null;
 	    
@@ -60,10 +60,12 @@ public class GetProviderRoles {
 	    		Set roles = getRoles(provider.getProviderNo());
 	    		
 	    		if(roles.size() > 1) {
+	    			System.out.println(provider.getFormattedName());
 	    			continue;
 	    		}
+	    		//System.out.print(provider.getProviderNo() + ",");
 	    		int x=0;
-	    		StringBuilder buf = new StringBuilder();
+	    		StringBuffer buf = new StringBuffer();
 	    		for(Iterator iter2=roles.iterator();iter2.hasNext();) {
 	    			String roleName= (String)iter2.next();
 	    			if(x!=0) {
@@ -72,7 +74,18 @@ public class GetProviderRoles {
 	    			buf.append(roleName);
 	    			x++;
 	    		}
-	    		buf.append("\n");	    		
+	    		buf.append("\n");
+	    		
+	    		/*
+	    		if(buf.toString().indexOf(',') != -1) {
+	    			System.out.print(provider.getFormattedName() + "," + buf.toString());
+		    		
+	    		}
+	    		
+	    		if(buf.toString().equals("")) {
+	    			System.out.print(provider.getFormattedName());
+	    		}
+	    		*/
 	    	}
 	    }
 	    

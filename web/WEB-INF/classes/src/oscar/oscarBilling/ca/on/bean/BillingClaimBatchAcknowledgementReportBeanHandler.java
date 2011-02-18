@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -29,8 +29,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Vector;
-
-import org.oscarehr.util.MiscUtils;
 
 public class BillingClaimBatchAcknowledgementReportBeanHandler {
     
@@ -85,7 +83,7 @@ public class BillingClaimBatchAcknowledgementReportBeanHandler {
             }
         }
         catch (IOException ioe) {
-            MiscUtils.getLogger().error("Error", ioe);         
+            ioe.printStackTrace();         
         }
         catch (StringIndexOutOfBoundsException ioe) {
             verdict = false;   

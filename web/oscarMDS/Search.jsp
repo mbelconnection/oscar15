@@ -1,3 +1,4 @@
+<%@ page language="java"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
@@ -28,7 +29,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -40,8 +41,7 @@
 </head>
 
 <body>
-<form method="post" action="../dms/inboxManage.do">
-    <input type="hidden" name="method" value="prepareForIndexPage"/>
+<form method="post" action="Index.jsp">
 <table width="100%" height="100%" border="0">
 	<tr class="MainTableTopRow">
 		<td class="MainTableTopRow" colspan="9" align="left">

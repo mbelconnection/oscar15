@@ -28,7 +28,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -38,11 +39,10 @@ import org.apache.struts.action.DynaActionForm;
 import org.apache.struts.actions.DispatchAction;
 import org.caisi.model.IssueAdmin;
 import org.caisi.service.IssueAdminManager;
-import org.oscarehr.util.MiscUtils;
 
 // use your IDE to handle imports
 public class IssueAdminAction extends DispatchAction {
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(IssueAdminAction.class);
     private IssueAdminManager mgr = null;
    // private CaisiRoleManager caisiRoleMgr = null;
 

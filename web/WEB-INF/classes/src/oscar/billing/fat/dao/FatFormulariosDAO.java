@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -27,8 +27,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.oscarehr.util.MiscUtils;
+import java.util.Properties;
 
 import oscar.billing.fat.model.FatFormularioProcedimento;
 import oscar.billing.fat.model.FatFormularios;
@@ -37,19 +36,22 @@ import oscar.util.DAO;
 
 
 public class FatFormulariosDAO extends DAO {
+    public FatFormulariosDAO(Properties pvar) throws SQLException {
+        super(pvar);
+    }
 
 	public FatFormularios retrieve(String id) throws SQLException {
 		FatFormularios form = new FatFormularios();
 		String sql = "select co_formulario, ds_formulario from fat_formularios where st_ativo = 'S' and co_formulario = " + id;
 
-		
+		DBHandler db = getDb();
 
 		try {
-		ResultSet rs = DBHandler.GetSQL(sql);
+		ResultSet rs = db.GetSQL(sql);
 
 		if (rs.next()) {
 			form.setCoFormulario(rs.getInt(1));
-			form.setDsFormulario(oscar.Misc.getString(rs, 2));
+			form.setDsFormulario(db.getString(rs,2));
 		}
 		} finally {
 		}
@@ -60,20 +62,20 @@ public class FatFormulariosDAO extends DAO {
     public List list() throws SQLException {
         ArrayList list = new ArrayList();
         String sql = "select co_formulario, ds_formulario from fat_formularios where st_ativo = 'S'";
-		MiscUtils.getLogger().debug("sql = " + sql);
+		System.out.println("sql = " + sql);
 
-        
+        DBHandler db = getDb();
 
         try {
-        ResultSet rs = DBHandler.GetSQL(sql);
-        MiscUtils.getLogger().debug("executou sql");
+        ResultSet rs = db.GetSQL(sql);
+        System.out.println("executou sql");
 
         while (rs.next()) {
             FatFormularios form = new FatFormularios();
             form.setCoFormulario(rs.getInt(1));
-            form.setDsFormulario(oscar.Misc.getString(rs, 2));
+            form.setDsFormulario(db.getString(rs,2));
             list.add(form);
-			MiscUtils.getLogger().debug("adicionou reg");
+			System.out.println("adicionou reg");
         }
         } finally {
         }
@@ -87,15 +89,15 @@ public class FatFormulariosDAO extends DAO {
             "select a.co_procedimento, b.ds_procedimento from rl_formulario_procedimento a, cad_procedimentos b where a.co_procedimento = b.co_procedimento and co_formulario = + " +
             id;
 
-        
+        DBHandler db = getDb();
 
         try {
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
 
             while (rs.next()) {
                 FatFormularioProcedimento formProc = new FatFormularioProcedimento();
                 formProc.getCadProcedimentos().setCoProcedimento(rs.getInt(1));
-                formProc.getCadProcedimentos().setDsProcedimento(oscar.Misc.getString(rs, 2));
+                formProc.getCadProcedimentos().setDsProcedimento(db.getString(rs,2));
 				formProc.getFatFormularios().setCoFormulario(Integer.parseInt(
 						id));
                 list.add(formProc);
@@ -113,15 +115,15 @@ public class FatFormulariosDAO extends DAO {
             "select a.co_procedimento, b.ds_procedimento, a.co_formulario from rl_formulario_procedimento a, cad_procedimentos b where a.co_procedimento = b.co_procedimento and a.co_procedimento in (" +
             getStrIn(ids) + ")";
 
-        
+        DBHandler db = getDb();
 
         try {
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
 
             while (rs.next()) {
                 FatFormularioProcedimento formProc = new FatFormularioProcedimento();
                 formProc.getCadProcedimentos().setCoProcedimento(rs.getInt(1));
-                formProc.getCadProcedimentos().setDsProcedimento(oscar.Misc.getString(rs, 2));
+                formProc.getCadProcedimentos().setDsProcedimento(db.getString(rs,2));
                 formProc.getFatFormularios().setCoFormulario(rs.getInt(3));
                 list.add(formProc);
             }

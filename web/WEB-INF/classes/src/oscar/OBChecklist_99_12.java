@@ -8,7 +8,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.oscarehr.util.MiscUtils;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -35,11 +34,11 @@ public class OBChecklist_99_12 {
 			return ((OBChecklistHandler_99_12) contentHandler).getResults();
 
 		} catch (IOException e) {
-			MiscUtils.getLogger().debug("Error reading URI: " + e.getMessage());
+			System.out.println("Error reading URI: " + e.getMessage());
 		} catch (SAXException e) {
-			MiscUtils.getLogger().debug("Error in parsing: " + e.getMessage());
+			System.out.println("Error in parsing: " + e.getMessage());
 		} catch (ParserConfigurationException e) {
-			MiscUtils.getLogger().debug("Error configuring parser: " + e.getMessage());
+			System.out.println("Error configuring parser: " + e.getMessage());
 		}
 
 		return "Error: unable to parse the checklist xml file";

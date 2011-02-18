@@ -35,8 +35,7 @@
  * Ontario, Canada
  */
 -->
-
-<%@page import="org.apache.commons.lang.StringUtils"%><html:html locale="true">
+<html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <link rel="stylesheet" href="../web.css" />
@@ -79,7 +78,7 @@
 	  //param[0]=Integer.parseIntdemographicaddarecord((new GregorianCalendar()).get(Calendar.MILLISECOND) ); //int
 	  //temp variables for test/set null dates
 	  String year, month, day;
-      DBPreparedHandlerParam [] param =new DBPreparedHandlerParam[34];
+      DBPreparedHandlerParam [] param =new DBPreparedHandlerParam[33];
 	  param[0]=new DBPreparedHandlerParam(request.getParameter("last_name"));
 	  param[1]=new DBPreparedHandlerParam(request.getParameter("first_name"));
 	  param[2]=new DBPreparedHandlerParam(request.getParameter("address"));
@@ -105,45 +104,71 @@
 	  param[19]=new DBPreparedHandlerParam(request.getParameter("staff"));
 	  param[20]=new DBPreparedHandlerParam(request.getParameter("sex"));
 
-		year = StringUtils.trimToNull(request.getParameter("end_date_year"));
-		month = StringUtils.trimToNull(request.getParameter("end_date_month"));
-		day = StringUtils.trimToNull(request.getParameter("end_date_date"));
-		if (year!=null && month!=null && day!=null)
-		{
-	  		param[21] = new DBPreparedHandlerParam(MyDateFormat.getSysDate(year + "-" + month + "-" + day));
-		}
-		else
-		{
-			param[21]=null;
-		}
+	  // If null, set year, month and date
+	  if (request.getParameter("end_date_year").equals("")) {
+	    year = "0001";
+	  } else {
+	    year = request.getParameter("end_date_year");
+	  }
 
-	    year = StringUtils.trimToNull(request.getParameter("eff_date_year"));
-	    month = StringUtils.trimToNull(request.getParameter("eff_date_month"));
-	    day = StringUtils.trimToNull(request.getParameter("eff_date_date"));
-		if (year!=null && month!=null && day!=null)
-		{
-			param[22] =  new DBPreparedHandlerParam(MyDateFormat.getSysDate(year + "-" + month + "-" + day));
-		}
-		else
-		{
-			param[22]=null;
-		}
+	  if (request.getParameter("end_date_month").equals("")) {
+	    month = "01";
+	  } else {
+	    month = request.getParameter("end_date_month");
+	  }
+
+	  if (request.getParameter("end_date_date").equals("")) {
+	    day = "01";
+	  } else {
+	    day = request.getParameter("end_date_date");
+	  }
+
+	  param[21] = new DBPreparedHandlerParam(MyDateFormat.getSysDate(year + "-" + month + "-" + day));
+
+	  // If null, set year, month and date
+	  if (request.getParameter("eff_date_year").equals("")) {
+	    year = "0001";
+	  } else {
+	    year = request.getParameter("eff_date_year");
+	  }
+
+	  if (request.getParameter("eff_date_month").equals("")) {
+	    month = "01";
+	  } else {
+	    month = request.getParameter("eff_date_month");
+	  }
+
+	  if (request.getParameter("eff_date_date").equals("")) {
+	    day = "01";
+	  } else {
+	    day = request.getParameter("eff_date_date");
+	  }
+
+	  param[22] =  new DBPreparedHandlerParam(MyDateFormat.getSysDate(year + "-" + month + "-" + day));
 
 	  param[23]=new DBPreparedHandlerParam(request.getParameter("pcn_indicator"));
 	  param[24]=new DBPreparedHandlerParam(request.getParameter("hc_type"));
 
-	    year = StringUtils.trimToNull(request.getParameter("hc_renew_date_year"));
-	    month = StringUtils.trimToNull(request.getParameter("hc_renew_date_month"));
-	    day = StringUtils.trimToNull(request.getParameter("hc_renew_date_date"));
-		if (year!=null && month!=null && day!=null)
-		{
-			param[25] =new DBPreparedHandlerParam(MyDateFormat.getSysDate( year + "-" + month + "-" + day));
-		}
-		else
-		{
-			param[25]=null;
-		}
+	  // If null, set year, month and date
+	  if (request.getParameter("hc_renew_date_year").equals("")) {
+	    year = "0001";
+	  } else {
+	    year = request.getParameter("hc_renew_date_year");
+	  }
 
+	  if (request.getParameter("hc_renew_date_month").equals("")) {
+	    month = "01";
+	  } else {
+	    month = request.getParameter("hc_renew_date_month");
+	  }
+
+	  if (request.getParameter("hc_renew_date_date").equals("")) {
+	    day = "01";
+	  } else {
+	    day = request.getParameter("hc_renew_date_date");
+	  }
+
+	  param[25] =new DBPreparedHandlerParam(MyDateFormat.getSysDate( year + "-" + month + "-" + day));
 	  param[26] =new DBPreparedHandlerParam("<rdohip>" + request.getParameter("r_doctor_ohip") + "</rdohip>" + "<rd>" + request.getParameter("r_doctor") + "</rd>"+ (request.getParameter("family_doc")!=null? ("<family_doc>" + request.getParameter("family_doc") + "</family_doc>") : ""));
           param[27] =new DBPreparedHandlerParam(request.getParameter("countryOfOrigin"));
           param[28] =new DBPreparedHandlerParam(request.getParameter("newsletter"));     
@@ -151,7 +176,6 @@
 	  param[30] =new DBPreparedHandlerParam(request.getParameter("title"));
 	  param[31] =new DBPreparedHandlerParam(request.getParameter("official_lang"));
 	  param[32] =new DBPreparedHandlerParam(request.getParameter("spoken_lang"));
-          param[33] =new DBPreparedHandlerParam(curUser_no);
           
 	String[] paramName =new String[5];
 	  paramName[0]=param[0].getStringValue().trim(); //last name
@@ -159,6 +183,7 @@
 	  paramName[2]=param[10].getStringValue().trim(); // year of dob
 	  paramName[3]=param[11].getStringValue().trim(); // month of dob
 	  paramName[4]=param[12].getStringValue().trim(); // day of dob
+	  //System.out.println("from -------- :"+ param[0]+ ": next :"+param[1]);
     ResultSet rs = apptMainBean.queryResults(paramName, "search_lastfirstnamedob");
 
     if(rs.next()) {  %> ***<font color='red'><bean:message
@@ -190,6 +215,8 @@
 	key="global.btnBack" /></b></a> <% return;
 	    }
     }
+
+    // int rowsAffected = apptMainBean.queryExecuteUpdate(intparam, param, request.getParameter("dboperation"));
 
   int rowsAffected = apptMainBean.queryExecuteUpdate(param, request.getParameter("dboperation")); //add_record
   if (rowsAffected ==1) {
@@ -224,20 +251,7 @@
             caisiParam[0] = apptMainBean.getString(rs,"demographic_no");
             caisiParam[1] = progId;
             caisiParam[2] = request.getParameter("staff");
-
-    		String yearTmp = StringUtils.trimToNull(request.getParameter("date_joined_year"));
-    		String monthTmp = StringUtils.trimToNull(request.getParameter("date_joined_month"));
-    		String dayTmp = StringUtils.trimToNull(request.getParameter("date_joined_date"));
-    		if (yearTmp!=null && monthTmp!=null && dayTmp!=null)
-    		{
-    			caisiParam[3] = yearTmp+"-"+monthTmp+"-"+dayTmp;
-    		}
-    		else
-    		{
-    			GregorianCalendar cal=new GregorianCalendar();
-    			caisiParam[3]=""+cal.get(GregorianCalendar.YEAR)+'-'+(cal.get(GregorianCalendar.MONTH)+1)+'-'+cal.get(GregorianCalendar.DAY_OF_MONTH);
-    		}
-
+            caisiParam[3] = request.getParameter("date_joined_year")+"-"+request.getParameter("date_joined_month")+"-"+request.getParameter("date_joined_date");
             apptMainBean.queryExecuteUpdate(caisiParam, "add2caisi_admission");
         }
         
@@ -249,10 +263,12 @@
 	    param2[3]=request.getParameter("cust3");
 	    param2[4]=request.getParameter("cust4");
 	    param2[5]="<unotes>"+request.getParameter("content")+"</unotes>";
+	    //System.out.println("demographic_no" + param2[0] +param2[1]+param2[2]+param2[3]+param2[4]+param2[5] );
         rowsAffected = apptMainBean.queryExecuteUpdate(param2, "add_custrecord" ); //add_record
 
        dem = apptMainBean.getString(rs,"demographic_no");
        DemographicExt dExt = new DemographicExt();
+	   OtherIdManager oidManager = new OtherIdManager();
 	   
        String proNo = (String) session.getValue("user");
        dExt.addKey(proNo, dem, "hPhoneExt", request.getParameter("hPhoneExt"), "");
@@ -267,11 +283,12 @@
        dExt.addKey(proNo, dem, "given_consent", request.getParameter("given_consent"), "");
 
        //for the IBD clinic
-		OtherIdManager.saveIdDemographic(dem, "meditech_id", request.getParameter("meditech_id"));
+		oidManager.saveIdDemographic(dem, "meditech_id", request.getParameter("meditech_id"));
      
        // customized key
        if(oscarVariables.getProperty("demographicExt") != null) {
 	       String [] propDemoExt = oscarVariables.getProperty("demographicExt","").split("\\|");
+		   //System.out.println("propDemoExt:" + propDemoExt[0] );
 	       for(int k=0; k<propDemoExt.length; k++) {
 	           dExt.addKey(proNo,dem,propDemoExt[k],request.getParameter(propDemoExt[k].replace(' ','_')),"");
 	       }
@@ -293,6 +310,7 @@
                 ResultSet rsWL = apptMainBean.queryResults(paramWLPosition, "search_waitingListPosition");
 
                 if(rsWL.next()){
+                    System.out.println("max position: " + Integer.toString(rsWL.getInt("position")));
                     String[] paramWL = new String[6]; 
                     paramWL[0] = request.getParameter("list_id");
                     paramWL[1] = apptMainBean.getString(rs,"demographic_no");
@@ -343,6 +361,7 @@
 
 <%
   }
+  apptMainBean.closePstmtConn();
 %>
 <p></p>
 <%@ include file="footer.jsp"%></center>

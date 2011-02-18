@@ -6,7 +6,6 @@ import java.util.Hashtable;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
 
 public class BillingStatusData {
 	private static final Logger _logger = Logger.getLogger(BillingStatusData.class);
@@ -39,7 +38,7 @@ public class BillingStatusData {
 
 		String sql = "select * from billing_on_cheader1 where status = '" + StringEscapeUtils.escapeSql(statusType)
 				+ "' " + providerQuery + startDateQuery + endDateQuery + demoQuery;
-		MiscUtils.getLogger().debug("bill status query " + sql);
+		System.out.println("bill status query " + sql);
 		try {
 			BillingONDataHelp db = new BillingONDataHelp();
 			ResultSet rs = db.searchDBRecord(sql);

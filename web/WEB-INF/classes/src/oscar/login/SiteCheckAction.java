@@ -16,6 +16,9 @@ package oscar.login;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.PrintWriter;
+import java.util.List;
+import java.util.Properties;
+import com.quatro.model.security.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -26,22 +29,32 @@ import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessage;
+import org.apache.struts.action.ActionMessages;
+import org.apache.struts.actions.DispatchAction;
+
+import com.quatro.model.LookupCodeValue;
+import com.quatro.model.security.*;
+
+import org.oscarehr.common.dao.FacilityDao;
+import org.oscarehr.common.model.Facility;
+import org.oscarehr.common.model.Provider;
 import org.oscarehr.PMmodule.service.ProviderManager;
 import org.oscarehr.PMmodule.web.BaseAction;
-import org.oscarehr.common.model.Provider;
 import org.oscarehr.util.SpringUtils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import oscar.OscarProperties;
 import oscar.log.LogAction;
 import oscar.log.LogConst;
+import oscar.oscarDB.DBPreparedHandler;
 import oscar.util.UtilDateUtilities;
 
-import com.quatro.common.KeyConstants;
-import com.quatro.model.security.SecSiteValue;
-import com.quatro.model.security.Security;
 import com.quatro.service.LookupManager;
-import com.quatro.service.security.SecSiteManager;
+import com.quatro.service.security.*;
 import com.quatro.service.security.SecurityManager;
-import com.quatro.service.security.UserAccessManager;
+import com.quatro.common.KeyConstants;
 
 public final class SiteCheckAction extends BaseAction {
     private static final Logger _logger = Logger.getLogger(LoginAction.class);
@@ -110,8 +123,8 @@ public final class SiteCheckAction extends BaseAction {
             String where = "shelterSelection";
             // String userName, password, pin, propName;
             String userName = ssv.getUserName();
-            
-            
+            String password = String.valueOf(ssv.getPassword());
+            String pin = ssv.getPin();
             if (userName.equals("")) {
                 return "error:Login failed, please try again";
             }
@@ -124,7 +137,7 @@ public final class SiteCheckAction extends BaseAction {
 
             Security user = null;
             String message = "";
-            
+            ApplicationContext appContext = getAppContext();
             try {
         //        user = cl.auth(userName, password, pin, ip, appContext);
     	        String expired_days = "";

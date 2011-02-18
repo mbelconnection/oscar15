@@ -1,3 +1,8 @@
+-- MySQL dump 9.09
+--
+-- Host: localhost    Database: oscar_mcmaster
+-- ------------------------------------------------------
+-- Server version	4.0.16-standard
 
 --
 -- Table structure for table `FaxClientLog`
@@ -51,7 +56,6 @@ CREATE TABLE appointment (
   end_time time NOT NULL default '00:00:00',
   name varchar(50) default NULL,
   demographic_no int(10) default NULL,
-  program_id int default 0,
   notes varchar(80) default NULL,
   reason varchar(80) default NULL,
   location varchar(30) default NULL,
@@ -63,7 +67,6 @@ CREATE TABLE appointment (
   createdatetime datetime default NULL,
   updatedatetime datetime default NULL,
   creator varchar(50) default NULL,
-  lastupdateuser varchar(6) default NULL,
   remarks varchar(50) default NULL,
   PRIMARY KEY  (appointment_no),
   KEY appointment_date (appointment_date,start_time,demographic_no),
@@ -279,8 +282,6 @@ CREATE TABLE consultationRequests (
   concurrentProblems text,
   urgency char(2) default NULL,
   patientWillBook tinyint(1),
-  followUpDate date default NULL,
-  site_name varchar(255),
   PRIMARY KEY  (requestId)
 ) ;
 
@@ -408,7 +409,6 @@ CREATE TABLE demographic (
   hin varchar(20) default NULL,
   ver char(3) default NULL,
   roster_status varchar(20) default NULL,
-  roster_date date,
   patient_status varchar(20) default NULL,
   date_joined date default NULL,
   chart_no varchar(10) default NULL,
@@ -430,9 +430,6 @@ CREATE TABLE demographic (
 	sin varchar(15) default NULL, 
   country_of_origin char(4) default NULL,
   newsletter varchar(32) default '',
-  anonymous varchar(32),
-  lastUpdateUser varchar(6),
-  lastUpdateDate date,
   PRIMARY KEY  (demographic_no),
   KEY hin (hin),
   KEY name (last_name,first_name),
@@ -558,8 +555,6 @@ CREATE TABLE document (
   observationdate date default NULL,
   reviewer varchar(30) default '',
   reviewdatetime datetime default NULL,
-  number_of_pages int(6) not null default 0,
-  appointment_no int(11) default NULL,
   PRIMARY KEY  (document_no)
 ) ;
 
@@ -688,7 +683,6 @@ CREATE TABLE eform (
   status tinyint(1) NOT NULL default '1',
   form_html mediumtext,
   patient_independent boolean,
-  roleType varchar(50) default NULL,
   PRIMARY KEY  (fid),
   UNIQUE KEY id (fid)
 ) ;
@@ -708,8 +702,7 @@ CREATE TABLE eform_data (
   form_time time default NULL,
   form_provider varchar(255) default NULL,
   form_data mediumtext,
-  patient_independent tinyint(1) not null,
-  roleType varchar(50) default NULL,
+  patient_independent boolean,
   PRIMARY KEY  (fdid),
   UNIQUE KEY id (fdid),
   KEY `idx_eform_data_demographic_no` (`demographic_no`),
@@ -721,6 +714,43 @@ CREATE TABLE eform_data (
   KEY `idx_eform_data_form_provider` (`form_provider`)
 ) ;
 
+--
+-- Table structure for table `eforms`
+--
+
+CREATE TABLE eforms (
+  fid int(8) NOT NULL auto_increment,
+  form_name text,
+  file_name text,
+  subject text,
+  form_date date default NULL,
+  form_time time default NULL,
+  form_creator text,
+  status int(1) NOT NULL default '0',
+  form_html mediumtext,
+  PRIMARY KEY  (fid),
+  UNIQUE KEY id (fid)
+) ;
+
+--
+-- Table structure for table `eforms_data`
+--
+
+CREATE TABLE eforms_data (
+  fdid int(8) NOT NULL auto_increment,
+  fid int(8) NOT NULL default '0',
+  form_name text,
+  subject text,
+  demographic_no int(8) NOT NULL default '0',
+  status int(1) NOT NULL default '0',
+  form_date date default NULL,
+  form_time time default NULL,
+  form_provider text,
+  form_data mediumtext,
+  form_fields mediumtext,
+  PRIMARY KEY  (fdid),
+  UNIQUE KEY id (fdid)
+) ;
 
 --
 -- Table structure for table `eform_values`
@@ -733,8 +763,7 @@ CREATE TABLE `eform_values` (
   `demographic_no` int(10) default '0',
   `var_name` varchar(30) NOT NULL default '',
   `var_value` text,
-  PRIMARY KEY  (`id`),
-  KEY `eform_values_varname_varvalue` (`var_name`,`var_value`(30))
+  PRIMARY KEY  (`id`)
 );
 
 --
@@ -6145,10 +6174,10 @@ CREATE TABLE mdsZRG (
 --
 CREATE TABLE measurements(
   id int UNSIGNED AUTO_INCREMENT,
-  type varchar(50) NOT NULL,
+  type varchar(4) NOT NULL,
   demographicNo int(10) NOT NULL default '0', 
   providerNo varchar(6) NOT NULL default '',
-  dataField  varchar(50) NOT NULL,
+  dataField  varchar(20) NOT NULL,
   measuringInstruction varchar(255) NOT NULL,  
   comments varchar(255) NOT NULL, 
   dateObserved datetime NOT NULL, 
@@ -6328,22 +6357,23 @@ CREATE TABLE patientLabRouting (
   KEY `all_index` (`lab_type`,`lab_no`,`demographic_no`)
 ) ;
 
-create table ProviderPreference
-(
-	providerNo varchar(6) not null primary key,
-	startHour tinyint,
-	endHour tinyint,
-	everyMin tinyint,
-	myGroupNo varchar(10),
-	colourTemplate varchar(10),
-	newTicklerWarningWindow varchar(10),
-	defaultServiceType varchar(10),
-	defaultCaisiPmm varchar(10),
-	defaultNewOscarCme varchar(10),
-	printQrCodeOnPrescriptions tinyint not null,
-	lastUpdated datetime not null,
-	appointmentScreenFormNameDisplayLength int not null
-);
+--
+-- Table structure for table `preference`
+--
+
+CREATE TABLE preference (
+  preference_no int(6) NOT NULL auto_increment,
+  provider_no varchar(6) NOT NULL default '',
+  start_hour char(2) default NULL,
+  end_hour char(2) default NULL,
+  every_min char(3) default NULL,
+  mygroup_no varchar(10) default NULL,
+  color_template varchar(10) default NULL,
+  default_servicetype varchar(10) default NULL,
+  default_caisi_pmm varchar(10) default 'disabled',
+  PRIMARY KEY  (preference_no),
+  KEY provider_no (provider_no)
+) ;
 
 --
 -- Table structure for table `prescribe`
@@ -6380,23 +6410,18 @@ CREATE TABLE prescription (
 --
 
 CREATE TABLE professionalSpecialists (
-  specId int(10) NOT NULL auto_increment primary key,
-  fName varchar(32),
-  lName varchar(32),
-  proLetters varchar(20),
-  address varchar(255),
-  phone varchar(30),
-  fax varchar(30),
-  website varchar(128),
-  email varchar(128),
-  specType varchar(128),
-  eDataUrl varchar(255),
-  eDataOscarKey varchar(1024),
-  eDataServiceKey varchar(1024),
-  eDataServiceName varchar(255),
-  lastUpdated datetime not null,
-  annotation text
-);
+  specId int(10) NOT NULL auto_increment,
+  fName varchar(32) default NULL,
+  lName varchar(32) default NULL,
+  proLetters varchar(20) default NULL,
+  address varchar(255) default NULL,
+  phone varchar(30) default NULL,
+  fax varchar(30) default NULL,
+  website varchar(128) default NULL,
+  email varchar(128) default NULL,
+  specType varchar(128) default NULL,
+  PRIMARY KEY  (specId)
+) ;
 
 --
 -- Table structure for table `property`
@@ -6930,20 +6955,19 @@ CREATE TABLE surveyData (
 ) ;
 
 CREATE TABLE `log` (
-  id bigint auto_increment primary key,
-  `dateTime` datetime not null,
-  `provider_no` varchar(10),
-  index datetime (`dateTime`, `provider_no`),
-  `action` varchar(64),
-  INDEX `action` (`action`),
-  `content` varchar(80),
-  INDEX `content` (`content`),
-  `contentId` varchar(80),
-  INDEX `contentId` (`contentId`),
-  `ip` varchar(30),
+  `dateTime` timestamp,
+  `provider_no` varchar(10) NOT NULL default '',
+  `action` varchar(20) default NULL,
+  `content` varchar(80) NOT NULL default '',
+  `contentId` varchar(80) default NULL,
+  `ip` varchar(30) default NULL,
   `demographic_no` int(10),
-  INDEX `demographic_no` (`demographic_no`),
-  `data` text
+  `data` text,
+  index datetime (`dateTime`, `provider_no`),
+  INDEX `action` (`action`),
+  INDEX `content` (`content`),
+  INDEX `contentId` (`contentId`),
+  INDEX `demographic_no` (`demographic_no`)
 ) ;
 
 CREATE TABLE preventions (
@@ -6972,7 +6996,7 @@ CREATE TABLE preventionsExt (
 
 CREATE TABLE `secRole` (
   `role_no` int(3) NOT NULL auto_increment,
-  `role_name` varchar(60) NOT NULL default '',
+  `role_name` varchar(30) NOT NULL default '',
   `description` varchar(60),
   PRIMARY KEY  (`role_no`),
   UNIQUE KEY `role_name` (`role_name`)
@@ -7200,16 +7224,14 @@ create table hl7TextInfo(
 	last_name varchar(30),
 	first_name varchar(30),
 	report_status varchar(1) NOT NULL,
-	accessionNum varchar(20)
+	accessionNum varchar(20) NOT NULL
 );
 
 create table hl7TextMessage(
 	lab_id int(10) NOT NULL auto_increment primary key,
-	fileUploadCheck_id int(10) NOT NULL,
+        fileUploadCheck_id int(10) NOT NULL,
 	message longtext NOT NULL,
-	type varchar(100) not null,
-	serviceName varchar(100) not null,
-	created datetime not null
+	type varchar(100)
 );
 
 create table oscarKeys(
@@ -7220,10 +7242,8 @@ create table oscarKeys(
 
 create table publicKeys(
 	service varchar(100) NOT NULL primary key,
-	type varchar(100) NOT NULL,
-	pubKey text NOT NULL,
-	privateKey text NOT NULL,
-	matchingProfessionalSpecialistId int
+	type varchar(20) NOT NULL,
+	pubKey text NOT NULL
 );
 
 CREATE TABLE measurementsExt(
@@ -7315,9 +7335,7 @@ CREATE TABLE hash_audit (
 --
 CREATE TABLE `gstControl` (
   `gstFlag` int(1) NOT NULL default '0',
-  `gstPercent` int(3) NOT NULL default '0',
-   id int auto_increment,
-   PRIMARY KEY  (id)
+  `gstPercent` int(3) NOT NULL default '0'
 );
 
 --
@@ -7994,8 +8012,6 @@ CREATE TABLE `site` (
   `province` varchar(25) default '',
   `postal` varchar(10) default '',
   `status` tinyint(4) NOT NULL default '0',
-  `providerId_from` int null,
-  `providerId_to` int null,
   PRIMARY KEY  (`site_id`),
   UNIQUE KEY `unique_name` (`name`),
   UNIQUE KEY `unique_shortname` (`short_name`)
@@ -8008,286 +8024,12 @@ CREATE TABLE `providersite` (
   PRIMARY KEY  (`provider_no`,`site_id`)
 ) TYPE=MyISAM;
 
-DROP TABLE IF EXISTS queue;
-create table queue (
-    id int(10) not null auto_increment,
-    name varchar(40) not null ,
-    primary key(id),unique (name)
-);
-
-
-DROP TABLE IF EXISTS queue_document_link;
-create table queue_document_link (
-    id int(10) not null auto_increment,
-    queue_id int(10) not null,
-    document_id int(10) not null,
-    status char(1) ,
-    primary key (id)
-);
-
 CREATE TABLE `other_id` (
-	id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	table_name int NOT NULL,
-	table_id int NOT NULL,
-	other_key varchar(30) NOT NULL,
-	other_id varchar(30) NOT NULL,
-	deleted boolean NOT NULL
-);
-
-CREATE TABLE demographicArchive (
-  demographic_no int(10),
-  title varchar(10),
-  last_name varchar(30),
-  first_name varchar(30),
-  address varchar(60),
-  city varchar(20),
-  province varchar(20),
-  postal varchar(9),
-  phone varchar(20),
-  phone2 varchar(20),
-  email varchar(100),
-  pin varchar(255),
-  year_of_birth varchar(4),
-  month_of_birth char(2),
-  date_of_birth char(2),
-  hin varchar(20),
-  ver char(3),
-  roster_status varchar(20),
-  roster_date date,
-  patient_status varchar(20),
-  date_joined date,
-  chart_no varchar(10),
-  official_lang varchar(60),
-  spoken_lang varchar(60),
-  provider_no varchar(250),
-  sex char(1),
-  end_date date,
-  eff_date date,
-  pcn_indicator varchar(20),
-  hc_type varchar(20),
-  hc_renew_date date,
-  family_doctor varchar(80),
-  alias varchar(70),
-  previousAddress varchar(255),
-  children varchar(255),
-  sourceOfIncome varchar(255),
-  citizenship varchar(40),
-  sin varchar(15),
-  country_of_origin char(4),
-  newsletter varchar(32),
-  anonymous varchar(32),
-  lastUpdateUser varchar(6),
-  lastUpdateDate date
-);
-
-CREATE TABLE providerArchive (
-  provider_no varchar(6),
-  last_name varchar(30),
-  first_name varchar(30),
-  provider_type varchar(15),
-  specialty varchar(40),
-  team varchar(20),
-  sex char(1),
-  dob date,
-  address varchar(40),
-  phone varchar(20),
-  work_phone varchar(50),
-  ohip_no varchar(20),
-  rma_no varchar(20),
-  billing_no varchar(20),
-  hso_no varchar(10),
-  status char(1),
-  comments text,
-  provider_activity char(3),
-  practitionerNo varchar(20),
-  `init` varchar(10),
-  `job_title` varchar(100),
-  `email` varchar(60),
-  `title` varchar(20),
-  `lastUpdateUser` varchar(6),
-  `lastUpdateDate` date,
-  `signed_confidentiality` date
-);
-
-CREATE TABLE appointmentArchive (
-  appointment_no int(12),
-  provider_no varchar(6),
-  appointment_date date,
-  start_time time,
-  end_time time,
-  name varchar(50),
-  demographic_no int(10),
-  program_id int,
-  notes varchar(80),
-  reason varchar(80),
-  location varchar(30),
-  resources varchar(255),
-  type varchar(10),
-  style varchar(10),
-  billing varchar(10),
-  status char(2),
-  createdatetime datetime,
-  updatedatetime datetime,
-  creator varchar(50),
-  lastupdateuser varchar(6),
-  remarks varchar(50)
-);
-
-create table ProviderPreferenceAppointmentScreenForm(providerNo varchar(6) not null, appointmentScreenForm varchar(128) not null);
-create table ProviderPreferenceAppointmentScreenEForm(providerNo varchar(6) not null, appointmentScreenEForm int not null);
-
-
-CREATE TABLE `eyeform` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `appointment_no` int(11)  ,
-  `discharge` varchar(20),
-  `stat` varchar(20),
-  `opt` varchar(20),
-  `date` timestamp ,
-  PRIMARY KEY (`id`)
-);
-
-
-CREATE TABLE `eyeform_followup` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `appointment_no` int(11)  ,
-  `demographic_no` int(11) ,
-  `timespan` int(11) ,
-  `timeframe` varchar(25) ,
-  `followup_provider` varchar(100) ,
-  `date` timestamp ,
-  `type` varchar(25),
-  `urgency` varchar(50),
-  `comment` text,
-  PRIMARY KEY (`id`)
-);
-
-
-CREATE TABLE `eyeform_macro` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `label` varchar(255) NOT NULL,
-  `display_order` tinyint(4) NOT NULL,
-  `impression` text,
-  `followup_no` smallint(5),
-  `followup_unit` varchar(50),
-  `followup_doctor` varchar(6),
-  `followup_reason` varchar(255) ,
-  `tickler_staff` varchar(6) ,
-  `billing_visit_type` varchar(50) ,
-  `billing_visit_location` varchar(50) ,
-  `billing_codes` text,
-  `billing_dxcode` varchar(50),
-  `billing_total` varchar(50) ,
-  `billing_comment` varchar(255),
-  `billing_billtype` varchar(50)  ,
-  `billing_pay_method` varchar(50) ,
-  `billing_billto` varchar(50) ,
-  `billing_remitto` varchar(50) ,
-  `billing_gstBilledTotal` varchar(50)  ,
-  `billing_payment` varchar(50),
-  `billing_refund` varchar(50),
-  `billing_gst` varchar(50),
-  `test_records` text,
-  `discharge` varchar(20),
-  `stat` varchar(20),
-  `opt` varchar(20),
-  PRIMARY KEY (`id`)
-);
-
-
-CREATE TABLE `ocularprocedurehis` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `demographic_no` int(11) NOT NULL ,
-  `provider` varchar(60) ,
-  `date` date NOT NULL ,
-  `eye` varchar(2) NOT NULL ,
-  `procedure_name` varchar(100) NOT NULL ,
-  `procedure_type` varchar(30) ,
-  `procedure_note` text,
-  `doctor` varchar(30) ,
-  `location` varchar(30) ,
-  `update_time` datetime ,
-  `status` varchar(2) ,
-  `appointment_no` int(11) ,
-  PRIMARY KEY (`id`)
-);
-
-
-CREATE TABLE `procedurebook` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `eyeform_id` bigint(20) ,
-  `demographic_no` int(11) ,
-  `appointment_no` int(11) ,
-  `provider` varchar(60) ,
-  `procedure_name` varchar(30) ,
-  `eye` varchar(20) ,
-  `location` varchar(50) ,
-  `urgency` varchar(10) ,
-  `comment` text,
-  `date` datetime ,
-  `status` varchar(2) ,
-  PRIMARY KEY (`id`)
-);
-
-
-CREATE TABLE `specshis` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `demographic_no` int(11) NOT NULL ,
-  `provider` varchar(60) ,
-  `date` date ,
-  `doctor` varchar(30) ,
-  `type` varchar(30) ,
-  `od_sph` varchar(10),
-  `od_cyl` varchar(10) ,
-  `od_axis` varchar(10) ,
-  `od_add` varchar(10) ,
-  `od_prism` varchar(10) ,
-  `os_sph` varchar(10) ,
-  `os_cyl` varchar(10) ,
-  `os_axis` varchar(10) ,
-  `os_add` varchar(10) ,
-  `os_prism` varchar(10) ,
-  `update_time` datetime ,
-  `status` varchar(2) ,
-  `appointment_no` int(11) ,
-  PRIMARY KEY (`id`)
-);
-
-CREATE TABLE `testbookrecord` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `testname` varchar(60) ,
-  `appointment_no` int(11) ,
-  `demographic_no` int(11) ,
-  `provider` varchar(60) ,
-  `eyeform_id` bigint(20) ,
-  `eye` varchar(20) ,
-  `urgency` varchar(30) ,
-  `comment` varchar(100) ,
-  `date` datetime ,
-  `status` varchar(2) ,
-  PRIMARY KEY (`id`)
-);
-
-
-CREATE TABLE `issue` (
-  `issue_id` int(10) NOT NULL auto_increment,
-  `code` varchar(20) NOT NULL,
-  `description` varchar(255) NOT NULL,
-  `role` varchar(100) NOT NULL,
-  `update_date` datetime NOT NULL,
-  `priority` CHAR(10) DEFAULT NULL,
-  `type` VARCHAR(32) DEFAULT NULL,
-  PRIMARY KEY  (`issue_id`),
-  index(code)
-);
-
-create table consultationRequestExt(
- id int(10) NOT NULL auto_increment,
- requestId int(10) NOT NULL,
- name varchar(100) NOT NULL,
- value varchar(100) NOT NULL,
- dateCreated date not null,
- primary key(id),
- key(requestId)
+	`id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`table_name` int NOT NULL,
+	`table_id` int NOT NULL,
+	`other_key` varchar(30) NOT NULL,
+	`other_id` varchar(30) NOT NULL,
+	`deleted` boolean NOT NULL
 );
 

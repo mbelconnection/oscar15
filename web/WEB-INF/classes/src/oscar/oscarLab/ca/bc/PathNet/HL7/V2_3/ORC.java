@@ -8,9 +8,6 @@ package oscar.oscarLab.ca.bc.PathNet.HL7.V2_3;
 
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 import oscar.oscarLab.ca.bc.PathNet.HL7.Node;
 /*
@@ -40,20 +37,18 @@ import oscar.oscarLab.ca.bc.PathNet.HL7.Node;
  * www.andromedia.ca
  */
 public class ORC extends oscar.oscarLab.ca.bc.PathNet.HL7.Node {
-    private static Logger logger=MiscUtils.getLogger(); 
-
-    public Node Parse(String line) {
+   public Node Parse(String line) {
       if(line.startsWith("ORC")) {
          return super.Parse(line, 0, 1);
       }
-      logger.error("Error During Parsing, Unknown Line - oscar.PathNet.HL7.V2_3.ORC - Message: " + line);
+      System.err.println("Error During Parsing, Unknown Line - oscar.PathNet.HL7.V2_3.ORC - Message: " + line);
       return null;
    }
    
    //Inserts record into hl7_orc table
-   public int ToDatabase(int parent)throws SQLException {
-      MiscUtils.getLogger().debug(this.getInsertSql(parent));
-      return booleanConvert(DBHandler.RunSQL(this.getInsertSql(parent)));
+   public int ToDatabase(DBHandler db, int parent)throws SQLException {
+      System.out.println(this.getInsertSql(parent));
+      return booleanConvert(db.RunSQL(this.getInsertSql(parent)));
    }
    
    protected String getInsertSql(int parent) {

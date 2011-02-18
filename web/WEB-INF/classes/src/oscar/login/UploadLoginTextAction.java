@@ -15,18 +15,20 @@
  * <OSCAR TEAM>
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 
 package oscar.login;
 
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import oscar.oscarLab.ca.bc.PathNet.pageUtil.LabUploadForm;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.io.FileOutputStream;
+import java.io.InputStream;
 
 import org.apache.log4j.Logger;
 import org.apache.struts.action.Action;
@@ -34,9 +36,6 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.upload.FormFile;
-import org.oscarehr.util.MiscUtils;
-
-import oscar.oscarLab.ca.bc.PathNet.pageUtil.LabUploadForm;
 
 
 /**
@@ -66,7 +65,7 @@ public class UploadLoginTextAction extends Action {
                 error = false;
             }
        } catch( Exception e) {
-           MiscUtils.getLogger().error("Error", e);           
+           e.printStackTrace();           
        }
 
        request.setAttribute("error", error);

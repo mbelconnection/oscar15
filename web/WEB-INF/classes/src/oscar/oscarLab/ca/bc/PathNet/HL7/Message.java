@@ -14,8 +14,6 @@ import java.util.Date;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
-import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarLab.ca.all.upload.ProviderLabRouting;
@@ -58,7 +56,7 @@ public class Message {
    private MSH msh = null;
    private Node current;
    public Message(String now) {
-      MiscUtils.getLogger().debug("Should be a new LOG MESSAGE FILE NOW"+now);
+      System.out.println("Should be a new LOG MESSAGE FILE NOW"+now);
       _logger.debug("Message object Instantiated now = "+now);
       this.now = now;
       this.current = null;
@@ -110,18 +108,18 @@ public class Message {
    
    //Method runs insert into hl7_message table and retrieves the insert id. 
    //The calls the MSH.toDatabase method passing in the insert id from hl7_message
-   public void ToDatabase() throws SQLException {
-      MiscUtils.getLogger().debug("sql "+this.getSql());
-      DBHandler.RunSQL(this.getSql());
-      ResultSet result = DBHandler.GetSQL(this.getLastInsertedIdSql());
+   public void ToDatabase(DBHandler db) throws SQLException {
+      System.out.println("sql "+this.getSql());
+      db.RunSQL(this.getSql());
+      ResultSet result = db.GetSQL(this.getLastInsertedIdSql());
       int parent = 0;
       if (result.next()) {
          parent = result.getInt(1);
       }
       if (parent == 0)
          throw new SQLException("Could not get last inserted id");
-      msh.ToDatabase(parent);
-      int id = pid.ToDatabase(parent);
+      msh.ToDatabase(db, parent);
+      int id = pid.ToDatabase(db, parent);
       linkToProvider(parent,id);
       patientRouteReport(parent);
    }  
@@ -129,7 +127,7 @@ public class Message {
    public void linkToProvider(int parent, int id){
       //public void providerRouteReport (int segmentID) {                
         try {                        
-                        
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);            
             String sql;        
             try {
                 String providerMinistryNo;
@@ -139,29 +137,29 @@ public class Message {
                 
                 sql = "select ordering_provider, result_copies_to from  hl7_obr where pid_id = '"+id+"'";                
                 
-                ResultSet rs = DBHandler.GetSQL(sql);                
+                ResultSet rs = db.GetSQL(sql);                
                 boolean addedToProviderLabRouting = false;                
                 if ( rs.next() ) {                    
                     //OLD CODE AT BOTTOM                   
                     ArrayList listOfProviderNo = new ArrayList();
                     // route lab first to admitting doctor
-                    subStrings = oscar.Misc.getString(rs, "ordering_provider").split("\\^");
+                    subStrings = db.getString(rs,"ordering_provider").split("\\^");
                     providerMinistryNo = subStrings[0]; //StringUtils.returnStringToFirst(subStrings[0].substring(1, subStrings[0].length())," ");
                     // check that this is a legal provider
-                    MiscUtils.getLogger().debug("looking for "+providerMinistryNo);
+                    System.out.println("looking for "+providerMinistryNo);
                     providerNo = getProviderNoFromBillingNo(providerMinistryNo);                    
                     if ( providerNo != null) {  // provider found in database
                         listOfProviderNo.add(providerNo);
                     }  // provider not found                                         
                     
                     // next route to consulting doctor(s)
-                    if ( ! oscar.Misc.getString(rs, "result_copies_to").equals("") ) {
-                        conDoctors = oscar.Misc.getString(rs, "result_copies_to").split("~");
+                    if ( ! db.getString(rs,"result_copies_to").equals("") ) {
+                        conDoctors = db.getString(rs,"result_copies_to").split("~");
                         for (int i = 1; i <= conDoctors.length; i++) {
                             subStrings = conDoctors[i-1].split("\\^");
                             providerMinistryNo = subStrings[0];//StringUtils.returnStringToFirst(subStrings[0].substring(1, subStrings[0].length())," ");
                             // check that this is a legal provider
-                            MiscUtils.getLogger().debug("looking for 2 "+providerMinistryNo);
+                            System.out.println("looking for 2 "+providerMinistryNo);
                             providerNo = getProviderNoFromBillingNo(providerMinistryNo);                                                
                             if ( providerNo != null) {  // provider found in database
                                if (!listOfProviderNo.contains(providerNo)){
@@ -177,33 +175,33 @@ public class Message {
                        for(int p = 0; p < listOfProviderNo.size(); p++){
                           String prov = (String) listOfProviderNo.get(p);
                           //sql ="insert ignore into providerLabRouting (provider_no, lab_no, status,lab_type) VALUES ('"+prov+"', '"+parent+"', 'N','BCP')";
-
-                          //DBHandler.RunSQL(sql);
-                          routing.route(parent, prov, DbConnectionFilter.getThreadLocalDbConnection(), "BCP");
+                          //System.out.println(" size "+listOfProviderNo.size()+" "+sql);
+                          //db.RunSQL(sql);
+                          routing.route(parent, prov, DBHandler.getConnection(), "BCP");
                        }
                        addedToProviderLabRouting =true;
                     }   // provider not found                                                          
                     
                     if(!addedToProviderLabRouting){
                        sql ="insert into providerLabRouting (provider_no, lab_no, status,lab_type) VALUES ('0', '"+parent+"', 'N','BCP')";
-                       MiscUtils.getLogger().debug(sql);
-                       DBHandler.RunSQL(sql);                        
+                       System.out.println(sql);
+                       db.RunSQL(sql);                        
                     }
                     
                 } else { // major error
-                    MiscUtils.getLogger().debug("sql "+sql);
+                    System.out.println("sql "+sql);
                     throw new Exception("Corresponding PV1 entry not found!");
                 }                
                 rs.close();                
             } catch (Exception e) {
-                MiscUtils.getLogger().debug("Error in providerRouteReport:"+e);
+                System.out.println("Error in providerRouteReport:"+e);
                 
                 sql ="insert into providerLabRouting (provider_no, lab_no, status,lab_type) VALUES ('0', '"+parent+"', 'N','BCP')";
-                MiscUtils.getLogger().debug(sql);
-                DBHandler.RunSQL(sql);
+                System.out.println(sql);
+                db.RunSQL(sql);
             }            
         } catch (Exception e) {
-            MiscUtils.getLogger().debug("Database error in providerRouteReport:"+e);
+            System.out.println("Database error in providerRouteReport:"+e);
         }        
 
 
@@ -212,15 +210,15 @@ public class Message {
    public String getProviderNoFromBillingNo(String providerMinistryNo){
        String ret = null;
        String sql = "select provider_no from provider where ohip_no='"+providerMinistryNo+"'";
-       MiscUtils.getLogger().debug(sql);
+       System.out.println(sql);
        boolean hasNext = false;       
        try {
-                             
-          ResultSet rsr = DBHandler.GetSQL(sql);	               
+          DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);                   
+          ResultSet rsr = db.GetSQL(sql);	               
           if (!rsr.next()){
              sql = "select provider_no from provider where ohip_no='0"+providerMinistryNo+"'";
-             MiscUtils.getLogger().debug("\n\n"+sql+"\n\n");
-             rsr = DBHandler.GetSQL(sql);	               
+             System.out.println("\n\n"+sql+"\n\n");
+             rsr = db.GetSQL(sql);	               
              if (rsr.next()){
                 hasNext = true;
              }
@@ -232,7 +230,7 @@ public class Message {
           }
           rsr.close();
        }catch(Exception e){
-          MiscUtils.getLogger().error("Error", e);  
+          e.printStackTrace();  
        }
        return ret;
     }
@@ -240,18 +238,18 @@ public class Message {
    ////
    public void patientRouteReport (int segmentID) {                
       try {                        
-                     
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);            
          String sql;        
          try {                            
             //sql ="select healthNumber, patientName, dOB, sex from mdsPID where segmentID='"+segmentID+"'";
             sql = "select external_id as healthNumber, patient_name as patientName, date_of_birth as dOB, sex from hl7_pid where message_id = '"+segmentID+"'";               
-            ResultSet rs = DBHandler.GetSQL(sql);                                                
+            ResultSet rs = db.GetSQL(sql);                                                
             if ( rs.next() ) {
-               String lastName = oscar.Misc.getString(rs, "patientName").split("\\^")[0].toUpperCase();
-               String firstName = oscar.Misc.getString(rs, "patientName").split("\\^")[1].toUpperCase();
-               //String dobYear = oscar.Misc.getString(rs,"dOB").substring(0,4);
-               //String dobMonth = oscar.Misc.getString(rs,"dOB").substring(4,6);
-               //String dobDay = oscar.Misc.getString(rs,"dOB").substring(6,8);
+               String lastName = db.getString(rs,"patientName").split("\\^")[0].toUpperCase();
+               String firstName = db.getString(rs,"patientName").split("\\^")[1].toUpperCase();
+               //String dobYear = db.getString(rs,"dOB").substring(0,4);
+               //String dobMonth = db.getString(rs,"dOB").substring(4,6);
+               //String dobDay = db.getString(rs,"dOB").substring(6,8);
                Date d = rs.getDate("dOB");     
                
                Format formatter;
@@ -263,36 +261,36 @@ public class Message {
                String dobDay = formatter.format(d);
                    
                String demoNo = null;
-               if ( !oscar.Misc.getString(rs, "healthNumber").trim().equals("") ) {
+               if ( !db.getString(rs,"healthNumber").trim().equals("") ) {
                   // patient's health number is known - check initials, DOB match
-                  sql = "select demographic_no from demographic where hin='"+oscar.Misc.getString(rs, "healthNumber")+"' and " +
+                  sql = "select demographic_no from demographic where hin='"+db.getString(rs,"healthNumber")+"' and " +
                         "last_name like '"+StringEscapeUtils.escapeSql(lastName.substring(0,1))+"%' and " +
                         "first_name like '"+StringEscapeUtils.escapeSql(firstName.substring(0,1))+"%' and year_of_birth='"+dobYear+"' and " +
-                        "month_of_birth='"+dobMonth+"' and date_of_birth='"+dobDay+"' and sex like '"+oscar.Misc.getString(rs, "sex").toUpperCase()+"%' and " +
+                        "month_of_birth='"+dobMonth+"' and date_of_birth='"+dobDay+"' and sex like '"+db.getString(rs,"sex").toUpperCase()+"%' and " +
                         "patient_status='AC'";
-                  ResultSet rs2 = DBHandler.GetSQL(sql);                  
+                  ResultSet rs2 = db.GetSQL(sql);                  
                   if ( rs2.next() ) {
                      demoNo = rs2.getString("demographic_no");
                      sql = "insert into patientLabRouting (demographic_no, lab_no,lab_type) values ('"+rs2.getString("demographic_no")+"', '"+segmentID+"','BCP')";                            
                   } else {
                      sql = "insert into patientLabRouting (demographic_no, lab_no,lab_type) values ('0', '"+segmentID+"','BCP')";                            
                   }
-                  DBHandler.RunSQL(sql);
+                  db.RunSQL(sql);
                } else {                        
                   // patient's health number is unknown - search by name, DOB, sex
                   sql = "select demographic_no from demographic where last_name='"+StringEscapeUtils.escapeSql(lastName)+"' and " +
                         "first_name like '"+StringEscapeUtils.escapeSql(firstName)+"%' and year_of_birth='"+dobYear+"' and " +
-                        "month_of_birth='"+dobMonth+"' and date_of_birth='"+dobDay+"' and sex like '"+oscar.Misc.getString(rs, "sex").toUpperCase()+"%' and " +
+                        "month_of_birth='"+dobMonth+"' and date_of_birth='"+dobDay+"' and sex like '"+db.getString(rs,"sex").toUpperCase()+"%' and " +
                         "patient_status='AC'";
-                  MiscUtils.getLogger().debug(sql);
-                  ResultSet rs3 = DBHandler.GetSQL(sql);
+                  System.out.println(sql);
+                  ResultSet rs3 = db.GetSQL(sql);
                   if ( rs3.next() ) {
                      demoNo = rs3.getString("demographic_no");                                    
                      sql = "insert into patientLabRouting (demographic_no, lab_no,lab_type) values ('"+rs3.getString("demographic_no")+"', '"+segmentID+"','BCP')";                            
                   } else {
                      sql = "insert into patientLabRouting (demographic_no, lab_no,lab_type) values ('0', '"+segmentID+"','BCP')";                            
                   }
-                  DBHandler.RunSQL(sql);
+                  db.RunSQL(sql);
                }                    
                
                //NOT ALL DOCS WANT ALL LABS ECHO'D INTO THERE INBOX
@@ -304,64 +302,64 @@ public class Message {
             }                
             rs.close();                
          } catch (Exception e) {
-            MiscUtils.getLogger().debug("Error in patientRouteReport:"+e); 
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println("Error in patientRouteReport:"+e); 
+            e.printStackTrace();
             sql = "insert into patientLabRouting (demographic_no, lab_no,lab_type) values ('0', '"+segmentID+"','BCP')";                            
-            DBHandler.RunSQL(sql);
+            db.RunSQL(sql);
          }            
       } catch (Exception e) {
-         MiscUtils.getLogger().debug("Database error in patientRouteReport:"+e);
+         System.out.println("Database error in patientRouteReport:"+e);
       }        
    }    
 
    ////
    public void patientProviderRoute(String lab_no, String demographic_no){
        try {                        
-                      
+          DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);            
           String sql;
           sql ="select provider_no from demographic where demographic_no = '"+demographic_no+"'";
-          ResultSet rs = DBHandler.GetSQL(sql);
+          ResultSet rs = db.GetSQL(sql);
                                                 
           if ( rs.next() ) {
-             String prov_no  = oscar.Misc.getString(rs, "provider_no");                                        
+             String prov_no  = db.getString(rs,"provider_no");                                        
              if ( prov_no != null && !prov_no.trim().equals("")){
                 sql = "select status from providerLabRouting where lab_type = 'BCP' and provider_no ='"+prov_no+"' and lab_no = '"+lab_no+"'";                               
-                MiscUtils.getLogger().debug(sql);
-                ResultSet rs2 = DBHandler.GetSQL(sql);
+                System.out.println(sql);
+                ResultSet rs2 = db.GetSQL(sql);
                 if ( !rs2.next() ) {                            
                    //sql = "insert into providerLabRouting (provider_no, lab_no, status,lab_type) VALUES ('"+prov_no+"', '"+lab_no+"', 'N','BCP')";
-
-                   //DBHandler.RunSQL(sql);
+                   //System.out.println(sql);
+                   //db.RunSQL(sql);
                    ProviderLabRouting router = new ProviderLabRouting();
-                   router.route(lab_no, prov_no, DbConnectionFilter.getThreadLocalDbConnection(), "BCP");
+                   router.route(lab_no, prov_no, DBHandler.getConnection(), "BCP");
                 } else {
-                   MiscUtils.getLogger().debug("prov was "+prov_no);
+                   System.out.println("prov was "+prov_no);
                 }
                 rs2.close();                      
              }                 
           }
           rs.close();            
        } catch (Exception e) {
-          MiscUtils.getLogger().debug("Database error in patientProviderRoute:"+e);
+          System.out.println("Database error in patientProviderRoute:"+e);
        }        
     }
    
    
    /*UNUSED CODE FROM ABOVE
     // route lab first to admitting doctor
-                    subStrings = oscar.Misc.getString(rs,"ordering_provider").split("\\^");
+                    subStrings = db.getString(rs,"ordering_provider").split("\\^");
                     providerMinistryNo = StringUtils.returnStringToFirst(subStrings[0].substring(1, subStrings[0].length())," ");
                     // check that this is a legal provider
                     providerNo = getProviderNoFromOhipNo(providerMinistryNo);                    
                     if ( providerNo != null) {  // provider found in database
                         sql ="insert into providerLabRouting (provider_no, lab_no, status,lab_type) VALUES ('"+providerNo+"', '"+parent+"', 'N','BCP')";
-                        DBHandler.RunSQL(sql);
+                        db.RunSQL(sql);
                         addedToProviderLabRouting =true;
                     }  // provider not found                                         
                     
                     // next route to consulting doctor(s)
-                    if ( ! oscar.Misc.getString(rs,"result_copies_to").equals("") ) {
-                        conDoctors = oscar.Misc.getString(rs,"result_copies_to").split("~");
+                    if ( ! db.getString(rs,"result_copies_to").equals("") ) {
+                        conDoctors = db.getString(rs,"result_copies_to").split("~");
                         for (int i = 1; i <= conDoctors.length; i++) {
                             subStrings = conDoctors[i-1].split("\\^");
                             providerMinistryNo = StringUtils.returnStringToFirst(subStrings[0].substring(1, subStrings[0].length())," ");
@@ -370,7 +368,7 @@ public class Message {
                             if ( providerNo != null) {  // provider found in database
                                 // ignore duplicates in case admitting doctor == consulting doctor
                                 sql ="insert ignore into providerLabRouting (provider_no, lab_no, status,lab_type) VALUES ('"+providerNo+"', '"+parent+"', 'N','BCP')";
-                                DBHandler.RunSQL(sql);
+                                db.RunSQL(sql);
                                 addedToProviderLabRouting =true;
                             }   // provider not found                                                          
                         }

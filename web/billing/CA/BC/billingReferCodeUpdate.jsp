@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -42,6 +42,7 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Billing Summary</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-2">
 <script LANGUAGE="JavaScript">
 <!--
 <%
@@ -130,7 +131,8 @@ function CodeAttach(File0, File1, File2) {
   	 rowsAffected = apptMainBean.queryExecuteUpdate(param1,"updatedigcode");
  
 %>
-<%
+<%  
+   apptMainBean.closePstmtConn();
 %>
 <p>
 <h1>Successful Addition of a billing Record.</h1>

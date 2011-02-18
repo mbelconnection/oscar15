@@ -44,7 +44,6 @@ public class PreventionReportDisplay implements Comparable{
    public String color = null;   
    public String numShots = null;
    public String bonusStatus= null;
-   public String billStatus = null;
    
    //FollowUp Data
    public Date lastFollowup = null;

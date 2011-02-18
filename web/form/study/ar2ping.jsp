@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -28,9 +28,9 @@ if(session.getAttribute("user") == null) response.sendRedirect("../../logout.jsp
 %>
 
 
+<%--@ page contentType="text/xml" --%>
 <%@ page import="java.lang.reflect.*, java.sql.*"%>
-
-<%@page import="org.oscarehr.util.MiscUtils"%><jsp:useBean id="studyMapping" class="java.util.Properties" scope="page" />
+<jsp:useBean id="studyMapping" class="java.util.Properties" scope="page" />
 <jsp:useBean id="studyBean" class="oscar.AppointmentMainBean"
 	scope="page" />
 <%@ taglib uri="/WEB-INF/oscarProperties-tag.tld" prefix="oscarProp"%>
@@ -40,13 +40,18 @@ if(session.getAttribute("user") == null) response.sendRedirect("../../logout.jsp
 <%@ page import="oscar.OscarPingTalk"%>
 <%@ page import="oscar.oscarDemographic.data.*"%>
 
+<%@ include file="../../admin/dbconnection.jsp"%>
 <% 
 String [][] dbQueries=new String[][] { 
+	//{"search_demographic", "select * from demographic where demographic_no=? "}, 
     {"search_formar", "select * from formAR where demographic_no= ? order by formEdited desc, ID desc limit 0,1"}, 
 	{"search_desaprisk", "select risk_content, checklist_content from desaprisk where form_no <= ? and demographic_no = ? order by form_no desc, desaprisk_date desc, desaprisk_time desc limit 1 " }, 
 };
 studyBean.doConfigure(dbQueries);
 %>
+
+
+<% response.setHeader("Cache-Control","no-cache");%>
 <%
 out.println("Please wait ...<br>");
 out.flush();
@@ -72,6 +77,7 @@ if(session.getAttribute("ticket") == null) {
 } else {
 	actorTicket = (String)session.getAttribute("ticket");
 }
+		//System.out.println(" 2 :" + actorTicket);
 
 String owner = actor;
 String originAgent = actor;
@@ -129,10 +135,14 @@ if (rsdemo.next()) {
         
         
         String type = md.getColumnTypeName(i);
+		//System.out.println(demoNo + " l :" + name);
 		if (type.equals("TINY") || name.equals("ID")) {
 			prop.setProperty(jaxbName, "" + rsdemo.getInt(name) );
+			//if (name.equals("pg1Yes37off")) System.out.println(" l :" + rsdemo.getString("pg1_yes37off"));
+			//System.out.println(jaxbName + "  : :" + name);
 		} else {
 			prop.setProperty(jaxbName, (rsdemo.getString(name)==null?"":rsdemo.getString(name) ) );
+			//if (name.equals("pg1DateOfBirth")) System.out.println(" l :" + rsdemo.getString("pg1_dateOfBirth"));
 		}
 	}
 	
@@ -145,6 +155,7 @@ if (rsdemo.next()) {
 	}
 }
 
+studyBean.closePstmtConn();
 
 // send to ping
 oscar.ping.xml.ObjectFactory _respFactory = new oscar.ping.xml.ObjectFactory();
@@ -164,26 +175,51 @@ if(connected){
         Method[] theMethods = c.getMethods();
         for (int i = 0; i < theMethods.length; i++) {
 			String methodString = theMethods[i].getName();
+			//System.out.println("Name: " + methodString);
                 
 			if (methodString.startsWith("set")) {
                 String fieldNameU = methodString.substring(3);
+                //System.out.println("fieldNameU: " + fieldNameU);
                 String fieldNameL = fieldNameU.substring(0, 1).toLowerCase()
                         + fieldNameU.substring(1);
+                //System.out.println("fieldNameL: " + fieldNameL);
                 String fieldValue = prop.getProperty(fieldNameL) == null ? prop
                         .getProperty(fieldNameU, "") : prop
                         .getProperty(fieldNameL);
+                //if (fieldValue.length() >= 1) System.out.println("Name: " + methodString + " | " + fieldValue);
+                //if (fieldNameL.equalsIgnoreCase("pg1Yes37off") ) System.out.println("N  ame: " + methodString + " | " + fieldValue);
+                //String returnString =
+                // theMethods[i].getReturnType().getName();
+                //System.out.println(" Return Type: " + returnString);
+                //Class[] parameterTypes = theMethods[i].getParameterTypes();
+                //System.out.print(" Parameter Types:");
+                //for (int k = 0; k < parameterTypes.length; k ++) {
+                //   String parameterString = parameterTypes[k].getName();
+                //System.out.print(" " + parameterString);
+                //}
                 Object[] arguments = new Object[] { fieldValue};
 
                 theMethods[i].invoke(ARRecord, arguments);
             }
         }
 
-    } catch (Exception e) {
-        MiscUtils.getLogger().error("Error", e);
+    } catch (IllegalAccessException e) {
+        System.out.println(e);
+    } catch (InvocationTargetException e) {
+        System.out.println(e);
     }
 
 	DataType dataType = ping.getDataType(ARRecord);
 	CddmType cddmType = ping.getCddm(owner,originAgent,author,level1,level2,dataType);
+	
+	//xml part
+	//Document doc = UtilXML.newDocument();
+
+	//out.clear();
+    //out.flush();
+	//out.println(UtilXML.toXML(doc, dtdFileName));
+	//out.println("The record was sent to PING server.<br><p><input type='button' name='but' onclick='window.close()' value='Close'>");
+    //System.out.println(UtilXML.toXML(doc));
 
 	connectErrorMsg = "The record was sent to PING server.<br><p><input type='button' name='but' onclick='window.close()' value='Close'>";
     try{                                        

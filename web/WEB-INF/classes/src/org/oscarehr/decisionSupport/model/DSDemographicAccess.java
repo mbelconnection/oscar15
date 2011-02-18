@@ -6,19 +6,16 @@
 package org.oscarehr.decisionSupport.model;
 
 import java.util.ArrayList;
+import org.oscarehr.decisionSupport.model.conditionValue.DSValue;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
-
-import org.apache.log4j.Logger;
-import org.oscarehr.billing.CA.ON.dao.BillingClaimDAO;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oscarehr.casemgmt.dao.CaseManagementNoteDAO;
 import org.oscarehr.casemgmt.model.CaseManagementNote;
-import org.oscarehr.decisionSupport.model.conditionValue.DSValue;
-import org.oscarehr.util.MiscUtils;
+import org.oscarehr.decisionSupport.web.DSGuidelineAction;
 import org.oscarehr.util.SpringUtils;
-
-import oscar.OscarProperties;
 import oscar.oscarBilling.ca.bc.MSP.ServiceCodeValidationLogic;
 import oscar.oscarDemographic.data.DemographicData;
 import oscar.oscarResearch.oscarDxResearch.bean.dxResearchBean;
@@ -31,7 +28,7 @@ import oscar.oscarRx.data.RxPrescriptionData.Prescription;
  * @author apavel
  */
 public class DSDemographicAccess {
-    private static final Logger logger = MiscUtils.getLogger();
+    private static Log _log = LogFactory.getLog(DSGuidelineAction.class);
 
     //To add new modules/types, add to enum with the access method, add the appropriate
     //functions for all, any, not, notall, notany (see examples below), and add to
@@ -81,14 +78,12 @@ public class DSDemographicAccess {
     }
 
     public boolean hasDxCode(String codeType, String code) {
-    	logger.debug("HAS DX CODES CALLED");
+        _log.debug("HAS DX CODES CALLED");
         List<dxResearchBean> dxCodes = this.getDxCodes();
         for (dxResearchBean dxCode: dxCodes) {
-            if (dxCode.getDxSearchCode().equals(code) && dxCode.getType().equalsIgnoreCase(codeType)) {
+            if (dxCode.getDxSearchCode().equals(code) && dxCode.getType().equalsIgnoreCase(codeType))
                 return true;
         }
-        }
-
         return false;
     }
 
@@ -118,13 +113,13 @@ public class DSDemographicAccess {
 
 
     public List<Prescription> getRxCodes() throws DecisionSupportException {
-    	logger.debug("GET RX CODES CALLED");
+        _log.debug("GET RX CODES CALLED");
         try {
             Prescription[] prescriptions = new RxPrescriptionData().getPrescriptionsByPatientHideDeleted(Integer.parseInt(this.demographicNo));
             List<Prescription> prescribedDrugs = Arrays.asList(prescriptions);
             return prescribedDrugs;
         } catch (NumberFormatException nfe) {
-        	logger.error("Decision Support Exception, could not format demographicNo: " + demographicNo);
+            _log.error("Decision Support Exception, could not format demographicNo: " + demographicNo);
         }
         return new ArrayList();
     }
@@ -189,7 +184,7 @@ public class DSDemographicAccess {
     }
 
     public boolean isAge(DSValue statement) throws DecisionSupportException {
-    	logger.debug("IS AGE CALLED");
+        _log.debug("IS AGE CALLED");
         String compareAge = getDemographicData().getAgeInYears() + "";
         if (statement.getValueUnit() != null) {
             if (statement.getValueUnit().equals("y")) ;
@@ -236,7 +231,7 @@ public class DSDemographicAccess {
     }
 
     public boolean isSex(DSValue sexStatement) throws DecisionSupportException {
-    	logger.debug("IS SEX CALLED");
+        _log.debug("IS SEX CALLED");
         if (sexStatement.getValue().equalsIgnoreCase("male")) sexStatement.setValue("M");
         else if (sexStatement.getValue().equalsIgnoreCase("female")) sexStatement.setValue("F");
         return sexStatement.testValue(this.getSex());
@@ -271,14 +266,14 @@ public class DSDemographicAccess {
     public boolean isSexNotany(String sexStatement) throws DecisionSupportException { return !isSexAny(sexStatement); }
 
     
-     public boolean noteContains(DSValue searchValue) {
+     public boolean noteContains(DSValue searchValue) throws DecisionSupportException {
         CaseManagementNoteDAO dao = (CaseManagementNoteDAO) SpringUtils.getBean("CaseManagementNoteDAO");
         List<CaseManagementNote> notes = dao.searchDemographicNotes(demographicNo, "%" + searchValue.getValue() + "%");
         if (notes != null && notes.size() > 0) return true;
         else return false;
     }
 
-    public boolean noteContainsAny(String searchStrings) {
+    public boolean noteContainsAny(String searchStrings) throws DecisionSupportException {
         List<DSValue> searchValues = DSValue.createDSValues(searchStrings);
         for (DSValue searchValue: searchValues) {
             if (noteContains(searchValue)) return true;
@@ -286,7 +281,7 @@ public class DSDemographicAccess {
         return false;
     }
 
-    public boolean noteContainsAll(String searchStrings) {
+    public boolean noteContainsAll(String searchStrings) throws DecisionSupportException {
         List<DSValue> searchValues = DSValue.createDSValues(searchStrings);
         for (DSValue searchValue: searchValues) {
             if (!noteContains(searchValue)) return false;
@@ -296,15 +291,15 @@ public class DSDemographicAccess {
 
     public boolean noteContainsNot(String searchStrings) throws DecisionSupportException { return noteContainsNotany(searchStrings); }
 
-    public boolean noteContainsNotall(String searchStrings) { return !noteContainsAll(searchStrings); }
+    public boolean noteContainsNotall(String searchStrings) throws DecisionSupportException { return !noteContainsAll(searchStrings); }
 
-    public boolean noteContainsNotany(String searchStrings) { return !noteContainsAny(searchStrings); }
+    public boolean noteContainsNotany(String searchStrings) throws DecisionSupportException { return !noteContainsAny(searchStrings); }
 
 
     /////New Billing Functionality
     //Days since last billed
 //    public boolean billedFor(String searchString,Hashtable options) throws DecisionSupportException {
-
+//        System.out.println("billedFor");
 //        return true;
 //    }
 
@@ -316,16 +311,8 @@ public class DSDemographicAccess {
     public boolean billedForAny(String searchStrings,Hashtable options) throws DecisionSupportException {
         boolean retval = false;
         if(options.containsKey("payer") && options.get("payer").equals("MSP")){
-        	logger.debug("PAYER:MSP ");
-            ServiceCodeValidationLogic bcCodeValidation = null;
-            BillingClaimDAO billingClaimONDAO = null;
-            String billregion = OscarProperties.getInstance().getProperty("billregion", "");
-            if( billregion.equalsIgnoreCase("BC") ) {
-                bcCodeValidation = new ServiceCodeValidationLogic();
-            }
-            else if( billregion.equalsIgnoreCase("ON") ) {
-                billingClaimONDAO = (BillingClaimDAO)SpringUtils.getBean("billingClaimDAO");
-            }
+            _log.debug("PAYER:MSP ");
+            ServiceCodeValidationLogic bcCodeValidation = new ServiceCodeValidationLogic();
             String[] codes = searchStrings.replaceAll("\'","" ).split(",");
 
 
@@ -341,28 +328,22 @@ public class DSDemographicAccess {
             if(options.containsKey("notInDays")){
                 int notInDays = getAsInt(options,"notInDays");
                 retval = true;  //Set this optimistically that it has not been billed in the said number of days
-                int numDays = -1;
                 for (String code: codes){
                     //This returns how many days since the last time this code was billed and -1 if it never has been billed
-                     if( billregion.equalsIgnoreCase("BC") ) {
-                        numDays = bcCodeValidation.daysSinceCodeLastBilled(demographicNo,code) ;
-                     }
-                     else if( billregion.equalsIgnoreCase("ON") ) {
-                         numDays = billingClaimONDAO.getDaysSinceBilled(code, demographicNo);
-                     }
-                     
+                    int numDays = bcCodeValidation.daysSinceCodeLastBilled(demographicNo,code) ;
+
                     //If any of the codes has been billed in the number of days then return false
                     if (numDays < notInDays && numDays != -1){
                         retval = false;  // should it just return false here,  why go on once it finds a false?
                     }
-                    logger.debug("PAYER:MSP demo "+demographicNo+" Code:"+code+" numDays"+numDays+" notInDays:"+notInDays+ " Answer: "+!(numDays < notInDays && numDays != -1)+" Setting return val to :"+retval);
+                    _log.debug("PAYER:MSP demo "+demographicNo+" Code:"+code+" numDays"+numDays+" notInDays:"+notInDays+ " Answer: "+!(numDays < notInDays && numDays != -1)+" Setting return val to :"+retval);
 
                 }
 
             }
         }
 
-        logger.debug("In Billed For Any  look for "+searchStrings+" returning :"+retval);
+        _log.debug("In Billed For Any  look for "+searchStrings+" returning :"+retval);
         return retval;
     }
 
@@ -388,7 +369,7 @@ public class DSDemographicAccess {
 
         }
 
-        logger.debug("In Billed For Any  look for "+searchStrings);
+        _log.debug("In Billed For Any  look for "+searchStrings);
         return retval;
     }
 
@@ -429,10 +410,10 @@ public class DSDemographicAccess {
             if (module == Module.sex) return this.getSex();
             if (module == Module.notes) return "";
         } catch (Exception dse) {
-            logger.error("Cannot get demographic data for decision support, module: '" + module + "'", dse);
+            _log.error("Cannot get demographic data for decision support, module: '" + module + "'", dse);
             return null;
         }
-        logger.error("Decision Support Display Error: Cannot get text for module: " + module);
+        _log.error("Decision Support Display Error: Cannot get text for module: " + module);
         return null;
     }
 

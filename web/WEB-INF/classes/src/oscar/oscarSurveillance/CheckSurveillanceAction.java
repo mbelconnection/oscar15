@@ -39,12 +39,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 
 /**
@@ -52,7 +52,7 @@ import org.oscarehr.util.MiscUtils;
  * @author  Jay Gallagher
  */
 public class CheckSurveillanceAction extends Action {
-   private static Logger log = MiscUtils.getLogger();
+   private static Log log = LogFactory.getLog(CheckSurveillanceAction.class);
    
    /** Creates a new instance of checkSurveillanceAction */
    public CheckSurveillanceAction() {
@@ -67,11 +67,7 @@ public class CheckSurveillanceAction extends Action {
                              
       long startTime = System.currentTimeMillis();                                   
       CheckSurveillanceForm frm = (CheckSurveillanceForm) form;
-       
-      String programId = request.getParameter("programId");
-      if(programId!=null)
-    	  request.getSession().setAttribute("case_program_id",programId);
-     
+         
       ActionForward forward = mapping.findForward("close");
       String proceed = frm.getProceed();
       String forwardPath = null;

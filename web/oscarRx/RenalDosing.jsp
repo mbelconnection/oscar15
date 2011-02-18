@@ -1,4 +1,5 @@
-<%@page %><%@page import="oscar.oscarDemographic.data.*,oscar.oscarDemographic.data.DemographicData.Demographic"%>
+<%@page contentType="text/html"%><%@page pageEncoding="UTF-8"%>
+<%@page import="oscar.oscarDemographic.data.*,oscar.oscarDemographic.data.DemographicData.Demographic"%>
 <%@page import="oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBeanHandler,java.util.*,oscar.oscarRx.util.*" %>
 <%@page import="oscar.oscarLab.ca.on.*,oscar.util.*,oscar.oscarLab.*" %>
 <%
@@ -76,6 +77,8 @@ if  ( age > 0){    ageb =true ;}
 if  ( weight > 0){ weightb = true;}
 if  ( sCr > 0){    sCrb = true;}
 
+
+System.out.println("age "+ageb+ " weightb "+ weightb+ " scrb "+sCrb);
 
 int Clcr = 0;
 if (ageb & weightb & sCrb){

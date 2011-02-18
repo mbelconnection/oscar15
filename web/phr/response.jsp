@@ -1,3 +1,5 @@
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
 <%--
 The taglib directive below imports the JSTL library. If you uncomment it,
 you must also add the JSTL library to the project. The Add Library... action
@@ -39,6 +41,7 @@ PHRAuthentication phrAuth = (PHRAuthentication) session.getAttribute(PHRAuthenti
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/phr/phr.css"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>PHR Call</title>
         <script type="text/javascript" language="JavaScript" src="<%=request.getContextPath()%>/share/javascript/prototype.js"></script>
         <script type="text/javascript" language="JavaScript" src="<%=request.getContextPath()%>/phr/phr.js"></script>
@@ -53,8 +56,7 @@ PHRAuthentication phrAuth = (PHRAuthentication) session.getAttribute(PHRAuthenti
                 window.close();
             }
             function onloadd() {
-                if(document.getElementById("phrPassword"))
-                    document.getElementById("phrPassword").focus();
+                document.getElementById("phrPassword").focus();
             }
         </script>
         <style type="text/css">

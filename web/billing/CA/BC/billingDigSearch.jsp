@@ -19,7 +19,7 @@
   *
   * This software was written for the
   * Department of Family Medicine
-  * McMaster University
+  * McMaster Unviersity
   * Hamilton
   * Ontario, Canada
   */
@@ -31,10 +31,10 @@
   user_no = (String) session.getAttribute("user");
 %>
 <%@page import="java.util.*, java.sql.*, oscar.*, java.net.*"%>
-
+<%@include file="../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@include file="dbBilling.jspf"%>
+<%@include file="dbBilling.jsp"%>
 <%
   String search = "", search2 = "";
   search = request.getParameter("search");
@@ -50,6 +50,7 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Diagnostic Code Search</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-2">
 <script LANGUAGE="JavaScript">
 <!--
 function CodeAttach(File2) {
@@ -117,6 +118,7 @@ Description: <input type="text" name="codedesc" value="" size="30">
 			size="2">Description</font> </b></td>
 	</tr>
 	<%
+ System.err.print("IN THE DIG SEARCH");
   ResultSet rslocal = null;
   ResultSet rslocal2 = null;
   String Dcode = "", DcodeDesc = "", Dcode2 = "", DcodeDesc2 = "";

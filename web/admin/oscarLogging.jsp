@@ -18,12 +18,15 @@
  * 
      * This software was written for the 
  * Department of Family Medicine 
- * McMaster University test2
+ * McMaster Unviersity test2
  * Hamilton 
  * Ontario, Canada 
  */
 -->
 <%@page import="oscar.util.*, oscar.*, java.util.*"%>
+
+<%@ page language="java"%>
+
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 
 <%

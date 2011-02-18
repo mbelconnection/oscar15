@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University test2
+ * McMaster Unviersity test2
  * Hamilton 
  * Ontario, Canada 
  */
@@ -55,6 +55,9 @@ ArrayList doctypes = EDocUtil.getDoctypes(module);
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="dms.documentReport.title" /></title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
+
 <link rel="stylesheet" type="text/css"
 	href="../../share/css/OscarStandardLayout.css" />
 <script type="text/javascript" src="../../share/javascript/Oscar.js"></script>

@@ -11,12 +11,11 @@ import org.apache.commons.lang.StringUtils;
 public class IssueGroup extends AbstractModel<Integer> implements Comparable<IssueGroup>{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id=null;
 	private String name=null;
 
-	@Override
-    public Integer getId() {
+	public Integer getId() {
 		return id;
 	}
 

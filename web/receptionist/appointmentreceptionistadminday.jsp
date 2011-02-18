@@ -85,7 +85,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -96,6 +96,8 @@
 <title><bean:message
 	key="receptionist.appointmentreceptionistadminday.title" /></title>
 <link rel="stylesheet" href="receptionistapptstyle.css" type="text/css">
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 </head>
 <script language="JavaScript">
 
@@ -204,6 +206,7 @@ function findProvider(p,m,d) {
      resultList = oscarSuperManager.find("receptionistDao", "searchmygroupcount", new Object[] {mygroupno});
      for (Map count : resultList) {
        numProvider = ((Long)(count.get(count.keySet().toArray()[0]))).intValue();
+//       System.out.print(count.keySet()+"\n\nnumProvider="+numProvider+"\n\n");
      }
 
      if (session.getAttribute(mygroupno+"_$navailprovider")!=null) {
@@ -215,6 +218,7 @@ function findProvider(p,m,d) {
        resultList = oscarSuperManager.find("receptionistDao", "search_numgrpscheduledate", param3);
        for (Map count : resultList) {
          numAvailProvider = ((Long)(count.get(count.keySet().toArray()[0]))).intValue();
+//         System.out.print(count.keySet()+"\n\nnumAvailProvider="+numAvailProvider+"\n\n");
        }
        session.setAttribute(mygroupno+"_$navailprovider", ""+numAvailProvider);
      }
@@ -634,6 +638,7 @@ notes: <%=Misc.htmlEscape(notes)%>">
 										.<%=(view==0?(name.length()>len?name.substring(0,len):name):name).toUpperCase()%></font></a></td>
 <%
         	  } else {
+        			  //System.out.println(name+" / " +demographic_no);
                 if (tickler_no.compareTo("") != 0) {
 %>
 										<a href="#"

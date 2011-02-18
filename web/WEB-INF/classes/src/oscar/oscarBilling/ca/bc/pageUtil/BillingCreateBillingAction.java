@@ -36,17 +36,17 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.oscarehr.util.MiscUtils;
+
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
 import oscar.OscarProperties;
 import oscar.entities.PaymentType;
 import oscar.entities.WCB;
@@ -61,7 +61,7 @@ import oscar.oscarDemographic.data.DemographicData;
 import oscar.util.SqlUtils;
 
 public class BillingCreateBillingAction extends Action {
-  private static final Logger log=MiscUtils.getLogger();
+  private static final Log log = LogFactory.getLog(BillingCreateBillingAction.class);
 
   private ServiceCodeValidationLogic vldt = new ServiceCodeValidationLogic();
   private ArrayList patientDX = new ArrayList(); //List of disease codes for current patient
@@ -163,7 +163,7 @@ public class BillingCreateBillingAction extends Action {
         validateServiceCodeList(billItem, demo, errors);
         validateDxCodeList(bean, errors);
         validateServiceCodeTimes(billItem, frm, errors);
-    
+
         for (Iterator iter = billItem.iterator(); iter.hasNext(); ) {
           BillingItem item = (BillingItem) iter.next();
           validateCDMCodeConditions(errors, demo.getDemographicNo(),
@@ -189,7 +189,7 @@ public class BillingCreateBillingAction extends Action {
     }
 
     if (request.getParameter("WCBid") != null){
-            MiscUtils.getLogger().debug("WCB id is not null "+request.getParameter("WCBid"));
+            System.out.println("WCB id is not null "+request.getParameter("WCBid"));
             List<String> errs = null;
             WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getSession().getServletContext());
             BillingmasterDAO billingmasterDAO = (BillingmasterDAO) ctx.getBean("BillingmasterDAO");
@@ -199,9 +199,9 @@ public class BillingCreateBillingAction extends Action {
             BillingItem item = (BillingItem) iter.next();
             String sc = item.getServiceCode();
             boolean formNeeded = WCBCodes.getInstance().isFormNeeded(sc);
-            MiscUtils.getLogger().debug("code:"+sc+" form needed "+formNeeded);
+            System.out.println("code:"+sc+" form needed "+formNeeded);
             if (formNeeded){
-                MiscUtils.getLogger().debug("Setting form needed 1");
+                System.out.println("Setting form needed 1");
                 errs = wcbForm.verifyEverythingOnForm();
                 if(errs != null && errs.size() > 0){
                     request.setAttribute("WCBcode",sc);
@@ -213,7 +213,7 @@ public class BillingCreateBillingAction extends Action {
             }
         }
         if(errs != null && errs.size() > 0){
-            MiscUtils.getLogger().debug("Setting form needed 2");
+            System.out.println("Setting form needed 2");
             request.setAttribute("WCBFormNeeds",errs);
             return mapping.getInputForward();
         }
@@ -223,7 +223,7 @@ public class BillingCreateBillingAction extends Action {
     //However we don't necessarily want it to force the user to enter a bill
     validateCodeLastBilled(request, errors, demo.getDemographicNo());
 
-    
+    String fromBilling = request.getParameter("fromBilling");
 
     //if fromBilling is true set forward to WCB Form
 ////    if ("true".equals(fromBilling)) {

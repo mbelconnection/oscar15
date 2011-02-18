@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -27,8 +27,6 @@ package oscar.oscarResearch.oscarDxResearch.bean;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -46,7 +44,7 @@ public class dxCodeSearchBeanHandler {
         boolean verdict = true;
         try {
             ResultSet rs;
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "";
             boolean orFlag = false;
             for(int i=0; i<keywords.length; i++){
@@ -59,13 +57,13 @@ public class dxCodeSearchBeanHandler {
                         sql = sql + "or "+codingSystem+" like '%" + keywords[i] + "%' or description like '%" + keywords[i] +"%' ";
                 }
             }
-
-            rs = DBHandler.GetSQL(sql);
+            //System.out.println("Sql Statement: " + sql);  
+            rs = db.GetSQL(sql);
             while(rs.next()){
-                dxCodeSearchBean bean = new dxCodeSearchBean(oscar.Misc.getString(rs, "description"),                                                                 
-                                                             oscar.Misc.getString(rs, codingSystem));
+                dxCodeSearchBean bean = new dxCodeSearchBean(db.getString(rs,"description"),                                                                 
+                                                             db.getString(rs,codingSystem));
                 for(int i=0; i<keywords.length; i++){
-                    if(keywords[i].equals(oscar.Misc.getString(rs, codingSystem)))
+                    if(keywords[i].equals(db.getString(rs,codingSystem)))
                         bean.setExactMatch("checked");                    
                 }
                 
@@ -75,7 +73,7 @@ public class dxCodeSearchBeanHandler {
             rs.close();
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;

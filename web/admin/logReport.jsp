@@ -18,7 +18,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -30,22 +30,12 @@
 	import="oscar.login.*,oscar.util.SqlUtils, oscar.oscarDB.*, oscar.MyDateFormat"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
-<%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
-
 <%
 if(session.getAttribute("user") == null )
 	response.sendRedirect("../logout.jsp");
 String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
 String curUser_no = (String)session.getAttribute("user");
-
-boolean isSiteAccessPrivacy=false;
 %>
-
-
-<security:oscarSec objectName="_site_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%isSiteAccessPrivacy=true; %>
-</security:oscarSec>
-
 
 <%
   String   tdTitleColor = "#CCCC99";
@@ -64,25 +54,19 @@ boolean isSiteAccessPrivacy=false;
   DBPreparedHandler dbObj = new DBPreparedHandler();
   Properties propName = new   Properties();
   // select provider list
-  if (isSiteAccessPrivacy) { 
- 	sql = "select p.* from provider p INNER JOIN providersite s ON p.provider_no = s.provider_no WHERE s.site_id IN (SELECT site_id from providersite where provider_no=" + curUser_no + ") order by p.first_name, p.last_name"; 
-  }
-  else {
-  	sql = "select * from provider p order by p.first_name, p.last_name ";
-  }
+  sql   = "select * from provider p order by p.first_name, p.last_name ";
   ResultSet rs = dbObj.queryResults(sql);
 
   while (rs.next()) {
-    propName.setProperty(Misc.getString(rs,"provider_no"), Misc.getString(rs,"first_name") + " " + Misc.getString(rs,"last_name"));
+    propName.setProperty(dbObj.getString(rs,"provider_no"), dbObj.getString(rs,"first_name") + " " + dbObj.getString(rs,"last_name"));
     prop = new Properties();
 
-    prop.setProperty("providerNo", Misc.getString(rs,"provider_no"));
-    prop.setProperty("name", Misc.getString(rs,"first_name") + " " + Misc.getString(rs,"last_name"));
+    prop.setProperty("providerNo", dbObj.getString(rs,"provider_no"));
+    prop.setProperty("name", dbObj.getString(rs,"first_name") + " " + dbObj.getString(rs,"last_name"));
     vecProvider.add(prop);
   }
 %>
-
-<%@page import="oscar.Misc"%><html:html locale="true">
+<html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Log Report</title>
@@ -193,27 +177,20 @@ function onSub() {
 
       if("*".equals(providerNo)) {
 		  bAll = true;
-		   if (isSiteAccessPrivacy)   { 
-			      sql = "select * from log force index (datetime) where dateTime <= ?";
-			      sql += " and dateTime >= ? and content like '" + content + "' ";
-			      sql += "and provider_no IN (SELECT provider_no FROM providersite WHERE site_id IN (SELECT site_id from providersite where provider_no= " + curUser_no +") )";
-			      sql += " order by dateTime desc ";
-		   }
-		   else {
-		      sql = "select * from log force index (datetime) where dateTime <= ?";
-		      sql += " and dateTime >= ? and content like '" + content + "' order by dateTime desc ";
-		   }
+	      sql = "select * from log force index (datetime) where dateTime <= ?";
+	      sql += " and dateTime >= ? and content like '" + content + "' order by dateTime desc ";
       }
+//      System.out.println("sql:" + sql);
       rs = dbObj.queryResults(sql, params);
       while (rs.next()) {
         prop = new Properties();
         prop.setProperty("dateTime", "" + rs.getTimestamp("dateTime"));
-        prop.setProperty("action", Misc.getString(rs,"action"));
-        prop.setProperty("content", Misc.getString(rs,"content"));
-        prop.setProperty("contentId", Misc.getString(rs,"contentId"));
-        prop.setProperty("ip", Misc.getString(rs,"ip"));
-        prop.setProperty("provider_no", Misc.getString(rs,"provider_no"));
-        prop.setProperty("demographic_no",Misc.getString(rs,"demographic_no"));
+        prop.setProperty("action", dbObj.getString(rs,"action"));
+        prop.setProperty("content", dbObj.getString(rs,"content"));
+        prop.setProperty("contentId", dbObj.getString(rs,"contentId"));
+        prop.setProperty("ip", dbObj.getString(rs,"ip"));
+        prop.setProperty("provider_no", dbObj.getString(rs,"provider_no"));
+        prop.setProperty("demographic_no",dbObj.getString(rs,"demographic_no"));
         vec.add(prop);
       }
 

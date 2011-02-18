@@ -10,11 +10,12 @@ public class SurveySecurityDao {
 	//true = allowed
 	//false = restricted
 	public boolean checkPrivilege(String formName, String providerNo) throws SQLException {
+		DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         java.sql.ResultSet rs;
         
         //check to see if there's a privilege defined
         String sqlCheck = "select count(*) as count from secObjPrivilege where objectName = '_ucf." + formName + "'";
-        rs = DBHandler.GetSQL(sqlCheck);
+        rs = db.GetSQL(sqlCheck);
         if(!rs.next()) {
         	rs.close();
         	return true;
@@ -26,7 +27,7 @@ public class SurveySecurityDao {
         rs.close();
         
         String sql = new String("select r.provider_no,roleUserGroup,privilege from secObjPrivilege p ,secUserRole r where p.roleUserGroup=r.role_name and p.objectName='_ucf."+formName+"' and p.privilege='x' and r.provider_no='"+providerNo+"'");
-        rs = DBHandler.GetSQL(sql);
+        rs = db.GetSQL(sql);
 		if(rs.next()) {
 			rs.close();
 			return true;

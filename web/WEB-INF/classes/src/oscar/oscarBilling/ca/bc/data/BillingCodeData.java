@@ -34,7 +34,6 @@ import java.util.List;
 import org.oscarehr.common.dao.BillingServiceDao;
 import org.oscarehr.common.model.BillingService;
 import org.oscarehr.util.SpringUtils;
-
 import oscar.Misc;
 import oscar.util.SqlUtils;
 
@@ -44,7 +43,7 @@ import oscar.util.SqlUtils;
  */
 public final class BillingCodeData implements Comparable      {
     private static BillingServiceDao billingServiceDao = (BillingServiceDao) SpringUtils.getBean("billingServiceDao");
-  
+
 
   /*
    +-----------------------+-------------+------+-----+---------+----------------+
@@ -60,7 +59,8 @@ public final class BillingCodeData implements Comparable      {
    | specialty             | varchar(15) | YES  |     | NULL    |                |
    | region                | varchar(5)  | YES  |     | NULL    |                |
    | anaesthesia           | char(2)     | YES  |     | NULL    |                |
-   | gstFlag               | tinyint(1)  | NO   |     | 0       |                |
+   | gstFlag               | tinyint(1)  | NO   |     |  0      |                |
+   | termination_date      | date        | YES  |     | 9999-12-31               |
    +-----------------------+-------------+------+-----+---------+----------------+
    */
 
@@ -88,7 +88,7 @@ public final class BillingCodeData implements Comparable      {
   }
 
   public boolean editBillingCode(String servicecode,String desc, String val, String codeId) {
-    boolean retval = true;   
+    boolean retval = true;
     BillingService  billingService = billingServiceDao.find(Integer.parseInt(codeId));
     billingService.setServiceCode(servicecode);
     billingService.setDescription(desc);
@@ -122,7 +122,7 @@ public final class BillingCodeData implements Comparable      {
     billingService.setBillingserviceDate(new Date());
     billingService.setRegion("BC");
     billingService.setAnaesthesia("00");
-    billingService.setGstFlag(false);
+
     billingServiceDao.persist(billingService);
     return retval;
   }
@@ -150,8 +150,8 @@ public final class BillingCodeData implements Comparable      {
 
   }
 
-  
-  
+
+
   public BillingService getBillingCodeByCode(String code){
     List list = billingServiceDao.findBillingCodesByCode( code,"BC");
     //List list = codeSearch("select * from billingservice where service_code like '" +code + "'" );
@@ -160,7 +160,7 @@ public final class BillingCodeData implements Comparable      {
     }
     return (BillingService) list.get(0);
   }
-  
+
   /**
    * Finds private service codes by code id
    * @param code String - the service code
@@ -171,7 +171,7 @@ public final class BillingCodeData implements Comparable      {
     return billingServiceDao.findBillingCodesByCode(code,BillingServiceDao.BC,order);
   }
 
-  
+
 
   public List getBillingCodesLookup(String searchTerm){
     return  SqlUtils.getQueryResultsList("select service_code,description from billingservice where description like '" + Misc.mysqlEscape(searchTerm) + "%'");

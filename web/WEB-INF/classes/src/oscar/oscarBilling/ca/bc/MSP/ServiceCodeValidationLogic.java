@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarBilling.ca.bc.data.BillingFormData.BillingService;
 import oscar.oscarDB.DBHandler;
 import oscar.oscarDemographic.data.DemographicData.Demographic;
@@ -108,20 +106,21 @@ public class ServiceCodeValidationLogic {
    */
   public ServiceCodeValidator getSexValidator(String serviceCode, Demographic d) {
     SexValidator v = new SexValidator(serviceCode, d.getSex());
-    
+    DBHandler db = null;
     ResultSet rs;
     try {
-      
+      db = new DBHandler(DBHandler.OSCAR_DATA);
       String sexQry = "select gender " +
           "from ctl_billingservice_sex_rules " +
           "where service_code = '" + serviceCode + "'";
-      rs = DBHandler.GetSQL(sexQry);
+      rs = db.GetSQL(sexQry);
       if (rs.next()) {
         v.setGender(rs.getString(1));
       }
       rs.close();
     }
-    catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+    catch (SQLException ex) {
+      ex.printStackTrace();
     }
     return v;
   }
@@ -133,22 +132,23 @@ public class ServiceCodeValidationLogic {
    * @return ServiceCodeValidator
    */
   public ServiceCodeValidator getAgeValidator(String serviceCode, Demographic d) {
-    
+    DBHandler db = null;
     ResultSet rs = null;
     AgeValidator v = new AgeValidator(serviceCode, d.getAgeInYears());
     try {
-      
+      db = new DBHandler(DBHandler.OSCAR_DATA);
       String ageQry = "select minAge,maxAge " +
           "from ctl_billingservice_age_rules " +
           "where service_code = '" + serviceCode + "'";
-      rs = DBHandler.GetSQL(ageQry);
+      rs = db.GetSQL(ageQry);
       if (rs.next()) {
         v.setMinAge(rs.getInt(1));
         v.setMaxAge(rs.getInt(2));
       }
       rs.close();
     }
-    catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+    catch (SQLException ex) {
+      ex.printStackTrace();
     }
     return v;
   }
@@ -161,17 +161,17 @@ public class ServiceCodeValidationLogic {
    */
   public int daysSinceLast13050(String demoNo) {
     int ret = 0;
-    
+    DBHandler db = null;
     ResultSet rs = null;
     try {
-      
+      db = new DBHandler(DBHandler.OSCAR_DATA);
       String qry =
           "select TO_DAYS(CURDATE()) - TO_DAYS(CAST(service_date as DATE)) " +
           "from billingmaster " +
           "where demographic_no = '" + demoNo + "' " +
           "and billing_code = '13050'" +
           " and billingstatus not in ('D','R','F')";
-      rs = DBHandler.GetSQL(qry);
+      rs = db.GetSQL(qry);
       int index = 0;
       while (rs.next()) {
         ret = rs.getInt(1);
@@ -182,7 +182,8 @@ public class ServiceCodeValidationLogic {
       }
       rs.close();
     }
-    catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+    catch (SQLException ex) {
+      ex.printStackTrace();
     }
     return ret;
   }
@@ -195,17 +196,17 @@ public class ServiceCodeValidationLogic {
    */
   public int daysSinceCodeLastBilled(String demoNo,String code) {
     int ret = 0;
-    
+    DBHandler db = null;
     ResultSet rs = null;
     try {
-      
+      db = new DBHandler(DBHandler.OSCAR_DATA);
       String qry =
           "select TO_DAYS(CURDATE()) - TO_DAYS(CAST(service_date as DATE)) " +
           "from billingmaster " +
           "where demographic_no = '" + demoNo + "' " +
           "and billing_code = '" + code + "'" +
           " and billingstatus not in ('D','R','F')";    //TODO:  should be more status here.  Need to investigate
-      rs = DBHandler.GetSQL(qry);
+      rs = db.GetSQL(qry);
       int index = 0;
       while (rs.next()) {
         ret = rs.getInt(1);
@@ -216,7 +217,8 @@ public class ServiceCodeValidationLogic {
       }
       rs.close();
     }
-    catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+    catch (SQLException ex) {
+      ex.printStackTrace();
     }
     return ret;
   }
@@ -230,10 +232,10 @@ public class ServiceCodeValidationLogic {
   public boolean hasMore00120Codes(String demoNo, String cnslCode,
                                    String serviceDate) {
     boolean ret = false;
-    
+    DBHandler db = null;
     ResultSet rs = null;
     try {
-      
+      db = new DBHandler(DBHandler.OSCAR_DATA);
       String qry = "SELECT COUNT(*) " +
           "FROM billingmaster " +
           "WHERE demographic_no = '" + demoNo + "'" +
@@ -241,14 +243,15 @@ public class ServiceCodeValidationLogic {
           " AND YEAR(service_date) = YEAR('" +
           DateUtils.convertDate8Char(serviceDate) +
           "') and billingstatus != 'D'";
-      rs = DBHandler.GetSQL(qry);
+      rs = db.GetSQL(qry);
       if (rs.next()) {
         int numCodes = rs.getInt(1);
         ret = numCodes < 4;
       }
       rs.close();
     }
-    catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+    catch (SQLException ex) {
+      ex.printStackTrace();
     }
     return ret;
   }
@@ -309,7 +312,8 @@ public class ServiceCodeValidationLogic {
         }
       }
     }
-    catch (Exception ex) {MiscUtils.getLogger().error("Error", ex);
+    catch (Exception ex) {
+      ex.printStackTrace();
     }
     finally {
       return ret;
@@ -360,7 +364,8 @@ public class ServiceCodeValidationLogic {
          }
        }
      }
-     catch (Exception ex) {MiscUtils.getLogger().error("Error", ex);
+     catch (Exception ex) {
+       ex.printStackTrace();
      }
      finally {
        HashMap availableUnits = new HashMap();
@@ -389,17 +394,17 @@ public class ServiceCodeValidationLogic {
    */
   public String getDateofLast13050(String demoNo) {
     String ret = "";
-    
+    DBHandler db = null;
     ResultSet rs = null;
     try {
-      
+      db = new DBHandler(DBHandler.OSCAR_DATA);
       String qry =
           "select service_date " +
           "from billingmaster " +
           "where demographic_no = '" + demoNo + "' " +
           "and billing_code = '13050'" +
           " and billingstatus not in('D','R','F')";
-      rs = DBHandler.GetSQL(qry);
+      rs = db.GetSQL(qry);
       if (rs.next()) {
         ret = rs.getString(1);
       }
@@ -407,13 +412,15 @@ public class ServiceCodeValidationLogic {
         ret = "";
       }
     }
-    catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+    catch (SQLException ex) {
+      ex.printStackTrace();
     }
     finally {
       try {
         rs.close();
       }
-      catch (SQLException ex1) {MiscUtils.getLogger().error("Error", ex1);
+      catch (SQLException ex1) {
+        ex1.printStackTrace();
       }
     }
     return ret;

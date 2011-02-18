@@ -53,7 +53,7 @@ boolean bTodayDate = false;
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -62,13 +62,9 @@ boolean bTodayDate = false;
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>CALENDAR</title>
-<% if (session.getAttribute("mobileOptimized") != null) { %>
-    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width" />
-<% } %>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <LINK REL="StyleSheet" HREF="../web.css" TYPE="text/css">
-<style type="text/css">
-    td, th { font-size: 14px; }
-</style>
 <script language="JavaScript">
 <!--
 
@@ -188,8 +184,8 @@ for (int i=0; i<dateGrid.length; i++) {
 %>
 	<td align="center" bgcolor='<%=bTodayDate?"gold":"#EEEEFF"%>'><a
 		href="#"
-		onClick="typeInDate(<%=year%>,<%=month%>,<%= dateGrid[i][j] %>)">
-	<%= dateGrid[i][j] %></a></td>
+		onClick="typeInDate(<%=year%>,<%=month%>,<%= dateGrid[i][j] %>)">&nbsp;&nbsp;
+	<%= dateGrid[i][j] %> &nbsp;&nbsp; </a></td>
 	<%
 		}  
 	}

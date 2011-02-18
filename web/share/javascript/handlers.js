@@ -64,7 +64,7 @@ function fileDialogComplete(numFilesSelected, numFilesQueued) {
 		if (numFilesSelected > 0) {
 			document.getElementById(this.customSettings.cancelButtonId).disabled = false;
 		}
-
+		
 		/* I want auto start the upload and I can do that here */
 		this.startUpload();
 	} catch (ex)  {
@@ -84,7 +84,7 @@ function uploadStart(file) {
 		progress.toggleCancel(true, this);
 	}
 	catch (ex) {}
-
+	
 	return true;
 }
 

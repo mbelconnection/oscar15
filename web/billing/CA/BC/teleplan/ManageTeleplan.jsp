@@ -18,12 +18,12 @@
  * 
      * This software was written for the 
  * Department of Family Medicine 
- * McMaster University test2
+ * McMaster Unviersity test2
  * Hamilton 
  * Ontario, Canada 
  */
 -->
-<%@page import="oscar.oscarDemographic.data.*,java.util.*,oscar.oscarBilling.ca.bc.Teleplan.*"%>
+<%@page  import="oscar.oscarDemographic.data.*,java.util.*,oscar.oscarBilling.ca.bc.Teleplan.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %>

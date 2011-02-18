@@ -77,7 +77,9 @@ public class EctImmDeleteImmScheduleAction extends Action {
          Document doc = UtilXML.parseXML(imm);
          NodeList sets = doc.getElementsByTagName("immunizationSet");
          Element set = (Element) sets.item(setnum);
-
+         
+         //System.out.println(set.getAttribute("name"));
+         
          if (method.equals("delete")){
             set.setAttribute("status", "deleted");
          }else{
@@ -87,7 +89,7 @@ public class EctImmDeleteImmScheduleAction extends Action {
          
          
          String sXML = UtilXML.toXML(doc);
-
+         //System.out.println(sXML);
          //EctImmImmunizationData imm = new EctImmImmunizationData();
          immData.saveImmunizations(demographicNo, providerNo, sXML);
       }

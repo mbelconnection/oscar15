@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -36,7 +36,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarReport.bean.RptByExampleQueryBeanHandler;
@@ -57,16 +56,16 @@ public class RptByExamplesFavoriteAction extends Action {
                     frm.setFavoriteName(frm.getNewName());
                 else{
                     try {
-                                                    
+                        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);                            
                         
                         String sql = "SELECT * from reportByExamplesFavorite WHERE query LIKE '" + StringEscapeUtils.escapeSql(frm.getNewQuery()) + "'";
-                        MiscUtils.getLogger().debug("HERE "+sql);
-                        ResultSet rs = DBHandler.GetSQL(sql);
+                        System.out.println("HERE "+sql);
+                        ResultSet rs = db.GetSQL(sql);
                         if(rs.next())
                             frm.setFavoriteName(rs.getString("name"));
                     }
                     catch(SQLException e) {
-                        MiscUtils.getLogger().error("Error", e);            
+                        System.out.println(e.getMessage());            
                     }
                 }
                 return mapping.findForward("edit");    
@@ -78,15 +77,15 @@ public class RptByExamplesFavoriteAction extends Action {
             }
         }
         else{
-            MiscUtils.getLogger().debug("STEP:1 "+frm.getQuery());
+            System.out.println("STEP:1 "+frm.getQuery());
             String favoriteName = frm.getFavoriteName();
             String query = frm.getQuery();   
-            //oscar.oscarReport.data.RptByExampleData exampleData  = new oscar.oscarReport.data.RptByExampleData();
+            oscar.oscarReport.data.RptByExampleData exampleData  = new oscar.oscarReport.data.RptByExampleData();       
             //String queryWithEscapeChar = exampleData.replaceSQLString ("\"","\'",query);
            
             StringEscapeUtils strEscUtils = new StringEscapeUtils();                                
             String queryWithEscapeChar = strEscUtils.escapeSql(query   );///queryWithEscapeChar);
-            MiscUtils.getLogger().debug("escapeSql: " + queryWithEscapeChar);
+            System.out.println("escapeSql: " + queryWithEscapeChar);
             write2Database(providerNo, favoriteName, queryWithEscapeChar);            
         }
         RptByExampleQueryBeanHandler hd = new RptByExampleQueryBeanHandler(providerNo);  
@@ -97,29 +96,29 @@ public class RptByExamplesFavoriteAction extends Action {
     public void write2Database(String providerNo, String favoriteName, String query){
         if (query!=null && query.compareTo("")!=0){
             try {
-                
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                 
                 //StringEscapeUtils strEscUtils = new StringEscapeUtils();
                                 
                 //query = strEscUtils.escapeSql(query);
-                MiscUtils.getLogger().debug("Fav "+favoriteName+" query "+query);
+                System.out.println("Fav "+favoriteName+" query "+query);
                 
                 
                 String sql = "SELECT * from reportByExamplesFavorite WHERE providerNo = '"+providerNo+"' and name LIKE '" + favoriteName + "' OR query LIKE '" + query + "'";
-                ResultSet rs = DBHandler.GetSQL(sql);
+                ResultSet rs = db.GetSQL(sql);
                 if(!rs.next()){
                     sql = "INSERT INTO reportByExamplesFavorite(providerNo, name, query) VALUES('" + providerNo + "','" 
                           + favoriteName + "','" + query + "')";
-                    DBHandler.RunSQL(sql);
+                    db.RunSQL(sql);
                 }
                 else{
                     sql = "UPDATE reportByExamplesFavorite SET name='" + favoriteName + "', query='" + query + 
                           "' WHERE id ='" + rs.getString("id") + "'";
-                    DBHandler.RunSQL(sql);
+                    db.RunSQL(sql);
                 }
             }
             catch(SQLException e) {
-                MiscUtils.getLogger().error("Error", e);            
+                System.out.println(e.getMessage());            
             }
         }
     }
@@ -127,13 +126,13 @@ public class RptByExamplesFavoriteAction extends Action {
     public void deleteQuery(String id){
         
         try {
-                               
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);                   
 
             String sql = "DELETE FROM reportByExamplesFavorite WHERE id = '" + id + "'";                
-            DBHandler.RunSQL(sql);
+            db.RunSQL(sql);
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);            
+            System.out.println(e.getMessage());            
         }
 
     }

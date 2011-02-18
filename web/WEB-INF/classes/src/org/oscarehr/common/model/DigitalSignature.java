@@ -30,7 +30,7 @@ import javax.persistence.Id;
 public class DigitalSignature extends AbstractModel<Integer>{
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id = null;
 
 	/** The facility in which this was captured */
@@ -48,8 +48,7 @@ public class DigitalSignature extends AbstractModel<Integer>{
 	/** Image of the signature as a jpg */
 	private byte[] signatureImage = null;
 
-	@Override
-    public Integer getId() {
+	public Integer getId() {
 		return id;
 	}
 
@@ -93,4 +92,18 @@ public class DigitalSignature extends AbstractModel<Integer>{
 		this.signatureImage = signatureImage;
 	}
 
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DigitalSignature redirectLink = (DigitalSignature) o;
+
+		if (id != null ? !id.equals(redirectLink.id) : redirectLink.id != null) return false;
+
+		return true;
+	}
+
+	public int hashCode() {
+		return (id != null ? id.hashCode() : 0);
+	}
 }

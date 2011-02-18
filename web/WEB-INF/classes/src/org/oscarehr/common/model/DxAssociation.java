@@ -18,7 +18,7 @@ import javax.persistence.Transient;
 public class DxAssociation extends AbstractModel<Integer> implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id")
 	private Integer id = null;
 	

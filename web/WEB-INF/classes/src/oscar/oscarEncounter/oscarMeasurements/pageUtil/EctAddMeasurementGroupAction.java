@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -27,6 +27,8 @@ package oscar.oscarEncounter.oscarMeasurements.pageUtil;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -36,10 +38,10 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 import oscar.oscarDB.DBHandler;
+import oscar.oscarMessenger.util.MsgStringQuote;
 
 
 public class EctAddMeasurementGroupAction extends Action {
@@ -51,37 +53,37 @@ public class EctAddMeasurementGroupAction extends Action {
         request.getSession().setAttribute("EctAddMeasurementGroupForm", frm);
         String groupName = frm.getGroupName();
         request.getSession().setAttribute("groupName", groupName);
-        
+        MsgStringQuote str = new MsgStringQuote();
         String requestId = "";
         
-       
-       
+        List messages = new LinkedList();
+        boolean valid = true;
                 
         if(frm.getForward()!=null){
             try{
-                                                                                        
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);                                                                        
                 
                 if (frm.getForward().compareTo("add")==0) {
-                    MiscUtils.getLogger().debug("the add button is pressed");
+                    System.out.println("the add button is pressed");
                     String[] selectedAddTypes = frm.getSelectedAddTypes();  
                     if(selectedAddTypes != null){
                         for(int i=0; i<selectedAddTypes.length; i++){
-                            MiscUtils.getLogger().debug(selectedAddTypes[i]);
+                            System.out.println(selectedAddTypes[i]);
                             String sql = "INSERT INTO measurementGroup (name, typeDisplayName) VALUES('" + groupName + "','" + selectedAddTypes[i] +"')";
-                            MiscUtils.getLogger().debug(" sql statement "+sql);
-                            DBHandler.RunSQL(sql);                                
+                            System.out.println(" sql statement "+sql);
+                            db.RunSQL(sql);                                
                         }
                     }
                 }
                 else if (frm.getForward().compareTo("delete")==0){
-                    MiscUtils.getLogger().debug("the delete button is pressed");
+                    System.out.println("the delete button is pressed");
                     String[] selectedDeleteTypes = frm.getSelectedDeleteTypes();  
                     if(selectedDeleteTypes != null){
                         for(int i=0; i<selectedDeleteTypes.length; i++){
-                            MiscUtils.getLogger().debug(selectedDeleteTypes[i]);
+                            System.out.println(selectedDeleteTypes[i]);
                             String sql = "DELETE  FROM `measurementGroup` WHERE name='"+ groupName +"' AND typeDisplayName='" + selectedDeleteTypes[i] + "'";                                        
-                            MiscUtils.getLogger().debug(" sql statement "+sql);
-                            DBHandler.RunSQL(sql);                                
+                            System.out.println(" sql statement "+sql);
+                            db.RunSQL(sql);                                
                         }
                     }
                 }
@@ -98,14 +100,14 @@ public class EctAddMeasurementGroupAction extends Action {
                 else
                     throw new SQLException("ERROR: Database " + db_type + " unrecognized.");
                     
-                ResultSet rs = DBHandler.GetSQL(dbSpecificCommand);
+                ResultSet rs = db.GetSQL(dbSpecificCommand);
                 if(rs.next())
                     requestId = Integer.toString(rs.getInt(1));
             }
            
             catch(SQLException e)
             {
-                MiscUtils.getLogger().error("Error", e);
+                System.out.println(e.getMessage());
             }
      
         }                          

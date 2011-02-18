@@ -18,11 +18,13 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 --%>
+<%@ page contentType="text/html; charset=UTF-8"%>
+<%@ page language="java"%>
 <%@ page import="oscar.util.*, oscar.form.*, oscar.form.data.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
@@ -62,8 +64,11 @@
 %>
 
 <html:html locale="true">
+<% response.setHeader("Cache-Control","no-cache");%>
+
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<meta content="text/html;  charset=UTF-8" http-equiv="Content-Type">
 <title>Rourke2006 Record 1</title>
 <link rel="stylesheet" type="text/css" href="rourkeStyle.css">
 <!-- calendar stylesheet -->

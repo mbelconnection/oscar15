@@ -24,8 +24,6 @@ package org.caisi.model;
 
 import java.util.Date;
 
-import org.oscarehr.util.MiscUtils;
-
 public class IssueAdmin extends BaseObject {
   private Long id;
   private String code;
@@ -89,6 +87,6 @@ public class IssueAdmin extends BaseObject {
 				this.update_date = formatter.parse(update_date_s);
 			else
 				this.update_date = new Date();
-	    }catch(Exception e){ MiscUtils.getLogger().error("Invalid issue update date", e);}
+	    }catch(Exception e){ System.out.println("Invalid issue update date"); e.printStackTrace();}
 	}
 }

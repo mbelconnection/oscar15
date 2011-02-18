@@ -24,7 +24,8 @@
   * Ontario, Canada
   */
 -->
-<%@page import="java.sql.*" errorPage=""%>
+<%@page contentType="text/html; charset=iso-8859-1" language="java"
+	import="java.sql.*" errorPage=""%>
 <%@page
 	import="java.math.*, java.util.*, java.sql.*, oscar.*, java.net.*,oscar.oscarBilling.ca.bc.MSP.*,oscar.oscarBilling.ca.bc.data.*;"%>
 <%@taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>

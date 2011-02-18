@@ -19,7 +19,7 @@
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
 <jsp:useBean id="SxmlMisc" class="oscar.SxmlMisc" scope="session" />
-<%@ include file="dbReport.jspf"%>
+<%@ include file="dbReport.jsp"%>
 <%
 GregorianCalendar now=new GregorianCalendar();
   int curYear = now.get(Calendar.YEAR);
@@ -63,7 +63,7 @@ GregorianCalendar now=new GregorianCalendar();
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -75,6 +75,9 @@ GregorianCalendar now=new GregorianCalendar();
 	key="oscarReport.oscarReportCatchment.title" /></title>
 <link rel="stylesheet" href="oscarReport.css">
 <link rel="stylesheet" type="text/css" media="all" href="../share/css/extractedFromPages.css"  />
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
+
 <script language="JavaScript">
 <!--
  
@@ -96,6 +99,9 @@ function refresh() {
 }
 //-->
 </script>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 
 <body bgcolor="#FFFFFF" text="#000000" leftmargin="0" rightmargin="0"

@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.caisi.model.Role;
 import org.oscarehr.PMmodule.dao.ProgramDao;
@@ -39,7 +40,7 @@ import org.oscarehr.util.SpringUtils;
 
 public class ProviderServiceReportUIBean {
 
-	private static Logger logger = MiscUtils.getLogger();
+	Logger logger = LogManager.getLogger(ProviderServiceReportUIBean.class);
 
 	private ProgramDao programDao = (ProgramDao) SpringUtils.getBean("programDao");
 	private RoleDAO roleDao = (RoleDAO) SpringUtils.getBean("roleDAO");

@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -102,6 +102,8 @@ public final class FrmPdfGraphicAR extends FrmPdfGraphic {
 		yNum = deltaY * (yNum - fStartY);
 
 		prop.setProperty("" + xNum, "" + yNum);
+		//System.out.println(xNum + " : " + yNum + "|" + deltaX + ":" +
+		// deltaY);
 		return;
 	}
 
@@ -182,7 +184,7 @@ public final class FrmPdfGraphicAR extends FrmPdfGraphic {
 			return false;
 
 		int N = str.length();
-		StringBuilder sb = new StringBuilder(N);
+		StringBuffer sb = new StringBuffer(N);
 		for (int i = 0; i < N; i++) {
 			char c = str.charAt(i);
 			if (c >= '0' && c <= '9')
@@ -203,7 +205,7 @@ public final class FrmPdfGraphicAR extends FrmPdfGraphic {
 		if (sb.length > 0) {
 			ret = false;
 		}
-
+		//System.out.println("array length is:" + sb.length);
 		return ret;
 	}
 }

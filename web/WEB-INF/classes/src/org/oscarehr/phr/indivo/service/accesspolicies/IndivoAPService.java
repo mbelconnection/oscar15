@@ -5,18 +5,22 @@
 
 package org.oscarehr.phr.indivo.service.accesspolicies;
 
+import com.sun.xacml.AbstractPolicy;
+import com.sun.xacml.PolicySet;
+import com.sun.xacml.combine.PolicyCombiningAlgorithm;
 import java.io.InputStream;
+//import java.lang.String; ??
+import java.lang.String;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.indivo.security.ProfileUtils;
 import org.indivo.security.SecurityUtils;
 import org.indivo.xml.JAXBUtils;
@@ -29,18 +33,13 @@ import org.indivo.xml.security.ProfileCollection;
 import org.indivo.xml.security.ProfileCollectionType;
 import org.oscarehr.phr.PHRAuthentication;
 import org.oscarehr.phr.PHRConstants;
+import org.oscarehr.phr.indivo.IndivoConstantsImpl;
 import org.oscarehr.phr.indivo.service.impl.IndivoServiceImpl;
 import org.oscarehr.phr.model.PHRAction;
 import org.oscarehr.phr.model.PHRDocument;
 import org.oscarehr.phr.service.PHRService;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarProvider.data.ProviderData;
 import oscar.util.StringUtils;
-
-import com.sun.xacml.AbstractPolicy;
-import com.sun.xacml.PolicySet;
-import com.sun.xacml.combine.PolicyCombiningAlgorithm;
 
 /**
  *
@@ -58,7 +57,7 @@ public class IndivoAPService extends IndivoServiceImpl {
      * All this occurs in one stage for sending demographic access policies
      */
     
-    private static Logger log = MiscUtils.getLogger(); ///IndivoServiceImpl.class
+    private static Log log = LogFactory.getLog(IndivoAPService.class); ///IndivoServiceImpl.class
     
     public static final String LEVEL_NOT_SET = "";
     public static final String LEVEL_PATIENT = "org:indivo:profile:patient";
@@ -80,9 +79,10 @@ public class IndivoAPService extends IndivoServiceImpl {
     //before it is queued and sent*/
     public void proposeAccessPolicy(String providerOscarId, String permissionRecipientPhrId, String newPolicy, String providerIdPerformingAction) {
         PHRAction action = new PHRAction();
+        PHRConstants phrConstants = new IndivoConstantsImpl();
         action.setActionType(PHRAction.ACTION_UPDATE);
         action.setStatus(PHRAction.STATUS_APPROVAL_PENDING);
-        action.setPhrClassification(PHRConstants.DOCTYPE_ACCESSPOLICIES());
+        action.setPhrClassification(phrConstants.DOCTYPE_ACCESSPOLICIES());
         action.setDateQueued(new Date());
         action.setReceiverOscar(providerOscarId);
         //TOTHINK: might have to get Id later
@@ -105,7 +105,7 @@ public class IndivoAPService extends IndivoServiceImpl {
         this.denyAction(action);
     }
     
-    
+        
     //user who is giving permissions must be authenticated with the indivo server (valid auth object)
     //permissionRecipientId is the user to whom permissions will be granted
     //queues as an action, awaits provider approval
@@ -138,7 +138,8 @@ public class IndivoAPService extends IndivoServiceImpl {
     
     //PROVIDER needs to be authed with the indivoServer, and providerNo must be set in the auth object
     public void packageAllAccessPolicies(PHRAuthentication auth) throws Exception {
-        List<PHRAction> policiesOnHold = phrActionDAO.getActionsByStatus(PHRAction.STATUS_ON_HOLD, auth.getProviderNo(), PHRConstants.DOCTYPE_ACCESSPOLICIES());
+        PHRConstants phrConstants = new IndivoConstantsImpl();
+        List<PHRAction> policiesOnHold = phrActionDAO.getActionsByStatus(PHRAction.STATUS_ON_HOLD, auth.getProviderNo(), phrConstants.DOCTYPE_ACCESSPOLICIES());
         for (PHRAction curPolicy: policiesOnHold) {
             packageAccessPolicy(auth, curPolicy);
         }

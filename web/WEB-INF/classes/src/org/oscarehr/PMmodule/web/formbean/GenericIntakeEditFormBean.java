@@ -28,11 +28,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.util.LabelValueBean;
+import org.oscarehr.common.model.Demographic;
 import org.oscarehr.PMmodule.model.Intake;
 import org.oscarehr.PMmodule.model.IntakeAnswerElement;
 import org.oscarehr.PMmodule.model.IntakeNodeJavascript;
 import org.oscarehr.PMmodule.model.Program;
-import org.oscarehr.common.model.Demographic;
 
 public class GenericIntakeEditFormBean extends ActionForm {
 
@@ -136,7 +136,7 @@ public class GenericIntakeEditFormBean extends ActionForm {
 	}
 
 	public void setProgramInDomainLabel(boolean hasProgramsInDomain) {
-		StringBuilder buffer = new StringBuilder();
+		StringBuffer buffer = new StringBuffer();
 
 		if (hasProgramsInDomain) {
 			buffer.append(PROGRAM_IN_DOMAIN_LABEL);
@@ -185,7 +185,7 @@ public class GenericIntakeEditFormBean extends ActionForm {
 	}
 
 	public void setExternalProgramLabel(boolean hasExternalPrograms) {
-		StringBuilder buffer = new StringBuilder();
+		StringBuffer buffer = new StringBuffer();
 
 		if (hasExternalPrograms) {
 			buffer.append(EXTERNAL_PROGRAM_LABEL);
@@ -229,7 +229,7 @@ public class GenericIntakeEditFormBean extends ActionForm {
 	}
 
 	public void setBedCommunityProgramLabel(boolean hasBedPrograms, boolean hasCommunityPrograms) {
-		StringBuilder buffer = new StringBuilder();
+		StringBuffer buffer = new StringBuffer();
 
 		if (hasBedPrograms) {
 			buffer.append(BED_PROGRAM_LABEL);

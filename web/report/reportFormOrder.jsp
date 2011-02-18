@@ -37,13 +37,17 @@ String reportName = (new RptReportItem()).getReportName(reportId);
 // get form parameters
 RptReportConfigData tableObj = new RptReportConfigData();
 
-// change order action 
+// change order action //System.out.println(request.getParameter("submit"));
 if (request.getParameter("submit") != null && request.getParameter("submit").equals("Move here")) {
 	String itemId = request.getParameter("nameSelected") != null ? request.getParameter("nameSelected") : "";
 	String newPos = request.getParameter("position") != null ? request.getParameter("position") : "";
 	tableObj.updateRecordOrder(SAVE_AS, reportId, itemId, newPos);
 }
 // get display data
+//Vector [] vecConfig = tableObj.getConfigFieldName(SAVE_AS, reportId);
+//Vector vecConfigName = vecConfig[0];
+//Vector vecConfigCaption = vecConfig[1];getConfigNameList
+//System.out.println("name");
 
 Vector vecConfigObj = tableObj.getConfigObj(SAVE_AS, reportId);
 %>
@@ -53,6 +57,8 @@ Vector vecConfigObj = tableObj.getConfigObj(SAVE_AS, reportId);
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Report Field Order</title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <LINK REL="StyleSheet" HREF="../web.css" TYPE="text/css">
 <script language="JavaScript">
 

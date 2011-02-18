@@ -19,7 +19,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -36,7 +36,7 @@
 </security:oscarSec>
 
 <security:oscarSec roleName="<%=roleName$%>"
-	objectName='<%="_demographic$"+demographic$%>' rights="o"
+	objectName="<%="_demographic$"+demographic$%>" rights="o"
 	reverse="<%=false%>">
 You have no rights to access the data!
 <% response.sendRedirect("../noRights.html"); %>
@@ -78,6 +78,8 @@ You have no rights to access the data!
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message
 	key="demographic.demographiceditdemographic.title" /></title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <link rel="stylesheet" type="text/css"
 	href="../oscarEncounter/encounterStyles.css">
 
@@ -349,6 +351,7 @@ while (rs.next()) {
                                                       String	sql   = "select * from billingreferral order by last_name, first_name" ;
                                                       oscar.oscarBilling.ca.on.data.BillingONDataHelp dbObj = new oscar.oscarBilling.ca.on.data.BillingONDataHelp();
                                                       ResultSet rs1 = dbObj.searchDBRecord(sql);
+                                                            // System.out.println(sql);
                                                       Properties prop = null;
                                                       Vector vecRef = new Vector();
                                                       while (rs1.next()) {
@@ -506,6 +509,7 @@ while (rs.next()) {
 <%
     }
   }
+  apptMainBean.closePstmtConn();
 %>
 
 </body>

@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -29,8 +29,6 @@
 
 package oscar.oscarClinic;
 import java.sql.SQLException;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 /**
@@ -79,29 +77,29 @@ public class ClinicData {
     void fillClinicData(){
         if (!filled){
             try{
-               
+               DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                java.sql.ResultSet rs;
                String sql = "select * from clinic ";
-               rs = DBHandler.GetSQL(sql);
+               rs = db.GetSQL(sql);
                 
                if(rs.next()){
-                 clinic_no              = oscar.Misc.getString(rs, "clinic_no"); 
-                 clinic_name            = oscar.Misc.getString(rs, "clinic_name");  
-                 clinic_address         = oscar.Misc.getString(rs, "clinic_address"); 
-                 clinic_city            = oscar.Misc.getString(rs, "clinic_city"); 
-                 clinic_postal          = oscar.Misc.getString(rs, "clinic_postal"); 
-                 clinic_phone           = oscar.Misc.getString(rs, "clinic_phone"); 
-                 clinic_fax             = oscar.Misc.getString(rs, "clinic_fax"); 
-                 clinic_location_code   = oscar.Misc.getString(rs, "clinic_location_code"); 
-                 clinic_province        = oscar.Misc.getString(rs, "clinic_province"); 
-                 clinic_delim_phone     = oscar.Misc.getString(rs, "clinic_delim_phone"); 
-                 clinic_delim_fax       = oscar.Misc.getString(rs, "clinic_delim_fax"); 
+                 clinic_no              = db.getString(rs,"clinic_no"); 
+                 clinic_name            = db.getString(rs,"clinic_name");  
+                 clinic_address         = db.getString(rs,"clinic_address"); 
+                 clinic_city            = db.getString(rs,"clinic_city"); 
+                 clinic_postal          = db.getString(rs,"clinic_postal"); 
+                 clinic_phone           = db.getString(rs,"clinic_phone"); 
+                 clinic_fax             = db.getString(rs,"clinic_fax"); 
+                 clinic_location_code   = db.getString(rs,"clinic_location_code"); 
+                 clinic_province        = db.getString(rs,"clinic_province"); 
+                 clinic_delim_phone     = db.getString(rs,"clinic_delim_phone"); 
+                 clinic_delim_fax       = db.getString(rs,"clinic_delim_fax"); 
                   
                }
             }
             catch(SQLException e)
             {
-                MiscUtils.getLogger().error("Error", e);
+                System.out.println(e.getMessage());
             } 
             filled = true;
         }

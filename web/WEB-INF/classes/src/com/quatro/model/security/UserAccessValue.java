@@ -9,7 +9,7 @@
  *     <Quatro Group Software Systems inc.>  <OSCAR Team>
  *******************************************************************************/
 package com.quatro.model.security;
-import java.io.Serializable;
+import java.io.*;
 
 public class UserAccessValue implements Serializable {
 		

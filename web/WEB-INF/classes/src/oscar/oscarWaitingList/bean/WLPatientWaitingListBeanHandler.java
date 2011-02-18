@@ -21,7 +21,7 @@
 // *
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -31,8 +31,6 @@ package oscar.oscarWaitingList.bean;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -48,24 +46,24 @@ public class WLPatientWaitingListBeanHandler {
         
         boolean verdict = true;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs; 
             String sql = "SELECT wn.ID, wn.name, w.position, w.note, w.onListSince FROM waitingListName wn, waitingList w WHERE wn.ID = w.ListID AND demographic_no ='"+ demographicNo + "'" + "and w.is_history<>'Y'";
-            for(rs = DBHandler.GetSQL(sql); rs.next(); )
+            for(rs = db.GetSQL(sql); rs.next(); )
             {                
                 WLPatientWaitingListBean wLBean = new WLPatientWaitingListBean( demographicNo,
-                                                                                oscar.Misc.getString(rs, "ID"),
-                                                                                oscar.Misc.getString(rs, "name"),
-                                                                                oscar.Misc.getString(rs, "position"), 
-                                                                                oscar.Misc.getString(rs, "note"),
-                                                                                oscar.Misc.getString(rs, "onListSince"));   
+                                                                                db.getString(rs,"ID"),
+                                                                                db.getString(rs,"name"),
+                                                                                db.getString(rs,"position"), 
+                                                                                db.getString(rs,"note"),
+                                                                                db.getString(rs,"onListSince"));   
                 patientWaitingListVector.add(wLBean);
             }
                             
             rs.close();
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;

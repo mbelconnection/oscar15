@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -29,18 +29,15 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Properties;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts.util.MessageResources;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarResearch.oscarDxResearch.bean.dxResearchBean;
 import oscar.oscarResearch.oscarDxResearch.bean.dxResearchBeanHandler;
 import oscar.util.DateUtils;
-import oscar.util.OscarRoleObjectPrivilege;
 import oscar.util.StringUtils;
 
 /**
@@ -51,14 +48,7 @@ public class EctDisplayDxAction extends EctDisplayAction {
     private String cmd = "Dx";
     
     public boolean getInfo(EctSessionBean bean, HttpServletRequest request, NavBarDisplayDAO Dao, MessageResources messages) {
-    	boolean a = true;
-    	Vector v = OscarRoleObjectPrivilege.getPrivilegeProp("_newCasemgmt.DxRegistry");
-        String roleName = (String)request.getSession().getAttribute("userrole") + "," + (String) request.getSession().getAttribute("user");
-        a = OscarRoleObjectPrivilege.checkPrivilege(roleName, (Properties) v.get(0), (Vector) v.get(1));
-    	if(!a) {
-    		return true; //Dx link won't show up on new CME screen.
-    	} else {
-    	
+
         //set lefthand module heading and link
         String winName = "Disease" + bean.demographicNo;
         String url = "popupPage(580,900,'" + winName + "','" + request.getContextPath() + "/oscarResearch/oscarDxResearch/setupDxResearch.do?demographicNo=" + bean.demographicNo + "&providerNo=" + bean.providerNo + "&quickList=')";        
@@ -96,7 +86,7 @@ public class EctDisplayDxAction extends EctDisplayAction {
                 item.setDate(date);
             }
             catch(ParseException ex ) {
-                MiscUtils.getLogger().debug("EctDisplayDxAction: Error creating date " + ex.getMessage());
+                System.out.println("EctDisplayDxAction: Error creating date " + ex.getMessage());
                 serviceDateStr = "Error";
                 //date = new Date(System.currentTimeMillis());
                 date = null;
@@ -111,7 +101,6 @@ public class EctDisplayDxAction extends EctDisplayAction {
         }
         Dao.sortItems(NavBarDisplayDAO.DATESORT_ASC);
         return true;
-    	}
     }
     
     public String getCmd() {

@@ -52,7 +52,7 @@ import javax.persistence.Table;
 @Table(name = "diagnosticcode")
 public class BillingDxCode {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "diagnosticcode_no")
     private int diagnosticcodeNo;
     @Column(name = "diagnostic_code")

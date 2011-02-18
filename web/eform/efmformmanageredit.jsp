@@ -4,7 +4,7 @@
   String deepColor = "#CCCCFF" , weakColor = "#EEEEFF" ;
 %>
 <%@ page
-	import="oscar.eform.data.*, oscar.eform.*, java.util.*, oscar.util.*,java.lang.String,org.apache.commons.lang.StringEscapeUtils"%>
+	import="oscar.eform.data.*, oscar.eform.*, java.util.*, oscar.util.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <!--  
@@ -47,28 +47,23 @@ if (request.getAttribute("submitted") != null) {
    if (curform.get("formName") == null) curform.put("formName", "");
    if (curform.get("formSubject") == null) curform.put("formSubject", "");
    if (curform.get("formFileName") == null) curform.put("formFileName", "");
-   if (curform.get("roleType") == null) curform.put("roleType", "");
-   
-   if (request.getParameter("formHtml") != null){
-       //load html from hidden form from eformGenerator.jsp,the html is then injected into edit-eform
-      curform.put("formHtml",request.getParameter("formHtml"));
-   }
+   if (curform.get("formHtml") == null) curform.put("formHtml", "");
    if (curform.get("formDate") == null) curform.put("formDate", "--");
    if (curform.get("formTime") == null) curform.put("formTime", "--");
    if (curform.get("patientIndependent") ==null) curform.put("patientIndependent", false);
-   boolean patientIndependent = (Boolean) curform.get("patientIndependent");
+   Boolean patientIndependent = (Boolean) curform.get("patientIndependent");
    
    String formHtmlRaw = (String) curform.get("formHtml");
    String formHtml = "";
    if (request.getAttribute("formHtml") != null) {
        formHtml = (String) request.getAttribute("formHtml");
    }
-   formHtml = UtilMisc.rhtmlEscape(formHtmlRaw);
-   formHtml = UtilMisc.htmlEscape(formHtml);
+   formHtml = UtilMisc.htmlEscape(formHtmlRaw);
 %>
 <html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<meta http-equiv="Cache-Control" content="no-cache" />
 <title><bean:message key="eform.edithtml.msgEditEform" /></title>
 <link rel="stylesheet" href="../share/css/OscarStandardLayout.css">
 <link rel="stylesheet" href="../share/css/eformStyle.css">
@@ -122,22 +117,6 @@ function disablenupload() {
 			<font class="warning"><bean:message key="<%=formNameMissing%>" /></font> <%} else if (errors.containsKey("formNameExists")) { %>
 			<font class="warning"><bean:message key="<%=formNameMissing%>" /></font> <%} %>
 			</td>
-			<th><bean:message key="eform.uploadhtml.btnRoleType"/></th>
-			<td><select name="roleType">
-				<option value="">- select one -</option>
-                <%  ArrayList roleList = EFormUtil.listSecRole(); 
-                	String selected = "";
-					for (int i=0; i<roleList.size(); i++) {  
-						selected = "";
-						if(roleList.get(i).equals(curform.get("roleType"))) {
-							selected = "selected";
-						}
-  				%>  			
-  					<option value="<%=roleList.get(i) %>" <%= selected%> %><%=roleList.get(i) %></option>
-                                        	
-                <%} %>
-                </select>
-            </td>
 			<th style="text-align: right;"><bean:message
 				key="eform.uploadhtml.patientIndependent" /><input type="checkbox" name="patientIndependent" value="true"
                                    <%= patientIndependent?"checked":"" %> /></th>
@@ -174,7 +153,7 @@ function disablenupload() {
 		<tr height="100%">
 			<th valign="top" style="text-align: right;"><bean:message key="eform.edithtml.msgEditHtml" />:</th>
 			<td colspan="2"><textarea style="width: 100%; height: 100%;"
-			wrap="off" name="formHtml"><%= formHtml%></textarea></td>
+				wrap="off" name="formHtml"><%= formHtml%></textarea></td>
 		</tr>
 		<tr>
 			<th style="text-align: right;"><bean:message key="eform.edithtml.frmSubmit" />:</th>

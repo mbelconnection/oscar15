@@ -1,22 +1,23 @@
 package org.oscarehr.PMmodule.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oscarehr.PMmodule.dao.ClientDao;
 import org.oscarehr.PMmodule.model.Intake;
 import org.oscarehr.PMmodule.service.GenericIntakeManager;
 import org.oscarehr.PMmodule.service.StreetHealthReportManager;
 import org.oscarehr.common.model.Demographic;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public class StreetHealthReportManagerImpl implements StreetHealthReportManager {
 
-	private Logger log=MiscUtils.getLogger();
+	private Log log = LogFactory.getLog(StreetHealthReportManagerImpl.class);
 
 	private ClientDao clientDao;
 	private GenericIntakeManager intakeMgr;
@@ -35,7 +36,7 @@ public class StreetHealthReportManagerImpl implements StreetHealthReportManager 
 	        if (beginDate == null && endDate == null) {
 	            return new ArrayList();
 	        }
-	        
+	        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
 	        List results = new ArrayList();
 
 	        if (log.isDebugEnabled()) {

@@ -3,6 +3,7 @@ package oscar.oscarEncounter.oscarMeasurements.dao;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedMap;
 
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBean;
@@ -18,11 +19,4 @@ public interface MeasurementsDao {
 			String demo);
 	
 	public SortedMap<String,String> getPatientMeasurementTypeDescriptions(String demo);
-	
-	public HashMap<String,Measurements> getMeasurements(String demo, String[] types);
-	
-	public List<Measurements> getMeasurements(String demo);
-	
-	public List<Measurements> getMeasurements(String demo,Date startDate, Date endDate);
-	
 }

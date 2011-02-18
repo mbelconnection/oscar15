@@ -29,7 +29,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.Hashtable;
-
 import oscar.oscarDB.DBHandler;
 import oscar.util.UtilDateUtilities;
 
@@ -38,10 +37,10 @@ public class LabRequestReportLink {
     public static Hashtable getLinkByReport(String reportTable, Long reportId) throws SQLException {
 	Hashtable link = new Hashtable();
 	
-	
+	DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 	String sql = "SELECT * FROM labRequestReportLink WHERE report_table='" + reportTable+"'" +
 							    " AND report_id="  + reportId;
-	ResultSet rs = DBHandler.GetSQL(sql);
+	ResultSet rs = db.GetSQL(sql);
 	if (rs.next()) {
 	    link.put("id", rs.getLong("id"));
 	    link.put("request_table", rs.getString("request_table"));
@@ -54,9 +53,9 @@ public class LabRequestReportLink {
     }
     
     public static String getRequestDate(String id) throws SQLException {
-	
+	DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 	String sql = "SELECT request_date FROM labRequestReportLink WHERE id=" + id;
-	ResultSet rs = DBHandler.GetSQL(sql);
+	ResultSet rs = db.GetSQL(sql);
 	Date requestDate = null;
 	if (rs.next()) {
 	    requestDate = rs.getDate(1);
@@ -70,23 +69,19 @@ public class LabRequestReportLink {
     }
     
     public static void save(String requestTable, Long requestId, String requestDate, String reportTable, Long reportId) throws SQLException {
-	if (requestDate==null || ("").equals(requestDate)) requestDate=null;
-	
-	String requestDateString="null";
-	if (requestDate!=null) requestDateString="'"+requestDate+"'";
-	
-	
+	if (requestDate==null || ("").equals(requestDate)) requestDate="0001-01-01";
+	DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 	String sql = "INSERT INTO labRequestReportLink (request_table,request_id,request_date,report_table,report_id) VALUES ('" +
-		     requestTable+"',"+requestId+","+requestDateString+",'"+reportTable+"',"+reportId+")";
-	DBHandler.RunSQL(sql);
+		     requestTable+"',"+requestId+",'"+requestDate+"','"+reportTable+"',"+reportId+")";
+	db.RunSQL(sql);
     }
     
     public static void update(Long id, String requestTable, Long requestId, String requestDate) throws SQLException {
-	
+	DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 	String sql = "UPDATE labRequestReportLink SET request_table='" + requestTable + "'" +
 						" AND request_id=" + requestId +
 						" AND request_date='" + requestDate + "'" +
 						" WHERE id=" + id;
-	DBHandler.RunSQL(sql);
+	db.RunSQL(sql);
     }
 }

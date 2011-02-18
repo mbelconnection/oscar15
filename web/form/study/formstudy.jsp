@@ -10,7 +10,7 @@
 
 <jsp:useBean id="studyBean" class="oscar.AppointmentMainBean"
 	scope="page" />
-
+<%@ include file="../../admin/dbconnection.jsp"%>
 <% 
     String [][] dbQueries=new String[][] { 
         {"search_study", "select s.* from study s order by ? " }, 
@@ -38,7 +38,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -92,6 +92,7 @@ function setfocus() {
     while (rs.next()) { 
     	nItems++;
 	    bgcolor = nItems%2==0?"#EEEEFF":"white";
+		System.out.println(nItems);
 %>
 	<tr bgcolor="<%=bgcolor%>">
 		<td align="center"><%=studyBean.getString(rs,"s.study_no")%></td>
@@ -101,6 +102,7 @@ function setfocus() {
 	</tr>
 	<%
 	}
+	studyBean.closePstmtConn();
 %>
 	<tr>
 		<td>&nbsp;</td>

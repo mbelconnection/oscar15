@@ -28,9 +28,9 @@
 
 package oscar.oscarReport.ClinicalReports;
 
+import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -38,7 +38,6 @@ import java.util.List;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 
@@ -119,8 +118,8 @@ public class ClinicalReportManager {
             sqlN.setId((String) numerHash.get("id"));
             sqlN.setSQL((String) numerHash.get("sql"));
             sqlN.parseOutputFields((String) numerHash.get("outputfields"));
-            MiscUtils.getLogger().debug("output fields "+(String) numerHash.get("outputfields"));
-            MiscUtils.getLogger().debug("create new sqlNumerator object");
+            System.out.println("output fields "+(String) numerHash.get("outputfields"));
+            System.out.println("create new sqlNumerator object");
             return sqlN;
        }
        if (type != null && type.equals("DROOLS")){
@@ -128,7 +127,7 @@ public class ClinicalReportManager {
             droolsN.setNumeratorName((String) numerHash.get("numeratorName"));
             droolsN.setId((String) numerHash.get("id"));
             droolsN.setFile((String) numerHash.get("file"));
-            MiscUtils.getLogger().debug("create new DroolsNumerator object");
+            System.out.println("create new DroolsNumerator object");
             return droolsN;
        }
        if (type != null && type.equals("DROOLS2")){
@@ -136,7 +135,7 @@ public class ClinicalReportManager {
             droolsN.setNumeratorName((String) numerHash.get("numeratorName"));
             droolsN.setId((String) numerHash.get("id"));
             droolsN.parseReplaceValues((String) numerHash.get("replaceKeys"));
-            MiscUtils.getLogger().debug("create new DroolsNumerator2 object");
+            System.out.println("create new DroolsNumerator2 object");
             return droolsN;
        }
        return null;
@@ -170,7 +169,8 @@ public class ClinicalReportManager {
                     try {
                         is = new FileInputStream(userConfigFilePath);
                         userConfigLoaded = true;                    
-                    } catch( FileNotFoundException ex ) {MiscUtils.getLogger().error("Error", ex);
+                    } catch( FileNotFoundException ex ) {
+                        ex.printStackTrace();
                         is = null;
                     }
                 }                                
@@ -264,7 +264,7 @@ public class ClinicalReportManager {
                         }
                    } 
                 }catch(Exception e){
-                    MiscUtils.getLogger().error("Error", e);
+                    e.printStackTrace();
                 }
                 loaded = true;
             }

@@ -21,8 +21,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 
-import org.apache.xerces.jaxp.datatype.DatatypeFactoryImpl;
-
 import oscar.ocan.domain.client.AnswerGroup;
 import oscar.ocan.domain.client.OCANClientSelfAssessment;
 import oscar.ocan.domain.staff.CCommunityTreatmentOrder;
@@ -83,6 +81,8 @@ import oscar.ocan.domain.submission.SideEffectsDetailList;
 import oscar.ocan.domain.submission.SymptomList;
 import oscar.ocan.domain.submission.TimeLivedInCanada;
 
+import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
+
 public class OcanDataProcessor {
 
 	public static DateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
@@ -113,9 +113,7 @@ public class OcanDataProcessor {
 		process.file = of.createOCANSubmissionFile();
 		process.file.setVersion("1.0.0");
 		process.file.setID("OCAN" + process.assessmentId + serviceOrganizationNumber + "01.xml");
-		//process.file.setTimestamp(XMLGregorianCalendarImpl.parse(FORMATTER.format(process.now) + "T00:00:00Z"));
-		process.file.setTimestamp(new DatatypeFactoryImpl().newXMLGregorianCalendar(FORMATTER.format(process.now) + "T00:00:00Z"));
-
+		process.file.setTimestamp(XMLGregorianCalendarImpl.parse(FORMATTER.format(process.now) + "T00:00:00Z"));
 		return process;
 	}
 	
@@ -139,10 +137,8 @@ public class OcanDataProcessor {
 		OCANSubmissionRecord r1 = of.createOCANSubmissionRecord();
 		r1.setAssessmentID(process.assessmentId);
 		r1.setAssessmentStatus("Complete");
-		//r1.setStartDate(XMLGregorianCalendarImpl.parse(client.getCInstructions().getCStartDate()+"Z"));
-		//r1.setCompletionDate(XMLGregorianCalendarImpl.parse(client.getCInstructions().getCStartDate()+"Z"));
-		r1.setStartDate(new DatatypeFactoryImpl().newXMLGregorianCalendar(FORMATTER.format(client.getCInstructions().getCStartDate()) + "Z"));
-		r1.setCompletionDate(new DatatypeFactoryImpl().newXMLGregorianCalendar(FORMATTER.format(client.getCInstructions().getCStartDate()) + "Z"));
+		r1.setStartDate(XMLGregorianCalendarImpl.parse(client.getCInstructions().getCStartDate()+"Z"));
+		r1.setCompletionDate(XMLGregorianCalendarImpl.parse(client.getCInstructions().getCStartDate()+"Z"));
 
 		// Organization Record
 		OrganizationRecord or1 = of.createOrganizationRecord();
@@ -288,8 +284,7 @@ public class OcanDataProcessor {
 		cr.setServiceRecipientLHIN(Integer.parseInt(staff.getCServiceInformation().getCServiceRecipientLHIN()));
 		// dic item!
 		cr.setServiceDeliveryLHIN(Integer.parseInt(staff.getCServiceInformation().getCServiceDeliveryLHIN()));
-		//cr.setClientDOB(XMLGregorianCalendarImpl.parse(staff.getCServiceInformation().getCDateOfBirthAge() + "Z"));
-		cr.setClientDOB(new DatatypeFactoryImpl().newXMLGregorianCalendar(FORMATTER.format(staff.getCServiceInformation().getCDateOfBirthAge()) + "Z"));
+		cr.setClientDOB(XMLGregorianCalendarImpl.parse(staff.getCServiceInformation().getCDateOfBirthAge() + "Z"));
 
 		if ("T".equals(staff.getCGenderSelectOne().getCMale())) {
 			cr.setGender("M");

@@ -36,7 +36,7 @@ String reportName = (new RptReportItem()).getReportName(reportId);
 // get form parameters
 RptTableFieldNameCaption tableObj = new RptTableFieldNameCaption();
 
-// add/delete action 
+// add/delete action //System.out.println(request.getParameter("submit"));
 if (request.getParameter("submit") != null && request.getParameter("submit").equals(" Add ")) {
 	String strName = request.getParameter("name") != null ? request.getParameter("name") : "";
 	String strCaption = request.getParameter("caption") != null ? request.getParameter("caption") : "";
@@ -64,6 +64,8 @@ vecTableField = tableObj.getTableNameCaption(tableName);
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Report List</title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <LINK REL="StyleSheet" HREF="../web.css" TYPE="text/css">
 <script language="JavaScript">
 

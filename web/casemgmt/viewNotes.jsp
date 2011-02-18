@@ -18,13 +18,16 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
 // -----------------------------------------------------------------------------------------------------------------------
 --%>
-<%  long start = System.currentTimeMillis(); %><%@include file="/casemgmt/taglibs.jsp"%>
+<%  long start = System.currentTimeMillis(); %>
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+<%@include file="/casemgmt/taglibs.jsp"%>
 <%@page
 	import="java.util.List, java.util.Set, java.util.Iterator, org.oscarehr.casemgmt.model.CaseManagementIssue, org.oscarehr.casemgmt.model.CaseManagementNoteExt"%>
 <%@page import="org.oscarehr.common.model.Provider"%>
@@ -33,24 +36,16 @@
 <nested:size id="num" name="Notes" />
 
 <div style="width: 10%; float: right; text-align: center;">
-<h3 style="padding:0px; background-color:#<c:out value="${param.hc}"/>"><a
+<h3 style="padding:0px; background-color:<c:out value="${param.hc}"/>"><a
 	href="#" title='Add Item'
 	onclick="return showEdit(event,'<bean-el:message key="${param.title}" />','',0,'','','','<%=request.getAttribute("addUrl")%>0', '<c:out value="${param.cmd}"/>','<%=request.getAttribute("identUrl")%>','<%=request.getAttribute("cppIssue")%>','','<c:out value="${param.demographicNo}"/>');">+</a></h3>
 </div>
 <div style="clear: left; float: left; width: 90%;">
-<h3 style="width:100%; background-color:#<c:out value="${param.hc}"/>"><a
+<h3 style="width:100%; background-color:<c:out value="${param.hc}"/>"><a
 	href="#"
         onclick="return showIssueHistory('<c:out value="${param.demographicNo}"/>','<%=request.getAttribute("issueIds")%>');"><bean-el:message key="${param.title}" /></a></h3>
 </div>
-        
-        <c:choose>
-            <c:when test='${param.title == "oscarEncounter.oMeds.title" || param.title == "oscarEncounter.riskFactors.title" || param.title == "oscarEncounter.famHistory.title"}'>
-                <div style="clear: both; overflow: auto;">
-            </c:when>
-            <c:otherwise>
-                <div style="clear: both; height: 100%; overflow: auto;">
-            </c:otherwise>
-        </c:choose>
+<div style="clear: both; height: 63px; overflow: auto;">
 <ul style="margin-left: 5px;">
 <% List<CaseManagementNoteExt> noteExts = (List<CaseManagementNoteExt>)request.getAttribute("NoteExts"); %>
 	<nested:iterate indexId="noteIdx" id="note" name="Notes"
@@ -95,7 +90,7 @@
 			onmouseout="this.className='topLinks'"
 			title="Rev:<nested:write name="note" property="revision"/> - Last update:<nested:write name="note" property="update_date" format="dd-MMM-yyyy"/>"
 			id="listNote<nested:write name="note" property="id"/>" href="#"
-			onclick="showEdit(event,'<c:out value="${param.title}"/>','<nested:write name="note" property="id"/>','<%=editors.toString()%>','<nested:write name="note" property="observation_date" format="dd-MMM-yyyy"/>','<nested:write name="note" property="revision"/>','<%=noteTxt%>', '<%=request.getAttribute("addUrl")%><nested:write name="note" property="id"/>', '<c:out value="${param.cmd}"/>','<%=request.getAttribute("identUrl")%>','<%=strNoteIssues.toString()%>','<%=strNoteExts%>','<c:out value="${param.demographicNo}"/>');return false;"  style="width:100%;overflow:scroll;" ><%=htmlNoteTxt%></a>
+			onclick="showEdit(event,'<c:out value="${param.title}"/>','<nested:write name="note" property="id"/>','<%=editors.toString()%>','<nested:write name="note" property="observation_date" format="dd-MMM-yyyy"/>','<nested:write name="note" property="revision"/>','<%=noteTxt%>', '<%=request.getAttribute("addUrl")%><nested:write name="note" property="id"/>', '<c:out value="${param.cmd}"/>','<%=request.getAttribute("identUrl")%>','<%=strNoteIssues.toString()%>','<%=strNoteExts%>','<c:out value="${param.demographicNo}"/>');return false;" style="width:100%;overflow:scroll;" ><%=htmlNoteTxt%></a>
 		</span></li>
 	</nested:iterate>
 </ul>
@@ -104,6 +99,9 @@
 	value="<nested:write name="num"/>">
 <input type="hidden" id="<c:out value="${param.cmd}"/>threshold"
 	value="0">
+<%
+    System.out.println("viewNotes loaded " + String.valueOf(System.currentTimeMillis() - start));
+ %>
 <%!
     String getNoteExts(Long noteId, List<CaseManagementNoteExt> lcme) {
 	StringBuffer strcme = new StringBuffer();

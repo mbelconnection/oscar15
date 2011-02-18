@@ -161,7 +161,7 @@
 
 
 <html:form action="/Tickler">
-	<input type="hidden" name="method" value="" />
+	<input type="hidden" name="method" value="save" />
 	<input type="hidden" name="order_tcr" value="asc"/>
 
 	<tr>
@@ -397,6 +397,7 @@
 <%if ((request.getParameter("from") == null) || (!request.getParameter("from").equals("CaseMgmt"))) { %>
 <table width="100%">
 	<tr>
+		<!-- <td><a href="../provider/providercontrol.jsp">Back to Schedule Page</a></td> -->
 		<td><a href="javascript:void(0);" onclick="wrapUp();">Close Window</a></td>
 	</tr>
 </table>

@@ -22,7 +22,12 @@
  * Hamilton 
  * Ontario, Canada 
  */ 
---><%@ page
+-->
+
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+
+<%@ page
 	import="java.math.*,java.util.*, java.sql.*, oscar.*, java.net.*,oscar.oscarBilling.ca.bc.MSP.*,oscar.util.*,oscar.oscarProvider.data.*,oscar.oscarBilling.ca.on.data.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
@@ -56,6 +61,8 @@ String startDate  = request.getParameter("xml_vdate");
 String endDate    = request.getParameter("xml_appointment_date");
 String demoNo     = request.getParameter("demographicNo");
 
+System.out.println(" statusType "+statusType+" providerNo "+providerNo+" startDate "+startDate+" endDate "+endDate+" demo "+demoNo);
+
 if ( statusType == null ) { statusType = "O"; } 
 if ( startDate == null ) { startDate = ""; } 
 if ( endDate == null ) { endDate = ""; } 
@@ -72,10 +79,10 @@ BigDecimal paidTotal = new BigDecimal(0).setScale(2, BigDecimal.ROUND_HALF_UP);
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
 
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html>
+<html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Bill Status</title>
 <script type="text/javascript" src="../../../share/javascript/Oscar.js"></script>
 <link rel="stylesheet" type="text/css" media="all"
@@ -197,22 +204,27 @@ Demographic:<input type="text" name="demographicNo" size="5"
 
 
 	<% 
+       System.out.println(" Error calculating value for bList.size(): "+bList.size()); 
 
        for (int i = 0 ; i < bList.size(); i++) { 
        Hashtable h = (Hashtable) bList.get(i);    
        ArrayList raList = raData.getRAData((String)h.get("billing_no"));
        boolean incorrectVal = false;
        
-       BigDecimal valueToAdd = new BigDecimal("0.00"); 
+       BigDecimal valueToAdd = new BigDecimal("0.00");
+       System.out.println(" Error calculating value for billing_no: "+(String)h.get("billing_no")); 
        try{
           valueToAdd = new BigDecimal(""+h.get("total")).setScale(2, BigDecimal.ROUND_HALF_UP);  
        }catch(Exception badValueException){ 
-          MiscUtils.getLogger().error(" Error calculating value for "+h.get("billing_no")); 
+          System.out.println(" Error calculating value for "+h.get("billing_no")); 
           incorrectVal = true;
        }
        total = total.add(valueToAdd);
+       System.out.println(" Er ror calculating value for bList.size(): "+raList.size()); 
        String amountPaid = raData.getAmountPaid(raList);
+       System.out.println(" E rr or calculating value for bList.size(): "+bList.size()); 
        paidTotal.add(new BigDecimal(amountPaid).setScale(2,BigDecimal.ROUND_HALF_UP));
+       System.out.println(" E rr or calculating value for bList.size(): "+bList.size()); 
        
        %>
 	<tr>

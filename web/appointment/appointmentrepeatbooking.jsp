@@ -33,7 +33,7 @@
             //if (strbuf.toString().indexOf("one")==-1 && strbuf.toString().indexOf("two")==-1) continue;
 		    //datano=Integer.parseInt(request.getParameter(strbuf.toString()) );
 
-		    String[] param=new String[18];
+		    String[] param=new String[17];
      	    param[0]=request.getParameter("provider_no");
 	        param[1]=request.getParameter("appointment_date");
     	    param[2]=MyDateFormat.getTimeXX_XX_XX(request.getParameter("start_time"));
@@ -50,13 +50,10 @@
      	    param[13]=createdDateTime;   //request.getParameter("createdatetime");
 	        param[14]=userName;  //request.getParameter("creator");
     	    param[15]=request.getParameter("remarks");
-    	    
 	  	    if (request.getParameter("demographic_no")!=null && !(request.getParameter("demographic_no").equals(""))) {
 				param[16]=request.getParameter("demographic_no");
 		    } else param[16]="0";
 
-	  	  	param[17]=(String)request.getSession().getAttribute("programId_oscarView");
-  		
         //}
 
         // repeat adding
@@ -92,43 +89,42 @@
  		    datano = Integer.parseInt(request.getParameter(strbuf.toString()));
 
             if (request.getParameter("groupappt").equals("Group Cancel")) {
-                String[] paramc = new String[3];
+                String[] paramc = new String[4];
 	            paramc[0]="C";
 	            paramc[1]=userName;
-	            paramc[2]=request.getParameter("appointment_no" + datano);  //request.getParameter("creator");
-                oscarSuperManager.update("appointmentDao", "archive_appt", new String[]{request.getParameter("appointment_no"+datano)});
+     	        paramc[2]=createdDateTime;
+	            paramc[3]=request.getParameter("appointment_no" + datano);  //request.getParameter("creator");
+
                 rowsAffected = oscarSuperManager.update("appointmentDao", "updatestatusc", paramc);
 			}
 
 		    //delete the selected appts
             if (request.getParameter("groupappt").equals("Group Delete")) {
-                oscarSuperManager.update("appointmentDao", "archive_appt", new String[]{request.getParameter("appointment_no"+datano)});
             	rowsAffected = oscarSuperManager.update("appointmentDao", "delete",
             			new Object [] {request.getParameter("appointment_no" + datano)});
-            }
+			}
 
-            if (request.getParameter("groupappt").equals("Group Update")) {
-                oscarSuperManager.update("appointmentDao", "archive_appt", new String[]{request.getParameter("appointment_no"+datano)});
+			if (request.getParameter("groupappt").equals("Group Update")) {
             	rowsAffected = oscarSuperManager.update("appointmentDao", "delete",
             			new Object [] {request.getParameter("appointment_no" + datano)});
      	        
                 String[] paramu = new String[17];
-                        paramu[0]=request.getParameter("provider_no"+datano);
-                        paramu[1]=request.getParameter("appointment_date");
-                        paramu[2]=MyDateFormat.getTimeXX_XX_XX(request.getParameter("start_time"));
-                        paramu[3]=MyDateFormat.getTimeXX_XX_XX(request.getParameter("end_time"));
-                        paramu[4]=request.getParameter("keyword");
-                        paramu[5]=request.getParameter("notes");
-                        paramu[6]=request.getParameter("reason");
-                        paramu[7]=request.getParameter("location");
-                        paramu[8]=request.getParameter("resources");
-                        paramu[9]=request.getParameter("type");
-                        paramu[10]=request.getParameter("style");
-                        paramu[11]=request.getParameter("billing");
-                        paramu[12]=request.getParameter("status");
-                        paramu[13]=createdDateTime;   //request.getParameter("createdatetime");
-                        paramu[14]=userName;  //request.getParameter("creator");
-                        paramu[15]=request.getParameter("remarks");
+				paramu[0]=request.getParameter("provider_no"+datano);
+				paramu[1]=request.getParameter("appointment_date");
+	    	    paramu[2]=MyDateFormat.getTimeXX_XX_XX(request.getParameter("start_time"));
+		        paramu[3]=MyDateFormat.getTimeXX_XX_XX(request.getParameter("end_time"));
+			    paramu[4]=request.getParameter("keyword");
+				paramu[5]=request.getParameter("notes");
+		        paramu[6]=request.getParameter("reason");
+			    paramu[7]=request.getParameter("location");
+			    paramu[8]=request.getParameter("resources");
+				paramu[9]=request.getParameter("type");
+	    	    paramu[10]=request.getParameter("style");
+		        paramu[11]=request.getParameter("billing");
+			    paramu[12]=request.getParameter("status");
+     			paramu[13]=createdDateTime;   //request.getParameter("createdatetime");
+		        paramu[14]=userName;  //request.getParameter("creator");
+			    paramu[15]=request.getParameter("remarks");
 		        if (!(request.getParameter("demographic_no").equals("")) && strbuf.toString().indexOf("one") != -1) {
 					paramu[16]=request.getParameter("demographic_no");
 	     	    } else {
@@ -156,7 +152,7 @@
 <p>
 <h1><bean:message
 	key="appointment.appointmentgrouprecords.msgAddFailure" /></h1>
-
+</p>
 <%  
     }
     return;
@@ -182,7 +178,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -192,6 +188,8 @@
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message
 	key="appointment.appointmentgrouprecords.title" /></title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <script language="JavaScript">
 <!--
 
@@ -219,7 +217,7 @@ function onSub() {
   } 
 }
 //-->
-</script>
+</SCRIPT>
 <!-- calendar stylesheet -->
 <link rel="stylesheet" type="text/css" media="all"
 	href="../share/calendar/calendar.css" title="win2k-cold-1" />

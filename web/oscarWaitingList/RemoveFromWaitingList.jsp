@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -34,9 +34,13 @@
 
 
 <%
+    response.setHeader("Cache-Control","no-cache"); //HTTP 1.1
+    response.setHeader("Pragma","no-cache"); //HTTP 1.0
+    response.setDateHeader ("Expires", 0); //prevents caching at the proxy 
     String waitingListId = request.getParameter("listId");
     //String removeFlag = request.getParameter("remove");
     WLWaitingListUtil.removeFromWaitingList(waitingListId, request.getParameter("demographicNo"));
+
 %>
 
 <html:html locale="true">

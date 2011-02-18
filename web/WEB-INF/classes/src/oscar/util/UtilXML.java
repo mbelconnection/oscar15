@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -36,7 +36,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.oscarehr.util.MiscUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -84,8 +83,9 @@ public class UtilXML {
          trans.transform(src, rslt);
       }
       catch(Exception e) {
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace(System.out);
       }
+      //System.out.print(ret.toString());
       return ret.toString();
    }
    public static String toXML(Document xmlDoc, String dtdname) {
@@ -100,9 +100,9 @@ public class UtilXML {
          trans.transform(src, rslt);
       }
       catch(Exception e) {
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace(System.out);
       }
-
+      //System.out.print(ret.toString());
       return ret.toString();
    }
    public static String toXML(Node xmlDoc) {
@@ -114,7 +114,7 @@ public class UtilXML {
          trans.transform(src, rslt);
       }
       catch(Exception e) {
-        MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace(System.out);
       }
       return ret.toString();
    }
@@ -194,8 +194,8 @@ public class UtilXML {
    }
    
    public static void setPropText(Node node, String tag, String attr1, String attr2) {
-      StringBuilder sb1 = new StringBuilder();
-      StringBuilder sb2 = new StringBuilder();
+      StringBuffer sb1 = new StringBuffer();
+      StringBuffer sb2 = new StringBuffer();
       
       NodeList list = node.getChildNodes();
       
@@ -210,8 +210,8 @@ public class UtilXML {
             NamedNodeMap attrib = node.getAttributes();
             for (int i = 0; i < attrib.getLength(); i++ ) {
                Node curAttr = attrib.item(i);
-               if (curAttr.getNodeName().equals(attr1) ) sb1 = new StringBuilder(curAttr.getNodeValue());
-               if (curAttr.getNodeName().equals(attr2) ) sb2 = new StringBuilder(curAttr.getNodeValue());
+               if (curAttr.getNodeName().equals(attr1) ) sb1 = new StringBuffer(curAttr.getNodeValue());
+               if (curAttr.getNodeName().equals(attr2) ) sb2 = new StringBuffer(curAttr.getNodeValue());
             }
             prop.setProperty(sb1.toString(), sb2.toString());
          }
@@ -306,10 +306,10 @@ public class UtilXML {
             String tag = xml.substring(pointer1, pointer2);
             String closetag = tag.substring(0, 1) + "/" + tag.substring(1);
             closetag += ">";
-
+            //System.out.println("closetag: " + closetag);
             if (xml.indexOf(closetag) == -1) {
                 xml = xml.substring(0, pointer1) + "&lt;" + xml.substring(pointer1+1);
-
+                //System.out.println("found, replaced: " + xml.substring(pointer1-10, pointer1+10));
             }
             pointer1++;
         }

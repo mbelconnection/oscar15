@@ -1,3 +1,4 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page
 	import="oscar.oscarEncounter.pageUtil.NavBarDisplayDAO, oscar.util.*, java.util.ArrayList, java.util.Date, java.util.Calendar, java.io.IOException"%>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
@@ -144,6 +145,8 @@
 	value="<%=numDisplayed%>" />
 <%   
         out.println("<script type=\"text/javascript\">" + jscode.toString() + "</script>");
+        //System.out.println(jscode.toString());
+        System.out.println("LeftNavBar " + request.getAttribute("navbarName") + "load time: " + (System.currentTimeMillis()-startTime) + "ms");
     %>
 
 <%!

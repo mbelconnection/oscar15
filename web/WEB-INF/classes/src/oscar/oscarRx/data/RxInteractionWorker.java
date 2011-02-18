@@ -32,7 +32,6 @@ import java.util.Vector;
 
 import org.oscarehr.util.DbConnectionFilter;
 import org.oscarehr.util.LoggedInInfo;
-import org.oscarehr.util.MiscUtils;
 
 /**
  *
@@ -51,7 +50,7 @@ public class RxInteractionWorker extends Thread {
     }
 
     public void run() {
-        MiscUtils.getLogger().debug("STARTING THREAD");
+        System.out.println("STARTING THREAD");
 
         LoggedInInfo.setLoggedInInfoToCurrentClassAndMethod();
 
@@ -67,20 +66,20 @@ public class RxInteractionWorker extends Thread {
                     interactionData.removeFromWorking(atcCodes);
                 }
                 else {
-                    MiscUtils.getLogger().debug("What to do");
-                    MiscUtils.getLogger().debug("atc codes " + atcCodes);
+                    System.out.println("What to do");
+                    System.out.println("atc codes " + atcCodes);
                 }
             }
         }
         catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         finally {
     		LoggedInInfo.loggedInInfo.remove();
             DbConnectionFilter.releaseAllThreadDbResources();
         }
         long end = System.currentTimeMillis() - start;
-        MiscUtils.getLogger().debug("THREAD ENDING " + end);
+        System.out.println("THREAD ENDING " + end);
     }
 
 }

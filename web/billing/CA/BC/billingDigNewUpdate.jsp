@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -38,11 +38,11 @@
 	import="java.math.*, java.util.*, java.sql.*, oscar.*, java.net.*"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html>
+<html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Billing Summary</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-2">
 <script LANGUAGE="JavaScript">
 <!--
 <%
@@ -127,15 +127,28 @@ function CodeAttach(File0, File1, File2) {
 
   
 
+/*for (Enumeration e = request.getParameterNames() ; e.hasMoreElements() ;) {
+         System.out.println(e.nextElement());
+    }
+  
+  */
  int rowsAffected=0;
     
     String[] param1 =new String[2];
 	  param1[0]= (String)request.getParameter(code);
 	  param1[1]=code;
           try{
+          System.out.println("code >"+code+"< the value to change >"+param1[0]+"<  this should also be code >"+param1[1]+"<");
+          }catch(Exception e){
+
+          }   
+//	  param1[1]=request.getParameter("apptProvider_no"); param1[2]=request.getParameter("appointment_date"); param1[3]=MyDateFormat.getTimeXX_XX_XX(request.getParameter("start_time"));
+          try{
   	 rowsAffected = apptMainBean.queryExecuteUpdate(param1,"updatedigcode");
+            apptMainBean.closePstmtConn();
          }catch(Exception e){
-        	 MiscUtils.getLogger().error("Error", e);
+                      //System.out.println("code >"+code+"< the value to change >"+param1[0]+"<  this should also be code >"+param1[1]+"<");
+            e.printStackTrace();
          }
  
 

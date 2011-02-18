@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -56,6 +56,8 @@
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>ANTENATAL RECORD</title>
 <link rel="stylesheet" href="antenatalrecord.css">
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 </head>
 <body bgproperties="fixed" topmargin="0" leftmargin="0" rightmargin="0"
 	bgcolor="#c4e9f6">
@@ -1502,9 +1504,11 @@ else {
       if(SxmlMisc.getXmlContent(temp, "<xml_nadr>","</xml_nadr>")!= null) savedar1risk.setProperty("74", "xml_nadr");
       if(SxmlMisc.getXmlContent(temp, "<xml_nadref>","</xml_nadref>")!= null) savedar1risk.setProperty("75", "xml_nadref");
      }
+    //System.out.println(SxmlMisc.getXmlContent(temp, "<xml_cp3s>","</xml_cp3s>") +" "+savedar1risk.getProperty("3") );
 	out.println(checklist.doStuff(new String("../webapps/"+oscarVariables.getProperty("project_home")+"/provider/obarchecklist_99_12.xml"), savedar1risk));
 }	
 }
+  formMainBean.closePstmtConn();
 		
 %>
 

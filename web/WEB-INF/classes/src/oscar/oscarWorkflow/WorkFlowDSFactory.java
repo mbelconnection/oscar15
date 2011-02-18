@@ -35,7 +35,6 @@ import java.net.URL;
 
 import org.drools.RuleBase;
 import org.drools.io.RuleBaseLoader;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 
@@ -66,7 +65,7 @@ public class WorkFlowDSFactory {
             //if (measurementDirPath.charAt(measurementDirPath.length()) != /)
             File file = new File(OscarProperties.getInstance().getProperty("WORKFLOW_DS_DIRECTORY")+string);
                if(file.isFile() || file.canRead()) {
-                   MiscUtils.getLogger().debug("Loading from file "+file.getName());
+                   System.out.println("Loading from file "+file.getName());
                    FileInputStream fis = new FileInputStream(file);
                    ruleBase = RuleBaseLoader.loadFromInputStream(fis);
                    fileFound = true;
@@ -74,14 +73,14 @@ public class WorkFlowDSFactory {
             }
         
             if (!fileFound){  
-                MiscUtils.getLogger().debug("/oscar/oscarWorkFlow/rules/"+string);
+                System.out.println("/oscar/oscarWorkFlow/rules/"+string);
                 URL url = WorkFlowDSFactory.class.getResource( "/oscar/oscarWorkflow/rules/"+string );  //TODO: change this so it is configurable;
-                MiscUtils.getLogger().debug("is URL instantiated "+url);            
-                MiscUtils.getLogger().debug("loading from URL "+url.getFile());            
+                System.out.println("is URL instantiated "+url);            
+                System.out.println("loading from URL "+url.getFile());            
                 ruleBase = RuleBaseLoader.loadFromUrl( url );
             }
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);                
+            e.printStackTrace();                
         }
         return ruleBase;             
    }

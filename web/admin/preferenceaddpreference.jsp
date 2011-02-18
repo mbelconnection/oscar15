@@ -18,96 +18,102 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 -->
 
-<%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi"%>
 <%@ page import="java.sql.*, java.util.*" errorPage="errorpage.jsp"%>
-<%@ page import="oscar.login.DBHelp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-
-<%@page import="org.oscarehr.common.model.ProviderPreference"%>
-<%@page import="org.oscarehr.web.admin.ProviderPreferencesUIBean"%>
-<%
-    if(session.getAttribute("user") == null ) response.sendRedirect("../logout.jsp");
-    String curProvider_no = (String) session.getAttribute("user");
-
-    if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
-    String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
-    
-    boolean isSiteAccessPrivacy=false;
-%>
-
-
-<security:oscarSec objectName="_site_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%isSiteAccessPrivacy=true; %>
-</security:oscarSec>
-	
 <html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="admin.preferenceaddpreference.title" /></title>
 <link rel="stylesheet" href="../web.css">
 </head>
-<body background="../images/gray_bg.jpg" bgproperties="fixed" topmargin="0" leftmargin="0" rightmargin="0">
+<body background="../images/gray_bg.jpg" bgproperties="fixed"
+	topmargin="0" leftmargin="0" rightmargin="0">
 <center>
 <table border="0" cellspacing="0" cellpadding="0" width="100%">
 	<tr bgcolor="#486ebd">
-		<th align="CENTER"><font face="Helvetica" color="#FFFFFF"><bean:message key="admin.preferenceaddpreference.description" /></font></th>
+		<th align="CENTER"><font face="Helvetica" color="#FFFFFF"><bean:message
+			key="admin.preferenceaddpreference.description" /></font></th>
 	</tr>
 </table>
 <%
-boolean isAccessPass = true;
-
-if (isSiteAccessPrivacy) {
-	//multisite : check provider no
-	String provider_no = request.getParameter("provider_no");
-	String sqlStr = "select COUNT(*) as cou from providersite where provider_no = " + provider_no 
-		+ " and site_id in (select site_id from providersite where provider_no = " + curProvider_no + ") ";
-	DBHelp dbObj = new DBHelp();
-	ResultSet rs = dbObj.searchDBRecord(sqlStr);
-	
-    if(rs.next()){          
-          int ret = rs.getInt("cou");
-          if(ret >= 1){
-        	  isAccessPass = true;
-          }
-          else {
-        	  isAccessPass = false;
-          }
-    }
-    rs.close();
+String[] param=null;
+if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable()){
+    param =new String[8];
+}else {
+	param =new String[7];
 }
-
-if (!isSiteAccessPrivacy || isAccessPass) {
-	ProviderPreference providerPreference=ProviderPreferencesUIBean.updateOrCreateProviderPreferences(request);
-
-	//---
-
-	session.setAttribute("starthour", providerPreference.getStartHour().toString());
-	session.setAttribute("endhour", providerPreference.getEndHour().toString());
-	session.setAttribute("everymin", providerPreference.getEveryMin().toString());
-	session.setAttribute("groupno", providerPreference.getMyGroupNo());
-	session.setAttribute("default_servicetype", providerPreference.getDefaultServiceType());
-	session.setAttribute("newticklerwarningwindow", providerPreference.getNewTicklerWarningWindow());
-	session.setAttribute("default_pmm", providerPreference.getDefaultCaisiPmm());
+	  param[0]=request.getParameter("start_hour");
+	  param[1]=request.getParameter("end_hour");
+	  param[2]=request.getParameter("every_min");
+	  param[3]=request.getParameter("mygroup_no");
+	  param[4]=request.getParameter("default_servicetype");
+	  param[5]=request.getParameter("color_template");
+	if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable()){
+	  param[6]=request.getParameter("new_tickler_warning_window");
+	  param[7]=request.getParameter("provider_no");
+	} else {
+	  param[6]=request.getParameter("provider_no");
+	}
+  int rowsAffected = apptMainBean.queryExecuteUpdate(param, "preference_addupdate_record");
+  if (rowsAffected >=1) { //Successful Update of a Preference Record.
+    session.setAttribute("starthour", param[0]);
+    session.setAttribute("endhour", param[1]);
+    session.setAttribute("everymin", param[2]);
+    session.setAttribute("groupno", param[3]);
+    session.setAttribute("default_servicetype", param[4]);
+if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable()){
+    session.setAttribute("newticklerwarningwindow", param[7]);
+}
 %>
 <h1><bean:message key="admin.preferenceaddarecord.msgSuccessful" />
 </h1>
-	<%  
-} 
-else {
-	%>
-	<h1><bean:message key="admin.preferenceaddpreference.msgAccessFailure" />
-<%	
+<%  
+  } else {
+  //now try to add the new preference record
+	param[0]=request.getParameter("provider_no");
+	param[1]=request.getParameter("start_hour");
+	param[2]=request.getParameter("end_hour");
+	param[3]=request.getParameter("every_min");
+	param[4]=request.getParameter("mygroup_no");
+	param[5]=request.getParameter("default_servicetype");
+	param[6]=request.getParameter("color_template");
+if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable()){
+	param[7]=request.getParameter("new_tickler_warning_window");
 }
+  rowsAffected = apptMainBean.queryExecuteUpdate(param, request.getParameter("dboperation"));
+  if (rowsAffected ==1) { //Successful add of a Preference Record.
+    session.setAttribute("starthour", param[1]);
+    session.setAttribute("endhour", param[2]);
+    session.setAttribute("everymin", param[3]);
+    session.setAttribute("groupno", param[4]);
+    session.setAttribute("default_servicetype", param[5]);
+if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable()){
+    session.setAttribute("newticklerwarningwindow", param[7]);
+}
+%>
+<h1><bean:message
+	key="admin.preferenceaddpreference.msgAdditionSuccess" /></h1>
+<%  
+    } else {
+%>
+<p>
+<h1><bean:message
+	key="admin.preferenceaddpreference.msgAdditionFailure" /></h1>
+</p>
+<%  
+    }
+  }
+  apptMainBean.closePstmtConn();
 %> <!-- footer -->
 <hr width="100%" color="navy">
 <table border="0" cellspacing="0" cellpadding="0" width="100%">

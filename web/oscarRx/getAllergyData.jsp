@@ -1,5 +1,4 @@
-
-<%@page import="org.oscarehr.util.MiscUtils"%><%--
+<%--
  * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved. *
  * This software is published under the GPL GNU General Public License.
  * This program is free software; you can redistribute it and/or
@@ -25,6 +24,7 @@
 --%>
 <%@page import="java.util.*,net.sf.json.*,java.lang.reflect.*,java.io.*,org.apache.xmlrpc.*,oscar.oscarRx.util.*,oscar.oscarRx.data.*"  %>
 <%
+System.out.println("In getAllerfyData");
 String atcCode =  request.getParameter("atcCode");
 String id = request.getParameter("id");
 
@@ -32,9 +32,10 @@ oscar.oscarRx.pageUtil.RxSessionBean rxSessionBean = (oscar.oscarRx.pageUtil.RxS
 oscar.oscarRx.data.RxPatientData.Patient.Allergy[] allergies = new oscar.oscarRx.data.RxPatientData().getPatient(rxSessionBean.getDemographicNo()).getAllergies();
 
 oscar.oscarRx.data.RxPatientData.Patient.Allergy[] allergyWarnings = null;
-   RxDrugData drugData = new RxDrugData();
-   allergyWarnings = drugData.getAllergyWarnings(atcCode, allergies);
-
+                RxDrugData drugData = new RxDrugData();
+                allergyWarnings = drugData.getAllergyWarnings(atcCode, allergies);
+                System.out.println("allg size="+allergyWarnings.length);
+                
 
    // Hashtable d = new Hashtable();
     Hashtable d2=new Hashtable();
@@ -42,17 +43,20 @@ oscar.oscarRx.data.RxPatientData.Patient.Allergy[] allergyWarnings = null;
   //  d.put("id",id);
     d2.put("id",id);
     for(oscar.oscarRx.data.RxPatientData.Patient.Allergy allg:allergyWarnings){
-        d2.put("DESCRIPTION", allg.getAllergy().getDESCRIPTION());
-        d2.put("reaction", allg.getAllergy().getReaction());
-    }
-
+                    System.out.println(">>>>>>>>>>>> "+allg.getAllergy().getDESCRIPTION());
+                    System.out.println(">>>--- "+allg.getAllergy().getReaction());
+                    // d.put("alleg",allg.getAllergy());
+                     d2.put("DESCRIPTION", allg.getAllergy().getDESCRIPTION());
+                     d2.put("reaction", allg.getAllergy().getReaction());
+                 }
+    
    try{
     response.setContentType("text/x-json");
     JSONObject jsonArray = (JSONObject) JSONSerializer.toJSON( d2 );
     jsonArray.write(out);
     }
    catch(Exception e){
-	   MiscUtils.getLogger().error("Error", e);
+        e.getCause().printStackTrace();
     }
-
+    
 %>

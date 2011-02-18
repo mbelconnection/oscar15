@@ -15,7 +15,7 @@
  * <OSCAR TEAM>
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  --%>
@@ -24,6 +24,7 @@
     Author     : rjonasz
 --%>
 <%@page import="java.util.List, java.util.Map, java.util.Date, java.util.Calendar, java.util.GregorianCalendar, java.io.*" %>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 
@@ -76,6 +77,7 @@
 
 <html>
     <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
             <title><bean:message key="provider.login.title.confidentiality"/></title>
     </head>
     <body>

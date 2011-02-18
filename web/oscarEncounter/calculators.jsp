@@ -18,11 +18,13 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 --%>
+
+<%@ page language="java"%>
 <%@ page
 	import="oscar.oscarDemographic.data.*, oscar.oscarDemographic.data.DemographicData.Demographic"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
@@ -88,9 +90,9 @@ if(demo != null){
                 <a href="javascript: function myFunction() {return false; }" onclick="popperup(525,775,'http://cvrisk.mvm.ed.ac.uk/calculator/calc.asp','CVRisk');">CV Risk</a>
             </td>
 	</tr>
-        
-        
-        
+
+
+
 	<tr>
 		<td align="center" class="menuLayer"><a
 			href="javascript: function myFunction() {return false; }"

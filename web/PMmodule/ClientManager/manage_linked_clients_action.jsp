@@ -1,5 +1,4 @@
-
-<%@page import="org.oscarehr.util.MiscUtils"%><%@page import="org.oscarehr.common.model.Facility"%>
+<%@page import="org.oscarehr.common.model.Facility"%>
 <%@page import="org.oscarehr.PMmodule.web.ManageLinkedClientsAction"%><%@page import="org.oscarehr.common.model.Provider"%>
 <%@page import="java.util.Arrays"%>
 <%@page import="org.oscarehr.common.model.FacilityDemographicPrimaryKey"%>
@@ -25,7 +24,7 @@
 		}
 		catch (Exception ex)
 		{
-			MiscUtils.getLogger().error("Error", ex);
+			ex.printStackTrace();
 		}
 	}
 

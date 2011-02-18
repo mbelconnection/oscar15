@@ -28,6 +28,8 @@
 <%@ page import="org.oscarehr.PMmodule.web.ProgramUtils" %>
 <%@ taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi" %>
 <%@ page import="org.oscarehr.util.SessionConstants" %>
+<% response.setHeader("Cache-Control","no-cache");%>
+
 <%
     GenericIntakeEditFormBean intakeEditForm = (GenericIntakeEditFormBean) session.getAttribute("genericIntakeEditForm");
     Intake intake = intakeEditForm.getIntake();
@@ -44,8 +46,7 @@
 <%@page import="java.util.GregorianCalendar"%>
 <%@page import="java.util.Calendar"%>
 <%@page import="java.text.DateFormatSymbols"%>
-<%@page import="org.apache.commons.lang.time.DateFormatUtils"%>
-<%@page import="org.oscarehr.common.model.Demographic"%><html:html xhtml="true" locale="true">
+<%@page import="org.apache.commons.lang.time.DateFormatUtils"%><html:html xhtml="true" locale="true">
 <head>
 	<script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 	<script type="text/javascript" src="<%= request.getContextPath() %>/js/check_hin.js"></script>
@@ -54,7 +55,12 @@
 	<script type="text/javascript" src="<%= request.getContextPath() %>/js/jquery.metadata.js"></script>
 	<script type="text/javascript" src="<%= request.getContextPath() %>/js/jquery.validate.min.js"></script>
 	
-	
+	<%if(intakeEditForm.getJsLocation() != null) {
+		for(IntakeNodeJavascript js:intakeEditForm.getJsLocation()) {
+	%>
+			<script type="text/javascript" src="<%= request.getContextPath() %><%=js.getLocation()%>"></script>
+	<%}}%>
+			
     <title>Generic Intake Edit</title>
     <style type="text/css">
         @import "<html:rewrite page="/css/genericIntake.css" />";
@@ -119,21 +125,6 @@
 	    }
 	    return false;
 	}
-
-	function saveDraft() {	
-		document.getElementById('skip_validate').value='true';
-		$("form[onsubmit]").each(function(idx, form) {
-		      var onsubmit = $(form).attr("onsubmit");
-		      //alert(onsubmit);
-		      $(form)
-		        .removeAttr("onsubmit")
-		        .submit(new Function(onsubmit));
-				      
-		});
-
-				
-		return save_draft();
-	}	
 	
 	function check_mandatory() {
 	    var mquestSingle = new Array();
@@ -278,19 +269,10 @@
 	});
 
 	$("document").ready(function() {	
-		//$("form").validate({meta: "validate"});
-		
+		$("form").validate({meta: "validate"});
 	});
-	
+
     </script>
-    
-    <%if(intakeEditForm.getJsLocation() != null) {
-		for(IntakeNodeJavascript js:intakeEditForm.getJsLocation()) {
-	%>
-			<script type="text/javascript" src="<%= request.getContextPath() %><%=js.getLocation()%>"></script>
-	<%}}%>
-			
-			
     <style>
     .repeat_remove 
 	{
@@ -313,9 +295,6 @@
 <input type="hidden" name="intakeType" value="<%=intakeType %>" />
 <input type="hidden" name="remoteFacilityId" value="<%=StringUtils.trimToEmpty(request.getParameter("remoteFacilityId"))%>" />
 <input type="hidden" name="remoteDemographicId" value="<%=StringUtils.trimToEmpty(request.getParameter("remoteDemographicId"))%>" />
-<input type="hidden" name="skip_validate" id="skip_validate" value="false"/>
-<input type="hidden" id="facility_name" name="facility_name" value="<%=org.oscarehr.util.LoggedInInfo.loggedInInfo.get().currentFacility.getName()%>"/>
-<input type="hidden" id="ocan_service_org_number" name="ocan_service_org_number" value="<%=org.oscarehr.util.LoggedInInfo.loggedInInfo.get().currentFacility.getOcanServiceOrgNumber()%>"/>
 
 <div id="layoutContainer" dojoType="LayoutContainer" layoutChildPriority="top-bottom" class="intakeLayoutContainer">
 <div id="topPane" dojoType="ContentPane" layoutAlign="top" class="intakeTopPane">
@@ -425,18 +404,6 @@
                        value="<bean:write name="genericIntakeEditForm"  property="client.phone2"/>"/>
             </label>
         </td>
-        <td>
-            <label>Anonymous</label>
-            <br />
-            <%
-            	String anonymous=intakeEditForm.getClient().getAnonymous();
-            %>
-            <select name="anonymous">
-            	<option value="" <%=anonymous==null?"selected=\"selected\"":""%>>not anonymous</option>
-            	<option value="<%=Demographic.ANONYMOUS%>" <%="anonymous".equals(Demographic.ANONYMOUS)?"selected=\"selected\"":""%>>anonymous</option>
-            	<option value="<%=Demographic.UNIQUE_ANONYMOUS%>" <%="anonymous".equals(Demographic.UNIQUE_ANONYMOUS)?"selected=\"selected\"":""%>>unique anonymous</option>
-            </select>
-        </td>
     </tr>
     <tr>
         <td><label>Street<br><html:text size="20" maxlength="60" property="client.address"/></label></td>
@@ -449,7 +416,7 @@
         </td>
         <td><label>Postal Code<br><html:text property="client.postal" size="9" maxlength="9"/></label></td>
     </tr>
-<oscar:oscarPropertiesCheck property="ENABLE_CME_ON_REG_INTAKE" value="true">
+<!--  
 <c:if test="${not empty sessionScope.genericIntakeEditForm.client.demographicNo}">
     <tr>
         <td>
@@ -460,7 +427,7 @@
         </td>
     </tr>
 </c:if>
-</oscar:oscarPropertiesCheck>
+-->
 </caisi:isModuleLoad>
 </table>
 </div>
@@ -606,9 +573,6 @@
             <td>
                 <caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">
                     <html:submit onclick="return saveForm();">Save</html:submit>&nbsp;
-                </caisi:isModuleLoad>
-                 <caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">
-                    <!--<html:submit onclick="return saveDraft();">Save As Draft</html:submit>&nbsp; -->
                 </caisi:isModuleLoad>
                 <caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="false">
                     <!--

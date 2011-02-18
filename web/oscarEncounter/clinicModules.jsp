@@ -1,4 +1,5 @@
-<%-- <%@page %>  --%>
+<%@page contentType="text/html"%>
+<%-- <%@page pageEncoding="UTF-8"%> --%>
 
 <%@page import="java.net.URLEncoder"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
@@ -77,3 +78,4 @@
 
 </ul>
 <input type="hidden" id="modCount" value="7">
+<% System.out.println("clinicModules.jsp load time: " + (System.currentTimeMillis()-startTime) + "ms"); %>

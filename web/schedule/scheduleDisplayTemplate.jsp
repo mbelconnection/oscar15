@@ -18,11 +18,15 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
---><%@ page import="java.sql.*"%>
+-->
+
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*"%>
 <%@ page errorPage="/common/error.jsp"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
@@ -89,6 +93,9 @@
                 int ratio = (hourCursor*60+minuteCursor)/nLen;
                 //hourmin = new StringBuffer((String)dateTimeCodeBean.get(((String) dateTimeCodeBean.get(provider)).substring(ratio,ratio+1)));
                 hourmin = new StringBuffer(hourCode.substring(ratio,ratio+1));
+                System.out.println("RATIO " + ratio);
+                System.out.println("LENGTH " + hourCode.substring(ratio,ratio+1));
+                System.out.println("CODE " + (String)dateTimeCodeBean.get("color"+hourCode.substring(ratio,ratio+1)));
                 bColorHour=minuteCursor==0?true:false;
          %>
 	<tr>

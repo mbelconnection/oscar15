@@ -8,8 +8,8 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
 
+import oscar.appt.ApptUtil;
 import oscar.oscarBilling.ca.on.data.BillingClaimHeader1Data;
 import oscar.oscarBilling.ca.on.data.BillingDataHlp;
 import oscar.oscarBilling.ca.on.data.BillingItemData;
@@ -59,7 +59,7 @@ public class BillingCorrectionPrep {
 					+ ch1Obj.getFacilty_num() + "|" + ch1Obj.getMan_review()
 					+ "|" + ch1Obj.getBilling_date() + "|"
 					+ ch1Obj.getProviderNo() + "|" + ch1Obj.getCreator());
-                        
+
                         status = requestData.getParameter("status").substring(0,1);
                         if( status.equals("S") && !ch1Obj.getStatus().equals(status)) {
                             this.updateExt("payDate", requestData);
@@ -170,6 +170,8 @@ public class BillingCorrectionPrep {
 								: "S");
 			}
 		}
+                
+                //System.out.println("ItemObj size " + lItemObj.size() + " Vector Size " + vecName.size());
 
 		// update item first
 		String claimId = "0";
@@ -195,7 +197,7 @@ public class BillingCorrectionPrep {
 		// recalculate amount
 		String newAmount = sumFee(vecFee);
 		_logger.info(" lItemObj(newAmount = " + newAmount);
-		updateAmount(newAmount, claimId);		
+		updateAmount(newAmount, claimId);
 
 		return ret;
 	}
@@ -241,30 +243,30 @@ public class BillingCorrectionPrep {
 		String temp = request.getParameter("m_review") == null ? "" : "Y";
 		if (!existObj.getStatus().equals(
 				request.getParameter("status").substring(0, 1)))
-			MiscUtils.getLogger().debug("status");
+			System.out.println("status");
 		if (!existObj.getPay_program().equals(
 				request.getParameter("payProgram")))
-			MiscUtils.getLogger().debug("payProgram");
+			System.out.println("payProgram");
 		if (!existObj.getRef_num().equals(request.getParameter("rdohip")))
-			MiscUtils.getLogger().debug("rdohip");
+			System.out.println("rdohip");
 		if (!existObj.getVisittype().equals(request.getParameter("visittype")))
-			MiscUtils.getLogger().debug("visittype");
+			System.out.println("visittype");
 		if (!existObj.getAdmission_date().equals(
 				request.getParameter("xml_vdate")))
-			MiscUtils.getLogger().debug("xml_vdate");
+			System.out.println("xml_vdate");
 
 		if (!existObj.getFacilty_num().equals(
 				request.getParameter("clinic_ref_code")))
-			MiscUtils.getLogger().debug("facNum:" + existObj.getFacilty_num());
+			System.out.println("facNum:" + existObj.getFacilty_num());
 		if (!existObj.getMan_review().equals(temp))
-			MiscUtils.getLogger().debug("|" + existObj.getMan_review() + ":temp:" + temp
+			System.out.println("|" + existObj.getMan_review() + ":temp:" + temp
 					+ "|");
 		if (!existObj.getBilling_date().equals(
 				request.getParameter("xml_appointment_date")))
-			MiscUtils.getLogger().debug("Billing_date");
+			System.out.println("Billing_date");
 		if (!existObj.getProviderNo().equals(
 				request.getParameter("provider_no")))
-			MiscUtils.getLogger().debug("getProvider_no");
+			System.out.println("getProvider_no");
 
 		if (!existObj.getStatus().equals(
 				request.getParameter("status").substring(0, 1))
@@ -298,6 +300,8 @@ public class BillingCorrectionPrep {
 			String serviceDate, Vector vecName, Vector vecUnit, Vector vecFee,
 			Vector vecStatus) {
 		boolean ret = true;
+		//System.out.println("status:" + oldObj.getService_code() + ":" +
+		//vecName.get(0) + ":");
 		if (vecName.contains(oldObj.getService_code())) {
 			ret = true;
 			int i = vecName.indexOf(oldObj.getService_code());
@@ -305,7 +309,7 @@ public class BillingCorrectionPrep {
 			// change to settle or not
 			boolean bStatusChange = false;
 			String cStatus = (String) vecStatus.get(i);
-
+			// System.out.println("status: " + cStatus);
 			if ((!oldObj.getStatus().equals("S") && cStatus.equals("S"))
 					|| (oldObj.getStatus().equals("S") && !cStatus.equals("S"))) {
 				bStatusChange = true;
@@ -326,14 +330,14 @@ public class BillingCorrectionPrep {
 				oldObj.setService_date(serviceDate);
 				oldObj.setDx(sDx);
 				oldObj.setStatus(cStatus);
-
+                                //System.out.println("Updating " + oldObj.getService_code());
 				ret = dbObj.updateBillingOneItem(oldObj);
 				if (!ret)
 					return ret;
 			}
 		} else {
 			// delete the old item
-
+                        //System.out.println("Deleting old item " + oldObj.getService_code());
 			oldObj.setStatus("D");
 			ret = dbObj.updateBillingOneItem(oldObj);
 		}
@@ -348,9 +352,9 @@ public class BillingCorrectionPrep {
                 BillingItemData newObj = null;
 		for (int i = 0; i < lItemObj.size(); i++) {
 			oldObj = (BillingItemData) lItemObj.get(i);
-
+                        //System.out.println("comparing oldobj to new " + oldObj.getService_code() + " : " + sName);
 			if (sName.equals((String) oldObj.getService_code())) {
-
+                                //System.out.println(oldObj.getService_code() + " already present skipping");
 				ret = false;
 				break;
 			}
@@ -364,7 +368,7 @@ public class BillingCorrectionPrep {
 			newObj.setDx(sDx);
 			newObj.setStatus(sStatus);
 			JdbcBillingClaimImpl myObj = new JdbcBillingClaimImpl();
-
+                        //System.out.println("Adding item " + newObj.getService_code());
 			int i = myObj.addOneItemRecord(newObj);
 			if (i == 0)
 				return false;
@@ -438,6 +442,8 @@ public class BillingCorrectionPrep {
 			fee = dbObj.getCodeFee(codeName,billReferenceDate);
 			// calculate fee
 			BigDecimal bigCodeFee = new BigDecimal(fee);
+			// System.out.println((String) vecUnit.get(i) + "big bigCodeFee: " +
+			// bigCodeFee.toString());
 			BigDecimal bigCodeUnit = new BigDecimal(unit);
 			BigDecimal bigFee = bigCodeFee.multiply(bigCodeUnit);
 			bigFee = bigFee.setScale(2, BigDecimal.ROUND_HALF_UP);

@@ -13,7 +13,7 @@ String userlastname = (String) session.getAttribute("userlastname");
 <%@ include file="../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 <!--
 /*
  * 
@@ -34,7 +34,7 @@ String userlastname = (String) session.getAttribute("userlastname");
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -43,6 +43,7 @@ String userlastname = (String) session.getAttribute("userlastname");
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Billing Summary</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-2">
 <script type="text/javascript"
 	src="../../../share/javascript/prototype.js"></script>
 <script type="text/javascript" src="../../../share/javascript/nifty.js"></script>
@@ -132,6 +133,7 @@ if(bPercS) {
 		}
 	}
 }
+//System.out.println(billing_pCode);
 
 int counter = 0;
 String numCode="";
@@ -913,11 +915,14 @@ if (xFlag.compareTo("1")==0) {
 		// reset
 		BigTotal = BigTotal.subtract(percentPremium);
 		BigTotal = BigTotal.subtract(xPercentPremium);
+		System.out.println("BigTotal:" + BigTotal);
 		// calc xUnit
 		xPercent = new BigDecimal(Double.parseDouble(xPerc)).setScale(4, BigDecimal.ROUND_HALF_UP);
 		otherunit = new BigDecimal(Double.parseDouble(xUnit)).setScale(2, BigDecimal.ROUND_HALF_UP);
+		System.out.println("xPercent:" + xPercent + ":" +otherunit);
 		xPercentPremium = pValue1PerUnit.multiply(otherunit).setScale(2, BigDecimal.ROUND_HALF_UP);
 		xPercentPremium = xPercent.multiply(pValue1PerUnit).setScale(2, BigDecimal.ROUND_HALF_UP);
+		System.out.println("xPercentPremium:" + xPercentPremium);
 
 		BigTotal = BigTotal.add(xPercentPremium);
 		BigTotal = BigTotal.add(percentPremium);
@@ -1071,6 +1076,7 @@ if (errorFlag.compareTo("1")==0){
 	}
 	session.setAttribute("content", content); 
 }
+apptMainBean.closePstmtConn();
 
 if(bPercS) {
     billing_pCode = oscarVariables.getProperty("billing_pCode","");

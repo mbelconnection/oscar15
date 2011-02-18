@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -48,7 +48,7 @@ if(props.getProperty("isNewONbilling", "").equals("true")) {
 	scope="session" />
 <jsp:useBean id="documentBean" class="oscar.DocumentBean"
 	scope="request" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 
 <%
 JdbcBillingRAImpl dbObj = new JdbcBillingRAImpl();
@@ -83,6 +83,7 @@ if(!filename.equals("")) {
 		header = nextline.substring(0,1);
 	
 		if (header.compareTo("H") == 0) { 
+			//System.out.println(nextline);
 			headerCount = nextline.substring(2,3);
 	
 			if (headerCount.compareTo("1") == 0){
@@ -136,7 +137,9 @@ if(!filename.equals("")) {
 					param[6]="N";
 					param[7]=nowDate;
 					param[8]="<xml_cheque>"+total+"</xml_cheque>";
+					System.out.println(raNo + " : " + nextline);
 					int rowsAffected = apptMainBean.queryExecuteUpdate(param,"save_rahd");
+					System.out.println(rowsAffected + " : " );
 	
 					rsdemo = null;
 					rsdemo = apptMainBean.queryResults(param2, "search_rahd");
@@ -182,6 +185,7 @@ if(!filename.equals("")) {
 			}
 		   
 			if (headerCount.compareTo("5") == 0){
+				//System.out.println(account+":"+nextline);
 				transactiontype = nextline.substring(14,15);
 				servicedate = nextline.substring(15,23);
 				serviceno= nextline.substring(23,25);
@@ -190,6 +194,7 @@ if(!filename.equals("")) {
 				amountpay = nextline.substring(37,43);
 				amountpaysign = nextline.substring(43,44);
 				explain = nextline.substring(44,46);
+				//System.out.println(amountpay);
 	
 				payFlag = 0;
 				error = "";
@@ -405,6 +410,7 @@ while (rsdemo.next()) {
 	</tr>
 	<%
 }
+apptMainBean.closePstmtConn();
 
 %>
 </table>

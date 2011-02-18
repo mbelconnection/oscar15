@@ -1,3 +1,4 @@
+<%@ page language="java"%>
 <%@ page import="java.util.*"%>
 <%@ page import="oscar.oscarMDS.data.*,oscar.oscarLab.ca.on.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
@@ -18,6 +19,8 @@
     if ( providerNo == null ) { providerNo = ""; }
     if ( searchProviderNo == null ) { searchProviderNo = providerNo; }
     //mDSData.populateMDSResultsData2(searchProviderNo, demographicNo, request.getParameter("fname"), request.getParameter("lname"), request.getParameter("hnum"), ackStatus);
+    
+    System.out.println("Demographic  "+demographicNo);
     
     ArrayList labs = comLab.populateLabResultsData("",demographicNo, "", "","","U");
     
@@ -49,7 +52,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -226,6 +229,7 @@ function checkAll(formId){
                 endIndex = labs.size();
             }
 
+            System.out.println("pagenum :"+pageNum+ " startIndex "+startIndex+" endIndex "+endIndex +" total size "+labs.size());
             for (int i = startIndex; i < endIndex; i++) {
                 
                 

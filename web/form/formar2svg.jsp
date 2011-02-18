@@ -20,7 +20,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -73,7 +73,7 @@ for (int i =0; i < 34; i++) {
 	if (request.getParameter("x" + i) != null) {
 		ipos = request.getParameter("x" + i).indexOf("|");
 		x = (int) Integer.parseInt(request.getParameter("x" + i).substring(0, ipos)) ;
-		y = (int) Integer.parseInt(request.getParameter("x" + i).substring(ipos+1)) ;
+		y = (int) Integer.parseInt(request.getParameter("x" + i).substring(ipos+1)) ;//System.out.println(dx + " : " +dy);
 %>
 <use xlink:href="#square" transform="translate(<%=x + ", " + y%>)" />
 <%

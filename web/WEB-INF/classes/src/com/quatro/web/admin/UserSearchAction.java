@@ -11,6 +11,7 @@
 package com.quatro.web.admin;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -94,6 +95,7 @@ public class UserSearchAction extends BaseAdminAction {
 	
 			List userlist = usersManager.search(formBean);
 			
+			Hashtable ht = new Hashtable();
 			if (userlist != null && userlist.size() > 0) {
 				for (int i = 0; i < userlist.size(); i++) {
 					Object[] tmp = (Object[]) userlist.get(i);

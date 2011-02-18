@@ -17,48 +17,15 @@
  */
  -->
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
-<%@ page import="oscar.login.DBHelp"%>
-
 <%
-	if(session.getAttribute("user") == null ) response.sendRedirect("../logout.jsp");
-	String curProvider_no = (String) session.getAttribute("user");
     if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
     String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
-    
     boolean isTeamBillingOnly=false;
-    boolean isSiteAccessPrivacy=false;
-    boolean isTeamAccessPrivacy=false; 
 %>
 <security:oscarSec objectName="_team_billing_only" roleName="<%=roleName$ %>" rights="r" reverse="false">
 <% isTeamBillingOnly=true; %>
 </security:oscarSec>
-<security:oscarSec objectName="_site_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%isSiteAccessPrivacy=true; %>
-</security:oscarSec>
-<security:oscarSec objectName="_team_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%isTeamAccessPrivacy=true; %>
-</security:oscarSec>
 
-
-<% 
-HashMap<String,String> providerMap = new HashMap<String,String>();
-//multisites function
-if (isSiteAccessPrivacy || isTeamAccessPrivacy) {
-	String sqlStr = "select provider_no from provider ";
-	if (isSiteAccessPrivacy) 
-		sqlStr = "select distinct p.provider_no from provider p inner join providersite s on s.provider_no = p.provider_no " 
-		 + " where s.site_id in (select site_id from providersite where provider_no = " + curProvider_no + ")";
-	if (isTeamAccessPrivacy) 
-		sqlStr = "select distinct p.provider_no from provider p where team in (select team from provider "
-				+ " where team is not null and team <> '' and provider_no = " + curProvider_no + ")";
-	DBHelp dbObj = new DBHelp();
-	ResultSet rs = dbObj.searchDBRecord(sqlStr);
-	while (rs.next()) {
-		providerMap.put(rs.getString("provider_no"),"true");
-	}
-	rs.close();
-}
-%>
 
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
@@ -76,11 +43,12 @@ if (isSiteAccessPrivacy || isTeamAccessPrivacy) {
 			String user_no = (String) session.getAttribute("user");
 
 			%>
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Billing Report</title>
 <link rel="stylesheet" type="text/css" href="billingON.css" />
 
@@ -115,6 +83,7 @@ if (isSiteAccessPrivacy || isTeamAccessPrivacy) {
 			//			 get the current year's billing disk filenames
 			BillingReviewPrep prep = new BillingReviewPrep();
 			Vector mriList = (Vector) prep.getMRIList(thisyear + "/01/01 00:00:01", thisyear + "/12/31 23:59:59","'U'");
+			//System.out.println("a     aaaaaaaaaaaa");
 			%>
 <script language="JavaScript" type="text/JavaScript">
 <!--
@@ -206,17 +175,7 @@ obj.visibility=v; }
 		<td width="220">Select Provider</td>
 		<td width="254"><select name="provider">
 			<%
-			List providerStr; 
-			
-			if (isTeamBillingOnly || isTeamAccessPrivacy) {
-				providerStr = prep.getTeamProviderBillingStr(user_no);
-			}
-			else if (isSiteAccessPrivacy) {
-				providerStr = prep.getSiteProviderBillingStr(user_no);
-			}
-			else {
-				providerStr = prep.getProviderBillingStr();
-			}
+			List providerStr = isTeamBillingOnly ? prep.getTeamProviderBillingStr(user_no) : prep.getProviderBillingStr();
 			
 			
 			if(providerStr.size() == 1) {
@@ -231,6 +190,7 @@ obj.visibility=v; }
 			<%
 			for (int i = 0; i < providerStr.size(); i++) {
 				String temp[] = ((String) providerStr.get(i)).split("\\|");
+				//System.out.println(providerStr.get(i));
 			%>
 			<option value="<%=temp[0]%>"><%=temp[1]%>, <%=temp[2]%></option>
 			<%}
@@ -276,6 +236,7 @@ obj.visibility=v; }
 
 			int count = 0;
 			for(int i=0; i<mriList.size(); i++) {
+				//System.out.println(i+" : " + mriList.size() +  mriList.get(i));
 				BillingDiskNameData obj = (BillingDiskNameData) mriList.get(i);
 				oFile = obj.getOhipfilename();
 				pro_group = obj.getGroupno();
@@ -283,6 +244,7 @@ obj.visibility=v; }
 				String createdate = obj.getCreatedatetime();
 				Vector vecProviderOhipNo = obj.getProviderohipno();
 				Vector vecProviderNo = obj.getProviderno();
+				//System.out.println(i+" : " + vecProviderNo);
 				for(int j=0; j<vecProviderNo.size(); j++){
 					count++;
 					pro_ohip = (String)vecProviderOhipNo.get(j);
@@ -293,12 +255,6 @@ obj.visibility=v; }
 					pro_name = proName.getProperty(pro_no);
 					String bgColor = count%2==0?yearColor:"ivory";
 					if(!updatedate.equals(createdate)) bgColor = "silver";
-					
-				    //multisites. skip record if not belong to same site/team
-				    if (isSiteAccessPrivacy || isTeamAccessPrivacy) {
-				    	if(providerMap.get(pro_no)== null)  continue;
-				    }
-
 %>
 
 	<tr bgcolor="<%=bgColor%>"
@@ -365,6 +321,7 @@ while(rslocal.next()){
 
 	<%
 }
+apptMainBean.closePstmtConn();
 %>
 
 </table>

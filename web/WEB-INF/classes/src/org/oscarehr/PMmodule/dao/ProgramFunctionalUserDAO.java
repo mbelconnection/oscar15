@@ -24,16 +24,16 @@ package org.oscarehr.PMmodule.dao;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.oscarehr.PMmodule.model.FunctionalUserType;
 import org.oscarehr.PMmodule.model.ProgramFunctionalUser;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 public class ProgramFunctionalUserDAO extends HibernateDaoSupport {
 
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(ProgramFunctionalUserDAO.class);
 
     public List getFunctionalUserTypes() {
         List results = this.getHibernateTemplate().find("from FunctionalUserType");

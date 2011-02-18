@@ -17,7 +17,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -62,7 +62,6 @@ public class ReportStatusUpdateAction extends Action {
         char status = request.getParameter("status").charAt(0);
         String comment = request.getParameter("comment");
         String lab_type = request.getParameter("labType");
-        String ajaxcall=request.getParameter("ajaxcall");
         Properties props = OscarProperties.getInstance();
 
         
@@ -70,11 +69,11 @@ public class ReportStatusUpdateAction extends Action {
             String demographicID = "";
             try{
                 String sql = "SELECT demographic_no FROM patientLabRouting WHERE lab_type = '"+lab_type+"' and lab_no='"+labNo+"'";
-                
-                ResultSet rs = DBHandler.GetSQL(sql);
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+                ResultSet rs = db.GetSQL(sql);
 
                 while(rs.next()){
-                    demographicID = oscar.Misc.getString(rs, "demographic_no");
+                    demographicID = db.getString(rs,"demographic_no");
                 }
                 rs.close();
 
@@ -100,10 +99,7 @@ public class ReportStatusUpdateAction extends Action {
                 }
                 
             }
-            if(ajaxcall!=null&&ajaxcall.equals("yes"))
-                return null;
-            else
-                return mapping.findForward("success");
+            return mapping.findForward("success");
         } catch (Exception e) {
             logger.error("exception in ReportStatusUpdateAction",e);
             return mapping.findForward("failure");

@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -42,6 +42,7 @@
   int everyMin=Integer.parseInt((String) session.getAttribute("everymin"));
 if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable()){
   n_t_w_w= (String) session.getAttribute("newticklerwarningwindow");
+  System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@"+n_t_w_w);
 }
   int view=0;
   int lenLimitedL=11, lenLimitedS=3;
@@ -83,6 +84,8 @@ if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.Is
 <title>Doctor Appointment Access - appointmentprovideradminday</title>
 <link rel="stylesheet" href="../receptionist/receptionistapptstyle.css"
 	type="text/css">
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 </head>
 <script language="JavaScript">
 <!--
@@ -340,6 +343,7 @@ function tsr(s) {
        me = nProvider; break;
      }
    }
+//   System.out.println(me +"    "+userInGroup);
 
    String [] param1 = new String[2];
    for(int nProvider=0;nProvider<numProvider;nProvider++) {
@@ -465,6 +469,7 @@ function tsr(s) {
 										.<%=view==0?(name.length()>len?name.substring(0,len):name):name%></font></a></td>
 										<%
         			} else {
+        			  //System.out.println(name+" / " +demographic_no);
 				%>
 										<a href=#
 											onClick="popupPage(360,680,'../appointment/appointmentcontrol.jsp?appointment_no=<%=appt.get("appointment_no")%>&provider_no=<%=curProvider_no[nProvider]%>&year=<%=year%>&month=<%=month%>&day=<%=day%>&start_time=<%=iS+":"+iSm%>&demographic_no=<%=demographic_no%>&displaymode=edit&dboperation=search');return false;"

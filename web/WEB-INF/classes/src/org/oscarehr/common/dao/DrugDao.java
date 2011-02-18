@@ -24,7 +24,6 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.oscarehr.common.model.Drug;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -33,28 +32,6 @@ public class DrugDao extends AbstractDao<Drug> {
 	public DrugDao() {
 		super(Drug.class);
 	}
-
-    public boolean addNewDrug(Drug d){
-       try{
-            entityManager.persist(d);
-        }catch(Exception e){
-            MiscUtils.getLogger().error(e);
-            return false;
-        }
-       return true;
-    }
-    public List<Drug> findByPrescriptionId(Integer prescriptionId) {
-
-    	String sqlCommand = "select x from Drug x where x.scriptNo=?1";
-
-        Query query = entityManager.createQuery(sqlCommand);
-        query.setParameter(1, prescriptionId);
-
-        @SuppressWarnings("unchecked")
-        List<Drug> results = query.getResultList();
-
-        return (results);
-    }
 
 	/**
      * @param archived can be null for both archived and non archived entries
@@ -104,6 +81,7 @@ public class DrugDao extends AbstractDao<Drug> {
             sqlCommand="select x from Drug x where x.demographicId=?1 and x.customName=?2 order by x.rxDate desc, x.id desc";
         else
             sqlCommand="select x from Drug x where x.demographicId=?1 and x.brandName=?2 order by x.rxDate desc, x.id desc";
+        System.out.println("sqlCommand="+sqlCommand);
         // set parameters
         Query query = entityManager.createQuery(sqlCommand);
         query.setParameter(1, demographicId);
@@ -122,8 +100,8 @@ public class DrugDao extends AbstractDao<Drug> {
 
     ///////
     public List<Drug> getUniquePrescriptions(String demographic_no) {
-
-
+        //   System.out.println("===========IN getUniquePrescriptions======");
+        //    System.out.println("demographic_no="+demographic_no);
         List<Drug> rs = findByDemographicIdOrderByDate(new Integer(demographic_no), false);
 
         List<Drug> rt = new ArrayList<Drug>();
@@ -134,16 +112,16 @@ public class DrugDao extends AbstractDao<Drug> {
             for (int i = 0; i < rt.size(); i++) {
                 Drug p2 = rt.get(i);
                 if (p2.getGcnSeqNo() == drug.getGcnSeqNo()) {
-
+                    //    System.out.println("p2.getGCN_SEQNO().intValue() == prescriptDrug.getGCN_SEQNO().intValue()="+p2.getGCN_SEQNO());
                     if (p2.getGcnSeqNo() != 0){ // not custom - safe GCN
-
+                        //       System.out.println("p2.getGCN_SEQNO().intValue() != 0" );
                         b = false;
                     } else {// custom
-
+                        //       System.out.println("p2.getGCN_SEQNO().intValue() = 0");
                         if (p2.getCustomName() != null && drug.getCustomName() != null) {
-
+                            //          System.out.println("p2.getCustomName() != null && prescriptDrug.getCustomName() != null");
                             if (p2.getCustomName().equals(drug.getCustomName())){ // same custom
-
+                                //           System.out.println("p2.getCustomName().equals(prescriptDrug.getCustomName())");
                                 b = false;
                             }
                         }
@@ -154,7 +132,7 @@ public class DrugDao extends AbstractDao<Drug> {
                 rt.add(drug);
             }
         }
-
+        //  System.out.println("===========END getUniquePrescriptions======");
         return rt;
     }
 

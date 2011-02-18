@@ -20,6 +20,8 @@
 <%@page import="org.oscarehr.PMmodule.model.Formintakea"%>
 
 <%
+	response.setHeader("Cache-Control", "no-cache");
+
 	String numOfIntakeAs = "";
 	if (request.getAttribute("numOfIntakeAs") != null) {
 		numOfIntakeAs = (String) request.getAttribute("numOfIntakeAs");
@@ -72,6 +74,7 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Untitled Document</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
 <link rel="stylesheet" type="text/css"
 	href="<html:rewrite page="/css/intakeA.css"/>"></link>
 <script language="JavaScript"

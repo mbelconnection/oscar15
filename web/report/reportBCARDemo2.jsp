@@ -19,6 +19,8 @@ if (request.getParameter("bcartype") != null && request.getParameter("bcartype")
     ARTYPE = "formBCAR2007";
 }
 
+System.out.println("AR TYPE "+ARTYPE);
+
 DBHelp dbObj = new DBHelp();
 
 Properties propDemoSelect = new Properties();
@@ -117,6 +119,7 @@ while (enumVar.hasMoreElements()) {
 
         vecValue.add(request.getParameter(name));
         vecDateFormat.add(request.getParameter(DATE_FORMAT + serialNo));
+        // System.out.println(" tempVal: " + name.substring(VALUE.length()) );
     }
 }
 // get seq. select string
@@ -135,6 +138,9 @@ for(int i=0; i<vecSeqSpecSelect.size(); i++) {
         sSpecSelect += (sSpecSelect.length()<1?"":",") + "demographicExt." + vecSeqSpecSelect.get(i); 
     }
 }
+
+System.out.println(":" + bDemoSelect + bSpecSelect + bARSelect);
+System.out.println(":" + sDemoSelect + sSpecSelect + sARSelect);
 
 //get replaced filter
 // filling the var with the real date value
@@ -188,6 +194,8 @@ for (int i = 0; i < vecValue.size(); i++) {
 
 	    sARFilter += (sARFilter.length()<1?"":" and ") + strFilter; 
 	}
+	System.out.println(i + tempVal + " tempVal: " + vecVarValue);
+	System.out.println(i + strFilter);
 	vecFilter.add(strFilter);
 }
 
@@ -200,10 +208,12 @@ Vector vecFieldValue = new Vector();
 String ORDER_BY = " order by demographic.last_name, demographic.first_name";
 if(bDemoSelect && !bARSelect && !bSpecSelect && bDemoFilter && !bARFilter && !bSpecFilter) {
 	String sql = "select " + sDemoSelect + " from demographic where " + sDemoFilter + ORDER_BY;
+	System.out.println(" one table: demographic: " + sql);
 	String [] temp = sDemoSelect.replaceAll("demographic.","").split(",");
 	for(int i=0; i<temp.length; i++) {
 	    vecFieldCaption.add(propDemoSelect.getProperty(temp[i].trim()));
 	    vecFieldName.add(temp[i].trim());
+	    System.out.println(" vecFieldCaption: " + propDemoSelect.getProperty(temp[i].trim()));
 	}
 	vecFieldValue = (new RptReportCreator()).query(sql, vecFieldName);
 }
@@ -215,12 +225,12 @@ if( (bDemoSelect && !bARSelect && bSpecSelect && !bARFilter) || (!bARFilter && b
     if(bDemoSelect && !bARSelect && bSpecSelect && !bSpecFilter) {
         vecFieldName.add("demographic_no");
     	String sql = "select demographic_no," + sDemoSelect + " from demographic where " + sDemoFilter + ORDER_BY;
-    	
+    	System.out.println(" demographic and demographicExt: " + sql);
     	String [] temp = sDemoSelect.replaceAll("demographic.","").split(",");
     	for(int i=0; i<temp.length; i++) {
     	    vecFieldCaption.add(propDemoSelect.getProperty(temp[i].trim()));
     	    vecFieldName.add(temp[i].trim());
-    	    
+    	    System.out.println(" vecFieldCaption: " + propDemoSelect.getProperty(temp[i].trim()));
     	}
     	vecFieldValue = (new RptReportCreator()).query(sql, vecFieldName);
     	vecFieldName.remove(0); // remove "demographic_no"
@@ -241,7 +251,7 @@ if( (bDemoSelect && !bARSelect && bSpecSelect && !bARFilter) || (!bARFilter && b
     			propSpecValue.setProperty(dbObj.getString(rs,"demographic_no")+temp[i], dbObj.getString(rs,"value"));
 			}
     	}
-
+    	System.out.println(" demographic and demographicExt: " + sql);
     }
     if(bSpecFilter) {
         vecFieldName.add("demographic_no");
@@ -251,7 +261,7 @@ if( (bDemoSelect && !bARSelect && bSpecSelect && !bARFilter) || (!bARFilter && b
         String sTempEle = sSpecFilter.length()>0? (" and "+sSpecFilter) : "";
         String subQuery = "select distinct(demographic.demographic_no) from demographicExt, demographic where demographic.demographic_no=demographicExt.demographic_no ";
         subQuery += " and " + sDemoFilter + sTempEle + "  ";
-    	
+    	System.out.println(" demographic and demographicExt subQuery: " + subQuery);
         String subFormDemoNo = "";
         rs = dbObj.searchDBRecord(subQuery);
     	while (rs.next()) {
@@ -264,6 +274,7 @@ if( (bDemoSelect && !bARSelect && bSpecSelect && !bARFilter) || (!bARFilter && b
     	    vecSpecCaption.add(propSpecSelect.getProperty(temp[i].trim()));
     		sql = "select demographic_no,value from demographicExt where key_val='" + temp[i] + "' and demographic_no in (";
     		sql += subFormDemoNo + ") order by date_time desc limit 1";
+        	System.out.println(" demographic and demographicExt: " + sql);
     		rs = dbObj.searchDBRecord(sql);
 			while (rs.next()) {
     			propSpecValue.setProperty(dbObj.getString(rs,"demographic_no")+temp[i], dbObj.getString(rs,"value"));
@@ -273,15 +284,24 @@ if( (bDemoSelect && !bARSelect && bSpecSelect && !bARFilter) || (!bARFilter && b
     	//sTempEle = sSpecSelect.length()>0? (","+sSpecSelect) : "";
         sql = "select demographic.demographic_no," + sDemoSelect + " from demographic where ";
         sql += " demographic.demographic_no in (" + subFormDemoNo + ") " + ORDER_BY;
-    	
+    	System.out.println(" demographic and demographicExt: " + sql);
 
     	temp = sDemoSelect.replaceAll("demographic.","").split(",");
     	for(int i=0; i<temp.length; i++) {
     	    vecFieldCaption.add(propDemoSelect.getProperty(temp[i].trim()));
     	    vecFieldName.add(temp[i].trim());
-    	    
+    	    System.out.println(" vecFieldCaption: " + propDemoSelect.getProperty(temp[i].trim()));
     	}
-    	
+    	/*
+    	if(bSpecSelect) {
+    		temp = sSpecSelect.replaceAll("demographicExt.","").split(",");
+    		for(int i=0; i<temp.length; i++) {
+    		    vecFieldCaption.add(propSpecSelect.getProperty(temp[i].trim()));
+    		    vecFieldName.add(temp[i].trim());
+    		    System.out.println(" vecFieldCaption: " + propSpecSelect.getProperty(temp[i].trim()));
+    		}
+    	}
+    	*/
     	vecFieldValue = (new RptReportCreator()).query(sql, vecFieldName);
     	vecFieldName.remove(0); // remove "demographic_no"
     }
@@ -297,7 +317,7 @@ if( (bDemoSelect && bARSelect && !bSpecSelect && !bSpecFilter) || (!bSpecSelect 
     ///here is the prob
     
     subQuery += " and " + sDemoFilter + sTempEle + " group by "+ARTYPE+".demographic_no,"+ARTYPE+".formCreated ";
-	
+	System.out.println(" demographic and "+ARTYPE+" subQuery: " + subQuery);
     String subFormId = "";
     ResultSet rs = dbObj.searchDBRecord(subQuery);
 	while (rs.next()) {
@@ -311,20 +331,20 @@ if( (bDemoSelect && bARSelect && !bSpecSelect && !bSpecFilter) || (!bSpecSelect 
         
     String sql = "select demographic.demographic_no," + sDemoSelect + sTempEle + " from demographic,"+ARTYPE+" where ";
     sql += ARTYPE+".ID in (" + subFormId + ") and demographic.demographic_no="+ARTYPE+".demographic_no " + ORDER_BY;
-	
+	System.out.println(" demographic and "+ARTYPE+": " + sql);
 
 	String [] temp = sDemoSelect.replaceAll("demographic.","").split(",");
 	for(int i=0; i<temp.length; i++) {
 	    vecFieldCaption.add(propDemoSelect.getProperty(temp[i].trim()));
 	    vecFieldName.add(temp[i].trim());
-	   
+	    System.out.println(" vecFieldCaption: " + propDemoSelect.getProperty(temp[i].trim()));
 	}
 	if(bARSelect) {
 		temp = sARSelect.replaceAll(ARTYPE+".","").split(",");
 		for(int i=0; i<temp.length; i++) {
 		    vecFieldCaption.add(propARSelect.getProperty(temp[i].trim()));
 		    vecFieldName.add(temp[i].trim());
-		    
+		    System.out.println(" vecFieldCaption: " + propARSelect.getProperty(temp[i].trim()));
 		}
 	}
 	vecFieldValue = (new RptReportCreator()).query(sql, vecFieldName);
@@ -339,7 +359,7 @@ if( (bDemoSelect && bARSelect && bSpecSelect) || (bARFilter && bSpecFilter) ) {
         String sTempEle = sARFilter.length()>0? (" and "+sARFilter) : "";
         String subQuery = "select max(ID) from "+ARTYPE+", demographic where demographic.demographic_no="+ARTYPE+".demographic_no ";
         subQuery += " and " + sDemoFilter + sTempEle + " group by "+ARTYPE+".demographic_no,"+ARTYPE+".formCreated ";
-        
+        System.out.println(" demographic and "+ARTYPE+" subQuery: " + subQuery);
         String subFormId = "";
         ResultSet rs = dbObj.searchDBRecord(subQuery);
     	while (rs.next()) {
@@ -350,20 +370,20 @@ if( (bDemoSelect && bARSelect && bSpecSelect) || (bARFilter && bSpecFilter) ) {
     	subFormId = subFormId.length()>0? subFormId : "0";
         String sql = "select demographic.demographic_no," + sDemoSelect + sTempEle + " from demographic,"+ARTYPE+" where ";
         sql += ARTYPE+".ID in (" + subFormId + ") and demographic.demographic_no="+ARTYPE+".demographic_no " + ORDER_BY;
-        
+        System.out.println(" demographic and "+ARTYPE+": " + sql);
 
     	String [] temp = sDemoSelect.replaceAll("demographic.","").split(",");
     	for(int i=0; i<temp.length; i++) {
     	    vecFieldCaption.add(propDemoSelect.getProperty(temp[i].trim()));
     	    vecFieldName.add(temp[i].trim());
-    	    
+    	    System.out.println(" vecFieldCaption: " + propDemoSelect.getProperty(temp[i].trim()));
     	}
     	if(bARSelect) {
     		temp = sARSelect.replaceAll(ARTYPE+".","").split(",");
     		for(int i=0; i<temp.length; i++) {
     		    vecFieldCaption.add(propARSelect.getProperty(temp[i].trim()));
     		    vecFieldName.add(temp[i].trim());
-    		    
+    		    System.out.println(" vecFieldCaption: " + propARSelect.getProperty(temp[i].trim()));
     		}
     	}
     	vecFieldValue = (new RptReportCreator()).query(sql, vecFieldName);
@@ -387,7 +407,7 @@ if( (bDemoSelect && bARSelect && bSpecSelect) || (bARFilter && bSpecFilter) ) {
 			}
     	}
     }
-	
+	System.out.println(" table: all: " );
 	
 	if(bARFilter && bSpecFilter) {
 	    // spec first
@@ -398,7 +418,7 @@ if( (bDemoSelect && bARSelect && bSpecSelect) || (bARFilter && bSpecFilter) ) {
         String sTempEle = sSpecFilter.length()>0? (" and "+sSpecFilter) : "";
         String subQuery = "select distinct(demographic.demographic_no) from demographicExt, demographic where demographic.demographic_no=demographicExt.demographic_no ";
         subQuery += " and " + sDemoFilter + sTempEle + "  ";
-    	
+    	System.out.println(" demographic and demographicExt subQuery: " + subQuery);
         String subFormDemoNo = "";
         rs = dbObj.searchDBRecord(subQuery);
     	while (rs.next()) {
@@ -420,7 +440,7 @@ if( (bDemoSelect && bARSelect && bSpecSelect) || (bARFilter && bSpecFilter) ) {
         sTempEle = sARFilter.length()>0? (" and "+sARFilter) : "";
         subQuery = "select max(ID) from "+ARTYPE+", demographic where demographic.demographic_no="+ARTYPE+".demographic_no ";
         subQuery += " and " + sDemoFilter + sTempEle + " group by "+ARTYPE+".demographic_no,"+ARTYPE+".formCreated ";
-    	
+    	System.out.println(" demographic and "+ARTYPE+" subQuery: " + subQuery);
         String subFormId = "";
         rs = dbObj.searchDBRecord(subQuery);
     	while (rs.next()) {
@@ -433,20 +453,20 @@ if( (bDemoSelect && bARSelect && bSpecSelect) || (bARFilter && bSpecFilter) ) {
         sql = "select demographic.demographic_no," + sDemoSelect + sTempEle + " from demographic,"+ARTYPE+" where ";
         sql += " demographic.demographic_no in (" +  subFormDemoNo + ") and ";
         sql += ARTYPE+".ID in (" + subFormId + ") and demographic.demographic_no="+ARTYPE+".demographic_no " + ORDER_BY;
-    	
+    	System.out.println(" total: " + sql);
 
     	temp = sDemoSelect.replaceAll("demographic.","").split(",");
     	for(int i=0; i<temp.length; i++) {
     	    vecFieldCaption.add(propDemoSelect.getProperty(temp[i].trim()));
     	    vecFieldName.add(temp[i].trim());
-    	    
+    	    System.out.println(" vecFieldCaption: " + propDemoSelect.getProperty(temp[i].trim()));
     	}
     	if(bARSelect) {
     		temp = sARSelect.replaceAll(ARTYPE+".","").split(",");
     		for(int i=0; i<temp.length; i++) {
     		    vecFieldCaption.add(propARSelect.getProperty(temp[i].trim()));
     		    vecFieldName.add(temp[i].trim());
-    		    
+    		    System.out.println(" vecFieldCaption: " + propARSelect.getProperty(temp[i].trim()));
     		}
     	}
     	vecFieldValue = (new RptReportCreator()).query(sql, vecFieldName);
@@ -460,6 +480,8 @@ if( (bDemoSelect && bARSelect && bSpecSelect) || (bARFilter && bSpecFilter) ) {
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="oscarReport.oscarReportscpbDemo.title"/></title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <LINK REL="StyleSheet" HREF="../web.css" TYPE="text/css">
 <!-- calendar stylesheet -->
 <link rel="stylesheet" type="text/css" media="all"

@@ -1,6 +1,7 @@
+<%@ page language="java"%>
 <%@ page import="oscar.oscarEncounter.immunization.data.*"%>
 <%@ page
-	import="oscar.oscarEncounter.immunization.pageUtil.*, java.util.*, org.w3c.dom.*"%>
+	import="oscar.oscarEncounter.immunization.pageUtil.*, java.util.*, org.w3c.dom.*, sun.misc.BASE64Encoder"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
@@ -12,6 +13,15 @@
     oscar.oscarEncounter.data.EctRemoteAttachments remoAttach = new oscar.oscarEncounter.data.EctRemoteAttachments();
     remoAttach.estMessageIds(bean.getDemographicNo());
     out.print(bean.getDemographicNo());
+%>
+
+<%!
+public String encode64(String plainText)
+    {
+        BASE64Encoder enc = new BASE64Encoder();
+        return enc.encode(plainText.getBytes());
+    }
+
 %>
 
 
@@ -35,7 +45,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -124,6 +134,8 @@ function popupSendAttach(vheight,vwidth,varpage) { //open a new popup window
                 String svBy    = (String) remoAttach.savedBys.get(i);
 
                 java.util.ArrayList lis = remoAttach.getFromLocation(mesId);
+
+                System.out.println("sys = "+lis.size());
 
                 String fromLoco = (String) lis.get(0);
                 String subject  = (String) lis.get(1);

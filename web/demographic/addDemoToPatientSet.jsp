@@ -1,3 +1,5 @@
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
 <%@page import="oscar.oscarReport.data.DemographicSets,java.util.ArrayList"%>
 
 <%
@@ -17,6 +19,7 @@
 
 <html>
     <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Add Demographic to Patient Set</title>
     </head>
     <body>

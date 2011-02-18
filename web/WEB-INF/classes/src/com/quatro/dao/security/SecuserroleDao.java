@@ -13,12 +13,13 @@ package com.quatro.dao.security;
 import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.criterion.Example;
+//import org.oscarehr.PMmodule.web.formbean.IncidentForm;
 import org.oscarehr.PMmodule.web.formbean.StaffForm;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import com.quatro.model.security.Secuserrole;
@@ -36,7 +37,7 @@ import com.quatro.model.security.Secuserrole;
  */
 
 public class SecuserroleDao extends HibernateDaoSupport {
-	private static final Logger logger = MiscUtils.getLogger();
+	private static final Logger log = LogManager.getLogger(SecuserroleDao.class);
 	// property constants
 	public static final String PROVIDER_NO = "providerNo";
 	public static final String ROLE_NAME = "roleName";
@@ -44,7 +45,7 @@ public class SecuserroleDao extends HibernateDaoSupport {
 	public static final String ACTIVEYN = "activeyn";
 
 	public void saveAll(List list) {
-		logger.debug("saving ALL Secuserrole instances");
+		log.debug("saving ALL Secuserrole instances");
 		try {
 			for(int i =0; i< list.size(); i++){
 				Secuserrole obj = (Secuserrole)list.get(i);
@@ -57,69 +58,69 @@ public class SecuserroleDao extends HibernateDaoSupport {
 				
 			}
 			//this.getHibernateTemplate().saveOrUpdateAll(list);
-			logger.debug("save ALL successful");
+			log.debug("save ALL successful");
 		} catch (RuntimeException re) {
-			logger.error("save ALL failed", re);
+			log.error("save ALL failed", re);
 			throw re;
 		}
 	}
 	public void save(Secuserrole transientInstance) {
-		logger.debug("saving Secuserrole instance");
+		log.debug("saving Secuserrole instance");
 		try {
 			getSession().save(transientInstance);
-			logger.debug("save successful");
+			log.debug("save successful");
 		} catch (RuntimeException re) {
-			logger.error("save failed", re);
+			log.error("save failed", re);
 			throw re;
 		}
 	}
 	
 	public void delete(Secuserrole persistentInstance) {
-		logger.debug("deleting Secuserrole instance");
+		log.debug("deleting Secuserrole instance");
 		try {
 			getSession().delete(persistentInstance);
-			logger.debug("delete successful");
+			log.debug("delete successful");
 		} catch (RuntimeException re) {
-			logger.error("delete failed", re);
+			log.error("delete failed", re);
 			throw re;
 		}
 	}
 	public int deleteByOrgcd(String orgcd) {
-		logger.debug("deleting Secuserrole by orgcd");
+		log.debug("deleting Secuserrole by orgcd");
 		try {
 			
 			return getHibernateTemplate().bulkUpdate("delete Secuserrole as model where model.orgcd =?", orgcd);
 			
 		} catch (RuntimeException re) {
-			logger.error("delete failed", re);
+			log.error("delete failed", re);
 			throw re;
 		}
 	}
 	public int deleteByProviderNo(String providerNo) {
-		logger.debug("deleting Secuserrole by providerNo");
+		log.debug("deleting Secuserrole by providerNo");
 		try {
 			
 			return getHibernateTemplate().bulkUpdate("delete Secuserrole as model where model.providerNo =?", providerNo);
 			
 		} catch (RuntimeException re) {
-			logger.error("delete failed", re);
+			log.error("delete failed", re);
 			throw re;
 		}
 	}
 	
 	public int deleteById(Integer id) {
-		logger.debug("deleting Secuserrole by ID");
+		log.debug("deleting Secuserrole by ID");
 		try {
 			
 			return getHibernateTemplate().bulkUpdate("delete Secuserrole as model where model.id =?", id);
 			
 		} catch (RuntimeException re) {
-			logger.error("delete failed", re);
+			log.error("delete failed", re);
 			throw re;
 		}
 	}
 	public int update(Secuserrole instance) {
-		logger.debug("Update Secuserrole instance");
+		log.debug("Update Secuserrole instance");
 		try {
 			String queryString = "update Secuserrole as model set model.activeyn ='" + instance.getActiveyn() + "'"
 				+ " where model.providerNo ='" + instance.getProviderNo() + "'"
@@ -131,39 +132,39 @@ public class SecuserroleDao extends HibernateDaoSupport {
 			return queryObject.executeUpdate();
 						
 		} catch (RuntimeException re) {
-			logger.error("Update failed", re);
+			log.error("Update failed", re);
 			throw re;
 		}
 	}
 	public Secuserrole findById(java.lang.Integer id) {
-		logger.debug("getting Secuserrole instance with id: " + id);
+		log.debug("getting Secuserrole instance with id: " + id);
 		try {
 			Secuserrole instance = (Secuserrole) getSession().get(
 					"com.quatro.model.Secuserrole", id);
 			return instance;
 		} catch (RuntimeException re) {
-			logger.error("get failed", re);
+			log.error("get failed", re);
 			throw re;
 		}
 	}
 
 	public List findByExample(Secuserrole instance) {
-		logger.debug("finding Secuserrole instance by example");
+		log.debug("finding Secuserrole instance by example");
 		try {
 			List results = getSession().createCriteria(
 					"com.quatro.model.Secuserrole").add(
 					Example.create(instance)).list();
-			logger.debug("find by example successful, result size: "
+			log.debug("find by example successful, result size: "
 					+ results.size());
 			return results;
 		} catch (RuntimeException re) {
-			logger.error("find by example failed", re);
+			log.error("find by example failed", re);
 			throw re;
 		}
 	}
 
 	public List findByProperty(String propertyName, Object value) {
-		logger.debug("finding Secuserrole instance with property: " + propertyName
+		log.debug("finding Secuserrole instance with property: " + propertyName
 				+ ", value: " + value);
 		try {
 			String queryString = "from Secuserrole as model where model."
@@ -172,7 +173,7 @@ public class SecuserroleDao extends HibernateDaoSupport {
 			queryObject.setParameter(0, value);
 			return queryObject.list();
 		} catch (RuntimeException re) {
-			logger.error("find by property name failed", re);
+			log.error("find by property name failed", re);
 			throw re;
 		}
 	}
@@ -194,7 +195,7 @@ public class SecuserroleDao extends HibernateDaoSupport {
 		and not (s.orgcd like 'R%' or s.orgcd like 'O%')
 		
 		*/
-		logger.debug("Find staff instance .");
+		log.debug("Find staff instance .");
 		try {
 			
 			String queryString = "select a from Secuserrole a, LstOrgcd b, SecProvider p"
@@ -209,14 +210,14 @@ public class SecuserroleDao extends HibernateDaoSupport {
 			return this.getHibernateTemplate().find(queryString);
 			
 		} catch (RuntimeException re) {
-			logger.error("Find staff failed", re);
+			log.error("Find staff failed", re);
 			throw re;
 		}
 		
 	}
 	public List searchByCriteria(StaffForm staffForm){
 		
-		logger.debug("Search staff instance .");
+		log.debug("Search staff instance .");
 		try {
 			
 			
@@ -248,7 +249,7 @@ public class SecuserroleDao extends HibernateDaoSupport {
 			return this.getHibernateTemplate().find(queryString);
 			
 		} catch (RuntimeException re) {
-			logger.error("Search staff failed", re);
+			log.error("Search staff failed", re);
 			throw re;
 		}
 	}
@@ -258,48 +259,48 @@ public class SecuserroleDao extends HibernateDaoSupport {
 	}
 
 	public List findAll() {
-		logger.debug("finding all Secuserrole instances");
+		log.debug("finding all Secuserrole instances");
 		try {
 			String queryString = "from Secuserrole";
 			Query queryObject = getSession().createQuery(queryString);
 			return queryObject.list();
 		} catch (RuntimeException re) {
-			logger.error("find all failed", re);
+			log.error("find all failed", re);
 			throw re;
 		}
 	}
 
 	public Secuserrole merge(Secuserrole detachedInstance) {
-		logger.debug("merging Secuserrole instance");
+		log.debug("merging Secuserrole instance");
 		try {
 			Secuserrole result = (Secuserrole) getSession().merge(
 					detachedInstance);
-			logger.debug("merge successful");
+			log.debug("merge successful");
 			return result;
 		} catch (RuntimeException re) {
-			logger.error("merge failed", re);
+			log.error("merge failed", re);
 			throw re;
 		}
 	}
 
 	public void attachDirty(Secuserrole instance) {
-		logger.debug("attaching dirty Secuserrole instance");
+		log.debug("attaching dirty Secuserrole instance");
 		try {
 			getSession().saveOrUpdate(instance);
-			logger.debug("attach successful");
+			log.debug("attach successful");
 		} catch (RuntimeException re) {
-			logger.error("attach failed", re);
+			log.error("attach failed", re);
 			throw re;
 		}
 	}
 
 	public void attachClean(Secuserrole instance) {
-		logger.debug("attaching clean Secuserrole instance");
+		log.debug("attaching clean Secuserrole instance");
 		try {
 			getSession().lock(instance, LockMode.NONE);
-			logger.debug("attach successful");
+			log.debug("attach successful");
 		} catch (RuntimeException re) {
-			logger.error("attach failed", re);
+			log.error("attach failed", re);
 			throw re;
 		}
 	}

@@ -26,7 +26,6 @@ package oscar.oscarLab.ca.all.upload.handlers;
 
 
 import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
 
 
 public class HHSEmrDownloadHandler extends DefaultHandler implements MessageHandler {
@@ -34,7 +33,7 @@ public class HHSEmrDownloadHandler extends DefaultHandler implements MessageHand
     
     @Override
     String getHl7Type(){
-        MiscUtils.getLogger().debug("HSSEmrDownloadHandler getting called");
+        System.out.println("HSSEmrDownloadHandler getting called");
         return "HHSEMR";
     }
     

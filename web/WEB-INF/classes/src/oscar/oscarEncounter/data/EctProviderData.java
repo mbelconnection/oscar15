@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -26,8 +26,6 @@ package oscar.oscarEncounter.data;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.SxmlMisc;
 import oscar.oscarClinic.ClinicData;
@@ -124,13 +122,13 @@ public class EctProviderData {
     public Provider getProvider(String providerNo)    {
         Provider provider = null;
         try        {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT * FROM provider WHERE provider_no = '" +providerNo+ "'";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if(rs.next()) {
-                String surname = oscar.Misc.getString(rs, "last_name");
-                String firstName = oscar.Misc.getString(rs, "first_name");
-                String comments = oscar.Misc.getString(rs, "comments");                                           
+                String surname = db.getString(rs,"last_name");
+                String firstName = db.getString(rs,"first_name");
+                String comments = db.getString(rs,"comments");                                           
                 String selfLearningPasswd = SxmlMisc.getXmlContent(comments,"xml_p_slppassword");
                 
                 if(firstName.indexOf("Dr.") < 0)
@@ -145,13 +143,14 @@ public class EctProviderData {
                 String clinicPhone = clinic.getClinicPhone();
                 String clinicFax = clinic.getClinicFax();
                 
-                String myOscarLoginId = ProviderMyOscarIdData.getMyOscarId(providerNo);
+                ProviderMyOscarIdData myOscar = new ProviderMyOscarIdData(providerNo);
+                String myOscarLoginId = myOscar.getMyOscarId();
                 
                 provider = new Provider(providerNo, surname, firstName, clinicName, clinicAddress, clinicCity, clinicPostal, clinicPhone, clinicFax, myOscarLoginId, selfLearningPasswd);
             }
             rs.close();
         }  catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         return provider;
     }

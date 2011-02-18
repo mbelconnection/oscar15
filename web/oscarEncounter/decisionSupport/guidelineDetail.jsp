@@ -3,6 +3,8 @@
     Created on : 29-Jun-2009, 1:14:43 AM
     Author     : apavel
 --%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
 
@@ -23,6 +25,7 @@ pageContext.setAttribute("provider_no", request.getParameter("provider_no"));
 
 <html>
     <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>GuidelineList</title>
         <link rel="stylesheet" href="decisionSupport.css" type="text/css"></link>
     </head>

@@ -27,9 +27,7 @@ package oscar.oscarEncounter.oscarMeasurements;
 
 import java.util.Hashtable;
 import java.util.List;
-
 import org.drools.RuleBase;
-
 import oscar.oscarEncounter.oscarMeasurements.util.Recommendation;
 import oscar.oscarEncounter.oscarMeasurements.util.TargetColour;
 

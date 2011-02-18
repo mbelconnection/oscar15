@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the
 // * Department of Family Medicine
-// * McMaster University
+// * McMaster Unviersity
 // * Hamilton
 // * Ontario, Canada
 // *
@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,7 +42,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -81,7 +81,7 @@ public final class EctSetupHistoryIndexAction extends Action {
                     session.setAttribute( "measurementsData", hd );
                 }
                 else{
-                    MiscUtils.getLogger().debug("cannot get the EctSessionBean");
+                    System.out.println("cannot get the EctSessionBean");
                 }
                 return (mapping.findForward("continue"));
             }
@@ -102,7 +102,7 @@ public final class EctSetupHistoryIndexAction extends Action {
 			session.setAttribute("measurementsData", hd);
 
 		} else {
-			MiscUtils.getLogger().debug("cannot get the EctSessionBean");
+			System.out.println("cannot get the EctSessionBean");
 		}
 		return (mapping.findForward("newcontinue"));
 	}

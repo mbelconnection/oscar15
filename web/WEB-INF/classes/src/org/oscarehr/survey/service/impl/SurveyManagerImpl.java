@@ -29,7 +29,6 @@ import org.oscarehr.survey.dao.SurveyDAO;
 import org.oscarehr.survey.model.Survey;
 import org.oscarehr.survey.service.SurveyManager;
 import org.oscarehr.surveymodel.SurveyDocument;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -78,7 +77,7 @@ public class SurveyManagerImpl implements SurveyManager {
             	SurveyDocument model = SurveyDocument.Factory.parse(new StringReader(xml));
             	return model.getSurvey();
             }catch(Exception e) {
-            	MiscUtils.getLogger().error("Error", e);
+            	e.printStackTrace();
             }
 		}
 		return null;
@@ -92,7 +91,7 @@ public class SurveyManagerImpl implements SurveyManager {
             	SurveyDocument model = SurveyDocument.Factory.parse(new StringReader(xml));
             	return model;
             }catch(Exception e) {
-            	MiscUtils.getLogger().error("Error", e);
+            	e.printStackTrace();
             }
 		}
 		return null;

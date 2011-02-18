@@ -29,7 +29,8 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -40,15 +41,15 @@ import org.apache.struts.actions.DispatchAction;
 import org.caisi.model.CustomFilter;
 import org.caisi.service.DemographicManagerTickler;
 import org.caisi.service.TicklerManager;
-import org.oscarehr.PMmodule.service.ProgramManager;
-import org.oscarehr.PMmodule.service.ProviderManager;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.Provider;
-import org.oscarehr.util.MiscUtils;
+import org.oscarehr.PMmodule.service.ProgramManager;
+import org.oscarehr.PMmodule.service.ProviderManager;
+import org.oscarehr.util.SessionConstants;
 
 public class CustomFilterAction extends DispatchAction {
 	
-	private static Logger log = MiscUtils.getLogger();
+	private static Log log = LogFactory.getLog(CustomFilterAction.class);
 	private TicklerManager ticklerMgr = null;
 	private ProviderManager providerMgr = null;
 	private DemographicManagerTickler demographicMgr = null;

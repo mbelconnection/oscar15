@@ -44,7 +44,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -52,12 +52,13 @@
 
 
 
-
-<%@page import="oscar.oscarDB.DBHandler"%><html>
+<html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message
 	key="oscarMDS.segmentDisplay.patientSearch.title" /></title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <script language="JavaScript">
 <!--
 function setfocus() {
@@ -237,6 +238,7 @@ function checkTypeIn() {
     		int index = keyword.indexOf(",");
 	  		param[0]=keyword.substring(0,index).trim()+"%";//(",");
 	  		param[1]=keyword.substring(index+1).trim()+"%";
+	  		//System.out.println("from -------- :"+ param[0]+ ": next :"+param[1]);
     		rs = db.queryResults(sql, param);
    	}
   } else if(request.getParameter("search_mode").equals("search_dob")) {      
@@ -244,6 +246,7 @@ function checkTypeIn() {
 	  		param[0]=""+MyDateFormat.getYearFromStandardDate(keyword)+"%";//(",");
 	  		param[1]=""+MyDateFormat.getMonthFromStandardDate(keyword)+"%";
 	  		param[2]=""+MyDateFormat.getDayFromStandardDate(keyword)+"%";  
+	  		//System.out.println("1111111111111111111 " +param[0]+param[1]+param[2]);
     		rs = db.queryResults(sql, param);
   } else {      
     keyword=keyword+"%";
@@ -267,15 +270,15 @@ function checkTypeIn() {
       bodd=bodd?false:true; //for the color of rows
       nItems++; //to calculate if it is the end of records
 
-     if(!(oscar.Misc.getString(rs,"month_of_birth").equals(""))) {//   ||oscar.Misc.getString(rs,"year_of_birth")||oscar.Misc.getString(rs,"date_of_birth")) {
-    	if(curMonth>Integer.parseInt(oscar.Misc.getString(rs,"month_of_birth"))) {
-    		age=curYear-Integer.parseInt(oscar.Misc.getString(rs,"year_of_birth"));
+     if(!(db.getString(rs,"month_of_birth").equals(""))) {//   ||db.getString(rs,"year_of_birth")||db.getString(rs,"date_of_birth")) {
+    	if(curMonth>Integer.parseInt(db.getString(rs,"month_of_birth"))) {
+    		age=curYear-Integer.parseInt(db.getString(rs,"year_of_birth"));
     	} else {
-    		if(curMonth==Integer.parseInt(oscar.Misc.getString(rs,"month_of_birth")) &&
-    			curDay>Integer.parseInt(oscar.Misc.getString(rs,"date_of_birth"))) {
-    			age=curYear-Integer.parseInt(oscar.Misc.getString(rs,"year_of_birth"));
+    		if(curMonth==Integer.parseInt(db.getString(rs,"month_of_birth")) &&
+    			curDay>Integer.parseInt(db.getString(rs,"date_of_birth"))) {
+    			age=curYear-Integer.parseInt(db.getString(rs,"year_of_birth"));
     		} else {
-    			age=curYear-Integer.parseInt(oscar.Misc.getString(rs,"year_of_birth"))-1; 
+    			age=curYear-Integer.parseInt(db.getString(rs,"year_of_birth"))-1; 
     		}
     	}	
      }	     
@@ -283,20 +286,20 @@ function checkTypeIn() {
 
 	<tr bgcolor="<%=bodd?"ivory":"white"%>" align="center">
 		<td><input type="submit" name="demographicNo"
-			value="<%=oscar.Misc.getString(rs,"demographic_no")%>" onclick="window.opener.updateLabDemoStatus('<%=request.getParameter("labNo")%>');"></td>
-		<td><%=nbsp( Misc.toUpperLowerCase(oscar.Misc.getString(rs,"last_name")) )%></td>
-		<td><%=nbsp( Misc.toUpperLowerCase(oscar.Misc.getString(rs,"first_name")) )%></td>
+			value="<%=db.getString(rs,"demographic_no")%>"></td>
+		<td><%=nbsp( Misc.toUpperLowerCase(db.getString(rs,"last_name")) )%></td>
+		<td><%=nbsp( Misc.toUpperLowerCase(db.getString(rs,"first_name")) )%></td>
 		<td><%= age %></td>
-		<td><%=nbsp( oscar.Misc.getString(rs,"roster_status") )%></td>
-		<td><%=nbsp( oscar.Misc.getString(rs,"sex") )%></td>
-		<td><%=nbsp( oscar.Misc.getString(rs,"year_of_birth")+"-"+oscar.Misc.getString(rs,"month_of_birth")+"-"+oscar.Misc.getString(rs,"date_of_birth") )%></td>
-		<td><%=providerBean.getProperty(oscar.Misc.getString(rs,"provider_no"))==null?"&nbsp;":providerBean.getProperty(oscar.Misc.getString(rs,"provider_no")) %></td>
+		<td><%=nbsp( db.getString(rs,"roster_status") )%></td>
+		<td><%=nbsp( db.getString(rs,"sex") )%></td>
+		<td><%=nbsp( db.getString(rs,"year_of_birth")+"-"+db.getString(rs,"month_of_birth")+"-"+db.getString(rs,"date_of_birth") )%></td>
+		<td><%=providerBean.getProperty(db.getString(rs,"provider_no"))==null?"&nbsp;":providerBean.getProperty(db.getString(rs,"provider_no")) %></td>
 
 	</tr>
 	<%
-      bufName = new StringBuffer( (oscar.Misc.getString(rs,"last_name")+ ","+ oscar.Misc.getString(rs,"first_name")) );
-      bufNo = new StringBuffer( (oscar.Misc.getString(rs,"demographic_no")) );
-      bufChart = new StringBuffer( (oscar.Misc.getString(rs,"chart_no"))   );
+      bufName = new StringBuffer( (db.getString(rs,"last_name")+ ","+ db.getString(rs,"first_name")) );
+      bufNo = new StringBuffer( (db.getString(rs,"demographic_no")) );
+      bufChart = new StringBuffer( (db.getString(rs,"chart_no"))   );
     }
   }
 %>

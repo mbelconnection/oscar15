@@ -72,15 +72,9 @@ import org.oscarehr.util.TimeClearedHashMap;
  * <br />
  * Note that not all data is privacy related, examples include a Facility and it's information is not covered under the regulations for privacy of an individual. Note also that for some reason we're only concerned about client privacy, providers seem to
  * not be covered and or have no expectation of privacy (although we could be wrong in this interpretation).
- * <br />
- * We will attempt to cache data on a per provider level as well, we will put this cached data in the sessions space. To keep things organised,
- * we will put a TimeClearedHashMap in the session space and with in that hash map we will cache data. 
  */
 public class CaisiIntegratorManager {
 
-	private static final String INTEGRATOR_DATA_SESSION_CACHE_KEY="INTEGRATOR_DATA_SESSION_CACHE_KEY";
-	private static final long MAX_SESSION_CACHE_DATA_TIME=DateUtils.MILLIS_PER_HOUR;
-	
 	/** only non-audited data should be cached in here */
 	private static Map<String, Object> basicDataCache=Collections.synchronizedMap(new TimeClearedHashMap<String, Object>(DateUtils.MILLIS_PER_HOUR, DateUtils.MILLIS_PER_HOUR));
 	
@@ -112,12 +106,12 @@ public class CaisiIntegratorManager {
     public static List<CachedFacility> getRemoteFacilities() throws MalformedURLException {
 		
     	@SuppressWarnings("unchecked")
-		List<CachedFacility> results=(List<CachedFacility>) basicDataCache.get("ALL_FACILITIES");
+		List<CachedFacility> results=(List<CachedFacility>) basicDataCache.get("ALL FACILITIES");
     	
     	if (results==null)
     	{
 			FacilityWs facilityWs = getFacilityWs();
-			results = Collections.unmodifiableList(facilityWs.getAllFacility());
+			results = facilityWs.getAllFacility();
 			basicDataCache.put("ALL_FACILITIES", results);
     	}
     	
@@ -158,20 +152,6 @@ public class CaisiIntegratorManager {
 		return (port);
 	}
 
-    public static List<CachedProgram> getAllPrograms() throws MalformedURLException
-	{
-    	@SuppressWarnings("unchecked")
-		List<CachedProgram> allPrograms=(List<CachedProgram>) basicDataCache.get("ALL_PROGRAMS");
-		
-		if (allPrograms==null)
-		{
-			allPrograms=Collections.unmodifiableList(getProgramWs().getAllPrograms());
-			basicDataCache.put("ALL_PROGRAMS", allPrograms);
-		}
-		
-		return(allPrograms);			
-	}
-	
 	/**
 	 * @param type should not be null
 	 * @return a list of cached programs matching the program type
@@ -179,7 +159,7 @@ public class CaisiIntegratorManager {
 	public static ArrayList<CachedProgram> getRemotePrograms(String type) throws MalformedURLException {
 		ArrayList<CachedProgram> results = new ArrayList<CachedProgram>();
 
-		for (CachedProgram cachedProgram : getAllPrograms()) {
+		for (CachedProgram cachedProgram : getProgramWs().getAllPrograms()) {
 			if (type.equals(cachedProgram.getType())) results.add(cachedProgram);
 		}
 
@@ -187,7 +167,7 @@ public class CaisiIntegratorManager {
 	}
 
 	public static CachedProgram getRemoteProgram(FacilityIdIntegerCompositePk remoteProgramPk) throws MalformedURLException {
-		List<CachedProgram> programs = getAllPrograms();
+		List<CachedProgram> programs = getProgramWs().getAllPrograms();
 
 		for (CachedProgram cachedProgram : programs) {
 			if (facilityIdIntegerPkEquals(cachedProgram.getFacilityIdIntegerCompositePk(), remoteProgramPk)) {
@@ -242,7 +222,7 @@ public class CaisiIntegratorManager {
     	if (results==null)
     	{
 			ProviderWs providerWs = getProviderWs();
-			results = Collections.unmodifiableList(providerWs.getAllProviders());
+			results = providerWs.getAllProviders();
 			basicDataCache.put("ALL_PROVIDERS", results);
     	}
     	
@@ -358,66 +338,9 @@ public class CaisiIntegratorManager {
 		return (consentTransfer);
 	}
 
-    public static List<CachedDemographicNote> getLinkedNotes(Integer demographicNo) throws MalformedURLException {
-		
-		String sessionCacheKey="LINKED_NOTES:"+demographicNo;
-
-		@SuppressWarnings("unchecked")
-		List<CachedDemographicNote> linkedNotes=(List<CachedDemographicNote>) getFromSessionCache(sessionCacheKey);
-		
-		if (linkedNotes==null)
-		{
-			DemographicWs demographicWs = getDemographicWs();
-			linkedNotes = Collections.unmodifiableList(demographicWs.getLinkedCachedDemographicNotes(demographicNo));
-			putInSessionCache(sessionCacheKey, linkedNotes);
-		}
-		
+	public static List<CachedDemographicNote> getLinkedNotes(Integer demographicNo) throws MalformedURLException {
+		DemographicWs demographicWs = getDemographicWs();
+		List<CachedDemographicNote> linkedNotes = demographicWs.getLinkedCachedDemographicNotes(demographicNo);
 		return (linkedNotes);
-	}
-	
-	public static void clearSessionCache()
-	{
-		LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
-		if (loggedInInfo!=null && loggedInInfo.session!=null) loggedInInfo.session.removeAttribute(INTEGRATOR_DATA_SESSION_CACHE_KEY);
-	}
-	
-	/**
-	 * This method should get the existin session cache or create one of none exists. It will return null if this is 
-	 * run from a non-session thread.
-	 */
-	private static TimeClearedHashMap<String, Object> getSessionCache()
-	{
-		LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
-		if (loggedInInfo!=null && loggedInInfo.session!=null)
-		{
-			@SuppressWarnings("unchecked")
-			TimeClearedHashMap<String, Object> sessionCache=(TimeClearedHashMap<String, Object>) loggedInInfo.session.getAttribute(INTEGRATOR_DATA_SESSION_CACHE_KEY);
-			
-			if (sessionCache==null)
-			{
-				sessionCache=new TimeClearedHashMap<String, Object>(MAX_SESSION_CACHE_DATA_TIME, MAX_SESSION_CACHE_DATA_TIME);
-				loggedInInfo.session.setAttribute(INTEGRATOR_DATA_SESSION_CACHE_KEY, sessionCache);
-			}
-			
-			return(sessionCache);
-		}
-		
-		return(null);
-	}
-	
-    private static void putInSessionCache(String key, Object value)
-	{
-		TimeClearedHashMap<String, Object> sessionCache=getSessionCache();
-		
-		if (sessionCache!=null) sessionCache.put(key, value);
-	}
-
-    private static Object getFromSessionCache(String key)
-	{
-		TimeClearedHashMap<String, Object> sessionCache=getSessionCache();
-		
-		if (sessionCache!=null) return(sessionCache.get(key));
-		
-		return(null);
 	}
 }

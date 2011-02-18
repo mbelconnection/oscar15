@@ -27,7 +27,7 @@
 <%@ page import="oscar.oscarBilling.ca.on.pageUtil.*"%>
 <%--<jsp:useBean id="oscarVariables" class="java.util.Properties" scope="session" />--%>
 <jsp:useBean id="providerBean" class="java.util.Properties" scope="session" />
-<%
+<%//
 			if (session.getAttribute("user") == null) {
 				response.sendRedirect("../../../logout.jsp");
 			}
@@ -75,22 +75,21 @@
 			    ctlBillForm = curBillForm;
 			} else {
 			    // check user preference to show a bill form
-			    ProviderPreferenceDao providerPreferenceDao=(ProviderPreferenceDao)SpringUtils.getBean("providerPreferenceDao");
-			    ProviderPreference providerPreference=null;
-			    
-                if( apptProvider_no.equalsIgnoreCase("none") ) {
-    			    providerPreferenceDao.find(user_no);
-                }
-                else {
-    			    providerPreferenceDao.find(apptProvider_no);
-                }
-			    
-			    if (providerPreference!=null) {
-					ctlBillForm = providerPreference.getDefaultServiceType();
+			    sql = "select default_servicetype from preference where provider_no='";
+                            if( apptProvider_no.equalsIgnoreCase("none") ) {
+                                sql += user_no + "'";
+                            }
+                            else {
+                                sql += apptProvider_no + "'";
+                            }
+
+			    rs = dbObj.searchDBRecord(sql);
+			    if (rs.next() && rs.getString("default_servicetype")!=null) {
+				ctlBillForm = rs.getString("default_servicetype");
 			    } else {
-					// check oscar.properties to show a default bill form
-					String dv = OscarProperties.getInstance().getProperty("default_view");
-					if (dv!=null) ctlBillForm = dv;
+				// check oscar.properties to show a default bill form
+				String dv = OscarProperties.getInstance().getProperty("default_view");
+				if (dv!=null) ctlBillForm = dv;
 			    }
 			}
 			
@@ -169,6 +168,10 @@
 			JdbcBillingReviewImpl hdbObj = new JdbcBillingReviewImpl();
 			List aL = hdbObj.getBillingHist(demo_no, 5,0, null);
 			
+			/////////////////////////////////////
+			//sql = "select id,billing_date,admission_date,visitType, timestamp, facilty_num, ref_num from billing_on_cheader1 "+ " where demographic_no="+ demo_no	+ " and status!='D' order by billing_date desc, id desc limit 1";
+			//rs = dbObj.searchDBRecord(sql);
+
 			Vector vecHistD = new Vector();
 			if (aL.size()>0) {
 				BillingClaimHeader1Data obj = (BillingClaimHeader1Data) aL.get(0);
@@ -358,6 +361,7 @@
                         }
 			// create msg
 			msg += errorMsg + warningMsg;
+			//System.out.println(" * ******************************" + sql);
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -366,12 +370,10 @@
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.oscarehr.common.model.Site"%>
 <%@page import="org.oscarehr.common.model.Provider"%>
-<%@page import="org.apache.commons.lang.StringUtils"%>
-<%@page import="org.oscarehr.util.MiscUtils"%>
-<%@page import="org.oscarehr.common.dao.ProviderPreferenceDao"%>
-<%@page import="org.oscarehr.util.SpringUtils"%>
-<%@page import="org.oscarehr.common.model.ProviderPreference"%><html>
+<%@page import="org.apache.commons.lang.StringUtils"%><html>
 <head>
+<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="PRIVATE" />
+<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=UTF-8" />
 <title>HospitalBilling</title>
 <style type="text/css">
 <!--
@@ -831,6 +833,7 @@ function changeCodeDesc() {
 				<option selected="selected" value="">- SUPER CODES -</option>
 <% //
 			    List sL = tdbObj.getBillingFavouriteList();
+			    System.out.println("s:" + sL.size());
 			    for (int i = 0; i < sL.size(); i = i + 2) { %>
 				<option value="<%=(String) sL.get(i+1)%>"><%=(String) sL.get(i)%></option>
 <% } %>
@@ -1043,7 +1046,7 @@ function changeSite(sel) {
 					    </option>
 <%	        for (int i = 0; i < vecProvider.size(); i++) {
 		    propT = (Properties) vecProvider.get(i);
-                    
+
                     %>
 					    <option value="<%=propT.getProperty("proOHIP")%>"
 						    <%=providerview.equals(propT.getProperty("proOHIP","").substring(0,propT.getProperty("proOHIP","").indexOf("|")))?"selected":""%>>
@@ -1127,7 +1130,7 @@ function changeSite(sel) {
 		admDate = demoData.getDemographicDateJoined(demo_no);
 	     }
           }catch(Exception inPatientEx){
-        	  MiscUtils.getLogger().error("Error", inPatientEx);
+	     inPatientEx.printStackTrace();
 	     admDate = "";
           }
             
@@ -1372,6 +1375,7 @@ function changeSite(sel) {
 			for (int i = 0; i < aL.size(); i = i + 2) {
 				BillingClaimHeader1Data obj = (BillingClaimHeader1Data) aL.get(i);
 				BillingItemData iobj = (BillingItemData) aL.get(i + 1);
+				//System.out.println(i + obj.getBilling_date());
 
 				%>
 			<tr <%=i%4==0? "class=\"myGreen\"":""%> align="center">
@@ -1401,9 +1405,12 @@ Calendar.setup( { inputField : "xml_vdate", ifFormat : "%Y-%m-%d", showsTime :fa
 		String ret = "";
 		if (paraName != null && !"".equals(paraName)) {
 			ret = paraName;
+                        System.out.println("HERE 1 "+ret);
 		} else if (vec != null && vec.size() > 0 && vec.get(0) != null) {
 			ret = ((Properties) vec.get(0)).getProperty(propName, "");
+                        System.out.println("HERE 2 "+propName+" "+ret);
 		}   
+		//System.out.println("paraName:" + paraName + " propName:" + propName + " :" + ret);
 		return ret;
 	}
 

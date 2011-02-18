@@ -22,10 +22,9 @@
 */
  -->
 
-<%@page isErrorPage="true"%>
+<%@ page language="java" isErrorPage="true"%>
 
-
-<%@page import="org.oscarehr.util.MiscUtils"%><head>
+<head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Doh!</title>
 </head>
@@ -34,7 +33,8 @@ An Error has occurred in this application.
 
 <% if (exception != null) { %>
 <pre>
-<% MiscUtils.getLogger().error("Error", exception); %>
+<% exception.printStackTrace(new java.io.PrintWriter(out)); %>
 </pre>
-<% } %>
+<% } else { %>
 Please check your log files for further information.
+<% } %>

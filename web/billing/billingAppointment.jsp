@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -39,10 +39,10 @@
 <%@ page
 	import="java.util.*, java.sql.*, oscar.*, java.net.*, oscar.MyDateFormat"
 	errorPage="errorpage.jsp"%>
-
+<%@ include file="../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 <%
 GregorianCalendar now=new GregorianCalendar();
   int curYear = now.get(Calendar.YEAR);
@@ -61,6 +61,8 @@ GregorianCalendar now=new GregorianCalendar();
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Billing Report</title>
 <link rel="stylesheet" href="../web.css">
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 <script language="JavaScript">
 <!--
 
@@ -225,7 +227,7 @@ function refresh() {
  String dateBegin = request.getParameter("xml_vdate");
    String dateEnd = request.getParameter("xml_appointment_date");
    if (dateEnd.compareTo("") == 0) dateEnd = MyDateFormat.getMysqlStandardDate(curYear, curMonth, curDay);
-   if (dateBegin.compareTo("") == 0) dateBegin="1950-01-01"; // set to any early time to start search from beginning
+   if (dateBegin.compareTo("") == 0) dateBegin="0001-01-01";
  ResultSet rs=null ;
   String[] param =new String[3];
   param[0] = request.getParameter("provider");
@@ -296,6 +298,7 @@ function refresh() {
 
 
 <%
+ apptMainBean.closePstmtConn();
   %>
 <br>
 <%

@@ -27,10 +27,9 @@ package oscar.oscarEncounter.oscarMeasurements.util;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jdom.Element;
-import org.oscarehr.util.MiscUtils;
 
 /**
  <ruleset>
@@ -47,7 +46,7 @@ import org.oscarehr.util.MiscUtils;
  * @author jaygallagher
  */
 public class TargetColour {
-    private static final Logger log=MiscUtils.getLogger();
+    private static final Log log = LogFactory.getLog(TargetColour.class);
     
     private String additionConsequence = null;
     private String indicationColor = null;

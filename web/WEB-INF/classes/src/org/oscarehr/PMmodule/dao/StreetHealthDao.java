@@ -1,12 +1,12 @@
 package org.oscarehr.PMmodule.dao;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 public class StreetHealthDao extends HibernateDaoSupport {
 
-	private Logger log=MiscUtils.getLogger();
+	private Log log = LogFactory.getLog(StreetHealthDao.class);
 
 	
 }

@@ -24,10 +24,10 @@
 	import="java.math.*, java.util.*, java.io.*, java.sql.*, java.net.*, oscar.*, oscar.util.*, oscar.MyDateFormat"
 	errorPage="errorpage.jsp"%>
 <%@ page import="oscar.oscarBilling.ca.on.pageUtil.*"%>
-
+<%@ include file="../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 
 <% 
 String raNo = "", flag="", plast="", pfirst="", pohipno="", proNo="";
@@ -107,6 +107,8 @@ paramx[0] = "F";
 paramx[1] = raNo;
 
 int recordAffected1 = apptMainBean.queryExecuteUpdate(paramx,"update_rahd_status");
+
+apptMainBean.closePstmtConn();
 %>
 
 <script LANGUAGE="JavaScript">

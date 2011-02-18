@@ -37,12 +37,12 @@ import java.util.Hashtable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarPrevention.reports.PreventionReport;
 import oscar.oscarPrevention.reports.PreventionReportFactory;
@@ -56,7 +56,7 @@ import oscar.util.UtilDateUtilities;
  * @author Jay Gallagher
  */
 public class PreventionReportAction extends Action {
-   private static Logger log = MiscUtils.getLogger();
+   private static Log log = LogFactory.getLog(PreventionReportAction.class);
    
    public PreventionReportAction() {
    }
@@ -93,7 +93,6 @@ public class PreventionReportAction extends Action {
        request.setAttribute("inEligible", h.get("inEligible"));
        request.setAttribute("eformSearch",h.get("eformSearch"));
        request.setAttribute("followUpType",h.get("followUpType"));
-       request.setAttribute("BillCode", h.get("BillCode"));
        
        request.setAttribute("prevType",prevention);
        request.setAttribute("patientSet",setName);

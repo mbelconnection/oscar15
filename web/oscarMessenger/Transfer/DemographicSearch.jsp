@@ -18,14 +18,14 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 --%>
 
 
-<%@ page 
+<%@ page language="java"
 	import="oscar.oscarMessenger.docxfer.send.*, oscar.oscarMessenger.docxfer.util.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
@@ -84,6 +84,7 @@ function conf()
 			action="/oscarMessenger/SearchDemographic">
 			<%
                                 aId = (String) request.getAttribute("IDenc");
+                                // System.out.println("aId ="+aId);
                                 oscar.oscarMessenger.pageUtil.MsgSessionBean bean;
                                 bean = (oscar.oscarMessenger.pageUtil.MsgSessionBean)request.getSession().getAttribute("msgSessionBean");
                                 aId = bean.getMessageId();

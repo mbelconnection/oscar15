@@ -29,7 +29,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -38,6 +38,7 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>PATIENT LIST</title>
+<meta http-equiv="Cache-Control" content="no-cache">
 <meta http-equiv=Expires content=-1>
 <!--link rel="stylesheet" href="../web.css" -->
 <script language="JavaScript">
@@ -65,38 +66,38 @@ Vector vServiceCode = new Vector();
 Vector vServiceDesc = new Vector();
 Vector vBillingDx = new Vector();
 Properties props = new Properties();
-
+DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
 // get nurse name list
 String sql = "select provider_no, last_name, first_name from provider where provider_type like 'nurse%'";
-ResultSet rs = DBHandler.GetSQL(sql); 
+ResultSet rs = db.GetSQL(sql); 
 while (rs.next()) { 
-	vNurse.add(oscar.Misc.getString(rs,"last_name") + ", " + oscar.Misc.getString(rs,"first_name"));
-	vNurseNo.add(oscar.Misc.getString(rs,"provider_no"));
+	vNurse.add(db.getString(rs,"last_name") + ", " + db.getString(rs,"first_name"));
+	vNurseNo.add(db.getString(rs,"provider_no"));
 }
 
 // get dx code list
 sql = "select ichppccode, description, diagnostic_code from ichppccode order by ichppccode";
-rs = DBHandler.GetSQL(sql); 
+rs = db.GetSQL(sql); 
 while (rs.next()) { 
-	vServiceCode.add(oscar.Misc.getString(rs,"ichppccode"));
-	vServiceDesc.add(oscar.Misc.getString(rs,"description"));
-	vBillingDx.add(oscar.Misc.getString(rs,"diagnostic_code"));
+	vServiceCode.add(db.getString(rs,"ichppccode"));
+	vServiceDesc.add(db.getString(rs,"description"));
+	vBillingDx.add(db.getString(rs,"diagnostic_code"));
 }
 
 for (int i = 0; i < vServiceCode.size(); i++) {
 	// get total pat
 	sql = "select count(distinct(x.demographic_no)) from dxresearch x, demographic d where x.dxresearch_code='" + vServiceCode.get(i) + "' and x.demographic_no=d.demographic_no  and x.update_date>='" + sdate + "' and x.update_date<='" + edate + "' and x.status!='D' ";
-	rs = DBHandler.GetSQL(sql); 
+	rs = db.GetSQL(sql); 
 	while (rs.next()) { 
-		props.setProperty(vServiceCode.get(i) + "pat" + vServiceDesc.get(i), oscar.Misc.getString(rs,"count(distinct(x.demographic_no))"));
+		props.setProperty(vServiceCode.get(i) + "pat" + vServiceDesc.get(i), db.getString(rs,"count(distinct(x.demographic_no))"));
 	}
 
 	// get total vis
 	sql = "select count(distinct(b.billing_no)) from billing b, billingdetail bd where b.billing_no=bd.billing_no and bd.diagnostic_code='" + vBillingDx.get(i) + "' and b.billing_date>='" + sdate + "' and b.billing_date<='" + edate + "' and b.status!='D' and bd.status!='D'";
-	rs = DBHandler.GetSQL(sql); 
+	rs = db.GetSQL(sql); 
 	while (rs.next()) { 
-		props.setProperty(vServiceCode.get(i) + "vis" + vServiceDesc.get(i), oscar.Misc.getString(rs,"count(distinct(b.billing_no))"));
+		props.setProperty(vServiceCode.get(i) + "vis" + vServiceDesc.get(i), db.getString(rs,"count(distinct(b.billing_no))"));
 	}
 
 
@@ -104,16 +105,16 @@ for (int i = 0; i < vServiceCode.size(); i++) {
 	for (int j = 0; j < vNurseNo.size(); j++) {
 		sql = "select count(distinct(x.demographic_no)) from dxresearch x, billing b, billingdetail bd where x.status!='D' and x.dxresearch_code='" + vServiceCode.get(i) + "' and x.demographic_no=b.demographic_no  and b.billing_no=bd.billing_no and bd.diagnostic_code='" + vBillingDx.get(i) + "' and b.creator='" + vNurseNo.get(j) + "' and b.billing_date>='" + sdate + "' and b.billing_date<='" + edate + "' and b.status!='D' and bd.status!='D'" ;
 		//sql = "select count(distinct(b.demographic_no)) from billing b, billingdetail bd  where b.billing_no=bd.billing_no and bd.diagnostic_code='" + vServiceCode.get(i) + "' and b.creator='" + vNurseNo.get(j) + "' and b.billing_date>='" + sdate + "' and b.billing_date<='" + edate + "' and b.status!='D' and bd.status!='D'"  ;
-		rs = DBHandler.GetSQL(sql); 
+		rs = db.GetSQL(sql); 
 		while (rs.next()) { 
-			props.setProperty(vServiceCode.get(i) + "patNurse" + j + vServiceDesc.get(i), oscar.Misc.getString(rs,"count(distinct(x.demographic_no))"));
+			props.setProperty(vServiceCode.get(i) + "patNurse" + j + vServiceDesc.get(i), db.getString(rs,"count(distinct(x.demographic_no))"));
 		}
 
 		sql = "select count(distinct(b.billing_no)) from billing b, billingdetail bd where b.billing_no=bd.billing_no and bd.diagnostic_code='" + vBillingDx.get(i) + "' and b.creator='" + vNurseNo.get(j) + "' and b.billing_date>='" + sdate + "' and b.billing_date<='" + edate + "' and b.status!='D' and bd.status!='D'" ;
 		//sql = "select count(distinct(b.demographic_no)) from billing b, billingdetail bd  where b.billing_no=bd.billing_no and bd.diagnostic_code='" + vServiceCode.get(i) + "' and b.creator='" + vNurseNo.get(j) + "' and b.billing_date>='" + sdate + "' and b.billing_date<='" + edate + "' and b.status!='D' and bd.status!='D'"  ;
-		rs = DBHandler.GetSQL(sql); 
+		rs = db.GetSQL(sql); 
 		while (rs.next()) { 
-			props.setProperty(vServiceCode.get(i) + "visNurse" + j + vServiceDesc.get(i), oscar.Misc.getString(rs,"count(distinct(b.billing_no))"));
+			props.setProperty(vServiceCode.get(i) + "visNurse" + j + vServiceDesc.get(i), db.getString(rs,"count(distinct(b.billing_no))"));
 		}
 /*
 		out.println("<hr>");
@@ -122,9 +123,9 @@ for (int i = 0; i < vServiceCode.size(); i++) {
 		out.flush();
 
 		sql = "select count(distinct(b.appointment_no)) from billing b, billingdetail bd  where b.billing_no=bd.billing_no and bd.diagnostic_code='" + vServiceCode.get(i) + "' and b.creator='" + vNurseNo.get(j) + "' and b.billing_date>='" + sdate + "' and b.billing_date<='" + edate + "' and b.status!='D' and bd.status!='D'"  ;
-		rs = DBHandler.GetSQL(sql); 
+		rs = db.GetSQL(sql); 
 		while (rs.next()) { 
-			props.setProperty(vServiceCode.get(i) + "visNurse" + j + vServiceDesc.get(i), oscar.Misc.getString(rs,"count(distinct(b.appointment_no))"));
+			props.setProperty(vServiceCode.get(i) + "visNurse" + j + vServiceDesc.get(i), db.getString(rs,"count(distinct(b.appointment_no))"));
 		}
 /*
 		out.println("<hr>");

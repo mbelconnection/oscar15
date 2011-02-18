@@ -93,7 +93,7 @@ String backurl=bsurl+"/oscarEncounter/IncomingEncounter.do?";
     function popUpMsg(vheight,vwidth,msgPosition) {
 
 
-        var page = "<%=session.getAttribute("casemgmt_oscar_baseurl")%>"+"/oscarMessenger/ViewMessageByPosition.do?from=encounter&orderBy=!date&demographic_no=<%=bean.demographicNo%>&messagePosition="+msgPosition;
+        var page = "<%=session.getAttribute("casemgmt_oscar_baseurl")%>"+"/oscarEncounter/oscarMessenger/ViewMessageByPosition.do?from=encounter&orderBy=!date&demographic_no=<%=bean.demographicNo%>&messagePosition="+msgPosition;
         windowprops = "height="+vheight+",width="+vwidth+",location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=yes,screenX=0,screenY=0,top=0,left=0";
         var popup=window.open(page, "", windowprops);
         if (popup != null) {
@@ -176,6 +176,15 @@ String backurl=bsurl+"/oscarEncounter/IncomingEncounter.do?";
     -->
 </caisirole:SecurityAccess>
 <!-- tr><td><a href="</td></tr -->
+
+<caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">
+
+<%--<tr style="background-color:#BBBBBB;"><td>Master</td></tr>--%>
+<!-- go back to oscar main page -->
+<!-- <tr><td><a href="../provider/providercontrol.jsp">Oscar Medical</a></td></tr> -->
+<!-- PMM link here / removed because of navigation concerns! -->
+<%--<tr><td><a href="../PMmodule/ClientManager.do?id=<%=bean.demographicNo%>">Program Management</a></td></tr>--%>
+</caisi:isModuleLoad>
 
 <tr style="background-color:#BBBBBB;"><td>Clinical Modules</td></tr>
 
@@ -268,11 +277,11 @@ String backurl=bsurl+"/oscarEncounter/IncomingEncounter.do?";
 
         <select name="selectCurrentForms" class="ControlSelect" onChange="javascript:selectBox(this)" onMouseOver="javascript:window.status='View any of <%=bean.patientLastName+","+bean.patientFirstName%>\'s current forms.';return true;">
             <option value="null" selected>-current forms-</option>
-            <nested:iterate id="cf" name="casemgmt_newFormBeans" type="org.oscarehr.common.model.EncounterForm">
+            <nested:iterate id="cf" name="casemgmt_newFormBeans" type="org.oscarehr.casemgmt.model.Encounterform">
                 <%
                     String table = cf.getFormTable();
                     if(!table.equalsIgnoreCase("")){
-                        oscar.oscarEncounter.data.EctFormData.PatientForm[] pforms = oscar.oscarEncounter.data.EctFormData.getPatientForms(bean.demographicNo, table);
+                        oscar.oscarEncounter.data.EctFormData.PatientForm[] pforms = new oscar.oscarEncounter.data.EctFormData().getPatientForms(bean.demographicNo, table);
                         if(pforms.length>0) {
                             oscar.oscarEncounter.data.EctFormData.PatientForm pfrm = pforms[0];
                             String value=session.getAttribute("casemgmt_oscar_baseurl")+"/form/forwardshortcutname.jsp?formname="
@@ -292,8 +301,8 @@ String backurl=bsurl+"/oscarEncounter/IncomingEncounter.do?";
     <tr><td>
         <select name="selectNewForms" class="ControlSelect" onChange="javascript:selectBox(this)" onMouseOver="javascript:window.status='View <%=bean.patientLastName+","+bean.patientFirstName%>\'s new forms list.';return true;">
             <option value="null" selected>-add new form-</option>
-            <nested:iterate id="cf" name="casemgmt_newFormBeans" type="org.oscarehr.common.model.EncounterForm">
-                <% if (cf.isHidden()) {
+            <nested:iterate id="cf" name="casemgmt_newFormBeans" type="org.oscarehr.casemgmt.model.Encounterform">
+                <% if (((Integer)cf.getHidden()).intValue()!=0) {
                     String value = session.getAttribute("casemgmt_oscar_baseurl")+"/appointment/"
                             +cf.getFormValue()+bean.demographicNo+"&formId=0&provNo="+bean.providerNo;
                     String label = cf.getFormName();
@@ -343,14 +352,9 @@ String backurl=bsurl+"/oscarEncounter/IncomingEncounter.do?";
     <select name="msgSelect" class="ControlSelect" onchange="javascript:popUpMsg(600,900,this.options[this.selectedIndex].value)">
         <option value="null" selected>-Select Message-</option>
         <nested:iterate id="cmb" name="casemgmt_msgBeans" type="org.apache.struts.util.LabelValueBean">
-            <option value="<%= cmb.getLabel() %>"><%= cmb.getValue() %></option>
+            <option value="<%= cmb.getValue() %>"><%= cmb.getLabel() %></option>
         </nested:iterate>
     </select>
-</td></tr>
-
-<!-- add a new message -->
-<tr><td>
-    <a href="javascript:void(0)" onClick="popupPage('<%=bsurl%>/oscarMessenger/SendDemoMessage.do?orderby=date&boxType=3&demographic_no=<%=bean.demographicNo%>&providerNo=<%=bean.providerNo%>&userName=<%=bean.userName%>'); return false;" >New Messages</a>
 </td></tr>
 
 <!-- all message -->
@@ -510,6 +514,10 @@ String backurl=bsurl+"/oscarEncounter/IncomingEncounter.do?";
 </caisi:isModuleLoad>
 </table>
 </div>
+<%
+	long finLoad = System.currentTimeMillis();
+	System.out.println("TOTAL LOAD TIME FOR NAVIGATION:" + (finLoad-loadPage)*.001);
+%>
 
 
 

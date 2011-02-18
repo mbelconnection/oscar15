@@ -47,7 +47,7 @@ public class ClientLink extends AbstractModel<Integer> {
 	}
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id = null;
 	private Integer facilityId = null;
 	private Integer clientId = null;

@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -33,7 +33,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 public class BillingCreateBillingAction extends Action {
     
@@ -50,7 +49,9 @@ public class BillingCreateBillingAction extends Action {
         
         oscar.oscarBilling.pageUtil.BillingSessionBean bean;
         bean = (oscar.oscarBilling.pageUtil.BillingSessionBean)request.getSession().getAttribute("billingSessionBean");
-      
+        String patientNo   = bean.getPatientNo();
+        String patientName = bean.getPatientName();
+        String apptNo     = bean.getApptNo();
         
         String[] service  = ((BillingCreateBillingForm)form).getService();
         String other_service1 = ((BillingCreateBillingForm)form).getXml_other1();
@@ -62,10 +63,10 @@ public class BillingCreateBillingAction extends Action {
         oscar.oscarBilling.pageUtil.BillingBillingManager bmanager;
         bmanager = new BillingBillingManager();
         ArrayList billItem = bmanager.getDups2(service, other_service1, other_service2, other_service3,other_service1_unit, other_service2_unit, other_service3_unit);
-        MiscUtils.getLogger().debug("Calling getGrandTotal");
+        System.out.println("Calling getGrandTotal");
         
         bean.setGrandtotal(bmanager.getGrandTotal(billItem));
-        MiscUtils.getLogger().debug("GrandTotal" +bmanager.getGrandTotal(billItem));
+        System.out.println("GrandTotal" +bmanager.getGrandTotal(billItem));
         oscar.oscarDemographic.data.DemographicData demoData = new oscar.oscarDemographic.data.DemographicData();
         
         oscar.oscarDemographic.data.DemographicData.Demographic demo = demoData.getDemographic(bean.getPatientNo());
@@ -113,7 +114,17 @@ public class BillingCreateBillingAction extends Action {
         //bean.setPatientNo(request.getParameter("demographic_no"));
         //bean.setApptNo(request.getParameter("appointment_no"));
         //bean.setApptDate(request.getParameter("appointment_date"));
-
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        //      System.out.println("Service count : "+ billItem.size());
+        
         return (mapping.findForward("success"));
     }
     

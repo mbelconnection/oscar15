@@ -22,7 +22,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -32,8 +32,8 @@
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean" scope="session" />
 <jsp:useBean id="documentBean" class="oscar.DocumentBean" scope="request" />
-
-<%@ include file="dbBilling.jspf" %>
+<%@ include file="../../../admin/dbconnection.jsp" %>
+<%@ include file="dbBilling.jsp" %>
 
 <%
   GregorianCalendar now=new GregorianCalendar();
@@ -49,8 +49,7 @@
 %>
 
 
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html>
+<html>
 <head>
 
 <html:base/>
@@ -136,6 +135,8 @@
         balancefwd = rsdemo.getString("t_balancefwd");
         chequeamt= rsdemo.getString("t_cheque");
         newbalance = rsdemo.getString("t_newbalance");
+        System.out.println(raNo+ " " + amtbilled);
+        //total = rsdemo.getString("totalamount");
    %>
 
      <tr>
@@ -169,7 +170,7 @@
         try{
             moneyStr = new java.math.BigDecimal(str).movePointLeft(2).toString();
         }catch (Exception moneyException) {
-        	MiscUtils.getLogger().error("Error", moneyException);
+            moneyException.printStackTrace();
             moneyStr = str;
         }
     return moneyStr;

@@ -201,21 +201,43 @@
 
 <c:if
 	test="${sessionScope.userrole ne 'er_clerk' and sessionScope.userrole ne 'Vaccine Provider'}">
+	<div><span>Reporting Tools</span> <caisi:isModuleLoad
+		moduleName="TORONTO_RFQ" reverse="true">		
+		<div><a HREF="javascript:void(0);" 
+		ONCLICK="javascript:getGeneralFormsReport();return false;">General Forms Reports 
+		</a></div>
+		<div><a href="javascript:void(0);" onclick="javascript:getIntakeReport('quick');return false;">Registration
+		Intake Report</a></div>
+		<div><a href="javascript:void(0);" onclick="javascript:getIntakeReport('indepth');return false;">Follow-up
+		Intake Report</a></div>
+		<caisi:isModuleLoad moduleName="intakec.enabled">
+			<div><a href="javascript:void(0);" onclick="javascript:createIntakeCReport1();return false;">Street
+			Health Mental Health Report</a></div>
+		</caisi:isModuleLoad>
+		<div><html:link action="/PMmodule/Reports/ProgramActivityReport.do">Activity Report</html:link>
+		</div>
+		<%--
+                <div>
+                    <html:link action="/PMmodule/Reports/ClientListsReport">Client Lists Report</html:link>
+                </div>
+                --%>
+		<div><html:link action="/SurveyManager.do?method=reportForm">User Created Form Report</html:link>
+		</div>
+		</caisi:isModuleLoad> <caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="false">
+			<div><html:link action="QuatroReport/ReportList.do">Quatro Report Runner</html:link>
+			</div>
+		</caisi:isModuleLoad> <caisi:isModuleLoad moduleName="streethealth">
+		<div><a href="javascript:void(0);" onclick="javascript:createStreetHealthReport();return false;">Street
+		Health Mental Health Report</a></div>
+	</caisi:isModuleLoad></div>
+</c:if> <c:if
+	test="${sessionScope.userrole ne 'er_clerk' and sessionScope.userrole ne 'Vaccine Provider'}">
 	<security:oscarSec roleName="<%=roleName$%>"
 		objectName="_pmm.caseManagement" rights="r">
 		<div><span>Case Management</span>
-		<div><span>
-		<caisi:isModuleLoad moduleName="oscarClinic">		
-		<a
-			href='<c:out value="${ctx}"/>/provider/providercontrol.jsp?infirmaryView_isOscar=true&GoToCaisiViewFromOscarView=false'>Case
-		Management</a>		
-		</caisi:isModuleLoad>
-		<caisi:isModuleLoad moduleName="oscarClinic" reverse="true">		
-		<a
+		<div><span><a
 			href='<c:out value="${ctx}"/>/provider/providercontrol.jsp?infirmaryView_isOscar=false&GoToCaisiViewFromOscarView=true'>Case
-		Management</a>
-		</caisi:isModuleLoad>
-		</span></div>
+		Management</a></span></div>
 		</div>
 	</security:oscarSec>
 </c:if> <!--    <div>

@@ -1,3 +1,4 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!--  
 /*
  * 
@@ -18,7 +19,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University test2
+ * McMaster Unviersity test2
  * Hamilton 
  * Ontario, Canada 
  */
@@ -28,13 +29,13 @@
 if(session.getValue("user") == null) response.sendRedirect("../logout.htm");
 if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
 String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
+System.out.println("Role Name " + roleName$);
 String user_no = (String) session.getAttribute("user");
 String demographicNo=(String)session.getAttribute("casemgmt_DemoNo");
 String userfirstname = (String) session.getAttribute("userfirstname");
 String userlastname = (String) session.getAttribute("userlastname");
 
 String annotation_display = org.oscarehr.casemgmt.model.CaseManagementNoteLink.DISP_DOCUMENT;
-String appointment = request.getParameter("appointment_no");
 %>
 
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
@@ -51,7 +52,11 @@ String appointment = request.getParameter("appointment_no");
 <%@page import="org.oscarehr.util.SessionConstants"%>
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="request" />
 <%
-   
+for( Enumeration e = request.getParameterNames(); e.hasMoreElements(); ) {
+    String name = (String)e.nextElement();
+    System.out.println(name + " -> " + request.getParameter(name));
+}
+    
 //if delete request is made
 if (request.getParameter("delDocumentNo") != null) {
     EDocUtil.deleteDocument(request.getParameter("delDocumentNo"));
@@ -130,6 +135,9 @@ if( viewstatus == null ) {
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="dms.documentReport.title" /></title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
+
 <link rel="stylesheet" type="text/css"
 	href="../share/css/OscarStandardLayout.css" />
 <script type="text/javascript" src="../share/javascript/Oscar.js"></script>
@@ -294,6 +302,20 @@ function popup1(height, width, url, windowName){
 		</td>
 	</tr>
 	<tr>
+		<%--
+         <td class="MainTableLeftColumn" valign="top">
+             <div class="leftplane">
+                  <h3>&nbsp; Tags</h3>
+                  <div style="background-color: #EEEEFF;">
+                      <ul>
+                         <li>Tag 1</li>
+                         <li>Tag 2</li>
+                         <li>Tag 3</li>
+                      </ul>
+                  </div>
+             </div>
+         </td>
+         --%>
 		<td class="MainTableRightColumn" colspan="2" valign="top"><jsp:include
 			page="addDocument.jsp" /> <html:form action="/dms/combinePDFs">
 			<input type="hidden" name="curUser" value="<%=curUser%>">
@@ -479,11 +501,17 @@ function popup1(height, width, url, windowName){
 				onclick="return submitForm('<rewrite:reWrite jspPage="combinePDFs.do"/>');" />
 			<%
                     if( module.equals("demographic") ) {
-              %> 
-              <oscarProp:oscarPropertiesCheck property="MY_OSCAR" value="yes">
-				<indivo:indivoRegistered demographic="<%=moduleid%>" provider="<%=curUser%>">
+              %> <oscarProp:oscarPropertiesCheck property="MY_OSCAR"
+				value="yes">
+				<indivo:indivoRegistered demographic="<%=moduleid%>"
+					provider="<%=curUser%>">
 
-					<input type="button" onclick="return submitPhrForm('SendDocToPhr.do', 'sendDocToPhr');"	value="Send To PHR" />
+					<%-- input type="button" value="Send to MyOscar" onclick="return submitForm('<rewrite:reWrite jspPage="send2Indivo.do"/>');"/  
+                                --%>
+
+					<input type="button"
+						onclick="return submitPhrForm('SendDocToPhr.do', 'sendDocToPhr');"
+						value="Send To PHR" />
 
 				</indivo:indivoRegistered>
 			</oscarProp:oscarPropertiesCheck> <%

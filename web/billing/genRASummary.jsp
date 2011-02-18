@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -36,7 +36,7 @@
 	scope="session" />
 <jsp:useBean id="billingLocalInvNoBean" class="java.util.Properties"
 	scope="page" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 
 <html>
 <head>
@@ -120,6 +120,7 @@ while ((nextline=input.readLine())!=null){
 				account = String.valueOf(accountno);
 			}
 			// add a bean
+			//System.out.println(location + " | " + account);
 			if (location.equals(localClinicNo)) {
 				billingLocalInvNoBean.setProperty(account, localClinicNo);
 			}

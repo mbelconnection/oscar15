@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -29,11 +29,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Locale;
-import java.util.ResourceBundle;
 import java.util.Vector;
-
-import org.oscarehr.util.MiscUtils;
+import java.util.ResourceBundle;
+import java.util.Locale;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarEncounter.oscarConsultationRequest.config.data.EctConConfigurationJavascriptData;
@@ -62,28 +60,28 @@ public class EctConConstructSpecialistsScriptsFile
             fileWriter.write("{K(-1,\"----All Services-------\");D(-1,\"--------All Specialists-----\");}\n");
             try
             {
-                
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                 String sql = "select * from  consultationServices";
                 ResultSet rs;
-                for(rs = DBHandler.GetSQL(sql); rs.next(); serviceDesc.add(oscar.Misc.getString(rs, "serviceDesc")))
-                    serviceId.add(oscar.Misc.getString(rs, "serviceId"));
+                for(rs = db.GetSQL(sql); rs.next(); serviceDesc.add(db.getString(rs,"serviceDesc")))
+                    serviceId.add(db.getString(rs,"serviceId"));
 
-                MiscUtils.getLogger().debug(String.valueOf(String.valueOf((new StringBuilder("there are ")).append(serviceId.size()).append(" services"))));
+                System.out.println(String.valueOf(String.valueOf((new StringBuffer("there are ")).append(serviceId.size()).append(" services"))));
                 for(int i = 0; i < serviceId.size(); i++)
                 {
                     String servId = (String)serviceId.elementAt(i);
                     String servDesc = (String)serviceDesc.elementAt(i);
-                    fileWriter.write(String.valueOf(String.valueOf((new StringBuilder("K(")).append(servId).append(",\"").append(servDesc).append("\");\n"))));
-                    sql = String.valueOf(String.valueOf((new StringBuilder("select ser.specId, pro.fName, pro.lName, pro.proLetters, pro.address , pro.phone, pro.fax  from serviceSpecialists ser, professionalSpecialists pro where pro.specId = ser.specId and ser.serviceId = '")).append(servId).append("' order by pro.lName")));
-                    for(rs = DBHandler.GetSQL(sql); rs.next(); MiscUtils.getLogger().debug("this went this many times = ".concat(String.valueOf(String.valueOf(servId)))))
+                    fileWriter.write(String.valueOf(String.valueOf((new StringBuffer("K(")).append(servId).append(",\"").append(servDesc).append("\");\n"))));
+                    sql = String.valueOf(String.valueOf((new StringBuffer("select ser.specId, pro.fName, pro.lName, pro.proLetters, pro.address , pro.phone, pro.fax  from serviceSpecialists ser, professionalSpecialists pro where pro.specId = ser.specId and ser.serviceId = '")).append(servId).append("' order by pro.lName")));
+                    for(rs = db.GetSQL(sql); rs.next(); System.out.println("this went this many times = ".concat(String.valueOf(String.valueOf(servId)))))
                     {
-                        String name = String.valueOf(String.valueOf((new StringBuilder(String.valueOf(String.valueOf(oscar.Misc.getString(rs, "lName"))))).append(", ").append(oscar.Misc.getString(rs, "fName")).append(" ").append(oscar.Misc.getString(rs, "proLetters"))));
-                        MiscUtils.getLogger().debug("name : ".concat(String.valueOf(String.valueOf(name))));
-                        String specId = oscar.Misc.getString(rs, "specId");
-                        String phone = oscar.Misc.getString(rs, "phone");
-                        String address = oscar.Misc.getString(rs, "address");
-                        String fax = oscar.Misc.getString(rs, "fax");
-                        fileWriter.write(String.valueOf(String.valueOf((new StringBuilder("D(")).append(servId).append(",\"").append(specId).append("\",\"").append(phone).append("\",\"").append(name).append("\",\"").append(fax).append("\",\"").append(address).append("\");\n"))));
+                        String name = String.valueOf(String.valueOf((new StringBuffer(String.valueOf(String.valueOf(db.getString(rs,"lName"))))).append(", ").append(db.getString(rs,"fName")).append(" ").append(db.getString(rs,"proLetters"))));
+                        System.out.println("name : ".concat(String.valueOf(String.valueOf(name))));
+                        String specId = db.getString(rs,"specId");
+                        String phone = db.getString(rs,"phone");
+                        String address = db.getString(rs,"address");
+                        String fax = db.getString(rs,"fax");
+                        fileWriter.write(String.valueOf(String.valueOf((new StringBuffer("D(")).append(servId).append(",\"").append(specId).append("\",\"").append(phone).append("\",\"").append(name).append("\",\"").append(fax).append("\",\"").append(address).append("\");\n"))));
                     }
 
                     fileWriter.write("\n");
@@ -93,7 +91,7 @@ public class EctConConstructSpecialistsScriptsFile
             }
             catch(SQLException e)
             {
-                MiscUtils.getLogger().error("Error", e);
+                System.out.println(e.getMessage());
             }
             fileWriter.write("\n");
             fileWriter.write("}\n");
@@ -101,7 +99,7 @@ public class EctConConstructSpecialistsScriptsFile
         }
         catch(IOException io)
         {
-            MiscUtils.getLogger().debug(io.getMessage());
+            System.out.println(io.getMessage());
         }
         return retval;
     }
@@ -111,7 +109,7 @@ public class EctConConstructSpecialistsScriptsFile
         serviceId = new Vector();
         serviceDesc = new Vector();
         ResourceBundle props = ResourceBundle.getBundle("oscarResources", locale);
-        StringBuilder stringBuffer = new StringBuilder();
+        StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append("function makeSpecialistslist(dec){\n");
         stringBuffer.append(" if(dec=='1') \n");
         stringBuffer.append("{K(-1,\"----" + props.getString("oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.optChooseServ") + "-------\");D(-1,\"--------" + props.getString("oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.optChooseSpec") + "-----\");}\n");
@@ -119,30 +117,30 @@ public class EctConConstructSpecialistsScriptsFile
         stringBuffer.append("{K(-1,\"----" + props.getString("oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.optAllServices") + "-------\");D(-1,\"--------" + props.getString("oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.optAllSpecs") + "-----\");}\n");
         try
         {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select * from  consultationServices where active = '1' order by serviceDesc";
             ResultSet rs;
-            for(rs = DBHandler.GetSQL(sql); rs.next(); serviceDesc.add(oscar.Misc.getString(rs, "serviceDesc")))
-                serviceId.add(oscar.Misc.getString(rs, "serviceId"));
+            for(rs = db.GetSQL(sql); rs.next(); serviceDesc.add(db.getString(rs,"serviceDesc")))
+                serviceId.add(db.getString(rs,"serviceId"));
 
-            MiscUtils.getLogger().debug(String.valueOf(String.valueOf((new StringBuilder("there are ")).append(serviceId.size()).append(" services"))));
+            System.out.println(String.valueOf(String.valueOf((new StringBuffer("there are ")).append(serviceId.size()).append(" services"))));
             for(int i = 0; i < serviceId.size(); i++)
             {
                 String servId = (String)serviceId.elementAt(i);
                 String servDesc = (String)serviceDesc.elementAt(i);
-                stringBuffer.append(String.valueOf(String.valueOf((new StringBuilder("K(")).append(servId).append(",\"").append(servDesc).append("\");\n"))));
-                sql = String.valueOf(String.valueOf((new StringBuilder("select ser.specId, pro.fName, pro.lName, pro.proLetters, pro.address , pro.phone, pro.fax  from serviceSpecialists ser, professionalSpecialists pro where pro.specId = ser.specId and ser.serviceId = '")).append(servId).append("' order by pro.lName")));
-                for(rs = DBHandler.GetSQL(sql); rs.next(); MiscUtils.getLogger().debug("this went this many times = ".concat(String.valueOf(String.valueOf(servId)))))
+                stringBuffer.append(String.valueOf(String.valueOf((new StringBuffer("K(")).append(servId).append(",\"").append(servDesc).append("\");\n"))));
+                sql = String.valueOf(String.valueOf((new StringBuffer("select ser.specId, pro.fName, pro.lName, pro.proLetters, pro.address , pro.phone, pro.fax  from serviceSpecialists ser, professionalSpecialists pro where pro.specId = ser.specId and ser.serviceId = '")).append(servId).append("' order by pro.lName")));
+                for(rs = db.GetSQL(sql); rs.next(); System.out.println("this went this many times = ".concat(String.valueOf(String.valueOf(servId)))))
                 {
-                    String name = String.valueOf(String.valueOf((new StringBuilder(String.valueOf(String.valueOf(oscar.Misc.getString(rs, "lName"))))).append(", ").append(oscar.Misc.getString(rs, "fName")).append(" ").append(oscar.Misc.getString(rs, "proLetters"))));
+                    String name = String.valueOf(String.valueOf((new StringBuffer(String.valueOf(String.valueOf(db.getString(rs,"lName"))))).append(", ").append(db.getString(rs,"fName")).append(" ").append(db.getString(rs,"proLetters"))));
                     name = this.escapeString(name);
-                    MiscUtils.getLogger().debug("name : ".concat(String.valueOf(String.valueOf(name))));
-                    String specId = oscar.Misc.getString(rs, "specId");
-                    String phone = oscar.Misc.getString(rs, "phone");
-                    String address = oscar.Misc.getString(rs, "address");                 
+                    System.out.println("name : ".concat(String.valueOf(String.valueOf(name))));
+                    String specId = db.getString(rs,"specId");
+                    String phone = db.getString(rs,"phone");
+                    String address = db.getString(rs,"address");                 
                     address = this.escapeString(address);
-                    String fax = oscar.Misc.getString(rs, "fax");
-                    stringBuffer.append(String.valueOf(String.valueOf((new StringBuilder("D(")).append(servId).append(",\"").append(specId).append("\",\"").append(phone).append("\",\"").append(name).append("\",\"").append(fax).append("\",\"").append(address).append("\");\n"))));
+                    String fax = db.getString(rs,"fax");
+                    stringBuffer.append(String.valueOf(String.valueOf((new StringBuffer("D(")).append(servId).append(",\"").append(specId).append("\",\"").append(phone).append("\",\"").append(name).append("\",\"").append(fax).append("\",\"").append(address).append("\");\n"))));
                 }
 
                 stringBuffer.append("\n");
@@ -152,7 +150,7 @@ public class EctConConstructSpecialistsScriptsFile
         }
         catch(SQLException e)
         {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         stringBuffer.append("\n");
         stringBuffer.append("}\n");

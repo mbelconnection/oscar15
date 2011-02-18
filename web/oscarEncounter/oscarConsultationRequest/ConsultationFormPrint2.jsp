@@ -16,7 +16,7 @@
  * <OSCAR TEAM>
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  * Modified by johnchwk
@@ -25,6 +25,8 @@
 --%>
 <%! boolean bMultisites = org.oscarehr.common.IsPropertiesOn.isMultisitesEnable(); %>
 <%@ include file="/common/webAppContextAndSuperMgr.jsp"%>
+
+<%@ page language="java" %>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
@@ -91,6 +93,13 @@
 	Vector vecAddressBillingNo = null;
     String defaultAddrName = null;
 	if (bMultisites) {
+    	String appt_no=(String)session.getAttribute("cur_appointment_no");
+    	String location = null;
+    	if (appt_no!=null) {
+    		List<Map> resultList = oscarSuperManager.find("appointmentDao", "search", new Object[] {appt_no});
+    		if (resultList!=null) location = (String) resultList.get(0).get("location");
+    	}
+
     	vecAddressName = new Vector();
         vecAddress = new Vector();
         vecAddressPhone = new Vector();
@@ -99,12 +108,14 @@
         
     		SiteDao siteDao = (SiteDao)WebApplicationContextUtils.getWebApplicationContext(application).getBean("siteDao");
       		List<Site> sites = siteDao.getActiveSitesByProviderNo((String) session.getAttribute("user"));
-      		Site defaultSite = sites.get(0);
+      		Site defaultSite = null;
       		for (Site s:sites) {
                 vecAddressName.add(s.getName());
                 vecAddress.add(s.getAddress() + ", " + s.getCity() + ", " + s.getProvince() + "  " + s.getPostal());
                 vecAddressPhone.add(s.getPhone());
                 vecAddressFax.add(s.getFax());      			
+                if (s.getName().equals(location))
+                	defaultSite = s;
      		}
             // default address
             if (defaultSite!=null) {
@@ -113,8 +124,7 @@
 	            clinic.setClinic_province(defaultSite.getProvince());
 	            clinic.setClinic_postal(defaultSite.getPostal());
 	            clinic.setClinic_phone(defaultSite.getPhone());
-	            clinic.setClinic_fax(defaultSite.getFax());
-	            clinic.setClinic_name(defaultSite.getName());
+	            clinic.setClinic_fax(defaultSite.getFax());     		                 
 	            defaultAddrName=defaultSite.getName();
             }
     } else
@@ -263,7 +273,7 @@
 			<% if(vecAddressName != null) {
 				for(int i=0; i<vecAddressName.size(); i++) {%>
 					if(document.getElementById("addressSel").value=="<%=i%>") {
-						document.getElementById("clinicName").innerHTML="<%=vecAddressName.get(i)%>";
+						//document.getElementById("clinicName").innerHTML="<%=vecAddressName.get(i)%>";
 						document.getElementById("clinicAddress").innerHTML="<%=vecAddress.get(i)%>";
 						document.getElementById("clinicPhone").innerHTML="Tel: "+"<%=vecAddressPhone.get(i)%>";
 						document.getElementById("clinicFax").innerHTML="Fax: "+"<%=vecAddressFax.get(i)%>";
@@ -625,9 +635,11 @@ public String divy (String str){
 	stringBuffer.append(str);
 	int j =0;
 	int i = 0 ;
+	System.out.println("str "+str);
 	while (i < stringBuffer.length() ){
 		if (stringBuffer.charAt(i) == '\n'){
 			stringBuffer.insert(i,"<BR>");
+			System.out.println("i = "+stringBuffer.charAt(i)+" i-1 = "+stringBuffer.charAt(i-1)+" i+1 "+stringBuffer.charAt(i+4));
 			i = i + 4;
 		}
 		i++;
@@ -640,6 +652,7 @@ public String divyup (String str){
 	stringBuffer.append(str);
 	int i = 2 ;
 	int k = 0;
+	System.out.println("str "+str);
 	while ((i < (stringBuffer.length()-2)) && (i > 0)){
 		k = 0;
 		while ((stringBuffer.charAt(i) == '\n') || (stringBuffer.charAt(i) == '\r')) {

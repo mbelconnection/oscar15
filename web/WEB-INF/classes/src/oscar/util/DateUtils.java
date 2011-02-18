@@ -35,7 +35,7 @@
 
  * Department of Family Medicine
 
- * McMaster University
+ * McMaster Unviersity
 
  * Hamilton
 
@@ -53,567 +53,618 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
-import org.apache.commons.lang.time.DateFormatUtils;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
 
-public final class DateUtils {
+public class DateUtils {
 
-	private static Logger logger = MiscUtils.getLogger();
+    private static Logger logger = LogManager.getLogger(DateUtils.class);
 
-	private static SimpleDateFormat sdf;
+    private static SimpleDateFormat sdf;
 
-	private static String formatDate = "dd/MM/yyyy";
+    private static String formatDate = "dd/MM/yyyy";
 
-	public static String getISODateTimeFormatNoT(Calendar cal)
-	{
-		return(DateFormatUtils.ISO_DATETIME_FORMAT.format(cal).replace('T', ' '));
-	}
-	
-	public static SimpleDateFormat getDateFormatter() {
+    public static SimpleDateFormat getDateFormatter() {
 
-		if (sdf == null) {
+        if (sdf == null) {
 
-			sdf = new SimpleDateFormat(formatDate);
+            sdf = new SimpleDateFormat(formatDate);
 
-		}
+        }
 
-		return sdf;
+        return sdf;
 
-	}
+    }
 
-	public static void setDateFormatter(String pattern) {
+    public static void setDateFormatter(String pattern) {
 
-		sdf = new SimpleDateFormat(pattern);
+        sdf = new SimpleDateFormat(pattern);
 
-	}
+    }
 
-	public static String getDate() {
+    public static String getDate() {
 
-		Date date = new Date();
+        Date date = new Date();
 
-		return DateFormat.getDateInstance().format(date);
+        return DateFormat.getDateInstance().format(date);
 
-	}
+    }
 
-	public static String getDate(Date date) {
+    public static String getDate(Date date) {
 
-		SimpleDateFormat sdf = new SimpleDateFormat();
+        SimpleDateFormat sdf = new SimpleDateFormat();
 
-		return sdf.format(date);
+        return sdf.format(date);
 
-	}
+    }
+    
+    public static String getDate(Date date, String format, Locale locale) {
+        SimpleDateFormat sdf = new SimpleDateFormat(format, locale);
 
-	public static String getDate(Date date, String format, Locale locale) {
-		SimpleDateFormat sdf = new SimpleDateFormat(format, locale);
+        return sdf.format(date);
+    }
 
-		return sdf.format(date);
-	}
+    public static String getDate(Date date, String format) {
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
 
-	public static String getDate(Date date, String format) {
-		SimpleDateFormat sdf = new SimpleDateFormat(format);
+        return sdf.format(date);
+    }
 
-		return sdf.format(date);
-	}
+    public static String getDateTime() {
 
-	public static String getDateTime() {
+        Date date = new Date();
 
-		Date date = new Date();
+        return DateFormat.getDateTimeInstance().format(date);
 
-		return DateFormat.getDateTimeInstance().format(date);
+    }
 
-	}
+    /** Compara uma data com a data atual.
+     * @param pDate Data que ser� comparada com a data atual.
 
-	public static String formatDate(String date, String format,
+     * @param format Formato da data. Ex: dd/MM/yyyy, yyyy-MM-dd
 
-	String formatAtual) {
+     * @return  1 - se a data for maior que a data atual.
 
-		try {
+     * -1 - se a data for menor que a data atual.
 
-			setDateFormatter(formatAtual);
+     * 0 - se a data for igual que a data atual.
 
-			Date data = getDateFormatter().parse(date);
+     * -2 - se ocorrer algum erro.
 
-			logger.debug("[DateUtils] - formatDate: data formatada: " +
+     */
 
-			getDateFormatter().format(data));
+    public static String compareDate(String pDate, String format) {
 
-			setDateFormatter(format);
+        DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM);
 
-			return getDateFormatter().format(data);
+        try {
 
-		} catch (ParseException e) {
+            Date date = df.parse(pDate);
 
-			logger.error("[DateUtils] - formatDate: ", e);
+            logger.debug("[DateUtils] - compareDate: date = " + date.toString());
 
-		}
+            String sNow = DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
 
-		return "";
+            Date now = df.parse(sNow);
 
-	}
+            logger.debug("[DateUtils] - compareDate: now = " + now.toString());
 
-	public static String formatDate(String date, String format) {
+            if (date.after(now)) {
 
-		try {
+                logger.debug("[DateUtils] - compareDate: 1");
 
-			SimpleDateFormat sdf = new SimpleDateFormat();
+                return "1";
 
-			Date data = sdf.parse(date);
+            }
+            else if (date.before(now)) {
 
-			logger.debug("[DateUtils] - formatDate: data formatada: " +
+                logger.debug("[DateUtils] - compareDate: -1");
 
-			sdf.format(data));
+                return "-1";
 
-			setDateFormatter(format);
+            }
+            else {
 
-			return getDateFormatter().format(data);
+                logger.debug("[DateUtils] - compareDate: 0");
 
-		} catch (ParseException e) {
+                return "0";
 
-			logger.error("[DateUtils] - formatDate: ", e);
+            }
 
-		}
+        }
+        catch (ParseException e) {
 
-		return "";
+            logger.error("[DateUtils] - compareDate: -2", e);
 
-	}
+            return "-2";
 
-	public static String sumDate(String format, String pSum) {
+        }
 
-		int iSum = new Integer(pSum).intValue();
+    }
 
-		logger.debug("[DateUtils] - sumDate: iSum = " + iSum);
+    /** Compara uma data com outra.
+     * @param pDate Data que ser� comparada com pDate2.
 
-		Calendar calendar = new GregorianCalendar();
+     * * @param pDate2 Data que ser� comparada com pDate.
 
-		Date now = new Date();
+     * @param format Formato da data. Ex: dd/MM/yyyy, yyyy-MM-dd
 
-		calendar.setTime(now);
+     * @return  1 - se a data for maior que a data atual.
 
-		calendar.add(Calendar.DATE, iSum);
+     * -1 - se a data for menor que a data atual.
 
-		Date data = calendar.getTime();
+     * 0 - se a data for igual que a data atual.
 
-		setDateFormatter(format);
+     * -2 - se ocorrer algum erro.
 
-		return getDateFormatter().format(data);
+     */
 
-	}
+    public static String compareDate(String pDate, String pDate2, String format) {
 
-	public String NextDay(int day, int month, int year) {
+        SimpleDateFormat df = new SimpleDateFormat(format);
 
-		boolean leapyear;
+        try {
 
-		switch (month) {
+            Date date = df.parse(pDate);
 
-		// the months with 31 days without december
+            logger.debug("[DateUtils] - compareDate: date = " + date.toString());
 
-		case 1:
+            //String sNow = df.format(df.parse(pDate2));
 
-		case 3:
+            Date now = df.parse(pDate2);
 
-		case 5:
+            logger.debug("[DateUtils] - compareDate: now = " + now.toString());
 
-		case 7:
+            if (date.after(now)) {
 
-		case 8:
+                logger.debug("[DateUtils] - compareDate: 1");
 
-		case 10:
+                return "1";
 
-			if (day < 31) {
+            }
+            else if (date.before(now)) {
 
-				day++;
+                logger.debug("[DateUtils] - compareDate: -1");
 
-			} else {
+                return "-1";
 
-				day = 1;
+            }
+            else {
 
-				month++;
+                logger.debug("[DateUtils] - compareDate: 0");
 
-			}
+                return "0";
 
-			break;
+            }
 
-		case 12:
+        }
+        catch (ParseException e) {
 
-			if (day < 31) {
+            logger.error("[DateUtils] - compareDate: -2", e);
 
-				day++;
+            return "-2";
 
-			} else {
+        }
 
-				day = 1;
+    }
 
-				month = 1;
+    public static String formatDate(String date, String format,
 
-				year++;
+    String formatAtual) {
 
-			}
+        try {
 
-			break;
+            setDateFormatter(formatAtual);
 
-		case 2:
+            Date data = getDateFormatter().parse(date);
 
-			if (day < 28) {
+            logger.debug("[DateUtils] - formatDate: data formatada: " +
 
-				day++;
+            getDateFormatter().format(data));
 
-			} else {
+            setDateFormatter(format);
 
-				if (((year % 4 == 0) && !(year % 100 == 0)) || (year % 400 == 0)) {
+            return getDateFormatter().format(data);
 
-					leapyear = true;
+        }
+        catch (ParseException e) {
 
-				} else {
+            logger.error("[DateUtils] - formatDate: ", e);
 
-					leapyear = false;
+        }
 
-					// in a leapyear 29 days
+        return "";
 
-				}
-				if (leapyear == true) {
+    }
 
-					if (day == 28) {
+    public static String formatDate(String date, String format) {
 
-						day++;
+        try {
 
-					} else {
+            SimpleDateFormat sdf = new SimpleDateFormat();
 
-						day = 1;
+            Date data = sdf.parse(date);
 
-						month++;
+            logger.debug("[DateUtils] - formatDate: data formatada: " +
 
-					}
-				}
+            sdf.format(data));
 
-				else {
+            setDateFormatter(format);
 
-					day = 1;
+            return getDateFormatter().format(data);
 
-					month++;
+        }
+        catch (ParseException e) {
 
-				}
+            logger.error("[DateUtils] - formatDate: ", e);
 
-			}
+        }
 
-			break;
+        return "";
 
-		// these are the other month 4 6 9 11
+    }
 
-		default:
+    public static String sumDate(String format, String pSum) {
 
-			if (day < 30) {
+        int iSum = new Integer(pSum).intValue();
 
-				day++;
+        logger.debug("[DateUtils] - sumDate: iSum = " + iSum);
 
-			} else {
+        Calendar calendar = new GregorianCalendar();
 
-				day = 1;
+        Date now = new Date();
 
-				month++;
+        calendar.setTime(now);
 
-			}
+        calendar.add(Calendar.DATE, iSum);
 
-		} // switch
+        Date data = calendar.getTime();
 
-		String nextDay = year + "-" + month + "-" + day;
+        setDateFormatter(format);
 
-		return nextDay;
+        return getDateFormatter().format(data);
 
-	}
+    }
 
-	public String NextDay(int day, int month, int year, int numDays) {
+    public String NextDay(int day, int month, int year) {
 
-		int modValue = 28;
+        boolean leapyear;
 
-		while (numDays > 0) {
+        System.out.println("Entered Date: " + year + "-" + month + "-" + day);
 
-			int curNumDays = numDays % modValue;
+        switch (month) {
 
-			if (curNumDays == 0) {
+            // the months with 31 days without december
 
-				curNumDays = modValue;
+            case 1:
 
-			}
+            case 3:
 
-			switch (month) {
+            case 5:
 
-			// the months with 31 days without december
+            case 7:
 
-			case 1:
+            case 8:
 
-			case 3:
+            case 10:
 
-			case 5:
+                if (day < 31) {
 
-			case 7:
+                    day++;
 
-			case 8:
+                }
+                else {
 
-			case 10:
+                    day = 1;
 
-				if (day + curNumDays < 31) {
+                    month++;
 
-					day = day + curNumDays;
+                }
 
-				} else if (((day + curNumDays) % 31) == 0) {
+            break;
 
-					day = 31;
+            case 12:
 
-				}
+                if (day < 31) {
 
-				else {
+                    day++;
 
-					day = ((day + curNumDays) % 31);
+                }
+                else {
 
-					month++;
+                    day = 1;
 
-				}
+                    month = 1;
 
-				break;
+                    year++;
 
-			case 12:
+                }
 
-				if (day + curNumDays < 31) {
+            break;
 
-					day = day + curNumDays;
+            case 2:
 
-				} else if (((day + curNumDays) % 31) == 0) {
+                if (day < 28) {
 
-					day = 31;
+                    day++;
 
-				}
+                }
+                else {
 
-				else {
+                    if (((year % 4 == 0) && !(year % 100 == 0)) || (year % 400 == 0)) {
 
-					day = ((day + curNumDays) % 31);
+                        leapyear = true;
 
-					month = 1;
+                    }
+                    else {
 
-					year++;
+                        leapyear = false;
 
-				}
+                        // in a leapyear 29 days
 
-				break;
+                    }
+                    if (leapyear == true) {
 
-			case 2:
+                        if (day == 28) {
 
-				if (((year % 4 == 0) && !(year % 100 == 0)) || (year % 400 == 0)) {
+                            day++;
 
-					if (day + curNumDays < 29) {
+                        }
+                        else {
 
-						day = day + curNumDays;
+                            day = 1;
 
-					} else if (((day + curNumDays) % 29) == 0) {
+                            month++;
 
-						day = 29;
+                        }
+                    }
 
-					}
+                    else {
 
-					else {
+                        day = 1;
 
-						day = ((day + curNumDays) % 29);
+                        month++;
 
-						month++;
+                    }
 
-					}
+                }
 
-				}
+            break;
 
-				else {
+            // these are the other month 4 6 9 11
 
-					if (day + curNumDays < 28) {
+            default:
 
-						day = day + curNumDays;
+                if (day < 30) {
 
-					} else if (((day + curNumDays) % 28) == 0) {
+                    day++;
 
-						day = 28;
+                }
+                else {
 
-					}
+                    day = 1;
 
-					else {
+                    month++;
 
-						day = ((day + curNumDays) % 28);
+                }
 
-						month++;
+        } // switch
 
-					}
+        String nextDay = year + "-" + month + "-" + day;
 
-				}
+        System.out.println("next day: " + nextDay);
 
-				break;
+        return nextDay;
 
-			// these are the other month 4 6 9 11
+    }
 
-			default:
+    public String NextDay(int day, int month, int year, int numDays) {
 
-				if (day + curNumDays < 30) {
+        boolean leapyear;
 
-					day = day + curNumDays;
+        int modValue = 28;
 
-				} else if (((day + curNumDays) % 30) == 0) {
+        System.out.println("Entered Date: " + year + "-" + month + "-" + day);
 
-					day = 30;
+        while (numDays > 0) {
 
-				}
+            int curNumDays = numDays % modValue;
 
-				else {
+            if (curNumDays == 0) {
 
-					day = ((day + curNumDays) % 30);
+                curNumDays = modValue;
 
-					month++;
+            }
 
-				}
+            switch (month) {
 
-			} // switch
+                // the months with 31 days without december
 
-			numDays = numDays - curNumDays;
+                case 1:
 
-		}
+                case 3:
 
-		String nextDay = year + "-" + month + "-" + day;
+                case 5:
 
-		return nextDay;
+                case 7:
 
-	}
+                case 8:
 
-	/**
-	 *Gets the difference between two dates, in days. Takes two dates represented in milliseconds and returns the difference in days
-	 */
-	public static long getDifDays(Date greater, Date lesser) {
-		long timeInMillis=greater.getTime()-lesser.getTime();
-		return(timeInMillis/org.apache.commons.lang.time.DateUtils.MILLIS_PER_DAY);
-	}
+                case 10:
 
-	public static long getNumberOfDaysBetweenTwoDates(Calendar cal1, Calendar cal2)
-	{
-		long timeInMillis=Math.abs(cal1.getTimeInMillis()-cal2.getTimeInMillis());
-		return(timeInMillis/org.apache.commons.lang.time.DateUtils.MILLIS_PER_DAY);
-	}
-	
-	public static long getNumberOfDaysBetweenTwoDates(Date date1, Date date2)
-	{
-		long timeInMillis=Math.abs(date1.getTime()-date2.getTime());
-		return(timeInMillis/org.apache.commons.lang.time.DateUtils.MILLIS_PER_DAY);
-	}
+                    if (day + curNumDays < 31) {
 
-	/**
-	 * Converts a String date with the form 'yyyy-MM-dd' to a String date with the form 'yyyyMMdd'
-	 * 
-	 * @param oldDateString String - The string to be converted
-	 * @return String - The formatted date String
-	 */
-	public static String convertDate8Char(String oldDateString) {
-		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
-		String sdate = "00000000";
-		try {
-			if (oldDateString != null) {
-				Date tempDate = fmt.parse(oldDateString);
-				sdate = new SimpleDateFormat("yyyyMMdd").format(tempDate);
-			}
-		} catch (ParseException ex) {MiscUtils.getLogger().error("Error", ex);
-		} finally {
-			return sdate;
-		}
-	}
+                        day = day + curNumDays;
 
-	/**
-	 * null safe method for converting an iso date from string to calendar.
-	 */
-	public static GregorianCalendar toGregorianCalendarDate(String isoDateString) {
-		if (isoDateString == null) return (null);
+                    }
+                    else if (((day + curNumDays) % 31) == 0) {
 
-		try {
-			String[] split=isoDateString.split("-");
-			int year=Integer.parseInt(split[0]);
-			int month=Integer.parseInt(split[1])-1;
-			int day=Integer.parseInt(split[2]);
-			
-			return(new GregorianCalendar(year,month,day));
-		} catch (Exception e) {
-			throw (new IllegalArgumentException("The passed in string is not a valid ISO date"));
-		}
-	}
-	
-	public static Date toDate(String isoDateString)
-	{
-		GregorianCalendar cal=toGregorianCalendarDate(isoDateString);
-		if (cal!=null) return(cal.getTime());
-		else return(null);
-	}
-	
-	/**
-	 * date2-date1
-	 * 
-	 * if either are null, it returns null.
-	 */
-	public static Integer yearDifference(Date date1, Date date2)
-	{
-		if (date1==null || date2==null) return(null);
-		
-		Calendar cal1=new GregorianCalendar();
-		cal1.setTime(date1);
-		
-		Calendar cal2=new GregorianCalendar();
-		cal2.setTime(date2);
-		
-		return(yearDifference(cal1, cal2));
-	}
-		
-	/**
-	 * date2-date1
-	 * 
-	 * if either are null, it returns null.
-	 */
-	public static Integer yearDifference(Calendar date1, Calendar date2)
-	{
-		if (date1==null || date2==null) return(null);
-		
-		int yearDiff=date2.get(Calendar.YEAR)-date1.get(Calendar.YEAR);
-		
-		if (date2.get(Calendar.DAY_OF_YEAR)>date1.get(Calendar.DAY_OF_YEAR)) yearDiff--;
-		
-		return(yearDiff);
-	}
-	
-	/**
-	 * This method will calculate the age of the person on the given date.
-	 */
-	public static Integer getAge(Calendar dateOfBirth, Calendar onThisDay)
-	{
-		return(yearDifference(dateOfBirth, onThisDay));
-	}
-	
-	/**
-	 * date2-date1
-	 * 
-	 * if either are null, it returns null.
-	 */
-	public static Integer calculateDayDifference(Calendar date1, Calendar date2)
-	{
-		if (date1==null || date2==null) return(null);
+                        day = 31;
 
-		long ms=date2.getTimeInMillis()-date1.getTimeInMillis();
-		return((int) (ms/org.apache.commons.lang.time.DateUtils.MILLIS_PER_DAY));
-	}
+                    }
 
-	/**
-	 * date2-date1
-	 * 
-	 * if either are null, it returns null.
-	 */
-	public static Integer calculateDayDifference(Date date1, Date date2)
-	{
-		if (date1==null || date2==null) return(null);
-		
-		Calendar cal1=new GregorianCalendar();
-		cal1.setTime(date1);
-		
-		Calendar cal2=new GregorianCalendar();
-		cal2.setTime(date2);
-		
-		return(calculateDayDifference(cal1, cal2));
-	}
+                    else {
 
+                        day = ((day + curNumDays) % 31);
+
+                        month++;
+
+                    }
+
+                break;
+
+                case 12:
+
+                    if (day + curNumDays < 31) {
+
+                        day = day + curNumDays;
+
+                    }
+                    else if (((day + curNumDays) % 31) == 0) {
+
+                        day = 31;
+
+                    }
+
+                    else {
+
+                        day = ((day + curNumDays) % 31);
+
+                        month = 1;
+
+                        year++;
+
+                    }
+
+                break;
+
+                case 2:
+
+                    if (((year % 4 == 0) && !(year % 100 == 0)) || (year % 400 == 0)) {
+
+                        if (day + curNumDays < 29) {
+
+                            day = day + curNumDays;
+
+                        }
+                        else if (((day + curNumDays) % 29) == 0) {
+
+                            day = 29;
+
+                        }
+
+                        else {
+
+                            day = ((day + curNumDays) % 29);
+
+                            month++;
+
+                        }
+
+                    }
+
+                    else {
+
+                        if (day + curNumDays < 28) {
+
+                            day = day + curNumDays;
+
+                        }
+                        else if (((day + curNumDays) % 28) == 0) {
+
+                            day = 28;
+
+                        }
+
+                        else {
+
+                            day = ((day + curNumDays) % 28);
+
+                            month++;
+
+                        }
+
+                    }
+
+                break;
+
+                // these are the other month 4 6 9 11
+
+                default:
+
+                    if (day + curNumDays < 30) {
+
+                        day = day + curNumDays;
+
+                    }
+                    else if (((day + curNumDays) % 30) == 0) {
+
+                        day = 30;
+
+                    }
+
+                    else {
+
+                        day = ((day + curNumDays) % 30);
+
+                        month++;
+
+                    }
+
+            } // switch
+
+            numDays = numDays - curNumDays;
+
+            System.out.println("curNumDays: " + curNumDays + " ; numDays: " + numDays);
+
+        }
+
+        String nextDay = year + "-" + month + "-" + day;
+
+        System.out.println("next few day: " + nextDay);
+
+        return nextDay;
+
+    }
+
+    /**
+     *Gets the difference between two dates, in days.
+     *Takes two dates represented in milliseconds and returns the difference in days
+     */
+    public static long getDifDays(Date greater, Date lesser) {
+        System.out.println(greater.toString());
+        System.out.println(lesser.toString());
+        Calendar calLesser = new GregorianCalendar();
+        calLesser.setTime(lesser);
+
+        Calendar calGreater = new GregorianCalendar();
+        calGreater.setTime(greater);
+
+        long differenceInMillis = calGreater.getTimeInMillis() - calLesser.getTimeInMillis();
+        long differenceInDays = differenceInMillis / (24 * 60 * 60 * 1000);
+        return differenceInDays;
+    }
+
+    /**
+     * Converts a String date with the form 'yyyy-MM-dd'
+     * to a String date with the form 'yyyyMMdd'
+     * @param oldDateString String - The string to be converted
+     * @return String - The formatted date String
+     */
+    public static String convertDate8Char(String oldDateString) {
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
+        String sdate = "00000000";
+        try {
+            if (oldDateString != null) {
+                Date tempDate = fmt.parse(oldDateString);
+                sdate = new SimpleDateFormat("yyyyMMdd").format(tempDate);
+            }
+        }
+        catch (ParseException ex) {
+            ex.printStackTrace();
+        }
+        finally {
+            return sdate;
+        }
+    }
 }

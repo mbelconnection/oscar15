@@ -27,21 +27,20 @@ import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.oscarehr.casemgmt.model.Issue;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import com.quatro.model.security.Secrole;
 
 public class IssueDAO extends HibernateDaoSupport {
-	private static Logger logger = MiscUtils.getLogger();
+	private Logger log = Logger.getLogger(this.getClass());
 	
     public Issue getIssue(Long id) {
-		return (Issue)getHibernateTemplate().get(Issue.class, id);
+        return (Issue)this.getHibernateTemplate().get(Issue.class, id);
     }
 
-    public List<Issue> getIssues() {
+    public List getIssues() {
         return this.getHibernateTemplate().find("from Issue");
     }
 
@@ -52,14 +51,6 @@ public class IssueDAO extends HibernateDaoSupport {
     
     public Issue findIssueByCode(String code) {        
         List<Issue>list = this.getHibernateTemplate().find("from Issue i where i.code = ?", new Object[] {code});
-        if( list.size() > 0 )
-            return list.get(0);
-        
-        return null;
-    }
-
-    public Issue findIssueByTypeAndCode(String type, String code) {        
-        List<Issue>list = this.getHibernateTemplate().find("from Issue i where i.type=? and i.code = ?", new Object[] {type,code});
         if( list.size() > 0 )
             return list.get(0);
         
@@ -82,7 +73,7 @@ public class IssueDAO extends HibernateDaoSupport {
             return new ArrayList();
         }
 
-        StringBuilder buf = new StringBuilder();
+        StringBuffer buf = new StringBuffer();
         for (int x = 0; x < roles.size(); x++) {
             if (x != 0) {
                 buf.append(",");
@@ -94,7 +85,7 @@ public class IssueDAO extends HibernateDaoSupport {
         search = "%" + search + "%";
         search = search.toLowerCase();
         String sql = "from Issue i where (lower(i.code) like ? or lower(i.description) like ?) and i.role in (" + roleList + ")";
-        logger.debug(sql);
+        log.info(sql);
         return this.getHibernateTemplate().find(sql, new Object[] {search, search});
 
     }
@@ -103,7 +94,7 @@ public class IssueDAO extends HibernateDaoSupport {
         search = "%" + search + "%";
         search = search.toLowerCase();
         String sql = "from Issue i where (lower(i.code) like ? or lower(i.description) like ?)";
-        logger.debug(sql);
+        log.info(sql);
         return this.getHibernateTemplate().find(sql, new Object[] {search, search});
     }
     

@@ -12,6 +12,7 @@
 <%@ page import="java.util.*,java.text.*, java.sql.*, oscar.*, java.net.*,org.oscarehr.common.dao.*" %>
 <%@ page import="java.util.*,java.text.*, java.sql.*, oscar.*, java.net.*, org.oscarehr.common.dao.ViewDAO, org.oscarehr.common.model.View, org.springframework.web.context.WebApplicationContext, org.springframework.web.context.support.WebApplicationContextUtils" %>
 
+<%@ include file="../admin/dbconnection.jsp" %>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean" scope="session" />
 <jsp:useBean id="SxmlMisc" class="oscar.SxmlMisc" scope="session" />
 
@@ -39,14 +40,26 @@
   String providerview;
   String assignedTo;
   if( request.getParameter("providerview")==null ) {
+      //v = viewMap.get("providerview");
+      //if( v != null ) {
+      //    providerview = v.getValue();
+      //}
+      //else {
           providerview = "all";
+      //}
   }
   else {
       providerview = request.getParameter("providerview");
   }
   
   if( request.getParameter("assignedTo") == null ) {
+      //v = viewMap.get("assignedTo");
+      //if( v!= null ) {
+      //    assignedTo = v.getValue();
+      //}
+      //else {
           assignedTo = "all";
+      //}
   }
   else {
       assignedTo = request.getParameter("assignedTo");
@@ -55,34 +68,54 @@
 
 %>
 
-<%@ include file="dbTicker.jspf" %>
+<%@ include file="dbTicker.jsp" %>
 <%
 GregorianCalendar now=new GregorianCalendar();
   int curYear = now.get(Calendar.YEAR);
   int curMonth = (now.get(Calendar.MONTH)+1);
   int curDay = now.get(Calendar.DAY_OF_MONTH);
   %>
-<%
- String ticklerview;
+<% //String providerview=request.getParameter("provider")==null?"":request.getParameter("provider");
+  //String ticklerview=request.getParameter("ticklerview")==null?"A":request.getParameter("ticklerview");
+   String ticklerview;
    if( request.getParameter("ticklerview") == null ) {
+      //v = viewMap.get("ticklerview");
+      //if( v!= null ) {
+      //    ticklerview = v.getValue();
+      //}
+      //else {
           ticklerview = "A";
+      //}
   }
   else {
       ticklerview = request.getParameter("ticklerview");
   }
 
   
+  //String xml_vdate=request.getParameter("xml_vdate") == null?"":request.getParameter("xml_vdate");
   String xml_vdate;
    if( request.getParameter("xml_vdate") == null ) {
+      //v = viewMap.get("dateBegin");
+      //if( v!= null ) {
+      //    xml_vdate = v.getValue();
+      //}
+      //else {
           xml_vdate = "";
+      //}
   }
   else {
       xml_vdate = request.getParameter("xml_vdate");
   }
-
+  //String xml_appointment_date = request.getParameter("xml_appointment_date")==null?MyDateFormat.getMysqlStandardDate(curYear, curMonth, curDay):request.getParameter("xml_appointment_date");
   String xml_appointment_date;
    if( request.getParameter("xml_appointment_date") == null ) {
+      //v = viewMap.get("dateEnd");
+      //if( v!= null ) {
+      //    xml_appointment_date = v.getValue();
+      //}
+      //else {
           xml_appointment_date = MyDateFormat.getMysqlStandardDate(curYear, curMonth, curDay);
+      //}
   }
   else {
       xml_appointment_date = request.getParameter("xml_appointment_date");
@@ -121,18 +154,19 @@ GregorianCalendar now=new GregorianCalendar();
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
 -->
 
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="request" />
-
-<%@page import="org.oscarehr.util.DbConnectionFilter"%>
-<%@page import="oscar.oscarDB.DBHandler"%><html:html locale="true">
+<html:html locale="true">
 <head>
 <title><bean:message key="tickler.ticklerMain.title"/></title>
+      <meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+      <meta http-equiv="Pragma" content="no-cache">
+
 <!--Table Sorting Code -->      
 <script type='text/javascript' src='<c:out value="${ctx}"/>/commons/scripts/sort_table/common.js'></script>
 <script type='text/javascript' src='<c:out value="${ctx}"/>/commons/scripts/sort_table/css.js'></script>
@@ -615,10 +649,38 @@ function changeSite(sel) {
                             String provider;
                             String taskAssignedTo = "";
                             if (dateEnd.compareTo("") == 0) dateEnd = MyDateFormat.getMysqlStandardDate(curYear, curMonth, curDay);
-                            if (dateBegin.compareTo("") == 0) dateBegin="1950-01-01"; // any early start date should suffice for selecting since the beginning
+                            if (dateBegin.compareTo("") == 0) dateBegin="0001-01-01";
                             ResultSet rs=null ;
-
-			    			String[] param =new String[6];
+                            /*String[] param =new String[5];
+                            boolean bodd=false;
+                            param[0] = ticklerview;
+                            
+                            param[1] = dateBegin;
+                            param[2] = dateEnd;
+                            param[3] = request.getParameter("providerview")==null?"%": request.getParameter("providerview");
+                            param[4] = request.getParameter("assignedTo")==null?"%": request.getParameter("assignedTo");
+                            System.out.println(request.getParameter("assignedTo")==null?"%": request.getParameter("assignedTo"));
+                            
+                            rs = apptMainBean.queryResults(param, "search_tickler");
+                            while (rs.next()) {
+                            nItems = nItems +1;
+                            
+                            if (apptMainBean.getString(rs,"provider_last")==null || apptMainBean.getString(rs,"provider_first")==null){
+                            provider = "";
+                            }
+                            else{
+                            provider = apptMainBean.getString(rs,"provider_last") + ", " + apptMainBean.getString(rs,"provider_first");
+                            }
+                            
+                            if (apptMainBean.getString(rs,"assignedLast")==null || apptMainBean.getString(rs,"assignedFirst")==null){
+                            taskAssignedTo = "";
+                            }
+                            else{
+                            taskAssignedTo = apptMainBean.getString(rs,"assignedLast") + ", " + apptMainBean.getString(rs,"assignedFirst");
+                            }
+                            bodd=bodd?false:true;
+                            vGrantdate = apptMainBean.getString(rs,"service_date")+ ".0";*/
+			    String[] param =new String[6];
                             boolean bodd=false;
                             param[0] = ticklerview;
                             
@@ -629,7 +691,8 @@ function changeSite(sel) {
                             				"(p.provider_no='"+user_no+"' or p.team=(select pp.team from provider pp where pp.provider_no='"+user_no+"'))" 
                             				: "d.provider_no like '%'") 
                             		: "d.provider_no like '"+providerview+"'"; 
-                            param[4] = assignedTo.equals("all") ? "%" : assignedTo; 
+                            param[4] = assignedTo.equals("all") ? "%" : assignedTo; //request.getParameter("assignedTo")==null?"%": request.getParameter("assignedTo");
+                            //System.out.println(request.getParameter("assignedTo")==null?"%": request.getParameter("assignedTo"));
                             
                             String colNames[] = new String[] {"last_name", "provider_last", "service_date", "update_date", "priority", "assignedLast", "status", "message"}; 
                             v = null;
@@ -647,30 +710,32 @@ function changeSite(sel) {
                                 }
                             }
                             
+                            System.out.println("SORT ORDER " + order);
                             param[5] = order;
                             String sql = "select t.tickler_no, d.demographic_no, d.last_name,d.first_name, p.last_name as provider_last, p.first_name as provider_first, t.status,t.message,t.service_date, t.update_date, t.priority, p2.first_name AS assignedFirst, p2.last_name as assignedLast from tickler t LEFT JOIN provider p2 ON ( p2.provider_no=t.task_assigned_to), demographic d LEFT JOIN provider p ON ( p.provider_no=d.provider_no) where t.demographic_no=d.demographic_no and t.status='" + param[0] + "' and TO_DAYS(t.service_date) >=TO_DAYS('" + param[1] + "') and TO_DAYS(t.service_date)<=TO_DAYS('" + param[2] + "') and " + param[3] + " and t.task_assigned_to like '" + param[4] + "' order by " + param[5];
-                            java.sql.PreparedStatement ps =  DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(sql);
+                            oscar.oscarDB.DBHandler db = new oscar.oscarDB.DBHandler(oscar.oscarDB.DBHandler.OSCAR_DATA);
+                            java.sql.PreparedStatement ps =  db.getConnection().prepareStatement(sql);
                               
-                            rs = DBHandler.GetSQL(sql);
-                            
+                            rs = db.GetSQL(sql);
+                            //rs = apptMainBean.queryResults(param, "search_ticklerOrdered");
                             while (rs.next()) {
                             nItems = nItems +1;
                             
-                            if (oscar.Misc.getString(rs,"provider_last")==null || oscar.Misc.getString(rs,"provider_first")==null){
+                            if (db.getString(rs,"provider_last")==null || db.getString(rs,"provider_first")==null){
                             provider = "";
                             }
                             else{
-                            provider = oscar.Misc.getString(rs,"provider_last") + ", " + oscar.Misc.getString(rs,"provider_first");
+                            provider = db.getString(rs,"provider_last") + ", " + db.getString(rs,"provider_first");
                             }
                             
-                            if (oscar.Misc.getString(rs,"assignedLast")==null || oscar.Misc.getString(rs,"assignedFirst")==null){
+                            if (db.getString(rs,"assignedLast")==null || db.getString(rs,"assignedFirst")==null){
                             taskAssignedTo = "";
                             }
                             else{
-                            taskAssignedTo = oscar.Misc.getString(rs,"assignedLast") + ", " + oscar.Misc.getString(rs,"assignedFirst");
+                            taskAssignedTo = db.getString(rs,"assignedLast") + ", " + db.getString(rs,"assignedFirst");
                             }
                             bodd=bodd?false:true;
-                            vGrantdate = oscar.Misc.getString(rs,"service_date")+ ".0";
+                            vGrantdate = db.getString(rs,"service_date")+ ".0";
                             java.util.Date grantdate = dateFormat.parse(vGrantdate);
                             java.util.Date toDate = new java.util.Date();
                             long millisDifference = toDate.getTime() - grantdate.getTime();
@@ -777,6 +842,8 @@ function changeSite(sel) {
                             %>
                             
                             <%}
+                            
+                            apptMainBean.closePstmtConn();
               
                             if (nItems == 0) {
                             %>

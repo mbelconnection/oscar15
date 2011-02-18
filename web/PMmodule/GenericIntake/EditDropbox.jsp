@@ -1,3 +1,5 @@
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
 <%@page import="java.sql.*,oscar.oscarDB.*"%>
 <%@page
 	import="java.util.*,org.oscarehr.PMmodule.dao.*,org.oscarehr.PMmodule.service.*,org.oscarehr.PMmodule.model.*,org.springframework.web.context.support.*,org.springframework.web.context.*"%>
@@ -12,6 +14,7 @@
     
     IntakeNodeTemplate iTemplate = null;
     if (dbNode==null) {
+	System.out.println("IntakeNode cannot be NULL!!!");
 	response.sendRedirect("close.jsp");
     } else {
 	iTemplate = dbNode.getNodeTemplate();
@@ -24,8 +27,7 @@
     }
     String child_move = request.getParameter("child_move");
     String done_reorder = request.getParameter("done_reorder");
-    String s_label = request.getParameter("s_label");
-    String s_value = request.getParameter("s_value");
+    String s_entry = request.getParameter("s_entry");
     String submit_type = request.getParameter("submit_type");
     ArrayList<IntakeAnswerElement> items = new ArrayList();
 
@@ -42,8 +44,7 @@
 	} else if (submit_type.equals("add")) {
 	    iTemplate = makeNewTemplate(dbNode, lastTemplateId);
 	    IntakeAnswerElement intakeAnswerElement = new IntakeAnswerElement();
-	    intakeAnswerElement.setLabel(s_label);
-	    intakeAnswerElement.setElement(s_value);
+	    intakeAnswerElement.setElement(s_entry);
 	    intakeAnswerElement.setId(lastElementId);
 	    lastElementId--;
 	    session.setAttribute("lastTemplateId", lastTemplateId);
@@ -84,6 +85,7 @@
 <html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Edit Dropbox Items</title>
 <script type="text/javascript">
             function move(dirn, pos) {
@@ -94,18 +96,16 @@
 	    }
 	    
 	    function copy_s(idx) {
-			val="";
-			if (idx>=0) {
-			    val=document.frm_editdb.box_item[idx].text;
-			    lab=document.frm_editdb.box_item_2[idx].text;
-			}
-			document.frm_editdb.s_label.value=lab;
-			document.frm_editdb.s_value.value=val;
+		val="";
+		if (idx>=0) {
+		    val=document.frm_editdb.box_item[idx].text;
 		}
-		    
-		function do_submit(s_type) {
-			document.frm_editdb.submit_type.value=s_type;
-			document.frm_editdb.submit();
+		document.frm_editdb.s_entry.value=val;
+	    }
+	    
+	    function do_submit(s_type) {
+		document.frm_editdb.submit_type.value=s_type;
+		document.frm_editdb.submit();
 	    }
 	</script>
 </head>
@@ -115,34 +115,26 @@
 
 <table width="370">
 	<tr>
-		<td>
-			<select name="box_item" size="9" onchange="copy_s(selectedIndex);">
-				<% for (IntakeAnswerElement ie : items) { %>
-					<option value="<%=ie.getId()%>"	<%=(ie.getId()==slct) ? "selected" : ""%>><%=ie.getElement()%></option>
-				<% } %>
-			</select>
-			<div style="display:none;">
-				<select name="box_item_2" size="9" >
-					<% for (IntakeAnswerElement ie : items) { %>
-						<option value="<%=ie.getId()%>"	<%=(ie.getId()==slct) ? "selected" : ""%>><%=ie.getLabel()%></option>
-					<% } %>
-				</select>
-			</div>
-		</td>
-		<td>
-			<input type="button" value="Move Up" onclick="move('up', box_item.value);move('up', box_item_2.value);" /> <br>
-			<input type="button" value="Move Down" onclick="move('down', box_item.value);move('up', box_item_2.value);" />
-		</td>
+		<td><select name="box_item" size="9"
+			onchange="copy_s(selectedIndex);">
+			<% for (IntakeAnswerElement ie : items) { %>
+			<option value="<%=ie.getId()%>"
+				<%=(ie.getId()==slct) ? "selected" : ""%>><%=ie.getElement()%></option>
+			<% } %>
+		</select></td>
+		<td><input type="button" value="Move Up"
+			onclick="move('up', box_item.value)" /> <br>
+		<input type="button" value="Move Down"
+			onclick="move('down', box_item.value)" /></td>
 	</tr>
 	<tr>
-		<td colspan="2">
-			Label: <input name="s_label" type="text" size="20" /><br/>
-			Value: <input name="s_value" type="text" size="20" /> <br/>
-			<input type="button" value="+" title="Add new item"	onclick="do_submit('add');" /> 
-			<input type="button" value="-" title="Remove selected item" onclick="do_submit('remove');" /> <br>
-			<input type="button" value="Done" title="Save dropbox" onclick="do_submit('save');" /> 
-			<input type="hidden" name="submit_type" /> <input type="hidden" name="child_move" />
-		</td>
+		<td colspan="2"><input name="s_entry" type="text" size="20" /> <input
+			type="button" value="+" title="Add new item"
+			onclick="do_submit('add');" /> <input type="button" value="-"
+			title="Remove selected item" onclick="do_submit('remove');" /> <br>
+		<input type="button" value="Done" title="Save dropbox"
+			onclick="do_submit('save');" /> <input type="hidden"
+			name="submit_type" /> <input type="hidden" name="child_move" /></td>
 	</tr>
 </table>
 </form>

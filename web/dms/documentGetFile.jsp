@@ -19,7 +19,7 @@
   *
   * This software was written for the
   * Department of Family Medicine
-  * McMaster University
+  * McMaster Unviersity
   * Hamilton
   * Ontario, Canada
   */
@@ -28,10 +28,10 @@
 <%@taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@page
 	import="java.math.*, java.util.*, java.io.*, java.sql.*, oscar.*, java.net.*,oscar.MyDateFormat"%>
-
+<%@include file="../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@include file="dbDMS.jspf"%>
+<%@include file="dbDMS.jsp"%>
 <%
   String filename = "", filetype = "", doc_no = "";
   String docdownload = oscar.OscarProperties.getInstance().getProperty("DOCUMENT_DIR");
@@ -41,7 +41,7 @@
     filename = request.getParameter("document");
     filetype = request.getParameter("type");
     doc_no = request.getParameter("doc_no");
-    String filePath = docdownload +'/'+ filename;
+    String filePath = docdownload + filename;
     if (filetype.compareTo("active") == 0) {              
       if ( downloadMethod == null ) {
       filePath = "../../OscarDocument"+request.getContextPath()+"/document/"+filename;
@@ -50,6 +50,7 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="dms.documentGetFile.title" /></title>
+<meta http-equiv="Content-Type" content="text/html;">
 </head>
 <frameset rows="21,*" frameborder="NO" border="0"
 	frames.opera/cache4/pacing="0" cols="*">

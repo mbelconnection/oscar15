@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -31,7 +31,7 @@ public class RptResultStruct {
 public static String getStructure(ResultSet rs) throws SQLException {
 
 // assuming  multiple rows in rs
-	StringBuilder sb = new StringBuilder();
+	StringBuffer sb = new StringBuffer();
 
 	ResultSetMetaData rsmd = rs.getMetaData();
 
@@ -78,7 +78,7 @@ CSS:
 public static String getStructure2(ResultSet rs) throws SQLException {
 
 // assuming  multiple rows in rs
-	StringBuilder sb = new StringBuilder();
+	StringBuffer sb = new StringBuffer();
         boolean results = true;
 	ResultSetMetaData rsmd = rs.getMetaData();
 

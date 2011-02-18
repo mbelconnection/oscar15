@@ -8,6 +8,7 @@
 <jsp:useBean id="daySheetBean" class="oscar.AppointmentMainBean"
 	scope="page" />
 
+<%@ include file="../admin/dbconnection.jsp"%>
 <% 
   String [][] dbQueries=new String[][] { 
 {"search_demographic", "select demographic_no, month_of_birth, date_of_birth from demographic order by demographic_no" }, 
@@ -37,7 +38,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -46,6 +47,8 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>SCRAMBLE SHEET</title>
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv=Expires content=-1>
 </head>
 <body>
 busy ... busy ... busy
@@ -65,6 +68,7 @@ busy ... busy ... busy
 		}
 	}
 
+	daySheetBean.closePstmtConn();
 %>
 
 <p>

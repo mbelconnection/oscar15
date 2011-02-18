@@ -17,14 +17,12 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 
 package oscar.form.graphic;
-
-import org.oscarehr.util.MiscUtils;
 
 
 /**
@@ -39,11 +37,11 @@ public class FrmGraphicFactory {
             Class classDefinition = Class.forName( name );         
             pdfGraph = (FrmPdfGraphic) classDefinition.newInstance(); 
         } catch (InstantiationException e) {
-            MiscUtils.getLogger().debug(e);
+            System.out.println(e);
         } catch (IllegalAccessException e) {
-            MiscUtils.getLogger().debug(e);
+            System.out.println(e);
         } catch (ClassNotFoundException e) {
-            MiscUtils.getLogger().debug(e);
+            System.out.println(e);
         }
         
         return pdfGraph;

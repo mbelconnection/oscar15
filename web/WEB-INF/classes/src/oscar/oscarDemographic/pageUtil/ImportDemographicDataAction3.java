@@ -43,7 +43,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
@@ -54,35 +53,24 @@ import java.util.zip.ZipInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.upload.FormFile;
 import org.apache.xmlbeans.XmlException;
-import org.oscarehr.PMmodule.dao.AdmissionDao;
-import org.oscarehr.PMmodule.model.Admission;
-import org.oscarehr.PMmodule.model.Program;
-import org.oscarehr.PMmodule.model.ProgramProvider;
-import org.oscarehr.PMmodule.service.AdmissionManager;
-import org.oscarehr.PMmodule.service.ProgramManager;
 import org.oscarehr.casemgmt.model.CaseManagementIssue;
 import org.oscarehr.casemgmt.model.CaseManagementNote;
 import org.oscarehr.casemgmt.model.CaseManagementNoteExt;
 import org.oscarehr.casemgmt.model.CaseManagementNoteLink;
 import org.oscarehr.casemgmt.model.Issue;
 import org.oscarehr.casemgmt.service.CaseManagementManager;
-import org.oscarehr.common.model.Provider;
-import org.oscarehr.util.MiscUtils;
-import org.oscarehr.util.SpringUtils;
 
 import oscar.appt.ApptStatusData;
 import oscar.dms.EDocUtil;
 import oscar.oscarDemographic.data.DemographicData;
 import oscar.oscarDemographic.data.DemographicExt;
 import oscar.oscarDemographic.data.DemographicRelationship;
-import oscar.oscarDemographic.data.DemographicData.DemographicAddResult;
 import oscar.oscarEncounter.data.EctProgram;
 import oscar.oscarEncounter.oscarMeasurements.data.ImportExportMeasurements;
 import oscar.oscarEncounter.oscarMeasurements.data.Measurements;
@@ -94,7 +82,6 @@ import oscar.oscarProvider.data.ProviderData;
 import oscar.oscarRx.data.RxAllergyImport;
 import oscar.oscarRx.data.RxPrescriptionImport;
 import oscar.service.OscarSuperManager;
-import oscar.util.StringUtils;
 import oscar.util.UtilDateUtilities;
 import cds.OmdCdsDocument;
 import cds.AllergiesAndAdverseReactionsDocument.AllergiesAndAdverseReactions;
@@ -113,23 +100,20 @@ import cds.PersonalHistoryDocument.PersonalHistory;
 import cds.ProblemListDocument.ProblemList;
 import cds.ReportsReceivedDocument.ReportsReceived;
 import cds.RiskFactorsDocument.RiskFactors;
+import org.oscarehr.PMmodule.dao.AdmissionDao;
+import org.oscarehr.PMmodule.model.Admission;
+import org.oscarehr.util.SpringUtils;
 
 /**
  *
  * @author Ronnie Cheng
  */
 	public class ImportDemographicDataAction3 extends Action {
-	
-	private static final Logger logger = MiscUtils.getLogger();
-		
 	boolean matchProviderNames = true;
 	String admProviderNo = null;
 	String demographicNo = null;
-	String patientName = null;
 	String programId = null;
-    
-    ProgramManager programManager = (ProgramManager) SpringUtils.getBean("programManager");
-    AdmissionManager admissionManager = (AdmissionManager) SpringUtils.getBean("admissionManager");
+
 	AdmissionDao admissionDao = (AdmissionDao) SpringUtils.getBean("admissionDao");
 	CaseManagementManager caseManagementManager = (CaseManagementManager) SpringUtils.getBean("caseManagementManager");
 	OscarSuperManager oscarSuperManager = (OscarSuperManager) SpringUtils.getBean("oscarSuperManager");
@@ -141,27 +125,10 @@ import cds.RiskFactorsDocument.RiskFactors;
 		String tmpDir = oscar.OscarProperties.getInstance().getProperty("TMP_DIR");
 		tmpDir = Util.fixDirName(tmpDir);
 		if (!Util.checkDir(tmpDir)) {
-			MiscUtils.getLogger().debug("Error! Cannot write to TMP_DIR - Check oscar.properties or dir permissions.");
+			System.out.println("Error! Cannot write to TMP_DIR - Check oscar.properties or dir permissions.");
 		}
 
 		ImportDemographicDataForm frm = (ImportDemographicDataForm) form;
-        logger.info("import to course id "  + frm.getCourseId() + " using timeshift value " + frm.getTimeshiftInDays());
-        List<Provider> students = new ArrayList<Provider>();
-        int courseId = 0;
-        if(frm.getCourseId()!=null && frm.getCourseId().length()>0) {
-        	courseId = Integer.valueOf(frm.getCourseId());
-        	if(courseId>0) {
-        		logger.info("need to apply this import to a learning environment");
-        		//get all the students from this course        		
-        		List<ProgramProvider> courseProviders = programManager.getProgramProviders(String.valueOf(courseId));
-        		for(ProgramProvider pp:courseProviders) {
-        			if(pp.getRole().getName().equalsIgnoreCase("student")) {
-        				students.add(pp.getProvider());
-        			}
-        		}        		
-        	}
-        }
-        logger.info("apply this patient to " + students.size() + " students");
 		matchProviderNames = frm.getMatchProviderNames();
 		FormFile imp = frm.getImportFile();
 		String ifile = tmpDir + imp.getFileName();
@@ -194,8 +161,8 @@ import cds.RiskFactorsDocument.RiskFactors;
 					noXML = false;
 					OutputStream out = new FileOutputStream(ofile);
 					while ((len=in.read(buf)) > 0) out.write(buf,0,len);
-					out.close();					
-					logs.add(importXML(ofile, warnings, request,frm.getTimeshiftInDays(),students,courseId));
+					out.close();
+					logs.add(importXML(ofile, warnings, request));
 				}
 				entry = in.getNextEntry();
 			}
@@ -209,15 +176,15 @@ import cds.RiskFactorsDocument.RiskFactors;
 			Util.cleanFile(ifile);
 
 		} else if (matchFileExt(ifile, "xml")) {
-			logs.add(importXML(ifile, warnings, request,frm.getTimeshiftInDays(),students,courseId));
-			importLog = makeImportLog(logs, tmpDir);		
+			logs.add(importXML(ifile, warnings, request));
+			importLog = makeImportLog(logs, tmpDir);
 		} else {
 			Util.cleanFile(ifile);
 			throw new Exception ("Error! Import file must be XML or ZIP");
 		}
 	} catch (Exception e) {
 		warnings.add("Error processing file: " + imp.getFileName());
-		MiscUtils.getLogger().error("Error", e);
+		e.printStackTrace();
 	}
 
 		//channel warnings and importlog to browser
@@ -227,59 +194,32 @@ import cds.RiskFactorsDocument.RiskFactors;
 		return mapping.findForward("success");
 	}
 
-    String[] importXML(String xmlFile, ArrayList warnings, HttpServletRequest request, int timeShiftInDays,List<Provider> students, int courseId) throws SQLException, Exception {
-        if(students == null || students.size()==0) {
-        	return importXML(xmlFile,warnings,request,timeShiftInDays,null,null,0);
-        }
-        
-        List<String> logs = new ArrayList<String>();
-        
-        for(Provider student:students) {
-        	logger.info("importing patient for student " +  student.getFormattedName());
-        	//need that student's personal program
-        	Integer pid = programManager.getProgramIdByProgramName("program"+student.getProviderNo());
-        	if(pid == null) {
-        		logger.warn("student's program not found");
-        		continue;
-        	}
-        	Program p = programManager.getProgram(pid);
-        	
-        	String[] result = importXML(xmlFile,warnings,request,timeShiftInDays,student,p,courseId);
-        	logs.addAll(convertLog(result));
-        }
-        return logs.toArray(new String[logs.size()]);
-    }
-    
-    private List<String> convertLog(String[] logs) {
-    	List<String> tmp = new ArrayList<String>();
-    	for(int x=0;x<logs.length;x++) {
-    		tmp.add(logs[x]);
-    	}
-    	return tmp;
-    }
-    
 
 
-	String[] importXML(String xmlFile, ArrayList warnings, HttpServletRequest request, int timeShiftInDays, Provider student, Program admitTo, int courseId) throws SQLException, Exception {
+
+	String[] importXML(String xmlFile, ArrayList warnings, HttpServletRequest request) throws SQLException, Exception {
 		ArrayList err_demo = new ArrayList(); //errors: duplicate demographics
 		ArrayList err_data = new ArrayList(); //errors: discrete data
 		ArrayList err_summ = new ArrayList(); //errors: summary
 		ArrayList err_othe = new ArrayList(); //errors: other categories
 		ArrayList err_note = new ArrayList(); //non-errors: notes
 
+		DemographicData.DemographicAddResult demoRes = null;
 		String defaultProvider = getDefaultProvider();
 		String docDir = oscar.OscarProperties.getInstance().getProperty("DOCUMENT_DIR");
 		docDir = Util.fixDirName(docDir);
 		if (!Util.checkDir(docDir)) {
-			MiscUtils.getLogger().debug("Error! Cannot write to DOCUMENT_DIR - Check oscar.properties or dir permissions.");
+			System.out.println("Error! Cannot write to DOCUMENT_DIR - Check oscar.properties or dir permissions.");
 		}
 
 		File xmlF = new File(xmlFile);
 		OmdCdsDocument.OmdCds omdCds=null;
 	try {
 		omdCds = OmdCdsDocument.Factory.parse(xmlF).getOmdCds();
-	} catch (IOException ex) {MiscUtils.getLogger().error("Error", ex);
-	} catch (XmlException ex) {MiscUtils.getLogger().error("Error", ex);
+	} catch (IOException ex) {
+		ex.printStackTrace();
+	} catch (XmlException ex) {
+		ex.printStackTrace();
 	}
 		PatientRecord patientRec = omdCds.getPatientRecord();
 
@@ -288,20 +228,19 @@ import cds.RiskFactorsDocument.RiskFactors;
 		cdsDt.PersonNameStandard.LegalName legalName = demo.getNames().getLegalName();
 		String lastName="", firstName="";
 		if (legalName!=null) {
-			if (legalName.getLastName()!=null) lastName = StringUtils.noNull(legalName.getLastName().getPart());
-			if (legalName.getFirstName()!=null) firstName = StringUtils.noNull(legalName.getFirstName().getPart());
-			patientName = lastName+","+firstName;
+			if (legalName.getLastName()!=null) lastName = Util.noNull(legalName.getLastName().getPart());
+			if (legalName.getFirstName()!=null) firstName = Util.noNull(legalName.getFirstName().getPart());
 		} else {
 			err_data.add("Error! No Legal Name");
 		}
 		String title = demo.getNames().getNamePrefix()!=null ? demo.getNames().getNamePrefix().toString() : "";
 		String sex = demo.getGender()!=null ? demo.getGender().toString() : "";
-		if (StringUtils.empty(sex)) {
+		if (Util.empty(sex)) {
 			err_data.add("Error! No Gender");
 		}
-		String birthDate = dateFullPartial(demo.getDateOfBirth(), timeShiftInDays);
-		if (StringUtils.empty(birthDate)) {
-			birthDate = null;
+		String birthDate = dateFullPartial(demo.getDateOfBirth());
+		if (Util.empty(birthDate)) {
+			birthDate = "0001-01-01";
 			err_data.add("Error! No Date Of Birth");
 		}
 		String roster_status = demo.getEnrollmentStatus()!=null ? demo.getEnrollmentStatus().toString() : "";
@@ -318,26 +257,26 @@ import cds.RiskFactorsDocument.RiskFactors;
 		else {
 			err_data.add("Error! No Person Status Code");
 		}
-		String roster_date = dateFullPartial(demo.getEnrollmentDate(), timeShiftInDays); //roster_date=hc_renew_date in table
-		String end_date = dateFullPartial(demo.getEnrollmentTerminationDate(), timeShiftInDays);
-		String sin = StringUtils.noNull(demo.getSIN());
+		String roster_date = dateFullPartial(demo.getEnrollmentDate()); //roster_date=hc_renew_date in table
+		String end_date = dateFullPartial(demo.getEnrollmentTerminationDate());
+		String sin = Util.noNull(demo.getSIN());
 
-		String chart_no = StringUtils.noNull(demo.getChartNumber());
+		String chart_no = Util.noNull(demo.getChartNumber());
 		String official_lang = "";
 		if (demo.getPreferredOfficialLanguage()!=null) {
 			official_lang = demo.getPreferredOfficialLanguage().toString();
 			official_lang = official_lang.equals("ENG") ? "English" : official_lang;
 			official_lang = official_lang.equals("FRE") ? "French" : official_lang;
 		}
-		String spoken_lang = StringUtils.noNull(demo.getPreferredSpokenLanguage());
-		String dNote = StringUtils.noNull(demo.getNoteAboutPatient());
+		String spoken_lang = Util.noNull(demo.getPreferredSpokenLanguage());
+		String dNote = Util.noNull(demo.getNoteAboutPatient());
 		String uvID = demo.getUniqueVendorIdSequence();
 		String fmLink = demo.getFamilyMemberLink();
 		String pwFlag = demo.getPatientWarningFlags();
-		String psDate = dateFullPartial(demo.getPersonStatusDate(), timeShiftInDays);
+		String psDate = dateFullPartial(demo.getPersonStatusDate());
 
-		if (StringUtils.filled(uvID)) {
-			if (StringUtils.empty(chart_no)) {
+		if (Util.filled(uvID)) {
+			if (Util.empty(chart_no)) {
 				chart_no = uvID;
 				err_note.add("Unique Vendor Id imported as Chart No");
 			} else {
@@ -345,15 +284,15 @@ import cds.RiskFactorsDocument.RiskFactors;
 				err_note.add("Unique Vendor Id imported to Patient Note");
 			}
 		}
-		if (StringUtils.filled(fmLink)) {
+		if (Util.filled(fmLink)) {
 			dNote = Util.appendLine(dNote, "Family Member Link: ", fmLink);
 			err_note.add("Family Member Link imported to Patient Note");
 		}
-		if (StringUtils.filled(pwFlag)) {
+		if (Util.filled(pwFlag)) {
 			dNote = Util.appendLine(dNote, "Patient Warning Flag: ", pwFlag);
 			err_note.add("Patient Warning Flag imported to Patient Note");
 		}
-		if (StringUtils.filled(psDate)) {
+		if (Util.filled(psDate)) {
 			dNote = Util.appendLine(dNote, "Person Status Date: ", psDate);
 			err_note.add("Person Status Date imported to Patient Note");
 		}
@@ -361,7 +300,7 @@ import cds.RiskFactorsDocument.RiskFactors;
 		String versionCode="", hin="", hc_type="", eff_date="";
 		cdsDt.HealthCard healthCard = demo.getHealthCard();
 		if (healthCard!=null) {
-			hin = StringUtils.noNull(healthCard.getNumber());
+			hin = Util.noNull(healthCard.getNumber());
 			if (hin.equals("")) {
 				err_data.add("Error! No health card number!");
 			}
@@ -369,23 +308,23 @@ import cds.RiskFactorsDocument.RiskFactors;
 			if (hc_type.equals("")) {
 				err_data.add("Error! No Province Code for health card!");
 			}
-			versionCode = StringUtils.noNull(healthCard.getVersion());
+			versionCode = Util.noNull(healthCard.getVersion());
 			eff_date = getCalDate(healthCard.getExpirydate());
 		}
 		String address="", city="", province="", postalCode="";
 		if (demo.getAddressArray().length>0) {
 			cdsDt.Address addr = demo.getAddressArray(0);	//only get 1st address, other ignored
 			if (addr!=null) {
-				if (StringUtils.filled(addr.getFormatted())) {
+				if (Util.filled(addr.getFormatted())) {
 					address = addr.getFormatted();
 				} else {
 					cdsDt.AddressStructured addrStr = addr.getStructured();
 					if (addrStr!=null) {
-						address = StringUtils.noNull(addrStr.getLine1()) + StringUtils.noNull(addrStr.getLine2()) + StringUtils.noNull(addrStr.getLine3());
-						city = StringUtils.noNull(addrStr.getCity());
+						address = Util.noNull(addrStr.getLine1()) + Util.noNull(addrStr.getLine2()) + Util.noNull(addrStr.getLine3());
+						city = Util.noNull(addrStr.getCity());
 						province = getCountrySubDivCode(addrStr.getCountrySubdivisionCode());
 						cdsDt.PostalZipCode postalZip = addrStr.getPostalZipCode();
-						if (postalZip!=null) postalCode = StringUtils.noNull(postalZip.getPostalCode());
+						if (postalZip!=null) postalCode = Util.noNull(postalZip.getPostalCode());
 					}
 				}
 			}
@@ -394,15 +333,15 @@ import cds.RiskFactorsDocument.RiskFactors;
 		String workPhone="", workExt="", homePhone="", homeExt="", cellPhone="", ext="", patientPhone="";
 		for (int i=0; i<pn.length; i++) {
 			String phone = pn[i].getPhoneNumber();
-			if (StringUtils.empty(phone)) {
-				if (StringUtils.filled(pn[i].getNumber())) {
-					String areaCode = StringUtils.filled(pn[i].getAreaCode()) ? "("+pn[i].getAreaCode()+")" : "";
+			if (Util.empty(phone)) {
+				if (Util.filled(pn[i].getNumber())) {
+					String areaCode = Util.filled(pn[i].getAreaCode()) ? "("+pn[i].getAreaCode()+")" : "";
 					phone = areaCode + pn[i].getNumber();
 				}
 			}
-			if (StringUtils.filled(phone)) {
-				if (StringUtils.filled(pn[i].getExtension())) ext = pn[i].getExtension();
-				else if (StringUtils.filled(pn[i].getExchange())) ext = pn[i].getExchange();
+			if (Util.filled(phone)) {
+				if (Util.filled(pn[i].getExtension())) ext = pn[i].getExtension();
+				else if (Util.filled(pn[i].getExchange())) ext = pn[i].getExchange();
 
 				if (pn[i].getPhoneNumberType()==cdsDt.PhoneNumberType.W) {
 					workPhone = phone;
@@ -417,111 +356,61 @@ import cds.RiskFactorsDocument.RiskFactors;
 		}
 		if (demo.getPreferredPhone()!=null) {
 			if (demo.getPreferredPhone()==cdsDt.PhoneNumberType.R) {
-				if (StringUtils.filled(homePhone)) patientPhone = homePhone+" "+homeExt;
+				if (Util.filled(homePhone)) patientPhone = homePhone+" "+homeExt;
 			}
 			if (demo.getPreferredPhone()==cdsDt.PhoneNumberType.W) {
-				if (StringUtils.filled(workPhone)) patientPhone = workPhone+" "+workExt;
+				if (Util.filled(workPhone)) patientPhone = workPhone+" "+workExt;
 			}
 			if (demo.getPreferredPhone()==cdsDt.PhoneNumberType.C) {
-				if (StringUtils.filled(cellPhone)) patientPhone = cellPhone;
+				if (Util.filled(cellPhone)) patientPhone = cellPhone;
 			}
 		} else {
-			if      (StringUtils.filled(homePhone)) patientPhone = homePhone+" "+homeExt;
-			else if (StringUtils.filled(workPhone)) patientPhone = workPhone+" "+workExt;
-			else if (StringUtils.filled(cellPhone)) patientPhone = cellPhone;
+			if      (Util.filled(homePhone)) patientPhone = homePhone+" "+homeExt;
+			else if (Util.filled(workPhone)) patientPhone = workPhone+" "+workExt;
+			else if (Util.filled(cellPhone)) patientPhone = cellPhone;
 		}
-		String email = StringUtils.noNull(demo.getEmail());
+		String email = Util.noNull(demo.getEmail());
 
-       String primaryPhysician = "";
-        if(student == null){
-	        if (demo.getPrimaryPhysician()!=null) {
-	            String[] personName = getPersonName(demo.getPrimaryPhysician().getName());
-	            String personOHIP = demo.getPrimaryPhysician().getOHIPPhysicianId();
-	            primaryPhysician = writeProviderData(personName[0], personName[1], personOHIP);
-	        }
-	        if (StringUtils.empty(primaryPhysician)) {
-	            primaryPhysician = defaultProvider;
-	            err_data.add("Error! No Primary Physician; patient assigned to \"doctor oscardoc\"");
-	        }
-        } else {
-        	primaryPhysician = student.getProviderNo();
-        }
+		String primaryPhysician = "";
+		if (demo.getPrimaryPhysician()!=null) {
+			String[] personName = getPersonName(demo.getPrimaryPhysician().getName());
+			String personOHIP = demo.getPrimaryPhysician().getOHIPPhysicianId();
+			primaryPhysician = writeProviderData(personName[0], personName[1], personOHIP);
+		}
+		if (Util.empty(primaryPhysician)) {
+			primaryPhysician = defaultProvider;
+			err_data.add("Error! No Primary Physician; patient assigned to \"doctor oscardoc\"");
+		}
 
-		String year_of_birth = null;
-		String month_of_birth = null;
-		String date_of_birth = null;
-		if (birthDate!=null)
-		{			
 			Date bDate = UtilDateUtilities.StringToDate(birthDate,"yyyy-MM-dd");
-			year_of_birth = UtilDateUtilities.DateToString(bDate,"yyyy");
-			month_of_birth = UtilDateUtilities.DateToString(bDate,"MM");
-			date_of_birth = UtilDateUtilities.DateToString(bDate,"dd");
-		}
+		String year_of_birth = UtilDateUtilities.DateToString(bDate,"yyyy");
+		String month_of_birth = UtilDateUtilities.DateToString(bDate,"MM");
+		String date_of_birth = UtilDateUtilities.DateToString(bDate,"dd");
 	
 		DemographicData dd = new DemographicData();
 		DemographicExt dExt = new DemographicExt();
-		DemographicAddResult demoRes = null;
-
-		//Check if Contact-only demographic exists
-		DemographicData.Demographic demographic = null;
-		
-		if(courseId == 0) {
-			demographicNo = dd.getDemoNoByNamePhoneEmail(firstName, lastName, homePhone, workPhone, email);
-			demographic = dd.getDemographic(demographicNo);
-		}
-		if (demographic==null) { //demo not found, add patient
-			demoRes = dd.addDemographic(title, lastName, firstName, address, city, province, postalCode, homePhone, workPhone, year_of_birth, month_of_birth, date_of_birth, hin, versionCode, roster_status, patient_status, ""/*date_joined*/, chart_no, official_lang, spoken_lang, primaryPhysician, sex, end_date, eff_date, ""/*pcn_indicator*/, hc_type, roster_date, ""/*family_doctor*/, email, ""/*pin*/, ""/*alias*/, ""/*previousAddress*/, ""/*children*/, ""/*sourceOfIncome*/, ""/*citizenship*/, sin);
-			demographicNo = demoRes.getId();
-		} else if (StringUtils.nullSafeEqualsIgnoreCase(demographic.getPatientStatus(), "Contact-only")) { //replace contact
-			demographic.setTitle(title);
-			demographic.setAddress(address);
-			demographic.setCity(city);
-			demographic.setProvince(province);
-			demographic.setPostal(postalCode);
-			demographic.setYearOfBirth(year_of_birth);
-			demographic.setMonthOfBirth(month_of_birth);
-			demographic.setDateOfBirth(date_of_birth);
-			demographic.setJustHIN(hin);
-			demographic.setVersionCode(versionCode);
-			demographic.setRosterStatus(roster_status);
-			demographic.setPatientStatus(patient_status);
-			demographic.setChartNo(chart_no);
-			demographic.setOfficialLang(official_lang);
-			demographic.setSpokenLang(spoken_lang);
-			demographic.setFamilyDoctor(primaryPhysician);
-			demographic.setSex(sex);
-			demographic.setEndDate(end_date);
-			demographic.setEffDate(eff_date);
-			demographic.setHCType(hc_type);
-			demographic.setDateJoined(roster_date);
-			demographic.setSin(sin);
-			dd.setDemographic(demographic);
-			err_note.add("Replaced Contact-only patient "+patientName+" (Demo no="+demographicNo+")");
-			demoRes = dd.addDemographic(title, lastName, firstName, address, city, province, postalCode, homePhone, workPhone, year_of_birth, month_of_birth, date_of_birth, hin, versionCode, roster_status, patient_status, ""/*date_joined*/, chart_no, official_lang, spoken_lang, primaryPhysician, sex, end_date, eff_date, ""/*pcn_indicator*/, hc_type, roster_date, ""/*family_doctor*/, email, ""/*pin*/, ""/*alias*/, ""/*previousAddress*/, ""/*children*/, ""/*sourceOfIncome*/, ""/*citizenship*/, sin);
-		}
-		
-		if (StringUtils.filled(demographicNo))
+		demoRes = dd.addDemographic(title, lastName, firstName, address, city, province, postalCode, homePhone, workPhone,
+									year_of_birth, month_of_birth, date_of_birth, hin, versionCode, roster_status,
+									patient_status, ""/*date_joined*/, chart_no, official_lang, spoken_lang, primaryPhysician,
+									sex, end_date, eff_date, ""/*pcn_indicator*/, hc_type, roster_date, ""/*family_doctor*/,
+									email, ""/*pin*/, ""/*alias*/, ""/*previousAddress*/, ""/*children*/, ""/*sourceOfIncome*/,
+									""/*citizenship*/, sin);
+		demographicNo = demoRes.getId();
+		if (demographicNo!=null)
 		{
-        	//TODO: Course - Admit to student program
-        	if(admitTo == null) {
-        		insertIntoAdmission();
-        	} else {
-        		admissionManager.processAdmission(Integer.valueOf(demographicNo), student.getProviderNo(), admitTo, "", "batch import");
-        	}
-			
-			if (StringUtils.filled(dNote)) dd.addDemographiccust(demographicNo, dNote);
+			insertIntoAdmission();
+			if (Util.filled(dNote)) dd.addDemographiccust(demographicNo, dNote);
 
 			if (!workExt.equals("")) dExt.addKey(primaryPhysician, demographicNo, "wPhoneExt", workExt);
 			if (!homeExt.equals("")) dExt.addKey(primaryPhysician, demographicNo, "hPhoneExt", homeExt);
 			if (!cellPhone.equals("")) dExt.addKey(primaryPhysician, demographicNo, "demo_cell", cellPhone);
-			if(courseId>0) dExt.addKey(primaryPhysician, demographicNo, "course", String.valueOf(courseId));
-			
+
 			Demographics.Contact[] contt = demo.getContactArray();
 			for (int i=0; i<contt.length; i++) {
 				String[] contactName = getPersonName(contt[i].getName());
 				String cFirstName = contactName[0];
 				String cLastName  = contactName[1];
-				String cEmail = StringUtils.noNull(contt[i].getEmailAddress());
+				String cEmail = Util.noNull(contt[i].getEmailAddress());
 
 				pn = contt[i].getPhoneNumberArray();
 				workPhone=""; workExt=""; homePhone=""; homeExt=""; cellPhone=""; ext="";
@@ -563,22 +452,19 @@ import cds.RiskFactorsDocument.RiskFactors;
 
 				String contactNote = contt[i].getNote();
 				String cDemoNo = dd.getDemoNoByNamePhoneEmail(cFirstName, cLastName, homePhone, workPhone, cEmail);
-				String cPatient = cLastName+","+cFirstName;
-				if (StringUtils.empty(cDemoNo)) {   //add new demographic as contact
-					demoRes = dd.addDemographic("", cLastName, cFirstName, "", "", "", "", homePhone, workPhone, null, null,
-					null, "", "", "", "Contact-only", "", "", "", "", "", "F", "", "", "", "", "", "", cEmail, "", "", "", "", "", "", "");
+				if (cDemoNo.equals("")) {   //add new demographic
+					demoRes = dd.addDemographic("", cLastName, cFirstName, "", "", "", "", homePhone, workPhone, "0001", "01",
+					"01", "", "", "", "", "", "", "", "", "", "F", "", "", "", "", "", "", cEmail, "", "", "", "", "", "", "");
 					cDemoNo = demoRes.getId();
-					err_note.add("Contact-only patient "+cPatient+" (Demo no="+cDemoNo+") created");
+					if (Util.filled(contactNote)) dd.addDemographiccust(cDemoNo, contactNote);
 
-					if (StringUtils.filled(contactNote)) dd.addDemographiccust(cDemoNo, contactNote);
 					if (!workExt.equals("")) dExt.addKey("", cDemoNo, "wPhoneExt", workExt);
 					if (!homeExt.equals("")) dExt.addKey("", cDemoNo, "hPhoneExt", homeExt);
 					if (!cellPhone.equals("")) dExt.addKey("", cDemoNo, "demo_cell", cellPhone);
 				}
-				if (StringUtils.filled(cDemoNo)) {
-					DemographicRelationship demoRel = new DemographicRelationship();
+				DemographicRelationship demoRel = new DemographicRelationship();
+				if (!cDemoNo.equals("")) {
 					demoRel.addDemographicRelationship(demographicNo, cDemoNo, rel, sdm, emc, ""/*notes*/, primaryPhysician, null);
-					err_note.add("Added relationship with patient "+cPatient+" (Demo no="+cDemoNo+")");
 				}
 			}
 
@@ -591,13 +477,13 @@ import cds.RiskFactorsDocument.RiskFactors;
 				CaseManagementNote cmNote = prepareCMNote();
 				cmNote.setIssues(scmi);
 				String socialHist = "";
-				if (StringUtils.filled(pHist[i].getCategorySummaryLine())) {
+				if (Util.filled(pHist[i].getCategorySummaryLine())) {
 					socialHist = Util.appendLine(socialHist, pHist[i].getCategorySummaryLine().trim());
 				} else {
 					err_summ.add("No Summary for Personal History ("+(i+1)+")");
 				}
 				socialHist = Util.appendLine(socialHist, getResidual(pHist[i].getResidualInfo()));
-				if (StringUtils.filled(socialHist)) {
+				if (Util.filled(socialHist)) {
 					cmNote.setNote(socialHist);
 					caseManagementManager.saveNoteSimple(cmNote);
 				}
@@ -617,20 +503,20 @@ import cds.RiskFactorsDocument.RiskFactors;
 				familyHist = Util.appendLine(familyHist, getCode(fHist[i].getDiagnosisCode(),"Diagnosis"));
 
 				String summary = fHist[i].getCategorySummaryLine();
-				if (StringUtils.empty(summary)) {
+				if (Util.empty(summary)) {
 					err_summ.add("No Summary for Family History ("+(i+1)+")");
 					summary = "Family History "+(i+1);
 				}
 
 				Long hostNoteId = null;
-				cmNote.setNote(StringUtils.filled(familyHist) ? familyHist : summary);
+				cmNote.setNote(Util.filled(familyHist) ? familyHist : summary);
 				caseManagementManager.saveNoteSimple(cmNote);
 				hostNoteId = cmNote.getId();
 
 				cmNote = prepareCMNote();
-				String note = StringUtils.noNull(fHist[i].getNotes());
+				String note = Util.noNull(fHist[i].getNotes());
 
-				if (StringUtils.filled(note)) note = Util.appendLine(note, "- Summary -");
+				if (Util.filled(note)) note = Util.appendLine(note, "- Summary -");
 				note = Util.appendLine(note, summary);
 
 				note = Util.appendLine(note, getResidual(fHist[i].getResidualInfo()));
@@ -641,7 +527,7 @@ import cds.RiskFactorsDocument.RiskFactors;
 				cme.setNoteId(hostNoteId);
 				if (fHist[i].getStartDate()!=null) {
 					cme.setKeyVal(CaseManagementNoteExt.STARTDATE);
-					cme.setDateValue(dDateFullPartial(fHist[i].getStartDate(), timeShiftInDays));
+					cme.setDateValue(dDateFullPartial(fHist[i].getStartDate()));
 					caseManagementManager.saveNoteExt(cme);
 				}
 				if (fHist[i].getAgeAtOnset()!=null) {
@@ -649,12 +535,12 @@ import cds.RiskFactorsDocument.RiskFactors;
 					cme.setValue(fHist[i].getAgeAtOnset().toString());
 					caseManagementManager.saveNoteExt(cme);
 				}
-				if (StringUtils.filled(fHist[i].getRelationship())) {
+				if (Util.filled(fHist[i].getRelationship())) {
 					cme.setKeyVal(CaseManagementNoteExt.RELATIONSHIP);
 					cme.setValue(fHist[i].getRelationship());
 					caseManagementManager.saveNoteExt(cme);
 				}
-				if (StringUtils.filled(fHist[i].getTreatment())) {
+				if (Util.filled(fHist[i].getTreatment())) {
 					cme.setKeyVal(CaseManagementNoteExt.TREATMENT);
 					cme.setValue(fHist[i].getTreatment());
 					caseManagementManager.saveNoteExt(cme);
@@ -676,20 +562,20 @@ import cds.RiskFactorsDocument.RiskFactors;
 				medicalHist = Util.appendLine(medicalHist,"Resolved ? ",pHealth[i].getResolvedIndicator());
 
 				String summary = pHealth[i].getCategorySummaryLine();
-				if (StringUtils.empty(summary)) {
+				if (Util.empty(summary)) {
 					err_summ.add("No Summary for Past Health ("+(i+1)+")");
 					summary = "Medical History "+(i+1);
 				}
 
 				Long hostNoteId = null;
-				cmNote.setNote(StringUtils.filled(medicalHist) ? medicalHist : summary);
+				cmNote.setNote(Util.filled(medicalHist) ? medicalHist : summary);
 				caseManagementManager.saveNoteSimple(cmNote);
 				hostNoteId = cmNote.getId();
 
 				cmNote = prepareCMNote();
-				String note = StringUtils.noNull(pHealth[i].getNotes());
+				String note = Util.noNull(pHealth[i].getNotes());
 
-				if (StringUtils.filled(note)) note = Util.appendLine(note, "- Summary -");
+				if (Util.filled(note)) note = Util.appendLine(note, "- Summary -");
 				note = Util.appendLine(note, summary);
 
 				note = Util.appendLine(note, getResidual(pHealth[i].getResidualInfo()));
@@ -698,14 +584,14 @@ import cds.RiskFactorsDocument.RiskFactors;
 
 				CaseManagementNoteExt cme = new CaseManagementNoteExt();
 				cme.setNoteId(hostNoteId);
-				if (StringUtils.filled(pHealth[i].getPastHealthProblemDescriptionOrProcedures())) {
+				if (Util.filled(pHealth[i].getPastHealthProblemDescriptionOrProcedures())) {
 					cme.setKeyVal(CaseManagementNoteExt.TREATMENT);
 					cme.setValue(pHealth[i].getPastHealthProblemDescriptionOrProcedures());
 					caseManagementManager.saveNoteExt(cme);
 				}
 				if (pHealth[i].getResolvedDate()!=null) {
 					cme.setKeyVal(CaseManagementNoteExt.RESOLUTIONDATE);
-					cme.setDateValue(dDateFullPartial(pHealth[i].getResolvedDate(), timeShiftInDays));
+					cme.setDateValue(dDateFullPartial(pHealth[i].getResolvedDate()));
 					caseManagementManager.saveNoteExt(cme);
 				}
 			}
@@ -724,20 +610,20 @@ import cds.RiskFactorsDocument.RiskFactors;
 				ongConcerns = Util.appendLine(ongConcerns, getCode(probList[i].getDiagnosisCode(),"Diagnosis"));
 
 				String summary = probList[i].getCategorySummaryLine();
-				if (StringUtils.empty(summary)) {
+				if (Util.empty(summary)) {
 					err_summ.add("No Summary for Problem List ("+(i+1)+")");
 					summary = "Ongoing Concerns "+(i+1);
 				}
 
 				Long hostNoteId = null;
-				cmNote.setNote(StringUtils.filled(ongConcerns) ? ongConcerns : summary);
+				cmNote.setNote(Util.filled(ongConcerns) ? ongConcerns : summary);
 				caseManagementManager.saveNoteSimple(cmNote);
 				hostNoteId = cmNote.getId();
 
 				cmNote = prepareCMNote();
-				String note = StringUtils.noNull(probList[i].getNotes());
+				String note = Util.noNull(probList[i].getNotes());
 
-				if (StringUtils.filled(note)) note = Util.appendLine(note, "- Summary -");
+				if (Util.filled(note)) note = Util.appendLine(note, "- Summary -");
 				note = Util.appendLine(note, summary);
 
 				note = Util.appendLine(note, getResidual(probList[i].getResidualInfo()));
@@ -748,17 +634,17 @@ import cds.RiskFactorsDocument.RiskFactors;
 				cme.setNoteId(hostNoteId);
 				if (probList[i].getOnsetDate()!=null) {
 					cme.setKeyVal(CaseManagementNoteExt.STARTDATE);
-					cme.setDateValue(dDateFullPartial(probList[i].getOnsetDate(), timeShiftInDays));
+					cme.setDateValue(dDateFullPartial(probList[i].getOnsetDate()));
 					caseManagementManager.saveNoteExt(cme);
 				} else {
 					err_data.add("Error! No Onset Date for Problem List ("+(i+1)+")");
 				}
 				if (probList[i].getResolutionDate()!=null) {
 					cme.setKeyVal(CaseManagementNoteExt.RESOLUTIONDATE);
-					cme.setDateValue(dDateFullPartial(probList[i].getResolutionDate(), timeShiftInDays));
+					cme.setDateValue(dDateFullPartial(probList[i].getResolutionDate()));
 					caseManagementManager.saveNoteExt(cme);
 				}
-				if (StringUtils.filled(probList[i].getProblemStatus())) {
+				if (Util.filled(probList[i].getProblemStatus())) {
 					cme.setKeyVal(CaseManagementNoteExt.PROBLEMSTATUS);
 					cme.setValue(probList[i].getProblemStatus());
 					caseManagementManager.saveNoteExt(cme);
@@ -774,20 +660,20 @@ import cds.RiskFactorsDocument.RiskFactors;
 				riskFactors = Util.appendLine(riskFactors,"Risk Factor: ",rFactors[i].getRiskFactor());
 
 				String summary = rFactors[i].getCategorySummaryLine();
-				if (StringUtils.empty(summary)) {
+				if (Util.empty(summary)) {
 					err_summ.add("No Summary for Risk Factors ("+(i+1)+")");
 					summary = "Risk Factors "+(i+1);
 				}
 
 				Long hostNoteId = null;
-				cmNote.setNote(StringUtils.filled(riskFactors) ? riskFactors : summary);
+				cmNote.setNote(Util.filled(riskFactors) ? riskFactors : summary);
 				caseManagementManager.saveNoteSimple(cmNote);
 				hostNoteId = cmNote.getId();
 
 				cmNote = prepareCMNote();
-				String note = StringUtils.noNull(rFactors[i].getNotes());
+				String note = Util.noNull(rFactors[i].getNotes());
 
-				if (StringUtils.filled(note)) note = Util.appendLine(note, "- Summary -");
+				if (Util.filled(note)) note = Util.appendLine(note, "- Summary -");
 				note = Util.appendLine(note, summary);
 
 				note = Util.appendLine(note, getResidual(rFactors[i].getResidualInfo()));
@@ -798,12 +684,12 @@ import cds.RiskFactorsDocument.RiskFactors;
 				cme.setNoteId(hostNoteId);
 				if (rFactors[i].getStartDate()!=null) {
 					cme.setKeyVal(CaseManagementNoteExt.STARTDATE);
-					cme.setDateValue(dDateFullPartial(rFactors[i].getStartDate(), timeShiftInDays));
+					cme.setDateValue(dDateFullPartial(rFactors[i].getStartDate()));
 					caseManagementManager.saveNoteExt(cme);
 				}
 				if (rFactors[i].getEndDate()!=null) {
 					cme.setKeyVal(CaseManagementNoteExt.RESOLUTIONDATE);
-					cme.setDateValue(dDateFullPartial(rFactors[i].getEndDate(), timeShiftInDays));
+					cme.setDateValue(dDateFullPartial(rFactors[i].getEndDate()));
 					caseManagementManager.saveNoteExt(cme);
 				}
 				if (rFactors[i].getAgeOfOnset()!=null) {
@@ -811,7 +697,7 @@ import cds.RiskFactorsDocument.RiskFactors;
 					cme.setValue(rFactors[i].getAgeOfOnset().toString());
 					caseManagementManager.saveNoteExt(cme);
 				}
-				if (StringUtils.filled(rFactors[i].getExposureDetails())) {
+				if (Util.filled(rFactors[i].getExposureDetails())) {
 					cme.setKeyVal(CaseManagementNoteExt.EXPOSUREDETAIL);
 					cme.setValue(rFactors[i].getExposureDetails());
 					caseManagementManager.saveNoteExt(cme);
@@ -822,9 +708,9 @@ import cds.RiskFactorsDocument.RiskFactors;
 			for (int i=0; i<cNotes.length; i++) {
 				CaseManagementNote cmNote = prepareCMNote();
 				if (cNotes[i].getEventDateTime()==null) cmNote.setObservation_date(new Date());
-				else cmNote.setObservation_date(dDateFullPartial(cNotes[i].getEventDateTime(), timeShiftInDays));
+				else cmNote.setObservation_date(dDateFullPartial(cNotes[i].getEventDateTime()));
 				if (cNotes[i].getSignedDateTime()==null) cmNote.setUpdate_date(new Date());
-				else cmNote.setUpdate_date(dDateFullPartial(cNotes[i].getSignedDateTime(), timeShiftInDays));
+				else cmNote.setUpdate_date(dDateFullPartial(cNotes[i].getSignedDateTime()));
 
 				String encounter = cNotes[i].getMyClinicalNotesContent();
 				encounter = Util.appendLine(encounter,"Note Type: ",cNotes[i].getNoteType());
@@ -833,7 +719,7 @@ import cds.RiskFactorsDocument.RiskFactors;
 					String[] authorName = getPersonName(cpAuthor.getName());
 					String authorOHIP = cpAuthor.getOHIPPhysicianId();
 					String authorProvider = writeProviderData(authorName[0], authorName[1], authorOHIP);
-					if (StringUtils.empty(authorProvider)) {
+					if (Util.empty(authorProvider)) {
 						authorProvider = defaultProvider;
 						err_note.add("Clinical notes have no author; assigned to \"doctor oscardoc\" ("+(i+1)+")");
 					}
@@ -843,15 +729,15 @@ import cds.RiskFactorsDocument.RiskFactors;
 				if (cNotes[i].getSigningOHIPPhysicianId()!=null) {
 					String signPhysicianOHIP = cNotes[i].getSigningOHIPPhysicianId();
 					String signProvider = writeProviderData("", "", signPhysicianOHIP);
-					if (StringUtils.empty(signProvider)) {
+					if (Util.empty(signProvider)) {
 						signProvider = defaultProvider;
 						err_note.add("Clinical notes have no signer; assigned to \"doctor oscardoc\" ("+(i+1)+")");
 					}
 					cmNote.setSigning_provider_no(signProvider);
 				}
 				encounter = Util.appendLine(encounter,"Signing Physician OHIP Id: ",cNotes[i].getSigningOHIPPhysicianId());
-				encounter = Util.appendLine(encounter,"Entered DateTime: ",dateFullPartial(cNotes[i].getEnteredDateTime(), timeShiftInDays));
-				if (StringUtils.filled(encounter)) {
+				encounter = Util.appendLine(encounter,"Entered DateTime: ",dateFullPartial(cNotes[i].getEnteredDateTime()));
+				if (Util.filled(encounter)) {
 					cmNote.setNote(encounter);
 					caseManagementManager.saveNoteSimple(cmNote);
 				}
@@ -862,14 +748,14 @@ import cds.RiskFactorsDocument.RiskFactors;
 			for (int i=0; i<aaReactArray.length; i++) {
 				String description="", regionalId="", reaction="", severity="", entryDate="", startDate="", typeCode="";
 
-				reaction = StringUtils.noNull(aaReactArray[i].getReaction());
-				description = StringUtils.noNull(aaReactArray[i].getOffendingAgentDescription());
-				entryDate = dateFullPartial(aaReactArray[i].getRecordedDate(), timeShiftInDays);
-				startDate = dateFullPartial(aaReactArray[i].getStartDate(), timeShiftInDays);
-				if (StringUtils.empty(entryDate)) entryDate = null;
-				if (StringUtils.empty(startDate)) startDate = null;
+				reaction = Util.noNull(aaReactArray[i].getReaction());
+				description = Util.noNull(aaReactArray[i].getOffendingAgentDescription());
+				entryDate = dateFullPartial(aaReactArray[i].getRecordedDate());
+				startDate = dateFullPartial(aaReactArray[i].getStartDate());
+				if (Util.empty(entryDate)) entryDate = "0001-01-01";
+				if (Util.empty(startDate)) startDate = "0001-01-01";
 
-				if (aaReactArray[i].getCode()!=null) regionalId = StringUtils.noNull(aaReactArray[i].getCode().getValue());
+				if (aaReactArray[i].getCode()!=null) regionalId = Util.noNull(aaReactArray[i].getCode().getValue());
 				reaction = Util.appendLine(reaction,"Offending Agent Description: ",aaReactArray[i].getOffendingAgentDescription());
 				if (aaReactArray[i].getReactionType()!=null) reaction = Util.appendLine(reaction,"Reaction Type: ",aaReactArray[i].getReactionType().toString());
 				if (!getYN(aaReactArray[i].getKnownAllergies()).equals("")) reaction = Util.appendLine(reaction,"Known Allergies: ",getYN(aaReactArray[i].getKnownAllergies()));
@@ -889,10 +775,10 @@ import cds.RiskFactorsDocument.RiskFactors;
 				Long allergyId = RxAllergyImport.save(demographicNo, entryDate, description, typeCode, reaction, startDate, severity, regionalId);
 
 				CaseManagementNote cmNote = prepareCMNote();
-				String note = StringUtils.noNull(aaReactArray[i].getNotes());
+				String note = Util.noNull(aaReactArray[i].getNotes());
 
-				if (StringUtils.filled(aaReactArray[i].getCategorySummaryLine())) {
-					if (StringUtils.filled(note)) note = Util.appendLine(note, "- Summary -");
+				if (Util.filled(aaReactArray[i].getCategorySummaryLine())) {
+					if (Util.filled(note)) note = Util.appendLine(note, "- Summary -");
 					note = Util.appendLine(note, aaReactArray[i].getCategorySummaryLine().trim());
 				} else {
 					err_summ.add("No Summary for Allergies & Adverse Reactions ("+(i+1)+")");
@@ -913,21 +799,21 @@ import cds.RiskFactorsDocument.RiskFactors;
 				boolean longTerm=false, pastMed=false;
 				int takemin=0, takemax=0, repeat=0, patientCompliance=0;
 
-				writtenDate		= dateFullPartial(medArray[i].getPrescriptionWrittenDate(), timeShiftInDays);
-				rxDate			= dateFullPartial(medArray[i].getStartDate(), timeShiftInDays);
-				endDate			= dateFullPartial(medArray[i].getEndDate(), timeShiftInDays);
-				lastRefillDate	= dateFullPartial(medArray[i].getLastRefillDate(), timeShiftInDays);
-				regionalId		= StringUtils.noNull(medArray[i].getDrugIdentificationNumber());
+				writtenDate		= dateFullPartial(medArray[i].getPrescriptionWrittenDate());
+				rxDate			= dateFullPartial(medArray[i].getStartDate());
+				endDate			= dateFullPartial(medArray[i].getEndDate());
+				lastRefillDate	= dateFullPartial(medArray[i].getLastRefillDate());
+				regionalId		= Util.noNull(medArray[i].getDrugIdentificationNumber());
 				quantity		= Util.getNum(medArray[i].getQuantity());
 				duration		= Util.getNum(medArray[i].getDuration());
 				frequencyCode	= procFreq(frequencyCode);
-				route			= StringUtils.noNull(medArray[i].getRoute());
-				drugForm		= StringUtils.noNull(medArray[i].getForm());
+				route			= Util.noNull(medArray[i].getRoute());
+				drugForm		= Util.noNull(medArray[i].getForm());
 				longTerm		= getYN(medArray[i].getLongTermMedication()).equals("Yes");
 				pastMed			= getYN(medArray[i].getPastMedications()).equals("Yes");
 
-				rxDate = StringUtils.filled(rxDate) ? rxDate : null;
-				endDate = StringUtils.filled(endDate) ? endDate : null;
+				rxDate = Util.filled(rxDate) ? rxDate : "0001-01-01";
+				endDate = Util.filled(endDate) ? endDate : "0001-01-01";
 
 				String pc = getYN(medArray[i].getPatientCompliance());
 				if (pc.equals("Yes")) patientCompliance = 1;
@@ -936,11 +822,11 @@ import cds.RiskFactorsDocument.RiskFactors;
 
 				if (duration.trim().equals("1 year")) duration = "365"; //coping with scenario in CMS 2.0
 
-				if (StringUtils.filled(medArray[i].getNumberOfRefills())) {
+				if (Util.filled(medArray[i].getNumberOfRefills())) {
 					repeat = Integer.parseInt(medArray[i].getNumberOfRefills());
 				}
 
-				if (StringUtils.filled(medArray[i].getDrugName())) {
+				if (Util.filled(medArray[i].getDrugName())) {
 					BN = medArray[i].getDrugName();
 					special = medArray[i].getDrugName();
 				} else {
@@ -948,20 +834,20 @@ import cds.RiskFactorsDocument.RiskFactors;
 				}
 
 				if (medArray[i].getStrength()!=null) {
-					dosage = StringUtils.noNull(medArray[i].getStrength().getAmount())+" "+StringUtils.noNull(medArray[i].getStrength().getUnitOfMeasure());
+					dosage = Util.noNull(medArray[i].getStrength().getAmount())+" "+Util.noNull(medArray[i].getStrength().getUnitOfMeasure());
 					special = Util.appendLine(special, "Strength: ", dosage);
 				}
 				//special = Util.appendLine(special, "DIN: ", regionalId);
 				//special = Util.appendLine(special, "Quantity: ", medArray[i].getQuantity());
 				special = Util.appendLine(special, "Take ", medArray[i].getDosage());
-				special += StringUtils.filled(route) ? " "+route : "";
-				special += StringUtils.filled(frequencyCode) ? " "+frequencyCode : "";
-				special += StringUtils.filled(duration) ? " for "+duration : "";
+				special += Util.filled(route) ? " "+route : "";
+				special += Util.filled(frequencyCode) ? " "+frequencyCode : "";
+				special += Util.filled(duration) ? " for "+duration : "";
 
 				special = Util.appendLine(special, "Prescription Instructions: ", medArray[i].getPrescriptionInstructions());
-				special += StringUtils.filled(special) ? "\n" : "";
+				special += Util.filled(special) ? "\n" : "";
 
-				String dose = StringUtils.noNull(medArray[i].getDosage());
+				String dose = Util.noNull(medArray[i].getDosage());
 				int sep1 = dose.indexOf("-");
 				int sep2 = dose.indexOf(" ");
 				int sep3 = dose.indexOf(" ", sep2+1);
@@ -1000,10 +886,10 @@ import cds.RiskFactorsDocument.RiskFactors;
 				dosage,takemin,takemax,unit,longTerm,pastMed,patientCompliance,outsiderName,outsiderOhip,(i+1));
 
 				CaseManagementNote cmNote = prepareCMNote();
-				String note = StringUtils.noNull(medArray[i].getNotes());
+				String note = Util.noNull(medArray[i].getNotes());
 
-				if (StringUtils.filled(medArray[i].getCategorySummaryLine())) {
-					if (StringUtils.filled(note)) note = Util.appendLine(note, "- Summary -");
+				if (Util.filled(medArray[i].getCategorySummaryLine())) {
+					if (Util.filled(note)) note = Util.appendLine(note, "- Summary -");
 					note = Util.appendLine(note, medArray[i].getCategorySummaryLine().trim());
 				} else {
 					err_summ.add("No Summary for Medications & Treatments ("+(i+1)+")");
@@ -1024,7 +910,7 @@ import cds.RiskFactorsDocument.RiskFactors;
 				String preventionDate="", preventionType="", refused="0", comments="";
 				ArrayList preventionExt = new ArrayList();
 
-				if (StringUtils.filled(immuArray[i].getImmunizationName())) {
+				if (Util.filled(immuArray[i].getImmunizationName())) {
 					preventionType = mapPreventionType(immuArray[i].getImmunizationCode());
 					if (preventionType.equals("")) {
 						preventionType = "OtherA";
@@ -1034,7 +920,7 @@ import cds.RiskFactorsDocument.RiskFactors;
 				} else {
 					err_data.add("Error! No Immunization Name ("+(i+1)+")");
 				}
-				preventionDate = dateFullPartial(immuArray[i].getDate(), timeShiftInDays);
+				preventionDate = dateFullPartial(immuArray[i].getDate());
 				refused = getYN(immuArray[i].getRefusedFlag()).equals("Yes") ? "1" : "0";
 
 				String iSummary="";
@@ -1044,39 +930,39 @@ import cds.RiskFactorsDocument.RiskFactors;
 					err_summ.add("No Summary for Immunizations ("+(i+1)+")");
 				}
 				comments = Util.appendLine(comments, immuArray[i].getNotes());
-				if (StringUtils.filled(iSummary)) {
+				if (Util.filled(iSummary)) {
 					comments = Util.appendLine(comments, "Summary: ", iSummary);
 					err_note.add("Immunization Summary imported in [comments] ("+(i+1)+")");
 				}
 				comments = Util.appendLine(comments, getCode(immuArray[i].getImmunizationCode(),"Immunization Code"));
 				comments = Util.appendLine(comments, "Instructions: ", immuArray[i].getInstructions());
 				comments = Util.appendLine(comments, getResidual(immuArray[i].getResidualInfo()));
-				if (StringUtils.filled(comments)) {
+				if (Util.filled(comments)) {
 					Hashtable ht = new Hashtable();
 					ht.put("comments", comments);
 					preventionExt.add(ht);
 				}
-				if (StringUtils.filled(immuArray[i].getManufacturer())) {
+				if (Util.filled(immuArray[i].getManufacturer())) {
 					Hashtable ht = new Hashtable();
 					ht.put("manufacture", immuArray[i].getManufacturer());
 					preventionExt.add(ht);
 				}
-				if (StringUtils.filled(immuArray[i].getLotNumber())) {
+				if (Util.filled(immuArray[i].getLotNumber())) {
 					Hashtable ht = new Hashtable();
 					ht.put("lot", immuArray[i].getLotNumber());
 					preventionExt.add(ht);
 				}
-				if (StringUtils.filled(immuArray[i].getRoute())) {
+				if (Util.filled(immuArray[i].getRoute())) {
 					Hashtable ht = new Hashtable();
 					ht.put("route", immuArray[i].getRoute());
 					preventionExt.add(ht);
 				}
-				if (StringUtils.filled(immuArray[i].getSite())) {
+				if (Util.filled(immuArray[i].getSite())) {
 					Hashtable ht = new Hashtable();
 					ht.put("location", immuArray[i].getSite());
 					preventionExt.add(ht);
 				}
-				if (StringUtils.filled(immuArray[i].getDose())) {
+				if (Util.filled(immuArray[i].getDose())) {
 					Hashtable ht = new Hashtable();
 					ht.put("dose", immuArray[i].getDose());
 					preventionExt.add(ht);
@@ -1106,22 +992,22 @@ import cds.RiskFactorsDocument.RiskFactors;
 
 			// Save to labPatientPhysicianInfo, labTestResults, patientLabRouting
 			for (int i=0; i<labResultArr.length; i++) {
-				_testName[i] = StringUtils.noNull(labResultArr[i].getLabTestCode());
-				_location[i] = StringUtils.noNull(labResultArr[i].getLaboratoryName());
-				_accession[i] = StringUtils.noNull(labResultArr[i].getAccessionNumber());
-				_comments[i] = StringUtils.noNull(labResultArr[i].getPhysiciansNotes());
-				_coll_date[i] = dateOnly(dateFullPartial(labResultArr[i].getCollectionDateTime(), timeShiftInDays));
-				_req_date[i] = dateFullPartial(labResultArr[i].getLabRequisitionDateTime(), timeShiftInDays);
-				_rev_date[i] = dateFullPartial(labResultArr[i].getDateTimeResultReviewed(), timeShiftInDays);
+				_testName[i] = Util.noNull(labResultArr[i].getLabTestCode());
+				_location[i] = Util.noNull(labResultArr[i].getLaboratoryName());
+				_accession[i] = Util.noNull(labResultArr[i].getAccessionNumber());
+				_comments[i] = Util.noNull(labResultArr[i].getPhysiciansNotes());
+				_coll_date[i] = dateOnly(dateFullPartial(labResultArr[i].getCollectionDateTime()));
+				_req_date[i] = dateFullPartial(labResultArr[i].getLabRequisitionDateTime());
+				_rev_date[i] = dateFullPartial(labResultArr[i].getDateTimeResultReviewed());
 
-				_title[i] = StringUtils.noNull(labResultArr[i].getTestName());
-				if (StringUtils.filled(labResultArr[i].getTestNameReportedByLab())) {
-					_title[i] += StringUtils.filled(_title[i]) ? "/" : "";
+				_title[i] = Util.noNull(labResultArr[i].getTestName());
+				if (Util.filled(labResultArr[i].getTestNameReportedByLab())) {
+					_title[i] += Util.filled(_title[i]) ? "/" : "";
 					_title[i] += labResultArr[i].getTestNameReportedByLab();
 				}
 				_description[i] = Util.appendLine(_description[i], "Test Results Info: ", labResultArr[i].getTestResultsInformationReportedByTheLab());
 				_description[i] = Util.appendLine(_description[i], "Notes from Lab: ", labResultArr[i].getNotesFromLab());
-				_description[i] = Util.appendLine(_description[i], "Received Datetime: ", dateFullPartial(labResultArr[i].getDateTimeResultReceivedByCMS(), timeShiftInDays));
+				_description[i] = Util.appendLine(_description[i], "Received Datetime: ", dateFullPartial(labResultArr[i].getDateTimeResultReceivedByCMS()));
 
 				if (labResultArr[i].getResultNormalAbnormalFlag()!=null) {
 					cdsDt.ResultNormalAbnormalFlag.Enum flag = labResultArr[i].getResultNormalAbnormalFlag();
@@ -1130,24 +1016,24 @@ import cds.RiskFactorsDocument.RiskFactors;
 				}
 
 				if (labResultArr[i].getResult()!=null) {
-					_result[i] = StringUtils.noNull(labResultArr[i].getResult().getValue());
-					_unit[i] = StringUtils.noNull(labResultArr[i].getResult().getUnitOfMeasure());
+					_result[i] = Util.noNull(labResultArr[i].getResult().getValue());
+					_unit[i] = Util.noNull(labResultArr[i].getResult().getUnitOfMeasure());
 				}
 
 				if (labResultArr[i].getReferenceRange()!=null) {
 					LaboratoryResults.ReferenceRange ref = labResultArr[i].getReferenceRange();
-					if (StringUtils.filled(ref.getReferenceRangeText())) {
+					if (Util.filled(ref.getReferenceRangeText())) {
 						_minimum[i] = ref.getReferenceRangeText();
 					} else {
-						_maximum[i] = StringUtils.noNull(ref.getHighLimit());
-						_minimum[i] = StringUtils.noNull(ref.getLowLimit());
+						_maximum[i] = Util.noNull(ref.getHighLimit());
+						_minimum[i] = Util.noNull(ref.getLowLimit());
 					}
 				}
 
 				LaboratoryResults.ResultReviewer resultRev = labResultArr[i].getResultReviewer();
 				if (resultRev!=null) {
 					String[] revName = getPersonName(resultRev.getName());
-					String revOhip = StringUtils.noNull(resultRev.getOHIPPhysicianId());
+					String revOhip = Util.noNull(resultRev.getOHIPPhysicianId());
 					_reviewer[i] = writeProviderData(revName[0], revName[1], revOhip);
 				}
 			}
@@ -1173,14 +1059,14 @@ import cds.RiskFactorsDocument.RiskFactors;
 							Long plrId = LabResultImport.savePatientLabRouting(demographicNo, paPhysId);
 							LabRequestReportLink.save(null,null,_req_date[i],"labPatientPhysicianInfo",Long.valueOf(paPhysId));
 
-							String status = StringUtils.filled(_reviewer[i]) ? "A" : "N";
+							String status = Util.filled(_reviewer[i]) ? "A" : "N";
 							_reviewer[i] = status.equals("A") ? _reviewer[i] : "0";
 							LabResultImport.saveProviderLabRouting(_reviewer[i], paPhysId, status, _comments[i], _rev_date[i]);
 
 							accNew = false;
 						}
 						_lab_no[i] = paPhysId;
-						String last = StringUtils.filled(_description[i]) ? "N" : "Y";
+						String last = Util.filled(_description[i]) ? "N" : "Y";
 						LabResultImport.saveLabTestResults(_title[i], _testName[i], _abn[i], _minimum[i], _maximum[i], _result[i], _unit[i], "", _location[i], paPhysId, "C", last);
 						if (last.equals("N")) {
 							LabResultImport.saveLabTestResults(_title[i], _testName[i], "", "", "", "", "", _description[i], _location[i], paPhysId, "D", "Y");
@@ -1190,34 +1076,34 @@ import cds.RiskFactorsDocument.RiskFactors;
 			}
 			/*
 			String labEverything = getLabDline(labResultArr[i]);
-			if (StringUtils.filled(labEverything)){
+			if (Util.filled(labEverything)){
 				LabResultImport.SaveLabDesc(labEverything,patiPhysId);
 			}
 			*/
 
 			// Save to measurements, measurementsExt
 			for (LaboratoryResults labResults : labResultArr) {
-				Measurements meas = new Measurements(Long.valueOf(demographicNo), admProviderNo);
+				Measurements meas = new Measurements(Integer.valueOf(demographicNo), admProviderNo);
 				LaboratoryResults.Result result = labResults.getResult();
 				String unit = null;
 				if (result!=null) {
-					meas.setDataField(StringUtils.noNull(result.getValue()));
-					unit = StringUtils.noNull(result.getUnitOfMeasure());
+					meas.setDataField(Util.noNull(result.getValue()));
+					unit = Util.noNull(result.getUnitOfMeasure());
 				} else {
 					meas.setDataField("");
 				}
 				if (labResults.getDateTimeResultReceivedByCMS()!=null) {
-					meas.setDateEntered(dDateFullPartial(labResults.getDateTimeResultReceivedByCMS(), timeShiftInDays));
+					meas.setDateEntered(dDateFullPartial(labResults.getDateTimeResultReceivedByCMS()));
 				} else {
 					meas.setDateEntered(new Date());
 				}
 				ImportExportMeasurements.saveMeasurements(meas);
-				Long measId = meas.getId();
+				Long measId = meas.getId().longValue();
 				saveMeasurementsExt(measId, "unit", unit);
-				String testCode = StringUtils.filled(labResults.getLabTestCode()) ? labResults.getLabTestCode() : "";
-				String testName = StringUtils.noNull(labResults.getTestName());
-				if (StringUtils.filled(labResults.getTestNameReportedByLab())) {
-					testName += StringUtils.filled(testName) ? "/" : "";
+				String testCode = Util.filled(labResults.getLabTestCode()) ? labResults.getLabTestCode() : "";
+				String testName = Util.noNull(labResults.getTestName());
+				if (Util.filled(labResults.getTestNameReportedByLab())) {
+					testName += Util.filled(testName) ? "/" : "";
 					testName += labResults.getTestNameReportedByLab();
 				}
 				saveMeasurementsExt(measId, "identifier", testCode);
@@ -1225,12 +1111,12 @@ import cds.RiskFactorsDocument.RiskFactors;
 
 				cdsDt.DateFullOrPartial collDate = labResults.getCollectionDateTime();
 				if (collDate!=null) {
-					saveMeasurementsExt(measId, "datetime", dateFullPartial(collDate, timeShiftInDays));
+					saveMeasurementsExt(measId, "datetime", dateFullPartial(collDate));
 				} else {
 					err_data.add("Error! No Collection DateTime for Lab Test "+testCode+" for Patient "+demographicNo);
 				}
-				String labname = StringUtils.noNull(labResults.getLaboratoryName());
-				if (StringUtils.filled(labname)) {
+				String labname = Util.noNull(labResults.getLaboratoryName());
+				if (Util.filled(labname)) {
 					saveMeasurementsExt(measId, "labname", labname);
 				} else {
 					err_data.add("Error! No Laboratory Name for Lab Test "+testCode+" for Patient "+demographicNo);
@@ -1253,7 +1139,7 @@ import cds.RiskFactorsDocument.RiskFactors;
 
 				LaboratoryResults.ReferenceRange refRange = labResults.getReferenceRange();
 				if (refRange!=null) {
-					if (StringUtils.filled(refRange.getReferenceRangeText())) {
+					if (Util.filled(refRange.getReferenceRangeText())) {
 						saveMeasurementsExt(measId, "range", refRange.getReferenceRangeText());
 					} else {
 						saveMeasurementsExt(measId, "maximum", refRange.getHighLimit());
@@ -1276,8 +1162,10 @@ import cds.RiskFactorsDocument.RiskFactors;
 			Properties p = (Properties) request.getSession().getAttribute("oscarVariables");
 
 			for (int i=0; i<appArray.length; i++) {
-				String apptDateStr = dateFullPartial(appArray[i].getAppointmentDate(), timeShiftInDays);
-				if (StringUtils.filled(apptDateStr)) {
+				name = lastName + "," + firstName;
+
+				String apptDateStr = dateFullPartial(appArray[i].getAppointmentDate());
+				if (Util.filled(apptDateStr)) {
 					appointmentDate = UtilDateUtilities.StringToDate(apptDateStr);
 				} else {
 					err_data.add("Error! No Appointment Date ("+(i+1)+")");
@@ -1298,7 +1186,7 @@ import cds.RiskFactorsDocument.RiskFactors;
 				} else {
 					err_data.add("Error! No Appointment Time ("+(i+1)+")");
 				}
-				if (StringUtils.filled(appArray[i].getAppointmentNotes())) {
+				if (Util.filled(appArray[i].getAppointmentNotes())) {
 					notes = appArray[i].getAppointmentNotes();
 				} else {
 					err_data.add("Error! No Appointment Notes ("+(i+1)+")");
@@ -1316,18 +1204,18 @@ import cds.RiskFactorsDocument.RiskFactors;
 						}
 					}
 				}
-				reason = StringUtils.noNull(appArray[i].getAppointmentPurpose());
+				reason = Util.noNull(appArray[i].getAppointmentPurpose());
 				if (appArray[i].getProvider()!=null) {
 					String[] providerName = getPersonName(appArray[i].getProvider().getName());
 					String personOHIP = appArray[i].getProvider().getOHIPPhysicianId();
 					apptProvider = writeProviderData(providerName[0], providerName[1], personOHIP);
-					if (StringUtils.empty(apptProvider)) {
+					if (Util.empty(apptProvider)) {
 						apptProvider = defaultProvider;
 						err_note.add("Appointment has no provider; assigned to \"doctor oscardoc\" ("+(i+1)+")");
 					}
 				}
 				oscarSuperManager.update("appointmentDao", "import_appt", new Object [] {apptProvider,
-				appointmentDate, startTime, endTime, patientName, demographicNo, notes, reason, status});
+				appointmentDate, startTime, endTime, name, demographicNo, notes, reason, status});
 			}
 
 			//REPORTS RECEIVED
@@ -1345,14 +1233,14 @@ import cds.RiskFactorsDocument.RiskFactors;
 						String docType=null, contentType="", observationDate=null, updateDateTime=null, docCreator=admProviderNo;
 						String reviewer=null, reviewDateTime=null, source=null;
 
-						if (StringUtils.filled(repR[i].getFileExtensionAndVersion())) {
+						if (Util.filled(repR[i].getFileExtensionAndVersion())) {
 							contentType = repR[i].getFileExtensionAndVersion();
 							docFileName += Util.mimeToExt(contentType);
 						} else {
 							err_data.add("Error! No File Extension & Version for Report ("+(i+1)+")");
 						}
 						String docDesc = repR[i].getSubClass();
-						if (StringUtils.empty(docDesc)) docDesc = "ImportReport"+(i+1);
+						if (Util.empty(docDesc)) docDesc = "ImportReport"+(i+1);
 						FileOutputStream f = new FileOutputStream(docDir + docFileName);
 						f.write(b);
 						f.close();
@@ -1367,19 +1255,19 @@ import cds.RiskFactorsDocument.RiskFactors;
 						}
 
 						String[] author = getPersonName(repR[i].getAuthorPhysician());
-						source = StringUtils.noNull(author[0]) + (StringUtils.filled(author[1]) ? " "+author[1] : "");
+						source = Util.noNull(author[0]) + (Util.filled(author[1]) ? " "+author[1] : "");
 
 						String revOHIP = repR[i].getReviewingOHIPPhysicianId();
-						if (StringUtils.filled(revOHIP)) {
+						if (Util.filled(revOHIP)) {
 							reviewer = writeProviderData("", "", revOHIP);
 						}
 
-						observationDate = dateFullPartial(repR[i].getEventDateTime(), timeShiftInDays);
-						updateDateTime = dateFullPartial(repR[i].getReceivedDateTime(), timeShiftInDays);
-						reviewDateTime = dateFullPartial(repR[i].getReviewedDateTime(), timeShiftInDays);
+						observationDate = dateFullPartial(repR[i].getEventDateTime());
+						updateDateTime = dateFullPartial(repR[i].getReceivedDateTime());
+						reviewDateTime = dateFullPartial(repR[i].getReviewedDateTime());
 
 						EDocUtil.addDocument(demographicNo,docFileName,docDesc,docType,contentType,observationDate,updateDateTime,docCreator,admProviderNo,reviewer,reviewDateTime, source);
-						if (StringUtils.filled(repR[i].getSubClass())) {
+						if (Util.filled(repR[i].getSubClass())) {
 							err_note.add("Subclass not imported - Report ("+(i+1)+")");
 						}
 					}
@@ -1397,7 +1285,7 @@ import cds.RiskFactorsDocument.RiskFactors;
 			for (int i=0; i<audInf.length; i++) {
 				if (audInf.length>1) auditInfoFile += "("+i+")";
 				String sAudInfo = audInf[i].getCategorySummaryLine();
-				if (StringUtils.empty(sAudInfo)) {
+				if (Util.empty(sAudInfo)) {
 					err_summ.add("No Summary for Audit Information ("+(i+1)+")");
 				}
 				cdsDt.ResidualInformation audRes = audInf[i].getResidualInfo();
@@ -1415,19 +1303,20 @@ import cds.RiskFactorsDocument.RiskFactors;
 					if (audInf[i].getContent()!=null) {
 						sAudInfo = Util.appendLine(sAudInfo, audInf[i].getContent().getTextContent());
 					}
-					if (StringUtils.filled(sAudInfo)) {
+					if (Util.filled(sAudInfo)) {
 						FileWriter f = new FileWriter(docDir + auditInfoFile);
 						f.write(sAudInfo);
 						f.close();
 					}
 				} else if (audInf[i].getFormat().equals(cdsDt.AuditFormat.FILE)) {
-					if (StringUtils.filled(sAudInfo)) {
+					if (Util.filled(sAudInfo)) {
 						auditInfoSummary = "importAuditSummary-"+fileTime;
 					try {
 						FileWriter f = new FileWriter(docDir + auditInfoSummary);
 						f.write(sAudInfo);
 						f.close();
-					} catch (IOException ex) {MiscUtils.getLogger().error("Error", ex);
+					} catch (IOException ex) {
+						ex.printStackTrace();
 					}
 					}
 					contentType = audInf[i].getFileExtensionAndVersion();
@@ -1437,13 +1326,14 @@ import cds.RiskFactorsDocument.RiskFactors;
 						FileOutputStream f = new FileOutputStream(docDir + auditInfoFile);
 						f.write(audInf[i].getContent().getMedia());
 						f.close();
-					} catch (Exception ex) {MiscUtils.getLogger().error("Error", ex);
+					} catch (Exception ex) {
+						ex.printStackTrace();
 					}
 					}
 				}
 				/***** Write to document table *****/
 				EDocUtil.addDocument(demographicNo,auditInfoFile,"Imported Audit Information","others",contentType,fileTime,fileTime,admProviderNo,admProviderNo);
-				if (StringUtils.filled(auditInfoSummary)) {
+				if (Util.filled(auditInfoSummary)) {
 					EDocUtil.addDocument(demographicNo,auditInfoSummary,"Imported Audit Summary","others",contentType,fileTime,fileTime,admProviderNo,admProviderNo);
 				}
 			}
@@ -1454,25 +1344,25 @@ import cds.RiskFactorsDocument.RiskFactors;
 				cdsDt.Height[] heights = ce.getHeightArray();
 				for (cdsDt.Height ht : heights) {
 					Date dateObserved = ht.getDate().getTime();
-					String dataField = StringUtils.noNull(ht.getHeight());
+					String dataField = Util.noNull(ht.getHeight());
 					ImportExportMeasurements.saveMeasurements("HT", demographicNo, admProviderNo, dataField, dateObserved);
 				}
 				cdsDt.Weight[] weights = ce.getWeightArray();
 				for (cdsDt.Weight wt : weights) {
 					Date dateObserved = wt.getDate().getTime();
-					String dataField = StringUtils.noNull(wt.getWeight());
+					String dataField = Util.noNull(wt.getWeight());
 					ImportExportMeasurements.saveMeasurements("WT", demographicNo, admProviderNo, dataField, "in kg", dateObserved);
 				}
 				cdsDt.WaistCircumference[] waists = ce.getWaistCircumferenceArray();
 				for (cdsDt.WaistCircumference wc : waists) {
 					Date dateObserved = wc.getDate().getTime();
-					String dataField = StringUtils.noNull(wc.getWaistCircumference());
+					String dataField = Util.noNull(wc.getWaistCircumference());
 					ImportExportMeasurements.saveMeasurements("WC", demographicNo, admProviderNo, dataField, dateObserved);
 				}
 				cdsDt.BloodPressure[] bloodp = ce.getBloodPressureArray();
 				for (cdsDt.BloodPressure bp : bloodp) {
 					Date dateObserved = bp.getDate().getTime();
-					String dataField = StringUtils.noNull(bp.getSystolicBP())+"/"+StringUtils.noNull(bp.getDiastolicBP());
+					String dataField = Util.noNull(bp.getSystolicBP())+"/"+Util.noNull(bp.getDiastolicBP());
 					ImportExportMeasurements.saveMeasurements("BP", demographicNo, admProviderNo, dataField, dateObserved);
 				}
 				cdsDt.SmokingPacks[] smokp = ce.getSmokingPacksArray();
@@ -1550,10 +1440,8 @@ import cds.RiskFactorsDocument.RiskFactors;
 				}
 			}
 		}
-		if(demoRes != null) {
-			err_demo.addAll(demoRes.getWarningsCollection());
-		}
-	//	Util.cleanFile(xmlFile);
+		err_demo.addAll(demoRes.getWarningsCollection());
+		Util.cleanFile(xmlFile);
 
 		return packMsgs(err_demo, err_data, err_summ, err_othe, err_note, warnings);
 	}
@@ -1629,7 +1517,7 @@ import cds.RiskFactorsDocument.RiskFactors;
 
 
 	boolean matchFileExt(String filename, String ext) {
-		if (StringUtils.empty(filename) || StringUtils.empty(ext)) return false;
+		if (Util.empty(filename) || Util.empty(ext)) return false;
 		if (filename.length()<ext.length()+2) return false;
 		if (filename.charAt(filename.length()-ext.length()-1)!='.') return false;
 
@@ -1662,7 +1550,7 @@ import cds.RiskFactorsDocument.RiskFactors;
 	}
 
 	String getCountrySubDivCode(String countrySubDivCode) {
-		if (StringUtils.empty(countrySubDivCode)) return "";
+		if (Util.empty(countrySubDivCode)) return "";
 		String[] csdc = countrySubDivCode.split("-");
 		if (csdc.length==2) {
 			if (csdc[0].trim().equals("CA")) return csdc[1].trim(); //return w/o "CA-"
@@ -1671,42 +1559,24 @@ import cds.RiskFactorsDocument.RiskFactors;
 		return "OT"; //Other
 	}
 
-    String dateFullPartial(cdsDt.DateFullOrPartial dfp, int timeshiftInDays) {
+	String dateFullPartial(cdsDt.DateFullOrPartial dfp) {
 		if (dfp==null) return "";
-				
-		if (dfp.getDateTime()!=null) {
-			dfp.getDateTime().add(Calendar.DAY_OF_YEAR, timeshiftInDays);
-			return getCalDateTime(dfp.getDateTime());
-		}
-		else if (dfp.getFullDate()!=null)  {
-			dfp.getFullDate().add(Calendar.DAY_OF_YEAR, timeshiftInDays);
-			return getCalDate(dfp.getFullDate());
-		}		
-		else if (dfp.getYearMonth()!=null) {
-			dfp.getYearMonth().add(Calendar.DAY_OF_YEAR, timeshiftInDays);
-			return getCalDate(dfp.getYearMonth());
-		}
-		else if (dfp.getYearOnly()!=null)  
-		{
-			dfp.getYearOnly().add(Calendar.DAY_OF_YEAR, timeshiftInDays);
-			return getCalDate(dfp.getYearOnly());
-		}
-		else 
-			return "";
-	   
-    }
-	    
-    Date dDateFullPartial(cdsDt.DateFullOrPartial dfp, int timeShiftInDays) {
-		String sdate = dateFullPartial(dfp,timeShiftInDays);
+
+		if (dfp.getDateTime()!=null) return getCalDateTime(dfp.getDateTime());
+		else if (dfp.getFullDate()!=null) return getCalDate(dfp.getFullDate());
+		else if (dfp.getYearMonth()!=null) return getCalDate(dfp.getYearMonth());
+		else if (dfp.getYearOnly()!=null) return getCalDate(dfp.getYearOnly());
+		else return "";
+	}
+
+	Date dDateFullPartial(cdsDt.DateFullOrPartial dfp) {
+		String sdate = dateFullPartial(dfp);
 		Date dDate = UtilDateUtilities.StringToDate(sdate, "yyyy-MM-dd HH:mm:ss");
-		if (dDate==null) 
-			dDate = UtilDateUtilities.StringToDate(sdate, "yyyy-MM-dd");
-		if (dDate==null) 
-			dDate = UtilDateUtilities.StringToDate(sdate, "HH:mm:ss");
-		
-		
+		if (dDate==null) dDate = UtilDateUtilities.StringToDate(sdate, "yyyy-MM-dd");
+		if (dDate==null) dDate = UtilDateUtilities.StringToDate(sdate, "HH:mm:ss");
+
 		return dDate;
-    }
+	}
 
 	String dateOnly(String d) {
 		return UtilDateUtilities.DateToString(UtilDateUtilities.StringToDate(d),"yyyy-MM-dd");
@@ -1715,8 +1585,8 @@ import cds.RiskFactorsDocument.RiskFactors;
 	String[] getPersonName(cdsDt.PersonNameSimple person) {
 		String[] name = new String[2];
 		if (person!=null) {
-			name[0] = StringUtils.noNull(person.getFirstName());
-			name[1] = StringUtils.noNull(person.getLastName());
+			name[0] = Util.noNull(person.getFirstName());
+			name[1] = Util.noNull(person.getLastName());
 		}
 		return name;
 	}
@@ -1724,8 +1594,8 @@ import cds.RiskFactorsDocument.RiskFactors;
 	String[] getPersonName(cdsDt.PersonNameSimpleWithMiddleName person) {
 		String[] name = new String[2];
 		if (person!=null) {
-			name[0] = StringUtils.noNull(person.getFirstName())+" "+StringUtils.noNull(person.getMiddleName());
-			name[1] = StringUtils.noNull(person.getLastName());
+			name[0] = Util.noNull(person.getFirstName())+" "+Util.noNull(person.getMiddleName());
+			name[1] = Util.noNull(person.getLastName());
 		}
 		return name;
 	}
@@ -1740,7 +1610,7 @@ import cds.RiskFactorsDocument.RiskFactors;
 	Set<CaseManagementIssue> getCMIssue(String code) {
 		CaseManagementIssue cmIssu = new CaseManagementIssue();
 		cmIssu.setDemographic_no(demographicNo);
-		Issue isu = caseManagementManager.getIssueInfoByCode(StringUtils.noNull(code));
+		Issue isu = caseManagementManager.getIssueInfoByCode(Util.noNull(code));
 		cmIssu.setIssue_id(isu.getId());
 		cmIssu.setType(isu.getType());
 		caseManagementManager.saveCaseIssue(cmIssu);
@@ -1752,7 +1622,7 @@ import cds.RiskFactorsDocument.RiskFactors;
 
 	Set<CaseManagementIssue> getCMIssue(String cppName, cdsDt.Code diagCode) {
 		Set<CaseManagementIssue> sCmIssu = new HashSet<CaseManagementIssue>();
-		Issue isu = caseManagementManager.getIssueInfoByCode(StringUtils.noNull(cppName));
+		Issue isu = caseManagementManager.getIssueInfoByCode(Util.noNull(cppName));
 		if (isu!=null) {
 			CaseManagementIssue cmIssu = new CaseManagementIssue();
 			cmIssu.setDemographic_no(demographicNo);
@@ -1763,8 +1633,8 @@ import cds.RiskFactorsDocument.RiskFactors;
 		}
 		if (diagCode==null) return sCmIssu;
 
-		if (StringUtils.noNull(diagCode.getCodingSystem()).equalsIgnoreCase("icd9")) {
-			isu = caseManagementManager.getIssueInfoByCode(StringUtils.noNull(diagCode.getValue()));
+		if (Util.noNull(diagCode.getCodingSystem()).equalsIgnoreCase("icd9")) {
+			isu = caseManagementManager.getIssueInfoByCode(Util.noNull(diagCode.getValue()));
 			if (isu!=null) {
 				CaseManagementIssue cmIssu = new CaseManagementIssue();
 				cmIssu.setDemographic_no(demographicNo);
@@ -1780,7 +1650,7 @@ import cds.RiskFactorsDocument.RiskFactors;
 	String getCode(cdsDt.Code dCode, String dTitle) {
 		if (dCode==null) return "";
 
-		String ret = StringUtils.filled(dTitle) ? dTitle+" -" : "";
+		String ret = Util.filled(dTitle) ? dTitle+" -" : "";
 		ret = Util.appendLine(ret, "Coding System: ", dCode.getCodingSystem());
 		ret = Util.appendLine(ret, "Value: ",         dCode.getValue());
 		ret = Util.appendLine(ret, "Description: ",   dCode.getDescription());
@@ -1795,14 +1665,14 @@ import cds.RiskFactorsDocument.RiskFactors;
 		} else {
 			pd.getExternalProviderWithNames(firstName, lastName);
 		}
-		if (StringUtils.filled(pd.getProviderNo())) return pd;
+		if (Util.filled(pd.getProviderNo())) return pd;
 		else return null;
 	}
 
 	ProviderData getProviderByOhip(String OhipNo) {
 		ProviderData pd = new ProviderData();
 		pd.getProviderWithOHIP(OhipNo);
-		if (StringUtils.filled(pd.getProviderNo())) return pd;
+		if (Util.filled(pd.getProviderNo())) return pd;
 		else return null;
 	}
 
@@ -1818,7 +1688,7 @@ import cds.RiskFactorsDocument.RiskFactors;
 		cdsDt.ResidualInformation.DataElement[] resData = resInfo.getDataElementArray();
 		if (resData.length>0) ret = "- Residual Information -";
 		for (int i=0; i<resData.length; i++) {
-			if (StringUtils.filled(resData[i].getName())) {
+			if (Util.filled(resData[i].getName())) {
 				ret = Util.appendLine(ret, "Data Name: ",   resData[i].getName());
 				ret = Util.appendLine(ret, "Description: ", resData[i].getDescription());
 				ret = Util.appendLine(ret, "Data Type: ",   resData[i].getDataType());
@@ -1886,19 +1756,15 @@ import cds.RiskFactorsDocument.RiskFactors;
 		dinCHOLERA.add("00074969");
 		dinCHOLERA.add("02247208");
 
-		if (dinFlu.contains(StringUtils.noNull(imCode.getValue()))) return "Flu";
-		if (dinHebAB.contains(StringUtils.noNull(imCode.getValue()))) return "HebAB";
-		if (dinCHOLERA.contains(StringUtils.noNull(imCode.getValue()))) return "CHOLERA";
+		if (dinFlu.contains(Util.noNull(imCode.getValue()))) return "Flu";
+		if (dinHebAB.contains(Util.noNull(imCode.getValue()))) return "HebAB";
+		if (dinCHOLERA.contains(Util.noNull(imCode.getValue()))) return "CHOLERA";
 		return "OtherA";
 	}
 
 	String[] packMsgs(ArrayList err_demo, ArrayList err_data, ArrayList err_summ, ArrayList err_othe, ArrayList err_note, ArrayList warnings) {
 		if (!(err_demo.isEmpty() && err_data.isEmpty() && err_summ.isEmpty() && err_othe.isEmpty() && err_note.isEmpty())) {
-			String title = "Fail to import patient "+patientName;
-			if (StringUtils.filled(demographicNo)) {
-				title = "Patient "+patientName+" (Demographic no="+demographicNo+")";
-			}
-			warnings.add(fillUp("---- "+title, '-', 150));
+			warnings.add(fillUp("---- Demographic no. "+demographicNo+" ", '-', 150));
 		}
 		warnings.addAll(err_demo);
 		warnings.addAll(err_data);
@@ -1935,7 +1801,7 @@ import cds.RiskFactorsDocument.RiskFactors;
 	}
 
 	String procFreq(String freqCode) {
-		if (StringUtils.empty(freqCode)) return "";
+		if (Util.empty(freqCode)) return "";
 		freqCode = freqCode.toUpperCase();
 		freqCode = freqCode.replace(".","");
 		freqCode = freqCode.replace(" ","");
@@ -1947,7 +1813,7 @@ import cds.RiskFactorsDocument.RiskFactors;
 	}
 
 	void saveLinkNote(CaseManagementNote cmn, Integer tableName, Long tableId) {
-		if (StringUtils.filled(cmn.getNote())) {
+		if (Util.filled(cmn.getNote())) {
 			caseManagementManager.saveNoteSimple(cmn);    //new note id created
 
 			CaseManagementNoteLink cml = new CaseManagementNoteLink();
@@ -1959,10 +1825,10 @@ import cds.RiskFactorsDocument.RiskFactors;
 	}
 
 	void saveMeasurementsExt(Long measurementId, String key, String val) throws SQLException {
-		if (measurementId!=null && StringUtils.filled(key)) {
+		if (measurementId!=null && Util.filled(key)) {
 			MeasurementsExt mx = new MeasurementsExt(measurementId.intValue());
 			mx.setKeyVal(key);
-			mx.setVal(StringUtils.noNull(val));
+			mx.setVal(Util.noNull(val));
 			ImportExportMeasurements.saveMeasurementsExt(mx);
 		}
 	}
@@ -1970,9 +1836,9 @@ import cds.RiskFactorsDocument.RiskFactors;
 	String updateExternalProviderNames(String firstName, String lastName, ProviderData pd) {
 		// For external provider only
 		if (pd.getProviderNo().charAt(0)=='-') {
-			if (StringUtils.empty(pd.getFirst_name()) && StringUtils.empty(pd.getLast_name())) {
-				pd.setFirst_name(StringUtils.noNull(firstName));
-				pd.setLast_name(StringUtils.noNull(lastName));
+			if (Util.empty(pd.getFirst_name()) && Util.empty(pd.getLast_name())) {
+				pd.setFirst_name(Util.noNull(firstName));
+				pd.setLast_name(Util.noNull(lastName));
 			}
 		}
 		return pd.getProviderNo();
@@ -1981,8 +1847,8 @@ import cds.RiskFactorsDocument.RiskFactors;
 	String updateExternalProviderOhip(String ohipNo, ProviderData pd) {
 		// For external provider only
 		if (pd.getProviderNo().charAt(0)=='-') {
-			if (StringUtils.empty(pd.getOhip_no())) {
-				pd.setOhip_no(StringUtils.noNull(ohipNo));
+			if (Util.empty(pd.getOhip_no())) {
+				pd.setOhip_no(Util.noNull(ohipNo));
 			}
 		}
 		return pd.getProviderNo();
@@ -1996,7 +1862,7 @@ import cds.RiskFactorsDocument.RiskFactors;
 		if (pd!=null) return updateExternalProviderOhip(ohipNo, pd);
 
 		//Write as a new provider
-		if (StringUtils.empty(firstName) && StringUtils.empty(lastName) && StringUtils.empty(ohipNo)) return ""; //no information at all!
+		if (Util.empty(firstName) && Util.empty(lastName) && Util.empty(ohipNo)) return ""; //no information at all!
 		pd = new ProviderData();
 		pd.addExternalProvider(firstName, lastName, ohipNo);
 		return pd.getProviderNo();
@@ -2030,8 +1896,8 @@ import cds.RiskFactorsDocument.RiskFactors;
 		admissionDao.saveAdmission(admission);
 	}
 
-	String getLabDline(LaboratoryResults labRes, int timeShiftInDays){
-		StringBuilder s = new StringBuilder();
+	String getLabDline(LaboratoryResults labRes){
+		StringBuffer s = new StringBuffer();
 		appendIfNotNull(s,"LaboratoryName",labRes.getLaboratoryName());
 		appendIfNotNull(s,"TestNameReportedByLab", labRes.getTestNameReportedByLab());
 		appendIfNotNull(s,"LabTestCode",labRes.getLabTestCode());
@@ -2050,13 +1916,13 @@ import cds.RiskFactorsDocument.RiskFactors;
 		}
 
 		//<xs:element name="LabRequisitionDateTime" type="cdsd:dateTimeYYYYMMDDHHMM" minOccurs="0"/>
-		appendIfNotNull(s,"LabRequisitionDateTime",dateFullPartial(labRes.getLabRequisitionDateTime (), timeShiftInDays));
+		appendIfNotNull(s,"LabRequisitionDateTime",dateFullPartial(labRes.getLabRequisitionDateTime ()));
 		//<xs:element name="CollectionDateTime" type="cdsd:dateTimeYYYYMMDDHHMM"/>
-		appendIfNotNull(s,"CollectionDateTime",dateFullPartial( labRes.getCollectionDateTime(), timeShiftInDays));
+		appendIfNotNull(s,"CollectionDateTime",dateFullPartial( labRes.getCollectionDateTime()));
 		//<xs:element name="DateTimeResultReceivedByCMS" type="cdsd:dateTimeYYYYMMDDHHMM" minOccurs="0"/>
-		appendIfNotNull(s,"DateTimeResultReceivedByCMS",dateFullPartial(labRes.getDateTimeResultReceivedByCMS(), timeShiftInDays));
+		appendIfNotNull(s,"DateTimeResultReceivedByCMS",dateFullPartial(labRes.getDateTimeResultReceivedByCMS()));
 		//<xs:element name="DateTimeResultReviewed" type="cdsd:dateTimeYYYYMMDDHHMM" minOccurs="0"/>
-		appendIfNotNull(s,"DateTimeResultReviewed",dateFullPartial(labRes.getDateTimeResultReviewed(), timeShiftInDays));
+		appendIfNotNull(s,"DateTimeResultReviewed",dateFullPartial(labRes.getDateTimeResultReviewed()));
 
 		if (labRes.getResultReviewer() != null){ //ResultReviewer){
 			//<xs:element name="ResultReviewer" type="cdsd:ohipBillingNumber" minOccurs="0"/>
@@ -2102,7 +1968,7 @@ import cds.RiskFactorsDocument.RiskFactors;
 		return s.toString();
 	}
 
-	void appendIfNotNull(StringBuilder s, String name, String object){
+	void appendIfNotNull(StringBuffer s, String name, String object){
 		if (object != null){
 			s.append(name+": "+object+"\n");
 		}

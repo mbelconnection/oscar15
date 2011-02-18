@@ -5,7 +5,6 @@
 package oscar.oscarRx.service;
 
 import java.util.List;
-
 import oscar.oscarRx.model.Favorites;
 
 /**

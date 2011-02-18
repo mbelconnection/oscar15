@@ -29,7 +29,7 @@ String service_form="", service_name="";
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -62,6 +62,7 @@ function refresh() {
 
 //-->
 </script>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-2">
 </head>
 
 <body leftmargin="0" topmargin="5" rightmargin="0">

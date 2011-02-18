@@ -30,7 +30,6 @@ import java.util.Vector;
 
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarEncounter.oscarMeasurements.pageUtil.EctValidation;
@@ -90,7 +89,7 @@ public class WriteNewMeasurements {
     static private void preProcess(Vector measures) {
         //fills in required values
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs = null;
             for (int i=0; i<measures.size(); i++) {
                 Hashtable curmeasure = (Hashtable) measures.get(i);
@@ -103,9 +102,9 @@ public class WriteNewMeasurements {
                 String sql;
                 if (measuringInst == null || measuringInst.equals("")) {
                     sql = "SELECT measuringInstruction FROM measurementType WHERE type='" + type + "'";
-                    rs = DBHandler.GetSQL(sql);
+                    rs = db.GetSQL(sql);
                     if (rs.next()) {
-                        measuringInst = oscar.Misc.getString(rs, "measuringInstruction");
+                        measuringInst = db.getString(rs,"measuringInstruction");
                         curmeasure.put("measuringInstruction", measuringInst);
                         rs.close();
                     } else {
@@ -123,13 +122,13 @@ public class WriteNewMeasurements {
                 }
                 curmeasure.put("dateEntered", dateEntered);
             }
-        } catch (SQLException sqe) { MiscUtils.getLogger().error("Error", sqe); }
+        } catch (SQLException sqe) { sqe.printStackTrace(); }
     }
     
     static private ActionMessages validate(Vector measures, String demographicNo) {
         ActionMessages errors = new ActionMessages();
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             EctValidation ectValidation = new EctValidation();
             ResultSet rs;
             boolean valid = true;
@@ -139,7 +138,9 @@ public class WriteNewMeasurements {
                 String inputValue = (String) measure.get("value");
                 String dateObserved = (String) measure.get("dateObserved");
                 String comments = (String) measure.get("comments");
+                String dateEntered = (String) measure.get("dateEntered");
                 String mInstrc, regCharExp;
+                String msg = null;
                 String regExp = null;
                 double dMax = 0;
                 double dMin = 0;
@@ -211,20 +212,20 @@ public class WriteNewMeasurements {
                 String sql = "SELECT * FROM measurements WHERE demographicNo='"+demographicNo+ "' AND dataField='"+inputValue
                 +"' AND measuringInstruction='" + mInstrc + "' AND comments='" + comments
                 + "' AND dateObserved='" + dateObserved + "'";
-                rs = DBHandler.GetSQL(sql);
+                rs = db.GetSQL(sql);
                 if(rs.next()) {
                     measures.remove(i);
                     i--;
                     continue;
                 }
             }
-        } catch (SQLException sqe) { MiscUtils.getLogger().error("Error", sqe); }
+        } catch (SQLException sqe) { sqe.printStackTrace(); }
         return errors;   
     }
 
     static public void write(Vector measures, String demographicNo, String providerNo) {
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             for (int i=0; i<measures.size(); i++) {
                 Hashtable measure = (Hashtable) measures.get(i);
 
@@ -239,16 +240,16 @@ public class WriteNewMeasurements {
                 +"(type, demographicNo, providerNo, dataField, measuringInstruction, comments, dateObserved, dateEntered)"
                 +" VALUES ('"+inputType+"','"+demographicNo+"','"+providerNo+"','"+inputValue+"','"
                 + mInstrc+"','"+comments+"','"+dateObserved+"','"+dateEntered+"')";
-                MiscUtils.getLogger().debug("SQL measure ====" + sql);
-                DBHandler.RunSQL(sql);
+                System.out.println("SQL measure ====" + sql);
+                db.RunSQL(sql);
             }
         }
-        catch(SQLException e) { MiscUtils.getLogger().error("Error", e); }
+        catch(SQLException e) { e.printStackTrace(); }
     }
     
     static public void write(Hashtable measure, String demographicNo, String providerNo) {
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String inputValue = (String) measure.get("value");
             String inputType = (String) measure.get("type");
             String mInstrc = (String) measure.get("measuringInstruction");
@@ -260,10 +261,10 @@ public class WriteNewMeasurements {
             +"(type, demographicNo, providerNo, dataField, measuringInstruction, comments, dateObserved, dateEntered)"
             +" VALUES ('"+inputType+"','"+demographicNo+"','"+providerNo+"','"+inputValue+"','"
             + mInstrc+"','"+comments+"','"+dateObserved+"','"+dateEntered+"')";
-            MiscUtils.getLogger().debug("SQL measure ====" + sql);
-            DBHandler.RunSQL(sql);
+            System.out.println("SQL measure ====" + sql);
+            db.RunSQL(sql);
         }
-        catch(SQLException e) { MiscUtils.getLogger().error("Error", e); }
+        catch(SQLException e) { e.printStackTrace(); }
     }
     
      public void write(final String followUpType, final String followUpValue, final String demographicNo, final String providerNo,final java.util.Date dateObserved,final String comment ) {        

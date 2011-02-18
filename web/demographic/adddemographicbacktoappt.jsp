@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -71,6 +71,7 @@
     ResultSet rs = apptMainBean.queryResults(paramName, "search_lastfirstnamedob");
     if(rs.next()) { 
       out.println("!!!!!!!!!!!<br><font color='red'>You may have the CPP record already!!! <BR>Please search it first or add it at 'Search/Add Patients'.</font><br>******************");
+  		apptMainBean.closePstmtConn();
       return;
     }
    
@@ -89,6 +90,7 @@
 <%  
   if(true) {
     out.clear();
+    //System.out.println("appointmentcontrol.jsp: -------- ");
     pageContext.forward("../appointment/editappointmentfromcpp.jsp?name="+name+"&cpp_id="+cpp_id); //forward request&response to the target page
     return;
   }
@@ -99,4 +101,5 @@
 </p>
 <%  
   }
+  apptMainBean.closePstmtConn();
 %>

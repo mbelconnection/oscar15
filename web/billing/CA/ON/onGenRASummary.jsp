@@ -24,12 +24,12 @@ if(session.getAttribute("user") == null) response.sendRedirect("../../../logout.
 	import="java.math.*, java.util.*, java.io.*, java.sql.*, java.net.*,oscar.*, oscar.util.*, oscar.MyDateFormat"
 	errorPage="errorpage.jsp"%>
 <%@ page import="oscar.oscarBilling.ca.on.pageUtil.*"%>
-
+<%@ include file="../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
 <jsp:useBean id="billingLocalInvNoBean" class="java.util.Properties"
 	scope="page" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 
 <html>
 <head>
@@ -585,6 +585,9 @@ param2[0] = content;
 param2[1] = raNo; 
 
 recordAffected = apptMainBean.queryExecuteUpdate(param2,"update_rahd_content");
+
+if (recordAffected != 1) System.out.println("genONRASummary.jsp: update_rahd_content - wrong!");
+apptMainBean.closePstmtConn();
 
 %>
 	

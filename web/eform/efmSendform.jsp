@@ -3,6 +3,8 @@
     Created on : Sep 3, 2009, 12:53:57 PM
     Author     : jaygallagher
 --%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils,org.oscarehr.util.OntarioMD,java.util.Hashtable"%><%@page import="org.springframework.web.context.WebApplicationContext,org.oscarehr.common.dao.*,org.oscarehr.common.model.*"%><%
 
     WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
@@ -41,6 +43,7 @@
 -->
 <html>
     <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>myDrugref login details</title>
         <link rel="stylesheet" href="<%=request.getContextPath()%>/share/css/OscarStandardLayout.css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/share/css/eformStyle.css">

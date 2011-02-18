@@ -33,23 +33,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.oscarehr.PMmodule.common.PassIntakeFormVars;
+import org.oscarehr.common.model.Demographic;
 import org.oscarehr.PMmodule.model.Formintakea;
 import org.oscarehr.PMmodule.service.ClientManager;
 import org.oscarehr.PMmodule.service.IntakeAManager;
 import org.oscarehr.PMmodule.utility.DateUtils;
 import org.oscarehr.PMmodule.utility.UtilDateUtilities;
 import org.oscarehr.PMmodule.utility.Utility;
-import org.oscarehr.common.model.Demographic;
-import org.oscarehr.util.MiscUtils;
 
 public class IntakeAReport1Action extends BaseAction {
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(IntakeAReport1Action.class);
 
     HttpSession session = null;
 
@@ -177,14 +176,14 @@ public class IntakeAReport1Action extends BaseAction {
 
         for (int i = 0; i < intakeAs.size(); i++) {
             demographicNo = ((Formintakea) intakeAs.get(i)).getDemographicNo().longValue();
-
+            // System.out.println("here is loop " + i+" client NO : " + demographicNo);
             if (prevDemoNo != demographicNo) {
                 Demographic demographic = clientMgr.getClientByDemographicNo(String.valueOf(demographicNo));
                 String clientStatus = (String) demographic.getPatientStatus();
                 if (clientStatus == null || clientStatus == "" || !clientStatus.equals("IN")) {
-
+                    // System.out.println("here is loop " + i+" client NO : " + demographicNo);
                     filteredIntakAs.add(intakeAs.get(i));
-
+                    // System.out.println("here is loop " + i+" client NO : " + demographicNo);
                 }
             }
 
@@ -292,12 +291,8 @@ public class IntakeAReport1Action extends BaseAction {
         while (listIterator.hasNext()) {
             intakeA = (Formintakea) listIterator.next();
             try {
-            	String yearTmp=StringUtils.trimToNull(intakeA.getYear());
-            	String monthTmp=StringUtils.trimToNull(intakeA.getMonth());
-            	String dayTmp=StringUtils.trimToNull(intakeA.getDay());
-            	
-                if ( yearTmp!= null && monthTmp != null && dayTmp != null) {
-                    dob = UtilDateUtilities.calcAge(yearTmp, monthTmp, dayTmp);
+                if (intakeA.getYear() != null && intakeA.getMonth() != null && intakeA.getDay() != null && !intakeA.getYear().equals("") && !intakeA.getYear().equals("0001") && !intakeA.getMonth().equals("") && !intakeA.getDay().equals("")) {
+                    dob = UtilDateUtilities.calcAge(intakeA.getYear(), intakeA.getMonth(), intakeA.getDay());
                     totalDOB += dob;
                     num++;
                 }

@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -31,12 +31,12 @@
 <%@ page
 	import="java.math.*, java.util.*, java.io.*, java.sql.*, java.net.*, oscar.*, oscar.util.*, oscar.MyDateFormat"
 	errorPage="errorpage.jsp"%>
-
+<%@ include file="../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
 <jsp:useBean id="documentBean" class="oscar.DocumentBean"
 	scope="request" />
-<%@ include file="../billing/dbBilling.jspf"%>
+<%@ include file="../billing/dbBilling.jsp"%>
 
 <%  
 GregorianCalendar now=new GregorianCalendar();

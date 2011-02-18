@@ -18,13 +18,13 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
 --%>
 
-<%@page import="java.util.HashMap, oscar.log.*"
+<%@ page language="java" import="java.util.HashMap, oscar.log.*"
 	errorPage="errorpage.jsp"%>
 <%
   if(oscar.oscarSecurity.CRHelper.isCRFrameworkEnabled()) net.sf.cookierevolver.CRFactory.getManager().recordLogout(request);
@@ -32,6 +32,8 @@
     Object user = session.getAttribute("user");
     if (user != null) {
       //HashMap hash=(HashMap)application.getAttribute("monitor");
+      //System.out.println("user : " +user);
+      //hash.remove(user);
       session.invalidate();
       request.getSession();
       String ip = request.getRemoteAddr();

@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -50,7 +50,6 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.apache.struts.upload.FormFile;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 import oscar.oscarBilling.ca.on.bean.BillingClaimBatchAcknowledgementReportBeanHandler;
@@ -106,9 +105,9 @@ public class BillingDocumentErrorReportUploadAction extends Action {
 			String place = props.getProperty("DOCUMENT_DIR");
 
 			if (!place.endsWith("/"))
-				place = new StringBuilder(place).insert(place.length(), "/").toString();
+				place = new StringBuffer(place).insert(place.length(), "/").toString();
 			retVal = place + file.getFileName();
-			MiscUtils.getLogger().debug(retVal);
+			System.out.println(retVal);
 			// write the file to the file specified
 			OutputStream bos = new FileOutputStream(retVal);
 			int bytesRead = 0;
@@ -120,12 +119,14 @@ public class BillingDocumentErrorReportUploadAction extends Action {
 
 			// close the stream
 			stream.close();
-		} catch (FileNotFoundException e) {
-			MiscUtils.getLogger().error("File not found", e);
+		} catch (FileNotFoundException fnfe) {
+
+			System.out.println("File not found");
+			fnfe.printStackTrace();
 			return isAdded = false;
 
 		} catch (IOException ioe) {
-			MiscUtils.getLogger().error("Error", ioe);
+			ioe.printStackTrace();
 			return isAdded = false;
 		}
 
@@ -142,12 +143,12 @@ public class BillingDocumentErrorReportUploadAction extends Action {
 	 */
 	private void write2Database(String fileName) {
 		try {
-			
+			DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 			String sql = "INSERT INTO measurementCSSLocation(location) VALUES('" + fileName + "')";
-			MiscUtils.getLogger().debug("Sql Statement: " + sql);
-			DBHandler.RunSQL(sql);
+			System.out.println("Sql Statement: " + sql);
+			db.RunSQL(sql);
 		} catch (SQLException e) {
-			MiscUtils.getLogger().error("Error", e);
+			System.out.println(e.getMessage());
 		}
 	}
 
@@ -167,9 +168,9 @@ public class BillingDocumentErrorReportUploadAction extends Action {
 			String filepath = props.getProperty("DOCUMENT_DIR");
 			boolean bNewBilling = props.getProperty("isNewONbilling", "").equals("true") ? true : false;
 			if (!filepath.endsWith("/"))
-				filepath = new StringBuilder(filepath).insert(filepath.length(), "/").toString();
+				filepath = new StringBuffer(filepath).insert(filepath.length(), "/").toString();
 			FileInputStream file = new FileInputStream(filepath + fileName);
-			MiscUtils.getLogger().debug("file path: " + filepath + fileName);
+			System.out.println("file path: " + filepath + fileName);
 			// Assign associated report Name
 			ArrayList messages = new ArrayList();
 			String ReportName = "";
@@ -202,12 +203,12 @@ public class BillingDocumentErrorReportUploadAction extends Action {
 			request.setAttribute("ReportName", ReportName);
 		} catch (FileNotFoundException fnfe) {
 
-			MiscUtils.getLogger().debug("File not found");
-			MiscUtils.getLogger().error("Error", fnfe);
+			System.out.println("File not found");
+			fnfe.printStackTrace();
 			return isGot = false;
 
 		} catch (IOException ioe) {
-			MiscUtils.getLogger().error("Error", ioe);
+			ioe.printStackTrace();
 			return isGot = false;
 		}
 		return isGot;
@@ -288,7 +289,7 @@ public class BillingDocumentErrorReportUploadAction extends Action {
 			}
 
 		} catch (IOException ioe) {
-			MiscUtils.getLogger().error("Error", ioe);
+			ioe.printStackTrace();
 		} catch (StringIndexOutOfBoundsException ioe) {
 			reportXIsGenerated = false;
 		}
@@ -306,7 +307,7 @@ public class BillingDocumentErrorReportUploadAction extends Action {
 		BillingEDTOBECOutputSpecificationBeanHandler hd = new BillingEDTOBECOutputSpecificationBeanHandler(file);
 		Vector outputSpecVector = hd.getEDTOBECOutputSecifiationBeanVector();
 		try {
-			
+			DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
 			for (int i = 0; i < outputSpecVector.size(); i++) {
 				BillingEDTOBECOutputSpecificationBean bean = (BillingEDTOBECOutputSpecificationBean) outputSpecVector
@@ -322,27 +323,27 @@ public class BillingDocumentErrorReportUploadAction extends Action {
 				if (responseCodeNum < 50 || responseCodeNum > 59) {
 
 					String sql = "SELECT * FROM batchEligibility where responseCode='" + responseCode + "'";
-					ResultSet rs = DBHandler.GetSQL(sql);
+					ResultSet rs = db.GetSQL(sql);
 
 					String sqlDemo = "SELECT * FROM demographic WHERE hin='" + hin + "'";
-					ResultSet rsDemo = DBHandler.GetSQL(sqlDemo);
+					ResultSet rsDemo = db.GetSQL(sqlDemo);
 
 					if (rsDemo.next()) {
 						if (rsDemo.getString("ver").compareTo(bean.getVersion()) == 0) {
 							String sqlVer = "UPDATE demographic SET ver ='##' WHERE hin='" + hin + "'";
-							DBHandler.RunSQL(sqlVer);
+							db.RunSQL(sqlVer);
 							String sqlAlert = "SELECT * FROM demographiccust where demographic_no ='"
 									+ rsDemo.getString("demographic_no") + "'";
-							MiscUtils.getLogger().debug("Select Demo sql: " + sqlAlert);
-							ResultSet rsAlert = DBHandler.GetSQL(sqlAlert);
+							System.out.println("Select Demo sql: " + sqlAlert);
+							ResultSet rsAlert = db.GetSQL(sqlAlert);
 							if (rsAlert.next() && rs.next()) {
 								String newAlert = rsAlert.getString("cust3") + "\n" + "Invalid old version code: "                                                                                
 										+ bean.getVersion() + "\nReason: " + rs.getString("MOHResponse") + "- "
 										+ rs.getString("reason") + "\nResponse Code: " + responseCode;
 								String newAlertSql = "UPDATE demographiccust SET cust3 = '" + newAlert
 										+ "' where demographic_no='" + rsDemo.getString("demographic_no") + "'";
-								MiscUtils.getLogger().debug("Update alert msg: " + newAlertSql);
-								DBHandler.RunSQL(newAlertSql);
+								System.out.println("Update alert msg: " + newAlertSql);
+								db.RunSQL(newAlertSql);
 							}
 							rsAlert.close();
 						}
@@ -352,7 +353,7 @@ public class BillingDocumentErrorReportUploadAction extends Action {
 				}
 			}
 		} catch (SQLException e) {
-			MiscUtils.getLogger().error("Error", e);
+			System.out.println(e.getMessage());
 		}
 
 		return hd;

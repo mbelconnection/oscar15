@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -38,20 +38,20 @@ public class FrmAdfV2Record extends FrmRecord {
 		Properties props = new Properties();
 
 		if (existingID <= 0) {
-			
+			DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 			String sql =
 				"SELECT demographic_no, last_name, first_name, sex, address, city, province, postal, phone, phone2, year_of_birth, month_of_birth, date_of_birth, hin FROM demographic WHERE demographic_no = "
 				+ demographicNo;
-			ResultSet rs = DBHandler.GetSQL(sql);
+			ResultSet rs = db.GetSQL(sql);
 			if (rs.next()) {
 				java.util.Date date =
 					UtilDateUtilities.calcDate(
-							oscar.Misc.getString(rs, "year_of_birth"),
-							oscar.Misc.getString(rs, "month_of_birth"),
-							oscar.Misc.getString(rs, "date_of_birth"));
+							db.getString(rs,"year_of_birth"),
+							db.getString(rs,"month_of_birth"),
+							db.getString(rs,"date_of_birth"));
 				props.setProperty(
 						"demographic_no",
-						oscar.Misc.getString(rs, "demographic_no"));
+						db.getString(rs,"demographic_no"));
 				props.setProperty(
 						"formCreated",
 						UtilDateUtilities.DateToString(
@@ -59,24 +59,24 @@ public class FrmAdfV2Record extends FrmRecord {
 								_dateFormat));
 				//props.setProperty("formEdited",
 				// UtilDateUtilities.DateToString(UtilDateUtilities.Today(),_dateFormat));
-				props.setProperty("c_patientname", oscar.Misc.getString(rs, "last_name") + ", " + oscar.Misc.getString(rs, "first_name"));
+				props.setProperty("c_patientname", db.getString(rs,"last_name") + ", " + db.getString(rs,"first_name"));
 				props.setProperty(
 						"c_address",
-						oscar.Misc.getString(rs, "address")
+						db.getString(rs,"address")
 						+ ", "
-						+ oscar.Misc.getString(rs, "city")
+						+ db.getString(rs,"city")
 						+ ", "
-						+ oscar.Misc.getString(rs, "province")
+						+ db.getString(rs,"province")
 						+ " "
-						+ oscar.Misc.getString(rs, "postal"));
-				props.setProperty("c_phn", oscar.Misc.getString(rs, "hin"));
+						+ db.getString(rs,"postal"));
+				props.setProperty("c_phn", db.getString(rs,"hin"));
 				props.setProperty(
 						"pg1_dateOfBirth",
 						UtilDateUtilities.DateToString(date, _dateFormat));
 				props.setProperty(
 						"pg1_age",
 						String.valueOf(UtilDateUtilities.calcAge(date)));
-				props.setProperty("c_phone", oscar.Misc.getString(rs, "phone"));
+				props.setProperty("c_phone", db.getString(rs,"phone"));
 				props.setProperty(
 						"sigDate",
 						UtilDateUtilities.DateToString(

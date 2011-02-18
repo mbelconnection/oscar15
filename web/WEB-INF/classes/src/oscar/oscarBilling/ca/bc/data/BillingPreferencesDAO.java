@@ -28,8 +28,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 import oscar.util.SqlUtils;
 
@@ -60,35 +58,37 @@ public class BillingPreferencesDAO {
    * @return List
    */
   public void saveUserPreferences(BillingPreference pref) {
-    
+    DBHandler db = null;
     ResultSet rs = null;
     String recordExistsQRY =
         "SELECT * from billing_preferences where providerNo = " +
         pref.getProviderNo();
     try {
-      
-      rs = DBHandler.GetSQL(recordExistsQRY);
+      db = new DBHandler(DBHandler.OSCAR_DATA);
+      rs = db.GetSQL(recordExistsQRY);
       if (rs.next()) {
         String updateSQL = "update billing_preferences set referral = " +
             pref.getReferral() + ",defaultPayeeNo = " + pref.getDefaultPayeeNo() +
             " where providerNo = " + pref.getProviderNo();
-        DBHandler.RunSQL(updateSQL);
+        db.RunSQL(updateSQL);
       }
       else {
         String insertSQL =
             "insert into billing_preferences(referral,providerNo,defaultPayeeNo) values(" +
             pref.getReferral() + "," + pref.getProviderNo() + "," + pref.getDefaultPayeeNo() + ")";
-        DBHandler.RunSQL(insertSQL);
+        db.RunSQL(insertSQL);
       }
     }
-    catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+    catch (SQLException ex) {
+      ex.printStackTrace();
     }
     finally {
       if (rs != null) {
         try {
           rs.close();
         }
-        catch (SQLException ex2) {MiscUtils.getLogger().error("Error", ex2);
+        catch (SQLException ex2) {
+          ex2.printStackTrace();
         }
       }
     }

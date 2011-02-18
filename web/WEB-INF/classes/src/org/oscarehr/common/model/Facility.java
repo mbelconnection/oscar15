@@ -9,13 +9,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PreUpdate;
 import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 @Entity
 public class Facility extends AbstractModel<Integer> implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 	private String name;
 	private String description;
@@ -34,13 +33,8 @@ public class Facility extends AbstractModel<Integer> implements Serializable {
 	private boolean enableHealthNumberRegistry = true;
 	private boolean allowSims = true;
 	private boolean enableDigitalSignatures = false;
-	private boolean enableOcanForms = false;
-	private boolean enableAnonymous = false;
-	private String ocanServiceOrgNumber;
-	private boolean enableGroupNotes = false;
-
-
-	@Temporal(TemporalType.TIMESTAMP)
+	private boolean enableCdsForms = false; 
+        @Temporal(javax.persistence.TemporalType.DATE)
 	private Date lastUpdated=new Date();
 	
 	
@@ -68,8 +62,7 @@ public class Facility extends AbstractModel<Integer> implements Serializable {
 		this.description = description;
 	}
 
-	@Override
-    public Integer getId() {
+	public Integer getId() {
 		return id;
 	}
 
@@ -205,42 +198,32 @@ public class Facility extends AbstractModel<Integer> implements Serializable {
 		return lastUpdated;
 	}
 
-	public boolean isEnableOcanForms() {
-    	return enableOcanForms;
+	public boolean isEnableCdsForms() {
+    	return enableCdsForms;
     }
 
-	public void setEnableOcanForms(boolean enableOcanForms) {
-    	this.enableOcanForms = enableOcanForms;
+	public void setEnableCdsForms(boolean enableCdsForms) {
+    	this.enableCdsForms = enableCdsForms;
     }
-	
-	
-	public String getOcanServiceOrgNumber() {
-		return ocanServiceOrgNumber;
-	}
-
-	public void setOcanServiceOrgNumber(String ocanServiceOrgNumber) {
-		this.ocanServiceOrgNumber = ocanServiceOrgNumber;
-	}
 
 	@PreUpdate
 	protected void jpaUpdateLastUpdateTime() {
 		lastUpdated = new Date();
 	}
+	
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
 
-	public boolean isEnableAnonymous() {
-		return enableAnonymous;
+		Facility facility = (Facility) o;
+
+		if (id != null ? !id.equals(facility.id) : facility.id != null) return false;
+
+		return true;
 	}
 
-	public void setEnableAnonymous(boolean enableAnonymous) {
-		this.enableAnonymous = enableAnonymous;
-	}
-
-	public boolean isEnableGroupNotes() {
-		return enableGroupNotes;
-	}
-
-	public void setEnableGroupNotes(boolean enableGroupNotes) {
-		this.enableGroupNotes = enableGroupNotes;
+	public int hashCode() {
+		return (id != null ? id.hashCode() : 0);
 	}
 
 }

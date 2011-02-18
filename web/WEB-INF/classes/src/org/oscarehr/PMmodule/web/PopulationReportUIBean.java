@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.caisi.model.Role;
 import org.oscarehr.PMmodule.dao.ProgramDao;
@@ -46,12 +47,11 @@ import org.oscarehr.common.model.IssueGroup;
 import org.oscarehr.common.model.Provider;
 import org.oscarehr.common.model.SecRole;
 import org.oscarehr.util.EncounterUtil;
-import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 
 public class PopulationReportUIBean {
 
-	private static Logger logger=MiscUtils.getLogger();
+	private static Logger logger=LogManager.getLogger(PopulationReportUIBean.class);
 	private ProgramDao programDao = (ProgramDao) SpringUtils.getBean("programDao");
 	private RoleDAO roleDAO = (RoleDAO) SpringUtils.getBean("roleDAO");
 	private IssueGroupDao issueGroupDao = (IssueGroupDao) SpringUtils.getBean("issueGroupDao");

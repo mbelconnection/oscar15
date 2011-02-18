@@ -66,6 +66,7 @@
 %>
 
 <html:html locale="true">
+<% response.setHeader("Cache-Control","no-cache");%>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <html:base />
@@ -334,12 +335,12 @@ function isformNeeded(){
     document.WCBForm.w_emparea.value = w_emparea;
     document.WCBForm.w_empphone.value = w_empphone;
   }
-  
+
   function billingFormActive(){
      oscarLog("billingFormActive")
       if(window.opener && window.opener.replaceWCB){
           oscarLog("Calling on replaceWCB");
-        window.opener.replaceWCB('1');  
+        window.opener.replaceWCB('1');
       }
       oscarLog("billingFormActiveEnd");
   }
@@ -347,7 +348,7 @@ function isformNeeded(){
   function validateForm(){
 
     //if Check to make sure WCB ID is only numeric
-    var claimNum = document.WCBForm.w_wcbno.value; 
+    var claimNum = document.WCBForm.w_wcbno.value;
     if (claimNum != ""){
          if (!isNumericInt(claimNum)){
             alert("Claim # has to be numeric");
@@ -355,7 +356,7 @@ function isformNeeded(){
             return false;
          }
      }
-    
+
      if(!checkAskiiData(document.getElementById('w_problem'))){
          return false;
      }
@@ -371,7 +372,13 @@ function isformNeeded(){
       return true;
   }
 
-  
+  function grabEnter(event,callb){
+     if( (window.event && window.event.keyCode == 13) || (event && event.which == 13) )  {
+        eval(callb);
+        return false;
+     }
+  }
+
 var WCBFeeItemCall = "popFeeItemList('WCBForm','w_feeitem')";
 var extraFeeItemCall = "popFeeItemList('WCBForm','w_extrafeeitem')";
 var icd9Call   = "popICD9List('WCBForm','w_icd9')";
@@ -436,9 +443,9 @@ String fmtApptDate = fmt.format(new Date());
                     if (WCBCodes.getInstance().isFormNeeded(billingcode)){
                         form.setFormNeeded("1");
                     }
-                }              
+                }
                 %>
-                    
+
 			<td>Form Needed <html:checkbox value="1" property="formNeeded"
 				onclick="isformNeeded();" /></td>
 			<td colspan="1" valign="top" height="25" class="SmallerText"
@@ -735,12 +742,12 @@ String fmtApptDate = fmt.format(new Date());
                             <%if(hideToBill){ %>
                             <hidden name="hideToBill" value="true"/>
                             <%}%>
-                            <input type="submit" name="save" value="Save" />| 
-                            <input type="submit" name="saveAndClose" value="Save and Close" />|  
+                            <input type="submit" name="save" value="Save" />|
+                            <input type="submit" name="saveAndClose" value="Save and Close" />|
                             <%if( !hideToBill){%>
                             <input type="submit" name="saveandbill" value="Save and Bill" />|
-                            <%}%> 
-                            <input type="button" value="Cancel" onClick="window.close();" /> | 
+                            <%}%>
+                            <input type="button" value="Cancel" onClick="window.close();" /> |
                             <input type="button" value="Print" onClick="window.print()" />
                         </td>
 		</tr>

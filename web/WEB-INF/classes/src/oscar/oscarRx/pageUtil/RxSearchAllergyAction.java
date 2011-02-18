@@ -26,6 +26,7 @@ package oscar.oscarRx.pageUtil;
 
 import java.io.IOException;
 import java.util.Hashtable;
+import java.util.Locale;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -36,7 +37,7 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
+import org.apache.struts.util.MessageResources;
 
 import oscar.oscarRx.data.RxAllergyData;
 import oscar.oscarRx.util.RxDrugRef;
@@ -50,7 +51,9 @@ public final class RxSearchAllergyAction extends Action {
     HttpServletResponse response)
     throws IOException, ServletException {
         
-
+        // Extract attributes we will need
+        Locale locale = getLocale(request);
+        MessageResources messages = getResources(request);
         
         // Setup variables
         
@@ -66,6 +69,9 @@ public final class RxSearchAllergyAction extends Action {
         
         ///Search a drug like another one
         
+        java.util.ArrayList brand = new java.util.ArrayList();
+        java.util.ArrayList gen = new java.util.ArrayList();
+        java.util.ArrayList afhcClass = new java.util.ArrayList();
         RxDrugRef drugRef = new RxDrugRef();
         
         java.util.Vector vec    = new java.util.Vector();
@@ -129,7 +135,7 @@ public final class RxSearchAllergyAction extends Action {
                     classVec.add(""+arr[i].getPickID());
                 }
             }else{
-                MiscUtils.getLogger().debug("IM FLAGGING IT AS NOT FOUND");
+                System.out.println("IM FLAGGING IT AS NOT FOUND");
                 itemsFound = false;
                 arr= null;
             }
@@ -144,13 +150,13 @@ public final class RxSearchAllergyAction extends Action {
 
 
                 Hashtable hash ;
-            
+                String compString = null;
                 Vector strVec = null;
-
+                //System.out.println("size of listy_drug_class sending :"+classVec.size()+" returned :"+classVec2.size());
                 if(classVec2!=null) {
                 	for(int j = 0; j < classVec2.size(); j++){
                 
-                    MiscUtils.getLogger().debug("LOOPING");
+                    System.out.println("LOOPING");
                     hash = (java.util.Hashtable) classVec2.get(j);
                     //'id_drug'     'id_class'      'name'
                     String idDrug  = String.valueOf(hash.get("id_drug"));
@@ -159,7 +165,7 @@ public final class RxSearchAllergyAction extends Action {
                     String[] strArr = new String[2];
                     strArr[0] = idClass;
                     strArr[1] = name;
-                    MiscUtils.getLogger().debug(j+" idDrug "+idDrug+" idClass "+idClass+" name "+name);
+                    System.out.println(j+" idDrug "+idDrug+" idClass "+idClass+" name "+name);
                     if(returnHash.containsKey(idDrug)){
                         strVec = (Vector) returnHash.get(idDrug);
                         strVec.add(strArr);
@@ -172,7 +178,7 @@ public final class RxSearchAllergyAction extends Action {
                 }
                 }
             }
-            MiscUtils.getLogger().debug("Sending this many vector of this size back "+returnHash.values().size());
+            System.out.println("Sending this many vector of this size back "+returnHash.values().size());
 
             if(arr.length>0) {
                 request.setAttribute("allergies", arr);

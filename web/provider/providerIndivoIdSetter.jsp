@@ -18,11 +18,15 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
---><%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
+-->
+
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+<%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ page import="oscar.oscarProvider.data.*"%>
 
@@ -43,6 +47,7 @@ String domain = "@myoscar.org";
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <html:base />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title><bean:message key="provider.setMyOscarLogin.title" /></title>
 
 <link rel="stylesheet" type="text/css"
@@ -76,7 +81,8 @@ String domain = "@myoscar.org";
 	<tr>
 		<td class="MainTableLeftColumn">&nbsp;</td>
 		<td class="MainTableRightColumn"><html:errors /> <%
-              String login = ProviderMyOscarIdData.getMyOscarId(curUser_no);
+              ProviderMyOscarIdData myOscarLogin = new ProviderMyOscarIdData(curUser_no);
+              String login = myOscarLogin.getMyOscarId();
                int atsign = login.indexOf("@");
                if( atsign > -1 )
                    login = login.substring(0,atsign);

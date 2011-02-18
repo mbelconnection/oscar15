@@ -17,7 +17,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -28,11 +28,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
-
 public class EctFileUtil {
-    private static Logger logger=MiscUtils.getLogger(); 
+    
     
     public String[] loadData(String fileName,String path){
         int s = 50;
@@ -50,7 +47,7 @@ public class EctFileUtil {
                 c[i]=bufReader.readLine();
             }
         }catch (IOException ee){
-            logger.error("houston, we have a problem: ", ee);
+            System.err.println("houston, we have a problem: "+ee);
             return c;
         }
         

@@ -503,17 +503,4 @@ public class AdmissionManager {
         
         return(false);
     }
-    
-    public List getActiveAnonymousAdmissions() {
-    	return dao.getActiveAnonymousAdmissions();
-    }
-    
-    public boolean wasInProgram(Integer programId, Integer clientId) {
-    	if(dao.getAdmission(programId, clientId)!=null)
-    		return true;
-    	else
-    		return false;
-    
-    }
 }
-

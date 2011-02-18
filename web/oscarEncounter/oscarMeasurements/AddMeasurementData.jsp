@@ -23,7 +23,7 @@
  * Ontario, Canada 
  */
 -->
-<%@page import="oscar.oscarDemographic.data.*,java.util.*,oscar.oscarPrevention.*,oscar.oscarProvider.data.*,oscar.util.*,oscar.oscarEncounter.oscarMeasurements.*,oscar.oscarEncounter.oscarMeasurements.bean.*,oscar.oscarEncounter.oscarMeasurements.pageUtil.*"%>
+<%@page  import="oscar.oscarDemographic.data.*,java.util.*,oscar.oscarPrevention.*,oscar.oscarProvider.data.*,oscar.util.*,oscar.oscarEncounter.oscarMeasurements.*,oscar.oscarEncounter.oscarMeasurements.bean.*,oscar.oscarEncounter.oscarMeasurements.pageUtil.*"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.springframework.web.context.WebApplicationContext"%>
 <%@page import="org.oscarehr.common.dao.*,org.oscarehr.common.model.FlowSheetCustomization"%>
@@ -293,10 +293,18 @@ clear: left;
                 
                 EctMeasurementTypesBean mtypeBean = mType.getMeasurementType(measurement);
                 if(ectMeasurementsForm != null && !ectMeasurementsForm.isEmpty()){
+                   //System.out.println("EcTMEasureMentsFoRms "+ectMeasurementsForm.values);
                    h = new Hashtable(ectMeasurementsForm.values);
+                   //System.out.println("EcTMEasureMentsFoRms "+ectMeasurementsForm.getValue("date-"+ctr));
                    prevDate = (String) h.get("date-"+ctr);
                    val = (String) h.get("inputValue-" + ctr);
                    comment = (String) h.get("comments-" + ctr);
+                }else{
+                   System.out.println("EcTMEasureMentsFoRms was null or empty");
+                }
+                System.out.println("state of the hashtable "+h);
+                if (h != null){
+                    //prevDate = (String) h.get("date-"+ctr);
                 }
                 %>
                

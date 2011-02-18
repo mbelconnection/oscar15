@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -26,9 +26,10 @@
 
 <%@ page
 	import="java.math.*, java.util.*, java.io.*, java.sql.*, oscar.*, java.net.*,oscar.MyDateFormat,oscar.log.*"%>
+<%@ include file="../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="dbTicker.jspf"%>
+<%@ include file="dbTicker.jsp"%>
 <%
 String[] param = new String[2];
 String[] temp = request.getParameterValues("checkbox");
@@ -51,7 +52,8 @@ if (temp == null){
         }
         
 
-    }  
+    } 
+    apptMainBean.closePstmtConn();  
     response.sendRedirect("ticklerMain.jsp"); 
 }
 %>

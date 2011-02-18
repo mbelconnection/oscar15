@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -34,7 +34,7 @@ if(session.getValue("user") == null) response.sendRedirect("../../../logout.jsp"
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
 <jsp:useBean id="SxmlMisc" class="oscar.SxmlMisc" scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 
 <%
 String errorMsg = "";
@@ -58,7 +58,7 @@ if (dateBegin.compareTo("") == 0){
 }else{
 	dateRange = " and billing_date >='" + dateBegin + "' and billing_date <='" + dateEnd + "'";
 }
-
+System.out.println(request.getParameter("provider"));
 ResultSet rslocal = apptMainBean.queryResults(request.getParameter("provider"), "search_provider_ohip_dt");
 while(rslocal.next()){
 	proOHIP = rslocal.getString("ohip_no"); 
@@ -85,6 +85,7 @@ while(rslocal.next()){
 	htmlValue += "<font color='red'>" + errorMsg + "</font>" + extract.getHtmlCode()+ "<hr/><br/><br/>";
 }
 rslocal.close();
+apptMainBean.closePstmtConn();
 
 request.setAttribute("html",htmlValue);
 %>

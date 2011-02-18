@@ -22,11 +22,10 @@
 
 package oscar.facility;
 
-import java.util.List;
-
-import org.apache.log4j.Logger;
 import org.oscarehr.common.model.IntegratorControl;
-import org.oscarehr.util.MiscUtils;
+import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 public class IntegratorControlDao extends HibernateDaoSupport {
@@ -34,7 +33,7 @@ public class IntegratorControlDao extends HibernateDaoSupport {
     public static final String REMOVE_DEMO_ID_CTRL = "RemoveDemographicIdentity";
     public static final String UPDATE_INTERVAL_CTRL = "UpdateInterval";
     public static final String INTERVAL_HR = "h";
-    private static final Logger log=MiscUtils.getLogger();
+    private static final Log log = LogFactory.getLog(IntegratorControlDao.class);
 
     public List<IntegratorControl> getAllByFacilityId(Integer facilityId) {
         String queryStr = "FROM IntegratorControl c WHERE c.facilityId = "+facilityId+" ORDER BY c.control";

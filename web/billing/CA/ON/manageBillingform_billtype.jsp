@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -30,10 +30,10 @@ if(session.getValue("user") == null) response.sendRedirect("../../../logout.jsp"
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ page
 	import="java.math.*, java.util.*, java.io.*, java.sql.*, oscar.*, java.net.*,oscar.MyDateFormat"%>
-
+<%@ include file="../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 
 <%
 String type_id = "", type_name="", billtype="no";
@@ -42,6 +42,8 @@ type_name = request.getParameter("type_name");
 
 ResultSet rslocal = apptMainBean.queryResults(type_id, "search_ctlbilltype");
 if (rslocal.next()) billtype = rslocal.getString("billtype");
+
+apptMainBean.closePstmtConn();
 %>
 
 <table width=95%>

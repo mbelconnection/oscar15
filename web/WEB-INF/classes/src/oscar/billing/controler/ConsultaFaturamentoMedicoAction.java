@@ -26,11 +26,11 @@ package oscar.billing.controler;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.billing.dao.AppointmentDAO;
 import oscar.billing.dao.ProviderDAO;
@@ -39,7 +39,7 @@ import oscar.util.OscarAction;
 
 
 public class ConsultaFaturamentoMedicoAction extends OscarAction {
-    private static Logger logger = MiscUtils.getLogger();
+    private static Logger logger = LogManager.getLogger(ConsultaFaturamentoMedicoAction.class);
 
     public ActionForward execute(ActionMapping mapping, ActionForm form,
         HttpServletRequest request, HttpServletResponse response) {
@@ -105,7 +105,8 @@ public class ConsultaFaturamentoMedicoAction extends OscarAction {
         ConsultaFaturamentoMedicoForm form = (ConsultaFaturamentoMedicoForm) actionForm;
 
         try {
-            AppointmentDAO appDAO = new AppointmentDAO();
+            AppointmentDAO appDAO = new AppointmentDAO(getPropertiesDb(
+                        request));
 
             //selecionar procedimentos do formulario XXX
             form.setConsultas(appDAO.listFatDoctor(form.getTipoPesquisa(), form.getMedico()));

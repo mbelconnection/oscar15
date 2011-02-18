@@ -18,18 +18,19 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 -->
+
+<%@ page language="java"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
 
 
-
-<%@page import="org.oscarehr.util.WebUtils"%><html:html locale="true">
+<html:html locale="true">
 
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
@@ -75,8 +76,6 @@ function finishPage(secs){
 				<% }else if (type.equals("2")){ %> <bean:message
 					key="oscarEncounter.oscarConsultationRequest.ConfirmConsultationRequest.msgCreated" />
 				<% } %>
-				
-				<%=WebUtils.popInfoMessagesAsHtml(session)%>
 				</td>
 			</tr>
 			<tr>

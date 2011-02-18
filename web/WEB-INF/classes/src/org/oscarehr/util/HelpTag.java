@@ -1,37 +1,13 @@
-/*
- *
- * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved. *
- * This software is published under the GPL GNU General Public License.
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version. *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details. * * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *
- *
- * <OSCAR TEAM>
- *
- * This software was written for the
- * Department of Family Medicine
- * McMaster University
- * Hamilton
- * Ontario, Canada
- */
+//Error reading included file Templates/Classes/../Licenses/license-MyLicense.txt
 package org.oscarehr.util;
 
+import java.util.Locale;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
-
 import org.apache.struts.Globals;
 import org.apache.struts.taglib.TagUtils;
 import org.apache.struts.util.MessageResources;
-
-import oscar.OscarProperties;
 
 /**
  * Creates a anchor tag that pops up a help window to
@@ -58,7 +34,7 @@ public class HelpTag extends TagSupport {
 
 
     private String keywords = null;
-    private String searchLink = OscarProperties.getInstance().getProperty("HELP_SEARCH_URL");  //"http://www.oscarmanual.org/system/app/pages/search?q=%s&scope=search-site";
+    private String searchLink = "http://www.oscarmanual.org/system/app/pages/search?q=%s&scope=search-site";
     private String classString= null;
     private String key= null;
     private String style=null;
@@ -112,7 +88,8 @@ public class HelpTag extends TagSupport {
 
             JspWriter out = super.pageContext.getOut();
             out.print("<a "+getStyleOut()+" "+getClassStringOut()+" target=\"_blank\" href=\""+getURL()+"\">"+message);
-        } catch (Exception p) {MiscUtils.getLogger().error("Error",p);
+        } catch (Exception p) {
+            p.printStackTrace(System.out);
         }
         return (EVAL_BODY_INCLUDE);
     }
@@ -121,7 +98,8 @@ public class HelpTag extends TagSupport {
         try {
             JspWriter out = super.pageContext.getOut();
             out.print("</a>");
-        } catch (Exception p) {MiscUtils.getLogger().error("Error",p);
+        } catch (Exception p) {
+            p.printStackTrace(System.out);
         }
         return EVAL_PAGE;
     }

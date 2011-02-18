@@ -1,4 +1,5 @@
 
+<%@ page language="java"%>
 <%@ page import="oscar.form.graphic.*, oscar.util.*, oscar.form.*, oscar.form.data.*" %>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
@@ -60,12 +61,13 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 -->
 <html:html locale="true">
+<% response.setHeader("Cache-Control","no-cache");%>
 <head>
     <title>Antenatal Record 2</title>
     <html:base/>
@@ -703,6 +705,7 @@ if (!fedb.equals("") && fedb.length()==10 ) {
 	FrmGraphicAR arG = new FrmGraphicAR();
 	edbDate = arG.getStartDate(fedb);
     sDate = UtilDateUtilities.DateToString(edbDate, "MMMMM dd, yyyy"); //"yy,MM,dd");
+	//System.out.println(fedb + ":" + sDate);
 %>
 	    var delta = 0;
         var str_date = getDateField(source.name);

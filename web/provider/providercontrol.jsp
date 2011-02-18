@@ -59,10 +59,10 @@
         String caisiView = null;
         caisiView = (String)request.getParameter("GoToCaisiViewFromOscarView");
         if(caisiView!=null && "true".equals(caisiView)) {
-        	response.sendRedirect("./providercontrol.jsp?GoToCaisiViewFromOscarView=true&year="+nowYear+"&month="+(nowMonth)+"&day="+(nowDay)+"&view=0&displaymode=day&dboperation=searchappointmentday&viewall=1");
+        	response.sendRedirect("./providercontrol.jsp?GoToCaisiViewFromOscarView=true&year="+nowYear+"&month="+(nowMonth)+"&day="+(nowDay)+"&view=0&displaymode=day&dboperation=searchappointmentday");
         	return;
         }
-        response.sendRedirect("./providercontrol.jsp?year="+nowYear+"&month="+(nowMonth)+"&day="+(nowDay)+"&view=0&displaymode=day&dboperation=searchappointmentday&viewall=1");
+        response.sendRedirect("./providercontrol.jsp?year="+nowYear+"&month="+(nowMonth)+"&day="+(nowDay)+"&view=0&displaymode=day&dboperation=searchappointmentday");
         return;
     }
 
@@ -90,7 +90,8 @@
             {"ar1" , "formar1_99_12.jsp"},
             {"ar2" , "formar2_99_08.jsp"},
             {"newgroup" , "providernewgroup.jsp"},
-            {"savemygroup" , "providersavemygroup.jsp"}
+            {"savemygroup" , "providersavemygroup.jsp"},
+//    {"billingobstetric" , "billingobstetric.jsp"},
 
     };
 

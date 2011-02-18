@@ -25,16 +25,9 @@
  */
 package org.oscarehr.common.web;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
-
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -49,35 +42,12 @@ import org.oscarehr.util.SpringUtils;
  */
 public class SearchDemographicAutoCompleteAction extends Action {
     
-    public ActionForward execute(ActionMapping mapping,ActionForm form,HttpServletRequest request,HttpServletResponse response) throws Exception{
+    public ActionForward execute(ActionMapping mapping,ActionForm form,HttpServletRequest request,HttpServletResponse response) {
         DemographicDao demographicDao = (DemographicDao) SpringUtils.getBean("demographicDao"); 
-        String searchStr = request.getParameter("demographicKeyword");
-        
-        if (searchStr == null){
-           searchStr = request.getParameter("query");
-        }
-        
-        if (searchStr == null){
-           searchStr = request.getParameter("name");
-        }
-        
+        String searchStr = request.getParameter("demographicKeyword"); 
         List<Demographic> list = demographicDao.searchDemographic(searchStr);
-        List secondList= new ArrayList();
-        for(Demographic demo :list){
-            Hashtable h = new Hashtable();
-             h.put("fomattedDob",demo.getFormattedDob());
-             h.put("formattedName",demo.getFormattedName());
-             h.put("demographicNo",demo.getDemographicNo());
-             secondList.add(h);
-        }
-
-        Hashtable d = new Hashtable();
-        d.put("results",secondList);
-        response.setContentType("text/x-json");
-        JSONObject jsonArray = (JSONObject) JSONSerializer.toJSON( d );
-        jsonArray.write(response.getWriter());
-        return null;
-
+        request.setAttribute("list", list);
+        return mapping.findForward("success");
     }
 
 }

@@ -5,9 +5,9 @@
 
 	<!-- hibernate session factory -->
 	<!-- 
-	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean" lazy-init="default" autowire="default" dependency-check="default">
 	 -->
-	<bean id="sessionFactory" class="org.oscarehr.util.SpringHibernateLocalSessionFactoryBean">
+	<bean id="sessionFactory" class="org.oscarehr.util.SpringHibernateLocalSessionFactoryBean" lazy-init="default" autowire="default" dependency-check="default">
 		<property name="dataSource" ref="dataSource" />
 		<property name="mappingDirectoryLocations">
 			<!-- only *.hbm.xml will be loaded -->
@@ -18,16 +18,17 @@
 				<value>classpath:/org/oscarehr/casemgmt/model</value>
 				<value>classpath:/org/oscarehr/phr/model</value>
 				<value>classpath:/org/oscarehr/common/model</value>
-				<value>classpath:/org/oscarehr/eyeform/model</value>
 				<value>classpath:/com/quatro/model</value>
 				<value>classpath:/oscar/appt/status/model</value>
+				<value>classpath:/org/oscarehr/consultationRequest/model</value>
 				<value>classpath:/org/oscarehr/document/model</value>
 				<value>classpath:/org/oscarehr/dx/model</value>
 				<value>classpath:/oscar/oscarRx/model</value>
-                <value>classpath:/org/oscarehr/decisionSupport/model</value>
-                <value>classpath:/oscar/oscarEncounter/oscarMeasurements/model</value>
-                <value>classpath:/oscar/oscarBilling/ca/on/model</value>
-                <value>classpath:/oscar/entities</value>
+                                <value>classpath:/org/oscarehr/decisionSupport/model</value>
+                                <value>classpath:/oscar/eform/model</value>
+                                <value>classpath:/oscar/oscarEncounter/oscarMeasurements/model</value>
+                                <value>classpath:/oscar/oscarBilling/ca/on/model</value>
+                                <value>classpath:/oscar/entities</value>
                                 
 			</list>
 		</property>
@@ -43,14 +44,14 @@
 		<property name="eventListeners">
 			<map>
 				<entry key="merge">
-					<bean class="org.springframework.orm.hibernate3.support.IdTransferringMergeEventListener" />
+					<bean class="org.springframework.orm.hibernate3.support.IdTransferringMergeEventListener" lazy-init="default" autowire="default" dependency-check="default" />
 				</entry>
 			</map>
 		</property>
 	</bean>
 
 
-	<bean id="auditSessionFactory" class="org.oscarehr.util.SpringHibernateLocalSessionFactoryBean">
+	<bean id="auditSessionFactory" class="org.oscarehr.util.SpringHibernateLocalSessionFactoryBean" lazy-init="default" autowire="default" dependency-check="default">
 		<property name="dataSource" ref="dataSource" />
 		<property name="mappingDirectoryLocations">
 			<!-- only *.hbm.xml will be loaded -->

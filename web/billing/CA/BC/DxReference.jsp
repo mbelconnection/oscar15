@@ -41,7 +41,7 @@
         padding: 0;
         line-height: 1.3em;
       }
-      
+
       ul.dxlist li a {
         text-decoration: none;
         font-weight: bold;
@@ -56,22 +56,22 @@
   int col = 0;
   if (pastDxList != null){%>
   <div style="margin-top: 2px;padding-left:6px;">
-          <%  
+          <%
           for (DxReference.DxCode dxc : pastDxList){
-              if (col ==0  ){    
+              if (col ==0  ){
               %>
           <ul class="dxlist" >
               <%}else if ( (col % 5 ) ==0){%>
           </ul>
           <ul class="dxlist" >
-             <%}%>  
+             <%}%>
              <li>
-                 <a href="javascript: function myFunction() {return false; }" onClick="quickPickDiagnostic('<%=dxc.getDx()%>');return false;" title="<%=dxc.getDesc()%>">
+                 <a href="javascript: function myFunction() {return false; }" onClick="quickPickDiagnostic('<%=dxc.getDx()%>');return false;">
                     <%=dxc.getDx()%> <%=dxc.getNumMonthSinceDate()%>M
                  </a>
-             
+
              </li>
-          <%  
+          <%
           if (col >= 19){ break;}  // 24 gives 5 columns of 5  #  19 gives 4 columns of 5
           col++;
           }%>

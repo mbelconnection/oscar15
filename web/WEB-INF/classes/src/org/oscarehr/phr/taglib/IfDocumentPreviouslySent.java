@@ -15,6 +15,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import org.apache.log4j.Logger;
 import org.oscarehr.phr.PHRConstants;
 import org.oscarehr.phr.service.PHRService;
+
 import org.oscarehr.util.SpringUtils;
 
 
@@ -32,7 +33,8 @@ public class IfDocumentPreviouslySent extends TagSupport {
     @Override
     public int doStartTag() {
         PHRService service = (PHRService) SpringUtils.getBean("phrService");
-        if (service.isIndivoRegistered(PHRConstants.DOCTYPE_BINARYDATA(), documentOscarId)) {
+        PHRConstants constants = (PHRConstants) SpringUtils.getBean("phrConstants");
+        if (service.isIndivoRegistered(constants.DOCTYPE_BINARYDATA(), documentOscarId)) {
             if (invertResult) return SKIP_BODY;
             else return EVAL_BODY_INCLUDE;
         }

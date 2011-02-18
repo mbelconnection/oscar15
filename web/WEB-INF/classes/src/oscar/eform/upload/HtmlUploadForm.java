@@ -41,8 +41,7 @@ public class HtmlUploadForm extends ActionForm {
     private FormFile formHtml = null;
     private String formName;
     private String subject;
-    private boolean patientIndependent = false;
-    private String roleType;
+    private Boolean patientIndependent = false;
     
     public HtmlUploadForm() {
     }
@@ -63,14 +62,6 @@ public class HtmlUploadForm extends ActionForm {
         this.formName = formName;
     }
     
-    public String getRoleType() {
-        return roleType;
-    }
-    
-    public void setRoleType(String roleType) {
-        this.roleType = roleType;
-    }
-    
     public String getSubject() {
         return subject;
     }
@@ -79,11 +70,11 @@ public class HtmlUploadForm extends ActionForm {
         this.subject = subject;
     }
 
-    public boolean getPatientIndependent() {
+    public Boolean getPatientIndependent() {
         return patientIndependent;
     }
 
-    public void setPatientIndependent(boolean patientIndependent) {
+    public void setPatientIndependent(Boolean patientIndependent) {
         this.patientIndependent = patientIndependent;
     }
     
@@ -91,7 +82,7 @@ public class HtmlUploadForm extends ActionForm {
         ActionErrors errors = new ActionErrors();
         if ((formName == null) || (formName.length() == 0)) {
             errors.add("form", new ActionMessage("eform.errors.file_name.missing"));
-        }        
+        }
         if (formHtml.getFileSize() == 0) {
             errors.add("form", new ActionMessage("eform.errors.form_html.missing"));
         }

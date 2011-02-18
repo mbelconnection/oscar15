@@ -21,7 +21,7 @@
 <%@ include file="../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 <%
 	String clinicview = oscarVariables.getProperty("clinic_view");
 	String clinicNo = oscarVariables.getProperty("clinic_no");
@@ -47,13 +47,12 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 -->
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html>
+<html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <html:base />
@@ -126,6 +125,7 @@ function POP(n,h,v) {
 }
 //-->
 </SCRIPT>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <script language="JavaScript">
 <!--
 <!--
@@ -196,6 +196,7 @@ function showHideLayers() { //v3.0
 	user_no = request.getParameter("user_no");
 	String apptProvider_no = request.getParameter("apptProvider_no");
 	String ctlBillForm = request.getParameter("billForm");
+	System.out.println("ctlBillForm" + ctlBillForm);
 	int ctlCount = 0;
 	String assgProvider_no = "", assgProvider_name = "";
 
@@ -546,7 +547,7 @@ function showHideLayers() { //v3.0
 
  		}
  	} catch (Exception inPatientEx) {
- 		MiscUtils.getLogger().error("Error", inPatientEx);
+ 		inPatientEx.printStackTrace();
  		admissionDate = "";
  	}
  %> <input type="text" name="xml_vdate"
@@ -651,7 +652,7 @@ function showHideLayers() { //v3.0
 					<%
 						CountService = CountService + 1;
 						}
-						//
+						// apptMainBean.closePstmtConn();
 
 						// headerTitle="Premium";
 					%>
@@ -748,7 +749,7 @@ function showHideLayers() { //v3.0
 					<%
 						CountService = CountService + 1;
 						}
-						//
+						// apptMainBean.closePstmtConn();
 					%>
 				</table>
 				</td>
@@ -842,7 +843,7 @@ function showHideLayers() { //v3.0
 					<%
 						CountService = CountService + 1;
 						}
-						//
+						// apptMainBean.closePstmtConn();
 					%>
 					<tr bgcolor="#CCCCFF">
 						<td align="center" valign="top" height="71" colspan="3">
@@ -995,6 +996,7 @@ function showHideLayers() { //v3.0
 						</td>
 					</tr>
 					<%
+						apptMainBean.closePstmtConn();
 					%>
 				</table>
 				<table width="100%" border="0" cellspacing="0" cellpadding="0">

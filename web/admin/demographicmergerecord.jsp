@@ -19,7 +19,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -78,6 +78,8 @@ if( outcome !=null){
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>DEMOGRAPHIC - MERGE RECORDS</title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <script language="JavaScript">
 
         function setfocus() {
@@ -224,6 +226,7 @@ String keyword=request.getParameter("keyword").trim();
 //keyword.replace('*', '%').trim();
 if(request.getParameter("search_mode").equals("search_name")) {
     keyword=request.getParameter("keyword")+"%";
+    System.out.println("keyword: '"+keyword+"'");
     if(keyword.indexOf(",")==-1)  rs = apptMainBean.queryResults(keyword, dboperation) ; //lastname
     else if(keyword.indexOf(",")==(keyword.length()-1))  rs = apptMainBean.queryResults(keyword.substring(0,(keyword.length()-1)), dboperation);//lastname
     else { //lastname,firstname
@@ -231,6 +234,7 @@ if(request.getParameter("search_mode").equals("search_name")) {
         int index = keyword.indexOf(",");
         param[0]=keyword.substring(0,index).trim()+"%";//(",");
         param[1]=keyword.substring(index+1).trim()+"%";
+//System.out.println("from -------- :"+ param[0]+ ": next :"+param[1]);
         rs = apptMainBean.queryResults(param, dboperation);
     }
 } else if(request.getParameter("search_mode").equals("search_dob")) {
@@ -240,6 +244,7 @@ if(request.getParameter("search_mode").equals("search_name")) {
 //param[1] = param[1].startsWith("0") ? param[1].substring(1) : param[1];
     param[2] = keyword.substring(keyword.lastIndexOf("-")+1);
 //param[2] = param[2].startsWith("0") ? param[2].substring(1) : param[2];
+    System.out.println(param[1] + " "+ param[2] );
     rs = apptMainBean.queryResults(param, dboperation);
 } else {
     keyword=request.getParameter("keyword")+"%";
@@ -312,6 +317,7 @@ if(rs==null) {
 	<%
     }
 }
+apptMainBean.closePstmtConn();
 %>
 
 </table>

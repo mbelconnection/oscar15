@@ -33,23 +33,22 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.entities.Provider;
 import oscar.oscarBilling.ca.bc.MSP.MSPReconcile;
 import oscar.oscarBilling.ca.bc.data.BillRecipient;
 import oscar.oscarBilling.ca.bc.data.BillingPreference;
 import oscar.oscarBilling.ca.bc.data.BillingPreferencesDAO;
-import oscar.oscarDemographic.data.DemographicData;
 
 public final class BillingViewAction
     extends Action {
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(BillingViewAction.class);
 
   public ActionForward execute(ActionMapping mapping,
                                ActionForm form,
@@ -67,9 +66,11 @@ public final class BillingViewAction
     }
     else {
       BillingViewForm frm = (BillingViewForm) form;
-      BillingViewBean bean = new BillingViewBean();
+      oscar.oscarBilling.ca.bc.pageUtil.BillingViewBean bean = new oscar.
+          oscarBilling.ca.bc.pageUtil.BillingViewBean();
       bean.loadBilling(request.getParameter("billing_no"));
-      BillingBillingManager bmanager = new BillingBillingManager();
+      oscar.oscarBilling.ca.bc.pageUtil.BillingBillingManager bmanager = new
+          BillingBillingManager();
       ArrayList billItem = new ArrayList();
       String[] billingN = request.getParameterValues("billing_no");
       
@@ -82,12 +83,15 @@ public final class BillingViewAction
       log.debug("Calling getGrandTotal");
       bean.setBillItem(billItem);
 
+      // bean.setSubTotal(bmanager.getSubTotal(billItem));
       bean.calculateSubtotal();
       log.debug("GrandTotal" + bmanager.getGrandTotal(billItem));
-      DemographicData demoData = new DemographicData();
+      oscar.oscarDemographic.data.DemographicData demoData = new oscar.
+          oscarDemographic.data.DemographicData();
       log.debug("Calling Demo");
 
-      DemographicData.Demographic demo = demoData.getDemographic(bean.getPatientNo());
+      oscar.oscarDemographic.data.DemographicData.Demographic demo = demoData.
+          getDemographic(bean.getPatientNo());
       bean.setPatientLastName(demo.getLastName());
       bean.setPatientFirstName(demo.getFirstName());
       bean.setPatientDoB(demo.getDateOfBirth());

@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -26,7 +26,6 @@
 
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
-<%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
 
 <%
   
@@ -36,25 +35,14 @@
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
 
-<%
-    if(session.getAttribute("user") == null ) response.sendRedirect("../logout.jsp");
-    String curProvider_no = (String) session.getAttribute("user");
-
-    if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
-    String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
-    
-    boolean isSiteAccessPrivacy=false;
-%>
-
-<security:oscarSec objectName="_site_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%isSiteAccessPrivacy=true; %>
-</security:oscarSec>
-
 <html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="admin.adminnewgroup.title" /></title>
 </head>
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
+
 <script language="javascript">
 <%-- start javascript ---- check to see if it is really empty in database --%>
 
@@ -135,19 +123,10 @@ function validate() {
 					type="text" name="mygroup_no" size="10" maxlength="10"> <font
 					size="-2">(Max. 10 chars.)</font></td>
 			</tr>
-
-	
-<%
+			<%
    ResultSet rsgroup = null;
    int i=0;
-   if (isSiteAccessPrivacy)
-   { 
-	  rsgroup = apptMainBean.queryResults(curProvider_no,"site_searchproviderall");
-   }
-   else
-   {
-	  rsgroup = apptMainBean.queryResults("searchproviderall");
-   }
+   rsgroup = apptMainBean.queryResults("searchproviderall");
    while (rsgroup.next()) { 
      i++;
 %>
@@ -164,6 +143,7 @@ function validate() {
 			</tr>
 			<%
    }
+   apptMainBean.closePstmtConn();
 %>
 			<INPUT TYPE="hidden" NAME="dboperation" VALUE='savemygroup'>
 			<INPUT TYPE="hidden" NAME="displaymode" VALUE='savemygroup'>

@@ -32,7 +32,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -55,8 +54,8 @@ public class TicklerData {
    
    public ResultSet listTickler(String demographic_no, String status, String beginDate, String endDate) throws SQLException {
        String sql = "select t.message,t.service_date, t.update_date from tickler t where t.status='A' and TO_DAYS(t.service_date) >=TO_DAYS('" + beginDate + "') and TO_DAYS(t.service_date)<=TO_DAYS('" + endDate + "') and t.demographic_no = " + demographic_no + " order by t.service_date desc";
-       
-       ResultSet rs = DBHandler.GetSQL(sql);
+       DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+       ResultSet rs = db.GetSQL(sql);
        
        return rs;
    }
@@ -79,32 +78,32 @@ public class TicklerData {
                   +" '"+StringEscapeUtils.escapeSql(creator)+"', "
                   +" '"+StringEscapeUtils.escapeSql(priority)+"', "
                   +" '"+StringEscapeUtils.escapeSql(task_assigned_to)+"')";  
-
+      //System.out.println(sql);
       try {         
-         
-            DBHandler.RunSQL(sql);         
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            db.RunSQL(sql);         
       } catch (SQLException e) {         
-         MiscUtils.getLogger().error("Error", e);
-         MiscUtils.getLogger().error("Error", e);
+         System.out.println(e.getMessage());
+         e.printStackTrace();
       }      
    }
    
    public boolean hasTickler(String demographic,String task_assigned_to,String message){
       boolean hastickler = false;
       try {         
-         
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
          String sql = "select * from tickler  where demographic_no = '"+StringEscapeUtils.escapeSql(demographic)+"' "
                      +" and task_assigned_to = '"+StringEscapeUtils.escapeSql(task_assigned_to)+"' "
                      +" and message = '"+StringEscapeUtils.escapeSql(message)+"'";
-
-         ResultSet rs = DBHandler.GetSQL(sql);
+         //System.out.println(sql);
+         ResultSet rs = db.GetSQL(sql);
          if (rs.next()){
             hastickler = true;
          }
          rs.close();         
       } catch (SQLException e) {
-         MiscUtils.getLogger().error("Error", e);
-         MiscUtils.getLogger().error("Error", e);
+         System.out.println(e.getMessage());
+         e.printStackTrace();
       }      
       return hastickler;
    }

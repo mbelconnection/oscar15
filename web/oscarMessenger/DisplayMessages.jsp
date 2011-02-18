@@ -18,11 +18,14 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 --%>
+
+<%@ page language="java" %>
+
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
@@ -287,16 +290,23 @@ function checkAll(formId){
                            java.util.Vector theMessages2 = new java.util.Vector() ;
                         switch(pageType){
                             case 0:
+//                                        theMessages =  DisplayMessagesBeanId.getMessageid();
                                 theMessages2 = DisplayMessagesBeanId.estInbox(orderby,moreMessages,INITIAL_DISPLAY);
+                                // System.out.println("normal messages");
                             break;
                             case 1:
+//                                      theMessages  = DisplayMessagesBeanId.getSentMessageid();
                                 theMessages2 = DisplayMessagesBeanId.estSentItemsInbox(orderby);
+                                // System.out.println("Sent messages");
                             break;
                             case 2:
+///                                    theMessages  = DisplayMessagesBeanId.getDelMessageid();
                                 theMessages2 = DisplayMessagesBeanId.estDeletedInbox(orderby);
+                                // System.out.println("deleted messages");
                             break;
                             case 3:
                                 theMessages2 = DisplayMessagesBeanId.estDemographicInbox(orderby,demographic_no);
+                                // System.out.println("demographic messages");
                             break;
                         }   //messageid
 
@@ -419,7 +429,7 @@ function checkAll(formId){
                                        String atta = dm.attach;
                                        String pdfAtta = dm.pdfAttach; 
                                        if (atta.equals("1") || pdfAtta.equals("1") ){ %>
-                                            <img src="img/clip4.jpg">
+                                            <img src="img/clip4.JPG">
                                     <% } %>
 
 

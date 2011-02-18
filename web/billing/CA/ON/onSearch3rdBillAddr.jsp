@@ -58,6 +58,7 @@
 				String sql = "select * from billing_on_3rdPartyAddress where " + where + " order by " + orderBy + " limit "
 						+ strLimit1 + "," + strLimit2;
 				ResultSet rs = dbObj.searchDBRecord(sql);
+				// System.out.println(sql);
 				while (rs.next()) {
 					prop = new Properties();
 					prop.setProperty("id", rs.getString("id"));
@@ -84,6 +85,8 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Add/Edit 3rd Bill Address</title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <link rel="stylesheet" type="text/css" href="billingON.css" />
 <script language="JavaScript">
 

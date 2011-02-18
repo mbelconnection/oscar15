@@ -48,10 +48,9 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.upload.FormFile;
-import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
+import oscar.oscarDB.DBHandler;
 import oscar.oscarLab.FileUploadCheck;
 import oscar.oscarLab.ca.on.CML.ABCDParser;
 
@@ -73,7 +72,7 @@ public class LabUploadAction extends Action {
        }
        String key = request.getParameter("key");
        String keyToMatch =  OscarProperties.getInstance().getProperty("CML_UPLOAD_KEY");
-       MiscUtils.getLogger().debug("key="+key);
+       System.out.println("key="+key);
        String outcome = "";
        
        //Checks to verify key is matched and file should be saved locally.
@@ -81,7 +80,7 @@ public class LabUploadAction extends Action {
            
           try{  
               
-             MiscUtils.getLogger().debug("Lab Upload content type = "+importFile.getContentType());
+             System.out.println("Lab Upload content type = "+importFile.getContentType());
              InputStream is = importFile.getInputStream();
              filename = importFile.getFileName();
 
@@ -93,33 +92,34 @@ public class LabUploadAction extends Action {
              boolean fileUploadedSuccessfully = false;
              if (localFileName != null){
                 InputStream  fis = new FileInputStream(localFileName); 
+                FileUploadCheck fileC = new FileUploadCheck();  
                 int check = FileUploadCheck.UNSUCCESSFUL_SAVE;
                 try{
-                    check = FileUploadCheck.addFile(filename,fis,proNo);
+                    check = fileC.addFile(filename,fis,proNo);
                     if (check != FileUploadCheck.UNSUCCESSFUL_SAVE){
                         outcome = "uploadedPreviously";
                     }
                 }catch(Exception addFileEx){
-                	MiscUtils.getLogger().error("Error", addFileEx);
+                   addFileEx.printStackTrace();
                    outcome = "databaseNotStarted";
                 }    
-                MiscUtils.getLogger().debug("Was file uploaded successfully ?"+fileUploadedSuccessfully);
+                System.out.println("Was file uploaded successfully ?"+fileUploadedSuccessfully);
                 fis.close();     
                 if (check != FileUploadCheck.UNSUCCESSFUL_SAVE){
                     BufferedReader in = new BufferedReader(new FileReader(localFileName));                                       
                     ABCDParser abc = new ABCDParser();     
                     abc.parse(in);              
-                                 
-                    abc.save(DbConnectionFilter.getThreadLocalDbConnection());
+                    DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);             
+                    abc.save(DBHandler.getConnection());
                     outcome = "uploaded";
                 }
              }else{
                 outcome="accessDenied";  //file could not save    
-                MiscUtils.getLogger().debug("Could not save file :"+filename+" to disk");
+                System.out.println("Could not save file :"+filename+" to disk");
              }
              
           }catch(Exception e){ 
-             MiscUtils.getLogger().error("Error", e); 
+             e.printStackTrace(); 
              outcome = "exception";
           }  
        
@@ -127,7 +127,7 @@ public class LabUploadAction extends Action {
           outcome = "accessDenied";
        }
        request.setAttribute("outcome", outcome);
-       MiscUtils.getLogger().debug("forwarding outcome "+outcome);
+       System.out.println("forwarding outcome "+outcome);
        return mapping.findForward("success");
     }
    
@@ -153,9 +153,9 @@ public class LabUploadAction extends Action {
          String place= props.getProperty("DOCUMENT_DIR");
             
          if(!place.endsWith("/"))
-            place = new StringBuilder(place).insert(place.length(),"/").toString();
+            place = new StringBuffer(place).insert(place.length(),"/").toString();
          retVal = place+"LabUpload."+filename+"."+(new Date()).getTime();
-         MiscUtils.getLogger().debug(retVal);
+         System.out.println(retVal);
             
          //write the  file to the file specified
          OutputStream bos = new FileOutputStream(retVal);
@@ -169,12 +169,12 @@ public class LabUploadAction extends Action {
          stream.close();
       }catch (FileNotFoundException fnfe) {
 
-         MiscUtils.getLogger().debug("File not found");
-         MiscUtils.getLogger().error("Error", fnfe);            
+         System.out.println("File not found");
+         fnfe.printStackTrace();            
          return retVal;
 
       }catch (IOException ioe) {
-         MiscUtils.getLogger().error("Error", ioe);
+         ioe.printStackTrace();
          return retVal;
       }   
       return retVal;

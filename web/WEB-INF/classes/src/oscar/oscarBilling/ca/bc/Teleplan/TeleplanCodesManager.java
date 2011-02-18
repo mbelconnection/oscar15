@@ -37,8 +37,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.oscarehr.util.MiscUtils;
-
 
 /**
  *
@@ -66,14 +64,14 @@ REM076 **                                                             **
        BufferedReader buff = new BufferedReader(new FileReader(f));
 
        String line = null;
-       MiscUtils.getLogger().debug("start while" );
+       System.out.println("start while" );
 
        LinkedList list = new LinkedList();
        while ((line = buff.readLine()) != null) {
          //01 - 05 Fee Item Code  X(5)  Fee for Service Fee Item      **                      
          //06 - 12 Fee Schedule   N(7)  Fee for Service Amount        **                      
          //27 - 76 Fee Item       X(50) 
-
+           //System.out.println(line);
            boolean parse = true;
            if (line == null ){
                parse = false;
@@ -100,7 +98,7 @@ REM076 **                                                             **
               
            }
        }
-       MiscUtils.getLogger().debug("end while");
+       System.out.println("end while");
        return list;
     }
     

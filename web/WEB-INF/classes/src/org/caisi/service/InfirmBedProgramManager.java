@@ -45,7 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class InfirmBedProgramManager {
     private BedProgramDao bedProgramDao;
-    private DemographicDao demographicDao;
+    private DemographicDao demographicDaoT;
     private ProgramProviderDAO programProviderDAOT;
     private ProviderDefaultProgramDao providerDefaultProgramDao;
     private ProgramDao programDao;
@@ -67,7 +67,7 @@ public class InfirmBedProgramManager {
 
     @Required
     public void setDemographicDao(DemographicDao dao) {
-        this.demographicDao = dao;
+        this.demographicDaoT = dao;
     }
 
     public List getPrgramNameID() {
@@ -112,24 +112,6 @@ public class InfirmBedProgramManager {
         return pList;
     }
 
-    public List getProgramForApptViewBeans(String providerNo, Integer facilityId) {
-        if (providerNo == null || "".equalsIgnoreCase(providerNo.trim())) return new ArrayList();
-        Iterator iter = programProviderDAOT.getProgramProvidersByProvider(providerNo).iterator();
-        ArrayList pList = new ArrayList();
-        while (iter.hasNext()) {
-            ProgramProvider p = (ProgramProvider)iter.next();
-            if (p != null && p.getProgramId() != null && p.getProgramId().longValue() > 0) {
-                //logger.debug("programName="+p.getProgram().getName()+"::"+"programId="+p.getProgram().getId().toString());
-                Program program = programDao.getProgramForApptView(new Integer(p.getProgramId().intValue()));
-                if(program==null) continue;
-                if (facilityId!=null && program.getFacilityId()!=facilityId.intValue()) continue;
-                
-                if (program.isActive()) pList.add(new LabelValueBean(program.getName(), program.getId().toString()));
-            }
-        }
-        return pList;
-    }
-
     public List getDemographicByBedProgramIdBeans(int programId, Date dt, String archiveView) {
         /*default time is Oscar default null time 0001-01-01.*/
         Date defdt = new GregorianCalendar(1, 0, 1).getTime();
@@ -142,8 +124,9 @@ public class InfirmBedProgramManager {
         dt = cal.getTime();
         Iterator iter;
 
-        if (archiveView != null && archiveView.equals("true")) iter = demographicDao.getArchiveDemographicByProgramOptimized(programId, dt, defdt).iterator();        
-        else iter = demographicDao.getActiveDemographicByProgram(programId, dt, defdt).iterator();
+        //if (archiveView != null && archiveView.equals("true")) iter = demographicDaoT.getArchiveDemographicByPromgram(programId, dt, defdt).iterator();
+        if (archiveView != null && archiveView.equals("true")) iter = demographicDaoT.getArchiveDemographicByProgramOptimized(programId, dt, defdt).iterator();        
+        else iter = demographicDaoT.getActiveDemographicByProgram(programId, dt, defdt).iterator();
 
         ArrayList demographicList = new ArrayList();
         Demographic de = null;

@@ -83,7 +83,7 @@ public class RptDemographicColumnNames {
         backhash.put("Patient Status",new String("patient_status"));
         backhash.put("Date Joined",new String("date_joined"));
         backhash.put("Chart #",new String("chart_no"));
-        backhash.put("Provider #",new String("provider_no"));        
+        backhash.put("Provider #",new String("provider_no"));
         backhash.put("Sex",new String("sex"));
         backhash.put("End Date",new String("end_date"));
         backhash.put("Eff. Date",new String("eff_date"));

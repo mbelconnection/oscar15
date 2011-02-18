@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -29,10 +29,10 @@ if(session.getAttribute("user") == null)    response.sendRedirect("../../../../l
 
 <%@ page
 	import="java.math.*, java.util.*, java.io.*, java.sql.*, oscar.*, java.net.*,oscar.MyDateFormat"%>
-
+<%@ include file="../../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="dbINR.jspf"%>
+<%@ include file="dbINR.jsp"%>
 <%
 
 GregorianCalendar now=new GregorianCalendar();
@@ -114,6 +114,8 @@ docdate = request.getParameter("docdate");
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>INR BILLING</title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <script language="JavaScript">
 <!--
 
@@ -261,5 +263,6 @@ if (errorCode.compareTo("") != 0) {
 	</form>
 </table>
 <% 
-}
+} 
+apptMainBean.closePstmtConn();
 %>

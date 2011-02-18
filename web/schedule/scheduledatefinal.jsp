@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -42,7 +42,7 @@
  * (your name here) 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
 */
@@ -69,13 +69,42 @@
   String priority = "c";
   String reason = "";
   String hour = "";
+/*
+  //delete the old scheduledate
+  int rowsAffected = 0;
+  String[] param1 =new String[2];
+  param1[0]=provider_no;
+  param1[1]=priority;
+  rowsAffected = scheduleMainBean.queryExecuteUpdate(param1,"delete_scheduledate_all");
+  param1[1]="b";
+  rowsAffected = scheduleMainBean.queryExecuteUpdate(param1,"delete_scheduledate_all");
 
+  //change to StringBuffer
+  String[] param2 =new String[7];
+  Object aO = null;
+  param2[1]=provider_no;
+  param2[3]=priority;
+  param2[6]=creator;
+
+  //save new scheduledate from the bean
+  for (Enumeration e = scheduleDateBean.keys() ; e.hasMoreElements() ;) {
+    aO = e.nextElement();
+    HScheduleDate aHScheduleDate = (HScheduleDate) scheduleDateBean.get(aO);
+    param2[0] = aO.toString();
+    param2[2] = aHScheduleDate.available;
+    param2[4] = aHScheduleDate.reason;
+    param2[5] = aHScheduleDate.hour;
+    rowsAffected = scheduleMainBean.queryExecuteUpdate(param2,"add_scheduledate");
+         System.out.println(aHScheduleDate.available + aHScheduleDate.priority + aHScheduleDate.reason +aHScheduleDate.hour);
+  }
+*/
 %>
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html:html locale="true">
+<html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="schedule.scheduledatefinal.title" /></title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <link rel="stylesheet" href="../web.css" />
 
 <script language="JavaScript">
@@ -165,6 +194,11 @@ function upCaseCtrl(ctrl) {
 </form>
 <%
   if(scheduleMainBean.getBDoConfigure()) scheduleMainBean.setBDoConfigure();
+  try {
+    scheduleMainBean.closePstmtConn();
+ }catch(SQLException e) {
+     e.printStackTrace();
+ }
 %>
 
 

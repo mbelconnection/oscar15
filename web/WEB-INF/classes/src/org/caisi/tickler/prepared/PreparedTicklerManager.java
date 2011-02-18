@@ -27,12 +27,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class PreparedTicklerManager {
 
-	static Logger log=MiscUtils.getLogger(); 
+	static Log log = LogFactory.getLog(PreparedTicklerManager.class); 
 	
 	private List ticklers;
 	

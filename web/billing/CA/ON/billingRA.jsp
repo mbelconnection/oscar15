@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -32,6 +32,7 @@ if(session.getValue("user") == null) response.sendRedirect("../../../logout.jsp"
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Billing Reconcilliation</title>
+<meta http-equiv="Content-Type" content="text/html">
 <script language="JavaScript">
 <!--
 

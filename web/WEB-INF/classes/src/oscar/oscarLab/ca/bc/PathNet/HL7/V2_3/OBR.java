@@ -70,7 +70,7 @@ public class OBR extends oscar.oscarLab.ca.bc.PathNet.HL7.Node {
          this.note.add(nte);
          return nte.Parse(line);
       }
-      _logger.error("Error During Parsing, Unknown Line - oscar.PathNet.HL7.V2_3.OBR - Message: " + line);
+      System.err.println("Error During Parsing, Unknown Line - oscar.PathNet.HL7.V2_3.OBR - Message: " + line);
       return null;
    }
    public String getNote() {
@@ -104,55 +104,55 @@ public class OBR extends oscar.oscarLab.ca.bc.PathNet.HL7.Node {
                                                                            _logger.debug("getting index of Updated filler #:"+this.get("filler_order_number", "")+" "+index);                           
          if(index != 0) {
                                                                            _logger.debug("Running Update: "+this.getUpdateSql(this.get("filler_order_number", "")));
-            DBHandler.RunSQL(this.getUpdateSql(this.get("filler_order_number", "")));
+            db.RunSQL(this.getUpdateSql(this.get("filler_order_number", "")));
          } else {
                                                                            _logger.debug("Running Insert: "+this.getInsertSql(parent));
-            DBHandler.RunSQL(this.getInsertSql(parent));
-            index = super.getLastInsertedId();
+            db.RunSQL(this.getInsertSql(parent));
+            index = super.getLastInsertedId(db);
                                                                            _logger.debug("Index of insert:"+index);
          }
          int size = this.obxs.size();
                                                                            _logger.debug("OBX size:"+size);
          for(int i = 0; i < size; ++i) {
-            ((OBX)obxs.get(i)).ToDatabase(index);
+            ((OBX)obxs.get(i)).ToDatabase(db, index);
          }
       } else if(this.get("result_status", "").equalsIgnoreCase("I")) {
                                                                            _logger.debug("Running Insert when stat = I:"+this.getInsertSql(parent));
-         DBHandler.RunSQL(this.getInsertSql(parent));
-         int lastInsert = super.getLastInsertedId();
+         db.RunSQL(this.getInsertSql(parent));
+         int lastInsert = super.getLastInsertedId(db);
                                                                            _logger.debug("Index of insert:"+lastInsert);
          int size = this.obxs.size();
                                                                            _logger.debug("OBX size:"+size);
          for(int i = 0; i < size; ++i) {
-            ((OBX)obxs.get(i)).ToDatabase(lastInsert);
+            ((OBX)obxs.get(i)).ToDatabase(db, lastInsert);
          }
       } else if(this.get("result_status", "").equalsIgnoreCase("C")) {
                                                                            _logger.debug("Running Update when stat = C :"+this.getUpdateSql(this.get("filler_order_number", "")));
-         DBHandler.RunSQL(this.getUpdateSql(this.get("filler_order_number", "")));
+         db.RunSQL(this.getUpdateSql(this.get("filler_order_number", "")));
          int lastUpdate = this.getLastUpdated(db, this.get("filler_order_number", ""));
                                                                            _logger.debug("Update id of lastUpdate:"+lastUpdate);         
          int size = this.obxs.size();
                                                                            _logger.debug("OBX size:"+size);
          for(int i = 0; i < size; ++i) {
             ((OBX)obxs.get(i)).setUpdate(true);
-            ((OBX)obxs.get(i)).ToDatabase(lastUpdate);
+            ((OBX)obxs.get(i)).ToDatabase(db, lastUpdate);
          }
       }
       return 0;
    }
    
    //////
-   public int ToDatabase(int parent)throws SQLException {
+   public int ToDatabase(DBHandler db, int parent)throws SQLException {
       _logger.debug("result_status :"+this.get("result_status","") );            
       _logger.debug("Running Insert when "+this.getInsertSql(parent));
       
-      DBHandler.RunSQL(this.getInsertSql(parent));
-      int lastInsert = super.getLastInsertedId();
+      db.RunSQL(this.getInsertSql(parent));
+      int lastInsert = super.getLastInsertedId(db);
       _logger.debug("Index of insert:"+lastInsert);
       int size = this.obxs.size();
       _logger.debug("OBX size:"+size);
       for(int i = 0; i < size; ++i) {
-         ((OBX)obxs.get(i)).ToDatabase(lastInsert);
+         ((OBX)obxs.get(i)).ToDatabase(db, lastInsert);
       }      
       return 0;
    }
@@ -160,7 +160,7 @@ public class OBR extends oscar.oscarLab.ca.bc.PathNet.HL7.Node {
    
    
    protected int getLastUpdated(DBHandler db, String id)throws SQLException {
-      ResultSet result = DBHandler.GetSQL("SELECT obr_id FROM hl7_obr WHERE filler_order_number='" + id +"'");
+      ResultSet result = db.GetSQL("SELECT obr_id FROM hl7_obr WHERE filler_order_number='" + id +"'");
       int parent = 0;
       if(result.next()) {
          parent = result.getInt(1);

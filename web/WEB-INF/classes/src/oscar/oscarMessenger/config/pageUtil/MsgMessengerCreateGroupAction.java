@@ -35,7 +35,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarMessenger.data.MsgAddressBookMaker;
@@ -53,32 +52,33 @@ public class MsgMessengerCreateGroupAction extends Action {
        String parentID = ((MsgMessengerCreateGroupForm)form).getParentID();
        String type = ((MsgMessengerCreateGroupForm)form).getType2();
 
+       // System.out.println("type = "+type);
        grpName = grpName.trim();
 
        if (!grpName.equals("")){
            if (type.equals("1")){
               try{
-                 
+                 DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                  java.sql.ResultSet rs;
                  String sql = "insert into groups_tbl (parentID,groupDesc) values ('"+parentID+"','"+grpName+"')";
-                 DBHandler.RunSQL(sql);
+                 db.RunSQL(sql);
 
                  
-                 MsgAddressBookMaker addMake = new MsgAddressBookMaker();
+                 MsgAddressBookMaker addMake = new MsgAddressBookMaker(db);
                  addMake.updateAddressBook();
 
-               }catch (java.sql.SQLException e){ MiscUtils.getLogger().debug("Update of address book didn't happen when updating groups");MiscUtils.getLogger().error("Error", e); }
+               }catch (java.sql.SQLException e){ System.out.println("Update of address book didn't happen when updating groups"); e.printStackTrace(System.out); }
            }else if (type.equals("2")){
                 try{
-                 
+                 DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                  java.sql.ResultSet rs;
                  String sql = "update groups_tbl set groupDesc = '"+grpName+"' where groupID = '"+parentID+"'";
-                 DBHandler.RunSQL(sql);
+                 db.RunSQL(sql);
 
-                 MsgAddressBookMaker addMake = new MsgAddressBookMaker();
+                 MsgAddressBookMaker addMake = new MsgAddressBookMaker(db);
                  addMake.updateAddressBook();
 
-               }catch (java.sql.SQLException e){ MiscUtils.getLogger().debug("Update of address book didn't happen when deleting group");MiscUtils.getLogger().error("Error", e); }
+               }catch (java.sql.SQLException e){ System.out.println("Update of address book didn't happen when deleting group"); e.printStackTrace(System.out); }
            }
         }
       request.setAttribute("groupNo",parentID);

@@ -18,11 +18,14 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 --%>
+
+<%@ page language="java"%>
+
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
@@ -225,7 +228,7 @@ function unlink(){
 							<td bgcolor="#EEEEFF" width="75"><html:checkbox
 								property="messageNo" value="<%=dm.messageId %>" /> <% String atta = dm.attach;
                                             if (atta.equals("1")){
-                                            %><img src="img/clip4.jpg">
+                                            %><img src="img/clip4.JPG">
 							<%
                                             }
                                          %> &nbsp;</td>

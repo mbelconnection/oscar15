@@ -19,7 +19,7 @@
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
 <jsp:useBean id="SxmlMisc" class="oscar.SxmlMisc" scope="session" />
-<%@ include file="dbReport.jspf"%>
+<%@ include file="dbReport.jsp"%>
 <%
 GregorianCalendar now=new GregorianCalendar();
   int curYear = now.get(Calendar.YEAR);
@@ -57,7 +57,7 @@ GregorianCalendar now=new GregorianCalendar();
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -69,6 +69,8 @@ GregorianCalendar now=new GregorianCalendar();
 	key="oscarReport.oscarReportVisitControl.title" /></title>
 <link rel="stylesheet" href="oscarReport.css">
 <link rel="stylesheet" type="text/css" media="all" href="../share/css/extractedFromPages.css"  />
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 <script language="JavaScript">
 <!-- 
 
@@ -181,13 +183,15 @@ function refresh() {
 <p>&nbsp;</p>
 <% } else {  
        if (reportAction.compareTo("lk") == 0) { %>
-<%@ include file="oscarReportVisit_lk.jspf"%>
+<%@ include file="oscarReportVisit_lk.jsp"%>
 <%     } else {
            if (reportAction.compareTo("vr") == 0) { %>
-<%@ include file="oscarReportVisit_vr.jspf"%>
+<%@ include file="oscarReportVisit_vr.jsp"%>
 <%         }
        }
    }
+
+apptMainBean.closePstmtConn();
 %>
 
 <%@ include file="../demographic/zfooterbackclose.jsp"%>

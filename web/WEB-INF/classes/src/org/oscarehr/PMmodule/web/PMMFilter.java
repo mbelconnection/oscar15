@@ -33,12 +33,12 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oscarehr.PMmodule.model.Agency;
 import org.oscarehr.PMmodule.service.AgencyManager;
 import org.oscarehr.PMmodule.service.OscarSecurityManager;
 import org.oscarehr.PMmodule.service.ProviderManager;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -46,7 +46,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class PMMFilter implements Filter {
 
-	private static Logger logger = MiscUtils.getLogger();
+	private static Log log = LogFactory.getLog(PMMFilter.class);
 
 	private AgencyManager agencyManager;
 	private OscarSecurityManager oscarSecurityManager;
@@ -62,7 +62,6 @@ public class PMMFilter implements Filter {
 	}
 
 	public void init(FilterConfig config) throws ServletException {
-		logger.info("Starting Filter : "+getClass().getSimpleName());
 		this.config = config;
 	}
 
@@ -74,7 +73,7 @@ public class PMMFilter implements Filter {
 
 		String oscarUser = (String) session.getAttribute("user");
 		if (oscarUser == null || oscarUser.length() == 0) {
-			logger.info("Not logged in!");
+			log.info("Not logged in!");
 			chain.doFilter(baseRequest, baseResponse);
 
             return;
@@ -83,7 +82,7 @@ public class PMMFilter implements Filter {
 		session.setAttribute("program_domain", providerManager.getProgramDomain(oscarUser));
 
 		if (session.getAttribute("pmm_admin") == null) {
-			logger.debug("setting session variable: pmm_admin");
+			log.debug("setting session variable: pmm_admin");
 			session.setAttribute("pmm_admin", new Boolean(oscarSecurityManager.hasAdminRole(oscarUser)));
 		}
 		

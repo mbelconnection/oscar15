@@ -100,20 +100,14 @@ import org.oscarehr.caisi_integrator.ws.ReferralWs;
 import org.oscarehr.casemgmt.service.CaseManagementManager;
 import org.oscarehr.common.dao.CdsClientFormDao;
 import org.oscarehr.common.dao.IntegratorConsentDao;
-import org.oscarehr.common.dao.OcanClientFormDao;
-import org.oscarehr.common.dao.OcanStaffFormDao;
 import org.oscarehr.common.model.CdsClientForm;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.Facility;
 import org.oscarehr.common.model.IntegratorConsent;
-import org.oscarehr.common.model.OcanClientForm;
-import org.oscarehr.common.model.OcanStaffForm;
 import org.oscarehr.common.model.Provider;
 import org.oscarehr.survey.model.oscar.OscarFormInstance;
 import org.oscarehr.util.LoggedInInfo;
-import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
-import org.oscarehr.util.WebUtils;
 import org.springframework.beans.factory.annotation.Required;
 
 import oscar.oscarDemographic.data.DemographicRelationship;
@@ -122,7 +116,7 @@ import com.quatro.service.LookupManager;
 
 public class ClientManagerAction extends BaseAction {
 
-	private static final Logger logger = MiscUtils.getLogger();
+	private static final Logger logger = org.apache.log4j.LogManager.getLogger(ClientManagerAction.class);
 
 	private HealthSafetyManager healthSafetyManager;
 	private ClientRestrictionManager clientRestrictionManager;
@@ -144,10 +138,7 @@ public class ClientManagerAction extends BaseAction {
 	private CdsClientFormDao cdsClientFormDao;
 	private static AdmissionDao admissionDao = (AdmissionDao) SpringUtils.getBean("admissionDao");
 	private static ProviderDao providerDao = (ProviderDao) SpringUtils.getBean("providerDao");
-	private OcanStaffFormDao ocanStaffFormDao = (OcanStaffFormDao)SpringUtils.getBean("ocanStaffFormDao");
-	private OcanClientFormDao ocanClientFormDao = (OcanClientFormDao)SpringUtils.getBean("ocanClientFormDao");
-	//private CdsClientFormDao cdsClientFormDao = (CdsClientFormDao)SpringUtils.getBean("cdsClientFormDao");
-	
+
 	public void setIntegratorConsentDao(IntegratorConsentDao integratorConsentDao) {
 		this.integratorConsentDao = integratorConsentDao;
 	}
@@ -422,7 +413,6 @@ public class ClientManagerAction extends BaseAction {
 				ReferralWs referralWs = CaisiIntegratorManager.getReferralWs();
 				referralWs.makeReferral(remoteReferral);
 			} catch (Exception e) {
-				WebUtils.addErrorMessage(request.getSession(), "Error processing referral : "+e.getMessage());
 				logger.error("Unexpected Error.", e);
 			}
 		}
@@ -508,7 +498,7 @@ public class ClientManagerAction extends BaseAction {
 
 				request.setAttribute("program", program);
 			} catch (Exception e) {
-				MiscUtils.getLogger().error("Error", e);
+				e.printStackTrace();
 			}
 		}
 
@@ -713,6 +703,8 @@ public class ClientManagerAction extends BaseAction {
 		if (clientsJadm != null && clientsJadm.getHeadClientId() != null) {
 			isFamilyDependent = true;
 		}
+		System.out.println("ClientManagerAction.saveBedReservation(): isFamilyHead = " + isFamilyHead);
+		System.out.println("ClientManagerAction.saveBedReservation(): isFamilyDependent = " + isFamilyDependent);
 
 		if (!isFamilyHead && isFamilyDependent) {// when client is dependent of a family -> do not attempt to assign.
 			// Display message notifying that the client cannot be saved (assign or unassign) a room or a bed
@@ -1033,6 +1025,7 @@ public class ClientManagerAction extends BaseAction {
 		Long headInteger = new Long(headClientId);
 		Long clientInteger = new Long(clientId);
 
+		System.out.println("headClientId " + headClientId + " clientId " + clientId);
 
 		jadmission.setAdmissionDate(new Date());
 		jadmission.setHeadClientId(headInteger);
@@ -1040,6 +1033,7 @@ public class ClientManagerAction extends BaseAction {
 		jadmission.setClientId(clientInteger);
 		jadmission.setProviderNo((String) request.getSession().getAttribute("user"));
 		jadmission.setTypeId(new Long(type));
+		System.out.println(jadmission.toString());
 		clientManager.saveJointAdmission(jadmission);
 		setEditAttributes(form, request, (String) request.getParameter("clientId"));
 
@@ -1063,11 +1057,7 @@ public class ClientManagerAction extends BaseAction {
 		if (CaisiIntegratorManager.isEnableIntegratedReferrals()) {
 			try {
 				List<CachedProgram> results = CaisiIntegratorManager.getRemoteProgramsAcceptingReferrals();
-				
 				filterResultsByCriteria(results, criteria);
-				
-				removeCommunityPrograms(results);
-				
 				request.setAttribute("remotePrograms", results);
 			} catch (MalformedURLException e) {
 				logger.error("unexpected error", e);
@@ -1080,14 +1070,6 @@ public class ClientManagerAction extends BaseAction {
 
 		return mapping.findForward("search_programs");
 	}
-
-	private void removeCommunityPrograms(List<CachedProgram> results) {
-		Iterator<CachedProgram> it = results.iterator();
-		while (it.hasNext()) {
-			CachedProgram cachedProgram = it.next();
-			if ("community".equals(cachedProgram.getType())) it.remove();
-		}
-    }
 
 	private void filterResultsByCriteria(List<CachedProgram> results, Program criteria) {
 
@@ -1229,7 +1211,7 @@ public class ClientManagerAction extends BaseAction {
 				try {
 					admissionManager.processAdmission(Integer.valueOf(demographicNo), getProviderNo(request), programManager.getProgram(String.valueOf(program.getProgramId())), null, admissionNotes);
 				} catch (Exception e) {
-					MiscUtils.getLogger().error("Error", e);
+					e.printStackTrace();
 					ActionMessages messages = new ActionMessages();
 					messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("admit.error", e.getMessage()));
 					saveMessages(request, messages);
@@ -1317,7 +1299,6 @@ public class ClientManagerAction extends BaseAction {
 		LoggedInInfo loggedInInfo = LoggedInInfo.loggedInInfo.get();
 		Integer facilityId = loggedInInfo.currentFacility.getId();
 		ClientManagerFormBean tabBean = (ClientManagerFormBean) clientForm.get("view");
-		Integer demographicId=Integer.valueOf(demographicNo);
 
 		request.setAttribute("id", demographicNo);
 		request.setAttribute("client", clientManager.getClientByDemographicNo(demographicNo));
@@ -1367,14 +1348,15 @@ public class ClientManagerAction extends BaseAction {
 
 			// request.setAttribute("admissions", admissionManager.getCurrentAdmissions(Integer.valueOf(demographicNo)));
 			// only allow bed/service programs show up.(not external program)
-			List<Admission> currentAdmissionList = admissionManager.getCurrentAdmissionsByFacility(demographicId, facilityId);
-			ArrayList<AdmissionForDisplay> bedServiceList = new ArrayList<AdmissionForDisplay>();
-			for (Admission admission1 : currentAdmissionList) {
-				if (!"External".equalsIgnoreCase(programManager.getProgram(admission1.getProgramId()).getType())) {
-					bedServiceList.add(new AdmissionForDisplay(admission1));
+			List currentAdmissionList = admissionManager.getCurrentAdmissionsByFacility(Integer.valueOf(demographicNo), facilityId);
+			List bedServiceList = new ArrayList();
+			for (Iterator ad = currentAdmissionList.iterator(); ad.hasNext();) {
+				Admission admission1 = (Admission) ad.next();
+				if ("External".equalsIgnoreCase(programManager.getProgram(admission1.getProgramId()).getType())) {
+					continue;
 				}
+				bedServiceList.add(admission1);
 			}
-			addRemoteAdmissions(bedServiceList, demographicId);
 			request.setAttribute("admissions", bedServiceList);
 
 			Intake mostRecentQuickIntake = genericIntakeManager.getMostRecentQuickIntakeByFacility(Integer.valueOf(demographicNo), facilityId);
@@ -1384,50 +1366,33 @@ public class ClientManagerAction extends BaseAction {
 			request.setAttribute("healthsafety", healthsafety);
 
 			request.setAttribute("referrals", getReferralsForSummary(Integer.parseInt(demographicNo), facilityId));
-			
-			//FULL OCAN Staff/Client Assessment
-			OcanStaffForm ocanStaffForm = ocanStaffFormDao.findLatestByFacilityClient(facilityId,Integer.valueOf(demographicNo),"FULL");
-			if(ocanStaffForm!=null && ocanStaffForm.getAssessmentStatus().equals("In Progress"))
-				request.setAttribute("ocanStaffForm", ocanStaffForm);
-			else
-				request.setAttribute("ocanStaffForm",null);
-			
-			//OcanClientForm ocanClientForm = ocanClientFormDao.findLatestByFacilityClient(facilityId,Integer.valueOf(demographicNo));
-			//request.setAttribute("ocanClientForm", ocanClientForm);	
-			
-			//SELF+CORE OCAN Staff/Client Assessment
-			OcanStaffForm selfOcanStaffForm = ocanStaffFormDao.findLatestByFacilityClient(facilityId,Integer.valueOf(demographicNo),"SELF");
-			if(selfOcanStaffForm!=null && selfOcanStaffForm.getAssessmentStatus().equals("In Progress"))
-				request.setAttribute("selfOcanStaffForm", selfOcanStaffForm);
-			else
-				request.setAttribute("selfOcanStaffForm",null);
-			
-			//FULL OCAN Staff/Client Assessment
-			OcanStaffForm coreOcanStaffForm = ocanStaffFormDao.findLatestByFacilityClient(facilityId,Integer.valueOf(demographicNo),"CORE");
-			if(coreOcanStaffForm!=null && coreOcanStaffForm.getAssessmentStatus().equals("In Progress"))
-				request.setAttribute("coreOcanStaffForm", coreOcanStaffForm);
-			else
-				request.setAttribute("coreOcanStaffForm",null);
-			
-			
-			
-			//CDS
-			CdsClientForm cdsClientForm = cdsClientFormDao.findLatestByFacilityClient(facilityId, Integer.valueOf(demographicNo));
-			request.setAttribute("cdsClientForm", cdsClientForm);
 		}
 
 		/* history */
 		if (tabBean.getTab().equals("History")) {
-			ArrayList<AdmissionForDisplay> allResults = new ArrayList<AdmissionForDisplay>();
-			
-			List<Admission> addLocalAdmissions = admissionManager.getAdmissionsByFacility(demographicId, facilityId);
-			for (Admission admission : addLocalAdmissions)
-				allResults.add(new AdmissionForDisplay(admission));
+			ArrayList<AdmissionForHistoryTabDisplay> allResults = new ArrayList<AdmissionForHistoryTabDisplay>();
 
-			addRemoteAdmissions(allResults, demographicId);
-			
+			List<Admission> addLocalAdmissions = admissionManager.getAdmissionsByFacility(Integer.valueOf(demographicNo), facilityId);
+			for (Admission admission : addLocalAdmissions)
+				allResults.add(new AdmissionForHistoryTabDisplay(admission));
+
+			if (loggedInInfo.currentFacility.isIntegratorEnabled()) {
+
+				try {
+					DemographicWs demographicWs = CaisiIntegratorManager.getDemographicWs();
+					List<CachedAdmission> cachedAdmissions = demographicWs.getLinkedCachedAdmissionsByDemographicId(Integer.parseInt(demographicNo));
+
+					for (CachedAdmission cachedAdmission : cachedAdmissions)
+						allResults.add(new AdmissionForHistoryTabDisplay(cachedAdmission));
+
+					Collections.sort(allResults, AdmissionForHistoryTabDisplay.ADMISSION_DATE_COMPARATOR);
+				} catch (Exception e) {
+					logger.error("Error retrieveing integrated admissions.", e);
+				}
+			}
+
 			request.setAttribute("admissionHistory", allResults);
-			request.setAttribute("referralHistory", getReferralsForHistory(demographicId, facilityId));
+			request.setAttribute("referralHistory", clientManager.getReferralsByFacility(demographicNo, facilityId));
 		}
 
 		List<?> currentAdmissions = admissionManager.getCurrentAdmissions(Integer.valueOf(demographicNo));
@@ -1570,19 +1535,6 @@ public class ClientManagerAction extends BaseAction {
 			// CDS forms
 			List<CdsClientForm> cdsForms = cdsClientFormDao.findByFacilityClient(facilityId, clientId);
 			request.setAttribute("cdsForms", cdsForms);
-			
-			//FULL OCAN Forms
-			List<OcanStaffForm> ocanStaffForms = ocanStaffFormDao.findByFacilityClient(facilityId, clientId,"FULL");
-			request.setAttribute("ocanStaffForms", ocanStaffForms);
-			
-			//SELF+CORE OCAN Forms
-			List<OcanStaffForm> selfOcanStaffForms = ocanStaffFormDao.findByFacilityClient(facilityId, clientId,"SELF");
-			request.setAttribute("selfOcanStaffForms", selfOcanStaffForms);
-			
-			//CORE OCAN Forms
-			List<OcanStaffForm> coreOcanStaffForms = ocanStaffFormDao.findByFacilityClient(facilityId, clientId,"CORE");
-			request.setAttribute("coreOcanStaffForms", coreOcanStaffForms);
-			
 		}
 
 		/* refer */
@@ -1673,6 +1625,7 @@ public class ClientManagerAction extends BaseAction {
 				String demographic = (String) h.get("demographicNo");
 				Long demoLong = new Long(demographic);
 				JointAdmission demoJadm = clientManager.getJointAdmission(demoLong);
+				System.out.println("DEMO JADM: " + demoJadm);
 
 				// IS PERSON JOINTLY ADMITTED WITH ME, They will either have the same HeadClient or be my headClient
 				if (clientsJadm != null && clientsJadm.getHeadClientId().longValue() == demoLong) { // they're my head client
@@ -1706,27 +1659,7 @@ public class ClientManagerAction extends BaseAction {
 		}
 	}
 
-	private void addRemoteAdmissions(ArrayList<AdmissionForDisplay> admissionsForDisplay, Integer demographicId)
-	{
-		LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
-		
-		if (loggedInInfo.currentFacility.isIntegratorEnabled()) {
-
-			try {
-				DemographicWs demographicWs = CaisiIntegratorManager.getDemographicWs();
-				List<CachedAdmission> cachedAdmissions = demographicWs.getLinkedCachedAdmissionsByDemographicId(demographicId);
-
-				for (CachedAdmission cachedAdmission : cachedAdmissions)
-					admissionsForDisplay.add(new AdmissionForDisplay(cachedAdmission));
-
-				Collections.sort(admissionsForDisplay, AdmissionForDisplay.ADMISSION_DATE_COMPARATOR);
-			} catch (Exception e) {
-				logger.error("Error retrieveing integrated admissions.", e);
-			}
-		}		
-	}
-	
-	private List<ReferralSummaryDisplay> getReferralsForSummary(Integer demographicNo, Integer facilityId) {
+	private List<ReferralSummaryDisplay> getReferralsForSummary(int demographicNo, Integer facilityId) {
 		ArrayList<ReferralSummaryDisplay> allResults = new ArrayList<ReferralSummaryDisplay>();
 
 		List<ClientReferral> tempResults = clientManager.getActiveReferrals(String.valueOf(demographicNo), String.valueOf(facilityId));
@@ -1741,30 +1674,6 @@ public class ClientManagerAction extends BaseAction {
 				for (Referral referral : tempRemoteReferrals) allResults.add(new ReferralSummaryDisplay(referral));
 				
 				Collections.sort(allResults, ReferralSummaryDisplay.REFERRAL_DATE_COMPARATOR);
-			}
-			catch (Exception e)
-			{
-				logger.error("Unexpected error.", e);
-			}
-		}
-				
-		return (allResults);
-	}
-
-	private List<ReferralHistoryDisplay> getReferralsForHistory(Integer demographicNo, Integer facilityId) {
-		ArrayList<ReferralHistoryDisplay> allResults = new ArrayList<ReferralHistoryDisplay>();
-
-		for (ClientReferral clientReferral : clientManager.getReferralsByFacility(demographicNo, facilityId)) allResults.add(new ReferralHistoryDisplay(clientReferral));
-
-		LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
-		if (loggedInInfo.currentFacility.isIntegratorEnabled()) {
-			try {
-				ReferralWs referralWs = CaisiIntegratorManager.getReferralWs();
-
-				List<Referral> tempRemoteReferrals = referralWs.getLinkedReferrals(demographicNo);
-				for (Referral referral : tempRemoteReferrals) allResults.add(new ReferralHistoryDisplay(referral));
-				
-				Collections.sort(allResults, ReferralHistoryDisplay.REFERRAL_DATE_COMPARATOR);
 			}
 			catch (Exception e)
 			{

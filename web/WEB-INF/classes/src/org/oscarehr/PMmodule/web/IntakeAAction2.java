@@ -31,14 +31,17 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.apache.struts.action.DynaActionForm;
+import org.caisi.event.OscarCaisiEvent;
 import org.oscarehr.PMmodule.model.Admission;
+import org.oscarehr.common.model.Demographic;
 import org.oscarehr.PMmodule.model.Formintakea;
 import org.oscarehr.PMmodule.model.Program;
 import org.oscarehr.PMmodule.model.ProgramProvider;
@@ -50,11 +53,10 @@ import org.oscarehr.PMmodule.service.ProgramManager;
 import org.oscarehr.PMmodule.service.ProviderManager;
 import org.oscarehr.PMmodule.web.formbean.IntakeAFormBean;
 import org.oscarehr.PMmodule.web.formbean.IntakeFormBean;
-import org.oscarehr.common.model.Demographic;
-import org.oscarehr.util.MiscUtils;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class IntakeAAction2 extends BaseAction {
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(IntakeAAction2.class);
     private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
     private AdmissionManager admissionManager;
     private ClientManager clientManager;
@@ -178,10 +180,10 @@ public class IntakeAAction2 extends BaseAction {
     public ActionForward save(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
         DynaActionForm intakeForm = (DynaActionForm) form;
         IntakeAFormBean formBean = (IntakeAFormBean) intakeForm.get("view2");
-        //IntakeFormBean intakeFormBean = (IntakeFormBean) intakeForm.get("bean");
+        IntakeFormBean intakeFormBean = (IntakeFormBean) intakeForm.get("bean");
 
         Formintakea intakea = (Formintakea) intakeForm.get("intake");
-        //String demographicNo = request.getParameter("demographicNo");
+        String demographicNo = request.getParameter("demographicNo");
 
         boolean update = false;
 
@@ -267,11 +269,11 @@ public class IntakeAAction2 extends BaseAction {
 
         // Intake A saved exposed to Oscar-Triggers as event
         // begin-event-code
-//        OscarCaisiEvent ev = new OscarCaisiEvent("pmm.intakea.saved", intakea);
-//        ev.getOscarCaisiContext().setProviderID(this.getProviderNo(request));
-//        ev.getOscarCaisiContext().setClientID(intakea.getDemographicNo().toString());
-//        ev.addBean("form", intakea);
-//        WebApplicationContextUtils.getWebApplicationContext(getServlet().getServletContext()).publishEvent(ev);
+        OscarCaisiEvent ev = new OscarCaisiEvent("pmm.intakea.saved", intakea);
+        ev.getOscarCaisiContext().setProviderID(this.getProviderNo(request));
+        ev.getOscarCaisiContext().setClientID(intakea.getDemographicNo().toString());
+        ev.addBean("form", intakea);
+        WebApplicationContextUtils.getWebApplicationContext(getServlet().getServletContext()).publishEvent(ev);
         // end-event-code
 
         request.getSession().setAttribute("demographic", null);

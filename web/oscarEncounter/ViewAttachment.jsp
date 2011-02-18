@@ -1,3 +1,4 @@
+<%@ page language="java"%>
 <%@ page
 	import="oscar.oscarEncounter.immunization.data.*,oscar.util.UtilXML"%>
 <%@ page
@@ -20,6 +21,8 @@
     xmlDoc = UtilXML.parseXML(attachment);
 
     Element root = xmlDoc.getDocumentElement();
+    System.out.println(UtilXML.toXML(root));
+
 %>
 
 
@@ -44,7 +47,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */

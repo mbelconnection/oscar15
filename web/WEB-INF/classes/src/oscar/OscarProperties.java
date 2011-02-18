@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the
 // * Department of Family Medicine
-// * McMaster University
+// * McMaster Unviersity
 // * Hamilton
 // * Ontario, Canada
 // *
@@ -33,9 +33,6 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
-
 /*
  * Updated by Eugene Petruhin on 21 jan 2009 while fixing missing "New Note" link
  * New isPropertyActive() function is introduced and everybody is encouraged to use it
@@ -46,7 +43,6 @@ import org.oscarehr.util.MiscUtils;
  * Every time the properties file changes, tomcat must be restarted.
  */
 public class OscarProperties extends Properties {
-    private static Logger logger=MiscUtils.getLogger(); 
 
 	private static final long serialVersionUID = -5965807410049845132L;
 	private static OscarProperties oscarProperties = new OscarProperties();
@@ -58,7 +54,7 @@ public class OscarProperties extends Properties {
 			readFromFile("/oscar_mcmaster.properties", oscarProperties);
 		} catch (IOException e) {
 			// don't use a logger here or your asking for trouble, it's a static initialiser
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 		}
 	}
         
@@ -84,15 +80,15 @@ public class OscarProperties extends Properties {
 	/*
 	 * private OscarProperties() {
 	 * 
-	 * InputStream is = getClass().getResourceAsStream("/oscar_mcmaster.properties"); try { load(is); } catch (Exception e) { MiscUtils.getLogger().debug("Error, file oscar_mcmaster.properties not found.");
-	 * MiscUtils.getLogger().debug("This file must be placed at WEB-INF/classes."); }
+	 * InputStream is = getClass().getResourceAsStream("/oscar_mcmaster.properties"); try { load(is); } catch (Exception e) { System.out.println("Error, file oscar_mcmaster.properties not found.");
+	 * System.out.println("This file must be placed at WEB-INF/classes."); }
 	 * 
-	 * try{ is.close(); } catch (IOException e) { MiscUtils.getLogger().debug("IO error."); MiscUtils.getLogger().error("Error", e); } } //OscarProperties - end
+	 * try{ is.close(); } catch (IOException e) { System.out.println("IO error."); e.printStackTrace(); } } //OscarProperties - end
 	 */
 
 	/* Do not use this constructor. Use getInstance instead */
 	private OscarProperties() {
-		MiscUtils.getLogger().debug("OSCAR PROPS CONSTRUCTOR");
+		System.out.println("OSCAR PROPS CONSTRUCTOR");
 	}
 
         
@@ -148,7 +144,7 @@ public class OscarProperties extends Properties {
 				propertyStream.close();
 				loaded = true;
 			} catch (IOException ex) {
-				logger.error("IO Error: ", ex);
+				System.err.println("IO Error: " + ex.getMessage());
 			}
 		}
 	}
@@ -161,7 +157,7 @@ public class OscarProperties extends Properties {
 				fis2.close();
 				loaded = true;
 			} catch (IOException ex) {
-				logger.error("IO Error: ", ex);
+				System.err.println("IO Error: " + ex.getMessage());
 			}
 		}
 	}
@@ -245,9 +241,5 @@ public class OscarProperties extends Properties {
 
 	public String getBuildDate() {
 		return getProperty("builddate");
-	}
-	
-	public boolean isOscarLearning() {
-		return isPropertyActive("OSCAR_LEARNING");
 	}
 }

@@ -30,21 +30,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 @Entity
 public class SystemMessage extends AbstractModel<Integer> {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id = 0;
 	private String message = null;
-
-	@Temporal(TemporalType.TIMESTAMP)
 	private Date creationDate = new Date();
-	
-	@Temporal(TemporalType.TIMESTAMP)
 	private Date expiryDate = new Date();
 
 	public String getMessage() {
@@ -71,13 +65,12 @@ public class SystemMessage extends AbstractModel<Integer> {
 		this.expiryDate = expiryDate;
 	}
 
-	@Override
-    public Integer getId() {
+	public Integer getId() {
 		return id;
 	}
 
 	/**
-	 * you should never set id's in an existing jpa object, this leads to known problems and is considered bad practice.
+	 * @deprecated you should never set id's in an existing jpa object, this leads to known problems and is considered bad practice.
 	 */
 	public void setId(Integer id) {
 		this.id = id;

@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the
 // * Department of Family Medicine
-// * McMaster University
+// * McMaster Unviersity
 // * Hamilton
 // * Ontario, Canada
 // *
@@ -36,7 +36,7 @@ import oscar.oscarDB.DBPreparedHandlerParam;
 import oscar.util.UtilDict;
 
 public class AppointmentMainBean {
-
+    public AppointmentMainBean(){}
   private DBPreparedHandler dbPH=null;
   private UtilDict toFile=null;
   private UtilDict dbSQL=null;
@@ -153,7 +153,7 @@ public class AppointmentMainBean {
 	  	sqlQuery = dbSQL.getDef(dboperation,"");
     	rs = dbPH.queryResults(sqlQuery, aKeyword);
 	  }
-
+	//  System.out.println("sqlQuery=" + sqlQuery);  
   	return rs;
   }
 
@@ -168,7 +168,7 @@ public class AppointmentMainBean {
 	  	sqlQuery = dbSQL.getDef(dboperation,"");
   	    rs = dbPH.queryResults_paged(sqlQuery, aKeyword, iOffSet);
 	  }
-
+   // System.out.println("sqlQuery=" + sqlQuery);
 	return rs;
 }
 
@@ -226,10 +226,10 @@ public class AppointmentMainBean {
 	  ResultSet rs =null;
 	  if(aKeyword.equals("*")) {
 	  	sqlQuery = dbSQL.getDef("search*","");
-    	rs = dbPH.queryResults(sqlQuery);
+                rs = dbPH.queryResults(sqlQuery);
 	  } else {
 	  	sqlQuery = dbSQL.getDef(dboperation,"");
-    	rs = dbPH.queryResults(sqlQuery, aKeyword);
+                rs = dbPH.queryResults(sqlQuery, aKeyword);
 	  }
   	return rs;
   }
@@ -288,7 +288,11 @@ public class AppointmentMainBean {
       return dbPH.queryResults(sqlQuery);
     }
 
-  public String getString(ResultSet rs, java.lang.String columnName) throws SQLException
+  // Don't forget to clean up!
+  public void closePstmtConn() throws SQLException {
+    dbPH.closePstmt();
+  }
+  public String getString(ResultSet rs, String columnName) throws SQLException
   {
   	return Misc.getString(rs, columnName);
   }

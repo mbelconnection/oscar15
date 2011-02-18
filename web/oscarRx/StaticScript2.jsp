@@ -1,8 +1,15 @@
+<%@ page language="java"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
-<%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %><!--
+<%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %>
+
+<%
+	response.setHeader("Cache-Control", "no-cache");
+%>
+
+<!--
 /*
  *
  * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved. *
@@ -22,7 +29,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -75,6 +82,7 @@
             response.sendRedirect("../logout.jsp");
 	String curUser_no = (String) session.getAttribute("user");
 	String regionalIdentifier=request.getParameter("regionalIdentifier");
+        System.out.println("req ctx "+request.getContextPath());
 	String cn=request.getParameter("cn");
         String bn=request.getParameter("bn");
 	Integer currentDemographicNo=bean.getDemographicNo();

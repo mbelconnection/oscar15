@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -35,6 +35,11 @@ import oscar.util.UtilMisc;
 import oscar.util.UtilXML;
 
 class Messages {
+    private DBHandler db;
+
+    public Messages(DBHandler db) {
+        this.db = db;
+    }
 
     public void addMessageList(Element messageList) throws SQLException {
         NodeList messages = messageList.getChildNodes();
@@ -57,12 +62,12 @@ class Messages {
                 + UtilMisc.mysqlEscape(msg.get("attachment"))     + "', '" 
                 + UtilMisc.mysqlEscape(msg.get("actionstatus"))   + "')";
                         
-            DBHandler.RunSQL(sql);
+            db.RunSQL(sql);
 
             int msgId = -1;   
 
             sql = "SELECT LAST_INSERT_ID()";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if(rs.next()) {
                 msgId = rs.getInt(1);
             }
@@ -75,7 +80,7 @@ class Messages {
                 sql = "INSERT INTO messagelisttbl (message, provider_no, status, remotelocation) VALUES (" + msgId + ", '"
                 + pNo + "', 'new', '" + loc + "')";
 
-                DBHandler.RunSQL(sql);
+                db.RunSQL(sql);
             }
         }
     }

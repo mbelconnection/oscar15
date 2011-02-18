@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -42,7 +42,7 @@
  * (your name here) 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
 */
@@ -82,6 +82,8 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="schedule.scheduledatepopup.title" /></title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <link rel="stylesheet" href="../web.css" />
 
 <script language="JavaScript">
@@ -146,7 +148,7 @@ function upCaseCtrl(ctrl) {
    }
    param = request.getParameter("provider_no");
    rsdemo = scheduleMainBean.queryResults(param, "search_scheduletemplate");
-   while (rsdemo.next()) {
+   while (rsdemo.next()) { //System.out.println(strHour +" : "+rsdemo.getString("name"));
 	%>
 					<option value="<%=rsdemo.getString("name")%>"
 						<%=rsdemo.getString("name").equals(strHour)?"selected":""%>><%=rsdemo.getString("name")+" |"+rsdemo.getString("summary")%></option>

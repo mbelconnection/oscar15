@@ -30,12 +30,13 @@ package oscar.oscarLab.ca.on.CML;
 
 import java.sql.ResultSet;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarLab.ca.on.CommonLabResultData;
@@ -46,14 +47,14 @@ import oscar.util.UtilDateUtilities;
  * @author Jay Gallagher
  */
 public class CMLLabTest {
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(CMLLabTest.class);
     
     public String locationId = null; //  2. (e.g. 70 = CML Mississauga)
     public String printDate  = null; //  3. YYYYMMDD
     public String printTime  = null; //  4. HH:MM
-    public String totalBType = null; //  5. number of B-type lines (= # of reports)
-    public String totalCType = null; //  6. number of C-type lines
-    public String totalDType = null; //  7. number of D-type lines
+    public String totalBType = null; //  5. number of ‘B-type’ lines (= # of reports)
+    public String totalCType = null; //  6. number of ‘C-type’ lines
+    public String totalDType = null; //  7. number of ‘D-type’ lines
     
     
     public String accessionNum = null;        //  2. CML Accession number (minus first char)
@@ -61,10 +62,10 @@ public class CMLLabTest {
     public String serviceDate = null;         //  4. YYYYMMDD
     public String pFirstName = null;          //  5. Patient: First name
     public String pLastName = null;           //  6. Patient: Last name
-    public String pSex = null;                //  7. Sex F or M
+    public String pSex = null;                //  7. Sex ‘F’ or ‘M’
     public String pHealthNum = null;          //  8. Patient: Health number
     public String pDOB = null;                //  9. Patient: Birth date
-    public String status = null;              // 10. Final or Partial F or P
+    public String status = null;              // 10. Final or Partial ‘F’ or ‘P’
     public String docNum = null;              // 11. Physician: Number
     public String docName = null;             // 12. Physician: Name
     public String docAddr1 = null;            // 13. Physician: Address line 1
@@ -92,7 +93,7 @@ public class CMLLabTest {
     }
     
     public String getAge(){
-    	return getAge(this.pDOB);
+        return getAge(this.pDOB);
     }
     
     public String getAge(String s){
@@ -102,8 +103,7 @@ public class CMLLabTest {
             DateFormat formatter = new SimpleDateFormat("yyyyMMdd");
             java.util.Date date = (java.util.Date)formatter.parse(s);
             age = UtilDateUtilities.calcAge(date);
-        } catch (Exception e) {
-        	// this is okay, either null or invalid format
+        } catch (ParseException e) {
         }
         return age;
     }
@@ -114,11 +114,11 @@ public class CMLLabTest {
     
     private void populateDemoNo(String labId){
         try{
-            
-            ResultSet rs = DBHandler.GetSQL("select demographic_no from patientLabRouting where lab_no = '"+labId+"' and lab_type = 'CML'");
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL("select demographic_no from patientLabRouting where lab_no = '"+labId+"' and lab_type = 'CML'");
             log.debug("select demographic_no from patientLabRouting where lab_no = '"+labId+"' and lab_type = 'CML'");
             if (rs.next()){
-                String d = oscar.Misc.getString(rs, "demographic_no");
+                String d = db.getString(rs,"demographic_no");
                 log.debug("dd "+d);
                 if ( !"0".equals(d)){
                     this.demographicNo = d;
@@ -127,7 +127,7 @@ public class CMLLabTest {
             rs.close();
             
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         log.debug("going out "+this.demographicNo);
     }
@@ -140,40 +140,40 @@ public class CMLLabTest {
                 
         log.debug("lab id "+labid);
         try{
-            
-            ResultSet rs = DBHandler.GetSQL("select * from labPatientPhysicianInfo where id = '"+labid+"'");
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL("select * from labPatientPhysicianInfo where id = '"+labid+"'");
             
             
             if (rs.next()){
-                this.labReportInfoId = oscar.Misc.getString(rs, "labReportInfo_id");
-                this.accessionNum = oscar.Misc.getString(rs, "accession_num");
-                this.physicianAccountNum = oscar.Misc.getString(rs, "physician_account_num");
-                this.serviceDate = oscar.Misc.getString(rs, "service_date");
-                this.pFirstName = oscar.Misc.getString(rs, "patient_first_name");
-                this.pLastName = oscar.Misc.getString(rs, "patient_last_name");
-                this.pSex = oscar.Misc.getString(rs, "patient_sex");
-                this.pHealthNum = oscar.Misc.getString(rs, "patient_health_num");
-                this.pDOB = oscar.Misc.getString(rs, "patient_dob");
-                this.status = oscar.Misc.getString(rs, "lab_status");
-                this.docNum = oscar.Misc.getString(rs, "doc_num");
-                this.docName = oscar.Misc.getString(rs, "doc_name");
-                this.docAddr1 = oscar.Misc.getString(rs, "doc_addr1");
-                this.docAddr2 = oscar.Misc.getString(rs, "doc_addr2");
-                this.docAddr3 = oscar.Misc.getString(rs, "doc_addr3");
-                this.docPostal = oscar.Misc.getString(rs, "doc_postal");
-                this.docRoute = oscar.Misc.getString(rs, "doc_route");
-                this.comment1 = oscar.Misc.getString(rs, "comment1");
-                this.comment2 = oscar.Misc.getString(rs, "comment2");
-                this.pPhone = oscar.Misc.getString(rs, "patient_phone");
-                this.docPhone = oscar.Misc.getString(rs, "doc_phone");
-                this.collectionDate = oscar.Misc.getString(rs, "collection_date");
+                this.labReportInfoId = db.getString(rs,"labReportInfo_id");
+                this.accessionNum = db.getString(rs,"accession_num");
+                this.physicianAccountNum = db.getString(rs,"physician_account_num");
+                this.serviceDate = db.getString(rs,"service_date");
+                this.pFirstName = db.getString(rs,"patient_first_name");
+                this.pLastName = db.getString(rs,"patient_last_name");
+                this.pSex = db.getString(rs,"patient_sex");
+                this.pHealthNum = db.getString(rs,"patient_health_num");
+                this.pDOB = db.getString(rs,"patient_dob");
+                this.status = db.getString(rs,"lab_status");
+                this.docNum = db.getString(rs,"doc_num");
+                this.docName = db.getString(rs,"doc_name");
+                this.docAddr1 = db.getString(rs,"doc_addr1");
+                this.docAddr2 = db.getString(rs,"doc_addr2");
+                this.docAddr3 = db.getString(rs,"doc_addr3");
+                this.docPostal = db.getString(rs,"doc_postal");
+                this.docRoute = db.getString(rs,"doc_route");
+                this.comment1 = db.getString(rs,"comment1");
+                this.comment2 = db.getString(rs,"comment2");
+                this.pPhone = db.getString(rs,"patient_phone");
+                this.docPhone = db.getString(rs,"doc_phone");
+                this.collectionDate = db.getString(rs,"collection_date");
                 log.debug(" lab id "+labReportInfoId);
             }
             
             rs.close();
             
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         
         if (labReportInfoId != null){
@@ -197,12 +197,12 @@ public class CMLLabTest {
         String dis = "";
         
         try{
-            
-            ResultSet rs = DBHandler.GetSQL("select distinct title from labTestResults where title != '' and labPatientPhysicianInfo_id = '"+labid+"'");
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL("select distinct title from labTestResults where title != '' and labPatientPhysicianInfo_id = '"+labid+"'");
             ArrayList alist = new ArrayList();
             int count = 0;
             while (rs.next()){
-                String title = oscar.Misc.getString(rs, "title");
+                String title = db.getString(rs,"title");
                 count += title.length();
                 alist.add(title);
                 log.debug("line "+title);
@@ -213,7 +213,7 @@ public class CMLLabTest {
             }else if(alist.size() != 0) {
                 int lenAvail = 20 - ( alist.size() - 1);
                 if ( lenAvail > count){
-                    StringBuilder s = new StringBuilder();
+                    StringBuffer s = new StringBuffer();
                     for(int i = 0; i < alist.size(); i++){
                         s.append( (String) alist.get(i));
                         if (i < (alist.size() -1)){
@@ -223,7 +223,7 @@ public class CMLLabTest {
                     dis = s.toString();
                 }else{//need to divide up characters
                     int charEach = lenAvail / alist.size();
-                    StringBuilder s = new StringBuilder();
+                    StringBuffer s = new StringBuffer();
                     for(int i = 0; i < alist.size(); i++){
                         String str = (String) alist.get(i);
                         
@@ -237,7 +237,7 @@ public class CMLLabTest {
             }
             rs.close();
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return dis;
         
@@ -251,19 +251,19 @@ public class CMLLabTest {
     private void populateLabReportInfo(String labid){
         //labID = labid;
         try{
-            
-            ResultSet rs = DBHandler.GetSQL("select * from labReportInformation where id = '"+labid+"'");
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL("select * from labReportInformation where id = '"+labid+"'");
             if (rs.next()){
-                this.locationId = oscar.Misc.getString(rs, "location_id");
-                this.printDate = oscar.Misc.getString(rs, "print_date");
-                this.printTime = oscar.Misc.getString(rs, "print_time");
-                this.totalBType = oscar.Misc.getString(rs, "total_BType");
-                this.totalCType = oscar.Misc.getString(rs, "total_CType");
-                this.totalDType = oscar.Misc.getString(rs, "total_DType");
+                this.locationId = db.getString(rs,"location_id");
+                this.printDate = db.getString(rs,"print_date");
+                this.printTime = db.getString(rs,"print_time");
+                this.totalBType = db.getString(rs,"total_BType");
+                this.totalCType = db.getString(rs,"total_CType");
+                this.totalDType = db.getString(rs,"total_DType");
             }
             rs.close();
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
     }
     
@@ -271,34 +271,34 @@ public class CMLLabTest {
     private ArrayList populateLabResultData(String labid){
         ArrayList alist = new ArrayList();
         try{
-            
-            ResultSet rs = DBHandler.GetSQL("select * from labTestResults where labPatientPhysicianInfo_id = '"+labid+"'");
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL("select * from labTestResults where labPatientPhysicianInfo_id = '"+labid+"'");
             log.debug("select * from labTestResults where labPatientPhysicianInfo_id = '"+labid+"'");
             while (rs.next()){
-                String lineType = oscar.Misc.getString(rs, "line_type");
+                String lineType = db.getString(rs,"line_type");
                 log.debug("line "+lineType);
                 if (lineType != null){
                     LabResult labRes = new LabResult();
                     
-                    labRes.title = oscar.Misc.getString(rs, "title");
+                    labRes.title = db.getString(rs,"title");
                     if (labRes.title == null){ labRes.title = "" ;}
-                    labRes.notUsed1 = oscar.Misc.getString(rs, "notUsed1");
-                    labRes.locationId = oscar.Misc.getString(rs, "location_id");
-                    labRes.last = oscar.Misc.getString(rs, "last");
+                    labRes.notUsed1 = db.getString(rs,"notUsed1");
+                    labRes.locationId = db.getString(rs,"location_id");
+                    labRes.last = db.getString(rs,"last");
                     
                     if(lineType.equals("C")){
-                        labRes.notUsed2 = oscar.Misc.getString(rs, "notUsed2");
-                        labRes.testName = oscar.Misc.getString(rs, "test_name");
-                        labRes.abn = oscar.Misc.getString(rs, "abn");
+                        labRes.notUsed2 = db.getString(rs,"notUsed2");
+                        labRes.testName = db.getString(rs,"test_name");
+                        labRes.abn = db.getString(rs,"abn");
                         if(labRes.abn != null && labRes.abn.equals("N")){
                             labRes.abn = "";
                         }
-                        labRes.minimum = oscar.Misc.getString(rs, "minimum");
-                        labRes.maximum = oscar.Misc.getString(rs, "maximum");
-                        labRes.units = oscar.Misc.getString(rs, "units");
-                        labRes.result = oscar.Misc.getString(rs, "result");
+                        labRes.minimum = db.getString(rs,"minimum");
+                        labRes.maximum = db.getString(rs,"maximum");
+                        labRes.units = db.getString(rs,"units");
+                        labRes.result = db.getString(rs,"result");
                     }else if (lineType.equals("D")){
-                        labRes.description = oscar.Misc.getString(rs, "description");
+                        labRes.description = db.getString(rs,"description");
                         labRes.labResult = false;
                     }
                     alist.add(labRes);
@@ -306,7 +306,7 @@ public class CMLLabTest {
             }
             rs.close();
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return alist;
     }
@@ -315,11 +315,11 @@ public class CMLLabTest {
         int count = 0;
         String sql = null;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             
             sql = "select id from labTestResults where abn = 'A' and labPatientPhysicianInfo_id = '"+labId+"'";
             
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             while(rs.next()){
                 count++;
             }
@@ -344,20 +344,20 @@ public class CMLLabTest {
         public String notUsed1 = null;    //  3. Not used ?
         public String notUsed2 = null;    //  4. Not used ?
         public String testName = null;    //  5. Test name
-        public String abn  = null;     //  6. Normal/Abnormal N or A
+        public String abn  = null;     //  6. Normal/Abnormal ‘N’ or ‘A’
         public String minimum = null;     //  7. Minimum
         public String maximum = null;     //  8. Maximum
         public String units = null;       //  9. Units
         public String result = null;      // 10. Result
-        public String locationId = null;  // 11. Location Id (Test performed at)
-        public String last = null;        // 12. Last Y or N
+        public String locationId = null;  // 11. Location Id (Test performed at …)
+        public String last = null;        // 12. Last ‘Y’ or ‘N’
         
         
         //String title = null;       // 2. Title
         //String notUsed1 = null;    // 3. not used ?
         public String description = null; // 4. Description/Comment
         //String locationId = null;  // 5. Location Id
-        //String last = null;        // 6. Last Y or N
+        //String last = null;        // 6. Last ‘Y’ or ‘N’
         
         ///
         public String getReferenceRange(){

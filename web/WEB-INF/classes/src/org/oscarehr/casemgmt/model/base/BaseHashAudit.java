@@ -34,7 +34,7 @@ import java.io.Serializable;
  */
 public abstract class BaseHashAudit implements Serializable {
     public final static String NOTE = "enc";
-    protected StringBuilder signature;
+    protected StringBuffer signature;
     protected String type;
     protected String algorithm;
     private long id;
@@ -42,7 +42,7 @@ public abstract class BaseHashAudit implements Serializable {
     
     /** Creates a new instance of BaseHashAudit */
     public BaseHashAudit() {
-        this.signature = new StringBuilder();
+        this.signature = new StringBuffer();
         this.id = 0;
     }
     
@@ -59,7 +59,7 @@ public abstract class BaseHashAudit implements Serializable {
     }
     
     public void setSignature(String signature) {
-        this.signature = new StringBuilder(signature);
+        this.signature = new StringBuffer(signature);
     }
     
     public long getId() {

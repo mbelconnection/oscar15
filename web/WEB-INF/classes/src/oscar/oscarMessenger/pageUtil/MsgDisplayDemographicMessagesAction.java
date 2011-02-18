@@ -7,6 +7,7 @@
 package oscar.oscarMessenger.pageUtil;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +17,7 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
+import org.apache.struts.util.MessageResources;
 
 import oscar.oscarMessenger.util.MsgDemoMap;
 
@@ -32,27 +33,31 @@ public class MsgDisplayDemographicMessagesAction extends Action {
 				 HttpServletRequest request,
 				 HttpServletResponse response)
 	throws IOException, ServletException {
-
+    // System.out.println("in display message action jackson");
             // Extract attributes we will need
         
-            MiscUtils.getLogger().debug("this is displayDemographicMessages.Action");
-            
+            System.out.println("this is displayDemographicMessages.Action");
+            Locale locale = getLocale(request);
+            MessageResources messages = getResources(request);
+
             // Setup variables            
             oscar.oscarMessenger.pageUtil.MsgSessionBean bean = null;
             String[] messageNo = ((MsgDisplayDemographicMessagesForm)form).getMessageNo();
             //String unlinkMsg = ((MsgDisplayDemographicMessagesForm)form).getUnlinkMsg();
+            String providerNo;
             
             //Initialize forward location
             String findForward = "success";
 
             if(request.getParameter("providerNo")!=null & request.getParameter("userName")!=null)
             {
-
+                // System.out.println("in display message action jackson4");
                 bean = new oscar.oscarMessenger.pageUtil.MsgSessionBean();
                 bean.setProviderNo(request.getParameter("providerNo"));
                 bean.setUserName(request.getParameter("userName"));
                 bean.setDemographic_no(request.getParameter("demographic_no"));
-
+                
+                //System.out.println(bean.getDemographic_no());
                 request.getSession().setAttribute("msgSessionBean", bean);
                                 
             }//if

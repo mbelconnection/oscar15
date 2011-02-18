@@ -5,26 +5,30 @@
 
 package oscar.oscarReport.pageUtil;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import oscar.OscarAction;
+import oscar.OscarDocumentCreator;
+
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.HashMap;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletContext;
 
-import org.apache.log4j.Logger;
+
+
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
-
-import oscar.OscarAction;
-import oscar.OscarDocumentCreator;
 
 /**
  *
@@ -32,7 +36,7 @@ import oscar.OscarDocumentCreator;
  */
 public class printLabDaySheetAction extends OscarAction{
 
-    private static Logger logger = MiscUtils.getLogger();
+    private static Log logger = LogFactory.getLog(printLabDaySheetAction.class);
 
     public printLabDaySheetAction() {
     }
@@ -60,18 +64,20 @@ public class printLabDaySheetAction extends OscarAction{
 
         if (ins == null) {
                 try {
-                       
+                        ServletContext context = getServlet().getServletContext();
                         ins = getClass().getResourceAsStream("/oscar/oscarReport/pageUtil/"+xmlStyleFile);
                         logger.debug("loading from : /oscar/oscarReport/pageUtil/labDaySheet.xml " + ins);
                 }
-                catch (Exception ex1) {MiscUtils.getLogger().error("Error", ex1);
+                catch (Exception ex1) {
+                        ex1.printStackTrace();
                 }
         }
 
         try {
             sos = response.getOutputStream();
         }
-        catch (IOException ex) {MiscUtils.getLogger().error("Error", ex);
+        catch (IOException ex) {
+            ex.printStackTrace();
         }
 
         response.setHeader("Content-disposition", getHeader(response).toString());
@@ -80,21 +86,21 @@ public class printLabDaySheetAction extends OscarAction{
             osc.fillDocumentStream(parameters, sos, "pdf", ins, DbConnectionFilter.getThreadLocalDbConnection());
         }
         catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
 
         return actionMapping.findForward(this.target);
 
     }
 
-    private StringBuilder getHeader(HttpServletResponse response) {
-        StringBuilder strHeader = new StringBuilder();
+    private StringBuffer getHeader(HttpServletResponse response) {
+        StringBuffer strHeader = new StringBuffer();
         strHeader.append("label_");
         strHeader.append(".pdf");
         response.setHeader("Cache-Control", "max-age=0");
         response.setDateHeader("Expires", 0);
         response.setContentType("application/pdf");
-        StringBuilder sbContentDispValue = new StringBuilder();
+        StringBuffer sbContentDispValue = new StringBuffer();
         sbContentDispValue.append("inline; filename="); //inline - display
         sbContentDispValue.append(strHeader);
         return sbContentDispValue;

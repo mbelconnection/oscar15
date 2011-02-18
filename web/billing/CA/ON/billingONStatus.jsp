@@ -17,7 +17,10 @@
  */
  -->
 <%! boolean bMultisites = org.oscarehr.common.IsPropertiesOn.isMultisitesEnable(); %>
-<%@ page import="java.math.*,java.util.*, java.sql.*, oscar.*, java.net.*,oscar.util.*,oscar.oscarBilling.ca.on.pageUtil.*,oscar.oscarBilling.ca.on.data.*,org.apache.struts.util.LabelValueBean" %>
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+
+<%@ page import="java.math.*,java.util.*, java.sql.*, oscar.*, java.net.*,oscar.util.*,oscar.oscarBilling.ca.on.pageUtil.*,oscar.oscarBilling.ca.on.data.*" %>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
@@ -35,34 +38,10 @@ on Libraries node in Projects view can be used to add the JSTL 1.1 library.
     if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
     String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
     boolean isTeamBillingOnly=false;
-    boolean isSiteAccessPrivacy=false;
-    boolean isTeamAccessPrivacy=false; 
 %>
 <security:oscarSec objectName="_team_billing_only" roleName="<%=roleName$ %>" rights="r" reverse="false">
 <% isTeamBillingOnly=true; %>
 </security:oscarSec>
-<security:oscarSec objectName="_site_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%isSiteAccessPrivacy=true; %>
-</security:oscarSec>
-<security:oscarSec objectName="_team_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%isTeamAccessPrivacy=true; %>
-</security:oscarSec>
-
-<%
-	//multi-site office , save all bgcolor to Hashmap
-	HashMap<String,String> siteBgColor = new HashMap<String,String>();
-	HashMap<String,String> siteShortName = new HashMap<String,String>();
-	int patientCount = 0;
-	if (bMultisites) {
-    	SiteDao siteDao = (SiteDao)WebApplicationContextUtils.getWebApplicationContext(application).getBean("siteDao");
-    	
-    	List<Site> sites = siteDao.getAllSites();
-    	for (Site st : sites) {
-    		siteBgColor.put(st.getName(),st.getBgColor());
-    		siteShortName.put(st.getName(),st.getShortName());
-    	}
-	}
-%>
 
 <%//
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -97,9 +76,6 @@ String dx = request.getParameter("dx");
 String visitType = request.getParameter("visitType");
 String filename = request.getParameter("demographicNo");
 
-String selectedSite = (String) request.getParameter("site");
-String billingForm = request.getParameter("billing_form");
-
 if ( statusType == null ) { statusType = "O"; } 
 if ( "_".equals(statusType) ) { demoNo = "";}
 if ( startDate == null ) { startDate = ""; } 
@@ -109,30 +85,42 @@ if ( providerNo == null ) { providerNo = "" ; }
 if ( raCode == null ) { raCode = "" ; } 
 if ( dx == null ) { dx = "" ; } 
 if ( visitType == null ) { visitType = "-" ; } 
-if ( serviceCode == null || serviceCode.equals("")) serviceCode = "%";
-if ( billingForm == null ) { billingForm = "-" ; }
+if ( serviceCode != null && serviceCode.equals("")) { 
+	serviceCode = "%"; 
+} else if(serviceCode == null || serviceCode.equals("-")) {
+	serviceCode = null;
+}
 
 List pList = isTeamBillingOnly
 		? (Vector)(new JdbcBillingPageUtil()).getCurTeamProviderStr((String) session.getAttribute("user"))
 		: (Vector)(new JdbcBillingPageUtil()).getCurProviderStr();
 
 BillingStatusPrep sObj = new BillingStatusPrep();
+System.out.println(" statusType "+strBillType);
 List bList = null;
-if((serviceCode == null || billingForm == null) && dx.length()<2 && visitType.length()<2) {
+if(serviceCode == null && dx.length()<2 && visitType.length()<2) {
 	bList = bSearch ? sObj.getBills(strBillType, statusType, providerNo, startDate, endDate, demoNo) : new Vector();
 	//serviceCode = "-";
 	serviceCode = "%";
 } else {
 	serviceCode = (serviceCode == null || serviceCode.length()<2)? "%" : serviceCode; 
-	bList = bSearch ? sObj.getBills(strBillType, statusType,  providerNo, startDate,  endDate,  demoNo, serviceCode, dx, visitType, billingForm) : new Vector();
+	bList = bSearch ? sObj.getBills(strBillType, statusType,  providerNo, startDate,  endDate,  demoNo, serviceCode, dx, visitType) : new Vector();
 }
 
 
+//ProviderData pd = new ProviderData();
+//ArrayList pList = pd.getProviderList();
+//BillingData billingData = new BillingData();
+//BillingStatusData billingData = new BillingStatusData();
 RAData raData = new RAData();
 
+System.out.println(" statusType "+statusType+" providerNo "+providerNo+" startDate "+startDate+" endDate "+endDate+" demo "+demoNo);
+
+//ArrayList bList = billingData.getBills( statusType,  providerNo, startDate,  endDate,  demoNo);
+//ArrayList bList = billingData.getBills( statusType,  providerNo, startDate,  endDate,  demoNo);
 
 BigDecimal total = new BigDecimal(0).setScale(2, BigDecimal.ROUND_HALF_UP); 
-BigDecimal paidTotal = new BigDecimal(0).setScale(2, BigDecimal.ROUND_HALF_UP);
+BigDecimal paidTotal = new BigDecimal(0).setScale(2, BigDecimal.ROUND_HALF_UP); 
 BigDecimal adjTotal = new BigDecimal(0).setScale(2, BigDecimal.ROUND_HALF_UP);
 
 %>
@@ -152,6 +140,8 @@ BigDecimal adjTotal = new BigDecimal(0).setScale(2, BigDecimal.ROUND_HALF_UP);
 <%@page import="org.oscarehr.common.model.Site"%>
 <%@page import="org.oscarehr.common.model.Provider"%><html>
     <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="Cache-Control" content="no-cache">
         <title>Bill Status</title>
         <script type="text/javascript" src="../../../share/javascript/Oscar.js"></script>
 		<link rel="stylesheet" type="text/css" href="billingON.css" />
@@ -418,13 +408,14 @@ var _providers = [];
 	%><option value='<%= p.getProviderNo() %>'><%= p.getLastName() %>, <%= p.getFirstName() %></option><% }} %>";
 <% } %>
 function changeSite(sel) {
-	sel.form.providerview.innerHTML=sel.value=="none"?"":"<option value='none'>---select provider---</option>"+_providers[sel.value];
+	sel.form.providerview.innerHTML=sel.value=="none"?"":_providers[sel.value];
 	sel.style.backgroundColor=sel.options[sel.selectedIndex].style.backgroundColor;
-	if (sel.value=='<%=request.getParameter("site")%>') {
+	if (sel.value!="none") {
 		if (document.serviceform.provider_ohipNo.value!='')
 			sel.form.providerview.value='<%=request.getParameter("providerview")%>';
 	}
 	changeProvider(false);
+	
 }
       </script>
       	<select id="site" name="site" onchange="changeSite(this)">
@@ -453,7 +444,7 @@ function changeSite(sel) {
 			<%
 			} else {
 			%>
-       <option value="all">All Providers</option>
+       <option value="">All Providers</option>
     <% for (int i = 0 ; i < pList.size(); i++) { 
 		String temp[] = ((String) pList.get(i)).split("\\|");
 	%>
@@ -477,7 +468,7 @@ function changeSite(sel) {
 		<input type="submit" name="Submit" value="Create Report">
         <div>         
           <font size="-1">Dx:</font><input type="text" name="dx" size="3" value="<%=dx%>"/>
-          <font size="-1">Serv. Code:</font><input type="text" name="serviceCode" size="14" value="<%=serviceCode%>"/>
+          <font size="-1">Serv. Code:</font><input type="text" name="serviceCode" size="5" value="<%=serviceCode%>"/>
           <font size="-1">Demographic:</font><input type="text" name="demographicNo" size="5" value="<%=demoNo%>"/>
           <font size="-1">RA Code:</font><input type="text" name="raCode" size="2" value="<%=raCode%>"/>
 			<select name="visitType">
@@ -489,27 +480,7 @@ function changeSite(sel) {
 				<option value="04" <%=visitType.startsWith("04")?"selected":""%>>Nursing Home</option>
 				<option value="05" <%=visitType.startsWith("05")?"selected":""%>>Home Visit</option>
 			</select>
-            <font size="-1">Billing Form:&nbsp;&nbsp;
-                <select name="billing_form">
-                    <option value="---" selected="selected"> --- </option>
-                    <%
-                                List<LabelValueBean> forms = sObj.listBillingForms();
-                                String selected = "";
-                                for (LabelValueBean form : forms) {
-                                    if (billingForm != null) {
-                                        if (billingForm.equals(form.getValue())) {
-                                            selected = "selected";
-                                        } else {
-                                            selected = "";
-                                        }
-                                    }
-                    %>
-                    <option value="<%= form.getValue()%>" <%= selected%> ><%= form.getLabel()%></option>
-                    <%
-                                }
-                    %>
-
-                </select>
+            
         </div>     
         </td>                           
       </tr>
@@ -568,14 +539,8 @@ if(statusType.equals("_")) { %>
             provInfo = aLProviders.get(idx).split("\\|");
             providerNo = provInfo[0].trim();
 
-	List lPat = null;
-        if(providerNo.equals("all")) {
-            List<BillingProviderData> providerObj = (new JdbcBillingPageUtil()).getProviderObjList(providerNo);
-            lPat = (new JdbcBillingErrorRepImpl()).getErrorRecords(providerObj, startDate, endDate, filename);
-        } else {
-            BillingProviderData providerObj = (new JdbcBillingPageUtil()).getProviderObj(providerNo);
-            lPat = (new JdbcBillingErrorRepImpl()).getErrorRecords(providerObj, startDate, endDate, filename);
-            }
+	BillingProviderData providerObj = (new JdbcBillingPageUtil()).getProviderObj(providerNo);
+	List lPat = (new JdbcBillingErrorRepImpl()).getErrorRecords(providerObj, startDate, endDate, filename);
     boolean nC = false;
 	String invoiceNo = "";
 	
@@ -630,28 +595,21 @@ if(statusType.equals("_")) { %>
              <th>TYPE</th>
              <th>ACCOUNT</th>
              <th>MESSAGES</th>
-		<% if (bMultisites) {%>
-			 <th>SITE</th>             
-        <% }%>     
           </tr>
        
           
        <% //
        String invoiceNo = ""; 
        boolean nC = false;
+       //System.out.println("total:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 
        for (int i = 0 ; i < bList.size(); i++) { 
     	   BillingClaimHeader1Data ch1Obj = (BillingClaimHeader1Data) bList.get(i);
     	   
     	   if (bMultisites && ch1Obj.getClinic()!=null && curSite!=null 
-    			   && !ch1Obj.getClinic().equals(curSite) && isSiteAccessPrivacy) // only applies on user have siteAccessPrivacy (SiteManager)
+    			   && !ch1Obj.getClinic().equals(curSite))
 				continue; // multisite: skip if the line doesn't belong to the selected clinic    		   
     		   
-	       if (bMultisites && selectedSite != null && (!selectedSite.equals(ch1Obj.getClinic())))
-	    	   continue;
-	       
-	       patientCount ++;
-			       
     	   // ra code
     	   if(raCode.trim().length() == 2) {
     		   if(!raData.isErrorCode(ch1Obj.getId(), raCode)) {
@@ -659,6 +617,7 @@ if(statusType.equals("_")) { %>
     		   }
     	   }
     	   
+           System.out.println( ch1Obj.getBilling_date().replaceAll("\\D", "") + "total::::::::::::::::::::::::::::::::::::::::::::" + ch1Obj.getProvider_ohip_no());
            String ohip_no = ch1Obj.getProvider_ohip_no();
 	       ArrayList raList = raData.getRADataIntern(ch1Obj.getId(), ch1Obj.getBilling_date().replaceAll("\\D", ""), ohip_no);
 	       boolean incorrectVal = false;
@@ -670,6 +629,7 @@ if(statusType.equals("_")) { %>
 	          incorrectVal = true;
 	       }
 	       total = total.add(valueToAdd);
+	       //System.out.println("total:" + total);
 	       String amountPaid = "0.00";
 	       String errorCode = "";
 	       if(serviceCode.equals("-") && raList.size() > 0){
@@ -682,11 +642,13 @@ if(statusType.equals("_")) { %>
 	       // 3rd party billing
 	       if(ch1Obj.getPay_program().matches("PAT|OCF|ODS|CPP|STD|IFH")) {
 	    	   amountPaid = ch1Obj.getPaid();
+		       //System.out.println("amountPaid:" + amountPaid);
 	    	   amountPaid = (amountPaid==null||amountPaid.equals(""))? "0.00" : amountPaid;
 	       }
+	       //System.out.println("paidTotal:" + paidTotal + ":amountPaid:" + amountPaid + ":");
 	       BigDecimal bTemp = (new BigDecimal(amountPaid.trim())).setScale(2,BigDecimal.ROUND_HALF_UP);
 	       paidTotal = paidTotal.add(bTemp);
-	       BigDecimal adj = (new BigDecimal(ch1Obj.getTotal())).setScale(2,BigDecimal.ROUND_HALF_UP);               
+	       BigDecimal adj = (new BigDecimal(ch1Obj.getTotal())).setScale(2,BigDecimal.ROUND_HALF_UP);
                adj = adj.subtract(bTemp);
                adjTotal = adjTotal.add(adj);
 	       String color = "";
@@ -702,7 +664,6 @@ if(statusType.equals("_")) { %>
                else {
                    settleDate = settleDate.substring(0, settleDate.indexOf(" "));
                }
-	      
        %>       
           <tr <%=color %>> 
              <td align="center"><%= ch1Obj.getBilling_date()%>  <%--=ch1Obj.getBilling_time()--%></td>  <!--SERVICE DATE-->
@@ -729,18 +690,13 @@ if(statusType.equals("_")) { %>
                  <a href="javascript: function myFunction() {return false; }"  onclick="javascript:popup(700,700,'billingONCorrection.jsp?billing_no=<%=ch1Obj.getId()%>','BillCorrection<%=ch1Obj.getId()%>');return false;">Edit</a>
                  <%=errorCode%>
              </td><!--MESSAGES-->
-             <% if (bMultisites) {%>
-				 <td "<%=(ch1Obj.getClinic()== null || ch1Obj.getClinic().equalsIgnoreCase("null") ? "" : "bgcolor='" + siteBgColor.get(ch1Obj.getClinic()) + "'")%>">
-				 	<%=(ch1Obj.getClinic()== null || ch1Obj.getClinic().equalsIgnoreCase("null") ? "" : siteShortName.get(ch1Obj.getClinic()))%>
-				 </td>     <!--SITE-->          
-        	<% }%>     
           </tr>
        <% } %>  
        
           <tr class="myYellow"> 
              <td>Count:</td>  
-             <td align="center"><%=patientCount%></td> 
-             <td align="center"><%=patientCount%></td> 
+             <td align="center"><%=bList.size()%></td> 
+             <td align="center"><%=bList.size()%></td> 
              <td>&nbsp;</td> <!--STAT-->
              <td>&nbsp;</td>
              <td>Total:</td><!--CODE-->
@@ -752,9 +708,6 @@ if(statusType.equals("_")) { %>
              <td>&nbsp;</td><!--DX3-->
              <td>&nbsp;</td><!--ACCOUNT-->
              <td>&nbsp;</td><!--MESSAGES-->
-             <% if (bMultisites) {%>
-				 <td>&nbsp;</td><!--SITE-->          
-        	<% }%>    
           </tr>
        <table>
     </div>

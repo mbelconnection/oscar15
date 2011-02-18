@@ -18,16 +18,13 @@ package oscar.oscarBilling.ca.on.data;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
-import org.oscarehr.util.SpringUtils;
 
 import oscar.SxmlMisc;
-import oscar.service.OscarSuperManager;
 
 public class JdbcBillingPageUtil {
 	private static final Logger _logger = Logger.getLogger(JdbcBillingPageUtil.class);
@@ -62,39 +59,7 @@ public class JdbcBillingPageUtil {
 
 		return retval;
 	}
-	
-	public List getCurSiteProviderStr(String provider_no) {
-		List retval = new Vector();
-		String sql = "select provider_no,last_name,first_name,ohip_no,comments from provider p "
-				+ "where status='1' and ohip_no!='' " +
-						"and exists(select * from providersite s where p.provider_no = s.provider_no and s.site_id IN (SELECT site_id from providersite where provider_no="+provider_no+"))" +
-						" order by last_name, first_name";
-		String proid = "";
-		String proFirst = "";
-		String proLast = "";
-		String proOHIP = "";
-		String specialty_code;
-		String billinggroup_no;
-		ResultSet rslocal = dbObj.searchDBRecord(sql);
-		try {
-			while (rslocal.next()) {
-				proid = rslocal.getString("provider_no");
-				proLast = rslocal.getString("last_name");
-				proFirst = rslocal.getString("first_name");
-				proOHIP = rslocal.getString("ohip_no");
-				billinggroup_no = getXMLStringWithDefault(rslocal.getString("comments"), "xml_p_billinggroup_no",
-						"0000");
-				specialty_code = getXMLStringWithDefault(rslocal.getString("comments"), "xml_p_specialty_code", "00");
-				retval.add(proid + "|" + proLast + "|" + proFirst + "|" + proOHIP + "|" + billinggroup_no + "|"
-						+ specialty_code);
-			}
-		} catch (SQLException e) {
-			_logger.error("getCurProviderStr(sql = " + sql + ")");
-		}
 
-		return retval;
-	}
-	
 	public List getCurProviderStr() {
 		List retval = new Vector();
 		String sql = "select provider_no,last_name,first_name,ohip_no,comments from provider "
@@ -171,9 +136,8 @@ public class JdbcBillingPageUtil {
 
 	public BillingProviderData getProviderObj(String providerNo) {
 		BillingProviderData pObj = null;
-		String sql = "select provider_no,last_name,first_name,ohip_no,rma_no,comments from provider ";
-                sql += "where status='1'";
-                if(!providerNo.equals("all")) sql += " and provider_no='" + providerNo + "'";
+		String sql = "select provider_no,last_name,first_name,ohip_no,rma_no,comments from provider "
+				+ "where provider_no='" + providerNo + "' and status='1'  ";
 		_logger.info("getProviderObj(sql = " + sql + ")");
 		ResultSet rslocal = dbObj.searchDBRecord(sql);
 		String specialty_code;
@@ -196,37 +160,6 @@ public class JdbcBillingPageUtil {
 			_logger.error("getProviderObj(sql = " + sql + ")");
 		}
 		return pObj;
-	}
-
-        public List<BillingProviderData> getProviderObjList(String providerNo) {
-		BillingProviderData pObj = null;
-		List<BillingProviderData> res = new ArrayList<BillingProviderData>();
-		String sql = "select provider_no,last_name,first_name,ohip_no,rma_no,comments from provider ";
-		sql += "where status='1'";
-		if(!providerNo.equals("all")) sql += " and provider_no='" + providerNo + "'";
-		_logger.info("getProviderObj(sql = " + sql + ")");
-		ResultSet rslocal = dbObj.searchDBRecord(sql);
-		String specialty_code;
-		String billinggroup_no;
-		try {
-			while (rslocal.next()) {
-				pObj = new BillingProviderData();
-				billinggroup_no = getXMLStringWithDefault(rslocal.getString("comments"), "xml_p_billinggroup_no",
-						"0000");
-				specialty_code = getXMLStringWithDefault(rslocal.getString("comments"), "xml_p_specialty_code", "00");
-				pObj.setProviderNo(rslocal.getString("provider_no"));
-				pObj.setLastName(rslocal.getString("last_name"));
-				pObj.setFirstName(rslocal.getString("first_name"));
-				pObj.setOhipNo(rslocal.getString("ohip_no"));
-				pObj.setRmaNo(rslocal.getString("rma_no"));
-				pObj.setSpecialtyCode(specialty_code);
-				pObj.setBillingGroupNo(billinggroup_no);
-				res.add(pObj);
-			}
-		} catch (SQLException e) {
-			_logger.error("getProviderObj(sql = " + sql + ")");
-		}
-		return res;
 	}
 
 	public List getProvider(String diskId) {
@@ -326,11 +259,11 @@ public class JdbcBillingPageUtil {
 		return retval;
 	}
 
-	public boolean updateApptStatus(String apptNo, String status, String userNo) {
-                OscarSuperManager oscarSuperManager = (OscarSuperManager)SpringUtils.getBean("oscarSuperManager");
-                oscarSuperManager.update("appointmentDao", "archive_appt", new Object[]{apptNo});
-                int rowsAffected = oscarSuperManager.update("appointmentDao", "updatestatusc", new Object[]{status,userNo,apptNo});
-                return (rowsAffected==1);
+	public boolean updateApptStatus(String apptNo, String status) {
+		boolean retval = false;
+		String sql = "update appointment set status='" + status + "' " + "where appointment_no=" + apptNo + " ";
+		retval = dbObj.updateDBRecord(sql);
+		return retval;
 	}
 
 	public String getApptStatus(String apptNo) {

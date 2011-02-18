@@ -143,6 +143,7 @@ public class BedDemographic implements Serializable {
 
 	public void setStatusName(String statusName) {
 		// immutable
+		System.out.println("BedDemographic.setStatusName()");
 	}
 
 	public String getProviderName() {
@@ -151,6 +152,7 @@ public class BedDemographic implements Serializable {
 
 	public void setProviderName(String providerName) {
 		// immutable
+		System.out.println("BedDemographic.setProviderName()");
 	}
 
 	public String getBedName() {
@@ -159,6 +161,7 @@ public class BedDemographic implements Serializable {
 
 	public void setBedName(String bedName) {
 		// immutable
+		System.out.println("BedDemographic.setBedName()");
 	}
 
 	public String getDemographicName() {
@@ -167,6 +170,7 @@ public class BedDemographic implements Serializable {
 
 	public void setDemographicName(String demographicName) {
 		// immutable
+		System.out.println("BedDemographic.setDemographicName()");
 	}
 
 	public String getRoomName() {
@@ -175,6 +179,7 @@ public class BedDemographic implements Serializable {
 
 	public void setRoomName(String roomName) {
 		// immutable
+		System.out.println("BedDemographic.setRoomName()");
 	}
 
 	public Integer getRoomId() {
@@ -191,6 +196,7 @@ public class BedDemographic implements Serializable {
 
 	public void setProgramName(String programName) {
 		// immutable
+		System.out.println("BedDemographic.setProgramName()");
 	}
 
 	// property adapted for view

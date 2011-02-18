@@ -15,7 +15,7 @@
         </parameter>       
         <java:condition>m.getDataAsDouble() &gt;= 2.0</java:condition> 
         <java:consequence>     
-              m.log("TG RULES IS GETTING RUN");
+              System.out.println("TG RULES IS GETTING RUN");           
               m.setIndicationColor("HIGH");
         </java:consequence>
     </rule>

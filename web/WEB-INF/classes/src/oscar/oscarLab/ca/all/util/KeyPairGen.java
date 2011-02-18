@@ -1,33 +1,44 @@
+/*
+ * KeyPairGen.java
+ *
+ * Created on June 15, 2007, 12:10 PM
+ *
+ * To change this template, choose Tools | Template Manager
+ * and open the template in the editor.
+ */
+
 package oscar.oscarLab.ca.all.util;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.sql.ResultSet;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
-import org.oscarehr.common.dao.OscarKeyDao;
-import org.oscarehr.common.dao.PublicKeyDao;
-import org.oscarehr.common.model.OscarKey;
-import org.oscarehr.common.model.PublicKey;
-import org.oscarehr.util.MiscUtils;
-import org.oscarehr.util.SpringUtils;
 
-public final class KeyPairGen {
+import oscar.oscarDB.DBHandler;
+
+
+
+/**
+ *
+ * @author wrighd
+ */
+public class KeyPairGen {
     
-    private static Logger logger = MiscUtils.getLogger();
+    Logger logger = Logger.getLogger(KeyPairGen.class);
     
     /**
      * Creates a new instance of KeyPairGen
      */
-    private KeyPairGen() {
-    	// utility class needs no instantiation
+    public KeyPairGen() {
     }
         
     /**
      *  Create a key pair for the specified service and store it in the database
      */
-    public static String createKeys(String name, String type){
+    public String createKeys(String name, String type){
         byte[] pubKey;
         byte[] privKey;
         Base64 base64 = new Base64();
@@ -44,30 +55,19 @@ public final class KeyPairGen {
             if( name.equals("oscar")){
                 // the primary key is name, therefore this statement will only
                 // be able to run once and the oscar key pair will not be overwritten
-            	
-            	OscarKeyDao oscarKeyDao=(OscarKeyDao)SpringUtils.getBean("oscarKeyDao");
-            	OscarKey oscarKey=new OscarKey();
-            	oscarKey.setName("oscar");
-            	oscarKey.setPublicKey(new String(pubKey, MiscUtils.ENCODING));
-            	oscarKey.setPrivateKey(new String(privKey, MiscUtils.ENCODING));
-
-            	oscarKeyDao.persist(oscarKey);            	
-            	
+                String insertStmt = "INSERT INTO oscarKeys (name, pubKey, privKey) VALUES ('oscar','"+(new String(pubKey, "ASCII"))+"','"+(new String(privKey, "ASCII"))+"');";
+                runInsertStmt(insertStmt);
+                
                 // no keys need to be returned so return "success" instead to 
                 // indicate the operation completed successfully
                 return("success");
             }else{
-            	
-            	PublicKeyDao publicKeyDao=(PublicKeyDao)SpringUtils.getBean("publicKeyDao");
-                PublicKey publicKeyObject=new PublicKey();
-                publicKeyObject.setService(name);
-                publicKeyObject.setType(type);
-                publicKeyObject.setBase64EncodedPublicKey(new String(pubKey, MiscUtils.ENCODING));
-                publicKeyObject.setBase64EncodedPrivateKey(new String(privKey, MiscUtils.ENCODING));
-                
-                publicKeyDao.persist(publicKeyObject);
-                
-                return(publicKeyObject.getBase64EncodedPrivateKey());
+                // insert the public key into that database
+                String insertStmt = "INSERT INTO publicKeys (service, type, pubKey) VALUES ('"+name+"', '"+type+"', '"+(new String(pubKey, "ASCII"))+"');";
+                if(!runInsertStmt(insertStmt))
+                    return null;
+                                
+                return(new String(privKey, "ASCII"));
             }
             
         }catch(NoSuchAlgorithmException e){
@@ -84,14 +84,23 @@ public final class KeyPairGen {
     /**
      *  Retrieve oscars public key and return it as a string
      */
-    public static String getPublic(){
+    public String getPublic(){
+        String key = "";
+        
         try{
-        	OscarKeyDao oscarKeyDao=(OscarKeyDao)SpringUtils.getBean("oscarKeyDao");
-        	OscarKey oscarKey=oscarKeyDao.find("oscar");
-
-            return(oscarKey.getPublicKey());
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            
+            String query = "SELECT pubKey FROM oscarKeys WHERE name='oscar';";
+            ResultSet rs = db.GetSQL(query);
+            
+            while(rs.next()){
+                key = db.getString(rs,"pubKey");
+            }
+            rs.close();
+            return(key);
+            
         }catch(Exception e){
-            logger.error("Could not get public key", e);
+            logger.error("Could not save public key", e);
             return null;
         }
 
@@ -101,18 +110,47 @@ public final class KeyPairGen {
      *  Check if the specified service name has already been used to create a key
      *  pair, return 'true' if it has and 'false' otherwise.
      */
-    public static boolean checkName(String name){
+    public boolean checkName(String name){
+        String query = "";
+        String result = "";
+        
         if (name.equals("oscar"))
-        {
-        	OscarKeyDao oscarKeyDao=(OscarKeyDao)SpringUtils.getBean("oscarKeyDao");
-        	OscarKey oscarKey=oscarKeyDao.find("oscar");
-        	return(oscarKey!=null);
-        }
+            query = "SELECT name FROM oscarKeys Where name='oscar';";
         else
-        {
-        	PublicKeyDao publicKeyDao=(PublicKeyDao)SpringUtils.getBean("publicKeyDao");
-            PublicKey publicKeyObject=publicKeyDao.find(name);
-            return(publicKeyObject!=null);
+            query = "SELECT service FROM publicKeys WHERE service='"+name+"';";
+        
+        try{
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL(query);
+            
+            while(rs.next()){
+                result = db.getString(rs,0);
+            }
+            rs.close();
+        }catch(Exception e){
+            logger.error("Could not retrieve service name from database: ",e);
+            return true;
         }
-    }    
+        
+        if (result.equals(""))
+            return false;
+        else
+            return true;
+        
+    }
+    
+    /**
+     *  Connect to the database and run the specified insert statement
+     */
+    private boolean runInsertStmt(String insertStmt){
+        try{
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            db.RunSQL(insertStmt);
+            return true;
+        }catch(Exception e){
+            logger.error("Could not save insert key(s) into the database", e);
+            return false;
+        }
+    }
+    
 }

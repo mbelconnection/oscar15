@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -27,8 +27,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 public class EctEChartBean {
@@ -37,21 +35,21 @@ public class EctEChartBean {
 	public void setEChartBean(String demoNo) {
 		demographicNo = demoNo;
 		try {
-			
+			DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 			String sql = "select * from eChart where demographicNo=" + demoNo
 					+ " ORDER BY eChartId DESC";
 //         			+ " ORDER BY eChartId DESC limit 1";
-			ResultSet rs = DBHandler.GetSQL(sql);
+			ResultSet rs = db.GetSQL(sql);
 			if (rs.next()) {
 				eChartTimeStamp = rs.getTimestamp("timeStamp");
-				socialHistory = oscar.Misc.getString(rs, "socialHistory");
-				familyHistory = oscar.Misc.getString(rs, "familyHistory");
-				medicalHistory = oscar.Misc.getString(rs, "medicalHistory");
-				ongoingConcerns = oscar.Misc.getString(rs, "ongoingConcerns");
-				reminders = oscar.Misc.getString(rs, "reminders");
-				encounter = oscar.Misc.getString(rs, "encounter");
-				subject = oscar.Misc.getString(rs, "subject");
-				providerNo = oscar.Misc.getString(rs, "providerNo");
+				socialHistory = db.getString(rs,"socialHistory");
+				familyHistory = db.getString(rs,"familyHistory");
+				medicalHistory = db.getString(rs,"medicalHistory");
+				ongoingConcerns = db.getString(rs,"ongoingConcerns");
+				reminders = db.getString(rs,"reminders");
+				encounter = db.getString(rs,"encounter");
+				subject = db.getString(rs,"subject");
+				providerNo = db.getString(rs,"providerNo");
 			} else {
 				eChartTimeStamp = null;
 				socialHistory = "";
@@ -65,7 +63,7 @@ public class EctEChartBean {
 			}
 			rs.close();
 		} catch (SQLException e) {
-			MiscUtils.getLogger().error("Error", e);
+			System.out.println(e.getMessage());
 		}
 	}
 	public Date eChartTimeStamp;

@@ -14,7 +14,6 @@
 package oscar.login;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -30,17 +29,12 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DispatchAction;
 import org.oscarehr.PMmodule.dao.ProviderDao;
 import org.oscarehr.PMmodule.service.ProviderManager;
-import org.oscarehr.PMmodule.web.OcanForm;
 import org.oscarehr.common.dao.FacilityDao;
-import org.oscarehr.common.dao.ProviderPreferenceDao;
-import org.oscarehr.common.dao.OcanStaffFormDao;
 import org.oscarehr.common.dao.UserPropertyDAO;
 import org.oscarehr.common.model.Facility;
 import org.oscarehr.common.model.Provider;
-import org.oscarehr.common.model.ProviderPreference;
 import org.oscarehr.common.model.UserProperty;
 import org.oscarehr.decisionSupport.service.DSService;
-import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.util.SessionConstants;
 import org.oscarehr.util.SpringUtils;
 import org.springframework.context.ApplicationContext;
@@ -66,13 +60,11 @@ public final class LoginAction extends DispatchAction {
 
     private ProviderManager providerManager = (ProviderManager) SpringUtils.getBean("providerManager");
     private FacilityDao facilityDao = (FacilityDao) SpringUtils.getBean("facilityDao");
-    private ProviderPreferenceDao providerPreferenceDao = (ProviderPreferenceDao) SpringUtils.getBean("providerPreferenceDao");
-    private static OcanStaffFormDao ocanStaffFormDao = (OcanStaffFormDao) SpringUtils.getBean("ocanStaffFormDao");
     
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         String ip = request.getRemoteAddr();
-        Boolean isMobileOptimized = request.getSession().getAttribute("mobileOptimized") != null;
+
         String nextPage=request.getParameter("nextPage");
         _logger.debug("nextPage: "+nextPage);
         if (nextPage!=null) {
@@ -82,9 +74,6 @@ public final class LoginAction extends DispatchAction {
             request.getSession().setAttribute(SessionConstants.CURRENT_FACILITY, facility);
             String username=(String)request.getSession().getAttribute("user");
             LogAction.addLog(username, LogConst.LOGIN, LogConst.CON_LOGIN, "facilityId="+facilityIdString, ip);
-            if(facility.isEnableOcanForms()) {
-            	request.getSession().setAttribute("ocanWarningWindow", OcanForm.getOcanWarningMessage(facility.getId()));
-            }
             return mapping.findForward(nextPage);
         }
 
@@ -140,12 +129,14 @@ public final class LoginAction extends DispatchAction {
                 session = request.getSession(); // Create a new session for this user
             }
 
-            _logger.debug("Assigned new session for: " + strAuth[0] + " : " + strAuth[3] + " : " + strAuth[4]);
+            _logger.info("Assigned new session for: " + strAuth[0] + " : " + strAuth[3] + " : " + strAuth[4]);
             LogAction.addLog(strAuth[0], LogConst.LOGIN, LogConst.CON_LOGIN, "", ip);
 
             // initial db setting
             Properties pvar = cl.getOscarVariable();
             session.setAttribute("oscarVariables", pvar);
+
+
 
             // get View Type
             String viewType = LoginViewTypeHlp.getInstance().getProperty(strAuth[3].toLowerCase());
@@ -157,28 +148,23 @@ public final class LoginAction extends DispatchAction {
             session.setAttribute("userrole", strAuth[4]);
             session.setAttribute("oscar_context_path", request.getContextPath());
             session.setAttribute("expired_days", strAuth[5]);
-            // If a new session has been created, we must set the mobile attribute again
-            if (isMobileOptimized) session.setAttribute("mobileOptimized","true");
+            
             // initiate security manager
+            //com.quatro.service.security.UserAccessManager userAccessManager = (com.quatro.service.security.UserAccessManager) getAppContext().getBean("userAccessManager");
+            //com.quatro.service.security.SecurityManager secManager = userAccessManager.getUserUserSecurityManager(providerNo);
+            //session.setAttribute("securitymanager", secManager);
             String default_pmm = null;
             if (viewType.equalsIgnoreCase("receptionist") || viewType.equalsIgnoreCase("doctor")) {
                 // get preferences from preference table
-            	ProviderPreference providerPreference=providerPreferenceDao.find(providerNo);
-            	if (providerPreference==null) providerPreference=new ProviderPreference();
-            	
-                session.setAttribute("starthour", providerPreference.getStartHour().toString());
-                session.setAttribute("endhour", providerPreference.getEndHour().toString());
-                session.setAttribute("everymin", providerPreference.getEveryMin().toString());
-                session.setAttribute("groupno", providerPreference.getMyGroupNo());
+                String[] strPreferAuth = cl.getPreferences();
+                session.setAttribute("starthour", strPreferAuth[0]);
+                session.setAttribute("endhour", strPreferAuth[1]);
+                session.setAttribute("everymin", strPreferAuth[2]);
+                session.setAttribute("groupno", strPreferAuth[3]);
                 if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable()) {
-                    session.setAttribute("newticklerwarningwindow", providerPreference.getNewTicklerWarningWindow());
-                    session.setAttribute("default_pmm", providerPreference.getDefaultCaisiPmm());
-                    default_pmm = providerPreference.getDefaultCaisiPmm();
-                    ArrayList<String> newDocArr = (ArrayList<String>)request.getSession().getServletContext().getAttribute("CaseMgmtUsers");    
-                    if("enabled".equals(providerPreference.getDefaultNewOscarCme())) {
-                    	newDocArr.add(providerNo);
-                    	session.setAttribute("CaseMgmtUsers", newDocArr);
-                    }
+                    session.setAttribute("newticklerwarningwindow", strPreferAuth[4]);
+                    session.setAttribute("default_pmm", strPreferAuth[5]);
+                    default_pmm = strPreferAuth[5];
                 }
             }
 
@@ -203,7 +189,7 @@ public final class LoginAction extends DispatchAction {
                 UserPropertyDAO  propDAO =  (UserPropertyDAO) ctx.getBean("UserPropertyDAO");
                 UserProperty drugrefProperty = propDAO.getProp(UserProperty.MYDRUGREF_ID);
                 if (drugrefProperty != null) {
-                   
+                    String drugrefId = drugrefProperty.getValue();
                     DSService service =  (DSService) ctx.getBean("dsService");
                     service.fetchGuidelinesFromServiceInBackground(providerNo);
                 }
@@ -243,14 +229,11 @@ public final class LoginAction extends DispatchAction {
                 Facility facility=facilityDao.find(facilityIds.get(0));
                 request.getSession().setAttribute("currentFacility", facility);
                 LogAction.addLog(strAuth[0], LogConst.LOGIN, LogConst.CON_LOGIN, "facilityId="+facilityIds.get(0), ip);
-                if(facility.isEnableOcanForms()) {
-                	request.getSession().setAttribute("ocanWarningWindow", OcanForm.getOcanWarningMessage(facility.getId()));
-                }
             }
             else {
-        		List<Facility> facilities = facilityDao.findAll(true);
+        		List facilities = facilityDao.findAll(null);
         		if(facilities!=null && facilities.size()>=1) {
-        			Facility fac = facilities.get(0);
+        			Facility fac = (Facility)facilities.get(0);
         			int first_id = fac.getId();
         			ProviderDao.addProviderToFacility(providerNo, first_id);
         			Facility facility=facilityDao.find(first_id);

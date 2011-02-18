@@ -1,3 +1,5 @@
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 
 <%@taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
@@ -8,6 +10,7 @@
 <html:html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Indivo Error</title>
 </head>
 <body>

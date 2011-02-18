@@ -12,7 +12,6 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.login.DBHelp;
 
@@ -24,7 +23,7 @@ public final class RptReportCreator {
 
     // select formBCAR.pg1_ethOrig as Ethnic Origin, ...
     public String getSelectField(String recordId) throws SQLException {
-        StringBuilder ret = new StringBuilder();
+        StringBuffer ret = new StringBuffer();
         String sql = "select * from reportConfig where report_id = " + recordId + " order by order_no";
         ResultSet rs = dbObj.searchDBRecord(sql);
         while (rs.next()) {
@@ -81,7 +80,7 @@ public final class RptReportCreator {
         String ret = "";
         for (int i = 0; i < 100; i++) {
             if (value.matches("[^\\{\\}\\$]*\\$\\{[^\\{\\}]+\\}.*")) {
-
+                //System.out.println(i + "getVarVec() var: " + i + ":" + vec.get(i));
                 value = value.replaceFirst("\\$\\{[^\\{\\}]+\\}", (vec.get(i) == null ? "" : ((String) vec.get(i))));
             } else {
                 ret = value;
@@ -106,7 +105,7 @@ public final class RptReportCreator {
             return ret;
         String[] var = value.split("[^\\{\\}\\$]*\\$\\{|\\}[^\\{\\}\\$]*");
         for (int i = 0; i < var.length; i++) {
-
+            //System.out.println("getVarVec() var: " + i + ":" + var[i]);
             if ("".equals(var[i]))
                 continue;
             ret.add(var[i]);
@@ -124,7 +123,7 @@ public final class RptReportCreator {
             //ret = DateFormatUtils.format(DateUtils.parseDate(strDate, new String[] { oDate }),
             // nDate);
         } else {
-            MiscUtils.getLogger().debug(" getDate wrong!!!");
+            System.out.println(" getDate wrong!!!");
         }
         return ret;
     }
@@ -134,13 +133,13 @@ public final class RptReportCreator {
         String ret = "0";
 
         ResultSet rs = dbObj.searchDBRecord(sql);
-        MiscUtils.getLogger().debug(" tempVal: " + sql);
+        System.out.println(" tempVal: " + sql);
         while (rs.next()) {
             if ("0".equals(ret)) {
                 ret = "";
             }
             ret += ("".equals(ret) ? "" : ",") + rs.getInt(1);
-
+            //System.out.println(" tempVal: " + ret );
         }
         rs.close();
         return ret;
@@ -156,6 +155,8 @@ public final class RptReportCreator {
             prop = new Properties();
             for (int i = 0; i < vecFieldName.size(); i++) {
                 try {
+                    //System.out.println("(String) vecFieldName.get(i): " + (String)
+                    // vecFieldName.get(i));
                     prop.setProperty((String) vecFieldName.get(i),
                             dbObj.getString(rs,(String) vecFieldName.get(i)) == null ? "" : rs
                                     .getString((String) vecFieldName.get(i)));

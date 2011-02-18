@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University test2
+ * McMaster Unviersity test2
  * Hamilton 
  * Ontario, Canada 
  */
@@ -36,7 +36,12 @@ String userlastname = (String) session.getAttribute("userlastname");
 <jsp:useBean id="oscarVariables" class="java.util.Properties"
 	scope="page" />
 <%@ page
-	import="java.util.*, oscar.*, oscar.util.*, oscar.dms.*, oscar.dms.data.*, oscar.oscarProvider.data.ProviderData"%><%
+	import="java.util.*, oscar.*, oscar.util.*, oscar.dms.*, oscar.dms.data.*, oscar.oscarProvider.data.ProviderData"%>
+
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+
+<%
 String mode = "";
 if (request.getAttribute("mode") != null) {
     mode = (String) request.getAttribute("mode");
@@ -119,6 +124,8 @@ String annotation_attrib = "anno"+now;
 <html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache">
 <title>Edit Document</title>
 <script type="text/javascript" src="../share/javascript/Oscar.js"></script>
 <script type="text/javascript" src="../share/javascript/prototype.js"></script>

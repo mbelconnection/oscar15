@@ -44,7 +44,6 @@
  */
 
 package oscar.oscarReport.data;
-import org.oscarehr.util.MiscUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -71,7 +70,7 @@ public class RptDemographicQuerySaver {
         String lastName         = frm.getLastName();
         String sex              = frm.getSex();
         String queryName        = frm.getQueryName();
-       
+        String query            = frm.getQuery();
 
         if (firstName != null ){
             firstName = firstName.trim();
@@ -149,16 +148,16 @@ public class RptDemographicQuerySaver {
         }
         oscar.oscarMessenger.util.MsgStringQuote s = new oscar.oscarMessenger.util.MsgStringQuote();
         try{
-                  
+                  DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
                   String sql = "insert into demographicQueryFavourites "
                   +"(selects,age,startYear,endYear,firstName,lastName,rosterStatus,sex,providerNo,patientStatus,queryName,archived)"
                   +" values "
                   +" ('"+sqSelects+"','"+sqAge+"','"+sqStartYear+"','"+sqEndYear+"','"+s.q(sqFirstName)+"','"+s.q(sqLastName)+"',"
                   +"  '"+sqRosterStatus+"', '"+s.q(sqSex)+"', '"+sqProviderNo+"' , '"+sqPatientStatus+"','"+sqQueryName+"','1')";;
-                  MiscUtils.getLogger().debug("sql statement : "+sql);
-                  DBHandler.RunSQL(sql);
-       }catch (java.sql.SQLException e){ MiscUtils.getLogger().error("Error", e); }
+                  System.out.println("sql statement : "+sql);
+                  db.RunSQL(sql);
+       }catch (java.sql.SQLException e){ System.out.println(e.getMessage()); }
 
 
 

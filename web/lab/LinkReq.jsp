@@ -1,3 +1,6 @@
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
 
@@ -26,8 +29,8 @@
 	    reqDateLink = LabRequestReportLink.getRequestDate(reqId);
 	    
 	    sql = "SELECT ID, formCreated, patientName FROM formLabReq07";
-	    
-	    ResultSet rs = DBHandler.GetSQL(sql);
+	    DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+	    ResultSet rs = db.GetSQL(sql);
 
 	    while (rs.next()) {
 		req_id.add(rs.getString("ID"));
@@ -35,13 +38,13 @@
 		formCreated.add(UtilDateUtilities.DateToString(rs.getDate("formCreated"),"yyyy-MM-dd"));
 	    }
 	} catch (SQLException ex) {
-		MiscUtils.getLogger().error("Error", ex);
+		ex.printStackTrace();
 	}
     } else { //Linked
 	try {
 	    sql = "SELECT formCreated FROM formLabReq07 WHERE ID="+linkReqId;
-	    
-	    ResultSet rs = DBHandler.GetSQL(sql);
+	    DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+	    ResultSet rs = db.GetSQL(sql);
 	    String req_date = "";
 	    if (rs.next()) req_date = UtilDateUtilities.DateToString(rs.getDate("formCreated"),"yyyy-MM-dd");
 	
@@ -52,15 +55,15 @@
 		LabRequestReportLink.update(id,"formLabReq07",Long.valueOf(linkReqId),req_date);
 	    }
 	} catch (SQLException ex) {
-		MiscUtils.getLogger().error("Error", ex);
+		ex.printStackTrace();
 	}
 	response.sendRedirect("../close.html");
     }
 %>
 
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html>
+<html>
     <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Link to Lab Requisition</title>
     </head>
     <body>

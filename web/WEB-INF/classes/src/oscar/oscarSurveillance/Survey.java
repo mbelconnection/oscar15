@@ -38,8 +38,8 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Random;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import oscar.oscarDB.DBHandler;
 
@@ -48,7 +48,7 @@ import oscar.oscarDB.DBHandler;
  * @author  Jay Gallagher
  */
 public class Survey {
-   private static Logger log = MiscUtils.getLogger();
+   private static Log log = LogFactory.getLog(Survey.class);
    
    static long seed = 0;
    
@@ -126,13 +126,13 @@ public class Survey {
        boolean isdemographicSelected = true;
        int num = 0;
        try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;            
             String sql = "SELECT count(demographic_no) as demoCount FROM demographic WHERE demographic_no = '" + demographicNo +"' and "+queryString;            
             if ( queryString != null && queryString.trim().startsWith("FROM") ){
                sql = "SELECT count(demographic.demographic_no) as demoCount "+queryString+" and demographic.demographic_no = '" + demographicNo +"'";
             }
-            rs = DBHandler.GetSQL(sql);            
+            rs = db.GetSQL(sql);            
             if (rs.next()) {
                num = rs.getInt("demoCount");
             }
@@ -191,18 +191,18 @@ public class Survey {
    
    private void getRecordsForPeriod(String demographic_no){
       try{
-         
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
          String sql = //"select * from surveyData where to_days(survey_date) < to_days('"+endDate+"'))
          "select * from surveyData where demographic_no = '"+demographic_no+"' and (to_days(now()) - to_days(survey_date) < "+period+") ";
          
-         ResultSet rs = DBHandler.GetSQL(sql);
+         ResultSet rs = db.GetSQL(sql);
          if(rs.next()){
-            surveyStatus = oscar.Misc.getString(rs, "status");            
+            surveyStatus = db.getString(rs,"status");            
          }            
          rs.close();
          
       }catch(Exception e){
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace();
       }
    }
    
@@ -210,18 +210,18 @@ public class Survey {
    private String getSurveyStatusForPeriod(String demographic_no){
       String sStatus = null;
       try{
-         
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
          String sql = //"select * from surveyData where to_days(survey_date) < to_days('"+endDate+"'))
          "select * from surveyData where surveyId = '"+surveyId+"' and demographic_no = '"+demographic_no+"' and (to_days(now()) - to_days(survey_date) < "+period+") ";
          
-         ResultSet rs = DBHandler.GetSQL(sql);
+         ResultSet rs = db.GetSQL(sql);
          if(rs.next()){
-            sStatus = oscar.Misc.getString(rs, "status");            
+            sStatus = db.getString(rs,"status");            
          }            
          rs.close();
          
       }catch(Exception e){
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace();
       }
       return sStatus;
    }
@@ -235,7 +235,7 @@ public class Survey {
       //This will beused to set patient to been seen in this period.
       String insertId = "";
       try{
-         
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
          String sql = 
          "insert into surveyData ( surveyId, demographic_no,provider_no,status,answer,survey_date) values "
             +"("
@@ -246,13 +246,13 @@ public class Survey {
             +"'"+answer+"',"
             +"now())";
          
-         DBHandler.RunSQL(sql);
-         ResultSet rs = DBHandler.GetSQL("SELECT LAST_INSERT_ID()");
+         db.RunSQL(sql);
+         ResultSet rs = db.GetSQL("SELECT LAST_INSERT_ID()");
          if (rs.next()){
-            insertId = oscar.Misc.getString(rs, 1);
+            insertId = db.getString(rs,1);
          }         
       }catch(Exception e){
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace();
       }
       return insertId;
    }
@@ -269,18 +269,18 @@ public class Survey {
    private String getSurveyIdForDemographic(String demographic_no){
       String surveyDataId = null;
       try{
-         
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
          String sql = //"select * from surveyData where to_days(survey_date) < to_days('"+endDate+"'))
          "select * from surveyData where surveyId = '"+surveyId+"' and demographic_no = '"+demographic_no+"' and (to_days(now()) - to_days(survey_date) < "+period+") ";
          
-         ResultSet rs = DBHandler.GetSQL(sql);
+         ResultSet rs = db.GetSQL(sql);
          if(rs.next()){
-            surveyDataId = oscar.Misc.getString(rs, "surveyDataId");            
+            surveyDataId = db.getString(rs,"surveyDataId");            
          }            
          rs.close();
          
       }catch(Exception e){
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace();
       }
       return surveyDataId;
    }
@@ -299,15 +299,15 @@ public class Survey {
       Answer a = getAnswerByString(answer);
       log.debug("Answer a :"+a.answerString +" answer "+answer);
       try{
-         
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
          String sql = "update surveyData set "
                      +" status = '"+a.answerStatus+"',"
                      +" answer = '"+a.answerValue+"'"
                      +" where surveyDataId = "
                      +"'"+surveyDataId+"'";
-         DBHandler.RunSQL(sql);         
+         db.RunSQL(sql);         
       }catch(Exception e){
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace();
       }      
    }
    
@@ -526,16 +526,16 @@ public class Survey {
    public ArrayList getStatusCount(String surveyId){
       ArrayList list = new ArrayList();
       try{
-         
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
          String sql = "select status , count(status) as countstatus from surveyData where surveyId = '"+surveyId+"' group by status";
-         ResultSet rs = DBHandler.GetSQL(sql);  
+         ResultSet rs = db.GetSQL(sql);  
          
          while(rs.next()){
-            String[] s =  {oscar.Misc.getString(rs, "status"),oscar.Misc.getString(rs, "countstatus")};
+            String[] s =  {db.getString(rs,"status"),db.getString(rs,"countstatus")};
             list.add(s);
          }         
       }catch(Exception e){
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace();
       }      
       return list;
    }
@@ -543,17 +543,17 @@ public class Survey {
    public ArrayList getAnswerCount(String surveyId){
       ArrayList list = new ArrayList();
       try{
-         
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
          String sql = "select answer , count(answer) as countanswer from surveyData where surveyId = '"+surveyId+"' and status = 'A'  group by answer;";
          
-         ResultSet rs = DBHandler.GetSQL(sql);  
+         ResultSet rs = db.GetSQL(sql);  
          
          while(rs.next()){
-            String[] s =  {oscar.Misc.getString(rs, "answer"),oscar.Misc.getString(rs, "countanswer")};
+            String[] s =  {db.getString(rs,"answer"),db.getString(rs,"countanswer")};
             list.add(s);
          }         
       }catch(Exception e){
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace();
       }      
       return list;
    }

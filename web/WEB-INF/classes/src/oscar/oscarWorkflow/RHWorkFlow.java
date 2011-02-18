@@ -34,8 +34,6 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.oscarehr.util.MiscUtils;
-
 /**
  * Generic WorkFlow Description 
  * @author jay
@@ -89,9 +87,9 @@ public class RHWorkFlow implements WorkFlow {
     }
 
     public String getState(String state) {
-        MiscUtils.getLogger().debug("state: "+state);
+        System.out.println("state: "+state);
         WFState wf = (WFState) states.get(state);
-        MiscUtils.getLogger().debug("wf "+wf);
+        System.out.println("wf "+wf);
         
         String ret = "None";
         if (wf != null){
@@ -115,7 +113,7 @@ public class RHWorkFlow implements WorkFlow {
         try{
         wfi = wfDS.getMessages(wfi);
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return wfi;
     }
@@ -125,7 +123,7 @@ public class RHWorkFlow implements WorkFlow {
         try{
         wfi = wfDS.getMessages(wfi);
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return wfi;
     }

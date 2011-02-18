@@ -35,14 +35,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.List;
 
+import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.indivo.IndivoException;
 import org.indivo.xml.JAXBUtils;
 import org.indivo.xml.phr.annotation.DocumentReferenceType;
@@ -58,7 +59,7 @@ import org.indivo.xml.phr.message.TextMessage;
 import org.indivo.xml.phr.urns.ContentTypeQNames;
 import org.indivo.xml.phr.urns.DocumentClassificationUrns;
 import org.oscarehr.phr.PHRConstants;
-import org.oscarehr.util.MiscUtils;
+import org.oscarehr.phr.indivo.IndivoConstantsImpl;
 import org.w3c.dom.Element;
 
 import oscar.oscarDemographic.data.DemographicData;
@@ -70,7 +71,7 @@ import oscar.oscarProvider.data.ProviderMyOscarIdData;
  * @author jay
  */
 public class PHRMessage  extends PHRDocument implements Serializable{
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(PHRMessage.class);
     //for status received msgs
     public static final int STATUS_NEW = 1;
     public static final int STATUS_READ = 2;
@@ -176,7 +177,8 @@ public class PHRMessage  extends PHRDocument implements Serializable{
         byte[] docContentBytes = JAXBUtils.marshalToByteArray((JAXBElement) new IndivoDocument(document), docContext);
         String docContentStr = new String(docContentBytes);
         
-        this.setPhrClassification(PHRConstants.DOCTYPE_MESSAGE());
+        PHRConstants phrConstants = new IndivoConstantsImpl();
+        this.setPhrClassification(phrConstants.DOCTYPE_MESSAGE());
         
         this.setSenderOscar(sender.getProviderNo());
         this.setSenderType(PHRDocument.TYPE_PROVIDER);
@@ -282,7 +284,7 @@ public class PHRMessage  extends PHRDocument implements Serializable{
                }
            } catch (Exception e) {
                log.error("ERROR: rawMessageId is formatted poorly: " + rawMessageId);
-               MiscUtils.getLogger().error("Error", e);
+               e.printStackTrace();
            }
            m.put(this.MESSAGE_ID,indexStr);
            this.setExts(m);
@@ -339,21 +341,23 @@ public class PHRMessage  extends PHRDocument implements Serializable{
     
     public String getSenderDemographicNo(){   
         Hashtable h = findOscarId(PHRDocument.TYPE_DEMOGRAPHIC,this.getSenderPhr());
+        System.out.println("TRYIGN TO FIND OSCAR ID for  "+this.getSenderPhr()+"  ====  "+h.get("oscarId"));    
         return (String) h.get("oscarId");
     }
     
     public Hashtable findOscarId(int idType, String phrId) {
+       ProviderMyOscarIdData providerData = new ProviderMyOscarIdData();
        DemographicData demographicData = new DemographicData();
        Hashtable results = new Hashtable();
        String oscarId = "";
        if (idType == PHRDocument.TYPE_PROVIDER) {
-           oscarId = ProviderMyOscarIdData.getProviderNo(phrId);
+           oscarId = providerData.getProviderNo(phrId);
            log.debug("OSCAR ID "+oscarId);
        } else if(idType == PHRDocument.TYPE_DEMOGRAPHIC) {
            oscarId = demographicData.getDemographicNoByIndivoId(phrId);
        } else if (idType == PHRDocument.TYPE_NOT_SET) {
            //try provider:
-           String searchNo = ProviderMyOscarIdData.getProviderNo(phrId);
+           String searchNo = providerData.getProviderNo(phrId);
            if (!searchNo.equals("")) {
                oscarId = searchNo;
                idType = PHRDocument.TYPE_PROVIDER;
@@ -372,6 +376,7 @@ public class PHRMessage  extends PHRDocument implements Serializable{
     
     
     private int indivoRoleToOscarType(String role) {
+        System.out.println("role: " +role);
         if (role.equalsIgnoreCase("provider") || role.equalsIgnoreCase("administrator"))
             return PHRDocument.TYPE_PROVIDER;
         else if (role.equalsIgnoreCase("patient"))

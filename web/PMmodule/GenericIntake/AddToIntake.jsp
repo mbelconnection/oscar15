@@ -1,3 +1,5 @@
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
 <%@page import="java.sql.*,oscar.oscarDB.*"%>
 <%@page
 	import="java.util.*,org.oscarehr.PMmodule.dao.*,org.oscarehr.PMmodule.service.*,org.oscarehr.PMmodule.model.*,org.springframework.web.context.support.*,org.springframework.web.context.*"%>
@@ -16,11 +18,9 @@ if (request.getParameter("newpos") != null && request.getParameter("parent_intak
     String parent_intake_node_id = request.getParameter("parent_intake_node_id") ;
     String eleType               = request.getParameter("elementType") ;
     String intNodeLabel          = request.getParameter("intake_node_label") ;
-    String intNodeValue          = request.getParameter("intake_node_value") ;
     String mandatory			 = request.getParameter("mandatory") ;
     String questionId			 = request.getParameter("question_id");
     String repeating			 = request.getParameter("repeating") ;
-    String common				 = request.getParameter("common_list") ;
     String[] validations		 = request.getParameterValues("validations");    
     
     IntakeNodeLabel intakeNodeLabel = new IntakeNodeLabel();
@@ -61,9 +61,6 @@ if (request.getParameter("newpos") != null && request.getParameter("parent_intak
     }
     if (questionId !=null) {
     	intakeNode.setQuestionId(questionId);
-    }
-    if(common != null) {
-    	intakeNode.setCommonList(true);
     }
     if(validations != null) {
     	String validationString="";
@@ -109,6 +106,7 @@ String pSize        = request.getParameter("pSize");
 <html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Add To Intake</title>
 <script type="text/javascript" src="<html:rewrite page="/js/jquery.js"/>"></script>
 <script type="text/javascript">
@@ -122,14 +120,7 @@ String pSize        = request.getParameter("pSize");
 				//repeating off
 				$("input[name='repeating']").attr("checked","");
 				$("#repeating").hide();			
-			}
-			/*	
-			if($(this).val() == 15) {
-				$("#common").show();
-			} else {
-				$("#common").hide();
-			}
-			*/
+			}			
 		});
 
 		$("input[name='elementType']").change(function(){
@@ -171,7 +162,7 @@ String pSize        = request.getParameter("pSize");
 	    
 	    function makeDropbox() {
 		var eURL = "MakeDropbox.jsp";
-		popup('500','450',eURL,'mkdrpbx');
+		popup('200','300',eURL,'mkdrpbx');
 	    }
 </script>	
 <script language="javascript" type="text/javascript" src="<html:rewrite page="/share/javascript/Oscar.js"/>"></script>
@@ -218,11 +209,7 @@ String pSize        = request.getParameter("pSize");
 <%}%> 
 
 <br>
-Label Text (Leave blank for no text): <br/><input type="text" name="intake_node_label" />
-<br/><br/>
-Value (If Applicable):<br/>
- <input type="text" name="intake_node_value" />
-  
+Label Text (Leave blank for no text): <input type="text" name="intake_node_label" /> 
 <%if (nodeTemplate.equals("4") || nodeTemplate.equals("5")) {%>
 	<br/>
 	<input type="checkbox" name="mandatory" onclick="doMandatory();">Mandatory</input>
@@ -234,11 +221,8 @@ Value (If Applicable):<br/>
 	<input type="checkbox" name="repeating" onclick=""/>Repeating
 </div>		
 <%}%>
-<br/>
-<input type="checkbox" name="common_list" onclick=""/>Common List
-	
-<br/>
 
+<br/>
 <input type="text" name="question_id"/>Internal Id (optional) <br/>
 
 <%if (nodeTemplate.equals("4") || nodeTemplate.equals("5")) {%>

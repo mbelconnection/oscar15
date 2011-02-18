@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -38,7 +38,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 import oscar.oscarDB.DBHandler;
@@ -54,29 +53,31 @@ public class EctDeleteMeasurementTypesAction extends Action {
         request.getSession().setAttribute("EctDeleteMeasurementTypesForm", frm);
         String[] deleteCheckbox = frm.getDeleteCheckbox();
         GregorianCalendar now=new GregorianCalendar(); 
-       
+        int curYear = now.get(Calendar.YEAR);
+        int curMonth = (now.get(Calendar.MONTH)+1);
+        int curDay = now.get(Calendar.DAY_OF_MONTH);
         String dateDeleted = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.get(Calendar.DATE) ;
                 
         try{
-                                                                                                
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);                                                                                    
             
             if(deleteCheckbox != null){
                 for(int i=0; i<deleteCheckbox.length; i++){
-                    MiscUtils.getLogger().debug(deleteCheckbox[i]);
+                    System.out.println(deleteCheckbox[i]);
                     String sql = "SELECT * FROM measurementType WHERE id='"+ deleteCheckbox[i] +"'"; 
                     ResultSet rs;
-                    rs = DBHandler.GetSQL(sql);
+                    rs = db.GetSQL(sql);
                     if(rs.next()){
                         sql = "INSERT INTO measurementTypeDeleted(type, typeDisplayName,  typeDescription, measuringInstruction, validation, dateDeleted)" +
-                              "VALUES('"+ oscar.Misc.getString(rs, "type") + "','" + oscar.Misc.getString(rs, "typeDisplayName")+ "','" +oscar.Misc.getString(rs, "typeDescription")+ "','" +
-                              oscar.Misc.getString(rs, "measuringInstruction")+ "','" + oscar.Misc.getString(rs, "validation") + "','" + dateDeleted +"')";
-                        DBHandler.RunSQL(sql);
+                              "VALUES('"+ db.getString(rs,"type") + "','" + db.getString(rs,"typeDisplayName")+ "','" +db.getString(rs,"typeDescription")+ "','" +
+                              db.getString(rs,"measuringInstruction")+ "','" + db.getString(rs,"validation") + "','" + dateDeleted +"')";
+                        db.RunSQL(sql);
                         sql = "DELETE  FROM measurementType WHERE id='"+ deleteCheckbox[i] +"'";                                        
-                        MiscUtils.getLogger().debug(" sql statement "+sql);
-                        DBHandler.RunSQL(sql);
-                        sql = "DELETE FROM measurementGroup WHERE typeDisplayName = '" + oscar.Misc.getString(rs, "typeDisplayName") + "'";
-                        MiscUtils.getLogger().debug("sql Statement " + sql);
-                        DBHandler.RunSQL(sql);
+                        System.out.println(" sql statement "+sql);
+                        db.RunSQL(sql);
+                        sql = "DELETE FROM measurementGroup WHERE typeDisplayName = '" + db.getString(rs,"typeDisplayName") + "'";
+                        System.out.println("sql Statement " + sql);
+                        db.RunSQL(sql);
                     }
                 }
             }
@@ -97,7 +98,7 @@ public class EctDeleteMeasurementTypesAction extends Action {
 
         catch(SQLException e)
         {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         MeasurementTypes mt =  MeasurementTypes.getInstance();
         mt.reInit();

@@ -5,6 +5,38 @@
 -- Server version	4.0.12-standard
 
 --
+-- Dumping data for table 'FaxClientLog'
+--
+
+--
+-- Dumping data for table 'allergies'
+--
+
+--
+-- Dumping data for table 'billactivity'
+--
+
+--
+-- Dumping data for table 'billcenter'
+--
+
+--
+-- Dumping data for table 'billing'
+--
+
+--
+-- Dumping data for table 'billingdetail'
+--
+
+--
+-- Dumping data for table 'billinginr'
+--
+
+--
+-- Dumping data for table 'billingservice'
+--
+
+--
 -- Dumping data for table 'clinic'
 --
 
@@ -35,6 +67,10 @@ INSERT INTO config_Immunization VALUES (2,'Late Infants & Children','<?xml versi
 INSERT INTO config_Immunization VALUES (3,'>7 year old children','<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<immunizationSet headers=\"true\" name=\"&gt;7 year old children\"><columnList><column name=\"First visit\"/><column name=\"2 months later\"/><column name=\"6-12 months later\"/><column name=\"10 years later\"/></columnList><rowList><row name=\"dTap\"><cell index=\"1\"/><cell index=\"2\"/><cell index=\"3\"/><cell index=\"4\"/></row><row name=\"IPV\"><cell index=\"1\"/><cell index=\"2\"/><cell index=\"3\"/></row><row name=\"MMR\"><cell index=\"1\"/></row><row name=\"Hep B\"><cell index=\"1\"/><cell index=\"2\"/><cell index=\"3\"/></row><row name=\"Varicella\"><cell index=\"1\"/></row><row name=\"Meningococcal&#10;Vaccine\"><cell index=\"1\"/></row></rowList></immunizationSet>','2002-07-30','174',0);
 INSERT INTO config_Immunization VALUES (4,'Adult','<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<immunizationSet headers=\"true\" name=\"Adult\"><columnList><column name=\"Td (Every 10 years)\"/><column name=\"Influenza (yearly)\"/><column name=\"Pneumococcal&#13;&lt;br&gt;(&gt;65 years + risks)\"/><column name=\"MMR(Adults born 1970 or later)\"/><column name=\"Other\"/><column name=\"Other\"/><column name=\"Other\"/></columnList><rowList><row name=\"Date\"><cell index=\"1\"/><cell index=\"2\"/><cell index=\"3\"/><cell index=\"4\"/><cell index=\"5\"/><cell index=\"6\"/><cell index=\"7\"/></row><row name=\"Date\"><cell index=\"1\"/><cell index=\"2\"/><cell index=\"3\"/><cell index=\"4\"/><cell index=\"5\"/><cell index=\"6\"/><cell index=\"7\"/></row><row name=\"Date\"><cell index=\"1\"/><cell index=\"2\"/><cell index=\"3\"/><cell index=\"4\"/><cell index=\"5\"/><cell index=\"6\"/><cell index=\"7\"/></row><row name=\"Date\"><cell index=\"1\"/><cell index=\"2\"/><cell index=\"3\"/><cell index=\"4\"/><cell index=\"5\"/><cell index=\"6\"/><cell index=\"7\"/></row><row name=\"Date\"><cell index=\"1\"/><cell index=\"2\"/><cell index=\"3\"/><cell index=\"4\"/><cell index=\"5\"/><cell index=\"6\"/><cell index=\"7\"/></row><row name=\"Date\"><cell index=\"1\"/><cell index=\"2\"/><cell index=\"3\"/><cell index=\"4\"/><cell index=\"5\"/><cell index=\"6\"/><cell index=\"7\"/></row><row name=\"Date\"><cell index=\"1\"/><cell index=\"2\"/><cell index=\"3\"/><cell index=\"4\"/><cell index=\"5\"/><cell index=\"6\"/><cell index=\"7\"/></row><row name=\"Date\"><cell index=\"1\"/><cell index=\"2\"/><cell index=\"3\"/><cell index=\"4\"/><cell index=\"5\"/><cell index=\"6\"/><cell index=\"7\"/></row><row name=\"Date\"><cell index=\"1\"/><cell index=\"2\"/><cell index=\"3\"/><cell index=\"4\"/><cell index=\"5\"/><cell index=\"6\"/><cell index=\"7\"/></row><row name=\"Date\"><cell index=\"1\"/><cell index=\"2\"/><cell index=\"3\"/><cell index=\"4\"/><cell index=\"5\"/><cell index=\"6\"/><cell index=\"7\"/></row></rowList></immunizationSet>','2002-07-30','174',0);
 INSERT INTO config_Immunization VALUES (5,'Routine Infants & Children','<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<immunizationSet headers=\"true\" name=\"Routine Infants &amp; Children\"><columnList><column name=\"2 months\"/><column name=\"4 months\"/><column name=\"6 months\"/><column name=\"12 months\"/><column name=\"18 months\"/><column name=\"4-6 years\"/><column name=\"14-16 years\"/></columnList><rowList><row name=\"DTP+IPV\"><cell index=\"1\"/><cell index=\"2\"/><cell index=\"3\"/><cell index=\"5\"/><cell index=\"6\"/></row><row name=\"Hib\"><cell index=\"1\"/><cell index=\"2\"/><cell index=\"3\"/><cell index=\"5\"/></row><row name=\"MMR\"><cell index=\"4\"/><cell index=\"6\"/></row><row name=\"Td\"><cell index=\"7\"/></row><row name=\"Hep B (first visit,&#10;1 month, 6 months)\"><cell index=\"1\"/><cell index=\"2\"/><cell index=\"3\"/></row><row name=\"VariVax&#10;(chickenpox)\"><cell index=\"4\"/></row><row name=\"Prevnar&#10;(pneumococcus)\"><cell index=\"1\"/><cell index=\"2\"/><cell index=\"3\"/><cell index=\"4\"/></row><row name=\"Menjugate or others&#10;(meningococcus)\"><cell index=\"1\"/><cell index=\"2\"/><cell index=\"3\"/><cell index=\"7\"/></row></rowList></immunizationSet>','2002-07-30','174',0);
+
+--
+-- Dumping data for table 'consultationRequests'
+--
 
 --
 -- Dumping data for table 'consultationServices'
@@ -201,9 +237,6 @@ INSERT INTO ctl_specialinstructions VALUES (26,'Insert in both eyes');
 -- Dumping data for table 'eform'
 --
 
-INSERT INTO eform VALUES (1,'letter','','letter generator','2010-05-02','10:00:00',NULL,1,'<html><head>\r\n<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">\r\n\r\n<title>Rich Text Letter</title>\r\n<style type=\"text/css\">\r\n.butn {width: 140px;}\r\n</style>\r\n\r\n<style type=\"text/css\" media=\"print\">\r\n.DoNotPrint {display: none;}\r\n\r\n</style>\r\n\r\n<script language=\"javascript\">\r\nvar needToConfirm = false;\r\n\r\n//keypress events trigger dirty flag for the iFrame and the subject line\r\ndocument.onkeyup=setDirtyFlag\r\n\r\n\r\nfunction setDirtyFlag() {\r\n	needToConfirm = true; \r\n}\r\n\r\nfunction releaseDirtyFlag() {\r\n	needToConfirm = false; //Call this function if dosent requires an alert.\r\n	//this could be called when save button is clicked\r\n}\r\n\r\n\r\nwindow.onbeforeunload = confirmExit;\r\n\r\nfunction confirmExit() {\r\n	if (needToConfirm)\r\n	return \"You have attempted to leave this page. If you have made any changes without clicking the Submit button, your changes will be lost. Are you sure you want to exit this page?\";\r\n}\r\n\r\n</script>\r\n\r\n\r\n\r\n</head><body onload=\"Start()\" bgcolor=\"FFFFFF\">\r\n\r\n\r\n<!-- START OF EDITCONTROL CODE --> \r\n\r\n<script language=\"javascript\" type=\"text/javascript\" src=\"${oscar_image_path}editControl.js\"></script>\r\n      \r\n<script language=\"javascript\">\r\n\r\n    //put any of the optional configuration variables that you want here\r\n    cfg_width = \'640\';                    //editor control width in pixels\r\n    cfg_height = \'520\';                   //editor control height in pixels\r\n    cfg_editorname = \'edit\';                //the handle for the editor                  \r\n    cfg_isrc = \'${oscar_image_path}\';         //location of the button icon files\r\n    cfg_filesrc = \'${oscar_image_path}\';         //location of the html files\r\n    cfg_template = \'blank.html\';	    //default style and content template\r\n    cfg_formattemplate = \'<option value=\"\">&mdash; template &mdash;</option>  <option value=\"blank\">blank</option>  <option value=\"consult\">consult</option> <option value=\"certificate\">work note</option> <option value=\"narcotic\">narcotic contract</option> <option value=\"MissedAppointment\">missed appt</option> <option value=\"custom\">custom</option></select>\';\r\n    //cfg_layout = \'[all]\';             //adjust the format of the buttons here\r\n    cfg_layout = \r\n\'<table style=\"background-color:#ccccff; width:640px\"><tr id=control1><td>[bold][italic][underlined][strike][subscript][superscript]|[left][center][full][right]|[unordered][ordered][rule]|[undo][redo]|[indent][outdent][select-all][clean]|[table]</td></tr><tr id=control2><td>[select-block][select-face][select-size][select-template]|[image][clock][date][spell][help]</td></tr></table>[edit-area]\';\r\n    insertEditControl(); // Initialise the edit control and sets it at this point in the webpage\r\n\r\n    function Start() {\r\n        // set eventlistener for the iframe to flag changes in the text displayed \r\n	var agent=navigator.userAgent.toLowerCase(); //for non IE browsers\r\n        if ((agent.indexOf(\"msie\") == -1) || (agent.indexOf(\"opera\") != -1)){\r\n		document.getElementById(cfg_editorname).contentWindow.addEventListener(\'keypress\',setDirtyFlag, true);\r\n	}\r\n\r\n	if (document.getElementById(\'recent_rx\').value.length<1){\r\n		//document.RichTextLetter.RecentMedications.style.visibility=\"hidden\";\r\n		document.getElementById(\'RecentMedications\').style.display = \"none\";\r\n	}\r\n\r\n        // reformat values of multiline database values from \\n lines to <br>\r\n        htmlLine(\'label\');\r\n        htmlLine(\'reminders\');\r\n        htmlLine(\'ongoingconcerns\');\r\n        htmlLine(\'medical_history\');document.getElementById(\'allergies_des\').value\r\n        htmlLine(\'other_medications_history\');  //family history  ... don\'t ask\r\n        htmlLine(\'social_family_history\');  //social history\r\n        htmlLine(\'address\');\r\n        htmlLine(\'NameAddress\');\r\n        htmlLine(\'clinic_label\');\r\n        htmlLine(\'clinic_address\');\r\n        htmlLine(\'druglist_generic\');\r\n        htmlLine(\'druglist_trade\');\r\n        htmlLine(\'recent_rx\');\r\n\r\n	var gender=document.getElementById(\'sex\').value; \r\n	if (gender==\'F\'){\r\n		document.getElementById(\'he_she\').value=\'she\'; \r\n		document.getElementById(\'his_her\').value=\'her\';\r\n		document.getElementById(\'gender\').value=\'female\';\r\n	}\r\n	var mySplitResult = document.getElementById(\'referral_name\').value.toString().split(\',\'); \r\n	document.getElementById(\'referral_nameL\').value=mySplitResult[0];\r\n\r\n	document.getElementById(\'letterhead\').value= genericLetterhead();\r\n\r\n	\r\n        // set the HTML contents of this edit control from the value saved in Oscar (if any)\r\n	var contents=document.getElementById(\'Letter\').value\r\n	if (contents.length==0){\r\n		parseTemplate();\r\n	} else {\r\n		seteditControlContents(cfg_editorname,contents);\r\n	}\r\n    }\r\n \r\n    function htmlLine(theelement) { \r\n	var temp = new Array();\r\n	if (document.getElementById(theelement).value.length>0){\r\n		temp=document.getElementById(theelement).value.split(\'\\n\'); \r\n		contents=\'\';\r\n		var x;\r\n		for (x in temp) {\r\n			contents += temp[x]+\'<br>\';\r\n			}\r\n		document.getElementById(theelement).value=contents;\r\n		}\r\n    }\r\n\r\n    function genericLetterhead() {\r\n        // set the HTML contents of the letterhead\r\n	var address = \'<table border=0><tbody><tr><td><font size=6>\'+document.getElementById(\'clinic_name\').value+\'</font></td></tr><tr><td><font size=2>\'+ document.getElementById(\'clinic_addressLineFull\').value+ \' Fax: \'+document.getElementById(\'clinic_fax\').value+\' Phone: \'+document.getElementById(\'clinic_phone\').value+\'</font><hr></td></tr></tbody></table><br>\'\r\n	if ((document.getElementById(\'clinic_name\').value.toLowerCase()).indexOf(\'amily health team\',0)>-1){\r\n		address=fhtLetterhead();\r\n	}\r\n	return address;\r\n    }\r\n\r\n    function fhtLetterhead() {\r\n        // set the HTML contents of the letterhead using FHT colours\r\n	var address = document.getElementById(\'clinic_addressLineFull\').value+ \'<br>Fax:\'+document.getElementById(\'clinic_fax\').value+\' Phone:\'+document.getElementById(\'clinic_phone\').value ;\r\n	if (document.getElementById(\'doctor\').value.indexOf(\'zapski\')>0){address=\'293 Meridian Avenue, Haileybury, ON P0J 1K0<br> Tel 705-672-2442 Fax 705-672-2384\'};\r\n	address=\'<table style=\\\'text-align: right;\\\' border=\\\'0\\\'><tbody><tr style=\\\'font-style: italic; color: rgb(71, 127, 128);\\\'><td><font size=\\\'+2\\\'>\'+document.getElementById(\'clinic_name\').value+\'</font> <hr style=\\\'width: 100%; height: 3px; color: rgb(212, 118, 0); background-color: rgb(212, 118, 0);\\\'></td> </tr> <tr style=\\\'color: rgb(71, 127, 128);\\\'> <td><font size=\\\'+1\\\'>Family Health Team<br> &Eacute;quipe Sant&eacute; Familiale</font></td> </tr> <tr style=\\\'color: rgb(212, 118, 0); \\\'> <td><small>\'+address+\'</small></td> </tr> </tbody> </table>\';\r\n	return address;\r\n    }\r\n</script>\r\n\r\n<!-- END OF EDITCONTROL CODE -->\r\n\r\n\r\n<form method=\"post\" action=\"\" name=\"RichTextLetter\" >\r\n\r\n<!-- START OF DATABASE PLACEHOLDERS -->\r\n\r\n<input type=\"hidden\" name=\"clinic_name\" id=\"clinic_name\" oscarDB=clinic_name>\r\n<input type=\"hidden\" name=\"clinic_address\" id=\"clinic_address\" oscarDB=clinic_address>\r\n<input type=\"hidden\" name=\"clinic_addressLine\" id=\"clinic_addressLine\" oscarDB=clinic_addressLine>\r\n<input type=\"hidden\" name=\"clinic_addressLineFull\" id=\"clinic_addressLineFull\" oscarDB=clinic_addressLineFull>\r\n<input type=\"hidden\" name=\"clinic_label\" id=\"clinic_label\" oscarDB=clinic_label>\r\n<input type=\"hidden\" name=\"clinic_fax\" id=\"clinic_fax\" oscarDB=clinic_fax>\r\n<input type=\"hidden\" name=\"clinic_phone\" id=\"clinic_phone\" oscarDB=clinic_phone>\r\n<input type=\"hidden\" name=\"clinic_city\" id=\"clinic_city\" oscarDB=clinic_city>\r\n<input type=\"hidden\" name=\"clinic_province\" id=\"clinic_province\" oscarDB=clinic_province>\r\n<input type=\"hidden\" name=\"clinic_postal\" id=\"clinic_postal\" oscarDB=clinic_postal>\r\n\r\n<input type=\"hidden\" name=\"patient_name\" id=\"patient_name\" oscarDB=patient_name>\r\n<input type=\"hidden\" name=\"first_last_name\" id=\"first_last_name\" oscarDB=first_last_name>\r\n<input type=\"hidden\" name=\"patient_nameF\" id=\"patient_nameF\" oscarDB=patient_nameF >\r\n<input type=\"hidden\" name=\"patient_nameL\" id=\"patient_nameL\" oscarDB=patient_nameL >\r\n<input type=\"hidden\" name=\"label\" id=\"label\" oscarDB=label>\r\n<input type=\"hidden\" name=\"NameAddress\" id=\"NameAddress\" oscarDB=NameAddress>\r\n<input type=\"hidden\" name=\"address\" id=\"address\" oscarDB=address>\r\n<input type=\"hidden\" name=\"addressline\" id=\"addressline\" oscarDB=addressline>\r\n<input type=\"hidden\" name=\"phone\" id=\"phone\" oscarDB=phone>\r\n<input type=\"hidden\" name=\"phone2\" id=\"phone2\" oscarDB=phone2>\r\n<input type=\"hidden\" name=\"province\" id=\"province\" oscarDB=province>\r\n<input type=\"hidden\" name=\"city\" id=\"city\" oscarDB=city>\r\n<input type=\"hidden\" name=\"postal\" id=\"postal\" oscarDB=postal>\r\n<input type=\"hidden\" name=\"dob\" id=\"dob\" oscarDB=dob>\r\n<input type=\"hidden\" name=\"dobc\" id=\"dobc\" oscarDB=dobc>\r\n<input type=\"hidden\" name=\"dobc2\" id=\"dobc2\" oscarDB=dobc2>\r\n<input type=\"hidden\" name=\"hin\" id=\"hin\" oscarDB=hin>\r\n<input type=\"hidden\" name=\"hinc\" id=\"hinc\" oscarDB=hinc>\r\n<input type=\"hidden\" name=\"hinversion\" id=\"hinversion\" oscarDB=hinversion>\r\n<input type=\"hidden\" name=\"ageComplex\" id=\"ageComplex\" oscarDB=ageComplex >\r\n<input type=\"hidden\" name=\"age\" id=\"age\" oscarDB=age >\r\n<input type=\"hidden\" name=\"sex\" id=\"sex\" oscarDB=sex >\r\n<input type=\"hidden\" name=\"chartno\" id=\"chartno\" oscarDB=chartno >\r\n\r\n<input type=\"hidden\" name=\"medical_history\" id=\"medical_history\" oscarDB=medical_history>\r\n<input type=\"hidden\" name=\"recent_rx\" id=\"recent_rx\" oscarDB=recent_rx>\r\n<input type=\"hidden\" name=\"druglist_generic\" id=\"druglist_generic\" oscarDB=druglist_generic>\r\n<input type=\"hidden\" name=\"druglist_trade\" id=\"druglist_trade\" oscarDB=druglist_trade>\r\n<input type=\"hidden\" name=\"druglist_line\" id=\"druglist_line\" oscarDB=druglist_line>\r\n<input type=\"hidden\" name=\"social_family_history\" id=\"social_family_history\" oscarDB=social_family_history>\r\n<input type=\"hidden\" name=\"other_medications_history\" id=\"other_medications_history\" oscarDB=other_medications_history>\r\n<input type=\"hidden\" name=\"reminders\" id=\"reminders\" oscarDB=reminders>\r\n<input type=\"hidden\" name=\"ongoingconcerns\" id=\"ongoingconcerns\" oscarDB=ongoingconcerns >\r\n\r\n<input type=\"hidden\" name=\"provider_name_first_init\" id=\"provider_name_first_init\" oscarDB=provider_name_first_init >\r\n<input type=\"hidden\" name=\"current_user\" id=\"current_user\" oscarDB=current_user >\r\n<input type=\"hidden\" name=\"doctor_work_phone\" id=\"doctor_work_phone\" oscarDB=doctor_work_phone >\r\n<input type=\"hidden\" name=\"doctor\" id=\"doctor\" oscarDB=doctor >\r\n\r\n<input type=\"hidden\" name=\"today\" id=\"today\" oscarDB=today>\r\n\r\n<input type=\"hidden\" name=\"allergies_des\" id=\"allergies_des\" oscarDB=allergies_des >\r\n\r\n<!-- PLACE REFERRAL PLACEHOLDERS HERE WHEN BC APCONFIG FIXED -->\r\n<input type=\"hidden\" name=\"referral_name\" id=\"referral_name\" oscarDB=referral_name>\r\n<input type=\"hidden\" name=\"referral_address\" id=\"referral_address\" oscarDB=referral_address>\r\n<input type=\"hidden\" name=\"referral_phone\" id=\"referral_phone\" oscarDB=referral_phone>\r\n<input type=\"hidden\" name=\"referral_fax\" id=\"referral_fax\" oscarDB=referral_fax>\r\n\r\n<!-- END OF DATABASE PLACEHOLDERS -->\r\n\r\n\r\n<!-- START OF MEASUREMENTS PLACEHOLDERS -->\r\n\r\n<input type=\"hidden\" name=\"BP\" id=\"BP\" oscarDB=m$BP#value>\r\n<input type=\"hidden\" name=\"WT\" id=\"WT\" oscarDB=m$WT#value>\r\n<input type=\"hidden\" name=\"smoker\" id=\"smoker\" oscarDB=m$SMK#value>\r\n<input type=\"hidden\" name=\"dailySmokes\" id=\"dailySmokes\" oscarDB=m$NOSK#value>\r\n<input type=\"hidden\" name=\"A1C\" id=\"A1C\" oscarDB=m$A1C#value>\r\n\r\n<!-- END OF MEASUREMENTS PLACEHOLDERS -->\r\n\r\n\r\n<!-- START OF DERIVED PLACEHOLDERS -->\r\n\r\n<input type=\"hidden\" name=\"he_she\" id=\"he_she\" value=\"he\">\r\n<input type=\"hidden\" name=\"his_her\" id=\"his_her\" value=\"his\">\r\n<input type=\"hidden\" name=\"gender\" id=\"gender\" value=\"male\">\r\n<input type=\"hidden\" name=\"referral_nameL\" id=\"referral_nameL\" value=\"Referring Doctor\">\r\n<input type=\"hidden\" name=\"letterhead\" id=\"letterhead\" value=\"Letterhead\">\r\n\r\n<!-- END OF DERIVED PLACEHOLDERS -->\r\n\r\n\r\n<textarea name=\"Letter\" id=\"Letter\" style=\"width:600px; display: none;\"></textarea>\r\n\r\n<div class=\"DoNotPrint\" id=\"control3\" style=\"position:absolute; top:20px; left: 660px;\">\r\n<input type=\"button\" class=\"butn\" name=\"AddLetterhead\" id=\"AddLetterhead\" value=\"Letterhead\" \r\n	onclick=\"doHtml(document.getElementById(\'letterhead\').value);\">\r\n\r\n<br>\r\n<!--\r\n<input type=\"button\" class=\"butn\" name=\"certificate\" value=\"Work Note\" \r\n	onclick=\"document.RichTextLetter.AddLetterhead.click();\r\n 	doHtml(\'<p>\'+doDate()+\'<p>This is to certify that I have today examined <p>\');\r\n	document.RichTextLetter.AddLabel.click();\r\n	doHtml(\'In my opinion, \'+document.getElementById(\'he_she\').value+\' will be unfit for \'+document.getElementById(\'his_her\').value+\' normal work from today to * inclusive.\');\r\n	document.RichTextLetter.Closing.click();\">\r\n<br>\r\n\r\n<input type=\"button\" class=\"butn\" name=\"consult\" value=\"Consult Letter\" \r\n	onclick=\"  var ref=document.getElementById(\'referral_name\').value.toString(); var mySplitResult = ref.split(\',\');\r\n	var gender=document.getElementById(\'sex\').value; if (gender==\'M\'){gender=\'male\';}; if (gender==\'F\'){gender=\'female\';};\r\n	var years=document.getElementById(\'ageComplex\').value; if (years==\'\'){years=document.getElementById(\'age\').value + \'yo\';};\r\n	document.RichTextLetter.AddLetterhead.click();\r\n	doHtml(\'<p>\'+doDate()+\'<p>\');\r\n	document.RichTextLetter.AddReferral.click();\r\n	doHtml(\'<p>RE:&nbsp\');\r\n	document.RichTextLetter.AddLabel.click();\r\n	doHtml(\'<p>Dear Dr. \'+mySplitResult[0]+\'<p>Thank you for asking me to see this \'+years+ \' \' +gender);\r\n	document.RichTextLetter.Closing.click(); \">\r\n<br>\r\n-->\r\n<input type=\"button\" class=\"butn\" name=\"AddReferral\" id=\"AddReferral\" value=\"Referring Block\" \r\n	onclick=\"doHtml(document.getElementById(\'referral_name\').value+\'<br>\'+ document.getElementById(\'referral_address\').value +\'<br>CANADA<br> Tel: \'+ document.getElementById(\'referral_phone\').value+\'<br>Fax:  \'+document.getElementById(\'referral_fax\').value);\">\r\n\r\n<br>\r\n\r\n<input type=\"button\" class=\"butn\" name=\"AddLabel\" id=\"AddLabel\" value=\"Patient Block\" \r\n	onclick=\"doHtml(document.getElementById(\'label\').value);\">\r\n\r\n<br>\r\n\r\n<br>\r\n<input type=\"button\"  class=\"butn\" name=\"MedicalHistory\" value=\"Recent History\" width=30\r\n	onclick=\"var hist=parseText(document.getElementById(\'medical_history\').value); doHtml(hist);\">\r\n<br>\r\n<input type=\"button\"  class=\"butn\" name=\"AddMedicalHistory\" value=\"Full History\" width=30\r\n	onclick=\"doHtml(document.getElementById(\'medical_history\').value); \">\r\n<br>\r\n<input type=\"button\" class=\"butn\" name=\"RecentMedications\" id=\"RecentMedications\" value=\"Recent Prescriptions\"\r\n	onclick=\"doHtml(document.getElementById(\'recent_rx\').value);\">\r\n<br>\r\n<input type=\"button\" class=\"butn\" name=\"Medlist\" id=\"Medlist\" value=\"Medication List\"\r\n	onclick=\"doHtml(document.getElementById(\'druglist_trade\').value);\">\r\n<br>\r\n<input type=\"button\" class=\"butn\" name=\"Allergies\" id=\"Allergies\" value=\"Meds & Allergies\"\r\n	onclick=\"var allergy=document.getElementById(\'allergies_des\').value; if (allergy.length>0){allergy=\'<br>Allergies: \'+allergy};doHtml(\'Medications: \'+document.getElementById(\'druglist_line\').value+allergy);\">\r\n<br>\r\n<input type=\"button\" class=\"butn\" name=\"OtherMedicationsHistory\" value=\"Family History\"\r\n	onclick=\"var hist=parseText(document.getElementById(\'other_medications_history\').value); doHtml(hist);\">\r\n<br>\r\n<input type=\"button\" class=\"butn\" name=\"AddOtherMedicationsHistory\" value=\"Full Family Hx\"\r\n	onclick=\"doHtml(document.getElementById(\'other_medications_history\').value); \">\r\n\r\n<br>\r\n<input type=\"button\" class=\"butn\" name=\"AddSocialFamilyHistory\" value=\"Social History\" \r\n	onclick=\"var hist=parseText(document.getElementById(\'social_family_history\').value); doHtml(hist);\">\r\n<br>\r\n<input type=\"button\" class=\"butn\" name=\"AddReminders\" value=\"Reminders\"\r\n	onclick=\"var hist=parseText(document.getElementById(\'reminders\').value); doHtml(hist);\">\r\n<br>\r\n<input type=\"button\" class=\"butn\" name=\"AddOngoingConcerns\" value=\"Ongoing Concerns\"\r\n	onclick=\"var hist=parseText(document.getElementById(\'ongoingconcerns\').value); doHtml(hist);\">\r\n<br>\r\n<br>\r\n<input type=\"button\" class=\"butn\" name=\"Patient\" value=\"Patient Name\"\r\n	onclick=\" doHtml(document.getElementById(\'first_last_name\').value);\">\r\n\r\n<br>\r\n<input type=\"button\" class=\"butn\" name=\"PatientAge\" value=\"Patient Age\"\r\n	onclick=\"var hist=document.getElementById(\'ageComplex\').value; if (hist==\'\'){hist=document.getElementById(\'age\').value;}; doHtml(hist);\">\r\n<br>\r\n<input type=\"button\" class=\"butn\" name=\"label\" value=\"Patient Label\"\r\n	onclick=\"var hist=document.getElementById(\'label\').value; doHtml(hist);\">\r\n\r\n\r\n<br>\r\n<input type=\"button\" class=\"butn\" name=\"PatientSex\" value=\"Patient Gender\"\r\n	onclick=\"doHtml(document.getElementById(\'sex\').value);\">\r\n<br>\r\n<br>\r\n<input type=\"button\" class=\"butn\" name=\"Closing\" value=\"Closing Salutation\" \r\n	onclick=\" doHtml(\'<p>Yours Sincerely<p>&nbsp;<p>\'+ document.getElementById(\'provider_name_first_init\').value+\', MD\');\">\r\n \r\n<br>\r\n<input type=\"button\" class=\"butn\" name=\"User\" value=\"Current User\"\r\n	onclick=\"var hist=document.getElementById(\'current_user\').value; doHtml(hist);\">\r\n \r\n<br>\r\n<input type=\"button\" class=\"butn\" name=\"Doctor\" value=\"Attending Doctor\"\r\n	onclick=\"var hist=document.getElementById(\'doctor\').value; doHtml(hist);\">\r\n<br>\r\n<br>\r\n\r\n\r\n<br>\r\n</div>\r\n\r\n\r\n<div class=\"DoNotPrint\" >\r\n<input onclick=\"viewsource(this.checked)\" type=\"checkbox\">\r\nHTML Source\r\n<input onclick=\"usecss(this.checked)\" type=\"checkbox\">\r\nUse CSS\r\n	<table><tr><td>\r\n		 Subject: <input name=\"subject\" id=\"subject\" size=\"40\" type=\"text\">\r\n		 <input value=\"Submit\" name=\"SubmitButton\" type=\"submit\" onclick=\"needToConfirm=false;document.getElementById(\'Letter\').value=editControlContents(\'edit\');  document.RichTextLetter.submit()\">\r\n		 <input value=\"Reset\" name=\"ResetButton\" type=\"reset\">\r\n		 <input value=\"Print\" name=\"PrintButton\" type=\"button\" onclick=\"document.getElementById(\'edit\').contentWindow.print();\">\r\n		 <input value=\"Print & Save\" name=\"PrintSaveButton\" type=\"button\" onclick=\"document.getElementById(\'edit\').contentWindow.print();needToConfirm=false;document.getElementById(\'Letter\').value=editControlContents(\'edit\');  setTimeout(\'document.RichTextLetter.submit()\',1000);\">\r\n	 </td></tr></table>\r\n </div>\r\n </form>\r\n\r\n</body></html>\r\n',0,NULL);
-
-
 --
 -- Dumping data for table 'eform_data'
 --
@@ -255,8 +288,8 @@ INSERT INTO encounterForm VALUES ('Caregiver', '../form/formcaregiver.jsp?demogr
 INSERT INTO encounterForm VALUES ('Grip Strength', '../form/formgripstrength.jsp?demographic_no=','formGripStrength',0);
 INSERT INTO encounterForm VALUES ('Treatment Preference', '../form/formtreatmentpref.jsp?demographic_no=','formTreatmentPref',0);
 INSERT INTO encounterForm VALUES ('Caregiver - SF36', '../form/formSF36caregiver.jsp?demographic_no=','formSF36Caregiver',0);
-INSERT INTO encounterForm VALUES ('Vascular Tracker', '../form/SetupForm.do?formName=VTForm&demographic_no=','formVTForm',0);
-INSERT INTO encounterForm VALUES ('Growth 0-36m', '../form/formGrowth0_36.jsp?demographic_no=','formGrowth0_36',0);
+INSERT INTO encounterForm VALUES ('Vascular Tracker', ' ../form/SetupForm.do?formName=VTForm&demographic_no=','formVTForm',0);
+INSERT INTO encounterForm VALUES ('Growth 0-36m', ' ../form/formGrowth0_36.jsp?demographic_no=','formGrowth0_36',0);
 INSERT INTO encounterForm VALUES ('Letterhead', '../form/formConsultant.jsp?demographic_no=', 'formConsult', 0);
 INSERT INTO `encounterForm`(`form_name`,`form_value`,`form_table`,`hidden`) VALUES ('CHF','../form/formchf.jsp?demographic_no=','formchf',0);
 
@@ -1006,6 +1039,8 @@ INSERT INTO measurementType (type, typeDisplayName,  typeDescription, measuringI
 -- Dumping data for table 'measurementGroup'
 --
 
+
+
 --
 -- Dumping data for table 'measurementGroupStyle'
 --
@@ -1030,14 +1065,34 @@ INSERT INTO mygroup VALUES ('IT Support','88888','Support','IT',NULL);
 
 INSERT INTO oscarcommlocations VALUES (145,'Oscar Users',NULL,1,'<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<addressBook><group><group desc=\"doc\" id=\"17\"><address desc=\"Chan, David\" id=\"174\"/><address desc=\"oscardoc, doctor\" id=\"999998\"/></group><group desc=\"receptionist\" id=\"18\"><address desc=\"oscarrep, receptionist\" id=\"999999\"/><address desc=\"Support, IT\" id=\"88888\"/></group><group desc=\"admin\" id=\"19\"><address desc=\"oscaradmin, admin\" id=\"999997\"/></group><address desc=\"Chan, David\" id=\"174\"/><address desc=\"oscaradmin, admin\" id=\"999997\"/><address desc=\"oscardoc, doctor\" id=\"999998\"/><address desc=\"oscarrep, receptionist\" id=\"999999\"/><address desc=\"Support, IT\" id=\"88888\"/></group></addressBook>',NULL);
 
+--
+-- Dumping data for table 'preference'
+--
 
-insert into ProviderPreference (providerNo, startHour, endHour, everyMin, myGroupNo, colourTemplate, defaultCaisiPmm, defaultNewOscarCme, printQrCodeOnPrescriptions, lastUpdated, appointmentScreenFormNameDisplayLength) values ('999998','8','18','15','.default','deepblue','disabled','disabled', 0, now(), 3);
+INSERT INTO preference VALUES (138,'999998','8','18','15','.default','deepblue','','disabled');
+
+--
+-- Dumping data for table 'prescribe'
+--
+
+--
+-- Dumping data for table 'professionalSpecialists'
+--
+
+--
+-- Dumping data for table 'property'
+--
+
 
 --
 -- Dumping data for table 'provider'
 --
 
 INSERT INTO provider VALUES ('999998','oscardoc','doctor','doctor','','','','0001-01-01','','','','','','','','1','','','','','','','','',NULL,'0001-01-01');
+
+--
+-- Dumping data for table 'providerExt'
+--
 
 --
 -- Dumping data for table 'quickList'
@@ -1159,9 +1214,8 @@ INSERT INTO scheduletemplatecode VALUES ('a','Administrative Work','15','#BFEFFF
 INSERT INTO scheduletemplatecode VALUES ('t','Travel','',NULL,'N',1);
 INSERT INTO scheduletemplatecode VALUES ('m','Meeting','',NULL,'N',1);
 INSERT INTO scheduletemplatecode VALUES ('1','15 Minute Appointment','15','#BFEFFF','N',1);
-INSERT INTO scheduletemplatecode VALUES ('s','Same Day','15','FFF68F','Day',1);
-INSERT INTO scheduletemplatecode VALUES ('S','Same Day - R1','30','FFF68F','Day',1);
-INSERT INTO scheduletemplatecode VALUES ('W','Same Week','15','FFF68F','Wk','1');
+INSERT INTO scheduletemplatecode VALUES ('s','Same Day','15','FFF68F','N',1);
+INSERT INTO scheduletemplatecode VALUES ('S','Same Day - R1','30','FFF68F','N',1);
 
 --
 -- Dumping data for table 'security'
@@ -1213,8 +1267,6 @@ INSERT INTO validations(name, maxValue, minValue, maxLength) values( 'Integer: 1
 INSERT INTO validations(name, maxValue, minValue, maxLength) values( 'Integer: 1 to 4', 4, 1, 1);
 INSERT INTO validations(name, maxValue, minValue, maxLength) values( 'Integer: 1 to 3', 3, 1, 1);
 
-
-
 insert into `secRole` values(1, 'receptionist', 'receptionist');
 insert into `secRole` values(2, 'doctor', 'doctor');
 insert into `secRole` values(3, 'admin', 'admin');
@@ -1223,25 +1275,6 @@ insert into `secRole` values(5, 'nurse', 'nurse');
 insert into `secRole` values(6, 'Vaccine Provider', 'Vaccine Provider');
 insert into `secRole` values(null, 'external', 'External');
 insert into `secRole` values(null, 'er_clerk', 'ER Clerk');
-insert into `secRole` (role_name, description) values('psychiatrist', 'psychiatrist');
-insert into `secRole` (role_name, description) values('RN', 'Registered Nurse');
-insert into `secRole` (role_name, description) values('RPN', 'Registered Practical Nurse');
-insert into `secRole` (role_name, description) values('Nurse Manager', 'Nurse Manager');
-insert into `secRole` (role_name, description) values('Clinical Social Worker','Clinical Social Worker');
-insert into `secRole` (role_name, description) values('Clinical Case Manager','Clinical Case Manager');
-insert into `secRole` (role_name, description) values('Medical Secretary', 'Medical Secretary');
-insert into `secRole` (role_name, description) values('Clinical Assistant', 'Clinical Assistant');
-insert into `secRole` (role_name, description) values('secretary', 'secretary');
-insert into `secRole` (role_name, description) values('counsellor', 'counsellor');
-insert into `secRole` (role_name, description) values('Case Manager', 'Case Manager');
-insert into `secRole` (role_name, description) values('Housing Worker', 'Housing Worker');
-insert into `secRole` (role_name, description) values('Support Worker', 'Support Worker');
-insert into `secRole` (role_name, description) values('Client Service Worker', 'Client Service Worker');
-insert into `secRole` (role_name, description) values('CAISI ADMIN', 'CAISI ADMIN');
-insert into `secRole` (role_name, description) values('Recreation Therapist', 'Recreation Therapist');
-insert into `secRole` (role_name, description) values('property staff','property staff');
-insert into `secRole` (role_name, description) values('Support Counsellor','Support Counsellor');
-
 
 insert into `secUserRole` (`provider_no`,`role_name`,`orgcd`,`activeyn`) values('999998', 'doctor', 'R0000001',1);
 insert into `secUserRole` (`provider_no`,`role_name`,`orgcd`,`activeyn`) values('999998', 'admin', 'R0000001',1);
@@ -1284,29 +1317,6 @@ insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values(
 INSERT INTO `secObjectName` (`objectName`, `description`, `orgapplicable`) VALUES ('_team_schedule_only', 'Restrict schedule to only login provider and his team', '0');
 INSERT INTO `secObjectName` (`objectName`, `description`, `orgapplicable`) VALUES ('_team_billing_only', 'Restrict billing access to only login provider and his team', '0');
 
-insert into `secObjectName` (`objectName`) values ('_newCasemgmt.preventions');
-insert into `secObjectName` (`objectName`) values ('_newCasemgmt.viewTickler');
-insert into `secObjectName` (`objectName`) values ('_newCasemgmt.DxRegistry');
-insert into `secObjectName` (`objectName`) values ('_newCasemgmt.forms');
-insert into `secObjectName` (`objectName`) values ('_newCasemgmt.eForms');
-insert into `secObjectName` (`objectName`) values ('_newCasemgmt.documents');
-insert into `secObjectName` (`objectName`) values ('_newCasemgmt.labResult');
-insert into `secObjectName` (`objectName`) values ('_newCasemgmt.oscarMsg');
-insert into `secObjectName` (`objectName`) values ('_newCasemgmt.measurements');
-insert into `secObjectName` (`objectName`) values ('_newCasemgmt.consultations');
-insert into `secObjectName` (`objectName`) values ('_newCasemgmt.allergies');
-insert into `secObjectName` (`objectName`) values ('_newCasemgmt.prescriptions');
-insert into `secObjectName` (`objectName`) values ('_newCasemgmt.otherMeds');
-insert into `secObjectName` (`objectName`) values ('_newCasemgmt.riskFactors');
-insert into `secObjectName` (`objectName`) values ('_newCasemgmt.familyHistory');
-insert into `secObjectName` (`objectName`) values ('_newCasemgmt.decisionSupportAlerts');
-insert into `secObjectName` (`objectName`) values ('_newCasemgmt.medicalHistory');
-insert into `secObjectName` (`objectName`) values ('_newCasemgmt.calculators');
-insert into `secObjectName` (`objectName`) values ('_newCasemgmt.templates');
-insert into `secObjectName` (`objectName`) values ('_newCasemgmt.cpp');
-insert into `secObjectName` (`objectName`) values ('_eform.doctor');
-
-
 insert into `secObjPrivilege` values('receptionist', '_appointment', 'x', 0, '999998');
 insert into `secObjPrivilege` values('receptionist', '_demographic', 'x', 0, '999998');
 insert into `secObjPrivilege` values('receptionist', '_billing', 'x', 0, '999998');
@@ -1315,137 +1325,25 @@ insert into `secObjPrivilege` values('receptionist', '_casemgmt.issues', 'x', 0,
 insert into `secObjPrivilege` values('receptionist', '_casemgmt.notes', 'x', 0, '999998');
 
 
-insert into `secObjPrivilege` values('doctor','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_appointment.doctorLink','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_billing','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_casemgmt.issues','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_casemgmt.notes','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_demographic','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_eChart','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_eChart.verifyButton','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_flowsheet','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_masterLink','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_rx','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_tasks','x',0,'999998');
+insert into `secObjPrivilege` values('doctor', '_appointment', 'x', 0, '999998');
+insert into `secObjPrivilege` values('doctor', '_eChart', 'x', 0, '999998');
+insert into `secObjPrivilege` values('doctor', '_appointment.doctorLink', 'x', 0, '999998');
+insert into `secObjPrivilege` values('doctor', '_eChart.verifyButton', 'x', 0, '999998');
+insert into `secObjPrivilege` values('doctor', '_demographic', 'x', 0, '999998');
+insert into `secObjPrivilege` values('doctor', '_billing', 'x', 0, '999998');
+insert into `secObjPrivilege` values('doctor', '_tasks', 'x', 0, '999998');
+insert into `secObjPrivilege` values('doctor','_masterLink','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_rx','x',0,999998);
 insert into `secObjPrivilege` values('doctor','_admin.reporting','x',0,999998);
-
-insert into `secObjPrivilege` values('doctor','_admin.facilityMessage','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_admin.systemMessage','x',0,999998);
-
-insert into `secObjPrivilege` values('doctor','_admin.provider','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_admin.security','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_admin.securityLogReport','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_admin.unlockAccount','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_admin.cookieRevolver','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_admin.caisi','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_admin.lookupFieldEditor','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_admin.issueEditor','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_admin.caisiRoles','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_admin.userCreatedForms','x',0,999998);
-
-insert into `secObjPrivilege` values('doctor','_pmm.clientSearch','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_pmm.newClient','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_pmm.mergeRecords','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_pmm.caseManagement','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_pmm.agencyInformation','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_pmm.manageFacilities','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_pmm.staffList','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_pmm.programList','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_pmm.addProgram','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_pmm.globalRoleAccess','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_pmm.caisiRoles','x',0,999998);
-
-insert into `secObjPrivilege` values('doctor','_pmm_editProgram.general','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_pmm_editProgram.staff','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_pmm_editProgram.functionUser','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_pmm_editProgram.teams','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_pmm_editProgram.clients','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_pmm_editProgram.queue','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_pmm_editProgram.access','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_pmm_editProgram.bedCheck','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_pmm_editProgram.clientStatus','x',0,999998);
-insert into `secObjPrivilege` values('doctor','_pmm_editProgram.serviceRestrictions','x',0,999998);
-
-insert into `secObjPrivilege` values('doctor','_newCasemgmt.preventions','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_newCasemgmt.viewTickler','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_newCasemgmt.DxRegistry','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_newCasemgmt.forms','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_newCasemgmt.eForms','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_newCasemgmt.documents','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_newCasemgmt.labResult','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_newCasemgmt.oscarMsg','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_newCasemgmt.measurements','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_newCasemgmt.consultations','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_newCasemgmt.allergies','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_newCasemgmt.prescriptions','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_newCasemgmt.otherMeds','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_newCasemgmt.riskFactors','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_newCasemgmt.familyHistory','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_newCasemgmt.decisionSupportAlerts','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_newCasemgmt.medicalHistory','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_newCasemgmt.calculators','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_newCasemgmt.templates','x',0,'999998');
-insert into `secObjPrivilege` values('doctor','_newCasemgmt.cpp','x',0,'999998');
-
-insert into `secObjPrivilege` values('doctor','_eform.doctor','x',0,'999998');
+insert into `secObjPrivilege` values('doctor','_flowsheet','x',0,999998);
+insert into `secObjPrivilege` values('doctor', '_casemgmt.issues', 'x', 0, '999998');
+insert into `secObjPrivilege` values('doctor', '_casemgmt.notes', 'x', 0, '999998');
 
 
 insert into `secObjPrivilege` values('admin', '_admin', 'x', 0, '999998');
 insert into `secObjPrivilege` values('admin','_masterLink','x',0,999998);
 insert into `secObjPrivilege` values('admin', '_casemgmt.issues', 'x', 0, '999998');
 insert into `secObjPrivilege` values('admin', '_casemgmt.notes', 'x', 0, '999998');
-insert into `secObjPrivilege` values('admin','_admin.caisi','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_admin.caisiRoles','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_admin.cookieRevolver','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_admin.facilityMessage','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_admin.issueEditor','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_admin.lookupFieldEditor','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_admin.provider','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_admin.reporting','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_admin.security','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_admin.securityLogReport','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_admin.systemMessage','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_admin.unlockAccount','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_admin.userCreatedForms','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_appointment.doctorLink','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_pmm.addProgram','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_pmm.caisiRoles','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_pmm.globalRoleAccess','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_pmm.manageFacilities','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_pmm.programList','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_pmm.staffList','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_pmm_editProgram.access','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_pmm_editProgram.bedCheck','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_pmm_editProgram.clients','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_pmm_editProgram.clientStatus','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_pmm_editProgram.functionUser','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_pmm_editProgram.general','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_pmm_editProgram.queue','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_pmm_editProgram.serviceRestrictions','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_pmm_editProgram.staff','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_pmm_editProgram.teams','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_pmm.editor','x',0,999998);
-insert into `secObjPrivilege` values('admin','_newCasemgmt.preventions','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_newCasemgmt.viewTickler','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_newCasemgmt.DxRegistry','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_newCasemgmt.forms','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_newCasemgmt.eForms','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_newCasemgmt.documents','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_newCasemgmt.labResult','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_newCasemgmt.oscarMsg','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_newCasemgmt.measurements','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_newCasemgmt.consultations','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_newCasemgmt.allergies','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_newCasemgmt.prescriptions','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_newCasemgmt.otherMeds','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_newCasemgmt.riskFactors','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_newCasemgmt.familyHistory','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_newCasemgmt.decisionSupportAlerts','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_newCasemgmt.medicalHistory','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_newCasemgmt.calculators','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_newCasemgmt.templates','x',0,'999998');
-insert into `secObjPrivilege` values('admin','_newCasemgmt.cpp','x',0,'999998');
 
 
 -- for role locum
@@ -1462,260 +1360,16 @@ insert into `secObjPrivilege` values('locum', '_casemgmt.issues', 'x', 0, '99999
 insert into `secObjPrivilege` values('locum', '_casemgmt.notes', 'x', 0, '999998');
 
 -- for role nurse
-insert into `secObjPrivilege` values('nurse','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('nurse','_casemgmt.issues','x',0,'999998');
-insert into `secObjPrivilege` values('nurse','_casemgmt.notes','x',0,'999998');
-insert into `secObjPrivilege` values('nurse','_demographic','x',0,'999998');
-insert into `secObjPrivilege` values('nurse','_eChart','x',0,'999998');
-insert into `secObjPrivilege` values('nurse','_eChart.verifyButton','x',0,'999998');
-insert into `secObjPrivilege` values('nurse','_flowsheet','x',0,'999998');
-insert into `secObjPrivilege` values('nurse','_masterLink','x',0,'999998');
-insert into `secObjPrivilege` values('nurse','_pmm.agencyInformation','x',0,'999998');
-insert into `secObjPrivilege` values('nurse','_pmm.caisiRoles','x',0,'999998');
-insert into `secObjPrivilege` values('nurse','_pmm.caseManagement','x',0,'999998');
-insert into `secObjPrivilege` values('nurse','_pmm.clientSearch','x',0,'999998');
-insert into `secObjPrivilege` values('nurse','_pmm.mergeRecords','x',0,'999998');
-insert into `secObjPrivilege` values('nurse','_pmm.newClient','x',0,'999998');
-insert into `secObjPrivilege` values('nurse','_tasks','x',0,'999998');
-
-
-
-insert into `secObjPrivilege` values('psychiatrist','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('psychiatrist','_appointment.doctorLink','x',0,'999998');
-insert into `secObjPrivilege` values('psychiatrist','_billing','x',0,'999998');
-insert into `secObjPrivilege` values('psychiatrist','_casemgmt.issues','x',0,'999998');
-insert into `secObjPrivilege` values('psychiatrist','_casemgmt.notes','x',0,'999998');
-insert into `secObjPrivilege` values('psychiatrist','_demographic','x',0,'999998');
-insert into `secObjPrivilege` values('psychiatrist','_eChart','x',0,'999998');
-insert into `secObjPrivilege` values('psychiatrist','_eChart.verifyButton','x',0,'999998');
-insert into `secObjPrivilege` values('psychiatrist','_flowsheet','x',0,'999998');
-insert into `secObjPrivilege` values('psychiatrist','_masterLink','x',0,'999998');
-insert into `secObjPrivilege` values('psychiatrist','_pmm.agencyInformation','x',0,'999998');
-insert into `secObjPrivilege` values('psychiatrist','_pmm.caisiRoles','x',0,'999998');
-insert into `secObjPrivilege` values('psychiatrist','_pmm.caseManagement','x',0,'999998');
-insert into `secObjPrivilege` values('psychiatrist','_pmm.clientSearch','x',0,'999998');
-insert into `secObjPrivilege` values('psychiatrist','_pmm.mergeRecords','x',0,'999998');
-insert into `secObjPrivilege` values('psychiatrist','_pmm.newClient','x',0,'999998');
-insert into `secObjPrivilege` values('psychiatrist','_rx','x',0,'999998');
-insert into `secObjPrivilege` values('psychiatrist','_tasks','x',0,'999998');
-
-insert into `secObjPrivilege` values('RN','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('RN','_casemgmt.issues','x',0,'999998');
-insert into `secObjPrivilege` values('RN','_casemgmt.notes','x',0,'999998');
-insert into `secObjPrivilege` values('RN','_demographic','x',0,'999998');
-insert into `secObjPrivilege` values('RN','_eChart','x',0,'999998');
-insert into `secObjPrivilege` values('RN','_eChart.verifyButton','x',0,'999998');
-insert into `secObjPrivilege` values('RN','_flowsheet','x',0,'999998');
-insert into `secObjPrivilege` values('RN','_masterLink','x',0,'999998');
-insert into `secObjPrivilege` values('RN','_pmm.agencyInformation','x',0,'999998');
-insert into `secObjPrivilege` values('RN','_pmm.caisiRoles','x',0,'999998');
-insert into `secObjPrivilege` values('RN','_pmm.caseManagement','x',0,'999998');
-insert into `secObjPrivilege` values('RN','_pmm.clientSearch','x',0,'999998');
-insert into `secObjPrivilege` values('RN','_pmm.mergeRecords','x',0,'999998');
-insert into `secObjPrivilege` values('RN','_pmm.newClient','x',0,'999998');
-insert into `secObjPrivilege` values('RN','_tasks','x',0,'999998');
-
-
-
-insert into `secObjPrivilege` values('RPN','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('RPN','_casemgmt.issues','x',0,'999998');
-insert into `secObjPrivilege` values('RPN','_casemgmt.notes','x',0,'999998');
-insert into `secObjPrivilege` values('RPN','_demographic','x',0,'999998');
-insert into `secObjPrivilege` values('RPN','_eChart','x',0,'999998');
-insert into `secObjPrivilege` values('RPN','_eChart.verifyButton','x',0,'999998');
-insert into `secObjPrivilege` values('RPN','_flowsheet','x',0,'999998');
-insert into `secObjPrivilege` values('RPN','_masterLink','x',0,'999998');
-insert into `secObjPrivilege` values('RPN','_pmm.agencyInformation','x',0,'999998');
-insert into `secObjPrivilege` values('RPN','_pmm.caisiRoles','x',0,'999998');
-insert into `secObjPrivilege` values('RPN','_pmm.caseManagement','x',0,'999998');
-insert into `secObjPrivilege` values('RPN','_pmm.clientSearch','x',0,'999998');
-insert into `secObjPrivilege` values('RPN','_pmm.mergeRecords','x',0,'999998');
-insert into `secObjPrivilege` values('RPN','_pmm.newClient','x',0,'999998');
-insert into `secObjPrivilege` values('RPN','_tasks','x',0,'999998');
-
-
-
-
-insert into `secObjPrivilege` values('Nurse Manager','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('Nurse Manager','_casemgmt.issues','x',0,'999998');
-insert into `secObjPrivilege` values('Nurse Manager','_casemgmt.notes','x',0,'999998');
-insert into `secObjPrivilege` values('Nurse Manager','_demographic','x',0,'999998');
-insert into `secObjPrivilege` values('Nurse Manager','_eChart','x',0,'999998');
-insert into `secObjPrivilege` values('Nurse Manager','_eChart.verifyButton','x',0,'999998');
-insert into `secObjPrivilege` values('Nurse Manager','_flowsheet','x',0,'999998');
-insert into `secObjPrivilege` values('Nurse Manager','_masterLink','x',0,'999998');
-insert into `secObjPrivilege` values('Nurse Manager','_pmm.agencyInformation','x',0,'999998');
-insert into `secObjPrivilege` values('Nurse Manager','_pmm.caisiRoles','x',0,'999998');
-insert into `secObjPrivilege` values('Nurse Manager','_pmm.caseManagement','x',0,'999998');
-insert into `secObjPrivilege` values('Nurse Manager','_pmm.clientSearch','x',0,'999998');
-insert into `secObjPrivilege` values('Nurse Manager','_pmm.mergeRecords','x',0,'999998');
-insert into `secObjPrivilege` values('Nurse Manager','_pmm.newClient','x',0,'999998');
-insert into `secObjPrivilege` values('Nurse Manager','_tasks','x',0,'999998');
-
-
-insert into `secObjPrivilege` values('Clinical Social Worker','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Social Worker','_casemgmt.issues','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Social Worker','_casemgmt.notes','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Social Worker','_demographic','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Social Worker','_eChart','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Social Worker','_eChart.verifyButton','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Social Worker','_flowsheet','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Social Worker','_masterLink','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Social Worker','_pmm.agencyInformation','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Social Worker','_pmm.caseManagement','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Social Worker','_pmm.clientSearch','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Social Worker','_pmm.mergeRecords','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Social Worker','_pmm.newClient','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Social Worker','_tasks','x',0,'999998');
-
-
-insert into `secObjPrivilege` values('Clinical Case Manager','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Case Manager','_casemgmt.issues','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Case Manager','_casemgmt.notes','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Case Manager','_demographic','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Case Manager','_eChart','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Case Manager','_eChart.verifyButton','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Case Manager','_flowsheet','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Case Manager','_masterLink','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Case Manager','_pmm.agencyInformation','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Case Manager','_pmm.caseManagement','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Case Manager','_pmm.clientSearch','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Case Manager','_pmm.mergeRecords','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Case Manager','_pmm.newClient','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Case Manager','_tasks','x',0,'999998');
-
-
-insert into `secObjPrivilege` values('counsellor','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('counsellor','_casemgmt.issues','x',0,'999998');
-insert into `secObjPrivilege` values('counsellor','_casemgmt.notes','x',0,'999998');
-insert into `secObjPrivilege` values('counsellor','_demographic','x',0,'999998');
-insert into `secObjPrivilege` values('counsellor','_eChart','x',0,'999998');
-insert into `secObjPrivilege` values('counsellor','_eChart.verifyButton','x',0,'999998');
-insert into `secObjPrivilege` values('counsellor','_flowsheet','x',0,'999998');
-insert into `secObjPrivilege` values('counsellor','_masterLink','x',0,'999998');
-insert into `secObjPrivilege` values('counsellor','_pmm.agencyInformation','x',0,'999998');
-insert into `secObjPrivilege` values('counsellor','_pmm.caseManagement','x',0,'999998');
-insert into `secObjPrivilege` values('counsellor','_pmm.clientSearch','x',0,'999998');
-insert into `secObjPrivilege` values('counsellor','_pmm.mergeRecords','x',0,'999998');
-insert into `secObjPrivilege` values('counsellor','_pmm.newClient','x',0,'999998');
-insert into `secObjPrivilege` values('counsellor','_tasks','x',0,'999998');
-
-
-insert into `secObjPrivilege` values('Case Manager','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('Case Manager','_casemgmt.issues','x',0,'999998');
-insert into `secObjPrivilege` values('Case Manager','_casemgmt.notes','x',0,'999998');
-insert into `secObjPrivilege` values('Case Manager','_demographic','x',0,'999998');
-insert into `secObjPrivilege` values('Case Manager','_eChart','x',0,'999998');
-insert into `secObjPrivilege` values('Case Manager','_eChart.verifyButton','x',0,'999998');
-insert into `secObjPrivilege` values('Case Manager','_flowsheet','x',0,'999998');
-insert into `secObjPrivilege` values('Case Manager','_masterLink','x',0,'999998');
-insert into `secObjPrivilege` values('Case Manager','_pmm.agencyInformation','x',0,'999998');
-insert into `secObjPrivilege` values('Case Manager','_pmm.caseManagement','x',0,'999998');
-insert into `secObjPrivilege` values('Case Manager','_pmm.clientSearch','x',0,'999998');
-insert into `secObjPrivilege` values('Case Manager','_pmm.mergeRecords','x',0,'999998');
-insert into `secObjPrivilege` values('Case Manager','_pmm.newClient','x',0,'999998');
-insert into `secObjPrivilege` values('Case Manager','_tasks','x',0,'999998');
-
-
-insert into `secObjPrivilege` values('Housing Worker','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('Housing Worker','_casemgmt.issues','x',0,'999998');
-insert into `secObjPrivilege` values('Housing Worker','_casemgmt.notes','x',0,'999998');
-insert into `secObjPrivilege` values('Housing Worker','_demographic','x',0,'999998');
-insert into `secObjPrivilege` values('Housing Worker','_eChart','x',0,'999998');
-insert into `secObjPrivilege` values('Housing Worker','_eChart.verifyButton','x',0,'999998');
-insert into `secObjPrivilege` values('Housing Worker','_flowsheet','x',0,'999998');
-insert into `secObjPrivilege` values('Housing Worker','_masterLink','x',0,'999998');
-insert into `secObjPrivilege` values('Housing Worker','_pmm.agencyInformation','x',0,'999998');
-insert into `secObjPrivilege` values('Housing Worker','_pmm.caseManagement','x',0,'999998');
-insert into `secObjPrivilege` values('Housing Worker','_pmm.clientSearch','x',0,'999998');
-insert into `secObjPrivilege` values('Housing Worker','_pmm.mergeRecords','x',0,'999998');
-insert into `secObjPrivilege` values('Housing Worker','_pmm.newClient','x',0,'999998');
-insert into `secObjPrivilege` values('Housing Worker','_tasks','x',0,'999998');
-
-
-insert into `secObjPrivilege` values('Medical Secretary','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('Medical Secretary','_casemgmt.issues','x',0,'999998');
-insert into `secObjPrivilege` values('Medical Secretary','_casemgmt.notes','x',0,'999998');
-insert into `secObjPrivilege` values('Medical Secretary','_demographic','x',0,'999998');
-insert into `secObjPrivilege` values('Medical Secretary','_masterLink','x',0,'999998');
-insert into `secObjPrivilege` values('Medical Secretary','_pmm.agencyInformation','x',0,'999998');
-insert into `secObjPrivilege` values('Medical Secretary','_pmm.caisiRoles','x',0,'999998');
-insert into `secObjPrivilege` values('Medical Secretary','_pmm.caseManagement','x',0,'999998');
-insert into `secObjPrivilege` values('Medical Secretary','_pmm.clientSearch','x',0,'999998');
-insert into `secObjPrivilege` values('Medical Secretary','_pmm.mergeRecords','x',0,'999998');
-insert into `secObjPrivilege` values('Medical Secretary','_pmm.newClient','x',0,'999998');
-insert into `secObjPrivilege` values('Medical Secretary','_tasks','x',0,'999998');
-
-
-insert into `secObjPrivilege` values('Clinical Assistant','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Assistant','_casemgmt.issues','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Assistant','_casemgmt.notes','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Assistant','_demographic','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Assistant','_masterLink','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Assistant','_pmm.agencyInformation','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Assistant','_pmm.caisiRoles','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Assistant','_pmm.caseManagement','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Assistant','_pmm.clientSearch','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Assistant','_pmm.mergeRecords','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Assistant','_pmm.newClient','x',0,'999998');
-insert into `secObjPrivilege` values('Clinical Assistant','_tasks','x',0,'999998');
-
-
-insert into `secObjPrivilege` values('secretary','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('secretary','_casemgmt.issues','x',0,'999998');
-insert into `secObjPrivilege` values('secretary','_casemgmt.notes','x',0,'999998');
-insert into `secObjPrivilege` values('secretary','_demographic','x',0,'999998');
-insert into `secObjPrivilege` values('secretary','_masterLink','x',0,'999998');
-insert into `secObjPrivilege` values('secretary','_pmm.agencyInformation','x',0,'999998');
-insert into `secObjPrivilege` values('secretary','_pmm.caisiRoles','x',0,'999998');
-insert into `secObjPrivilege` values('secretary','_pmm.caseManagement','x',0,'999998');
-insert into `secObjPrivilege` values('secretary','_pmm.clientSearch','x',0,'999998');
-insert into `secObjPrivilege` values('secretary','_pmm.mergeRecords','x',0,'999998');
-insert into `secObjPrivilege` values('secretary','_pmm.newClient','x',0,'999998');
-insert into `secObjPrivilege` values('secretary','_tasks','x',0,'999998');
-
-insert into `secObjPrivilege` values('Support Worker','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('Support Worker','_casemgmt.issues','x',0,'999998');
-insert into `secObjPrivilege` values('Support Worker','_casemgmt.notes','x',0,'999998');
-insert into `secObjPrivilege` values('Support Worker','_demographic','x',0,'999998');
-insert into `secObjPrivilege` values('Support Worker','_eChart','x',0,'999998');
-insert into `secObjPrivilege` values('Support Worker','_eChart.verifyButton','x',0,'999998');
-insert into `secObjPrivilege` values('Support Worker','_masterLink','x',0,'999998');
-insert into `secObjPrivilege` values('Support Worker','_pmm.agencyInformation','x',0,'999998');
-insert into `secObjPrivilege` values('Support Worker','_pmm.caseManagement','x',0,'999998');
-insert into `secObjPrivilege` values('Support Worker','_pmm.clientSearch','x',0,'999998');
-insert into `secObjPrivilege` values('Support Worker','_pmm.newClient','x',0,'999998');
-insert into `secObjPrivilege` values('Support Worker','_tasks','x',0,'999998');
-
-insert into `secObjPrivilege` values('Client Service Worker','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('Client Service Worker','_casemgmt.issues','x',0,'999998');
-insert into `secObjPrivilege` values('Client Service Worker','_casemgmt.notes','x',0,'999998');
-insert into `secObjPrivilege` values('Client Service Worker','_demographic','x',0,'999998');
-insert into `secObjPrivilege` values('Client Service Worker','_eChart','x',0,'999998');
-insert into `secObjPrivilege` values('Client Service Worker','_eChart.verifyButton','x',0,'999998');
-insert into `secObjPrivilege` values('Client Service Worker','_masterLink','x',0,'999998');
-insert into `secObjPrivilege` values('Client Service Worker','_pmm.agencyInformation','x',0,'999998');
-insert into `secObjPrivilege` values('Client Service Worker','_pmm.caseManagement','x',0,'999998');
-insert into `secObjPrivilege` values('Client Service Worker','_pmm.clientSearch','x',0,'999998');
-insert into `secObjPrivilege` values('Client Service Worker','_pmm.newClient','x',0,'999998');
-insert into `secObjPrivilege` values('Client Service Worker','_tasks','x',0,'999998');
-
-insert into `secObjPrivilege` values('Recreation Therapist','_appointment','x',0,'999998');
-insert into `secObjPrivilege` values('Recreation Therapist','_casemgmt.issues','x',0,'999998');
-insert into `secObjPrivilege` values('Recreation Therapist','_casemgmt.notes','x',0,'999998');
-insert into `secObjPrivilege` values('Recreation Therapist','_demographic','x',0,'999998');
-insert into `secObjPrivilege` values('Recreation Therapist','_eChart','x',0,'999998');
-insert into `secObjPrivilege` values('Recreation Therapist','_eChart.verifyButton','x',0,'999998');
-insert into `secObjPrivilege` values('Recreation Therapist','_flowsheet','x',0,'999998');
-insert into `secObjPrivilege` values('Recreation Therapist','_masterLink','x',0,'999998');
-insert into `secObjPrivilege` values('Recreation Therapist','_pmm.agencyInformation','x',0,'999998');
-insert into `secObjPrivilege` values('Recreation Therapist','_pmm.caseManagement','x',0,'999998');
-insert into `secObjPrivilege` values('Recreation Therapist','_pmm.clientSearch','x',0,'999998');
-insert into `secObjPrivilege` values('Recreation Therapist','_pmm.mergeRecords','x',0,'999998');
-insert into `secObjPrivilege` values('Recreation Therapist','_pmm.newClient','x',0,'999998');
-insert into `secObjPrivilege` values('Recreation Therapist','_tasks','x',0,'999998');
-
-
+insert into `secObjPrivilege` values('nurse', '_appointment', 'x', 0, '999998');
+insert into `secObjPrivilege` values('nurse', '_eChart', 'x', 0, '999998');
+insert into `secObjPrivilege` values('nurse', '_appointment.doctorLink', 'x', 0, '999998');
+insert into `secObjPrivilege` values('nurse', '_demographic', 'x', 0, '999998');
+insert into `secObjPrivilege` values('nurse', '_billing', 'x', 0, '999998');
+insert into `secObjPrivilege` values('nurse', '_tasks', 'x', 0, '999998');
+insert into `secObjPrivilege` values('nurse','_masterLink','x',0,999998);
+insert into `secObjPrivilege` values('nurse','_rx','x',0,999998);
+insert into `secObjPrivilege` values('nurse', '_casemgmt.issues', 'x', 0, '999998');
+insert into `secObjPrivilege` values('nurse', '_casemgmt.notes', 'x', 0, '999998');
 
 insert into lst_orgcd (code, description, activeyn, orderbyindex,codetree) values('R0000001','Shelter Management Information System',1,10,'R000001');
 
@@ -1727,36 +1381,3 @@ INSERT INTO `country_codes` VALUES (1,'AFGHANISTAN','AF','en'),(2,'LAND ISLANDS'
 INSERT INTO `appointment_status` VALUES (1,'t','To Do','#FDFEC7','starbill.gif',1,0),(2,'T','Daysheet Printed','#FDFEC7','todo.gif',1,0),(3,'H','Here','#00ee00','here.gif',1,1),(4,'P','Picked','#FFBBFF','picked.gif',1,1),(5,'E','Empty Room','#FFFF33','empty.gif',1,1),(11,'N','No Show','#cccccc','noshow.gif',1,0),(12,'C','Cancelled','#999999','cancel.gif',1,0),(13,'B','Billed','#3ea4e1','billed.gif',1,0),(6,'a','Customized 1','#897DF8','1.gif',1,1),(7,'b','Customized 2','#897DF8','2.gif',1,1),(8,'c','Customized 3','#897DF8','3.gif',0,1),(9,'d','Customized 4','#897DF8','4.gif',1,1),(10,'e','Customized 5','#897DF8','5.gif',1,1);
 
 insert into gstControl set gstPercent = 5;
-
--- create security objects for multi-office control
-insert into `secObjectName` 
-	(objectName, `description`, orgapplicable)
-	values
-	('_team_access_privacy', 'restrict access to only the same team of a provider', 0);
-
-insert into `secObjectName` 
-	(objectName, `description`, orgapplicable)
-	values
-	('_site_access_privacy', 'restrict access to only the assigned sites of a provider', 0);
-
--- create new roles for multi-office control
-insert into `secRole` 
-	(role_no, role_name, `description`)
-SELECT 
-	 (SELECT MAX(role_no) from `secRole`)  +  1 AS role_no
-	,'Site Manager' AS role_name
-	,'Site Manager' AS `description`;
-
-insert into `secRole` 
-	(role_no, role_name, `description`)
-SELECT 
-	 (SELECT MAX(role_no) from `secRole`)  +  1 AS role_no
-	,'Partner Doctor' AS role_name
-	,'Partner Doctor' AS `description`;
-
-
-insert into issue (code,description,role,update_date,priority,type) values ('PastOcularHistory','Past Ocular History','nurse',now(),NULL,'system');
-insert into issue (code,description,role,update_date,priority,type) values ('DiagnosticNotes','Diagnostic Notes','nurse',now(),NULL,'system');
-insert into issue (code,description,role,update_date,priority,type) values ('OcularMedication','Ocular Medication','nurse',now(),NULL,'system');
-insert into issue (code,description,role,update_date,priority,type) values ('PatientLog','Patient Log','nurse',now(),NULL,'system');
-insert into issue (`code`,`description`,`role`,`update_date`) Values('CurrentHistory','Current History', 'nurse', now());

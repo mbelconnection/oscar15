@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -28,8 +28,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 public class EctSearchDemographicData
@@ -39,7 +37,7 @@ public class EctSearchDemographicData
             String chartNumber, String monthOfBirth, String dayOfBirth, String city)
     {
         int items = 0;
-        StringBuilder searchString = new StringBuilder("Select * from demographic where ");
+        StringBuffer searchString = new StringBuffer("Select * from demographic where ");
         fName = fName.trim();
         lName = lName.trim();
         phone = phone.trim();
@@ -53,95 +51,95 @@ public class EctSearchDemographicData
         if(!fName.equals(""))
         {
             if(items == 0)
-                searchString.append(String.valueOf(String.valueOf((new StringBuilder(" first_name like '")).append(fName).append("%' "))));
+                searchString.append(String.valueOf(String.valueOf((new StringBuffer(" first_name like '")).append(fName).append("%' "))));
             else
-                searchString.append(String.valueOf(String.valueOf((new StringBuilder(" and first_name like '")).append(fName).append("%' "))));
+                searchString.append(String.valueOf(String.valueOf((new StringBuffer(" and first_name like '")).append(fName).append("%' "))));
             items++;
         }
         if(!lName.equals(""))
         {
             if(items == 0)
-                searchString.append(String.valueOf(String.valueOf((new StringBuilder(" last_name like '")).append(lName).append("%' "))));
+                searchString.append(String.valueOf(String.valueOf((new StringBuffer(" last_name like '")).append(lName).append("%' "))));
             else
-                searchString.append(String.valueOf(String.valueOf((new StringBuilder(" and last_name like '")).append(lName).append("%' "))));
+                searchString.append(String.valueOf(String.valueOf((new StringBuffer(" and last_name like '")).append(lName).append("%' "))));
             items++;
         }
         if(!phone.equals(""))
         {
             if(items == 0)
-                searchString.append(String.valueOf(String.valueOf((new StringBuilder(" phone  like '")).append(phone).append("%' or phone2 like '").append(phone).append("%' "))));
+                searchString.append(String.valueOf(String.valueOf((new StringBuffer(" phone  like '")).append(phone).append("%' or phone2 like '").append(phone).append("%' "))));
             else
-                searchString.append(String.valueOf(String.valueOf((new StringBuilder(" and phone  like '")).append(phone).append("%' or phone2 like '").append(phone).append("%' "))));
+                searchString.append(String.valueOf(String.valueOf((new StringBuffer(" and phone  like '")).append(phone).append("%' or phone2 like '").append(phone).append("%' "))));
             items++;
         }
         if(!hin.equals(""))
         {
             if(items == 0)
-                searchString.append(String.valueOf(String.valueOf((new StringBuilder(" hin like '")).append(hin).append("%' "))));
+                searchString.append(String.valueOf(String.valueOf((new StringBuffer(" hin like '")).append(hin).append("%' "))));
             else
-                searchString.append(String.valueOf(String.valueOf((new StringBuilder(" and hin like '")).append(hin).append("%' "))));
+                searchString.append(String.valueOf(String.valueOf((new StringBuffer(" and hin like '")).append(hin).append("%' "))));
             items++;
         }
         if(!yearOfBirth.equals(""))
         {
             if(items == 0)
-                searchString.append(String.valueOf(String.valueOf((new StringBuilder(" year_of_birth  like '")).append(yearOfBirth).append("%' "))));
+                searchString.append(String.valueOf(String.valueOf((new StringBuffer(" year_of_birth  like '")).append(yearOfBirth).append("%' "))));
             else
-                searchString.append(String.valueOf(String.valueOf((new StringBuilder(" and year_of_birth  like '")).append(yearOfBirth).append("%' "))));
+                searchString.append(String.valueOf(String.valueOf((new StringBuffer(" and year_of_birth  like '")).append(yearOfBirth).append("%' "))));
             items++;
         }
         if(!sex.equals(""))
         {
             if(items == 0)
-                searchString.append(String.valueOf(String.valueOf((new StringBuilder(" sex  like '")).append(sex).append("%' "))));
+                searchString.append(String.valueOf(String.valueOf((new StringBuffer(" sex  like '")).append(sex).append("%' "))));
             else
-                searchString.append(String.valueOf(String.valueOf((new StringBuilder(" and sex  like '")).append(sex).append("%' "))));
+                searchString.append(String.valueOf(String.valueOf((new StringBuffer(" and sex  like '")).append(sex).append("%' "))));
             items++;
         }
         if(!address.equals(""))
         {
             if(items == 0)
-                searchString.append(String.valueOf(String.valueOf((new StringBuilder(" address  like '")).append(address).append("%' "))));
+                searchString.append(String.valueOf(String.valueOf((new StringBuffer(" address  like '")).append(address).append("%' "))));
             else
-                searchString.append(String.valueOf(String.valueOf((new StringBuilder(" and address  like '")).append(address).append("%' "))));
+                searchString.append(String.valueOf(String.valueOf((new StringBuffer(" and address  like '")).append(address).append("%' "))));
             items++;
         }
         if(!chartNumber.equals(""))
         {
             if(items == 0)
-                searchString.append(String.valueOf(String.valueOf((new StringBuilder(" chart_no  like '")).append(chartNumber).append("%' "))));
+                searchString.append(String.valueOf(String.valueOf((new StringBuffer(" chart_no  like '")).append(chartNumber).append("%' "))));
             else
-                searchString.append(String.valueOf(String.valueOf((new StringBuilder(" and chart_no  like '")).append(chartNumber).append("%' "))));
+                searchString.append(String.valueOf(String.valueOf((new StringBuffer(" and chart_no  like '")).append(chartNumber).append("%' "))));
             items++;
         }
         if(!monthOfBirth.equals(""))
         {
             if(items == 0)
-                searchString.append(String.valueOf(String.valueOf((new StringBuilder(" month_of_birth  like '")).append(monthOfBirth).append("%' "))));
+                searchString.append(String.valueOf(String.valueOf((new StringBuffer(" month_of_birth  like '")).append(monthOfBirth).append("%' "))));
             else
-                searchString.append(String.valueOf(String.valueOf((new StringBuilder(" and month_of_birth  like '")).append(monthOfBirth).append("%' "))));
+                searchString.append(String.valueOf(String.valueOf((new StringBuffer(" and month_of_birth  like '")).append(monthOfBirth).append("%' "))));
             items++;
         }
         if(!dayOfBirth.equals(""))
         {
             if(items == 0)
-                searchString.append(String.valueOf(String.valueOf((new StringBuilder(" date_of_birth  like '")).append(dayOfBirth).append("%' "))));
+                searchString.append(String.valueOf(String.valueOf((new StringBuffer(" date_of_birth  like '")).append(dayOfBirth).append("%' "))));
             else
-                searchString.append(String.valueOf(String.valueOf((new StringBuilder(" and date_of_birth  like '")).append(dayOfBirth).append("%' "))));
+                searchString.append(String.valueOf(String.valueOf((new StringBuffer(" and date_of_birth  like '")).append(dayOfBirth).append("%' "))));
             items++;
         }
         if(!city.equals(""))
         {
             if(items == 0)
-                searchString.append(String.valueOf(String.valueOf((new StringBuilder(" city  like '")).append(city).append("%' "))));
+                searchString.append(String.valueOf(String.valueOf((new StringBuffer(" city  like '")).append(city).append("%' "))));
             else
-                searchString.append(String.valueOf(String.valueOf((new StringBuilder(" and city  like '")).append(city).append("%' "))));
+                searchString.append(String.valueOf(String.valueOf((new StringBuffer(" and city  like '")).append(city).append("%' "))));
             items++;
         }
         if(items > 0)
         {
             searchString.append(" order by last_name, first_name ");
-            MiscUtils.getLogger().debug(searchString.toString());
+            System.out.println(searchString.toString());
             return searchString.toString();
         } else
         {
@@ -159,32 +157,32 @@ public class EctSearchDemographicData
             vector = new Vector();
             try
             {
-                
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                 ResultSet rs;
                 EctDemographicData demographicData;
-                for(rs = DBHandler.GetSQL(sql); rs.next(); vector.add(demographicData))
+                for(rs = db.GetSQL(sql); rs.next(); vector.add(demographicData))
                 {
                     demographicData = new EctDemographicData();
-                    demographicData.demographicNo = oscar.Misc.getString(rs, "demographic_no");
-                    demographicData.firstName = oscar.Misc.getString(rs, "first_name");
-                    demographicData.lastName = oscar.Misc.getString(rs, "last_name");
-                    demographicData.address = oscar.Misc.getString(rs, "address");
-                    demographicData.city = oscar.Misc.getString(rs, "city");
-                    demographicData.province = oscar.Misc.getString(rs, "province");
-                    demographicData.phone = oscar.Misc.getString(rs, "phone");
-                    demographicData.phone2 = oscar.Misc.getString(rs, "phone2");
-                    demographicData.hin = oscar.Misc.getString(rs, "hin");
-                    demographicData.sex = oscar.Misc.getString(rs, "sex");
-                    demographicData.yearOfBirth = oscar.Misc.getString(rs, "year_of_birth");
-                    demographicData.monthOfBirth = oscar.Misc.getString(rs, "month_of_birth");
-                    demographicData.dayOfBirth = oscar.Misc.getString(rs, "date_of_birth");
+                    demographicData.demographicNo = db.getString(rs,"demographic_no");
+                    demographicData.firstName = db.getString(rs,"first_name");
+                    demographicData.lastName = db.getString(rs,"last_name");
+                    demographicData.address = db.getString(rs,"address");
+                    demographicData.city = db.getString(rs,"city");
+                    demographicData.province = db.getString(rs,"province");
+                    demographicData.phone = db.getString(rs,"phone");
+                    demographicData.phone2 = db.getString(rs,"phone2");
+                    demographicData.hin = db.getString(rs,"hin");
+                    demographicData.sex = db.getString(rs,"sex");
+                    demographicData.yearOfBirth = db.getString(rs,"year_of_birth");
+                    demographicData.monthOfBirth = db.getString(rs,"month_of_birth");
+                    demographicData.dayOfBirth = db.getString(rs,"date_of_birth");
                 }
 
                 rs.close();
             }
             catch(SQLException e)
             {
-                MiscUtils.getLogger().error("Error", e);
+                System.out.println(e.getMessage());
             }
         }
         return vector;

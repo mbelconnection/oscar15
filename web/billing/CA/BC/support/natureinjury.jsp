@@ -27,8 +27,8 @@
  * EMR System
  */
 -->
-
-<%@page import="oscar.oscarDB.DBHandler"%><html:html locale="true">
+<html:html locale="true">
+<% response.setHeader("Cache-Control","no-cache");%>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>OSCAR Nature of Injury</title>
@@ -73,8 +73,9 @@ function posttoText(index){
 	</tr>
 	<%
 	boolean color = false;
+	oscar.oscarDB.DBHandler db = new oscar.oscarDB.DBHandler(oscar.oscarDB.DBHandler.OSCAR_DATA);
    String wherestr = "where code like '"+searchStr+"' or level1 like '"+searchStr+"' or level2 like '"+searchStr+"' or level3 like '"+searchStr+"'";
-	java.sql.ResultSet rs = DBHandler.GetSQL("SELECT code, level1, level2, level3, usagenote FROM wcb_noi_code "+wherestr+" ORDER BY level1, level2, level3");
+	java.sql.ResultSet rs = db.GetSQL("SELECT code, level1, level2, level3, usagenote FROM wcb_noi_code "+wherestr+" ORDER BY level1, level2, level3");
 	while (rs.next()){
 %>
 	<tr <%=((color) ? "bgcolor=\"#F6F6F6\"" : "")%> align="left"
@@ -82,10 +83,10 @@ function posttoText(index){
 		<td class="SmallerText"><a href=#
 			onClick="posttoText('<%=rs.getString("code")%>');"><%=rs.getString("code")%></a>
 		</td>
-		<td class="SmallerText"><%=oscar.Misc.getString(rs,"level1")%></td>
-		<td class="SmallerText"><%=oscar.Misc.getString(rs,"level2")%></td>
-		<td class="SmallerText"><%=oscar.Misc.getString(rs,"level3")%></td>
-		<td class="SmallerText"><%=oscar.Misc.getString(rs,"usagenote")%></td>
+		<td class="SmallerText"><%=db.getString(rs,"level1")%></td>
+		<td class="SmallerText"><%=db.getString(rs,"level2")%></td>
+		<td class="SmallerText"><%=db.getString(rs,"level3")%></td>
+		<td class="SmallerText"><%=db.getString(rs,"usagenote")%></td>
 	</tr>
 	<%
 		color = !(color);

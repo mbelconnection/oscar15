@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -44,9 +44,9 @@ public class CookieSecurity
             cookieVal = cookieVal.concat(Integer.toString(j));            
             adler32.update(j);            
         }
-
+        // System.out.println("Cookieval before concat with checksum: "+cookieVal);        
         cookieVal = cookieVal.concat(Long.toString(adler32.getValue()));
-
+        // System.out.println("Cookieval after concat with checksum: "+cookieVal);        
         Cookie cookie = new Cookie(cookieName, cookieVal);
         cookie.setPath("/");
         return cookie;

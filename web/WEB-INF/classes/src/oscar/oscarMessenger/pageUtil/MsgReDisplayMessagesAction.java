@@ -34,7 +34,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -60,11 +59,11 @@ public class MsgReDisplayMessagesAction extends Action {
             //to del.which stands for deleted. but you prolly could have figured that out
             for (int i =0 ; i < messageNo.length ; i++){
               try{
-                
-                
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+                java.sql.ResultSet rs;
                 String sql = new String("update messagelisttbl set status = \'read\' where provider_no = \'"+providerNo+"\' and message = \'"+messageNo[i]+"\'");
-                DBHandler.RunSQL(sql);
-              }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+                db.RunSQL(sql);
+              }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
             }//for
 
     return (mapping.findForward("success"));

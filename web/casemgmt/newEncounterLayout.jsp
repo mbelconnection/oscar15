@@ -1,3 +1,4 @@
+<%@page contentType="text/html;charset=UTF-8"%>
 <!-- 
 /*
 * 
@@ -24,6 +25,9 @@
 
 <%@ include file="/casemgmt/taglibs.jsp" %>
 <%@ page errorPage="/casemgmt/error.jsp" %>
+<%@ page language="java"%>
+
+
 <% if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp"); %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
@@ -42,9 +46,11 @@
 <nested:define id="rowTwoSize" name="caseManagementViewForm" property="ectWin.rowTwoSize"/>
 --%>
 <html:html locale="true">
-  <head>  	<c:set var="ctx" value="${pageContext.request.contextPath}" scope="request"/>	
+  <head>      
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  	<c:set var="ctx" value="${pageContext.request.contextPath}" scope="request"/>	
 	<link rel="stylesheet" href="<c:out value="${ctx}"/>/css/casemgmt.css" type="text/css">
-    <link rel="stylesheet" href="<c:out value="${ctx}"/>/oscarEncounter/encounterStyles.css" type="text/css">         
+        <link rel="stylesheet" href="<c:out value="${ctx}"/>/oscarEncounter/encounterStyles.css" type="text/css">         
     <link rel="stylesheet" type="text/css" href="<c:out value="${ctx}"/>/css/print.css" media="print">
     <script src="<c:out value="${ctx}"/>/share/javascript/prototype.js" type="text/javascript"></script>
     <script src="<c:out value="${ctx}"/>/share/javascript/scriptaculous.js" type="text/javascript"></script>    
@@ -83,132 +89,7 @@
   <script type="text/javascript" src="<c:out value="${ctx}/phr/phr.js"/>"></script>
 
   <!--js code for newCaseManagementView.jsp -->
-  <script type="text/javascript" src="<c:out value="${ctx}/js/newCaseManagementView.js.jsp"/>"></script>
-  
-   <script src="<c:out value="${ctx}/js/jquery.js"/>"></script>
-   <script>
-     jQuery.noConflict();
-   </script>
-   
-   <script>
-
-   function makeElement(type, attributes) {
-	   var element = document.createElement(type);
-	   if (attributes != null) {
-	     for (var i in attributes) {
-	       element.setAttribute(i, attributes[i]);
-	     }
-	   }	   
-	   return element;
-	 }
-
-   function insertAfter( referenceNode, newNode )
-   {
-       referenceNode.parentNode.insertBefore( newNode, referenceNode.nextSibling );
-   }
-   
-   
-   function addCppRow(rowNumber) {	   	
-		if(!document.getElementById("divR" + rowNumber)) {
-			var newDiv = makeElement('div',{'style':'width: 100%; height: 75px; margin-top: 0px; background-color: #FFFFFF;','id':'divR'+rowNumber});
-
-			var i1 = makeElement('div',{'id':'divR' + rowNumber + 'I1','class':'topBox','style':'clear: left; float: left; width: 49%; margin-left: 3px;'});
-			var i2 = makeElement('div',{'id':'divR' + rowNumber + 'I2','class':'topBox','style':'clear: right; float: right; width: 49%; margin-right: 3px;'});
-			newDiv.appendChild(i1);
-			newDiv.appendChild(i2);
-			var prevRow = document.getElementById("divR"+(rowNumber-1));
-			insertAfter(prevRow,newDiv);
-		}	
-   }
-
-   function popColumn(url,div,params, navBar, navBarObj) {
-	   params = "reloadURL=" + url + "&numToDisplay=6&cmd=" + params;
-
-       var objAjax = new Ajax.Request (
-                           url,
-                           {
-                               method: 'post',
-                               postBody: params,
-                               evalScripts: true,
-                               /*onLoading: function() {
-                                               $(div).update("<p>Loading ...<\/p>");
-                                           }, */
-                               onSuccess: function(request) {
-                                             //  alert(request.responseText);
-                                               //while( $(div).firstChild )
-                                               //    $(div).removeChild($(div).firstChild);
-                                               //alert("success " + div);
-                                               $(div).update(request.responseText);
-
-                                               if( $("leftColLoader") != null )
-                                                   Element.remove("leftColLoader");
-
-                                               if( $("rightColLoader") != null )
-                                                   Element.remove("rightColLoader");
-
-
-                                               //track ajax completions and display divs when last ajax call completes
-                                               //navBarObj.display(navBar,div);
-                                          },
-                               onFailure: function(request) {
-                                               $(div).innerHTML = "<h3>" + div + "</h3>Error: " + request.status;
-                                           }
-                           }
-
-                     );
-       };
-   
-
-       function addLeftNavDiv(name) {
-    	   var div = document.createElement("div");
-           div.className = "leftBox";
-           div.style.display = "block";
-           div.style.visiblity = "hidden";
-           div.id = name;                
-           $("leftNavBar").appendChild(div);
-           
-       }
-
-       function addRightNavDiv(name) {
-    	   var div = document.createElement("div");
-           div.className = "leftBox";
-           div.style.display = "block";
-           div.style.visiblity = "hidden";
-           div.id = name;                
-           $("rightNavBar").appendChild(div);
-           
-       }
-
-       function removeNavDiv(name) {
-    	   var tmpEl = document.getElementById(name);          
-           tmpEl.parentNode.removeChild(tmpEl);
-       }
-       
-
-       function addPrintOption(name,bean) {
-    	   var test1Str = "<img style=\"cursor: pointer;\" title=\"Print "+name+"\" id=\"img"+name+"\" alt=\"Print "+name+"\" onclick=\"return printInfo(this, 'extPrint"+name+"');\" src=\"" + ctx + "/oscarEncounter/graphics/printer.png\">&nbsp;"+name;
-           jQuery("#printDateRow").before("<tr><td></td><td>" + test1Str + "</tr></tr>");           
-           jQuery("form[name='caseManagementEntryForm']").append("<input name=\"extPrint"+name+"\" id=\"extPrint"+name+"\" value=\"false\" type=\"hidden\"/>");
-           jQuery.ajax({ url: ctx+"/casemgmt/ExtPrintRegistry.do?method=register&name="+name+"&bean="+bean, async:false, success: function(data){               
-           }});      
-       }
-       
-       var appointmentNo = <%=request.getParameter("appointmentNo")%>;
-      
-   </script>
- 
-   
-   <%
-      
- 	String customScript = (String)request.getAttribute("cme_js");
-   if(customScript != null && customScript.length()>0) {
-	%>
-		<script src="<c:out value="${ctx}"/>/js/custom/<%=customScript%>-cme.js"></script>
-	
-	<%   	   
-   }      
-   %>
- 
+  <script type="text/javascript" src="<c:out value="${ctx}/js/newCaseManagementView.js"/>"></script>
   
     <style type="text/css">
         
@@ -454,7 +335,21 @@
  <![endif]-->
     <html:base />
     <title><bean:message key="oscarEncounter.Index.title"/> - <oscar:nameage demographicNo="<%=(String) request.getAttribute(\"demographicNo\")%>"/></title>
+    <meta http-equiv="Cache-Control" content="no-cache">
     <script type="text/javascript">
+        
+        //Text items used in newCaseManagementView.js
+        <%--
+        socHistoryLabel = encodeURI("<bean:message key="oscarEncounter.socHistory.title"/>");
+        medHistoryLabel = encodeURI("<bean:message key="oscarEncounter.medHistory.title"/>");
+        //onGoingLabel = "<bean:message key="oscarEncounter.onGoing.title"/>";
+        onGoingLabel = "<bean:message key="oscarEncounter.onGoing.title"/>";
+        console.log(onGoingLabel);
+        remindersLabel = encodeURI("<bean:message key="oscarEncounter.reminders.title"/>");
+        oMedsLabel = encodeURI("<bean:message key="oscarEncounter.oMeds.title"/>");
+        famHistoryLabel = encodeURI("<bean:message key="oscarEncounter.famHistory.title"/>");
+        riskFactorsLabel = encodeURI("<bean:message key="oscarEncounter.riskFactors.title"/>");
+        --%>
             
         socHistoryLabel = "oscarEncounter.socHistory.title";
         medHistoryLabel = "oscarEncounter.medHistory.title";
@@ -462,14 +357,8 @@
         remindersLabel = "oscarEncounter.reminders.title";
         oMedsLabel = "oscarEncounter.oMeds.title";
         famHistoryLabel = "oscarEncounter.famHistory.title";
-        riskFactorsLabel = "oscarEncounter.riskFactors.title";  
-
-        diagnosticNotesLabel = "oscarEncounter.eyeform.diagnosticNotes.title";
-        pastOcularHistoryLabel = "oscarEncounter.eyeform.pastOcularHistory.title";
-        patientLogLabel = "oscarEncounter.eyeform.patientLog.title";
-        ocularMedicationsLabel = "oscarEncounter.eyeform.ocularMedications.title";          
-		currentHistoryLabel = "oscarEncounter.eyeform.currentHistory.title";
-         
+        riskFactorsLabel = "oscarEncounter.riskFactors.title";    
+            
         insertTemplateError = "<bean:message key="oscarEncounter.templateError.msg"/>";
         unsavedNoteWarning = "<bean:message key="oscarEncounter.unsavedNoteWarning.msg"/>";
         sessionExpiredError = "<bean:message key="oscarEncounter.sessionExpiredError.msg"/>";
@@ -478,7 +367,6 @@
         pastObservationDateError = "<bean:message key="oscarEncounter.pastObservationDateError.msg"/>";
         assignIssueError = "<bean:message key="oscarEncounter.assignIssueError.msg"/>";
         assignObservationDateError = "<bean:message key="oscarEncounter.assignObservationDateError.msg"/>";
-        assignEncTypeError = "<bean:message key="oscarEncounter.assignEncTypeError.msg"/>";
         savingNoteError = "<bean:message key="oscarEncounter.savingNoteError.msg"/>";
         changeIssueMsg = "<bean:message key="oscarEncounter.change.title"/>";
         closeWithoutSaveMsg = "<bean:message key="oscarEncounter.closeWithoutSave.msg"/>";
@@ -508,12 +396,22 @@
         month[11] = "<bean:message key="share.CalendarPopUp.msgDec"/>";
 
 function init() {       
-
+        
+    //console.log("Begin init");
+    //var start = new Date();
+    //var current;
     showIssueNotes();
+    
+    //current = new Date();
+    //var delta = current.getTime() - start.getTime();
+    //console.log("show Issues " + delta);
     
     var navBars = new navBarLoader();
     navBars.load();  
     
+    //current = new Date();
+    //var delta = current.getTime() - start.getTime();
+    //console.log("navbars " + delta);
     monitorNavBars(null);
     
     Element.observe(window, "resize", monitorNavBars);    
@@ -540,27 +438,13 @@ function init() {
         alert("<nested:write name="DateError"/>");
     </nested:notEmpty>
 
-    doscroll();
-
-    //if we're on a new note
-    setTimeout(scrollDownInnerBar,1500);
-    
 }
-
-function scrollDownInnerBar() {
-	$("encMainDiv").scrollTop= $("encMainDiv").scrollHeight;
-}
-
-function doscroll(){
-	x=document.body.scrollHeight;
-	x=x+99999
-	window.scrollTo(0,x);
-	}
 
 </script>
   </head> 
-  <body id="body" style="margin:0px;" onunload="onClosing()">
+  <body id="body" style="margin:0px;" onload="init()" onunload="onClosing()">
     
+              
           <div id="header">
               <tiles:insert attribute="header" />
           </div>
@@ -576,7 +460,8 @@ function doscroll(){
           <div id="rightNavBar" style="display:inline; float:right; width:20%; margin-left:-3px;">
               <tiles:insert attribute="rightNavigation" />
           </div>            
-                
+          
+          
           <!-- hovering divs -->
           <div id="showEditNote" class="showEdContent">
               <form id="frmIssueNotes" action="" method="post" onsubmit="return updateCPPNote();">
@@ -626,39 +511,17 @@ function doscroll(){
           <div id="printOps" class="printOps">
               <h3 style="margin-bottom:5px; text-align:center;"><bean:message key="oscarEncounter.Index.PrintDialog"/></h3>
               <form id="frmPrintOps" action="" onsubmit="return false;">
-              		<table id="printElementsTable">
-              			<tr>
-              				<td><input type="radio" id="printopSelected" name="printop" value="selected"><bean:message key="oscarEncounter.Index.PrintSelect"/></td>
-              				<td>
-              					<%
-	              					String roleName = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
-              					%>
-								<security:oscarSec roleName="<%=roleName%>" objectName="_newCasemgmt.cpp" rights="r" reverse="false">
-									<img style="cursor: pointer;" title="<bean:message key="oscarEncounter.print.title"/>" id='imgPrintCPP' alt="<bean:message key="oscarEncounter.togglePrintCPP.title"/>" onclick="return printInfo(this,'printCPP');" src='<c:out value="${ctx}"/>/oscarEncounter/graphics/printer.png'>&nbsp;<bean:message key="oscarEncounter.cpp.title" /> 
-								</security:oscarSec>
-              				</td>
-              			</tr>
-              			<tr>
-              				<td><input type="radio" id="printopAll" name="printop" value="all"><bean:message key="oscarEncounter.Index.PrintAll"/></td>
-              				<td>
-								<img style="cursor: pointer;" title="<bean:message key="oscarEncounter.print.title"/>" id='imgPrintRx' alt="<bean:message key="oscarEncounter.togglePrintRx.title"/>" onclick="return printInfo(this, 'printRx');" src='<c:out value="${ctx}"/>/oscarEncounter/graphics/printer.png'>&nbsp;<bean:message key="oscarEncounter.Rx.title" />
-              				</td>
-              			</tr>
-              			<!--  extension point -->              			
-              			<tr id="printDateRow">
-              				<td><input type="radio" id="printopDates" name="printop" value="dates"><bean:message key="oscarEncounter.Index.PrintDates"/>&nbsp;<a style="font-variant:small-caps;" href="#" onclick="return printToday(event);"><bean:message key="oscarEncounter.Index.PrintToday"/></a></td>
-              				<td></td>
-              			</tr>
-              		</table>
-
+                   <input type="radio" id="printopSelected" name="printop" value="selected"><bean:message key="oscarEncounter.Index.PrintSelect"/><br>
+                   <input type="radio" id="printopAll" name="printop" value="all"><bean:message key="oscarEncounter.Index.PrintAll"/><br>
+                   <input type="radio" id="printopDates" name="printop" value="dates"><bean:message key="oscarEncounter.Index.PrintDates"/>&nbsp;<a style="font-variant:small-caps;" href="#" onclick="return printToday(event);"><bean:message key="oscarEncounter.Index.PrintToday"/></a><br>
                    <div style="float:left; margin-left:5px; width:30px;"><bean:message key="oscarEncounter.Index.PrintFrom"/>:</div> <img src="<c:out value="${ctx}/images/cal.gif" />" id="printStartDate_cal" alt="calendar">&nbsp;<input type="text" id="printStartDate" name="printStartDate" ondblclick="this.value='';" style="font-style:italic; border: 1px solid #7682b1; width:125px; background-color:#FFFFFF;" readonly value=""><br>
                    <div style="float:left; margin-left:5px; width:30px;"><bean:message key="oscarEncounter.Index.PrintTo"/>:</div> <img src="<c:out value="${ctx}/images/cal.gif" />" id="printEndDate_cal" alt="calendar">&nbsp;<input type="text" id="printEndDate" name="printEndDate" ondblclick="this.value='';" style="font-style:italic; border: 1px solid #7682b1; width:125px; background-color:#FFFFFF;" readonly value=""><br>                   
                    <div style="margin-top:5px; text-align:center">
                        <input type="submit" id="printOp" style="border: 1px solid #7682b1;" value="Print" onclick="return printNotes();">
                        <oscarProperties:oscarPropertiesCheck property="MY_OSCAR" value="yes">
-                       	<indivo:indivoRegistered demographic="<%=(String) request.getAttribute(\"demographicNo\")%>" provider="<%=(String) request.getSession().getAttribute(\"user\")%>">
-                       		<input type="submit" id="sendToPhr" style="border: 1px solid #7682b1;" value="Send To Phr" onclick="return sendToPhrr();">
-                       	</indivo:indivoRegistered>
+                              <indivo:indivoRegistered demographic="<%=(String) request.getAttribute(\"demographicNo\")%>" provider="<%=(String) request.getSession().getAttribute(\"user\")%>">
+                       <input type="submit" id="sendToPhr" style="border: 1px solid #7682b1;" value="Send To Phr" onclick="return sendToPhrr();">
+                              </indivo:indivoRegistered>
                        </oscarProperties:oscarPropertiesCheck>
                        <input type="submit" id="cancelprintOp" style="border: 1px solid #7682b1;" value="Cancel" onclick="$('printOps').style.display='none';">
                        <input type="submit" id="clearprintOp" style="border: 1px solid #7682b1;" value="Clear" onclick="$('printOps').style.display='none'; return clearAll(event);">

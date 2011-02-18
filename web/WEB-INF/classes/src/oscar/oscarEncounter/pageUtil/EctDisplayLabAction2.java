@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the
 // * Department of Family Medicine
-// * McMaster University
+// * McMaster Unviersity
 // * Hamilton
 // * Ontario, Canada
 // *
@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.Properties;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -41,7 +39,6 @@ import oscar.OscarProperties;
 import oscar.oscarLab.ca.on.CommonLabResultData;
 import oscar.oscarLab.ca.on.LabResultData;
 import oscar.util.DateUtils;
-import oscar.util.OscarRoleObjectPrivilege;
 import oscar.util.StringUtils;
 
 //import oscar.oscarSecurity.CookieSecurity;
@@ -51,18 +48,7 @@ public class EctDisplayLabAction2 extends EctDisplayAction {
     private static final String cmd = "labs";
     
     public boolean getInfo(EctSessionBean bean, HttpServletRequest request, NavBarDisplayDAO Dao, MessageResources messages) {
-        
-        
-    	boolean a = true;
-      	Vector v = OscarRoleObjectPrivilege.getPrivilegeProp("_newCasemgmt.labResult");
-        String roleName = (String)request.getSession().getAttribute("userrole") + "," + (String) request.getSession().getAttribute("user");
-        a = OscarRoleObjectPrivilege.checkPrivilege(roleName, (Properties) v.get(0), (Vector) v.get(1));
-      	if(!a) {
-      		return true; //Lab result link won't show up on new CME screen.
-      	} else {
-      	    
-    	 
-    	CommonLabResultData comLab = new CommonLabResultData();
+        CommonLabResultData comLab = new CommonLabResultData();
         ArrayList labs = comLab.populateLabResultsData("",bean.demographicNo, "", "","","U");
         Collections.sort(labs);
         
@@ -102,7 +88,7 @@ public class EctDisplayLabAction2 extends EctDisplayAction {
         LabResultData result;
         String labDisplayName;
         //String bgcolour = "FFFFCC";
-        StringBuilder func;
+        StringBuffer func;
         int hash;
         
         LinkedHashMap accessionMap = new LinkedHashMap();
@@ -123,7 +109,7 @@ public class EctDisplayLabAction2 extends EctDisplayAction {
             Date date = result.getDateObj();
             String formattedDate = DateUtils.getDate(date,"dd-MMM-yyyy", request.getLocale());
             //String formattedDate = DateUtils.getDate(date);
-            func = new StringBuilder("popupPage(700,960,'");
+            func = new StringBuffer("popupPage(700,960,'");
             
             if ( result.isMDS() ){
                 labDisplayName = result.getDiscipline();
@@ -155,7 +141,6 @@ public class EctDisplayLabAction2 extends EctDisplayAction {
         }
         
         return true;
-      	}
     }
     
     public String getCmd() {

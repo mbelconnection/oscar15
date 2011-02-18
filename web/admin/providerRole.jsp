@@ -24,7 +24,7 @@
 <%@ page errorPage="../errorpage.jsp" %>
 <%@ page import="java.util.*" %>
 <%@ page import="java.sql.*" %>
-<%@ page import="oscar.util.*,oscar.*" %>
+<%@ page import="oscar.util.*" %>
 <%@ page import="oscar.login.*" %>
 <%@ page import="oscar.log.*" %>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
@@ -37,14 +37,6 @@ String curUser_no = (String)session.getAttribute("user");
 %>
 <security:oscarSec roleName="<%=roleName$%>" objectName="_admin,_admin.userAdmin,_admin.torontoRfq" rights="r" reverse="<%=true%>" >
 <%response.sendRedirect("../logout.jsp");%>
-</security:oscarSec>
-
-<%    
-    boolean isSiteAccessPrivacy=false;
-%>
-
-<security:oscarSec objectName="_site_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%isSiteAccessPrivacy=true; %>
 </security:oscarSec>
 
 <%
@@ -78,17 +70,7 @@ if( newCaseManagement ) {
 
 // get role from database
 Vector vecRoleName = new Vector();
-String	sql;
-String adminRoleName = "";
-if (isSiteAccessPrivacy) {
-	//multisites ,remove admin role from dropdown list
-	OscarProperties props = OscarProperties.getInstance();
-	adminRoleName = props.getProperty("multioffice.admin.role.name", "");
-	sql   = "select * from secRole where role_name <> '" + adminRoleName + "' order by role_name";
-}
-else {
-	sql   = "select * from secRole order by role_name";
-}
+String	sql   = "select * from secRole order by role_name";
 ResultSet rs = dbObj.searchDBRecord(sql);
 while (rs.next()) {
 	vecRoleName.add(dbObj.getString(rs,"role_name"));
@@ -102,7 +84,7 @@ if (request.getParameter("buttonUpdate") != null && request.getParameter("button
     String roleNew = request.getParameter("roleNew");
 
     sql = "update secUserRole set role_name='" + roleNew + "' where id='" + roleId + "'";
-    if(!"-".equals(roleNew) && DBHelp.updateDBRecord(sql)){
+    if(!"-".equals(roleNew) && dbObj.updateDBRecord(sql, curUser_no)){
     	msg = "Role " + roleNew + " is updated. (" + number + ")";
 
     	sql = "insert into recyclebin (provider_no,updatedatetime,table_name,keyword,table_content) values(";
@@ -111,7 +93,7 @@ if (request.getParameter("buttonUpdate") != null && request.getParameter("button
     	sql += "'" + "secUserRole" + "',";
     	sql += "'" + number +"|"+ roleOld + "',";
     	sql += "'" + "<provider_no>" + number + "</provider_no>" + "<role_name>" + roleOld + "</role_name>"  + "<role_id>" + roleId + "</role_id>" + "')";
-    	DBHelp.updateDBRecord(sql);
+    	dbObj.updateDBRecord(sql, curUser_no);
 
     	LogAction.addLog(curUser_no, LogConst.UPDATE, LogConst.CON_ROLE, number +"|"+ roleOld +">"+ roleNew, ip);
             
@@ -128,7 +110,7 @@ if (request.getParameter("submit") != null && request.getParameter("submit").equ
     String roleNew = request.getParameter("roleNew");
 
     sql = "insert into secUserRole(provider_no, role_name, activeyn) values('" + number + "', '" + StringEscapeUtils.escapeSql(roleNew) + "',1)";
-    if(!"-".equals(roleNew) && DBHelp.updateDBRecord(sql)){
+    if(!"-".equals(roleNew) && dbObj.updateDBRecord(sql, curUser_no)){
     	msg = "Role " + roleNew + " is added. (" + number + ")";
 
     	LogAction.addLog(curUser_no, LogConst.ADD, LogConst.CON_ROLE, number +"|"+ roleNew, ip);
@@ -148,7 +130,7 @@ if (request.getParameter("submit") != null && request.getParameter("submit").equ
     String roleNew = request.getParameter("roleNew");
 
     sql = "delete from secUserRole where id='" + roleId + "'";
-    if(DBHelp.updateDBRecord(sql)){
+    if(dbObj.updateDBRecord(sql, curUser_no)){
     	msg = "Role " + roleOld + " is deleted. (" + number + ")";
 
     	sql = "insert into recyclebin (provider_no,updatedatetime,table_name,keyword,table_content) values(";
@@ -157,7 +139,7 @@ if (request.getParameter("submit") != null && request.getParameter("submit").equ
     	sql += "'" + "secUserRole" + "',";
     	sql += "'" + number +"|"+ roleOld + "',";
     	sql += "'" + "<provider_no>" + number + "</provider_no>" + "<role_name>" + roleOld + "</role_name>" + "')";
-		DBHelp.updateDBRecord(sql);
+		dbObj.updateDBRecord(sql, curUser_no);
 
 		LogAction.addLog(curUser_no, LogConst.DELETE, LogConst.CON_ROLE, number +"|"+ roleOld, ip);
             
@@ -193,7 +175,7 @@ String keyword = request.getParameter("keyword")!=null?request.getParameter("key
                         sql = "INSERT INTO program_provider (program_id,provider_no,role_id) Values('" + caisiProgram + "','" + provNo + "'," + roles.get(roleNew) + ")";
                 }
 
-                DBHelp.updateDBRecord(sql);
+                dbObj.updateDBRecord(sql,curUser_no);
             }
             else {
                 if( roleOld.equals("doctor") || roleOld.equals("nurse") || roleOld.equals("locum") ) {
@@ -201,7 +183,7 @@ String keyword = request.getParameter("keyword")!=null?request.getParameter("key
                     rs = dbObj.searchDBRecord(sql);
                     if(!rs.next()) {
                         sql = "DELETE FROM program_provider WHERE provider_no = '" + provNo + "'";
-                        DBHelp.updateDBRecord(sql);
+                        dbObj.updateDBRecord(sql,curUser_no);
                     }
                 }
             }
@@ -218,7 +200,7 @@ String keyword = request.getParameter("keyword")!=null?request.getParameter("key
                 else
                     sql = "INSERT INTO program_provider (program_id,provider_no,role_id) Values('" + caisiProgram + "','" + provNo + "'," + roles.get(roleNew) + ")";
                                
-                DBHelp.updateDBRecord(sql);
+                dbObj.updateDBRecord(sql,curUser_no);
             }
         }
         
@@ -230,7 +212,7 @@ String keyword = request.getParameter("keyword")!=null?request.getParameter("key
                 ResultSet rs = dbObj.searchDBRecord(sql);
                 if(!rs.next()) {
                     sql = "DELETE FROM program_provider WHERE provider_no = '" + provNo + "'";
-                    DBHelp.updateDBRecord(sql);
+                    dbObj.updateDBRecord(sql,curUser_no);
                 }
                 else {
                     sql = "SELECT cr.role_name AS name from secRole cr, program_provider pp WHERE pp.provider_no = '" + provNo + "' AND cr.role_no = pp.role_id";
@@ -251,7 +233,7 @@ String keyword = request.getParameter("keyword")!=null?request.getParameter("key
                     
                     if( !caisiRole.equals(highRole) ) {
                         sql = "UPDATE program_provider SET role_id = " + roles.get(highRole) + " WHERE provider_no = '" + provNo + "'";
-                        DBHelp.updateDBRecord(sql);
+                        dbObj.updateDBRecord(sql, curUser_no);
                     }
                     rs1.close();
                 }
@@ -310,23 +292,9 @@ if(temp.length>1) {
 	lastName = keyword + "%";
 	firstName = "%";
 }
-
-
-String query; 
-
-if (isSiteAccessPrivacy){
-	//multisites: only select providers have same site with current user
-	query = "select u.id, u.role_name, p.provider_no, p.first_name, p.last_name from provider p LEFT JOIN secUserRole u ON ";
-	query += " p.provider_no=u.provider_no LEFT JOIN providersite ps ON p.provider_no = ps.provider_no ";
-	query += " where p.last_name like '" + lastName + "' and p.first_name like '" + firstName + "' and p.status='1' ";
-	query += " and not exists(select * from secUserRole scr where scr.provider_no =  p.provider_no and scr.role_name = '" + adminRoleName + "') " ;
-	query += " and ps.site_id in (select site_id from providersite where provider_no = " + curUser_no + ")  order by p.first_name, p.last_name, u.role_name";
-}
-else {
-	query = "select u.id, u.role_name, p.provider_no, p.first_name, p.last_name from provider p LEFT JOIN secUserRole u ON ";
-	query += " p.provider_no=u.provider_no where p.last_name like '" + lastName + "' and p.first_name like '" + firstName + "' and p.status='1' order by p.first_name, p.last_name, u.role_name";
-}
-
+String query = "select u.id, u.role_name, p.provider_no, p.first_name, p.last_name from provider p LEFT JOIN secUserRole u ON ";
+query += " p.provider_no=u.provider_no where p.last_name like '" + lastName + "' and p.first_name like '" + firstName + "' and p.status='1' order by p.first_name, p.last_name, u.role_name";
+//System.out.println(query);
 rs = dbObj.searchDBRecord(query);
 Vector<Properties> vec = new Vector<Properties>();
 while (rs.next()) {

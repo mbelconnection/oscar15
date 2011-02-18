@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -30,6 +30,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
@@ -47,7 +48,7 @@ public final class RptSetupSelectCDMReportAction extends Action {
         
         RptGroupNameBeanHandler hd = new RptGroupNameBeanHandler();
         Collection groups = hd.getGroupNameVector();
-        
+        HttpSession session = request.getSession();
         List messages = new LinkedList();
         messages.add("hello");
         request.setAttribute("messages", messages);

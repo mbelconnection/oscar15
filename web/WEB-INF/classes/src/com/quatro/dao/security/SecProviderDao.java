@@ -12,11 +12,12 @@ package com.quatro.dao.security;
 
 import java.util.List;
 
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.criterion.Example;
-import org.oscarehr.util.MiscUtils;
+import org.oscarehr.PMmodule.model.Admission;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import com.quatro.model.security.SecProvider;
@@ -28,7 +29,7 @@ import com.quatro.model.security.SecProvider;
  */
 
 public class SecProviderDao extends HibernateDaoSupport {
-	private static final Logger logger = MiscUtils.getLogger();
+	private static final Logger log = LogManager.getLogger(SecProviderDao.class);
 	// property constants
 	public static final String LAST_NAME = "lastName";
 	public static final String FIRST_NAME = "firstName";
@@ -48,50 +49,50 @@ public class SecProviderDao extends HibernateDaoSupport {
 	public static final String PROVIDER_ACTIVITY = "providerActivity";
 
 	public void save(SecProvider transientInstance) {
-		logger.debug("saving Provider instance");
+		log.debug("saving Provider instance");
 		try {
 			this.getHibernateTemplate().save(transientInstance);
-			logger.debug("save successful");
+			log.debug("save successful");
 		} catch (RuntimeException re) {
-			logger.error("save failed", re);
+			log.error("save failed", re);
 			throw re;
 		}
 	}
 	
 	public void saveOrUpdate(SecProvider transientInstance) {
-		logger.debug("saving Provider instance");
+		log.debug("saving Provider instance");
 		try {
 			this.getHibernateTemplate().saveOrUpdate(transientInstance);
-			logger.debug("save successful");
+			log.debug("save successful");
 		} catch (RuntimeException re) {
-			logger.error("save failed", re);
+			log.error("save failed", re);
 			throw re;
 		}
 	}
 	public void delete(SecProvider persistentInstance) {
-		logger.debug("deleting Provider instance");
+		log.debug("deleting Provider instance");
 		try {
 			this.getHibernateTemplate().delete(persistentInstance);
-			logger.debug("delete successful");
+			log.debug("delete successful");
 		} catch (RuntimeException re) {
-			logger.error("delete failed", re);
+			log.error("delete failed", re);
 			throw re;
 		}
 	}
 
 	public SecProvider findById(java.lang.String id) {
-		logger.debug("getting Provider instance with id: " + id);
+		log.debug("getting Provider instance with id: " + id);
 		try {
 			SecProvider instance = (SecProvider) this.getHibernateTemplate().get(
 					"com.quatro.model.security.SecProvider", id);
 			return instance;
 		} catch (RuntimeException re) {
-			logger.error("get failed", re);
+			log.error("get failed", re);
 			throw re;
 		}
 	}
 	public SecProvider findById(java.lang.String id,String status) {
-		logger.debug("getting Provider instance with id: " + id);
+		log.debug("getting Provider instance with id: " + id);
 		try {
 			String sql ="from SecProvider where id=? and status=?";
 			List lst=this.getHibernateTemplate().find(sql,new Object[]{id,status});			
@@ -101,28 +102,28 @@ public class SecProviderDao extends HibernateDaoSupport {
 	          return (SecProvider) lst.get(0);
 				
 			} catch (RuntimeException re) {
-				logger.error("get failed", re);
+				log.error("get failed", re);
 			throw re;
 		}
 	}
 
 	public List findByExample(SecProviderDao instance) {
-		logger.debug("finding Provider instance by example");
+		log.debug("finding Provider instance by example");
 		try {
 			List results = getSession().createCriteria(
 					"com.quatro.model.security.SecProvider").add(
 					Example.create(instance)).list();
-			logger.debug("find by example successful, result size: "
+			log.debug("find by example successful, result size: "
 					+ results.size());
 			return results;
 		} catch (RuntimeException re) {
-			logger.error("find by example failed", re);
+			log.error("find by example failed", re);
 			throw re;
 		}
 	}
 
 	public List findByProperty(String propertyName, Object value) {
-		logger.debug("finding Provider instance with property: " + propertyName
+		log.debug("finding Provider instance with property: " + propertyName
 				+ ", value: " + value);
 		try {
 			String queryString = "from Provider as model where model."
@@ -131,7 +132,7 @@ public class SecProviderDao extends HibernateDaoSupport {
 			queryObject.setParameter(0, value);
 			return queryObject.list();
 		} catch (RuntimeException re) {
-			logger.error("find by property name failed", re);
+			log.error("find by property name failed", re);
 			throw re;
 		}
 	}
@@ -201,47 +202,47 @@ public class SecProviderDao extends HibernateDaoSupport {
 	}
 
 	public List findAll() {
-		logger.debug("finding all Provider instances");
+		log.debug("finding all Provider instances");
 		try {
 			String queryString = "from Provider";
 			Query queryObject = getSession().createQuery(queryString);
 			return queryObject.list();
 		} catch (RuntimeException re) {
-			logger.error("find all failed", re);
+			log.error("find all failed", re);
 			throw re;
 		}
 	}
 
 	public SecProviderDao merge(SecProviderDao detachedInstance) {
-		logger.debug("merging Provider instance");
+		log.debug("merging Provider instance");
 		try {
 			SecProviderDao result = (SecProviderDao) getSession().merge(detachedInstance);
-			logger.debug("merge successful");
+			log.debug("merge successful");
 			return result;
 		} catch (RuntimeException re) {
-			logger.error("merge failed", re);
+			log.error("merge failed", re);
 			throw re;
 		}
 	}
 
 	public void attachDirty(SecProviderDao instance) {
-		logger.debug("attaching dirty Provider instance");
+		log.debug("attaching dirty Provider instance");
 		try {
 			getSession().saveOrUpdate(instance);
-			logger.debug("attach successful");
+			log.debug("attach successful");
 		} catch (RuntimeException re) {
-			logger.error("attach failed", re);
+			log.error("attach failed", re);
 			throw re;
 		}
 	}
 
 	public void attachClean(SecProviderDao instance) {
-		logger.debug("attaching clean Provider instance");
+		log.debug("attaching clean Provider instance");
 		try {
 			getSession().lock(instance, LockMode.NONE);
-			logger.debug("attach successful");
+			log.debug("attach successful");
 		} catch (RuntimeException re) {
-			logger.error("attach failed", re);
+			log.error("attach failed", re);
 			throw re;
 		}
 	}

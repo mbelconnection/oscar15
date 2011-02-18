@@ -1,3 +1,4 @@
+<%@page contentType="text/html"%>
 <%@ page import="java.util.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <!--  
@@ -20,7 +21,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -38,6 +39,8 @@ GregorianCalendar cal = new GregorianCalendar();
 int curYear = cal.get(Calendar.YEAR);
 int curMonth = (cal.get(Calendar.MONTH)+1);
 int curDay = cal.get(Calendar.DAY_OF_MONTH);
+
+//System.out.println("Redirecting to: ../oscarEncounter/IncomingEncounter.do?demographicNo="+request.getParameter("demographicNo")+"&reason=Lab+Results-Notes&curDate="+curYear+"-"+curMonth+"-"+curDay+"&status="); 
 
 %>
 

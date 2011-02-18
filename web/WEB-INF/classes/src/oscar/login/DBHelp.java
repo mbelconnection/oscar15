@@ -7,47 +7,107 @@ package oscar.login;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.persistence.PersistenceException;
-
 import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
-import oscar.util.SqlUtils;
+import oscar.oscarDB.DBPreparedHandler;
+import oscar.oscarDB.DBPreparedHandlerParam;
 
 /**
- * deprecated Use JPA instead, no new code should be written against this class.
+ * @author yilee18
  */
-public final class DBHelp {
-    private static final Logger logger = MiscUtils.getLogger();
+public class DBHelp {
+    private static final Logger _logger = Logger.getLogger(DBHelp.class);
 
-    public static boolean updateDBRecord(String sql) throws SQLException {
+    public synchronized boolean updateDBRecord(String sql) throws SQLException {
+        boolean ret = false;
+        DBHandler db = null;
         try {
-        	SqlUtils.update(sql);
-            return(true);
-        } catch (PersistenceException e) {
-            logger.error("Error", e);
-            return(false);
-        }
-    }
-
-    public static ResultSet searchDBRecord(String sql) throws SQLException {
-        ResultSet ret = null;
-        try {
-        	
-            ret = DBHandler.GetSQL(sql);
+            db = new DBHandler(DBHandler.OSCAR_DATA);
+            ret = db.RunSQL(sql);
+            ret = true;
         } catch (SQLException e) {
-            logger.error("Error", e);
+            ret = false;
+            System.out.println(e.getMessage());
+        } finally {
         }
-        
         return ret;
     }
 
+//    public synchronized boolean updateDBRecord(String sql, DBPreparedHandlerParam[] param) throws SQLException {
+    public synchronized int updateDBRecord(String sql, DBPreparedHandlerParam[] params) throws SQLException {
+        int ret = 0;
+        DBPreparedHandler db = null;
+        try {
+            db = new DBPreparedHandler();
+            ret = db.queryExecuteUpdate(sql, params);
+//            _logger.info("updateDBRecord(sql = " + sql + ", userId = " + userId + ")");
+        } catch (SQLException e) {
+//            _logger.error("updateDBRecord(sql = " + sql + ", userId = " + userId + ")");
+        } finally {
+        }
+        return ret;
+    }
+    	
+    public synchronized ResultSet searchDBRecord(String sql) throws SQLException {
+        ResultSet ret = null;
+        DBHandler db = null;
+        try {
+            db = new DBHandler(DBHandler.OSCAR_DATA);
+            ret = db.GetSQL(sql);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+        }
+        return ret;
+    }
+
+    public synchronized ResultSet searchDBRecord(String sql, DBPreparedHandlerParam[] params) throws SQLException {
+        ResultSet ret = null;
+        DBPreparedHandler db = null;
+        try {
+            db = new DBPreparedHandler();
+            ret = db.queryResults_paged(sql, params, 0);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+        }
+        return ret;
+    }
+    
+    public synchronized boolean updateDBRecord(String sql, String userId) throws SQLException {
+        boolean ret = false;
+        DBHandler db = null;
+        try {
+            db = new DBHandler(DBHandler.OSCAR_DATA);
+            ret = db.RunSQL(sql);
+            ret = true;
+            _logger.info("updateDBRecord(sql = " + sql + ", userId = " + userId + ")");
+        } catch (SQLException e) {
+            ret = false;
+            _logger.error("updateDBRecord(sql = " + sql + ", userId = " + userId + ")",e);
+        } finally {
+        }
+        return ret;
+    }
+
+    public synchronized ResultSet searchDBRecord(String sql, String userId) throws SQLException {
+        ResultSet ret = null;
+        DBHandler db = null;
+        try {
+            db = new DBHandler(DBHandler.OSCAR_DATA);
+            ret = db.GetSQL(sql);
+            _logger.info("searchDBRecord(sql = " + sql + ", userId = " + userId + ")");
+        } catch (SQLException e) {
+            _logger.error("searchDBRecord(sql = " + sql + ", userId = " + userId + ")");
+        } finally {
+        }
+        return ret;
+    }
     public static String getString(ResultSet rs,String columnName) throws SQLException
     {
     	return oscar.Misc.getString(rs, columnName);
     }
-    
     public static String getString(ResultSet rs,int columnIndex) throws SQLException
     {
     	return oscar.Misc.getString(rs, columnIndex);

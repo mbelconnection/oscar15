@@ -26,10 +26,9 @@
 package oscar.oscarEncounter.oscarMeasurements.util;
 
 import java.util.ArrayList;
-
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jdom.Element;
-import org.oscarehr.util.MiscUtils;
 
 /**
  * Stores Conditions for target Colours
@@ -48,7 +47,7 @@ import org.oscarehr.util.MiscUtils;
  * @author jaygallagher
  */
 public class RecommendationCondition {
-     private static final Logger log=MiscUtils.getLogger();
+     private static final Log log = LogFactory.getLog(RecommendationCondition.class);
     
     private String type = null;
     private String value = null;

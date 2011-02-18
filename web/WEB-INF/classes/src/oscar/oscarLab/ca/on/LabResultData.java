@@ -32,12 +32,10 @@ import java.util.Comparator;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarLab.ca.bc.PathNet.PathnetResultsData;
 import oscar.oscarLab.ca.on.CML.CMLLabTest;
-import oscar.util.StringUtils;
 import oscar.util.UtilDateUtilities;
 
 
@@ -47,7 +45,7 @@ import oscar.util.UtilDateUtilities;
  */
 public class LabResultData implements Comparable{
     
-    Logger logger = MiscUtils.getLogger();
+    Logger logger = Logger.getLogger(LabResultData.class );
     
     public static String CML = "CML";
     public static String MDS = "MDS";
@@ -95,28 +93,14 @@ public class LabResultData implements Comparable{
         
     }
     
-    public String getLabPatientId(){
-        return this.labPatientId;
-    }
-    public void setLabPatientId(String lpi){
-        this.labPatientId=lpi;
-    }
-    public String getSegmentID(){
-        return this.segmentID;
-    }
-    public void setSegmentID(String sid){
-        this.segmentID=sid;
-    }
     
     public boolean isAbnormal(){
         if (EXCELLERIS.equals(this.labType)){
-            //logger.debug("excelleris is doc type");
             PathnetResultsData prd = new PathnetResultsData();
             if (prd.findPathnetAdnormalResults(this.segmentID) > 0){
                 this.abn= true;
             }
         }else if(CML.equals(this.labType)){
-            //logger.debug("cml is doc type");
             CMLLabTest cml = new CMLLabTest();
             if (cml.findCMLAdnormalResults(this.segmentID) > 0){
                 this.abn= true;
@@ -214,11 +198,7 @@ public class LabResultData implements Comparable{
 //          this.isMatchedToPatient = prd.isLabLinkedWithPatient(this.segmentID);
 //       }
         CommonLabResultData commonLabResultData = new CommonLabResultData();
-        logger.debug("in ismatchedtopatient, "+this.segmentID+"--"+this.labType);
-        if(this.labType.equals("DOC"))
-            this.isMatchedToPatient=commonLabResultData.isDocLinkedWithPatient(this.segmentID,this.labType);
-        else
-            this.isMatchedToPatient = commonLabResultData.isLabLinkedWithPatient(this.segmentID,this.labType);
+        this.isMatchedToPatient = commonLabResultData.isLabLinkedWithPatient(this.segmentID,this.labType);
         return this.isMatchedToPatient;
     }
     
@@ -251,13 +231,7 @@ public class LabResultData implements Comparable{
         return count;
     }
     
-    public String getAcknowledgedStatus(){
-        return this.acknowledgedStatus;
-    }
     
-    public void setAcknowledgedStatus(String as){
-        this.acknowledgedStatus=as;
-    }
     public String getReportStatus(){
        /* if (EXCELLERIS.equals(this.labType)){
             PathnetResultsData prd = new PathnetResultsData();
@@ -289,10 +263,10 @@ public class LabResultData implements Comparable{
             String date="";
             String sql = "select print_date, print_time from labReportInformation, labPatientPhysicianInfo where labPatientPhysicianInfo.id = '"+this.segmentID+"' and labReportInformation.id = labPatientPhysicianInfo.labReportInfo_id ";
             try{
-                
-                ResultSet rs = DBHandler.GetSQL(sql);
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+                ResultSet rs = db.GetSQL(sql);
                 if(rs.next()){
-                    date=oscar.Misc.getString(rs, "print_date")+oscar.Misc.getString(rs, "print_time");
+                    date=db.getString(rs,"print_date")+db.getString(rs,"print_time");
                 }
                 rs.close();
             }catch(Exception e){
@@ -348,16 +322,7 @@ public class LabResultData implements Comparable{
         }
     }
     
-    public String getDisciplineDisplayString()
-    {
-    	String temp;
-    	
-    	if ("REF_I12".equals(discipline)) temp="REFERRAL";
-    	else if (discipline!=null && discipline.startsWith("ORU_R01:")) return(discipline.substring("ORU_R01:".length()));
-    	else temp=discipline;
-    	
-        return(StringUtils.maxLenString(temp, 13, 10, "..."));
-    }
+    
 }
 
 

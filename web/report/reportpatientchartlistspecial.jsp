@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -34,13 +34,12 @@
 <%@ page
 	import="java.util.*, java.sql.*, oscar.*, java.text.*, java.lang.*,java.net.*"
 	errorPage="../appointment/errorpage.jsp"%>
-<%@ page import="oscar.login.DBHelp"%>
-
 <jsp:useBean id="patientBean" class="oscar.AppointmentMainBean"
 	scope="page" />
 <jsp:useBean id="myGroupBean" class="java.util.Vector" scope="page" />
 <jsp:useBean id="providerBean" class="java.util.Properties"
 	scope="session" />
+<%@ include file="../admin/dbconnection.jsp"%>
 <% 
   String [][] dbQueries;
 
@@ -68,49 +67,13 @@
 
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
-<%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
-<%
-    if(session.getAttribute("user") == null ) response.sendRedirect("../logout.jsp");
-    String curProvider_no = (String) session.getAttribute("user");
-
-    if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
-    String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
-    
-    boolean isSiteAccessPrivacy=false;
-    boolean isTeamAccessPrivacy=false; 
-%>
-<security:oscarSec objectName="_site_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%isSiteAccessPrivacy=true; %>
-</security:oscarSec>
-<security:oscarSec objectName="_team_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%isTeamAccessPrivacy=true; %>
-</security:oscarSec>
-
-<% 
-HashMap<String,String> providerMap = new HashMap<String,String>();
-//multisites function
-if (isSiteAccessPrivacy || isTeamAccessPrivacy) {
-	String sqlStr = "select provider_no from provider ";
-	if (isSiteAccessPrivacy) 
-		sqlStr = "select distinct p.provider_no from provider p inner join providersite s on s.provider_no = p.provider_no " 
-		 + " where s.site_id in (select site_id from providersite where provider_no = " + curProvider_no + ")";
-	if (isTeamAccessPrivacy) 
-		sqlStr = "select distinct p.provider_no from provider p where team in (select team from provider "
-				+ " where team is not null and team <> '' and provider_no = " + curProvider_no + ")";
-	DBHelp dbObj = new DBHelp();
-	ResultSet rs = dbObj.searchDBRecord(sqlStr);
-	while (rs.next()) {
-		providerMap.put(rs.getString("provider_no"),"true");
-	}
-	rs.close();
-}
-%>
-
 <html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message
 	key="report.reportpatientchartlistspecial.title" /></title>
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv=Expires content=-1>
 <link rel="stylesheet" href="../web.css">
 <script language="JavaScript">
 <!--
@@ -137,6 +100,7 @@ function setfocus() {
 	  rsdemo = patientBean.queryResults(provider_no.substring(5), "searchmygroupall");
     while (rsdemo.next()) { 
 	    myGroupBean.add(rsdemo.getString("provider_no"));
+//System.out.println(rsdemo.getString("provider_no"));
     }
   }
 %>
@@ -163,6 +127,9 @@ function setfocus() {
 
   for(int i=0; i<pnum; i++) {
     param[0]=bGroup?((String) myGroupBean.get(i)):provider_no;
+//    param[1]=param[0];
+//    param[2]=param[0];
+//  System.out.println(param[0]);
 
     /* this is a fix since a PreparedStatement dont substitute ? between single quotes */
     if (db_type.equalsIgnoreCase("mysql"))
@@ -176,12 +143,6 @@ function setfocus() {
    }
 
     while (rsdemo.next()) { 
-    	
-        //multisites. skip record if not belong to same site/team
-        if (isSiteAccessPrivacy || isTeamAccessPrivacy) {
-        	if(providerMap.get(rsdemo.getString("provider_no"))== null)  continue;
-        }
-    	
       if (rsdemo.getInt("demographic_no") != dnoTemp) dnoTemp = rsdemo.getInt("demographic_no");
 	  else continue;
       bodd = bodd?false:true;
@@ -253,6 +214,7 @@ function setfocus() {
 	<%
   }
   }
+  patientBean.closePstmtConn();
 %>
 
 </table>

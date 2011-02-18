@@ -30,6 +30,8 @@ import com.quatro.model.LookupCodeValue;
  * This is the object class that relates to the program table. Any customizations belong here.
  */
 public class Program implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     public static final Integer DEFAULT_COMMUNITY_PROGRAM_ID = new Integer(10010);
     
     public static final String EXTERNAL_TYPE = "external";
@@ -50,7 +52,6 @@ public class Program implements Serializable {
     private Integer maxAllowed;
     private String type;
     private String description;
-    private String functionalCentreId;
     private String address;
     private String phone;
     private String fax;
@@ -93,18 +94,8 @@ public class Program implements Serializable {
     private String lastUpdateUser;
     private Date lastUpdateDate;
     private LookupCodeValue shelter;
-    private String siteSpecificField;
-    
 
-    public String getSiteSpecificField() {
-		return siteSpecificField;
-	}
-
-	public void setSiteSpecificField(String siteSpecificField) {
-		this.siteSpecificField = siteSpecificField;
-	}
-
-	public Date getLastUpdateDate() {
+    public Date getLastUpdateDate() {
 		return lastUpdateDate;
 	}
 
@@ -115,14 +106,6 @@ public class Program implements Serializable {
 	public String getLastUpdateUser() {
 		return lastUpdateUser;
 	}
-
-	public String getFunctionalCentreId() {
-    	return functionalCentreId;
-    }
-
-	public void setFunctionalCentreId(String functionalCentreId) {
-    	this.functionalCentreId = functionalCentreId;
-    }
 
 	public void setLastUpdateUser(String lastUpdateUser) {
 		this.lastUpdateUser = lastUpdateUser;

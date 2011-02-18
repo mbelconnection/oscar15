@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the
 // * Department of Family Medicine
-// * McMaster University
+// * McMaster Unviersity
 // * Hamilton
 // * Ontario, Canada
 // *
@@ -30,19 +30,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Properties;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.struts.util.MessageResources;
-import org.oscarehr.util.MiscUtils;
+import org.oscarehr.util.SessionConstants;
 
 import oscar.dms.EDoc;
 import oscar.dms.EDocUtil;
 import oscar.util.DateUtils;
-import oscar.util.OscarRoleObjectPrivilege;
 import oscar.util.StringUtils;
 
 //import oscar.oscarSecurity.CookieSecurity;
@@ -53,14 +50,6 @@ public class EctDisplayDocsAction extends EctDisplayAction {
 
  public boolean getInfo(EctSessionBean bean, HttpServletRequest request, NavBarDisplayDAO Dao, MessageResources messages) {
 
-	boolean a = true;
- 	Vector v = OscarRoleObjectPrivilege.getPrivilegeProp("_newCasemgmt.documents");
-    String roleName = (String)request.getSession().getAttribute("userrole") + "," + (String) request.getSession().getAttribute("user");
-    a = OscarRoleObjectPrivilege.checkPrivilege(roleName, (Properties) v.get(0), (Vector) v.get(1));
- 	if(!a) {
- 		return true; //Prevention link won't show up on new CME screen.
- 	} else {
- 	  
 	//add for inbox manager
 	boolean inboxflag=oscar.util.plugin.IsPropertiesOn.propertiesOn("inboxmnger");
     //set lefthand module heading and link
@@ -90,7 +79,7 @@ public class EctDisplayDocsAction extends EctDisplayAction {
     Dao.setRightURL(url);
     Dao.setRightHeadingID(cmd); //no menu so set div id to unique id for this action
 
-    StringBuilder javascript = new StringBuilder("<script type=\"text/javascript\">");
+    StringBuffer javascript = new StringBuffer("<script type=\"text/javascript\">");
     String js = "";
     ArrayList docList = EDocUtil.listDocs("demographic", bean.demographicNo, null, EDocUtil.PRIVATE, EDocUtil.SORT_OBSERVATIONDATE, "active");
     String dbFormat = "yyyy-MM-dd";
@@ -124,7 +113,7 @@ public class EctDisplayDocsAction extends EctDisplayAction {
             serviceDateStr = DateUtils.getDate(date, dateFormat, request.getLocale());
         }
         catch(ParseException ex ) {
-            MiscUtils.getLogger().debug("EctDisplayDocsAction: Error creating date " + ex.getMessage());
+            System.out.println("EctDisplayDocsAction: Error creating date " + ex.getMessage());
             serviceDateStr = "Error";
             date = null;
         }
@@ -158,7 +147,7 @@ public class EctDisplayDocsAction extends EctDisplayAction {
 
     Dao.setJavaScript(javascript.toString());
     return true;
- 	}
+
   }
 
  public String getCmd() {

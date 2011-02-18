@@ -26,16 +26,17 @@
 <%  
 //This Page handles both viewing uploaded forms (from admin screen) and viewing added forms
 //to the patient.
+  if(session.getValue("user") == null)  response.sendRedirect("../logout.jsp");
 %>
 <%@ page import="java.sql.*, oscar.eform.data.*"%>
-<%
+<% 
   String id = request.getParameter("fid");  
-  if (id == null) {  // form exists in patient
+  if (id == null) {  //if form exists in patient
       id = request.getParameter("fdid");
       EForm eForm = new EForm(id);
 	  eForm.setContextPath(request.getContextPath());
       String parentAjaxId = request.getParameter("parentAjaxId");
-      if( parentAjaxId != null ) eForm.setAction(parentAjaxId);
+      if(parentAjaxId != null) eForm.setAction(parentAjaxId);
 
       session.setAttribute("eform_data_id", id);
       out.print(eForm.getFormHtml());

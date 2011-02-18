@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -43,6 +43,8 @@
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>ANTENATAL RECORD</title>
 <link rel="stylesheet" href="../provider/antenatalrecord.css">
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 <script language="JavaScript">
 <!--		
 var saveTemp=0;
@@ -223,6 +225,7 @@ function onSubmitForm() {
 		<input type="submit" name="print" value="Print Preview"
 			onClick='onPrint()'> <a href=#
 			onClick="popupPage(200,300,'formarprintsetting.jsp');return false;">.</a>
+		<!--a href="providercontrol.jsp?appointment_no=<%--=request.getParameter("appointment_no")%>&demographic_no=<%=request.getParameter("demographic_no")%>&curProvider_no=<%=request.getParameter("curProvider_no")%>&username=<%=request.getParameter("username")%>&reason=<%=request.getParameter("reason")--%>&displaymode=ar2&dboperation=search_demograph&template=&bNew=1"  title="A New AR2 Form">
 		  <font color='yellow'> New AR2 </font></a--> <input type="hidden"
 			name="oox" value="0"> <input type="hidden" name="ooy"
 			value="0"> <input type="hidden" name="cmd" value="">
@@ -306,6 +309,7 @@ if (fedb != null && fedb.length() == 10 ) {
 	FrmGraphicAR arG = new FrmGraphicAR();
 	java.util.Date edbDate = arG.getStartDate(fedb);
     sDate = UtilDateUtilities.DateToString(edbDate, "MMMMM dd, yyyy"); //"yy,MM,dd");
+	//System.out.println(sDate);
 %>
 	    var delta = 0;
         var str_date = getDateField(source.name);
@@ -1431,6 +1435,7 @@ else {
       if(SxmlMisc.getXmlContent(temp, "<xml_nadr>","</xml_nadr>")!= null) savedar1risk.setProperty("74", "xml_nadr");
       if(SxmlMisc.getXmlContent(temp, "<xml_nadref>","</xml_nadref>")!= null) savedar1risk.setProperty("75", "xml_nadref");
      }
+    //System.out.println(SxmlMisc.getXmlContent(temp, "<xml_cp3s>","</xml_cp3s>") +" "+savedar1risk.getProperty("3") );
 	out.println(checklist.doStuff(new String("../webapps/"+oscarVariables.getProperty("project_home")+"/provider/obarchecklist_99_12.xml"), savedar1risk));
 }	
 }

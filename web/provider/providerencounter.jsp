@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -55,6 +55,8 @@
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>ENCOUNTER</title>
 <link rel="stylesheet" href="../web.css">
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 <script language="JavaScript">
 <!--
 
@@ -170,6 +172,7 @@ function gotoAccs() {
 %>
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<!--for form use-->
+	<!--form name="demoacce" method="post" action="providercontrol.jsp" target="encounterhist" onSubmit="popupPage(1,1,'providercontrol.jsp')"-->
 	<form name="encounter" method="post" action="providercontrol.jsp">
 	<tr>
 		<td>
@@ -264,6 +267,7 @@ function gotoAccs() {
 			color="blue"> <%
      String historysubject = enc.get("subject")==null?"No Reason":String.valueOf(enc.get("subject")).equals("")?"No Reason":String.valueOf(enc.get("subject"));
      StringTokenizer st=new StringTokenizer(historysubject,":");
+     //System.out.println(" history = " + historysubject);
      String strForm="", strTemplateURL="";
      while (st.hasMoreTokens()) {
        strForm = (new String(st.nextToken())).trim();
@@ -296,6 +300,11 @@ function gotoAccs() {
 		<td align="right"><a href=#
 			onclick="window.open('../dms/adddocument.jsp?function=demographic&functionid=<%=request.getParameter("demographic_no")%>&creator=<%=user_no%>','', 'scrollbars=yes,resizable=yes,width=600,height=300')";>
 		<font color="yellow">Add Document</font></a> <%
+     if(request.getParameter("status").indexOf('B')==-1) {
+   %> <!--a href=# onClick='popupPage(600,800, "billingobstetric.jsp?appointment_no=<%=request.getParameter("appointment_no")%>&demographic_name=<%=URLEncoder.encode(demoname)%>&demographic_no=<%=request.getParameter("demographic_no")%>&user_no=<%=user_no%>&apptProvider_no=<%=apptProvider_no%>&appointment_date=<%=request.getParameter("appointment_date")%>&start_time=<%=request.getParameter("start_time")%>&bNewForm=1" )'><font color="yellow">
+    Billing</font></a><br--> <!--a href=# onClick='popupPage(700,720, "../billing/billingOB.jsp?hotclick=<%=URLEncoder.encode("")%>&appointment_no=<%=request.getParameter("appointment_no")%>&demographic_name=<%=URLEncoder.encode(demoname)%>&demographic_no=<%=request.getParameter("demographic_no")%>&user_no=<%=user_no%>&apptProvider_no=<%=apptProvider_no%>&appointment_date=<%=request.getParameter("appointment_date")%>&start_time=<%=request.getParameter("start_time")%>&bNewForm=1")'><font color="yellow">
+    Billing</font></a><br--> <%       
+     }
    %> <a href=# onClick='popupPage(500,700, "providercontrol.jsp?appointment_no=<%=request.getParameter("appointment_no")%>&demographic_name=<%=URLEncoder.encode(demoname)%>&demographic_no=<%=request.getParameter("demographic_no")%>&curProvider_no=<%=user_no%>&username=<%= username %>&apptProvider_no=<%=apptProvider_no%>&displaymode=prescribe&dboperation=search_demograph&template=" );return false;'><font color="yellow">
     Prescribe</font></a></td>
 		<td align="right"><select name="formmenu" size="1"
@@ -327,6 +336,7 @@ function gotoAccs() {
 </table>
 
 <table width="100%" border="1" bgcolor="#87CEEB">
+	<!--form name="encounter" method="post" action="providercontrol.jsp" -->
 	<tr>
 		<td align="center">
 		<%

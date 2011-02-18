@@ -11,10 +11,10 @@ if(props.getProperty("isNewONbilling", "").equals("true")) {
 <%@ page
 	import="java.math.*, java.util.*, java.io.*, java.sql.*, oscar.*, java.net.*,oscar.MyDateFormat"
 	errorPage="errorpage.jsp"%>
-
+<%@ include file="../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 <!--  
 /*
  * 
@@ -35,7 +35,7 @@ if(props.getProperty("isNewONbilling", "").equals("true")) {
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -232,6 +232,7 @@ if (proNo.compareTo("") == 0 || proNo.compareTo("all") == 0){
 
 	<%
 }
+apptMainBean.closePstmtConn();
 %>
 
 </body>

@@ -39,8 +39,6 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.Properties;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.OscarProperties;
 
 public class MspErrorCodes extends Properties{
@@ -61,8 +59,8 @@ public class MspErrorCodes extends Properties{
          }
          load(is);
       } catch (Exception e) {
-         MiscUtils.getLogger().error("Error", e);
-         MiscUtils.getLogger().debug("Error loading MSP Error codes file :"+oscar.OscarProperties.getInstance().getProperty("msp_error_codes"));
+         e.printStackTrace();
+         System.out.println("Error loading MSP Error codes file :"+oscar.OscarProperties.getInstance().getProperty("msp_error_codes"));
       }
    }
 
@@ -79,7 +77,7 @@ public class MspErrorCodes extends Properties{
 
        store(new FileOutputStream(file),"Written on "+new Date());
         } catch (Exception e) {
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace();
       }
 
    }

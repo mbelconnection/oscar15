@@ -1,5 +1,7 @@
+<%@page pageEncoding="UTF-8"%>
 <%@ page
 	import="java.math.*, java.util.*, java.sql.*, oscar.*, java.net.*, oscar.oscarResearch.oscarDxResearch.bean.*"%>
+<% response.setHeader("Cache-Control","no-cache");%>
 <ul
 	<%
    String demoNO = request.getParameter("demographicNo");

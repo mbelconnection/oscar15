@@ -24,7 +24,6 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarBilling.ca.on.data.BillingReviewCodeItem;
 import oscar.oscarBilling.ca.on.data.BillingReviewPercItem;
@@ -84,16 +83,18 @@ public class BillingReviewPrep {
 
 			// calculate fee
 			BigDecimal bigCodeFee = new BigDecimal(fee);
+			// System.out.println((String) vecUnit.get(i) + "big bigCodeFee: " +
+			// bigCodeFee.toString());
 			BigDecimal bigCodeUnit = new BigDecimal((String) vecUnit.get(i));
 			BigDecimal bigCodeAt = new BigDecimal((String) vecAt.get(i));
-
+			// System.out.println("big bigCodeAt: " + (String) vecAt.get(i));
 			BigDecimal bigFee = bigCodeFee.multiply(bigCodeUnit);
-
+			// System.out.println("big fee1: " + bigFee.toString());
 			bigFee = bigFee.multiply(bigCodeAt);
-
+			// System.out.println("big fee2: " + bigFee.toString());
 			bigFee = bigFee.setScale(2, BigDecimal.ROUND_HALF_UP);
 			// bigFee = bigFee.round(new MathContext(2));
-			MiscUtils.getLogger().debug("big end: " + bigFee.toString());
+			System.out.println("big end: " + bigFee.toString());
 
 			codeItem = new BillingReviewCodeItem();
 			codeItem.setCodeName((String) vecCode.get(i));
@@ -168,9 +169,9 @@ public class BillingReviewPrep {
                                 }
                                 
 				BigDecimal bigFee = bigCodeFee.multiply(new BigDecimal(fee));
-
+				// System.out.println("big fee1: " + bigFee.toString());
 				// bigFee = bigFee.multiply(bigCodeAt);
-
+				// System.out.println("big fee2: " + bigFee.toString());
 				bigFee = bigFee.setScale(4, BigDecimal.ROUND_HALF_UP);
 				// bigFee = bigFee.round(new MathContext(2));
 				vecCodeTotal.add(bigFee.toString());
@@ -192,14 +193,13 @@ public class BillingReviewPrep {
 	}
 
 	// ret[0],[1],[2] - Vector vecCode, Vector vecUnit, Vector vecAt
-    public Vector<String>[] getRequestCodeVec(HttpServletRequest requestData,
+	public Vector[] getRequestCodeVec(HttpServletRequest requestData,
 			String paramNameCode, String paramNameUnit, String paramNameAt,
 			int numItem) {
-    	@SuppressWarnings("unchecked")
-		Vector<String>[] ret = new Vector[3];
-		ret[0] = new Vector<String>();
-		ret[1] = new Vector<String>();
-		ret[2] = new Vector<String>();
+		Vector[] ret = new Vector[3];
+		ret[0] = new Vector();
+		ret[1] = new Vector();
+		ret[2] = new Vector();
 
 		for (int i = 0; i < numItem; i++) {
 			if ("".equals(requestData.getParameter(paramNameCode + i)))
@@ -217,13 +217,12 @@ public class BillingReviewPrep {
 	// checkbox
 	// this way for no sequence order
 	// should change to col1, col2, col3 scan and get a sequence order
-	public Vector<String>[] getRequestFormCodeVec(HttpServletRequest requestData,
+	public Vector[] getRequestFormCodeVec(HttpServletRequest requestData,
 			String paramNameCode, String paramNameUnit, String paramNameAt) {
-    	@SuppressWarnings("unchecked")
-		Vector<String>[] ret = new Vector[3];
-		ret[0] = new Vector<String>();
-		ret[1] = new Vector<String>();
-		ret[2] = new Vector<String>();
+		Vector[] ret = new Vector[3];
+		ret[0] = new Vector();
+		ret[1] = new Vector();
+		ret[2] = new Vector();
 
 		for (Enumeration e = requestData.getParameterNames(); e
 				.hasMoreElements();) {
@@ -257,12 +256,6 @@ public class BillingReviewPrep {
 	public List getTeamProviderBillingStr(String provider_no) {
 		JdbcBillingPageUtil dbObj = new JdbcBillingPageUtil();
 		List ret = dbObj.getCurTeamProviderStr(provider_no);
-		return ret;
-	}
-
-	public List getSiteProviderBillingStr(String provider_no) {
-		JdbcBillingPageUtil dbObj = new JdbcBillingPageUtil();
-		List ret = dbObj.getCurSiteProviderStr(provider_no);
 		return ret;
 	}
 

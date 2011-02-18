@@ -5,22 +5,46 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DispatchAction;
 import org.jdom.Element;
+/*
+ *
+ * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved. *
+ * This software is published under the GPL GNU General Public License.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version. *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details. * * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *
+ *
+ * Jason Gallagher
+ *
+ * UserPropertyDAO.java
+ *
+ * Created on December 19, 2007, 4:29 PM
+ *
+ *
+ *
+ */
+
+
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.oscarehr.common.dao.FlowSheetCustomizerDAO;
 import org.oscarehr.common.model.FlowSheetCustomization;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarEncounter.oscarMeasurements.FlowSheetItem;
 import oscar.oscarEncounter.oscarMeasurements.MeasurementFlowSheet;
 import oscar.oscarEncounter.oscarMeasurements.MeasurementTemplateFlowSheetConfig;
@@ -30,7 +54,7 @@ import oscar.oscarEncounter.oscarMeasurements.util.TargetColour;
 import oscar.oscarEncounter.oscarMeasurements.util.TargetCondition;
 
 public class FlowSheetCustomAction extends DispatchAction {
-    private static final Logger logger = MiscUtils.getLogger();
+    private static final Log log2 = LogFactory.getLog(FlowSheetCustomAction.class);
 
     private FlowSheetCustomizerDAO flowSheetCustomizerDAO;
 
@@ -40,7 +64,7 @@ public class FlowSheetCustomAction extends DispatchAction {
 
     @Override
     protected ActionForward unspecified(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        logger.debug("AnnotationAction-unspec");
+        log2.debug("AnnotationAction-unspec");
         //return setup(mapping, form, request, response);
         return null;
     }
@@ -54,7 +78,7 @@ public class FlowSheetCustomAction extends DispatchAction {
 
         if (request.getParameter("measurement") != null) {
 
-            Hashtable<String,String> h = new Hashtable<String,String>();
+            Hashtable h = new Hashtable();
 
             h.put("measurement_type", request.getParameter("measurement"));
             h.put("display_name", request.getParameter("display_name"));
@@ -69,15 +93,14 @@ public class FlowSheetCustomAction extends DispatchAction {
                 }
             }
 
-            @SuppressWarnings("unchecked")
             Enumeration<String> en = request.getParameterNames();
 
-            List<Recommendation> ds = new ArrayList<Recommendation>();
+            List ds = new ArrayList();
             while (en.hasMoreElements()) {
                 String s = en.nextElement();
                 if (s.startsWith("monthrange")) {
                     String extrachar = s.replaceAll("monthrange", "").trim();
-                    logger.debug("EXTRA CAH " + extrachar);
+                    log2.debug("EXTRA CAH " + extrachar);
                     String mRange = request.getParameter("monthrange" + extrachar);
                     String strn = request.getParameter("strength" + extrachar);
                     String dsText = request.getParameter("text" + extrachar);
@@ -104,7 +127,7 @@ public class FlowSheetCustomAction extends DispatchAction {
                 cust.setDemographicNo(demographicNo);
                 cust.setCreateDate(new Date());
         
-                logger.debug("SAVE "+cust);
+                log2.debug("SAVE "+cust);
 
                 flowSheetCustomizerDAO.save(cust);
 
@@ -119,37 +142,39 @@ public class FlowSheetCustomAction extends DispatchAction {
         MeasurementTemplateFlowSheetConfig templateConfig = MeasurementTemplateFlowSheetConfig.getInstance();
 
         String flowsheet = request.getParameter("flowsheet");
+        String measurement = request.getParameter("measurement");
         String demographicNo = request.getParameter("demographic");
         
-        logger.debug("UPDATING FOR demographic "+demographicNo);
+        log2.debug("UPDATING FOR demographic "+demographicNo);
 
         if (request.getParameter("updater") != null) {
-            Hashtable<String,String> h = new Hashtable<String,String>();
+            Hashtable h = new Hashtable();
             h.put("measurement_type", request.getParameter("measurement_type"));
             h.put("display_name", request.getParameter("display_name"));
             h.put("guideline", request.getParameter("guideline"));
             h.put("graphable", request.getParameter("graphable"));
             h.put("value_name", request.getParameter("value_name"));
 
+            //mFlowsheet.updateMeasurementFlowSheetInfo(measurement,h);
             FlowSheetItem item = new FlowSheetItem(h);
             
 
-            @SuppressWarnings("unchecked")
             Enumeration<String> en = request.getParameterNames();
 
-            List<TargetColour> targets = new ArrayList<TargetColour>();
-            List<Recommendation> recommendations = new ArrayList<Recommendation>();
+            ///List ds = new ArrayList();
+            List<TargetColour> targets = new ArrayList();
+            List<Recommendation> recommendations = new ArrayList();
             while (en.hasMoreElements()) {
                 String s = en.nextElement();
                 if (s.startsWith("strength")) {
                     String extrachar = s.replaceAll("strength", "").trim();
-                    logger.debug("EXTRA CAH " + extrachar);
+                    log2.debug("EXTRA CAH " + extrachar);
                     boolean go = true;
                     Recommendation rec = new Recommendation();
                     rec.setStrength(request.getParameter(s));
                     int targetCount = 1;
                     rec.setText(request.getParameter("text"+extrachar));
-                    List<RecommendationCondition> conds = new ArrayList<RecommendationCondition>();
+                    List<RecommendationCondition> conds = new ArrayList();
                     while(go){
                         String type = request.getParameter("type"+extrachar+"c"+targetCount);
                         if (type != null){
@@ -195,12 +220,12 @@ public class FlowSheetCustomAction extends DispatchAction {
 //                    }
                 }else if(s.startsWith("col")){
                     String extrachar = s.replaceAll("col", "").trim();
-                    logger.debug("EXTRA CHA "+extrachar);
+                    log2.debug("EXTRA CHA "+extrachar);
                     boolean go = true;
                     int targetCount = 1;
                     TargetColour tcolour = new TargetColour();
                     tcolour.setIndicationColor(request.getParameter(s));  
-                    List<TargetCondition> conds = new ArrayList<TargetCondition>();
+                    List<TargetCondition> conds = new ArrayList();
                     while(go){
                         String type = request.getParameter("targettype"+extrachar+"c"+targetCount);
                         if (type != null){
@@ -261,7 +286,7 @@ public class FlowSheetCustomAction extends DispatchAction {
             outp.setFormat(Format.getPrettyFormat());
 
             FlowSheetCustomization cust = new FlowSheetCustomization();
-            cust.setAction(FlowSheetCustomization.UPDATE);
+            cust.setAction(cust.UPDATE);
             cust.setPayload(outp.outputString(va));
             cust.setFlowsheet(flowsheet);
             if(demographicNo != null ){
@@ -269,7 +294,7 @@ public class FlowSheetCustomAction extends DispatchAction {
             }
             cust.setMeasurement(item.getItemName());//THIS THE MEASUREMENT TO SET THIS AFTER!
             cust.setProviderNo((String) request.getSession().getAttribute("user"));
-            logger.debug("UPDATE "+cust);
+            log2.debug("UPDATE "+cust);
 
             flowSheetCustomizerDAO.save(cust);
 
@@ -280,21 +305,21 @@ public class FlowSheetCustomAction extends DispatchAction {
     }
 
     public ActionForward delete(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        logger.debug("IN DELETE");
+        log2.debug("IN DELETE");
         String flowsheet = request.getParameter("flowsheet");
         String measurement = request.getParameter("measurement");
         String demographicNo = request.getParameter("demographic");
         
         FlowSheetCustomization cust = new FlowSheetCustomization();
 
-        cust.setAction(FlowSheetCustomization.DELETE);
+        cust.setAction(cust.DELETE);
         cust.setFlowsheet(flowsheet);
         cust.setMeasurement(measurement);
         cust.setProviderNo((String) request.getSession().getAttribute("user"));
         cust.setDemographicNo(demographicNo);
 
         flowSheetCustomizerDAO.save(cust);
-        logger.debug("DELETE "+cust);
+        log2.debug("DELETE "+cust);
         
         request.setAttribute("demographic",demographicNo);
         request.setAttribute("flowsheet", flowsheet);
@@ -302,8 +327,9 @@ public class FlowSheetCustomAction extends DispatchAction {
     }
     
     public ActionForward archiveMod(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        logger.debug("IN MOD");
+        log2.debug("IN MOD");
         String id = request.getParameter("id");
+        String measurement = request.getParameter("measurement");
         
         String flowsheet = request.getParameter("flowsheet");
         String demographicNo = request.getParameter("demographic");
@@ -312,7 +338,7 @@ public class FlowSheetCustomAction extends DispatchAction {
         cust.setArchived(true);
         cust.setArchivedDate(new Date());
         flowSheetCustomizerDAO.save(cust);
-        logger.debug("archiveMod "+cust);
+        log2.debug("archiveMod "+cust);
         
         request.setAttribute("demographic",demographicNo);
         request.setAttribute("flowsheet", flowsheet);

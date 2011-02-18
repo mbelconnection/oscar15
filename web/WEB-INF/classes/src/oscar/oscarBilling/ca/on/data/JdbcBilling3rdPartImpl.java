@@ -8,7 +8,6 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 import oscar.util.UtilDateUtilities;
@@ -159,7 +158,7 @@ public class JdbcBilling3rdPartImpl {
                 }
             }
             catch( SQLException e ) {
-                MiscUtils.getLogger().error("Error", e);
+                e.printStackTrace();
             }
 
             return ret;
@@ -299,8 +298,8 @@ public class JdbcBilling3rdPartImpl {
         public Properties getGstTotal(String invNo) throws SQLException{
             String sql = "SELECT value from billing_on_ext where key_val = 'gst' AND billing_no = '" + invNo + "';";
             _logger.info("getGstTotal(sql= " + sql + ")");
-            
-            ResultSet rs = DBHandler.GetSQL(sql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL(sql);
             Properties props = new Properties();
             if (rs.next()){
                 props.setProperty("gst", rs.getString("value"));

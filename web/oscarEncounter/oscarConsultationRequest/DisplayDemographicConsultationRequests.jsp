@@ -18,11 +18,13 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 -->
+
+<%@ page language="java"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
@@ -155,6 +157,7 @@ function popupOscarConS(vheight,vwidth,varpage) { //open a new popup window
 					</tr>
 					<%  
                                     for (int i = 0; i < theRequests.ids.size(); i++){
+                                        System.out.println("requestID: " + theRequests.ids);
                                     String id      = (String) theRequests.ids.elementAt(i);
                                     String status  = (String) theRequests.status.elementAt(i);
                                     String patient = (String) theRequests.patient.elementAt(i);

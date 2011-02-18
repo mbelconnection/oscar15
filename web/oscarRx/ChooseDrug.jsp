@@ -1,8 +1,12 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page language="java" %>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
 <%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %>
 <%@ page import="java.util.*,oscar.oscarRx.data.*,oscar.oscarRx.pageUtil.*, oscar.OscarProperties" %>
+<% response.setHeader("Cache-Control","no-cache");%>
+
 <logic:notPresent name="RxSessionBean" scope="session">
     <logic:redirect href="error.html" />
 </logic:notPresent>
@@ -49,13 +53,19 @@
 
 
 <%
+//System.out.println("***###IN ChooseDrug.jsp");
 RxSessionBean bean = (RxSessionBean)pageContext.findAttribute("bean");
 RxDrugData.DrugSearch drugSearch = (RxDrugData.DrugSearch) request.getAttribute("drugSearch");//set from searchdrugaction
+//Enumeration emnn=request.getAttributeNames();
+//while(emnn.hasMoreElements())
+//    System.out.println("request attr in chooseDrug.jsp="+emnn.nextElement());
+//System.out.println("drugSearch="+drugSearch);
 String demoNo = (String) request.getAttribute("demoNo");//set from searchdrugaction
 ArrayList brand = drugSearch.getBrand();
 ArrayList gen = drugSearch.getGen();
 ArrayList afhcClass = drugSearch.getAfhcClass();
 int i;
+//System.out.println("bean.getStashIndex() ChooseDrug.jsp="+bean.getStashIndex());
 
 String drugref_route = OscarProperties.getInstance().getProperty("drugref_route");
 if (drugref_route==null) drugref_route = "";
@@ -201,7 +211,7 @@ for (int j=0; j<selRoute.length; j++) {
 				&nbsp;&nbsp;&nbsp;
 				<input type=button class="ControlPushButton"  onclick="javascript:document.forms.RxSearchDrugForm.searchString.value='';document.forms.RxSearchDrugForm.searchString.focus();" value="<bean:message key="ChooseDrug.msgReset"/>" />
 				<%if(request.getParameter("rx2") == null || !request.getParameter("rx2").equals("true")){ %>
-				<input type=button class="ControlPushButton"  onclick="javascript:customWarning();" value="<bean:message key="ChooseDrug.msgCustomDrug"/>" />                            
+                                    <input type=button class="ControlPushButton"  onclick="javascript:customWarning();" value="<bean:message key="ChooseDrug.msgCustomDrug"/>" />
                                 <%}%>
 
 			    </td>
@@ -258,10 +268,12 @@ for (int j=0; j<selRoute.length; j++) {
                                 <div class="ChooseDrugBox">
                                 <table width="100%" border=0>
                                   <%
+                                    //System.out.println("brand.size() in choosedrug.jsp="+brand.size());
                                   for(i=0; i<brand.size(); i++){
                                       bgColor=getColor(grey);                                        
                                       RxDrugData.MinDrug t = (RxDrugData.MinDrug) brand.get(i);
                                        String brandName =  t.name;
+                                       //System.out.println("t.pKey in choosedrug.jsp="+t.pKey);
                                     %>
                                     <tr>                                    
                                       <td bgcolor="<%=bgColor%>">
@@ -302,9 +314,9 @@ for (int j=0; j<selRoute.length; j++) {
                         </script>
                         <div class="LeftMargin">
                            <%if(request.getParameter("rx2") == null || !request.getParameter("rx2").equals("true")){ %>
-                            <a href="javascript:customWarning();">
-                                <bean:message key="ChooseDrug.msgDrugNotFound"/>
-                            </a>
+                               <a href="javascript:customWarning();">
+                                    <bean:message key="ChooseDrug.msgDrugNotFound"/>
+                               </a>
                            <%}%>
                         </div>
                     </td>

@@ -18,18 +18,22 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
---><%@ include file="/casemgmt/taglibs.jsp"%>
+-->
+
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+<%@ include file="/casemgmt/taglibs.jsp"%>
 <%@page import="java.util.*" %>
 <%
 if(session.getValue("user") == null)
     response.sendRedirect("../logout.htm");
   String curUser_no;
   curUser_no = (String) session.getAttribute("user");
-   String tite = (String) request.getAttribute("provider.title");
+   String tite = (String) request.getAttribute("provider.title"); 
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
@@ -39,6 +43,7 @@ if(session.getValue("user") == null)
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <html:base />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title><bean-el:message key="${providertitle}" /></title>
 
 <link rel="stylesheet" type="text/css"
@@ -95,7 +100,7 @@ if(session.getValue("user") == null)
 	<tr>
 		<td class="MainTableLeftColumn">&nbsp;</td>
 		<td class="MainTableRightColumn">
-		<%if( request.getAttribute("status") == null ){%>
+		<%if( request.getAttribute("status") == null ){%> 
                 <bean-el:message key="${providermsgEdit}" />
                 <html:form action="/setProviderStaleDate.do">
 			<input type="hidden" name="method" value="<c:out value="${method}"/>">

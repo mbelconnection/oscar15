@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -31,10 +31,10 @@ if(session.getValue("user") == null) response.sendRedirect("../../../logout.jsp"
 
 <%@ page
 	import="java.math.*, java.util.*, java.io.*, java.sql.*, oscar.*, java.net.*,oscar.MyDateFormat"%>
-
+<%@ include file="../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 
 <%
 String temp;
@@ -46,5 +46,7 @@ for (Enumeration e = request.getParameterNames() ; e.hasMoreElements() ;) {
 	recordAffected = apptMainBean.queryExecuteUpdate(request.getParameter(temp),"delete_ctlpremium");
 }
 
-response.sendRedirect("manageBillingform.jsp"); 
+if (recordAffected != -100) apptMainBean.closePstmtConn();
 %>
+
+<% response.sendRedirect("manageBillingform.jsp"); %>

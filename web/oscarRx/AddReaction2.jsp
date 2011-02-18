@@ -1,6 +1,9 @@
+<%@ page language="java"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
+<% response.setHeader("Cache-Control","no-cache");%>
+
 <!--
 /*
  *
@@ -21,7 +24,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -121,7 +124,7 @@ String allergyId = (String) request.getAttribute("allergyId");
                                                                 <html:option value="4">Unknown</html:option>
 								<html:option value="1">Mild</html:option>
 								<html:option value="2">Moderate</html:option>
-								<html:option value="3">Severe</html:option>
+								<html:option value="3">Severe</html:option>								
 							</html:select></td>
 
 						</tr>

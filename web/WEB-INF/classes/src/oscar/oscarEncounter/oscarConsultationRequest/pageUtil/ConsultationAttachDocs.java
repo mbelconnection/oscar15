@@ -49,8 +49,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.dms.EDoc;
 import oscar.dms.EDocUtil;
 import oscar.oscarDB.DBHandler;
@@ -96,17 +94,17 @@ public class ConsultationAttachDocs {
         else {
             String sql = "SELECT demographicNo FROM consultationRequests WHERE requestId = " + reqId;
             try {
-                                
-                ResultSet rs = DBHandler.GetSQL(sql);
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);                
+                ResultSet rs = db.GetSQL(sql);
                 if( rs.next() ) {
-                    demo = oscar.Misc.getString(rs, "demographicNo");
+                    demo = db.getString(rs,"demographicNo");
                     demoNo = demo;
                 }
                 else
                     demo = "";
                 
             }catch( SQLException e ) {
-              MiscUtils.getLogger().error("Error", e);
+              System.out.println(e.getMessage());
               demo = "";
             }                        
         }

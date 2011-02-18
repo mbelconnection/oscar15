@@ -63,14 +63,15 @@
 			sql += " value='" + valuePara + "', ";
 			sql += " percentage='" + request.getParameter("percentage") + "', ";
 			sql += " billingservice_date='" + request.getParameter("billingservice_date") + "', ";
-                        sql += " termination_date='" + request.getParameter("termination_date") + "' ";
+            sql += " termination_date='" + request.getParameter("termination_date") + "' ";
                         if( billingservice_no == null ) {
                             sql += " where service_code = '" + serviceCode + "'";
                         }
                         else {
                             sql += " where billingservice_no = " + billingservice_no;
                         }
-	
+
+			System.out.println(sql);
 			if(request.getParameter("percentage").length()>1 && request.getParameter("min").length()>1 && request.getParameter("max").length()>1) {
 				String sqlMinMax = "select * from billingperclimit where service_code='" + serviceCode + "'";
 				boolean bAdd = true;
@@ -90,7 +91,7 @@
 					sqlMinMax += request.getParameter("min") + "', max='";
 					sqlMinMax += request.getParameter("max") + "' where service_code='";
 					sqlMinMax += serviceCode + "' and effective_date = '";
-                                        sqlMinMax += request.getParameter("billingservice_date") + "'";                                        
+                                        sqlMinMax += request.getParameter("billingservice_date") + "'";
 					dbObj.updateDBRecord(sqlMinMax);
 				}
 			}
@@ -164,6 +165,7 @@
 		String	sql   = "select * from billingservice where service_code='" + serviceCode + "'  order by billingservice_date desc";
 		ResultSet rs = dbObj.searchDBRecord(sql);
                 String tmp;
+System.out.println(sql);
                 int count = 0;
                 
 		while (rs.next()) {
@@ -185,7 +187,8 @@
                         action = "edit" + serviceCode;
                         action2 = "add" + serviceCode;
 
-		    String sqlMinMax = "select * from billingperclimit where service_code='" + serviceCode + "' and effective_date = '" + prop.getProperty("billingservice_date") + "'";;
+		    String sqlMinMax = "select * from billingperclimit where service_code='" + serviceCode + "'";
+System.out.println(sqlMinMax);
 			ResultSet rs2 = dbObj.searchDBRecord(sqlMinMax);
 			if (rs2.next()) {
                             prop.setProperty("min", rs2.getString("min"));
@@ -209,6 +212,7 @@
       ResultSet rs = dbObj.searchDBRecord(sql);
       
       String tmp;
+System.out.println(sql);
     int count = 0;
 
     while (rs.next()) {
@@ -231,7 +235,7 @@
             action2 = "add" + serviceCode;
 
         String sqlMinMax = "select * from billingperclimit where service_code='" + serviceCode + "' and effective_date = '" + prop.getProperty("billingservice_date") + "'";
-
+System.out.println(sqlMinMax);
             ResultSet rs2 = dbObj.searchDBRecord(sqlMinMax);
             if (rs2.next()) {
                 prop.setProperty("min", rs2.getString("min"));
@@ -248,6 +252,8 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Add/Edit Service Code</title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <LINK REL="StyleSheet" HREF="../web.css" TYPE="text/css">
 <!-- calendar stylesheet -->
 <link rel="stylesheet" type="text/css" media="all"

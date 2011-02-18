@@ -9,15 +9,19 @@
  *     <Quatro Group Software Systems inc.>  <OSCAR Team>
  *******************************************************************************/
 package com.quatro.service.security;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
+
+import com.quatro.service.LookupManager;
+import com.quatro.util.*;
+import org.apache.batik.dom.util.HashTable;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import oscar.OscarProperties;
 
 import com.quatro.dao.security.UserAccessDao;
-import com.quatro.model.security.UserAccessValue;
-import com.quatro.service.LookupManager;
+import com.quatro.model.LookupCodeValue;
+import com.quatro.model.security.*;
 public class UserAccessManager
 {
     private UserAccessDao _dao=null;

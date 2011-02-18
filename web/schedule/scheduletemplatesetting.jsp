@@ -16,7 +16,7 @@
  * (your name here) 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
 */
@@ -30,19 +30,10 @@
 
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
-<%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
 
 <jsp:useBean id="scheduleMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="scheduleMainBeanConn.jspf"%>
-<%
-    if(session.getAttribute("user") == null ) response.sendRedirect("../logout.jsp");
-    String curProvider_no = (String) session.getAttribute("user");
-
-    if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
-    String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
-%>
-
+<%@ include file="scheduleMainBeanConn.jsp"%>
 <%  
   GregorianCalendar now=new GregorianCalendar();
   int year = now.get(Calendar.YEAR);
@@ -51,30 +42,13 @@
   
 %>
 
-<%
-    boolean isSiteAccessPrivacy=false;
-    boolean isTeamAccessPrivacy=false; 
-    String dboperation = "search_provider";
-%>
-<security:oscarSec objectName="_site_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%
-		isSiteAccessPrivacy=true;
-		dboperation = "site_search_provider";
-	%>
-</security:oscarSec>
-<security:oscarSec objectName="_team_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%
-		isTeamAccessPrivacy=true; 
-		dboperation = "team_search_provider";
-	%>
-</security:oscarSec>
-
-
 <html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message
 	key="schedule.scheduletemplatesetting.title" /></title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <link rel="stylesheet" href="../web.css" />
 
 <script language="JavaScript">
@@ -171,19 +145,19 @@ function go() {
 						key="schedule.scheduletemplatesetting.msgNoProvider" /></option>
 					<%
    String param = "doctor";
-   ResultSet rsgroup = scheduleMainBean.queryResults(param, dboperation);
+   ResultSet rsgroup = scheduleMainBean.queryResults(param, "search_provider");
  	 while (rsgroup.next()) { 
 %>
 					<option value="<%=rsgroup.getString("provider_no")%>"><%=rsgroup.getString("last_name")+", "+rsgroup.getString("first_name")%></option>
 					<% } 
    param = "receptionist";
-   rsgroup = scheduleMainBean.queryResults(param, dboperation);
+   rsgroup = scheduleMainBean.queryResults(param, "search_provider");
  	 while (rsgroup.next()) { 
 %>
 					<option value="<%=rsgroup.getString("provider_no")%>"><%=rsgroup.getString("last_name")+", "+rsgroup.getString("first_name")%></option>
 					<% } 
    param = "admin";
-   rsgroup = scheduleMainBean.queryResults(param, dboperation);
+   rsgroup = scheduleMainBean.queryResults(param, "search_provider");
  	 while (rsgroup.next()) { 
 %>
 					<option value="<%=rsgroup.getString("provider_no")%>"><%=rsgroup.getString("last_name")+", "+rsgroup.getString("first_name")%></option>
@@ -201,10 +175,9 @@ function go() {
 			<tr>
 				<td>&nbsp;</td>
 			</tr>
-		<%if (!( isSiteAccessPrivacy  || isTeamAccessPrivacy )) {%>
 			<tr>
 				<td nowrap bgcolor="#CCFFCC">&nbsp; <a HREF="#"
-					ONCLICK="popupPage(440,530,'scheduleholidaysetting.jsp?year=<%=year%>&month=<%=month%>&day=<%=day%>')"
+					ONCLICK="popupPage(380,530,'scheduleholidaysetting.jsp?year=<%=year%>&month=<%=month%>&day=<%=day%>')"
 					TITLE='<bean:message key="schedule.scheduletemplatesetting.msgHolidaySettingTip"/>;return true'><bean:message
 					key="schedule.scheduletemplatesetting.btnHolidaySetting" /></a></td>
 			</tr>
@@ -212,14 +185,10 @@ function go() {
 				<td>&nbsp;</td>
 			</tr>
 			<tr>
-
 				<td nowrap bgcolor="#CCFFFF">&nbsp; <a HREF="#"
-					ONCLICK="popupPage(600,700,'scheduletemplatecodesetting.jsp')"><bean:message
+					ONCLICK="popupPage(380,530,'scheduletemplatecodesetting.jsp')"><bean:message
 					key="schedule.scheduletemplatesetting.btnTemplateCodeSetting" /></a></td>
-					
-
 			</tr>
-		<%} %>				
 			<tr>
 				<td nowrap bgcolor="#CCFFFF">&nbsp; <a HREF="#" onClick="go()"><bean:message
 					key="schedule.scheduletemplatesetting.btnTemplateSetting" /></a>&nbsp;<bean:message
@@ -229,19 +198,19 @@ function go() {
 						key="schedule.scheduletemplatesetting.msgPublic" /></option>
 					<%
    param = "doctor";
-   rsgroup = scheduleMainBean.queryResults(param, dboperation);
+   rsgroup = scheduleMainBean.queryResults(param, "search_provider");
  	 while (rsgroup.next()) { 
 %>
 					<option value="<%=rsgroup.getString("provider_no")%>"><%=rsgroup.getString("last_name")+", "+rsgroup.getString("first_name")%></option>
 					<% } 
    param = "receptionist";
-   rsgroup = scheduleMainBean.queryResults(param, dboperation);
+   rsgroup = scheduleMainBean.queryResults(param, "search_provider");
  	 while (rsgroup.next()) { 
 %>
 					<option value="<%=rsgroup.getString("provider_no")%>"><%=rsgroup.getString("last_name")+", "+rsgroup.getString("first_name")%></option>
 					<% } 
    param = "admin";
-   rsgroup = scheduleMainBean.queryResults(param, dboperation);
+   rsgroup = scheduleMainBean.queryResults(param, "search_provider");
  	 while (rsgroup.next()) { 
 %>
 					<option value="<%=rsgroup.getString("provider_no")%>"><%=rsgroup.getString("last_name")+", "+rsgroup.getString("first_name")%></option>

@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -37,7 +37,7 @@ user_no = (String) session.getAttribute("user");
 	scope="session" />
 <jsp:useBean id="SxmlMisc" class="oscar.SxmlMisc" scope="session" />
 
-<%@ include file="dbINR.jspf"%>
+<%@ include file="dbINR.jsp"%>
 <% 	GregorianCalendar now=new GregorianCalendar();
   int curYear = now.get(Calendar.YEAR);
   int curMonth = (now.get(Calendar.MONTH)+1);
@@ -54,6 +54,7 @@ user_no = (String) session.getAttribute("user");
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>INR Billing</title>
+<meta http-equiv="Content-Type" content="text/html;">
 <script language="JavaScript">
 <!--
 function openBrWindow(theURL,winName,features) {
@@ -145,7 +146,7 @@ providerArray.add(providerArr);
 			<% 
 
  }
-// 
+// apptMainBean.closePstmtConn(); 
   %>
 		</select> </font></b></td>
 		<td width="254"><font color="#003366"><b><font
@@ -326,6 +327,7 @@ proName1 = proFirst + " " + proLast;
    </td>
 <%
 }
+apptMainBean.closePstmtConn();
 %>
 </table> 
     </td>

@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -26,22 +26,23 @@ package oscar.comm.client;
 import java.io.FileInputStream;
 import java.util.Properties;
 
-import org.oscarehr.util.MiscUtils;
+import oscar.oscarDB.DBHandler;
 
 public class ScheduledClient {
 	Properties param = new Properties();
 
     public static void main(String[] args) throws Exception {
-        MiscUtils.getLogger().debug("Running oscarCommClient...");
+        System.out.println("Running oscarCommClient...");
 
         if(args.length != 1) {
-			MiscUtils.getLogger().debug("Usage: oscarCommClient pathOfPropertiesFile");
-
-
-
+			System.out.println("Usage: oscarCommClient pathOfPropertiesFile");
+			//System.out.println("Usage: oscarCommClient databaseURL databaseName");
+			//System.out.println("    databaseURL:   Url to local MySQL database (e.g.: localhost:3306/)");
+			//System.out.println("    databaseName:  Name of the local MySQL database (e.g.: oscar_sfhc");
         }  else  {
-            MiscUtils.getLogger().debug("    propertiesFile:  " + args[0]);
-
+            System.out.println("    propertiesFile:  " + args[0]);
+            //System.out.println("    databaseName: " + args[1]);
+	
 			ScheduledClient aStudy = new ScheduledClient();
 			//initial
 			aStudy.init(args[0]);

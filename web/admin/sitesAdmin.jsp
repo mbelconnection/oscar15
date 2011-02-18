@@ -21,7 +21,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -86,10 +86,7 @@
      <display-el:column property="city" title="City" />
      <display-el:column property="province" title="Province" />
      <display-el:column property="postal" title="Postal Code" />
-   <% if (org.oscarehr.common.IsPropertiesOn.isProviderFormalizeEnable()) { %>  
-     <display-el:column property="providerIdFrom" title="ProviderID From" />
-     <display-el:column property="providerIdTo" title="ProviderID To" />  
-   <% } %>   
+          
   </display-el:table>
 		
 

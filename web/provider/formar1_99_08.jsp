@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -39,6 +39,8 @@
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>ANTENATAL RECORD</title>
 <link rel="stylesheet" href="antenatalrecord.css">
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 <script language="JavaScript">
 <!--		
 
@@ -129,7 +131,7 @@ function checkTypeIn(obj) {
 	  newbornCare = newbornCare==null?"":newbornCare;
       riskFactors = SxmlMisc.getXmlContent(content,"<xml_rfi>","</xml_rfi>");
 	  riskFactors = riskFactors==null?"":riskFactors;
-
+System.out.println("formar1:"+riskFactors);
       finalEDB = SxmlMisc.getXmlContent(content,"<xml_fedb>","</xml_fedb>");
 	  finalEDB = finalEDB==null?"":finalEDB;
       g = SxmlMisc.getXmlContent(content,"<xml_gra>","</xml_gra>");

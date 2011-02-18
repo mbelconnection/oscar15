@@ -1,4 +1,5 @@
-<%--  
+<%--
+<!--  
 /*
  * 
  * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved. *
@@ -18,9 +19,72 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
+-->
+ <%
+  if(session.getValue("user") == null) response.sendRedirect("../../logout.jsp");
+%>
+<%@ page language="java" %>
+<%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
+<%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
+<%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
+<%@ page import="java.lang.*,oscar.oscarEncounter.oscarMeasurements.pageUtil.*"%>
+
+<%
+    response.setHeader("Cache-Control","no-cache"); //HTTP 1.1
+    response.setHeader("Pragma","no-cache"); //HTTP 1.0
+    response.setDateHeader ("Expires", 0); //prevents caching at the proxy 
+
+%>
+
+<html:html locale="true">
+<head>
+<script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<title>
+</title>
+<html:base/>
+</head>
+
+<script language="javascript">
+
+function write2Parent(text){
+        
+    opener.document.encForm.enTextarea.value = opener.document.encForm.enTextarea.value + "\n\n" + text;
+    opener.setTimeout("document.encForm.enTextarea.scrollTop=2147483647", 0);  // setTimeout is needed to allow browser to realize that text field has been updated 
+    opener.document.encForm.enTextarea.focus();
+    window.close();
+ }
+
+
+</script>
+
+<link rel="stylesheet" type="text/css" href="../styles.css">
+<body topmargin="0" leftmargin="0" vlink="#0000FF">
+<html:errors/>
+<table>
+    <tr>
+        <td> Processing... </td>
+        <script>
+            var text = "<bean:write name="templateValue"/>";
+            text = text.replace(/\\u000A/g, "\u000A");
+            text = text.replace(/\\u003E/g, "\u003E");
+            text = text.replace(/\\u003C/g, "\u003C");
+            text = text.replace(/\\u005C/g, "\u005C");
+            text = text.replace(/\\u0022/g, "\u0022");
+            text = text.replace(/\\u0027/g, "\u0027");
+            write2Parent(text);
+        </script>        
+    </tr>
+</table>
+
+
+
+
+</body>
+</html:html>
+
 --%>
 <%=request.getAttribute("templateValue")%>

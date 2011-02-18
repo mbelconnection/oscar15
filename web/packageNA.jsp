@@ -18,11 +18,13 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 -->
+
+<%@ page language="java" contentType="text/html"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
@@ -31,6 +33,7 @@
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <html:base />
 <title><bean:message key="packageNA.title" /></title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 <% String pkg = request.getParameter("pkg")==null?"":request.getParameter("pkg"); 
    String pkgname = pkg.compareTo("oscarRx")==0?"packageNA.msg.oscarRx":pkg.compareTo("oscarComm")==0?"packageNA.msg.oscarComm":"packageNA.msg.oscarComm"; %>

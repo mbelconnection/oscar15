@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -32,6 +32,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import oscar.billing.cad.model.CadAtividadesSaude;
 import oscar.oscarDB.DBHandler;
@@ -43,6 +44,9 @@ import oscar.util.DAO;
  * @author  lilian
  */
 public class CadAtividadeSaudeDAO extends DAO {
+    public CadAtividadeSaudeDAO(Properties pvar) throws SQLException {
+        super(pvar);
+    }
 
     public List list(String codigo, String desc) throws SQLException {
         List beans = null;
@@ -64,19 +68,22 @@ public class CadAtividadeSaudeDAO extends DAO {
 
         sql = sql + " order by ds_atividade";
 
-        
+        DBHandler db = getDb();
 
-        ResultSet rs = DBHandler.GetSQL(sql);
+        try {
+            ResultSet rs = db.GetSQL(sql);
 
-        if (rs != null) {
-            beans = new ArrayList();
+            if (rs != null) {
+                beans = new ArrayList();
 
-            while (rs.next()) {
-                CadAtividadesSaude bean = new CadAtividadesSaude();
-                bean.setCoAtividade(rs.getLong("co_atividade"));
-                bean.setDsAtividade(oscar.Misc.getString(rs, "ds_atividade"));
-                beans.add(bean);
+                while (rs.next()) {
+                    CadAtividadesSaude bean = new CadAtividadesSaude();
+                    bean.setCoAtividade(rs.getLong("co_atividade"));
+                    bean.setDsAtividade(db.getString(rs,"ds_atividade"));
+                    beans.add(bean);
+                }
             }
+        } finally {
         }
 
         return beans;

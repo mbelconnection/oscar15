@@ -17,7 +17,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -26,8 +26,6 @@ package oscar.oscarEncounter.oscarConsultationRequest.pageUtil;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarLab.ca.on.CommonLabResultData;
@@ -99,28 +97,28 @@ public class ConsultationAttachLabs {
     
     public static void detachLabConsult(String LabNo, String consultId) {
         String sql = "UPDATE consultdocs SET deleted = 'Y' WHERE requestId = " + consultId + " AND document_no = " + LabNo + " AND doctype = 'L'";                     
-        MiscUtils.getLogger().debug("detachDoc: " + sql);
+        System.out.println("detachDoc: " + sql);
         
         try {
-            
-            DBHandler.RunSQL(sql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            db.RunSQL(sql);
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().debug("Error detaching lab: " + e.getMessage());
+            System.out.println("Error detaching lab: " + e.getMessage());
         }
         
     }
     
     public static void attachLabConsult(String providerNo, String LabNo, String consultId) {
         String sql = "INSERT INTO consultdocs (requestId,document_no,doctype,attach_date,provider_no) VALUES(" + consultId + "," + LabNo + ",'L',now(),'" + providerNo + "')";
-        MiscUtils.getLogger().debug("attachLab: " + sql);
+        System.out.println("attachLab: " + sql);
         
         try {
-            
-            DBHandler.RunSQL(sql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            db.RunSQL(sql);
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().debug("Error attaching lab: " + e.getMessage());
+            System.out.println("Error attaching lab: " + e.getMessage());
         }
         
     }

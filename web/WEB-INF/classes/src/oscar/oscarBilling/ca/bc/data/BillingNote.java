@@ -10,8 +10,6 @@ package oscar.oscarBilling.ca.bc.data;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.Misc;
 import oscar.oscarDB.DBHandler;
 import oscar.util.UtilMisc;
@@ -40,14 +38,14 @@ public class BillingNote {
       boolean hasNote = false;
       String notesql = "select * from billingnote where billingmaster_no = '"+billingmaster_no+"' and note_type = '2'";
       try{
-         
-         ResultSet rs = DBHandler.GetSQL(notesql);
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+         ResultSet rs = db.GetSQL(notesql);
          if(rs.next()){
             hasNote = true;
          }
          rs.close();
       }catch (Exception e){
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace();
       }
       return hasNote;
    }
@@ -64,23 +62,23 @@ public void addNote(String billingmaster_no,String provider_no,String note) thro
                         "'"+UtilMisc.mysqlEscape(note)+"'," +
                         "'2')";
 
-      
-      DBHandler.RunSQL(notesql);
+      DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+                db.RunSQL(notesql);
    }
 
 public void addNoteFromBillingNo(String billingNo, String provider,String note) throws SQLException{
    note = oscar.Misc.removeNewLine(note);
    String sql = "select billingmaster_no from billingmaster where billing_no = '"+billingNo+"' ";
       try{
-         
-         ResultSet rs = DBHandler.GetSQL(sql);
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+         ResultSet rs = db.GetSQL(sql);
          while(rs.next()){
             String billingMasterNo =  rs.getString("billingmaster_no");
             addNote(billingMasterNo,provider,note);
          }
          rs.close();
       }catch (Exception e){
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace();
       }
 
 }
@@ -94,8 +92,8 @@ public void addNoteFromBillingNo(String billingNo, String provider,String note) 
       Note n = new Note();
       String notesql = "select * from billingnote where billingmaster_no = '"+billingmaster_no+"' and note_type = '2' order by createdate desc limit 1";
       try{
-      
-      ResultSet rs = DBHandler.GetSQL(notesql);
+      DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+      ResultSet rs = db.GetSQL(notesql);
       if(rs.next()){
          n.setBillingnote_no(rs.getString("billingnote_no"));
          n.setBillingmaster_no(rs.getString("billingmaster_no"));
@@ -105,7 +103,7 @@ public void addNoteFromBillingNo(String billingNo, String provider,String note) 
       }
       rs.close();
       }catch (Exception e){
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace();
       }
       return n;
    }
@@ -115,14 +113,14 @@ public void addNoteFromBillingNo(String billingNo, String provider,String note) 
       String retStr = "";
       String notesql = "select note from billingnote where billingmaster_no = '"+billingmaster_no+"' and note_type = '2' order by createdate desc limit 1 ";
       try{
-         
-         ResultSet rs = DBHandler.GetSQL(notesql);
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+         ResultSet rs = db.GetSQL(notesql);
          if(rs.next()){
             retStr = rs.getString("note");
          }
          rs.close();
          }catch (Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
          }
       return retStr;
    }
@@ -139,12 +137,13 @@ public void addNoteFromBillingNo(String billingNo, String provider,String note) 
    Seventh - NOTE-DATA-LINE (400)
    */
    public static String getN01(String dataCenterNum,String dataCenterSeqNum,String payeeNum,String practitionerNum,String noteType,String note){
-      String s = "N01" + Misc.forwardZero(dataCenterNum,5)
-                       + Misc.forwardZero(dataCenterSeqNum, 7)
-                       + Misc.forwardZero(payeeNum, 5)
-                       + Misc.forwardZero(practitionerNum, 5)
-                       + Misc.forwardSpace(noteType,1)
-                       + Misc.forwardSpace(note,400);
+      Misc misc = new Misc();
+      String s = "N01" + misc.forwardZero(dataCenterNum,5)
+                       + misc.forwardZero(dataCenterSeqNum, 7)
+                       + misc.forwardZero(payeeNum, 5)
+                       + misc.forwardZero(practitionerNum, 5)
+                       + misc.forwardSpace(noteType,1)
+                       + misc.forwardSpace(note,400);
       return s;
    }
 

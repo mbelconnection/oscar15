@@ -18,19 +18,21 @@
   *
   * This software was written for the
   * Department of Family Medicine
-  * McMaster University
+  * McMaster Unviersity
   * Hamilton
   * Ontario, Canada
   */
 -->
 <%@page import="java.util.*, java.sql.*, oscar.*, java.net.*"%>
-
+<%@include file="../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
-	scope="session" /><%@include file="dbBilling.jspf"%>
+	scope="session" /><%@include file="dbBilling.jsp"%>
 <%
 
+System.err.print("THIS IS IN DIG NEW\n");
   String search = "", search2 = "";
   search = request.getParameter("search");
+  System.err.print("THE SEARCH:"+search);
   if (search.compareTo("") == 0) {
     search = "search_diagnostic_new_code";
   }
@@ -85,6 +87,7 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Diagnostic Code Search</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-2">
 <script LANGUAGE="JavaScript">
 
 

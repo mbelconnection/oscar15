@@ -9,8 +9,6 @@ package oscar.oscarLab.ca.bc.PathNet;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 /**
@@ -29,7 +27,8 @@ public class PathNetInfo {
       String select_pending = "SELECT count(hl7_pid.pid_id) as `count` " +
                               "FROM hl7_pid left join hl7_link on hl7_pid.pid_id=hl7_link.pid_id " +
                               "WHERE hl7_link.status='P' OR hl7_link.status is null";      
-      ResultSet rsLab = DBHandler.GetSQL(select_pending);
+      DBHandler dbLab = new DBHandler(DBHandler.OSCAR_DATA);
+      ResultSet rsLab = dbLab.GetSQL(select_pending);
       if(rsLab.next()){
          pendingLabs = rsLab.getInt("count");
       }
@@ -44,7 +43,8 @@ public class PathNetInfo {
                               "AND demographic.demographic_no=hl7_link.demographic_no " +
                               "AND (hl7_link.status='N' OR hl7_link.status='A')";
       int notSigned = 0;
-      ResultSet rsLab = DBHandler.GetSQL(select_not_signed);
+      DBHandler dbLab = new DBHandler(DBHandler.OSCAR_DATA);
+      ResultSet rsLab = dbLab.GetSQL(select_not_signed);
       if(rsLab.next()){
          notSigned = rsLab.getInt("count");
       }
@@ -59,7 +59,7 @@ public class PathNetInfo {
          String labTab = "<font size=\"2\" " + ((getNotSignedLabCount(providerNo)>0)? "color='red'" : "") + ">" + labText + "</font>";
          retval = labTab;
       }catch(Exception e){
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace();
          retval = "Lab";
       }
       return retval;

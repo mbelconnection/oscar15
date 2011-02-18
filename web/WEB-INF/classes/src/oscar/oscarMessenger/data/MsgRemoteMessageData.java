@@ -17,16 +17,14 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 package oscar.oscarMessenger.data;
 
-import org.apache.log4j.Logger;
 import org.oscarehr.util.DbConnectionFilter;
 import org.oscarehr.util.LoggedInInfo;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.comm.client.SendMessageClient;
 import oscar.oscarDB.DBHandler;
@@ -41,8 +39,6 @@ import oscar.oscarDB.DBHandler;
        * @version 1.0
        */
 public  class MsgRemoteMessageData extends Thread{
-    private static Logger logger=MiscUtils.getLogger(); 
-
          String messageId;
          String XMLMessage;
          String currentLocation;
@@ -62,6 +58,7 @@ public  class MsgRemoteMessageData extends Thread{
             this.messageId = new String(messageId);
             XMLMessage = new String();
             currentLocation = new String(CurrLoco);
+            System.err.println("instantiating with message id of "+this.messageId );
          }
     
 
@@ -77,7 +74,7 @@ public  class MsgRemoteMessageData extends Thread{
          * @return
          */
          String getXMLMessage(String messageID){
-            StringBuilder XMLstring;
+            StringBuffer XMLstring;
             message    = new String();
             subject    = new String();
             sentby     = new String();
@@ -92,14 +89,14 @@ public  class MsgRemoteMessageData extends Thread{
 
 
 
-            XMLstring = new StringBuilder("<?xml version=\"1.0\" ?>\n <message>\n ");
+            XMLstring = new StringBuffer("<?xml version=\"1.0\" ?>\n <message>\n ");
 
             try{
-               
+               DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                java.sql.ResultSet rs_message, rs_whotoo;
                String sql_message = new String("Select * from messagetbl where messageid = '"+messageID+"'");
                String sql_whotoo = new String("Select * from messagelisttbl where message = '"+messageID+"'");
-               rs_message = DBHandler.GetSQL(sql_message);
+               rs_message = db.GetSQL(sql_message);
 
                if (rs_message.next()){
                   message   = replaceIllegalCharacters(rs_message.getString("themessage"));
@@ -112,26 +109,34 @@ public  class MsgRemoteMessageData extends Thread{
                   theAttach = (rs_message.getString("attachment"));
                   //theaction = (rs_message.getString("actionstatus"));
                }
+               // System.out.println("THE ATTACHMENT IS >"+theAttach+"<");
 
                if (theAttach != null && !theAttach.equals("null")){
                int getit = theAttach.indexOf('\n');
-                if (getit > 6){
-                    theAttach = theAttach.substring(getit+1);
-                }
+               System.err.println("the ints val" +getit);
+                    if (getit > 6){
+                        theAttach = theAttach.substring(getit+1);
+                    }
                }
 
+               // System.out.println("THE ATTACHMENT NOW IS >"+theAttach+"<");
 
-               rs_whotoo = DBHandler.GetSQL(sql_whotoo);
+               //System.err.println("the doc = "+oscar.oscarMessenger.util.Msgxml.toXML(oscar.oscarMessenger.util.Msgxml.parseXML(theAttach)));
+
+               rs_whotoo = db.GetSQL(sql_whotoo);
 
                while (rs_whotoo.next()){
                   providerNo.add(rs_whotoo.getString("provider_no"));
                   locationID.add(rs_whotoo.getString("remoteLocation"));
                }
+               // System.out.println(" how did i doo "+providerNo.size()+"\n");
 
                for ( int i = 0; i < providerNo.size(); i++){
 
                      String locoId = (String) locationID.elementAt(i);
+                     System.err.println("locoID "+locoId);
                   if ( locoId == null ){
+                     //System.err.println("switching to current location of "+currentLocation);
                      locoId = currentLocation;
                   }
 
@@ -153,17 +158,18 @@ public  class MsgRemoteMessageData extends Thread{
 
 
 
+               System.err.println(XMLstring.toString());
                java.io.File file = new java.io.File("/home/torenvn/mes.xml");
                try {
                java.io.FileWriter fileWriter = new java.io.FileWriter(file);
                fileWriter.write(XMLstring.toString());
                fileWriter.close();
                }
-               catch(java.io.IOException io){ MiscUtils.getLogger().error("Error", io); }
+               catch(java.io.IOException io){ io.printStackTrace(System.out); }
 
                rs_message.close();
                rs_whotoo.close();
-            }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+            }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
 
             return XMLstring.toString();
          }
@@ -176,17 +182,29 @@ public  class MsgRemoteMessageData extends Thread{
 
     		try {
                 int i = 0;
+                System.err.println("Create MEssage with ID of "+messageId);
+                System.err.println("LOcation = "+currentLocation);
                 XMLMessage = getXMLMessage(messageId);
                 SendMessageClient sendMessageClient = new SendMessageClient();
                 boolean how = false;
                 try{
                 int llll = 0;
+                   //Document docs;
+                   //docs = oscar.oscarMessenger.util.xml.parseXML(XMLMessage);
+                   //System.err.println("\n\ndocument "+docs+"\n\n");
+                   //System.err.println("\n"+oscar.oscarMessenger.util.xml.toXML(docs)+"\n");
+
+                   //System.err.println("\nGOnna send this\n"+XMLMessage+"\n");
+                   System.err.println("MEssage Sent");
                    how = sendMessageClient.sendMessage("localhost:3306/","oscar_spc",XMLMessage);
                 }catch(Exception e){
                     defunctMessage();
-                    logger.error("I be messin up", e);
+                    System.err.println("I be messin up");
+                    e.printStackTrace();
                 }
+                System.err.println("Back from sending message");
 
+                System.err.println("How i did = " + how);
                 if (!how){
                     defunctMessage();
                 }
@@ -202,7 +220,7 @@ public  class MsgRemoteMessageData extends Thread{
         private void defunctMessage(){
         //sendMessage2(String message, String subject,String userName,String sentToWho,String userNo,java.util.ArrayList providers )
         java.util.ArrayList aList = new java.util.ArrayList();
-        StringBuilder stringBuffer = new StringBuilder("This message could not be delivered to remote Providers. \nPlease try again\n\n");
+        StringBuffer stringBuffer = new StringBuffer("This message could not be delivered to remote Providers. \nPlease try again\n\n");
         MsgProviderData providerData = new MsgProviderData();
         providerData.locationId = currentLocation;
         providerData.providerNo = sentbyNo;

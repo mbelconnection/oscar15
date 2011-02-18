@@ -35,7 +35,7 @@
 
  * Department of Family Medicine
 
- * McMaster University
+ * McMaster Unviersity
 
  * Hamilton
 
@@ -52,13 +52,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class DateUtils {
 
 
-  private static Logger cat = MiscUtils.getLogger();
+  private static Log cat = LogFactory.getLog(DateUtils.class);
 
   private static SimpleDateFormat sdf;
 
@@ -184,6 +184,140 @@ public class DateUtils {
     return DateFormat.getDateTimeInstance().format(date);
 
   }
+//##########################################################################
+
+  /** Compara uma data com a data atual.
+   * @param pDate Data que ser� comparada com a data atual.
+
+   * @param format Formato da data. Ex: dd/MM/yyyy, yyyy-MM-dd
+
+   * @return  1 - se a data for maior que a data atual.
+
+   * -1 - se a data for menor que a data atual.
+
+   * 0 - se a data for igual que a data atual.
+
+   * -2 - se ocorrer algum erro.
+
+   */
+
+  public static String compareDate(String pDate, String format) {
+
+    DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM);
+
+    try {
+
+      Date date = df.parse(pDate);
+
+      cat.debug("[DateUtils] - compareDate: date = " + date.toString());
+
+      String sNow = DateFormat.getDateInstance(DateFormat.MEDIUM).format(new
+          Date());
+
+      Date now = df.parse(sNow);
+
+      cat.debug("[DateUtils] - compareDate: now = " + now.toString());
+
+      if (date.after(now)) {
+
+        cat.debug("[DateUtils] - compareDate: 1");
+
+        return "1";
+
+      }
+      else if (date.before(now)) {
+
+        cat.debug("[DateUtils] - compareDate: -1");
+
+        return "-1";
+
+      }
+      else {
+
+        cat.debug("[DateUtils] - compareDate: 0");
+
+        return "0";
+
+      }
+
+    }
+    catch (ParseException e) {
+
+      cat.error("[DateUtils] - compareDate: -2", e);
+
+      return "-2";
+
+    }
+
+  }
+//##########################################################################
+
+  /** Compara uma data com outra.
+   * @param pDate Data que ser� comparada com pDate2.
+
+   * * @param pDate2 Data que ser� comparada com pDate.
+
+   * @param format Formato da data. Ex: dd/MM/yyyy, yyyy-MM-dd
+
+   * @return  1 - se a data for maior que a data atual.
+
+   * -1 - se a data for menor que a data atual.
+
+   * 0 - se a data for igual que a data atual.
+
+   * -2 - se ocorrer algum erro.
+
+   */
+
+  public static String compareDate(String pDate, String pDate2, String format) {
+
+    SimpleDateFormat df = new SimpleDateFormat(format);
+
+    try {
+
+      Date date = df.parse(pDate);
+
+      cat.debug("[DateUtils] - compareDate: date = " + date.toString());
+
+      //String sNow = df.format(df.parse(pDate2));
+
+      Date now = df.parse(pDate2);
+
+      cat.debug("[DateUtils] - compareDate: now = " + now.toString());
+
+      if (date.after(now)) {
+
+        cat.debug("[DateUtils] - compareDate: 1");
+
+        return "1";
+
+      }
+      else if (date.before(now)) {
+
+        cat.debug("[DateUtils] - compareDate: -1");
+
+        return "-1";
+
+      }
+      else {
+
+        cat.debug("[DateUtils] - compareDate: 0");
+
+        return "0";
+
+      }
+
+    }
+    catch (ParseException e) {
+
+      cat.error("[DateUtils] - compareDate: -2", e);
+
+      return "-2";
+
+    }
+
+  }
+//##########################################################################
 
   public static String formatDate(String date, String format,
                                   String formatAtual) 
@@ -271,6 +405,8 @@ public class DateUtils {
   public String NextDay(int day, int month, int year) {
 
     boolean leapyear;
+
+    System.out.println("Entered Date: " + year + "-" + month + "-" + day);
 
     switch (month) {
 
@@ -392,15 +528,19 @@ public class DateUtils {
 
     String nextDay = year + "-" + month + "-" + day;
 
+    System.out.println("next day: " + nextDay);
+
     return nextDay;
 
   }
 //##########################################################################
   public String NextDay(int day, int month, int year, int numDays) {
 
-   
+    boolean leapyear;
 
     int modValue = 28;
+
+    System.out.println("Entered Date: " + year + "-" + month + "-" + day);
 
     while (numDays > 0) {
 
@@ -551,9 +691,11 @@ public class DateUtils {
 
       numDays = numDays - curNumDays;
 
+      System.out.println("curNumDays: " + curNumDays + " ; numDays: " + numDays);
     }
 
     String nextDay = year + "-" + month + "-" + day;
+    System.out.println("next few day: " + nextDay);
     return nextDay;
 
   }
@@ -603,13 +745,13 @@ public static int compareDateForIntakeB(String currDate, String enteredDate)
   		java.util.Date currDateObj = null;
   		java.util.Date enteredDateObj = null;
       	
-      	if(currDateParams != null && currDateParams[0]!= null && currDateParams[1]!= null && currDateParams[2]!= null)
+      	if(currDateParams != null)
       	{
       		currDateObj = UtilDateUtilities.calcDate(
       			       currDateParams[0], currDateParams[1], currDateParams[2]);
       	}
       
-      	if(enteredDateParams != null && enteredDateParams[0] != null && enteredDateParams[1] != null && enteredDateParams[2] !=null)
+      	if(enteredDateParams != null)
       	{
       		enteredDateObj = UtilDateUtilities.calcDate(
       			enteredDateParams[0], enteredDateParams[1], enteredDateParams[2]);

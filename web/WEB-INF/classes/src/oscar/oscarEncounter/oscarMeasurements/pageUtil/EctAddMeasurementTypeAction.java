@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -33,6 +33,7 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
@@ -41,7 +42,6 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.apache.struts.util.MessageResources;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarEncounter.oscarMeasurements.data.MeasurementTypes;
@@ -54,14 +54,14 @@ public class EctAddMeasurementTypeAction extends Action {
     {
         EctAddMeasurementTypeForm frm = (EctAddMeasurementTypeForm) form;
 
-       
+        HttpSession session = request.getSession();
         request.getSession().setAttribute("EctAddMeasurementTypeForm", frm);
         
         MsgStringQuote str = new MsgStringQuote();     
         List messages = new LinkedList();
         
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 
             String type = frm.getType();
             String typeUp = type.toUpperCase();
@@ -78,13 +78,13 @@ public class EctAddMeasurementTypeAction extends Action {
                 +"(type, typeDescription, typeDisplayName, measuringInstruction, validation)"
                 +" VALUES ('"+str.q(typeUp)+"','"+str.q(typeDesc)+"','"+str.q(typeDisplayName)+"','"+str.q(measuringInstrc)+"','"
                 + str.q(validation)+"')";
-            MiscUtils.getLogger().debug(" sql statement "+sql);
-            DBHandler.RunSQL(sql);
+            System.out.println(" sql statement "+sql);
+            db.RunSQL(sql);
                 
         }
         catch(SQLException e)
         {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }            
         
         MessageResources mr = getResources(request);
@@ -105,9 +105,9 @@ public class EctAddMeasurementTypeAction extends Action {
         String regExp = validate.getRegCharacterExp();
         boolean isValid = true;
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT type FROM measurementType WHERE type='" + type +"'";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             rs.next();
             if(rs.getRow()>0){
                 errors.add(type,
@@ -118,7 +118,7 @@ public class EctAddMeasurementTypeAction extends Action {
         }
         catch(SQLException e)
         {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }     
         
         String errorField = "The type " + type;

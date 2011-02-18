@@ -1,6 +1,4 @@
 
-<%@page import="java.util.Date"%>
-<%@page import="oscar.util.DateUtils"%>
 <%@page import="org.oscarehr.common.model.CdsClientForm"%>
 <%@page import="org.oscarehr.PMmodule.web.CdsForm4Action"%>
 <%@page import="org.oscarehr.util.WebUtils"%>
@@ -15,35 +13,16 @@
 	Integer admissionId=Integer.valueOf(parameters.get("admissionId")[0]);	
 	parameters.remove("admissionId");
 
+	Integer clientAge=Integer.valueOf(parameters.get("age")[0]);	
+	parameters.remove("age");
+
 	Integer clientId=Integer.valueOf(parameters.get("clientId")[0]);	
 	parameters.remove("clientId");
-
-	Date initialContactDate=null;
-	try
-	{
-		initialContactDate=DateUtils.toDate(parameters.get("initialContactDate")[0]);
-	}
-	catch(Exception e)
-	{
-		// do nothing, no date specified
-	}
-	parameters.remove("initialContactDate");
-
-	Date assessmentDate=null;
-	try
-	{
-		assessmentDate=DateUtils.toDate(parameters.get("assessmentDate")[0]);
-	}
-	catch(Exception e)
-	{
-		// do nothing, no date specified
-	}
-	parameters.remove("assessmentDate");
 
 	boolean signed=WebUtils.isChecked(request, "signed");	
 	parameters.remove("signed");
 
-	CdsClientForm cdsClientForm=CdsForm4Action.createCdsClientForm(admissionId, clientId, initialContactDate, assessmentDate, signed);
+	CdsClientForm cdsClientForm=CdsForm4Action.createCdsClientForm(admissionId, clientAge, clientId, signed);
 	
 	for (Map.Entry<String, String[]> entry : parameters.entrySet())
 	{

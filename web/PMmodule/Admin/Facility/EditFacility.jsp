@@ -51,11 +51,6 @@
 			<td><html:checkbox property="facility.hic" /></td>
 		</tr>
 		<tr class="b">
-			<td width="20%">OCAN Service Org Number: *</td>
-			<td><html:text property="facility.ocanServiceOrgNumber" size="5" maxlength="5"
-				styleId="ocanServiceOrgNumber" /></td>
-		</tr>
-		<tr class="b">
 			<td width="20%">Primary Contact Name:</td>
 			<td><html:text property="facility.contactName" /></td>
 		</tr>
@@ -139,27 +134,19 @@
 		<tr class="b">
 			<td width="20%">Enable Health Number Registry:</td>
 			<td><html:checkbox property="facility.enableHealthNumberRegistry" /></td>
-		</tr>		
-		<tr class="b">
-			<td width="20%">Enable OCAN Forms:</td>
-			<td><html:checkbox property="facility.enableOcanForms" /></td>
 		</tr>
 		<tr class="b">
-			<td width="20%">Enable Anonymous Clients:</td>
-			<td><html:checkbox property="facility.enableAnonymous" /></td>
-		</tr>
-		<tr class="b">
-			<td width="20%">Enable Group Notes:</td>
-			<td><html:checkbox property="facility.enableGroupNotes" /></td>
+			<td width="20%">Enable CDS Forms:</td>
+			<td><html:checkbox property="facility.enableCdsForms" /></td>
 		</tr>
 		<tr>
-			<td colspan="2"><html:submit property="submit.save" onclick="bCancel=false;">Save</html:submit>
+			<td colspan="2"><html:submit property="submit.save">Save</html:submit>
 			<html:cancel>Cancel</html:cancel></td>
 		</tr>
 	</table>
 </html:form>
 <div>
 <p><a
-	href="<html:rewrite action="/PMmodule/FacilityManager.do"/>?method=list" >Return
+	href="<html:rewrite action="/PMmodule/FacilityManager.do"/>?method=list" />Return
 to facilities list</a></p>
 </div>

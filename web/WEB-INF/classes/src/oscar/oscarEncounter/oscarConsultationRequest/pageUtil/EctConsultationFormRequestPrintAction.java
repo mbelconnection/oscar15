@@ -39,7 +39,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import com.lowagie.text.DocumentException;
 
@@ -49,12 +48,11 @@ import com.lowagie.text.DocumentException;
  */
 public class EctConsultationFormRequestPrintAction extends Action {
     
-    private static final Logger logger = MiscUtils.getLogger();
+    Logger logger = Logger.getLogger(EctConsultationFormRequestAction.class);
     
     public EctConsultationFormRequestPrintAction() {
     }
     
-    @Override
     public ActionForward execute(ActionMapping mapping,ActionForm form,HttpServletRequest request,HttpServletResponse response){
         
         try {

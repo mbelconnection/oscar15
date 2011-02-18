@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -29,22 +29,17 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 import oscar.util.UtilDateUtilities;
 
 public class EctPeriMenopausalRecord
 {
-    private static Logger logger=MiscUtils.getLogger(); 
-
     public Properties getPeriMenopausalRecord(int demographicNo, int existingID)
             throws SQLException
     {
         Properties props = new Properties();
 
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         ResultSet rs;
         String sql;
 
@@ -55,14 +50,14 @@ public class EctPeriMenopausalRecord
                     + "year_of_birth, month_of_birth, date_of_birth "
                     + "FROM demographic WHERE demographic_no = " + demographicNo;
 
-                rs = DBHandler.GetSQL(sql);
+                rs = db.GetSQL(sql);
 
                 if(rs.next())
                 {
-                    java.util.Date dob = UtilDateUtilities.calcDate(oscar.Misc.getString(rs, "year_of_birth"), oscar.Misc.getString(rs, "month_of_birth"), oscar.Misc.getString(rs, "date_of_birth"));
+                    java.util.Date dob = UtilDateUtilities.calcDate(db.getString(rs,"year_of_birth"), db.getString(rs,"month_of_birth"), db.getString(rs,"date_of_birth"));
 
-                    props.setProperty("demographic_no", oscar.Misc.getString(rs, "demographic_no"));
-                    props.setProperty("pName", oscar.Misc.getString(rs, "pName"));
+                    props.setProperty("demographic_no", db.getString(rs,"demographic_no"));
+                    props.setProperty("pName", db.getString(rs,"pName"));
                     props.setProperty("formCreated", UtilDateUtilities.DateToString(UtilDateUtilities.Today(), "yyyy/MM/dd"));
                     props.setProperty("formEdited", UtilDateUtilities.DateToString(UtilDateUtilities.Today(), "yyyy/MM/dd"));
                     props.setProperty("age", String.valueOf(UtilDateUtilities.calcAge(dob)));
@@ -70,13 +65,14 @@ public class EctPeriMenopausalRecord
                 rs.close();
 
             }catch(SQLException ee) {
-            	logger.error("Unexpected error", ee);
+                System.err.println("sql exception "+ee);
+                ee.printStackTrace(System.out);
             }
         } else {
             try{
                 sql = "SELECT * FROM formPeriMenopausal WHERE demographic_no = " + demographicNo + " AND ID = " + existingID;
 
-                rs = DBHandler.GetSQL(sql);
+                rs = db.GetSQL(sql);
 
                 if(rs.next()) {
                     ResultSetMetaData md = rs.getMetaData();
@@ -105,7 +101,7 @@ public class EctPeriMenopausalRecord
                             }
                             else
                             {
-                                value = oscar.Misc.getString(rs, i);
+                                value = db.getString(rs,i);
                             }
                         }
 
@@ -117,7 +113,8 @@ public class EctPeriMenopausalRecord
                 }//end if
                 rs.close();
             }catch(SQLException ee) {
-            	logger.error("Unexpected error", ee);
+                System.err.println("sql exception "+ee);
+                ee.printStackTrace(System.out);
             }
         }//end else
         return props;
@@ -126,9 +123,9 @@ public class EctPeriMenopausalRecord
     public int savePeriMenopausalRecord(Properties props)     throws SQLException    {
         String demographic_no = props.getProperty("demographic_no");
 
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         String sql="SELECT * FROM formPeriMenopausal WHERE demographic_no=" + demographic_no + " AND ID=0";
-        ResultSet rs = DBHandler.GetSQL(sql, true);
+        ResultSet rs = db.GetSQL(sql, true);
 
         rs.moveToInsertRow();
 
@@ -145,7 +142,7 @@ public class EctPeriMenopausalRecord
                 if(md.getColumnTypeName(i).equalsIgnoreCase("TINY"))  {
                     if(value!=null) {
                         if(value.equalsIgnoreCase("on")) {
-
+//                            System.out.println("in 'on' "+name+" "+value);
                             rs.updateInt(name, 1);
                         } else {
                             rs.updateInt(name, 0);
@@ -198,7 +195,7 @@ public class EctPeriMenopausalRecord
         int ret = 0;
 
         sql = "SELECT LAST_INSERT_ID()";
-        rs = DBHandler.GetSQL(sql);
+        rs = db.GetSQL(sql);
         if(rs.next())
         {
             ret = rs.getInt(1);

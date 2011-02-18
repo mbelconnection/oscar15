@@ -4,7 +4,7 @@
     Author     : apavel
 --%>
 
-<%@page pageEncoding="UTF-8"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
    
@@ -38,7 +38,8 @@ if (wPhoneExt != null)
 
 <html>
     <head>
-                <title>Register Indivo</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Register Indivo</title>
         <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/phr/phr.css">
         <style type="text/css" language="JavaScript">
             .headingTop {

@@ -34,10 +34,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBean;
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBeanHandler;
@@ -47,7 +47,7 @@ import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBeanHandle
  * @author jay
  */
 public class MeasurementInfo {
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(MeasurementInfo.class);
     
     ArrayList warning = null;
     Hashtable warningHash = new Hashtable();
@@ -77,10 +77,6 @@ public class MeasurementInfo {
         }
         
         return list;
-    }
-
-    public void log(String logMessage){
-        log.debug(logMessage);
     }
     
     public ArrayList getWarnings(){
@@ -203,7 +199,7 @@ public class MeasurementInfo {
             try{ 
              value = Integer.parseInt(mdata.getDataField());
             }catch (Exception e ){
-               MiscUtils.getLogger().error("Error", e);    
+               e.printStackTrace();    
             } 
         }
         log.debug("Returning the number of months "+value);

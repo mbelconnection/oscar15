@@ -1,3 +1,9 @@
+<%@ page import="java.util.*"%>
+<%@ page import="org.oscarehr.PMmodule.model.ProgramQueue"%>
+<%@ page import="java.net.URLEncoder"%>
+<%@page import="org.apache.commons.lang.time.DateFormatUtils"%>
+<%@page import="org.oscarehr.util.SpringUtils"%>
+<%@page import="org.oscarehr.common.model.Demographic"%>
 
 <!--
 /*
@@ -23,16 +29,6 @@
 */
 -->
 
-<%@ page import="java.util.*"%>
-<%@ page import="org.oscarehr.PMmodule.model.ProgramQueue"%>
-<%@ page import="java.net.URLEncoder"%>
-<%@page import="org.apache.commons.lang.time.DateFormatUtils"%>
-<%@page import="org.oscarehr.util.SpringUtils"%>
-<%@page import="org.oscarehr.common.model.Demographic"%>
-<%@page import="org.oscarehr.PMmodule.dao.ProgramProviderDAO"%>
-<%@page import="org.oscarehr.PMmodule.model.Program"%>
-<%@ taglib uri="/WEB-INF/security.tld" prefix="security" %>
-<%@ taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi"%>
 <%@ include file="/taglibs.jsp"%>
 <%@ taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi"%>
 
@@ -97,34 +93,9 @@
 		window.location="<%=request.getContextPath()%>/PMmodule/GenericIntake/Search.do?method=searchFromRemoteAdmit&remoteReferralId="+remoteReferralId;
 	}
 
-	function removeFromRemoteQueue(remoteReferralId) {
-        var form = document.programManagerViewForm;
-        form.elements['remoteReferralId'].value = remoteReferralId;
-        form.method.value='remove_remote_queue';
-        form.submit();
-	}
 </script>
 <html:hidden property="clientId" />
 <html:hidden property="queueId" />
-
-<%
-	ProgramProviderDAO ppd =(ProgramProviderDAO)SpringUtils.getBean("programProviderDAO");
-	boolean bShowEncounterLink = false; 
-	String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
-%>
-<security:oscarSec roleName="<%=roleName$%>" objectName="_eChart" rights="r">
-<% bShowEncounterLink = true; %>
-</security:oscarSec>
-<%
-String curUser_no = (String) session.getAttribute("user");
-String rsAppointNO="0";
-
-String status = "T";
-String userfirstname = (String) session.getAttribute("userfirstname");;
-String userlastname = (String) session.getAttribute("userlastname");
-String reason ="";
-%>
-
 <h3>Local Queue</h3>
 <%
 	HashSet<Long> genderConflict=(HashSet<Long>)request.getAttribute("genderConflict");
@@ -179,39 +150,18 @@ String reason ="";
 	<%--</display:column>--%>
 	<display:column sortable="true" property="clientFormattedName"
 		title="Client name" />
-		
-	<display:column sortable="true" title="">	
-		<% 
-			if(bShowEncounterLink) {
-				Program program = (Program) request.getAttribute("program");
-				if(!"community".equalsIgnoreCase(program.getType())) {
-				HttpSession se = request.getSession();			
-				ProgramQueue temp=(ProgramQueue)pageContext.getAttribute("queue_entry");
-				String programId = String.valueOf(temp.getProgramId());
-				int demographic_no = temp.getClientId().intValue();
-				if(ppd.isThisProgramInProgramDomain(curUser_no,Integer.valueOf(programId))) {				
-					
-					String eURL = "../oscarEncounter/IncomingEncounter.do?programId="+programId+"&providerNo="+curUser_no+"&appointmentNo="+rsAppointNO+"&demographicNo="+demographic_no+"&curProviderNo="+curUser_no+"&reason="+java.net.URLEncoder.encode(reason)+"&encType="+java.net.URLEncoder.encode("face to face encounter with client","UTF-8")+"&userName="+java.net.URLEncoder.encode( userfirstname+" "+userlastname)+"&curDate=null&appointmentDate=null&startTime=0:0"+"&status="+status+"&source=cm";
-		%>	
-		<a href=#
-			onClick="popupPage(710, 1024,'../oscarSurveillance/CheckSurveillance.do?demographicNo=<%=demographic_no%>&proceed=<%=java.net.URLEncoder.encode(eURL)%>');return false;"
-			title="<bean:message key="global.encounter"/>"> <bean:message
-			key="provider.appointmentProviderAdminDay.btnE" /></a> 
-		
-		
-	<% 	}	} 
-		}
-	%>
-	</display:column>
-	
 	<display:column property="referralDate" sortable="true"
 		title="Referral Date" />
 	<display:column property="providerFormattedName" sortable="true"
 		title="Referring Provider" />
+	<caisi:isModuleLoad moduleName="pmm.refer.temporaryAdmission.enabled">
+		<display:column property="temporaryAdmission" sortable="true"
+			title="Temporary Admission" />
+	</caisi:isModuleLoad>
 	<display:column property="notes" sortable="true"
 		title="Reason for referral" />
 	<display:column property="presentProblems" sortable="true"
-		title="Presenting problems" />
+		title="Present problems" />
 	<display:column property="headRecord" sortable="true" title="Family Id" />
 </display:table>
 <br />
@@ -313,10 +263,8 @@ String reason ="";
 		<display:setProperty name="basic.msg.empty_list"
 			value="Queue is empty." />
 		<display:column sortable="false" title="">
-			<input type="button" value="Admit" onclick="admitFromRemote('<c:out value="${queue_entry.referral.referralId}"/>')" />
-		</display:column>
-		<display:column sortable="false" title="">
-			<input type="button" value="Reject" onclick="removeFromRemoteQueue('<c:out value="${queue_entry.referral.referralId}"/>')" />
+			<input type="button" value="Admit"
+				onclick="admitFromRemote('<c:out value="${queue_entry.referral.referralId}"/>')" />
 		</display:column>
 		<display:column property="clientName" sortable="true"
 			title="Client Name" />
@@ -325,8 +273,6 @@ String reason ="";
 		<display:column property="providerName" sortable="true"
 			title="Referring Provider" />
 		<display:column property="referral.reasonForReferral" sortable="true"
-			title="Reason for referral" />
-		<display:column property="referral.presentingProblem" sortable="true"
-			title="Presenting problems" />
+			title="Notes" />
 	</display:table>
 </c:if>

@@ -20,6 +20,10 @@ import org.w3c.dom.NodeList;
 import oscar.oscarLab.ca.all.upload.MessageUploader;
 import oscar.oscarLab.ca.all.util.Utilities;
 
+/**
+ *
+ * @author wrighd
+ */
 public class DefaultHandler implements MessageHandler {
     Logger logger = Logger.getLogger(DefaultHandler.class);
     String hl7Type = null;
@@ -28,8 +32,9 @@ public class DefaultHandler implements MessageHandler {
         return hl7Type;
     }
     
-    public String parse(String serviceName, String fileName,int fileId){
+    public String parse(String fileName,int fileId){
         Document xmlDoc = getXML(fileName);
+        MessageUploader uploader = new MessageUploader();
         
         /*
          *  If the message is in xml format parse through all the nodes looking for
@@ -46,25 +51,26 @@ public class DefaultHandler implements MessageHandler {
                     if (hl7Body != null && hl7Body.indexOf("\nPID|") > 0){
                         msgCount++;
                         logger.info("using xml HL7 Type "+getHl7Type());
-                        MessageUploader.routeReport(serviceName, getHl7Type(), hl7Body,fileId);
+                        uploader.routeReport(getHl7Type(), hl7Body,fileId);
                     }
                 }
             }catch(Exception e){
-            	MessageUploader.clean(fileId);
+                uploader.clean(fileId);
                 logger.error("ERROR:", e);
                 return null;
             }
         }else{
+            Utilities u = new Utilities();
             int i = 0;
             try{
-                ArrayList<String> messages = Utilities.separateMessages(fileName);
+                ArrayList messages = u.separateMessages(fileName);
                 for (i=0; i < messages.size(); i++){
-                    String msg = messages.get(i);
+                    String msg = (String) messages.get(i);
                     logger.info("using HL7 Type "+getHl7Type());
-                    MessageUploader.routeReport(serviceName, getHl7Type(), msg,fileId);
+                    uploader.routeReport(getHl7Type(), msg,fileId);
                 }
             }catch(Exception e){
-            	MessageUploader.clean(fileId);
+                uploader.clean(fileId);
                 logger.error("ERROR:", e);
                 return null;
             }

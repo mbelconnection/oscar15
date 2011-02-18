@@ -18,11 +18,13 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 --%>
+
+<%@ page language="java"%>
 <%@ page import="oscar.oscarEncounter.data.EctPatientData"%>
 
 <%
@@ -32,6 +34,7 @@
 
 	EctPatientData.Patient p = new EctPatientData().getPatient(demoNo);
     String s = p.getSex();
+    //System.out.println("loading ann health formId"+formId+" prov no = "+provNo+" sex = "+s);
 
     if(true) {
         out.clear();

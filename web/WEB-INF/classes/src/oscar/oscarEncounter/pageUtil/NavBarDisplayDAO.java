@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -31,8 +31,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-
-import org.oscarehr.util.MiscUtils;
 
 /**
  *
@@ -78,7 +76,7 @@ public class NavBarDisplayDAO {
 		NavBarDisplayDAO.Item item = dao.Item();
 		long num = rand.nextLong();
 		if( num < 0 ) num *= -1;
-		MiscUtils.getLogger().debug("Storing " + num);
+		System.out.println("Storing " + num);
 		item.setTitle("" + num);
 		d = new Date(num);
 		item.setDate(d);
@@ -87,15 +85,15 @@ public class NavBarDisplayDAO {
 
 	dao.sortItems(NavBarDisplayDAO.ALPHASORT);
 
-	MiscUtils.getLogger().debug("Alphabetically Sorted:");
+	System.out.println("Alphabetically Sorted:");
 	for( int idx = 0; idx < 10; ++idx)
-		MiscUtils.getLogger().debug(idx + ": " + dao.getItem(idx).getTitle());
+		System.out.println(idx + ": " + dao.getItem(idx).getTitle());
 
 	dao.sortItems(NavBarDisplayDAO.DATESORT_ASC);
 
-	MiscUtils.getLogger().debug("Chronologically Sorted:");
+	System.out.println("Chronologically Sorted:");
 	for( int idx = 0; idx < 10; ++idx)
-		MiscUtils.getLogger().debug(idx + ": " + dao.getItem(idx).getDate().toString());
+		System.out.println(idx + ": " + dao.getItem(idx).getDate().toString());
 	 
     }
     

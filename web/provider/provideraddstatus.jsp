@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -31,11 +31,9 @@
 
 <%
   //if action is good, then give me the result
-    String[] param =new String[3];
+    String[] param =new String[2];
     param[0]=request.getParameter("status")+ request.getParameter("statusch");
-    param[1]=(String)session.getAttribute("user");
-    param[2]=request.getParameter("appointment_no");
-    oscarSuperManager.update("providerDao", "archive_appt", new String[]{request.getParameter("appointment_no")});
+    param[1]=request.getParameter("appointment_no");
     int rowsAffected = oscarSuperManager.update("providerDao", request.getParameter("dboperation"), param);
     if (rowsAffected == 1) {//add_record
       int view=0;
@@ -56,7 +54,7 @@
 %>
 <p>
 <h1><bean:message key="AddProviderStatus.msgAddFailure" /></h1>
-
+</p>
 <%  
   }
 %>

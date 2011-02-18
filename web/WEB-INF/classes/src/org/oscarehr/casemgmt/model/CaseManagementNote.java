@@ -35,9 +35,7 @@ import java.util.Set;
 import org.caisi.model.BaseObject;
 import org.oscarehr.casemgmt.dao.CaseManagementNoteLinkDAO;
 import org.oscarehr.common.model.Provider;
-import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
-
 import oscar.oscarDB.DBHandler;
 import oscar.oscarRx.data.RxPrescriptionData;
 
@@ -109,7 +107,7 @@ public class CaseManagementNote extends BaseObject {
 	}
 
 	public String getAuditString() {
-		StringBuilder auditStr = new StringBuilder(getNote());
+		StringBuffer auditStr = new StringBuffer(getNote());
 		Iterator<CaseManagementIssue> iter = issues.iterator();
 		auditStr.append("\nIssues\n");
 		int idx = 0;
@@ -493,9 +491,10 @@ public class CaseManagementNote extends BaseObject {
     protected static ResultSet getSQL(String sql) {
         ResultSet rs = null;
         try {
-            rs = DBHandler.GetSQL(sql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            rs = db.GetSQL(sql);
         } catch (SQLException sqe) {
-            MiscUtils.getLogger().error("Error", sqe);
+            sqe.printStackTrace();
         }
         return (rs);
     }

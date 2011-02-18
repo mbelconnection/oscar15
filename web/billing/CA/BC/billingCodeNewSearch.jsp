@@ -24,16 +24,17 @@
   *
   * This software was written for the
   * Department of Family Medicine
-  * McMaster University
+  * McMaster Unviersity
   * Hamilton
   * Ontario, Canada
   */
 -->
 <%@page
 	import="java.util.*, java.sql.*, oscar.*, java.net.*,oscar.oscarBilling.ca.bc.pageUtil.*"%>
+<%@include file="../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@include file="dbBilling.jspf"%>
+<%@include file="dbBilling.jsp"%>
 <%
   String search = "", search2 = "";
   search = request.getParameter("search");
@@ -91,6 +92,7 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Service Code Search</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-2">
 <script LANGUAGE="JavaScript">
 <!--
 function CodeAttach(File0,dx1,dx2,dx3) {
@@ -105,6 +107,7 @@ function CodeAttach(File0,dx1,dx2,dx3) {
 -->
 </script>
 </head>
+<%System.out.println("LOADED"); %>
 <body bgcolor="#FFFFFF" text="#000000" topmargin="0" leftmargin="0"
 	rightmargin="0">
 <table border="0" cellspacing="0" cellpadding="0" width="100%">
@@ -186,8 +189,8 @@ function CodeAttach(File0,dx1,dx2,dx3) {
 		<td colspan="2"><font face="Arial, Helvetica, sans-serif"
 			size="2"> No match found. <%// =i        %> </font></td>
 	</tr>
-	<%}%>
-	<%if (intCount == 1) {%>
+	<%}  System.err.println("CNT:"+intCount);%>
+	<%if (intCount == 1) {  System.out.println("Count1");%>
 	<script LANGUAGE="JavaScript">
 <!--
 

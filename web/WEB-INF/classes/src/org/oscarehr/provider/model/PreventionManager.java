@@ -15,7 +15,7 @@
  * <OSCAR TEAM>
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -23,18 +23,18 @@
 package org.oscarehr.provider.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Collections;
 
-import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang.StringUtils;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.collections.map.LRUMap;
+
 
 import oscar.oscarPrevention.Prevention;
-import oscar.oscarPrevention.PreventionDS;
-import oscar.oscarPrevention.PreventionData;
 import oscar.oscarPrevention.PreventionDisplayConfig;
+import oscar.oscarPrevention.PreventionData;
+import oscar.oscarPrevention.PreventionDS;
 
 /**
  *
@@ -60,7 +60,7 @@ public class PreventionManager {
 
     public synchronized String getWarnings(String demo) {
         String ret = (String)mShell.get(PREVS).get(demo);
-
+        //System.out.println("Fetching Demo " + demo + " '" + ret + "'");
         if( ret == null ) {
             //synchronized(this) {
                 try {
@@ -76,10 +76,10 @@ public class PreventionManager {
                     //ret += StringUtils.join(warnings, ". ");
                     
                     mShell.get(PREVS).put(demo, ret);
-
+                    //System.out.println("Cached demo " + demo + " '" + ret + "'");
                 } catch(Exception e) {
                     ret = "";
-                    MiscUtils.getLogger().error("Error", e);
+                    e.printStackTrace();
                 }
             //}
         }

@@ -25,13 +25,15 @@
 
 package oscar.oscarReport.reportByTemplate;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.StringWriter;
 import java.sql.ResultSet;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
+import oscar.util.UtilMisc;
+
+import com.Ostermiller.util.CSVPrinter;
 
 /**
  *
@@ -48,12 +50,12 @@ public class INRReporter implements Reporter {
         ReportObject curReport = (new ReportManager()).getReportTemplateNoParam(templateId);
         String fromDate = request.getParameter("from_date");
         String toDate = request.getParameter("to_date");
-        StringBuilder csvBody = new StringBuilder();
-        StringBuilder csvHeader = new StringBuilder();
-        StringBuilder csv = new StringBuilder();
-        StringBuilder rsHtml = new StringBuilder();
-        StringBuilder header = new StringBuilder();
-        StringBuilder body = new StringBuilder();
+        StringBuffer csvBody = new StringBuffer();
+        StringBuffer csvHeader = new StringBuffer();
+        StringBuffer csv = new StringBuffer();
+        StringBuffer rsHtml = new StringBuffer();
+        StringBuffer header = new StringBuffer();
+        StringBuffer body = new StringBuffer();
         int numHeaders = 1;
         int curHeader = 0;
         ResultSet rs;
@@ -72,8 +74,8 @@ public class INRReporter implements Reporter {
         String cssCurrent = "";
         boolean firstRow = true;
          try {
-            
-            rs = DBHandler.GetSQL(sql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            rs = db.GetSQL(sql);
             demographicNo = -1;
             rsHtml.append("<table class=\"reportTable\">\n");
             header.append("<th class=\"reportHeader\">Last Name</th><th class=\"reportHeader\">First Name</th><th class=\"reportHeader\">DOB</th><th class=\"reportHeader\">MRP</th><th class=\"reportHeader\">INR</th><th class=\"reportHeader\">Observation Date</th><th class=\"reportHeader\">DX Code</th>");
@@ -116,7 +118,7 @@ public class INRReporter implements Reporter {
             }
             else {
                 while( curHeader++ < numHeaders ) {
-                    MiscUtils.getLogger().debug("Adding " + curHeader + " header");
+                    System.out.println("Adding " + curHeader + " header");
                     body.append("<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>");
                     csvBody.append(", , ,");
                 }
@@ -137,7 +139,7 @@ public class INRReporter implements Reporter {
                         
          }
          catch(Exception e) {
-            MiscUtils.getLogger().error("Error", e);            
+            e.printStackTrace();            
         }
 
         request.setAttribute("csv", csv.toString());

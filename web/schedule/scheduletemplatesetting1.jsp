@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -36,7 +36,7 @@
 <jsp:useBean id="scheduleRscheduleBean" class="oscar.RscheduleBean"
 	scope="session" />
 <%  if(!scheduleMainBean.getBDoConfigure()) { %>
-<%@ include file="scheduleMainBeanConn.jspf"%>
+<%@ include file="scheduleMainBeanConn.jsp"%>
 <% } %>
 
 <% scheduleRscheduleBean.clear(); %>
@@ -45,6 +45,8 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>SCHEDULE SETTING</title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <link rel="stylesheet" href="../web.css" />
 
 <script language="JavaScript">
@@ -195,6 +197,8 @@ function addDataString1() {
     break;
   }
 
+//System.out.println("llllppppppppppppppp" + scheduleRscheduleBean.day_of_week + scheduleRscheduleBean.day_of_month + scheduleRscheduleBean.avail_hour); 
+//System.out.println(scheduleRscheduleBean.sdate); 
   String syear = "",smonth="",sday="",eyear="",emonth="",eday="";
   String[] param2 =new String[7];
   for(int i=0; i<7; i++) {param2[i]="";}
@@ -405,5 +409,8 @@ function addDataString1() {
 
 
 </form>
+<%
+   //scheduleMainBean.closePstmtConn();
+%>
 </body>
 </html>

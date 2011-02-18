@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -42,7 +42,7 @@ if(props.getProperty("isNewONbilling", "").equals("true")) {
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
 <jsp:useBean id="SxmlMisc" class="oscar.SxmlMisc" scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 
 <%
 GregorianCalendar now=new GregorianCalendar();
@@ -105,6 +105,7 @@ switch (billCenter.charAt(0)) {
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Billing Report</title>
+<meta http-equiv="Content-Type" content="text/html;">
 <script language="JavaScript">
 <!--
 function openBrWindow(theURL,winName,features) {
@@ -193,6 +194,7 @@ while(rslocal.next()){
 	vecProviderName.add(proLast + ", " + proFirst);
 }
 rslocal.close();
+apptMainBean.closePstmtConn();
 for(int i=0; i<vecOHIP.size(); i++) {
 	proOHIP = (String)vecOHIP.get(i);
 %>

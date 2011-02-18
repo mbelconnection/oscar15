@@ -17,14 +17,13 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 package oscar.oscarProvider.pageUtil;
 
 import org.apache.struts.action.ActionForm;
-import org.oscarehr.util.MiscUtils;
 
 public final class ProEditSignatureForm extends ActionForm {
 
@@ -38,7 +37,7 @@ public final class ProEditSignatureForm extends ActionForm {
 
     public void setSignature(String str)
     {
-        MiscUtils.getLogger().debug("signature has been set");
+        System.out.println("signature has been set");
         signature = str;
     }
 

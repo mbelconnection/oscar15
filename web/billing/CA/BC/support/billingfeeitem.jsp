@@ -1,3 +1,4 @@
+<% response.setHeader("Cache-Control", "no-cache");%>
 <%@page import="java.math.*, java.util.*,  oscar.*, java.net.*,oscar.oscarBilling.ca.bc.data.*,org.oscarehr.common.model.*,oscar.util.*" %>
 <%@page import="org.springframework.web.context.WebApplicationContext,org.springframework.web.context.support.WebApplicationContextUtils, oscar.entities.*" %><%
         if (session.getAttribute("user") == null) {
@@ -12,7 +13,7 @@
         String searchStr = request.getParameter("searchStr");
         String serviceDate = request.getParameter("serviceDate");
         Date serDate = UtilDateUtilities.StringToDate(serviceDate,"yyyyMMdd");
-        
+
         if(serDate == null){
            serDate = new Date();
         }
@@ -60,7 +61,7 @@
     <title>OSCAR Billing Fee Item</title>
     <link rel="stylesheet" href="../../../../share/css/oscar.css">
     </head>
-    
+
 
     <script language="JavaScript">
         function posttoText(index){
@@ -105,7 +106,7 @@
                 <td>Link</td>
                 <td>Description</td>
             </tr>
-            
+
             <%for(BillingService code : billServiceList){%>
             <tr <%=((color) ? "bgcolor=\"#F6F6F6\"" : "")%> align="left" valign="top">
                 <td class="SmallerText">

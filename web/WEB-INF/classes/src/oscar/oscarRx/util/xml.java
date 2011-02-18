@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -33,7 +33,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.oscarehr.util.MiscUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -76,8 +75,9 @@ public class xml {
             trans.transform(src, rslt);
         }
         catch(Exception e) {
-           MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace(System.out);
         }
+        System.out.print(ret.toString());
         return ret.toString();
     }
     

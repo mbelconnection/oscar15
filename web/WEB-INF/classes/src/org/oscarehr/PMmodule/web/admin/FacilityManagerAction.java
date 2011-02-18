@@ -198,11 +198,8 @@ public class FacilityManagerAction extends BaseAction {
 			facility.setEnableIntegratedReferrals(WebUtils.isChecked(request, "facility.enableIntegratedReferrals"));
 			facility.setEnableHealthNumberRegistry(WebUtils.isChecked(request, "facility.enableHealthNumberRegistry"));
 			facility.setEnableDigitalSignatures(WebUtils.isChecked(request, "facility.enableDigitalSignatures"));
+			facility.setEnableCdsForms(WebUtils.isChecked(request, "facility.enableCdsForms"));
 
-			facility.setEnableAnonymous(WebUtils.isChecked(request, "facility.enableAnonymous"));
-			facility.setEnableGroupNotes(WebUtils.isChecked(request, "facility.enableGroupNotes"));
-			facility.setEnableOcanForms(WebUtils.isChecked(request, "facility.enableOcanForms"));
-			
 			if (facility.getId() == null || facility.getId() == 0) facilityDao.persist(facility);
 			else facilityDao.merge(facility);
 

@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -47,16 +47,16 @@
   String strEveryMin = (String) session.getAttribute("everymin");
   String defaultServiceType = (String) session.getAttribute("default_servicetype");
   if( defaultServiceType == null ) {
-	ProviderPreference providerPreference=ProviderPreferencesUIBean.getLoggedInProviderPreference();
-      if (providerPreference!=null) {
-        defaultServiceType = providerPreference.getDefaultServiceType();
+      List<Map> prefList = oscarSuperManager.find("providerDao", "search_pref_defaultbill", new Object[] {curUser_no});
+      if (prefList.size() > 0) {
+        defaultServiceType = String.valueOf(prefList.get(0).get("default_servicetype"));
       }
   }
   
   if( defaultServiceType == null ) {
     defaultServiceType = "";
   }
-
+  
   int startHour=Integer.parseInt(strStartHour.trim());
   int endHour=Integer.parseInt(strEndHour.trim());
   int everyMin=Integer.parseInt(strEveryMin.trim());
@@ -66,9 +66,7 @@
   }
   boolean caisi = Boolean.valueOf((String)request.getParameter("caisi")).booleanValue();
 %>
-
-<%@page import="org.oscarehr.common.model.ProviderPreference"%>
-<%@page import="org.oscarehr.web.admin.ProviderPreferencesUIBean"%><html>
+<html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message

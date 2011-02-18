@@ -1,3 +1,5 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page language="java"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
@@ -31,7 +33,12 @@
 
             response.sendRedirect("../noRights.html");
     %>
-</security:oscarSec><logic:notPresent name="RxSessionBean" scope="session">
+</security:oscarSec>
+
+<%
+            response.setHeader("Cache-Control", "no-cache");
+%>
+<logic:notPresent name="RxSessionBean" scope="session">
     <logic:redirect href="error.html" />
 </logic:notPresent>
 <logic:present name="RxSessionBean" scope="session">
@@ -49,8 +56,6 @@
 <%
             String usefav=request.getParameter("usefav");
             String favid=request.getParameter("favid");
-            int demoNo=bean.getDemographicNo();
-            String providerNo=bean.getProviderNo();
             //String reRxDrugId=request.getParameter("reRxDrugId");
             HashMap hm=(HashMap)session.getAttribute("profileViewSpec");
             boolean show_current=true;
@@ -60,9 +65,7 @@
             boolean all=true;
             boolean longterm_acute=true;
             boolean longterm_acute_inactive_external=true;
-            if(hm==null) {
-			// do nothing
-            }
+            if(hm==null) {System.out.println("hm is null");}
             else{
              if(hm.get("show_current")!=null)
                 show_current=(Boolean)hm.get("show_current");
@@ -96,7 +99,7 @@
 
             RxPharmacyData pharmacyData = new RxPharmacyData();
             RxPharmacyData.Pharmacy pharmacy;
-            pharmacy = pharmacyData.getPharmacyFromDemographic(Integer.toString(demoNo));
+            pharmacy = pharmacyData.getPharmacyFromDemographic(Integer.toString(bean.getDemographicNo()));
             String prefPharmacy = "";
             if (pharmacy != null) {
                 prefPharmacy = pharmacy.name;
@@ -113,7 +116,7 @@
             oscar.oscarRx.data.RxPrescriptionData.Prescription[] prescribedDrugs;
                         prescribedDrugs = patient.getPrescribedDrugScripts(); //this function only returns drugs which have an entry in prescription and drugs table
                         String script_no = "";
-
+           
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
@@ -146,8 +149,8 @@
 
 <html:html locale="true">
     <head>
-            <script type="text/javascript" src="<%=request.getContextPath()%>/js/global.js"></script>
-
+        <script type="text/javascript" src="<%=request.getContextPath()%>/js/global.js"></script>
+        
         <title><bean:message key="SearchDrug.title" /></title>
         <link rel="stylesheet" type="text/css" href="styles.css">
 
@@ -178,11 +181,12 @@
         <script type="text/javascript" src="<c:out value="${ctx}/share/yui/js/datasource-min.js"/>"></script>
         <script type="text/javascript" src="<c:out value="${ctx}/share/yui/js/autocomplete-min.js"/>"></script>
 
+
         <script type="text/javascript">
             function resetReRxDrugList(){
                 var url="<c:out value="${ctx}"/>" + "/oscarRx/deleteRx.do?parameterValue=clearReRxDrugList";
                        var data = "";
-                       new Ajax.Request(url, {method: 'post',parameters:data,onSuccess:function(transport){
+                       new Ajax.Request(url, {method: 'post',parameters:data,asynchronous:false,onSuccess:function(transport){
                         }});
             }
             function onPrint(cfgPage) {
@@ -208,7 +212,7 @@
                var top = winY+70;
                var left = winX+110;
                var url = "searchDrug.do?rx2=true&searchString="+$('searchString').value;
-               popup2(600, 800, top, left, url, 'windowNameRxSearch<%=demoNo%>');
+               popup2(600, 800, top, left, url, 'windowNameRxSearch<%=bean.getDemographicNo()%>');
 
            }
 
@@ -613,7 +617,7 @@ body {
 
     <body  vlink="#0000FF" onload="checkFav();iterateStash();rxPageSizeSelect();checkReRxLongTerm();load()" class="yui-skin-sam">
         <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="100%" id="AutoNumber1" height="100%">
-            <%@ include file="TopLinks2.jspf" %><!-- Row One included here-->
+            <%@ include file="TopLinks2.jsp" %><!-- Row One included here-->
             <tr>
                 <%@ include file="SideLinksEditFavorites2.jsp"%><%-- <td></td>Side Bar File --%>
                 <td width="70%" style="border-left: 2px solid #A9A9A9;" height="100%" valign="top"><!--Column Two Row Two-->
@@ -668,22 +672,22 @@ body {
                                             <td>
                                                 <div class="DivContentSectionHead">
                                                     <bean:message key="SearchDrug.section2Title" />
-                                                    &nbsp;&nbsp;
+                                                    &nbsp;
                                                     <a href="javascript:popupWindow(720,700,'PrintDrugProfile2.jsp','PrintDrugProfile')"><bean:message key="SearchDrug.Print"/></a>
-                                                    &nbsp;&nbsp;
+                                                    &nbsp;
                                                     <a href="#" onclick="$('reprint').toggle();return false;"><bean:message key="SearchDrug.Reprint"/></a>
-                                                    &nbsp;&nbsp;
+                                                    &nbsp;
                                                     <a href="javascript:void(0);"name="cmdRePrescribe"  onclick="javascript:RePrescribeLongTerm();" style="width: 200px" ><bean:message key="SearchDrug.msgReprescribeLongTermMed"/></a>
-                                                    &nbsp;&nbsp;
-                                                    <a href="javascript:popupWindow(720,920,'chartDrugProfile.jsp?demographic_no=<%=demoNo%>','PrintDrugProfile2')">Timeline Drug Profile</a>
-                                                    &nbsp;&nbsp;
-                                                    <a href="javascript: void(0);" onclick="callReplacementWebService('GetmyDrugrefInfo.do?method=view','interactionsRxMyD');" >DS run</a>
-                                                    <oscar:oscarPropertiesCheck property="MY_OSCAR" value="yes">
-                                                            <indivo:indivoRegistered demographic="<%=String.valueOf(demoNo)%>" provider="<%=providerNo%>">
-                                                                    &nbsp;
-                                                                    <a href="javascript: popupFocusPage(720,920,'./synchroniseWithPHR.jsp?providerNo=<%=providerNo%>&demoNo=<%=demoNo%>','PHR');">PHR</a>
-                                                            </indivo:indivoRegistered>
-                                                    </oscar:oscarPropertiesCheck>
+                                                    &nbsp;
+                                                    <a href="javascript:popupWindow(720,920,'chartDrugProfile.jsp?demographic_no=<%=bean.getDemographicNo()%>','PrintDrugProfile2')"><bean:message key="SearchDrug.TimelineDrugProfile"/></a>
+                                                    &nbsp;
+                                                    <a href="javascript: void(0);" onclick="callReplacementWebService('GetmyDrugrefInfo.do?method=view','interactionsRxMyD');" ><bean:message key="SearchDrug.DSRun"/></a>
+                                         <oscar:oscarPropertiesCheck property="MY_OSCAR" value="yes">
+						<indivo:indivoRegistered demographic="<%=String.valueOf(bean.getDemographicNo())%>" provider="<%=bean.getProviderNo()%>">
+							&nbsp;
+                                                        <a href="javascript: phrActionPopup('../oscarRx/SendToPhr.do?demoId=<%=Integer.toString(bean.getDemographicNo())%>', 'sendRxToPhr');"><bean:message key="SearchDrug.SendToPHR"/></a>
+						</indivo:indivoRegistered>
+					</oscar:oscarPropertiesCheck>
                                                 </div>
 
                                             </td>
@@ -760,7 +764,7 @@ body {
                                     </table>
                                 </div>
                             </td>
-                        </tr>
+                        </tr> 
                     </table>
                 </td>
                 <td width="15%" valign="top">
@@ -775,7 +779,7 @@ body {
 
 <tr>
     <td width="100%" height="0%" colspan="2">&nbsp;
-
+       
     </td>
 </tr>
 
@@ -905,9 +909,9 @@ body {
         </tr>
 
     </table>
-
+    
 </div>
-
+            
 <%
                         }
 %>
@@ -950,7 +954,7 @@ function changeLt(drugId){
         $('instructions_'+randomId).value=content;
         parseIntr($('instructions_'+randomId));
     }
-    function addSpecialInstruction(content,randomId){
+    function addSpecialInstruction(content,randomId){        
                 if($('siAutoComplete_'+randomId).getStyle('display')=='none'){
                   Effect.BlindDown('siAutoComplete_'+randomId);
                 }else{}
@@ -960,7 +964,7 @@ function changeLt(drugId){
    function hideMedHistory(){
        mb.hide();
    }
-    var modalBox=function(){
+    var modalBox=function(){ 
         this.show=function(randomId){
             if(!document.getElementById("xmaskframe")){
                 var divFram=document.createElement('iframe');
@@ -992,10 +996,10 @@ function changeLt(drugId){
 
             };
     }
-    var mb=new modalBox();
+    var mb=new modalBox();    
     function displayMedHistory(randomId){
            var data="randomId="+randomId;
-           new Ajax.Request("<c:out value='${ctx}'/>"+ "/oscarRx/WriteScript.do?parameterValue=listPreviousInstructions",
+           new Ajax.Request("<c:out value='${ctx}'/>"+ "/oscarRx/WriteScript.do?parameterValue=listPreviousInstructions", 
            {method: 'post',parameters:data,asynchronous:false,onSuccess:function(transport){
                  mb.show(randomId);
                 }});
@@ -1021,7 +1025,7 @@ function changeLt(drugId){
     }
     function setPrn(randomId){
         var prnStr=$('prn_'+randomId).innerHTML;
-        prnStr=prnStr.strip();
+        prnStr=prnStr.strip(); 
         var prnStyle=$('prn_'+randomId).getStyle('textDecoration');
         if(prnStr=='prn' || prnStr=='PRN'|| prnStr=='Prn'){
             if(prnStyle.match("line-through")!=null){
@@ -1031,7 +1035,7 @@ function changeLt(drugId){
                 $('prn_'+randomId).setStyle({textDecoration:'line-through'});
                 $('prnVal_'+randomId).value=false;
             }
-        }
+        }        
     }
      function focusTo(elementId){
          $(elementId).contentEditable='true';
@@ -1069,12 +1073,12 @@ function changeLt(drugId){
             + '\n  *  Drug-Drug Interaction Information'
             + '\n  *  Drug Information'
             + '\n\nAre you sure you wish to use this feature?')==true) {
-
+            
             //call another function to bring up prescribe.jsp
             var url="<c:out value="${ctx}"/>"+ "/oscarRx/WriteScript.do?parameterValue=normalDrugSetCustom";
             var customDrugName=$("drugName_"+randomId).getValue();
             var data="randomId="+randomId+"&customDrugName="+customDrugName;
-            new Ajax.Updater('rxText',url,{method:'get',parameters:data,asynchronous:true,insertion: Insertion.Bottom,onSuccess:function(transport){
+            new Ajax.Updater('rxText',url,{method:'get',parameters:data,asynchronous:true,insertion: Insertion.Bottom,onSuccess:function(transport){ 
                     $('set_'+randomId).remove();
 
                 }});
@@ -1088,7 +1092,7 @@ function changeLt(drugId){
     function resetStash(){
                var url="<c:out value="${ctx}"/>" + "/oscarRx/deleteRx.do?parameterValue=clearStash";
                var data = "";
-               new Ajax.Request(url, {method: 'post',parameters:data,onSuccess:function(transport){
+               new Ajax.Request(url, {method: 'post',parameters:data,asynchronous:false,onSuccess:function(transport){
                             updateCurrentInteractions();
             }});
                $('rxText').innerHTML="";//make pending prescriptions disappear.
@@ -1101,23 +1105,21 @@ function changeLt(drugId){
             insertion: Insertion.Bottom,onSuccess:function(transport){
                 updateCurrentInteractions();
         }});
-
+        
     }
     function rxPageSizeSelect(){
                var ran_number=Math.round(Math.random()*1000000);
                var url="GetRxPageSizeInfo.do?method=view";
-               var params = "demographicNo=<%=demoNo%>&rand="+ran_number;  //hack to get around ie caching the page
+               var params = "demographicNo=<%=bean.getDemographicNo()%>&rand="+ran_number;  //hack to get around ie caching the page
                new Ajax.Request(url, {method: 'post',parameters:params});
     }
-    
     function reprint2(scriptNo){
         var data="scriptNo="+scriptNo;
         var url= "<c:out value="${ctx}"/>" + "/oscarRx/rePrescribe2.do?method=reprint2";
        new Ajax.Request(url,
         {method: 'post',postBody:data,
             onSuccess:function(transport){
-                popForm2(scriptNo);
-
+                popForm2();
             }});
         return false;
     }
@@ -1154,7 +1156,7 @@ function changeLt(drugId){
                              $(prescrip).style.textDecoration='line-through';
                     }
                 }});
-
+         
     }
 
     function ThemeViewer(){
@@ -1222,8 +1224,8 @@ function changeLt(drugId){
          new Ajax.Request(url,{method: 'post',postBody:data,onSuccess:function(transport){
                  var json=transport.responseText.evalJSON();
                 if(json!=null){
-                    var str = "Inactive Drug Since: "+new Date(json.vec[0].time).toDateString();
-                    $('inactive_'+json.id).innerHTML = str;
+                  var str = "Inactive Drug Since: "+new Date(json.vec[0].time).toDateString();
+                  $('inactive_'+json.id).innerHTML = str;
                 }
             }});
    }
@@ -1300,11 +1302,11 @@ function changeLt(drugId){
     }
 //represcribe long term meds
     function RePrescribeLongTerm(){
-       var demoNo='<%=patient.getDemographicNo()%>';
+       var demoNo='<%=patient.getDemographicNo()%>';              
         var data="demoNo="+demoNo+"&showall=<%=showall%>";
-        var url= "<c:out value="${ctx}"/>" + "/oscarRx/rePrescribe2.do?method=repcbAllLongTerm";
+        var url= "<c:out value="${ctx}"/>" + "/oscarRx/rePrescribe2.do?method=repcbAllLongTerm";        
         new Ajax.Updater('rxText',url, {method:'get',parameters:data,asynchronous:true,insertion: Insertion.Bottom,onSuccess:function(transport){
-                            updateCurrentInteractions();
+                            updateCurrentInteractions();                            
             }});
         return false;
     }
@@ -1361,21 +1363,21 @@ function saveCustomName(element){
 function updateDeleteOnCloseRxBox(){
     $('deleteOnCloseRxBox').value='true';
 }
-function popForm2(scriptId){
+function popForm2(){
         try{
             //oscarLog("popForm2 called");
             var url1="<c:out value="${ctx}"/>"+"/oscarRx/WriteScript.do?parameterValue=checkNoStashItem";
             var data="";
-            var h=900;
+            var h=700;
             new Ajax.Request(url1, {method: 'get',parameters:data, onSuccess:function(transport){
                 //output default instructions
                 var json=transport.responseText.evalJSON();
-                var n=json.NoStashItem;
+                var n=json.NoStashItem;                
                 if(n>4){
                     h=h+(n-4)*100;
                 }
                 //oscarLog("h="+h+"--n="+n);
-                var url= "<c:out value="${ctx}"/>" + "/oscarRx/ViewScript2.jsp?scriptId="+scriptId;
+                var url= "<c:out value="${ctx}"/>" + "/oscarRx/ViewScript2.jsp";
                 //oscarLog( "preview2 done");
                 myLightWindow.activateWindow({
                     href: url,
@@ -1398,20 +1400,20 @@ function popForm2(scriptId){
          var ele = $(textId);
          var url = "TreatmentMyD.jsp"
          var ran_number=Math.round(Math.random()*1000000);
-         var params = "demographicNo=<%=demoNo%>&cond="+ele.value+"&rand="+ran_number;  //hack to get around ie caching the page
+         var params = "demographicNo=<%=bean.getDemographicNo()%>&cond="+ele.value+"&rand="+ran_number;  //hack to get around ie caching the page
          new Ajax.Updater(id,url, {method:'get',parameters:params,asynchronous:true});
          $('treatmentsMyD').toggle();
      }
 
      function callAdditionWebService(url,id){
          var ran_number=Math.round(Math.random()*1000000);
-         var params = "demographicNo=<%=demoNo%>&rand="+ran_number;  //hack to get around ie caching the page
+         var params = "demographicNo=<%=bean.getDemographicNo()%>&rand="+ran_number;  //hack to get around ie caching the page
          var updater=new Ajax.Updater(id,url, {method:'get',parameters:params,insertion: Insertion.Bottom,evalScripts:true});
      }
 
      function callReplacementWebService(url,id){
               var ran_number=Math.round(Math.random()*1000000);
-              var params = "demographicNo=<%=demoNo%>&rand="+ran_number;  //hack to get around ie caching the page
+              var params = "demographicNo=<%=bean.getDemographicNo()%>&rand="+ran_number;  //hack to get around ie caching the page
               var updater=new Ajax.Updater(id,url, {method:'get',parameters:params,evalScripts:true});
          }
           //callReplacementWebService("InteractionDisplay.jsp",'interactionsRx');
@@ -1429,9 +1431,9 @@ YAHOO.example.FnMultipleFields = function(){
         resultsList : "results",
         fields : ["name", "id","isInactive"]
     };
-    // Enable caching
-    oDS.maxCacheEntries =0;
-    oDS.connXhrMode ="cancelStaleRequests";
+    
+    oDS.maxCacheEntries =0;//no caching so it return more relevant result when search string is changed.
+    oDS.connXhrMode ="cancelStaleRequests";    
     // Instantiate AutoComplete
     var oAC = new YAHOO.widget.AutoComplete("searchString", "autocomplete_choices", oDS);
     oAC.useShadow = true;
@@ -1440,7 +1442,7 @@ YAHOO.example.FnMultipleFields = function(){
     oAC.minQueryLength = 3;
     oAC.maxResultsDisplayed = 50;
     oAC.formatResult = resultFormatter2;
-    
+
     // Define an event handler to populate a hidden form field
     // when an item gets selected and populate the input field
     //var myHiddenField = YAHOO.util.Dom.get("myHidden");
@@ -1449,15 +1451,15 @@ YAHOO.example.FnMultipleFields = function(){
                     var url = "<c:out value="${ctx}"/>" + "/oscarRx/WriteScript.do?parameterValue=createNewRx"; //"prescribe.jsp";
                     var ran_number=Math.round(Math.random()*1000000);
                     var name=encodeURIComponent(arr.name);
-                    var params = "demographicNo=<%=demoNo%>&drugId="+arr.id+"&text="+name+"&randomId="+ran_number;  //hack to get around ie caching the page
-                   new Ajax.Updater('rxText',url, {method:'get',parameters:params,evalScripts:true,
+                    var params = "demographicNo=<%=bean.getDemographicNo()%>&drugId="+arr.id+"&text="+name+"&randomId="+ran_number;  //hack to get around ie caching the page
+                    new Ajax.Updater('rxText',url, {method:'get',parameters:params,asynchronous:false,evalScripts:true,
                         insertion: Insertion.Bottom,onSuccess:function(transport){
                             updateCurrentInteractions();
                         }});
-                    
+
                     $('searchString').value = "";
 
-   };
+    };
     oAC.itemSelectEvent.subscribe(myHandler);
     var collapseFn=function(){
         $('autocomplete_choices').hide();
@@ -1520,7 +1522,7 @@ function addFav(randomId,brandName){
                 $(id).show();
                 $('show_'+id).hide();
                 $('showHideWord').update('hide');
-
+                
                 showOrHide=1;
                 numberOfHiddenResources++;
             }
@@ -1594,7 +1596,7 @@ function setSearchedDrug(drugId,name){
     var url = "<c:out value="${ctx}"/>" + "/oscarRx/WriteScript.do?parameterValue=createNewRx";
     var ran_number=Math.round(Math.random()*1000000);
     name=encodeURIComponent(name);
-    var params = "demographicNo=<%=demoNo%>&drugId="+drugId+"&text="+name+"&randomId="+ran_number;
+    var params = "demographicNo=<%=bean.getDemographicNo()%>&drugId="+drugId+"&text="+name+"&randomId="+ran_number;
     new Ajax.Updater('rxText',url, {method:'get',parameters:params,asynchronous:true,evalScripts:true,insertion: Insertion.Bottom,onSuccess:function(transport){
                             updateCurrentInteractions();
             }});
@@ -1621,7 +1623,7 @@ function updateReRxDrugId(elementId){
         var drugId=ar[1];
         if(drugId!=null && $("reRxCheckBox_"+drugId).checked==true){
             var url= "<c:out value="${ctx}"/>" + "/oscarRx/rePrescribe2.do?method=represcribeMultiple";
-            new Ajax.Updater('rxText',url, {method:'get',parameters:data,evalScripts:true,
+            new Ajax.Updater('rxText',url, {method:'get',parameters:data,asynchronous:false,evalScripts:true,
                 insertion: Insertion.Bottom,onSuccess:function(transport){
                     updateCurrentInteractions();
                 }});
@@ -1750,7 +1752,7 @@ function updateQty(element){
          function getRenalDosingInformation(divId,atcCode){
                var url = "RenalDosing.jsp";
                var ran_number=Math.round(Math.random()*1000000);
-               var params = "demographicNo=<%=demoNo%>&atcCode="+atcCode+"&divId="+divId+"&rand="+ran_number;
+               var params = "demographicNo=<%=bean.getDemographicNo()%>&atcCode="+atcCode+"&divId="+divId+"&rand="+ran_number;
                new Ajax.Updater(divId,url, {method:'get',parameters:params,insertion: Insertion.Bottom,asynchronous:true});
          }
          function getLUC(divId,randomId,din){
@@ -1767,7 +1769,7 @@ function updateQty(element){
         {method: 'post',postBody:data,asynchronous:false,
             onSuccess:function(transport){
                 callReplacementWebService("ListDrugs.jsp",'drugProfile');
-                popForm2(null);
+                popForm2();
                 resetReRxDrugList();
             }});
         return false;

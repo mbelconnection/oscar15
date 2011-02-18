@@ -1,4 +1,4 @@
-<%@page errorPage="../provider/errorpage.jsp"%>
+<%@ page language="java" errorPage="../provider/errorpage.jsp"%>
 <%@ page
 	import="java.util.*, oscar.oscarMDS.data.*,oscar.oscarLab.ca.on.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
@@ -44,7 +44,7 @@ String AbnFlag = "";
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -55,6 +55,7 @@ String AbnFlag = "";
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><%=pd.getPatientName()%> - <bean:message
 	key="oscarMDS.segmentDisplay.title" /></title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <script language="javascript" type="text/javascript"
 	src="../share/javascript/Oscar.js"></script>
 <link rel="stylesheet" type="text/css" href="encounterStyles.css">

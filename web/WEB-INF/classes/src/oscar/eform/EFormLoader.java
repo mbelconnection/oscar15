@@ -29,13 +29,10 @@ package oscar.eform;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
 import org.apache.commons.digester.Digester;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.eform.data.DatabaseAP;
 
@@ -48,7 +45,7 @@ public class EFormLoader {
         if (_instance == null) {
             _instance = new EFormLoader();
             parseXML();
-            MiscUtils.getLogger().debug("NumElements ====" + eFormAPs.size());
+            System.out.println("NumElements ====" + eFormAPs.size());
         }
         return _instance;
     }
@@ -65,9 +62,9 @@ public class EFormLoader {
         ap.setApOutput(processed);
         eFormAPs.addElement(ap);
     }
-
+    
     private EFormLoader() {
-/*
+        /*
         String name = "patient_name";
         String sql = "SELECT * FROM demographic WHERE demographic_no=${demographic}";
         String output = "${last_name}, ${first_name}";
@@ -78,22 +75,19 @@ public class EFormLoader {
         DatabaseAP ap2 = new DatabaseAP(name2, sql2, output2);
         eFormAPs.addElement(ap1);
         eFormAPs.addElement(ap2);
- */
-            
+        */
+        
     }
-    /**
-     *
-     * @return list of names from database
-     */
-    public List getNames() {
+    /*
+    public static ArrayList getNames() {
         ArrayList names = new ArrayList();
         for (int i=0; i<eFormAPs.size(); i++) {
             DatabaseAP curap = (DatabaseAP) eFormAPs.get(i);
             names.add(curap.getApName());
         }
         return names;
-    }
-     
+    }*/
+    
     public static String getMarker() { return marker; }
     
     public static DatabaseAP getAP(String apName) {
@@ -136,13 +130,13 @@ public class EFormLoader {
           if (configpath == null) {             
              EFormLoader eLoader = new EFormLoader();
              ClassLoader loader = eLoader.getClass().getClassLoader();
-             fs = loader.getResourceAsStream("/oscar/eform/apconfig.xml");
+             fs = loader.getResourceAsStream("/oscar/eform/apconfig.xml");                                                       
           }else{
              fs = new FileInputStream(configpath);          
           }
           digester.parse(fs);
           fs.close();
-      } catch (Exception e) { MiscUtils.getLogger().error("Error", e); }
+      } catch (Exception e) { e.printStackTrace(); }
     }
     
  }

@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -60,7 +60,11 @@
 
   plannerBean.doConfigure(dbQueries);
 %>
-<html><head>
+<html>
+<%
+    response.setHeader("Cache-Control", "no-cache");
+%>
+<head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>ANNUAL HEALTH REVIEW PLANNER</title>
 <script type="text/javascript" language="Javascript">
@@ -126,8 +130,11 @@
 %> <xml id="xml_list"> <planner> <%= risk_content %> <%= checklist_content %>
 </planner> </xml> <%
         //set the riskdata bean from xml file
-        Properties   savedar1risk1 = risks.getRiskName("../../decision/annualreview/desannualreviewplannerrisk.xml");
+        Properties   savedar1risk1 = risks.getRiskName("../webapps/" + oscarVariables.getProperty("project_home") + 
+                "/decision/annualreview/desannualreviewplannerrisk.xml");
         StringBuffer tt;
+        System.out.println("jsp :" + "../webapps/" + oscarVariables.getProperty("project_home") + 
+                "/decision/annualreview/desannualreviewplannerrisk.xml");
 
         for (Enumeration e = savedar1risk1.propertyNames(); e.hasMoreElements(); ) {
           tt = new StringBuffer().append(e.nextElement());
@@ -164,6 +171,8 @@
           riskDataBean.setProperty("996", "checked");
         }
       }
+
+      plannerBean.closePstmtConn();
 %>
 <table bgcolor='silver' width='100%'>
 	<tr>
@@ -185,12 +194,13 @@
 	<tr>
 		<td width="20%" valign='top'>
 		<%
-            out.println(risks.doStuff(oscarVariables.getProperty("tomcat_path") +"webapps/"+ oscarVariables.getProperty("project_home") + "/decision/annualreview/desannualreviewplannerrisk.xml"));
+            out.println(risks.doStuff(new String(oscarVariables.getProperty("tomcat_path") +"webapps/"+ oscarVariables.getProperty("project_home") + "/decision/annualreview/desannualreviewplannerrisk.xml")));
 %>
 		</td>
 		<td>
 		<%
-            out.println(checklist.doStuff(oscarVariables.getProperty("tomcat_path") +"webapps/"+ oscarVariables.getProperty("project_home") + "/decision/annualreview/desannualreviewplannerriskchecklist.xml", riskDataBean));
+            out.println(checklist.doStuff(new String(oscarVariables.getProperty("tomcat_path") +"webapps/"+ oscarVariables.getProperty("project_home") + 
+                    "/decision/annualreview/desannualreviewplannerriskchecklist.xml"), riskDataBean));
 %>
 		
 	</tr>

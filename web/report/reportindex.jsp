@@ -20,7 +20,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -43,42 +43,17 @@ String billingRegion = (oscar.OscarProperties.getInstance()).getProperty("billre
 <jsp:useBean id="reportMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
 <%  if(!reportMainBean.getBDoConfigure()) { %>
-<%@ include file="reportMainBeanConn.jspf"%>
+<%@ include file="reportMainBeanConn.jsp"%>
 <% }  %>
 
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
-<%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar"%>
-<%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
-
-<%
-
-	if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
-	String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
-	
-    boolean isSiteAccessPrivacy=false;
-    boolean isTeamAccessPrivacy=false; 
-    String provider_dboperation = "search_provider";
-    String mygroup_dboperation = "search_group";
-%>
-<security:oscarSec objectName="_site_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%
-		isSiteAccessPrivacy =true;
-		provider_dboperation = "site_search_provider";
-		mygroup_dboperation = "site_search_group";
-	%>
-</security:oscarSec>
-<security:oscarSec objectName="_team_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%
-		isTeamAccessPrivacy =true; 
-		provider_dboperation = "team_search_provider";
-	%>
-	
-</security:oscarSec>
 <html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="report.reportindex.title" /></title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <link rel="stylesheet" href="../web.css" />
 
 <link rel="stylesheet" type="text/css" media="all"
@@ -87,17 +62,6 @@ String billingRegion = (oscar.OscarProperties.getInstance()).getProperty("billre
 <script type="text/javascript"
 	src="../share/calendar/lang/calendar-en.js"></script>
 <script type="text/javascript" src="../share/calendar/calendar-setup.js"></script>
-
-
-<script type="text/javascript" src="../dojoAjax/dojo.js"></script>
-<script type="text/javascript" language="JavaScript">
-            dojo.require("dojo.date.format");
-			dojo.require("dojo.widget.*");
-			dojo.require("dojo.validate.*");
-		</script>
-<script type="text/javascript" src="../js/caisi_report_tools.js"></script>
-
-
 <script language="JavaScript">
 <!--
 function setfocus() {
@@ -133,17 +97,6 @@ function ogo2() {
   popupPage(700,900,u);
 }
 
-function popupPageNew(vheight,vwidth,varpage) {
-  var page = "" + varpage;
-  windowprops = "height="+vheight+",width="+vwidth+",location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=yes";
-  var popup=window.open(page, "demographicprofile", windowprops);
-  if (popup != null) {
-    if (popup.opener == null) {
-      popup.opener = self;
-    }
-  }
-}
-
 function go(r) {
 //s.options[s.selectedIndex].value
   var s = document.report.provider_no.value ;
@@ -168,42 +121,11 @@ else if(r=='new') {
 	}
  }
  else if( ro == true ) {
-        popupPageNew(600,750,x2);
+        popupPage(600,750,x2);
   }else {
-	popupPageNew(600,750,x);
+	popupPage(600,750,x);
   }
 }
-
-function gonew(r) {
-//s.options[s.selectedIndex].value
-var s = document.report.provider_no.value ;
-var t = document.report.sdate.value ;
-var u = document.report.asdate.value ;
-var v = document.report.aedate.value ;
-var y = document.report.sTime.value ;
-var z = document.report.eTime.value ;
-var ro = document.report.rosteredOnly.checked;
-var w = 'reportdaysheet2.jsp?dsmode=' + r + '&provider_no=' + s +'&sdate='+ t;
-var x = 'reportdaysheet2.jsp?dsmode=' + r + '&provider_no=' + s +'&sdate='+ u + '&edate=' + v + '&sTime=' + y + '&eTime=' + z ;
-var x2 = 'reportdaysheet2.jsp?dsmode=' + r + '&provider_no=' + s +'&sdate='+ u + '&edate=' + v + '&sTime=' + y + '&eTime=' + z + '&rosteredStatus=true';
-var y2 =  'tabulardaysheetreport.jsp?provider_no=' + s +'&sdate=' + document.report.tabDay.value.replace('/', '-');
-
-if (r=='tab')
- {
-popupPage(600,750, y2);
-}
-else if(r=='new') {
-if(confirm("<bean:message key="report.reportindex.msgGoConfirm"/>") ) {
-popupPage(600,750,w);
-  }
-      }
- else if( ro == true ) {
- popupPage(600,750,x2);
-  }else {
- popupPageNew(600,750,x);
-  }
-   }
-
 function ggo(r) {
 //s.options[s.selectedIndex].value
   var s = document.report.pprovider_no.value ;
@@ -270,10 +192,8 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
 		</td>
 		<td><a HREF="#"
 			onClick="popupPage(310,430,'../share/CalendarPopup.jsp?urlfrom=../report/reportindex.jsp&year=<%=now.get(Calendar.YEAR)%>&month=<%=now.get(Calendar.MONTH)+1%>&param=<%=URLEncoder.encode("&formdatebox=document.report.startDate.value")%>')">
-		<bean:message key="report.reportindex.formFrom" /></a> 
-		<%-- any early default start date should suffice for reporting all --%>
-		<INPUT TYPE="text" NAME="startDate" VALUE="1950/01/01" size='10'>
-		</td>
+		<bean:message key="report.reportindex.formFrom" /></a> <INPUT TYPE="text"
+			NAME="startDate" VALUE="0001/01/01" size='10'></td>
 		<td><a HREF="#"
 			onClick="popupPage(310,430,'../share/CalendarPopup.jsp?urlfrom=../report/reportindex.jsp&year=<%=now.get(Calendar.YEAR)%>&month=<%=now.get(Calendar.MONTH)+1%>&param=<%=URLEncoder.encode("&formdatebox=document.report.endDate.value")%>')">
 		<bean:message key="report.reportindex.formTo" /></a> <INPUT TYPE="text"
@@ -307,10 +227,8 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
 			key="report.reportindex.formDaySheet" /></td>
 		<td><select name="provider_no">
 			<%
-               ResultSet rsgroup = reportMainBean.queryResults(mygroup_dboperation);
+               ResultSet rsgroup = reportMainBean.queryResults("search_group");
                      while (rsgroup.next()) {
-                    	 if (isTeamAccessPrivacy) 
-                    		 continue;	//skip mygroup display if user have TeamAccessPrivacy 
             %>
 			<option value="<%="_grp_"+rsgroup.getString("mygroup_no")%>"
 				<%=mygroupno.equals(rsgroup.getString("mygroup_no"))?"selected":""%>><%="GRP: "+rsgroup.getString("mygroup_no")%></option>
@@ -318,7 +236,7 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
                      }
             %>
 			<%
-                 rsgroup = reportMainBean.queryResults(provider_dboperation);
+                 rsgroup = reportMainBean.queryResults("search_provider");
                      while (rsgroup.next()) {
             %>
 			<option value="<%=rsgroup.getString("provider_no")%>"
@@ -336,11 +254,7 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
 	<tr>
 		<td width="2"></td>
 		<td width="1">&nbsp;</td>
-                        <td width="300">
-<oscar:oscarPropertiesCheck property="NEW_DAY_SHEET_STYLE" value="yes">
-                        <sup>*</sup><a HREF="#" ONCLICK="gonew('all')">Hospital Appointment</a><br>
-</oscar:oscarPropertiesCheck>
-                        <sup>*</sup><a HREF="#" ONCLICK="go('all')"><bean:message
+                        <td width="300"><sup>*</sup><a HREF="#" ONCLICK="go('all')"><bean:message
 			key="report.reportindex.btnAllAppt" /></a><br>&nbsp;&nbsp; <bean:message key="report.reportindex.chkRostered"/> <input type="checkbox" id="rosteredOnly" value="true"> </td>
 		<td><a HREF="#"
 			onClick="popupPage(310,430,'../share/CalendarPopup.jsp?urlfrom=../report/reportindex.jsp&year=<%=now.get(Calendar.YEAR)%>&month=<%=now.get(Calendar.MONTH)+1%>&param=<%=URLEncoder.encode("&formdatebox=document.report.asdate.value")%>')"><bean:message
@@ -472,10 +386,8 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
 			key="report.reportindex.formBadAppt" /></a></td>
 		<td><select name="pprovider_no">
 			<%
-               rsgroup = reportMainBean.queryResults(mygroup_dboperation);
+               rsgroup = reportMainBean.queryResults("search_group");
                      while (rsgroup.next()) {
-                    	 if (isTeamAccessPrivacy) 
-                    		 continue;	//skip mygroup display if user have TeamAccessPrivacy 
             %>
 			<option value="<%="_grp_"+rsgroup.getString("mygroup_no")%>"
 				<%=mygroupno.equals(rsgroup.getString("mygroup_no"))?"selected":""%>><%="GRP: "+rsgroup.getString("mygroup_no")%></option>
@@ -483,7 +395,7 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
                      }
             %>
 			<%
-                 rsgroup = reportMainBean.queryResults(provider_dboperation);
+                 rsgroup = reportMainBean.queryResults("search_provider");
                      while (rsgroup.next()) {
             %>
 			<option value="<%=rsgroup.getString("provider_no")%>"
@@ -518,10 +430,8 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
 			key="report.reportindex.btnPatientChartList" /></a></td>
 		<td><select name="pcprovider_no">
 			<%
-               rsgroup = reportMainBean.queryResults(mygroup_dboperation);
+               rsgroup = reportMainBean.queryResults("search_group");
                      while (rsgroup.next()) {
-                    	 if (isTeamAccessPrivacy) 
-                    		 continue;	//skip mygroup display if user have TeamAccessPrivacy 
             %>
 			<option value="<%="_grp_"+rsgroup.getString("mygroup_no")%>"
 				<%=mygroupno.equals(rsgroup.getString("mygroup_no"))?"selected":""%>><%="GRP: "+rsgroup.getString("mygroup_no")%></option>
@@ -529,7 +439,7 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
                      }
             %>
 			<%
-                 rsgroup = reportMainBean.queryResults(provider_dboperation);
+                 rsgroup = reportMainBean.queryResults("search_provider");
                      while (rsgroup.next()) {
             %>
 			<option value="<%=rsgroup.getString("provider_no")%>"
@@ -551,10 +461,8 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
 			key="report.reportindex.btnOldPatient" /></a></td>
 		<td><select name="opcprovider_no">
 			<%
-               rsgroup = reportMainBean.queryResults(mygroup_dboperation);
+               rsgroup = reportMainBean.queryResults("search_group");
                      while (rsgroup.next()) {
-                    	 if (isTeamAccessPrivacy) 
-                    		 continue;	//skip mygroup display if user have TeamAccessPrivacy 
             %>
 			<option value="<%="_grp_"+rsgroup.getString("mygroup_no")%>"
 				<%=mygroupno.equals(rsgroup.getString("mygroup_no"))?"selected":""%>><%="GRP: "+rsgroup.getString("mygroup_no")%></option>
@@ -562,7 +470,7 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
                      }
             %>
 			<%
-                 rsgroup = reportMainBean.queryResults(provider_dboperation);
+                 rsgroup = reportMainBean.queryResults("search_provider");
                      while (rsgroup.next()) {
             %>
 			<option value="<%=rsgroup.getString("provider_no")%>"
@@ -585,10 +493,8 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
 			key="report.reportindex.btnNoShowAppointmentList" /></a></td>
 		<td><select name="nsprovider_no">
 			<%
-               rsgroup = reportMainBean.queryResults(mygroup_dboperation);
+               rsgroup = reportMainBean.queryResults("search_group");
                      while (rsgroup.next()) {
-                    	 if (isTeamAccessPrivacy) 
-                    		 continue;	//skip mygroup display if user have TeamAccessPrivacy 
             %>
 			<option value="<%="_grp_"+rsgroup.getString("mygroup_no")%>"
 				<%=mygroupno.equals(rsgroup.getString("mygroup_no"))?"selected":""%>><%="GRP: "+rsgroup.getString("mygroup_no")%></option>
@@ -596,7 +502,7 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
                      }
             %>
 			<%
-                 rsgroup = reportMainBean.queryResults(provider_dboperation);
+                 rsgroup = reportMainBean.queryResults("search_provider");
                      while (rsgroup.next()) {
             %>
 			<option value="<%=rsgroup.getString("provider_no")%>"
@@ -786,51 +692,7 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
         <td></td>
         <td></td>
     </tr>
-        
-     <tr></tr>  
-     <tr></tr>
-     
-    <tr><td width="2"></td>
-    	<td colspan='3' align="left">
-    <c:if
-	test="${sessionScope.userrole ne 'er_clerk' and sessionScope.userrole ne 'Vaccine Provider'}">
-	<div><span>CAISI Reporting Tools</span> <caisi:isModuleLoad
-		moduleName="TORONTO_RFQ" reverse="true">
-				
-		<div><a HREF="../PMmodule/ClientManager.do?method=getGeneralFormsReport" target="generalFormsReport">General Forms Reports 
-		</a></div>
-		<div><a href="javascript:void(0);" onclick="javascript:getIntakeReport('quick');return false;">Registration
-		Intake Report</a></div>
-		<div><a href="javascript:void(0);" onclick="javascript:getIntakeReport('indepth');return false;">Follow-up
-		Intake Report</a></div>
-		  
-		<caisi:isModuleLoad moduleName="intakec.enabled">
-			<div><a href="javascript:void(0);" onclick="javascript:createIntakeCReport1();return false;">Street
-			Health Mental Health Report</a></div>
-		</caisi:isModuleLoad>
-		
-		<div><html:link action="/PMmodule/Reports/ProgramActivityReport.do">Activity Report</html:link>
-		</div>
-		<%--
-                <div>
-                    <html:link action="/PMmodule/Reports/ClientListsReport">Client Lists Report</html:link>
-                </div>
-                --%>
-		<div><html:link action="/SurveyManager.do?method=reportForm">User Created Form Report</html:link>
-		</div>
-		</caisi:isModuleLoad> <caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="false">
-			<div><html:link action="QuatroReport/ReportList.do">Quatro Report Runner</html:link>
-			</div>
-		</caisi:isModuleLoad> <caisi:isModuleLoad moduleName="streethealth">
-		<div><a href="javascript:void(0);" onclick="javascript:createStreetHealthReport();return false;">Street
-		Health Mental Health Report</a></div>
-	</caisi:isModuleLoad></div>
-</c:if> 
-	
-    </td>
-    </tr>
-    
-    <tr>
+        <tr>
         <td colspan='3' align="left"><input type="button" name="Button" value="<bean:message key="report.reportindex.btnCancel"/>" onClick="window.close()"></td>
         <td></td>
         <td></td>

@@ -1,9 +1,16 @@
+<%@ page language="java" %>
 <%@ page
     import="java.util.*,oscar.oscarLab.ca.on.*,oscar.oscarDemographic.data.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
 <%
+
+
+
+            System.out.println(" test name " + request.getParameter("testName"));
+            System.out.println(" demo " + request.getParameter("demographic_no"));
+            System.out.println(" labType  " + request.getParameter("labType"));
 
             String labType = request.getParameter("labType");
             String demographicNo = request.getParameter("demographic_no");
@@ -12,6 +19,7 @@
             if (identifier == null) {
                 identifier = "NULL";
             }
+            System.out.println("lab Type " + labType + " demo " + demographicNo + " testName " + testName);
 
             DemographicData dData = new DemographicData();
 
@@ -54,18 +62,18 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 -->
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html>
+<html>
     <head>
         <script type="text/javascript" src="<%= request.getContextPath()%>/js/global.js"></script>
         <html:base />
         <title><%=""/*lab.pLastName*/%>, <%=""/*lab.pFirstName*/%> <bean:message
             key="oscarMDS.segmentDisplay.title" /></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
         <link rel="stylesheet" type="text/css"
               href="../../../share/css/OscarStandardLayout.css">
         <link rel="stylesheet" type="text/css" media="all" href="../share/css/extractedFromPages.css"  />
@@ -212,8 +220,9 @@
                         oscar.oscarRx.data.RxPrescriptionData.Prescription [] arr = {};
                         arr = prescriptData.getUniquePrescriptionsByPatient(Integer.parseInt(demographicNo));
         
+                        System.out.println("WHY NO RX??? "+arr+"<<<");
                         if (arr != null){
-                        	MiscUtils.getLogger().error("ARR "+arr.length);
+                           System.out.println("ARR "+arr.length);
                         }
         
                         long now = System.currentTimeMillis();
@@ -221,7 +230,10 @@
                         for(int idx = 0; idx < arr.length; ++idx ) {            
                             oscar.oscarRx.data.RxPrescriptionData.Prescription drug = arr[idx];
                             if( drug.isArchived() ){
+                                System.out.println("DRug is skipping");
                                 continue;
+                            }else{
+                                System.out.println("DRug is not skipping");
                             }
 
                             String styleColor = "";            

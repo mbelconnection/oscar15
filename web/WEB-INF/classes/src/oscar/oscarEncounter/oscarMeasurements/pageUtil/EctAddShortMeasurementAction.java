@@ -38,7 +38,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarPrevention.reports.FollowupManagement;
 import oscar.util.UtilDateUtilities;
@@ -65,7 +64,7 @@ public class EctAddShortMeasurementAction extends Action{
        String comment = request.getParameter("message");
        if ( followUpType != null && followUpValue != null){   
            FollowupManagement fup = new FollowupManagement();
-           MiscUtils.getLogger().debug("followUpType:"+followUpType+" followUpValue: "+followUpValue+" demos:"+demos+" providerNo:"+providerNo+" comment:"+comment);
+           System.out.println("followUpType:"+followUpType+" followUpValue: "+followUpValue+" demos:"+demos+" providerNo:"+providerNo+" comment:"+comment);
            fup.markFollowupProcedure(followUpType,followUpValue,demos,providerNo,UtilDateUtilities.now(),comment);
            response.getWriter().print("id="+id+"&followupValue="+followUpValue+"&Date="+UtilDateUtilities.DateToString(UtilDateUtilities.now()));        
        }

@@ -12,7 +12,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *
  *
- *
+ * 
  *
  * This software was written for the
  * Department of Family Medicine
@@ -20,25 +20,36 @@
  * Hamilton
  * Ontario, Canada
  THIS FILE GET INTERACTION FROM MYDRUGREF
---%><%@ page import="java.util.*,oscar.oscarRx.data.*,oscar.oscarRx.pageUtil.*"%>
+--%>
+
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+<%@ page import="java.util.*,oscar.oscarRx.data.*,oscar.oscarRx.pageUtil.*"%>
 <%
 RxSessionBean bean = (RxSessionBean) session.getAttribute("RxSessionBean");
 if ( bean == null ){
     return;
 }
 Vector<Hashtable> warnings = (Vector)request.getAttribute("warnings");
+   System.out.println("in MyDrugrefDisplay.jsp");
     if ( warnings != null && warnings.size() > 0){
+        System.out.println("numb warnings "+warnings.size());
 
         int untrustedRes = 0;
         int hiddenRes = 0;
         Random rnd=new Random();
         for (Hashtable ht: warnings){
             Vector<Hashtable> commentsVec = (Vector) ht.get("comments");
+            System.out.println("commentsVec="+commentsVec);
+            //displayKeys(ht);
 
+            System.out.println("\nDrug: "+ht.get("name")+"\nEvidence: "+ht.get("evidence")+"\nSignificance: "+ht.get("significance")+"\nATC: "+ht.get("atc")+"\nReference: "+ht.get("reference")+"\nWarning: "+ht.get("body")+" trusted "+ht.get("trusted"));
             boolean trustedResource = trusted(ht.get("trusted"));
 
             String interactStr=(String)ht.get("interactStr");
             if(interactStr!=null && interactStr.trim().length()>0){
+
+                System.out.println("---interactStr="+interactStr);
 
             %>
 <div
@@ -60,7 +71,7 @@ Vector<Hashtable> warnings = (Vector)request.getAttribute("warnings");
        h.put("2","moderate");
        h.put("3","major");
        h.put(" ","unknown");
-
+       System.out.println("s="+s);
        String retval=null;
        if(s!=null){
          retval = (String) h.get(s);
@@ -77,7 +88,7 @@ Vector<Hashtable> warnings = (Vector)request.getAttribute("warnings");
        h.put("F","fair");
        h.put("G","good");
        h.put(" ","unknown");
-
+       System.out.println("s "+s);
        String retval;
       if(s!=null){
            retval = (String) h.get(s);
@@ -141,13 +152,14 @@ Vector<Hashtable> warnings = (Vector)request.getAttribute("warnings");
             for (Object o :ht.keySet()){
                 String s  = "key:"+o+" val "+ht.get(o)+"  class : "+ht.get(o).getClass().getName();
                 sb.append(s);
-
+                System.out.println(s);
                 if ( o instanceof Vector){
                    Vector v =  (Vector) o;
+                   System.out.println("SS "+v.size());
                 }
             }
        }
-
+       
        return sb.toString();
    }
 
@@ -156,6 +168,7 @@ Vector<Hashtable> warnings = (Vector)request.getAttribute("warnings");
            if (o != null && o instanceof Boolean){
               Boolean c  = (Boolean) o;
               b = c.booleanValue();
+              System.out.println(b);
            }
            return b;
        }

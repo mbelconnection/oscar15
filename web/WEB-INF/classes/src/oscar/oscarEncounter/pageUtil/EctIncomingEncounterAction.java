@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -31,12 +31,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.util.UtilDateUtilities;
 
@@ -44,7 +44,7 @@ import oscar.util.UtilDateUtilities;
 
 public class EctIncomingEncounterAction extends Action {
     
-  private static Logger log = MiscUtils.getLogger();
+  private static Log log = LogFactory.getLog(EctIncomingEncounterAction.class);
     
   public ActionForward execute(ActionMapping mapping,
 				 ActionForm form,
@@ -112,9 +112,6 @@ public class EctIncomingEncounterAction extends Action {
                 bean.setUpEncounterPage();               
                 request.getSession().setAttribute("EctSessionBean",bean);
                 request.getSession().setAttribute("eChartID", bean.eChartId);
-                if(request.getParameter("source")!=null) {
-                	bean.source = request.getParameter("source");
-                }
             }
         }
         else{

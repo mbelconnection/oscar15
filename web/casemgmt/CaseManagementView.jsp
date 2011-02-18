@@ -35,17 +35,14 @@
 <%@ page import="oscar.OscarProperties"%>
 <%@ page import="org.apache.log4j.Logger"%>
 <%@page import="org.oscarehr.casemgmt.web.CaseManagementViewAction"%>
-<%@page import="org.oscarehr.casemgmt.web.NoteDisplay"%>
 <%
+	response.setHeader("Cache-Control", "no-cache");
 	Logger logger=Logger.getLogger("CaseManagementView.jsp");
-	
-	@SuppressWarnings("unchecked")
-	java.util.List<NoteDisplay> noteList=(java.util.List<NoteDisplay>)request.getAttribute("Notes");
+	java.util.List<CaseManagementViewAction.NoteDisplay> noteList=(java.util.List<CaseManagementViewAction.NoteDisplay>)request.getAttribute("Notes");
 
     if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
     String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
 %>
-
 
 <html:form action="/CaseManagementView" method="get">
 	<html:hidden property="demographicNo" />
@@ -477,11 +474,11 @@
 						</security:oscarSec>
 						</td>
 						<td><fmt:formatDate pattern="yyyy-MM-dd hh:mm a" value="${note.observationDate}" /></td>
-						<td><c:out value="${note.providerName}" /></td>
+						<td><c:out value="${note.provider}" /></td>
 						<td><c:out value="${note.status}" /></td>
-						<td><c:out value="${note.programName}" /></td>
+						<td><c:out value="${note.program}" /></td>
 						<td><c:out value="${note.location}" /></td>
-						<td><c:out value="${note.roleName}" /></td>
+						<td><c:out value="${note.role}" /></td>
 					</tr>
 				</c:forEach>
 			</table>
@@ -518,13 +515,13 @@
 							<tr bgcolor="<%=bgcolor1%>">
 								<td width="7%">Program</td>
 								<td width="93%">
-									<c:out value="${note.programName}" />
+									<c:out value="${note.program}" />
 								</td>
 							</tr>
 							<tr bgcolor="<%=bgcolor1%>">
 								<td width="7%">Provider</td>
 								<td width="93%">
-									<c:out value="${note.providerName}" />
+									<c:out value="${note.provider}" />
 								</td>
 							</tr>
 							<tr bgcolor="<%=bgcolor1%>">

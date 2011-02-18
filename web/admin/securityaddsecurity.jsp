@@ -18,7 +18,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -42,8 +42,7 @@
 <%@ page import="oscar.log.LogAction,oscar.log.LogConst"%>
 <%@ include file="/common/webAppContextAndSuperMgr.jsp"%>
 
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html:html locale="true">
+<html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="admin.securityaddsecurity.title" /></title>
@@ -82,7 +81,7 @@
         		request.getParameter("user_name"), request.getRemoteAddr());
 	} catch (Exception e) {
 		if (e.getMessage().toLowerCase().contains("duplicate")) duplicateError=true;
-		else MiscUtils.getLogger().error("Error", e);
+		else e.printStackTrace();
 	}
 
 

@@ -23,8 +23,8 @@ package org.oscarehr.common.model;
 
 import java.io.Serializable;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Set;
+import java.util.Date;
 
 /**
  * This is the object class that relates to the provider table. Any customizations belong here.
@@ -52,19 +52,6 @@ public class Provider implements Serializable, Comparable<Provider>{
 	private String firstName;
 	private String rmaNo;
     private Date SignedConfidentiality;
-    private String practitionerNo;
-    private String email;
-    private String title;
-    
-	public String getPractitionerNo() {
-		return practitionerNo;
-	}
-
-	public void setPractitionerNo(String practitionerNo) {
-		this.practitionerNo = practitionerNo;
-	}
-
-   
 
 	private Set<Site> sites;
 
@@ -180,9 +167,6 @@ public class Provider implements Serializable, Comparable<Provider>{
 		this.lastName = lastName;
 	}
 
-	/**
-    * @Deprecated no longer is use 2010-04-23, marked for future removal 
-	 */
 	public String getProviderType() {
 		return providerType;
 	}
@@ -255,28 +239,12 @@ public class Provider implements Serializable, Comparable<Provider>{
 		this.rmaNo = rmaNo;
 	}
 
-    public String getEmail() {
-    	return email;
-    }
-
-	public void setEmail(String email) {
-    	this.email = email;
-    }
-
-	public Date getSignedConfidentiality() {
+    public Date getSignedConfidentiality() {
         return this.SignedConfidentiality;
     }
 
     public void setSignedConfidentiality( Date SignedConfidentiality ) {
         this.SignedConfidentiality = SignedConfidentiality;
-    }
-
-	public String getTitle() {
-    	return title;
-    }
-
-	public void setTitle(String title) {
-    	this.title = title;
     }
 
 	public ComparatorName ComparatorName() {
@@ -291,8 +259,7 @@ public class Provider implements Serializable, Comparable<Provider>{
 		}
 	}
 
-	@Override
-    public int hashCode() {
+	public int hashCode() {
 		if (providerNo==null) return(super.hashCode());
 		else return(providerNo.hashCode());
 	}

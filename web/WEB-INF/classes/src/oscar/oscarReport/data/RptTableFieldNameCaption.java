@@ -6,16 +6,11 @@ package oscar.oscarReport.data;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
-import org.oscarehr.common.dao.EncounterFormDao;
-import org.oscarehr.common.model.EncounterForm;
-import org.oscarehr.util.MiscUtils;
-import org.oscarehr.util.SpringUtils;
 
 import oscar.login.DBHelp;
 
@@ -23,8 +18,7 @@ import oscar.login.DBHelp;
  * @author yilee18
  */
 public class RptTableFieldNameCaption {
-    private static final Logger logger = MiscUtils.getLogger();
-    private static EncounterFormDao encounterFormDao=(EncounterFormDao)SpringUtils.getBean("encounterFormDao");
+    private static final Logger _logger = Logger.getLogger(RptTableFieldNameCaption.class);
 
     String table_name;
     String name;
@@ -32,7 +26,7 @@ public class RptTableFieldNameCaption {
     DBHelp dbObj = new DBHelp();
 
     public boolean insertOrUpdateRecord() {
-        boolean ret;
+        boolean ret = false;
         String sql = "select id from reportTableFieldCaption where table_name = '"
                 + StringEscapeUtils.escapeSql(table_name) + "' and name='" + StringEscapeUtils.escapeSql(name) + "'";
         try {
@@ -44,7 +38,7 @@ public class RptTableFieldNameCaption {
             }
             rs.close();
         } catch (SQLException e) {
-            logger.error("insertOrUpdateRecord() : sql = " + sql);
+            _logger.error("insertOrUpdateRecord() : sql = " + sql);
         }
         return false;
     }
@@ -60,9 +54,9 @@ public class RptTableFieldNameCaption {
                 + StringEscapeUtils.escapeSql(table_name) + "', '" + StringEscapeUtils.escapeSql(name) + "', '"
                 + StringEscapeUtils.escapeSql(caption) + "')";
         try {
-            ret = DBHelp.updateDBRecord(sql);
+            ret = dbObj.updateDBRecord(sql);
         } catch (SQLException e) {
-            logger.error("insertRecord() : sql = " + sql);
+            _logger.error("insertRecord() : sql = " + sql);
         }
         return ret;
     }
@@ -73,9 +67,9 @@ public class RptTableFieldNameCaption {
                 + "' where table_name='" + StringEscapeUtils.escapeSql(table_name) + "' and name = '"
                 + StringEscapeUtils.escapeSql(name) + "'";
         try {
-            ret = DBHelp.updateDBRecord(sql);
+            ret = dbObj.updateDBRecord(sql);
         } catch (SQLException e) {
-            logger.error("updateRecord() : sql = " + sql);
+            _logger.error("updateRecord() : sql = " + sql);
         }
         return ret;
     }
@@ -90,7 +84,7 @@ public class RptTableFieldNameCaption {
         for (int i = 0; i < vec.size(); i++) {
             tempName = (String) vec.get(i);
             if (tempName.matches(RptTableShadowFieldConst.fieldName)) {
-
+                //System.out.println(db.getString(rs,"name"));
                 continue;
             }
             temp = prop.getProperty(tempName, "");
@@ -111,7 +105,7 @@ public class RptTableFieldNameCaption {
             }
             rs.close();
         } catch (SQLException e) {
-            logger.error("getNameCaptionProp() : sql = " + sql);
+            _logger.error("getNameCaptionProp() : sql = " + sql);
         }
         return ret;
     }
@@ -127,21 +121,20 @@ public class RptTableFieldNameCaption {
             }
             rs.close();
         } catch (SQLException e) {
-            logger.error("getMetaNameList() : sql = " + sql);
+            _logger.error("getMetaNameList() : sql = " + sql);
         }
         return ret;
     }
 
     public Vector getFormTableNameList() throws SQLException {
-    	
-    	List<EncounterForm> forms=encounterFormDao.findAll();
-    	
         Vector ret = new Vector();
-        for (EncounterForm encounterForm : forms) {
-            ret.add(encounterForm.getFormName());
-            ret.add(encounterForm.getFormTable());
+        String sql = "select * from encounterForm where hidden != 0 order by form_name";
+        ResultSet rs = dbObj.searchDBRecord(sql);
+        while (rs.next()) {
+            ret.add(dbObj.getString(rs,"form_name"));
+            ret.add(dbObj.getString(rs,"form_table"));
         }
-
+        rs.close();
         return ret;
     }
 

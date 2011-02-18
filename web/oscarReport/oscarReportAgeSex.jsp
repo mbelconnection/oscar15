@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -43,7 +43,7 @@
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
 <jsp:useBean id="SxmlMisc" class="oscar.SxmlMisc" scope="session" />
-<%@ include file="dbReport.jspf"%>
+<%@ include file="dbReport.jsp"%>
 <% 
 GregorianCalendar now=new GregorianCalendar();
    int curYear = now.get(Calendar.YEAR);
@@ -65,13 +65,15 @@ GregorianCalendar now=new GregorianCalendar();
 %>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html:html locale="true">
+<html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="oscarReport.oscarReportAgeSex.title" /></title>
 <link rel="stylesheet" href="oscarReport.css">
 <link rel="stylesheet" type="text/css" media="all" href="../share/css/extractedFromPages.css"  />
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
+
 <script language="JavaScript">
 <!--
 
@@ -212,7 +214,7 @@ function refresh() {
       String dateBegin = request.getParameter("xml_vdate");
       String dateEnd = request.getParameter("xml_appointment_date");
       if (dateEnd.compareTo("") == 0) dateEnd = MyDateFormat.getMysqlStandardDate(curYear, curMonth, curDay);
-      if (dateBegin.compareTo("") == 0) dateBegin="1950-01-01"; // set to any early date to start search from beginning
+      if (dateBegin.compareTo("") == 0) dateBegin="0001-01-01";
 
       ResultSet rs;
       ResultSet rs2;
@@ -600,7 +602,7 @@ function refresh() {
 	   }
 	 
    }catch(Exception e){
-      MiscUtils.getLogger().error("Error", e);
+      System.err.println("Error");
    }
    return content; 
    }
@@ -616,7 +618,7 @@ public String WriteFemaleBar(int x){
 	   }
 	  
 	}catch(Exception e){
-      MiscUtils.getLogger().error("Error", e);
+      System.err.println("Error");
    }
    return content; 
 }

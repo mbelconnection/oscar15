@@ -30,8 +30,8 @@
     <measurement type="FBS" typeDesc="Glucose FBS" typeDisplayName="FBS" measuringInstrc="FBS">
         <validationRule name="Numeric Value: 0 to 50" maxValue="50" minValue="0" isDate="" isNumeric="1" regularExp="" maxLength="" minLength=""/>
     </measurement>
-
-
+  
+  
         <!--Target = Every 2 years BP < 160; Annually if BP >= 160 CAn do this but haven't -->
     <item measurement_type="ACR" display_name="Alb: creat ratio" guideline="Target: &lt; 2.0 M : &lt;2.8 F" graphable="yes" value_name="ACR" >
         <rules>
@@ -166,7 +166,7 @@
 		graphable="no" />
     <item prevention_type="Pneumovax" display_name="Pneumococcal vaccine"
 		guideline="" graphable="no" />
-
+	
     <measurement type="BP" typeDesc="BP" typeDisplayName="Blood Pressure"
 		measuringInstrc="sitting position">
         <validationRule name="Blood Pressure" regularExp="[0-9]{2,3}/{1}[0-9]{2,3}" />

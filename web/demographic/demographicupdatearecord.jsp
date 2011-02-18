@@ -36,10 +36,11 @@
 -->
 <%
     if(session.getValue("user") == null) response.sendRedirect("../../logout.jsp");
+    response.setHeader("Cache-Control","no-cache"); //HTTP 1.1
+    response.setHeader("Pragma","no-cache"); //HTTP 1.0
+    response.setDateHeader ("Expires", 0); //prevents caching at the proxy 
 %>
-
-<%@page import="org.apache.commons.lang.StringUtils"%>
-<%@page import="org.oscarehr.util.MiscUtils"%><html:html locale="true">
+<html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script></head>
 
@@ -55,9 +56,10 @@
 
   ResultSet rs = null;
   java.util.Locale vLocale =(java.util.Locale)session.getAttribute(org.apache.struts.Globals.LOCALE_KEY);
+  OtherIdManager oidManager = new OtherIdManager();
 
   //if action is good, then give me the result
-    String[] param =new String[30];
+    String[] param =new String[29];
 	  param[0]=request.getParameter("last_name");
 	  param[1]=request.getParameter("first_name");
 	  param[2]=request.getParameter("address");
@@ -87,72 +89,107 @@
 	  param[26]=request.getParameter("title");
 	  param[27]=request.getParameter("official_lang");
 	  param[28]=request.getParameter("spoken_lang");
-          param[29]=(String)session.getAttribute("user");
 	
-		java.sql.Date [] dtparam = new java.sql.Date[5];
-
-		String yearTmp=StringUtils.trimToNull(request.getParameter("date_joined_year"));
-		String monthTmp=StringUtils.trimToNull(request.getParameter("date_joined_month"));
-		String dayTmp=StringUtils.trimToNull(request.getParameter("date_joined_date"));
-		if( yearTmp != null && monthTmp!=null && dayTmp!=null )
-		{
-			dtparam[0]=MyDateFormat.getSysDate(yearTmp+'-'+monthTmp+'-'+dayTmp);
-		}
-		else
-		{
-			dtparam[0]=null;
-		}
-		
-		yearTmp=StringUtils.trimToNull(request.getParameter("end_date_year"));
-		monthTmp=StringUtils.trimToNull(request.getParameter("end_date_month"));
-		dayTmp=StringUtils.trimToNull(request.getParameter("end_date_date"));
-		if( yearTmp != null && monthTmp!=null && dayTmp!=null )
-		{
-			dtparam[1]=MyDateFormat.getSysDate(yearTmp+'-'+monthTmp+'-'+dayTmp);
-		}
-		else
-		{
-			dtparam[1]=null;
-		}
+          java.sql.Date [] dtparam = new java.sql.Date[4];
+          StringBuffer sbDate = new StringBuffer();
+          String reqTmp;
+          reqTmp = request.getParameter("date_joined_year");
+          if( reqTmp == null || reqTmp.trim().equals("") )
+              sbDate.append("0001");
+          else
+              sbDate.append(reqTmp.trim());
           
-		yearTmp=StringUtils.trimToNull(request.getParameter("eff_date_year"));
-		monthTmp=StringUtils.trimToNull(request.getParameter("eff_date_month"));
-		dayTmp=StringUtils.trimToNull(request.getParameter("eff_date_date"));
-		if( yearTmp != null && monthTmp!=null && dayTmp!=null )
-		{
-			dtparam[2]=MyDateFormat.getSysDate(yearTmp+'-'+monthTmp+'-'+dayTmp);
-		}
-		else
-		{
-			dtparam[2]=null;
-		}
-
-		yearTmp=StringUtils.trimToNull(request.getParameter("hc_renew_date_year"));
-		monthTmp=StringUtils.trimToNull(request.getParameter("hc_renew_date_month"));
-		dayTmp=StringUtils.trimToNull(request.getParameter("hc_renew_date_date"));
-		if( yearTmp != null && monthTmp!=null && dayTmp!=null )
-		{
-			dtparam[3]=MyDateFormat.getSysDate(yearTmp+'-'+monthTmp+'-'+dayTmp);
-		}
-		else
-		{
-			dtparam[3]=null;
-		}
-
-                yearTmp=StringUtils.trimToNull(request.getParameter("roster_date_year"));
-		monthTmp=StringUtils.trimToNull(request.getParameter("roster_date_month"));
-		dayTmp=StringUtils.trimToNull(request.getParameter("roster_date_day"));
-
-		if( yearTmp != null && monthTmp!=null && dayTmp!=null )
-		{
-			dtparam[4]=MyDateFormat.getSysDate(yearTmp+'-'+monthTmp+'-'+dayTmp);
-		}
-		else
-		{
-			dtparam[4]=null;
-		}
-         
+          sbDate.append("-");
+          reqTmp = request.getParameter("date_joined_month");
+          if( reqTmp == null || reqTmp.trim().equals("") )
+              sbDate.append("01");
+          else
+              sbDate.append(reqTmp.trim());
           
+          sbDate.append("-");
+          
+          reqTmp = request.getParameter("date_joined_date");
+          if( reqTmp == null || reqTmp.trim().equals("") )
+              sbDate.append("01");
+          else
+              sbDate.append(reqTmp.trim());
+
+	  dtparam[0]=MyDateFormat.getSysDate(sbDate.toString());
+          
+          sbDate = new StringBuffer();
+          reqTmp = request.getParameter("end_date_year");
+          if( reqTmp == null || reqTmp.trim().equals("") )
+              sbDate.append("0001");
+          else
+              sbDate.append(reqTmp.trim());
+          
+          sbDate.append("-");
+          reqTmp = request.getParameter("end_date_month");
+          if( reqTmp == null || reqTmp.trim().equals("") )
+              sbDate.append("01");
+          else
+              sbDate.append(reqTmp.trim());
+          
+          sbDate.append("-");
+          
+          reqTmp = request.getParameter("end_date_date");
+          if( reqTmp == null || reqTmp.trim().equals("") )
+              sbDate.append("01");
+          else
+              sbDate.append(reqTmp.trim());
+                   
+          
+	  dtparam[1]=MyDateFormat.getSysDate(sbDate.toString());
+          
+          sbDate = new StringBuffer();
+          reqTmp = request.getParameter("eff_date_year");
+          if( reqTmp == null || reqTmp.trim().equals("") )
+              sbDate.append("0001");
+          else
+              sbDate.append(reqTmp.trim());
+          
+          sbDate.append("-");
+          reqTmp = request.getParameter("eff_date_month");
+          if( reqTmp == null || reqTmp.trim().equals("") )
+              sbDate.append("01");
+          else
+              sbDate.append(reqTmp.trim());
+          
+          sbDate.append("-");
+          
+          reqTmp = request.getParameter("eff_date_date");
+          if( reqTmp == null || reqTmp.trim().equals("") )
+              sbDate.append("01");
+          else
+              sbDate.append(reqTmp.trim());
+                   
+	  dtparam[2]=MyDateFormat.getSysDate(sbDate.toString());
+          
+          sbDate = new StringBuffer();
+          reqTmp = request.getParameter("hc_renew_date_year");
+          
+          if( reqTmp == null || reqTmp.trim().equals("") )
+              sbDate.append("0001");
+          else
+              sbDate.append(reqTmp.trim());
+          
+          sbDate.append("-");
+          reqTmp = request.getParameter("hc_renew_date_month");
+          if( reqTmp == null || reqTmp.trim().equals("") )
+              sbDate.append("01");
+          else
+              sbDate.append(reqTmp.trim());
+          
+          sbDate.append("-");
+          
+          reqTmp = request.getParameter("hc_renew_date_date");          
+          if( reqTmp == null || reqTmp.trim().equals("") )
+              sbDate.append("01");
+          else
+              sbDate.append(reqTmp.trim());
+          
+	  dtparam[3]=MyDateFormat.getSysDate(sbDate.toString());
+ //System.out.println("DATE '" + sbDate.toString() + "'");
 	  int []intparam=new int[] {Integer.parseInt(request.getParameter("demographic_no"))};
      
   //DemographicExt
@@ -172,11 +209,12 @@
      dExt.addKey(proNo, demoNo, "given_consent", request.getParameter("given_consent"), request.getParameter("given_consentOrig"));
      
      // for the IBD clinic
-	 OtherIdManager.saveIdDemographic(demoNo, "meditech_id", request.getParameter("meditech_id"));
+	 oidManager.saveIdDemographic(demoNo, "meditech_id", request.getParameter("meditech_id"));
     
      // customized key
      if(oscarVariables.getProperty("demographicExt") != null) {
 	       String [] propDemoExt = oscarVariables.getProperty("demographicExt","").split("\\|");
+		   //System.out.println("propDemoExt:" + propDemoExt[0] );
 	       for(int k=0; k<propDemoExt.length; k++) {
 	           dExt.addKey(proNo,request.getParameter("demographic_no"),propDemoExt[k].replace(' ','_'),request.getParameter(propDemoExt[k].replace(' ','_')),request.getParameter(propDemoExt[k].replace(' ','_')+"Orig"));
 	       }
@@ -214,9 +252,6 @@
         }
     }
 
-    int[] paramArch =new int[] {Integer.parseInt(request.getParameter("demographic_no"))};
-    apptMainBean.queryExecuteUpdate(paramArch, "archive_record");
-
   int rowsAffected = apptMainBean.queryExecuteUpdate(param, dtparam, intparam, request.getParameter("dboperation"));
   if (rowsAffected ==1) {      
     //find the democust record for update
@@ -224,7 +259,8 @@
     DemographicNameAgeString nameAgeString  = DemographicNameAgeString.getInstance();
     nameAgeString.resetDemographic(request.getParameter("demographic_no"));   
     }catch(Exception nameAgeEx){
-    	MiscUtils.getLogger().error("ERROR RESETTING NAME AGE", nameAgeEx);
+        nameAgeEx.printStackTrace();
+        System.out.println("ERROR RESETTING NAME AGE ");
     }
     rs = apptMainBean.queryResults(request.getParameter("demographic_no"), "search_custrecordno");
     if(rs.next() ) { //update
@@ -323,8 +359,10 @@
             rs = apptMainBean.queryResults(paramWLChk, "search_demo_waiting_list");
 
             if(!rs.next()){
+                System.out.println("not on the selected waiting list");
                 ResultSet rsAppt = apptMainBean.queryResults(paramWLChk[0], "search_future_appt");
                 if(rsAppt.next()){                
+                    System.out.println("has appointment in the future");
             %> <script language="JavaScript">                    
                     var add2List = confirm("The patient already has an appointment, do you still want to add him/her to the waiting list?");                
                     if(add2List){                       
@@ -375,7 +413,8 @@
 %>
 <h1>Sorry, fail to update !!! <%= request.getParameter("demographic_no") %>.</h1>
 <%  
-  } 
+  }
+  apptMainBean.closePstmtConn(); 
 %>
 <p></p>
 

@@ -24,7 +24,6 @@ package org.oscarehr.PMmodule.model;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.GregorianCalendar;
 
 /**
  * This is the object class that relates to the admission table. Any customizations belong here.
@@ -108,22 +107,6 @@ public class Admission implements Serializable {
 
 	public Program getProgram() {
 		return program;
-	}
-	
-	public GregorianCalendar getAdmissionCalendar()
-	{
-		GregorianCalendar cal=new GregorianCalendar();
-		cal.setTime(admissionDate);
-		return(cal);
-	}
-	
-	public GregorianCalendar getDischargeCalendar()
-	{
-		if (dischargeDate==null) return(null);
-		
-		GregorianCalendar cal=new GregorianCalendar();
-		cal.setTime(dischargeDate);
-		return(cal);
 	}
 	
 	public String getAdmissionDate(String format) {
@@ -458,8 +441,7 @@ public class Admission implements Serializable {
 		this.automaticDischarge = automaticDischarge;
 	}
 
-	@Override
-    public boolean equals(Object obj) {
+	public boolean equals(Object obj) {
     	if (null == obj) return false;
     	if (!(obj instanceof org.oscarehr.PMmodule.model.Admission)) return false;
     	else {
@@ -469,8 +451,7 @@ public class Admission implements Serializable {
     	}
     }
 
-	@Override
-    public int hashCode() {
+	public int hashCode() {
     	if (Integer.MIN_VALUE == this.hashCode) {
     		if (null == this.getId()) return super.hashCode();
     		else {
@@ -481,8 +462,7 @@ public class Admission implements Serializable {
     	return this.hashCode;
     }
 
-	@Override
-    public String toString() {
+	public String toString() {
     	return super.toString();
     }
 

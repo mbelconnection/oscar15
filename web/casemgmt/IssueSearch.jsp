@@ -51,17 +51,6 @@ function backToNote(from)
 	else location.href="<c:out value='${url}' escapeXml='false'/>"+"&from="+from;
 	return false;
 }
-
-
-function addIssue(form)
-{
-	form.method.value='issueAdd';
-	var btn = document.getElementById('submit_add_issue');
-	btn.disabled=true;
-	btn.value='processing';
-	return true; 	
-}
-
 </script>
 <html:hidden property="demographicNo"/>
 <html:hidden property="providerNo"/>
@@ -123,7 +112,8 @@ function addIssue(form)
 </table>
 
 <br>
-<input type="button" value="add checked issue" name="submit_add_issue" onclick="this.form.method.value='issueAdd'; this.disabled = true; this.className='processing' ;this.form.submit();"/>
+<nested:submit value="add checked issue" onclick="this.form.method.value='issueAdd';"/>
+
 </nested:equal>
 
 <logic:equal name="from" value="casemgmt" scope="request">

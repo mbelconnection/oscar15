@@ -17,7 +17,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -75,7 +75,7 @@ public final class LoginInfoBean {
         cal.add(Calendar.MINUTE, maxduration);
         if (cal.getTimeInMillis() < now.getTimeInMillis())
             btemp = true; //starttime = starttime1;
-
+        //System.out.println(" "+cal.getTimeInMillis()+" now: "+now.getTimeInMillis());
         return btemp;
     }
 

@@ -17,7 +17,7 @@ import javax.persistence.TemporalType;
 public class Prevention extends AbstractModel<Integer> implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id = null;
 
 	@Column(name = "demographic_no")
@@ -121,12 +121,26 @@ public class Prevention extends AbstractModel<Integer> implements Serializable {
 		this.creatorProviderNo = creatorProviderNo;
 	}
 
-	@Override
-    public Integer getId() {
+	public Integer getId() {
 		return id;
 	}
 
 	public Date getCreationDate() {
 		return creationDate;
+	}
+
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Prevention prevention = (Prevention) o;
+
+		if (id != null ? !id.equals(prevention.id) : prevention.id != null) return false;
+
+		return true;
+	}
+
+	public int hashCode() {
+		return (id != null ? id.hashCode() : 0);
 	}
 }

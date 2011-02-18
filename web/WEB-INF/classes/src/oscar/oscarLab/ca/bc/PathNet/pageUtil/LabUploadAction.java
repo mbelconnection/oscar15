@@ -47,9 +47,9 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.upload.FormFile;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
+import oscar.oscarDB.DBHandler;
 import oscar.oscarLab.FileUploadCheck;
 import oscar.oscarLab.ca.bc.PathNet.Connection;
 import oscar.oscarLab.ca.bc.PathNet.HL7.Message;
@@ -71,11 +71,13 @@ public class LabUploadAction extends Action {
        String outcome = "";
         
        try{  
-          MiscUtils.getLogger().debug("Lab Upload content type = "+importFile.getContentType());
+          System.out.println("Lab Upload content type = "+importFile.getContentType());
           InputStream is = importFile.getInputStream();
           filename = importFile.getFileName();
           
-          int check = FileUploadCheck.addFile(filename,is,proNo);
+          FileUploadCheck fileC = new FileUploadCheck();
+          
+          int check = fileC.addFile(filename,is,proNo);
           is.reset();
           if (check != FileUploadCheck.UNSUCCESSFUL_SAVE){
              Connection connection = new Connection();
@@ -84,7 +86,7 @@ public class LabUploadAction extends Action {
                 boolean success = true;
                 try {                  
                    int size = messages.size();
-                   
+                   DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                    String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
                    for (int i = 0; i < size; i++) {
                       if (_logger.isDebugEnabled()){ _logger.debug("Call Message Constructor for message # "+i); }
@@ -92,13 +94,14 @@ public class LabUploadAction extends Action {
                       if (_logger.isDebugEnabled()){ _logger.debug("Call Message.Parse for message # "+i); }
                       message.Parse((String) messages.get(i));
                       if (_logger.isDebugEnabled()){ _logger.debug("Call Message.ToDatabase for message # "+i); }
-                      message.ToDatabase();
+                      message.ToDatabase(db);
                    }
                    outcome = "success";
                 }                
                 catch (Exception ex) {
                    //success = false; //<- for future when transactional
-                   _logger.error("Error - oscar.PathNet.Contorller - Message: "+ ex.getMessage()+ " = "+ ex.toString(), ex);
+                   System.err.println("Error - oscar.PathNet.Contorller - Message: "+ ex.getMessage()+ " = "+ ex.toString());
+                   ex.printStackTrace();
                    outcome = "exception";
                 }
                //connection.Acknowledge(success);
@@ -110,7 +113,7 @@ public class LabUploadAction extends Action {
              outcome = "uploadedPreviously";  
           }          
        }catch(Exception e){ 
-          MiscUtils.getLogger().error("Error", e); 
+          e.printStackTrace(); 
           outcome = "exception";
        } 
        request.setAttribute("outcome", outcome);
@@ -143,9 +146,9 @@ public class LabUploadAction extends Action {
             String place= props.getProperty("DOCUMENT_DIR");
             
             if(!place.endsWith("/"))
-                    place = new StringBuilder(place).insert(place.length(),"/").toString();
+                    place = new StringBuffer(place).insert(place.length(),"/").toString();
             retVal = place+"LabUpload."+filename+"."+(new Date()).getTime();
-            MiscUtils.getLogger().debug(retVal);
+            System.out.println(retVal);
             //write the file to the file specified
             OutputStream bos = new FileOutputStream(retVal);
             int bytesRead = 0;
@@ -162,13 +165,13 @@ public class LabUploadAction extends Action {
         }
         catch (FileNotFoundException fnfe) {
             
-            MiscUtils.getLogger().debug("File not found");
-            MiscUtils.getLogger().error("Error", fnfe);            
+            System.out.println("File not found");
+            fnfe.printStackTrace();            
             return isAdded=false;
             
         }
         catch (IOException ioe) {
-            MiscUtils.getLogger().error("Error", ioe);
+            ioe.printStackTrace();
             return isAdded=false;
         }
 

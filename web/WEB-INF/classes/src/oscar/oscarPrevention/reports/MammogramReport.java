@@ -39,8 +39,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBean;
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBeanHandler;
@@ -53,7 +53,7 @@ import oscar.util.UtilDateUtilities;
  * @author jay
  */
 public class MammogramReport implements PreventionReport{
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(MammogramReport.class);
     /** Creates a new instance of MammogramReport */
     public MammogramReport() {
     }
@@ -74,7 +74,6 @@ public class MammogramReport implements PreventionReport{
              PreventionReportDisplay prd = new PreventionReportDisplay();
              prd.demographicNo = demo;
              prd.bonusStatus = "N";
-             prd.billStatus = "N";
              Date prevDate = null;
              if(ineligible(prevs)){
                 prd.rank = 5;
@@ -131,7 +130,6 @@ public class MammogramReport implements PreventionReport{
 
                 if (!refused && bonusStartDate.before(prevDate) && asofDate.after(prevDate) && !result.equalsIgnoreCase("pending")){
                    prd.bonusStatus = "Y";
-                   prd.billStatus = "Y";
                    done++;
                 }
                 
@@ -155,7 +153,6 @@ public class MammogramReport implements PreventionReport{
                    prd.numMonths = numMonths;
                    prd.color = "yellow"; //FF00FF
                    if(!prd.bonusStatus.equals("Y")){
-                       prd.billStatus = "Y";
                       doneWithGrace++;
                    }
                    
@@ -216,7 +213,6 @@ public class MammogramReport implements PreventionReport{
           h.put("inEligible", ""+inList);
           h.put("eformSearch","Mam");
           h.put("followUpType","MAMF");
-          h.put("BillCode", "Q002A");
           log.debug("set returnReport "+returnReport);
           return h;
     }
@@ -300,7 +296,7 @@ public class MammogramReport implements PreventionReport{
               
               Collection followupData = measurementDataHandler.getMeasurementsDataVector();
               //NO Contact
-
+              System.out.print("fluFollowupData size = "+followupData.size());
               if ( followupData.size() == 0 ){
                   prd.nextSuggestedProcedure = this.LETTER1;
                   return this.LETTER1;
@@ -357,7 +353,7 @@ public class MammogramReport implements PreventionReport{
               EctMeasurementsDataBeanHandler measurementDataHandler = new EctMeasurementsDataBeanHandler(prd.demographicNo,measurementType);
               log.debug("getting followup data for "+prd.demographicNo);
               Collection followupData = measurementDataHandler.getMeasurementsDataVector();
-
+              System.out.print("fluFollowupData size = "+followupData.size());
               if ( followupData.size() > 0 ){
                   EctMeasurementsDataBean measurementData = (EctMeasurementsDataBean) followupData.iterator().next();
                   prd.lastFollowup = measurementData.getDateObservedAsDate();
@@ -375,7 +371,7 @@ public class MammogramReport implements PreventionReport{
               EctMeasurementsDataBeanHandler measurementDataHandler = new EctMeasurementsDataBeanHandler(prd.demographicNo,measurementType);
               log.debug("getting followup data for "+prd.demographicNo);
               Collection followupData = measurementDataHandler.getMeasurementsDataVector();
-
+              System.out.print("fluFollowupData size = "+followupData.size());
               if ( followupData.size() > 0 ){
                   EctMeasurementsDataBean measurementData = (EctMeasurementsDataBean) followupData.iterator().next();
                   prd.lastFollowup = measurementData.getDateObservedAsDate();

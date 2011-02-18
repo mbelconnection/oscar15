@@ -94,6 +94,7 @@
 			} else if (request.getParameter("submit") != null && request.getParameter("submit").equals("Search")) {
 				// check the input data
 				if (request.getParameter("service_code") == null) {
+					System.out.println("service_code" + request.getParameter("service_code"));
 					msg = "Please type in a right service code.";
 				} else {
 					String serviceCode = request.getParameter("service_code");
@@ -116,6 +117,7 @@
 				}
 			} else if (request.getParameter("submit") != null && request.getParameter("submit").equals("Delete")) {
 				if (request.getParameter("service_code") == null) {
+					System.out.println("service_code" + request.getParameter("service_code"));
 					msg = "Please type in a right service code.";
 				} else {
 					String serviceCode = request.getParameter("service_code");
@@ -135,6 +137,8 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Add/Edit Private Service Code</title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <link rel="stylesheet" type="text/css" href="billingON.css" />
 <link rel="StyleSheet" type="text/css" href="../web.css" />
 <!-- calendar stylesheet -->
@@ -266,6 +270,7 @@
 			<option selected="selected" value="">- choose one -</option>
 			<%//
 				List sL = dbObj.getPrivateBillingCodeDesc();
+				//System.out.println("s:" + sL.size());
 				for (int i = 0; i < sL.size(); i = i + 2) {
 					String strDesc = (String) sL.get(i+1);
 					strDesc = strDesc.length() > 30 ? strDesc.substring(0,30): strDesc;
@@ -302,8 +307,8 @@
 		<td><input type="text" name="value"
 			value="<%=prop.getProperty("value", "")%>" size='8' maxlength='8'>Add
 		GST<input type="checkbox" name="gstCheck" id="gstCheck"
-			onclick="setFlag()" /> (format: xx.xx, e.g. 18.20)
-		<input type="hidden" value="" id="gstFlag" name="gstFlag" /></td>
+			onclick="setFlag()" /> (format: xx.xx, e.g. 18.20)</td>
+		<input type="hidden" value="" id="gstFlag" name="gstFlag" />
 	</tr>
 	<tr>
 		<td align="right"><b>Issued Date</b></td>

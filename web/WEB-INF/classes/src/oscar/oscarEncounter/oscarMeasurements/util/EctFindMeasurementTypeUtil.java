@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.util.Vector;
 
 import org.apache.commons.digester.Digester;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementTypesBean;
@@ -70,7 +69,7 @@ public class EctFindMeasurementTypeUtil {
             digester.clear();
         } 
         catch (Exception exc) {
-        	MiscUtils.getLogger().error("Error", exc);
+            exc.printStackTrace();
         }
         return ret;
     }
@@ -81,27 +80,27 @@ public class EctFindMeasurementTypeUtil {
         Vector measurementTypeVector = new Vector();
         
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql =   "SELECT mf.typeId, mt.type, mt.typeDisplayName, mt.typeDescription, " 
                             + "mt.measuringInstruction, mt.validation"
                             + " FROM measurementForm mf, measurementType mt WHERE mf.formName='" + formName 
                             + "' AND mf.typeId=mt.id";            
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             while(rs.next()){                                      
                 EctMeasurementTypesBean measurementTypes = new EctMeasurementTypesBean( rs.getInt("typeId"), 
-                                                                                        oscar.Misc.getString(rs,("type"), 
-                                                                                        oscar.Misc.getString(rs,("typeDisplayName"), 
-                                                                                        oscar.Misc.getString(rs,("typeDescription"), 
-                                                                                        oscar.Misc.getString(rs,("measuringInstruction"), 
-                                                                                        oscar.Misc.getString(rs,("validation")); 
+                                                                                        db.getString(rs,("type"), 
+                                                                                        db.getString(rs,("typeDisplayName"), 
+                                                                                        db.getString(rs,("typeDescription"), 
+                                                                                        db.getString(rs,("measuringInstruction"), 
+                                                                                        db.getString(rs,("validation")); 
                 measurementTypeVector.add(measurementTypes);                                                       
-                MiscUtils.getLogger().debug("getMeasurementType() type: " + oscar.Misc.getString(rs,("typeId"));
+                System.out.println("getMeasurementType() type: " + db.getString(rs,("typeId"));
             }
             
             rs.close();            
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return measurementTypeVector;
@@ -114,15 +113,15 @@ public class EctFindMeasurementTypeUtil {
      * @author - Ivy Chan - iConcept Technologies Inc.
      */
     static public Vector checkMeasurmentTypes(InputStream is, String formName){
-
+        //System.out.println("in checkMeasurementTypes");
         EctFormProp formProp = getEctMeasurementsType(is);
-
+        //System.out.println("xmlpath:" + xmlPath);
         Vector measurementTypes = formProp.getMeasurementTypes();
-
+        //System.out.println("got measurementTypes");
         for(int i=0; i<measurementTypes.size(); i++){
             EctMeasurementTypesBean mt = (EctMeasurementTypesBean) measurementTypes.elementAt(i);
             EctValidationsBean validation = (EctValidationsBean) mt.getValidationRules().elementAt(0);           
-
+            //System.out.println(mt.getType() + " " + validation.getName() + " " + validation.getRegularExp());
             if(!measurementTypeIsFound(mt, formName)){
                 addMeasurementType(mt, formName);
             }
@@ -133,22 +132,22 @@ public class EctFindMeasurementTypeUtil {
     static public boolean measurementTypeIsFound(EctMeasurementTypesBean mt, String formName){
         boolean verdict = true;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT * from measurementType where type='"+ mt.getType() + "' AND measuringInstruction='"
                          + mt.getMeasuringInstrc() + "'";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if(!rs.next()){   
                 
                 verdict = false;
             }
             /*else{
-                if(!measurementFrmIsAdded(formName, oscar.Misc.getString(rs,("id")))
-                    add2MeasurementForm(formName, oscar.Misc.getString(rs,("id"));
+                if(!measurementFrmIsAdded(formName, db.getString(rs,("id")))
+                    add2MeasurementForm(formName, db.getString(rs,("id"));
             }*/
             rs.close();
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;
@@ -157,16 +156,16 @@ public class EctFindMeasurementTypeUtil {
     static public boolean measurementTypeKeyIsFound(EctMeasurementTypesBean mt){
         boolean verdict = true;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT * from measurementType where type='"+ mt.getType() + "' ";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if(!rs.next()){                   
                 verdict = false;
             }
             rs.close();
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;
@@ -177,17 +176,17 @@ public class EctFindMeasurementTypeUtil {
     static public boolean measurementFrmIsAdded(String formName, String typeId){
         boolean verdict = true;
         try {
-
-            
+            //System.out.println("check if form "+ formName + " and type " + typeId + " exists");
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT * FROM measurementForm WHERE formName='" + formName + "' AND typeId='"+typeId+"'";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if(!rs.next()){            
                 verdict = false;
             }
             rs.close();
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;
@@ -195,7 +194,7 @@ public class EctFindMeasurementTypeUtil {
     
     static public void addMeasurementType(EctMeasurementTypesBean mt, String formName){
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             //Find validation if not found add validation
             Vector validations = mt.getValidationRules();
             if(validations.size()>0){
@@ -208,17 +207,17 @@ public class EctFindMeasurementTypeUtil {
                 String sql ="INSERT INTO measurementType(type, typeDisplayName, typeDescription, measuringInstruction, validation)" +
                             "VALUES('" + mt.getType() + "', '" + mt.getTypeDisplayName() + "', '" + mt.getTypeDesc() + "', '" +
                             mt.getMeasuringInstrc() + "', '" + validationId + "')";
-                DBHandler.RunSQL(sql);                
+                db.RunSQL(sql);                
                 /*sql = "SELECT * FROM measurementType ORDER BY id DESC LIMIT 1";
-                ResultSet rs = DBHandler.GetSQL(sql);             
+                ResultSet rs = db.GetSQL(sql);             
                 if(rs.next()){
-                    if(!measurementFrmIsAdded(formName, oscar.Misc.getString(rs,("id")))
-                        add2MeasurementForm(formName, oscar.Misc.getString(rs,("id"));
+                    if(!measurementFrmIsAdded(formName, db.getString(rs,("id")))
+                        add2MeasurementForm(formName, db.getString(rs,("id"));
                 }*/
             }
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);         
+            System.out.println(e.getMessage());         
         }
     }
     
@@ -226,14 +225,14 @@ public class EctFindMeasurementTypeUtil {
     static public void add2MeasurementForm(String formName, String typeId){
         boolean verdict = true;
         try {
-
-            
+            //System.out.println("add form"+ formName + " and type " + typeId + " into measurementGroup table");
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "INSERT INTO measurementForm VALUES('" + formName + "','"+typeId+"')";
-            DBHandler.RunSQL(sql);
+            db.RunSQL(sql);
             
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);           
+            System.out.println(e.getMessage());           
         }        
     }*/    
         

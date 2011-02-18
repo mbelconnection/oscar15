@@ -28,17 +28,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.time.DateUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.caisi.model.FacilityMessage;
 import org.oscarehr.PMmodule.model.ProgramProvider;
 import org.oscarehr.common.model.Facility;
-import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.TimeClearedHashMap;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 public class ProgramProviderDAO extends HibernateDaoSupport {
 
-    private Logger log=MiscUtils.getLogger();
+    private Log log = LogFactory.getLog(ProgramProviderDAO.class);
 
 	private static Map<String, List<ProgramProvider>> programProviderByProviderProgramIdCache = Collections.synchronizedMap(new TimeClearedHashMap<String, List<ProgramProvider>>(DateUtils.MILLIS_PER_HOUR, DateUtils.MILLIS_PER_HOUR));
 	
@@ -275,24 +275,6 @@ public class ProgramProviderDAO extends HibernateDaoSupport {
         }
         return results;
     }
-    
-    public boolean isThisProgramInProgramDomain(String providerNo, Integer programId) 
-	{
-		if (providerNo == null || Long.valueOf(providerNo) == null)
-		{
-			throw new IllegalArgumentException();
-		}
-
-		String queryStr = "from ProgramProvider pp where pp.ProviderNo = ? and pp.ProgramId = ?";
-		List results = getHibernateTemplate().find(queryStr, new Object[]{providerNo, Long.valueOf(programId.longValue())});
-		if(results!=null && results.size()>0) {
-			return true;
-		} else {
-			return false;
-		}
-		
-	}
-	
 
     @SuppressWarnings("unchecked")
     public List<Facility> getFacilitiesInProgramDomain(String providerNo) {

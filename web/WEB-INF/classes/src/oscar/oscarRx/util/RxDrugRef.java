@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -36,12 +36,10 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
 import org.apache.xmlrpc.Base64;
 import org.apache.xmlrpc.XmlRpcClient;
 import org.apache.xmlrpc.XmlRpcClientLite;
 import org.apache.xmlrpc.XmlRpcException;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 
@@ -50,8 +48,7 @@ import oscar.OscarProperties;
  * @author  Jay
  */
 public class RxDrugRef {
-    private static Logger logger=MiscUtils.getLogger(); 
-
+    
     private String server_url =
            // "http://www.hherb.com:8001";
            "http://24.141.82.168:8001";
@@ -146,7 +143,7 @@ public class RxDrugRef {
 
      public Hashtable getDrug2(String pKey, Boolean boolVal)throws Exception{
          Vector params = new Vector();
-         MiscUtils.getLogger().debug("Adding to params for get_drug_2 :"+pKey+" - "+boolVal);
+         System.out.println("Adding to params for get_drug_2 :"+pKey+" - "+boolVal);
          params.addElement(pKey);
          params.addElement(boolVal);
          Vector vec = (Vector) callWebserviceLite("get_drug_2",params);
@@ -183,9 +180,11 @@ public class RxDrugRef {
          Vector params = new Vector();
          params.addElement(pKey);
 
+        // System.out.println("pkey for RxDrugRef.getGenericName :"+pKey);
          Vector vec = (Vector) callWebserviceLite("get_generic_name",params);
        //  if (vec == null || vec.isEmpty()){
 
+       //      System.out.println("going to throw an error from RxDrugRef.getGenericName "+pKey);
         //     return null;
        //  }
          Hashtable returnVal = (Hashtable) vec.get(0);         
@@ -355,37 +354,51 @@ public class RxDrugRef {
      }
      
      private Object callWebservice(String procedureName,Vector params) {
-        MiscUtils.getLogger().debug("#CALLDRUGREF-"+procedureName);
+        System.out.println("#CALLDRUGREF-"+procedureName);
          Object object = null;
          try{
             XmlRpcClient server = new XmlRpcClient(server_url);
             object = (Object) server.execute(procedureName, params);
          }catch (XmlRpcException exception) {
-                logger.error("JavaClient: XML-RPC Fault #" +exception.code, exception);
+                
+                System.err.println("JavaClient: XML-RPC Fault #" +
+                                   Integer.toString(exception.code) + ": " +
+                                   exception.toString());
+                                   exception.printStackTrace();
+                                   
+                
+                
          } catch (Exception exception) {
-        	 logger.error("JavaClient: ", exception);
+                System.err.println("JavaClient: " + exception.toString());
+                exception.printStackTrace();
+                
          }
          return object;
      }
      
      private Object callWebserviceLite(String procedureName,Vector params) throws Exception{
-
+        // System.out.println("#CALLDRUGREF-"+procedureName);
          Object object = null;
          try{
-
+            // System.out.println("server_url :"+server_url);
             XmlRpcClientLite server = new XmlRpcClientLite(server_url);
             object = server.execute(procedureName, params);
          }catch (XmlRpcException exception) {
                 
-             logger.error("JavaClient: XML-RPC Fault #" +exception.code, exception);
+                System.err.println("JavaClient: XML-RPC Fault #" +
+                                   Integer.toString(exception.code) + ": " +
+                                   exception.toString());
+                                   exception.printStackTrace();
                                    
                 throw new Exception("JavaClient: XML-RPC Fault #" +
                                    Integer.toString(exception.code) + ": " +
                                    exception.toString());
                 
          } catch (Exception exception) {
-        	 logger.error("JavaClient: ", exception);
+                System.out.println("Drugref URL is "+server_url);
+                System.err.println("JavaClient: " + exception.toString());
 
+                exception.printStackTrace();
                 throw new Exception("JavaClient: " + exception.toString(),exception);
          }
          return object;
@@ -398,10 +411,10 @@ public class RxDrugRef {
       *
       * Applications allowing more choice will expose all possible data sources to the end user
       * @param searchexpr mnemonic describing data source,
-      *        e.g. mims, amh, rote liste, first database.
-      *        Case insensitive, partial match possible if using % as wild card
+      *        e.g. “mims�?, “amh�?, “rote liste�?, “first database�?.
+      *        Case insensitive, partial match possible if using “%�? as wild card
       * @param tags see tags
-      * @return array of structs alphabetically sorted by name with the following minimum keys:
+      * @return array of structs alphabetically sorted by “name�? with the following minimum keys:
       *
       * <B>pkey</B>: integer. Primary key      
       * <B>name</B>: string. Menemonic describing data source     
@@ -422,16 +435,16 @@ public class RxDrugRef {
          return new Hashtable();
      }
 
-     /**returns basic identifiers of all drugs, drug products and drug classes available in the database which names match searchexpr, and which other criteria match the constraints in tags
+     /**returns basic identifiers of all drugs, drug products and drug classes available in the database which names match “searchexpr�?, and which other criteria match the constraints in “tags�?
       *
-      *@param searchexpr: (Partial) name of a drug (generic, brand name, composite drug) Case insensitive, partial match possible if using % as wild card
+      *@param searchexpr: (Partial) name of a “drug�? (generic, brand name, composite drug) Case insensitive, partial match possible if using “%�? as wild card
       *@tags: see [tags] Additional optional keys:
       *       classes : boolean. If true, class names (ATC) are listed
       *       generics : boolean. If true, generic names are listed
       *       branded : boolean. If true, branded product names are listed
       *       composites : if true, generic composite drugs are listed
       *
-      *@return array of structs alphabetically sorted by name with the following minimum keys:
+      *@return array of structs alphabetically sorted by “name�? with the following minimum keys:
       *       pkey: integer. Primary key
       *       Name: string. Name of the drug
       *       Type: string(2):
@@ -442,7 +455,7 @@ public class RxDrugRef {
       *         'ge' = generic
       *         'gc' = composite generic (e.g. Co-Trimoxazole)
       *         'bp' = branded product
-      *       If the parameter return_tags was given in the query, tags will be available too.
+      *       If the parameter “return_tags�? was given in the query, “tags�? will be available too.
       */
      public Vector list_drugs(String searchexpr,Hashtable  tags){
          Vector params = new Vector();
@@ -544,17 +557,17 @@ public class RxDrugRef {
       *
       *@return struct with at least the following keys:
       *
-      *     name: string. International nonproprietary name (INPN) of this drug (=generic)
+      *     name: string. International nonproprietary name (INPN) of this drug (=�?generic�?)
       *     atc: string. ATC code
       *     generics : struct. Lists all generic components (usually just one). Key (string) is the generic name, value (integer) is the repective primary key
       *     essential: True if this drug is on the WHO essential drug list
       *     product: string. If this drug is not a generic, the product brand name is listed under this key, else this key is not available
       *     action: string. Description of mode of action.
-      *     indications: array of structs. Each struct has indication as key, and a struct as value containing the following keys:
+      *     indications: array of structs. Each struct has “indication�? as key, and a struct as value containing the following keys:
       *         code : integer. Drugref condition code primary key
       *         firstline : boolean. True if for this indication this drug is considered a first line treatment.
       *         comment : string
-      *     contraindications: array of structs. Each struct has contraindication as key, and a struct as value containing the following keys:
+      *     contraindications: array of structs. Each struct has “contraindication�? as key, and a struct as value containing the following keys:
       *         code : integer. Drugref condition code primary key.
       *         severity : integer (1-3, 3 being absolute contraindication)
       *         comment : string
@@ -585,8 +598,8 @@ public class RxDrugRef {
       *         frequency_units : integer. 0=not applicable, 1=seconds, 2=minutes, 3=hours, 4=days, 5=weeks, 6=months, 7=years
       *         frequency : integer. How often this drug should be administered
       *         duration_units: integer. Same as frequency_units, additional value 8='times'
-      *         duration_minimum ; integer. How long a usual course of this drug should be given. -1 is permanent, -2=p.r.n.
-      *         duration_maximum : integer. -1 is permanent, -2=p.r.n.
+      *         duration_minimum ; integer. How long a usual course of this drug should be given. -1 is “permanent�?, -2=�?p.r.n.�?
+      *         duration_maximum : integer. -1 is “permanent�?, “-2�?=�?p.r.n.�?
       *         constrained: boolean. If true, no automazied dosage suggestion must be generated, prescriber must read comment. (e.g. dosage per body surface etc.)
       *         comment
       */         
@@ -642,7 +655,7 @@ public class RxDrugRef {
 
 
 
-       /**returns all available products for a given drug as identified by pkey and constrained by tags
+       /**returns all available products for a given drug as identified by “pkey�? and constrained by “tags�?
         *@param pkey: primary key of a drug.
         *@param tags: see [tags].
         *return list of structs containing the following minimum keys:
@@ -657,7 +670,7 @@ public class RxDrugRef {
            return new Vector();
        }
 
-       /**returns product specific information for a given drug as identified by pkey and constrained by tags, including available package sizes and strengths, manufacturers, prices and available subsidies as well as legal / subsidy access restrictions.
+       /**returns product specific information for a given drug as identified by “pkey�? and constrained by “tags�?, including available package sizes and strengths, manufacturers, prices and available subsidies as well as legal / subsidy access restrictions.
         *
         *@param pkey: primary key of a specific drug product
         *@param tags: see [tags]
@@ -675,7 +688,7 @@ public class RxDrugRef {
         *                   c=conditional
         *           subsidy_conditions : struct. Key is name of subsidy, value is a string (conditions in human readable text)
         *           subsidy_gap : struct. Key is name of subsidy, value (Real ) is th amount
-        *           brand_price_premium : struct. Key is applicability (all, pensioners ), value (Real) is the price
+        *           brand_price_premium : struct. Key is “applicability�? (all, pensioners ...), value (Real) is the price
         *           prices : struct. Key is price category (retail, wholesale, subsidized), value (Real) is the price
         *           currency : string. Currency the stated price / gap / premium is based on
         */
@@ -695,7 +708,7 @@ public class RxDrugRef {
            return new Base64();
        }
 
-       /**returns an array of structs describing the possible interactions between any two drugs contained in drugs. Information used for interaction checking constrained by tags.
+       /**returns an array of structs describing the possible interactions between any two drugs contained in “drugs�?. Information used for interaction checking constrained by “tags�?.
         *@param drugs: array of integers. Primary keys of drugs
         *@param tags: see [tags].
         *@return array of structs with the following minimum keys:
@@ -716,7 +729,7 @@ public class RxDrugRef {
        }
 
        
-       /**List all conditions and their codes / coding systems known to drugref, constrained by searchexpr as welll as by tags. Searchexpr accepts % as wildcard.
+       /**List all conditions and their codes / coding systems known to drugref, constrained by “searchexpr�? as welll as by tags. “Searchexpr�? accepts “%�? as wildcard.
         *
         */
        public Vector list_conditions(String searchexpr,Hashtable tags){           
@@ -768,7 +781,7 @@ public class RxDrugRef {
             Enumeration e = ((Hashtable) obj).keys();
             while (e.hasMoreElements()){
                String s = (String) e.nextElement();
-               MiscUtils.getLogger().debug(s+" "+((Hashtable) obj).get(s)+" "+((Hashtable) obj).get(s).getClass().getName());
+               System.out.println(s+" "+((Hashtable) obj).get(s)+" "+((Hashtable) obj).get(s).getClass().getName());
             }
          }
          

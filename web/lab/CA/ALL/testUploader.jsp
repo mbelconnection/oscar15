@@ -1,6 +1,10 @@
-<% 
+<%
 if(session.getValue("user") == null) response.sendRedirect("../../logout.jsp");
-%><%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
+%>
+
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+<%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar"%>
 
 <%
@@ -11,7 +15,7 @@ if(outcome != null){
 <%
     }else if(outcome.equals("uploaded previously")){
 %><script type="text/javascript">alert("Lab has already been uploaded");</script>
-<%    
+<%
     }else if(outcome.equals("exception")){
 %><script type="text/javascript">alert("Exception uploading the lab");</script>
 <%
@@ -26,15 +30,20 @@ if(outcome != null){
 <html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Lab Upload Utility</title>
-<link rel="stylesheet" type="text/css" href="../../../share/css/OscarStandardLayout.css">
+<link rel="stylesheet" type="text/css"
+	href="../../../share/css/OscarStandardLayout.css">
+<link rel="stylesheet" type="text/css"
+	href="../share/css/OscarStandardLayout.css">
 <script type="text/javascript" src="../../../share/javascript/Oscar.js"></script>
+<script type="text/javascript" src="../share/javascript/Oscar.js"></script>
 <script type="text/javascript">
-            function selectOther(){                
+            function selectOther(){
                 if (document.UPLOAD.type.value == "OTHER")
                     document.getElementById('OTHER').style.visibility = "visible";
                 else
-                    document.getElementById('OTHER').style.visibility = "hidden";                
+                    document.getElementById('OTHER').style.visibility = "hidden";
             }
             function checkInput(){
                 if (document.UPLOAD.lab.value ==""){
@@ -100,7 +109,7 @@ if(outcome != null){
 						<oscar:oscarPropertiesCheck property="PATHNET_LABS" value="yes">Selected</oscar:oscarPropertiesCheck>>EXCELLERIS</option>
 					<option value="OTHER">Other</option>
                                         <option value="HHSEMR">HHS Emr Download</option>
-                                        <option value="IHA">IHA</option>
+                                        
 				</select></td>
 			</tr>
 			<tr id="OTHER" style="visibility: hidden;">

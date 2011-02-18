@@ -19,7 +19,9 @@
  * McMaster University 
  * Hamilton 
  * Ontario, Canada 
---%><%@ page
+--%><%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+<%@ page
 	import="java.util.*,oscar.oscarRx.data.*,oscar.oscarRx.pageUtil.*,java.io.*,org.apache.xmlrpc.*"%>
 <%
 RxSessionBean bean = (RxSessionBean) session.getAttribute("RxSessionBean");
@@ -32,10 +34,11 @@ if ( bean == null ){
     if ( pricesArray != null && pricesArray.length > 0){
         for (int i=0; i < pricesArray.length; i++){
             Hashtable ht = (Hashtable) pricesArray[i]; 
-            %>
+            System.out.println("\nName: "+ht.get("name")
+            +"\nPrice: "+ht.get("cost")
+            +"\nRetailer: "+ht.get("reference"));%>
 
-
-<%@page import="org.oscarehr.util.MiscUtils"%><div
+<div
 	style="background-color:<%=sigColor(""+ht.get("significance"))%>;margin-right:100px;margin-left:20px;margin-top:10px;padding-left:10px;padding-top:10px;padding-bottom:5px;border-bottom: 2px solid gray;border-right: 2px solid #999;border-top: 1px solid #CCC;border-left: 1px solid #CCC;">
 <%=ht.get("name")%>&nbsp;&nbsp;&nbsp;&nbsp;: $ <%=ht.get("cost")%><br />
 Retailer:<%=ht.get("reference")%></div>
@@ -117,20 +120,27 @@ Retailer:<%=ht.get("reference")%></div>
    }
    
    private Object callWebserviceLite(String procedureName,Vector params) throws Exception{
+        System.out.println("#CALLDRUGREF-"+procedureName);
         Object object = null;
         String server_url = "http://dev2.mydrugref.org/backend/api";
         try{
+            System.out.println("server_url :"+server_url);
             XmlRpcClientLite server = new XmlRpcClientLite(server_url);
             object = (Object) server.execute(procedureName, params);
         }catch (XmlRpcException exception) {
-            MiscUtils.getLogger().error("JavaClient: XML-RPC Fault #" + exception.code, exception);
+            
+            System.err.println("JavaClient: XML-RPC Fault #" +
+                    Integer.toString(exception.code) + ": " +
+                    exception.toString());
+            exception.printStackTrace();
             
             throw new Exception("JavaClient: XML-RPC Fault #" +
                     Integer.toString(exception.code) + ": " +
                     exception.toString());
             
         } catch (Exception exception) {
-			MiscUtils.getLogger().error("JavaClient: ",  exception);
+            System.err.println("JavaClient: " + exception.toString());
+            exception.printStackTrace();
             throw new Exception("JavaClient: " + exception.toString());
         }
         return object;
@@ -155,6 +165,7 @@ Retailer:<%=ht.get("reference")%></div>
             Enumeration e = ((Hashtable) obj).keys();
             while (e.hasMoreElements()){
                 String s = (String) e.nextElement();
+                System.out.println(s+" "+((Hashtable) obj).get(s)+" "+((Hashtable) obj).get(s).getClass().getName());
             }
         }
         

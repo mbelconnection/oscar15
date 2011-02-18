@@ -50,7 +50,8 @@ String curUser_no = (String)session.getAttribute("user");
 		if(role_name.equals(request.getParameter("action").substring("edit".length()))) {
 			String	sql   = "update secRole set role_name='" + StringEscapeUtils.escapeSql(role_name) + "' ";
 			sql += "where role_name='" + StringEscapeUtils.escapeSql(role_name) + "'";
-			if(DBHelp.updateDBRecord(sql)) {
+			//System.out.println(sql);
+			if(dbObj.updateDBRecord(sql, curUser_no)) {
 	  			msg = role_name + " is updated.<br>" + "Type in a role name and search it first to see if it is available.";
 	  			action = "search";
 			    prop.setProperty("role_name", role_name);
@@ -71,7 +72,7 @@ String curUser_no = (String)session.getAttribute("user");
 		if(role_name.equals(request.getParameter("action").substring("add".length()))) {
 			String	sql   = "insert into secRole (role_name) values ('";
 			sql += StringEscapeUtils.escapeSql(role_name) + "' )";
-			if(DBHelp.updateDBRecord(sql) ) {
+			if(dbObj.updateDBRecord(sql, curUser_no) ) {
 	  			msg = role_name + " is added.<br>" + "Type in a role name and search it first to see if it is available.";
 	  			action = "search";
 			    prop.setProperty("role_name", role_name);
@@ -96,6 +97,7 @@ String curUser_no = (String)session.getAttribute("user");
     } else {
 		String	sql   = "select * from secRole where role_name='" + StringEscapeUtils.escapeSql(role_name) + "'";
 		ResultSet rs = dbObj.searchDBRecord(sql);
+		//System.out.println(sql);
 
 		if (rs.next()) {
 		    prop.setProperty("role_name", role_name);
@@ -117,6 +119,8 @@ String curUser_no = (String)session.getAttribute("user");
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Add/Edit Role</title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT" />
+<meta http-equiv="Cache-Control" content="no-cache" />
 <script type="text/javascript" language="JavaScript">
 
       <!--

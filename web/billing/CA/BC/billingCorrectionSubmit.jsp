@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -27,6 +27,7 @@
 <html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title></title>
 </head>
 <body>
@@ -39,8 +40,8 @@
 	class="oscar.BillingPatientDataBean" scope="session" />
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="../../../admin/dbconnection.jsp"%>
+<%@ include file="dbBilling.jsp"%>
 <table border="0" cellspacing="0" cellpadding="0" width="100%">
 	<tr bgcolor="#486ebd">
 		<th align=CENTER NOWRAP><font face="Helvetica" color="#FFFFFF">Billing
@@ -124,6 +125,7 @@
 
 <%
   }
+   apptMainBean.closePstmtConn();
   %>
 
 <%

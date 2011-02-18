@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -67,6 +67,7 @@
        param[1]=request.getParameter("provider_no"+datano);
        param[2]=request.getParameter("last_name"+datano);
        param[3]=request.getParameter("first_name"+datano);
+	  //System.out.println("qssssssssssssssssssssssssssssqqqqqqqqqqqqqq"+param[1]);
     rowsAffected = apptMainBean.queryExecuteUpdate(param,request.getParameter("dboperation"));
     }
   }
@@ -87,6 +88,7 @@
 </p>
 <%  
   }
+  apptMainBean.closePstmtConn();
 %>
 <p></p>
 <hr width="90%"></hr>

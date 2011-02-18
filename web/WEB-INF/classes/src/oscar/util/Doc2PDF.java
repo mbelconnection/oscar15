@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -26,6 +26,7 @@ package oscar.util;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,8 +43,6 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
 import org.w3c.tidy.Tidy;
 
 import com.lowagie.text.Document;
@@ -56,7 +55,6 @@ import com.lowagie.text.pdf.PdfWriter;
  * @author root
  */
 public class Doc2PDF {
-    private static Logger logger=MiscUtils.getLogger(); 
 
     public static void parseJSP2PDF(HttpServletRequest request, HttpServletResponse response, String uri, String jsessionid) {
 
@@ -73,7 +71,7 @@ public class Doc2PDF {
 
             tidy.parse(in, tidyout);
 
-            MiscUtils.getLogger().debug(tidyout.toString());
+            System.out.println(tidyout.toString());
             String documentTxt = AddAbsoluteTag(request, tidyout.toString(), uri);
 
             PrintPDFFromHTMLString(response, documentTxt);
@@ -81,7 +79,8 @@ public class Doc2PDF {
         }
 
         catch (Exception e) {
-            logger.error("", e);
+            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
 
     }
@@ -126,9 +125,8 @@ public class Doc2PDF {
         }
         catch (Exception e) {
             // An error occurred - send it to stderr for the web server...
-            logger.error(e.toString() + " caught while running:\n\n");
-            logger.error("    " + command + "\n");
-            logger.error("", e);
+            System.err.print(e.toString() + " caught while running:\n\n");
+            System.err.print("    " + command + "\n");
             return(1);
         }
     }
@@ -136,10 +134,10 @@ public class Doc2PDF {
     // Main entry for htmldoc class
     public static void HTMLDOC(HttpServletRequest request, HttpServletResponse response, String url)// I - Command-line args
     {
-        //String server_name, // SERVER_NAME env var
-        //server_port, // SERVER_PORT env var
-        //path_info, // PATH_INFO env var
-        String query_string, // QUERY_STRING env var
+        String server_name, // SERVER_NAME env var
+        server_port, // SERVER_PORT env var
+        path_info, // PATH_INFO env var
+        query_string, // QUERY_STRING env var
         filename; // File to convert
 
         filename = url;
@@ -147,6 +145,8 @@ public class Doc2PDF {
         if ((query_string = System.getProperty("QUERY_STRING")) != null) {
             filename = filename + "?" + query_string;
         }
+
+        System.err.print("htmldoc.class filename\n");
 
         // Convert the file to PDF and send to the web client...
         topdf(request, response, filename);
@@ -174,7 +174,8 @@ public class Doc2PDF {
         }
 
         catch (Exception e) {
-        	logger.error("Unexpected error", e);
+            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
 
     }
@@ -201,7 +202,8 @@ public class Doc2PDF {
         }
 
         catch (Exception e) {
-        	logger.error("Unexpected error", e);
+            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
             return null;
         }
 
@@ -209,6 +211,8 @@ public class Doc2PDF {
 
     public static void SavePDF2File(String fileName, String docBin) {
 
+        FileOutputStream fos;
+        DataOutputStream ds;
         try {
 
             FileOutputStream ostream = new FileOutputStream(fileName);
@@ -222,7 +226,7 @@ public class Doc2PDF {
 
         }
         catch (IOException ioe) {
-            MiscUtils.getLogger().debug("IO error: " + ioe);
+            System.out.println("IO error: " + ioe);
         }
     }
 
@@ -233,7 +237,7 @@ public class Doc2PDF {
 
             URL url = new URI(uri + ";jsessionid=" + jsessionid).toURL();
 
-            MiscUtils.getLogger().debug(" " + uri + ";jsessionid=" + jsessionid);
+            System.out.println(" " + uri + ";jsessionid=" + jsessionid);
 
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 
@@ -241,7 +245,8 @@ public class Doc2PDF {
 
         }
         catch (Exception e) {
-        	logger.error("Unexpected error", e);
+            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
         return in;
     }
@@ -268,7 +273,8 @@ public class Doc2PDF {
         }
 
         catch (Exception e) {
-        	logger.error("Unexpected error", e);
+            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
         return null;
 
@@ -288,7 +294,8 @@ public class Doc2PDF {
         }
 
         catch (Exception e) {
-        	logger.error("Unexpected error", e);
+            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
 
     }
@@ -322,7 +329,8 @@ public class Doc2PDF {
         }
 
         catch (Exception e) {
-        	logger.error("Unexpected error", e);
+            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
 
     }
@@ -356,7 +364,8 @@ public class Doc2PDF {
         }
 
         catch (Exception e) {
-        	logger.error("Unexpected error", e);
+            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
 
     }

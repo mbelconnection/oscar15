@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -29,17 +29,13 @@ package oscar.oscarEncounter.pageUtil;
 import java.net.URLEncoder;
 import java.sql.ResultSet;
 import java.util.Date;
-import java.util.Properties;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts.util.MessageResources;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarTickler.TicklerData;
 import oscar.util.DateUtils;
-import oscar.util.OscarRoleObjectPrivilege;
 import oscar.util.StringUtils;
 
 //import oscar.oscarSecurity.CookieSecurity;
@@ -48,22 +44,14 @@ public class EctDisplayTicklerAction extends EctDisplayAction {
     private static final String cmd = "tickler";
     
  public boolean getInfo(EctSessionBean bean, HttpServletRequest request, NavBarDisplayDAO Dao, MessageResources messages) {
-     
-	 boolean a = true;
- 	Vector v = OscarRoleObjectPrivilege.getPrivilegeProp("_newCasemgmt.viewTickler");
-     String roleName = (String)request.getSession().getAttribute("userrole") + "," + (String) request.getSession().getAttribute("user");
-     a = OscarRoleObjectPrivilege.checkPrivilege(roleName, (Properties) v.get(0), (Vector) v.get(1));
- 	if(!a) {
- 		return true; //The link of tickler won't show up on new CME screen.
- 	} else {
- 	 
+                      
  try {         
 
     //Set lefthand module heading and link
     String winName = "ViewTickler" + bean.demographicNo;
     String pathview, pathedit;
     if( org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable() ) {
-        pathview = request.getContextPath() + "/Tickler.do?method=filter&filter.demographic_webName="+bean.patientLastName+","+bean.patientFirstName+"&filter.demographic_no="+bean.demographicNo;
+        pathview = request.getContextPath() + "/Tickler.do";
         pathedit = request.getContextPath() + "/Tickler.do?method=edit&tickler.demographic_webName="+bean.patientLastName + "," + bean.patientFirstName+"&tickler.demographic_no=" + bean.demographicNo;
     }
     else {
@@ -113,12 +101,12 @@ public class EctDisplayTicklerAction extends EctDisplayAction {
     
      Dao.sortItems(NavBarDisplayDAO.DATESORT);
  }catch( Exception e ) {
-     MiscUtils.getLogger().debug("Error retrieving " + cmd + " : " + e.getMessage());
-     MiscUtils.getLogger().error("Error", e);
+     System.out.println("Error retrieving " + cmd + " : " + e.getMessage());
+     e.printStackTrace();
      return false;
  }
     return true;
- 	}      
+        
   }
  
  public String getCmd() {

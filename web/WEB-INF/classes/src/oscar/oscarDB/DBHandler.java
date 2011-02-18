@@ -20,66 +20,68 @@
 // * <OSCAR TEAM>
 // * This software was written for the
 // * Department of Family Medicine
-// * McMaster University
+// * McMaster Unviersity
 // * Hamilton
 // * Ontario, Canada
 // *
 // -----------------------------------------------------------------------------------------------------------------------
 package oscar.oscarDB;
 
-import java.sql.PreparedStatement;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.oscarehr.util.DbConnectionFilter;
 
-/**
- * deprecated Use JPA instead, no new code should be written against this class.
- */
-public final class DBHandler {
+public class DBHandler {
 
-	private DBHandler() {
-		// not intented for instantiation
-	}
+    public static String OSCAR_DATA = "oscar_sfhc";
 
-	public static java.sql.ResultSet GetSQL(String SQLStatement) throws SQLException {
-		return GetSQL(SQLStatement, false);
-	}
+    public DBHandler(String dbName) throws SQLException {
+    }
 
-	public static ResultSet GetSQL(String SQLStatement, boolean updatable) throws SQLException {
-		Statement stmt;
-		ResultSet rs = null;
-		if (updatable) {
-			stmt = DbConnectionFilter.getThreadLocalDbConnection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-		} else {
-			stmt = DbConnectionFilter.getThreadLocalDbConnection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-		}
+    public DBHandler(String host, String dbName) throws SQLException {
+    }
 
-		rs = stmt.executeQuery(SQLStatement);
-		return rs;
-	}
+    public static Connection getConnection() throws SQLException {
+        return DbConnectionFilter.getThreadLocalDbConnection();
+    }
 
-	public static int RunSQL(String SQLStatement, String para1) throws SQLException {
-		PreparedStatement ps = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(SQLStatement);
-		ps.setString(1, para1);
-		int result = ps.executeUpdate();
-		return result;
-	}
+    public java.sql.ResultSet GetSQL(String SQLStatement) throws SQLException {
+        return this.GetSQL(SQLStatement, false);
+    }
 
-	public static java.sql.ResultSet GetPreSQL(String SQLStatement, String para1) throws SQLException {
-		PreparedStatement ps = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(SQLStatement);
-		ps.setString(1, para1);
-		ResultSet result = ps.executeQuery();
-		return result;
-	}
+    synchronized public java.sql.ResultSet GetSQL(String SQLStatement, boolean updatable) throws SQLException {
+        Statement stmt;
+        ResultSet rs = null;
+        if (updatable) {
+            stmt = getConnection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        }
+        else {
+            //stmt = getConnection().createStatement();
+        	stmt = getConnection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY);
+        }
 
-	public static boolean RunSQL(String SQLStatement) throws SQLException {
-		boolean b = false;
-		Statement stmt;
-		stmt = DbConnectionFilter.getThreadLocalDbConnection().createStatement();
-		b = stmt.execute(SQLStatement);
-		return b;
-	}
+        rs = stmt.executeQuery(SQLStatement);
+        return rs;
+    }
 
+    synchronized public boolean RunSQL(String SQLStatement) throws SQLException {
+        boolean b = false;
+        Statement stmt;
+        stmt = getConnection().createStatement();
+        b = stmt.execute(SQLStatement);
+        return b;
+    }
+
+    public String getString(ResultSet rs, String columnName) throws SQLException
+    {
+    	return oscar.Misc.getString(rs, columnName);
+    }
+    public String getString(ResultSet rs, int columnIndex) throws SQLException
+    {
+    	return oscar.Misc.getString(rs, columnIndex);
+    }
+    
 }

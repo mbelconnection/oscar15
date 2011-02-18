@@ -12,8 +12,6 @@ package oscar.util;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 import oscar.oscarDB.DBPreparedHandler;
 import oscar.oscarDB.DBPreparedHandlerParam;
@@ -22,24 +20,24 @@ public class SqlUtilBaseS {
            //------------------private
    protected static void runSQL(String sql) {
        try {
-           
-           DBHandler.RunSQL(sql);
+           DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+           db.RunSQL(sql);
        } catch (SQLException sqe) {
-           MiscUtils.getLogger().error("Error", sqe);
+           sqe.printStackTrace();
        }
    }
    
    protected static String runSQLinsert(String sql) {
        try {
-           
-           DBHandler.RunSQL(sql);
+           DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+           db.RunSQL(sql);
            sql = "SELECT LAST_INSERT_ID()";
-           ResultSet rs = DBHandler.GetSQL(sql);
+           ResultSet rs = db.GetSQL(sql);
            rs.next();
            String lastID = rs.getString("LAST_INSERT_ID()");
            rs.close();
            return(lastID);
-       } catch (SQLException sqe) { MiscUtils.getLogger().error("Error", sqe); }
+       } catch (SQLException sqe) { sqe.printStackTrace(); }
        return "";
    }
    
@@ -50,22 +48,22 @@ public class SqlUtilBaseS {
 		   String lastID;
 		   String strDbType = oscar.OscarProperties.getInstance().getProperty("db_type").trim();
 		   if("oracle".equalsIgnoreCase(strDbType)){
-			   
-			   ResultSet rs = DBHandler.GetSQL("select HIBERNATE_SEQUENCE.NEXTVAL as nextval from dual");
+			   DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+			   ResultSet rs = db.GetSQL("select HIBERNATE_SEQUENCE.NEXTVAL as nextval from dual");
 			   rs.next();
 			   int lastIDInt = rs.getInt("nextval") - 1;
 			   lastID = String.valueOf(lastIDInt);			   
 			   rs.close();
 		   } else {
-			   
+			   DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 			   String sql = "SELECT LAST_INSERT_ID()";
-			   ResultSet rs = DBHandler.GetSQL(sql);
+			   ResultSet rs = db.GetSQL(sql);
 			   rs.next();
-			   lastID = oscar.Misc.getString(rs, "LAST_INSERT_ID()");
+			   lastID = db.getString(rs,"LAST_INSERT_ID()");
 			   rs.close();
 		   }
            return(lastID);
-       } catch (SQLException sqe) { MiscUtils.getLogger().error("Error", sqe); }
+       } catch (SQLException sqe) { sqe.printStackTrace(); }
        return "";
    }
    
@@ -74,17 +72,17 @@ public class SqlUtilBaseS {
 		   DBPreparedHandler dbPre = new DBPreparedHandler();
 		   dbPre.queryExecuteUpdate(preparedSql, params);
 	   } catch (SQLException sqe) { 
-		   MiscUtils.getLogger().error("Error", sqe); 
+		   sqe.printStackTrace(); 
 	   }       
    }
    
    protected static ResultSet getSQL(String sql) {
        ResultSet rs = null;
        try {
-           
-           rs = DBHandler.GetSQL(sql);
+           DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+           rs = db.GetSQL(sql);
        } catch (SQLException sqe) {
-           MiscUtils.getLogger().error("Error", sqe);
+           sqe.printStackTrace();
        }
        return(rs);
    }

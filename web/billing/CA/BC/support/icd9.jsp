@@ -27,8 +27,7 @@
  * EMR System
  */
 -->
-
-<%@page import="oscar.oscarDB.DBHandler"%><html:html locale="true">
+<html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>OSCAR Diagnostic Codes</title>
@@ -70,15 +69,16 @@ function posttoText(index){
 	</tr>
 	<%
 	boolean color = false;
-	java.sql.ResultSet rs = DBHandler.GetSQL("SELECT diagnostic_code, description FROM diagnosticcode where diagnostic_code like '"+searchStr+"' or description like '"+searchStr+"' ORDER BY diagnostic_code");
+	oscar.oscarDB.DBHandler db = new oscar.oscarDB.DBHandler(oscar.oscarDB.DBHandler.OSCAR_DATA);
+	java.sql.ResultSet rs = db.GetSQL("SELECT diagnostic_code, description FROM diagnosticcode where diagnostic_code like '"+searchStr+"' or description like '"+searchStr+"' ORDER BY diagnostic_code");
 	while (rs.next()){
 %>
 	<tr <%=((color) ? "bgcolor=\"#F6F6F6\"" : "")%> align="left"
 		valign="top">
 		<td class="SmallerText"><a href=#
-			onClick="posttoText('<%=oscar.Misc.getString(rs,"diagnostic_code")%>');"><%=oscar.Misc.getString(rs,"diagnostic_code")%></a>
+			onClick="posttoText('<%=db.getString(rs,"diagnostic_code")%>');"><%=db.getString(rs,"diagnostic_code")%></a>
 		</td>
-		<td class="SmallerText"><%=oscar.Misc.getString(rs,"description")%></td>
+		<td class="SmallerText"><%=db.getString(rs,"description")%></td>
 	</tr>
 	<%
 		color = !(color);

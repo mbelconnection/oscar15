@@ -8,15 +8,15 @@
 <%
          Hashtable hiddenResources = (Hashtable) request.getSession().getAttribute("hideResources");
          if(hiddenResources!=null){
-         int numHidden=hiddenResources.size();
-         if(numHidden>0){
-             %>  <script type="text/javascript">
-                    if(showOrHide==1)$('showHideWord').update('hide');
-                    else $('showHideWord').update('show');
-             </script>
-<div id="">
-    <a href="javascript:void(0);" style="font-size: 9pt;" onclick="showOrHideRes('<%=hiddenResources%>');"> <span id="showHideWord">show</span> <span id="showHideNumber"><%=numHidden%></span> hidden resources</a>
-</div>
+                     int numHidden=hiddenResources.size();
+                     if(numHidden>0){
+                         %>  <script type="text/javascript">
+                                if(showOrHide==1)$('showHideWord').update('hide');
+                                else $('showHideWord').update('show');
+                         </script>
+            <div id="">
+                <a href="javascript:void(0);" style="font-size: 9pt;" onclick="showOrHideRes('<%=hiddenResources%>');"> <span id="showHideWord">show</span> <span id="showHideNumber"><%=numHidden%></span> hidden resources</a>
+            </div>
             <%                      }
          }
          %>

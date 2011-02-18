@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -26,10 +26,10 @@ package oscar.oscarMessenger.util;
 
 public class MsgStringQuote {
 
-    private java.lang.StringBuilder stringBuffer;
+    private java.lang.StringBuffer stringBuffer;
 
    public String q(String str){
-        stringBuffer = new java.lang.StringBuilder();
+        stringBuffer = new java.lang.StringBuffer();
         stringBuffer.append(str);
         for (int i =0 ; i < stringBuffer.length(); i++){
             if ( stringBuffer.charAt(i) == '\'' || stringBuffer.charAt(i) == '\\'){

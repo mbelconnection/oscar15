@@ -23,6 +23,7 @@
 package org.oscarehr.PMmodule.web.reports;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -56,10 +57,11 @@ public class BasicReportAction extends BaseAction {
 	}
 	
 	public ActionForward form(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-		
+		Date endDate= new Date();
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MONTH, -12);
-			
+		Date startDate = cal.getTime();
+		
 		request.setAttribute("programStatistics", this.getProgramStatistics());
 		request.setAttribute("providerStatistics", this.getProviderStatistics());
 		

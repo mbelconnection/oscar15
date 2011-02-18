@@ -18,11 +18,13 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 -->
+
+<%@ page language="java"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
@@ -77,8 +79,8 @@ function BackToOscar()
 
 			<!----Start new rows here-->
 			<tr>
-                            <td><%--bean:message
-					key="oscarEncounter.oscarConsultationRequest.config.EditSpecialists.msgCheckOff" /--%><br>
+				<td><bean:message
+					key="oscarEncounter.oscarConsultationRequest.config.EditSpecialists.msgCheckOff" /><br>
 				<bean:message
 					key="oscarEncounter.oscarConsultationRequest.config.EditSpecialists.msgClickOn" /><br>
 
@@ -87,8 +89,8 @@ function BackToOscar()
 			</tr>
 			<tr>
 				<td><html:form action="/oscarEncounter/EditSpecialists">
-					<%-- input type="submit" name="delete"
-						value="<bean:message key="oscarEncounter.oscarConsultationRequest.config.EditSpecialists.btnDeleteSpecialist"/>"--%>
+					<input type="submit" name="delete"
+						value="<bean:message key="oscarEncounter.oscarConsultationRequest.config.EditSpecialists.btnDeleteSpecialist"/>">
 					<div class="ChooseRecipientsBox1">
 					<table>
 						<tr>

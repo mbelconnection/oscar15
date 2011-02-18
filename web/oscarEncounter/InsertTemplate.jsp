@@ -19,7 +19,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -27,11 +27,19 @@
 <%
   if(session.getValue("user") == null) response.sendRedirect("../../logout.jsp");
 %>
+<%@ page language="java"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
 <%@ page
 	import="java.lang.*,oscar.oscarEncounter.oscarMeasurements.pageUtil.*"%>
+
+<%
+    response.setHeader("Cache-Control","no-cache"); //HTTP 1.1
+    response.setHeader("Pragma","no-cache"); //HTTP 1.0
+    response.setDateHeader ("Expires", 0); //prevents caching at the proxy 
+
+%>
 
 <html:html locale="true">
 <head>
@@ -62,11 +70,11 @@ function write2Parent(text){
 		<script>
             var text = "<bean:write name="templateValue"/>";
             text = text.replace(/\\u000A/g, "\u000A");
-            text = text.replace(/\\u003E/g, ">");
-            text = text.replace(/\\u003C/g, "<");
-            text = text.replace(/\\u005C/g, "\");
-            text = text.replace(/\\u0022/g, """);
-            text = text.replace(/\\u0027/g, "'");
+            text = text.replace(/\\u003E/g, "\u003E");
+            text = text.replace(/\\u003C/g, "\u003C");
+            text = text.replace(/\\u005C/g, "\u005C");
+            text = text.replace(/\\u0022/g, "\u0022");
+            text = text.replace(/\\u0027/g, "\u0027");
             write2Parent(text);
         </script>
 	</tr>

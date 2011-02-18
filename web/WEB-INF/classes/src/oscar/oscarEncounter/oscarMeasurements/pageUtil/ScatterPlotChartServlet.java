@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -58,7 +58,6 @@ import org.jCharts.properties.PointChartProperties;
 import org.jCharts.properties.ScatterPlotProperties;
 import org.jCharts.properties.util.ChartFont;
 import org.jCharts.types.ChartType;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarEncounter.pageUtil.EctSessionBean;
@@ -180,17 +179,17 @@ public class ScatterPlotChartServlet extends HttpServlet
                         
                         for( int x = 0; x < results[1].length/2; x++ )
                         {                                
-                                MiscUtils.getLogger().debug("systolic" + x + " " + results[1][x]);
+                                System.out.println("systolic" + x + " " + results[1][x]);
                                 points[0][x] = results[1][x];
                                 int testNum = x + 1;
                                 String xAxisLabel = "test" + testNum;
                                 xAxisLabels[x] = xAxisLabel;
-                                MiscUtils.getLogger().debug("xAxisLabel is " + xAxisLabels[x]);
+                                System.out.println("xAxisLabel is " + xAxisLabels[x]);
                         }                                           
                         
                         for( int x = 0; x < results[1].length/2; x++ )
                         {                                                               
-                                MiscUtils.getLogger().debug("Diastolic" + x + results[1][x+offset]);
+                                System.out.println("Diastolic" + x + results[1][x+offset]);
                                 points[1][x] = results[1][x+offset];                                                               
                         }
                         
@@ -198,11 +197,11 @@ public class ScatterPlotChartServlet extends HttpServlet
                             AxisChartDataSet acds = new AxisChartDataSet(points, legendLabels, paints,ChartType.LINE, lineChartProperties );
                             dataSeries = new DataSeries( xAxisLabels, xAxisTitle, yAxisTitle, chartTitle );
                             dataSeries.addIAxisPlotDataSet(acds);
-                            MiscUtils.getLogger().debug("the diastolic data has been added successfully");
+                            System.out.println("the diastolic data has been added successfully");
                         }
                         catch(Exception e)
                         {
-                                MiscUtils.getLogger().debug(e);
+                                System.out.println(e);
                         }                                                                        
                         
                     }
@@ -223,12 +222,12 @@ public class ScatterPlotChartServlet extends HttpServlet
             
             try{
                 if(isNumeric(type, mInstrc)){
-                    
+                    DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                     String sql = "SELECT DISTINCT dateObserved FROM measurements WHERE demographicNo = '" + demo + "' AND type='"+ type + "' AND measuringInstruction='" + mInstrc 
                                  + "' ORDER BY dateObserved";
-                    MiscUtils.getLogger().debug("SQL Statement: " + sql);
+                    System.out.println("SQL Statement: " + sql);
                     ResultSet rs;
-                    rs = DBHandler.GetSQL(sql);                
+                    rs = db.GetSQL(sql);                
                     rs.last();
                     int nbData = rs.getRow();
                     rs.first();
@@ -236,14 +235,14 @@ public class ScatterPlotChartServlet extends HttpServlet
                     
                     for(int i=0; i<nbData; i++){ 
                         sql =   "SELECT * FROM measurements WHERE demographicNo='" + demo + "' AND type='"+ type 
-                                + "' AND dateObserved='"+oscar.Misc.getString(rs, "dateObserved") + "' ORDER BY dateEntered DESC limit 1";
+                                + "' AND dateObserved='"+db.getString(rs,"dateObserved") + "' ORDER BY dateEntered DESC limit 1";
                         ResultSet rsData;
-                        rsData = DBHandler.GetSQL(sql);
+                        rsData = db.GetSQL(sql);
                         if(rsData.next()){
                             Date dateObserved = rs.getDate("dateObserved");
                             points[0][i] = dateObserved.getTime()/1000/60/60/24;                        
                             points[1][i] = rsData.getLong("dataField");
-                            MiscUtils.getLogger().debug("Date: " + points[0][i] + " Value: " + points[1][i]);
+                            System.out.println("Date: " + points[0][i] + " Value: " + points[1][i]);
                         }
                         rsData.close();
                         rs.next();
@@ -251,58 +250,58 @@ public class ScatterPlotChartServlet extends HttpServlet
                     rs.close();
                 }
                 else if (type.compareTo("BP")==0){
-                    
+                    DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                     String sql = "SELECT dateObserved FROM measurements WHERE demographicNo = '" + demo + "' AND type='"+ type + "' AND measuringInstruction='" + mInstrc 
                                  + "' GROUP BY dateObserved ORDER BY dateObserved";
-                    MiscUtils.getLogger().debug("SQL Statement: " + sql);
+                    System.out.println("SQL Statement: " + sql);
                     ResultSet rs;
-                    rs = DBHandler.GetSQL(sql);                
+                    rs = db.GetSQL(sql);                
                     rs.last();                    
                     int nbPatient = rs.getRow();
                     rs.first();
                     rs.previous();
                     points = new long[2][nbPatient*2];                    
                     
-                   
-                    MiscUtils.getLogger().debug("number of record: " + Integer.toString(nbPatient));
+                    boolean hasNext = true;
+                    System.out.println("number of record: " + Integer.toString(nbPatient));
                     for(int i=0; i<nbPatient; i++){
                         if(rs.next()){                            
                             sql =   "SELECT * FROM measurements WHERE demographicNo='" + demo + "' AND type='"+ type 
-                                    + "' AND dateObserved='"+oscar.Misc.getString(rs, "dateObserved") + "' ORDER BY dateEntered DESC limit 1";
-                            MiscUtils.getLogger().debug("sql dateObserved: " + sql);
+                                    + "' AND dateObserved='"+db.getString(rs,"dateObserved") + "' ORDER BY dateEntered DESC limit 1";
+                            System.out.println("sql dateObserved: " + sql);
                             ResultSet rsData;
-                            rsData = DBHandler.GetSQL(sql);
+                            rsData = db.GetSQL(sql);
                             if(rsData.next()){
                                 String bloodPressure = rsData.getString("dataField");
-                                MiscUtils.getLogger().debug("bloodPressure: " + bloodPressure);
+                                System.out.println("bloodPressure: " + bloodPressure);
                                 int slashIndex = bloodPressure.indexOf("/");            
                                 if (slashIndex >= 0){
                                     String systolic = bloodPressure.substring(0, slashIndex);
                                     Date dateObserved = rs.getDate("dateObserved");
                                     points[0][i] = dateObserved.getTime()/1000/60/60/24;                                
                                     points[1][i] = Long.parseLong(systolic);
-                                    MiscUtils.getLogger().debug("systolic: " + i + " " + systolic);
+                                    System.out.println("systolic: " + i + " " + systolic);
 
                                     String diastolic = bloodPressure.substring(slashIndex+1);
                                     points[0][i+nbPatient] = dateObserved.getTime()/1000/60/60/24;
                                     points[1][i+nbPatient] = Long.parseLong(diastolic);
-                                    MiscUtils.getLogger().debug("diastolic: " + points[1][i+nbPatient]);
+                                    System.out.println("diastolic: " + points[1][i+nbPatient]);
                                 }                                                                          
                             }
                             rsData.close();
                         }
                     }
                     /*for(int i=0; i<nbPatient; i++){ 
-                        MiscUtils.getLogger().debug("the result is: " + points[i]);
+                        System.out.println("the result is: " + points[i]);
                     }*/
-                    MiscUtils.getLogger().debug("Store blood pressure data to a new array successfully" );
+                    System.out.println("Store blood pressure data to a new array successfully" );
                     rs.close();
                 }
                 
             }
             catch(SQLException e)
             {
-                MiscUtils.getLogger().error("Error", e);
+                System.out.println(e.getMessage());
             }
             
             return points;
@@ -312,17 +311,17 @@ public class ScatterPlotChartServlet extends HttpServlet
             boolean isNumeric = false;
             
             try{
-                
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                 String sql = "SELECT * FROM measurementType WHERE type='"+ type + "' AND measuringInstruction='" + mInstrc + "'";
-                MiscUtils.getLogger().debug("SQL Statement: " + sql);
+                System.out.println("SQL Statement: " + sql);
                 ResultSet rs;
-                rs = DBHandler.GetSQL(sql);                
+                rs = db.GetSQL(sql);                
                 rs.next();
-                String validation = oscar.Misc.getString(rs, "validation");
+                String validation = db.getString(rs,"validation");
                 rs.close();
                 
                 sql = "SELECT * FROM validations WHERE id='"+ validation + "'";
-                rs = DBHandler.GetSQL(sql);
+                rs = db.GetSQL(sql);
                 rs.next();
                 if(rs.getInt("isNumeric")==1){
                     isNumeric = true;
@@ -333,7 +332,7 @@ public class ScatterPlotChartServlet extends HttpServlet
             }
             catch(SQLException e)
             {
-                MiscUtils.getLogger().error("Error", e);
+                System.out.println(e.getMessage());
             }
             
             return isNumeric;
@@ -380,9 +379,9 @@ public class ScatterPlotChartServlet extends HttpServlet
                             }
                         }
 		}
-		catch( Throwable t )
+		catch( Throwable throwable )
 		{			
-			MiscUtils.getLogger().error("Error", t);
+			throwable.printStackTrace();
 		}
 
 	}

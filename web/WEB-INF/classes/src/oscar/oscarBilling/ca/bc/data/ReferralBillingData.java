@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -95,14 +94,14 @@ public class ReferralBillingData {
    private Hashtable runSQL(String sql){
       Hashtable h = new Hashtable();
       try{
-         
-         ResultSet rs = DBHandler.GetSQL(sql);         
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+         ResultSet rs = db.GetSQL(sql);         
          if(rs.next()){
             fillHash(rs,h);
          }
          rs.close();                    
       }catch (Exception e){
-         MiscUtils.getLogger().error("Error", e);        
+         e.printStackTrace();        
       }
       return h;
    }
@@ -110,14 +109,14 @@ public class ReferralBillingData {
    private ArrayList runSQLMulti(String sql){
       ArrayList l = new ArrayList();
       try{
-         
-         ResultSet rs = DBHandler.GetSQL(sql);         
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+         ResultSet rs = db.GetSQL(sql);         
          while(rs.next()){
             l.add(fillHash(rs));
          }
          rs.close();                    
       }catch (Exception e){
-         MiscUtils.getLogger().error("Error", e);        
+         e.printStackTrace();        
       }
       return l;
    }
@@ -158,14 +157,14 @@ public class ReferralBillingData {
    public String getReferralDocName(String billingNum){
       String retval= "";
       try{
-         
-         ResultSet rs = DBHandler.GetSQL(" select * from billingreferral where referral_no = '"+billingNum+"' ");         
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+         ResultSet rs = db.GetSQL(" select * from billingreferral where referral_no = '"+billingNum+"' ");         
          if(rs.next()){
             retval = rs.getString("last_name")+", "+rs.getString("first_name");            
          }
          rs.close();                    
       }catch (Exception e){
-         MiscUtils.getLogger().error("Error", e);        
+         e.printStackTrace();        
       }
       return retval;
    }
@@ -174,14 +173,14 @@ public class ReferralBillingData {
    public int getNumberOfRecordsUsingBillingNumber(String billingNum){
       int ret = 0;
       try{
-         
-         ResultSet rs = DBHandler.GetSQL(" select count(*) as coun from billingreferral where referral_no = '"+billingNum+"' ");         
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+         ResultSet rs = db.GetSQL(" select count(*) as coun from billingreferral where referral_no = '"+billingNum+"' ");         
          if(rs.next()){
             ret = rs.getInt("coun");
          }
          rs.close();                    
       }catch (Exception e){
-         MiscUtils.getLogger().error("Error", e);        
+         e.printStackTrace();        
       }
       return ret;
    }
@@ -191,7 +190,7 @@ public class ReferralBillingData {
    public void insertIntoBillingReferral(String referral_no,String last_name,String first_name, String specialty,String  address1,String address2,
    String city,String province,String postal,String phone,String fax){
       try{
-         
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
          String sql = "insert into billingreferral  (referral_no,last_name,first_name,specialty,address1,address2,city,province,postal,phone,fax) values "
          + "('"+StringEscapeUtils.escapeSql(referral_no)+"',"  
          + " '"+StringEscapeUtils.escapeSql(last_name)+"', "  
@@ -206,9 +205,9 @@ public class ReferralBillingData {
          + " '"+StringEscapeUtils.escapeSql(fax)+"' "           
          + ")";          
          
-         DBHandler.RunSQL(sql);                    
+         db.RunSQL(sql);                    
       }catch (Exception e){
-         MiscUtils.getLogger().error("Error", e);        
+         e.printStackTrace();        
       }
    }
    
@@ -223,7 +222,7 @@ public class ReferralBillingData {
    public void updateBillingReferral(String billingreferral_no, String referral_no,String last_name,String first_name, String specialty,String  address1,String address2,
    String city,String province,String postal,String phone,String fax){
       try{
-         
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
          String sql = "update billingreferral set "
          + "referral_no = '"+StringEscapeUtils.escapeSql(referral_no)+"',"  
          + "last_name = '"+StringEscapeUtils.escapeSql(last_name)+"', "  
@@ -238,9 +237,9 @@ public class ReferralBillingData {
          + "fax = '"+StringEscapeUtils.escapeSql(fax)+"' "           
          + " where billingreferral_no = '"+billingreferral_no+"'";          
          
-         DBHandler.RunSQL(sql);                    
+         db.RunSQL(sql);                    
       }catch (Exception e){
-         MiscUtils.getLogger().error("Error", e);        
+         e.printStackTrace();        
       }
    }
    

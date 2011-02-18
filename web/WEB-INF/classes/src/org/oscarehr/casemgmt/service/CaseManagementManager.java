@@ -37,8 +37,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.util.LabelValueBean;
 import org.oscarehr.PMmodule.caisi_integrator.CaisiIntegratorManager;
 import org.oscarehr.PMmodule.dao.ClientDao;
@@ -53,10 +53,10 @@ import org.oscarehr.PMmodule.model.ProgramProvider;
 import org.oscarehr.PMmodule.service.AdmissionManager;
 import org.oscarehr.PMmodule.service.ProgramManager;
 import org.oscarehr.caisi_integrator.ws.CachedDemographicDrug;
-import org.oscarehr.caisi_integrator.ws.CachedDemographicNote;
 import org.oscarehr.caisi_integrator.ws.CachedFacility;
 import org.oscarehr.caisi_integrator.ws.DemographicWs;
 import org.oscarehr.casemgmt.dao.AllergyDAO;
+import org.oscarehr.casemgmt.dao.ApptDAO;
 import org.oscarehr.casemgmt.dao.CaseManagementCPPDAO;
 import org.oscarehr.casemgmt.dao.CaseManagementIssueDAO;
 import org.oscarehr.casemgmt.dao.CaseManagementNoteDAO;
@@ -64,6 +64,7 @@ import org.oscarehr.casemgmt.dao.CaseManagementNoteExtDAO;
 import org.oscarehr.casemgmt.dao.CaseManagementNoteLinkDAO;
 import org.oscarehr.casemgmt.dao.CaseManagementTmpSaveDAO;
 import org.oscarehr.casemgmt.dao.EchartDAO;
+import org.oscarehr.casemgmt.dao.EncounterFormDAO;
 import org.oscarehr.casemgmt.dao.EncounterWindowDAO;
 import org.oscarehr.casemgmt.dao.HashAuditDAO;
 import org.oscarehr.casemgmt.dao.IssueDAO;
@@ -91,7 +92,6 @@ import org.oscarehr.common.model.UserProperty;
 import org.oscarehr.dx.dao.DxResearchDAO;
 import org.oscarehr.dx.model.DxResearch;
 import org.oscarehr.util.LoggedInInfo;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import oscar.OscarProperties;
@@ -118,8 +118,10 @@ public class CaseManagementManager {
 	private CaseManagementCPPDAO caseManagementCPPDAO;
 	private AllergyDAO allergyDAO;
 	private PrescriptionDAO prescriptionDAO;
+	private EncounterFormDAO encounterFormDAO;
 	private MessagetblDAO messagetblDAO;
 	private EchartDAO echartDAO;
+	private ApptDAO apptDAO;
 	private ProviderDao providerDAO;
 	private ClientDao demographicDao;
 	private ProviderSignitureDao providerSignitureDao;
@@ -133,14 +135,14 @@ public class CaseManagementManager {
 	private DxResearchDAO dxResearchDAO;
 	private ProgramProviderDAO programProviderDao;
 	private ProgramAccessDAO programAccessDAO;
-
+	
 	private boolean enabled;
 
-	private static final Logger logger = MiscUtils.getLogger();
+	private static final Log logger = LogFactory.getLog(CaseManagementManager.class);
 
 	/*
-	* check to see if issue has been saved for this demo beforeif it has return issue; else return null
-	*/
+	 * check to see if issue has been saved for this demo beforeif it has return issue; else return null
+	 */
 	public CaseManagementIssue getIssueById(String demo, String issue_id) {
 		return this.caseManagementIssueDAO.getIssuebyId(demo, issue_id);
 	}
@@ -168,6 +170,11 @@ public class CaseManagementManager {
 			if (providers == null) providers = new ArrayList<Provider>();
 			note.setEditors(providers);
 		}
+	}
+
+	public void updateAppointment(String apptId, String status, String type) {
+
+		apptDAO.updateAppointmentStatus(apptId, status, type);
 	}
 
 	public UserProperty getUserProperty(String provider_no, String name) {
@@ -298,10 +305,6 @@ public class CaseManagementManager {
 	public List<CaseManagementIssue> getIssues(int demographic_no) {
 		return caseManagementIssueDAO.getIssuesByDemographicOrderActive(demographic_no, null);
 	}
-	
-	public List<CaseManagementIssue> getIssuesByNote(int noteId) {
-		return caseManagementIssueDAO.getIssuesByNote(noteId,null);
-	}
 
 	public List<CaseManagementIssue> getIssues(int demographic_no, Boolean resolved) {
 		return caseManagementIssueDAO.getIssuesByDemographicOrderActive(demographic_no, resolved);
@@ -397,16 +400,19 @@ public class CaseManagementManager {
 		return this.caseManagementNoteLinkDAO.getLinkByNote(noteId);
 	}
 
-	public CaseManagementNoteLink getLatestLinkByNote(Long noteId){
-		return this.caseManagementNoteLinkDAO.getLastLinkByNote(noteId);
-	}
-
+        public CaseManagementNoteLink getLatestLinkByNote(Long noteId){
+                List<CaseManagementNoteLink> lcml =getLinkByNote(noteId);
+                if (lcml.isEmpty()) return null;
+		else return lcml.get(lcml.size() - 1);
+        }
 	public List getLinkByTableId(Integer tableName, Long tableId) {
 		return this.caseManagementNoteLinkDAO.getLinkByTableId(tableName, tableId);
 	}
 
 	public CaseManagementNoteLink getLatestLinkByTableId(Integer tableName, Long tableId) {
-		return this.caseManagementNoteLinkDAO.getLastLinkByTableId(tableName, tableId);
+		List<CaseManagementNoteLink> lcml = getLinkByTableId(tableName, tableId);
+		if (lcml.isEmpty()) return null;
+		else return lcml.get(lcml.size() - 1);
 	}
 
 	public Integer getTableNameByDisplay(String disp) {
@@ -514,6 +520,10 @@ public class CaseManagementManager {
 		return (null);
 	}
 
+	public List getEncounterFormBeans() {
+		return encounterFormDAO.getAllForms();
+	}
+
 	public List getMsgBeans(Integer demographicNo) {
 		Iterator iter = messagetblDAO.getMsgByDemoNo(demographicNo).iterator();
 		ArrayList al = new ArrayList();
@@ -532,10 +542,6 @@ public class CaseManagementManager {
 	}
 
 	public void saveAndUpdateCaseIssues(List issuelist) {
-		/*
-		 * We're having a problem where duplicate CaseManagementIssue objects being 
-		 * created (as in points to same issue). 
-		 */
 		caseManagementIssueDAO.saveAndUpdateCaseIssues(issuelist);
 	}
 
@@ -957,8 +963,6 @@ public class CaseManagementManager {
 	 * @param demoNo demographic to search for
 	 */
 	public List getIssueHistory(String issueIds, String demoNo) {
-		issueIds=StringUtils.trimToNull(issueIds);
-		if (issueIds==null) return(new ArrayList());
 		return this.caseManagementNoteDAO.getIssueHistory(issueIds, demoNo);
 	}
 
@@ -1021,13 +1025,7 @@ public class CaseManagementManager {
 					add = true;
 				}
 			}
-			
-			//global default role access
-			String accessName="read " + noteRoleName + " notes";
-			if(roleProgramAccessDAO.hasAccess(accessName,role.getId())) {
-					add=true;
-			}
-			
+
 			// did it pass the test?
 			if (add) {
 				filteredNotes.add(cmNote);
@@ -1042,64 +1040,7 @@ public class CaseManagementManager {
 		return filteredNotes;
 	}
 	
-    public boolean hasRole(CachedDemographicNote cachedDemographicNote, String programId) {
-    	LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
-    	
-		// Get Role - if no ProgramProvider record found, show no issues.
-		@SuppressWarnings("unchecked")
-		List ppList = programProviderDao.getProgramProviderByProviderProgramId(loggedInInfo.loggedInProvider.getProviderNo(), new Long(programId));
-		if (ppList == null || ppList.isEmpty()) {
-			return(false);
-		}
-
-		ProgramProvider pp = (ProgramProvider) ppList.get(0);
-		Secrole role = pp.getRole();
-
-		// Load up access list from program
-		@SuppressWarnings("unchecked")
-		List programAccessList = programAccessDAO.getAccessListByProgramId(new Long(programId));
-		@SuppressWarnings("unchecked")
-		Map programAccessMap = convertProgramAccessListToMap(programAccessList);
-
-		// iterate through the issue list
-		String noteRoleName = cachedDemographicNote.getRole();
-		if (noteRoleName!=null) noteRoleName=noteRoleName.toLowerCase();
-		ProgramAccess pa = null;
-		boolean add = false;
-
-		// write
-		pa = null;
-		// read
-		pa = (ProgramAccess) programAccessMap.get("read " + noteRoleName + " notes");
-		if (pa != null) {
-			if (pa.isAllRoles() || isRoleIncludedInAccess(pa, role)) {
-				// filteredIssues.add(cmIssue);
-					return(true);
-			}
-		} else {
-			if (noteRoleName.equals(role.getRoleName().toLowerCase())) {
-				// default
-				return(true);
-			}
-		}
-
-		// apply defaults
-		if (!add) {
-			if (noteRoleName.equals(role.getRoleName().toLowerCase())) {
-				return(true);
-			}
-		}
-			
-		//global default role access
-		String accessName="read " + noteRoleName + " notes";
-		if(roleProgramAccessDAO.hasAccess(accessName,role.getId())) {
-				return(true);
-		}
-			
-		return(false);
-	}
-    
-    public boolean isRoleIncludedInAccess(ProgramAccess pa, Secrole role) {
+	public boolean isRoleIncludedInAccess(ProgramAccess pa, Secrole role) {
 		boolean result = false;
 
 		for (Iterator iter = pa.getRoles().iterator(); iter.hasNext();) {
@@ -1113,7 +1054,7 @@ public class CaseManagementManager {
 
 	public Map convertProgramAccessListToMap(List paList) {
 		Map map = new HashMap();
-		if(paList==null) {return map;}
+
 		for (Iterator iter = paList.iterator(); iter.hasNext();) {
 			ProgramAccess pa = (ProgramAccess) iter.next();
 			map.put(pa.getAccessType().getName().toLowerCase(), pa);
@@ -1154,11 +1095,6 @@ public class CaseManagementManager {
 				}
 			}
 			if (pa == null && r.getId().intValue() == role.getId().intValue()) {
-				allowableSearchRoles.add(r);
-			}
-			
-			//global default role access			
-			if(roleProgramAccessDAO.hasAccess(key,role.getId())) {
 				allowableSearchRoles.add(r);
 			}
 		}
@@ -1219,13 +1155,6 @@ public class CaseManagementManager {
 					add = true;
 				}
 			}
-			
-			//global default role access
-			String accessName="write " + issueRole + " issues";
-			if(roleProgramAccessDAO.hasAccess(accessName,role.getId())) {
-					add=true;
-			}
-			
 			pa = null;
 			// read
 			pa = (ProgramAccess) programAccessMap.get("read " + issueRole + " issues");
@@ -1240,12 +1169,7 @@ public class CaseManagementManager {
 					add = true;
 				}
 			}
-			//global default role access
-			accessName= "read " + issueRole + " issues";
-			if(roleProgramAccessDAO.hasAccess(accessName,role.getId())) {
-					add=true;
-			}
-			
+
 			// apply defaults
 			if (!add) {
 				if (issueRole.equalsIgnoreCase(role.getRoleName())) {
@@ -1367,6 +1291,14 @@ public class CaseManagementManager {
 
 	public void setEchartDAO(EchartDAO echartDAO) {
 		this.echartDAO = echartDAO;
+	}
+
+	public void setApptDAO(ApptDAO apptDAO) {
+		this.apptDAO = apptDAO;
+	}
+
+	public void setEncounterFormDAO(EncounterFormDAO dao) {
+		this.encounterFormDAO = dao;
 	}
 
 	public void setMessagetblDAO(MessagetblDAO dao) {
@@ -1492,48 +1424,6 @@ public class CaseManagementManager {
 		return this.dxResearchDAO.getByDemographicNo(Integer.parseInt(demographicNo));
 	}
 
-        /**
-         * This method takes in a string (template) eg
-         * "Signed on ${DATE} by {$USERSIGNATURE}"
-         * it then searches the string for values surrounded by ${ }.  Once a value is found it looks in the map to see if there is a value for that key.
-         * If it doesn't find a value in the map, it looks in the in recource bundle (this allows templates to be i18n compliant).  If nothing is found in the resource
-         * bundle the value is added as a blank in the returned formatted string.
-         * This is the default signing line.
-         *
-         * ECHART_SIGN_LINE=[${oscarEncounter.class.EctSaveEncounterAction.msgSigned} ${DATE} ${oscarEncounter.class.EctSaveEncounterAction.msgSigBy} ${USERSIGNATURE}]\n
-         *
-         * @param template string with template values used to create the String that is returned
-         * @param rc  The current locale's resource bundle
-         * @param map Values that can be subtituted in.
-         * @return Formatted String
-         */
-        public String getTemplateSignature(String template,ResourceBundle rc,Map<String,String> map){
-            StringBuilder ret = new StringBuilder();
-            int tagstart = -2;
-            int tagend;
-            int currentPosition = 0;
-            while ((tagstart = template.indexOf("${", tagstart+2)) >= 0) {
-                tagend = template.indexOf("}", tagstart);
-                String substituteName = template.substring(tagstart+2, tagend);
-                String substituteValue = map.get(substituteName);
-                if (substituteValue == null){
-                    try{
-                    substituteValue = rc.getString(substituteName);
-                    }catch(Exception e){
-                        substituteValue = "";
-                    }
-                }
-
-                ret.append(template.substring(currentPosition,tagstart));
-                ret.append(substituteValue);
-                currentPosition = tagend+1;
-            }
-
-            ret.append(template.substring(currentPosition));
-            return ret.toString();
-        }
-
-
 	public String getSignature(String cproviderNo, String userName, String roleName, Locale locale, int type) {
 
 		SimpleDateFormat dt = new SimpleDateFormat("dd-MMM-yyyy H:mm", locale);
@@ -1547,30 +1437,18 @@ public class CaseManagementManager {
 		// if (providerSignitureDao.isOnSig(cproviderNo))
 		tempS = providerSignitureDao.getProviderSig(cproviderNo);
 		if (tempS != null && !"".equals(tempS.trim())) userName = tempS;
-                
-		ResourceBundle resourceBundle = ResourceBundle.getBundle("oscarResources", locale);
-		String signature;
-                if (userName != null && !"".equals(userName.trim())) {
-                    try{
-                        HashMap map = new HashMap();
-                        map.put("DATE",dt.format(now));
-                        map.put("USERSIGNATURE",userName);
-                        map.put("ROLENAME",rolename);
 
+		ResourceBundle props = ResourceBundle.getBundle("oscarResources", locale);
+		String signature;
+		if (userName != null && !"".equals(userName.trim())) {
 			if (type == this.SIGNATURE_SIGNED) {
-                            //TODO: In the future pull this from a USER/PROGRAM preference.
-                            String signLine = OscarProperties.getInstance().getProperty("ECHART_SIGN_LINE");
-                            signature = getTemplateSignature(signLine,resourceBundle,map);
+				signature = "[" + props.getString("oscarEncounter.class.EctSaveEncounterAction.msgSigned") + " " + dt.format(now) + " " + props.getString("oscarEncounter.class.EctSaveEncounterAction.msgSigBy") + " " + userName + "]\n";
+
 			} else if (type == this.SIGNATURE_VERIFY) {
-                            String signLine = OscarProperties.getInstance().getProperty("ECHART_VERSIGN_LINE");
-                            signature = getTemplateSignature(signLine,resourceBundle,map);
+				signature = "[" + props.getString("oscarEncounter.class.EctSaveEncounterAction.msgVerAndSig") + " " + dt.format(now) + " " + props.getString("oscarEncounter.class.EctSaveEncounterAction.msgSigBy") + " " + userName + "]";
 			} else {
-                            throw new Exception("No Signature type defined");
+				signature = "[Unknown Signature Type Requested]";
 			}
-                    }catch(Exception eSignature){
-                        signature = "[Unknown Signature Type Requested]";
-                        logger.error("Signature error while signing note ",eSignature);
-                    }
 		} else {
 			signature = "\n[" + dt.format(now) + "]\n";
 		}

@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -56,6 +56,7 @@
 <h1><bean:message key="admin.preferencedelete.msgDeletionFailure" />:
 <%= request.getParameter("keyword") %>. <%  
   }
+  apptMainBean.closePstmtConn();
 %>
 <p></p>
 

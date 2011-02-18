@@ -18,6 +18,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
  -->
+
+<%@ page language="java"%>
 <%@ page
 	import="oscar.util.*, oscar.form.*, oscar.form.data.*, org.oscarehr.util.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
@@ -49,6 +51,8 @@
 %>
 
 <html:html locale="true">
+<% response.setHeader("Cache-Control","no-cache");%>
+
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>MULTI-DISCIPLINARY TEAM DISCHARGE SUMMARY</title>

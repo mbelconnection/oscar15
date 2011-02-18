@@ -17,10 +17,7 @@ create table Facility (
 	enableHealthNumberRegistry tinyint(1) not null,
 	allowSims tinyint(1) unsigned NOT NULL default 1,
 	enableDigitalSignatures tinyint(1) not null,
-        ocanServiceOrgNumber int(10) not null default '0',
-        enableOcanForms tinyint(1) not null,
-	enableAnonymous tinyint(1) unsigned NOT NULL default 0,
-	enableGroupNotes tinyint(1) unsigned NOT NULL default 0,
+	enableCdsForms tinyint(1) not null,
 	lastUpdated datetime not null
 );
 
@@ -1455,8 +1452,8 @@ CREATE TABLE `functional_user_type` (
 
 CREATE TABLE `intake_node_js` (
         `id` integer not null auto_increment,
-        `question_id` varchar(255) not null,
-        `location` varchar(255) not null,
+        `intake_node_id` integer,
+        `location` varchar(255),
         primary key(id)
 );
 
@@ -1511,7 +1508,6 @@ CREATE TABLE `intake_answer_element` (
   `intake_answer_validation_id` int(10) unsigned default NULL,
   `dflt` tinyint(1) default '0',
   `element` varchar(255) NOT NULL,
-  `label` varchar(255),
   PRIMARY KEY  (`intake_answer_element_id`),
   KEY `IDX_intake_answer_element_intake_node_template` (`intake_node_template_id`),
   KEY `IDX_intake_answer_element_intake_answer_validation` (`intake_answer_validation_id`),
@@ -1530,7 +1526,6 @@ CREATE TABLE `intake_node` (
   `parent_intake_node_id` int(10) unsigned default NULL,
   `mandatory` boolean NOT NULL default false,
   `repeating` boolean NOT NULL default false,
-  `common_list` boolean NOT NULL default false,
   `eq_to_id` int(10) default NULL,
   `form_version` int(10) unsigned default NULL,
   `publish_date` date default NULL,
@@ -1588,6 +1583,18 @@ CREATE TABLE `intake_answer` (
 -- Table structure for table `issue`
 --
 
+CREATE TABLE `issue` (
+  `issue_id` int(10) NOT NULL auto_increment,
+  `code` varchar(20) NOT NULL default '',
+  `description` varchar(255) NOT NULL default '',
+  `role` varchar(100) NOT NULL default '',
+  `update_date` datetime NOT NULL default '0000-00-00 00:00:00',
+  `priority` CHAR(10) DEFAULT NULL,
+  `type` VARCHAR(32) DEFAULT NULL,
+  PRIMARY KEY  (`issue_id`),
+	index(code)
+);
+
 --
 -- Table structure for table `program`
 --
@@ -1600,7 +1607,6 @@ CREATE TABLE `program` (
 	intakeProgram int,
   `name` varchar(70) NOT NULL default '',
 	description varchar(255),
-	functionalCentreId varchar(64),
   `address` varchar(255) NOT NULL default '',
   `phone` varchar(255) NOT NULL default '',
   `fax` varchar(255) NOT NULL default '',
@@ -1636,8 +1642,7 @@ CREATE TABLE `program` (
   `capacity_funding` int(10) default NULL,
   `capacity_space` int(10) default NULL,
   `lastUpdateUser` varchar(6) default NULL,
-  `lastUpdateDate` date default NULL,
-  `siteSpecificField` varchar(255) default NULL
+  `lastUpdateDate` date default NULL
 
 );
 
@@ -2018,6 +2023,10 @@ create table programSignature (
   	PRIMARY KEY (`id`)
 );
 
+
+
+-- Caisi Alter Oscar
+alter table preference add `new_tickler_warning_window` varchar(10) NOT NULL default '' after color_template;
 
 -- program restriction based on gender
 create table `program_client_restriction` (
@@ -2551,7 +2560,6 @@ create table IntegratorConsent
 	
 	excludeMentalHealthData tinyint(1) NOT NULL,
 	clientConsentStatus varchar(32) NOT NULL,
-	signatureStatus varchar(10) not NULL,
 	expiry date,
 
 	digitalSignatureId int, foreign key (digitalSignatureId) references DigitalSignature(id)
@@ -2586,8 +2594,8 @@ create table CdsClientForm
 	index(facilityId, clientId),
 	admissionId int,
 	index(admissionId),
-	initialContactDate date,
-	assessmentDate date
+	clientAge int,
+	index(clientAge)
 );
 
 create table CdsClientFormData
@@ -2599,110 +2607,6 @@ create table CdsClientFormData
 	index(question),
 	answer varchar(16) not null
 );
-
-
-create table OcanFormOption
-(
-        id int primary key auto_increment,
-        ocanFormVersion varchar(16) not null,
-        ocanDataCategory varchar(100) not null,
-        ocanDataCategoryValue varchar(100) not null,
-        ocanDataCategoryName varchar(255) not null
-);
-
-
-create table OcanStaffForm
-(
-        id int primary key auto_increment,
-        assessmentId int,
-        ocanFormVersion varchar(16) not null,
-        ocanType varchar(20) not null,
-        index(ocanFormVersion),
-        providerNo varchar(6),
-        clientFormProviderNo varchar(6),
-        signed tinyint not null,
-        index(signed),
-        created datetime,
-        clientFormCreated datetime,
-        facilityId int not null,
-        clientId int not null,
-        index(facilityId, clientId),
-        admissionId int,
-        index(admissionId),
-        clientAge int,
-        index(clientAge),
-        lastName varchar(100),
-        firstName varchar(100),
-        addressLine1 varchar(100),
-        addressLine2 varchar(100),
-        city varchar(100),
-        province varchar(10),
-        postalCode varchar(100),
-        phoneNumber varchar(100),
-        email varchar(100),
-        hcNumber varchar(100),
-        hcVersion varchar(100),
-        dateOfBirth varchar(100),
-        clientDateOfBirth varchar(10),
-        reasonForAssessment varchar(100),
-	assessmentStatus varchar(40),
-	index(assessmentStatus),
-	startDate date,
-	clientStartDate date,
-	completionDate date,
-	clientCompletionDate date,
-	gender varchar(10),
-	providerName varchar(100),
-	clientFormProviderName varchar(100),
-	submissionId int,
-	index(startDate),
-	index(completionDate)
-);
-
-create table OcanStaffFormData
-(
-        id int primary key auto_increment,
-        ocanStaffFormId int not null,
-        index(ocanStaffFormId),
-        question varchar(64) not null,
-        index(question),
-        answer varchar(16) not null
-);
-
-
-create table OcanClientForm
-(
-        id int primary key auto_increment,
-        ocanFormVersion varchar(16) not null,
-        index(ocanFormVersion),
-        providerNo varchar(6) not null,
-        created datetime not null,
-        facilityId int not null,
-        clientId int not null,
-        index(facilityId, clientId),
-        lastName varchar(100),
-        firstName varchar(100),
-        dateOfBirth varchar(100),
-	startDate date NOT NULL,
-	completionDate date,
-	index(startDate),
-	index(completionDate),
-	assessmentStatus varchar(50),
-	providerName varchar(100),
-	index(assessmentStatus)
-);
-
-create table OcanClientFormData
-(
-        id int primary key auto_increment,
-        ocanClientFormId int not null,
-        index(ocanClientFormId),
-        question varchar(64) not null,
-        index(question),
-        answer varchar(16) not null
-);
-
-
 
 DROP TABLE IF EXISTS `oncall_questionnaire`;
 CREATE TABLE `oncall_questionnaire` (
@@ -2717,70 +2621,3 @@ CREATE TABLE `oncall_questionnaire` (
         PRIMARY KEY  (`id`)
 );
 
-create table CdsHospitalisationDays
-(
-	id int primary key auto_increment,
-	clientId int not null,
-	admitted date not null,
-	discharged date
-);
-
-create table FunctionalCentre
-(
-	accountId varchar(64) primary key,
-	description varchar(255) not null
-);
-
-create table group_note_link (
-        id int primary key auto_increment,
-        created timestamp,
-        noteId int(10) not null,
-        demographicNo int(10) not null,
-        key(noteId),
-        key(demographicNo)
-);
-
-
-CREATE TABLE IntegratorControl (
-        id int auto_increment,
-        facilityId int not null, foreign key (facilityId) references Facility(id),
-        control varchar(80),
-        execute boolean,
-        PRIMARY KEY (id)
-);
-
-
-CREATE TABLE `GroupNoteLink` (
-  `id` int(11) NOT NULL auto_increment,
-  `created` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  `noteId` int(10) NOT NULL,
-  `demographicNo` int(10) NOT NULL,
-  `anonymous` tinyint(1) default NULL,
-  `active` tinyint(1) default NULL,
-  PRIMARY KEY  (`id`),
-  KEY `noteId` (`noteId`),
-  KEY `demographicNo` (`demographicNo`),
-  KEY `anonymous` (`anonymous`),
-  KEY `active` (`active`)
-);
-
-
-create table OcanConnexOption (
-	id int primary key auto_increment,
-	LHINCode varchar(3) NOT NULL,
-	orgLHIN varchar(100) NOT NULL,
-	orgName varchar(100) NOT NULL,
-	orgNumber varchar(5) NOT NULL,
-	programName varchar(100) NOT NULL,
-	programNumber varchar(5) NOT NULL
-);
-
-
-create table OcanSubmissionLog (
-submissionId int primary key auto_increment,
-submitDateTime timestamp,
-result varchar(255),
-transactionId varchar(100),
-resultMessage text,
-submissionData longtext
-);

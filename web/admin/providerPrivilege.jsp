@@ -115,7 +115,7 @@ if (request.getParameter("submit") != null && request.getParameter("submit").equ
 	    sql += StringEscapeUtils.escapeSql(roleUserGroup) + "', '" + StringEscapeUtils.escapeSql(objectName.trim()) + "','";
 	    sql += privilege + "', " + priority + ",'";
 	    sql += curUser_no + "')";
-	    if(DBHelp.updateDBRecord(sql)){
+	    if(dbObj.updateDBRecord(sql, curUser_no)){
 	    	msg += "Role/Obj/Rights " + roleUserGroup + "/" + objectName + "/" + privilege + " is added. ";
 		    LogAction.addLog(curUser_no, LogConst.ADD, LogConst.CON_PRIVILEGE, roleUserGroup +"|"+ objectName +"|"+privilege, ip);
 	    } else {
@@ -148,7 +148,7 @@ if (request.getParameter("buttonUpdate") != null && request.getParameter("button
 	sql += "'" + "<roleUserGroup>" + roleUserGroup + "</roleUserGroup>" + "<objectName>" + objectName + "</objectName>";
 	sql += "<privilege>" + privilege + "</privilege>" + "<priority>" + priority + "</priority>";
 	sql += "<provider_no>" + provider_no + "</provider_no>" + "')";
-	DBHelp.updateDBRecord(sql);
+	dbObj.updateDBRecord(sql, curUser_no);
 
 
     //String privilege = request.getParameter("privilege");
@@ -161,8 +161,9 @@ if (request.getParameter("buttonUpdate") != null && request.getParameter("button
     }
     priority   = request.getParameter("priority");
     provider_no   = curUser_no;
+    //System.out.println(number + "  " + name);
     sql = "update secObjPrivilege set privilege='" + privilege + "', priority='" + priority + "',provider_no='" + provider_no + "'  where roleUserGroup='" + roleUserGroup + "' and objectName='" + objectName + "'";
-    if(DBHelp.updateDBRecord(sql)){
+    if(dbObj.updateDBRecord(sql, curUser_no)){
     	msg = "Role/Obj/Rights " + roleUserGroup + "/" + objectName + "/" + privilege + " is updated. ";
 	    LogAction.addLog(curUser_no, LogConst.UPDATE, LogConst.CON_PRIVILEGE, roleUserGroup +"|"+ objectName, ip);
     } else {
@@ -189,7 +190,7 @@ if (request.getParameter("submit") != null && request.getParameter("submit").equ
 	}
 
     sql = "delete from secObjPrivilege where roleUserGroup='" + roleUserGroup + "' and objectName='" + objectName + "'";
-    if(DBHelp.updateDBRecord(sql)){
+    if(dbObj.updateDBRecord(sql, curUser_no)){
     	msg = "Role/Obj/Rights " + roleUserGroup + "/" + objectName + "/" + privilege + " is deleted. ";
     	sql = "insert into recyclebin (provider_no,updatedatetime,table_name,keyword,table_content) values(";
     	sql += "'" + curUser_no + "',";
@@ -199,7 +200,7 @@ if (request.getParameter("submit") != null && request.getParameter("submit").equ
     	sql += "'" + "<roleUserGroup>" + roleUserGroup + "</roleUserGroup>" + "<objectName>" + objectName + "</objectName>";
     	sql += "<privilege>" + privilege + "</privilege>" + "<priority>" + priority + "</priority>";
     	sql += "<provider_no>" + provider_no + "</provider_no>" + "')";
-		DBHelp.updateDBRecord(sql);
+		dbObj.updateDBRecord(sql, curUser_no);
 	    LogAction.addLog(curUser_no, LogConst.DELETE, LogConst.CON_PRIVILEGE, roleUserGroup +"|"+ objectName, ip);
     } else {
     	msg = "Role/Obj/Rights " + roleUserGroup + "/" + objectName + "/" + privilege + " is <font color='red'>NOT</font> deleted!!! ";
@@ -270,6 +271,7 @@ String nameWhere = "".equals(keyword)||vecRoleName.contains(keyword)? "roleUserG
 String nameValue = keyword + "%";
 String orderBy = nameWhere.equals("objectName")? "objectName, roleUserGroup" : "roleUserGroup, objectName";
 String query = "select * from secObjPrivilege where " + nameWhere + " like '" + nameValue + "' order by " + orderBy;
+System.out.println(query);
 rs = dbObj.searchDBRecord(query);
 while (rs.next()) {
 	prop = new Properties();
@@ -298,6 +300,7 @@ while (rs.next()) {
         for (int i = 0; i < vec.size(); i++) {
        		bgColor = bgColor.equals("#EEEEFF")?color:"#EEEEFF";
        		String roleUser = ((Properties)vec.get(i)).getProperty("roleUserGroup", "");
+System.out.println(roleUser);
        		String roleUserName = vecProviderNo.contains(roleUser)? "<font size='-1'>"+(String)vecProviderName.get(vecProviderNo.indexOf(roleUser))+"</font>": roleUser;
        		String obj = ((Properties)vec.get(i)).getProperty("objectName", "");
 %>
@@ -347,7 +350,8 @@ while (rs.next()) {
 		<th colspan="4" align="left">Add Role/Privilege</th>
 	</tr>
 	<tr>
-		<th width="20%">Role</th>
+		<th width="20%">Role
+		</td>
 		<th width="30%">Object ID</th>
 		<th width="40%">Privilege</th>
 		<th>Priority</th>
@@ -381,30 +385,10 @@ while (rs.next()) {
 			String objName = "";
 			if(i==vecObjectId.size()) {
 				objName = "Name1";
-%> <input type="text" name="object$<%=objName%>" value="" size=35 /> <%	} else {
-
+%> <input type="text" name="object$<%=objName%>" value="" size=35 /> <%			} else {
 				objName = (String)vecObjectId.get(i);
 %> <input type="checkbox" name="object$<%=objName%>" /> <%= vecObjectId.get(i) %>
-		<%	if(objName.startsWith("_queue.")){
-                    String d=null;
-                    sql   = "select description from secObjectName where objectName='"+objName+"'";
-                    rs = dbObj.searchDBRecord(sql);
-
-                    if (rs.next()) {
-                        d=dbObj.getString(rs,"description");
-
-                    }
-
-                    if(d==null || d.equalsIgnoreCase("null")||d.trim().length()==0){
-                            d="";
-                        }
-                    else{
-                            d="("+d+")";
-                        }
-    %>
-
-                                <%=d%>
-                            <%}		}%>
+		<%			}%>
 		</td>
 		<%       		bgColor = bgColor.equals("#EEEEFF")?color:"#EEEEFF"; %>
 		<td>

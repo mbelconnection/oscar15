@@ -1,10 +1,6 @@
 <%@taglib uri="/WEB-INF/security.tld" prefix="security"%>
 <%
-  	if (session.getAttribute("userrole") == null)
-	{
-	  response.sendRedirect("../logout.jsp");
-	  return;
-	}
+  if (session.getAttribute("userrole") == null) response.sendRedirect("../logout.jsp");
   String roleName$ = (String) session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
 %>
 <security:oscarSec roleName="<%=roleName$%>"
@@ -39,10 +35,10 @@
 	import="java.util.*,java.io.*,oscar.oscarBilling.ca.bc.MSP.*,oscar.oscarBilling.ca.bc.administration.*,java.sql.*"%>
 <%@taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
-
+<%@include file="../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@include file="dbBilling.jspf"%>
+<%@include file="dbBilling.jsp"%>
 <%
   TeleplanCorrectionFormWCB form = new TeleplanCorrectionFormWCB(apptMainBean.queryResults(request.getParameter("billing_no"), "select_user_bill_report_wcb"));
   Properties codes = new MspErrorCodes();

@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -27,6 +27,7 @@
 	if(session.getValue("user") == null || !( ((String) session.getValue("userprofession")).equalsIgnoreCase("doctor") ))
 		response.sendRedirect("../../logout.jsp");
 %>
+<%@ page language="java"%>
 <%@ page import="java.sql.*, oscar.oscarDB.*"%>
 
 <%
@@ -39,13 +40,13 @@
 	String username = "yilee18";
 	String password = "515750564848564853485353544852485248484851575150";
 
-	 
+	DBHandler db = new DBHandler(DBHandler.OSCAR_DATA); 
     String sql = "SELECT * from studylogin where provider_no=" + provNo + " and study_no = " + studyId + " and current1=1" ;
-	ResultSet rs = DBHandler.GetSQL(sql);
+	ResultSet rs = db.GetSQL(sql);
 	while(rs.next()) {
-		baseURL = oscar.Misc.getString(rs,"remote_login_url");
-		username = oscar.Misc.getString(rs,"username");
-		password = oscar.Misc.getString(rs,"password");
+		baseURL = db.getString(rs,"remote_login_url");
+		username = db.getString(rs,"username");
+		password = db.getString(rs,"password");
 	}
 
 	rs.close();

@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -28,18 +28,16 @@
  */
 package oscar.billing.cad.dao;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
+import java.util.Properties;
 
 import oscar.billing.cad.model.CadProcedimentos;
 import oscar.oscarDB.DBHandler;
+import oscar.oscarDB.DBPreparedHandlerAdvanced;
 import oscar.util.DAO;
 import oscar.util.FieldTypes;
 import oscar.util.SqlUtils;
@@ -51,6 +49,9 @@ import oscar.util.StringUtils;
  * @author  lilian
  */
 public class CadProcedimentoDAO extends DAO {
+    public CadProcedimentoDAO(Properties pvar) throws SQLException {
+        super(pvar);
+    }
 
     public List list(String codigo, String desc) throws SQLException {
         List beans = null;
@@ -67,8 +68,8 @@ public class CadProcedimentoDAO extends DAO {
 
         sql = sql + " order by ds_procedimento";
 
-        Connection c=DbConnectionFilter.getThreadLocalDbConnection();
-        PreparedStatement pstmProc = c.prepareStatement(sql);
+        DBPreparedHandlerAdvanced db = new DBPreparedHandlerAdvanced();
+        PreparedStatement pstmProc = db.getPrepareStatement(sql);
 
         try {
             SqlUtils.fillPreparedStatement(pstmProc, 1,
@@ -76,19 +77,17 @@ public class CadProcedimentoDAO extends DAO {
             SqlUtils.fillPreparedStatement(pstmProc, 2, CadProcedimentos.ATIVO,
                 FieldTypes.CHAR);
 
-            ResultSet rs = pstmProc.executeQuery();
+            ResultSet rs = db.executeQuery(pstmProc);
             beans = new ArrayList();
 
             while (rs.next()) {
                 CadProcedimentos bean = new CadProcedimentos();
                 bean.setCoProcedimento(rs.getLong("co_procedimento"));
-                String temp=rs.getString("ds_procedimento");
-                if (temp==null) temp="";
-                bean.setDsProcedimento(temp);
+                bean.setDsProcedimento(db.getString(rs,"ds_procedimento"));
                 beans.add(bean);
             }
         } catch (Exception err) {
-        	MiscUtils.getLogger().error("Error", err);
+            err.printStackTrace();
             throw new SQLException(err.getMessage());
         }
 
@@ -102,8 +101,8 @@ public class CadProcedimentoDAO extends DAO {
             StringUtils.getStrIn(ids) + ") order by ds_procedimento";
 
         try {
-            
-            ResultSet rs = DBHandler.GetSQL(sql);
+            DBHandler db = getDb();
+            ResultSet rs = db.GetSQL(sql);
 
             if (rs != null) {
                 beans = new ArrayList();
@@ -111,12 +110,12 @@ public class CadProcedimentoDAO extends DAO {
                 while (rs.next()) {
                     CadProcedimentos bean = new CadProcedimentos();
                     bean.setCoProcedimento(rs.getLong("co_procedimento"));
-                    bean.setDsProcedimento(oscar.Misc.getString(rs, "ds_procedimento"));
+                    bean.setDsProcedimento(db.getString(rs,"ds_procedimento"));
                     beans.add(bean);
                 }
             }
         } catch (Exception err) {
-        	MiscUtils.getLogger().error("Error", err);
+            err.printStackTrace();
             throw new SQLException(err.getMessage());
         }
 
@@ -130,15 +129,15 @@ public class CadProcedimentoDAO extends DAO {
             id + " order by ds_procedimento";
 
         try {
-            
-            ResultSet rs = DBHandler.GetSQL(sql);
+            DBHandler db = getDb();
+            ResultSet rs = db.GetSQL(sql);
 
             if (rs.next()) {
                 bean.setCoProcedimento(rs.getLong("co_procedimento"));
-                bean.setDsProcedimento(oscar.Misc.getString(rs, "ds_procedimento"));
+                bean.setDsProcedimento(db.getString(rs,"ds_procedimento"));
             }
         } catch (Exception err) {
-        	MiscUtils.getLogger().error("Error", err);
+            err.printStackTrace();
             throw new SQLException(err.getMessage());
         }
 

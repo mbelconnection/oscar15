@@ -22,7 +22,10 @@
  * Hamilton 
  * Ontario, Canada 
  */ 
---><%@ page
+-->
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+<%@ page
 	import="java.math.*,java.util.*, java.sql.*, oscar.*, java.net.*,oscar.oscarBilling.ca.bc.MSP.*,oscar.util.*,oscar.oscarProvider.data.*,oscar.oscarBilling.ca.on.data.*"%>
 
 <%
@@ -38,6 +41,7 @@ ArrayList aList = raData.getRAData(billingNo);
 <html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>JSP Page</title>
 <link rel="stylesheet" type="text/css" media="all" href="../share/css/extractedFromPages.css"  />
 </head>

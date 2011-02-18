@@ -33,7 +33,7 @@ if(props.getProperty("isNewONbilling", "").equals("true")) {
 	scope="session" />
 <jsp:useBean id="providerBean" class="java.util.Properties"
 	scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 <%
 String clinicview = oscarVariables.getProperty("clinic_view", "");
 String clinicNo = oscarVariables.getProperty("clinic_no", "");
@@ -59,13 +59,12 @@ String visitType = oscarVariables.getProperty("visit_type", "");
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
 -->
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html>
+<html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <html:base />
@@ -563,7 +562,7 @@ try{
 		admissionDate = demoData.getDemographicDateJoined(demo_no);
 	}
 }catch(Exception inPatientEx){
-	MiscUtils.getLogger().error("Error", inPatientEx);
+	inPatientEx.printStackTrace();
 	admissionDate = "";
 }
 %> <input type="text" name="xml_vdate" value="<%=admissionDate%>">
@@ -890,7 +889,7 @@ rslocal.close();
 </table>
 </form>
 
-<%%>
+<% apptMainBean.closePstmtConn();%>
 
 </body>
 </html>

@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -36,14 +36,19 @@ import org.oscarehr.util.DbConnectionFilter;
 
 import oscar.OscarProperties;
 
-/**
- * deprecated Use JPA instead, no new code should be written against this class.
- */
-public final class DBPreparedHandler {
-    
+public class DBPreparedHandler {
+
+    DBHandler db = null;
     ResultSet rs = null;
     Statement stmt = null;
     PreparedStatement preparedStmt = null;
+
+    public DBPreparedHandler() {
+    }
+    
+    public static Connection getConnection() throws SQLException {
+        return DbConnectionFilter.getThreadLocalDbConnection();
+    }
 
     synchronized public void procExecute(String procName, String[] param) throws SQLException {
     	String sql = "{call " + procName ;
@@ -57,33 +62,33 @@ public final class DBPreparedHandler {
     	}
     	
     	sql += "}";
-    	CallableStatement   stmt = DbConnectionFilter.getThreadLocalDbConnection().prepareCall(sql);
+    	CallableStatement   stmt = getConnection().prepareCall(sql);
     	if (param != null && param.length > 0) {
 	        for (int i = 0; i < param.length; i++) {
 	            stmt.setString((i + 1), param[i]);
-
+	            //System.out.println(param[i]);
 	        }
     	}
         stmt.execute();
     }
 
     synchronized public void queryExecute(String preparedSQL, String[] param) throws SQLException {
-        preparedStmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(preparedSQL);
+        preparedStmt = getConnection().prepareStatement(preparedSQL);
         for (int i = 0; i < param.length; i++) {
             preparedStmt.setString((i + 1), param[i]);
-
+            //System.out.println(param[i]);
         }
         preparedStmt.execute();
     }
     synchronized public int queryExecuteUpdate(String preparedSQL) throws SQLException {
-        preparedStmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(preparedSQL);
+        preparedStmt = getConnection().prepareStatement(preparedSQL);
         return(preparedStmt.executeUpdate());
     }
     synchronized public int queryExecuteInsertReturnId(String preparedSQL) throws SQLException {
     	return queryExecuteInsertReturnId(preparedSQL, null);
     }
     synchronized public int queryExecuteInsertReturnId(String preparedSQL, DBPreparedHandlerParam[] params) throws SQLException {
-    	Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
+    	Connection conn = getConnection();
     	boolean ac = conn.getAutoCommit();
 		conn.setAutoCommit(false);
     	try {
@@ -127,28 +132,27 @@ public final class DBPreparedHandler {
     }
 
     synchronized public int queryExecuteUpdate(String preparedSQL, String[] param) throws SQLException {
-        preparedStmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(preparedSQL);
+        preparedStmt = getConnection().prepareStatement(preparedSQL);
         for (int i = 0; i < param.length; i++) {
             preparedStmt.setString((i + 1), param[i]);
-
+            //System.out.println(param[i]);
         }
         return(preparedStmt.executeUpdate());
     }
 
     synchronized public int queryExecuteUpdate(String preparedSQL, int[] param) throws SQLException {
-        preparedStmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(preparedSQL);
+        preparedStmt = getConnection().prepareStatement(preparedSQL);
         for (int i = 0; i < param.length; i++) {
             preparedStmt.setInt((i + 1), param[i]);
         }
         return(preparedStmt.executeUpdate());
     }
     synchronized public int queryExecuteUpdate(String preparedSQL, DBPreparedHandlerParam[] params) throws SQLException {
-        preparedStmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(preparedSQL);
+        preparedStmt = getConnection().prepareStatement(preparedSQL);
         for (int i = 0; i < params.length; i++) {
         	DBPreparedHandlerParam param = params[i];
         	
-        	if (param==null) preparedStmt.setObject(i+1, null);
-        	else if(DBPreparedHandlerParam.PARAM_STRING.equals(param.getParamType())){
+        	if(DBPreparedHandlerParam.PARAM_STRING.equals(param.getParamType())){
                     preparedStmt.setString(i+1, param.getStringValue());
         	}else if (DBPreparedHandlerParam.PARAM_DATE.equals(param.getParamType())){
                     preparedStmt.setDate(i+1, param.getDateValue());
@@ -162,7 +166,7 @@ public final class DBPreparedHandler {
     }
 
     synchronized public int queryExecuteUpdate(String preparedSQL, String[] param, Date[] dtparam,int[] intparam) throws SQLException {
-        preparedStmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(preparedSQL);
+        preparedStmt = getConnection().prepareStatement(preparedSQL);
         int idx = 1;
         for (int i = 0; i < param.length; i++) {
             preparedStmt.setString((idx++), param[i]);
@@ -177,7 +181,7 @@ public final class DBPreparedHandler {
     }
 
     synchronized public int queryExecuteUpdate(String preparedSQL, String[] param, int[] intparam) throws SQLException {
-        preparedStmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(preparedSQL);
+        preparedStmt = getConnection().prepareStatement(preparedSQL);
         for (int i = 0; i < param.length; i++) {
             preparedStmt.setString((i + 1), param[i]);
         }
@@ -189,7 +193,7 @@ public final class DBPreparedHandler {
 
     synchronized public int queryExecuteUpdate(String preparedSQL, int[] intparam, String[] param) throws SQLException {
         int i = 0;
-        preparedStmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(preparedSQL);
+        preparedStmt = getConnection().prepareStatement(preparedSQL);
         for (i = 0; i < intparam.length; i++) {
             preparedStmt.setInt((i + 1), intparam[i]);
         }
@@ -201,7 +205,7 @@ public final class DBPreparedHandler {
 
     synchronized public ResultSet queryResults(String preparedSQL, String[] param, int[] intparam) throws SQLException {
         int i = 0;
-        preparedStmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(preparedSQL);
+        preparedStmt = getConnection().prepareStatement(preparedSQL);
         for (i = 0; i < param.length; i++) {
             preparedStmt.setString((i + 1), param[i]);
         }
@@ -213,14 +217,14 @@ public final class DBPreparedHandler {
     }
 
     synchronized public ResultSet queryResults(String preparedSQL, int param) throws SQLException {
-        preparedStmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(preparedSQL);
+        preparedStmt = getConnection().prepareStatement(preparedSQL);
         preparedStmt.setInt(1, param);
         rs = preparedStmt.executeQuery();
         return rs;
     }
 
     synchronized public ResultSet queryResults(String preparedSQL, int[] param) throws SQLException {
-        preparedStmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(preparedSQL);
+        preparedStmt = getConnection().prepareStatement(preparedSQL);
         for (int i = 0; i < param.length; i++) {
             preparedStmt.setInt((i + 1), param[i]);
         }
@@ -228,14 +232,14 @@ public final class DBPreparedHandler {
     }
 
     synchronized public ResultSet queryResults(String preparedSQL, String param) throws SQLException {
-        preparedStmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(preparedSQL);
+        preparedStmt = getConnection().prepareStatement(preparedSQL);
         preparedStmt.setString(1, param);
         rs = preparedStmt.executeQuery();
         return rs;
     }
 
     synchronized public ResultSet queryResults_paged(String preparedSQL, String param, int iOffSet) throws SQLException {
-        preparedStmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(preparedSQL);
+        preparedStmt = getConnection().prepareStatement(preparedSQL);
         preparedStmt.setString(1, param);
         rs = preparedStmt.executeQuery();
         for(int i=1; i<=iOffSet; i++){
@@ -245,7 +249,7 @@ public final class DBPreparedHandler {
     }
 
     synchronized public ResultSet queryResults(String preparedSQL, String[] param) throws SQLException {
-        preparedStmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(preparedSQL);
+        preparedStmt = getConnection().prepareStatement(preparedSQL);
         for (int i = 0; i < param.length; i++) {
             preparedStmt.setString((i + 1), param[i]);
         }
@@ -254,7 +258,7 @@ public final class DBPreparedHandler {
     }
 
     synchronized public ResultSet queryResults_paged(String preparedSQL, String[] param, int iOffSet) throws SQLException {
-        preparedStmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(preparedSQL);
+        preparedStmt = getConnection().prepareStatement(preparedSQL);
         for (int i = 0; i < param.length; i++) {
            preparedStmt.setString((i + 1), param[i]);
         }
@@ -265,7 +269,7 @@ public final class DBPreparedHandler {
         return(rs);
     }
     synchronized public ResultSet queryResults(String preparedSQL, DBPreparedHandlerParam[] param) throws SQLException {
-        preparedStmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(preparedSQL);
+        preparedStmt = getConnection().prepareStatement(preparedSQL);
         for (int i = 0; i < param.length; i++) {
            if(param[i].getParamType().equals(DBPreparedHandlerParam.PARAM_STRING)){
                preparedStmt.setString((i + 1), param[i].getStringValue());
@@ -282,7 +286,7 @@ public final class DBPreparedHandler {
     }
     
     synchronized public ResultSet queryResults_paged(String preparedSQL, DBPreparedHandlerParam[] param, int iOffSet) throws SQLException {
-        preparedStmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(preparedSQL);
+        preparedStmt = getConnection().prepareStatement(preparedSQL);
         for (int i = 0; i < param.length; i++) {
            if(param[i].getParamType().equals(DBPreparedHandlerParam.PARAM_STRING)){
                preparedStmt.setString((i + 1), param[i].getStringValue());
@@ -302,21 +306,21 @@ public final class DBPreparedHandler {
     }
 
     synchronized public Object[] queryResultsCaisi(String preparedSQL, int param) throws SQLException {
-        preparedStmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(preparedSQL);
+        preparedStmt = getConnection().prepareStatement(preparedSQL);
         preparedStmt.setInt(1, param);
         rs = preparedStmt.executeQuery();
         return new Object[] {rs, preparedStmt};
     }
 
     synchronized public Object[] queryResultsCaisi(String preparedSQL, String param) throws SQLException {
-        preparedStmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(preparedSQL);
+        preparedStmt = getConnection().prepareStatement(preparedSQL);
         preparedStmt.setString(1, param);
         rs = preparedStmt.executeQuery();
         return new Object[] {rs, preparedStmt};
     }
 
     synchronized public Object[] queryResultsCaisi(String preparedSQL, String[] param) throws SQLException {
-        preparedStmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(preparedSQL);
+        preparedStmt = getConnection().prepareStatement(preparedSQL);
         for (int i = 0; i < param.length; i++) {
             preparedStmt.setString((i + 1), param[i]);
         }
@@ -325,19 +329,19 @@ public final class DBPreparedHandler {
     }
 
     synchronized public Object[] queryResultsCaisi(String preparedSQL) throws SQLException {
-        stmt = DbConnectionFilter.getThreadLocalDbConnection().createStatement();
+        stmt = getConnection().createStatement();
         rs = stmt.executeQuery(preparedSQL);
         return new Object[] {rs, stmt};
     }
 
     synchronized public ResultSet queryResults(String preparedSQL) throws SQLException {
-        stmt = DbConnectionFilter.getThreadLocalDbConnection().createStatement();
+        stmt = getConnection().createStatement();
         rs = stmt.executeQuery(preparedSQL);
         return rs;
     }
 
     synchronized public ResultSet queryResults_paged(String preparedSQL, int iOffSet) throws SQLException {
-        stmt = DbConnectionFilter.getThreadLocalDbConnection().createStatement();
+        stmt = getConnection().createStatement();
         rs = stmt.executeQuery(preparedSQL);
         for(int i=1; i<=iOffSet; i++){
             if(rs.next()==false) break;
@@ -345,6 +349,28 @@ public final class DBPreparedHandler {
         return rs;
     }
 
+    // Don't forget to clean up!
+    public void closePstmt() throws SQLException {
+        if (stmt != null) {
+            stmt.close();
+            stmt = null;
+        }
+        else {
+		if(preparedStmt != null) {
+	            preparedStmt.close();
+		}
+            preparedStmt = null;
+        }
+    }
+
+    public String getString(ResultSet rs, String columnName) throws SQLException
+    {
+    	return oscar.Misc.getString(rs, columnName);
+    }
+    public String getString(ResultSet rs, int columnIndex) throws SQLException
+    {
+    	return oscar.Misc.getString(rs, columnIndex);
+    }
     public synchronized String getNewProviderNo()
     {
     	try {
@@ -353,9 +379,7 @@ public final class DBPreparedHandler {
 	    	ResultSet rs = queryResults(sql);
 	    	while (rs.next()) {
 	    		if (rs.getInt(1)> 0) {
-	    			do {
-	    				pno = oscar.Misc.getRandomNumber(6);
-	    			}while(pno != null && pno.startsWith("0"));
+	    			pno = oscar.Misc.getRandomNumber(6);
 	    			sql = "select count(*) from prvider where provider_no= '" + pno + "'";
 	    			rs= queryResults(sql);
 	    		}

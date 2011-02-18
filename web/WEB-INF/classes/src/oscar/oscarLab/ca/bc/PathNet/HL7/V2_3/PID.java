@@ -9,9 +9,6 @@ package oscar.oscarLab.ca.bc.PathNet.HL7.V2_3;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 import oscar.oscarLab.ca.bc.PathNet.HL7.Node;
 /*
@@ -41,9 +38,7 @@ import oscar.oscarLab.ca.bc.PathNet.HL7.Node;
  * www.andromedia.ca
  */
 public class PID extends oscar.oscarLab.ca.bc.PathNet.HL7.Node {
-    private static Logger logger=MiscUtils.getLogger(); 
-
-    private ArrayList containers;
+   private ArrayList containers;
    
    private ArrayList note;
    
@@ -86,7 +81,7 @@ public class PID extends oscar.oscarLab.ca.bc.PathNet.HL7.Node {
       } else {
          return ((PIDContainer)this.containers.get(this.containers.size() -1)).Parse(line);
       }
-      logger.error("Error During Parsing, Unknown Line - oscar.PathNet.HL7.V2_3.PID - Message: " + line);
+      System.err.println("Error During Parsing, Unknown Line - oscar.PathNet.HL7.V2_3.PID - Message: " + line);
       return null;
    }
    
@@ -101,12 +96,12 @@ public class PID extends oscar.oscarLab.ca.bc.PathNet.HL7.Node {
    //This inserts a record into the hl7_pid table with a key to the hl7.message_id field 
    //Then gets the last insert Id from the hl7_pid table
    //Then for each PIDContainer in containers ArrayList calls the PIDContainer.ToDatabase
-   public int ToDatabase(int parent) throws SQLException {
-      DBHandler.RunSQL(this.getInsertSql(parent));
-      int lastInsert = super.getLastInsertedId();
+   public int ToDatabase(DBHandler db, int parent) throws SQLException {
+      db.RunSQL(this.getInsertSql(parent));
+      int lastInsert = super.getLastInsertedId(db);
       int size = this.containers.size();
       for(int i = 0; i < size; ++i) {
-         ((PIDContainer)this.containers.get(i)).ToDatabase(lastInsert);
+         ((PIDContainer)this.containers.get(i)).ToDatabase(db, lastInsert);
       }
       return lastInsert;
    }

@@ -24,8 +24,8 @@ import java.util.ArrayList;
 
 import javax.servlet.ServletContext;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oscarehr.util.SpringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
@@ -38,14 +38,19 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
 
 import oscar.OscarProperties;
 
-public final class OscarSpringContextLoader extends ContextLoader {
+/**
+ * @author rjonasz
+ */
+public class OscarSpringContextLoader extends ContextLoader {
 	
-	private static final Logger log = MiscUtils.getLogger();
-	private static final String CONTEXTNAME = "WEB-INF/applicationContext";
-	private static final String PROPERTYNAME = "ModuleNames";
+	private final Log log = LogFactory.getLog(OscarSpringContextLoader.class);
+	private final String CONTEXTNAME = "WEB-INF/applicationContext";
+	private final String PROPERTYNAME = "ModuleNames";
 
-	@Override
-    protected WebApplicationContext createWebApplicationContext(ServletContext servletContext, ApplicationContext parent) throws BeansException {
+	/** Creates a new instance of OscarSpringContextLoader */
+	public OscarSpringContextLoader() {}
+
+	protected WebApplicationContext createWebApplicationContext(ServletContext servletContext, ApplicationContext parent) throws BeansException {
 		String contextClassName = servletContext.getInitParameter(CONTEXT_CLASS_PARAM);
 
         Class<?> contextClass;

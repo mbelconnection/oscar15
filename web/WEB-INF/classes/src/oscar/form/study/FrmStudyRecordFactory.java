@@ -17,15 +17,13 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 package oscar.form.study;
 
 import java.io.IOException;
-
-import org.oscarehr.util.MiscUtils;
 
 public class FrmStudyRecordFactory {
     public FrmStudyRecord factory (String which) throws IOException {
@@ -36,11 +34,11 @@ public class FrmStudyRecordFactory {
             Class classDefinition = Class.forName( fullName );         
             myClass = (FrmStudyRecord) classDefinition.newInstance(); 
         } catch (InstantiationException e) {
-            MiscUtils.getLogger().debug(e);
+            System.out.println(e);
         } catch (IllegalAccessException e) {
-            MiscUtils.getLogger().debug(e);
+            System.out.println(e);
         } catch (ClassNotFoundException e) {
-            MiscUtils.getLogger().debug(e);
+            System.out.println(e);
         }
         
         return myClass;

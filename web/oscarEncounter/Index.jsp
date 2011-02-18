@@ -79,6 +79,8 @@ You have no rights to access the data!
  	LogAction.addLog((String) session.getAttribute("user"), LogConst.READ, LogConst.CON_ECHART, demographic$, ip);
 %>
 <%
+
+  response.setHeader("Cache-Control","no-cache");
   //The oscarEncounter session manager, if the session bean is not in the context it looks for a session cookie with the appropriate name and value, if the required cookie is not available
   //it dumps you out to an erros page.
 
@@ -124,7 +126,7 @@ if (request.getParameter("casetoEncounter")==null)
   oscar.util.UtilDateUtilities dateConvert = new oscar.util.UtilDateUtilities();
   String demoNo = bean.demographicNo;
   String provNo = bean.providerNo;
-  EctFormData.Form[] forms = EctFormData.getForms();
+  EctFormData.Form[] forms = new EctFormData().getForms();
   EctPatientData.Patient pd = new EctPatientData().getPatient(demoNo);
   EctProviderData.Provider prov = new EctProviderData().getProvider(provNo);
   String patientName = pd.getFirstName()+" "+pd.getSurname();
@@ -159,8 +161,7 @@ if (request.getParameter("casetoEncounter")==null)
 
 
 
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html:html locale="true">
+<html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="oscarEncounter.Index.title" /> - <oscar:nameage
@@ -878,6 +879,7 @@ function removeSaveFeedback()  {
 					onClick='popupPage(700,1000, "../oscar/billing/procedimentoRealizado/init.do?appId=<%=bean.appointmentNo%>");return false;'
 					title="<bean:message key="global.billing"/>"><bean:message
 					key="global.billing" /></a> <% } else {%> <% if(bean.status.indexOf('B')==-1) { %>
+				<!--a href=# onClick='popupPage(700,1000, "../billing/billingOB.jsp?billForm=<%=URLEncoder.encode("MFP")%>&hotclick=<%=URLEncoder.encode("")%>&appointment_no=<%=bean.appointmentNo%>&demographic_name=<%=URLEncoder.encode(bean.patientLastName+","+bean.patientFirstName)%>&demographic_no=<%=bean.demographicNo%>&providerview=<%=bean.curProviderNo%>&user_no=<%=bean.providerNo%>&apptProvider_no=<%=bean.curProviderNo%>&appointment_date=<%=bean.appointmentDate%>&start_time=<%=bean.startTime%>&bNewForm=1");return false;' title="<bean:message key="global.billing"/>"><bean:message key="global.billing"/></a-->
 				<a href=#
 					onClick='popupPage(700,1000, "../billing.do?billRegion=<%=URLEncoder.encode(province)%>&billForm=<%=URLEncoder.encode(oscarVariables.getProperty("default_view"))%>&hotclick=<%=URLEncoder.encode("")%>&appointment_no=<%=bean.appointmentNo%>&demographic_name=<%=URLEncoder.encode(bean.patientLastName+","+bean.patientFirstName)%>&demographic_no=<%=bean.demographicNo%>&providerview=<%=bean.curProviderNo%>&user_no=<%=bean.providerNo%>&apptProvider_no=<%=bean.curProviderNo%>&appointment_date=<%=bean.appointmentDate%>&start_time=<%=bean.startTime%>&bNewForm=1&status=t");return false;'
 					title="<bean:message key="global.billing"/>"><bean:message
@@ -947,7 +949,7 @@ function removeSaveFeedback()  {
                                 EctFormData.Form frm = forms[j];
                                 String table = frm.getFormTable();
                                 if(!table.equalsIgnoreCase("")){
-                                    EctFormData.PatientForm[] pforms = EctFormData.getPatientForms(demoNo, table);
+                                    EctFormData.PatientForm[] pforms = new EctFormData().getPatientForms(demoNo, table);
                                     if(pforms.length>0) {
                                         EctFormData.PatientForm pfrm = pforms[0];
                                 %>
@@ -966,6 +968,7 @@ function removeSaveFeedback()  {
 					onMouseOver="javascript:window.status='<bean:message key="oscarEncounter.Index.createForm"/> <%=patientName%>.'; return true;">
 					<option value="null" selected>-<bean:message
 						key="oscarEncounter.Index.addForm" />- <%
+                        //EctFormData.Form[] forms = new EctFormData().getForms();
                         for(int j=0; j<forms.length; j++) {
                             EctFormData.Form frm = forms[j];
                             if (!frm.isHidden()) {
@@ -1512,6 +1515,7 @@ function removeSaveFeedback()  {
 						</td>
 					</tr>
 					<%
+                            //System.out.println("reason "+bean.reason+" subject "+bean.subject);
                             String encounterText = "";
                             try{
                                if(!bSplit){
@@ -1521,19 +1525,24 @@ function removeSaveFeedback()  {
                                }else{
                                   encounterText = bean.encounter+"\n--------------------------------------------------\n$$SPLIT CHART$$\n";
                                }
-                              
+                               System.out.println("currDate "+bean.appointmentDate+ " currdate "+bean.currentDate);
                                if(bean.eChartTimeStamp==null){
                                   encounterText +="\n["+dateConvert.DateToString(bean.currentDate)+" .: "+bean.reason+"] \n";
+                                  //encounterText +="\n["+bean.appointmentDate+" .: "+bean.reason+"] \n";
                                }else if(bean.currentDate.compareTo(bean.eChartTimeStamp)>0){
+                                   //System.out.println("2curr Date "+ oscar.util.UtilDateUtilities.DateToString(oscar.util.UtilDateUtilities.now(),"yyyy",java.util.Locale.CANADA) );
+                                  //encounterText +="\n__________________________________________________\n["+dateConvert.DateToString(bean.currentDate)+" .: "+bean.reason+"]\n";
                                    encounterText +="\n__________________________________________________\n["+("".equals(bean.appointmentDate)?UtilDateUtilities.getToday("yyyy-MM-dd"):bean.appointmentDate)+" .: "+bean.reason+"]\n";
                                }else if((bean.currentDate.compareTo(bean.eChartTimeStamp) == 0) && (bean.reason != null || bean.subject != null ) && !bean.reason.equals(bean.subject) ){
+                                   //encounterText +="\n__________________________________________________\n["+dateConvert.DateToString(bean.currentDate)+" .: "+bean.reason+"]\n";
                                    encounterText +="\n__________________________________________________\n["+bean.appointmentDate+" .: "+bean.reason+"]\n";
                                }
+                               //System.out.println("eChartTimeStamp" + bean.eChartTimeStamp+"  bean.currentDate " + dateConvert.DateToString(bean.currentDate));//" diff "+bean.currentDate.compareTo(bean.eChartTimeStamp));
                                if(!bean.oscarMsg.equals("")){
                                   encounterText +="\n\n"+bean.oscarMsg;
                                }
 
-                            }catch(Exception eee){MiscUtils.getLogger().error("Error", eee);}
+                            }catch(Exception eee){eee.printStackTrace();}
                             %>
 					<tr>
 						<td colspan="2" valign="top" style="text-align: left"><textarea
@@ -1651,7 +1660,7 @@ function removeSaveFeedback()  {
 	<%}%>
 </table>
 </div>
-<%}%>
+<%}System.out.println("Session:" + session.getAttribute("user"));%>
 
 </body>
 </html:html>

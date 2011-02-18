@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -34,10 +34,10 @@ String curUser_no = (String) session.getAttribute("user");String userfirstname =
 	errorPage="errorpage.jsp"%>
 <%@ page import="oscar.oscarBilling.ca.on.pageUtil.*"%>
 <%@ page import="oscar.oscarBilling.ca.on.data.*"%>
-
+<%@ include file="../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 
 <html>
 <head>
@@ -88,6 +88,7 @@ self.close();
 self.opener.refresh();
 </script> <%
 	if(!props.getProperty("isNewONbilling", "").equals("true")) {
+		apptMainBean.closePstmtConn();
 	}
 }
 %>

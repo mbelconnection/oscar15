@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -28,8 +28,6 @@ package oscar.oscarEncounter.pageUtil;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.Properties;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -39,7 +37,7 @@ import oscar.oscarPrevention.Prevention;
 import oscar.oscarPrevention.PreventionDS;
 import oscar.oscarPrevention.PreventionData;
 import oscar.oscarPrevention.PreventionDisplayConfig;
-import oscar.util.OscarRoleObjectPrivilege;
+import oscar.util.DateUtils;
 import oscar.util.StringUtils;
 
 /**
@@ -51,15 +49,7 @@ public class EctDisplayPreventionAction extends EctDisplayAction {
     private long startTime = System.currentTimeMillis();
     
     public boolean getInfo(EctSessionBean bean, HttpServletRequest request, NavBarDisplayDAO Dao, MessageResources messages) {
-    	
-    	boolean a = true;
-    	Vector v = OscarRoleObjectPrivilege.getPrivilegeProp("_newCasemgmt.preventions");
-        String roleName = (String)request.getSession().getAttribute("userrole") + "," + (String) request.getSession().getAttribute("user");
-        a = OscarRoleObjectPrivilege.checkPrivilege(roleName, (Properties) v.get(0), (Vector) v.get(1));
-    	if(!a) {
-    		return true; //Prevention link won't show up on new CME screen.
-    	} else {
-    	       
+                
         //set lefthand module heading and link
         String winName = "prevention" + bean.demographicNo;
         String url = "popupPage(700,960,'" + winName + "', '" + request.getContextPath() + "/oscarPrevention/index.jsp?demographic_no=" + bean.demographicNo + "')";        
@@ -87,13 +77,14 @@ public class EctDisplayPreventionAction extends EctDisplayAction {
         ArrayList prevList = pdc.getPreventions();
         Hashtable warningTable = p.getWarningMsgs();    
         
-         
-       
+        int hash; 
+        String dbFormat = "yyyy-MM-dd";
+        String serviceDateStr;
         String highliteColour = "FF0000";
         String inelligibleColour = "FF6600";
         String pendingColour = "FF00FF";
         Date date = null;
-        //Date defaultDate = new Date(System.currentTimeMillis());
+        Date defaultDate = new Date(System.currentTimeMillis());
         url += "; return false;";
         ArrayList warnings = new ArrayList();
         ArrayList items = new ArrayList();
@@ -111,8 +102,17 @@ public class EctDisplayPreventionAction extends EctDisplayAction {
                     result = (String)hExt.get("result");
 
                     date = (Date)hdata.get("prevention_date_asDate");
+                    System.out.println("Prevention Date " +  date);
                     item.setDate(date);
-                    
+                    if( date == null ) {
+                        serviceDateStr = "";
+                        //item.setDate(defaultDate);
+                    }
+                    else {    
+                        serviceDateStr = DateUtils.getDate(date, dateFormat, request.getLocale());
+                        //item.setDate(date);
+                    }
+
                     if( hdata.get("refused").equals("2") ) {
                         item.setColour(inelligibleColour);
                     }
@@ -121,6 +121,8 @@ public class EctDisplayPreventionAction extends EctDisplayAction {
                     }
                 }
                 else {
+                    serviceDateStr = "";
+                    //item.setDate(defaultDate);
                     item.setDate(null);
                 }                                                                
                 
@@ -153,7 +155,6 @@ public class EctDisplayPreventionAction extends EctDisplayAction {
                 
         return true;
     }
-   }
     
     public String getCmd() {
       return cmd;

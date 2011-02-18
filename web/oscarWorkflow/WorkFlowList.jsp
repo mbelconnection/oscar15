@@ -174,7 +174,7 @@
 				<td><%=flow.getState(""+h.get("current_state"))%></td>
 				<td><%=gestAge%></td>
 				<td><oscar:nextAppt
-					demographicNo='<%=(String) h.get("demographic_no")%>' /></td>
+					demographicNo="<%=(String) h.get("demographic_no")%>" /></td>
 			</tr>
 			<%}%>
 		</table>
@@ -236,6 +236,7 @@ String checked(String first,String second){
 
 String sel(String s1,String s2){
      String ret = "";
+     //System.out.println("s1 "+s1+" s2 "+s2);
      if (s1 != null && s2 != null && s1.equals(s2)){
         ret = "selected";    
      }
@@ -250,6 +251,17 @@ String replaceHeading(String s){
     }
     return s;
 }
-       
+
+void showKeys(Hashtable h){
+    Enumeration en = h.keys();
+    while (en.hasMoreElements()){
+        String ssss = (String) en.nextElement();
+        System.out.println(ssss+" "+h.get(ssss)); 
+    }
+}
+
+
+
+                          
 
 %>

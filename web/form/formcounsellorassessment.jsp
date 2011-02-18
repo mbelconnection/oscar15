@@ -1,10 +1,13 @@
 
+
+<%@ page language="java"%>
 <%@ page import="oscar.form.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
 
 <html:html locale="true">
+<% response.setHeader("Cache-Control","no-cache");%>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 
@@ -13,6 +16,7 @@
 
 
 <title>INTAKE B. COUNSELLOR ASSESSMENT</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" type="text/css"
 	href="formcounsellorassessment.css">
 <link rel="stylesheet" type="text/css" media="print" href="print.css">

@@ -1,4 +1,5 @@
 
+<%@ page language="java"%>
 <%@ page import="oscar.util.*, oscar.form.*, oscar.form.data.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
@@ -23,9 +24,11 @@
 	String sep = project_home.substring(project_home.length()-1);
 	project_home = project_home.substring(0, project_home.length()-1) ;
 	project_home = project_home.substring(project_home.lastIndexOf(sep)+1) ;
-
-	boolean bView = false;
-  	if (request.getParameter("view") != null && request.getParameter("view").equals("1")) bView = true; 
+	//System.out.println(project_home);
+%>
+<%
+  boolean bView = false;
+  if (request.getParameter("view") != null && request.getParameter("view").equals("1")) bView = true; 
 %>
 <!--  
 /*
@@ -47,12 +50,14 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 -->
 <html:html locale="true">
+<% response.setHeader("Cache-Control","no-cache");%>
+
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>MEDICAL HISTORY AND ADMISSION EXAMINATION</title>

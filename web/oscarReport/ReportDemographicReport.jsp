@@ -1,3 +1,5 @@
+<%@ page language="java" %>
+
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
@@ -144,9 +146,11 @@ thisForm.copyConstructor((oscar.oscarReport.pageUtil.RptDemographicReportForm)re
 }
 oscar.oscarReport.pageUtil.RptDemographicReportForm thisForm;
 thisForm = (oscar.oscarReport.pageUtil.RptDemographicReportForm)request.getAttribute("RptDemographicReportForm");
+System.out.println(" val = "+thisForm);
 
 
 if ( thisForm != null || thisForm.getAgeStyle() == null || thisForm.getAgeStyle().equals("2") ){
+    System.out.println("I get called");
     thisForm.setAgeStyle("1");
  }
 %>
@@ -320,7 +324,7 @@ if ( thisForm != null || thisForm.getAgeStyle() == null || thisForm.getAgeStyle(
             Provider #
             </td>
         </tr>
-        <tr>
+      <tr>
             <td>
             <html:multibox property="select" value="provider_name"/>
             </td>
@@ -468,6 +472,7 @@ if ( thisForm != null || thisForm.getAgeStyle() == null || thisForm.getAgeStyle(
                     <html:multibox property="rosterStatus" value="<%=ros%>"/>
                     </td>
                     <%}
+                    //System.out.println(rosterStatus.size());
                     %>
 
 
@@ -527,6 +532,7 @@ if ( thisForm != null || thisForm.getAgeStyle() == null || thisForm.getAgeStyle(
                     <html:multibox property="patientStatus" value="<%=pat%>"/>
                     </td>
                     <%}
+                    //System.out.println(rosterStatus.size());
                     %>
 
 
@@ -626,6 +632,7 @@ if ( thisForm != null || thisForm.getAgeStyle() == null || thisForm.getAgeStyle(
         Search Returned : <%=searchList.size()%> Results
         <html:form action="/report/CreateDemographicSet" >
         <% boolean includesDemo = false;
+           System.out.println("checking select array "+ selectArray[0]);
            if (selectArray[0].equals("demographic_no")){ 
               includesDemo = true; %>      
               <div class="hiddenInPrint">

@@ -5,10 +5,9 @@
 
 package org.oscarehr.decisionSupport.model.conditionValue;
 
+import org.oscarehr.decisionSupport.model.*;
 import java.util.ArrayList;
-
 import org.apache.commons.lang.StringUtils;
-import org.oscarehr.decisionSupport.model.DecisionSupportException;
 
 /**
  *
@@ -80,7 +79,7 @@ public class DSValueStatement extends DSValue {
 
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
+        StringBuffer result = new StringBuffer();
         if (this.getValueType() != null) result.append(this.getValueType() + ":");
         if (this.getOperator() != null) result.append(this.getOperator());
         result.append(this.getValue());

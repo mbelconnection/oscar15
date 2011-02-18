@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -30,20 +30,15 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 import oscar.util.UtilDateUtilities;
 
 public class EctRourkeRecord {
-    private static Logger logger=MiscUtils.getLogger(); 
-
     public Properties getRourkeRecord(int demographicNo, int existingID)
             throws SQLException    {
         Properties props = new Properties();
 
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         ResultSet rs;
         String sql;
 
@@ -52,17 +47,17 @@ public class EctRourkeRecord {
                 + "year_of_birth, month_of_birth, date_of_birth, sex "
                 + "FROM demographic WHERE demographic_no = " + demographicNo;
 
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
 
             if(rs.next())  {
-                java.util.Date dob = UtilDateUtilities.calcDate(oscar.Misc.getString(rs, "year_of_birth"), oscar.Misc.getString(rs, "month_of_birth"), oscar.Misc.getString(rs, "date_of_birth"));
+                java.util.Date dob = UtilDateUtilities.calcDate(db.getString(rs,"year_of_birth"), db.getString(rs,"month_of_birth"), db.getString(rs,"date_of_birth"));
 
-                props.setProperty("demographic_no", oscar.Misc.getString(rs, "demographic_no"));
+                props.setProperty("demographic_no", db.getString(rs,"demographic_no"));
                 props.setProperty("formCreated", UtilDateUtilities.DateToString(UtilDateUtilities.Today(), "yyyy/MM/dd"));
                 props.setProperty("formEdited", UtilDateUtilities.DateToString(UtilDateUtilities.Today(), "yyyy/MM/dd"));
                 props.setProperty("c_birthDate", UtilDateUtilities.DateToString(dob, "yyyy/MM/dd"));
-                props.setProperty("c_pName", oscar.Misc.getString(rs, "pName"));
-                if(oscar.Misc.getString(rs, "sex").equalsIgnoreCase("M")) {
+                props.setProperty("c_pName", db.getString(rs,"pName"));
+                if(db.getString(rs,"sex").equalsIgnoreCase("M")) {
                     props.setProperty("c_male", "checked='checked'");
                 } else {
                     props.setProperty("c_female", "checked='checked'");
@@ -71,7 +66,7 @@ public class EctRourkeRecord {
             rs.close();
         } else {
             sql = "SELECT * FROM formRourke WHERE demographic_no = " + demographicNo + " AND ID = " + existingID;
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
 
             if(rs.next()) {
                 ResultSetMetaData md = rs.getMetaData();
@@ -91,7 +86,7 @@ public class EctRourkeRecord {
                         if(md.getColumnTypeName(i).equalsIgnoreCase("date")) {
                             value = UtilDateUtilities.DateToString(rs.getDate(i), "yyyy/MM/dd");
                         } else {
-                            value = oscar.Misc.getString(rs, i);
+                            value = db.getString(rs,i);
                         }
                     }
 
@@ -109,13 +104,13 @@ public class EctRourkeRecord {
         String demographic_no = props.getProperty("demographic_no");
         String page = "p"+props.getProperty("c_lastVisited")+"_";
 
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         String sqlDB = "SELECT * FROM formRourke WHERE demographic_no=" + demographic_no + " AND ID=" + formId;
-        ResultSet rsDB = DBHandler.GetSQL(sqlDB);
+        ResultSet rsDB = db.GetSQL(sqlDB);
         rsDB.next();
 
         String sqlPage="SELECT * FROM formRourke WHERE demographic_no=" + demographic_no + " AND ID=0";
-        ResultSet rsPage = DBHandler.GetSQL(sqlPage, true);
+        ResultSet rsPage = db.GetSQL(sqlPage, true);
         rsPage.moveToInsertRow();
 
         ResultSetMetaData md = rsPage.getMetaData();
@@ -187,7 +182,7 @@ public class EctRourkeRecord {
         int ret = 0;
 
         sqlPage = "SELECT LAST_INSERT_ID()";
-        rsPage = DBHandler.GetSQL(sqlPage);
+        rsPage = db.GetSQL(sqlPage);
         if(rsPage.next()) {
             ret = rsPage.getInt(1);
         }
@@ -198,7 +193,7 @@ public class EctRourkeRecord {
     public Properties getGraph(int demographicNo, int existingID)  throws SQLException {
         Properties props = new Properties();
 
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         ResultSet rs;
         String sql;
 
@@ -217,7 +212,7 @@ public class EctRourkeRecord {
                 + "FROM formRourke "
                 + "WHERE demographic_no = " + demographicNo + " AND ID = " + existingID;
 
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
 
             if(rs.next())           {
                 ResultSetMetaData md = rs.getMetaData();
@@ -229,7 +224,7 @@ public class EctRourkeRecord {
                     if(md.getColumnTypeName(i).equalsIgnoreCase("date"))               {
                         value = UtilDateUtilities.DateToString(rs.getDate(i), "yyyy/MM/dd");
                     } else {
-                        value = oscar.Misc.getString(rs, i);
+                        value = db.getString(rs,i);
                     }
 
                     if(i<=6) {
@@ -254,15 +249,22 @@ public class EctRourkeRecord {
 
         try {
             Date tToday = (oscar.util.UtilDateUtilities.StringToDate(today, "yyyy/MM/dd"));
+            System.out.println("today: "+today);
+            System.out.println("Date: "+tToday);
+            System.out.println("Time: "+tToday.getTime());
 
             Date tDob = (oscar.util.UtilDateUtilities.StringToDate(dob, "yyyy/MM/dd"));
+            System.out.println("Dob: "+dob);
+            System.out.println("Date: "+tDob);
+            System.out.println("Time: "+tDob.getTime());
 
             age = (tToday.getTime() - tDob.getTime())/(1000*3600*24);
             double daysPerMonth = 30.4375;
             age = age/daysPerMonth; // the approximate number of days in a month
         } catch(Exception ex) {
-            logger.error("", ex);
+            System.err.println(ex);
         }
+        System.out.println("this is returned: "+age);
         return age;
     }
 
@@ -276,16 +278,16 @@ public class EctRourkeRecord {
         ResultSet rs;
         String str = "M";
         try{
-                
-                rs = DBHandler.GetSQL("select sex from demographic where demographic_no = "+demo);
+                db = new DBHandler(DBHandler.OSCAR_DATA);
+                rs = db.GetSQL("select sex from demographic where demographic_no = "+demo);
                 if(rs.next()){
-                        str = oscar.Misc.getString(rs, "sex");
+                        str = db.getString(rs,"sex");
                         if (str.equalsIgnoreCase("F")){
                                 retval = true;
                         }
                 }
         rs.close();
-        }catch(Exception exc){MiscUtils.getLogger().error("Error", exc);}
+        }catch(Exception exc){exc.printStackTrace();}
         return retval;
     }
 ///////////////////////////////////

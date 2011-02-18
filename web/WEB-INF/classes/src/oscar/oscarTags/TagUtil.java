@@ -5,8 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.util.SqlUtilBaseS;
 
 public class TagUtil extends SqlUtilBaseS {
@@ -24,7 +22,7 @@ public class TagUtil extends SqlUtilBaseS {
                     ids.add(id);
                 }
             } catch (SQLException sqe) {
-                MiscUtils.getLogger().error("Error", sqe);    
+                sqe.printStackTrace();    
             }
             return ids;
         } else {

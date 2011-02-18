@@ -25,21 +25,20 @@ package org.oscarehr.PMmodule.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Expression;
 import org.oscarehr.PMmodule.model.Admission;
 import org.oscarehr.PMmodule.model.ClientReferral;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 public class ClientReferralDAO extends HibernateDaoSupport {
 
-    private Logger log = MiscUtils.getLogger();
+    private Log log = LogFactory.getLog(getClass());
 
-    public List<ClientReferral> getReferrals() {
-        @SuppressWarnings("unchecked")
-    	List<ClientReferral> results = this.getHibernateTemplate().find("from ClientReferral");
+    public List getReferrals() {
+        List results = this.getHibernateTemplate().find("from ClientReferral");
 
         if (log.isDebugEnabled()) {
             log.debug("getReferrals: # of results=" + results.size());
@@ -48,14 +47,13 @@ public class ClientReferralDAO extends HibernateDaoSupport {
         return results;
     }
 
-    @SuppressWarnings("unchecked")
-    public List<ClientReferral> getReferrals(Long clientId) {
+    public List getReferrals(Long clientId) {
 
         if (clientId == null || clientId.longValue() <= 0) {
             throw new IllegalArgumentException();
         }
 
-        List<ClientReferral> results = this.getHibernateTemplate().find("from ClientReferral cr where cr.ClientId = ?", clientId);
+        List results = this.getHibernateTemplate().find("from ClientReferral cr where cr.ClientId = ?", clientId);
 
         if (log.isDebugEnabled()) {
             log.debug("getReferrals: clientId=" + clientId + ",# of results=" + results.size());
@@ -68,8 +66,7 @@ public class ClientReferralDAO extends HibernateDaoSupport {
         return results;
     }
 
-    @SuppressWarnings("unchecked")
-    public List<ClientReferral> getReferralsByFacility(Long clientId, Integer facilityId) {
+    public List getReferralsByFacility(Long clientId, Integer facilityId) {
 
         if (clientId == null || clientId.longValue() <= 0) {
             throw new IllegalArgumentException();
@@ -80,7 +77,7 @@ public class ClientReferralDAO extends HibernateDaoSupport {
 
         String sSQL="from ClientReferral cr where cr.ClientId = ? " +
                     " and ( (cr.FacilityId=?) or (cr.ProgramId in (select s.id from Program s where s.facilityId=? or s.facilityId is null)))";
-        List<ClientReferral> results = this.getHibernateTemplate().find(sSQL, new Object[] { clientId, facilityId, facilityId });
+        List results = this.getHibernateTemplate().find(sSQL, new Object[] { clientId, facilityId, facilityId });
 //        		"from ClientReferral cr where cr.ClientId = ?", clientId);
 
         if (log.isDebugEnabled()) {
@@ -99,6 +96,7 @@ public class ClientReferralDAO extends HibernateDaoSupport {
     	
     	for(Object element : lResult) {
     		ClientReferral cr = (ClientReferral) element;
+    		System.out.println(cr.getId() + "|" + cr.getProgramName() + "|" + cr.getClientId());
 
             ClientReferral result = null;
             List results = this.getHibernateTemplate().find("from ClientReferral r where r.ClientId = ? and r.Id < ? order by r.Id desc", new Object[] {cr.getClientId(), cr.getId()});
@@ -108,10 +106,13 @@ public class ClientReferralDAO extends HibernateDaoSupport {
         	String notes = "";
             if (!results.isEmpty()) {
                 result = (ClientReferral)results.get(0);
+        		System.out.println("--" + result.getId() + "|" + result.getProgramName() + "|" + result.getClientId());
             	completionNotes = result.getProgramName();
             	notes = isExternalProgram(Integer.parseInt(result.getProgramId().toString())) ? "Yes" : "No";
+        		System.out.println("--" + result.getProgramId().toString());
             } else {
             	// get program from table admission
+        		System.out.println("--" + cr.getClientId());
             	List lr = getAdmissions(Integer.parseInt(cr.getClientId().toString()));
             	Admission admission = (Admission) lr.get(lr.size() - 1);
             	completionNotes = admission.getProgramName(); 

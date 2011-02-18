@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -52,6 +52,7 @@ plannerBean.doConfigure(dbQueries);
 %>
 
 <html>
+<% response.setHeader("Cache-Control","no-cache");%>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Antenatal Planner</title>
@@ -121,6 +122,7 @@ plannerBean.doConfigure(dbQueries);
 	  }
     }
   }
+  plannerBean.closePstmtConn();
 %>
 <table bgcolor='silver' width='100%' cellspacing=0 cellpadding=0>
 	<tr>

@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the
 // * Department of Family Medicine
-// * McMaster University
+// * McMaster Unviersity
 // * Hamilton
 // * Ontario, Canada
 // *
@@ -28,48 +28,41 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 import oscar.util.UtilDateUtilities;
 
 public class EctConsultationFormRequestUtil {
 
-	private boolean bMultisites=org.oscarehr.common.IsPropertiesOn.isMultisitesEnable();
-	
     public boolean estPatient(String demo) {
 
         demoNo = demo;
         boolean verdict = true;
 
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select * from demographic where demographic_no = " + demoNo;
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
 
             if (rs.next()) {
-                patientFirstName = oscar.Misc.getString(rs, "first_name");
-                patientLastName = oscar.Misc.getString(rs, "last_name");
-                patientName = patientLastName + "," +patientFirstName;
-
-                patientAddress = oscar.Misc.getString(rs, "address") + "<br>" + oscar.Misc.getString(rs, "city") +
-                        "," + oscar.Misc.getString(rs, "province") + "," + oscar.Misc.getString(rs, "postal");
-                patientPhone = oscar.Misc.getString(rs, "phone");
-                patientWPhone = oscar.Misc.getString(rs, "phone2");
-                patientDOB = oscar.Misc.getString(rs, "year_of_birth") + "-" +
-                        oscar.Misc.getString(rs, "month_of_birth") + "-" + oscar.Misc.getString(rs, "date_of_birth");
-                patientHealthNum = oscar.Misc.getString(rs, "hin");
-                patientSex = oscar.Misc.getString(rs, "sex");
-                patientHealthCardType = oscar.Misc.getString(rs, "hc_type");
-                patientHealthCardVersionCode = oscar.Misc.getString(rs, "ver");
-                patientChartNo = oscar.Misc.getString(rs, "chart_no");
-                patientAge = UtilDateUtilities.calcAge(UtilDateUtilities.calcDate(rs.getString("year_of_birth"), oscar.Misc.getString(rs, "month_of_birth"),
-                        oscar.Misc.getString(rs, "date_of_birth")));
-                mrp = oscar.Misc.getString(rs, "provider_no");
+                patientName = db.getString(rs, "last_name") + "," +db.getString(rs, "first_name");
+                patientAddress = db.getString(rs, "address") + "<br>" + db.getString(rs, "city") +
+                        "," + db.getString(rs, "province") + "," + db.getString(rs, "postal");
+                patientPhone = db.getString(rs, "phone");
+                patientWPhone = db.getString(rs, "phone2");
+                patientDOB = db.getString(rs, "year_of_birth") + "/" +
+                        db.getString(rs, "month_of_birth") + "/" + db.getString(rs, "date_of_birth");
+                patientHealthNum = db.getString(rs, "hin");
+                patientSex = db.getString(rs, "sex");
+                patientHealthCardType = db.getString(rs, "hc_type");
+                patientHealthCardVersionCode = db.getString(rs, "ver");
+                patientChartNo = db.getString(rs, "chart_no");
+                patientAge = UtilDateUtilities.calcAge(UtilDateUtilities.calcDate(rs.getString("year_of_birth"), db.getString(rs, "month_of_birth"),
+                        db.getString(rs, "date_of_birth")));
+                mrp = db.getString(rs, "provider_no");
             }
             rs.close();
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;
@@ -79,19 +72,19 @@ public class EctConsultationFormRequestUtil {
         boolean verdict = true;
         teamVec = new Vector();
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select distinct team from provider where status = '1' and team != '' order by team";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
 
             while (rs.next()) {
-                String teamName = oscar.Misc.getString(rs, "team");
+                String teamName = db.getString(rs, "team");
                 if (!teamName.equals("")) {
                     teamVec.add(teamName);
                 }
             }
             rs.close();
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;
@@ -102,104 +95,54 @@ public class EctConsultationFormRequestUtil {
         boolean verdict = true;
         teamVec = new Vector();
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select distinct team from provider order by team ";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
 
             while (rs.next()) {
-                String teamName = oscar.Misc.getString(rs, "team");
+                String teamName = db.getString(rs, "team");
                 if (!teamName.equals("")) {
                     teamVec.add(teamName);
                 }
             }
             rs.close();
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;
     }
-    
-    public boolean estTeamsBySite(String providerNo) {
-
-        boolean verdict = true;
-        teamVec = new Vector();
-        try {
-            String sql = "select distinct team from provider p inner join providersite s on s.provider_no = p.provider_no " +
-            		" where s.site_id in (select site_id from providersite where provider_no = '" + providerNo + "') order by team ";
-            ResultSet rs = DBHandler.GetSQL(sql);
-
-            while (rs.next()) {
-                String teamName = oscar.Misc.getString(rs, "team");
-                if (!teamName.equals("")) {
-                    teamVec.add(teamName);
-                }
-            }
-            rs.close();
-            
-        } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
-            verdict = false;
-        }
-        return verdict;
-    }
-        
-    public boolean estTeamsByTeam(String providerNo) {
-
-        boolean verdict = true;
-        teamVec = new Vector();
-        try {
-            String sql = "select distinct team from provider where provider_no = '" + providerNo + "' order by team ";
-            ResultSet rs = DBHandler.GetSQL(sql);
-
-            while (rs.next()) {
-                String teamName = oscar.Misc.getString(rs, "team");
-                if (!teamName.equals("")) {
-                    teamVec.add(teamName);
-                }
-            }
-            rs.close();
-            
-        } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
-            verdict = false;
-        }
-        return verdict;
-    }    
 
     public boolean estRequestFromId(String id) {
 
         boolean verdict = true;
         getSpecailistsName(id);
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select * from consultationRequests where requestId  = " +id;
 
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()) {
-                pwb = oscar.Misc.getString(rs, "patientWillBook");
-                urgency = oscar.Misc.getString(rs, "urgency");
-                providerNo = oscar.Misc.getString(rs, "providerNo");
-                referalDate = oscar.Misc.getString(rs, "referalDate");
-                service = oscar.Misc.getString(rs, "serviceId");
-                specialist = oscar.Misc.getString(rs, "specId");
-                String appointmentTime = oscar.Misc.getString(rs, "appointmentTime");
-                reasonForConsultation = oscar.Misc.getString(rs, "reason");
-                clinicalInformation = oscar.Misc.getString(rs, "clinicalInfo");
-                concurrentProblems = oscar.Misc.getString(rs, "concurrentProblems");
-                currentMedications = oscar.Misc.getString(rs, "currentMeds");
-                allergies = oscar.Misc.getString(rs, "allergies");
-                sendTo = oscar.Misc.getString(rs, "sendTo");
-                status = oscar.Misc.getString(rs, "status");
-                appointmentNotes = oscar.Misc.getString(rs, "statusText");
+                pwb = db.getString(rs, "patientWillBook");
+                urgency = db.getString(rs, "urgency");
+                providerNo = db.getString(rs, "providerNo");
+                referalDate = db.getString(rs, "referalDate");
+                service = db.getString(rs, "serviceId");
+                specialist = db.getString(rs, "specId");
+                String appointmentTime = db.getString(rs, "appointmentTime");
+                reasonForConsultation = db.getString(rs, "reason");
+                clinicalInformation = db.getString(rs, "clinicalInfo");
+                concurrentProblems = db.getString(rs, "concurrentProblems");
+                currentMedications = db.getString(rs, "currentMeds");
+                allergies = db.getString(rs, "allergies");
+                sendTo = db.getString(rs, "sendTo");
+                status = db.getString(rs, "status");
+                appointmentNotes = db.getString(rs, "statusText");
                 if (appointmentNotes == null || appointmentNotes.equals("null")) {
                     appointmentNotes = new String();
                 }
-                estPatient(oscar.Misc.getString(rs, "demographicNo"));
-                String date = oscar.Misc.getString(rs, "appointmentDate");
-                if (bMultisites) {
-                	siteName = oscar.Misc.getString(rs, "site_name");
-                }
+                estPatient(db.getString(rs, "demographicNo"));
+                String date = db.getString(rs, "appointmentDate");
                 int fir = date.indexOf('-');
                 int las = date.lastIndexOf('-');
                 appointmentYear = date.substring(0, fir);
@@ -208,7 +151,7 @@ public class EctConsultationFormRequestUtil {
                 fir = appointmentTime.indexOf(':');
                 las = appointmentTime.lastIndexOf(':');
                 if (fir > -1 && las > -1) {
-
+                    //System.out.println(String.valueOf(String.valueOf((new StringBuffer(String.valueOf(String.valueOf(appointmentTime)))).append(" firs = ").append(fir).append(" las ").append(las))));
                     appointmentHour = appointmentTime.substring(0, fir);
                     if (fir < las) {
                         appointmentMinute = appointmentTime.substring(fir + 1, las);
@@ -225,7 +168,7 @@ public class EctConsultationFormRequestUtil {
             }
             rs.close();
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;
@@ -234,16 +177,16 @@ public class EctConsultationFormRequestUtil {
     public String getSpecailistsName(String id) {
         String retval = new String();
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select * from professionalSpecialists where specId  = " +id;
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()) {
-                retval = oscar.Misc.getString(rs, "lName") + ", " + oscar.Misc.getString(rs, "fName") + " " +oscar.Misc.getString(rs, "proLetters");
-                specPhone = oscar.Misc.getString(rs, "phone");
-                specFax = oscar.Misc.getString(rs, "fax");
-                specAddr = oscar.Misc.getString(rs, "address");
-                specEmail = oscar.Misc.getString(rs, "email");
-                MiscUtils.getLogger().debug("getting Null" + specEmail + "<");
+                retval = db.getString(rs, "lName") + ", " + db.getString(rs, "fName") + " " +db.getString(rs, "proLetters");
+                specPhone = db.getString(rs, "phone");
+                specFax = db.getString(rs, "fax");
+                specAddr = db.getString(rs, "address");
+                specEmail = db.getString(rs, "email");
+                System.out.println("getting Null" + specEmail + "<");
 
                 if (specPhone == null || specPhone.equals("null")) {
                     specPhone = new String();
@@ -260,22 +203,22 @@ public class EctConsultationFormRequestUtil {
             }
             rs.close();
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         return retval;
 
     }
 
     public String getSpecailistsEmail(String id) {
-        MiscUtils.getLogger().debug("in Get SPECAILISTS EMAIL \n\n" + id);
+        System.out.println("in Get SPECAILISTS EMAIL \n\n" + id);
         String retval = new String();
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select email from professionalSpecialists where specId  = '" + id + "'";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()) {
-                specEmail = oscar.Misc.getString(rs, "email");
-                MiscUtils.getLogger().debug("meial" + specEmail + "<");
+                specEmail = db.getString(rs, "email");
+                System.out.println("meial" + specEmail + "<");
                 if (specEmail == null || specEmail.equalsIgnoreCase("null")) {
                     specEmail = new String();
                 }
@@ -283,7 +226,7 @@ public class EctConsultationFormRequestUtil {
             }
             rs.close();
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         return retval;
     }
@@ -291,15 +234,15 @@ public class EctConsultationFormRequestUtil {
     public String getProviderTeam(String id) {
         String retval = new String();
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select team from provider where provider_no  = " + id;
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()) {
-                retval = oscar.Misc.getString(rs, "team");
+                retval = db.getString(rs, "team");
             }
             rs.close();
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         return retval;
     }
@@ -307,15 +250,15 @@ public class EctConsultationFormRequestUtil {
     public String getProviderName(String id) {
         String retval = new String();
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select * from provider where provider_no  = " + id;
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()) {
-                retval = oscar.Misc.getString(rs, "last_name") + ", " + oscar.Misc.getString(rs, "first_name");
+                retval = db.getString(rs, "last_name") + ", " + db.getString(rs, "first_name");
             }
             rs.close();
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         return retval;
     }
@@ -323,15 +266,15 @@ public class EctConsultationFormRequestUtil {
     public String getFamilyDoctor() {
         String retval = new String();
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select p.last_name, p.first_name from provider p, demographic d where d.provider_no  = p.provider_no and  d.demographic_no = " +demoNo;
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()) {
-                retval = oscar.Misc.getString(rs, "last_name") + ", " + oscar.Misc.getString(rs, "first_name");
+                retval = db.getString(rs, "last_name") + ", " + db.getString(rs, "first_name");
             }
             rs.close();
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         return retval;
     }
@@ -339,15 +282,15 @@ public class EctConsultationFormRequestUtil {
     public String getServiceName(String id) {
         String retval = new String();
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select * from consultationServices where serviceId  = " +id;
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()) {
-                retval = oscar.Misc.getString(rs, "serviceDesc");
+                retval = db.getString(rs, "serviceDesc");
             }
             rs.close();
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         return retval;
     }
@@ -355,22 +298,20 @@ public class EctConsultationFormRequestUtil {
     public String getClinicName() {
         String retval = new String();
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "select clinic_name from clinic";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()) {
-                retval = oscar.Misc.getString(rs, "clinic_name");
+                retval = db.getString(rs, "clinic_name");
             }
             rs.close();
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         return retval;
     }
             
     public String patientName;
-    public String patientFirstName;
-    public String patientLastName;
     public String patientAddress;
     public String patientPhone;
     public String patientWPhone;
@@ -409,5 +350,4 @@ public class EctConsultationFormRequestUtil {
     public String demoNo;
     public String pwb;
     public String mrp = "";
-    public String siteName;
 }

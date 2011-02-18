@@ -1,19 +1,17 @@
-<% long startTime = System.currentTimeMillis(); %><%@page import="oscar.oscarDemographic.data.*,java.util.*,oscar.oscarPrevention.*,oscar.oscarEncounter.oscarMeasurements.*,oscar.oscarEncounter.oscarMeasurements.bean.*,java.net.*"%>
-<%@page import="oscar.OscarProperties, oscar.util.StringUtils, org.oscarehr.common.dao.DemographicDao, org.oscarehr.common.model.Demographic" %>
+<% long startTime = System.currentTimeMillis(); %>
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+<%@page  import="oscar.oscarDemographic.data.*,java.util.*,oscar.oscarPrevention.*,oscar.oscarEncounter.oscarMeasurements.*,oscar.oscarEncounter.oscarMeasurements.bean.*,java.net.*"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils,oscar.log.*"%>
 <%@page import="org.springframework.web.context.WebApplicationContext,oscar.oscarResearch.oscarDxResearch.bean.*"%>
 <%@page import="org.oscarehr.common.dao.FlowSheetCustomizerDAO,org.oscarehr.common.model.FlowSheetCustomization"%>
 <%@page import="org.oscarehr.common.dao.FlowSheetDrugDAO,org.oscarehr.common.model.FlowSheetDrug"%>
 <%@page import="org.oscarehr.common.dao.UserPropertyDAO,org.oscarehr.common.model.UserProperty"%>
-<%@page import=" org.oscarehr.decisionSupport.model.DSConsequence,oscar.oscarBilling.ca.bc.decisionSupport.BillingGuidelines" %>
-<%@page import="org.oscarehr.util.MiscUtils" %>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %>
 <%@ taglib uri="/WEB-INF/rewrite-tag.tld" prefix="rewrite" %>
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
-<c:set var="contx" value="${pageContext.request.contextPath}" scope="request"/>
 <%
     if(session.getValue("user") == null) response.sendRedirect("../../logout.jsp");
     //int demographic_no = Integer.parseInt(request.getParameter("demographic_no"));
@@ -22,7 +20,6 @@
     String demographic_no = request.getParameter("demographic_no");
     String providerNo = (String) session.getAttribute("user");
     String temp = request.getParameter("template");
-    
 %>
 <oscar:oscarPropertiesCheck property="SPEC3" value="yes">
     <security:oscarSec roleName="<%=roleName$%>" objectName="_flowsheet" rights="r" reverse="<%=true%>">
@@ -35,40 +32,8 @@
 <%
    
     LogAction.addLog((String) session.getAttribute("user"), LogConst.READ, LogConst.CON_FLOWSHEET,  temp , request.getRemoteAddr(),demographic_no);
-    WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-    DemographicDao demographicDao = (DemographicDao) ctx.getBean("demographicDao");
-    Demographic demographic = demographicDao.getDemographic(demographic_no);
-    String mrp = demographic.getProviderNo();
     
-    List listBillingCodes = null;
-    String incentiveCodes = "";
-    if( OscarProperties.getInstance().getProperty("billregion", "").equals("ON") ) {
-        HashMap<String,String> codeMap = new HashMap<String,String>();
-        codeMap.put("diab2", "250");
-        codeMap.put("chf", "428");
-        String tempcode = codeMap.get(temp);
-        try{
-            if( tempcode != null ) {
-                List<DSConsequence> list = BillingGuidelines.getInstance(tempcode).evaluateAndGetConsequences(demographic_no, mrp);
-                for (DSConsequence dscon : list){
-                    List<Object> javaConsequence = dscon.getObjConsequence();
-                    if( javaConsequence != null ) {
-                        for( Object obj : javaConsequence ) {
-                            if( obj instanceof List ) {
-                                listBillingCodes = (List)obj;
-                            }
-                        }
-                    }
-               }
-           }
-        }catch(Exception e){
-            MiscUtils.getLogger().error("Billing Guidelines Failed", e);
-        }
     
-    }
-    if( listBillingCodes != null ) {
-        incentiveCodes = StringUtils.join(listBillingCodes, ",");
-     }
     int numElementsToShow = 4;
     Date sdate = null;
     Date edate = null;
@@ -101,8 +66,12 @@
     PreventionData pd = new PreventionData();
     Prevention p = pd.getPrevention(demographic_no);
 
+    System.out.println("Getting preventions took  "+ (System.currentTimeMillis() - startTimeToGetP) );
     boolean dsProblems = false;
 
+    
+    WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+            
     FlowSheetCustomizerDAO flowSheetCustomizerDAO = (FlowSheetCustomizerDAO) ctx.getBean("flowSheetCustomizerDAO");
     FlowSheetDrugDAO flowSheetDrugDAO = (FlowSheetDrugDAO) ctx.getBean("flowSheetDrugDAO");
     
@@ -119,11 +88,18 @@
     ArrayList<String> measurements = new ArrayList(measurementLs);
     long startTimeToGetM = System.currentTimeMillis();
      
+    System.out.println("Measurements size "+measurements.size());
     mi.getMeasurements(measurements);
+    System.out.println("Getting measurements  took  "+ (System.currentTimeMillis() - startTimeToGetM) );
 
     mFlowsheet.getMessages(mi);
 
     ArrayList recList = mi.getList();
+    System.out.println("RECLIST "+recList.size());
+    
+    for(Object rec: recList){
+        System.out.println("REF : "+rec);
+    }
     
     mFlowsheet.sortToCurrentOrder(recList);
     StringBuffer recListBuffer = new StringBuffer();
@@ -135,6 +111,8 @@
     String flowSheet = mFlowsheet.getDisplayName();
     ArrayList<String> warnings = mi.getWarnings();
     ArrayList<String> recomendations = mi.getRecommendations();
+    System.out.println(" warnings "+mi.getWarnings().size());
+    System.out.println(" recommendations "+mi.getRecommendations().size());
     ArrayList comments = new ArrayList();
 
 %>
@@ -162,7 +140,7 @@
 *
 * This software was written for the
 * Department of Family Medicine
-* McMaster University test2
+* McMaster Unviersity test2
 * Hamilton
 * Ontario, Canada
 */
@@ -268,40 +246,7 @@ div.headPrevention p {
 
     }
     
-    <%if(listBillingCodes != null ) { %>
     
-    function batchBill(id) {
-
-        var url = "<c:out value="${contx}"/>" + "/billing/CA/ON/BatchBill.do";
-        url += "?clinic_view=<%=OscarProperties.getInstance().getProperty("clinic_view","")%>";
-
-        <% Iterator i = listBillingCodes.iterator();
-           String billingCode;
-           while(i.hasNext()) {
-               billingCode = (String)i.next();
-        %>
-                url += "&bill=<%=billingCode+";"+demographic_no+";"+mrp%>";
-        <%}%>
-
-        new Ajax.Request(
-            url,
-            {
-                method: 'post',
-                asynchronous: true,
-                onSuccess: function(ret) {
-                    $(id).update("Bill successfully complete");
-                },
-                onFailure: function(ret) {
-                    alert( ret.status + " Billing Failed");
-                }
-            }
-
-        );
-
-        return false;
-    }
-
-    <%}%>
    function loadDifferentElements(){
        //console.log("hapy");
         var numEle = $('numEle').value;
@@ -666,12 +611,7 @@ div.recommendations li{
 <img src="../../oscarEncounter/GraphMeasurements.do?demographic_no=<%=demographic_no%>&type=INR&type2=COUM"/>
 <br/>
 --%>
-<% if( listBillingCodes != null ) {
-
-%>
-<div id="batchBill">You are eligible to bill code <a href="#" onclick="batchBill('batchBill');"><%=incentiveCodes%></a></div>
-<% } %>
-<div>
+<div >
 <%
     boolean flatformat = true;
 
@@ -709,6 +649,7 @@ div.recommendations li{
     EctMeasurementTypeBeanHandler mType = new EctMeasurementTypeBeanHandler();
     long startTimeToLoopAndPrint = System.currentTimeMillis();
     List<MeasurementTemplateFlowSheetConfig.Node>nodes = mFlowsheet.getItemHeirarchy();
+    System.out.println("NODES " + nodes.size());
     String measure;
     int marginLeft = 20;
     int step = 1;
@@ -717,6 +658,8 @@ div.recommendations li{
     while( node != null ) {
         FlowSheetItem item = node.flowSheetItem;
         if( node.children != null ) {
+
+            System.out.println("'" + item.getDisplayName() + "' has a child");
             if( !flatformat ) {
                 ++step;
     %>
@@ -726,6 +669,7 @@ div.recommendations li{
             //numSibling = 0;
             //nodes = node.children;
             node = node.getFirstChild();            
+            System.out.println("STEP = " + step);
         }
         else {
 
@@ -733,6 +677,7 @@ div.recommendations li{
     //for (String measure:measurements){
         Hashtable h2 = mFlowsheet.getMeasurementFlowSheetInfo(measure);
         //FlowSheetItem item =  mFlowsheet.getFlowSheetItem(measure);
+        System.out.println(">>>>"+item.getItemName()+" "+item.isHide());
         
         String hidden= "";
         if (item.isHide()){
@@ -745,7 +690,15 @@ div.recommendations li{
 
             if(mtypeBean!=null) {
                 h.put("name",mtypeBean.getTypeDisplayName());
-                h.put("desc",mtypeBean.getTypeDesc());                
+                h.put("desc",mtypeBean.getTypeDesc());
+                
+                System.err.println("mType ="+mtypeBean.getTypeDisplayName()+" hashtable value "+h.get("name"));
+                if (!mtypeBean.getTypeDisplayName().equals(""+h.get("name"))){
+                    System.err.println("\n\n\n\n\n\n");
+                    System.err.println("!!!!mType ="+mtypeBean.getTypeDisplayName()+" hashtable value "+h.get("name"));
+                    System.out.println("DESC "+h.get("desc"));
+                }
+                
             }
             String prevName = (String) h.get("name");
             //Collection aalist = mi.getMeasurementData(measure);
@@ -773,7 +726,9 @@ div.recommendations li{
                <img class="DoNotPrint" src="img/chart.gif" alt="Plot"/>
             <%}%>
            <%}%>
-           <a class="noborder" href="javascript: function myFunction() {return false; }"  onclick="javascript:popup(465,635,'AddMeasurementData.jsp?measurement=<%= response.encodeURL( measure) %>&amp;demographic_no=<%=demographic_no%>&amp;template=<%= URLEncoder.encode(temp,"UTF-8") %>','addMeasurementData<%=Math.abs( ((String) h.get("name")).hashCode() ) %>')">
+            <% System.out.println(h2.get("display_name")+ " "+ h2.get("value_name")); %>
+            <% System.out.println("NAME " + h.get("name")); %>
+            <a class="noborder" href="javascript: function myFunction() {return false; }"  onclick="javascript:popup(465,635,'AddMeasurementData.jsp?measurement=<%= response.encodeURL( measure) %>&amp;demographic_no=<%=demographic_no%>&amp;template=<%= URLEncoder.encode(temp,"UTF-8") %>','addMeasurementData<%=Math.abs( ((String) h.get("name")).hashCode() ) %>')">
                 <span  class="noborder" style="font-weight:bold;"><%=h2.get("display_name")%></span>
             </a>
 
@@ -801,8 +756,10 @@ div.recommendations li{
             if (request.getParameter("show") !=null && request.getParameter("show").equals("lastOnly")){
                 num =1;
             }
+            System.out.println("sdate "+sdate+" edate "+edate);
             if(sdate != null && edate != null){
                 Date itDate = mdb.getDateObservedAsDate();
+                System.out.println("DEBUGDISPLAY"+measure+" "+sdate+" "+edate+" "+itDate);
                 if (itDate.before(sdate) || itDate.after(edate)){
                         hider = "display:none;";
                 }
@@ -812,6 +769,7 @@ div.recommendations li{
 
             String indColour = "";
             if ( mdb.getIndicationColour() != null ){
+                System.out.println("INDICAT: "+mdb.getIndicationColour());
                 indColour = "style=\"background-color:"+mFlowsheet.getIndicatorColour(mdb.getIndicationColour())+"\"";
             }
             
@@ -834,6 +792,10 @@ div.recommendations li{
     String prevType = (String) h2.get("prevention_type");
     long startPrevType = System.currentTimeMillis();
     ArrayList alist = pd.getPreventionData(prevType, demographic_no);
+
+    System.out.println("Getting prev  "+prevType+" data took "+(System.currentTimeMillis() - startPrevType) );
+
+
 %>
 
 
@@ -854,6 +816,7 @@ div.recommendations li{
             Hashtable hdata = (Hashtable) alist.get(k);
             String com = pd.getPreventionComment(""+hdata.get("id"));
             boolean comb = false;
+            System.out.println(com);
             if (com != null ){
                 comments.add(com);
                 comb = true;
@@ -872,28 +835,34 @@ div.recommendations li{
     <%}%>
 </div>
 
-<%
+<%System.out.println("Prev took  "+prevType+" "+(System.currentTimeMillis() - startPrevType) );
 }%>
 
     <%          while( !node.hasNextSibling() && node.parent != null) {
                     out.println("</div>");
                     node = node.parent;
                     step = flatformat ? step : --step;
+                    System.out.println("STEP = " + step);
+                    System.out.println("UP TO PARENT " + node.flowSheetItem.getDisplayName());
                 }
 
                 if( node.parent == null ) {
                     if( numSibling < nodes.size()-1) {
                         node = nodes.get(++numSibling);
+                        System.out.println("PARENT IS NULL GETTING NEXT " + node.flowSheetItem.getDisplayName());
                     }
                     else {
                         node = null;
+                        System.out.println("SETTING NODE NULL");
                     }
                 }
                 else {
                     node = node.getNextSibling();
+                    System.out.println("GETTING NEXT SIBLING " + node.flowSheetItem.getDisplayName());
                 }
         }
   }
+    System.out.println("Looping display took  "+ (System.currentTimeMillis() - startTimeToLoopAndPrint) );
 %>
 
 
@@ -976,6 +945,7 @@ div.recommendations li{
 <script type="text/javascript" src="../../share/javascript/boxover.js"></script>
 </body>
 </html:html>
+<% System.out.println("Template took  "+ (System.currentTimeMillis() - startTime) +" to display"); %>
 <%!
     String refused(Object re){
         String ret = "Given";
@@ -1006,5 +976,14 @@ div.recommendations li{
         }
         return ret;
     }
+    
+    
+    public void printOutStringLists(List<String> measurements){
+       for (String measurement : measurements){
+          System.out.println(":*:measurement= "+measurement);
+       }
+    }
+    
+    
     
 %>

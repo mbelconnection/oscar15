@@ -24,6 +24,8 @@
 package oscar.oscarEncounter.oscarConsultationRequest.config.pageUtil;
 
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 import javax.servlet.ServletException;
@@ -34,59 +36,92 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.common.dao.ProfessionalSpecialistDao;
-import org.oscarehr.common.model.ProfessionalSpecialist;
-import org.oscarehr.util.SpringUtils;
+
+import oscar.oscarDB.DBHandler;
 
 public class EctConEditSpecialistsAction extends Action {
-	@Override
-	public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		ProfessionalSpecialistDao professionalSpecialistDao=(ProfessionalSpecialistDao)SpringUtils.getBean("professionalSpecialistDao");
-
-		EctConEditSpecialistsForm editSpecialistsForm = (EctConEditSpecialistsForm) form;
-		String specId = editSpecialistsForm.getSpecId();
-		String delete = editSpecialistsForm.getDelete();
-		String specialists[] = editSpecialistsForm.getSpecialists();
-
-		ResourceBundle oscarR = ResourceBundle.getBundle("oscarResources", request.getLocale());
-
-		if (delete.equals(oscarR.getString("oscarEncounter.oscarConsultationRequest.config.EditSpecialists.btnDeleteSpecialist"))) {
-			if (specialists.length > 0) {
-				for (int i = 0; i < specialists.length; i++)
-				{
-					professionalSpecialistDao.remove(Integer.parseInt(specialists[i]));
-				}
-			}
-			EctConConstructSpecialistsScriptsFile constructSpecialistsScriptsFile = new EctConConstructSpecialistsScriptsFile();
-			constructSpecialistsScriptsFile.makeString(request.getLocale());
-			return mapping.findForward("delete");
-		}
-
-		// not delete request, just update one entry
-		ProfessionalSpecialist professionalSpecialist=professionalSpecialistDao.find(Integer.parseInt(specId));
-		
-		int updater = 0;
-		request.setAttribute("fName", professionalSpecialist.getFirstName());
-		request.setAttribute("lName", professionalSpecialist.getLastName());
-		request.setAttribute("proLetters", professionalSpecialist.getProfessionalLetters());
-
-		request.setAttribute("address", professionalSpecialist.getStreetAddress());
-		
-		request.setAttribute("phone", professionalSpecialist.getPhoneNumber());
-		request.setAttribute("fax", professionalSpecialist.getFaxNumber());
-		request.setAttribute("website", professionalSpecialist.getWebSite());
-		request.setAttribute("email", professionalSpecialist.getEmailAddress());
-		request.setAttribute("specType", professionalSpecialist.getSpecialtyType());
-		request.setAttribute("specId", specId);
-		request.setAttribute("eDataUrl", professionalSpecialist.geteDataUrl());
-		request.setAttribute("eDataOscarKey", professionalSpecialist.geteDataOscarKey());
-		request.setAttribute("eDataServiceKey", professionalSpecialist.geteDataServiceKey());
-		request.setAttribute("eDataServiceName", professionalSpecialist.geteDataServiceName());
-                request.setAttribute("annotation", professionalSpecialist.getAnnotation());
-		request.setAttribute("upd", new Integer(updater));
-		EctConConstructSpecialistsScriptsFile constructSpecialistsScriptsFile = new EctConConstructSpecialistsScriptsFile();
-		request.setAttribute("verd", constructSpecialistsScriptsFile.makeFile());
-		constructSpecialistsScriptsFile.makeString(request.getLocale());
-		return mapping.findForward("success");
-	}
+   
+   public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
+   throws ServletException, IOException {
+      System.out.println("Entering EditSpecialistsAction Jackson");
+      EctConEditSpecialistsForm editSpecialistsForm = (EctConEditSpecialistsForm)form;
+      String specId = editSpecialistsForm.getSpecId();
+      String delete = editSpecialistsForm.getDelete();
+      String specialists[] = editSpecialistsForm.getSpecialists();
+      System.out.println(String.valueOf(String.valueOf((new StringBuffer("===>")).append(delete).append("<==="))));
+      
+      ResourceBundle oscarR = ResourceBundle.getBundle("oscarResources",request.getLocale());
+      
+      if(delete.equals(oscarR.getString("oscarEncounter.oscarConsultationRequest.config.EditSpecialists.btnDeleteSpecialist"))) {
+         if(specialists.length > 0) {
+            StringBuffer stringBuffer = new StringBuffer();
+            for(int i = 0; i < specialists.length; i++)
+               if(i == specialists.length - 1)
+                  stringBuffer.append(String.valueOf(String.valueOf((new StringBuffer(" specId = ")).append(specialists[i]))));
+               else
+                  stringBuffer.append(String.valueOf(String.valueOf((new StringBuffer(" specId = ")).append(specialists[i]).append(" or "))));
+            
+            try {
+               DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+               String sql = "delete from professionalSpecialists where ".concat(String.valueOf(String.valueOf(stringBuffer.toString())));
+               db.RunSQL(sql);
+            }
+            catch(SQLException e) {
+               System.out.println(e.getMessage());
+            }
+         }
+         EctConConstructSpecialistsScriptsFile constructSpecialistsScriptsFile = new EctConConstructSpecialistsScriptsFile();
+         constructSpecialistsScriptsFile.makeString(request.getLocale());
+         return mapping.findForward("delete");
+      }
+      String fName = new String();
+      String lName = new String();
+      String proLetters = new String();
+      String address = new String();
+      String phone = new String();
+      String fax = new String();
+      String website = new String();
+      String email = new String();
+      String specType = new String();
+      int updater = 0;
+      try {
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+         String sql = String.valueOf(String.valueOf((new StringBuffer("select * from professionalSpecialists where specId = ")).append(specId)));
+         ResultSet rs;
+         for(rs = db.GetSQL(sql); rs.next();) {
+            fName = db.getString(rs,"fName");
+            lName = db.getString(rs,"lName");
+            proLetters = db.getString(rs,"proLetters");
+            address = db.getString(rs,"address");
+            phone = db.getString(rs,"phone");
+            fax = db.getString(rs,"fax");
+            website = db.getString(rs,"website");
+            email = db.getString(rs,"email");
+            specType = db.getString(rs,"specType");
+            updater = 1;
+         }
+         
+         rs.close();
+      }
+      catch(SQLException e) {
+         System.out.println(e.getMessage());
+      }
+      request.setAttribute("fName", fName);
+      request.setAttribute("lName", lName);
+      request.setAttribute("proLetters", proLetters);
+      request.setAttribute("address", address);
+      request.setAttribute("phone", phone);
+      request.setAttribute("fax", fax);
+      request.setAttribute("website", website);
+      request.setAttribute("email", email);
+      request.setAttribute("specType", specType);
+      request.setAttribute("specId", specId);
+      request.setAttribute("upd", new Integer(updater));
+      EctConConstructSpecialistsScriptsFile constructSpecialistsScriptsFile = new EctConConstructSpecialistsScriptsFile();
+      request.setAttribute("verd", constructSpecialistsScriptsFile.makeFile());
+      constructSpecialistsScriptsFile.makeString(request.getLocale());
+      return mapping.findForward("success");
+   }
 }
+
+

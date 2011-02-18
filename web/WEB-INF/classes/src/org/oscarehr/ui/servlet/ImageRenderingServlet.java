@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.oscarehr.PMmodule.caisi_integrator.CaisiIntegratorManager;
 import org.oscarehr.caisi_integrator.ws.DemographicTransfer;
@@ -21,7 +22,6 @@ import org.oscarehr.common.dao.DigitalSignatureDao;
 import org.oscarehr.common.model.DigitalSignature;
 import org.oscarehr.common.model.Provider;
 import org.oscarehr.util.DigitalSignatureUtils;
-import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SessionConstants;
 import org.oscarehr.util.SpringUtils;
 
@@ -33,11 +33,9 @@ import org.oscarehr.util.SpringUtils;
  * <br />
  * This servlet assumes the image exists, for the most part this servlet is a "drop in" replacement for serving images from the HD directly, i.e. things like existence and appropriateness of the image should have already been checked. In general security
  * should also be checked before hand, we also check again here as security is a special case.
- * <br /> <br />
- * This servlet should no longer be extended, look at ContentRenderingServlet instead which is much more versatile
  */
-public final class ImageRenderingServlet extends HttpServlet {
-	private static Logger logger = MiscUtils.getLogger();
+public class ImageRenderingServlet extends HttpServlet {
+	private static Logger logger = LogManager.getLogger(ImageRenderingServlet.class);
 	private static ClientImageDAO clientImageDAO = (ClientImageDAO) SpringUtils.getBean("clientImageDAO");
 	private static DigitalSignatureDao digitalSignatureDao = (DigitalSignatureDao) SpringUtils.getBean("digitalSignatureDao");
 
@@ -45,8 +43,7 @@ public final class ImageRenderingServlet extends HttpServlet {
 		local_client, hnr_client, integrator_client, signature_preview, signature_stored
 	}
 
-	@Override
-    public final void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public final void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		try {
 			String source = request.getParameter("source");
 
@@ -164,7 +161,7 @@ public final class ImageRenderingServlet extends HttpServlet {
 		try {
 			// get image
 			org.oscarehr.casemgmt.model.ClientImage clientImage = clientImageDAO.getClientImage(Integer.parseInt(request.getParameter("clientId")));
-			if (clientImage != null && "jpg".equalsIgnoreCase(clientImage.getImage_type())) {
+			if (clientImage != null && "jpg".equals(clientImage.getImage_type())) {
 				renderImage(response, clientImage.getImage_data(), "jpeg");
 				return;
 			}

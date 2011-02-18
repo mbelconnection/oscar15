@@ -1,10 +1,16 @@
-<%@page errorPage="../provider/errorpage.jsp"%>
+<%@ page language="java" errorPage="../provider/errorpage.jsp"%>
 <%@ page
 	import="java.util.*,oscar.oscarLab.ca.on.*,oscar.oscarDemographic.data.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
 <%
+
+
+
+System.out.println(" test name "+request.getParameter("testName"));
+System.out.println(" demo "+request.getParameter("demo"));
+System.out.println(" labType  "+request.getParameter("labType"));
 
 String labType = request.getParameter("labType");
 String demographicNo = request.getParameter("demo");
@@ -22,9 +28,12 @@ CommonLabTestValues comVal =  new CommonLabTestValues();
 ArrayList list = null;
 
 if (!demographicNo.equals("null")){
+    System.out.println("sdfsdf");
  list = comVal.findValuesForTest(labType, demographicNo, testName, identifier);
  
 }
+
+System.out.println("idididid "+list);
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <!--  
@@ -47,7 +56,7 @@ if (!demographicNo.equals("null")){
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -56,8 +65,9 @@ if (!demographicNo.equals("null")){
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <html:base />
-<title><%=""%>, <%=""%> <bean:message
+<title><%=""/*lab.pLastName*/%>, <%=""/*lab.pFirstName*/%> <bean:message
 	key="oscarMDS.segmentDisplay.title" /></title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" type="text/css"
 	href="../../../share/css/OscarStandardLayout.css">
 <link rel="stylesheet" type="text/css" media="all" href="../share/css/extractedFromPages.css"  />
@@ -78,15 +88,6 @@ function popupStart(vheight,vwidth,varpage,windowname) {
 </script>
 
 <body>
-
-  <%  if(demographic==null){%>
-
-<script language="JavaScript">
-alert("The demographic number is not valid");
-window.close();
-</script>
-
-    <%} else{%>
 <form name="acknowledgeForm" method="post"
 	action="../../../oscarMDS/UpdateStatus.do">
 
@@ -180,7 +181,17 @@ window.close();
 			<tr>
 				<td colspan="4" height="7">&nbsp;</td>
 			</tr>
+			<!--tr>
+                                <td bgcolor="#FFCC00" width="200" height="22" valign="bottom">
+                                    <div class="Title2">
+                                        <%=""/*gResults.groupName*/%>
                                         
+                                    </div>
+                                </td>
+                                <td align="right" bgcolor="#FFCC00" width="100">&nbsp;</td>
+                                <td width="9">&nbsp;</td>
+                                <td width="*">&nbsp;</td>
+                            </tr-->
 		</table>
 
 		<table width="100%" border="0" cellspacing="0" cellpadding="2"
@@ -202,6 +213,7 @@ window.close();
 			</tr>
 			<%  int linenum = 0;
                             if (list != null){ 
+                                System.out.println("list . size "+list.size());
                                for (int i = 0 ;  i < list.size(); i++){
                                    Hashtable h = (Hashtable) list.get(i);
                                    String lineClass = "NormalRes";
@@ -247,6 +259,6 @@ window.close();
 </table>
 
 </form>
-<%}%>
+
 </body>
 </html>

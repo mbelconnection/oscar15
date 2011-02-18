@@ -19,11 +19,14 @@
 *
 * This software was written for the
 * Department of Family Medicine
-* McMaster University test2
+* McMaster Unviersity test2
 * Hamilton
 * Ontario, Canada
 */
---><%@page import="oscar.oscarDemographic.data.*,java.util.*,oscar.oscarPrevention.*,oscar.oscarEncounter.oscarMeasurements.*,oscar.oscarEncounter.oscarMeasurements.bean.*,java.net.*"%>
+-->
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+<%@page  import="oscar.oscarDemographic.data.*,java.util.*,oscar.oscarPrevention.*,oscar.oscarEncounter.oscarMeasurements.*,oscar.oscarEncounter.oscarMeasurements.bean.*,java.net.*"%>
 <%@page import="org.jdom.Element,oscar.oscarEncounter.oscarMeasurements.data.*,org.jdom.output.Format,org.jdom.output.XMLOutputter,oscar.oscarEncounter.oscarMeasurements.util.*,java.io.*" %>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.springframework.web.context.WebApplicationContext"%>
@@ -48,13 +51,16 @@
             }
             String flowsheet = temp;
             String demographic = request.getParameter("demographic");
+            System.out.println("TEMP "+temp);
             MeasurementTemplateFlowSheetConfig templateConfig = MeasurementTemplateFlowSheetConfig.getInstance();
             Hashtable<String, String> flowsheetNames = templateConfig.getFlowsheetDisplayNames();
             
             WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
             FlowSheetCustomizerDAO flowSheetCustomizerDAO = (FlowSheetCustomizerDAO) ctx.getBean("flowSheetCustomizerDAO");
             List<FlowSheetCustomization> custList = flowSheetCustomizerDAO.getFlowSheetCustomizations( flowsheet,(String) session.getAttribute("user"),demographic);
-                        
+            
+            System.out.println("CUST SIZE LISt "+custList.size());
+            
             Enumeration en = flowsheetNames.keys();
             
             EctMeasurementTypesBeanHandler hd = new EctMeasurementTypesBeanHandler();
@@ -290,11 +296,13 @@ div.recommendations li{
    
    <ul style="width:200px; float:left;list-style-type:none;padding-left:5px;">
             <%
+            System.out.println("TEMP "+temp);
             MeasurementFlowSheet mFlowsheet = templateConfig.getFlowSheet(temp,custList);
             Element va = templateConfig.getExportFlowsheet(mFlowsheet);
            
             List<String> measurements = mFlowsheet.getMeasurementList();
             
+            System.out.println("SET HAS MEASUREMENTS" + measurements);
             int count = 0;
             if (measurements != null) {
                 for (String mstring : measurements) { 
@@ -404,6 +412,9 @@ div.recommendations li{
 <script type="text/javascript" src="../../share/javascript/boxover.js"></script>
 </body>
 </html:html>
+<% //System.out.println("Template took  "+ (System.currentTimeMillis() - startTime) +" to display");
+
+%>
 <%!
     String refused(Object re){
         String ret = "Given";
@@ -435,5 +446,13 @@ div.recommendations li{
         return ret;
     }
     
-        
+    
+    public void printOutStringLists(List<String> measurements){
+       for (String measurement : measurements){
+          System.out.println(":*:measurement= "+measurement);
+       }
+    }
+    
+    
+    
 %>

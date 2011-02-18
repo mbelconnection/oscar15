@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -35,10 +35,10 @@
 %>
 <%@ page import="java.sql.*, java.util.*,java.net.*, oscar.MyDateFormat"
 	errorPage="errorpage.jsp"%>
-
+<%@ include file="../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 <html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
@@ -68,7 +68,7 @@
    %>
 <p>
 <h1>Sorry, cannot delete billed items.</h1>
-
+</p>
 <form><input type="button" value="Back to previous page"
 	onClick="history.go(-1);return false;"></form>
 <% }
@@ -94,13 +94,11 @@
 //	  int[] demo_no = new int[1]; demo_no[0]=Integer.parseInt(request.getParameter("demographic_no")); int rowsAffected = apptMainBean.queryExecuteUpdate(demo_no,param,request.getParameter("dboperation"));
   
   if (rowsAffected ==1) {
-    //change the status to billed {"updateapptstatus", "update appointment set status=? where appointment_no=? //provider_no=? and appointment_date=? and start_time=?"},
-   String[] param1 =new String[3];
+    //apptMainBean.closePstmtConn();//change the status to billed {"updateapptstatus", "update appointment set status=? where appointment_no=? //provider_no=? and appointment_date=? and start_time=?"},
+   String[] param1 =new String[2];
 	  param1[0]="P";
-	  param1[1]=(String)session.getAttribute("user");
-	  param1[2]=request.getParameter("appointment_no");
+	  param1[1]=request.getParameter("appointment_no");
 //	  param1[1]=request.getParameter("apptProvider_no"); param1[2]=request.getParameter("appointment_date"); param1[3]=MyDateFormat.getTimeXX_XX_XX(request.getParameter("start_time"));
-   apptMainBean.queryExecuteUpdate(new String[]{request.getParameter("appointment_no")}, "archive_appt");
    rowsAffected = apptMainBean.queryExecuteUpdate(param1,"updateapptstatus");
 // rsdemo = null;
  //  rsdemo = apptMainBean.queryResults(request.getParameter("demographic_no"), "search_billing_no");
@@ -108,9 +106,12 @@
 %>
 <p>
 <h1>Successful Addition of a billing Record.</h1>
-
+</p>
 <script LANGUAGE="JavaScript">
       self.close();
+      //self.top.location = 'providercontrol.jsp?appointment_no=<%// =request.getParameter("appointment_no")%>&demographic_no=<%// =Integer.parseInt(request.getParameter("demographic_no"))%>&curProvider_no=<%// =curUser_no%>&username=<%// = userfirstname+" "+userlastname %>&appointment_date=<%// =request.getParameter("appointment_date")%>&start_time=<%// =request.getParameter("start_time")%>&status=B&displaymode=encounter&dboperation=search_demograph&template=';
+    //  self.opener.document.encounter.encounterattachment.value +="<billing>../billing/billingOB2.jsp?billing_no=<%// =rsdemo.getString("billing_no")%>^dboperation=search_bill^hotclick=0</billing>"; //providercontrol.jsp?billing_no=<%// =rsdemo.getString("billing_no")%>^displaymode=vary^displaymodevariable=<%// =URLEncoder.encode("../billing/")%>billing<%// =request.getParameter("billing_name")%>.jsp^dboperation=search_bill^hotclick=0</billing>";
+     // self.opener.document.encounter.attachmentdisplay.value +="Billing "; //:<%=request.getParameter("billing_name")%> ";
      	self.opener.refresh();
 </script> <%
   //  break; //get only one billing_no
@@ -119,13 +120,14 @@
 %>
 <p>
 <h1>Sorry, addition has failed.</h1>
-
+</p>
 <%  
   }
+  apptMainBean.closePstmtConn();
   }
 %>
 <p></p>
-<hr width="90%">
+<hr width="90%"></hr>
 <form><input type="button" value="Close this window"
 	onClick="window.close()"></form>
 </center>

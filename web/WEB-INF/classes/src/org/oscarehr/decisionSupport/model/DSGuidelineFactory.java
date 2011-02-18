@@ -5,28 +5,25 @@
 
 package org.oscarehr.decisionSupport.model;
 
+import org.oscarehr.decisionSupport.model.conditionValue.DSValue;
+import org.oscarehr.decisionSupport.model.impl.drools.DSGuidelineDrools;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-import org.oscarehr.decisionSupport.model.conditionValue.DSValue;
-import org.oscarehr.decisionSupport.model.impl.drools.DSGuidelineDrools;
-import org.oscarehr.util.MiscUtils;
+
 /**
  *
  * @author apavel
  */
 public class DSGuidelineFactory {
-    private static Logger _log = MiscUtils.getLogger();
     public DSGuideline createGuidelineFromXml(String xml) throws DecisionSupportParseException {
        if (xml == null || xml.equals("")) throw new DecisionSupportParseException("Xml not set");
         SAXBuilder parser = new SAXBuilder();
@@ -45,29 +42,6 @@ public class DSGuidelineFactory {
 
         String guidelineTitle = guidelineRoot.getAttributeValue("title");
         dsGuideline.setTitle(guidelineTitle);
-
-        //Load parameters such as classes
-        //<parameter identifier="a">
-        //  <class>java.util.ArrayList</class>
-        //</parameter>
-        ArrayList<DSParameter> parameters = new ArrayList();
-        List<Element> parameterTags = guidelineRoot.getChildren("parameter");
-        for( Element parameterTag : parameterTags ) {
-            String alias = parameterTag.getAttributeValue("identifier");
-            if( alias == null ) {
-                throw new DecisionSupportParseException(guidelineTitle, "Parameter identifier attribute is mandatory");
-            }
-
-            Element Eclass = parameterTag.getChild("class");
-            String strClass = Eclass.getText();
-            DSParameter dsParameter = new DSParameter();
-            dsParameter.setStrAlias(alias);
-            dsParameter.setStrClass(strClass);
-            parameters.add(dsParameter);
-        }
-
-        dsGuideline.setParameters(parameters);
-
         //Load Conditions
         //<conditions>
         //  <condition type="dxcodes" any="icd9:4439,icd9:4438,icd10:E11,icd10:E12"/>
@@ -111,7 +85,7 @@ public class DSGuidelineFactory {
                 dsCondition.setConditionType(conditionType);
                 dsCondition.setListOperator(operator); //i.e. any, all, not
                 if (paramHashtable != null && !paramHashtable.isEmpty()){
-                    _log.debug("THIS IS THE HASH STRING "+paramHashtable.toString());
+                    System.out.println("THIS IS THE HASH STRING "+paramHashtable.toString());
                     dsCondition.setParam(paramHashtable);
                 }
 
@@ -140,9 +114,6 @@ public class DSGuidelineFactory {
             
             if (consequenceType == DSConsequence.ConsequenceType.warning) {
                 String strengthStr = consequenceElement.getAttributeValue("strength");
-                if( strengthStr == null ) {
-                    strengthStr = "warning";
-                }
                 DSConsequence.ConsequenceStrength strength = null;
                 //try to resolve strength type
                 try {
@@ -153,6 +124,8 @@ public class DSGuidelineFactory {
                     throw new DecisionSupportParseException(guidelineTitle, "Unknown strength: " + strengthStr + ". Allowed: " + knownStrengths, iae);
                 }
             }
+            
+            
             dsConsequence.setText(consequenceElement.getText());
             dsConsequences.add(dsConsequence);
         }

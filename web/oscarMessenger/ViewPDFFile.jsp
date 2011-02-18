@@ -18,11 +18,12 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 --%>
+<%@ page language="java"%>
 <%@ page
 	import="oscar.oscarMessenger.docxfer.send.*, oscar.oscarMessenger.docxfer.util.*, oscar.util.*"%>
 <%@ page import="java.util.*, org.w3c.dom.*"%>
@@ -43,5 +44,12 @@
 </logic:present>
 <%
     String pdfAttch = (String) request.getAttribute("PDFAttachment");
-    String id  = request.getParameter("id");    
+    String id  = request.getParameter("id");
+    
+    System.out.println( "Get integer " + pdfAttch ) ;
+    /*
+    Vector attVector = Doc2PDF.getXMLTagValue(pdfAttch, "CONTENT" );
+    String pdfFile = attVector.get( Integer.parseInt(id ) );
+    Doc2PDF.PrintPDFFromBin ( response, pdfFile );
+*/
 %>

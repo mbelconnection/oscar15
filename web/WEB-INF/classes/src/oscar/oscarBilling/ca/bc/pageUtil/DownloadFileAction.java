@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DownloadAction;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 
@@ -72,7 +71,7 @@ public class DownloadFileAction extends DownloadAction{
            }
            file = new File(directory,fileName);
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
             throw new Exception("Could not open file "+home_dir+fileName +" does "+home_dir+ " exist ?",e);
         }
         return new FileStreamInfo(contentType, file);   

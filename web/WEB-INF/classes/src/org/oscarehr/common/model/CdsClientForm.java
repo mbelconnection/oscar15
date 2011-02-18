@@ -25,7 +25,7 @@ import javax.persistence.TemporalType;
 public class CdsClientForm extends AbstractModel<Integer> implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 
 	private String cdsFormVersion=null;
@@ -38,15 +38,9 @@ public class CdsClientForm extends AbstractModel<Integer> implements Serializabl
 	private Integer facilityId=null;
 	private Integer clientId=null;
 	private Integer admissionId=null;
+	private Integer clientAge=null;
 	
-	@Temporal(TemporalType.DATE)
-	private Date initialContactDate;
-
-	@Temporal(TemporalType.DATE)
-	private Date assessmentDate;
-
-	@Override
-    public Integer getId() {
+	public Integer getId() {
 		return id;
 	}
 
@@ -102,24 +96,23 @@ public class CdsClientForm extends AbstractModel<Integer> implements Serializabl
     	this.admissionId = admissionId;
     }
 
-	public Date getInitialContactDate() {
-    	return initialContactDate;
+	public Integer getClientAge() {
+    	return clientAge;
     }
 
-	public void setInitialContactDate(Date initialContactDate) {
-    	this.initialContactDate = initialContactDate;
+	public void setClientAge(Integer clientAge) {
+    	this.clientAge = clientAge;
     }
 
-	public Date getAssessmentDate() {
-    	return assessmentDate;
-    }
+	public boolean equals(CdsClientForm o) {
+		try {
+			return (id != null && id.intValue() == o.id.intValue());
+		} catch (Exception e) {
+			return (false);
+		}
+	}
 
-	public void setAssessmentDate(Date assessmentDate) {
-    	this.assessmentDate = assessmentDate;
-    }
-
-	@Override
-    public int hashCode() {
+	public int hashCode() {
 		return (id != null ? id.hashCode() : 0);
 	}
 	

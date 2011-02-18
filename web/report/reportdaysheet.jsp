@@ -1,3 +1,4 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
     
     String orderby = request.getParameter("orderby")!=null?request.getParameter("orderby"):("start_time") ;
@@ -8,8 +9,6 @@
 	errorPage="../appointment/errorpage.jsp"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
-<%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
-
 <jsp:useBean id="daySheetBean" class="oscar.AppointmentMainBean"
 	scope="page" />
 <jsp:useBean id="myGroupBean" class="java.util.Properties" scope="page" />
@@ -27,10 +26,8 @@
             {"search_daysheetnew",       "select a.appointment_date, a.provider_no, a.start_time, a.end_time, a.reason, a.name, p.last_name, p.first_name, d.provider_no as doc_no, d.chart_no, d.roster_status, p2.last_name as doc_last_name, p2.first_name as doc_first_name from (appointment a, provider p, demographic d) left join provider p2 on d.provider_no=p2.provider_no where a.provider_no=p.provider_no and a.demographic_no=d.demographic_no and d.demographic_no = a.demographic_no and a.appointment_date=? and a.provider_no=p.provider_no and a.status like 't%' order by p.last_name, p.first_name, a.appointment_date,"+orderby },
             {"search_daysheetsinglenew", "select a.appointment_date, a.provider_no, a.start_time, a.end_time, a.reason, a.name, p.last_name, p.first_name, d.provider_no as doc_no, d.chart_no, d.roster_status, p2.last_name as doc_last_name, p2.first_name as doc_first_name from (appointment a, provider p, demographic d) left join provider p2 on d.provider_no=p2.provider_no where a.provider_no=p.provider_no and a.demographic_no=d.demographic_no and d.demographic_no = a.demographic_no and a.appointment_date=? and a.provider_no=? and a.status like 't%' and a.provider_no=p.provider_no order by a.appointment_date,"+orderby },
             {"searchmygroupall",         "select * from mygroup where mygroup_no= ?"},
-            {"update_apptstatus",        "update appointment set status='T', lastupdateuser=?, updatedatetime=now() where appointment_date=? and status='t' " },
-            {"update_apptstatussingle",  "update appointment set status='T', lastupdateuser=?, updatedatetime=now() where appointment_date=? and provider_no=? and status='t' " },
-            {"archive_appt",             "insert into appointmentArchive (select * from appointment where appointment_date=? and status='t')"},
-            {"archive_apptsingle",       "insert into appointmentArchive (select * from appointment where appointment_date=? and provider_no=? and status='t')"}
+            {"update_apptstatus",        "update appointment set status='T' where appointment_date=? and status='t' " },
+            {"update_apptstatussingle",  "update appointment set status='T' where appointment_date=? and provider_no=? and status='t' " },
         };
     } else {
         dbQueries=new String[][] {
@@ -39,53 +36,13 @@
             {"search_daysheetnew",       "select concat(d.year_of_birth,'/',d.month_of_birth,'/',d.date_of_birth)as dob, d.family_doctor, a.appointment_date, a.provider_no, a.start_time, a.end_time, a.reason, a.name, p.last_name, p.first_name, d.provider_no as doc_no, d.chart_no, d.roster_status, p2.last_name as doc_last_name, p2.first_name as doc_first_name, d.hin  from (appointment a, provider p) left join demographic d on a.demographic_no=d.demographic_no left join provider p2 on d.provider_no=p2.provider_no where a.appointment_date=? and a.provider_no=p.provider_no and a.status like binary 't' order by p.last_name, p.first_name, a.appointment_date,"+orderby },
             {"search_daysheetsinglenew", "select concat(d.year_of_birth,'/',d.month_of_birth,'/',d.date_of_birth)as dob, d.family_doctor, a.appointment_date, a.provider_no, a.start_time, a.end_time, a.reason, a.name, p.last_name, p.first_name, d.provider_no as doc_no, d.chart_no, d.roster_status, p2.last_name as doc_last_name, p2.first_name as doc_first_name, d.hin  from (appointment a, provider p) left join demographic d on a.demographic_no=d.demographic_no left join provider p2 on d.provider_no=p2.provider_no where a.appointment_date=? and a.provider_no=? and a.status like binary 't' and a.provider_no=p.provider_no order by a.appointment_date,"+orderby },
             {"searchmygroupall",         "select * from mygroup where mygroup_no= ?"},
-            {"update_apptstatus",        "update appointment set status='T', lastupdateuser=?, updatedatetime=now() where appointment_date=? and status='t' " },
-            {"update_apptstatussingle",  "update appointment set status='T', lastupdateuser=?, updatedatetime=now() where appointment_date=? and provider_no=? and status='t' " },
-            {"archive_appt",             "insert into appointmentArchive (select * from appointment where appointment_date=? and status='t')"},
-            {"archive_apptsingle",       "insert into appointmentArchive (select * from appointment where appointment_date=? and provider_no=? and status='t')"}
+            {"update_apptstatus",        "update appointment set status='T' where appointment_date=? and status='t' " },
+            {"update_apptstatussingle",  "update appointment set status='T' where appointment_date=? and provider_no=? and status='t' " },
         };
     }
   	
     daySheetBean.doConfigure(dbQueries);
 %>
-
-<%
-    if(session.getAttribute("user") == null ) response.sendRedirect("../logout.jsp");
-    String curProvider_no = (String) session.getAttribute("user");
-
-    if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
-    String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
-    
-    boolean isSiteAccessPrivacy=false;
-    boolean isTeamAccessPrivacy=false; 
-%>
-
-<security:oscarSec objectName="_site_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%isSiteAccessPrivacy=true; %>
-</security:oscarSec>
-<security:oscarSec objectName="_team_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%isTeamAccessPrivacy =true;%>
-</security:oscarSec>
-<% 
-HashMap<String,String> providerMap = new HashMap<String,String>();
-//multisites function
-if (isSiteAccessPrivacy || isTeamAccessPrivacy) {
-	String sqlStr = "select provider_no from provider ";
-	if (isSiteAccessPrivacy) 
-		sqlStr = "select distinct p.provider_no from provider p inner join providersite s on s.provider_no = p.provider_no " 
-		 + " where s.site_id in (select site_id from providersite where provider_no = " + curProvider_no + ")";
-	if (isTeamAccessPrivacy) 
-		sqlStr = "select distinct p.provider_no from provider p where team in (select team from provider "
-				+ " where team is not null and team <> '' and provider_no = " + curProvider_no + ")";
-	DBHelp dbObj = new DBHelp();
-	ResultSet rs = dbObj.searchDBRecord(sqlStr);
-	while (rs.next()) {
-		providerMap.put(rs.getString("provider_no"),"true");
-	}
-	rs.close();
-}
-%>
-
 <!--
 /*
  *
@@ -106,7 +63,7 @@ if (isSiteAccessPrivacy || isTeamAccessPrivacy) {
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -115,6 +72,8 @@ if (isSiteAccessPrivacy || isTeamAccessPrivacy) {
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="report.reportdaysheet.title" /></title>
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv=Expires content=-1>
 <link rel="stylesheet" href="../web.css">
 <style>
 td {
@@ -125,7 +84,7 @@ td {
 <!--
 
 //-->
-</script>
+</SCRIPT>
 </head>
 <%
 	boolean bDob = oscarVariables.getProperty("daysheet_dob", "").equalsIgnoreCase("true") ? true : false;
@@ -141,6 +100,7 @@ td {
     String edate = request.getParameter("edate")!=null?request.getParameter("edate"):"" ;
     String sTime = request.getParameter("sTime")!=null? (request.getParameter("sTime")+":00:00") : "00:00:00" ;
     String eTime = request.getParameter("eTime")!=null? (request.getParameter("eTime")+":00:00") : "24:00:00" ;
+    System.out.println(sTime + " " + eTime);
     String provider_no = request.getParameter("provider_no")!=null?request.getParameter("provider_no"):"175" ;
     ResultSet rsdemo = null ;
     boolean bodd = false;
@@ -171,44 +131,41 @@ td {
   boolean bFistL = true; //first line in a table for TH
   String strTemp = "";
   String dateTemp = "";
-  String [] param = new String[3];
-  param[0] = (String) session.getAttribute("user");
-  param[1] = sdate;
-  param[2] = provider_no;
+  String [] param = new String[2];
+  param[0] = sdate;
+  param[1] = provider_no;
   String [] parama = new String[5];
   parama[0] = sdate;
   parama[1] = edate;
   parama[2] = sTime;
   parama[3] = eTime;
   parama[4] = provider_no;
+  System.out.println("provider_no = "+provider_no);
   if(request.getParameter("dsmode")!=null && request.getParameter("dsmode").equals("all") ) {
+    	System.out.println("we are here !!!!!!!!!!!!!!!!!!!!!!");
 	  if(!provider_no.equals("*") && !provider_no.startsWith("_grp_") ) {
+		  System.out.println("@@@@@@@@@@@@ "+parama[0]+"  ||  "+ parama[1]);
 	  rsdemo = daySheetBean.queryResults(parama, "search_daysheetsingleall");
 	  
     } else { //select all providers
+    	System.out.println(parama[0]+" *** " + parama[1]);
 	  rsdemo = daySheetBean.queryResults(new String[] {parama[0], parama[1], sTime, eTime}, "search_daysheetall");
     }
   } else { //new appt, need to update status
     if(!provider_no.equals("*") && !provider_no.startsWith("_grp_") ) {
 	  rsdemo = daySheetBean.queryResults(param, "search_daysheetsinglenew");
-          daySheetBean.queryExecuteUpdate(new String[]{param[1],param[2]}, "archive_apptsingle");
-	  daySheetBean.queryExecuteUpdate(param, "update_apptstatussingle");
+	  int rowsAffected = daySheetBean.queryExecuteUpdate(param, "update_apptstatussingle");
     } else { //select all providers
 	  rsdemo = daySheetBean.queryResults(param[0], "search_daysheetnew");
-          daySheetBean.queryExecuteUpdate(param[1], "archive_appt");
-	  daySheetBean.queryExecuteUpdate(new String[]{param[0],param[1]}, "update_apptstatus");
+	  int rowsAffected = daySheetBean.queryExecuteUpdate(param[0], "update_apptstatus");
     }
   }
+System.out.println("out of here ##############");
   while (rsdemo.next()) {
     //if it is a group and a group member
 	if(!myGroupBean.isEmpty()) {
 	  if(myGroupBean.getProperty(rsdemo.getString("provider_no"))==null) continue;
 	}
-    
-    //multisites. skip record if not belong to same site/team
-    if (isSiteAccessPrivacy || isTeamAccessPrivacy) {
-    	if(providerMap.get(rsdemo.getString("provider_no"))== null)  continue;
-    }
 
   bodd = bodd?false:true;
 	if(!strTemp.equals(rsdemo.getString("provider_no")) || !dateTemp.equals(rsdemo.getString("appointment_date")) ) { //new provider for a new table
@@ -293,6 +250,7 @@ td {
 	</tr>
 	<%
   }
+  daySheetBean.closePstmtConn();
 %>
 
 </table>

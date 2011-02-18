@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.oscarehr.PMmodule.caisi_integrator.CaisiIntegratorManager;
 import org.oscarehr.caisi_integrator.ws.CachedFacility;
@@ -13,11 +14,10 @@ import org.oscarehr.common.model.DigitalSignature;
 import org.oscarehr.common.model.IntegratorConsent;
 import org.oscarehr.util.DigitalSignatureUtils;
 import org.oscarehr.util.LoggedInInfo;
-import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 
 public class ManageConsentAction {
-	private static Logger logger = MiscUtils.getLogger();
+	private static Logger logger = LogManager.getLogger(ManageConsentAction.class);
 	private static IntegratorConsentDao integratorConsentDao = (IntegratorConsentDao) SpringUtils.getBean("integratorConsentDao");
 
 	private IntegratorConsent consent = new IntegratorConsent();
@@ -76,17 +76,11 @@ public class ManageConsentAction {
 		consent.setClientConsentStatus(IntegratorConsent.ConsentStatus.valueOf(s));
 	}
 
-	public void setSignatureStatus(String s) {
-		consent.setSignatureStatus(IntegratorConsent.SignatureStatus.valueOf(s));
-	}
-	
 	public void setExpiry(String s) {
 		int months = -1;
-		if (s!= null) 
-			months = Integer.parseInt(s);
+		if (s!= null) Integer.parseInt(s);
 
-		if (months == -1) 
-			consent.setExpiry(null);
+		if (months == -1) consent.setExpiry(null);
 		else {
 			GregorianCalendar cal = new GregorianCalendar();
 			cal.setTime(consent.getCreatedDate());

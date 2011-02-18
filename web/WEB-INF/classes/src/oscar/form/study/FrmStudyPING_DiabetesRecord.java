@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -37,25 +37,32 @@ public class FrmStudyPING_DiabetesRecord extends FrmStudyRecord {
             throws SQLException {
         Properties props = new Properties();
         if (existingID <= 0) {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT demographic_no, CONCAT(last_name, ', ', first_name) AS pName, year_of_birth, month_of_birth, date_of_birth FROM demographic WHERE demographic_no = "
                     + demographicNo;
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if (rs.next()) {
-				Date dob = UtilDateUtilities.calcDate(rs.getString("year_of_birth"), rs.getString("month_of_birth"), rs.getString("date_of_birth"));
-				props.setProperty("demographic_no", rs.getString("demographic_no"));
-				props.setProperty("formCreated", UtilDateUtilities.DateToString(UtilDateUtilities.Today(), "yyyy/MM/dd"));
-				props.setProperty("formEdited", UtilDateUtilities.DateToString(UtilDateUtilities.Today(), "yyyy/MM/dd"));
-                props.setProperty("birthDate", UtilDateUtilities.DateToString(dob, "yyyy/MM/dd"));
-				props.setProperty("pName", oscar.Misc.getString(rs, "pName"));
-			}
+                Date dob = UtilDateUtilities.calcDate(rs
+                        .getString("year_of_birth"), rs
+                        .getString("month_of_birth"), rs
+                        .getString("date_of_birth"));
+                props.setProperty("demographic_no", rs
+                        .getString("demographic_no"));
+                props.setProperty("formCreated", UtilDateUtilities
+                        .DateToString(UtilDateUtilities.Today(), "yyyy/MM/dd"));
+                props.setProperty("formEdited", UtilDateUtilities.DateToString(
+                        UtilDateUtilities.Today(), "yyyy/MM/dd"));
+                props.setProperty("birthDate", UtilDateUtilities.DateToString(
+                        dob, "yyyy/MM/dd"));
+                props.setProperty("pName", db.getString(rs,"pName"));
+            }
             rs.close();
         } else {
             String sql = "SELECT * FROM formType2Diabetes WHERE demographic_no = "
                 + demographicNo + " AND ID = " + existingID;
 			props = (new oscar.form.FrmRecordHelp()).getFormRecord(sql);
         }
-
+        //props.list(System.out);
         return props;
     }
     

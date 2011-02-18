@@ -34,7 +34,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -49,12 +50,11 @@ import org.oscarehr.survey.web.formbean.SurveyExecuteFormBean;
 import org.oscarehr.surveymodel.Page;
 import org.oscarehr.surveymodel.SurveyDocument;
 import org.oscarehr.surveymodel.SurveyDocument.Survey;
-import org.oscarehr.util.MiscUtils;
 
 
 public class SurveyTestAction extends AbstractSurveyAction {
 
-	private static Logger log = MiscUtils.getLogger();
+	private Log log = LogFactory.getLog(getClass());
 
 	private SurveyManager surveyManager;
 	private SurveyTestManager surveyTestManager;

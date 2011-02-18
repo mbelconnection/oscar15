@@ -34,8 +34,8 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import oscar.OscarProperties;
 import oscar.oscarDB.DBHandler;
@@ -45,34 +45,34 @@ import oscar.oscarDB.DBHandler;
  * @author  Jay Gallagher
  */
 public class ProcessSurveyFile{
-   private static Logger log = MiscUtils.getLogger();
+   private static Log log = LogFactory.getLog(ProcessSurveyFile.class);
    
    
    
    private int maxProcessed(String surveyId){
       int maxprocessed = 0 ;
       try{
-         
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
          String sql = "select max(processed) as maxprocessed from surveyData  where surveyId = '"+surveyId+"'  ";         
-         ResultSet rs = DBHandler.GetSQL(sql);
+         ResultSet rs = db.GetSQL(sql);
          
          if(rs.next()){
             maxprocessed = rs.getInt("maxprocessed");            
          }            
          rs.close();         
       }catch(Exception e){
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace();
       }
       return maxprocessed;
    }
    
    private void setProcessed(String surveyDataId, int processedId){
       try{
-         
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
          String sql = "update surveyData set processed = '"+processedId+"' where surveyDataId = '"+surveyDataId+"'  ";         
-         DBHandler.RunSQL(sql);         
+         db.RunSQL(sql);         
       }catch(Exception e){
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace();
       }
    }
                
@@ -101,10 +101,10 @@ public class ProcessSurveyFile{
       String sStatus = null;
       int numRecordsToProcess = 0;
       try{
-         
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
          String processCount = "select count(surveyDataId) as recordsForProcessing from surveyData  where surveyId = '"+surveyId+"' and processed is null and status = 'A'";
          
-         ResultSet rs = DBHandler.GetSQL(processCount);
+         ResultSet rs = db.GetSQL(processCount);
          
          if (rs.next()){
             numRecordsToProcess = rs.getInt("recordsForProcessing");            
@@ -121,26 +121,26 @@ public class ProcessSurveyFile{
                String exp = survey.getExportString();
                  log.debug("xp "+exp);
                
-               rs = DBHandler.GetSQL(sql);  
+               rs = db.GetSQL(sql);  
                
                try{
                   BufferedWriter out = new BufferedWriter(new FileWriter(fileDir+filename));                
                   while(rs.next()){ 
-                     String surveyDataId = oscar.Misc.getString(rs, "surveyDataId");
+                     String surveyDataId = db.getString(rs,"surveyDataId");
                      String writeString = replaceAllValues(exp, rs);                     
                      out.write(writeString+'\n');                                    
                      setProcessed(surveyDataId,processedId);
                   }        
                   out.close();
                } catch (IOException e) {
-                  MiscUtils.getLogger().error("Error", e);
+                  e.printStackTrace();
                }             
             }
          }
          rs.close();
          
       }catch(Exception e){
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace();
       }
       return sStatus;
    }

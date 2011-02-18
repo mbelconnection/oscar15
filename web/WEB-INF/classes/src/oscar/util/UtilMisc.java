@@ -20,7 +20,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the
 // * Department of Family Medicine
-// * McMaster University
+// * McMaster Unviersity
 // * Hamilton
 // * Ontario, Canada
 // *
@@ -35,16 +35,14 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import org.apache.commons.codec.binary.Base64;
-import org.oscarehr.util.MiscUtils;
 
 public class UtilMisc {
   public static String htmlEscape(String S) {
-
     if (null == S) {
       return S;
     }
     int N = S.length();
-    StringBuilder sb = new StringBuilder(N);
+    StringBuffer sb = new StringBuffer(N);
     for (int i = 0; i < N; i++) {
       char c = S.charAt(i);
       if (c == '&') {
@@ -62,68 +60,19 @@ public class UtilMisc {
       else if (c == '\'') {
         sb.append("&#39;");
       }
-    else {
+      else {
         sb.append(c);
       }
     }
     return sb.toString();
   }
 
- /**
-  * For eformGenerator to Edit-Html window
-  * This method is used to generate html symbols
-  * eg. change '&lt' to  '<'
-  *            '&gt' to '>'
-  *
-  */
-  public static String rhtmlEscape(String S) {
-    if (null == S) return S;
-
-    int N = S.length();
-    StringBuilder sb = new StringBuilder(N);
-    for (int i = 0; i < N; i++) {
-        char c = S.charAt(i);
-        if (c == '&') {//the read one more char and encode
-            String temp =new String();
-            if (i+1<N) temp += S.charAt(i+1);
-            if(temp.equalsIgnoreCase("a")) {//&amp
-              sb.append("&");
-              i+=4;
-              continue;
-            } else if (temp.equalsIgnoreCase("l")) {//&lt
-              sb.append("<");
-              i+=3;
-              continue;
-            } else if (temp.equalsIgnoreCase("g")) {//&gt
-              sb.append(">");
-              i+=3;
-              continue;
-            } else if (temp.equalsIgnoreCase("q")) {//&quot
-              sb.append("\"");
-              i+=5;
-              continue;
-            } else if (temp.equals("#")) {//&#
-                if (i+2<N) temp += S.charAt(i+2);//&#?
-                if (i+3<N) temp += S.charAt(i+3);//&#??
-                if (i+4<N) temp += S.charAt(i+4);//&#???
-                if (temp.equals("&#39;")) {//'
-                    sb.append("\'");
-                    i+=5;
-                    continue;
-                }
-            }
-        }
-        sb.append(c);
-    }
-    return sb.toString();
-  }
-  
   public static String charEscape(String S, char a) {
     if (null == S) {
       return S;
     }
     int N = S.length();
-    StringBuilder sb = new StringBuilder(N);
+    StringBuffer sb = new StringBuffer(N);
     for (int i = 0; i < N; i++) {
       char c = S.charAt(i);
       if (c == '\\') {
@@ -144,7 +93,7 @@ public class UtilMisc {
       return S;
     }
     int N = S.length();
-    StringBuilder sb = new StringBuilder(N);
+    StringBuffer sb = new StringBuffer(N);
     for (int i = 0; i < N; i++) {
       char c = S.charAt(i);
       if (c == '&') {
@@ -186,7 +135,7 @@ public class UtilMisc {
       return S;
     }
     int N = S.length();
-    StringBuilder sb = new StringBuilder(N);
+    StringBuffer sb = new StringBuffer(N);
     for (int i = 0; i < N; i++) {
       char c = S.charAt(i);
       if (c == '\\') {
@@ -210,7 +159,7 @@ public class UtilMisc {
       return S;
     }
     int N = S.length();
-    StringBuilder sb = new StringBuilder(N);
+    StringBuffer sb = new StringBuffer(N);
     for (int i = 0; i < N; i++) {
       char c = S.charAt(i);
       if (c == '"') {
@@ -236,7 +185,7 @@ public class UtilMisc {
     S = S.trim().toLowerCase();
     int N = S.length();
     boolean bUpper = false;
-    StringBuilder sb = new StringBuilder(N);
+    StringBuffer sb = new StringBuffer(N);
     for (int i = 0; i < N; i++) {
       char c = S.charAt(i);
       if (i == 0 || bUpper) {
@@ -302,7 +251,8 @@ public class UtilMisc {
     try {
       ret = Double.parseDouble(value);
     }
-    catch (Exception ex) {MiscUtils.getLogger().error("Error", ex);
+    catch (Exception ex) {
+      ex.printStackTrace();
     }
     finally {
       return ret;
@@ -324,7 +274,7 @@ public class UtilMisc {
     for (int i = 0; i < array.length; i++) {
       ret = String.valueOf(ret)
           + String.valueOf(String.valueOf(String
-                                          .valueOf( (new StringBuilder("'")).
+                                          .valueOf( (new StringBuffer("'")).
           append(
               String.valueOf(array[i])).append("'"))));
       if (i < array.length - 1) {
@@ -337,7 +287,7 @@ public class UtilMisc {
   public static String replace(String expression, String searchFor,
                                String replaceWith) {
     if (expression != null) {
-      StringBuilder buf = new StringBuilder(expression);
+      StringBuffer buf = new StringBuffer(expression);
       int pos = -1;
       do {
         pos = buf.indexOf(searchFor, pos);
@@ -363,7 +313,7 @@ public class UtilMisc {
       stop = stop < step ? start : step++;
       step = step < 1 ? 1 : step;
       int arrayLen = (stop - start) / step + (stop - start) % step;
-      MiscUtils.getLogger().debug(arrayLen);
+      System.out.println(arrayLen);
       int[] rangeArray = new int[arrayLen];
       for (int i = 0; i < arrayLen; i++) {
         if (i == 0) {
@@ -407,7 +357,8 @@ public class UtilMisc {
     try {
       ret = Integer.parseInt(value);
     }
-    catch (Exception ex) {MiscUtils.getLogger().error("Error", ex);
+    catch (Exception ex) {
+      ex.printStackTrace();
     }
     finally {
       return ret;

@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -30,7 +30,7 @@ String providerview = request.getParameter("providerview")==null?"all":request.g
 boolean bFirstDisp=true; //this is the first time to display the window
 if (request.getParameter("bFirstDisp")!=null) bFirstDisp= (request.getParameter("bFirstDisp")).equals("true");
 %>
-<%@ page 
+<%@ page language="java"
 	import="oscar.oscarDemographic.data.*, java.util.Enumeration"%>
 
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
@@ -123,15 +123,15 @@ function popup(demographicNo, msgId, providerNo, action) { //open a new popup wi
             win.pasteToEncounterNote(txt);
           }
           else {
-            win.close();                          
-              page = 'WriteToEncounter.do?demographic_no='+demographicNo+'&msgId='+msgId+'&providerNo='+providerNo+'&encType=oscarMessenger';         
-              var popUp=window.open(page, "<bean:message key="provider.appointmentProviderAdminDay.apptProvider"/>", windowprops);
-              if (popUp != null) {
-                if (popUp.opener == null) {
-                  popUp.opener = self; 
-                }
+            win.close();
+            page = 'WriteToEncounter.do?demographic_no='+demographicNo+'&msgId='+msgId+'&providerNo='+providerNo+'&encType=oscarMessenger';
+            var popUp=window.open(page, "<bean:message key="provider.appointmentProviderAdminDay.apptProvider"/>", windowprops);
+                if (popUp != null) {
+                    if (popUp.opener == null) {
+                      popUp.opener = self;
+                    }
                 popUp.focus();
-              }
+                }
           }
       }
       else if ( action == "linkToDemographic"){

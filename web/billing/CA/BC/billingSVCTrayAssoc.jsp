@@ -1,4 +1,5 @@
-<%@page import="java.sql.*" errorPage=""%>
+<%@page contentType="text/html; charset=iso-8859-1" language="java"
+	import="java.sql.*" errorPage=""%>
 <%@taglib uri="http://displaytag.sf.net" prefix="display"%>
 <%@taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
@@ -53,6 +54,7 @@ function deleteAssociation(id){
   }
 }
 </script>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title>Manage Procedure and Tray Fee Associations</title>
 </head>
 <body>

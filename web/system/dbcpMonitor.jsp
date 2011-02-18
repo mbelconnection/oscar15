@@ -18,7 +18,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -41,6 +41,10 @@ then it will not show up in section #3. Will have to use sections #1 and #2 to
 detect those and search the source.
 
 --%>
+
+
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
 
@@ -55,17 +59,19 @@ detect those and search the source.
 
 <%
         BasicDataSource basicDataSource = (BasicDataSource) SpringUtils.getBean("dataSource");
+        DBHandler dbHandler = new DBHandler(DBHandler.OSCAR_DATA);
 
         int numActive = basicDataSource.getNumActive();
         int numIdle = basicDataSource.getNumIdle();
 
-        ResultSet rsProcessList = DBHandler.GetSQL("show processlist");
+        ResultSet rsProcessList = dbHandler.GetSQL("show processlist");
 
 %>
 
 
 <html>
     <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
         <style type="text/css">
             body {

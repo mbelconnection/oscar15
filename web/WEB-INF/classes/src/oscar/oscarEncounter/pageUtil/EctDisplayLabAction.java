@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -44,8 +44,7 @@ public class EctDisplayLabAction extends EctDisplayAction {
     private static final String cmd = "labs";
     
   public boolean getInfo(EctSessionBean bean, HttpServletRequest request, NavBarDisplayDAO Dao, MessageResources messages) {          
-     
-	  CommonLabResultData comLab = new CommonLabResultData();
+        CommonLabResultData comLab = new CommonLabResultData();
         ArrayList labs = comLab.populateLabResultsData("",bean.demographicNo, "", "","","U");
         Collections.sort(labs);               
 
@@ -76,13 +75,13 @@ public class EctDisplayLabAction extends EctDisplayAction {
         LabResultData result;
         String labDisplayName;
         //String bgcolour = "FFFFCC";
-        StringBuilder func; 
+        StringBuffer func; 
         int hash;
         for( int idx = 0; idx < labs.size(); ++idx ) {
             result = (LabResultData) labs.get(idx);
             Date date = result.getDateObj();
             String formattedDate = DateUtils.getDate(date,dateFormat,request.getLocale());               
-            func = new StringBuilder("popupPage(700,960,'");
+            func = new StringBuffer("popupPage(700,960,'");
             
             if ( result.isMDS() ){ 
                 labDisplayName = result.getDiscipline();               
@@ -111,7 +110,7 @@ public class EctDisplayLabAction extends EctDisplayAction {
             Dao.addItem(item);            
         }
 
-        return true;  	
+        return true;
   }
   
   public String getCmd() {

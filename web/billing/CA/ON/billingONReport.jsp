@@ -43,7 +43,7 @@ if(props.getProperty("isNewONbilling", "").equals("true")) {
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
 <jsp:useBean id="SxmlMisc" class="oscar.SxmlMisc" scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 
 <%
 GregorianCalendar now=new GregorianCalendar(); 
@@ -75,6 +75,7 @@ if("unbilled".equals(action)) {
     sql = "select * from appointment where provider_no='" + providerview + "' and appointment_date >='" + xml_vdate 
             + "' and appointment_date<='" + xml_appointment_date + "' and (status='P' or status='H' or status='HS' or status='PV' or status='PS' or status='E' or status='ES' or status='EV')" 
             + " and demographic_no != 0 order by appointment_date , start_time ";
+    System.out.println(sql);
     rs = dbObj.searchDBRecord(sql);
     while (rs.next()) {
         prop = new Properties();
@@ -103,6 +104,7 @@ if("billed".equals(action)) {
     sql = "select * from billing where provider_no='" + providerview + "' and billing_date >='" + xml_vdate 
             + "' and billing_date<='" + xml_appointment_date + "' and (status<>'D' and status<>'S' and status<>'B')" 
             + " order by billing_date , billing_time ";
+    System.out.println(sql);
     rs = dbObj.searchDBRecord(sql);
     while (rs.next()) {
         prop = new Properties();
@@ -157,6 +159,7 @@ if("paid".equals(action)) {
     sql = "select billing_no,total from billing where provider_no='" + providerview 
     + "' and billing_date>='" + xml_vdate + "' and billing_date<='" + xml_appointment_date 
     + "' and status ='S' order by billing_date, billing_time";
+    System.out.println(sql);
     
     // change 'S' to 'O' for testing
     
@@ -179,6 +182,7 @@ if("paid".equals(action)) {
     
     sql = "select billing_no, amountclaim, amountpay, hin, service_date from radetail where billing_no in ("
             + tempStr + ") and raheader_no !=0 order by billing_no, radetail_no";
+    System.out.println(sql);
     rs = dbObj.searchDBRecord(sql);
     String sAmountclaim = "", sAmountpay = "", hin = "";
     int nNo = 0;
@@ -190,6 +194,8 @@ if("paid".equals(action)) {
             nNo++;
             sAmountclaim = rs.getString("amountclaim");
 			sAmountpay = rs.getString("amountpay");
+		    //System.out.println(sAmountpay + " :sAmountclaim: " + sAmountclaim);
+			//hin = rs.getString("hin");
 			String strT = "<a href=# onClick='popupPage(700,720, \"../../../billing/CA/BC/billingView.do?billing_no="
 		        + rs.getString("billing_no") + "&dboperation=search_bill&hotclick=0\"); return false;' >" 
 		        + rs.getString("billing_no") + "</a>";
@@ -205,12 +211,16 @@ if("paid".equals(action)) {
 	        fTotalPaid += Float.parseFloat(rs.getString("amountpay"));
         } else { // old billing no
             prop = new Properties();
+            //sAmountclaim = rs.getString("amountclaim");
+			//sAmountpay = rs.getString("amountpay");
 			float fAmountclaim = Float.parseFloat(sAmountclaim);
+		    //System.out.println(sAmountclaim + " :fAmountclaim: " + fAmountclaim);
 			fAmountclaim = fAmountclaim + Float.parseFloat(rs.getString("amountclaim"));
 			sAmountclaim = "" + Math.round(fAmountclaim*100)/100.00;
 			float fAmountpay = Float.parseFloat(sAmountpay);
 			fAmountpay = fAmountpay + Float.parseFloat(rs.getString("amountpay"));
 			sAmountpay = "" + Math.round(fAmountpay*100)/100.00;
+			//hin = rs.getString("hin");
 			String strT = "<a href=# onClick='popupPage(700,720, \"../../../billing/CA/BC/billingView.do?billing_no="
 		        + rs.getString("billing_no") + "&dboperation=search_bill&hotclick=0\"); return false;' >" 
 		        + rs.getString("billing_no") + "</a>";
@@ -252,6 +262,7 @@ if("unpaid".equals(action)) {
     sql = "select * from billing where provider_no='" + providerview + "' and billing_date >='" + xml_vdate 
     + "' and billing_date<='" + xml_appointment_date + "' and (status<>'D' and status<>'S')" 
     + " order by billing_date , billing_time ";
+	System.out.println(sql);
     int nNo = 0;
 	rs = dbObj.searchDBRecord(sql);
 	while (rs.next()) {
@@ -309,6 +320,8 @@ if("unpaid".equals(action)) {
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>ON Billing Report</title>
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 <link rel="stylesheet" href="../../web.css">
 <link rel="stylesheet" type="text/css" media="all" href="../share/css/extractedFromPages.css"  />
 <!-- calendar stylesheet -->

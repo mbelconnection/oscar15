@@ -17,14 +17,12 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
 // -----------------------------------------------------------------------------------------------------------------------
 package oscar.oscarMessenger.pageUtil;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 public class MsgDocListForm {
@@ -103,19 +101,19 @@ public class MsgDocListForm {
       providerLastName = new java.util.Vector();
       providerFirstName = new java.util.Vector();
       try{
-         
+         DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
          java.sql.ResultSet rs;
          String sql = "select * from provider order by first_name asc";
-         rs = DBHandler.GetSQL(sql);
+         rs = db.GetSQL(sql);
          while (rs.next()) {
-            providerNoVector.add(oscar.Misc.getString(rs, "provider_no"));
-            providerFirstName.add(oscar.Misc.getString(rs, "first_name"));
-            providerLastName.add(oscar.Misc.getString(rs, "last_name"));
+            providerNoVector.add(db.getString(rs,"provider_no"));
+            providerFirstName.add(db.getString(rs,"first_name"));
+            providerLastName.add(db.getString(rs,"last_name"));
          }
 
        rs.close();
 
-      }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+      }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
   }//setUpDaVectorJaySTyle
 
 

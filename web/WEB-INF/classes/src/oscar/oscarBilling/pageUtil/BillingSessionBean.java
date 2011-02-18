@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -154,15 +154,15 @@ public class BillingSessionBean {
     
     // public void estUserName(){
     //     try{
-    //             
+    //             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
     //             java.sql.ResultSet rs;
     //             String sql = new String("select first_name, last_name from provider where provider_no = '"+providerNo+"'");
-    //             rs = DBHandler.GetSQL(sql);
+    //             rs = db.GetSQL(sql);
     //             if (rs.next()){
     //                userName =  rs.getString("first_name")+" "+rs.getString("last_name");
     //             }
     //             rs.close();
-    //     }catch (java.sql.SQLException e){ MiscUtils.getLogger().error("Error", e); }
+    //     }catch (java.sql.SQLException e){ System.out.println(e.getMessage()); }
     // }
     
     

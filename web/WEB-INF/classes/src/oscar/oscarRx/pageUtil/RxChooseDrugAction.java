@@ -23,31 +23,30 @@
  */
 package oscar.oscarRx.pageUtil;
 
+import oscar.oscarRx.data.*;
 import java.io.IOException;
-
+import java.util.Locale;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
-
-import oscar.oscarRx.data.RxDrugData;
-import oscar.oscarRx.data.RxPrescriptionData;
+import org.apache.struts.util.MessageResources;
 
 
 
 public final class RxChooseDrugAction extends Action {
         public void p(String s){
-
+         //   System.out.println(s);
         }
 	public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
+        //    System.out.println("***IN RxChooseDrugAction.java");
             // Extract attributes we will need
-
+            Locale locale = getLocale(request);
+            MessageResources messages = getResources(request);
        //     p("locale="+locale.toString());
         //    p("message="+messages.toString());
             // Setup variables           
@@ -66,11 +65,12 @@ public final class RxChooseDrugAction extends Action {
                 RxPrescriptionData.Prescription rx =
                         rxData.newPrescription(bean.getProviderNo(), bean.getDemographicNo());
 
-               
+                String GN     = request.getParameter("GN");
                 String BN     = request.getParameter("BN");
                 String drugId = request.getParameter("drugId"); 
                 
-
+            //    System.out.println("drugID "+drugId);
+           //     System.out.println("BRAND = "+BN);
              //   p("GN="+GN);
                     rx.setBrandName(BN);
                 try{
@@ -96,9 +96,9 @@ public final class RxChooseDrugAction extends Action {
                     }          
                     rx.setDosage(dosage);
                  //   p("rx set dosage to: "+dosage);
-                    StringBuilder compString = null;
+                    StringBuffer compString = null;
                     if (f.components != null){
-                        compString = new StringBuilder();
+                        compString = new StringBuffer();
                         for (int c = 0; c < f.components.size();c++){
                             RxDrugData.DrugMonograph.DrugComponent dc = (RxDrugData.DrugMonograph.DrugComponent) f.components.get(c);
                   //          p("dc.name: "+dc.name+"dc.strength: "+dc.strength+"dc.unit: "+dc.unit);
@@ -106,9 +106,9 @@ public final class RxChooseDrugAction extends Action {
                         }          
                     }
                     
-                    MiscUtils.getLogger().debug("In here --=-=--=-_--=="+compString+"\n\n\n\n");
+                    System.out.println("In here --=-=--=-_--=="+compString+"\n\n\n\n");
                     if (compString != null){
-                        MiscUtils.getLogger().debug("In here --=-=--=-_--=="+compString.toString());
+                        System.out.println("In here --=-=--=-_--=="+compString.toString());
                        rx.setGenericName(compString.toString());
                     }else{
                        rx.setGenericName(genName);
@@ -126,13 +126,16 @@ public final class RxChooseDrugAction extends Action {
                 rx.setFrequencyCode("OID");
                 rx.setDuration("30");
                 rx.setDurationUnit("D");
+          //      p("String.valueOf(bean.getStashIndex()): "+String.valueOf(bean.getStashIndex()));
                 bean.addAttributeName(rx.getAtcCode() + "-" + String.valueOf(bean.getStashIndex()));
                 
-
+             //   System.out.println("***###addStathItem called11");
+             //   System.out.println("index="+bean.addStashItem(rx));
                 bean.setStashIndex(bean.addStashItem(rx));
+            //    p("bean.getStashIndex: "+bean.getStashIndex());
             }
             catch (Exception e){
-               MiscUtils.getLogger().error("Error", e);
+                e.printStackTrace(System.out);
             }
 
 		return (mapping.findForward("success"));

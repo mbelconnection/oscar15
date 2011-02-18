@@ -19,14 +19,18 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 -->
 <%
     if(session.getValue("user") == null) response.sendRedirect("../../logout.jsp");
+    response.setHeader("Cache-Control","no-cache"); //HTTP 1.1
+    response.setHeader("Pragma","no-cache"); //HTTP 1.0
+    response.setDateHeader ("Expires", 0); //prevents caching at the proxy 
 %>
+<%@ page language="java"%>
 <%@ page
 	import="java.util.*,oscar.util.*, org.apache.struts.action.*, oscar.oscarWaitingList.bean.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
@@ -41,6 +45,9 @@
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Change Waiting List Name</title>
 </head>
+
+<meta http-equiv="Cache-Control" content="no-cache">
+
 <script language="JavaScript">
 
 function resetFields(actionType){

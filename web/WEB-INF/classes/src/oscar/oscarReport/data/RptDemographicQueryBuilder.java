@@ -24,8 +24,6 @@
  */
 
 package oscar.oscarReport.data;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 import oscar.oscarReport.pageUtil.RptDemographicReportForm;
 import oscar.util.UtilDateUtilities;
@@ -36,7 +34,7 @@ public class RptDemographicQueryBuilder {
 
     int theWhereFlag;
     int theFirstFlag;
-    StringBuilder stringBuffer = null;
+    StringBuffer stringBuffer = null;
 
     public void whereClause(){
         if (stringBuffer != null){
@@ -62,10 +60,10 @@ public class RptDemographicQueryBuilder {
     }
 
     public java.util.ArrayList buildQuery(RptDemographicReportForm frm,String asofRosterDate){
-      MiscUtils.getLogger().debug("in buildQuery");
+      System.out.println("in buildQuery");
 
         String[] select = frm.getSelect();
-        stringBuffer =  new StringBuilder("select " );
+        stringBuffer =  new StringBuffer("select " );
 
         String ageStyle         = frm.getAgeStyle();
         String yearStyle        = frm.getAge();
@@ -79,7 +77,7 @@ public class RptDemographicQueryBuilder {
         String firstName        = frm.getFirstName();
         String lastName         = frm.getLastName();
         String sex              = frm.getSex();
-       
+        String queryName        = frm.getQueryName();
         
 
         String orderBy          = frm.getOrderBy();
@@ -176,7 +174,7 @@ public class RptDemographicQueryBuilder {
        // value="3">born in
        // value="4">born between
 
-       MiscUtils.getLogger().debug("date style"+yStyle);
+       System.out.println("date style"+yStyle);
         switch (yStyle){
             case 1:
                 whereClause();
@@ -207,20 +205,20 @@ public class RptDemographicQueryBuilder {
                 break;
             case 4:
                 whereClause();
-                MiscUtils.getLogger().debug("age style "+ageStyle);
+                System.out.println("age style "+ageStyle);
                 if (!ageStyle.equals("2")){
                   // stringBuffer.append(" ( ( YEAR("+asofDate+") -YEAR (DATE_FORMAT(CONCAT((year_of_birth), '-', (month_of_birth),'-',(date_of_birth)),'%Y-%m-%d'))) - (RIGHT("+asofDate+",5)<RIGHT(DATE_FORMAT(CONCAT((year_of_birth),'-',(month_of_birth),'-',(date_of_birth)),'%Y-%m-%d'),5)) >  "+startYear+" and ( YEAR("+asofDate+") -YEAR (DATE_FORMAT(CONCAT((year_of_birth), '-', (month_of_birth),'-',(date_of_birth)),'%Y-%m-%d'))) - (RIGHT("+asofDate+",5)<RIGHT(DATE_FORMAT(CONCAT((year_of_birth),'-',(month_of_birth),'-',(date_of_birth)),'%Y-%m-%d'),5)) <  "+endYear+"  ) ");
-                  MiscUtils.getLogger().debug("VERIFYING INT"+startYear);
+                  System.out.println("VERIFYING INT"+startYear);
                   //check to see if its a number 
                   if ( verifyInt (startYear) ){
-                     stringBuffer.append(" ( ( YEAR("+asofDate+") -YEAR (DATE_FORMAT(CONCAT((d.year_of_birth), '-', (d.month_of_birth),'-',(d.date_of_birth)),'%Y-%m-%d'))) - (RIGHT("+asofDate+",5)<RIGHT(DATE_FORMAT(CONCAT((d.year_of_birth),'-',(d.month_of_birth),'-',(d.date_of_birth)),'%Y-%m-%d'),5)) >  "+startYear+" ) ");
+                     stringBuffer.append(" ( ( YEAR("+asofDate+") -YEAR (DATE_FORMAT(CONCAT((year_of_birth), '-', (month_of_birth),'-',(date_of_birth)),'%Y-%m-%d'))) - (RIGHT("+asofDate+",5)<RIGHT(DATE_FORMAT(CONCAT((year_of_birth),'-',(month_of_birth),'-',(date_of_birth)),'%Y-%m-%d'),5)) >  "+startYear+" ) ");
                   }else{
                      String interval = getInterval(startYear);
-                     stringBuffer.append(" ( date_sub("+asofDate+",interval "+interval+") >= DATE_FORMAT(CONCAT((d.year_of_birth),'-',(d.month_of_birth),'-',(d.date_of_birth)),'%Y-%m-%d')   ) ");
+                     stringBuffer.append(" ( date_sub("+asofDate+",interval "+interval+") >= DATE_FORMAT(CONCAT((year_of_birth),'-',(month_of_birth),'-',(date_of_birth)),'%Y-%m-%d')   ) ");                   
                   }
                   stringBuffer.append(" and ");
                   if ( verifyInt (endYear) ){
-                    stringBuffer.append(" ( ( YEAR("+asofDate+") -YEAR (DATE_FORMAT(CONCAT((d.year_of_birth), '-', (d.month_of_birth),'-',(d.date_of_birth)),'%Y-%m-%d'))) - (RIGHT("+asofDate+",5)<RIGHT(DATE_FORMAT(CONCAT((d.year_of_birth),'-',(d.month_of_birth),'-',(d.date_of_birth)),'%Y-%m-%d'),5)) <  "+endYear+"  ) ");
+                    stringBuffer.append(" ( ( YEAR("+asofDate+") -YEAR (DATE_FORMAT(CONCAT((year_of_birth), '-', (month_of_birth),'-',(date_of_birth)),'%Y-%m-%d'))) - (RIGHT("+asofDate+",5)<RIGHT(DATE_FORMAT(CONCAT((year_of_birth),'-',(month_of_birth),'-',(date_of_birth)),'%Y-%m-%d'),5)) <  "+endYear+"  ) ");
                   }else{
                       ///
                     String interval = getInterval(endYear);
@@ -256,9 +254,9 @@ public class RptDemographicQueryBuilder {
             for (int i = 0; i < patientStatus.length ; i++){
                 theFirstFlag = 1;
                 if (i == (patientStatus.length - 1)){
-                    stringBuffer.append(" d.patient_status = '"+patientStatus[i]+"' )");
+                    stringBuffer.append(" patient_status = '"+patientStatus[i]+"' )");
                 }else{
-                    stringBuffer.append(" d.patient_status = '"+patientStatus[i]+"' or  ");
+                    stringBuffer.append(" patient_status = '"+patientStatus[i]+"' or  ");
                 }
             }
         }
@@ -279,7 +277,7 @@ public class RptDemographicQueryBuilder {
         }
 
         if (lastName != null && lastName.length() != 0 ){
-            MiscUtils.getLogger().debug("last name = "+lastName+"<size = "+lastName.length());
+            System.out.println("last name = "+lastName+"<size = "+lastName.length());
             whereClause();
             firstClause();
             theFirstFlag = 1;
@@ -305,13 +303,13 @@ public class RptDemographicQueryBuilder {
             case 1:
                 whereClause();
                 firstClause();
-                stringBuffer.append(" ( d.sex =  'F'  )");
+                stringBuffer.append(" ( sex =  'F'  )");
                 theFirstFlag = 1;
                 break;
             case 2:
                 whereClause();
                 firstClause();
-                stringBuffer.append(" ( d.sex = 'M' )");
+                stringBuffer.append(" ( sex = 'M' )");
                 theFirstFlag = 1;
                 break;
 
@@ -342,25 +340,25 @@ public class RptDemographicQueryBuilder {
                     Integer.parseInt(limit);
                     stringBuffer.append(" limit "+limit+" ");
                 }
-                catch(Exception u){MiscUtils.getLogger().debug("limit was not numeric >"+limit+"<");}
+                catch(Exception u){System.out.println("limit was not numeric >"+limit+"<");}
             }
        }
 
 
 
-        MiscUtils.getLogger().debug("SEARCH SQL STATEMENT \n"+stringBuffer.toString());
+        System.out.println("SEARCH SQL STATEMENT \n"+stringBuffer.toString());
         java.util.ArrayList searchedArray = new java.util.ArrayList();
         try{
-              
+              DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
               java.sql.ResultSet rs;
-              rs = DBHandler.GetSQL(stringBuffer.toString());
-              MiscUtils.getLogger().debug(stringBuffer.toString());
+              rs = db.GetSQL(stringBuffer.toString());
+              System.out.println(stringBuffer.toString());
 
               while (rs.next()) {
 
                 java.util.ArrayList tempArr  = new java.util.ArrayList();
                 for (int i = 0; i < select.length ; i++){
-                   tempArr.add( oscar.Misc.getString(rs, select[i]) );
+                   tempArr.add( db.getString(rs,select[i]) );
                 }
                 searchedArray.add(tempArr);
 
@@ -369,7 +367,7 @@ public class RptDemographicQueryBuilder {
 
 
               rs.close();
-        }catch (java.sql.SQLException e){ MiscUtils.getLogger().error("Error", e); }
+        }catch (java.sql.SQLException e){ System.out.println(e.getMessage()); }
 
 
     return searchedArray;
@@ -386,12 +384,12 @@ public class RptDemographicQueryBuilder {
    }
    
    String  getInterval(String startYear){
-      MiscUtils.getLogger().debug("in getInterval startYear "+startYear); 
+      System.out.println("in getInterval startYear "+startYear); 
       String str = "";
       if (startYear.charAt(startYear.length()-1) == 'm' ){
          str = startYear.substring(0,(startYear.length()-1)) + " month";
       }
-      MiscUtils.getLogger().debug(str);
+      System.out.println(str);
       return str;
    }
 }

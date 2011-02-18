@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -28,8 +28,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Vector;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 import oscar.oscarDB.DBHandler;
@@ -56,7 +54,7 @@ public class dxQuickListBeanHandler {
     }
     
     public boolean init(String providerNo,String codingSystem) {
-        
+        int NameLength = 10; //max length of quicklistname in quicklistuser table
         String codSys = "";
         if ( codingSystem != null ){
             codSys = " where codingSystem = '"+codingSystem+"' ";
@@ -64,43 +62,43 @@ public class dxQuickListBeanHandler {
         
         boolean verdict = true;
         try {
-          
+            ResultSet rsLastUsed;
             ResultSet rs;
             String quickListName;
-           
-           
+            boolean truncateName = false;
             
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String lastUsed = "";
             String sql;
             
             lastUsed = OscarProperties.getInstance().getProperty("DX_QUICK_LIST_DEFAULT");
             if( lastUsed == null ) {
                 sql = "SELECT DISTINCT quickListName FROM quickList ORDER BY quickListName LIMIT 1";
-                rs = DBHandler.GetSQL(sql);
+                rs = db.GetSQL(sql);
                 if(rs.next()) 
-                    lastUsed = oscar.Misc.getString(rs, "quickListName");                                           
+                    lastUsed = db.getString(rs,"quickListName");                                           
 
                 rs.close();
             }
 
             sql = "Select quickListName, createdByProvider from quickList "+codSys+" group by quickListName";            
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
             while(rs.next()){                
-                dxQuickListBean bean = new dxQuickListBean(oscar.Misc.getString(rs, "quickListName"),
-                                                           oscar.Misc.getString(rs, "createdByProvider"));
-                quickListName = oscar.Misc.getString(rs, "quickListName");
+                dxQuickListBean bean = new dxQuickListBean(db.getString(rs,"quickListName"),
+                                                           db.getString(rs,"createdByProvider"));
+                quickListName = db.getString(rs,"quickListName");
                                     
                 if(lastUsed.equals(quickListName)){
-
+                    //System.out.println("lastused: " + lastUsed);
                     bean.setLastUsed("Selected");
-                    lastUsedQuickList = oscar.Misc.getString(rs, "quickListName");
+                    lastUsedQuickList = db.getString(rs,"quickListName");
                 }                
                 dxQuickListBeanVector.add(bean);
             }
             rs.close();
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;
@@ -110,22 +108,22 @@ public class dxQuickListBeanHandler {
         
         boolean verdict = true;
         try {
-            
+            ResultSet rsLastUsed;
             ResultSet rs;
             
-            
-           
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            String lastUsed = "";
             String sql = "SELECT DISTINCT quickListName FROM quickList ORDER BY quickListName"; 
-
-            rs = DBHandler.GetSQL(sql);
+            //System.out.println(sql);
+            rs = db.GetSQL(sql);
             while(rs.next()){                
-                dxQuickListBean bean = new dxQuickListBean(oscar.Misc.getString(rs, "quickListName"));                              
+                dxQuickListBean bean = new dxQuickListBean(db.getString(rs,"quickListName"));                              
                 dxQuickListBeanVector.add(bean);
             }
             rs.close();
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;

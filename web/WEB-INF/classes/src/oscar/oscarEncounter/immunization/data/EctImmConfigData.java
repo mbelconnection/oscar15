@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -42,15 +42,15 @@ public class EctImmConfigData {
 
 	public String getImmunizationConfig()
 		throws SAXException, ParserConfigurationException, SQLException {
-		
+		DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 		String sql =
 			"SELECT setName, setXmlDoc FROM config_Immunization WHERE archived=0 AND setName IS NOT NULL AND setName <> '' ORDER BY setName";
-		ResultSet rs = DBHandler.GetSQL(sql);
+		ResultSet rs = db.GetSQL(sql);
 		Document doc = UtilXML.newDocument();
 		Element root = UtilXML.addNode(doc, "immunization");
 		Node newSet;
 		for (; rs.next(); root.appendChild(newSet)) {
-			Document setDoc = UtilXML.parseXML(oscar.Misc.getString(rs, "setXmlDoc"));
+			Document setDoc = UtilXML.parseXML(db.getString(rs,"setXmlDoc"));
 			Element setRoot = setDoc.getDocumentElement();
 			newSet = doc.importNode(setRoot, true);
 		}
@@ -62,13 +62,13 @@ public class EctImmConfigData {
 	public Vector getImmunizationConfigName()
 		throws SAXException, ParserConfigurationException, SQLException {
 		Vector ret = new Vector();
-		
+		DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 		String sql =
 			"SELECT setName FROM config_Immunization WHERE archived=0 AND setName IS NOT NULL AND setName <> '' ORDER BY setName";
-		ResultSet rs = DBHandler.GetSQL(sql);
+		ResultSet rs = db.GetSQL(sql);
 		
 		while (rs.next()){
-			ret.add(oscar.Misc.getString(rs, "setName"));
+			ret.add(db.getString(rs,"setName"));
 		}
 		rs.close();
 		return ret;
@@ -77,10 +77,10 @@ public class EctImmConfigData {
 	public Vector getImmunizationConfigId()
 	throws SAXException, ParserConfigurationException, SQLException {
 		Vector ret = new Vector();
-		
+		DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 		String sql =
 			"SELECT setId FROM config_Immunization WHERE archived=0 AND setName IS NOT NULL AND setName <> '' ORDER BY setName";
-		ResultSet rs = DBHandler.GetSQL(sql);
+		ResultSet rs = db.GetSQL(sql);
 		
 		while (rs.next()){
 			ret.add(""+rs.getInt("setId"));

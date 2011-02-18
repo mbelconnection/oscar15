@@ -115,6 +115,13 @@ if(request.getParameter("bFirstDisp")==null || request.getParameter("bFirstDisp"
   }
   rset.close();
 
+  //if we already have a schedule tell the user! -- See below, we just warn the user for now
+  /*if( scheduleOverlaps ) {
+      String redirect = request.getHeader("Referer") + "&overlap=true";
+      System.out.println("Redirecting to " + redirect);
+      response.sendRedirect(redirect);
+      return;
+  }*/
       
   //if the schedule is the same we are editing instead
   String[] searchParams1 = new String[3];
@@ -133,6 +140,7 @@ if(request.getParameter("bFirstDisp")==null || request.getParameter("bFirstDisp"
     scheduleRscheduleBean.setRscheduleBean(provider_no, sdate,edate,request.getParameter("available"),request.getParameter("day_of_week"), request.getParameter("day_of_weekB") ,request.getParameter("avail_hourB"), request.getParameter("avail_hour"), user_name);
   else
     scheduleRscheduleBean.setRscheduleBean(provider_no, sdate,edate,request.getParameter("available"),request.getParameter("day_of_week"), request.getParameter("avail_hourB"), request.getParameter("avail_hour"), user_name);
+    //System.out.println("llllppppppppppppppp"+scheduleRscheduleBean.available +GregorianCalendar.SUNDAY+GregorianCalendar.MONDAY+scheduleRscheduleBean.available +scheduleRscheduleBean.provider_no+" "+ scheduleRscheduleBean.day_of_week); 
 
   if( editingSchedule ) {
     String[] updateParams = new String[7];
@@ -231,7 +239,7 @@ if(request.getParameter("bFirstDisp")==null || request.getParameter("bFirstDisp"
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -244,6 +252,8 @@ if(request.getParameter("bFirstDisp")==null || request.getParameter("bFirstDisp"
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="schedule.schedulecreatedate.title" /></title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <link rel="stylesheet" href="../web.css" />
 
 <script language="JavaScript">
@@ -376,6 +386,7 @@ function refresh() {
                     strHour = new StringBuffer();
                     strReason = new StringBuffer();
                     strHolidayName = new StringBuffer();
+                    //System.out.println("    pppp   pp  pp" +scheduleRscheduleBean.avail_hourB); 
                    if(scheduleRscheduleBean.getDateAvail(now) ) {
                       bgcolor = new StringBuffer("white"); //color for attendance
                       strHour = new StringBuffer(SxmlMisc.getXmlContent(scheduleRscheduleBean.getAvailHour(now), weekdaytag[now.get(now.DAY_OF_WEEK)-1]));
@@ -392,7 +403,7 @@ function refresh() {
                       bgcolor = new StringBuffer("gold");
                       if(aHScheduleDate.available.equals("0")) bgcolor = new StringBuffer("navy");
                       strHour = new StringBuffer(aHScheduleDate.hour);
-                      strReason = new StringBuffer(aHScheduleDate.reason!=null?aHScheduleDate.reason:"");
+                      strReason = new StringBuffer(aHScheduleDate.reason!=null?aHScheduleDate.reason:""); //System.out.println("eeeeeeeeeeeeeeeeeeeeeeee"+year+"-"+month+"-"+dateGrid[i][j]+aHScheduleDate.available);
                     }
                      
             %>
@@ -435,6 +446,9 @@ function refresh() {
 </table>
 
 </form>
+<%
+   //scheduleMainBean.closePstmtConn();
+%>
 
 
 </body>

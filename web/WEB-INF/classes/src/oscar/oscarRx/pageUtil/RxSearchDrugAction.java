@@ -24,22 +24,20 @@
 package oscar.oscarRx.pageUtil;
 
 import java.io.IOException;
+
 import java.util.Hashtable;
 import java.util.Vector;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
-
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.apache.struts.actions.DispatchAction;
-import org.oscarehr.util.MiscUtils;
 
+import org.apache.struts.actions.DispatchAction;
 import oscar.oscarRx.data.RxDrugData;
 import oscar.oscarRx.util.RxDrugRef;
 
@@ -52,7 +50,7 @@ public final class RxSearchDrugAction extends DispatchAction {
 				 HttpServletRequest request,
 				 HttpServletResponse response)
 	throws IOException, ServletException {
-
+   //     System.out.println("***IN RxSearchDrugAction.java");
             // Setup variables
             RxSearchDrugForm reqForm = (RxSearchDrugForm) form;
             String genericSearch = reqForm.getGenericSearch();
@@ -73,8 +71,9 @@ public final class RxSearchDrugAction extends DispatchAction {
 		} else {
                     drugSearch = drugData.listDrug(searchString);
                 }
-            }catch(Exception connEx){
-            	MiscUtils.getLogger().error("Error", connEx);
+            }catch(Exception connEx){                
+                System.out.print(connEx.getMessage());
+                connEx.printStackTrace();
             }
             request.setAttribute("drugSearch", drugSearch);
             request.setAttribute("demoNo", reqForm.getDemographicNo());

@@ -64,6 +64,5 @@
 
 	<!-- Managed Beans -->
 	<context:component-scan base-package="org.oscarehr.common.dao" />
-	<context:component-scan base-package="org.oscarehr.eyeform.dao" />
 
 </beans>

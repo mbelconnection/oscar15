@@ -24,7 +24,6 @@ package org.oscarehr.PMmodule.web.admin;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -59,6 +58,7 @@ import org.oscarehr.PMmodule.service.LogManager;
 import org.oscarehr.PMmodule.service.ProgramManager;
 import org.oscarehr.PMmodule.service.ProgramQueueManager;
 import org.oscarehr.PMmodule.service.ProviderManager;
+import org.oscarehr.PMmodule.service.RoleManager;
 import org.oscarehr.PMmodule.web.BaseAction;
 import org.oscarehr.caisi_integrator.ws.CachedProvider;
 import org.oscarehr.caisi_integrator.ws.DemographicTransfer;
@@ -67,16 +67,13 @@ import org.oscarehr.caisi_integrator.ws.FacilityIdStringCompositePk;
 import org.oscarehr.caisi_integrator.ws.Referral;
 import org.oscarehr.caisi_integrator.ws.ReferralWs;
 import org.oscarehr.common.dao.FacilityDao;
-import org.oscarehr.common.dao.FunctionalCentreDao;
-import org.oscarehr.common.model.FunctionalCentre;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.quatro.service.security.RolesManager;
 
 public class ProgramManagerAction extends BaseAction {
 
-	private static final Logger logger = MiscUtils.getLogger();
+	private static final Logger logger = org.apache.log4j.LogManager.getLogger(ProgramManagerAction.class);
 
 	private ClientRestrictionManager clientRestrictionManager;
 	private FacilityDao facilityDao = null;
@@ -88,15 +85,10 @@ public class ProgramManagerAction extends BaseAction {
 	private ProgramQueueManager programQueueManager;
 	//private RoleManager roleManager;
 	private RolesManager roleManager;
-	private FunctionalCentreDao functionalCentreDao;
 	
 	public void setFacilityDao(FacilityDao facilityDao) {
 		this.facilityDao = facilityDao;
 	}
-
-	public void setFunctionalCentreDao(FunctionalCentreDao functionalCentreDao) {
-    	this.functionalCentreDao = functionalCentreDao;
-    }
 
 	public ActionForward unspecified(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
 		return list(mapping, form, request, response);
@@ -148,9 +140,9 @@ public class ProgramManagerAction extends BaseAction {
 			return list(mapping, form, request, response);
 		}
 
-		if (id != null && id!="") {
+		if (id != null) {
 			Program program = programManager.getProgram(id);
-			
+
 			if (program == null) {
 				ActionMessages messages = new ActionMessages();
 				messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("program.missing"));
@@ -161,10 +153,6 @@ public class ProgramManagerAction extends BaseAction {
 
 			programForm.set("program", program);
 			request.setAttribute("oldProgram", program);
-
-			List<FunctionalCentre> functionalCentres = functionalCentreDao.findAll();
-			Collections.sort(functionalCentres, FunctionalCentre.ACCOUNT_ID_COMPARATOR);
-			request.setAttribute("functionalCentres", functionalCentres);
 
 			// request.setAttribute("programFirstSignature",programManager.getProgramFirstSignature(Integer.valueOf(id)));
 			programForm.set("bedCheckTimes", bedCheckTimeManager.getBedCheckTimesByProgram(Integer.valueOf(id)));
@@ -177,16 +165,14 @@ public class ProgramManagerAction extends BaseAction {
 		}
 
 		setEditAttributes(request, id);
-		
-		if (id != null && id!="") {
-			request.setAttribute("service_restrictions", clientRestrictionManager.getActiveRestrictionsForProgram(Integer.valueOf(id), new Date()));
-			request.setAttribute("disabled_service_restrictions", clientRestrictionManager.getDisabledRestrictionsForProgram(Integer.valueOf(id), new Date()));
-		}
+		request.setAttribute("service_restrictions", clientRestrictionManager.getActiveRestrictionsForProgram(Integer.valueOf(id), new Date()));
+		request.setAttribute("disabled_service_restrictions", clientRestrictionManager.getDisabledRestrictionsForProgram(Integer.valueOf(id), new Date()));
+
 		return mapping.findForward("edit");
 	}
 
 	public ActionForward programSignatures(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-		//DynaActionForm programForm = (DynaActionForm) form;
+		DynaActionForm programForm = (DynaActionForm) form;
 		String programId = request.getParameter("programId");
 		if (programId != null) {
 			// List<ProgramSignature> pss = programManager.getProgramSignatures(Integer.valueOf(programId));
@@ -505,7 +491,7 @@ public class ProgramManagerAction extends BaseAction {
 	}
 
 	public ActionForward removeBedCheckTime(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-		
+		String id = request.getParameter("id");
 		String removeId = request.getParameter("removeId");
 
 		bedCheckTimeManager.removeBedCheckTime(Integer.valueOf(removeId));
@@ -623,7 +609,7 @@ public class ProgramManagerAction extends BaseAction {
 		String providerNo = (String) request.getSession().getAttribute("user");
 		programSignature.setProviderId(providerNo);
 		programSignature.setProviderName(providerManager.getProvider(providerNo).getFormattedName());
-		programSignature.setCaisiRoleName("n/a");
+		programSignature.setCaisiRoleName(providerManager.getProvider(providerNo).getProviderType());
 		Date now = new Date();
 		programSignature.setUpdateDate(now);
 		programManager.saveProgramSignature(programSignature);
@@ -651,7 +637,7 @@ public class ProgramManagerAction extends BaseAction {
 		try {
 			program.setFacilityId(Integer.parseInt(request.getParameter("program.facilityId")));
 		} catch (NumberFormatException e) {
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 		}
 
 		if (request.getParameter("program.allowBatchAdmission") == null) {
@@ -669,7 +655,6 @@ public class ProgramManagerAction extends BaseAction {
 		if (request.getParameter("program.transgender") == null) program.setTransgender(false);
 		if (request.getParameter("program.firstNation") == null) program.setFirstNation(false);
 		if (request.getParameter("program.bedProgramAffiliated") == null) program.setBedProgramAffiliated(false);
-		if (request.getParameter("program.bedProgramLinkId") == null) program.setBedProgramLinkId(0);
 		if (request.getParameter("program.alcohol") == null) program.setAlcohol(false);
 		if (request.getParameter("program.physicalHealth") == null) program.setPhysicalHealth(false);
 		if (request.getParameter("program.mentalHealth") == null) program.setMentalHealth(false);
@@ -718,7 +703,7 @@ public class ProgramManagerAction extends BaseAction {
 
 		setEditAttributes(request, String.valueOf(program.getId()));
 
-		return edit(mapping, form, request, response);
+		return mapping.findForward("edit");
 	}
 
 	private void saveProgram(HttpServletRequest request, Program program) {
@@ -763,7 +748,7 @@ public class ProgramManagerAction extends BaseAction {
 			String providerNo = (String) request.getSession().getAttribute("user");
 			programSignature.setProviderId(providerNo);
 			programSignature.setProviderName(providerManager.getProvider(providerNo).getFormattedName());
-			programSignature.setCaisiRoleName("n/a");
+			programSignature.setCaisiRoleName(providerManager.getProvider(providerNo).getProviderType());
 			Date now = new Date();
 			programSignature.setUpdateDate(now);
 
@@ -914,7 +899,7 @@ public class ProgramManagerAction extends BaseAction {
 
 	private void setEditAttributes(HttpServletRequest request, String programId) {
 
-		if (programId != null && programId!="") {
+		if (programId != null) {
 			request.setAttribute("id", programId);
 			request.setAttribute("programName", programManager.getProgram(programId).getName());
 			request.setAttribute("providers", programManager.getProgramProviders(programId));
@@ -1145,47 +1130,19 @@ public class ProgramManagerAction extends BaseAction {
 	private boolean isChanged(Program program1, Program program2) {
 		boolean changed = false;
 
-		if (   !eq(program1.getName(), program2.getName())
-                    || !eq(program1.getType(), program2.getType())
-                    || !eq(program1.getDescription(), program2.getDescription())
-                    || !eq(program1.getAddress(), program2.getAddress())
-                    || !eq(program1.getPhone(), program2.getPhone())
-                    || !eq(program1.getFax(), program2.getFax())
-                    || !eq(program1.getUrl(), program2.getUrl())
-                    || !eq(program1.getEmail(), program2.getEmail())
-                    || !eq(program1.getEmergencyNumber(), program2.getEmergencyNumber())
-                    || !eq(program1.getLocation(), program2.getLocation())
-                    || !eq(program1.getProgramStatus(), program2.getProgramStatus())
-                    || !eq(program1.getManOrWoman(), program2.getManOrWoman())
-                    || !eq(program1.getAbstinenceSupport(), program2.getAbstinenceSupport())
-                    || !eq(program1.getExclusiveView(), program2.getExclusiveView())
-                    || !eq(program1.getBedProgramLinkId(), program2.getBedProgramLinkId())
-                    || !eq(program1.getMaxAllowed(), program2.getMaxAllowed())
-                    || (program1.isHoldingTank() ^ program2.isHoldingTank())
-                    || (program1.isAllowBatchAdmission() ^ program2.isAllowBatchAdmission())
-                    || (program1.isAllowBatchDischarge() ^ program2.isAllowBatchDischarge())
-                    || (program1.isHic() ^ program2.isHic())
-                    || (program1.isTransgender() ^ program2.isTransgender())
-                    || (program1.isFirstNation() ^ program2.isFirstNation())
-                    || (program1.isBedProgramAffiliated() ^ program2.isBedProgramAffiliated())
-                    || (program1.isAlcohol() ^ program2.isAlcohol())
-                    || (program1.isPhysicalHealth() ^ program2.isPhysicalHealth())
-                    || (program1.isMentalHealth() ^ program2.isMentalHealth())
-                    || (program1.getFacilityId() != program2.getFacilityId())
-                    || (program1.isHousing() ^ program2.isHousing()))
+		if (program1.getMaxAllowed().intValue() != program2.getMaxAllowed().intValue() || !program1.getName().equals(program2.getName()) || !program1.getType().equals(program2.getType()) || !program1.getDescription().equals(program2.getDescription())
+		        || !program1.getAddress().equals(program2.getAddress()) || !program1.getPhone().equals(program2.getPhone()) || !program1.getFax().equals(program2.getFax()) || !program1.getUrl().equals(program2.getUrl())
+		        || !program1.getEmail().equals(program2.getEmail()) || !program1.getEmergencyNumber().equals(program2.getEmergencyNumber()) || !program1.getLocation().equals(program2.getLocation())
+		        || !program1.getProgramStatus().equals(program2.getProgramStatus()) || !program1.getBedProgramLinkId().equals(program2.getBedProgramLinkId()) || !program1.getManOrWoman().equals(program2.getManOrWoman())
+		        || !program1.getAbstinenceSupport().equals(program2.getAbstinenceSupport()) || !program1.getExclusiveView().equals(program2.getExclusiveView()) || (program1.isHoldingTank() ^ program2.isHoldingTank())
+		        || (program1.isAllowBatchAdmission() ^ program2.isAllowBatchAdmission()) || (program1.isAllowBatchDischarge() ^ program2.isAllowBatchDischarge()) || (program1.isHic() ^ program2.isHic())
+		        || (program1.isTransgender() ^ program2.isTransgender()) || (program1.isFirstNation() ^ program2.isFirstNation()) || (program1.isBedProgramAffiliated() ^ program2.isBedProgramAffiliated()) || (program1.isAlcohol() ^ program2.isAlcohol())
+		        || (program1.isPhysicalHealth() ^ program2.isPhysicalHealth()) || (program1.isMentalHealth() ^ program2.isMentalHealth()) || (program1.getFacilityId() != program2.getFacilityId()) || (program1.isHousing() ^ program2.isHousing()))
 
 		changed = true;
 
 		return changed;
 	}
-
-        private boolean eq(String s1, String s2) {
-            return ((s1==null && s2==null) || s1.equals(s2));
-        }
-
-        private boolean eq(Integer in1, Integer in2) {
-            return ((in1==null && in2==null) || in1.equals(in2));
-        }
 
 	@Required
 	public void setClientRestrictionManager(ClientRestrictionManager clientRestrictionManager) {

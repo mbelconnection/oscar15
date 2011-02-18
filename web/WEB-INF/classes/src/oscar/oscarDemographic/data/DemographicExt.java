@@ -58,8 +58,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
+import oscar.oscarDB.DBHandler;
 
 /**
  * This class is used to interface with the DemographicExt table.
@@ -84,11 +83,12 @@ public class DemographicExt {
    public String getValueForDemoKey(String demo, String key){
       String retval  = null;
       try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
+            //System.out.println("demo"+demo)                        
             String sql = "select value from demographicExt where demographic_no = ? and key_val = ? order by id desc  limit 1";
             
-            Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
+            Connection conn = DBHandler.getConnection();
             
             PreparedStatement pstmt = conn.prepareStatement(sql);            
             pstmt.setString(1,demo ); 
@@ -96,13 +96,13 @@ public class DemographicExt {
             rs = pstmt.executeQuery();
             
             if(rs.next()){
-               retval = oscar.Misc.getString(rs, "value");
+               retval = db.getString(rs,"value");
             }
                                       
             pstmt.close();
             
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
       return retval;
    }
@@ -113,12 +113,12 @@ public class DemographicExt {
    public Hashtable getAllValuesForDemo(String demo){
       Hashtable retval =  new Hashtable();
       try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
                                     
             String sql = "select key_val, value from demographicExt where demographic_no = ? ";
             
-            Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
+            Connection conn = DBHandler.getConnection();
             
             PreparedStatement pstmt = conn.prepareStatement(sql);            
             pstmt.setString(1,demo ); 
@@ -126,10 +126,10 @@ public class DemographicExt {
             rs = pstmt.executeQuery();
             
             while(rs.next()){
-               String key = oscar.Misc.getString(rs, "key_val");
-               String val = oscar.Misc.getString(rs, "value");
+               String key = db.getString(rs,"key_val");
+               String val = db.getString(rs,"value");
                
-               MiscUtils.getLogger().debug("for hash Key "+key+" value "+val);
+               System.out.println("for hash Key "+key+" value "+val);
                if(key != null && val != null){
                   retval.put(key,val);
                }
@@ -138,9 +138,9 @@ public class DemographicExt {
             pstmt.close();
             
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
-      MiscUtils.getLogger().debug("size of hash "+retval.size());
+      System.out.println("size of hash "+retval.size());
       return retval;
       
    }
@@ -154,7 +154,7 @@ public class DemographicExt {
          String val = (String) h.get(key);
          String[] sArr = new String[] {key,val};
          arr.add(sArr);
-         MiscUtils.getLogger().debug("has2Arr "+key+" val "+val);
+         System.out.println("has2Arr "+key+" val "+val);
       }
       
       return  arr;
@@ -172,10 +172,12 @@ public class DemographicExt {
     */
    public void addKey(String providerNo, String demo,String key, String value){
       try {
-                                      
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs;
+                                    
             String sql = "insert into demographicExt (provider_no,demographic_no,key_val,value,date_time) values (?,?,?,?,now())";
             
-            Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
+            Connection conn = DBHandler.getConnection();
             
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1,providerNo);              
@@ -188,7 +190,7 @@ public class DemographicExt {
             pstmt.close();
             
         } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
       /*
        insert into demographicExt (demographic_no,key_val,key_desc,value,date_time) values ('1','test','test for this','this value2',now());
@@ -198,15 +200,19 @@ public class DemographicExt {
    
    
    public void addKey(String providerNo, String demo,String key, String newValue,String oldValue){
-      MiscUtils.getLogger().debug("String providerNo "+providerNo+" String demo "+demo+" String key "+key+" String newValue "+newValue+" String oldValue"+oldValue);
+      System.out.println("String providerNo "+providerNo+" String demo "+demo+" String key "+key+" String newValue "+newValue+" String oldValue"+oldValue);
       if ( oldValue == null ){ oldValue = ""; }
       if (newValue != null && !oldValue.equalsIgnoreCase(newValue)){
          
          try {
-                       
+         
+            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs;
+                                    
             String sql = "insert into demographicExt (provider_no,demographic_no,key_val,value,date_time) values (?,?,?,?,now())";
             
-            Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
+            Connection conn = DBHandler.getConnection();
             
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1,providerNo);              
@@ -219,7 +225,7 @@ public class DemographicExt {
             pstmt.close();
             
          } catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
          }
       }
       /*

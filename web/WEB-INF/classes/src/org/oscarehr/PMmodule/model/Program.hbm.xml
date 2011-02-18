@@ -35,7 +35,6 @@
 		<property name="maxAllowed" />
 		<property name="type" />
 		<property name="description" />
-		<property name="functionalCentreId" />
 		<property name="address" />
 		<property name="phone" />
 		<property name="fax" />
@@ -80,6 +79,5 @@
 -->
 		<property name="lastUpdateDate" column="lastupdatedate"></property>
 		<property name="lastUpdateUser" column="lastupdateuser"></property>
-		<property name="siteSpecificField" />
     </class>
 </hibernate-mapping>

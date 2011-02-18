@@ -1,3 +1,4 @@
+<%@page contentType="text/html"%>
 <!-- 
 /*
 * 
@@ -23,53 +24,19 @@
  -->
 
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
-<%@ include file="/casemgmt/taglibs.jsp"%>
-<%@taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi" %>
+
 <%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
-<%@ page import="org.oscarehr.casemgmt.model.*"%>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-bean" prefix="bean"%>
-<%
-String demo=request.getParameter("demographicNo");
-%>
+
 <script type="text/javascript">
 
     //This object stores the key -> cmd value passed to action class and the id of the created div
     // and the value -> URL of the action class
     <c:set var="ctx" value="${pageContext.request.contextPath}" scope="request"/>
 
-    function popupUploadPage(varpage,dn) {
-        var page = "" + varpage+"?demographicNo="+dn;
-        windowprops = "height=500,width=500,location=no,"
-          + "scrollbars=no,menubars=no,toolbars=no,resizable=yes,top=50,left=50";
-         var popup=window.open(page, "", windowprops);
-         popup.focus();
-        
-    }
-
-    function delay(time){
-		string="document.getElementById('ci').src='<%=request.getContextPath()+ClientImage.imagePresentPlaceholderUrl%>'";
-		setTimeout(string,time);
-	}
-	
 </script>
 
 <!--dummmy div to force browser to allocate space -->
-<caisi:isModuleLoad moduleName="caisi">
-<c:choose>
-				<c:when test="${not empty requestScope.image_exists}">
-					<c:set var="clientId" value="${demographicNo}"></c:set>
-					<img style="cursor: pointer;" id="ci" src="<c:out value="${ctx}"/><%=ClientImage.imagePresentPlaceholderUrl%>" alt="id_photo" height="100" title="Click to upload new photo."
-						OnMouseOver="document.getElementById('ci').src='../imageRenderingServlet?source=local_client&clientId=<c:out value="${clientId}" />'"
-						OnMouseOut="delay(5000)" window.status='Click to upload new photo' ; return	true;"
-						onClick="popupUploadPage('uploadimage.jsp',<%=demo%>);return false;" />
-				</c:when>
-				<c:otherwise>
-					<img style="cursor: pointer;" src="<c:out value="${ctx}"/><%=ClientImage.imageMissingPlaceholderUrl%>" alt="No_Id_Photo" height="100" title="Click to upload new photo." OnMouseOver="window.status='Click to upload new photo';return true"
-						onClick="popupUploadPage('uploadimage.jsp',<%=demo%>);return false;" />
-				</c:otherwise>
-			</c:choose>
-</caisi:isModuleLoad>
-
 <div id="rightColLoader" style="width: 100%;">
 <h3 style="width: 100%; background-color: #CCCCFF;">
     <bean:message key="oscarEncounter.LeftNavBar.msgLoading"/></h3>

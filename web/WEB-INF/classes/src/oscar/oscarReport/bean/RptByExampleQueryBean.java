@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -25,7 +25,6 @@
 package oscar.oscarReport.bean;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.oscarehr.util.MiscUtils;
 
 public class RptByExampleQueryBean{
 
@@ -49,7 +48,7 @@ public class RptByExampleQueryBean{
             //this.queryWithEscapeChar = exampleData.replaceSQLString ("'","\\'",query);
             StringEscapeUtils strEscUtils = new StringEscapeUtils();                                
             this.queryWithEscapeChar = strEscUtils.escapeJavaScript(query);
-            MiscUtils.getLogger().debug("query with javascript escape char: " + queryWithEscapeChar);
+            System.out.println("query with javascript escape char: " + queryWithEscapeChar);
        }
       
        public RptByExampleQueryBean(String providerLastName, String providerFirstName, String query, String date){            

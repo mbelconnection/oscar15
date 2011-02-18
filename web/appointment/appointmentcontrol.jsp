@@ -1,3 +1,4 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ page import="java.util.*, oscar.*, oscar.util.*" errorPage="errorpage.jsp"%>
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
 <%
@@ -15,7 +16,6 @@
      {"Group Appt" , "appointmentgrouprecords.jsp"},
      {"Group Action" ,  "appointmentgrouprecords.jsp"},
      {"Add Appt & PrintPreview" , "appointmentaddrecordprint.jsp"},
-     {"Add Appt & PrintCard" , "appointmentaddrecordcard.jsp"},
      {"TicklerSearch" , "../tickler/ticklerAdd.jsp"},
      {"Search " , "../demographic/demographiccontrol.jsp"},
      {"Search" , "appointmentsearchrecords.jsp"},

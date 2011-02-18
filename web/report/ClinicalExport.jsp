@@ -1,5 +1,4 @@
-
-<%@page import="org.oscarehr.util.MiscUtils"%><%@page import="org.apache.poi.hssf.usermodel.HSSFRow,org.apache.poi.hssf.usermodel.HSSFSheet,org.apache.poi.hssf.usermodel.HSSFWorkbook,com.Ostermiller.util.CSVParser"%><%
+<%@page import="org.apache.poi.hssf.usermodel.HSSFRow,org.apache.poi.hssf.usermodel.HSSFSheet,org.apache.poi.hssf.usermodel.HSSFWorkbook,com.Ostermiller.util.CSVParser"%><%
 
     String csv = (String) session.getAttribute("clinicalReportCSV");
     String action = request.getParameter("getCSV");
@@ -9,11 +8,12 @@
             try {
                 response.getWriter().write(csv);
             } catch (Exception ioe) {
-            	MiscUtils.getLogger().error("Error", ioe);
+                ioe.printStackTrace();
             }
         }
         action = request.getParameter("getXLS");
         if (action != null) {
+            System.out.println("Generating Spread Sheet file for the 'report by template' module ..");
             response.setContentType("application/octet-stream");
             response.setHeader("Content-Disposition", "attachment; filename=\"oscarReport.xls\"");
             String[][] data = CSVParser.parse(csv);
@@ -33,7 +33,7 @@
             try {    
                 wb.write(response.getOutputStream());
             } catch(Exception e) {
-            	MiscUtils.getLogger().error("Error", e);
+                e.printStackTrace();   
             }
             
         }

@@ -41,7 +41,8 @@ red imediate attention
             <class>oscar.oscarWorkflow.WorkFlowInfo</class>
         </parameter>
         <java:condition>w.getGestationAge() == -1</java:condition>
-        <java:consequence>                 
+        <java:consequence>   
+System.out.println("setting 0");              
               w.setColour("red");
         </java:consequence>
     </rule>
@@ -53,7 +54,8 @@ red imediate attention
         </parameter>
         <java:condition>w.isCurrentState("1")</java:condition>
         <java:condition>w.getGestationAge() &lt; 24</java:condition>
-        <java:consequence>                 
+        <java:consequence>   
+System.out.println("setting 1");              
               w.setColour("#ccccff");
         </java:consequence>
     </rule>
@@ -65,7 +67,8 @@ red imediate attention
         </parameter>
         <java:condition>w.isCurrentState("1")</java:condition>
         <java:condition>w.getGestationAge() &gt;= 24</java:condition>
-        <java:consequence>                 
+        <java:consequence>   
+System.out.println("setting 2");              
               w.setColour("orange");
         </java:consequence>
     </rule>
@@ -76,7 +79,8 @@ red imediate attention
         </parameter>
         <java:condition>w.isCurrentState("1")</java:condition>
         <java:condition>w.getGestationAge() &gt;= 27</java:condition>
-        <java:consequence>                 
+        <java:consequence>           
+System.out.println("setting 3");      
               w.setColour("red");
         </java:consequence>
     </rule>
@@ -88,7 +92,8 @@ red imediate attention
         </parameter>
         <java:condition>w.isCurrentState("2")</java:condition>
         <java:condition>w.getGestationAge() &lt;= 28</java:condition>
-        <java:consequence>      
+        <java:consequence>   
+        System.out.println("setting 4");   
               w.setColour("#ccccff");
         </java:consequence>
     </rule>
@@ -101,7 +106,8 @@ red imediate attention
         <java:condition>w.isCurrentState("2")</java:condition>
         <java:condition>w.getGestationAge() &gt; 28</java:condition>
         <java:consequence>              
-              w.setColour("red");  
+              w.setColour("red");
+System.out.println("setting 5");   
         </java:consequence>
     </rule>
     
@@ -112,7 +118,8 @@ red imediate attention
         </parameter>
         <java:condition>w.isCurrentState("3")</java:condition>
         <java:condition>w.getGestationAge() &gt; 42</java:condition>
-        <java:consequence>                 
+        <java:consequence>              
+            System.out.println("setting 6");   
               w.setColour("red");
         </java:consequence>
     </rule>
@@ -123,7 +130,8 @@ red imediate attention
             <class>oscar.oscarWorkflow.WorkFlowInfo</class>
         </parameter>
         <java:condition>w.isCurrentState("4")</java:condition>
-        <java:consequence>            
+        <java:consequence>         
+            System.out.println("setting 7");   
               w.setColour("orange");
         </java:consequence>
     </rule>
@@ -134,7 +142,8 @@ red imediate attention
             <class>oscar.oscarWorkflow.WorkFlowInfo</class>
         </parameter>
         <java:condition>w.isCurrentState("5")</java:condition>
-        <java:consequence>             
+        <java:consequence>  
+              System.out.println("setting 8 ");            
               w.setColour("orange");
         </java:consequence>
     </rule>
@@ -144,7 +153,8 @@ red imediate attention
             <class>oscar.oscarWorkflow.WorkFlowInfo</class>
         </parameter>
         <java:condition>w.isCurrentState("6")</java:condition>
-        <java:consequence>              
+        <java:consequence>  
+              System.out.println("setting 9 ");            
               w.setColour("yellow");
         </java:consequence>
     </rule>

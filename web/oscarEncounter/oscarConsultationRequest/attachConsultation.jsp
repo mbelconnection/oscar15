@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University test2
+ * McMaster Unviersity test2
  * Hamilton 
  * Ontario, Canada 
  */
@@ -41,6 +41,7 @@ String userlastname = (String) session.getAttribute("userlastname");
 <%@ page import="oscar.oscarLab.ca.all.Hl7textResultsData"%>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@page import="org.oscarehr.util.SessionConstants"%>
+<%@ page contentType="text/html; charset=UTF-8"%>
 <%
 
 //preliminary JSP code
@@ -54,6 +55,7 @@ String providerNo = request.getParameter("provNo");
 if(demoNo == null && requestId == null ) response.sendRedirect("../error.jsp");
 
 if( demoNo == null || demoNo.equals("null")  ) {
+    //System.out.println("attach " + requestId + " demo " + demoNo);
     ConsultationAttachDocs docsUtil = new ConsultationAttachDocs(requestId);
     demoNo = docsUtil.getDemoNo();
     
@@ -68,8 +70,12 @@ String[] docType = {"D","L"};
 <html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<meta content="text/html;  charset=UTF-8" http-equiv="Content-Type">
 <title><bean:message
 	key="oscarEncounter.oscarConsultationRequest.AttachDocPopup.title" /></title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
+
 <link rel="stylesheet" type="text/css" media="all" href="../share/css/extractedFromPages.css"  />
 
 <script type="text/javascript">

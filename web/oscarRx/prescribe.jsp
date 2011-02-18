@@ -1,3 +1,4 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
@@ -8,10 +9,12 @@
 <%@page import="oscar.oscarRx.util.*" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
     <%
+System.out.println("***### IN prescribe.jsp");
 
 List<RxPrescriptionData.Prescription> listRxDrugs=(List)request.getAttribute("listRxDrugs");
 oscar.oscarRx.pageUtil.RxSessionBean bean = (oscar.oscarRx.pageUtil.RxSessionBean)request.getSession().getAttribute("RxSessionBean");
 
+System.out.println("listRxDrugs="+listRxDrugs);
 if(listRxDrugs!=null){
             String specStr=RxUtil.getSpecialInstructions();
 
@@ -116,14 +119,14 @@ if(listRxDrugs!=null){
        <label for="siInput_<%=rand%>" ></label>
        <div id="siAutoComplete_<%=rand%>" <%if(isSpecInstPresent){%> style="overflow:visible;"<%} else{%> style="overflow:visible;display:none;"<%}%> >
            <label style="float:left;width:80px;">&nbsp;&nbsp;</label><input id="siInput_<%=rand%>"  type="text" size="60" <%if(!isSpecInstPresent) {%>style="color:gray; width:auto" value="Enter Special Instruction" <%} else {%> style="color:black; width:auto" value="<%=specialInstruction%>" <%}%> onblur="changeText('siInput_<%=rand%>');updateSpecialInstruction('siInput_<%=rand%>');" onfocus="changeText('siInput_<%=rand%>');" >
-           <div id="siContainer_<%=rand%>" style="float:right" >
+           <div id="siContainer_<%=rand%>" style="float:right" >              
            </div>
                        <br><br>
         </div>
-
+   
         <label id="labelQuantity_<%=rand%>"  style="float:left;width:80px;">Qty/Mitte:</label><input <%if(rx.isCustomNote()){%> disabled <%}%> type="text" id="quantity_<%=rand%>"     name="quantity_<%=rand%>"     value="<%=quantityText%>" onblur="updateQty(this);" />
         <label style="">Repeats:</label><input type="text" id="repeats_<%=rand%>"  <%if(rx.isCustomNote()){%> disabled <%}%>    name="repeats_<%=rand%>"   value="<%=repeats%>" />
-
+    
         <input  type="checkbox" id="longTerm_<%=rand%>"  name="longTerm_<%=rand%>" <%if(longTerm) {%> checked="true" <%}%> >Long Term Med </input>
         <%if(genericName!=null&&!genericName.equalsIgnoreCase("null")){%>
         <div><a>Ingredient:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%=genericName%></a></div><%}%>
@@ -181,7 +184,7 @@ if(listRxDrugs!=null){
 
 </fieldset>
 
-        <script type="text/javascript">
+        <script type="text/javascript">                     
             $('drugName_'+'<%=rand%>').value=decodeURIComponent(encodeURIComponent('<%=drugName%>'));
             calculateRxData('<%=rand%>');
             handleEnter=function handleEnter(inField, ev){
@@ -197,6 +200,7 @@ if(listRxDrugs!=null){
                     showHideSpecInst('siAutoComplete_'+id);
             }
             showHideSpecInst=function showHideSpecInst(elementId){
+                oscarLog("in show hide spec inst="+elementId);
               if($(elementId).getStyle('display')=='none'){
                   Effect.BlindDown(elementId);
               }else{
@@ -226,10 +230,10 @@ if(listRxDrugs!=null){
             }();
 
 
-
+            
             checkAllergy('<%=rand%>','<%=rx.getAtcCode()%>');
             checkIfInactive('<%=rand%>','<%=rx.getRegionalIdentifier()%>');
-
+            
             var isDiscontinuedLatest=<%=isDiscontinuedLatest%>;
             //oscarLog("isDiscon "+isDiscontinuedLatest);
             //pause(1000);
@@ -259,7 +263,7 @@ if(listRxDrugs!=null){
                //oscarLog("counterRx="+counterRx+"--listRxDrugSize="+listRxDrugSize);
                $('instructions_<%=rand%>').focus();
            }
-
+  
         </script>
                 <%}%>
   <script type="text/javascript">

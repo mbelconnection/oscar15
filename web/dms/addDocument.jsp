@@ -1,26 +1,28 @@
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
 <%--
 /*
- *
+ * 
  * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved. *
- * This software is published under the GPL GNU General Public License.
+ * This software is published under the GPL GNU General Public License. 
  * This program is free software; you can redistribute it and/or 
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version. *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details. * * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *
- *
+ * modify it under the terms of the GNU General Public License 
+ * as published by the Free Software Foundation; either version 2 
+ * of the License, or (at your option) any later version. * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+ * GNU General Public License for more details. * * You should have received a copy of the GNU General Public License 
+ * along with this program; if not, write to the Free Software 
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. * 
+ * 
  * <OSCAR TEAM>
- *
- * This software was written for the
- * Department of Family Medicine
- * McMaster University
- * Hamilton
- * Ontario, Canada
+ * 
+ * This software was written for the 
+ * Department of Family Medicine 
+ * McMaster University 
+ * Hamilton 
+ * Ontario, Canada 
  */
 --%>
 
@@ -34,7 +36,6 @@
 <%--This is included in documentReport.jsp - wasn't meant to be displayed as a separate page --%>
 <%
 String user_no = (String) session.getAttribute("user");
-String appointment = request.getParameter("appointment_no");
 
 String module = "";
 String moduleid = "";
@@ -48,9 +49,9 @@ if (request.getParameter("function") != null) {
 
 String curUser = "";
 if (request.getParameter("curUser") != null) {
-    curUser = request.getParameter("curUser");
+    curUser = request.getParameter("curUser");    
 } else if (request.getAttribute("curUser") != null) {
-    curUser = (String) request.getAttribute("curUser");
+    curUser = (String) request.getAttribute("curUser");    
 }
 
 OscarProperties props = OscarProperties.getInstance();
@@ -89,6 +90,16 @@ else
 
 if (request.getAttribute("completedForm") != null) {
 formdata = (AddEditDocumentForm) request.getAttribute("completedForm");
+/*  Moved the edit to a separate popup window
+} else if (editDocumentNo != null) {
+    EDoc currentDoc = EDocUtil.getDoc(editDocumentNo);
+    formdata.setFunction(currentDoc.getModule());
+    formdata.setFunctionId(currentDoc.getModuleId());
+    formdata.setDocType(currentDoc.getType());
+    formdata.setDocDesc(currentDoc.getDescription());
+    formdata.setDocPublic((currentDoc.getDocPublic().equals("1"))?"checked":"");
+    formdata.setDocCreator(user_no);
+    formdata.setObservationDate(currentDoc.getObservationDate());*/
 } else {
     formdata.setFunction(module);  //"module" and "function" are the same
     formdata.setFunctionId(moduleid);
@@ -97,7 +108,6 @@ formdata = (AddEditDocumentForm) request.getAttribute("completedForm");
     formdata.setDocCreator(user_no);
     formdata.setObservationDate(UtilDateUtilities.DateToString(UtilDateUtilities.now(), "yyyy/MM/dd"));
     formdata.setHtml(defaultHtml);
-    formdata.setAppointment(appointment);
 }
 ArrayList doctypes = EDocUtil.getDoctypes(formdata.getFunction());
 %>
@@ -119,11 +129,11 @@ function onloadfunction() {
     <%--request attribute "linkhtmlerrors" & "docerrors" is used to check if a document was just submitted --%>
     <% if (request.getAttribute("linkhtmlerrors") != null) { //Open AddLink div%>
     showhide('addLinkDiv', 'plusminusLinkA');
-    <%} else if ((request.getAttribute("docerrors") != null) || (!mode.equals(""))) { //Open AddDoc div%>
+    <%} else if ((request.getAttribute("docerrors") != null) || (!mode.equals(""))) { //Open AddDoc div%> 
     showhide('addDocDiv', 'plusminusAddDocA');
     //setFocus();
     <%}%>
-
+    
 }
   function checkSel(sel){
   theForm = sel.form;
@@ -148,7 +158,7 @@ function setFocus() {
             if (focusTo[i].type == "text") {
                focusTo[i].focus();
             i = focusTo.length;
-
+            
            }
             }
 }*/
@@ -197,9 +207,9 @@ function checkDefaultDate(object, defaultValue) {
 </script>
 <div class="topplane">
 <div class="docHeading" style="background-color: #d1d5bd;">
-    <a id="plusminusAddDocA" href="javascript: showhide('addDocDiv', 'plusminusAddDocA');"> +<bean:message key="dms.addDocument.msgAddDocument"/></a>
-    <%-- a id="plusminusAddDocA" href="undocumentReport2.jsp"> +<bean:message key="dms.addDocument.msgManageUploadDocument"/></a --%>
-    <a id="plusminusLinkA" href="javascript: showhide('addLinkDiv', 'plusminusLinkA')"> +<bean:message key="dms.addDocument.AddLink"/> </a>
+    <a id="plusminusAddDocA" href="javascript: showhide('addDocDiv', 'plusminusAddDocA');"> +<bean:message key="dms.addDocument.msgAddDocument"/></a> 
+    <%-- a id="plusminusAddDocA" href="undocumentReport2.jsp"> +<bean:message key="dms.addDocument.msgManageUploadDocument"/></a --%> 
+    <a id="plusminusLinkA" href="javascript: showhide('addLinkDiv', 'plusminusLinkA')"> +<bean:message key="dms.addDocument.AddLink"/> </a> 
     <a href="javascript:;" onclick="popup(450, 600, 'addedithtmldocument.jsp?function=<%=module%>&functionid=<%=moduleid%>&mode=addHtml', 'addhtml')">+<bean:message key="dms.addDocument.AddHTML"/></a>
 </div>
 <div id="addDocDiv" class="addDocDiv"

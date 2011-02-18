@@ -34,7 +34,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.util.Doc2PDF;
 
@@ -63,7 +62,7 @@ public class MsgViewPDFAction extends Action {
         }
         catch(Exception e)
         {
-           MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace(System.out);
             return ( mapping.findForward("success"));
         }
 

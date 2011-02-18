@@ -19,7 +19,8 @@
  * McMaster University 
  * Hamilton 
  * Ontario, Canada 
---%><%@ page import="java.util.*,oscar.oscarRx.data.*,oscar.oscarRx.pageUtil.*,java.text.DateFormatSymbols,java.io.*,org.apache.xmlrpc.*"%>
+--%><%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page import="java.util.*,oscar.oscarRx.data.*,oscar.oscarRx.pageUtil.*,java.text.DateFormatSymbols,java.io.*,org.apache.xmlrpc.*"%>
 <%
 
 RxSessionBean bean = (RxSessionBean) session.getAttribute("RxSessionBean");
@@ -29,7 +30,7 @@ if ( bean == null ){
     String treatment = request.getParameter("cond");
     if (treatment == null || treatment.trim().equals("")){
         %>
-        
+
 <%@page import="org.oscarehr.util.MiscUtils"%><div style="background-color:white;margin:100px;padding:40px;border:2px solid grey">
             <a href="javascript: function myFunction() {return false; }" onclick="$('treatmentsMyD').toggle();">NOTHING FOUND</a>
         </div>
@@ -39,12 +40,22 @@ if ( bean == null ){
     Vector prices = getTreatment(treatment);
     Object[] pricesArray = null;
     if (prices != null){
+    System.out.println("CODES count "+prices.size());
     pricesArray = prices.toArray();
     }
     if ( pricesArray != null && pricesArray.length > 0){
         for (int i=0; i < pricesArray.length; i++){
             Hashtable ht = (Hashtable) pricesArray[i]; 
-
+           /* Enumeration en = ht.keys();
+            
+            while(en.hasMoreElements()){
+                Object s = en.nextElement();
+                System.out.println(s+" -- "+ht.get(s));
+            }
+            */
+            System.out.println("\nName: "+ht.get("name")
+            +"\nPrice: "+ht.get("cost")
+            +"\nRetailer: "+ht.get("reference"));
             String author=(String)ht.get("author");
             if(author==null) author="";
             Date updateTime=(Date)ht.get("updated_at");
@@ -79,7 +90,7 @@ if (ht.get("drugs") != null){
     for(Hashtable drug :drugs){%>
 <%=DrugLing((String)drug.get("label"))%>  <a href="javascript:void(0);" onclick="$('searchString').value ='<%=drug.get("tc_atc")%>';$('treatmentsMyD').toggle();$('searchString').focus();"><%=drug.get("tc_atc")%></a>  <%=drug.get("tc_atc_number")%> <br/>
   <%}
-}          
+}
 if(content.length()<100){%>
             <%=content%>
 <%}else{  %>
@@ -205,22 +216,29 @@ String DrugLing(String s){
    }
    
    private Object callWebserviceLite(String procedureName,Vector params) throws Exception{
+        System.out.println("#CALLDRUGREF-"+procedureName);
         Object object = null;
         //String server_url = "http://dev2.mydrugref.org/backend/api";
         //String server_url = "http://130.113.106.88:3000/backend/api";
         String server_url = "http://mydrugref.org/backend/api";
         try{
+            System.out.println("server_url :"+server_url);
             XmlRpcClientLite server = new XmlRpcClientLite(server_url);
             object = (Object) server.execute(procedureName, params);
         }catch (XmlRpcException exception) {
-            MiscUtils.getLogger().error("JavaClient: XML-RPC Fault #" + exception.code, exception);
+            
+            System.err.println("JavaClient: XML-RPC Fault #" +
+                    Integer.toString(exception.code) + ": " +
+                    exception.toString());
+            exception.printStackTrace();
             
             throw new Exception("JavaClient: XML-RPC Fault #" +
                     Integer.toString(exception.code) + ": " +
                     exception.toString());
             
         } catch (Exception exception) {
-        	MiscUtils.getLogger().error("JavaClient: ", exception);
+            System.err.println("JavaClient: " + exception.toString());
+            exception.printStackTrace();
             throw new Exception("JavaClient: " + exception.toString());
         }
         return object;
@@ -228,6 +246,7 @@ String DrugLing(String s){
     
     
      public Vector getTreatment(String  treatment)throws Exception{
+         System.out.println("TREATMENT IS "+treatment);
         if (treatment == null){
             return null;
         }
@@ -243,7 +262,13 @@ String DrugLing(String s){
             if (holbrook instanceof Vector){
                 vec = (Vector) holbrook;
             }
+            Enumeration e = ((Hashtable) obj).keys();
+            while (e.hasMoreElements()){
+                String s = (String) e.nextElement();
+                System.out.println(s+" "+((Hashtable) obj).get(s)+" "+((Hashtable) obj).get(s).getClass().getName());
+            }
         }
+        System.out.println("RETURN TREAT VEC +"+vec.size());
         return vec;
     }
      

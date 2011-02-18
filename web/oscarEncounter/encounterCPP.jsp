@@ -18,11 +18,13 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 --%>
+
+<%@ page language="java"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
@@ -41,8 +43,9 @@
 <link rel="stylesheet" type="text/css" href="encounterPrintStyles.css" />
 <script type="text/javascript" src="../share/javascript/Oscar.js"></script>
 <script type="text/javascript" src="../share/javascript/wz_dragdrop.js"></script>
-
+<%System.out.println("here1");%>
 <%
+    response.setHeader("Cache-Control","no-cache");
     //The oscarEncounter session manager, if the session bean is not in the context it looks for a session cookie with the appropriate name and value, if the required cookie is not available
     //it dumps you out to an erros page.
 
@@ -70,10 +73,13 @@
       
       PreventionDisplayConfig pdc = PreventionDisplayConfig.getInstance();//new PreventionDisplayConfig();         
       ArrayList prevList  = pdc.getPreventions();
+      System.out.println("size"+prevList.size());
       for (int k =0 ; k < prevList.size(); k++){
              Hashtable a = (Hashtable) prevList.get(k);   
+             System.out.println("layout ="+a.get("layout")+"<");
              if (a != null && a.get("layout") != null &&  a.get("layout").equals("injection")){
                 inject.add((String) a.get("name"));
+                System.out.println("added "+a.get("name")+"<");
              }	     	
       }
       
@@ -83,10 +89,16 @@
             
     List medsList = (List) h.get("medsList");
     List allergyList = (List) h.get("allergyList");
-    List divList = (List) h.get("divList");    
+    List divList = (List) h.get("divList");
+    
+    String cppPref = GeneralProperties.getInstance().getUserProperty("CPP_PREF",provNo,null);
+    if (cppPref != null){
+       divList = CPPData.getListFromString(cppPref);    
+    }
 %>
 
 <link rel="stylesheet" type="text/css" media="all" href="../share/css/extractedFromPages.css"  />
+<%System.out.println("here2");%>
 <script type="text/javascript" language="Javascript">
     var dirty = false;
     var hiddenPres = new Array();    
@@ -363,6 +375,7 @@ function setCheckedAll(){
 
 </head>
 
+<%System.out.println("here3");%>
 <body topmargin="0" leftmargin="0" vlink="#0000FF">
 <html:errors />
 <div style="width: 7in">
@@ -461,7 +474,7 @@ special needs <!--a class="hideShow" onclick="javascript:showHideItem('reminder'
 </div>
 
 </div>
-
+<%System.out.println("here3.5");%>
 <div
 	style="margin-left:5pt;width:100%;clear:left;<%=displayNone("presBox",divList)%>"
 	id="presBox">
@@ -485,6 +498,7 @@ special needs <!--a class="hideShow" onclick="javascript:showHideItem('reminder'
 </div>
 <br />
 <ul>
+	<%System.out.println("here3.6");%>
 	<%for (int i = 0; i < arr.length; i++){
                         String rxD = arr[i].getRxDate().toString();                        
                         String rxP = arr[i].getFullOutLine().replaceAll(";"," ");
@@ -500,6 +514,7 @@ special needs <!--a class="hideShow" onclick="javascript:showHideItem('reminder'
 		href="javascript: function myFunction() {return false; }">hide</a> <%=rxD%>&nbsp;
 	<%=rxP%></li>
 	<%}%>
+	<%System.out.println("here3.7");%>
 </ul>
 </div>
 </div>
@@ -538,7 +553,7 @@ special needs <!--a class="hideShow" onclick="javascript:showHideItem('reminder'
 </ul>
 </div>
 </div>
-
+<%System.out.println("here4");%>
 <div
 	style="margin-left:5pt;width:100%;clear:left;<%=displayNone("imms",divList)%>"
 	id="imms">
@@ -706,7 +721,7 @@ function putDataInTextArea(tarea) {
 
 <script type="text/javascript">
 setCheckedAll();
-
+<%System.out.println("here5");%>
 <% if (medsList != null){
       for (int i =0; i < medsList.size();i++){ 
       String pres =  (String) medsList.get(i); %>
@@ -720,6 +735,7 @@ setCheckedAll();
 <%    }
    }%>
 
+<%System.out.println("here6");%>
 
 
 </script>
@@ -727,6 +743,7 @@ setCheckedAll();
 
 </body>
 
+<%System.out.println("socialFam = "+h.get("socialFam"));%>
 </html:html>
 
 
@@ -743,7 +760,10 @@ setCheckedAll();
     String hashval(Object s){
         String st = "";
         if ( s instanceof String){
+            System.out.println(s+"WAS AN STRING");
              st = (String) s;
+        }else{
+            System.out.println("WASNt AN STRING");
         }
         return st;
     }

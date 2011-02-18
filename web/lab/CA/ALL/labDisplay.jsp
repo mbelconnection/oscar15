@@ -1,4 +1,4 @@
-<%@page errorPage="../../../provider/errorpage.jsp" %>
+<%@ page language="java" errorPage="../../../provider/errorpage.jsp" %>
 <%@ page import="java.util.*,
 		 java.sql.*,
 		 oscar.oscarDB.*,
@@ -7,8 +7,7 @@
 		 oscar.oscarLab.ca.all.parsers.*,
 		 oscar.oscarLab.LabRequestReportLink,
 		 oscar.oscarMDS.data.ReportStatus,oscar.log.*,
-		 org.apache.commons.codec.binary.Base64,
-                 oscar.OscarProperties" %>
+		 org.apache.commons.codec.binary.Base64" %>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
@@ -16,34 +15,32 @@
 <%@ taglib uri="/WEB-INF/oscarProperties-tag.tld" prefix="oscarProperties"%>
 <%@ taglib uri="/WEB-INF/indivo-tag.tld" prefix="indivo"%>
 <%
-oscar.OscarProperties props = oscar.OscarProperties.getInstance();
+
 String segmentID = request.getParameter("segmentID");
 String providerNo = request.getParameter("providerNo");
 String searchProviderNo = request.getParameter("searchProviderNo");
-String patientMatched = request.getParameter("patientMatched");
 
 Long reqIDL = LabRequestReportLink.getIdByReport("hl7TextMessage",Long.valueOf(segmentID));
 String reqID = reqIDL==null ? "" : String.valueOf(reqIDL);
 
 //String sql = "SELECT status FROM providerLabRouting WHERE lab_no='"+segmentID+"';";
 String sql = "SELECT demographic_no FROM patientLabRouting WHERE lab_type='HL7' and lab_no='"+segmentID+"';";
-
-ResultSet rs = DBHandler.GetSQL(sql);
+DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+ResultSet rs = db.GetSQL(sql);
 String demographicID = "";
 
 while(rs.next()){
-    demographicID = oscar.Misc.getString(rs,"demographic_no");
+    demographicID = db.getString(rs,"demographic_no");
 }
 rs.close();
-boolean isLinkedToDemographic=false;
 
-if(demographicID != null && !demographicID.equals("")&& !demographicID.equals("0")){
-    isLinkedToDemographic=true;
+
+if(demographicID != null && !demographicID.equals("")){
     LogAction.addLog((String) session.getAttribute("user"), LogConst.READ, LogConst.CON_HL7_LAB, segmentID, request.getRemoteAddr(),demographicID);
 }else{           
     LogAction.addLog((String) session.getAttribute("user"), LogConst.READ, LogConst.CON_HL7_LAB, segmentID, request.getRemoteAddr());
 }
-
+        
 
 
 boolean ackFlag = false;
@@ -52,17 +49,18 @@ ArrayList ackList = ackData.getAcknowledgements(segmentID);
 if (ackList != null){
     for (int i=0; i < ackList.size(); i++){
         ReportStatus reportStatus = (ReportStatus) ackList.get(i);
-        if (reportStatus.getProviderNo().equals(providerNo) && reportStatus.getStatus().equals("A") ){
-            ackFlag = true;//lab has been ack by this provider.
+        if ( reportStatus.getProviderNo().equals(providerNo) && reportStatus.getStatus().equals("A") ){
+            ackFlag = true;
             break;
         }
     }
 }
-MessageHandler handler = Factory.getHandler(segmentID);
+Factory f = new Factory();
+MessageHandler handler = f.getHandler(segmentID);
 Hl7textResultsData data = new Hl7textResultsData();
 String multiLabId = data.getMatchingLabs(segmentID);
 
-String hl7 = Factory.getHL7Body(segmentID);
+String hl7 = f.getHL7Body(segmentID);
 
 // check for errors printing
 if (request.getAttribute("printError") != null && (Boolean) request.getAttribute("printError")){
@@ -80,19 +78,8 @@ if (request.getAttribute("printError") != null && (Boolean) request.getAttribute
     <head>
         <html:base/>
         <title><%=handler.getPatientName()+" Lab Results"%></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <script language="javascript" type="text/javascript" src="../../../share/javascript/Oscar.js" ></script>
-        <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
-        <script type="text/javascript" src="<%= request.getContextPath() %>/share/javascript/prototype.js"></script>
-        <script type="text/javascript" src="<%= request.getContextPath() %>/share/javascript/scriptaculous.js"></script>
-        <script type="text/javascript" src="<%= request.getContextPath() %>/share/javascript/effects.js"></script>
-        <script language="javascript" type="text/javascript">
-            // alternately refer to this function in oscarMDSindex.js as labDisplayAjax.jsp does
-		function updateLabDemoStatus(labno){
-                                    if(document.getElementById("DemoTable"+labno)){
-                                       document.getElementById("DemoTable"+labno).style.backgroundColor="#FFF";
-                                    }
-                                }
-	</script>
         <link rel="stylesheet" type="text/css" href="../../../share/css/OscarStandardLayout.css">
         <style type="text/css">
             <!--
@@ -121,9 +108,7 @@ if (request.getAttribute("printError") != null && (Boolean) request.getAttribute
 .AbnormalRes a:visited { color: red }
 .AbnormalRes a:active { color: red }
 .NormalRes   { font-weight: bold; font-size: 8pt; color: black; font-family: 
-                      confirmAck=function() {
-            return confirm('<bean:message key="oscarMDS.index.msgConfirmAcknowledge"/>');
-        } Verdana, Arial, Helvetica }
+               Verdana, Arial, Helvetica }
 .NormalRes a:link { color: black }
 .NormalRes a:hover { color: black }
 .NormalRes a:visited { color: black }
@@ -136,9 +121,7 @@ if (request.getAttribute("printError") != null && (Boolean) request.getAttribute
 .HiLoRes a:active { color: blue }
 .CorrectedRes { font-weight: bold; font-size: 8pt; color: #E000D0; font-family: 
                Verdana, Arial, Helvetica }
-.CorrectedRes         confirmAck=function() {
-            return confirm('<bean:message key="oscarMDS.index.msgConfirmAcknowledge"/>');
-        }a:link { color: #6da997 }
+.CorrectedRes a:link { color: #6da997 }
 .CorrectedRes a:hover { color: #6da997 }
 .CorrectedRes a:visited { color: #6da997 }
 .CorrectedRes a:active { color: #6da997 }
@@ -152,9 +135,7 @@ div.Field a:active { color: black }
                Verdana, Arial, Helvetica }
 div.Field2   { font-weight: bold; font-size: 8pt; color: #ffffff; font-family: 
                Verdana, Arial, Helvetica }
-div.FieldData {         confirmAck=function() {
-            return confirm('<bean:message key="oscarMDS.index.msgConfirmAcknowledge"/>');
-        }font-weight: normal; font-size: 8pt; color: black; font-family:
+div.FieldData { font-weight: normal; font-size: 8pt; color: black; font-family: 
                Verdana, Arial, Helvetica }
 div.Field3   { font-weight: normal; font-size: 8pt; color: black; font-style: italic; 
                font-family: Verdana, Arial, Helvetica }
@@ -181,9 +162,7 @@ div.Title2 a:active { color: black }
                border-bottom-width: medium }
 .Cell3       { background-color: #add9c7; border-left: thin solid #dbfdeb; 
                border-right: thin solid #5d9987; 
-                      confirmAck=function() {
-            return confirm('<bean:message key="oscarMDS.index.msgConfirmAcknowledge"/>');
-        } border-top: thin solid #dbfdeb;
+               border-top: thin solid #dbfdeb; 
                border-bottom: thin solid #5d9987 }
 .CellHdr     { background-color: #cbe5d7; border-right-style: none; border-right-width: 
                medium; border-bottom-style: none; border-bottom-width: medium }
@@ -214,15 +193,15 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
             windowprops = "height="+vheight+",width="+vwidth+",location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=yes";
             var popup=window.open(varpage, windowname, windowprops);
         }
-        function getComment() {    
+        function getComment() {
             var ret = true;
             var commentVal = prompt('<bean:message key="oscarMDS.segmentDisplay.msgComment"/>', '');
-    
-            if( commentVal == null || commentVal.length==0)
+
+            if( commentVal == null )
                 ret = false;
-            else 
+            else
                 document.acknowledgeForm.comment.value = commentVal;
-           if(ret) handleLab('acknowledgeForm','<%=segmentID%>','ackLab');
+
             return ret;
         }
         
@@ -236,83 +215,19 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
 	    window.open(link, "linkwin", "width=500, height=200");
 	}
 
-        function sendToPHR(labId, demographicNo) {
-            popup(300, 600, "<%=request.getContextPath()%>/phr/SendToPhrPreview.jsp?labId=" + labId + "&demographic_no=" + demographicNo, "sendtophr");
-        }
+    function sendToPHR(labId, demographicNo) {
+        popup(300, 600, "<%=request.getContextPath()%>/phr/SendToPhrPreview.jsp?labId=" + labId + "&demographic_no=" + demographicNo, "sendtophr");
+    }
 
-        function matchMe() {
-            <% if ( !isLinkedToDemographic) { %>
-               	popupStart(360, 680, '../../../oscarMDS/SearchPatient.do?labType=HL7&segmentID=<%= segmentID %>&name=<%=java.net.URLEncoder.encode(handler.getLastName()+", "+handler.getFirstName())%>', 'searchPatientWindow');
-            <% } %>
-	}
+    function confirmAck() {
+            return confirm('<bean:message key="oscarMDS.index.msgConfirmAcknowledge"/>');
+    }
 
-
-        function handleLab(formid,labid,action){
-            var url='../../../dms/inboxManage.do';
-                                           var data='method=isLabLinkedToDemographic&labid='+labid;
-                                           new Ajax.Request(url, {method: 'post',parameters:data,onSuccess:function(transport){
-                                                                    var json=transport.responseText.evalJSON();
-                                                                    if(json!=null){
-                                                                        var success=json.isLinkedToDemographic;
-                                                                        var demoid='';
-                                                                        //check if lab is linked to a provider
-                                                                        if(success){
-                                                                            if(action=='ackLab'){
-                                                                                if(confirmAck()){
-                                                                                    updateStatus(formid,labid);
-                                                                                }
-                                                                            }else if(action=='msgLab'){
-                                                                                demoid=json.demoId;
-                                                                                if(demoid!=null && demoid.length>0)
-                                                                                    window.popup(700,960,'../../../oscarMessenger/SendDemoMessage.do?demographic_no='+demoid,'msg');
-                                                                            }else if(action=='ticklerLab'){
-                                                                                demoid=json.demoId;
-                                                                                if(demoid!=null && demoid.length>0)
-                                                                                    window.popup(450,600,'../../../tickler/ForwardDemographicTickler.do?docType=HL7&docId='+labid+'&demographic_no='+demoid,'tickler')
-                                                                            }
-
-                                                                        }else{
-                                                                            if(action=='ackLab'){
-                                                                                if(confirmAckUnmatched())
-                                                                                    updateStatus(formid,labid);                                                                                
-                                                                                else
-                                                                                    matchMe();
-                                                                            }else{
-                                                                                alert("Please relate lab to a patient");
-                                                                                matchMe();
-                                                                            }
-                                                                        }
-                                                                    }
-                                                            }});
-        }
-        function confirmAck(){
-		<% if (props.getProperty("confirmAck", "").equals("yes")) { %>
-            		return confirm('<bean:message key="oscarMDS.index.msgConfirmAcknowledge"/>');
-            	<% } else { %>
-            		return true;
-            	<% } %>
-	}
-        function confirmAckUnmatched(){
-            return confirm('<bean:message key="oscarMDS.index.msgConfirmAcknowledgeUnmatched"/>');
-        }
-        function updateStatus(formid,labid){
-            var url='<%=request.getContextPath()%>'+"/oscarMDS/UpdateStatus.do";
-            var data=$(formid).serialize(true);
-
-            new Ajax.Request(url,{method:'post',parameters:data,onSuccess:function(transport){
-                 if(labid){
-                     window.opener.updateDocLabData(labid);
-                     window.close();
-
-                }
-        }});
-
-        }
         </script>
-
-    </head>
-
-    <body onLoad="javascript:matchMe();">
+        
+    </head>    
+    
+    <body>
         <!-- form forwarding of the lab -->
         <form name="reassignForm" method="post" action="Forward.do">
             <input type="hidden" name="flaggedLabs" value="<%= segmentID %>" />
@@ -321,7 +236,7 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
             <input type="hidden" name="labType<%= segmentID %>HL7" value="imNotNull" />
             <input type="hidden" name="providerNo" value="<%= providerNo %>" />
         </form>    
-        <form name="acknowledgeForm" id="acknowledgeForm" method="post" onsubmit="javascript:void(0);" method="post" action="javascript:void(0);" >
+        <form name="acknowledgeForm" method="post" action="../../../oscarMDS/UpdateStatus.do">
             
             <table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
                 <tr>
@@ -336,16 +251,15 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
                                     <input type="hidden" name="comment" value=""/>
                                     <input type="hidden" name="labType" value="HL7"/>
                                     <% if ( !ackFlag ) { %>
-                                    <input type="button" value="<bean:message key="oscarMDS.segmentDisplay.btnAcknowledge"/>" onclick="handleLab('acknowledgeForm','<%=segmentID%>','ackLab');" >
-                                    <input type="button" value="<bean:message key="oscarMDS.segmentDisplay.btnComment"/>" onclick="return getComment();">
+                                    <input type="submit" value="<bean:message key="oscarMDS.segmentDisplay.btnAcknowledge"/>" onclick="return getComment();">
                                     <% } %>
                                     <input type="button" class="smallButton" value="<bean:message key="oscarMDS.index.btnForward"/>" onClick="popupStart(300, 400, '../../../oscarMDS/SelectProvider.jsp', 'providerselect')">
                                     <input type="button" value=" <bean:message key="global.btnClose"/> " onClick="window.close()">
                                     <input type="button" value=" <bean:message key="global.btnPrint"/> " onClick="printPDF()">
-                                   
-                                    <input type="button" value="Msg" onclick="handleLab('','<%=segmentID%>','msgLab');"/>
-                                    <input type="button" value="Tickler" onclick="handleLab('','<%=segmentID%>','ticklerLab');"/>
-                                 
+                                    <% if ( demographicID != null && !demographicID.equals("") && !demographicID.equalsIgnoreCase("null")){ %>
+                                    <input type="button" value="Msg" onclick="popup(700,960,'../../../oscarMessenger/SendDemoMessage.do?demographic_no=<%=demographicID%>','msg')"/>
+                                    <input type="button" value="Tickler" onclick="popup(450,600,'../../../tickler/ForwardDemographicTickler.do?docType=HL7&docId=<%= segmentID %>&demographic_no=<%=demographicID%>','tickler')"/>
+                                    <% } %>
                                     <% if ( searchProviderNo != null ) { // null if we were called from e-chart%>                            
                                     <input type="button" value=" <bean:message key="oscarMDS.segmentDisplay.btnEChart"/> " onClick="popupStart(360, 680, '../../../oscarMDS/SearchPatient.do?labType=HL7&segmentID=<%= segmentID %>&name=<%=java.net.URLEncoder.encode(handler.getLastName()+", "+handler.getFirstName())%>', 'searchPatientWindow')">
                                     <% } %>
@@ -401,7 +315,8 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
                                     <table valign="top" border="0" cellpadding="2" cellspacing="0" width="100%">
                                         <tr valign="top">
                                             <td valign="top" width="33%" align="left">
-                                                <table width="100%" border="0" cellpadding="2" cellspacing="0" valign="top"  <% if ( !isLinkedToDemographic){ %> bgcolor="orange" <% } %> id="DemoTable<%=segmentID%>" >                                                    <tr>
+                                                <table width="100%" border="0" cellpadding="2" cellspacing="0" valign="top">
+                                                    <tr>
                                                         <td valign="top" align="left">
                                                             <table valign="top" border="0" cellpadding="3" cellspacing="0" width="100%">
                                                                 <tr>
@@ -725,7 +640,7 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
                                 int obxCount = handler.getOBXCount(j);
                                 for (k=0; k < obxCount; k++){ 
                                     String obxName = handler.getOBXName(j, k);
-                                    if ( !handler.getOBXResultStatus(j, k).equals("DNS") /*&& !obxName.equals("")*/ && handler.getObservationHeader(j, k).equals(headers.get(i))){ // <<--  DNS only needed for MDS messages
+                                    if ( !handler.getOBXResultStatus(j, k).equals("DNS") && !obxName.equals("") && handler.getObservationHeader(j, k).equals(headers.get(i))){ // <<--  DNS only needed for MDS messages
                                         String obrName = handler.getOBRName(j);
                                         if(!obrFlag && !obrName.equals("") && !(obxName.contains(obrName) && obxCount < 2)){%>
                                             <tr bgcolor="<%=(linenum % 2 == 1 ? highlight : "")%>" >
@@ -744,7 +659,7 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
                                         }%>
                                         <%if(handler.getOBXValueType(j,k) != null &&  handler.getOBXValueType(j,k).equalsIgnoreCase("FT")){
                                             String[] dividedString  =divideStringAtFirstNewline(handler.getOBXResult( j, k));
-                                            %>                                         
+                                            %>
                                             <tr bgcolor="<%=(linenum % 2 == 1 ? highlight : "")%>" class="<%=lineClass%>" >
                                                 <td valign="top" align="left"><%= obrFlag ? "&nbsp; &nbsp; &nbsp;" : "&nbsp;" %><a href="javascript:popupStart('660','900','../ON/labValues.jsp?testName=<%=obxName%>&demo=<%=demographicID%>&labType=HL7&identifier=<%= handler.getOBXIdentifier(j, k) %>')"><%=obxName %></a></td>
                                                 <td align="right"><%= dividedString[0] %></td>
@@ -760,15 +675,15 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
                                             </tr>
                                             <%}%>
                                         <%}else{%>
-                                            <tr bgcolor="<%=(linenum % 2 == 1 ? highlight : "")%>" class="<%=lineClass%>">
-                                                <td valign="top" align="left"><%= obrFlag ? "&nbsp; &nbsp; &nbsp;" : "&nbsp;" %><a href="javascript:popupStart('660','900','../ON/labValues.jsp?testName=<%=obxName%>&demo=<%=demographicID%>&labType=HL7&identifier=<%= handler.getOBXIdentifier(j, k) %>')"><%=obxName %></a></td>
-                                                <td align="right"><%= handler.getOBXResult( j, k) %></td>
-                                                <td align="center" valign="top"><%= handler.getOBXAbnormalFlag(j, k)%></td>
-                                                <td align="left" valign="top"><%=handler.getOBXReferenceRange( j, k)%></td>
-                                                <td align="left" valign="top"><%=handler.getOBXUnits( j, k) %></td>
-                                                <td align="center" valign="top"><%= handler.getTimeStamp(j, k) %></td>
-                                                <td align="center" valign="top"><%= handler.getOBXResultStatus( j, k) %></td>
-                                            </tr>
+                                        <tr bgcolor="<%=(linenum % 2 == 1 ? highlight : "")%>" class="<%=lineClass%>">
+                                            <td valign="top" align="left"><%= obrFlag ? "&nbsp; &nbsp; &nbsp;" : "&nbsp;" %><a href="javascript:popupStart('660','900','../ON/labValues.jsp?testName=<%=obxName%>&demo=<%=demographicID%>&labType=HL7&identifier=<%= handler.getOBXIdentifier(j, k) %>')"><%=obxName %></a></td>                                         
+                                            <td align="right"><%= handler.getOBXResult( j, k) %></td>
+                                            <td align="center"><%= handler.getOBXAbnormalFlag(j, k)%></td>
+                                            <td align="left"><%=handler.getOBXReferenceRange( j, k)%></td>
+                                            <td align="left"><%=handler.getOBXUnits( j, k) %></td>
+                                            <td align="center"><%= handler.getTimeStamp(j, k) %></td>
+                                            <td align="center"><%= handler.getOBXResultStatus( j, k) %></td>
+                                        </tr>
                                         <%}%>
                                         <%for (l=0; l < handler.getOBXCommentCount(j, k); l++){%>
                                             <tr bgcolor="<%=(linenum % 2 == 1 ? highlight : "")%>" class="NormalRes" >
@@ -778,7 +693,7 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
                                     }
                                 }                                                             
                             //}                             
-                                                    
+                                                        
                             //for ( j=0; j< OBRCount; j++){    
                                 if (handler.getObservationHeader(j, 0).equals(headers.get(i))) {%>
                                 <%for (k=0; k < handler.getOBRCommentCount(j); k++){
@@ -798,12 +713,12 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
                                 <% if(handler.getOBXName(j,k).equals("")){
                                        String result = handler.getOBXResult(j, k);%>
                                         <tr bgcolor="<%=(linenum % 2 == 1 ? highlight : "")%>" >
-                                                <td colspan="7" valign="top"  align="left"><%=result%></td>        
+                                                <td colspan="7" valign="top"  align="left"><%=result%></td>
                                         </tr>
                                             <%
-                                    }
-                                
-                                
+                            }
+
+
                                 }
                             }
                             }%>
@@ -814,9 +729,8 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
                         <table width="100%" border="0" cellspacing="0" cellpadding="3" class="MainTableBottomRowRightColumn" bgcolor="#003399">
                             <tr>
                                 <td align="left" width="50%">
-                                    <% if ( !ackFlag ) { %>
-                                    <input type="button" value="<bean:message key="oscarMDS.segmentDisplay.btnAcknowledge" />" onclick="handleLab('acknowledgeForm','<%=segmentID%>','ackLab');" >
-                                    <input type="button" value="<bean:message key="oscarMDS.segmentDisplay.btnComment"/>" onclick="return getComment();">
+                                    <% if ( providerNo != null /*&& ! mDSSegmentData.getAcknowledgedStatus(providerNo) */) { %>
+                                    <input type="submit" value="<bean:message key="oscarMDS.segmentDisplay.btnAcknowledge"/>" onclick="return getComment();">
                                     <% } %>
                                     <input type="button" class="smallButton" value="<bean:message key="oscarMDS.index.btnForward"/>" onClick="popupStart(300, 400, '../../../oscarMDS/SelectProvider.jsp', 'providerselect')">
                                     <input type="button" value=" <bean:message key="global.btnClose"/> " onClick="window.close()">
@@ -840,9 +754,9 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
                 </tr>
             </table>
             
-        </form><%String s = ""+System.currentTimeMillis();%>
-        <a style="color:white;" href="javascript: void(0);" onclick="showHideItem('rawhl7<%=s%>');" >show</a>
-        <pre id="rawhl7<%=s%>" style="display:none;"><%=hl7%></pre>
+        </form>
+     <a style="color:white;" href="javascript: void();" onclick="showHideItem('rawhl7');" >show</a>
+     <pre id="rawhl7" style="display:none;"><%=hl7%></pre>
     </body>
 </html>
 <%!

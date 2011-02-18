@@ -10,10 +10,10 @@
 <%@ page
 	import="java.math.*, java.util.*, java.sql.*, oscar.*, java.net.*"
 	errorPage="../errorpage.jsp"%>
-
+<%@ include file="../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 
 <!--  
 /*
@@ -35,7 +35,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -44,6 +44,7 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Billing Summary</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-2">
 <script language="JavaScript">
 <!--
 function validate_form(){
@@ -234,7 +235,7 @@ Summary</u></font></b><br>
  while(rslocation.next()){
  local_desc = rslocation.getString("clinic_location_name");
    }
-     //
+     //  apptMainBean.closePstmtConn();
        %>
 	<tr>
 		<td width="54%"><b><font face="Arial, Helvetica, sans-serif">Visit
@@ -315,7 +316,7 @@ Summary</u></font></b><br>
    otherperc1 = rsother.getString("percentage");
  
    }
-    //
+    //   apptMainBean.closePstmtConn();
   
   if (otherdesc1.compareTo("") == 0 || otherdesc1 == null ) {
   otherflag1 = 0;
@@ -404,7 +405,7 @@ otherstr = sotherBuffer.toString();
    otherfee2 = rsother.getString("value");
     otherperc2 = rsother.getString("percentage");
    }
-   //
+   //    apptMainBean.closePstmtConn();
   
   if (otherdesc2.compareTo("") == 0 || otherdesc2 == null) { 
   otherflag2 = 0;
@@ -492,6 +493,7 @@ otherstr2 = sotherBuffer.toString();
    otherfee3 = rsother.getString("value");
  
    }
+       apptMainBean.closePstmtConn();
   
   if (otherdesc3.compareTo("") == 0 || otherdesc3 == null ) {
   otherflag3 = 0;

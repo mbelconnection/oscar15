@@ -118,7 +118,7 @@
   }
 
   // save the billing if needed
-  if(request.getParameter("submit")!=null && ("Next".equals(request.getParameter("submit")) 
+  if(request.getParameter("submit")!=null && ("Next".equals(request.getParameter("submit"))
           || "Save".equals(request.getParameter("submit")) || "Save and Back".equals(request.getParameter("submit"))  ) ) {
     // parse billing date
     int NUMTYPEINFIELD = 5;
@@ -153,10 +153,13 @@
 	String [] tempDate = billingDate.split("\\s");
 
     for( int idx = 0; idx < tempDate.length; ++idx ) {
+        System.out.println("BILLING DATE " + tempDate[idx]);
     }
+System.out.println("RECORD COUNT " + recordCount);
 	for(int i=0; i<recordCount; i++) {
 		sql = "select service_code, description, value, percentage from billingservice where service_code='"
 			+ billrec[i] + "' and billingservice_date in (select max(b.billingservice_date) from billingservice b where b.service_code='" + billrec[i] + "' and b.billingservice_date <= '" + request.getParameter("billDate") + "')";
+        System.out.println("SQL " + sql);
 		rs = dbObj.searchDBRecord(sql);
 		while (rs.next()) {
 			billrecdesc[i] = rs.getString("description");
@@ -173,6 +176,7 @@
 			} else {
 				if(!"allAboveCode".equals(rulePerc) && rulePercLabelNum == -1 ) {
                                     rulePercLabelNum = i-1 == -1 ? 0 : i-1;
+                                    System.out.println("SETTING RULE " + rulePercLabelNum);
                                 }
 				vecServiceCodePerc.add( billrec[i] ); // code
 				vecServiceCodePerc.add( percrec[i] ); // price
@@ -195,11 +199,13 @@
 		tempUnit = (tempUnit==null||"".equals(tempUnit) )? "1":tempUnit;
 		String code = temp.substring("xml_".length()).toUpperCase();
 		if( (!"".equals(fee) && Double.parseDouble(fee)>0.) || ( "".equals(perc)) ) {
+                    System.out.println("Adding fee code " + code);
 			vecServiceCodePrice.add( fee );
 			vecServiceCodeUnit.add( tempUnit );
 			vecServiceCode.add( code );
 			vecServiceCodeDesc.add( desc );
 		} else {
+                    System.out.println("Adding percentage code " + code);
 			vecServiceCodePerc.add( code );
 			vecServiceCodePerc.add( perc );
 			vecServiceCodePerc.add( tempUnit ); // unit
@@ -244,10 +250,12 @@
     	bdTotal = bdTotal.add(price.multiply(unit).setScale(2, BigDecimal.ROUND_HALF_UP));
     	if(i==rulePercLabelNum) {
             bdPercBase = bdTotal;
+            System.out.println("Assigned perc total " + bdPercBase);
         }
+//System.out.println(i + " :" + price + " x " + unit + " = " + bdTotal);
 		msg += "<tr bgcolor='#EEEEFF'><td align='right' width='20%'>" + vecServiceCode.get(i) + " ("+Math.round(unit.floatValue())+")</td><td align='right'>" + (i==0?"":" + ") + price + " x " + unit + " = " + bdTotal + "</td></tr>";
 	}
-	
+
 		// calculate perc base
 		if("allAboveCode".equals(rulePerc) ) {
 			bdPercBase = bdTotal;
@@ -258,11 +266,13 @@
 		// calculate perc
 		BigDecimal perc = new BigDecimal(Double.parseDouble((String)vecServiceCodePerc.get(codeIdx))).setScale(2, BigDecimal.ROUND_HALF_UP);
 		bdPerc = bdPercBase.multiply(perc).setScale(2, BigDecimal.ROUND_HALF_UP);
+//System.out.println("Percentage :" + bdPercBase + " x " + perc + " = " + bdPerc);
 		msg += "<tr bgcolor='#EEEEFF'><td align='right'>"+vecServiceCodePerc.get(codeIdx-1)+" (1)</td><td align='right'>Percentage : " + bdPercBase + " x " + perc + " = " + bdPerc + "</td></tr>";
 		// adjust perc by min/max
 		if(aLimits[idx3]) {
 			bdPerc = bdPerc.min(new BigDecimal(Double.parseDouble(aMaxFee[idx3]) ).setScale(2, BigDecimal.ROUND_HALF_UP) );
 			bdPerc = bdPerc.max(new BigDecimal(Double.parseDouble(aMinFee[idx3]) ).setScale(2, BigDecimal.ROUND_HALF_UP) );
+//System.out.println("Adjust to (" + minFee + ", " + maxFee + "): " + bdPerc);
 		msg += "<tr bgcolor='ivory'><td align='right' colspan='2'>Adjust to (" + aMinFee[idx3] + ", " + aMaxFee[idx3] + "): </td><td align='right'>" + bdPerc + "</td></tr>";
 		}
     	bdTotal = bdTotal.add(bdPerc);
@@ -271,6 +281,7 @@
 	}
 
     total = "" + bdTotal;
+    System.out.println("***************total****************:" + bdTotal);
 		msg += "<tr><td align='right' colspan='2'>Total: " + bdTotal + "</td></tr>";
 	// referral
     content = "";
@@ -282,7 +293,7 @@
     content += "<hctype>" + demoHCTYPE + "</hctype>" ;
     content += "<demosex>" + demoSex + "</demosex>" ;
 
-    if(request.getParameter("addition")!=null && "Confirm".equals(request.getParameter("addition"))) {	    
+    if(request.getParameter("addition")!=null && "Confirm".equals(request.getParameter("addition"))) {
             Boolean bServicePerc = false;
 	    for(int k=0; k<tempDate.length; k++) {
 	    	if(tempDate[k].trim().length()!=10) continue;
@@ -316,7 +327,7 @@
 			param[22] = user_no;//request.getParameter("user_no");
 			int nBillNo = 0;
 			int nBillDetailNo = 0;
-			
+
 			// for new billing
 			OscarProperties props = OscarProperties.getInstance();
 			if(props.getProperty("isNewONbilling", "").equals("true")) {
@@ -336,7 +347,7 @@
 				Vector vecT = saveObj.getBillingClaimHospObj(request, tempDate[k], total, vecServiceCode, vecServiceCodeUnit, vecServiceCodePrice);
 				saveObj.addABillingRecord(vecT);
 			} else {
-			
+
 			//BillingONDataHelp billObj = new BillingONDataHelp();
 			//String sql = "insert into billing values('\\N',?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?)";
 			sql = "insert into billing(clinic_no, demographic_no, provider_no, appointment_no, organization_spec_code, demographic_name, hin, update_date, update_time, billing_date, billing_time, clinic_ref_code, content, total, status, dob, visitdate, visittype, provider_ohip_no, provider_rma_no, apptProvider_no, asstProvider_no, creator) values( "
@@ -345,6 +356,7 @@
 				+ UtilMisc.nullMySQLEscape(param[10]) + "," + UtilMisc.nullMySQLEscape(param[11]) + "," + UtilMisc.nullMySQLEscape(param[12]) + "," + UtilMisc.nullMySQLEscape(param[13]) + "," + UtilMisc.nullMySQLEscape(param[14]) + ","
 				+ UtilMisc.nullMySQLEscape(param[15]) + "," + UtilMisc.nullMySQLEscape(param[16]) + "," + UtilMisc.nullMySQLEscape(param[17]) + "," + UtilMisc.nullMySQLEscape(param[18]) + "," + UtilMisc.nullMySQLEscape(param[19]) + ","
 				+ UtilMisc.nullMySQLEscape(param[20]) + "," + UtilMisc.nullMySQLEscape(param[21]) + ",'" + param[22] + "')";
+		    System.out.println("*******************************" + sql);
 			nBillNo = dbObj.saveBillingRecord(sql);
 
 
@@ -384,20 +396,21 @@
 					dbObj.updateDBRecord(sql);
 		    		break;
 		    	}
+		    	System.out.println(nBillNo + sql);
 			}
-			
+
 			}
 		} // end of for loop
 		msg = "<br>Billing records were added.<br>";
 		if("Save".equals(request.getParameter("submit"))) {
 			msg += "<script language=\"JavaScript\"> self.close();</script>";
 		} else {
-		    msg += "<script language=\"JavaScript\">window.location = 'billingShortcutPg1.jsp?billRegion=&billForm=" 
+		    msg += "<script language=\"JavaScript\">window.location = 'billingShortcutPg1.jsp?billRegion=&billForm="
 		        + URLEncoder.encode(oscarVariables.getProperty("hospital_view", oscarVariables.getProperty("default_view"))) + "&hotclick=&appointment_no=0&demographic_name="
-		        + URLEncoder.encode(demoLast) + "%2C" 
+		        + URLEncoder.encode(demoLast) + "%2C"
 		        + URLEncoder.encode(demoFirst) + "&demographic_no="
 		        + demo_no + "&providerview=1&user_no="
-		        + user_no + "&apptProvider_no=none&appointment_date=" 
+		        + user_no + "&apptProvider_no=none&appointment_date="
 		        + curYear +"-"+curMonth+"-"+curDay + "&start_time=0:00&bNewForm=1&status=t'</script>";
 		}
 	}
@@ -407,6 +420,8 @@
   // create msg
   String wrongMsg = errorMsg + warningMsg;
   //msg += errorMsg + warningMsg;
+System.out.println(" * ******************************" + sql);
+
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">

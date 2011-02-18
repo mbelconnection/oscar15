@@ -1,3 +1,5 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page language="java"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
@@ -10,15 +12,23 @@
 <%@page import="java.util.Enumeration"%>
 
 <%
+  //      System.out.println("*** in SearchDrug.jsp");
 	if (session.getAttribute("userrole") == null) response.sendRedirect("../logout.jsp");
 	String roleName$ = (String)session.getAttribute("userrole") + "," + (String)session.getAttribute("user");
 %>
 <security:oscarSec roleName="<%=roleName$%>" objectName="_rx" rights="r" 
 reverse="<%=true%>">
 	<%
+        //LogAction.addLog((String) session.getAttribute("user"), LogConst.NORIGHT+LogConst.READ,  LogConst.CON_PRESCRIPTION, demographic$, request.getRemoteAddr(),demographic$);
+
 		response.sendRedirect("../noRights.html");
 	%>
-</security:oscarSec><logic:notPresent name="RxSessionBean" scope="session">
+</security:oscarSec>
+
+<%
+	response.setHeader("Cache-Control", "no-cache");
+%>
+<logic:notPresent name="RxSessionBean" scope="session">
 	<logic:redirect href="error.html" />
 </logic:notPresent>
 <logic:present name="RxSessionBean" scope="session">
@@ -34,6 +44,8 @@ reverse="<%=true%>">
 %>
 
 <%
+System.out.println("bean.getStashIndex() searchDrug.jsp="+bean.getStashIndex());
+
 	RxPharmacyData pharmacyData = new RxPharmacyData();
 	RxPharmacyData.Pharmacy pharmacy;
 	pharmacy = pharmacyData.getPharmacyFromDemographic(Integer.toString(bean.getDemographicNo()));
@@ -70,7 +82,7 @@ reverse="<%=true%>">
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -611,7 +623,7 @@ function load() {
 								<td><a href="javascript:ShowDrugInfo('<%=((oscar.oscarRx.data.RxPrescriptionData.Prescription)rx).getGenericName()%>');"><bean:message key="SearchDrug.msgInfo"/></a></td>
 							</tr>
 							<%
-								i++;
+								i++;System.out.println("i in searchdrug.jsp="+i);
 							%>
 						</logic:iterate>
 					</table></element>

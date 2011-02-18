@@ -20,7 +20,7 @@
  *
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  *
@@ -29,9 +29,14 @@
 -->
 <%
     if(session.getValue("user") == null) response.sendRedirect("../../logout.jsp");
-
+    response.setHeader("Cache-Control","no-cache"); //HTTP 1.1
+    response.setHeader("Pragma","no-cache"); //HTTP 1.0
+    response.setDateHeader ("Expires", 0); //prevents caching at the proxy 
+%>
+<%
 	String styleClass = "data2";
 %>
+<%@ page language="java"%>
 <%@ page
 	import="java.util.*,oscar.util.*, oscar.oscarWaitingList.bean.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>

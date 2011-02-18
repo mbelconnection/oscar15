@@ -34,12 +34,12 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 import oscar.oscarDemographic.data.DemographicData;
@@ -49,7 +49,7 @@ import oscar.oscarDemographic.data.DemographicData;
  * @author Jay Gallagher
  */
 public class PreventionDisplayConfig {
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(PreventionDisplayConfig.class);
     static PreventionDisplayConfig preventionDisplayConfig = new PreventionDisplayConfig();
    
     Hashtable prevHash = null;
@@ -113,12 +113,13 @@ public class PreventionDisplayConfig {
             for (int j = 0; j < attr.size(); j++){           
                Attribute att = (Attribute) attr.get(j);
                h.put(att.getName(),att.getValue() );
+               //System.out.print(att.getName()+" "+att.getValue() );               
             }            
             prevList.add(h);            
             prevHash.put(h.get("name"), h);            
          }                
       }catch(Exception e ){
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace();
       }
    }
 
@@ -159,13 +160,14 @@ public class PreventionDisplayConfig {
                }else{
                   h.put(att.getName(),att.getValue() );
                }
-                              
+               
+               System.out.print(att.getName()+" "+att.getValue() );               
             }                        
             configList.add(h);        
             configHash.put(h.get("title"), h);            
          }                
       }catch(Exception e ){
-         MiscUtils.getLogger().error("Error", e);
+         e.printStackTrace();
       }
        
     }
@@ -222,7 +224,7 @@ public class PreventionDisplayConfig {
                 }
             }
         } catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return display;
     }
@@ -298,7 +300,7 @@ public class PreventionDisplayConfig {
                }
             }
         } catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return display;
     }

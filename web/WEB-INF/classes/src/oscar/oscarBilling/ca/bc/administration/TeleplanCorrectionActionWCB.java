@@ -9,11 +9,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.AppointmentMainBean;
 import oscar.oscarBilling.ca.bc.MSP.MSPReconcile;
@@ -51,7 +51,7 @@ import oscar.util.StringUtils;
 public class TeleplanCorrectionActionWCB
         extends org.apache.struts.action.Action {
 
-    static Logger log=MiscUtils.getLogger();
+    static Log log = LogFactory.getLog(TeleplanCorrectionActionWCB.class);
     private static final String sql_biling = "update_wcb_billing", //set it to be billed again in billing
              sql_demographic = "update_wcb_demographic", //update demographic information
              sql_wcb = "update_wcb_wcb", //updates wcb form
@@ -119,13 +119,17 @@ public class TeleplanCorrectionActionWCB
 
             bean.queryExecuteUpdate(s, provider_wcb);
 
+            //{"update_provider_wcb","Update wcb set provider=?, w_payeeno = ?, w_pracno = ? where billing_no=?"},
+            //bean.queryExecuteUpdate(data.getBillingMaster(),CLOSE_RECONCILIATION);
+            bean.closePstmtConn();
         } catch (Exception ex) {
-            log.error("WCB Teleplan Correction Query Error: " +ex.getMessage() + " - ", ex);
+            ex.printStackTrace();
+            System.err.println("WCB Teleplan Correction Query Error: " +ex.getMessage() + " - ");
         }
 
         String newURL = mapping.findForward(where).getPath();
         newURL = newURL + "?billing_no=" + data.getId();
-        MiscUtils.getLogger().debug(newURL);
+        System.out.println(newURL);
 
         ActionForward actionForward = new ActionForward();
         actionForward.setPath(newURL);
@@ -134,10 +138,10 @@ public class TeleplanCorrectionActionWCB
     }
     private void updateUnitValue(String i, String billingno) {
         try {
-            
-        	DBHandler.RunSQL("update billingmaster set billing_unit = '" + i + "' WHERE billing_no ='" + billingno + "'");
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            db.RunSQL("update billingmaster set billing_unit = '" + i + "' WHERE billing_no ='" + billingno + "'");
         } catch (java.sql.SQLException e) {
-            log.error("", e);
+            System.err.println(e.getMessage());
         }
     }
 
@@ -145,15 +149,15 @@ public class TeleplanCorrectionActionWCB
         String billamt = "0.00";
 
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             java.sql.ResultSet rs;
-            rs = DBHandler.GetSQL("SELECT value FROM billingservice WHERE service_code='" +
+            rs = db.GetSQL("SELECT value FROM billingservice WHERE service_code='" +
                     fee1 + "'");
             if (rs.next()) {
                 billamt = rs.getString("value");
             }
         } catch (java.sql.SQLException e) {
-            log.error("", e);
+            System.err.println(e.getMessage());
         }
         return billamt;
     }

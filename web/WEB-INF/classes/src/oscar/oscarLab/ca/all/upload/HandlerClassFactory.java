@@ -15,23 +15,25 @@ import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarLab.ca.all.upload.handlers.DefaultHandler;
 import oscar.oscarLab.ca.all.upload.handlers.MessageHandler;
 
-public final class HandlerClassFactory {
+/**
+ *
+ * @author wrighd
+ */
+public class HandlerClassFactory {
     
-    private static final Logger logger = MiscUtils.getLogger();
+    Logger logger = Logger.getLogger(HandlerClassFactory.class);
     
-    private HandlerClassFactory(){
-    	// don't instantiate
+    public HandlerClassFactory(){
     }
     
     /*
      *  Create and return the message handler corresponding to the message type
      */
-    public static MessageHandler getHandler(String type) {
+    public MessageHandler getHandler(String type) {
         Document doc = null;
         String msgType;
         String msgHandler = "";
@@ -41,22 +43,17 @@ public final class HandlerClassFactory {
             return( new DefaultHandler());
         }
         try{
-            InputStream is = HandlerClassFactory.class.getClassLoader().getResourceAsStream("oscar/oscarLab/ca/all/upload/message_config.xml");
+            InputStream is = this.getClass().getClassLoader().getResourceAsStream("oscar/oscarLab/ca/all/upload/message_config.xml");
             SAXBuilder parser = new SAXBuilder();
             doc = parser.build(is);
             
             Element root = doc.getRootElement();
-
-            @SuppressWarnings("unchecked")
             List items = root.getChildren();
             for (int i = 0; i < items.size(); i++){
                 Element e = (Element) items.get(i);
                 msgType = e.getAttributeValue("name");
-                String className = e.getAttributeValue("className");
-                if (msgType.equals(type) && (className.indexOf(".")==-1) )
+                if (msgType.equals(type))
                     msgHandler = "oscar.oscarLab.ca.all.upload.handlers."+e.getAttributeValue("className");
-                if (msgType.equals(type) && (className.indexOf(".")!=-1) )
-                	msgHandler = className;
             }
         }catch(Exception e){
             logger.error("Could not parse config file", e);
@@ -66,13 +63,19 @@ public final class HandlerClassFactory {
             return( new DefaultHandler() );
         }else{
             try {
-                @SuppressWarnings("unchecked")
                 Class classRef = Class.forName(msgHandler);
                 MessageHandler mh = (MessageHandler) classRef.newInstance();
                 logger.debug("Message handler '"+msgHandler+"' created successfully");
                 return(mh);
-            } catch (Exception e){
-                logger.error("Could not create message handler: "+msgHandler+", Using default message handler instead", e);
+            } catch (ClassNotFoundException e) {
+                logger.debug("Could not find message handler: "+msgHandler+
+                        "\nUsing default message handler instead");
+                e.printStackTrace();
+                return(new DefaultHandler());
+            } catch (Exception e1){
+                logger.error("Could not create message handler: "+msgHandler+
+                        "\nUsing default message handler instead", e1);
+                e1.printStackTrace();
                 return(new DefaultHandler());
             }
         }

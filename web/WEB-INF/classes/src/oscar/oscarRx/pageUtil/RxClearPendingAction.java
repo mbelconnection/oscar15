@@ -24,6 +24,7 @@
 package oscar.oscarRx.pageUtil;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +34,7 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.util.MessageResources;
 
 
 public final class RxClearPendingAction extends Action{
@@ -41,7 +43,10 @@ public final class RxClearPendingAction extends Action{
 				 HttpServletRequest request,
 				 HttpServletResponse response)
 	throws IOException, ServletException{
-
+      //  System.out.println("***IN RxClearPendingAction.java") ;
+        // Extract attributes we will need
+        Locale locale = getLocale(request);
+        MessageResources messages = getResources(request);
 
         // Setup variables
         

@@ -17,7 +17,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -34,13 +34,13 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts.upload.FormFile;
-import org.oscarehr.util.MiscUtils;
 
 public class StringUtils {
 
-    private static Logger logger = MiscUtils.getLogger();
+    private static Logger logger = LogManager.getLogger(StringUtils.class);
 
     /**
      * use to have a maximum string length view 
@@ -97,7 +97,7 @@ public class StringUtils {
 
             return matchFound;
         } catch (IllegalStateException e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
             logger.error("Erro ao validar expressao regular", e);
 
             return false;
@@ -249,20 +249,20 @@ public class StringUtils {
         try {
             InputStream is = file.getInputStream();
             int pointer;
-            StringBuilder strb = new StringBuilder(file.getFileSize());
+            StringBuffer strb = new StringBuffer(file.getFileSize());
             while ((pointer = is.read()) != -1) {
                 strb.append((char) pointer);
             }
             return (strb.toString());
         } catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return ("");
     }
 
     //joins an array into a string; array elements separated by a specified delimiter
     public static String join(String[] strArray, String delimiter) {
-        StringBuilder result = new StringBuilder();
+        StringBuffer result = new StringBuffer();
         for (int i = 0, arrayLength = strArray.length; i < arrayLength; i++) {
             result.append(strArray[i]);
             if (i < arrayLength - 1) {
@@ -273,8 +273,8 @@ public class StringUtils {
     }
 
     //arraylist elements must be string types
-    public static String join(List strArray, String delimiter) {
-        StringBuilder result = new StringBuilder();
+    public static String join(ArrayList strArray, String delimiter) {
+        StringBuffer result = new StringBuffer();
         for (int i = 0, arrayLength = strArray.size(); i < arrayLength; i++) {
             result.append(strArray.get(i));
             if (i < arrayLength - 1) {
@@ -310,7 +310,7 @@ public class StringUtils {
      *Takes a list of String Objects and returns a String with the all values from the list separated by a comma
      */
     public static String getCSV(List l) {
-        StringBuilder ret = new StringBuilder();
+        StringBuffer ret = new StringBuffer();
         ;
         if (l != null) {
             for (int i = 0; i < l.size(); i++) {
@@ -329,8 +329,10 @@ public class StringUtils {
      * johnchwk Apr 2008
      */
     public static String lineBreaks(String str) {
-        StringBuilder mystringBuffer = new StringBuilder();
+        StringBuffer mystringBuffer = new StringBuffer();
         mystringBuffer.append(str);
+
+        char currentchar = ' ';
 
         boolean spaces = true;
 

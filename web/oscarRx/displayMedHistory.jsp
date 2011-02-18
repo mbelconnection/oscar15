@@ -23,6 +23,7 @@
  * Ontario, Canada
  */
 -->
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
@@ -32,8 +33,7 @@
 <%@page import="oscar.oscarRx.data.*" %>
 <%@page import="oscar.oscarRx.util.*" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html>
+<html>
 <head>
     <script type="text/javascript" src="<c:out value="${ctx}/share/javascript/dragiframe.js"/>"></script>
     <link rel="stylesheet" type="text/css" href="styles.css">
@@ -41,6 +41,7 @@
 <body onload="addHandle(document.getElementsByTagName('body').item(0), window);">
     <%
 try{
+    System.out.println("in displaymedhistory.jsp");
     oscar.oscarRx.pageUtil.RxSessionBean bean = (oscar.oscarRx.pageUtil.RxSessionBean) request.getSession().getAttribute("RxSessionBean");
     String randomId=(String)request.getParameter("randomId");
         if(randomId!=null){
@@ -49,6 +50,8 @@ try{
                 if(drugName==null || drugName.equalsIgnoreCase("null") || drugName.trim().length()==0)
                     drugName=rx.getCustomName();
                 List<HashMap<String,String>> listMedHistory=(List<HashMap<String,String>>)bean.getListMedHistory();
+                System.out.println("drugName="+drugName+"--randomId="+randomId+"--listMedHistory="+listMedHistory);
+
                 %>
 
 <a style="position:fixed;top:0px;right:4px;color:red;font-size:12pt" onmouseover="this.style.cursor='pointer';" onclick="parent.mb.hide();">X</a>
@@ -96,7 +99,7 @@ try{
             }
     }
 
-}catch(Exception e){ MiscUtils.getLogger().error("Error", e);}
+}catch(Exception e){e.printStackTrace();}
 %>
     </table>
 </body>

@@ -1,4 +1,5 @@
-<%@page pageEncoding="UTF-8"%>
+<%@page contentType="text/html"%>
+<%@page pageEncoding="utf-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
 
@@ -50,6 +51,7 @@
 
     String demo = request.getParameter("demo");
     String display = request.getParameter("display");
+    System.out.println("demo_no="+demo);
     boolean saved = Boolean.valueOf(request.getParameter("saved"));
 
     String tid = request.getParameter("table_id");
@@ -65,50 +67,58 @@
 
     Integer tableName = cmm.getTableNameByDisplay(display);
     String note = "";
+    System.out.println("tableName="+tableName+"---"+"tableId="+tableId);
     CaseManagementNoteLink cml = cmm.getLatestLinkByTableId(tableName, tableId);//the lastest note which should be the annotation instead of document note.
     CaseManagementNote p_cmn = null;
     if (cml!=null) {
         p_cmn = cmm.getNote(cml.getNoteId().toString());
         //get the most recent previous note from uuid.
-        p_cmn=cmm.getMostRecentNote(p_cmn.getUuid());
+        p_cmn=cmm.getMostRecentNote(p_cmn.getUuid());        
     }
 
     String uuid = "";
     //if get provider no is -1 , it's a document note.
     if (p_cmn!=null && !p_cmn.getProviderNo().equals("-1") ) uuid = p_cmn.getUuid();
     else p_cmn=null;//don't use document note as annotation.
+    System.out.println("uuid value="+uuid);
     //get note from attribute
     CaseManagementNote a_cmn = (CaseManagementNote)se.getAttribute(attrib_name);
+    System.out.println("attrib_name value="+attrib_name);
     CaseManagementNote historyNote=new CaseManagementNote();
     if (a_cmn!=null) {
         historyNote=a_cmn;
 	note = a_cmn.getNote();
+        System.out.println("a_cmn is not null , note="+note);
     } else if (p_cmn!=null){
 	//get note from database
 	 //previous annotation exists
             historyNote=p_cmn;
 	    note = p_cmn.getNote();
+            System.out.println("if p_cmn is not null, note="+note);
 
-	}
+    }
     if (saved) {
 	String prog_no = new EctProgram(se).getProgram(user_no);
         //create a note with demo, user_no, prog_no
 	CaseManagementNote cmn = createCMNote(historyNote,request.getParameter("note"), demo, user_no, prog_no);
+        System.out.println("annotation note id="+cmn.getNote());
 	if (cmn!=null) {
 	    if (p_cmn!=null) {  //previous annotation exists
 /*            if (p_cmn!=null && note !="") { //previous annotation exists
 */		cmn.setUuid(uuid); //assign same UUID to new annotation
 	    }
 	    if (tableName.equals(cml.CASEMGMTNOTE) || tableId.equals(0L)) {
+                System.out.println("NOT SAVING");
 		if (!attrib_name.equals("")) se.setAttribute(attrib_name, cmn);
-	    } else { //annotated subject exists                   
+	    } else { //annotated subject exists
+                    System.out.println("saving annotation here");
                     cmm.saveNoteSimple(cmn);
                     cml = new CaseManagementNoteLink();
                     cml.setTableName(tableName);
                     cml.setTableId(tableId);
                     cml.setNoteId(cmn.getId());
                     cmm.saveNoteLink(cml);
-                    LogAction.addLog(user_no,LogConst.ANNOTATE, display, String.valueOf(tableId), request.getRemoteAddr(), demo, cmn.getNote());                
+                    LogAction.addLog(user_no,LogConst.ANNOTATE, display, String.valueOf(tableId), request.getRemoteAddr(), demo, cmn.getNote());
 	    }
 	}
 	response.sendRedirect("../close.html");
@@ -125,28 +135,20 @@
         if(special!=null)
             note=special+"\nRx annotation: ";
     }
+    System.out.println("uuid="+uuid);
     CaseManagementNote lastCmn=null;
     if(uuid.length()>0){
         lastCmn=cmm.getMostRecentNote(uuid);
+        //System.out.println("lastCmn="+lastCmn.getCreate_date());
     }
-    Boolean isMobileOptimized = session.getAttribute("mobileOptimized") != null;
 %>
 
 
 <html:html locale="true">
 <head>
     <title>Annotation</title>
-    <% if (isMobileOptimized) { %>
-        <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width" />
-        <link rel="stylesheet" type="text/css" href="../share/css/OscarStandardMobileLayout.css" />
-    <% } else { %>
+
     <link rel="stylesheet" type="text/css" href="../share/css/OscarStandardLayout.css" />
-        <style type="text/css">
-            body { font-size: x-small; }
-            textarea { width: 100%; margin: 5px 0; }
-            div.label { float: left; }
-        </style>
-    <% } %>
     <script type="text/javascript">
 	function showHistory(uuid,display) {
 	    if (uuid=="") {
@@ -168,22 +170,34 @@
 	<input type="hidden" name="display" value="<%=display%>" />
 	<input type="hidden" name="table_id" value="<%=tid%>" />
 	<input type="hidden" name="saved" />
-        <div class="header"></div>
-        <div class="panel">
-            <%=display%> Annotation:
+	<table>
+	    <tr><td colspan="2"><%=display%> Annotation:</td></tr>
             <%if(lastCmn!=null){%>
-            <div class="label">Documentation Date: <%=lastCmn.getCreate_date()%></div>
-            <div class="label">Saved by <%=lastCmn.getProviderName()%></div>
+            <tr>
+                <td>
+                Documentation Date: <%=lastCmn.getCreate_date()%><br>
+                </td>
+                <td>
+                Saved by <%=lastCmn.getProviderName()%>
+                </td>
+            </tr>
             <%}%>
-            <textarea name="note" rows="10"><%=note%></textarea>
-            <input type="submit" class="rightButton blueButton top"value="Save" onclick="this.form.saved.value='true';"/> &nbsp;
-            <input type="button" class="leftButton top" value="Cancel" onclick="window.close();"/>
+	    <tr><td colspan="2">
+		    <textarea name="note" rows="10" cols="50"><%=note%></textarea>
+		</td>
+	    </tr>
+	    <tr>
+		<td>
+		    <input type="submit" value="Save" onclick="this.form.saved.value='true';"/> &nbsp;
+		    <input type="button" value="Cancel" onclick="window.close();"/>
+		</td>
+		<td align="right">
 	<% if (rev>0) { %>
-            <div class="revision" style="float: right;">
 		    rev<a href="#" onclick="showHistory('<%=uuid%>','<%=display%>');"><%=rev%></a>
-            </div>
 	<% } %>
-        </div>
+		</td>
+	    </tr>
+	</table>
     </form>
 </body>
 
@@ -200,19 +214,20 @@
 	    cmNote.setDemographic_no(demo_no);
 	    cmNote.setProviderNo(provider);
 	    cmNote.setSigning_provider_no(provider);
-	    cmNote.setSigned(true);
+	    cmNote.setSigned(true);	    
 	    cmNote.setProgram_no(program_no);
 	    cmNote.setReporter_caisi_role("2");  //secRole for "doctor"
 	    cmNote.setReporter_program_team("0");
 	    cmNote.setNote(note);
             String historyStr;
-
+            
             if(historyNote==null || historyNote.getHistory()==null || historyNote.getHistory().trim().length()==0 ){
                 historyStr=note;
             }
             else{
                 historyStr=note + "\n" + "   ----------------History Record----------------   \n" + historyNote.getHistory().trim() + "\n";
             }
+            System.out.println("historyStr="+historyStr);
             cmNote.setHistory(historyStr);
 	return cmNote;
     }

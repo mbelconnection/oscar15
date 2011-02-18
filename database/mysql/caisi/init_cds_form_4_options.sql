@@ -1,3 +1,6 @@
+insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','006-01','English');
+insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','006-02','French');
+insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','006-03','Other');
 insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','007-01','Unique individuals - admitted');
 insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','007-02','Unique individuals - pre-admission');
 insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','007-03','Individuals- not uniquely identified');
@@ -201,6 +204,7 @@ insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) v
 insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','018-04','CMH&A - Case Management');
 insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','018-05','CMH&A - ACT Teams');
 insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','018-06','CMH&A - Counseling and Treatment');
+insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','018-07','CMH&A - Diversion and Court Support (Enter in CJS subcategories) (Data no longer accepted)');
 insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','018-08','CMH&A - Early Intervention');
 insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','018-09','CMH&A - Crisis Intervention');
 insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','018-10','CMH&A - Supports within Housing');
@@ -379,3 +383,10 @@ insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) v
 insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','031-08','No source of income');
 insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','031-09','Other');
 insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','031-10','Unknown or Service Recipient Declined');
+insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','032-01','Service Recipient Satisfaction');
+insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','032-02','Service Recipient Family Satisfaction');
+insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','032-03','Quality Improvement');
+insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','032-04','Accreditation');
+insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','036-01','Service Recipients in multiple functions');
+insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','036-02','Baseline status not tracked');
+insert into CdsFormOption (cdsFormVersion,cdsDataCategory,cdsDataCategoryName) values ('4','036-03','Multiple diagnosis');

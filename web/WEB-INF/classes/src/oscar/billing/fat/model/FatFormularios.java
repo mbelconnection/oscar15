@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -69,7 +69,7 @@ public class FatFormularios {
      *
      * </p>
      */
-    public Collection<FatFormularioProcedimento> fatFormularioProcedimento = new TreeSet<FatFormularioProcedimento>(); // of type FatFormularioProcedimento
+    public Collection fatFormularioProcedimento = new TreeSet(); // of type FatFormularioProcedimento
 
     ///////////////////////////////////////
     // operations
@@ -105,7 +105,7 @@ public class FatFormularios {
     /**
      * @return
      */
-    public Collection<FatFormularioProcedimento> getFatFormularioProcedimento() {
+    public Collection getFatFormularioProcedimento() {
         return fatFormularioProcedimento;
     }
 
@@ -133,7 +133,7 @@ public class FatFormularios {
     /**
      * @param collection
      */
-    public void setFatFormularioProcedimento(Collection<FatFormularioProcedimento> collection) {
+    public void setFatFormularioProcedimento(Collection collection) {
         fatFormularioProcedimento = collection;
     }
 

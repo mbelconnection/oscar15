@@ -56,13 +56,12 @@ String default_pmm=null;
 if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable()){
 	newticklerwarningwindow = (String) session.getAttribute("newticklerwarningwindow");
 	default_pmm = (String)session.getAttribute("default_pmm");
-}  
-
+}   
 %>
 
 <table  class="topnav" id="firstTable">
 	<tr>
-		<td valign="bottom">
+		<td>
 			<ul id="navlist">
 				<li>
     				<a href="<html:rewrite page="/provider/providercontrol.jsp"/>?year=<%=curYear%>&month=<%=curMonth%>&day=<%=curDay%>&view=0&displaymode=day&dboperation=searchappointmentday" TITLE="<bean:message key="provider.appointmentProviderAdminDay.viewDaySched"/>"><u>T</u>oday</a>
@@ -86,12 +85,12 @@ if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.Is
 				</oscar:oscarPropertiesCheck>
 <security:oscarSec roleName="<%=roleName$%>" objectName="_appointment.doctorLink" rights="r">
 				<oscar:oscarPropertiesCheck property="NOT_FOR_CAISI" value="no" defaultVal="true">
-                                <li>
-                                        <a HREF="#" ONCLICK ="popupInboxManager('<html:rewrite page="/dms/inboxManage.do?method=prepareForIndexPage"/>?providerNo=<%=curUser_no%>', 'Lab');return false;" title="<bean:message key="provider.appointmentProviderAdminDay.viewLabReports"/>">
-                                            <span id="oscar_new_lab"><bean:message key="global.lab"/></span>
+				<li>
+					<a HREF="#" ONCLICK ="popupPage2('<html:rewrite page="/oscarMDS/Index.jsp"/>?providerNo=<%=curUser_no%>', 'Lab');return false;" title="<bean:message key="provider.appointmentProviderAdminDay.viewLabReports"/>">
+						<span id="oscar_new_lab"><u>L</u>ab</span>
 					</a>
        				<oscar:newUnclaimedLab>
-       					<a class="tabalert" HREF="#" ONCLICK="popupInboxManager('<html:rewrite page="/dms/inboxManage.do?method=prepareForIndexPage"/>?providerNo=0&searchProviderNo=0&status=N&lname=&fname=&hnum=&pageNum=1&startIndex=0', 'Lab');return false;" TITLE='<bean:message key="provider.appointmentProviderAdminDay.viewLabReports"/>'>*</a>
+       					<a class="tabalert" HREF="#" ONCLICK="popupPage2('<html:rewrite page="/oscarMDS/Index.jsp"/>?providerNo=0&searchProviderNo=0&status=N&lname=&fname=&hnum=&pageNum=1&startIndex=0', 'Lab');return false;" TITLE='<bean:message key="provider.appointmentProviderAdminDay.viewLabReports"/>'>*</a>
        				</oscar:newUnclaimedLab>					       
 				</li>
 				</oscar:oscarPropertiesCheck>
@@ -130,25 +129,10 @@ if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.Is
 		<td align="right" valign="bottom">
  			<a href="javascript: function myFunction() {return false; }" onClick="popup(700,1000,'<html:rewrite page="/scratch/index.jsp"/>','scratch')"><span id="oscar_scratch"></span></a>
   			&nbsp;&nbsp;   
-			<a href=# onClick ="popupPage(600,750,'http://www.oscarcanada.org/manual/oscar-caisi-documentation/');return false;"><u>H</u>elp</a>
+			<a href=# onClick ="popupPage(600,750,'http://resource.oscarmcmaster.org/oscarResource/');return false;"><u>H</u>elp</a>
 			&nbsp;
 			<a href='<html:rewrite page="/PMmodule/ProviderInfo.do"/>'>Home</a> &nbsp;
 			<a href="<html:rewrite page="/logout.jsp"/>">Lo<u>g</u>out</a>
 		</td>
-	</tr>	
-</table>
-<table width="100%" border="1">
-<tr>
-	<td width="50%"></td>
-	<td width="50%" align="right"><b>Hello &nbsp; <%=userfirstname %> &nbsp;<%=userlastname %></b>
-	</td>
-</tr>
-<tr><td colspan="2">
-<c:import url="/SystemMessage.do?method=view" />
-</td>
-</tr>
-<tr><td colspan="2">
-<c:import url="/FacilityMessage.do?method=view" />
-</td>
-</tr>
+	</tr>
 </table>

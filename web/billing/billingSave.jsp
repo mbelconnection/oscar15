@@ -23,7 +23,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -43,8 +43,8 @@
 	errorPage="errorpage.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="../admin/dbconnection.jsp"%>
+<%@ include file="dbBilling.jsp"%>
 
 <html>
 <head>
@@ -124,18 +124,16 @@ function closeit() {
 //	  int[] demo_no = new int[1]; demo_no[0]=Integer.parseInt(request.getParameter("demographic_no")); int rowsAffected = apptMainBean.queryExecuteUpdate(demo_no,param,request.getParameter("dboperation"));
   
     if (rowsAffected ==1) {
-    //change the status to billed {"updateapptstatus", "update appointment set status=? where appointment_no=? //provider_no=? and appointment_date=? and start_time=?"},
+    //apptMainBean.closePstmtConn();//change the status to billed {"updateapptstatus", "update appointment set status=? where appointment_no=? //provider_no=? and appointment_date=? and start_time=?"},
         rsdemo = apptMainBean.queryResults(request.getParameter("appointment_no"), "searchapptstatus");
         String apptCurStatus = rsdemo.next()?rsdemo.getString("status"):"T";
 
         oscar.appt.ApptStatusData as = new oscar.appt.ApptStatusData();
         String billStatus = as.billStatus(apptCurStatus);
-        String[] param1 =new String[3];
+        String[] param1 =new String[2];
 	    param1[0]=billStatus;
-	    param1[1]=(String)session.getAttribute("user");
-	    param1[2]=request.getParameter("appointment_no");
+	    param1[1]=request.getParameter("appointment_no");
 //	  param1[1]=request.getParameter("apptProvider_no"); param1[2]=request.getParameter("appointment_date"); param1[3]=MyDateFormat.getTimeXX_XX_XX(request.getParameter("start_time"));
-        apptMainBean.queryExecuteUpdate(new String[]{request.getParameter("appointment_no")}, "archive_appt");
         rowsAffected = apptMainBean.queryExecuteUpdate(param1,"updateapptstatus");
         rsdemo = null;
         rsdemo = apptMainBean.queryResults(request.getParameter("demographic_no"), "search_billing_no");
@@ -143,11 +141,7 @@ function closeit() {
 %>
 <p>
 <h1>Successful Addition of a billing Record.</h1>
-
-<%
-// not sure what this variable is suppose to be, this page has never compiled since 2004 when some one did a faulty merge
-int nBillNo=0;
-%>
+</p>
 <script LANGUAGE="JavaScript">
     if (self.opener.document.inputForm)
 		self.opener.document.inputForm.elements["caseNote.billing_code"].value="<%=nBillNo%>";
@@ -160,12 +154,13 @@ int nBillNo=0;
 %>
 <p>
 <h1>Sorry, addition has failed.</h1>
-
+</p>
 <%  
     }
+    apptMainBean.closePstmtConn();
 %>
 <p></p>
-<hr width="90%">
+<hr width="90%"></hr>
 <form><input type="button" value="Close this window"
 	onClick="window.close()"></form>
 </center>

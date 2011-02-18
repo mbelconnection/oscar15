@@ -33,7 +33,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarLab.ca.on.CommonLabResultData;
 
@@ -45,7 +44,8 @@ public class SearchPatientAction extends Action {
    
    public ActionForward execute(ActionMapping mapping,ActionForm form,HttpServletRequest request,HttpServletResponse response)
    throws ServletException, IOException {
-
+      //System.out.println("inside ReportStatusUpdateAction");
+      
       String labNo = request.getParameter("segmentID");
       String name = request.getParameter("name");
       String labType = request.getParameter("labType");
@@ -60,11 +60,11 @@ public class SearchPatientAction extends Action {
             newURL = mapping.findForward("failure").getPath();
          }
       } catch (Exception e) {
-         MiscUtils.getLogger().debug("exception in SearchPatientAction:"+e);
+         System.out.println("exception in SearchPatientAction:"+e);
          newURL = mapping.findForward("failure").getPath();
       }
       newURL = newURL + "&labNo="+labNo+"&labType="+labType+"&keyword="+java.net.URLEncoder.encode(name,"UTF-8");
-
+      //System.out.println("url "+newURL);
       return new ActionForward(newURL);
    }
 }

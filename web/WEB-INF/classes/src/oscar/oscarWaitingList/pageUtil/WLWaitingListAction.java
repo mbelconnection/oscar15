@@ -19,7 +19,7 @@
 // * 29-09-2004   Ivy Chan        iConcept Technologies   initial version
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -43,7 +43,7 @@ public class WLWaitingListAction extends Action {
         throws ServletException, IOException
     {
  
-                       
+        WLWaitingListForm frm = (WLWaitingListForm) form;                
         return mapping.findForward("success");
         
     }

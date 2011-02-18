@@ -24,15 +24,14 @@ package org.oscarehr.casemgmt.dao;
 
 import java.util.Date;
 import java.util.List;
-
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oscarehr.casemgmt.model.CaseManagementNoteExt;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 public class CaseManagementNoteExtDAO extends HibernateDaoSupport {
 
-	private static Logger log = MiscUtils.getLogger();
+	private static Log log = LogFactory.getLog(CaseManagementNoteDAO.class);
 
 	public CaseManagementNoteExt getNoteExt(Long id) {
 		CaseManagementNoteExt noteExt = (CaseManagementNoteExt) this.getHibernateTemplate().get(CaseManagementNoteExt.class, id);

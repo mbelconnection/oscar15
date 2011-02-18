@@ -7,7 +7,7 @@ import oscar.appt.status.model.base.BaseAppointmentStatus;
 public class AppointmentStatus extends BaseAppointmentStatus {
 
 	public static final String APPOINTMENT_STATUS_HERE="H";
-	
+
 /*[CONSTRUCTOR MARKER BEGIN]*/
 	public AppointmentStatus () {
 		super();

@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -25,8 +25,6 @@ package oscar.oscarProvider.data;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarMessenger.util.MsgStringQuote;
@@ -38,17 +36,17 @@ public class ProSignatureData {
        boolean retval = false;
        try
             {
-                
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                 String sql = "select signature from providerExt where provider_no = '"+proNo+"' ";
-                ResultSet rs = DBHandler.GetSQL(sql);
+                ResultSet rs = db.GetSQL(sql);
                 if(rs.next())
                     retval = true;
                 rs.close();
             }
             catch(SQLException e)
             {
-                MiscUtils.getLogger().debug("There has been an error while checking if a provider had a signature");
-                MiscUtils.getLogger().error("Error", e);
+                System.out.println("There has been an error while checking if a provider had a signature");
+                System.out.println(e.getMessage());
             }
 
        return retval;
@@ -57,16 +55,16 @@ public class ProSignatureData {
     public String getSignature(String providerNo){
        String retval = "";
        try{
-             
+             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
              String sql = "select signature from providerExt where provider_no = '"+providerNo+"' ";
-             ResultSet rs = DBHandler.GetSQL(sql);
+             ResultSet rs = db.GetSQL(sql);
              if(rs.next())
-                retval = oscar.Misc.getString(rs, "signature");
+                retval = db.getString(rs,"signature");
              rs.close();
           }
           catch(SQLException e){
-             MiscUtils.getLogger().debug("There has been an error while retrieving a provider's signature");
-             MiscUtils.getLogger().error("Error", e);
+             System.out.println("There has been an error while retrieving a provider's signature");
+             System.out.println(e.getMessage());
           }
 
        return retval;
@@ -86,13 +84,13 @@ public class ProSignatureData {
     private void addSignature(String providerNo,String signature){
        MsgStringQuote s = new MsgStringQuote();
        try{
-             
+             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
              String sql = "insert into  providerExt (provider_no,signature) values ('"+providerNo+"','"+s.q(signature)+"') ";
-             DBHandler.RunSQL(sql);
+             db.RunSQL(sql);
           }
           catch(SQLException e){
-             MiscUtils.getLogger().debug("There has been an error while adding a provider's signature");
-             MiscUtils.getLogger().error("Error", e);
+             System.out.println("There has been an error while adding a provider's signature");
+             System.out.println(e.getMessage());
           }
 
 
@@ -101,13 +99,13 @@ public class ProSignatureData {
     private void updateSignature(String providerNo,String signature){
        MsgStringQuote s = new MsgStringQuote();
        try{
-             
+             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
              String sql = "update  providerExt set signature = '"+s.q(signature)+"' where provider_no = '"+providerNo+"' ";
-             DBHandler.RunSQL(sql);
+             db.RunSQL(sql);
           }
           catch(SQLException e){
-             MiscUtils.getLogger().debug("There has been an error while updating a provider's signature");
-             MiscUtils.getLogger().error("Error", e);
+             System.out.println("There has been an error while updating a provider's signature");
+             System.out.println(e.getMessage());
           }
 
 

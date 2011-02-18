@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -67,8 +67,6 @@ import javax.xml.soap.SOAPHeaderElement;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 
@@ -79,6 +77,7 @@ public class FrmStudyXMLClientSend {
 	Properties param = new Properties();
 	Vector studyContent = new Vector();
 	Vector studyNo = new Vector();
+	DBHandler db = null; 
 	String sql = null; 
 	ResultSet rs = null; 
 
@@ -88,7 +87,7 @@ public class FrmStudyXMLClientSend {
 
 	public static void main (String[] args) throws java.sql.SQLException, java.io.IOException  {
 		if (args.length != 3) {
-			MiscUtils.getLogger().debug("Please run: java path/FrmStudyXMLClient dbname WebServiceUrl");
+			System.out.println("Please run: java path/FrmStudyXMLClient dbname WebServiceUrl");
 			return; 
 		}
 		FrmStudyXMLClientSend aStudy = new FrmStudyXMLClientSend();
@@ -109,6 +108,7 @@ public class FrmStudyXMLClientSend {
 	private synchronized void init (String file, String url) throws java.sql.SQLException, java.io.IOException  {
 		URLService = url;
 		param.load(new FileInputStream(file)); 
+        db = new DBHandler(DBHandler.OSCAR_DATA);
 
 		GregorianCalendar now=new GregorianCalendar();
 		now.add(now.DATE, -1);
@@ -119,25 +119,30 @@ public class FrmStudyXMLClientSend {
 
 	private synchronized void getStudyContent () throws java.sql.SQLException  {
         sql = "SELECT studydata_no, content from studydata where timestamp > '" + dateYesterday + "' and timestamp < '" + dateTomorrow + "' and status='ready' order by studydata_no";
-        rs = DBHandler.GetSQL(sql);
+        rs = db.GetSQL(sql);
         while(rs.next()) {
-			studyContent.add(oscar.Misc.getString(rs, "content")); 
-			studyNo.add(oscar.Misc.getString(rs, "studydata_no")); 
+			studyContent.add(db.getString(rs,"content")); 
+			studyNo.add(db.getString(rs,"studydata_no")); 
 		}
         rs.close();
 	}
 
 	private synchronized void updateStatus (String studyDataNo) throws java.sql.SQLException  {
         sql = "update studydata set status='sent' where studydata_no=" + studyDataNo ;
-		if (DBHandler.RunSQL(sql)) throw new java.sql.SQLException();
+		if (db.RunSQL(sql)) throw new java.sql.SQLException();
         rs.close();
 	}
 
 
 	private void sendJaxmMsg (String aMsg, String u) throws java.sql.SQLException  {
 		try	{
+			//System.setProperty("javax.net.ssl.trustStore", "c:\\root\\oscarComm\\oscarComm.keystore");
+			//System.setProperty("javax.net.ssl.trustStore", "/root/oscarComm/compete.keystore");
 			System.setProperty("javax.net.ssl.trustStore", u);
+            //System.setProperty("javax.net.debug", "ssl,handshake,trustmanager");
 
+			//URL endPoint = new URL (" https://67.69.12.115:8443");
+			//javax.xml.soap.SOAPConnectionFactory=com.sun.xml.messaging.saaj.client.p2p.HttpSOAPConnectionFactory
 			SOAPConnectionFactory scf = SOAPConnectionFactory.newInstance();
 			SOAPConnection connection = scf.createConnection();
 
@@ -152,21 +157,29 @@ public class FrmStudyXMLClientSend {
 
 			SOAPHeaderElement headerElement = header.addHeaderElement(envelope.createName("OSCAR", "DT", "http://www.oscarhome.org/"));
 		    headerElement.addTextNode("header");
+			//SOAPBodyElement bodyElement = body.addBodyElement(envelope.createName("Text", "jaxm", "http://java.sun.com/jaxm"));
 
 			SOAPBodyElement bodyElement = body.addBodyElement(envelope.createName("Service"));
 		    bodyElement.addTextNode("compete");
 
 			AttachmentPart ap1 = message.createAttachmentPart();
 			ap1.setContent(aMsg, "text/plain");
+			//DOMSource aSource = new DOMSource(UtilXML.parseXML(aMsg) );
+			//ap1.setContent(aSource, "text/xml");
+		    //URL url = new URL("../../../../webapps/oscar_sfhc/images/sfhc.jpg");
+		    //AttachmentPart ap1 = message.createAttachmentPart(new DataHandler(url));
+		    //message.addAttachmentPart(ap1);
 
 			message.addAttachmentPart(ap1);
+
+			//AttachmentPart ap2 = message.createAttachmentPart("hello", "text/plain; charset=ISO-8859-1");	//message.addAttachmentPart(ap2);
 			
 			URLEndpoint endPoint = new URLEndpoint (URLService);  //"https://67.69.12.115:8443/OscarComm/DummyReceiver");
 			SOAPMessage reply = connection.call(message, endPoint);
-
+//			message.writeTo(System.out);
 			connection.close();
 		} catch (Throwable e)	{
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 		}
 	}
 }

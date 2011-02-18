@@ -23,16 +23,19 @@
 package org.oscarehr.PMmodule.dao;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
+import org.hibernate.Hibernate;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.oscarehr.PMmodule.model.Program;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import oscar.OscarProperties;
@@ -42,7 +45,7 @@ import com.quatro.util.Utility;
 
 public class ProgramDao extends HibernateDaoSupport {
 
-    private static final Logger log=MiscUtils.getLogger();
+    private static final Log log = LogFactory.getLog(ProgramDao.class);
 
     public boolean isBedProgram(Integer programId) {
         boolean result = false;
@@ -139,24 +142,6 @@ public class ProgramDao extends HibernateDaoSupport {
         return program;
     }
 
-    public Program getProgramForApptView(Integer programId) {
-        if (programId == null || programId <= 0) {
-            return null;
-        }
-        Program result = null;
-        String queryStr = "FROM Program p WHERE p.id = ? AND p.exclusiveView = 'appointment'";
-        List<Program> rs = getHibernateTemplate().find(queryStr, programId);
-
-        if (log.isDebugEnabled()) {
-            log.debug("isCommunityProgram: id=" + programId );
-        }
-        if (!rs.isEmpty()) {
-            result = rs.get(0);
-        }
-
-        return result;
-    }
-    
     public String getProgramName(Integer programId) {
         String name = null;
 
@@ -179,18 +164,6 @@ public class ProgramDao extends HibernateDaoSupport {
         return name;
     }
 
-    public Integer getProgramIdByProgramName(String programName) {
-    	
-    	if(programName == null) return null;
-    	
-    	List<Program> programs = getHibernateTemplate().find("FROM Program p WHERE p.name = ? ORDER BY p.id ", programName);
-    	if(!programs.isEmpty()) {
-    		return programs.get(0).getId();
-    	} else {
-    		return null;
-    	}
-    }
-    
     public List getAllPrograms(String programStatus, String type, Integer facilityId, String providerNo,Integer shelterId)
     {
     	return getAllPrograms(programStatus, type,facilityId,null,providerNo,shelterId);
@@ -283,15 +256,6 @@ public class ProgramDao extends HibernateDaoSupport {
         return rs;
     }
 
-    public List<Program> getProgramsByFacilityIdAndFunctionalCentreId(Integer facilityId, String functionalCentreId) {
-        String queryStr = "FROM Program p WHERE p.facilityId = "+facilityId+" and p.functionalCentreId = '"+functionalCentreId+'\'';
-
-        @SuppressWarnings("unchecked")
-        List<Program> rs = getHibernateTemplate().find(queryStr);
-
-        return rs;
-    }
-
     /**
      * @param facilityId is allowed to be null
      * @return a list of community programs in the facility and any programs with no facility associated
@@ -369,6 +333,7 @@ public class ProgramDao extends HibernateDaoSupport {
         if (program == null) {
             throw new IllegalArgumentException();
         }
+        
         getHibernateTemplate().saveOrUpdate(program);
 
         if (log.isDebugEnabled()) {
@@ -603,18 +568,5 @@ public class ProgramDao extends HibernateDaoSupport {
     	Program p1 = getProgram(programId1);
     	Program p2 = getProgram(programId2);
     	return(p1.getFacilityId()==p2.getFacilityId());
-    }
-    
-    public Program getProgramBySiteSpecificField(String value) {
-        Program result = null;
-
-        @SuppressWarnings("unchecked")
-        List<Program> results = getHibernateTemplate().find("from Program p where p.siteSpecificField = ?", new Object[]{value});
-
-        if (!results.isEmpty()) {
-            result = results.get(0);
-        }
-
-        return result;
     }
 }

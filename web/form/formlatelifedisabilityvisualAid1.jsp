@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -76,19 +76,19 @@
 							</tr>
 							<tr bgcolor="white" height="150px">
 								<td width="34%" align="center"><img
-									src="graphics/disabilityVisualAid/veryOften.jpg" align="center"
+									src="graphics/disabilityVisualAid/veryOften.JPG" align="center"
 									border='0' /></td>
 								<td width="30%" align="center"><img
-									src="graphics/disabilityVisualAid/often.jpg" align="center"
+									src="graphics/disabilityVisualAid/often.JPG" align="center"
 									border='0' /></td>
 								<td width="25%" align="center"><img
-									src="graphics/disabilityVisualAid/onceInAWhile.jpg"
+									src="graphics/disabilityVisualAid/onceInAWhile.JPG"
 									align="center" border='0' /></td>
 								<td width="20%" align="center"><img
-									src="graphics/disabilityVisualAid/almostNever.jpg"
+									src="graphics/disabilityVisualAid/almostNever.JPG"
 									align="center" border='0' /></td>
 								<td width="11%" align="center"><img
-									src="graphics/disabilityVisualAid/never.jpg" align="center"
+									src="graphics/disabilityVisualAid/never.JPG" align="center"
 									border='0' /></td>
 							</tr>
 							<tr bgcolor="white" height="80px">

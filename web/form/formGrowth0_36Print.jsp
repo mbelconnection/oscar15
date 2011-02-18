@@ -49,12 +49,14 @@
 	String[] cfgGraphic = null;
 	if(request.getParameterValues("__cfgGraphicFile")!=null) {
 		cfgGraphic = request.getParameterValues("__cfgGraphicFile");
+		//System.out.println("vvvvvvvvvvvvvvvvvvvvv");
 	}
 
   //response.sendRedirect("../form/createpdf");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
+<% response.setHeader("Cache-Control","no-cache");%>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>CDC US Growth Charts</title>
@@ -100,18 +102,23 @@
 <%
 	for (Enumeration e = prop.propertyNames() ; e.hasMoreElements() ;) {
 		String temp = e.nextElement().toString();
+		//System.out.println(temp);
 		String[] str = temp.split("date_|age_|length_|weight_|comment_|headCirc_");
 		int nC = Integer.parseInt(str[1]);
+		System.out.println(" qaz :" + nC);
 		if(nC>=nS && nC<=nE) {
+			System.out.println(" qaz :" + nS + ":" + nE + ":" + nC);
 			// swap: set tempName = 1 - 7
 			nC = nC - ((n-1)*(nE-nS+1));
 			String newName = temp.substring(0, temp.indexOf("_")+1) + nC;
+			System.out.println(" newName :" + newName);
 			String newValue = prop.getProperty(temp, "");
 			// 1-7 change to nS-nE
 			String baseName = temp;
 			String baseValue = prop.getProperty(newName, "");
 			prop.setProperty(newName,newValue);
 			prop.setProperty(baseName,baseValue);
+			//System.out.println(temp + " : " + tempName);
 		}
 	}
 

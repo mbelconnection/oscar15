@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -35,6 +35,9 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Rourke Baby Record</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 <script language="JavaScript">
 <!--		
 function setfocus() {
@@ -68,6 +71,7 @@ function setfocus() {
     String[] param2 =new String[2];
     param2[0]=request.getParameter("demographic_no");
     param2[1]="Old Rourke" ; //form_name;
+//System.out.println(param2[0]+param2[1]);
     List<Map> resultList = oscarSuperManager.find("providerDao", "search_form_no", param2);
     for (Map form : resultList) {
       bNew = false;

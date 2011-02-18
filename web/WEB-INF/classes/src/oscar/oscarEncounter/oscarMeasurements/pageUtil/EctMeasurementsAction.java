@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the
 // * Department of Family Medicine
-// * McMaster University
+// * McMaster Unviersity
 // * Hamilton
 // * Ontario, Canada
 // *
@@ -27,6 +27,7 @@ package oscar.oscarEncounter.oscarMeasurements.pageUtil;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
@@ -42,11 +43,10 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
+
 import org.oscarehr.common.dao.FlowSheetCustomizerDAO;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
 import oscar.OscarProperties;
 import oscar.oscarDB.DBHandler;
 import oscar.oscarEncounter.oscarMeasurements.MeasurementFlowSheet;
@@ -108,6 +108,8 @@ public class EctMeasurementsAction extends Action {
 
         MsgStringQuote str = new MsgStringQuote();
 
+        List messages = new LinkedList();
+
         Properties p = (Properties) session.getAttribute("providerBean");
         String by = "";
         if (p != null ){
@@ -124,14 +126,14 @@ public class EctMeasurementsAction extends Action {
         boolean valid = true;
         try
             {
-                
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                 EctValidation ectValidation = new EctValidation();
                 ActionMessages errors = new ActionMessages();
 
                 String inputValueName, inputTypeName, inputTypeDisplayName, mInstrcName, commentsName;
                 String dateName,validationName, inputValue, inputType, inputTypeDisplay, mInstrc;
                 String comments, dateObserved, validation;
-                
+                String msg = null;
                 String regExp = null;
                 double dMax = 0;
                 double dMin = 0;
@@ -155,7 +157,7 @@ public class EctMeasurementsAction extends Action {
                     comments = (String) frm.getValue(commentsName);
                     dateObserved = (String) frm.getValue(dateName);
 
-                 
+                    msg = null;
                     regExp = null;
                     dMax = 0;
                     dMin = 0;
@@ -235,16 +237,16 @@ public class EctMeasurementsAction extends Action {
                             String sql = "SELECT * FROM measurements WHERE demographicNo='"+demographicNo+ "' AND dataField='"+inputValue
                                         +"' AND measuringInstruction='" + mInstrc + "' AND comments='" + comments
                                         + "' AND dateObserved='" + dateObserved + "' and type = '"+inputType+"'";
-
-                            rs = DBHandler.GetSQL(sql);
+                            //System.out.println(sql);
+                            rs = db.GetSQL(sql);
                             if(!rs.next()){
                                 //Write to the Dababase if all input values are valid
                                 sql = "INSERT INTO measurements"
                                         +"(type, demographicNo, providerNo, dataField, measuringInstruction, comments, dateObserved, dateEntered)"
                                         +" VALUES ('"+str.q(inputType)+"','"+str.q(demographicNo)+"','"+str.q(providerNo)+"','"+str.q(inputValue)+"','"
                                         + str.q(mInstrc)+"','"+str.q(comments)+"','"+str.q(dateObserved)+"','"+str.q(dateEntered)+"')";
-
-                                DBHandler.RunSQL(sql);
+                                //System.out.println(sql);
+                                db.RunSQL(sql);
                                 //prepare input values for writing to the encounter form
                                 if (mFlowsheet == null){
                                     textOnEncounter =  textOnEncounter + inputType + "    " + inputValue + " " + mInstrc + " " + comments + "\\n";
@@ -257,7 +259,7 @@ public class EctMeasurementsAction extends Action {
 
                     }
                     textOnEncounter = textOnEncounter + "**********************************************************************************\\n";
-
+                    //System.out.println(textOnEncounter);
                 }
                 else{
                     String groupName = (String) frm.getValue("groupName");
@@ -280,7 +282,7 @@ public class EctMeasurementsAction extends Action {
             }
             catch(SQLException e)
             {
-                MiscUtils.getLogger().error("Error", e);
+                System.out.println(e.getMessage());
             }
 
 

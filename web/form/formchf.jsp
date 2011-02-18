@@ -22,6 +22,8 @@
   if(session.getValue("user") == null || !( ((String) session.getValue("userprofession")).equalsIgnoreCase("doctor") ))
     response.sendRedirect("../logout.jsp");
 %>
+
+<%@ page language="java"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
@@ -31,8 +33,11 @@
 
 
 <html:html locale="true">
+<% response.setHeader("Cache-Control","no-cache");%>
+
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Congestive Heart Failure Record</title>
 
 <style type="text/css" media="print">

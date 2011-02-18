@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -34,7 +34,7 @@
 <jsp:useBean id="daySheetBean" class="oscar.AppointmentMainBean"
 	scope="page" />
 <jsp:useBean id="nameBean" class="java.util.Properties" scope="page" />
-
+<%@ include file="../admin/dbconnection.jsp"%>
 <% 
   String [][] dbQueries=new String[][] { 
 {"search_encounter", "select e.*, d.* from encounter e LEFT JOIN demographicaccessory d ON e.demographic_no=d.demographic_no where e.encounter_no<? order by e.demographic_no, e.encounter_date, e.encounter_time" }, 
@@ -47,6 +47,8 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>ECHART SHEET</title>
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv=Expires content=-1>
 </head>
 <body>
 busy ...
@@ -94,12 +96,14 @@ busy ...
     encounter += "\n[Signed on " + rsdemo.getString("e.encounter_date")  + " " + rsdemo.getString("e.encounter_time")+ " by " + nameBean.get(provider_no) + "]\n\n" ;
     asql = "insert into eChart values ("+ ectno +", '"+ timestamp + "', " + demographic_no +", '"+ provider_no +"', '"
 	      +Misc.charEscape( socialhistory, '\'' ) + "', '" +Misc.charEscape( familyhistory,'\'')  + "', '" +Misc.charEscape( medicalhistory,'\'' ) +"', '" +Misc.charEscape( ongoingconcerns, '\'') +"', '" +Misc.charEscape( reminders, '\'')  +"', '" + Misc.charEscape( encounter, '\'' ) + "' ); \n" ;
+//    System.out.println(timestamp+"  ******"+ demographic_no +"  ******"+  nameBean.get(provider_no) +encounter);
     
   }
 
   inf.write(asql);
   inf.close();
   
+  daySheetBean.closePstmtConn();
 %>
 
 done.

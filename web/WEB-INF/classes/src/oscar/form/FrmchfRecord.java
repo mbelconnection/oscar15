@@ -8,15 +8,17 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. * * You should have
  * received a copy of the GNU General Public License along with this program; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. * <OSCAR
- * TEAM> This software was written for the Department of Family Medicine McMaster University
+ * TEAM> This software was written for the Department of Family Medicine McMaster Unviersity
  * Hamilton Ontario, Canada
  */
 package oscar.form;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Properties;
-
+// if we are going to access or write meausurements we should..
+// import oscar.oscarEncounter.oscarMeasurements;
 import oscar.oscarDB.DBHandler;
 import oscar.util.UtilDateUtilities;
 
@@ -25,25 +27,25 @@ public class FrmchfRecord extends FrmRecord {
         Properties props = new Properties();
   
         if (existingID <= 0) {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
    
             String sql = "SELECT demographic_no, CONCAT(last_name, ', ', first_name) AS pName, "
                     + "sex, year_of_birth, month_of_birth, date_of_birth "
                     + "FROM demographic WHERE demographic_no = " + demographicNo;
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
 
             if (rs.next()) {
-                java.util.Date dob = UtilDateUtilities.calcDate(oscar.Misc.getString(rs, "year_of_birth"), rs
-                        .getString("month_of_birth"), oscar.Misc.getString(rs, "date_of_birth"));
+                java.util.Date dob = UtilDateUtilities.calcDate(db.getString(rs,"year_of_birth"), rs
+                        .getString("month_of_birth"), db.getString(rs,"date_of_birth"));
 
-                props.setProperty("demographic_no", oscar.Misc.getString(rs, "demographic_no"));
-                props.setProperty("pName", oscar.Misc.getString(rs, "pName"));
+                props.setProperty("demographic_no", db.getString(rs,"demographic_no"));
+                props.setProperty("pName", db.getString(rs,"pName"));
                 props.setProperty("formCreated", UtilDateUtilities.DateToString(UtilDateUtilities.Today(),
                         "yyyy/MM/dd"));
                 //props.setProperty("formEdited",
                 // UtilDateUtilities.DateToString(UtilDateUtilities.Today(), "yyyy/MM/dd"));
                 props.setProperty("birthDate", UtilDateUtilities.DateToString(dob, "yyyy/MM/dd"));
-                props.setProperty("sex", oscar.Misc.getString(rs, "sex"));
+                props.setProperty("sex", db.getString(rs,"sex"));
  
             }
             rs.close();
@@ -53,12 +55,13 @@ public class FrmchfRecord extends FrmRecord {
             props = (new FrmRecordHelp()).getFormRecord(sql);
         }
 
+        //props.list(System.out);
         return props;
     }
 
     public int saveFormRecord(Properties props) throws SQLException {
         String demographic_no = props.getProperty("demographic_no");
-        // 
+        // DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         String sql = "SELECT * FROM formchf WHERE demographic_no=" + demographic_no + " AND ID=0";
 
         return ((new FrmRecordHelp()).saveFormRecord(props, sql));

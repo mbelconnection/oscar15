@@ -31,9 +31,9 @@ package oscar.oscarEncounter.oscarMeasurements.data;
 import java.util.Date;
 
 public class Measurements {
-    private Long    id;
+    private Integer id;
     private String  type;
-    private Long    demographicNo;
+    private Integer demographicNo;
     private String  providerNo;
     private String  dataField;
     private String  measuringInstruction;
@@ -42,11 +42,11 @@ public class Measurements {
     private Date    dateEntered;
     
     /** Creates a new instance of Measurements */
-    public Measurements(Long demographicNo) {
+    public Measurements(Integer demographicNo) {
 	this.setDemographicNo(demographicNo);
     }
     
-    public Measurements(Long demographicNo, String providerNo) {
+    public Measurements(Integer demographicNo, String providerNo) {
         this.setDemographicNo(demographicNo);
         this.setProviderNo(providerNo);
     }
@@ -55,10 +55,10 @@ public class Measurements {
     
     
     
-    public Long getId() {
+    public Integer getId() {
 	return this.id;
     }
-    public void setId(Long id) {
+    public void setId(Integer id) {
 	this.id = id;
     }
     
@@ -69,10 +69,10 @@ public class Measurements {
 	this.type = type;
     }
     
-    public Long getDemographicNo() {
+    public Integer getDemographicNo() {
 	return this.demographicNo;
     }
-    public void setDemographicNo(Long demographicNo) {
+    public void setDemographicNo(Integer demographicNo) {
 	this.demographicNo = demographicNo;
     }
     

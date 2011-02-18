@@ -40,20 +40,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
-import org.oscarehr.util.SpringUtils;
-
-import oscar.entities.BillingDxCode;
+import oscar.oscarDB.DBHandler;
 import oscar.util.UtilDateUtilities;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.oscarehr.util.SpringUtils;
+import oscar.entities.BillingDxCode;
 
 /**
  *
  * @author jay
  */
 public class DxReference {
-    private static final Logger _log = MiscUtils.getLogger();
+    private static final Log _log = LogFactory.getLog(DxReference.class);
     BillingDxCodeDAO dxCode = (BillingDxCodeDAO) SpringUtils.getBean("BillingDxCodeDAO");
 
     /** Creates a new instance of DxReference */
@@ -67,16 +67,16 @@ public class DxReference {
 | 250      |          |          | 20061114     |
 +----------+----------+----------+--------------+
      */
-    
+
     /*
      * method looks in a paitnest
      */
-    public List getLatestDxCodes(String demo){     
-       ArrayList list = new ArrayList(); 
+    public List getLatestDxCodes(String demo){
+       ArrayList list = new ArrayList();
        String nsql ="select dx_code1, dx_code2, dx_code3,service_date from billingmaster where demographic_no = ? and billingstatus != 'D' order by service_date desc";
        try {
-            
-            PreparedStatement pstmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(nsql);
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            PreparedStatement pstmt = DBHandler.getConnection().prepareStatement(nsql);
             pstmt.setString(1,demo);
             ResultSet rs = pstmt.executeQuery();
             Map m = new HashMap();
@@ -88,7 +88,7 @@ public class DxReference {
                 dx[2] = rs.getString("dx_code3");
                 Date sD = UtilDateUtilities.StringToDate(sDate,"yyyyMMdd") ;
                 _log.debug("THIS IS THE DATE: "+sDate +" DATE PARSED "+sD);
-                       
+
                 for (int i = 0; i < dx.length; i++){
                     if (dx[i] != null && !dx[i].trim().equals("")){
                         DxCode code = new DxCode(sD,dx[i]);
@@ -102,28 +102,28 @@ public class DxReference {
             }
             pstmt.close();
        }catch (SQLException e) {
-          MiscUtils.getLogger().error("Error", e);
+          e.printStackTrace();
        }
        Collections.sort(list);
-       
+
        return list;
     }
-    
+
     private void fillDxCodeDescrition(DxCode code){
-         
+
          List<BillingDxCode> dxCodeList = dxCode.getByDxCode(code.getDx());
          BillingDxCode bdc = dxCodeList.get(0);
          code.setDesc(bdc.getDescription());
     }
-    
+
 
     public class DxCode implements Comparable{
-        
+
         public DxCode(Date d, String dx){
             this.setDx(dx);
             this.setDate(d);
         }
-        
+
         private String dx = null;
         private Date date = null;
         private String desc = null;
@@ -151,15 +151,15 @@ public class DxReference {
         public String getDesc(){
             return this.desc;
         }
-        
-        
+
+
         public int getNumMonthSinceDate(){
             return getNumMonths(date,Calendar.getInstance().getTime());
         }
         public int getNumMonthsSinceDate(Date d){
-            return getNumMonths(date,d); 
-        }   
-    
+            return getNumMonths(date,d);
+        }
+
         private int getNumMonths(Date dStart, Date dEnd) {
             int i = 0;
             try{
@@ -183,7 +183,7 @@ public class DxReference {
             if (d == null && date == null) return 0;
             if (d == null && date != null) return -1;
             if (d != null && date == null) return 1;
-            
+
             if (date.after(d)){
                 return 1;
             }else if (date.before(d)){
@@ -192,6 +192,6 @@ public class DxReference {
             return 0;
         }
     }
-    
-    
+
+
 }

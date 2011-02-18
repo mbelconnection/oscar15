@@ -1,3 +1,6 @@
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+<%@ page language="java"%>
 <%@ page
 	import="oscar.oscarMessenger.docxfer.send.*,oscar.oscarMessenger.docxfer.util.*, oscar.oscarEncounter.data.*, oscar.oscarEncounter.pageUtil.EctSessionBean "%>
 <%@  page
@@ -16,6 +19,7 @@ String pdfTitle = (String) request.getParameter("pdfTitle");
 
 %>
 
+<%@ include file="../admin/dbconnection.jsp"%>
 
 
 

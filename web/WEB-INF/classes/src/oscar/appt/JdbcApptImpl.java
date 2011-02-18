@@ -4,11 +4,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
-import org.oscarehr.util.SpringUtils;
 
 import oscar.SxmlMisc;
 import oscar.oscarBilling.ca.on.data.BillingONDataHelp;
-import oscar.service.OscarSuperManager;
 import oscar.util.UtilDateUtilities;
 
 public class JdbcApptImpl {
@@ -16,13 +14,16 @@ public class JdbcApptImpl {
 	BillingONDataHelp dbObj = new BillingONDataHelp();
 
 	public boolean deleteAppt(String apptNo) {
-                OscarSuperManager oscarSuperManager = (OscarSuperManager)SpringUtils.getBean("oscarSuperManager");
-                oscarSuperManager.update("appointmentDao", "archive_appt", new String[]{apptNo});
-                int retval = oscarSuperManager.update("appointmentDao", "delete", new String[]{apptNo});
-		if (retval==1) {
-			_logger.error("deleteAppt(id=" + apptNo + ")");
+		boolean retval = false;
+		String sql = "delete from appointment where appointment_no=" + apptNo;
+		// _logger.info("deleteAppt(sql = " + sql + ")");
+
+		retval = dbObj.updateDBRecord(sql);
+
+		if (retval) {
+			_logger.error("deleteAppt(sql = " + sql + ")");
 		}
-		return (retval==1);
+		return retval;
 	}
 
 	public String getLocationFromSchedule(String apptDate, String provider_no) {

@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -35,7 +35,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -54,22 +53,22 @@ public class RptRehabStudyAction extends Action {
         String endDate = frm.getEndDate();
         String results = "<table>";
         try{
-                
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);    
             String sql = "select * from " + formName + " limit 1"; 
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if(rs.next())
                 results = results + getHeadingStructure(rs);
             rs.close();
             
             sql = "select max(formEdited) as formEdited, demographic_no from " + formName + " where formEdited > '" + startDate +
                   "' and formEdited < '" + endDate + "' group by demographic_no";
-            MiscUtils.getLogger().debug("sql:" + sql);
-            rs = DBHandler.GetSQL(sql);
+            System.out.println("sql:" + sql);
+            rs = db.GetSQL(sql);
             while(rs.next()){
                 String sqlDemo =   "SELECT * FROM " + formName + " where demographic_no='" + rs.getString("demographic_no")
                                  + "' AND formEdited='" + rs.getString("formEdited") + "'";
-                MiscUtils.getLogger().debug("sqlDemo:" + sqlDemo);
-                ResultSet rsDemo = DBHandler.GetSQL(sqlDemo);
+                System.out.println("sqlDemo:" + sqlDemo);
+                ResultSet rsDemo = db.GetSQL(sqlDemo);
                 //if(rsDemo.next())                    
                     results = results + getStructure(rsDemo);
                 rsDemo.close();                    
@@ -77,7 +76,7 @@ public class RptRehabStudyAction extends Action {
             rs.close();
         }
         catch(SQLException e){
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
             
         results = results + "</table>";
@@ -90,7 +89,7 @@ public class RptRehabStudyAction extends Action {
     public String getHeadingStructure(ResultSet rs) throws SQLException {
 
         // assuming  multiple rows in rs
-	StringBuilder sb = new StringBuilder();
+	StringBuffer sb = new StringBuffer();
 
 	ResultSetMetaData rsmd = rs.getMetaData();
 	int columns = rsmd.getColumnCount();	
@@ -111,17 +110,17 @@ public class RptRehabStudyAction extends Action {
     public String getStructure(ResultSet rs) throws SQLException {
 
         // assuming  multiple rows in rs
-	StringBuilder sb = new StringBuilder();
+	StringBuffer sb = new StringBuffer();
 
 	ResultSetMetaData rsmd = rs.getMetaData();
 	int columns = rsmd.getColumnCount();
 	//String rowColor="rowColor1";
 	String[] columnNames = new String[columns];
-	MiscUtils.getLogger().debug("number of columns: " + Integer.toString(columns));
+	System.out.println("number of columns: " + Integer.toString(columns));
 	while (rs.next()) {                
 		sb.append("<tr>");
 		for(int j=0; j<columns; j++) {
-                        MiscUtils.getLogger().debug("columns " + Integer.toString(j));
+                        System.out.println("columns " + Integer.toString(j));
 			sb.append("<td>");                        
 			sb.append(rs.getString(j+1));
 			sb.append("</td>");

@@ -1,3 +1,5 @@
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
 <%--
 The taglib directive below imports the JSTL library. If you uncomment it,
 you must also add the JSTL library to the project. The Add Library... action
@@ -41,6 +43,7 @@ pageContext.setAttribute("forwardToOnSuccess",request.getAttribute("forwardToOnS
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/phr/phr.css"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>PHR Call</title>
         <script type="text/javascript" language="JavaScript" src="<%=request.getContextPath()%>/share/javascript/prototype.js"></script>
         <script type="text/javascript" language="JavaScript" src="<%=request.getContextPath()%>/phr/phr.js"></script>

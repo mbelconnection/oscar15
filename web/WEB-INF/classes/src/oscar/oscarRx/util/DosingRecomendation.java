@@ -32,8 +32,6 @@ package oscar.oscarRx.util;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import org.oscarehr.util.MiscUtils;
-
 /**
  *
  * @author jay
@@ -102,7 +100,7 @@ public class DosingRecomendation {
         try{
             String toParse  = (String) doseVal.get("clcrrange");
 
-            MiscUtils.getLogger().debug("TO PARSE: "+toParse);
+            System.out.println("TO PARSE: "+toParse);
             if (toParse == null){
                return false;    
             }
@@ -143,7 +141,7 @@ public class DosingRecomendation {
             
             
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return valueInRange;
     }

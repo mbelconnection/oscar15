@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -32,7 +32,7 @@
 	errorPage="../appointment/errorpage.jsp"%>
 <jsp:useBean id="baseurlBean" class="oscar.AppointmentMainBean"
 	scope="page" />
-
+<%@ include file="../admin/dbconnection.jsp"%>
 <% 
   String [][] dbQueries=new String[][] { 
     {"delete_baseurl", "delete from property where name = ?"}, 
@@ -53,7 +53,8 @@
     rowsAffected1 = baseurlBean.queryExecuteUpdate(request.getParameter("resource_baseurl"), "add_resource");
     out.println("<script language=\"JavaScript\"><!--");
     out.println("self.close();");
-    out.println("//--></SCRIPT>");  
+    out.println("//--></SCRIPT>");
+    baseurlBean.closePstmtConn();  
   }
 %>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
@@ -62,6 +63,8 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="admin.resourcebaseurl.title" /></title>
+<meta http-equiv="Expires" content="Monday, 8 Aug 88 18:18:18 GMT">
+<meta http-equiv="Cache-Control" content="no-cache">
 <LINK REL="StyleSheet" HREF="../web.css" TYPE="text/css">
 <script language="JavaScript">
 <!--

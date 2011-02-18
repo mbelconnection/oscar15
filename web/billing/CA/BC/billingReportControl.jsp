@@ -18,11 +18,12 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */ 
 -->
+<%@ page language="java" contentType="text/html"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
@@ -39,15 +40,14 @@
   if(request.getParameter("limit2")!=null) strLimit2 = request.getParameter("limit2");
   String providerview = request.getParameter("providerview")==null?"all":request.getParameter("providerview") ;
 %>
-<jsp:useBean id="oscarVariables" class="java.util.Properties" scope="session" />
 <%@ page
 	import="java.math.*,java.util.*, java.sql.*, oscar.*, java.net.*"
 	errorPage="errorpage.jsp"%>
-
+<%@ include file="../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
 <jsp:useBean id="SxmlMisc" class="oscar.SxmlMisc" scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 <%
 GregorianCalendar now=new GregorianCalendar();
   int curYear = now.get(Calendar.YEAR);
@@ -70,6 +70,8 @@ GregorianCalendar now=new GregorianCalendar();
 <title>Billing Report</title>
 
 <link rel="stylesheet" type="text/css" media="all" href="../share/css/extractedFromPages.css"  />
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 <script language="JavaScript">
 <!--
 
@@ -190,27 +192,27 @@ String billinggroup_no;
 <% } else {  
 if (reportAction.compareTo("unbilled") == 0) {
 %>
-<%@ include file="billingReport_unbilled.jspf"%>
+<%@ include file="billingReport_unbilled.jsp"%>
 <%
 } else {
 %>
 <%
 if (reportAction.compareTo("billed") == 0) {
 %>
-<%@ include file="billingReport_billed.jspf"%>
+<%@ include file="billingReport_billed.jsp"%>
 <%
 }else{
 if (reportAction.compareTo("unsettled") == 0) {
 %>
-<%@ include file="billingReport_unsettled.jspf"%>
+<%@ include file="billingReport_unsettled.jsp"%>
 <%}else{
 if (reportAction.compareTo("billob") == 0) {
 %>
-<%@ include file="billingReport_billob.jspf"%>
+<%@ include file="billingReport_billob.jsp"%>
 <%	}else{
 		if (reportAction.compareTo("flu") == 0) {
 %>
-<%@ include file="billingReport_flu.jspf"%>
+<%@ include file="billingReport_flu.jsp"%>
 <%
 
 		}  
@@ -221,6 +223,7 @@ if (reportAction.compareTo("billob") == 0) {
 
 
 <%
+ apptMainBean.closePstmtConn();
   %>
 
 <%@ include file="../../../demographic/zfooterbackclose.jsp"%>

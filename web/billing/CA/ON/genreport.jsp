@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -34,7 +34,7 @@ if(session.getValue("user") == null) response.sendRedirect("../../../logout.jsp"
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
 <jsp:useBean id="SxmlMisc" class="oscar.SxmlMisc" scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 
 <% 
 boolean bHybridBilling = false;
@@ -45,6 +45,7 @@ if(oscarVariables.getProperty("hybrid_billing", "").equalsIgnoreCase("on")) {
 	String[] temp = proList.split("\\,");
 	for(int i = 0; i<temp.length; i++) {
 	    vecGrpBillingPro.add(temp[i].trim());
+	    //System.out.println(vecGrpBillingPro);
 	}
 }
 
@@ -209,6 +210,7 @@ if (provider.compareTo("all") == 0 ){
 		extract.writeHtml(htmlcontext);
 	}
 }
+apptMainBean.closePstmtConn();
 
 %>
 

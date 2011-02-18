@@ -1,10 +1,5 @@
-<%-- 
-    Document   : LimitedUseCode
-    Created on : Apr 15, 2010, 1:02:38 PM
-    Author     : jackson
---%>
-
-<%@page %><%@page import="oscar.oscarDemographic.data.*,oscar.oscarDemographic.data.DemographicData.Demographic"%>
+<%@page contentType="text/html"%><%@page pageEncoding="UTF-8"%>
+<%@page import="oscar.oscarDemographic.data.*,oscar.oscarDemographic.data.DemographicData.Demographic"%>
 <%@page import="oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBeanHandler,java.util.*,oscar.oscarRx.util.*" %>
 <%@page import="oscar.oscarLab.ca.on.*,oscar.util.*,oscar.oscarLab.*" %>
 
@@ -14,6 +9,7 @@
             ArrayList<LimitedUseCode> luList = LimitedUseLookup.getLUInfoForDin(din);
 
             if (luList != null){
+            System.out.println("inside luList size is "+luList.size());
      %>
             <div style="float:left; margin-left:2px; margin-right: 2px;">
             <table style="border-width: 1px; border-spacing: 2px; border-style: outset; border-color: black;">

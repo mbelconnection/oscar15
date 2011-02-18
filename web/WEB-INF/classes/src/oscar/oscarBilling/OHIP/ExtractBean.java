@@ -20,7 +20,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the
 // * Department of Family Medicine
-// * McMaster University
+// * McMaster Unviersity
 //* Hamilton
 // * Ontario, Canada
 // *
@@ -34,16 +34,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.OscarProperties;
 import oscar.oscarBilling.data.BillingONDataHelp;
 import oscar.util.UtilDateUtilities;
 public class ExtractBean extends Object implements Serializable {
-    private static Logger logger=MiscUtils.getLogger(); 
-
-    private String apptDate;
+	private String apptDate;
 	private String batchCount = "";
 	private String batchHeader;
 	private int batchOrder = 0;
@@ -378,7 +373,7 @@ public class ExtractBean extends Object implements Serializable {
 				invCount = 0;
 				query = "select * from billingdetail where billing_no='"
 						+ invNo + "' and status='" + specCode + "'";
-
+				//System.out.println(query);
 				ResultSet rs2 = dbObj.searchDBRecord(query);
 				while (rs2.next()) {
 					recordCount++;
@@ -510,15 +505,22 @@ public class ExtractBean extends Object implements Serializable {
 	public void writeFile(String value1) {
 		try {
 			String home_dir;
+			/*
+			 * String userHomePath = System.getProperty("user.home",
+			 * "user.dir"); //System.out.println(userHomePath); File pFile =
+			 * new File(userHomePath, oscar_home); FileInputStream pStream =
+			 * new FileInputStream(pFile.getPath()); Properties ap = new
+			 * Properties(); ap.load(pStream); pStream.close();
+			 */
 			home_dir = OscarProperties.getInstance().getProperty("HOME_DIR");
 			FileOutputStream out = new FileOutputStream(home_dir + ohipFilename);
 			PrintStream p = new PrintStream(out);
 			p.println(value1);
-
+			//System.out.println(sqlE.record);
 			p.close();
 			out.close();
 		} catch (Exception e) {
-			logger.error("Unexpected error", e);
+			System.err.println("Write OHIP File Error");
 		}
 	}
 	// get path from the property file, e.g.
@@ -528,7 +530,7 @@ public class ExtractBean extends Object implements Serializable {
 			String home_dir1;
 			/*
 			String userHomePath1 = System.getProperty("user.home", "user.dir");
-
+			// System.out.println(userHomePath);
 			File pFile1 = new File(userHomePath1, oscar_home);
 			FileInputStream pStream1 = new FileInputStream(pFile1.getPath());
 			Properties ap1 = new Properties();
@@ -536,16 +538,16 @@ public class ExtractBean extends Object implements Serializable {
 			pStream1.close();
 			*/
 			home_dir1 = OscarProperties.getInstance().getProperty("HOME_DIR");
-
+			//System.out.println("!!!" + home_dir1);
 			FileOutputStream out1 = new FileOutputStream(home_dir1
 					+ htmlFilename);
 			PrintStream p1 = new PrintStream(out1);
 			p1.println(htmlvalue1);
-
+			//System.out.println(sqlE.record);
 			p1.close();
 			out1.close();
 		} catch (Exception e) {
-			logger.error("Unexpected error", e);
+			System.err.println("Write HTML File Error!!!");
 		}
 	}
 	// return x zero str, e.g. 000000

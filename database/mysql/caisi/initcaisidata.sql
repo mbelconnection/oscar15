@@ -8,113 +8,15 @@ insert into provider_facility values (999998, (select id from Facility where nam
 
 -- default roles
 INSERT INTO `caisi_role` VALUES (1,'doctor',0,'',now()),(2,'nurse',0,'',now()),(3,'counsellor',0,'',now()),(4,'csw',0,'',now());
-insert into caisi_role (name,userDefined,oscar_name,update_date) values('psychiatrist', 1,'',now());
-insert into caisi_role (name,userDefined,oscar_name,update_date) values('RN', 1,'',now());
-insert into caisi_role (name,userDefined,oscar_name,update_date) values('RPN',1,'',now());
-insert into caisi_role (name,userDefined,oscar_name,update_date) values('Nurse Manager', 1,'',now());
-insert into caisi_role (name,userDefined,oscar_name,update_date) values('Clinical Social Worker',1,'',now());
-insert into caisi_role (name,userDefined,oscar_name,update_date) values('Clinical Case Manager',1,'',now());
-insert into caisi_role (name,userDefined,oscar_name,update_date) values('Medical Secretary', 1,'',now());
-insert into caisi_role (name,userDefined,oscar_name,update_date) values('Clinical Assistant', 1,'',now());
-insert into caisi_role (name,userDefined,oscar_name,update_date) values('secretary', 1,'',now());
-insert into caisi_role (name,userDefined,oscar_name,update_date) values('Case Manager',1,'',now());
-insert into caisi_role (name,userDefined,oscar_name,update_date) values('Housing Worker', 1,'',now());
-insert into caisi_role (name,userDefined,oscar_name,update_date) values('Support Worker', 1,'',now());
-insert into caisi_role (name,userDefined,oscar_name,update_date) values('Client Service Worker', 1,'',now());
-insert into caisi_role (name,userDefined,oscar_name,update_date) values('Recreation Therapist', 1,'',now());
 
--- access types
 INSERT INTO `access_type` VALUES (1,'write doctor issues','access'),(2,'read doctor issues','access'),(3,'read doctor notes','access'),(4,'read doctor ticklers','access'),
 (5,'write nurse issues','access'),(6,'read nurse issues','access'),(7,'read nurse notes','access'),(8,'read nurse ticklers','access'),
 (9,'write counsellor issues','access'),(10,'read counsellor issues','access'),(11,'read counsellor notes','access'),(12,'read counsellor ticklers','access'),
 (13,'write csw issues','access'),(14,'read csw issues','access'),(15,'read csw notes','access'),(16,'read csw ticklers','access')
 ;
 
+-- access types
 INSERT INTO `access_type` (name,type) VALUES ('Write Ticklers','Action'),('prescription Write','access'),('billing','access'),('medical encounter','access'),('immunization','access'),('prevention','access'),('oscarcomm','access'),('disease registry','access'),('medical form','access'),('measurements','access'),('eform','access'),('lab','access'),('prescription Read','access'),('read ticklers','access'),('master file','access'),('Service restriction override on referral','access'),('Service restriction override on admission','access'),('Create service restriction','access'),('Disable service restriction','access');
-
-insert into access_type (name, type) values("read ticklers assigned to a doctor","access");
-
-insert into access_type (name, type) values("read ticklers assigned to a psychiatrist","access");
-insert into access_type (name, type) values("write psychiatrist issues","access");
-insert into access_type (name, type) values("read psychiatrist issues","access");
-insert into access_type (name, type) values("read psychiatrist notes","access");
-
-insert into access_type (name, type) values("read ticklers assigned to a RN","access");
-insert into access_type (name, type) values("write RN issues","access");
-insert into access_type (name, type) values("read RN issues","access");
-insert into access_type (name, type) values("read RN notes","access");
-
-insert into access_type (name, type) values("read ticklers assigned to a RPN","access");
-insert into access_type (name, type) values("write RPN issues","access");
-insert into access_type (name, type) values("read RPN issues","access");
-insert into access_type (name, type) values("read RPN notes","access");
-
-insert into access_type (name, type) values("read ticklers assigned to a Nurse Manager","access");
-insert into access_type (name, type) values("write Nurse Manager issues","access");
-insert into access_type (name, type) values("read Nurse Manager issues","access");
-insert into access_type (name, type) values("read Nurse Manager notes","access");
-
-insert into access_type (name, type) values("read ticklers assigned to a Clinical Social Worker","access");
-insert into access_type (name, type) values("write Clinical Social Worker issues","access");
-insert into access_type (name, type) values("read Clinical Social Worker issues","access");
-insert into access_type (name, type) values("read Clinical Social Worker notes","access");
-
-insert into access_type (name, type) values("read ticklers assigned to a Clinical Case Manager","access");
-insert into access_type (name, type) values("write Clinical Case Manager issues","access");
-insert into access_type (name, type) values("read Clinical Case Manager issues","access");
-insert into access_type (name, type) values("read Clinical Case Manager notes","access");
-
-insert into access_type (name, type) values("read ticklers assigned to a counsellor","access");
-
-insert into access_type (name, type) values("read ticklers assigned to a Case Manager","access");
-insert into access_type (name, type) values("write Case Manager issues","access");
-insert into access_type (name, type) values("read Case Manager issues","access");
-insert into access_type (name, type) values("read Case Manager notes","access");
-
-insert into access_type (name, type) values("read ticklers assigned to a Housing Worker","access");
-insert into access_type (name, type) values("write Housing Worker issues","access");
-insert into access_type (name, type) values("read Housing Worker issues","access");
-insert into access_type (name, type) values("read Housing Worker notes","access");
-
-insert into access_type (name, type) values("read ticklers assigned to a Medical Secretary","access");
-insert into access_type (name, type) values("write Medical Secretary issues","access");
-insert into access_type (name, type) values("read Medical Secretary issues","access");
-insert into access_type (name, type) values("read Medical Secretary notes","access");
-
-insert into access_type (name, type) values("read ticklers assigned to a Clinical Assistant","access");
-insert into access_type (name, type) values("write Clinical Assistant issues","access");
-insert into access_type (name, type) values("read Clinical Assistant issues","access");
-insert into access_type (name, type) values("read Clinical Assistant notes","access");
-
-insert into access_type (name, type) values("read ticklers assigned to a secretary","access");
-insert into access_type (name, type) values("write secretary issues","access");
-insert into access_type (name, type) values("read secretary issues","access");
-insert into access_type (name, type) values("read secretary notes","access");
-
-insert into access_type (name, type) values("read ticklers assigned to a Support Worker","access");
-insert into access_type (name, type) values("write Support Worker issues","access");
-insert into access_type (name, type) values("read Support Worker issues","access");
-insert into access_type (name, type) values("read Support Worker notes","access");
-
-insert into access_type (name, type) values("read ticklers assigned to a Client Service Worker","access");
-insert into access_type (name, type) values("write Client Service Worker issues","access");
-insert into access_type (name, type) values("read Client Service Worker issues","access");
-insert into access_type (name, type) values("read Client Service Worker notes","access");
-
-insert into access_type (name, type) values("read ticklers assigned to a Recreation Therapist","access");
-insert into access_type (name, type) values("write Recreation Therapist issues","access");
-insert into access_type (name, type) values("read Recreation Therapist issues","access");
-insert into access_type (name, type) values("read Recreation Therapist notes","access");
-
-insert into access_type (name, type) values("read ticklers assigned to a property staff","access");
-insert into access_type (name, type) values("write property staff issues","access");
-insert into access_type (name, type) values("read property staff issues","access");
-insert into access_type (name, type) values("read property staff notes","access");
-
-insert into access_type (name, type) values("read ticklers assigned to a Support Counsellor","access");
-insert into access_type (name, type) values("write Support Counsellor issues","access");
-insert into access_type (name, type) values("read Support Counsellor issues","access");
-insert into access_type (name, type) values("read Support Counsellor notes","access");
 
 -- access types for quatro shelter
 insert into access_type (name, type) values("Sex restriction override on referral","access");
@@ -134,1145 +36,26 @@ insert into access_type	(name, type) values("Run Report Runner","access");
 insert into access_type	(name, type) values("Design Reports","access");
 
 -- default role access (global) (doctor gets all)
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read ticklers assigned to a doctor'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read doctor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='write doctor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read doctor notes'));
+insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='doctor'),(select access_id from access_type where name='Write Ticklers'));
+insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='doctor'),(select access_id from access_type where name='prescription Write'));
+insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='doctor'),(select access_id from access_type where name='billing'));
+insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='doctor'),(select access_id from access_type where name='medical encounter'));
+insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='doctor'),(select access_id from access_type where name='immunization'));
+insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='doctor'),(select access_id from access_type where name='prevention'));
+insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='doctor'),(select access_id from access_type where name='oscarcomm'));
+insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='doctor'),(select access_id from access_type where name='disease registry'));
+insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='doctor'),(select access_id from access_type where name='medical form'));
+insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='doctor'),(select access_id from access_type where name='measurements'));
+insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='doctor'),(select access_id from access_type where name='eform'));
+insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='doctor'),(select access_id from access_type where name='lab'));
+insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='doctor'),(select access_id from access_type where name='prescription Read'));
+insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='doctor'),(select access_id from access_type where name='read ticklers'));
+insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='doctor'),(select access_id from access_type where name='master file'));
+insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='doctor'),(select access_id from access_type where name='Run Report Runner'));
+insert into default_role_access (role_id,access_id) values ((select role_id from caisi_role where name='doctor'),(select access_id from access_type where name='Design Reports'));
 
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read ticklers assigned to a psychiatrist'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read psychiatrist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='write psychiatrist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read psychiatrist notes'));
 
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read ticklers assigned to a RN'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read RN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='write RN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read RN notes'));
 
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read ticklers assigned to a RPN'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read RPN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='write RPN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read RPN notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read ticklers assigned to a Nurse Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read Nurse Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='write Nurse Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read Nurse Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read ticklers assigned to a Clinical Social Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read Clinical Social Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='write Clinical Social Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read Clinical Social Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read ticklers assigned to a Clinical Case Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read Clinical Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='write Clinical Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read Clinical Case Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read ticklers assigned to a counsellor'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='write counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read counsellor notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read ticklers assigned to a Case Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='write Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read Case Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read ticklers assigned to a Housing Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read Housing Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='write Housing Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read Housing Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read ticklers assigned to a Medical Secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='write Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read Medical Secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read ticklers assigned to a Clinical Assistant'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='write Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read Clinical Assistant notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read ticklers assigned to a secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='write secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read ticklers assigned to a Support Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read Support Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='write Support Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read Support Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read ticklers assigned to a Client Service Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read Client Service Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='write Client Service Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read Client Service Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read ticklers assigned to a Recreation Therapist'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read Recreation Therapist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='write Recreation Therapist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read Recreation Therapist notes'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read Support Counsellor notes'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read property staff notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='Write Ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='prescription Write'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='billing'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='medical encounter'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='immunization'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='prevention'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='oscarcomm'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='disease registry'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='medical form'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='measurements'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='eform'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='lab'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='prescription Read'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='master file'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='Perform program registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='perform registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='perform admissions'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='perform discharges'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='perform bed assignments'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='print bed rosters and reports'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='Run Report Runner'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='Design Reports'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='read nurse issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='doctor'),(select access_id from access_type where name='write nurse issues'));
-
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read ticklers assigned to a doctor'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read doctor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='write doctor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read doctor notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read ticklers assigned to a psychiatrist'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read psychiatrist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='write psychiatrist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read psychiatrist notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read ticklers assigned to a RN'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read RN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='write RN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read RN notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read ticklers assigned to a RPN'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read RPN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='write RPN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read RPN notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read ticklers assigned to a Nurse Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read Nurse Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='write Nurse Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read Nurse Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read ticklers assigned to a Clinical Social Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read Clinical Social Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='write Clinical Social Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read Clinical Social Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read ticklers assigned to a Clinical Case Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read Clinical Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='write Clinical Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read Clinical Case Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read ticklers assigned to a counsellor'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='write counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read counsellor notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read ticklers assigned to a Case Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='write Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read Case Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read ticklers assigned to a Housing Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read Housing Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='write Housing Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read Housing Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read ticklers assigned to a Medical Secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='write Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read Medical Secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read ticklers assigned to a Clinical Assistant'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='write Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read Clinical Assistant notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read ticklers assigned to a secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='write secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read ticklers assigned to a Support Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read Support Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='write Support Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read Support Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read ticklers assigned to a Client Service Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read Client Service Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='write Client Service Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read Client Service Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read ticklers assigned to a Recreation Therapist'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read Recreation Therapist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='write Recreation Therapist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read Recreation Therapist notes'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read Support Counsellor notes'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read property staff notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='Write Ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='prescription Write'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='billing'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='medical encounter'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='immunization'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='prevention'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='oscarcomm'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='disease registry'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='medical form'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='measurements'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='eform'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='lab'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='prescription Read'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='master file'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='Perform program registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='perform registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='perform admissions'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='perform discharges'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='perform bed assignments'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='print bed rosters and reports'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='read nurse issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='psychiatrist'),(select access_id from access_type where name='write nurse issues'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read ticklers assigned to a doctor'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read doctor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='write doctor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read doctor notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read ticklers assigned to a psychiatrist'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read psychiatrist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='write psychiatrist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read psychiatrist notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read ticklers assigned to a RN'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read RN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='write RN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read RN notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read ticklers assigned to a RPN'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read RPN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='write RPN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read RPN notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read ticklers assigned to a Nurse Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read Nurse Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='write Nurse Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read Nurse Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read ticklers assigned to a Clinical Social Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read Clinical Social Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='write Clinical Social Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read Clinical Social Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read ticklers assigned to a Clinical Case Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read Clinical Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='write Clinical Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read Clinical Case Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read ticklers assigned to a counsellor'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='write counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read counsellor notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read ticklers assigned to a Case Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='write Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read Case Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read ticklers assigned to a Housing Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read Housing Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='write Housing Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read Housing Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read ticklers assigned to a Medical Secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='write Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read Medical Secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read ticklers assigned to a Clinical Assistant'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='write Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read Clinical Assistant notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read ticklers assigned to a secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='write secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read ticklers assigned to a Support Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read Support Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='write Support Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read Support Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read ticklers assigned to a Client Service Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read Client Service Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='write Client Service Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read Client Service Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read ticklers assigned to a Recreation Therapist'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read Recreation Therapist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='write Recreation Therapist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read Recreation Therapist notes'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read Support Counsellor notes'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read property staff notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='Write Ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='immunization'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='prevention'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='oscarcomm'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='disease registry'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='medical form'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='measurements'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='eform'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='prescription Read'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='master file'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='Perform program registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='perform registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='perform admissions'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='perform discharges'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='perform bed assignments'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='print bed rosters and reports'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='read nurse issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RN'),(select access_id from access_type where name='write nurse issues'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read ticklers assigned to a doctor'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read doctor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='write doctor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read doctor notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read ticklers assigned to a psychiatrist'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read psychiatrist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='write psychiatrist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read psychiatrist notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read ticklers assigned to a RN'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read RN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='write RN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read RN notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read ticklers assigned to a RPN'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read RPN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='write RPN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read RPN notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read ticklers assigned to a Nurse Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read Nurse Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='write Nurse Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read Nurse Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read ticklers assigned to a Clinical Social Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read Clinical Social Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='write Clinical Social Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read Clinical Social Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read ticklers assigned to a Clinical Case Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read Clinical Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='write Clinical Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read Clinical Case Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read ticklers assigned to a counsellor'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='write counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read counsellor notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read ticklers assigned to a Case Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='write Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read Case Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read ticklers assigned to a Housing Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read Housing Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='write Housing Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read Housing Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read ticklers assigned to a Medical Secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='write Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read Medical Secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read ticklers assigned to a Clinical Assistant'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='write Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read Clinical Assistant notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read ticklers assigned to a secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='write secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read ticklers assigned to a Support Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read Support Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='write Support Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read Support Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read ticklers assigned to a Client Service Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read Client Service Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='write Client Service Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read Client Service Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read ticklers assigned to a Recreation Therapist'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read Recreation Therapist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='write Recreation Therapist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read Recreation Therapist notes'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read Support Counsellor notes'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read property staff notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='Write Ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='immunization'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='prevention'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='oscarcomm'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='disease registry'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='medical form'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='measurements'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='eform'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='prescription Read'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='master file'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='Perform program registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='perform registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='perform admissions'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='perform discharges'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='perform bed assignments'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='print bed rosters and reports'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='read nurse issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='RPN'),(select access_id from access_type where name='write nurse issues'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read ticklers assigned to a doctor'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read doctor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='write doctor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read doctor notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read ticklers assigned to a psychiatrist'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read psychiatrist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='write psychiatrist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read psychiatrist notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read ticklers assigned to a RN'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read RN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='write RN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read RN notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read ticklers assigned to a RPN'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read RPN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='write RPN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read RPN notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read ticklers assigned to a Nurse Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read Nurse Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='write Nurse Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read Nurse Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read ticklers assigned to a Clinical Social Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read Clinical Social Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='write Clinical Social Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read Clinical Social Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read ticklers assigned to a Clinical Case Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read Clinical Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='write Clinical Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read Clinical Case Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read ticklers assigned to a counsellor'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='write counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read counsellor notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read ticklers assigned to a Case Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='write Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read Case Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read ticklers assigned to a Housing Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read Housing Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='write Housing Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read Housing Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read ticklers assigned to a Medical Secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='write Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read Medical Secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read ticklers assigned to a Clinical Assistant'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='write Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read Clinical Assistant notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read ticklers assigned to a secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='write secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read ticklers assigned to a Support Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read Support Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='write Support Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read Support Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read ticklers assigned to a Client Service Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read Client Service Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='write Client Service Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read Client Service Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read ticklers assigned to a Recreation Therapist'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read Recreation Therapist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='write Recreation Therapist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read Recreation Therapist notes'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read Support Counsellor notes'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read property staff notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='Write Ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='immunization'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='prevention'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='oscarcomm'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='disease registry'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='medical form'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='measurements'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='eform'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='prescription Read'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='master file'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='Perform program registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='perform registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='perform admissions'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='perform discharges'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='perform bed assignments'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='print bed rosters and reports'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='read nurse issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Nurse Manager'),(select access_id from access_type where name='write nurse issues'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read ticklers assigned to a doctor'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read doctor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='write doctor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read doctor notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read ticklers assigned to a psychiatrist'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read psychiatrist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='write psychiatrist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read psychiatrist notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read ticklers assigned to a RN'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read RN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='write RN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read RN notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read ticklers assigned to a RPN'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read RPN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='write RPN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read RPN notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read ticklers assigned to a Nurse Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read Nurse Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='write Nurse Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read Nurse Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read ticklers assigned to a Clinical Social Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read Clinical Social Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='write Clinical Social Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read Clinical Social Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read ticklers assigned to a Clinical Case Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read Clinical Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='write Clinical Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read Clinical Case Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read ticklers assigned to a counsellor'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='write counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read counsellor notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read ticklers assigned to a Case Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='write Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read Case Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read ticklers assigned to a Housing Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read Housing Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='write Housing Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read Housing Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read ticklers assigned to a Medical Secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='write Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read Medical Secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read ticklers assigned to a Clinical Assistant'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='write Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read Clinical Assistant notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read ticklers assigned to a secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='write secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read ticklers assigned to a Recreation Therapist'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read Recreation Therapist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='write Recreation Therapist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read Recreation Therapist notes'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read Support Counsellor notes'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read property staff notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='Write Ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='immunization'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='prevention'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='oscarcomm'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='disease registry'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='medical form'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='measurements'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='eform'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='prescription Read'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='master file'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='read ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='Perform program registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='perform registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='perform admissions'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='perform discharges'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='perform bed assignments'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Social Worker'),(select access_id from access_type where name='print bed rosters and reports'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read ticklers assigned to a doctor'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read doctor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='write doctor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read doctor notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read ticklers assigned to a psychiatrist'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read psychiatrist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='write psychiatrist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read psychiatrist notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read ticklers assigned to a RN'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read RN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='write RN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read RN notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read ticklers assigned to a RPN'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read RPN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='write RPN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read RPN notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read ticklers assigned to a Nurse Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read Nurse Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='write Nurse Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read Nurse Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read ticklers assigned to a Clinical Social Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read Clinical Social Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='write Clinical Social Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read Clinical Social Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read ticklers assigned to a Clinical Case Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read Clinical Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='write Clinical Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read Clinical Case Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read ticklers assigned to a counsellor'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='write counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read counsellor notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read ticklers assigned to a Case Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='write Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read Case Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read ticklers assigned to a Housing Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read Housing Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='write Housing Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read Housing Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read ticklers assigned to a Medical Secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='write Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read Medical Secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read ticklers assigned to a Clinical Assistant'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='write Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read Clinical Assistant notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read ticklers assigned to a secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='write secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read ticklers assigned to a Recreation Therapist'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read Recreation Therapist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='write Recreation Therapist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read Recreation Therapist notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='Write Ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='immunization'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='prevention'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='oscarcomm'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='disease registry'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='medical form'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='measurements'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='eform'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='prescription Read'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='master file'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='read ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='Perform program registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='perform registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='perform admissions'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='perform discharges'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='perform bed assignments'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Case Manager'),(select access_id from access_type where name='print bed rosters and reports'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read ticklers assigned to a counsellor'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='write counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read counsellor notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read ticklers assigned to a Case Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='write Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read Case Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read ticklers assigned to a Housing Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read Housing Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='write Housing Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read Housing Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read ticklers assigned to a Medical Secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='write Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read Medical Secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read ticklers assigned to a Clinical Assistant'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='write Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read Clinical Assistant notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read ticklers assigned to a secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='write secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read ticklers assigned to a Support Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read Support Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='write Support Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read Support Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read ticklers assigned to a Client Service Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read Client Service Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='write Client Service Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read Client Service Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='Write Ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='oscarcomm'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='medical form'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='measurements'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='eform'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='master file'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='read ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='Perform program registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='perform registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='perform admissions'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='perform discharges'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='perform bed assignments'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='counsellor'),(select access_id from access_type where name='print bed rosters and reports'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read ticklers assigned to a counsellor'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='write counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read counsellor notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read ticklers assigned to a Case Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='write Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read Case Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read ticklers assigned to a Housing Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read Housing Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='write Housing Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read Housing Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read ticklers assigned to a Medical Secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='write Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read Medical Secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read ticklers assigned to a Clinical Assistant'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='write Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read Clinical Assistant notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read ticklers assigned to a secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='write secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read ticklers assigned to a Support Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read Support Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='write Support Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read Support Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read ticklers assigned to a Client Service Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read Client Service Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='write Client Service Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read Client Service Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='Write Ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='oscarcomm'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='medical form'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='measurements'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='eform'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='master file'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='read ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='Perform program registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='perform registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='perform admissions'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='perform discharges'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='perform bed assignments'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Case Manager'),(select access_id from access_type where name='print bed rosters and reports'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read ticklers assigned to a counsellor'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='write counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read counsellor notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read ticklers assigned to a Case Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='write Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read Case Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read ticklers assigned to a Housing Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read Housing Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='write Housing Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read Housing Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read ticklers assigned to a Medical Secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='write Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read Medical Secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read ticklers assigned to a Clinical Assistant'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='write Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read Clinical Assistant notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read ticklers assigned to a secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='write secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read ticklers assigned to a Support Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read Support Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='write Support Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read Support Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read ticklers assigned to a Client Service Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read Client Service Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='write Client Service Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read Client Service Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='Write Ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='oscarcomm'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='medical form'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='measurements'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='eform'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='master file'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='read ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='Perform program registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='perform registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='perform admissions'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='perform discharges'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='perform bed assignments'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Housing Worker'),(select access_id from access_type where name='print bed rosters and reports'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='read ticklers assigned to a Medical Secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='read Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='write Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='read Medical Secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='read ticklers assigned to a Clinical Assistant'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='read Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='write Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='read Clinical Assistant notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='read ticklers assigned to a secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='read secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='write secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='read secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='Write Ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='oscarcomm'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='medical form'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='measurements'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='eform'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='master file'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='read ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='Perform program registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='perform registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='perform admissions'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='perform discharges'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='perform bed assignments'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Medical Secretary'),(select access_id from access_type where name='print bed rosters and reports'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='read ticklers assigned to a Medical Secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='read Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='write Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='read Medical Secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='read ticklers assigned to a Clinical Assistant'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='read Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='write Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='read Clinical Assistant notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='read ticklers assigned to a secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='read secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='write secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='read secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='Write Ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='oscarcomm'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='medical form'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='measurements'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='eform'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='master file'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='read ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='Perform program registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='perform registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='perform admissions'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='perform discharges'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='perform bed assignments'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Clinical Assistant'),(select access_id from access_type where name='print bed rosters and reports'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='secretary'),(select access_id from access_type where name='read ticklers assigned to a secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='secretary'),(select access_id from access_type where name='read secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='secretary'),(select access_id from access_type where name='write secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='secretary'),(select access_id from access_type where name='read secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='secretary'),(select access_id from access_type where name='Write Ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='secretary'),(select access_id from access_type where name='oscarcomm'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='secretary'),(select access_id from access_type where name='medical form'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='secretary'),(select access_id from access_type where name='measurements'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='secretary'),(select access_id from access_type where name='eform'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='secretary'),(select access_id from access_type where name='master file'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='secretary'),(select access_id from access_type where name='read ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='secretary'),(select access_id from access_type where name='Perform program registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='secretary'),(select access_id from access_type where name='perform registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='secretary'),(select access_id from access_type where name='perform admissions'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='secretary'),(select access_id from access_type where name='perform discharges'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='secretary'),(select access_id from access_type where name='perform bed assignments'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='read ticklers assigned to a Support Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='read Support Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='write Support Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='read Support Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='read ticklers assigned to a Client Service Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='read Client Service Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='write Client Service Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='read Client Service Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='read ticklers assigned to a secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='read secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='write secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='read secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='Write Ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='oscarcomm'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='measurements'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='eform'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='master file'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='read ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='Perform program registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='perform registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='perform admissions'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='perform discharges'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='perform bed assignments'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Worker'),(select access_id from access_type where name='print bed rosters and reports'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='read ticklers assigned to a Support Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='read Support Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='write Support Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='read Support Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='read ticklers assigned to a Client Service Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='read Client Service Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='write Client Service Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='read Client Service Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='read ticklers assigned to a secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='read secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='write secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='read secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='Write Ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='oscarcomm'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='measurements'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='eform'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='master file'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='read ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='Perform program registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='perform registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='perform admissions'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='perform discharges'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='perform bed assignments'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Client Service Worker'),(select access_id from access_type where name='print bed rosters and reports'));
-
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read ticklers assigned to a doctor'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read doctor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='write doctor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read doctor notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read ticklers assigned to a psychiatrist'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read psychiatrist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='write psychiatrist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read psychiatrist notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read ticklers assigned to a RN'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read RN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='write RN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read RN notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read ticklers assigned to a RPN'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read RPN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='write RPN issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read RPN notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read ticklers assigned to a Nurse Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read Nurse Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='write Nurse Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read Nurse Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read ticklers assigned to a Recreation Therapist'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read Recreation Therapist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='write Recreation Therapist issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read Recreation Therapist notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read ticklers assigned to a Clinical Case Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read Clinical Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='write Clinical Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read Clinical Case Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read ticklers assigned to a Clinical Case Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read Clinical Social Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='write Clinical Social Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read Clinical Social Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read ticklers assigned to a counsellor'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='write counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read counsellor notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read ticklers assigned to a Case Manager'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='write Case Manager issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read Case Manager notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read ticklers assigned to a Housing Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read Housing Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='write Housing Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read Housing Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read ticklers assigned to a Medical Secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='write Medical Secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read Medical Secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read ticklers assigned to a Clinical Assistant'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='write Clinical Assistant issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read Clinical Assistant notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read ticklers assigned to a secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='write secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='Write Ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='immunization'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='prevention'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='oscarcomm'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='disease registry'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='medical form'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='measurements'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='eform'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='prescription Read'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='master file'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='read ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='Perform program registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='perform registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='perform admissions'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='perform discharges'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='perform bed assignments'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Recreation Therapist'),(select access_id from access_type where name='print bed rosters and reports'));
-
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name='property staff'),(select access_id from access_type where name='read ticklers assigned to a property staff'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name='property staff'),(select access_id from access_type where name='read property staff issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name='property staff'),(select access_id from access_type where name='write property staff issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name='property staff'),(select access_id from access_type where name='read property staff notes'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name='property staff'),(select access_id from access_type where name='Write Ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name='property staff'),(select access_id from access_type where name='oscarcomm'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name='property staff'),(select access_id from access_type where name='eform'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name='property staff'),(select access_id from access_type where name='master file'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name='property staff'),(select access_id from access_type where name='read ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name='property staff'),(select access_id from access_type where name='print bed rosters and reports'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='read ticklers assigned to a Support Counsellor'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='read Support Counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='write Support Counsellor issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='read Support Counsellor notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='read ticklers assigned to a Support Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='read Support Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='write Support Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='read Support Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='read ticklers assigned to a Client Service Worker'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='read Client Service Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='write Client Service Worker issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='read Client Service Worker notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='read ticklers assigned to a secretary'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='read secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='write secretary issues'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='read secretary notes'));
-
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='Write Ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='oscarcomm'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='measurements'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='eform'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='master file'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='read ticklers'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='Perform program registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='perform registration intake'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='perform admissions'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='perform discharges'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='perform bed assignments'));
-insert into default_role_access (role_id,access_id) values ((select role_no from secRole where role_name ='Support Counsellor'),(select access_id from access_type where name='print bed rosters and reports'));
-
-
-
-
-
-
--- counsellor issues
 INSERT INTO issue (code,description,role,update_date,type) values('CTCMM1000','Safety','counsellor',Now(),'userDefined');
 INSERT INTO issue (code,description,role,update_date,type) values('CTCMM2000','Health','counsellor',Now(),'userDefined');
 INSERT INTO issue (code,description,role,update_date,type) values('CTCMM3000','Personal ID','counsellor',Now(),'userDefined');
@@ -1303,35 +86,10 @@ INSERT INTO issue (code,description,role,update_date,type) values('CTCMM27000','
 INSERT INTO issue (code,description,role,update_date,type) values('CTCMM28000','Incident Report','counsellor',Now(),'userDefined');
 INSERT INTO issue (code,description,role,update_date,type) values('CTCMM29000','Immigration','counsellor',Now(),'userDefined');
 
-INSERT INTO issue (code,description,role,update_date,type) values('CTCMM9500','Intimate Relationships','counsellor',Now(),'userDefined');
-INSERT INTO issue (code,description,role,update_date,type) values('CTCMM11500','Sexual Expression','counsellor',Now(),'userDefined');
-INSERT INTO issue (code,description,role,update_date,type) values('CTCMM14500','Client Capacity','counsellor',Now(),'userDefined');
-INSERT INTO issue (code,description,role,update_date,type) values('CTCMM21500','Self Care','counsellor',Now(),'userDefined');
-INSERT INTO issue (code,description,role,update_date,type) values('CTCMM22500','Looking After the Home','counsellor',Now(),'userDefined');
-INSERT INTO issue (code,description,role,update_date,type) values('CTCMM23500','Transportation','counsellor',Now(),'userDefined');
-
-
--- CSW issues
 INSERT INTO issue (code,description,role,update_date,type) values('ICSW100','program-client conflict','CSW',Now(),'userDefined');
 INSERT INTO issue (code,description,role,update_date,type) values('ICSW200','difficulties with hygeine','CSW',Now(),'userDefined');
 INSERT INTO issue (code,description,role,update_date,type) values('ICSW300','difficulties with eating','CSW',Now(),'userDefined');
 INSERT INTO issue (code,description,role,update_date,type) values('ICSW301','anorexia, loss of apetite','CSW',Now(),'userDefined');
-
-INSERT INTO issue (code,description,role,update_date,type) values('ICSW210','requires assistance with grooming/personal hygiene','CSW',Now(),'userDefined');
-INSERT INTO issue (code,description,role,update_date,type) values('ICSW310','requires assistance with eating','CSW',Now(),'userDefined');
-INSERT INTO issue (code,description,role,update_date,type) values('ICSW410','requires assistance of reading (vision problem)','CSW',Now(),'userDefined');
-INSERT INTO issue (code,description,role,update_date,type) values('ICSW420','requires assistance of hearing (hearing aids) ','CSW',Now(),'userDefined');
-INSERT INTO issue (code,description,role,update_date,type) values('ICSW430','requires assistance with seizures','CSW',Now(),'userDefined');
-INSERT INTO issue (code,description,role,update_date,type) values('ICSW440','language barriers','CSW',Now(),'userDefined');
-INSERT INTO issue (code,description,role,update_date,type) values('ICSW450','requires assistance with medical care advocacy','CSW',Now(),'userDefined');
-INSERT INTO issue (code,description,role,update_date,type) values('ICSW460','problems related to sleep pattern','CSW',Now(),'userDefined');
-INSERT INTO issue (code,description,role,update_date,type) values('ICSW400','Requires assistance with bathing','CSW',Now(),'userDefined');
-INSERT INTO issue (code,description,role,update_date,type) values('ICSW500','requires assistance with getting dressed','CSW',Now(),'userDefined');
-INSERT INTO issue (code,description,role,update_date,type) values('ICSW600','requires assistance with getting around floor e.g. dining room','CSW',Now(),'userDefined');
-INSERT INTO issue (code,description,role,update_date,type) values('ICSW700','requires assistance with cleaning of living space','CSW',Now(),'userDefined');
-INSERT INTO issue (code,description,role,update_date,type) values('ICSW800','requires assistance with laundry','CSW',Now(),'userDefined');
-INSERT INTO issue (code,description,role,update_date,type) values('ICSW1000','Care provided in Managed Alcohol Program','CSW',Now(),'userDefined');
-
 
 -- community programs
 INSERT INTO `program` (id,facilityId,name,description,address,phone,fax,url,email,emergencyNumber,type,location,maxAllowed,holdingTank,allowBatchAdmission,allowBatchDischarge,hic,programStatus,userDefined) VALUES (10001,1,'Subsidized Housing','Subsidized Housing','','','','','','','community','',99999,0,0,0,0,'active',1);
@@ -1431,21 +189,21 @@ INSERT INTO `intake_answer_validation` VALUES
 -- Populate intake answer element
 --
 INSERT INTO `intake_answer_element` VALUES
-	(1, 7, NULL, 0, 'T', ''),
-	(2, 7, NULL, 1, 'F', ''),
-	(3, 8, NULL, 0, '', ''),
-	(4, 9, 1, 0, '', ''),
-	(5, 10, 2, 0, '', ''),
-	(6, 11, 3, 0, '', ''),
-	(7, 12, 4, 0, '', ''),
-	(8, 13, NULL, 0, '', '');
+	(1, 7, NULL, 0, 'T'),
+	(2, 7, NULL, 1, 'F'),
+	(3, 8, NULL, 0, ''),
+	(4, 9, 1, 0, ''),
+	(5, 10, 2, 0, ''),
+	(6, 11, 3, 0, ''),
+	(7, 12, 4, 0, ''),
+	(8, 13, NULL, 0, '');
 
 --
 -- Populate intake node
 --
 INSERT INTO `intake_node` VALUES
-	(1, 1, NULL, 0, NULL, false, 1, 0, 1, NULL, NULL, NULL,1,0,NULL),
-	(2, 2, NULL, 0, NULL, false, 2, 0, 1, NULL, NULL, NULL,2,0,NULL);
+	(1, 1, NULL, 0, NULL, false, 1, 1, NULL, NULL,1,NULL,0,NULL),
+	(2, 2, NULL, 0, NULL, false, 2, 1, NULL, NULL,2,NULL,0,NULL);
 
 --
 -- Cookie Revolver Init
@@ -1465,10 +223,111 @@ VALUES ('remote-access-policy', 0, null, 1, 0, 0, 0, 0, null, 'remote_access', 1
 INSERT INTO cr_policy (policy_id, static_ip, ip, remote_access, generate_super_certs, administrate_policies, administrate_questions, remove_bans, user_id, role_id, priority, usage_times_before_reverify, max_time_between_usage, expire_cookie, ip_filter, certs_max, certs_current, default_answer)
 VALUES ('default', 0, null, 1, 0, 0, 0, 0, null, null, 10, 10000000, 2592000, 315360000, null, 1000000, 1, null);
 
+INSERT INTO secRole (role_name) 
+VALUES ('remote_access');
+
+
+
 --
 -- Sherbourne Summary Discharge Form
 --
-insert into encounterForm values("Discharge Summary","../form/formDischargeSummary.jsp?demographic_no=","formDischargeSummary",0);
+insert into encounterForm values("Discharge Summary","../form/formDischargeSummary.jsp?demographic_no=","formDischargeSummary",1);
+
+
+
+-- RFQ: secObjectName
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm.clientSearch', 'Client - Search', 0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm.newClient', 'Client - New Client',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm.mergeRecords', 'Client - Merge Records',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm.caseManagement','PMM - Case Management',0);
+
+-- PMM administration part
+
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.provider', 'Administration - Provider',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.security', 'Administration - Security',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.securityLogReport', 'Administration - Security Log Report',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.unlockAccount', 'Administration - Unlock Account',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.cookieRevolver', 'Administration - Cookie Revolver',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.caisi', 'Administration - Caisi',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.lookupFieldEditor', 'Administration - Lookup Field Editor',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.issueEditor', 'Administration - Issue Editor',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.caisiRoles', 'Administration - Manage Caisi Roles',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.userCreatedForms', 'Administration - User Created Forms',0);
+
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.facilityMessage', 'Administration - Facility Message',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_admin.systemMessage', 'Administration - System Message',0);
+
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm.agencyInformation','Program - Agency Information',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm.manageFacilities','Program - Manage Facilities',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm.staffList','Program - Staff List',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm.programList','Program - Program List',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm.addProgram','Program - Add Program',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm.globalRoleAccess','Program - Global Role Access',0);
+-- insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm.caisiRoles','Program - Caisi Roles',0);
+
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.general','Program - General',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.staff','Program - Staff',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.functionUser','Program - User',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.teams', 'Program - Team', 0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.clients', 'Program - Clients',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.queue', 'Program - Queue',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.access', 'Program - Access',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.bedCheck', 'Program - Bed Check',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.clientStatus', 'Program - Client Status',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.serviceRestrictions', 'Program - Service Restrictions',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values ('_pmm.eidtor','Caisi Intake Editor',0);
+
+-- Quatro Group Report
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_reportRunner', 'Report Runner', 0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_reportWriter', 'Report Writer', 0);
+
+-- 
+insert into `secObjPrivilege` values('doctor','_admin.facilityMessage','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_admin.systemMessage','x',0,999998);
+
+insert into `secObjPrivilege` values('doctor','_admin.provider','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_admin.security','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_admin.securityLogReport','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_admin.unlockAccount','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_admin.cookieRevolver','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_admin.caisi','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_admin.lookupFieldEditor','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_admin.issueEditor','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_admin.caisiRoles','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_admin.userCreatedForms','x',0,999998);
+
+insert into `secObjPrivilege` values('doctor','_pmm.clientSearch','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_pmm.newClient','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_pmm.mergeRecords','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_pmm.caseManagement','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_pmm.agencyInformation','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_pmm.manageFacilities','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_pmm.staffList','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_pmm.programList','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_pmm.addProgram','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_pmm.globalRoleAccess','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_pmm.caisiRoles','x',0,999998);
+
+insert into `secObjPrivilege` values('doctor','_pmm_editProgram.general','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_pmm_editProgram.staff','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_pmm_editProgram.functionUser','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_pmm_editProgram.teams','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_pmm_editProgram.clients','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_pmm_editProgram.queue','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_pmm_editProgram.access','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_pmm_editProgram.bedCheck','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_pmm_editProgram.clientStatus','x',0,999998);
+insert into `secObjPrivilege` values('doctor','_pmm_editProgram.serviceRestrictions','x',0,999998);
+insert into `secObjPrivilege` values('admin','_pmm.editor','x',0,999998);
+
+INSERT INTO secObjPrivilege (roleUserGroup, objectName, privilege, priority, provider_no)
+	VALUES ('admin', '_reportRunner', 'x', 0, '999998');
+INSERT INTO secObjPrivilege (roleUserGroup, objectName, privilege, priority, provider_no)
+	VALUES ('admin', '_reportWriter', 'x', 0, '999998');
+INSERT INTO secObjPrivilege (roleUserGroup, objectName, privilege, priority, provider_no)
+	VALUES ('doctor', '_reportRunner', 'x', 0, '999998');
+INSERT INTO secObjPrivilege (roleUserGroup, objectName, privilege, priority, provider_no)
+	VALUES ('doctor', '_reportWriter', 'x', 0, '999998');
 
 
 -- quatro group's report runner
@@ -1969,34 +828,4 @@ INSERT INTO encounterForm VALUES("Mental Health Form1","../form/formMentalHealth
 INSERT INTO encounterForm VALUES("Mental Health Form14","../form/formMentalHealthForm14.jsp?demographic_no=","formMentalHealthForm14",0);
 insert into encounterForm values("Mental Health Form42","../form/formMentalHealthForm42.jsp?demographic_no=","formMentalHealthForm42",0);
 
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','K203A','Group3','Group3','A',1);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','K204A','Group3','Group3','A',2);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','K205A','Group3','Group3','A',3);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','K620A','Group3','Group3','A',4);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','K623A','Group3','Group3','A',5);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','K624A','Group3','Group3','A',6);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','K992A','Group3','Group3','A',7);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','K994A','Group3','Group3','A',8);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','K002A','Group2','Group2','A',1);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','K003A','Group2','Group2','A',2);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','K005A','Group2','Group2','A',3);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','K050A','Group2','Group2','A',4);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','K051A','Group2','Group2','A',5);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','K052A','Group2','Group2','A',6);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','K053A','Group2','Group2','A',7);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','K054A','Group2','Group2','A',8);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','K055A','Group2','Group2','A',9);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','K193A','Group2','Group2','A',10);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','K195A','Group2','Group2','A',11);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','K197A','Group2','Group2','A',12);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','K198A','Group2','Group2','A',13);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','A194A','Group1','Group1','A',2);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','A193A','Group1','Group1','A',1);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','A195A','Group1','Group1','A',3);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','A395A','Group1','Group1','A',4);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','G497A','Group1','Group1','A',6);
-insert into ctl_billingservice values('PSYCHIATRIST',	'P01','A795A','Group1','Group1','A',5);
-
-
 source init_cds_form_4_options.sql;
-source init_functional_centres.sql;

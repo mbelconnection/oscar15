@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -29,8 +29,6 @@
 package oscar.oscarFax.client;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 /**
@@ -55,16 +53,16 @@ public class FaxClientLog {
        
 	try
             {
-                
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                 String sql = "insert into FaxClientLog (provider_no,startTime) values ('"+providerNo+"',now()) ";
-                DBHandler.RunSQL(sql);
-                ResultSet rs = DBHandler.GetSQL("SELECT LAST_INSERT_ID() ");
+                db.RunSQL(sql);
+                ResultSet rs = db.GetSQL("SELECT LAST_INSERT_ID() ");
                 if(rs.next())
                     faxLogId = Integer.toString(rs.getInt(1));
             }
             catch(SQLException e)
             {
-                MiscUtils.getLogger().error("Error", e);
+                System.out.println(e.getMessage());
             }
        
     }
@@ -73,13 +71,13 @@ public class FaxClientLog {
            if (!faxLogId.equals("")){;
             try
             {
-                
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                 String sql = "update FaxClientLog set requestId = '"+requestId+"' , faxId = '"+faxId+"' , endTime = now() where faxLogId = '"+faxLogId+"' ";
-                DBHandler.RunSQL(sql);
+                db.RunSQL(sql);
             }
             catch(SQLException e)
             {
-                MiscUtils.getLogger().error("Error", e);
+                System.out.println(e.getMessage());
             }
             }else{
                throw new Exception("faxLogId must be set before you can call this method");
@@ -92,13 +90,13 @@ public class FaxClientLog {
            if (!faxLogId.equals("")){;
             try
             {
-                
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                 String sql = "update FaxClientLog set result = '"+result+"' , endTime = now() where faxLogId = '"+faxLogId+"' ";
-                DBHandler.RunSQL(sql);
+                db.RunSQL(sql);
             }
             catch(SQLException e)
             {
-                MiscUtils.getLogger().error("Error", e);
+                System.out.println(e.getMessage());
             }
             }else{
                throw new Exception("faxLogId must be set before you can call this method");

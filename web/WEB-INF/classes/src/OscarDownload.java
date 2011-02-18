@@ -20,7 +20,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the
 // * Department of Family Medicine
-// * McMaster University
+// * McMaster Unviersity
 // * Hamilton
 // * Ontario, Canada
 // *
@@ -32,7 +32,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import oscar.util.GenericDownload;
 public class OscarDownload extends GenericDownload  {
 	public void doGet(HttpServletRequest req, HttpServletResponse res)

@@ -24,20 +24,25 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 -->
 <%@ page import="java.util.*, java.sql.*, oscar.*, java.net.*"%>
-
+<%@ include file="../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 <% String search = "search_service_price";      
    String formName = request.getParameter("formName");
    String formElementCode = request.getParameter("formElementCode");
    String formElementPrice = request.getParameter("formElementPrice");      
+   //if ( formName == null || formElement == null){
+   //   formName = "";
+   //   formElement = "";
+   //}   
+   System.out.println("formElementCode "+formElementCode);
    String[] param =new String[1];
    param[0] = formElementCode;
 %>
@@ -45,6 +50,7 @@
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Service Code Price Search</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-2">
 <script LANGUAGE="JavaScript">
 function CodeAttach(cost) {     
       self.close();

@@ -18,11 +18,13 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 --%>
+
+<%@ page language="java"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
@@ -61,8 +63,7 @@ String demographic_no = (String) request.getAttribute("demographic_no");
 
 
 <link rel="stylesheet" type="text/css" href="encounterStyles.css">
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html:html locale="true">
+<html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="oscarMessenger.CreateMessage.title" />
@@ -414,6 +415,7 @@ function popupAttachDemo(demographic){ // open a new popup window
                                                             theProviders = (String[]) request.getAttribute("ReMessage");
                                                             java.util.Arrays.sort(theProviders);
                                                             reData = (oscar.oscarMessenger.data.MsgReplyMessageData) request.getAttribute("ProvidersClassObject");
+                                                            System.err.println("hey every one i have a "+reData);
                                                         }else if ( request.getAttribute("ReText") != null){
                                                             oscar.oscarMessenger.pageUtil.MsgCreateMessageForm thisForm ;
                                                             thisForm = (oscar.oscarMessenger.pageUtil.MsgCreateMessageForm)request.getAttribute("msgCreateMessageForm");
@@ -448,6 +450,7 @@ function popupAttachDemo(demographic){ // open a new popup window
                                                                                                 for (int g = 0; g < listy.size(); g++){
                                                                                                     oscar.oscarMessenger.data.MsgProviderData pData;
                                                                                                     pData = (oscar.oscarMessenger.data.MsgProviderData) listy.get(g);
+                                                                                                    // System.out.println(g+": pro = "+pData.providerNo+" remo ="+pData.locationId);
                                                                                                 }
                                                                                             }else{
                                                                                                 listy = new java.util.ArrayList();
@@ -586,6 +589,7 @@ function popupAttachDemo(demographic){ // open a new popup window
       depth++;
 
       Element element = (Element) node;
+      // System.out.println("desc = "+element.getAttribute("desc")+"<br>");
       try{
          if (depth > 2){
             if ((element.getTagName()).equals("group")){
@@ -651,7 +655,8 @@ function popupAttachDemo(demographic){ // open a new popup window
          }
 
        }catch(Exception e){
-    	   MiscUtils.getLogger().error("Exception in CreateMessage.jsp.displayNodes():", e);
+           System.out.println("Exception in CreateMessage.jsp.displayNodes():");
+           e.printStackTrace(System.out);
        }
    }//display nodes
     

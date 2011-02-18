@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -62,9 +62,10 @@ else
 
 %>
 <%@ page import="java.util.*, java.sql.*, oscar.*, java.net.*, oscar.oscarEncounter.pageUtil.EctSessionBean" %>
+<%@ include file="../admin/dbconnection.jsp" %>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean" scope="session" />
 <jsp:useBean id="SxmlMisc" class="oscar.SxmlMisc" scope="session" />
-<%@ include file="dbTicker.jspf" %>
+<%@ include file="dbTicker.jsp" %>
 <%
 GregorianCalendar now=new GregorianCalendar();
   int curYear = now.get(Calendar.YEAR);
@@ -101,6 +102,8 @@ GregorianCalendar now=new GregorianCalendar();
 }
 -->
 </style>
+      <meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+      <meta http-equiv="Pragma" content="no-cache">
       <script language="JavaScript">
 <!--
 function popupPage(vheight,vwidth,varpage) { //open a new popup window
@@ -323,6 +326,7 @@ var newD = newYear + "-" + newMonth + "-" + newDay;
           	if (appNo != null) {
           		ResultSet rs = apptMainBean.queryResults(appNo, "get_appt_location");
           		if(rs.next()) location=apptMainBean.getString(rs,1);
+          		apptMainBean.closePstmtConn();
           	}
       %> 
       <script>
@@ -372,7 +376,8 @@ function changeSite(sel) {
             %> 
             <option value="<%=proOHIP%>" <%=user_no.equals(proOHIP)?"selected":""%>><%=proLast%>, <%=proFirst%></option>
             <%
-                }
+                }      
+                apptMainBean.closePstmtConn();
             %>
       </select>
 <% } %>

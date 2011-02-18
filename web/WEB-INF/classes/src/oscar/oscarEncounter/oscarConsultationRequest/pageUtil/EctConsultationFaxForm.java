@@ -17,14 +17,13 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 package oscar.oscarEncounter.oscarConsultationRequest.pageUtil;
 
 import org.apache.struts.action.ActionForm;
-import org.oscarehr.util.MiscUtils;
 
 public final class EctConsultationFaxForm extends ActionForm {
 
@@ -37,7 +36,7 @@ public final class EctConsultationFaxForm extends ActionForm {
 
     public void setRecipient(String str)
     {
-        MiscUtils.getLogger().debug("recipient has been set");
+        System.out.println("recipient has been set");
         recipient = str;
     }
 
@@ -50,7 +49,7 @@ public final class EctConsultationFaxForm extends ActionForm {
 
     public void setFrom(String str)
     {
-        MiscUtils.getLogger().debug("from has been set");
+        System.out.println("from has been set");
         from = str;
     }
 
@@ -63,7 +62,7 @@ public final class EctConsultationFaxForm extends ActionForm {
 
     public void setRecipientsFaxNumber(String str)
     {
-        MiscUtils.getLogger().debug("recipientsFaxNumber setter");
+        System.out.println("recipientsFaxNumber setter");
         recipientsFaxNumber = str;
     }
 
@@ -76,7 +75,7 @@ public final class EctConsultationFaxForm extends ActionForm {
 
     public void setSendersPhone(String str)
     {
-        MiscUtils.getLogger().debug(" setter");
+        System.out.println(" setter");
         sendersPhone = str;
     }
 
@@ -89,7 +88,7 @@ public final class EctConsultationFaxForm extends ActionForm {
 
     public void setSendersFax(String str)
     {
-        MiscUtils.getLogger().debug("sendersFax setter");
+        System.out.println("sendersFax setter");
         sendersFax = str;
     }
 
@@ -102,7 +101,7 @@ public final class EctConsultationFaxForm extends ActionForm {
 
     public void setComments(String str)
     {
-        MiscUtils.getLogger().debug("appointmentDay setter");
+        System.out.println("appointmentDay setter");
         comments = str;
     }
 
@@ -115,7 +114,7 @@ public final class EctConsultationFaxForm extends ActionForm {
 
     public void setRequestId(String str)
     {
-        MiscUtils.getLogger().debug("requestId setter");
+        System.out.println("requestId setter");
         requestId = str;
     }
     String recipient;

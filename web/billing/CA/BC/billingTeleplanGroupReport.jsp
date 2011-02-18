@@ -10,7 +10,7 @@ String user_no = (String) session.getAttribute("user");
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
 <jsp:useBean id="SxmlMisc" class="oscar.SxmlMisc" scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 
 <%
 GregorianCalendar now=new GregorianCalendar();
@@ -72,7 +72,7 @@ session.setAttribute("ohipdownload", ohipdownload);
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -81,6 +81,7 @@ session.setAttribute("ohipdownload", ohipdownload);
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Billing Report</title>
+<meta http-equiv="Content-Type" content="text/html; ">
 <script language="JavaScript">
 
 
@@ -186,7 +187,7 @@ function showHideLayers() { //v3.0
 			<%
 
              }
-//
+// apptMainBean.closePstmtConn();
   %>
 		</select> </font></b></td>
 		<td width="181"><b><!--<font face="Arial, Helvetica, sans-serif" size="2">Select
@@ -288,6 +289,7 @@ function showHideLayers() { //v3.0
 	</tr>
 	<%
 }
+apptMainBean.closePstmtConn();
 %>
 </table>
 </body>

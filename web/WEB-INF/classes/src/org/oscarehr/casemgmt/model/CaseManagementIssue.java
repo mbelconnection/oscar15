@@ -37,7 +37,6 @@ import org.oscarehr.PMmodule.dao.ProgramAccessDAO;
 import org.oscarehr.PMmodule.dao.ProgramProviderDAO;
 import org.oscarehr.PMmodule.model.ProgramAccess;
 import org.oscarehr.PMmodule.model.ProgramProvider;
-import org.oscarehr.casemgmt.dao.RoleProgramAccessDAO;
 import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.util.SpringUtils;
 import org.oscarehr.util.TimeClearedHashMap;
@@ -49,7 +48,6 @@ public class CaseManagementIssue extends BaseObject {
 	private ProgramProviderDAO programProviderDao=(ProgramProviderDAO)SpringUtils.getBean("programProviderDAO");
 	private ProgramAccessDAO programAccessDao=(ProgramAccessDAO)SpringUtils.getBean("programAccessDAO");
 	private static Map<String, Boolean> writeAccessCache=Collections.synchronizedMap(new TimeClearedHashMap<String, Boolean>(DateUtils.MILLIS_PER_MINUTE, DateUtils.MILLIS_PER_MINUTE));
-	private RoleProgramAccessDAO roleProgramAccessDAO=(RoleProgramAccessDAO)SpringUtils.getBean("RoleProgramAccessDAO");
 	
 	protected Long id;
 	protected String demographic_no;
@@ -230,20 +228,13 @@ public class CaseManagementIssue extends BaseObject {
 	{
 		String cacheKey=LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo()+':'+programId;
 		
-		/* one cacheKey like 91:10018 could have the value of "false" or "true"
-		 * You cannot say the first write access is false then all others will be false too
-		 * Not sure why we have cacheKey here. But it surely caused one bug:
-		 * If one client had counselor issues and doctor issues, all issues would be grayed out for the counselor if the counselor didn't have "write doctor issues" access right.
-		 * In this case, only doctor issues should be grayed out. 
-		
 		Boolean result=writeAccessCache.get(cacheKey);
 		if (result==null)
 		{
 			result=calculateWriteAccess(programId);
 			writeAccessCache.put(cacheKey, result);
 		}
-		*/
-		Boolean result = calculateWriteAccess(programId);
+		
 		return(result);
 	}
 
@@ -262,8 +253,8 @@ public class CaseManagementIssue extends BaseObject {
 	    String issueRole = getIssue().getRole().toLowerCase();
 	    ProgramAccess pa = null;
 
-	    String accessName="write " + issueRole + " issues";
-	    pa = programAccessMap.get(accessName);
+	    // write
+	    pa = programAccessMap.get("write " + issueRole + " issues");
 	    if (pa != null) {
 	    	if (pa.isAllRoles() || isRoleIncludedInAccess(pa, role)) {
 	    		return(true);
@@ -274,10 +265,6 @@ public class CaseManagementIssue extends BaseObject {
 	    	}
 	    }
 	    
-	    //global default role access
-		if(roleProgramAccessDAO.hasAccess(accessName,role.getId())) {
-				return(true);
-		}
 	    return(false);
     }
 	

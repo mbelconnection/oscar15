@@ -33,12 +33,12 @@ import org.oscarehr.util.MiscUtils;
 import oscar.oscarLab.ca.all.upload.MessageUploader;
 import oscar.oscarLab.ca.all.upload.handlers.OscarToOscarHl7V2.AdtA09Handler;
 import ca.uhn.hl7v2.model.AbstractMessage;
-import ca.uhn.hl7v2.model.v26.message.ADT_A09;
+import ca.uhn.hl7v2.model.v25.message.ADT_A09;
 
 public class OscarToOscarHl7V2Handler implements MessageHandler {
 	private Logger logger = MiscUtils.getLogger();
 
-	public String parse(String serviceName, String fileName, int fileId) {
+	public String parse(String fileName, int fileId) {
 		
 		try {
 	        byte[] dataBytes=FileUtils.readFileToByteArray(new File(fileName));
@@ -53,7 +53,7 @@ public class OscarToOscarHl7V2Handler implements MessageHandler {
 			}
 			else
 			{
-				MessageUploader.routeReport(serviceName, OscarToOscarUtils.UPLOAD_MESSAGE_TYPE, dataString, fileId);
+				MessageUploader.routeReport(OscarToOscarUtils.UPLOAD_MESSAGE_TYPE, dataString, fileId);
 			}
 			
 			return("success");

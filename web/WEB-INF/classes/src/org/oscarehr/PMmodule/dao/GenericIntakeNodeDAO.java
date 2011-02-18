@@ -28,7 +28,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.ObjectNotFoundException;
 import org.oscarehr.PMmodule.model.Agency;
 import org.oscarehr.PMmodule.model.IntakeAnswerElement;
@@ -37,7 +38,6 @@ import org.oscarehr.PMmodule.model.IntakeNodeJavascript;
 import org.oscarehr.PMmodule.model.IntakeNodeLabel;
 import org.oscarehr.PMmodule.model.IntakeNodeTemplate;
 import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 /**
@@ -45,7 +45,8 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
  */
 public class GenericIntakeNodeDAO extends HibernateDaoSupport {
 
-	private static final Logger LOG = MiscUtils.getLogger();
+	private static final Log LOG = LogFactory
+			.getLog(GenericIntakeNodeDAO.class);
 
 	/**
 	 * @see org.oscarehr.PMmodule.dao.GenericIntakeNodeDAO#getIntakeNode(java.lang.Integer)

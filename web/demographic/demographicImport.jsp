@@ -1,4 +1,4 @@
-	 <!--  
+<!--  
 /*
  * 
  * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved. *
@@ -18,27 +18,16 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University test2
+ * McMaster Unviersity test2
  * Hamilton 
  * Ontario, Canada 
  */
 -->
 <%@page import="oscar.oscarDemographic.data.*,java.util.*,oscar.oscarDemographic.pageUtil.Util"%>
-<%@page import="org.oscarehr.PMmodule.dao.ProgramDao, org.oscarehr.util.SpringUtils,org.oscarehr.PMmodule.model.Program"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 
-<%
-	ProgramDao programDao = (ProgramDao) SpringUtils.getBean("programDao");
-	List<Program> programs = programDao.getAllPrograms();
-	List<Program> courses = new ArrayList<Program>();
-	for(Program p:programs) {
-		if(p.getSiteSpecificField()!=null && p.getSiteSpecificField().equals("course")) {
-			courses.add(p);
-		}
-	}
 
-%>
 <html:html locale="true">
 
 <head>
@@ -65,7 +54,6 @@ function displayAndDisable(){
 
 <%
 oscar.OscarProperties op = oscar.OscarProperties.getInstance();
-String learningEnabled = op.getProperty("OSCAR_LEARNING");
 if (!Util.checkDir(op.getProperty("TMP_DIR"))) { %>
 <p>
 <h2>Error! Cannot perform demographic import. Please contact support.</h2>
@@ -105,16 +93,7 @@ if (!Util.checkDir(op.getProperty("TMP_DIR"))) { %>
 //--> <html:form action="/form/importUpload3.do" method="POST"
 			enctype="multipart/form-data" onsubmit="displayAndDisable()">
                         <p><html:file property="importFile" value=""/></p>
-						<%if(learningEnabled != null && learningEnabled.equalsIgnoreCase("yes")) { %>
-							<!-- Drop Down box of courses -->
-							Course:&nbsp;<html:select property="courseId">
-								<option value="0">Choose One</option>
-								<%for(Program course:courses) { %>
-									<option value="<%=course.getId().intValue()%>"><%=course.getName()%></option>
-								<% } %>
-							</html:select><br/>
-							Timeshift (in days +/-):&nbsp;<html:text property="timeshiftInDays" value="0" size="5"/></br/>
-						<%} %> 				
+
                         If patient's providers do not have OHIP numbers:<br>
                         <html:radio property="matchProviderNames" value="true">
                             Match providers in database by first and last names (Recommended)

@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -29,8 +29,7 @@
 <%@ page
 	import="java.util.*,oscar.oscarBilling.ca.bc.data.*,oscar.oscarBilling.ca.bc.pageUtil.*,org.apache.commons.beanutils.*"%>
 
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html:html locale="true">
+<html:html locale="true">
 
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
@@ -136,7 +135,7 @@ function forwardZero(str, len) {
                     AddReferralDocForm frm = (AddReferralDocForm) request.getAttribute("AddReferralDocForm");
                     BeanUtils.populate(frm,bd.getReferralbyId(id));                              
                 }catch(Exception e){
-                	MiscUtils.getLogger().error("Error", e);
+                    e.printStackTrace();
                 }%>
 			<input type="hidden" name="id" value="<%=id%>" />
 			<%

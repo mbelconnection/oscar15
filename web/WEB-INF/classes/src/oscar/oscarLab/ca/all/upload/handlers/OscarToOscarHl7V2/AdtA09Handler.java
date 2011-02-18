@@ -19,10 +19,10 @@ import oscar.appt.AppointmentDao;
 import oscar.appt.status.model.AppointmentStatus;
 import oscar.dao.ProviderDao;
 import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.model.v26.datatype.CX;
-import ca.uhn.hl7v2.model.v26.message.ADT_A09;
-import ca.uhn.hl7v2.model.v26.segment.PID;
-import ca.uhn.hl7v2.model.v26.segment.PV1;
+import ca.uhn.hl7v2.model.v25.datatype.CX;
+import ca.uhn.hl7v2.model.v25.message.ADT_A09;
+import ca.uhn.hl7v2.model.v25.segment.PID;
+import ca.uhn.hl7v2.model.v25.segment.PV1;
 
 public final class AdtA09Handler {
 	private static Logger logger = MiscUtils.getLogger();

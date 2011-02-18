@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -35,10 +35,9 @@ if(session.getAttribute("user") == null) response.sendRedirect("../../../logout.
 	scope="session" />
 <jsp:useBean id="billingLocalInvNoBean" class="java.util.Properties"
 	scope="page" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html>
+<html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <link rel="stylesheet" href="billing.css">
@@ -113,6 +112,7 @@ while ((nextline=input.readLine())!=null){
 				account = String.valueOf(accountno);
 			}
 			// add a bean
+			//System.out.println(location + " | " + account);
 			if (location.equals(localClinicNo)) {
 				billingLocalInvNoBean.setProperty(account, localClinicNo);
 			}
@@ -623,6 +623,9 @@ param2[1] = raNo;
 
 recordAffected = apptMainBean.queryExecuteUpdate(param2,"update_rahd_content");
 
+if (recordAffected != 1) System.out.println("genRASummary.jsp: update_rahd_content - wrong!");
+apptMainBean.closePstmtConn();
+
 file.close();
 reader.close();
 input.close();
@@ -642,9 +645,10 @@ boolean wasBilledLocal(String account,String provider,String billing_date, Strin
    boolean wasbilledlocal = false; 
    java.util.Date date = UtilDateUtilities.getDateFromString(billing_date, "yyyyMMdd");
    String sql = "select count(*) as cou from billing b, billingdetail bd where b.billing_no= '"+account+"' and b.billing_date = '"+UtilDateUtilities.DateToString(date)+"' and b.provider_ohip_no = '"+provider+"' and bd.billing_no = b.billing_no  and bd.service_code = '"+code+"'";
+   System.out.println(sql);
    try{
-        
-       ResultSet rs  = DBHandler.GetSQL(sql);
+       DBHandler db = new DBHandler(DBHandler.OSCAR_DATA); 
+       ResultSet rs  = db.GetSQL(sql);
        if(rs.next()){          
              int ret = rs.getInt("cou");
              if(ret >= 1){
@@ -654,7 +658,7 @@ boolean wasBilledLocal(String account,String provider,String billing_date, Strin
         
        rs.close();
    }catch(Exception wasbilled){
-	   MiscUtils.getLogger().error("Error", wasbilled);
+       wasbilled.printStackTrace();
    }
    return wasbilledlocal;
 }

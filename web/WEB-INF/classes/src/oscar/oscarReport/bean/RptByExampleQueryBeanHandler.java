@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -30,7 +30,6 @@ import java.util.Collection;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -56,29 +55,30 @@ public class RptByExampleQueryBeanHandler {
         
     public Collection getFavoriteCollection(String providerNo){
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT * from reportByExamplesFavorite WHERE providerNo='" + providerNo + "' ORDER BY name";
-            MiscUtils.getLogger().debug("Sql Statement: " + sql);
+            System.out.println("Sql Statement: " + sql);
             ResultSet rs;
             
-            for(rs = DBHandler.GetSQL(sql); rs.next(); )
+            for(rs = db.GetSQL(sql); rs.next(); )
             {
             
                     StringEscapeUtils strEscUtils = new StringEscapeUtils();                                                   
-                    String queryWithEscapeChar = strEscUtils.escapeJava(oscar.Misc.getString(rs, "query"));                   
+                    String queryWithEscapeChar = strEscUtils.escapeJava(db.getString(rs,"query"));                   
                     //oscar.oscarReport.data.RptByExampleData exampleData  = new oscar.oscarReport.data.RptByExampleData();
                     //queryWithEscapeChar = exampleData.replaceSQLString (";","",queryWithEscapeChar);
                     //queryWithEscapeChar = exampleData.replaceSQLString("\"", "\'", queryWithEscapeChar);            
 
-                    String queryNameWithEscapeChar = strEscUtils.escapeJava(oscar.Misc.getString(rs, "name"));
-                    RptByExampleQueryBean query = new RptByExampleQueryBean(rs.getInt("id"), oscar.Misc.getString(rs, "query"), oscar.Misc.getString(rs, "name"));
+                    //System.out.println("queryWithEscapeChar" + queryWithEscapeChar);
+                    String queryNameWithEscapeChar = strEscUtils.escapeJava(db.getString(rs,"name"));
+                    RptByExampleQueryBean query = new RptByExampleQueryBean(rs.getInt("id"), db.getString(rs,"query"), db.getString(rs,"name"));
                     favoriteVector.add(query);                             
             }
 
             rs.close();
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);            
+            System.out.println(e.getMessage());            
         }
         return favoriteVector;
     }
@@ -89,47 +89,47 @@ public class RptByExampleQueryBeanHandler {
     
     public Collection getAllQueryVector(){
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT r.query, r.date, p.last_name, p.first_name from reportByExamples r, provider p WHERE r.providerNo=p.provider_No ORDER BY date DESC";
-            MiscUtils.getLogger().debug("Sql Statement: " + sql);
+            System.out.println("Sql Statement: " + sql);
             ResultSet rs;
-            for(rs = DBHandler.GetSQL(sql); rs.next(); )
+            for(rs = db.GetSQL(sql); rs.next(); )
             {
                 //StringEscapeUtils strEscUtils = new StringEscapeUtils();                                
-                //String queryWithEscapeChar = strEscUtils.escapeJava(oscar.Misc.getString(rs,"query"));
-                RptByExampleQueryBean query = new RptByExampleQueryBean(oscar.Misc.getString(rs, "last_name"), oscar.Misc.getString(rs, "first_name"), oscar.Misc.getString(rs, "query"), oscar.Misc.getString(rs, "date"));
+                //String queryWithEscapeChar = strEscUtils.escapeJava(db.getString(rs,"query"));
+                RptByExampleQueryBean query = new RptByExampleQueryBean(db.getString(rs,"last_name"), db.getString(rs,"first_name"), db.getString(rs,"query"), db.getString(rs,"date"));
                 allQueryVector.add(query);
             }
 
             rs.close();
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);            
+            System.out.println(e.getMessage());            
         }
         return allQueryVector;
     }
     
     public Vector getQueryVector(){
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT r.query, r.date, p.last_name, p.first_name from reportByExamples r, provider p "
                          + "WHERE r.providerNo=p.provider_No AND date>= '" + startDate + "' AND date <='" + endDate
                          + "' ORDER BY date DESC";
-            MiscUtils.getLogger().debug("Sql Statement: " + sql);
+            System.out.println("Sql Statement: " + sql);
             ResultSet rs;
-            for(rs = DBHandler.GetSQL(sql); rs.next(); )
+            for(rs = db.GetSQL(sql); rs.next(); )
             {
 
                 StringEscapeUtils strEscUtils = new StringEscapeUtils();                                
-                String queryWithEscapeChar = strEscUtils.escapeJava(oscar.Misc.getString(rs, "query"));
-                RptByExampleQueryBean query = new RptByExampleQueryBean(oscar.Misc.getString(rs, "last_name"), oscar.Misc.getString(rs, "first_name"), oscar.Misc.getString(rs, "query"), oscar.Misc.getString(rs, "date"));
+                String queryWithEscapeChar = strEscUtils.escapeJava(db.getString(rs,"query"));
+                RptByExampleQueryBean query = new RptByExampleQueryBean(db.getString(rs,"last_name"), db.getString(rs,"first_name"), db.getString(rs,"query"), db.getString(rs,"date"));
                 queryVector.add(query);
             }
 
             rs.close();
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);            
+            System.out.println(e.getMessage());            
         }
         return queryVector;
     }

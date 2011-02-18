@@ -30,7 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -48,10 +49,9 @@ import org.caisi.service.TicklerManager;
 import org.caisi.tickler.prepared.PreparedTickler;
 import org.caisi.tickler.prepared.PreparedTicklerManager;
 import org.oscarehr.PMmodule.model.Program;
+import org.oscarehr.common.model.Provider;
 import org.oscarehr.PMmodule.service.ProgramManager;
 import org.oscarehr.PMmodule.service.ProviderManager;
-import org.oscarehr.common.model.Provider;
-import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SessionConstants;
 
 import oscar.OscarProperties;
@@ -61,7 +61,7 @@ import oscar.OscarProperties;
  * Updated by Eugene Petruhin on 19 dec 2008 while fixing #2422864 & #2317933 & #2379840
  */
 public class TicklerAction extends DispatchAction {
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(TicklerAction.class);
     private TicklerManager ticklerMgr = null;
     private ProviderManager providerMgr = null;
     private PreparedTicklerManager preparedTicklerMgr = null;
@@ -355,12 +355,12 @@ public class TicklerAction extends DispatchAction {
             String today = formatter.format(new Date());
 
             String e = chart.getEncounter();
-            StringBuilder buf;
+            StringBuffer buf;
             if (e != null) {
-                buf = new StringBuilder(e);
+                buf = new StringBuffer(e);
             }
             else {
-                buf = new StringBuilder();
+                buf = new StringBuffer();
             }
             buf.append("\n\n");
             if (!today.equals(postedDate)) {
@@ -385,12 +385,7 @@ public class TicklerAction extends DispatchAction {
         filter.setEnd_date(null);
 		ticklerForm.set("filter", filter);
 		ticklerForm.set("tickler", new Tickler());
-      //  return filter(mapping, form, request, response);
-        ActionForward af = new ActionForward();
-        af.setRedirect(true);
-        af.setPath("/Tickler.do?tickler.demographic_webName="+tickler.getDemographic_webName()+"&tickler.demographic_no="+tickler.getDemographic_no());
-        return af;
-        
+        return filter(mapping, form, request, response);
     }
 
     /* get a list of prepared ticklers */
@@ -426,7 +421,7 @@ public class TicklerAction extends DispatchAction {
     public ActionForward update_status(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         log.debug("update_status");
         char status = request.getParameter("status").charAt(0);
-        
+        String provider = request.getParameter("provider");
         String id = request.getParameter("id");
 
         switch (status) {
@@ -444,8 +439,9 @@ public class TicklerAction extends DispatchAction {
     }
 
     public boolean isModuleLoaded(HttpServletRequest request, String moduleName) {
-    
-        
+        String propFile = request.getContextPath().substring(1) + ".properties";
+        String sep = System.getProperty("file.separator");
+        String propFileName = System.getProperty("user.home") + sep + propFile;
         OscarProperties proper = OscarProperties.getInstance();
         // proper.loader(propFileName);
 

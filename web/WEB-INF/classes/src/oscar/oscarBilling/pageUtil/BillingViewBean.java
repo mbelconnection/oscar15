@@ -17,7 +17,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -26,8 +26,6 @@ package oscar.oscarBilling.pageUtil;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -76,7 +74,7 @@ public class BillingViewBean {
     
     public void loadBilling(String billing_no) {
         try{
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
             String sql;
             
@@ -84,8 +82,8 @@ public class BillingViewBean {
             sql = sql + "b.clarification_code, b.anatomical_area, b.after_hour, b.new_program, b.billing_code, b.bill_amount, b.payment_mode, b.service_date, b.service_to_day, b.submission_code, b.extended_submission_code, b.dx_code1, b.dx_code2, b.dx_code3, ";
             sql = sql + "b.dx_expansion, b.service_location, b.referral_flag1, b.referral_no1, b.referral_flag2, b.referral_no2, b.time_call, b.service_start_time, b.service_end_time, b.birth_date, b.office_number, b.correspondence_code, b.claim_comment ";
             sql = sql + "from billingmaster b, billing bi where bi.billing_no=b.billing_no and b.billing_no='" + billing_no+"'";
-            MiscUtils.getLogger().debug(sql);
-            rs = DBHandler.GetSQL(sql);
+            System.out.println(sql);
+            rs = db.GetSQL(sql);
             
             while(rs.next()){
                 
@@ -112,7 +110,7 @@ public class BillingViewBean {
             //setBillItem(billingItemsArray);
             rs.close();
             
-        } catch (SQLException e){ MiscUtils.getLogger().error("Error", e);  }
+        } catch (SQLException e){ System.out.println(e.getMessage());  }
         
     }
     

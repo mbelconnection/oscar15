@@ -31,7 +31,6 @@ import oscar.oscarLab.ca.all.util.Utilities;
 public class InsideLabUploadAction extends Action {
     Logger logger = Logger.getLogger(InsideLabUploadAction.class);
     
-    @Override
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)  {
         LabUploadForm frm = (LabUploadForm) form;
         FormFile importFile = frm.getImportFile();
@@ -47,22 +46,21 @@ public class InsideLabUploadAction extends Action {
             if (type.equals("OTHER"))
                 type = request.getParameter("otherType");
             
-            String filePath = Utilities.saveFile(is, filename);
+            Utilities u = new Utilities();
+            String filePath = u.saveFile(is, filename);
             is.close();
             File file = new File(filePath);
             
             is = new FileInputStream(filePath);
-            int checkFileUploadedSuccessfully = FileUploadCheck.addFile(file.getName(),is,proNo);            
+            FileUploadCheck fileC = new FileUploadCheck();
+            int checkFileUploadedSuccessfully = fileC.addFile(file.getName(),is,proNo);            
             is.close();
             
             if (checkFileUploadedSuccessfully != FileUploadCheck.UNSUCCESSFUL_SAVE){
                 logger.info("filePath"+filePath);
-                logger.info("Type :"+type);
-                MessageHandler msgHandler = HandlerClassFactory.getHandler(type);
-                if(msgHandler != null){
-                   logger.info("MESSAGE HANDLER "+msgHandler.getClass().getName());
-                }
-                if((msgHandler.parse(getClass().getSimpleName(), filePath,checkFileUploadedSuccessfully)) != null)
+                HandlerClassFactory f = new HandlerClassFactory();
+                MessageHandler msgHandler = f.getHandler(type);
+                if((msgHandler.parse(filePath,checkFileUploadedSuccessfully)) != null)
                     outcome = "success";
                 
             }else{
@@ -76,5 +74,10 @@ public class InsideLabUploadAction extends Action {
         
         request.setAttribute("outcome", outcome);
         return mapping.findForward("success");
+    }
+    
+    
+    public InsideLabUploadAction() {
+        
     }
 }

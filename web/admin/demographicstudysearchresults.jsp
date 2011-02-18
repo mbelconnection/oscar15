@@ -27,10 +27,14 @@
 	  	nameValue = "year_of_birth = " + name.substring(0,4);
 	  	nameValue += " and month_of_birth = " + name.substring(5,7);
 	  	nameValue += " and date_of_birth = " + name.substring(8,10);
+	  	//System.out.println("sql = " +nameValue);
 	} else {
 	    nameValue = request.getParameter("search_mode") + "='" + UtilMisc.charEscape(request.getParameter("keyword"), '\'') +"'";
 	}
+%>
 
+<%@ include file="../admin/dbconnection.jsp"%>
+<% 
     String [][] dbQueries=new String[][] { 
         {"search_demo", "select d.*, s.study_no from demographic d LEFT JOIN demographicstudy s ON d.demographic_no = s.demographic_no where " + nameValue + " group by d.demographic_no order by last_name limit ? offset ?" }, 
     };
@@ -56,7 +60,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -198,6 +202,7 @@ function refreshstudy() {
 	</tr>
 	<%
   }
+  studyBean.closePstmtConn();
 %>
 
 </table>

@@ -8,7 +8,12 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt" %>
 
-<%@ page import="oscar.oscarDemographic.data.DemographicData"%><%@ page import="org.oscarehr.phr.PHRAuthentication"%>
+<%@ page import="oscar.oscarDemographic.data.DemographicData"%>
+
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+
+<%@ page import="org.oscarehr.phr.PHRAuthentication"%>
 <%@ page import="oscar.oscarProvider.data.ProviderData"%>
 <%@ page import="java.util.*"%>
 <%
@@ -25,6 +30,7 @@ request.setAttribute("forwardto", request.getRequestURI());
 
 <html>
     <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <html:base />
         <link rel="stylesheet" type="text/css" href="../../oscarMessenger/encounterStyles.css">
         <title>

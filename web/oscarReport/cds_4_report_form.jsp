@@ -21,53 +21,51 @@
 * Toronto, Ontario, Canada 
 */
 --%>
-<%@page import="org.oscarehr.common.dao.FunctionalCentreDao"%>
+<%@page import="java.util.*"%>
+<%@page import="org.caisi.dao.*"%>
+<%@page import="org.caisi.model.*"%>
+<%@page import="org.oscarehr.common.dao.SecRoleDao"%>
+<%@page import="org.oscarehr.common.model.SecRole"%>
+<%@page import="org.oscarehr.PMmodule.model.*"%>
+<%@page import="org.oscarehr.PMmodule.dao.*"%>
 <%@page import="org.oscarehr.util.SpringUtils"%>
-<%@page import="java.util.List"%>
-<%@page import="org.oscarehr.common.model.FunctionalCentre"%>
-<%@page import="org.oscarehr.util.LoggedInInfo"%>
-<%@page import="java.util.GregorianCalendar"%>
 <%@page import="java.text.DateFormatSymbols"%>
+<%@page import="org.oscarehr.web.Cds4FunctionCode"%>
+<%@page import="org.apache.commons.lang.StringEscapeUtils"%>
+<%@page import="org.oscarehr.PMmodule.web.CdsForm4"%>
+<%@page import="org.oscarehr.common.model.CdsFormOption"%>
 
 <%
-	FunctionalCentreDao functionalCentreDao = (FunctionalCentreDao) SpringUtils.getBean("functionalCentreDao");
-
-	LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
-	List<FunctionalCentre> functionalCentres=functionalCentreDao.findInUseByFacility(loggedInInfo.currentFacility.getId());
+	ProgramDao programDao = (ProgramDao) SpringUtils.getBean("programDao");
+	
+	List<Program> allPrograms=programDao.getAllActivePrograms();
 %>
 
 <%@include file="/layouts/caisi_html_top.jspf"%>
 
-<h1>CDS Reports</h1>
-				
-<script type="text/javascript">
-	function validate(form)
-	{
-		var fields = form.elements;
 
-		if (fields.functionalCentreId.value==null||fields.functionalCentreId.value=="")
-		{
-			alert('Please select a functional centre.');
-			return(false);
-		}
-	}
-</script>
 
-<form method="post" action="cds_4_report_results.jsp" onsubmit="return(validate(this))">
+<%@page import="org.oscarehr.web.CdsManualLineEntry"%><h1>CDS Reports</h1>
+
+<form method="post" action="cds_4_report_export.jsp">
 	<table class="borderedTableAndCells">
 		<tr>
-			<td colspan="2">CDS-MH 4.05</td>
+			<td>CDS version</td>
+			<td>CDS-MH 4.x</td>
 		</tr>
 		<tr>
-			<td>Functional Centre to report on</td>
+			<td>Caisi programs to include</td>
 			<td>
-				<select name="functionalCentreId">
+				<select name="caisiProgramIds" multiple="multiple" style="width:20em;height:8em">
 					<%
-						for (FunctionalCentre functionalCentre : functionalCentres)
+						for (Program program : allPrograms)
 						{
-							%>
-								<option value="<%=functionalCentre.getAccountId()%>"><%=functionalCentre.getAccountId()+", "+functionalCentre.getDescription()%></option>
-							<%
+							if (program.isBed() || program.isService())
+							{
+								%>
+									<option value="<%=program.getId() %>"><%=program.getName()%></option>
+								<%
+							}
 						}
 					%>
 				</select>
@@ -128,6 +126,71 @@
 					}
 				%>
 				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>Ministries Organisation Number</td>
+			<td><input type="text" name="ministryOrganisationNumber" /></td>
+		</tr>
+		<tr>
+			<td>4. Ministries Program Number</td>
+			<td><input type="text" name="ministryProgramNumber" /></td>
+		</tr>
+		<tr>
+			<td>5. Ministries Function</td>
+			<td>
+				<select name="ministryFunctionCode">
+					<%
+						// oops I guess this breaks the theory of making the form multi version, oh well we'll sort it when V5 of the form comes out.
+						for (Cds4FunctionCode code : Cds4FunctionCode.values())
+						{
+							%>
+								<option value="<%=code.getFunctionCode()%>"><%=StringEscapeUtils.escapeHtml(code.getFunctionName())%></option>
+							<%
+						}
+					%>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>6. Service languages for the above programs</td>
+			<td>
+				<input type="checkbox" name="serviceLanguages" value="en" /> English<br />
+				<input type="checkbox" name="serviceLanguages" value="fr" /> French<br />
+				<input type="checkbox" name="serviceLanguages" value="other" /> Other
+			</td>
+		</tr>
+		<tr>
+			<td>7-02. Unique individuals - pre-admission</td>
+			<td>
+				<%=CdsManualLineEntry.outputCdsManualLineEntryTable("007-02")%>
+			</td>
+		</tr>
+		<tr>
+			<td>10b. Service Delivery LHIN</td>
+			<td>
+				<select multiple="multiple" name="serviceDeliveryLhin" style="height:8em">
+				<%
+					for (CdsFormOption option : CdsForm4.getCdsFormOptions("10b"))
+					{
+						String htmlEscapedName=StringEscapeUtils.escapeHtml(option.getCdsDataCategoryName());
+						String lengthLimitedEscapedName=CdsForm4.limitLengthAndEscape(option.getCdsDataCategoryName());
+	
+						%>
+							<option value="<%=StringEscapeUtils.escapeHtml(option.getCdsDataCategory())%>" title="<%=htmlEscapedName%>"><%=lengthLimitedEscapedName%></option>
+						<%
+					}
+				%>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>32. Formal Service Evaluation Process (check for 'yes')</td>
+			<td>
+				Does the function formally measure service recipient satisfaction? <input type="checkbox" name="measureServiceRecipientSatisfaction" /><br />
+				Does the function formally measure service recipient family satisfaction? <input type="checkbox" name="measureServiceRecipientFamiltySatisfaction" /><br />
+				Is the function involved in formal quality improvement strategies? <input type="checkbox" name="qualityImprovementStrategies" /><br />
+				Does the function participate in accreditation? <input type="checkbox" name="participateInAccreditation" /><br />
 			</td>
 		</tr>
 		<tr>

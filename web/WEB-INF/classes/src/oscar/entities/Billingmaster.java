@@ -17,7 +17,7 @@
  *
  * This software was written for the
  * Department of Family Medicine
- * McMaster University
+ * McMaster Unviersity
  * Hamilton
  * Ontario, Canada
  */
@@ -34,11 +34,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.util.UtilDateUtilities;
 
 /**
@@ -53,7 +50,7 @@ public class Billingmaster {
      * auto_increment
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "billingmaster_no")
     private int billingmasterNo;
     @Column(name = "billing_no")
@@ -169,7 +166,7 @@ public class Billingmaster {
     @Column(name = "oin_postalcode")
     private String oinPostalcode;
     @Column(name = "wcb_id")
-    public Integer wcbId;
+    private Integer wcbId;
     @Column(name = "paymentMethod")
     private int paymentMethod;
 
@@ -524,7 +521,7 @@ public class Billingmaster {
         try{
            d = UtilDateUtilities.getDateFromString(serviceDate, "yyyyMMdd");
         }catch(Exception e){
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return d;
     }
@@ -1338,7 +1335,7 @@ public class Billingmaster {
             }
         } catch (Exception e) {
             retval = false;
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return retval;
     }

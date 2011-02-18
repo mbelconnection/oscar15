@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -31,11 +31,11 @@ user_no = (String) session.getAttribute("user");
 %>
 <%@ page import="java.util.*, java.sql.*, oscar.*"
 	errorPage="../../errorpage.jsp"%>
-
+<%@ include file="../../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
 <jsp:useBean id="SxmlMisc" class="oscar.SxmlMisc" scope="session" />
-<%@ include file="dbINR.jspf"%>
+<%@ include file="dbINR.jsp"%>
 <% 
 String temp="";
 String clinic_no= request.getParameter("clinic_no");
@@ -155,7 +155,8 @@ for (Enumeration e = request.getParameterNames() ; e.hasMoreElements() ;) {
               
          
 	}
-}
+} 
+apptMainBean.closePstmtConn();
 %>
 <script LANGUAGE="JavaScript">
       self.close();

@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -30,6 +30,7 @@
   if(request.getParameter("oox")!=null) oox += Integer.parseInt(request.getParameter("oox"));
   if(request.getParameter("ooy")!=null) ooy += Integer.parseInt(request.getParameter("ooy"));
 %>
+<%@ page language="java"%>
 <%@ page import="java.util.*, java.sql.*, oscar.*, oscar.util.*"%>
 <%@ page import="oscar.form.*"%>
 
@@ -38,6 +39,8 @@
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>ANTENATAL RECORD 1</title>
 <link rel="stylesheet" href="antenatalRecordPrint.css">
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 <script language="JavaScript">
 <!--
 
@@ -74,6 +77,13 @@ function ff(x,y,w,h,name) { //need escape to name for ' and "
 ff(750,10,50,20,'<span class="title"><a href="javascript: window.print();">Print</a></span>' );
 //<!--ff(750,40,50,20,'<span class="title"><a href="formAR.jsp?demographic_no=&formId=&provNo=">Cancel</a></span>' );-->
 ff(750,40,50,20,'<span class="title"><a href=# onClick="window.close()">Cancel</a></span>' );
+<%
+	if (request.getParameter("historyet") != null) {
+%>
+		ff(750,70,50,20,'<span class="title"><a href="formarpg1sendoc.jsp?formId=<%=request.getParameter("formId")%>&demographic_no=<%=request.getParameter("demographic_no") %>" >Send</a></span>' );
+<%
+	}
+%>
 
 ff(192,0,300,20,'<span class="title">Antenatal Record 1</span>' );
 ff(8,68,100,20,'<span class="tdname">Name</span>' );

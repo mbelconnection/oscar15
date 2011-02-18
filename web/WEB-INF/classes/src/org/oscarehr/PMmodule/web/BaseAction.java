@@ -23,6 +23,7 @@
 package org.oscarehr.PMmodule.web;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +37,7 @@ import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.apache.struts.action.RedirectingActionForward;
 import org.apache.struts.actions.DispatchAction;
+import org.oscarehr.common.model.Provider;
 import org.oscarehr.PMmodule.service.AdmissionManager;
 import org.oscarehr.PMmodule.service.BedDemographicManager;
 import org.oscarehr.PMmodule.service.ClientManager;
@@ -47,12 +49,12 @@ import org.oscarehr.PMmodule.service.ProviderManager;
 import org.oscarehr.PMmodule.service.RatePageManager;
 import org.oscarehr.PMmodule.service.RoomDemographicManager;
 import org.oscarehr.PMmodule.service.RoomManager;
-import org.oscarehr.PMmodule.utility.Utility;
 import org.oscarehr.casemgmt.service.CaseManagementManager;
-import org.oscarehr.common.model.Provider;
 import org.oscarehr.util.SessionConstants;
+import org.oscarehr.PMmodule.utility.Utility;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import com.quatro.service.security.*;
 
 import oscar.OscarProperties;
 
@@ -61,9 +63,6 @@ import com.quatro.model.security.NoAccessException;
 import com.quatro.service.security.SecurityManager;
 import com.quatro.service.security.UserAccessManager;
 
-/**
- * deprecated do not use this class anymore, there's no good reason for this classes existance. Action classes should generally speaking stand on their own without a common super class. If utilities are required, then a utility class should be made, not a super class.
- */
 public abstract class BaseAction extends DispatchAction {
 	
 	protected static final String PARAM_START = "?";
@@ -170,7 +169,7 @@ public abstract class BaseAction extends DispatchAction {
 		return attribute;
 	}
 	
-	protected ActionForward createRedirectForward(ActionMapping mapping, String forwardName, StringBuffer parameters) {
+	protected ActionForward createRedirectForward(ActionMapping mapping, String forwardName, StringBuilder parameters) {
 		ActionForward forward = mapping.findForward(forwardName);
 		StringBuilder path = new StringBuilder(forward.getPath());
 		path.append(parameters);
@@ -250,9 +249,9 @@ public abstract class BaseAction extends DispatchAction {
 	}
 	
 	protected ActionForward createRedirectForward(ActionMapping mapping,
-			String forwardName, StringBuilder parameters) {
+			String forwardName, StringBuffer parameters) {
 		ActionForward forward = mapping.findForward(forwardName);
-		StringBuilder path = new StringBuilder(forward.getPath());
+		StringBuffer path = new StringBuffer(forward.getPath());
 		path.append(parameters);
 
 		return new RedirectingActionForward(path.toString());
@@ -347,7 +346,7 @@ public abstract class BaseAction extends DispatchAction {
 
 	protected Integer getParameterAsInteger(HttpServletRequest request, String name, Integer defaultVal) {
 		String param = request.getParameter(name);
-		if(!(param==null || param.equals("null") || param.equals(""))) {
+		if(param != null) {
 			return Integer.valueOf(param);
 		}
 		return defaultVal;

@@ -20,6 +20,7 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 
 import javax.crypto.Cipher;
@@ -35,211 +36,222 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.upload.FormFile;
-import org.oscarehr.common.dao.OscarKeyDao;
-import org.oscarehr.common.dao.PublicKeyDao;
-import org.oscarehr.common.model.OscarKey;
-import org.oscarehr.util.MiscUtils;
-import org.oscarehr.util.SpringUtils;
 
+import oscar.oscarDB.DBHandler;
 import oscar.oscarLab.FileUploadCheck;
 import oscar.oscarLab.ca.all.upload.HandlerClassFactory;
 import oscar.oscarLab.ca.all.upload.handlers.MessageHandler;
 import oscar.oscarLab.ca.all.util.Utilities;
 
+
 public class LabUploadAction extends Action {
-	protected static Logger logger = Logger.getLogger(LabUploadAction.class);
+    protected static Logger logger = Logger.getLogger(LabUploadAction.class);
 
-	@Override
-	public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-		LabUploadForm frm = (LabUploadForm) form;
-		FormFile importFile = frm.getImportFile();
+    public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+        LabUploadForm frm = (LabUploadForm) form;
+        FormFile importFile = frm.getImportFile();
 
-		String signature = request.getParameter("signature");
-		String key = request.getParameter("key");
-		String service = request.getParameter("service");
-		String outcome = "";
-		String audit = "";
-		Integer httpCode = 200;
+        String signature = request.getParameter("signature");
+        String key = request.getParameter("key");
+        String service = request.getParameter("service");
+        String outcome = "";
+        String audit = "";
+        Integer httpCode = 200;
 
-		@SuppressWarnings("unchecked")
-		ArrayList clientInfo = getClientInfo(service);
-		PublicKey clientKey = (PublicKey) clientInfo.get(0);
-		String type = (String) clientInfo.get(1);
+        ArrayList clientInfo = getClientInfo(service);
+        PublicKey clientKey = (PublicKey) clientInfo.get(0);
+        String type = (String) clientInfo.get(1);
 
-		try {
+        try {
 
-			InputStream is = decryptMessage(importFile.getInputStream(), key, clientKey);
-			String fileName = importFile.getFileName();
-			String filePath = Utilities.saveFile(is, fileName);
-			importFile.getInputStream().close();
-			File file = new File(filePath);
+            InputStream is = decryptMessage(importFile.getInputStream(), key, clientKey);
+            Utilities u = new Utilities();
+            String fileName = importFile.getFileName();
+            String filePath = u.saveFile(is, fileName);
+            importFile.getInputStream().close();
+            File file = new File(filePath);
 
-			if (validateSignature(clientKey, signature, file)) {
-				logger.debug("Validated Successfully");
-				MessageHandler msgHandler = HandlerClassFactory.getHandler(type);
-
-				is = new FileInputStream(file);
-				int check = FileUploadCheck.addFile(file.getName(), is, "0");
-				if (check != FileUploadCheck.UNSUCCESSFUL_SAVE) {
-					if ((audit = msgHandler.parse(service, filePath, check)) != null) {
-						outcome = "uploaded";
-						httpCode = HttpServletResponse.SC_OK;
-					} else {
-						outcome = "upload failed";
-						httpCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-					}
-				} else {
-					outcome = "uploaded previously";
-					httpCode = HttpServletResponse.SC_CONFLICT;
-				}
-				is.close();
-			} else {
-				logger.info("failed to validate");
-				outcome = "validation failed";
-				httpCode = HttpServletResponse.SC_NOT_ACCEPTABLE;
-			}
-		} catch (Exception e) {
-			MiscUtils.getLogger().error("Error", e);
-			outcome = "exception";
-			httpCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-		}
-		request.setAttribute("outcome", outcome);
-		request.setAttribute("audit", audit);
-
-		if (request.getParameter("use_http_response_code") != null) {
-			try {
-	            response.sendError(httpCode, outcome);
-            } catch (IOException e) {
-	            logger.error("Error", e);
+            if (validateSignature(clientKey, signature, file)) {
+                logger.debug("Validated Successfully");
+                HandlerClassFactory f = new HandlerClassFactory();
+                MessageHandler msgHandler = f.getHandler(type);
+                
+                is = new FileInputStream(file);
+                FileUploadCheck fileC = new FileUploadCheck();
+                int check = fileC.addFile(file.getName(), is, "0");
+                if (check != FileUploadCheck.UNSUCCESSFUL_SAVE) {
+                    if((audit = msgHandler.parse(filePath,check)) != null){
+                        outcome = "uploaded";
+                        httpCode = HttpServletResponse.SC_OK;
+                    } else {
+                        outcome = "upload failed";
+                        httpCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                    }
+                } else {
+                    outcome = "uploaded previously";
+                    httpCode = HttpServletResponse.SC_CONFLICT;
+                }
+                is.close();
+            } else {
+                logger.info("failed to validate");
+                outcome = "validation failed";
+                httpCode = HttpServletResponse.SC_NOT_ACCEPTABLE;
             }
-			return (null);
-		} else return mapping.findForward("success");
-	}
+        } catch (Exception e) {
+            logger.debug("Exception: " + e);
+            e.printStackTrace();
+            outcome = "exception";
+            httpCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+        }
 
-	public LabUploadAction() {
-	}
+        request.setAttribute("outcome", outcome);
+        request.setAttribute("audit", audit);
+        logger.info("useHttpRequest " + request.getParameter("use_http_response_code") + " code " + httpCode + " outcome " + outcome);
+        if (request.getParameter("use_http_response_code") != null) {
+            try {
+                response.sendError(httpCode, outcome);
+            } catch (IOException e) {
+                logger.error("Error", e);
+            }
 
-	/*
-	 * Decrypt the encrypted message and return the original version of the message as an InputStream
-	 */
-	public static InputStream decryptMessage(InputStream is, String skey, PublicKey pkey) {
+            return (null);
+        } else {
+            return mapping.findForward("success");
+        }
 
-		Base64 base64 = new Base64();
+    }
 
-		// Decrypt the secret key and the message
-		try {
+    /*
+     * Decrypt the encrypted message and return the original version of the message as an InputStream
+     */
+    public static InputStream decryptMessage(InputStream is, String skey, PublicKey pkey) {
 
-			// retrieve the servers private key
-			PrivateKey key = getServerPrivate();
+        Base64 base64 = new Base64();
 
-			// Decrypt the secret key using the servers private key
-			Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-			cipher.init(Cipher.DECRYPT_MODE, key);
-			byte[] newSecretKey = cipher.doFinal(base64.decode(skey.getBytes(MiscUtils.ENCODING)));
+        // Decrypt the secret key and the message
+        try {
 
-			// Decrypt the message using the secret key
-			SecretKeySpec skeySpec = new SecretKeySpec(newSecretKey, "AES");
-			Cipher msgCipher = Cipher.getInstance("AES");
-			msgCipher.init(Cipher.DECRYPT_MODE, skeySpec);
+            // retrieve the servers private key
+            PrivateKey key = getServerPrivate();
 
-			is = new CipherInputStream(is, msgCipher);
+            // Decrypt the secret key using the servers private key
+            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            cipher.init(Cipher.DECRYPT_MODE, key);
+            byte[] newSecretKey = cipher.doFinal(base64.decode(skey.getBytes("ASCII")));
 
-			// Return the decrypted message
-			return (new BufferedInputStream(is));
+            // Decrypt the message using the secret key
+            SecretKeySpec skeySpec = new SecretKeySpec(newSecretKey, "AES");
+            Cipher msgCipher = Cipher.getInstance("AES");
+            msgCipher.init(Cipher.DECRYPT_MODE, skeySpec);
 
-		} catch (Exception e) {
-			logger.error("Could not decrypt the message", e);
-			return (null);
-		}
-	}
+            is = new CipherInputStream(is, msgCipher);
 
-	/*
-	 * Check that the signature 'sigString' matches the message InputStream 'msgIS' thus verifying that the message has not been altered.
-	 */
-	public static boolean validateSignature(PublicKey key, String sigString, File input) {
-		Base64 base64 = new Base64();
-		byte[] buf = new byte[1024];
+            // Return the decrypted message
+            return (new BufferedInputStream(is));
 
-		try {
+        } catch (Exception e) {
+            logger.error("Could not decrypt the message", e);
+            return (null);
+        }
+    }
 
-			InputStream msgIs = new FileInputStream(input);
-			Signature sig = Signature.getInstance("MD5WithRSA");
-			sig.initVerify(key);
+    /*
+     *  Check that the signature 'sigString' matches the message InputStream 'msgIS' thus
+     *  verifying that the message has not been altered.
+     */
+    public static boolean validateSignature(PublicKey key, String sigString, File input) {
+        Base64 base64 = new Base64();
+        byte[] buf = new byte[1024];
 
-			// Read in the message bytes and update the signature
-			int numRead = 0;
-			while ((numRead = msgIs.read(buf)) >= 0) {
-				sig.update(buf, 0, numRead);
-			}
-			msgIs.close();
+        try {
 
-			return (sig.verify(base64.decode(sigString.getBytes(MiscUtils.ENCODING))));
+            InputStream msgIs = new FileInputStream(input);
+            Signature sig = Signature.getInstance("MD5WithRSA");
+            sig.initVerify(key);
 
-		} catch (Exception e) {
-			logger.debug("Could not validate signature: " + e);
-			MiscUtils.getLogger().error("Error", e);
-			return (false);
-		}
-	}
+            // Read in the message bytes and update the signature
+            int numRead = 0;
+            while ((numRead = msgIs.read(buf)) >= 0) {
+                sig.update(buf, 0, numRead);
+            }
+            msgIs.close();
 
-	/*
-	 * Retrieve the clients public key from the database
-	 */
-	public static ArrayList<Object> getClientInfo(String service) {
+            return (sig.verify(base64.decode(sigString.getBytes("ASCII"))));
 
-		PublicKey Key = null;
-		Base64 base64 = new Base64();
-		String keyString = "";
-		String type = "";
-		byte[] publicKey;
-		ArrayList<Object> info = new ArrayList<Object>();
+        } catch (Exception e) {
+            logger.debug("Could not validate signature: " + e);
+            e.printStackTrace();
+            return (false);
+        }
+    }
 
-		try {
-			PublicKeyDao publicKeyDao = (PublicKeyDao) SpringUtils.getBean("publicKeyDao");
-			org.oscarehr.common.model.PublicKey publicKeyObject = publicKeyDao.find(service);
+    /*
+     *  Retrieve the clients public key from the database
+     */
+    public static ArrayList getClientInfo(String service){
 
-			if (publicKeyObject != null) {
-				keyString = publicKeyObject.getBase64EncodedPublicKey();
-				type = publicKeyObject.getType();
-			}
+        PublicKey Key = null;
+        Base64 base64 = new Base64();
+        String keyString = "";
+        String type = "";
+        byte[] publicKey;
+        ArrayList info = new ArrayList();
 
-			publicKey = base64.decode(keyString.getBytes(MiscUtils.ENCODING));
-			;
-			X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(publicKey);
-			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-			Key = keyFactory.generatePublic(pubKeySpec);
+        try {
 
-			info.add(Key);
-			info.add(type);
+            String query = "SELECT pubKey, type FROM publicKeys WHERE service='" + service + "';";
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL(query);
 
-		} catch (Exception e) {
-			logger.error("Could not retrieve private key: ", e);
-		}
-		return (info);
-	}
+            while (rs.next()) {
+                keyString = db.getString(rs, "pubKey");
+                type = db.getString(rs,"type");
+            }
 
-	/*
-	 * Retrieve the servers private key from the database
-	 */
-	private static PrivateKey getServerPrivate() {
+            rs.close();
+            publicKey = base64.decode(keyString.getBytes("ASCII"));;
+            X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(publicKey);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            Key = keyFactory.generatePublic(pubKeySpec);
 
-		PrivateKey Key = null;
-		Base64 base64 = new Base64();
-		byte[] privateKey;
+            info.add(Key);
+            info.add(type);
 
-		try {
-			OscarKeyDao oscarKeyDao = (OscarKeyDao) SpringUtils.getBean("oscarKeyDao");
-			OscarKey oscarKey = oscarKeyDao.find("oscar");
-			logger.info("oscar key: " + oscarKey);
+        } catch (Exception e) {
+            logger.error("Could not retrieve private key: ", e);
+        }
+        return (info);
+    }
 
-			privateKey = base64.decode(oscarKey.getPrivateKey().getBytes(MiscUtils.ENCODING));
-			PKCS8EncodedKeySpec privKeySpec = new PKCS8EncodedKeySpec(privateKey);
-			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-			Key = keyFactory.generatePrivate(privKeySpec);
-		} catch (Exception e) {
-			logger.error("Could not retrieve private key: ", e);
-		}
-		return (Key);
-	}
+    /*
+     *  Retrieve the servers private key from the database
+     */
+    private static PrivateKey getServerPrivate() {
+
+        PrivateKey Key = null;
+        Base64 base64 = new Base64();
+        byte[] privateKey;
+        String keyString = "";
+
+        try {
+
+            String query = "SELECT privKey FROM oscarKeys WHERE name='oscar';";
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            ResultSet rs = db.GetSQL(query);
+
+            while (rs.next()) {
+                keyString = db.getString(rs, "privKey");
+            }
+            logger.info("oscar key: " + keyString);
+            rs.close();
+            privateKey = base64.decode(keyString.getBytes("ASCII"));
+            PKCS8EncodedKeySpec privKeySpec = new PKCS8EncodedKeySpec(privateKey);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            Key = keyFactory.generatePrivate(privKeySpec);
+        } catch (Exception e) {
+            logger.error("Could not retrieve private key: ", e);
+        }
+        return (Key);
+    }
 
 }

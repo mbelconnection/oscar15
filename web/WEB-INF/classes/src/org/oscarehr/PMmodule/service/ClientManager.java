@@ -93,16 +93,16 @@ public class ClientManager {
         return dao.getMostRecentIntakeCProvider(Integer.valueOf(demographicNo));
     }
 
-    public List<ClientReferral> getReferrals() {
+    public List getReferrals() {
         return referralDAO.getReferrals();
     }
 
-    public List<ClientReferral> getReferrals(String clientId) {
+    public List getReferrals(String clientId) {
         return referralDAO.getReferrals(Long.valueOf(clientId));
     }
 
-    public List<ClientReferral> getReferralsByFacility(Integer clientId, Integer facilityId) {
-        return referralDAO.getReferralsByFacility(clientId.longValue(), facilityId);
+    public List getReferralsByFacility(String clientId, Integer facilityId) {
+        return referralDAO.getReferralsByFacility(Long.valueOf(clientId), facilityId);
     }
 
     public List<ClientReferral> getActiveReferrals(String clientId, String sourceFacilityId) {

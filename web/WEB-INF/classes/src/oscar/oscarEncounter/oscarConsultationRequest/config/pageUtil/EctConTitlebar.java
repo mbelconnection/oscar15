@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -71,13 +71,13 @@ public class EctConTitlebar
 
     public String estBar(HttpServletRequest request)
     {
-        StringBuilder strBuf = new StringBuilder();
+        StringBuffer strBuf = new StringBuffer();
         strBuf.append("<table bgcolor=\"#ffffff\" cellspacing=\"2\">\n");
         strBuf.append("   <tr>\n");
         String uri = request.getRequestURI();
         int ind = uri.lastIndexOf("/");
         uri = uri.substring(ind + 1);
-
+        //System.out.println("uri".concat(String.valueOf(String.valueOf(uri))));
         for(int i = 0; i < jspVect.size(); i++){
             if(uri.equals(jspVect.elementAt(i)) && request.getAttribute("upd") == null)
             {
@@ -87,7 +87,7 @@ public class EctConTitlebar
             } else
             {
                 strBuf.append("      <td bgcolor=\"#9999ff\">\n");
-                strBuf.append(String.valueOf(String.valueOf((new StringBuilder("         <a href=")).append((String)jspVect.elementAt(i)).append(" class=\"consultButtonsActive\">").append((String)displayNameVect.elementAt(i)).append("</a>\n"))));
+                strBuf.append(String.valueOf(String.valueOf((new StringBuffer("         <a href=")).append((String)jspVect.elementAt(i)).append(" class=\"consultButtonsActive\">").append((String)displayNameVect.elementAt(i)).append("</a>\n"))));
                 strBuf.append("      </td>\n");
             }
             strBuf.append("   </tr>\n");

@@ -18,11 +18,13 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 -->
+
+<%@ page language="java"%>
 <%@ page import="oscar.oscarEncounter.immunization.data.*, oscar.util.*"%>
 <%@ page
 	import="oscar.oscarEncounter.immunization.pageUtil.*, java.util.*, org.w3c.dom.*"%>
@@ -104,11 +106,13 @@ function BackToOscar()
 								<tr>
 									<td><bean:message
 										key="oscarEncounter.search.demographicSearch.formMale" /></td>
-									<td><html:radio property="sex" value="M" />
+									<td><html:radio property="sex"
+										value="<bean:message key="oscarEncounter.search.demographicSearch.formMale"/>" />
 									</td>
 									<td><bean:message
 										key="oscarEncounter.search.demographicSearch.formFemale" /></td>
-                                                                        <td><html:radio property="sex" value="F" />
+									<td><html:radio property="sex"
+										value="<bean:message key="oscarEncounter.search.demographicSearch.formFemale"/>" />
 									</td>
 								</tr>
 							</table>

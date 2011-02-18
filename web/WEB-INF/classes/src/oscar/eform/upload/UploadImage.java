@@ -39,22 +39,39 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 
 public class UploadImage extends HttpServlet{
     final static int BUFFER = 2048;
-    public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException  {    
-        String foldername="", fileheader="";
-  
+    public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException  {
+        int c;
+        int count;
+        byte data[] = new byte[BUFFER];
+        byte data1[] = new byte[BUFFER/2];
+        byte data2[] = new byte[BUFFER/2];
+        byte enddata[] = new byte[2];
+        
+        
+        HttpSession session = request.getSession(true);
+        String backupfilepath = ((String) session.getAttribute("homepath"))!=null?((String) session.getAttribute("homepath")):"null" ;
+        
+        count=request.getContentType().indexOf('=');
+        String temp = request.getContentType().substring(count+1);
+        String filename = "", foldername="", fileheader="", forwardTo="", function="", function_id="", filedesc="", creator="", doctype="", docxml="";
+        String home_dir="", doc_forward="";
+        String userHomePath = System.getProperty("user.home", "user.dir");
+        
         Properties ap = OscarProperties.getInstance();
-        foldername = ap.getProperty("eform_image");
+        foldername = ap.getProperty("eform_image");        
 
+        boolean isMultipart = FileUpload.isMultipartContent(request);
         //		 Create a new file upload handler
         DiskFileUpload upload = new DiskFileUpload();
 
@@ -69,24 +86,24 @@ public class UploadImage extends HttpServlet{
                 if (item.isFormField()) {
                     //String name = item.getFieldName();
                     //String value = item.getString(); 
-
+                    //System.out.println("Fieldname: " + item.getFieldName());
                 } else {
                     String pathName = item.getName();  
                     String [] fullFile = pathName.split("[/|\\\\]");
             		File savedFile = new File(foldername, fullFile[fullFile.length-1]);
-
+                    //System.out.println(item.getName() + "fullFile: " + fullFile[fullFile.length-1]);
                     fileheader = fullFile[fullFile.length-1];
-                    MiscUtils.getLogger().debug(fileheader + "uploaded to \n" +
+                    System.out.println(fileheader + "uploaded to \n" +
                                       foldername);
                     item.write(savedFile);
                 }
             }
         } catch (FileUploadException e) {
             // TODO Auto-generated catch block
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }   
         
         // Call the output page.

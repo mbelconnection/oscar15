@@ -20,22 +20,23 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.OscarProperties;
 
+/**
+ *
+ * @author wrighd
+ */
 public class Utilities {
        
-	private static final Logger logger=MiscUtils.getLogger();
-	
-    private Utilities() {
-    	// utils shouldn't be instantiated
+    /**
+     * Creates a new instance of Utilities
+     */
+    public Utilities() {
     }
     
-    public static ArrayList<String> separateMessages(String fileName) throws Exception{
+    public ArrayList separateMessages(String fileName) throws Exception{
                 
-        ArrayList<String> messages = new ArrayList<String>();
+        ArrayList messages = new ArrayList();
         try{
             InputStream is = new FileInputStream(fileName);
             
@@ -93,6 +94,7 @@ public class Utilities {
      */
     public static String saveFile(InputStream stream,String filename ){
         String retVal = null;
+        boolean isAdded = true;
         
         
         try {
@@ -101,10 +103,9 @@ public class Utilities {
             String place= props.getProperty("DOCUMENT_DIR");
             
             if(!place.endsWith("/"))
-                place = new StringBuilder(place).insert(place.length(),"/").toString();
+                place = new StringBuffer(place).insert(place.length(),"/").toString();
             retVal = place+"LabUpload."+filename.replaceAll(".enc", "")+"."+(new Date()).getTime();
             
-            logger.debug("saveFile place="+place+", retVal="+retVal);
             //write the  file to the file specified
             OutputStream os = new FileOutputStream(retVal);
             
@@ -117,11 +118,11 @@ public class Utilities {
             //close the stream
             stream.close();
         }catch (FileNotFoundException fnfe) {
-        	logger.error("Error", fnfe);
+            fnfe.printStackTrace();
             return retVal;
             
         }catch (IOException ioe) {
-        	logger.error("Error", ioe);
+            ioe.printStackTrace();
             return retVal;
         }
         return retVal;
@@ -131,7 +132,7 @@ public class Utilities {
     /*
      *  Return a string corresponding to the data in a given InputStream
      */
-    public static String inputStreamAsString(InputStream stream) throws IOException {
+    public String inputStreamAsString(InputStream stream) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(stream));
         StringBuilder sb = new StringBuilder();
         String line = null;

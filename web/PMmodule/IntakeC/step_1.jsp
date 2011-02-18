@@ -37,8 +37,7 @@
 	
 	pageContext.setAttribute("formBean", formBean);
 %>
-
-<%@page import="org.oscarehr.common.model.Provider"%><script>
+<script>
 	function go_to_top() {
 		var form = document.intakeCForm;
 		form.method.value='refresh';
@@ -54,7 +53,7 @@
 		<td height="10" align="right" colspan="4">&nbsp; <c:if
 			test="${requestScope.demographicNo gt 0 }">
 			<a href="javascript:void(0);"
-				onclick="window.open('<caisi:CaseManagementLink demographicNo="<%=intake.getDemographicNo().intValue()%>" providerNo="<%=provider.getProviderNo()%>" providerName="<%=provider.getFullName()%>" />', 'casemgmt', 'width=700,height=800')">
+				onclick="window.open('<caisi:CaseManagementLink demographicNo="<%=intake.getDemographicNo()%>" providerNo="<%=provider.getProviderNo()%>" providerName="<%=provider.getFullName()%>" />', 'casemgmt', 'width=700,height=800')">
 			<span class="style126">Case Management Notes</span> </a>
 		</c:if></td>
 	</tr>

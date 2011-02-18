@@ -14,8 +14,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.CollectionOfElements;
@@ -29,19 +27,13 @@ public class IntegratorConsent extends AbstractModel<Integer> {
 		GIVEN, REVOKED, DEFERRED_NOT_APPROPRIATE, DEFERRED_CONSIDER_LATER, REFUSED_TO_SIGN
 	}
 	
-	public enum SignatureStatus {
-		PAPER, ELECTRONIC
-	}
-	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id = null;
 	/** This is the facility which is creating this record, i.e. the facility of the provider making this change. */
 	private Integer facilityId = -1;
 	private Integer demographicId = -1;
 	private String providerNo = null;
-
-	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdDate = new Date();
 
 	/**
@@ -55,10 +47,6 @@ public class IntegratorConsent extends AbstractModel<Integer> {
 	
 	@Enumerated(EnumType.STRING)
 	private ConsentStatus clientConsentStatus = null;
-	
-	@Enumerated(EnumType.STRING)
-	private SignatureStatus signatureStatus = null;
-	
 	private Date expiry=null;
 	
 	private Integer digitalSignatureId = null;
@@ -95,8 +83,7 @@ public class IntegratorConsent extends AbstractModel<Integer> {
 		this.createdDate = createdDate;
 	}
 
-	@Override
-    public Integer getId() {
+	public Integer getId() {
 		return id;
 	}
 
@@ -132,14 +119,6 @@ public class IntegratorConsent extends AbstractModel<Integer> {
 		this.clientConsentStatus = clientConsentStatus;
 	}
 
-	public SignatureStatus getSignatureStatus() {
-		return signatureStatus;
-	}
-
-	public void setSignatureStatus(SignatureStatus signatureStatus) {
-		this.signatureStatus = signatureStatus;
-	}
-	
 	public Date getExpiry() {
     	return expiry;
     }

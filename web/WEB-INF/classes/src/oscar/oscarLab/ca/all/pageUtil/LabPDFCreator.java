@@ -30,12 +30,12 @@
 package oscar.oscarLab.ca.all.pageUtil;
 
 import java.awt.Color;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import oscar.OscarProperties;
 import oscar.oscarLab.ca.all.AcknowledgementData;
@@ -65,6 +65,8 @@ import com.lowagie.text.pdf.PdfWriter;
  * @author wrighd
  */
 public class LabPDFCreator extends PdfPageEventHelper{
+    private HttpServletRequest request;
+    private HttpServletResponse response;
     private OutputStream os;
     
     private boolean ackFlag = false;
@@ -79,25 +81,19 @@ public class LabPDFCreator extends PdfPageEventHelper{
     private Font boldFont;
     private Font redFont;
     
-    public static byte[] getPdfBytes(String segmentId, String providerNo) throws IOException, DocumentException
-    {
-    	ByteArrayOutputStream baos=new ByteArrayOutputStream();
-    	
-    	LabPDFCreator labPDFCreator=new LabPDFCreator(baos, segmentId, providerNo);
-    	labPDFCreator.printPdf();
-    	
-    	return(baos.toByteArray());
-    }
-    
     /** Creates a new instance of LabPDFCreator */
     public LabPDFCreator(HttpServletRequest request, OutputStream os) {
-    	this(os, (request.getParameter("segmentID")!=null?request.getParameter("segmentID"):(String)request.getAttribute("segmentID")), (request.getParameter("providerNo")!=null?request.getParameter("providerNo"):(String)request.getAttribute("providerNo")));
-    }
-    
-    public LabPDFCreator(OutputStream os, String segmentId, String providerNo) {
+        this.request = request;
         this.os = os;
-        this.id = segmentId;
-
+        this.id = request.getParameter("segmentID");
+        if (id == null)
+            this.id = (String) request.getAttribute("segmentID");
+        String providerNo = request.getParameter("providerNo");
+        if (providerNo == null) {
+            providerNo = (String) request.getAttribute("providerNo");
+        }
+        System.out.println("segmentID: " + this.id);
+        System.out.println("providerNo: " + request.getAttribute("providerNo"));
         // check for acknowledgements and set ackFlag
         AcknowledgementData ackData = new AcknowledgementData();
         ArrayList ackList = ackData.getAcknowledgements(id);
@@ -112,7 +108,8 @@ public class LabPDFCreator extends PdfPageEventHelper{
         }
         
         // create handler
-        this.handler = Factory.getHandler(id);
+        Factory f = new Factory();
+        this.handler = f.getHandler(id);
         
         // determine lab version
         Hl7textResultsData data = new Hl7textResultsData();
@@ -126,7 +123,7 @@ public class LabPDFCreator extends PdfPageEventHelper{
         this.versionNum = i+1;
         
     }
-
+    
     public void printPdf() throws IOException, DocumentException{
         
         // check that we have data to print
@@ -180,7 +177,6 @@ public class LabPDFCreator extends PdfPageEventHelper{
         
         document.close();
         
-        os.flush();
     }
     
     

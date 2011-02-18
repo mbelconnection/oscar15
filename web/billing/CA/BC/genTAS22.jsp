@@ -1,10 +1,10 @@
 
 <%@ page
 	import="java.math.*, java.util.*, java.io.*, java.sql.*, oscar.*, java.net.*,oscar.MyDateFormat"%>
-
+<%@ include file="../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 <!--  
 /*
  * 
@@ -25,13 +25,12 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 -->
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html>
+<html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <link rel="stylesheet" href="billing.css">
@@ -275,7 +274,7 @@ String proFirst="", proLast="", demoFirst="", demoLast="", apptDate="", apptTime
         String moneyStr = "0.00";
         try{             
             moneyStr = new java.math.BigDecimal(str).movePointLeft(2).toString();
-        }catch (Exception moneyException) { MiscUtils.getLogger().error("Error", moneyException); }
+        }catch (Exception moneyException) { moneyException.printStackTrace(); }
     return moneyStr;
     }
 %>

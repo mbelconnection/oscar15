@@ -36,7 +36,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 import oscar.oscarMessenger.data.MsgAddressBookMaker;
@@ -59,38 +58,39 @@ public class MsgMessengerAdminAction extends Action {
         ResourceBundle oscarR = ResourceBundle.getBundle("oscarResources",request.getLocale());
 
         if (update.equals(oscarR.getString("oscarMessenger.config.MessengerAdmin.btnUpdateGroupMembers"))){
+        // System.out.println("UPDATE WORKING");
 
            try{
-              
+              DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
               java.sql.ResultSet rs;
               String sql = new String("delete from groupMembers_tbl where groupID = '"+grpNo+"'");
-              DBHandler.RunSQL(sql);
+              db.RunSQL(sql);
               for (int i = 0; i < providers.length ; i++){
                   sql = new String("insert into groupMembers_tbl (groupID,provider_No) values ('"+grpNo+"','"+providers[i]+"')");
-                  DBHandler.RunSQL(sql);
+                  db.RunSQL(sql);
               }
               
-              MsgAddressBookMaker addMake = new MsgAddressBookMaker();
+              MsgAddressBookMaker addMake = new MsgAddressBookMaker(db);
               boolean  res = addMake.updateAddressBook();
-           }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+           }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
 
 
          request.setAttribute("groupNo",grpNo);
         }else if(delete.equals(oscarR.getString("oscarMessenger.config.MessengerAdmin.btnDeleteThisGroup"))){
-
+        // System.out.println("DELETE WORKING");
             try{
-                 
+                 DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
                  java.sql.ResultSet rs;
 
                  String sql = new String("select parentID from groups_tbl where groupID = '"+grpNo+"'");
-                 rs = DBHandler.GetSQL(sql);
+                 rs = db.GetSQL(sql);
                  if (rs.next()){
-                     parent =  oscar.Misc.getString(rs, "parentID");
+                     parent =  db.getString(rs,"parentID");
                  }
 
 
                  sql = new String("select * from groups_tbl where parentID = '"+grpNo+"'");
-                 rs = DBHandler.GetSQL(sql);
+                 rs = db.GetSQL(sql);
 
                  if (rs.next()){
                     request.setAttribute("groupNo",grpNo);
@@ -98,16 +98,16 @@ public class MsgMessengerAdminAction extends Action {
                     return (mapping.findForward("failure"));
                  }else{
                     sql = new String("delete from groupMembers_tbl where groupID = '"+grpNo+"'");
-                    DBHandler.RunSQL(sql);
+                    db.RunSQL(sql);
 
                     sql = new String("delete from groups_tbl where groupID = '"+grpNo+"'");
-                    DBHandler.RunSQL(sql);
+                    db.RunSQL(sql);
 
                  }
               rs.close();
-              MsgAddressBookMaker addMake = new MsgAddressBookMaker();
+              MsgAddressBookMaker addMake = new MsgAddressBookMaker(db);
               boolean res = addMake.updateAddressBook();
-           }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+           }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
 
          request.setAttribute("groupNo",parent);
         }

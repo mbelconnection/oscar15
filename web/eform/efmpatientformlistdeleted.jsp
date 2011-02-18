@@ -111,7 +111,7 @@ function updateAjax() {
 	</tr>
 	<tr>
 		<td class="MainTableLeftColumn" valign="top"><a
-			href="efmformslistadd.jsp?demographic_no=<%=demographic_no%>&appointment=<%=appointment%>"> <bean:message
+			href="efmformslistadd.jsp?demographic_no=<%=demographic_no%>&apptProvider=<%=apptProvider%>&appointment=<%=appointment%>"> <bean:message
 			key="eform.showmyform.btnAddEForm" /></a> <br>
 		<%  if (country.equals("BR")) { %> <a
 			href="../demographic/demographiccontrol.jsp?demographic_no=<%=demographic_no%>&apptProvider=<%=apptProvider%>&appointment=<%=appointment%>&displaymode=edit&dboperation=search_detail_ptbr"><bean:message
@@ -146,10 +146,11 @@ function updateAjax() {
 				<th><bean:message key="eform.showmyform.msgAction" /></th>
 			</tr>
 			<%
-			ArrayList<HashMap<String, ? extends Object>> forms = EFormUtil.listPatientEForms(orderBy, EFormUtil.DELETED, demographic_no, null);
-			    for (int i=0; i< forms.size(); i++) {
-			    	HashMap<String, ? extends Object> curform = forms.get(i);
-			%>
+    ArrayList forms = null;
+    forms = EFormUtil.listPatientEForms(orderBy, EFormUtil.DELETED, demographic_no);
+    for (int i=0; i< forms.size(); i++) {
+        Hashtable curform = (Hashtable) forms.get(i);
+%>
 			<tr bgcolor="<%= ((i%2) == 1)?"#F2F2F2":"white"%>">
 				<td><a href="#"
 					ONCLICK="popupPage('efmshowform_data.jsp?fdid=<%= curform.get("fdid")%>', '<%="FormPD" + i%>'); return false;"

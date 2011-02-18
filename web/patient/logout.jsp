@@ -18,19 +18,21 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 -->
 
-<%@page import="java.util.HashMap"
+<%@ page language="java" import="java.util.HashMap"
 	errorPage="provider/errorpage.jsp"%>
 <%
   if(session != null) {
     Object user = session.getValue("patient");
     if (user != null) {
       HashMap hash=(HashMap)application.getAttribute("monitor");
+      //System.out.println("user : " +user);
+      //hash.remove(user);
       session.invalidate();
       request.getSession();
     }

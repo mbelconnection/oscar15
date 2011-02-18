@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -28,8 +28,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Vector;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -49,20 +47,20 @@ public class EctTypeDisplayNameBeanHandler {
         
         boolean verdict = true;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT DISTINCT typeDisplayName FROM measurementType";
-            MiscUtils.getLogger().debug("Sql Statement: " + sql);
+            System.out.println("Sql Statement: " + sql);
             ResultSet rs;
-            for(rs = DBHandler.GetSQL(sql); rs.next(); )
+            for(rs = db.GetSQL(sql); rs.next(); )
             {
-                EctTypeDisplayNameBean typeDisplayName = new EctTypeDisplayNameBean(oscar.Misc.getString(rs, "typeDisplayName"));
+                EctTypeDisplayNameBean typeDisplayName = new EctTypeDisplayNameBean(db.getString(rs,"typeDisplayName"));
                 typeDisplayNameVector.add(typeDisplayName);
             }
 
             rs.close();
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;
@@ -72,21 +70,21 @@ public class EctTypeDisplayNameBeanHandler {
         
         boolean verdict = true;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = null;
             if (excludeGroupName){
                 sql = "SELECT DISTINCT typeDisplayName FROM measurementType";  
-                MiscUtils.getLogger().debug("Sql Statement: " + sql);
+                System.out.println("Sql Statement: " + sql);
                 ResultSet rs;
                 String sqlGr = "SELECT DISTINCT typeDisplayName FROM measurementGroup WHERE name='" +groupName+ "'";  
-                MiscUtils.getLogger().debug("Sql Statement: " + sqlGr);
+                System.out.println("Sql Statement: " + sqlGr);
                 ResultSet rsGr;
                 
-                for(rs = DBHandler.GetSQL(sql); rs.next(); )
+                for(rs = db.GetSQL(sql); rs.next(); )
                 {
                     boolean foundInGroup = false;
-                    for(rsGr = DBHandler.GetSQL(sqlGr); rsGr.next();){                        
-                        if(oscar.Misc.getString(rs, "typeDisplayName").compareTo(rsGr.getString("typeDisplayName"))==0){
+                    for(rsGr = db.GetSQL(sqlGr); rsGr.next();){                        
+                        if(db.getString(rs,"typeDisplayName").compareTo(rsGr.getString("typeDisplayName"))==0){
                             foundInGroup = true;
                             break;
                         }
@@ -95,7 +93,7 @@ public class EctTypeDisplayNameBeanHandler {
                         }                                                
                     }
                     if (!foundInGroup){
-                        EctTypeDisplayNameBean typeDisplayName = new EctTypeDisplayNameBean(oscar.Misc.getString(rs, "typeDisplayName"));
+                        EctTypeDisplayNameBean typeDisplayName = new EctTypeDisplayNameBean(db.getString(rs,"typeDisplayName"));
                         typeDisplayNameVector.add(typeDisplayName);
                     }
                 }
@@ -103,18 +101,18 @@ public class EctTypeDisplayNameBeanHandler {
             }
             else{
                 sql = "SELECT typeDisplayName FROM measurementGroup WHERE name='" + groupName +"'";
-                MiscUtils.getLogger().debug("Sql Statement: " + sql);
+                System.out.println("Sql Statement: " + sql);
                 ResultSet rs;
-                for(rs = DBHandler.GetSQL(sql); rs.next(); )
+                for(rs = db.GetSQL(sql); rs.next(); )
                 {
-                    EctTypeDisplayNameBean typeDisplayName = new EctTypeDisplayNameBean(oscar.Misc.getString(rs, "typeDisplayName"));
+                    EctTypeDisplayNameBean typeDisplayName = new EctTypeDisplayNameBean(db.getString(rs,"typeDisplayName"));
                     typeDisplayNameVector.add(typeDisplayName);
                 }
                 rs.close();
             }
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;

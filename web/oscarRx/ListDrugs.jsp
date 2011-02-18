@@ -24,7 +24,9 @@
  * Ontario, Canada
  */
 
---%><%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
+--%><%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page language="java"%>
+<%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
@@ -63,7 +65,7 @@
             if (request.getParameter("show").equals("all")) {
                 showall = true;
             }
-        }
+        }       
 
         boolean integratorEnabled = LoggedInInfo.loggedInInfo.get().currentFacility.isIntegratorEnabled();
         String annotation_display = org.oscarehr.casemgmt.model.CaseManagementNoteLink.DISP_PRESCRIP;
@@ -96,7 +98,7 @@ if (heading != null){
 
             long now = System.currentTimeMillis();
             long month = 1000L * 60L * 60L * 24L * 30L;
-
+            
             for (Drug prescriptDrug : prescriptDrugs) {
                 boolean isPrevAnnotation=false;
                 String styleColor = "";
@@ -107,6 +109,7 @@ if (heading != null){
                 CaseManagementNote p_cmn = null;
                 if (cml!=null) {p_cmn = caseManagementManager.getNote(cml.getNoteId().toString());}
                 if (p_cmn!=null){isPrevAnnotation=true;}
+              //  System.out.println("in list drugs.jsp: "+Long.parseLong(prescriptDrug.getId().toString())+"--"+tableName+"--"+p_cmn+"--"+cml);
 
                 if (request.getParameter("status") != null) { //TODO: Redo this in a better way
                     String stat = request.getParameter("status");
@@ -131,7 +134,7 @@ if (heading != null){
                     if(!prescriptDrug.isExternal())
                         continue;
                 }
-//add all long term med drugIds to an array.
+                //add all long term med drugIds to an array.
                 styleColor = getClassColour( prescriptDrug, now, month);
                 String specialText=prescriptDrug.getSpecial();
                 specialText=specialText.replace("\n"," ");
@@ -142,13 +145,13 @@ if (heading != null){
             <td valign="top"><a id="rxDate_<%=prescriptIdInt%>"   <%=styleColor%> href="StaticScript2.jsp?regionalIdentifier=<%=prescriptDrug.getRegionalIdentifier()%>&amp;cn=<%=response.encodeURL(prescriptDrug.getCustomName())%>&amp;bn=<%=response.encodeURL(bn)%>"><%=oscar.util.UtilDateUtilities.DateToString(prescriptDrug.getRxDate())%></a></td>
             <td valign="top"><%=prescriptDrug.daysToExpire()%></td>
             <td valign="top"><%if(prescriptDrug.isLongTerm()){%>*<%}else{%><a id="notLongTermDrug_<%=prescriptIdInt%>" title="<bean:message key='oscarRx.Prescription.changeDrugLongTerm'/>" onclick="changeLt('<%=prescriptIdInt%>');" href="javascript:void(0);">L</a><%}%></td>
-
+            
             <td valign="top"><a id="prescrip_<%=prescriptIdInt%>" <%=styleColor%> href="StaticScript2.jsp?regionalIdentifier=<%=prescriptDrug.getRegionalIdentifier()%>&amp;cn=<%=response.encodeURL(prescriptDrug.getCustomName())%>&amp;bn=<%=response.encodeURL(bn)%>"><%=RxPrescriptionData.getFullOutLine(prescriptDrug.getSpecial()).replaceAll(";", " ")%></a></td>
             <td width="20px" align="center" valign="top">
                 <%if (prescriptDrug.getRemoteFacilityName() == null) {%>
                 <input id="reRxCheckBox_<%=prescriptIdInt%>" type=CHECKBOX onclick="updateReRxDrugId(this.id)" <%if(reRxDrugList.contains(prescriptIdInt.toString())){%>checked<%}%> name="checkBox_<%=prescriptIdInt%>">
                 <a name="rePrescribe" style="vertical-align:top" id="reRx_<%=prescriptIdInt%>" <%=styleColor%> href="javascript:void(0)" onclick="represcribe(this)">ReRx</a>
-                <%} else {%>
+                <%} else {%> 
                 <form action="<%=request.getContextPath()%>/oscarRx/searchDrug.do" method="post">
                     <input type="hidden" name="demographicNo" value="<%=patient.getDemographicNo()%>" />
                     <input type="hidden" name="searchString" value="<%=getName(prescriptDrug)%>" />
@@ -173,7 +176,7 @@ if (heading != null){
                 <a href="javascript:void(0);" title="Annotation" onclick="window.open('../annotation/annotation.jsp?display=<%=annotation_display%>&amp;table_id=<%=prescriptIdInt%>&amp;demo=<%=bean.getDemographicNo()%>&amp;drugSpecial=<%=specialText%>','anwin','width=400,height=250');">
                     <%if(!isPrevAnnotation){%> <img src="../images/notes.gif" alt="rxAnnotation" height="16" width="13" border="0"><%} else{%><img src="../images/filledNotes.gif" height="16" width="13" alt="rxFilledNotes" border="0"> <%}%></a>
             </td>
-
+            
             <td width="10px" align="center" valign="top">
                 <%
                 if (prescriptDrug.getRemoteFacilityName() != null){ %>
@@ -186,16 +189,16 @@ if (heading != null){
 
 
             </td>
-
+            
         </tr>
         <%}%>
     </table>
 
 </div>
         <br>
-        <script type="text/javascript">
+<script type="text/javascript">
 sortables_init();
-            </script>
+</script>
 <%!
 
 String getName(Drug prescriptDrug){
@@ -218,7 +221,7 @@ String getName(Drug prescriptDrug){
         if (!drug.isExpired() && drug.getEndDate()!=null && (drug.getEndDate().getTime() - referenceTime <= durationToSoon)) {  // ref = now and duration will be a month
             sb.append("expireInReference ");
         }
-
+        
         if (!drug.isExpired() && !drug.isArchived()) {
             sb.append("currentDrug ");
         }
@@ -251,7 +254,7 @@ String getName(Drug prescriptDrug){
 
 
 
-
+        
 
         return retval.substring(0,retval.length())+"\"";
 

@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -27,8 +27,6 @@ package oscar.oscarEncounter.immunization.data;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 import oscar.oscarDB.DBHandler;
@@ -40,11 +38,11 @@ public class EctImmImmunizationData
         throws SQLException
     {
         String sRet = null;
-        
-        String sql = String.valueOf(String.valueOf((new StringBuilder("SELECT * FROM immunizations WHERE demographic_no = ")).append(demographicNo).append(" AND archived=0")));
-        ResultSet rs = DBHandler.GetSQL(sql);
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+        String sql = String.valueOf(String.valueOf((new StringBuffer("SELECT * FROM immunizations WHERE demographic_no = ")).append(demographicNo).append(" AND archived=0")));
+        ResultSet rs = db.GetSQL(sql);
         if(rs.next())
-            sRet = oscar.Misc.getString(rs, "immunizations");
+            sRet = db.getString(rs,"immunizations");
         rs.close();
         return sRet;
     }
@@ -53,9 +51,9 @@ public class EctImmImmunizationData
         throws SQLException
     {        
         boolean retval = false;
-        
-        String sql = String.valueOf(String.valueOf((new StringBuilder("SELECT * FROM immunizations WHERE demographic_no = ")).append(demographicNo).append(" AND archived=0")));
-        ResultSet rs = DBHandler.GetSQL(sql);
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+        String sql = String.valueOf(String.valueOf((new StringBuffer("SELECT * FROM immunizations WHERE demographic_no = ")).append(demographicNo).append(" AND archived=0")));
+        ResultSet rs = db.GetSQL(sql);
         if(rs.next()) {
             retval = true;
         }         
@@ -66,10 +64,10 @@ public class EctImmImmunizationData
     public void saveImmunizations(String demographicNo, String providerNo, String immunizations)
         throws SQLException
     {
-        
-        MiscUtils.getLogger().debug(String.valueOf(String.valueOf((new StringBuilder(String.valueOf(String.valueOf(demographicNo)))).append(" ").append(providerNo).append(" ").append(immunizations))));
-        String sql = String.valueOf(String.valueOf((new StringBuilder("INSERT INTO immunizations (demographic_no, provider_no, immunizations, save_date, archived) VALUES (")).append(demographicNo).append(", '").append(providerNo).append("', '").append(immunizations).append("', CURRENT_DATE, 0)")));
-        DBHandler.RunSQL(sql);
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+        System.out.println(String.valueOf(String.valueOf((new StringBuffer(String.valueOf(String.valueOf(demographicNo)))).append(" ").append(providerNo).append(" ").append(immunizations))));
+        String sql = String.valueOf(String.valueOf((new StringBuffer("INSERT INTO immunizations (demographic_no, provider_no, immunizations, save_date, archived) VALUES (")).append(demographicNo).append(", '").append(providerNo).append("', '").append(immunizations).append("', CURRENT_DATE, 0)")));
+        db.RunSQL(sql);
 	//select the specific database function:
 	String db_type = OscarProperties.getInstance().getProperty("db_type", "mysql");
 	db_type.trim();
@@ -80,21 +78,21 @@ public class EctImmImmunizationData
 	
         sql = "UPDATE immunizations SET archived = 1 WHERE demographic_no = " + demographicNo + 
               " AND ID <>" + proper_func;
-        DBHandler.RunSQL(sql);
+        db.RunSQL(sql);
     }
 
     public String[] getProviders()
         throws SQLException
     {
         Vector vRet = new Vector();
-        
+        DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
         String sql = "SELECT provider_no, CONCAT(last_name, ', ', first_name) AS namer FROM provider WHERE status = 1 ORDER BY last_name, first_name";
         ResultSet rs;
         String s;
-        for(rs = DBHandler.GetSQL(sql); rs.next(); vRet.add(s))
+        for(rs = db.GetSQL(sql); rs.next(); vRet.add(s))
         {
-            s = String.valueOf(String.valueOf((new StringBuilder(String.valueOf(String.valueOf(oscar.Misc.getString(rs, "provider_no"))))).append("/").append(oscar.Misc.getString(rs, "namer"))));
-            MiscUtils.getLogger().debug(s);
+            s = String.valueOf(String.valueOf((new StringBuffer(String.valueOf(String.valueOf(db.getString(rs,"provider_no"))))).append("/").append(db.getString(rs,"namer"))));
+            System.out.println(s);
         }
 
         rs.close();

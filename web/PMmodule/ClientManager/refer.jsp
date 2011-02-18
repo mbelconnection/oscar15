@@ -27,8 +27,7 @@
 <%@ page import="java.util.*"%>
 <%@ taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi"%>
 
-<%@page import="org.apache.commons.lang.time.DateFormatUtils"%>
-<%@page import="org.oscarehr.util.WebUtils"%><script>
+<%@page import="org.apache.commons.lang.time.DateFormatUtils"%><script>
 	function resetClientFields() {
 		var form = document.clientManagerForm;
 		form.elements['program.name'].value='';
@@ -68,9 +67,6 @@
 		form.submit();
 	}
 </script>
-
-<%=WebUtils.popErrorMessagesAsHtml(session)%>
-
 <div class="tabs" id="tabs">
 <table cellpadding="3" cellspacing="0" border="0">
 	<tr>

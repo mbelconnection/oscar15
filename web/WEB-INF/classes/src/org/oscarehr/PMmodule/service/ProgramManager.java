@@ -129,11 +129,7 @@ public class ProgramManager {
     public String getProgramName(String programId) {
         return programDao.getProgramName(Integer.valueOf(programId));
     }
-    
-    public Integer getProgramIdByProgramName(String programName) {
-    	return programDao.getProgramIdByProgramName(programName);
-    }
-    
+
     public List<Program> getAllPrograms() {
         return programDao.getAllPrograms();
     }
@@ -356,9 +352,7 @@ public class ProgramManager {
 
         for (Iterator<?> i = programProviderDAO.getProgramDomain(providerNo).iterator(); i.hasNext();) {
             ProgramProvider programProvider = (ProgramProvider) i.next();
-            Program p = getProgram(programProvider.getProgramId());
-            if(p != null)
-            	programDomain.add(p);
+            programDomain.add(getProgram(programProvider.getProgramId()));
         }
 
         return programDomain;
@@ -370,9 +364,7 @@ public class ProgramManager {
 
         for (Iterator<?> i = programProviderDAO.getActiveProgramDomain(providerNo).iterator(); i.hasNext();) {
             ProgramProvider programProvider = (ProgramProvider) i.next();
-            Program p = getProgram(programProvider.getProgramId());
-            if(p!=null)
-            	programDomain.add(p);
+            programDomain.add(getProgram(programProvider.getProgramId()));
         }
 
         return programDomain;
@@ -387,10 +379,8 @@ public class ProgramManager {
     	else programs=getProgramDomain(loggedInInfo.loggedInProvider.getProviderNo());
     	
     	List<Program> results = new ArrayList<Program>();
-    	for(Program program : programs) {    		
-    		if(program.getFacilityId()==loggedInInfo.currentFacility.getId().intValue()) { 
-    			results.add(program);
-    		}
+    	for(Program program : programs) {
+    		if(program.getFacilityId()==loggedInInfo.currentFacility.getId().intValue()) results.add(program);
     	}
     	return results;    	
     }
@@ -483,17 +473,5 @@ public class ProgramManager {
         } else {
         	return false;
         }
-    }
-    
-    public List<Program> getAllProgramsByRole(String providerNo,int roleId) {
-    	List<Program> results = new ArrayList<Program>();
-    	List<ProgramProvider> ppList = programProviderDAO.getProgramProvidersByProvider(providerNo);
-    	for(ProgramProvider pp:ppList) {
-    		if(pp.getRoleId().intValue() == roleId) {
-    			Program p = programDao.getProgram(pp.getProgramId().intValue());
-    			results.add(p);
-    		}
-    	}
-    	return results;
     }
 }

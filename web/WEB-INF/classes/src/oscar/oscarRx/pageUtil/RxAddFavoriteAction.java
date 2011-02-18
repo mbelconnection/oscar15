@@ -25,6 +25,7 @@
 package oscar.oscarRx.pageUtil;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +35,7 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DispatchAction;
-import org.oscarehr.util.MiscUtils;
+import org.apache.struts.util.MessageResources;
 
 import oscar.oscarRx.data.RxPrescriptionData;
 import oscar.oscarRx.util.RxUtil;
@@ -48,6 +49,10 @@ public final class RxAddFavoriteAction extends DispatchAction {
     HttpServletRequest request,
     HttpServletResponse response)
     throws IOException, ServletException {
+        
+        // Extract attributes we will need
+        Locale locale = getLocale(request);
+        MessageResources messages = getResources(request);
         
         // Setup variables        
         
@@ -78,7 +83,7 @@ public final class RxAddFavoriteAction extends DispatchAction {
         ActionForward fwd = mapping.findForward("success");
         String s = fwd.getPath() + frm.getReturnParams();
         request.setAttribute("BoxNoFillFirstLoad", "true");
-        MiscUtils.getLogger().debug("fill box no");
+        System.out.println("fill box no");
         
         fwd = new ActionForward(s, true);
         
@@ -91,6 +96,11 @@ public final class RxAddFavoriteAction extends DispatchAction {
     HttpServletRequest request,
     HttpServletResponse response)
     throws IOException, ServletException {
+     //   System.out.println("================Start addFav2 of RxAddFavoriteAction.java=================");
+
+        // Extract attributes we will need
+        Locale locale = getLocale(request);
+        MessageResources messages = getResources(request);
 
         RxSessionBean bean = (RxSessionBean)request.getSession().getAttribute("RxSessionBean");
         if(bean==null) {
@@ -114,10 +124,10 @@ public final class RxAddFavoriteAction extends DispatchAction {
        
         /*
         request.setAttribute("BoxNoFillFirstLoad", "true");
-        MiscUtils.getLogger().debug("fill box no");
+        System.out.println("fill box no");
         */
-        RxUtil.printStashContent(bean);
-
+        //RxUtil.printStashContent(bean);
+    //    System.out.println("================END addFav2 of RxAddFavoriteAction.java=================");
         return null;
     }
 }

@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -30,8 +30,6 @@ import java.sql.SQLException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
-
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -51,18 +49,18 @@ public class MsgNewMessageTag extends TagSupport {
 
     public int doStartTag() throws JspException    {
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
 //            String sql = new String("select count(*) from messagelisttbl where provider_no ='"+ providerNo +"' and status = 'new' ");
             String sql = new String("select count(*) from messagelisttbl m LEFT JOIN oscarcommlocations o ON m.remoteLocation = o.locationId where m.provider_no = '"+ providerNo +"' and m.status = 'new' and o.current1=1" );
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             while (rs.next()) {
                numNewMessages = (rs.getInt(1));
-
+               //System.out.println(numNewMessages);
             }
 
             rs.close();
         }      catch(SQLException e)        {
-           MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace(System.out);
         }
         try        {
             JspWriter out = super.pageContext.getOut();
@@ -70,7 +68,8 @@ public class MsgNewMessageTag extends TagSupport {
                 out.print("<span class='tabalert'>");
             else
                 out.print("<span>");
-        } catch(Exception p) {MiscUtils.getLogger().error("Error",p);
+        } catch(Exception p) {
+            p.printStackTrace(System.out);
         }
         return(EVAL_BODY_INCLUDE);
     }
@@ -83,7 +82,8 @@ public class MsgNewMessageTag extends TagSupport {
               out.print("<sup>"+numNewMessages+"</sup></span>  ");
           else
               out.print("</span>  ");
-       }catch(Exception p) {MiscUtils.getLogger().error("Error",p);
+       }catch(Exception p) {
+            p.printStackTrace(System.out);
        }
        return EVAL_PAGE;
     }

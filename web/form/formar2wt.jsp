@@ -3,6 +3,7 @@
   if(session.getValue("user") == null)    response.sendRedirect("../logout.jsp");
   int oox=0, ooy=0;
 %>
+<%@ page language="java"%>
 <%@ page
 	import="java.util.*, java.sql.*, java.net.*, oscar.util.*, oscar.form.graphic.*"
 	errorPage="errorpage.jsp"%>
@@ -27,7 +28,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -77,6 +78,7 @@ if (!fedb.equals("") && !cppw.equals("")) {
 	        x = (int) ((ox + (dx -8) * width / (9 * 4)) -2) ;
 	        y = (int) ((oy - (dy - 0) * height / (6 * 2)) -1) ;
             urlparam += "&x" + (i-1) + "=" + x + "|" + y;
+			//System.out.println(urlparam);
 		}
 	}
     for (int i = 18; i < 35; i++) {
@@ -91,6 +93,7 @@ if (!fedb.equals("") && !cppw.equals("")) {
 	        x = (int) ((ox + (dx -8) * width / (9 * 4)) -2) ;
 	        y = (int) ((oy - (dy - 0) * height / (6 * 2)) -1) ;
             urlparam += "&x" + (i-1) + "=" + x + "|" + y;
+			//System.out.println(urlparam);
 		}
 	}
 %>

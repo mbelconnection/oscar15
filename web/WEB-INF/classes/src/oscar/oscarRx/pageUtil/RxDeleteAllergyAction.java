@@ -24,6 +24,7 @@
 package oscar.oscarRx.pageUtil;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +34,7 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.util.MessageResources;
 
 import oscar.log.LogAction;
 import oscar.log.LogConst;
@@ -47,7 +49,9 @@ public final class RxDeleteAllergyAction extends Action {
 				 HttpServletResponse response)
 	throws IOException, ServletException {
 
-
+            // Extract attributes we will need
+            Locale locale = getLocale(request);
+            MessageResources messages = getResources(request);
 
             // Setup variables            
             // Add allergy

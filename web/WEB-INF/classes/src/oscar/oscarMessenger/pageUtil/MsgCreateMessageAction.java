@@ -24,6 +24,7 @@
 // -----------------------------------------------------------------------------------------------------------------------
 package oscar.oscarMessenger.pageUtil;
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +34,7 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.util.MessageResources;
 
 import oscar.oscarMessenger.util.MsgDemoMap;
 
@@ -44,8 +46,11 @@ public class MsgCreateMessageAction extends Action {
 				 HttpServletRequest request,
 				 HttpServletResponse response)
 	throws IOException, ServletException {
-
+            // System.out.println("CreateMessageAction Jackson");
             // Extract attributes we will need
+            Locale locale = getLocale(request);
+            MessageResources messages = getResources(request);
+
             oscar.oscarMessenger.pageUtil.MsgSessionBean bean;
             bean = (oscar.oscarMessenger.pageUtil.MsgSessionBean)request.getSession().getAttribute("msgSessionBean");
                 String userNo   = bean.getProviderNo();
@@ -75,6 +80,9 @@ public class MsgCreateMessageAction extends Action {
             currLoco                = messageData.getCurrentLocationId();
 
 
+            // System.out.println("provider Listing : "+providerListing.size());
+            // System.out.println("Local Listings : "+localProviderListing.size());
+            // System.out.println("RemoteProviderListing : "+remoteProviderListing.size());
 
             if (messageData.isLocals()){
             sentToWho = messageData.createSentToString(localProviderListing);
@@ -87,6 +95,8 @@ public class MsgCreateMessageAction extends Action {
             }
 
             messageId = messageData.sendMessage2(message,subject,userName,sentToWho,userNo,providerListing,att, pdfAtt);
+
+            // System.out.println("messages id = "+messageId);
 
             if (messageData.isRemotes()){
                 oscar.oscarMessenger.data.MsgRemoteMessageData  remoteMessageData;

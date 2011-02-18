@@ -18,24 +18,20 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 -->
 
 <%@ page isErrorPage="true"%><!-- only true can access exception object -->
-
-<%@page import="org.oscarehr.util.MiscUtils"%><html>
+<html>
 <body>
 <h1>Error Page</h1>
 <hr>
 <h2>Received the exception:<br>
 <font color=red> <%= exception.toString() %><br>
-<%= exception.getMessage() %> 
-<%
-MiscUtils.getLogger().error("Error", exception);
-%>
+<%= exception.getMessage() %> <% exception.printStackTrace(System.out); %>
 </font></h2>
 </body>
 </html>

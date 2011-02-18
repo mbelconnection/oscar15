@@ -37,15 +37,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
-import java.util.List;
 
+import java.util.List;
 import org.apache.commons.collections.OrderedMapIterator;
 import org.apache.commons.collections.map.ListOrderedMap;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.drools.RuleBase;
 import org.drools.WorkingMemory;
 import org.drools.io.RuleBaseLoader;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBean;
@@ -60,7 +60,7 @@ import oscar.oscarEncounter.oscarMeasurements.util.TargetColour;
  */
 public class MeasurementFlowSheet {
 
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(MeasurementFlowSheet.class);
     String name = null;
     private String displayName = null;
     private String warningColour = null;
@@ -122,7 +122,7 @@ public class MeasurementFlowSheet {
     }
     
     public String getDxTriggersString(){ 
-       StringBuilder sb = new StringBuilder();
+       StringBuffer sb = new StringBuffer();
        boolean firstElement = true;
        if (dxTriggers != null){
            for(String s:dxTriggers){
@@ -149,7 +149,7 @@ public class MeasurementFlowSheet {
     }
     
     public FlowSheetItem getFlowSheetItem(String measurement) {
-        MiscUtils.getLogger().debug("GETTING "+measurement+ " ITEMS IN THE LIST "+itemList.size());
+        System.out.println("GETTING "+measurement+ " ITEMS IN THE LIST "+itemList.size());
         FlowSheetItem item = (FlowSheetItem) itemList.get(measurement);
         
         return item;
@@ -200,7 +200,7 @@ public class MeasurementFlowSheet {
     }
     /////
     public String getTopHTMLStream() {
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
         if (topHTMLFileName != null) {
             try {
                 String measurementDirPath = OscarProperties.getInstance().getProperty("MEASUREMENT_DS_HTML_DIRECTORY");
@@ -228,7 +228,7 @@ public class MeasurementFlowSheet {
                     bReader.close();
                 }
             } catch (Exception e) {
-                MiscUtils.getLogger().error("Error", e);
+                e.printStackTrace();
             }
         }
         return sb.toString();
@@ -271,7 +271,7 @@ public class MeasurementFlowSheet {
             }catch(Exception e){
                 log.debug("LOADING EXEPTION");
         
-                MiscUtils.getLogger().error("Error", e);
+                e.printStackTrace();
             }
         }else{
             if (true);
@@ -300,7 +300,7 @@ public class MeasurementFlowSheet {
                 ruleBase = RuleBaseLoader.loadFromUrl(url);
             }
         } catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         rulesLoaded = true;
     }
@@ -331,7 +331,7 @@ public class MeasurementFlowSheet {
             }catch(Exception e){
                 log.debug("loadMeasuremntRuleBase EXEPTION");
         
-                MiscUtils.getLogger().error("Error", e);
+                e.printStackTrace();
             }
          return measurementRuleBase;
         
@@ -362,7 +362,7 @@ public class MeasurementFlowSheet {
                 measurementRuleBase = RuleBaseLoader.loadFromUrl(url);
             }
         } catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         return measurementRuleBase;
     }
@@ -383,7 +383,7 @@ public class MeasurementFlowSheet {
                 workingMemory.assertObject(new MeasurementDSHelper(mdb));
                 workingMemory.fireAllRules();
             } catch (Exception e) {
-                MiscUtils.getLogger().error("Error", e);
+                e.printStackTrace();
             //throw new Exception("ERROR: Drools ",e);
             }
         }
@@ -400,7 +400,7 @@ public class MeasurementFlowSheet {
             workingMemory.assertObject(mi);
             workingMemory.fireAllRules();
         } catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         //throw new Exception("ERROR: Drools ",e);
         }
         return mi;

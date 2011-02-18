@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -36,7 +36,7 @@ String user_no = (String) session.getAttribute("user");
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
 <jsp:useBean id="SxmlMisc" class="oscar.SxmlMisc" scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 
 <%
 GregorianCalendar now=new GregorianCalendar();
@@ -66,6 +66,7 @@ String billCenter = oscarVariables.getProperty("billcenter", "").trim();
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Billing Report</title>
+<meta http-equiv="Content-Type" content="text/html;">
 <script language="JavaScript">
 <!--
 function openBrWindow(theURL,winName,features) {
@@ -120,6 +121,7 @@ function checkData() {
 
 <%
 String providerview=request.getParameter("provider")==null?"":request.getParameter("provider");
+System.out.println("providerview "+providerview);
 String xml_vdate=request.getParameter("xml_vdate") == null?"":request.getParameter("xml_vdate");
 String xml_appointment_date = request.getParameter("xml_appointment_date")==null? nowDate : request.getParameter("xml_appointment_date");
 %>
@@ -153,6 +155,7 @@ while(rslocal.next()){
 			<% 
 }
 rslocal.close();
+apptMainBean.closePstmtConn();
 %>
 
 		</select></td>

@@ -24,6 +24,7 @@
 // -----------------------------------------------------------------------------------------------------------------------
 package oscar.oscarMessenger.pageUtil;
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +35,7 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
+import org.apache.struts.util.MessageResources;
 
 import oscar.oscarDB.DBHandler;
 
@@ -46,14 +47,14 @@ public  class MsgHandleMessagesAction extends Action {
 				 HttpServletResponse response)
 	throws IOException, ServletException {
         // Extract attributes we will need
-        
-        
+        Locale locale = getLocale(request);
+        MessageResources messages = getResources(request);
         MsgSessionBean bean = (MsgSessionBean)request.getSession().getAttribute("msgSessionBean");
         String providerNo = bean.getProviderNo();
         MsgHandleMessagesForm frm = (MsgHandleMessagesForm) form;
         String messageNo = frm.getMessageNo();
         String demographicNo = frm.getDemographic_no();
-        
+        String sentbyNo ;
         String sentByLocation;
         String reply = frm.getReply();
         String replyAll = frm.getReplyAll();
@@ -109,35 +110,35 @@ public  class MsgHandleMessagesAction extends Action {
 
         if (delete.compareToIgnoreCase("Delete") == 0){
           try{    //sents this message status to del
-             
-             
+             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+             java.sql.ResultSet rs;
              String sql = "update messagelisttbl set status = 'del' where provider_no = '"+providerNo+"' and message = '"+messageNo+"'";
-             DBHandler.RunSQL(sql);
+             db.RunSQL(sql);
 
-          }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+          }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
 
         }
         else if(reply.equalsIgnoreCase("Reply") || (replyAll.equalsIgnoreCase("reply All") )){
 
           String[] replyval = new String[] {};
           java.util.Vector vector = new java.util.Vector();
-          StringBuilder subject = new StringBuilder("Re:");
+          StringBuffer subject = new StringBuffer("Re:");
           String themessage = new String();
-          StringBuilder theSendMessage = new StringBuilder();
+          StringBuffer theSendMessage = new StringBuffer();
 
           try{   //gets the sender
-             
+             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
              java.sql.ResultSet rs;
              String sql = new String("Select sentbyNo,thesubject,themessage,sentByLocation from messagetbl where messageid = '"+messageNo+"'");
-             rs = DBHandler.GetSQL(sql);
+             rs = db.GetSQL(sql);
 
              if ( rs.next()){
-                vector.add(oscar.Misc.getString(rs, "sentbyNo"));
-                subject.append(oscar.Misc.getString(rs, "thesubject"));
-                themessage= oscar.Misc.getString(rs, "themessage");
-                sentByLocation = oscar.Misc.getString(rs, "sentByLocation");
+                vector.add(db.getString(rs,"sentbyNo"));
+                subject.append(db.getString(rs,"thesubject"));
+                themessage= db.getString(rs,"themessage");
+                sentByLocation = db.getString(rs,"sentByLocation");
                 themessage = themessage.replace('\n','>');        //puts > at the beginning
-                theSendMessage = new StringBuilder(themessage);    //of each line
+                theSendMessage = new StringBuffer(themessage);    //of each line
                 theSendMessage.insert(0,"\n\n\n>");
                 replyMessageData.add( (String) vector.elementAt(0) ,sentByLocation);
               }
@@ -147,11 +148,11 @@ public  class MsgHandleMessagesAction extends Action {
               }
 
               if(replyAll.compareToIgnoreCase("reply All") == 0){  // add every one that got the message
-                 rs = DBHandler.GetSQL("select provider_no, remoteLocation from messagelisttbl where message = '"+messageNo+"'");
+                 rs = db.GetSQL("select provider_no, remoteLocation from messagelisttbl where message = '"+messageNo+"'");
                  while (rs.next()){
-                     MiscUtils.getLogger().debug("LOOK4ME pro no "+oscar.Misc.getString(rs, "provider_no")+" remo Loco "+oscar.Misc.getString(rs, "remoteLocation"));
-                     vector.add(oscar.Misc.getString(rs, "provider_no"));
-                     replyMessageData.add(oscar.Misc.getString(rs, "provider_no"),oscar.Misc.getString(rs, "remoteLocation"));
+                     System.out.println("LOOK4ME pro no "+db.getString(rs,"provider_no")+" remo Loco "+db.getString(rs,"remoteLocation"));
+                     vector.add(db.getString(rs,"provider_no"));
+                     replyMessageData.add(db.getString(rs,"provider_no"),db.getString(rs,"remoteLocation"));
                  }
                  replyval = new String[vector.size()];  //no need for the old replyval
                  for (int k =0; k < vector.size(); k++){
@@ -160,7 +161,7 @@ public  class MsgHandleMessagesAction extends Action {
               }
              rs.close();
 
-           }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+           }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
 
 
         request.setAttribute("ReText",theSendMessage.toString());
@@ -171,31 +172,31 @@ public  class MsgHandleMessagesAction extends Action {
         }
         else if (forward.equals("Forward")){
            String[] replyval = new String[] {};
-           
-           StringBuilder subject = new StringBuilder("Fwd:");
+           java.util.Vector vector = new java.util.Vector();
+           StringBuffer subject = new StringBuffer("Fwd:");
            String themessage = new String();
-           StringBuilder theSendMessage = new StringBuilder();
+           StringBuffer theSendMessage = new StringBuffer();
 
            try{   //gets the sender
-              
+              DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
               java.sql.ResultSet rs;
               String sql = new String("Select sentbyNo,thesubject,themessage,sentByLocation from messagetbl where messageid = '"+messageNo+"'");
-              rs = DBHandler.GetSQL(sql);
+              rs = db.GetSQL(sql);
 
               if ( rs.next()){
-//                 vector.add(oscar.Misc.getString(rs,"sentbyNo"));
-                 subject.append(oscar.Misc.getString(rs, "thesubject"));
-                 themessage= oscar.Misc.getString(rs, "themessage");
-//                 sentByLocation = oscar.Misc.getString(rs,"sentByLocation");
+//                 vector.add(db.getString(rs,"sentbyNo"));
+                 subject.append(db.getString(rs,"thesubject"));
+                 themessage= db.getString(rs,"themessage");
+//                 sentByLocation = db.getString(rs,"sentByLocation");
                  themessage = themessage.replace('\n','>');        //puts > at the beginning
-                 theSendMessage = new StringBuilder(themessage);    //of each line
+                 theSendMessage = new StringBuffer(themessage);    //of each line
                  theSendMessage.insert(0,"\n\n\n>");
               }
 
 
              rs.close();
 
-           }catch (java.sql.SQLException e){MiscUtils.getLogger().error("Error", e); }
+           }catch (java.sql.SQLException e){ e.printStackTrace(System.out); }
 
 
            request.setAttribute("ReText",theSendMessage.toString());                //this one is a goody

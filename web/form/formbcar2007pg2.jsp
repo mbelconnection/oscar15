@@ -1,4 +1,5 @@
 
+<%@ page language="java"%>
 <%@ page import="oscar.form.graphic.*, oscar.util.*, oscar.form.*, oscar.form.data.*" %>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
@@ -72,6 +73,7 @@ if (props.getProperty("ar2_age", "").equals("") ) 	props.setProperty("ar2_age", 
  */
 -->
 <html:html locale="true">
+<% response.setHeader("Cache-Control","no-cache");%>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
     <title>Antenatal Record 2</title>
@@ -667,6 +669,7 @@ if (!fedb.equals("") && fedb.length()==10 ) {
     FrmGraphicAR arG = new FrmGraphicAR();
     edbDate = arG.getStartDate(fedb);
     sDate = UtilDateUtilities.DateToString(edbDate, "MMMMM dd, yyyy"); //"yy,MM,dd");
+    //System.out.println(fedb + ":" + sDate);
 %>
 	    var delta = 0;
         var str_date = getDateField(source.name);

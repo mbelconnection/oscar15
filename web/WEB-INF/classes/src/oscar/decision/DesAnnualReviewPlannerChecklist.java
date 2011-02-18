@@ -8,7 +8,7 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. * * You should have
  * received a copy of the GNU General Public License along with this program; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. * <OSCAR
- * TEAM> This software was written for the Department of Family Medicine McMaster University
+ * TEAM> This software was written for the Department of Family Medicine McMaster Unviersity
  * Hamilton Ontario, Canada
  */
 package oscar.decision;
@@ -20,7 +20,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.oscarehr.util.MiscUtils;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -37,11 +36,11 @@ public class DesAnnualReviewPlannerChecklist {
 
             return ((DesAnnualReviewPlannerChecklistHandler) contentHandler).getResults();
         } catch (IOException e) {
-            MiscUtils.getLogger().debug("Error reading URI: " + e.getMessage());
+            System.out.println("Error reading URI: " + e.getMessage());
         } catch (SAXException e) {
-            MiscUtils.getLogger().debug("Error in parsing: " + e.getMessage());
+            System.out.println("Error in parsing: " + e.getMessage());
         } catch (ParserConfigurationException e) {
-            MiscUtils.getLogger().debug("Error configuring parser: " + e.getMessage());
+            System.out.println("Error configuring parser: " + e.getMessage());
         }
 
         return "Error: unable to find/parse the risks xml file, CHECK if the format is correct";
@@ -57,11 +56,11 @@ public class DesAnnualReviewPlannerChecklist {
 
             return ((DesAnnualReviewPlannerChecklistHandler) contentHandler).getResults();
         } catch (IOException e) {
-            MiscUtils.getLogger().debug("Error reading URI: " + e.getMessage());
+            System.out.println("Error reading URI: " + e.getMessage());
         } catch (SAXException e) {
-            MiscUtils.getLogger().debug("Error in parsing: " + e.getMessage());
+            System.out.println("Error in parsing: " + e.getMessage());
         } catch (ParserConfigurationException e) {
-            MiscUtils.getLogger().debug("Error configuring parser: " + e.getMessage());
+            System.out.println("Error configuring parser: " + e.getMessage());
         }
 
         return "Error: unable to find/parse the risks xml file, CHECK if the format is correct";

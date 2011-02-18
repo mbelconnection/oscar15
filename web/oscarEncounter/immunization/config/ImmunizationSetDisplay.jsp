@@ -18,11 +18,14 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
 -->
+
+<%@ page language="java"%>
+
 <%@ page import="java.util.*, org.w3c.dom.*, oscar.util.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
@@ -113,6 +116,7 @@ String xmlString = setData.getSetXMLDoc(setId);
 
 Document xmlDoc = UtilXML.parseXML(xmlString);
 Element set = xmlDoc.getDocumentElement();
+//System.out.println("are you in ImmunizationSetDisplay ???????");
 String setNamed = set.getAttribute("name");
 
 int i = 0;
@@ -133,6 +137,7 @@ if(set.getAttribute("headers").equalsIgnoreCase("true"))
 
         Element columnList = (Element)set.getElementsByTagName("columnList").item(0);
         NodeList columns = columnList.getElementsByTagName("column");
+        //System.out.println("columns num "+columns.getLength());
 
         for(int j=0; j<columns.getLength(); j++){
             Element column = (Element)columns.item(j);
@@ -150,11 +155,14 @@ if(set.getAttribute("headers").equalsIgnoreCase("true"))
 
     Element rowList = (Element)set.getElementsByTagName("rowList").item(0);
     NodeList rows = rowList.getElementsByTagName("row");
+    //System.out.println("############rows "+rows.getLength());
     for(int j=0; j<rows.getLength(); j++)
     {
+        //System.out.println("Im in the loop");
         Element row = (Element)rows.item(j);
 
         String sName = row.getAttribute("name");
+        //System.out.println("sName = "+sName);
         if(sName.length()<1){
             String s = "tdSet" + i + "_Row" + j + "_name";
             %><tr>
@@ -187,6 +195,7 @@ if(set.getAttribute("headers").equalsIgnoreCase("true"))
                             %><td class="grey">&nbsp;</td>
 		<%
                     }
+                //System.out.println("i get here");
             }
         }
         else

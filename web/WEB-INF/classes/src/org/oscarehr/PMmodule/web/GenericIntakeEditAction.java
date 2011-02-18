@@ -35,7 +35,8 @@ import javax.xml.ws.WebServiceException;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -66,14 +67,13 @@ import org.oscarehr.casemgmt.dao.ClientImageDAO;
 import org.oscarehr.casemgmt.model.ClientImage;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.util.LoggedInInfo;
-import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SessionConstants;
 
 import oscar.OscarProperties;
 
 public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 
-	private static Logger LOG = MiscUtils.getLogger();
+	private static Log LOG = LogFactory.getLog(GenericIntakeEditAction.class);
 	// Forwards
 	private static final String EDIT = "edit";
 	private static final String PRINT = "print";
@@ -114,17 +114,12 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		}
 
 		List<IntakeNodeJavascript> jsLocation = genericIntakeManager.getIntakeNodeJavascriptLocation(intake.getNode().getQuestionId());
+		System.out.println("Javascript Location=" + jsLocation);
 		
 		LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
-		
-		Integer defaultCommunityProgramId = null;
-		
-		if(org.oscarehr.common.IsPropertiesOn.propertiesOn("oscarClinic")) {
-			defaultCommunityProgramId = getOscarClinicDefaultCommunityProgramId(oscar.OscarProperties.getInstance().getProperty("oscarClinicDefaultProgram"));
-		}
-						
+
 		setBeanProperties(formBean, intake, getClient(request), providerNo, Agency.getLocalAgency().areHousingProgramsVisible(intakeType), Agency.getLocalAgency()
-				.areServiceProgramsVisible(intakeType), Agency.getLocalAgency().areExternalProgramsVisible(intakeType), defaultCommunityProgramId, null, null, loggedInInfo.currentFacility.getId(), null,jsLocation);
+				.areServiceProgramsVisible(intakeType), Agency.getLocalAgency().areExternalProgramsVisible(intakeType), null, null, null, loggedInInfo.currentFacility.getId(), null,jsLocation);
 
 		request.getSession().setAttribute(SessionConstants.INTAKE_CLIENT_IS_DEPENDENT_OF_FAMILY, false);
 
@@ -191,6 +186,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		}
 		
 		List<IntakeNodeJavascript> jsLocation = genericIntakeManager.getIntakeNodeJavascriptLocation(intake.getNode().getQuestionId());
+		System.out.println("Javascript Location=" + jsLocation);
 
 		Demographic client = new Demographic();
 		
@@ -275,7 +271,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		}
 		
 		List<IntakeNodeJavascript> jsLocation = genericIntakeManager.getIntakeNodeJavascriptLocation(intake.getNode().getQuestionId());
-		
+		System.out.println("Javascript Location=" + jsLocation);
 		
 
 		setBeanProperties(formBean, intake, getClient(clientId), providerNo, Agency.getLocalAgency().areHousingProgramsVisible(intakeType), Agency.getLocalAgency()
@@ -331,7 +327,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		}
 
 		List<IntakeNodeJavascript> jsLocation = genericIntakeManager.getIntakeNodeJavascriptLocation(intake.getNode().getQuestionId());
-		
+		System.out.println("Javascript Location=" + jsLocation);
 		
 		
 		setBeanProperties(formBean, intake, getClient(clientId), providerNo, false, false, false, null, null, null, facilityId,null,jsLocation);
@@ -368,9 +364,6 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 				LOG.debug("date parse exception on eff date", e);
 				// that's fine ignore it, probably an invalid date or no date set.
 			}
-
-			String anonymous=StringUtils.trimToNull(request.getParameter("anonymous"));
-			client.setAnonymous(anonymous);
 			
 			// save client information.
 			saveClient(client, providerNo);
@@ -439,10 +432,6 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 				intake.setIntakeStatus("Signed");
 				intake.setId(null);
 				saveIntake(intake, client.getDemographicNo());
-			} else if("draft".equals(saveWhich)) {
-				intake.setIntakeStatus("Draft");
-				intake.setId(null);
-				saveIntake(intake, client.getDemographicNo());
 			}
 			else {
 				// RFQ intake saving...
@@ -468,7 +457,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 			saveErrors(request, messages);
 		}
 		catch (AdmissionException e) {
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 			LOG.error(e);
 
 			ActionMessages messages = new ActionMessages();
@@ -483,7 +472,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		}
 
 		List<IntakeNodeJavascript> jsLocation = genericIntakeManager.getIntakeNodeJavascriptLocation(intake.getNode().getQuestionId());
-		
+		System.out.println("Javascript Location=" + jsLocation);
 		
 		setBeanProperties(formBean, intake, client, providerNo, Agency.getLocalAgency().areHousingProgramsVisible(intakeType), Agency.getLocalAgency().areServiceProgramsVisible(
 				intakeType), Agency.getLocalAgency().areExternalProgramsVisible(intakeType), getCurrentBedCommunityProgramId(client.getDemographicNo()),
@@ -580,10 +569,6 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 
 	public ActionForward save(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
 		return save_all(mapping, form, request, response, "normal");
-	}
-	
-	public ActionForward save_draft(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
-		return save_all(mapping, form, request, response, "draft");
 	}
 
 	public ActionForward save_temp(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
@@ -695,13 +680,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		}
 		return programsInDomain;
 	}
-	
-	private Integer getOscarClinicDefaultCommunityProgramId (String communityProgram){
-		Integer communityProgramId = null;
-		communityProgramId=programManager.getProgramIdByProgramName(communityProgram);
-		return communityProgramId;
-	}
-	
+
 	private Integer getCurrentBedCommunityProgramId(Integer clientId) {
 		Integer currentProgramId = null;
 

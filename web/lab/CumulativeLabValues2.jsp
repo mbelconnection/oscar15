@@ -37,7 +37,10 @@
   
   CommonLabTestValues labTests = new CommonLabTestValues();
   
-  ArrayList prevList = labTests.findUniqueLabsForPatient(demographic_no);          
+  ArrayList prevList = labTests.findUniqueLabsForPatient(demographic_no);
+  
+  System.out.println("number of different labs :"+prevList.size());
+          
 %>
 
 

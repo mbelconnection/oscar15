@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -30,7 +30,6 @@ import java.util.Collection;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
 
@@ -46,19 +45,19 @@ public class EctValidationsBeanHandler {
         
         boolean verdict = true;
         try {
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             String sql = "SELECT name,id FROM validations ORDER BY name";
             ResultSet rs;
-            for(rs = DBHandler.GetSQL(sql); rs.next(); )
+            for(rs = db.GetSQL(sql); rs.next(); )
             {
-                EctValidationsBean validation = new EctValidationsBean(oscar.Misc.getString(rs, "name"), rs.getInt("id"));
+                EctValidationsBean validation = new EctValidationsBean(db.getString(rs,"name"), rs.getInt("id"));
                 validationsVector.add(validation);
             }
 
             rs.close();
         }
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             verdict = false;
         }
         return verdict;
@@ -100,7 +99,7 @@ public class EctValidationsBeanHandler {
             isDate = "='" + validation.getIsDate() + "'";
         
         try{
-                        
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);            
             String sql ="SELECT * FROM validations WHERE regularExp" + regularExp
                         + " AND minValue" + minValue 
                         + " AND maxValue" + maxValue
@@ -108,17 +107,17 @@ public class EctValidationsBeanHandler {
                         + " AND maxLength" + maxLength
                         + " AND isNumeric" + isNumeric
                         + " AND isDate" + isDate;
-
-            ResultSet rs = DBHandler.GetSQL(sql);
+            //System.out.println("findValidation: " + sql);
+            ResultSet rs = db.GetSQL(sql);
             if(rs.next()){
                 validationId = rs.getInt("id");
-
+                //System.out.println(validationId + ": " + sql);
             }
             rs.close();
         }
         
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             validationId = -1;
         }
         
@@ -129,7 +128,7 @@ public class EctValidationsBeanHandler {
         int validationId = -1;
         
         try{
-                        
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);            
             String regularExp = null;
             String minValue = null;
             String maxValue = null;
@@ -168,17 +167,17 @@ public class EctValidationsBeanHandler {
                         + maxLength + "," 
                         + isNumeric + ","
                         + isDate + ")";
-
-            DBHandler.RunSQL(sql);
+            //System.out.println("sql: " + sql);
+            db.RunSQL(sql);
             sql = "SELECT id FROM validations ORDER BY id DESC LIMIT 1";
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             if(rs.next()){
                 validationId = rs.getInt("id");
             }
         }
         
         catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
             validationId = -1;
         }
         
@@ -188,23 +187,23 @@ public class EctValidationsBeanHandler {
     public EctValidationsBean getValidation(String val){   
         EctValidationsBean validation = new EctValidationsBean();
         try{
-                        
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);            
 
             String sql ="SELECT * FROM  validations WHERE name = '"+StringEscapeUtils.escapeSql(val)+"'";             
-            ResultSet rs = DBHandler.GetSQL(sql);
+            ResultSet rs = db.GetSQL(sql);
             
             if (rs.next()){
                 validation.setName(val);
-                validation.setRegularExp(oscar.Misc.getString(rs, "regularExp")); 
-                validation.setMinValue(oscar.Misc.getString(rs, "minValue"));
-                validation.setMaxValue(oscar.Misc.getString(rs, "maxValue"));
-                validation.setMinLength(oscar.Misc.getString(rs, "minLength"));
-                validation.setMaxLength(oscar.Misc.getString(rs, "maxLength"));
-                validation.setIsNumeric(oscar.Misc.getString(rs, "isNumeric"));
-                validation.setIsDate(oscar.Misc.getString(rs, "isDate"));
+                validation.setRegularExp(db.getString(rs,"regularExp")); 
+                validation.setMinValue(db.getString(rs,"minValue"));
+                validation.setMaxValue(db.getString(rs,"maxValue"));
+                validation.setMinLength(db.getString(rs,"minLength"));
+                validation.setMaxLength(db.getString(rs,"maxLength"));
+                validation.setIsNumeric(db.getString(rs,"isNumeric"));
+                validation.setIsDate(db.getString(rs,"isDate"));
             }
         }catch(SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            System.out.println(e.getMessage());
         }
         
         return validation;

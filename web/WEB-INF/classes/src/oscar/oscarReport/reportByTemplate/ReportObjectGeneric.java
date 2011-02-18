@@ -29,8 +29,6 @@ package oscar.oscarReport.reportByTemplate;
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.util.StringUtils;
 
 /*
@@ -115,7 +113,7 @@ public class ReportObjectGeneric implements ReportObject {
         while ((cursor1 = sql.indexOf("{")) != -1) {
             int cursor2 = sql.indexOf("}", cursor1);
             String paramId = sql.substring(cursor1+1, cursor2);
-
+            //System.out.println("Names: " + paramId);
             String[] substValues = (String[]) parameters.get(paramId);
             if (substValues == null) { //if type textlist or this param isn't in the request
                 substValues = (String[]) parameters.get(paramId + ":list");
@@ -138,7 +136,7 @@ public class ReportObjectGeneric implements ReportObject {
                 
             }
         }
-        MiscUtils.getLogger().debug("<REPORT BY TEMPLATE> SQL: " + sql);
+        System.out.println("<REPORT BY TEMPLATE> SQL: " + sql);
         return sql;
     }
     

@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -147,6 +147,8 @@ if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.Is
 <title><bean:message
 	key="receptionist.appointmentrecepcionistmonth.title" /></title>
 <link rel="stylesheet" href="receptionistapptstyle.css" type="text/css">
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 </head>
 <script language="JavaScript">
 <!--
@@ -426,6 +428,7 @@ function refresh1() {
         bFistEntry = false;
         break;
       } else {  
+        //System.out.println("ccc "+dateGrid[i][j]);
         bFistEntry = true;
         if(String.valueOf(date.get("available")).equals("0")) continue;
       }

@@ -39,15 +39,15 @@ import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  *
  * @author Jay Gallagher
  */
 public class Prevention {
-   private static Logger log = MiscUtils.getLogger(); 
+   private static Log log = LogFactory.getLog(Prevention.class); 
       
    String sex;
    String name= null;  // Not really needed but handy for testing
@@ -77,11 +77,7 @@ public class Prevention {
    public Prevention(String demographicNo) {
             
    }
-
-   public void log(String logMessage){
-      log.debug(name+" :"+logMessage);
-   }
-         
+          
    public void setSex(String s){ sex = s; }   
    public String getSex(){ return sex; }
    public java.lang.String getName() { return name; }
@@ -182,8 +178,9 @@ public class Prevention {
             withinRange = true;
          }
       } catch (ParseException e) {
-         MiscUtils.getLogger().error("Error", e); 
-      } catch (Exception ex){MiscUtils.getLogger().error("Error", ex);
+         e.printStackTrace(); 
+      } catch (Exception ex){
+         ex.printStackTrace();
       }
       return withinRange;
    }
@@ -300,17 +297,10 @@ public class Prevention {
    public int getAgeInMonthsLastPreventionTypeGiven(String preventionType){
       return getNumMonths(DOB,getLastPreventionDate(preventionType));         
    }
-
-   private String getStrDate(Date d){
-       if (d == null){
-           return null;
-       }
-       return d.toString();
-   }
    
    private int getNumMonths(Date dStart, Date dEnd) {
         int i = 0;
-        log.debug("Getting the number of months between "+getStrDate(dStart)+ " and "+getStrDate(dEnd) );
+        log.debug("Getting the number of months between "+dStart.toString()+ " and "+dEnd.toString() );        
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(dStart);
         while (calendar.getTime().before(dEnd) || calendar.getTime().equals(dEnd)) {

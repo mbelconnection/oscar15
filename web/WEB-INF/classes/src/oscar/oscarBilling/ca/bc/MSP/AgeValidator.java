@@ -1,5 +1,6 @@
 package oscar.oscarBilling.ca.bc.MSP;
 
+import java.util.Vector;
 
 public class AgeValidator
     extends ServiceCodeValidator {
@@ -13,6 +14,8 @@ public class AgeValidator
     this.inputAge = inputAge;
   }
   public String getDescription(){
+    Vector v = new Vector();
+
     return minAge + " - " + maxAge;
   }
 

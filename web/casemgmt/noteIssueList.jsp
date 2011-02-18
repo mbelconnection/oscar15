@@ -18,51 +18,53 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
 // -----------------------------------------------------------------------------------------------------------------------
---%><%@ page
+--%>
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+<%@ page
 	import="org.oscarehr.casemgmt.web.formbeans.CaseManagementEntryFormBean"%>
 <%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@ include file="/casemgmt/taglibs.jsp"%>
 
 <c:set var="ctx" value="${pageContext.request.contextPath}"
 	scope="request" />
-<%
-	String noteIndex = "";
-	String encSelect = "encTypeSelect";
-	String demoNo = request.getParameter("demographicNo");
-	String caseMgmtEntryFrm = "caseManagementEntryForm" + demoNo;
-	CaseManagementEntryFormBean frm = (CaseManagementEntryFormBean)request.getAttribute("caseManagementEntryForm");
-	if (frm == null)
-	{
-		frm = (CaseManagementEntryFormBean)session.getAttribute(caseMgmtEntryFrm);
-		request.setAttribute("caseManagementEntryForm", frm);
-	} 
+<% String noteIndex = "";
+   String encSelect = "encTypeSelect";
+   String demoNo = request.getParameter("demographicNo");
+   String caseMgmtEntryFrm = "caseManagementEntryForm" + demoNo;
+   CaseManagementEntryFormBean frm = (CaseManagementEntryFormBean)request.getAttribute("caseManagementEntryForm");
+   System.out.println("Fetching form bean from request");
+   if( frm == null ) {
+        System.out.println("No form bean in request - Fetching from session");
+        frm = (CaseManagementEntryFormBean)session.getAttribute(caseMgmtEntryFrm);
+        request.setAttribute("caseManagementEntryForm", frm);
+   }
+   
+        
 %>
 <nested:empty name="caseManagementEntryForm" property="caseNote.id">
 	<nested:notEmpty name="newNoteIdx">
-		<%
-			noteIndex = request.getParameter("newNoteIdx");
-		%>
+		<% noteIndex = request.getParameter("newNoteIdx"); %>
 		<div id="sumary<nested:write name="newNoteIdx"/>">
 		<div id="observation<nested:write name="newNoteIdx"/>"
 			style="float: right; margin-right: 3px;">
 	</nested:notEmpty>
 	<nested:empty name="newNoteIdx">
-		<%
-			noteIndex = "0";
-		%>
+		<% noteIndex = "0";%>
 		<div id="sumary0">
 		<div id="observation0" style="float: right; margin-right: 3px;">
 	</nested:empty>
 </nested:empty>
 <nested:notEmpty name="caseManagementEntryForm" property="caseNote.id">
-	<%
-		noteIndex = String.valueOf(frm.getCaseNote().getId());
-	%>
+	<%        
+       noteIndex = String.valueOf(frm.getCaseNote().getId());       
+       
+    %>
 	<div style="background-color: #CCCCFF;"
 		id="sumary<nested:write name="caseManagementEntryForm" property="caseNote.id" />">
 	<div
@@ -111,12 +113,7 @@
 </nested:equal> <nested:equal name="newNote" value="true">
 	<div style="margin: 0px;">&nbsp;</div>
 </nested:equal></div>
-
-<div id="current_note_addon"></div>
-
-<%
-	encSelect += noteIndex;
-%>
+<% encSelect += noteIndex; %>
 <div style="clear: right; margin-right: 3px; margin: 0px; float: right;"><bean:message key="oscarEncounter.encType.title"/>
 :&nbsp;<span id="encType<%=noteIndex%>"> <nested:empty
 	name="ajaxsave">
@@ -126,18 +123,6 @@
 		<html:option value="face to face encounter with client"><bean:message key="oscarEncounter.faceToFaceEnc.title"/></html:option>
 		<html:option value="telephone encounter with client"><bean:message key="oscarEncounter.telephoneEnc.title"/></html:option>
 		<html:option value="encounter without client"><bean:message key="oscarEncounter.noClientEnc.title"/></html:option>
-		
-		<%
-			if(org.oscarehr.util.LoggedInInfo.loggedInInfo.get().currentFacility.isEnableGroupNotes()) {
-		%>
-		
-		<html:option value="group face to face encounter"><bean:message key="oscarEncounter.groupFaceEnc.title"/></html:option>
-		<html:option value="group telephone encounter"><bean:message key="oscarEncounter.groupTelephoneEnc.title"/></html:option>
-		<html:option value="group encounter without group"><bean:message key="oscarEncounter.groupNoClientEnc.title"/></html:option>
-		
-		<%
-			}
-		%>
 	</html:select>
 </nested:empty> <nested:notEmpty name="ajaxsave">
             &quot;<nested:write name="caseManagementEntryForm"
@@ -172,77 +157,72 @@
 <table id="setIssueList" style="font-size: 8px;">
 	<nested:iterate indexId="ind" id="issueCheckList" property="issueCheckList" name="caseManagementEntryForm" type="org.oscarehr.casemgmt.web.CheckBoxBean">
 		<%
-			String winame = "window" + issueCheckList.getIssueDisplay().getDescription();
-				winame = winame.replaceAll("\\s|\\/|\\*", "_");
-				winame = winame.replaceAll("'", "");
-				winame = StringEscapeUtils.escapeJavaScript(winame);
-				if (ind % 2 == 0)
-				{
-		%>
+                                String winame = "window" + issueCheckList.getIssue().getIssue().getDescription();
+                                winame = winame.replaceAll("\\s|\\/|\\*", "_");
+                                winame = winame.replaceAll("'","");
+                                winame = StringEscapeUtils.escapeJavaScript(winame);
+                                if( ind % 2 == 0 ) {%>
 		<tr>
-			<%
-				}
-			%>
-
-
+			<% } %>
 			<td style="width: 50%; font-size: 8px; background-color: #CCCCFF;">
-				<%
-					String submitString = "this.form.method.value='issueChange';";
-					submitString = submitString + "this.form.lineId.value=" + "'" + ind.intValue() + "'; return ajaxUpdateIssues('issueChange', $('noteIssues').up().id);";
-					String id = "noteIssue" + ind;
-					org.oscarehr.casemgmt.web.CheckBoxBean cbb = (org.oscarehr.casemgmt.web.CheckBoxBean)pageContext.getAttribute("issueCheckList");
-					String programId = (String)request.getSession().getAttribute("case_program_id");
-					boolean writeAccess = cbb.getIssueDisplay().isWriteAccess();
-					boolean disabled = !writeAccess;
-				%> 
+			<%String submitString = "this.form.method.value='issueChange';";
+                                submitString = submitString + "this.form.lineId.value=" + "'"
+                                + ind.intValue() + "'; return ajaxUpdateIssues('issueChange', $('noteIssues').up().id);";
+                                String id = "noteIssue" + ind;
+                                org.oscarehr.casemgmt.web.CheckBoxBean cbb = (org.oscarehr.casemgmt.web.CheckBoxBean)pageContext.getAttribute("issueCheckList");
+                                String programId = (String) request.getSession().getAttribute("case_program_id");
+                                boolean writeAccess = cbb.getIssue().isWriteAccess(Integer.parseInt(programId));                                
+                                boolean disabled = !writeAccess;
+                                %> <nested:checkbox styleId="<%=id%>"
+				indexed="true" name="issueCheckList" property="checked"
+				disabled="<%=disabled%>"></nested:checkbox> <a href="#"
+				onclick="return displayIssue('<%=winame%>');"><nested:write
+				name="issueCheckList" property="issue.issue.description" /></a> <nested:equal
+				name="issueCheckList" property="used" value="false">
+				<%String submitDelete = "removeIssue('" + winame + "');document.forms['caseManagementEntryForm'].deleteId.value=" + "'"
+                                    + ind.intValue() + "';return ajaxUpdateIssues('issueDelete', $('noteIssues').up().id);";
+                                    %>
+                                    &nbsp;<a href="#"
+					onclick="<%=submitDelete%>">Delete</a>&nbsp;
+                                </nested:equal> <!--  change diagnosis button --> <%String submitChange = "return changeDiagnosis('" + ind.intValue() + "');";
+                                %> &nbsp;<a href="#"
+				onclick="<%=submitChange%>">Change</a>
+			<div id="<%=winame%>" style="margin-left: 20px; display: none;">
 
-
-				<nested:checkbox styleId="<%=id%>" indexed="true" name="issueCheckList" property="checked" disabled="<%=disabled%>"></nested:checkbox> 
-				<a href="#" onclick="return displayIssue('<%=winame%>');">
-					<nested:write name="issueCheckList"	property="issueDisplay.description" />
-				</a>
-
-				<nested:equal name="issueCheckList" property="used" value="false">
-					<%
-						String submitDelete = "removeIssue('" + winame + "');document.forms['caseManagementEntryForm'].deleteId.value=" + "'" + ind.intValue() + "';return ajaxUpdateIssues('issueDelete', $('noteIssues').up().id);";
-					%>
-                     &nbsp;
-                     <a href="#" onclick="<%=submitDelete%>">Delete</a>
-                     &nbsp;
-                </nested:equal>
-                
-                <!--  change diagnosis button --> 
-                <%
- 					String submitChange = "return changeDiagnosis('" + ind.intValue() + "');";
- 				%>
- 				&nbsp;
- 				<a href="#"	onclick="<%=submitChange%>">Change</a>
-
-				<div id="<%=winame%>" style="margin-left: 20px; display: none;">
-					<div>
-						<div style="width: 50%; float: left; display: inline;"><nested:radio indexed="true" name="issueCheckList" property="issueDisplay.acute" value="true" onchange="<%=submitString%>">acute</nested:radio></div>
-						<div style="width: 50%; float: left; display: inline; clear: right;"><nested:radio indexed="true" name="issueCheckList" property="issueDisplay.acute" value="false" onchange="<%=submitString%>">chronic</nested:radio></div>
-						<div style="width: 50%; float: left; display: inline;"><nested:radio indexed="true" name="issueCheckList" property="issue.certain" disabled="<%=disabled%>" value="true" onchange="<%=submitString%>">certain</nested:radio></div>
-						<div style="width: 50%; float: left; display: inline; clear: right;"><nested:radio indexed="true" name="issueCheckList" property="issueDisplay.certain" disabled="<%=disabled%>" value="false" onchange="<%=submitString%>">uncertain</nested:radio></div>
-						<div style="width: 50%; float: left; display: inline;"><nested:radio indexed="true" name="issueCheckList" property="issue.major" disabled="<%=disabled%>" value="true" onchange="<%=submitString%>">major</nested:radio></div>
-						<div style="width: 50%; float: left; display: inline; clear: right;"><nested:radio indexed="true" name="issueCheckList" property="issueDisplay.major" disabled="<%=disabled%>" value="false" onchange="<%=submitString%>">not major</nested:radio></div>
-						<div style="width: 50%; float: left; display: inline;"><nested:radio indexed="true" name="issueCheckList" property="issue.resolved" value="true" onchange="<%=submitString%>">resolved</nested:radio></div>
-						<div style="width: 50%; float: left; display: inline; clear: right;"><nested:radio indexed="true" name="issueCheckList" property="issueDisplay.resolved" value="false" onchange="<%=submitString%>">unresolved</nested:radio></div>
-						<div style="text-align: center;"><nested:text indexed="true" name="issueCheckList" property="issueDisplay.role" size="10" disabled="<%=disabled%>" /></div>
-					</div>
-				</div>
-								
-
+			<div>
+			<div style="width: 50%; float: left; display: inline;"><nested:radio
+				indexed="true" name="issueCheckList" property="issue.acute"
+				value="true" onchange="<%=submitString%>">acute</nested:radio></div>
+			<div style="width: 50%; float: left; display: inline; clear: right;"><nested:radio
+				indexed="true" name="issueCheckList" property="issue.acute"
+				value="false" onchange="<%=submitString%>">chronic</nested:radio></div>
+			<div style="width: 50%; float: left; display: inline;"><nested:radio
+				indexed="true" name="issueCheckList" property="issue.certain"
+				disabled="<%=disabled%>" value="true" onchange="<%=submitString%>">certain</nested:radio></div>
+			<div style="width: 50%; float: left; display: inline; clear: right;"><nested:radio
+				indexed="true" name="issueCheckList" property="issue.certain"
+				disabled="<%=disabled%>" value="false" onchange="<%=submitString%>">uncertain</nested:radio></div>
+			<div style="width: 50%; float: left; display: inline;"><nested:radio
+				indexed="true" name="issueCheckList" property="issue.major"
+				disabled="<%=disabled%>" value="true" onchange="<%=submitString%>">major</nested:radio></div>
+			<div style="width: 50%; float: left; display: inline; clear: right;"><nested:radio
+				indexed="true" name="issueCheckList" property="issue.major"
+				disabled="<%=disabled%>" value="false" onchange="<%=submitString%>">not major</nested:radio></div>
+			<div style="width: 50%; float: left; display: inline;"><nested:radio
+				indexed="true" name="issueCheckList" property="issue.resolved"
+				value="true" onchange="<%=submitString%>">resolved</nested:radio></div>
+			<div style="width: 50%; float: left; display: inline; clear: right;"><nested:radio
+				indexed="true" name="issueCheckList" property="issue.resolved"
+				value="false" onchange="<%=submitString%>">unresolved</nested:radio></div>
+			<div style="text-align: center;"><nested:text indexed="true"
+				name="issueCheckList" property="issue.type" size="10"
+				disabled="<%=disabled%>" /></div>
+			</div>
+			</div>
 			</td>
-			
-			<%
-				if (ind % 2 != 0)
-					{
-			%>
+			<% if( ind % 2 != 0 ) { %>
 		</tr>
-		<%
-			}
-		%>
+		<% } %>
 
 	</nested:iterate>
 </table>
@@ -267,9 +247,11 @@
         }  
        updatedNoteId = newId;
       
-       <%//CaseManagementEntryFormBean form = (CaseManagementEntryFormBean)request.getAttribute("caseManagementEntryForm");            
-				String noteTxt = frm.getCaseNote().getNote();
-				noteTxt = org.apache.commons.lang.StringEscapeUtils.escapeJavaScript(noteTxt);%>
+       <%
+            //CaseManagementEntryFormBean form = (CaseManagementEntryFormBean)request.getAttribute("caseManagementEntryForm");            
+            String noteTxt = frm.getCaseNote().getNote();
+            noteTxt = org.apache.commons.lang.StringEscapeUtils.escapeJavaScript(noteTxt);
+       %>
        completeChangeToView("<%=noteTxt%>",newId);
        if( origId.substr(0,1) == "0" ) {
             $("nc"+origId).id = "nc" + numNotes;
@@ -286,7 +268,7 @@
    var txtColour = txtStyles[0].substr(txtStyles[0].indexOf("#"));
    var background = txtStyles[1].substr(txtStyles[1].indexOf("#"));
    var summary = "sumary" + "<%=noteIndex%>";
-
+   
    if( $("observationDate") != null ) {
         $("observationDate").style.color = txtColour;
         $("observationDate").style.backgroundColor = background; 

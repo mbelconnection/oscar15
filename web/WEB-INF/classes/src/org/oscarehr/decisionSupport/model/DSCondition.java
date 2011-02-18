@@ -6,19 +6,15 @@
 package org.oscarehr.decisionSupport.model;
 
 import java.util.Hashtable;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.oscarehr.decisionSupport.model.conditionValue.DSValue;
-import org.oscarehr.util.MiscUtils;
+import java.util.List;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
  * @author apavel
  */
 public class DSCondition {
-    private static final Logger _log = MiscUtils.getLogger();
 
     /**
      * @return the param
@@ -38,7 +34,7 @@ public class DSCondition {
      * @return the label
      */
     public String getLabel() {
-        _log.debug("getting label in "+this.hashCode());
+        System.out.println("getting label in "+this.hashCode());
         return label;
     }
 
@@ -47,7 +43,7 @@ public class DSCondition {
      * @param label the label to set
      */
     public void setLabel(String label) {
-        _log.debug("Setting label in "+this.hashCode());
+        System.out.println("Setting label in "+this.hashCode());
         this.label = label;
     }
     

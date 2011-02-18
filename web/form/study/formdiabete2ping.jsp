@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -27,12 +27,15 @@
   if(session.getAttribute("user") == null || !( ((String) session.getAttribute("userprofession")).equalsIgnoreCase("doctor") ))
     response.sendRedirect("../logout.jsp");
 %>
+
+<%@ page language="java"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
 <%@ page import="oscar.form.study.*"%>
 
 <html:html locale="true">
+<% response.setHeader("Cache-Control","no-cache");%>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Type 2 Diabetes Record</title>
@@ -46,9 +49,11 @@
     String demoNo = request.getParameter("demographic_no");
     String studyId = request.getParameter("study_no");
     oscar.form.data.FrmData.PatientForm pform = (new oscar.form.data.FrmData()).getCurrentPatientForm(demoNo, studyId);
+	//System.out.println(" id: "+pform.getFormId());
     int formId = (pform == null) ? 0: Integer.parseInt(pform.getFormId());
 	String[] studyNameLink = (new oscar.form.data.FrmData()).getStudyNameLink(studyId);
     FrmStudyRecord rec = (new FrmStudyRecordFactory()).factory(studyNameLink[0]);
+	//System.out.println(" id: "+formId);
     java.util.Properties props = rec.getFormRecord(Integer.parseInt(demoNo), formId);
 %>
 

@@ -51,7 +51,7 @@ if(props.getProperty("isNewONbilling", "").equals("true")) {
 <%@ include file="../../../admin/dbconnection.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
-<%@ include file="dbBilling.jspf"%>
+<%@ include file="dbBilling.jsp"%>
 
 <%
 GregorianCalendar now=new GregorianCalendar();
@@ -82,7 +82,7 @@ int curDay = now.get(Calendar.DAY_OF_MONTH);
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -91,6 +91,8 @@ int curDay = now.get(Calendar.DAY_OF_MONTH);
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="billing.billingCorrection.title" /></title>
+<meta http-equiv="expires" content="Mon,12 May 1998 00:36:05 GMT">
+<meta http-equiv="Pragma" content="no-cache">
 <script language="JavaScript">
 <!--
 function setfocus() {
@@ -166,6 +168,7 @@ function validateAllItems(){
    return true;
 }
 </script>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 
 <body bgcolor="#FFFFFF" text="#000000" topmargin="5" leftmargin="0"
@@ -187,7 +190,7 @@ if (billNo.compareTo("") == 0 || billNo == null) {
 } else {         
 	bFlag =true;         
 %>
-<%@ include file="billingDataRetrieve.jspf"%>
+<%@ include file="billingDataRetrieve.jsp"%>
 <% 
 	if(oscarVariables.getProperty("isSpecialist", "").equals("true")) {
 	    r_doctor_ohip = r_doctor_ohip_s;
@@ -575,6 +578,7 @@ if (bFlag) {
 		diagDesc = rsDiagCode.getString("description");
 	}
 }
+apptMainBean.closePstmtConn();
 %>
 
 	<tr bgcolor="#CCCCFF">

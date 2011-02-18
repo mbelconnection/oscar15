@@ -14,10 +14,9 @@ import net.sf.cookierevolver.CRFactory;
 import net.sf.cookierevolver.service.RolesProvider;
 
 import org.apache.log4j.Logger;
-import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarProperties;
+import oscar.oscarDB.DBHandler;
 
 public class CRHelper implements RolesProvider {
 	private static Logger log = Logger.getLogger(CRHelper.class);
@@ -46,9 +45,10 @@ public class CRHelper implements RolesProvider {
 	}
 	
 	public String[] getRolesForUser(String user) {
-		
+		DBHandler db = null;
 		try {
-			Connection con = DbConnectionFilter.getThreadLocalDbConnection();
+			db=new DBHandler(DBHandler.OSCAR_DATA);
+			Connection con = DBHandler.getConnection();
 			String sql = establishStringToUse(con);
 			if(sql==null){
 				log.warn("No userSecRole table found!");
@@ -59,7 +59,7 @@ public class CRHelper implements RolesProvider {
 			ResultSet rs = st.executeQuery();
 			HashSet list = new HashSet();
 			while(rs.next()){
-				list.add(oscar.Misc.getString(rs, 1));
+				list.add(db.getString(rs,1));
 			}
 			if(queryCaisiRoles(con)){
 				rs.close();
@@ -68,15 +68,17 @@ public class CRHelper implements RolesProvider {
 				st.setString(1,(String)userNameToProviderNO.get(user));
 				rs = st.executeQuery();
 				while(rs.next()){
-					list.add(oscar.Misc.getString(rs, 1));
+					list.add(db.getString(rs,1));
 				}
 			}
 			rs.close();
 			st.close();
 			return (String[]) list.toArray(new String[list.size()]);
 		} catch (SQLException e) {
-			MiscUtils.getLogger().error("Error", e);
+			e.printStackTrace();
 			return new String[0];
+		}finally{
+			if(db!=null) try{}catch(Throwable t){}
 		}
 	}
 	

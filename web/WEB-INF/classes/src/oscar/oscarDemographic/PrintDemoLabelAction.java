@@ -12,19 +12,21 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarAction;
 import oscar.OscarDocumentCreator;
 
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class PrintDemoLabelAction extends OscarAction {
     
-    private static Logger logger = MiscUtils.getLogger();
+    private static Log logger = LogFactory.getLog(PrintDemoLabelAction.class);
 	
     public PrintDemoLabelAction() {
     }
@@ -55,14 +57,16 @@ public class PrintDemoLabelAction extends OscarAction {
                 ins = getClass().getResourceAsStream("/oscar/oscarDemographic/label.xml");
                 logger.debug("loading from : /oscar/oscarDemographic/label.xml " + ins);
             }
-            catch (Exception ex1) {MiscUtils.getLogger().error("Error", ex1);
+            catch (Exception ex1) {
+                ex1.printStackTrace();
             }
         }
 
         try {
             sos = response.getOutputStream();
         }
-        catch (IOException ex) {MiscUtils.getLogger().error("Error", ex);
+        catch (IOException ex) {
+            ex.printStackTrace();
         }
 
         response.setHeader("Content-disposition", getHeader(response).toString());
@@ -71,20 +75,20 @@ public class PrintDemoLabelAction extends OscarAction {
             osc.fillDocumentStream(parameters, sos, "pdf", ins, DbConnectionFilter.getThreadLocalDbConnection());
         }
         catch (SQLException e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
 
         return actionMapping.findForward(this.target);
     }
 
-    private StringBuilder getHeader(HttpServletResponse response) {
-        StringBuilder strHeader = new StringBuilder();
+    private StringBuffer getHeader(HttpServletResponse response) {
+        StringBuffer strHeader = new StringBuffer();
         strHeader.append("label_");
         strHeader.append(".pdf");
         response.setHeader("Cache-Control", "max-age=0");
         response.setDateHeader("Expires", 0);
         response.setContentType("application/pdf");
-        StringBuilder sbContentDispValue = new StringBuilder();
+        StringBuffer sbContentDispValue = new StringBuffer();
         sbContentDispValue.append("inline; filename="); //inline - display
         sbContentDispValue.append(strHeader);
         return sbContentDispValue;

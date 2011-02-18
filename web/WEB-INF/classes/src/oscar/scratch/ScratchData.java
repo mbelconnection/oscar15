@@ -34,9 +34,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Hashtable;
 
-import org.oscarehr.util.DbConnectionFilter;
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 /**
@@ -58,20 +55,20 @@ public class ScratchData {
         Hashtable retval = null;
         try {
             //Get Provider from database
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
             String sql = "SELECT * FROM scratch_pad WHERE provider_no = " + providerNo + " order by id  desc limit 1";
-            rs = DBHandler.GetSQL(sql);
+            rs = db.GetSQL(sql);
    
             if (rs.next()){
                 retval = new Hashtable();
-                retval.put("id",oscar.Misc.getString(rs, "id"));
-                retval.put("text",oscar.Misc.getString(rs, "scratch_text"));
-                retval.put("date",oscar.Misc.getString(rs, "date_time"));
+                retval.put("id",db.getString(rs,"id"));
+                retval.put("text",db.getString(rs,"scratch_text"));
+                retval.put("date",db.getString(rs,"date_time"));
             }
             rs.close();
         } catch (SQLException e) {
-           MiscUtils.getLogger().error("Error", e);
+           e.printStackTrace();
         }
         return retval;
     }
@@ -80,18 +77,18 @@ public class ScratchData {
         String scratch_id = null;
         try {
             //Get Provider from database
-            
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
             ResultSet rs;
             String sql = "INSERT into scratch_pad (provider_no, scratch_text,date_time ) values ('" + providerNo + "','"+text+"',now())";
-            DBHandler.RunSQL(sql);
-            rs = DBHandler.GetSQL("SELECT LAST_INSERT_ID() ");
+            db.RunSQL(sql);
+            rs = db.GetSQL("SELECT LAST_INSERT_ID() ");
    
             if(rs.next()){
                scratch_id = Integer.toString( rs.getInt(1) );
             }
             rs.close();
         } catch (SQLException e) {
-           MiscUtils.getLogger().error("Error", e);
+           e.printStackTrace();
         }
         return scratch_id;
     }
@@ -101,9 +98,9 @@ public class ScratchData {
         String scratch_id = null;
         try {
             //Get Provider from database
-            // //unused variable db
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
              String sql = "INSERT into scratch_pad (provider_no, scratch_text,date_time ) values (?,?,now())";
-             Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
+             Connection conn = DBHandler.getConnection();
              PreparedStatement pstat = conn.prepareStatement(sql);
               pstat.setString(1,providerNo);
               pstat.setString(2,text);
@@ -116,7 +113,7 @@ public class ScratchData {
               rs.close();
              pstat.close();
         } catch (SQLException e) {
-           MiscUtils.getLogger().error("Error", e);
+           e.printStackTrace();
         }
         return scratch_id;
     }

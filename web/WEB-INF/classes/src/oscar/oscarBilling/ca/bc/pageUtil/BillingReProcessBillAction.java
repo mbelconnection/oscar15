@@ -34,15 +34,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
+
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
 import oscar.Misc;
 import oscar.OscarProperties;
 import oscar.entities.Billing;
@@ -59,7 +59,7 @@ import oscar.util.SqlUtils;
 import oscar.util.StringUtils;
 
 public class BillingReProcessBillAction extends Action {
-    private static final Logger logger = MiscUtils.getLogger();
+    private static Log _log = LogFactory.getLog(BillingReProcessBillAction.class);
 
   //Misc misc = new Misc();
   MSPReconcile msp = new MSPReconcile();
@@ -80,12 +80,12 @@ public class BillingReProcessBillAction extends Action {
     
     WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getSession().getServletContext());
     BillingmasterDAO billingmasterDAO = (BillingmasterDAO) ctx.getBean("BillingmasterDAO"); 
-    logger.debug("RETRIEVING Using "+billingmasterNo);
+    _log.debug("RETRIEVING Using "+billingmasterNo);
     Billingmaster billingmaster = billingmasterDAO.getBillingMasterByBillingMasterNo(billingmasterNo);
     Billing bill = billingmasterDAO.getBilling(billingmaster.getBillingNo());
     
     
-    logger.debug("type "+bill.getBillingtype());
+    _log.debug("type "+bill.getBillingtype());
 
 
     BillingFormData billform = new BillingFormData();
@@ -196,7 +196,7 @@ public class BillingReProcessBillAction extends Action {
         dateRecieved = dateRecieved.trim();
         Integer.parseInt(dateRecieved);
       }catch (Exception e) {
-        MiscUtils.getLogger().error("Error", e);
+        e.printStackTrace();
         dateRecieved = "";
       }
 
@@ -241,8 +241,8 @@ public class BillingReProcessBillAction extends Action {
       //BillingCodeData bcd = new BillingCodeData();
       //BillingService billingService = bcd.getBillingCodeByCode(billingServiceCode, new Date());
       String codePrice = request.getParameter("billingAmount"); //billingService.getValue();
-      logger.debug("codePrice=" + codePrice+" amount on form "+request.getParameter("billingAmount"));
-      
+      _log.debug("codePrice=" + codePrice+" amount on form "+request.getParameter("billingAmount"));
+
       if("E".equals(payment_mode)){
           codePrice = "0.00";
       }
@@ -254,7 +254,7 @@ public class BillingReProcessBillAction extends Action {
 
       billingServicePrice = bdFee.toString();
     } catch(NumberFormatException e){
-      MiscUtils.getLogger().error("Error", e);
+      e.printStackTrace();
       throw new RuntimeException("BC BILLING - Exception when attempting to multiply Bill Amount by Unit ");
     }
     bill.setProviderOhipNo(practitionerNo);
@@ -314,17 +314,17 @@ public class BillingReProcessBillAction extends Action {
         billingmaster.setWcbId(Integer.parseInt(request.getParameter("WCBid")));
         }catch(Exception e){}
         bill.setProviderNo(providerNo);
-        logger.debug("WHAT IS BILL <ASTER "+billingmaster.getBillingmasterNo());
+        _log.debug("WHAT IS BILL <ASTER "+billingmaster.getBillingmasterNo());
         billingmasterDAO.update(billingmaster);
         billingmasterDAO.update(bill);
         
-        logger.debug("type 2"+bill.getBillingtype());
-        logger.debug("WHAT IS BILL <ASTER2 "+billingmaster.getBillingmasterNo());
+        _log.debug("type 2"+bill.getBillingtype());
+        _log.debug("WHAT IS BILL <ASTER2 "+billingmaster.getBillingmasterNo());
         
         try {
-      
-      //DBHandler.RunSQL(sql);
-      //DBHandler.RunSQL(providerSQL);
+      DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+      //db.RunSQL(sql);
+      //db.RunSQL(providerSQL);
       if (!StringUtils.isNullOrEmpty(billingStatus)) {  //What if billing status is null?? the status just doesn't get updated but everything else does??'
           //Why does this get called??  update billing type based on the billing status.  I guess this is effective when you switch this to bill on 
         msp.updateBillingStatus(frm.getBillNumber(), billingStatus,billingmasterNo);  
@@ -343,8 +343,8 @@ public class BillingReProcessBillAction extends Action {
         dao.createBillingHistoryArchive(billingmasterNo);
       }
       if (secondSQL != null) {
-        logger.debug(secondSQL);
-        DBHandler.RunSQL(secondSQL);
+        _log.debug(secondSQL);
+        db.RunSQL(secondSQL);
       }
 
       if (correspondenceCode.equals("N") || correspondenceCode.equals("B")) {
@@ -360,7 +360,7 @@ public class BillingReProcessBillAction extends Action {
       }
     }
     catch (SQLException e3) {
-      logger.info(e3.getMessage());
+      _log.info(e3.getMessage());
     }
 
     request.setAttribute("billing_no", billingmasterNo);
@@ -402,7 +402,7 @@ public class BillingReProcessBillAction extends Action {
    */
   public String convertDate8Char(String s) {
     String sdate = "00000000", syear = "", smonth = "", sday = "";
-    logger.debug("s=" + s);
+    _log.debug("s=" + s);
     if (s != null) {
 
       if (s.indexOf("-") != -1) {
@@ -419,13 +419,13 @@ public class BillingReProcessBillAction extends Action {
           sday = "0" + sday;
         }
 
-        logger.debug("Year" + syear + " Month" + smonth + " Day" + sday);
+        _log.debug("Year" + syear + " Month" + smonth + " Day" + sday);
         sdate = syear + smonth + sday;
 
       }else {
         sdate = s;
       }
-      logger.debug("sdate:" + sdate);
+      _log.debug("sdate:" + sdate);
     }else {
       sdate = "00000000";
 

@@ -32,7 +32,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarReport.data.RptDemographicQueryBuilder;
 import oscar.oscarReport.data.RptDemographicQueryLoader;
@@ -46,7 +45,7 @@ public  class RptDemographicReportAction extends Action {
 				 HttpServletRequest request,
 				 HttpServletResponse response)
 	throws IOException, ServletException {
-        MiscUtils.getLogger().debug("RptDemographicReportAction Jackson");
+        System.out.println("RptDemographicReportAction Jackson");
         RptDemographicReportForm frm = (RptDemographicReportForm) form;
         String[] select = frm.getSelect();
 
@@ -63,13 +62,13 @@ public  class RptDemographicReportAction extends Action {
 //        String queryName        = frm.getQueryName();
           String query            = frm.getQuery();
           
-          MiscUtils.getLogger().debug("query "+query);
+          System.out.println("query "+query);
 
         if (query.equals("Run Query")){
-            MiscUtils.getLogger().debug("run query");
+            System.out.println("run query");
             RptDemographicQueryBuilder demoQ = new RptDemographicQueryBuilder();
             java.util.ArrayList searchedArray = demoQ.buildQuery(frm);
-            MiscUtils.getLogger().debug("searchArray size "+searchedArray.size());
+            System.out.println("searchArray size "+searchedArray.size());
             request.setAttribute("searchedArray",searchedArray);
             request.setAttribute("selectArray",select);
         }else if( query.equals("Save Query")){

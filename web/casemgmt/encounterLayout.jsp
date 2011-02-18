@@ -24,6 +24,8 @@
 
 <%@ include file="/casemgmt/taglibs.jsp"%>
 <%@ page errorPage="/casemgmt/error.jsp"%>
+<%@ page language="java"%>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
 <%
@@ -43,6 +45,7 @@
 	href="<c:out value="${ctx}"/>/css/print.css" media="print" />
 <html:base />
 <title>Case Management</title>
+<meta http-equiv="Cache-Control" content="no-cache">
 <%! String refresh = oscar.OscarProperties.getInstance().getProperty("refresh.encounterLayout.jsp", "-1"); %>
 <%="-1".equals(refresh)?"":"<meta http-equiv=\"refresh\" content=\""+refresh+";\">"%>
 </head>

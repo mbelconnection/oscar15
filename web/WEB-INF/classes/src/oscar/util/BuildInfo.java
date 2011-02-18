@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -27,30 +27,29 @@ package oscar.util;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+public class BuildInfo extends Properties {
+        
+    static BuildInfo myself = new BuildInfo();
+    
+    private BuildInfo() {                
+            InputStream is = getClass().getResourceAsStream("/build.properties");        
+            try {
+                    load(is);
+            } catch (Exception e) {
+                    System.out.println("Error, file build.properties not found.");
+                    System.out.println("This file must be placed at WEB-INF/classes.");
+            }     
+    }
+    
+    public static BuildInfo getInstance() {
+		return myself;
+    }
+    
+    public String getBuildDate() {          
+        return getProperty("builddate", "unknown");
+    }
 
-public final class BuildInfo {
-    private static Logger logger=MiscUtils.getLogger(); 
-
-	private static final String BUILD_PROPERTIES="/build.properties";
-	
-	private static final Properties properties = new Properties();
-	static {
-		try {
-			InputStream is = BuildInfo.class.getResourceAsStream(BUILD_PROPERTIES);
-			properties.load(is);
-			is.close();
-		} catch (Exception e) {
-			logger.error("Error loading "+BUILD_PROPERTIES, e);
-		}
-	}
-
-	public static String getBuildDate() {
-		return properties.getProperty("builddate", "unknown");
-	}
-
-	public static String getBuildTag() {
-		return properties.getProperty("buildtag", "unknown");
-	}
+    public String getBuildTag() {
+        return getProperty("buildtag","unknown");
+    }
 }

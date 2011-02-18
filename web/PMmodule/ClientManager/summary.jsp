@@ -15,10 +15,9 @@
 <%@page import="org.oscarehr.ui.servlet.ImageRenderingServlet"%>
 <%@page import="oscar.OscarProperties"%>
 <%@page import="org.oscarehr.caisi_integrator.ws.GetConsentTransfer"%>
-<%@page import="org.oscarehr.PMmodule.dao.ProgramProviderDAO"%>
+
 <%@ taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi"%>
 <%
-	ProgramProviderDAO ppd =(ProgramProviderDAO)SpringUtils.getBean("programProviderDAO");
 	IntegratorConsentDao integratorConsentDao=(IntegratorConsentDao)SpringUtils.getBean("integratorConsentDao");
 	Demographic currentDemographic=(Demographic)request.getAttribute("client");
 	LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
@@ -31,10 +30,7 @@
 <%@page import="org.apache.commons.lang.time.DateFormatUtils"%>
 <%@page import="org.oscarehr.caisi_integrator.ws.ConsentState"%>
 <%@page import="org.oscarehr.util.LoggedInInfo"%>
-<%@page import="org.oscarehr.util.MiscUtils"%>
-<%@page import="org.oscarehr.common.model.CdsClientForm"%>
-<%@page import="org.oscarehr.PMmodule.web.ClientManagerAction"%>
-<%@page import="org.oscarehr.PMmodule.web.AdmissionForDisplay"%><input type="hidden" name="clientId" value="" />
+<%@page import="org.oscarehr.util.MiscUtils"%><input type="hidden" name="clientId" value="" />
 <input type="hidden" name="formId" value="" />
 <input type="hidden" id="formInstanceId" value="0" />
 
@@ -144,7 +140,7 @@ function openSurvey() {
 		<tr>
 			<th width="20%">Health Card</th>
 			<td>
-				<c:out value="${client.hin}" />&nbsp;<c:out value="${client.ver}" />&nbsp;(<c:out value="${client.hcType}" />)
+				<c:out value="${client.hin}" />&nbsp;<c:out value="${client.ver}" />
 				<%
 					// show the button even if integrator is disabled, this is to allow people to validate local data with integrator disabled.
 					if (loggedInInfo.currentFacility.isEnableHealthNumberRegistry())
@@ -277,8 +273,20 @@ function openSurvey() {
 				 	<td><input type="button" <%=isIntegratorContactable?"":"disabled=\"disabled\""%> value="Manage Linked Clients" onclick="document.location='ClientManager/manage_linked_clients.jsp?demographicId=<%=currentDemographic.getDemographicNo()%>'" /></td>
 				</tr>
 			<%
-		}		
+		}
+	
+		if (LoggedInInfo.loggedInInfo.get().currentFacility.isEnableCdsForms())
+		{
 			%>
+				<tr>
+					<th>CDS Data</th>
+					<td>
+						<input type="button" value="CDS Form" onclick="document.location='ClientManager/cds_form_4.jsp?demographicId=<%=currentDemographic.getDemographicNo()%>'" />
+					</td>
+				</tr>
+			<%
+		}
+	%>
 </table>
 
 <br />
@@ -441,7 +449,7 @@ function openSurvey() {
 <div class="tabs">
 <table cellpadding="3" cellspacing="0" border="0">
 	<tr>
-		<th>Intake Form/Follow up Intake forms</th>
+		<th>Intake Form</th>
 	</tr>
 </table>
 </div>
@@ -480,142 +488,6 @@ function openSurvey() {
 				onclick="updateQuickIntake('<c:out value="${client.demographicNo}" />')" /></td>
 		</c:if>
 	</tr>
-	<tr>
-		<td width="20%">CDS</td>
-		<c:set var="cdsClientForm" value="${cdsClientForm}" scope="request" />
-		<%
-			CdsClientForm cdsClientForm=(CdsClientForm)request.getAttribute("cdsClientForm");
-		%>
-		<c:if test="${cdsClientForm != null}">
-			<td><c:out value="${cdsClientForm.created}" /></td>
-			<td><%=ClientManagerAction.getEscapedProviderDisplay(cdsClientForm.getProviderNo())%></td>
-			<td><%=cdsClientForm.isSigned()?"signed":"unsigned"%></td>
-			<td>
-				<input type="button" value="Update" onclick="document.location='ClientManager/cds_form_4.jsp?demographicId=<%=currentDemographic.getDemographicNo()%>'" />
-				<input type="button" value="Print Preview" onclick="document.location='ClientManager/cds_form_4.jsp?demographicId=<%=currentDemographic.getDemographicNo()%>&print=true'" />
-			</td>
-		</c:if>
-		<c:if test="${cdsClientForm == null}">
-			<td><span style="color: red">None found</span></td>
-			<td></td>
-			<td>
-				<input type="button" value="New Form" onclick="document.location='ClientManager/cds_form_4.jsp?demographicId=<%=currentDemographic.getDemographicNo()%>'" />
-			</td>
-		</c:if>
-	</tr>
-		
-													
-	<%
-		if (LoggedInInfo.loggedInInfo.get().currentFacility.isEnableOcanForms())
-		{
-	%>
-	<tr>
-		<td width="20%">FULL OCAN 2.0 Staff Assessment</td>
-		<c:if test="${ocanStaffForm != null}">
-			<td><c:out value="${ocanStaffForm.created}" /></td>
-			<td><c:out value="${ocanStaffForm.providerName}" /></td>
-			<td><c:out value="${ocanStaffForm.assessmentStatus}" /></td>
-			<td>
-				<input type="button" value="Update" onclick="document.location='ClientManager/ocan_form.jsp?ocanType=FULL&demographicId=<%=currentDemographic.getDemographicNo()%>'" />
-				<input type="button" value="Blank Form" onclick="window.open('<html:rewrite page="/ocan/OCAN_2.0_FULL_v2.0.5.pdf"/>')"/>			
-				<input type="button" value="Print Preview" onclick="document.location='<%=request.getContextPath()%>/ClientManager/ocan_form.jsp?ocanType=FULL&demographicId=<%=currentDemographic.getDemographicNo()%>&print=true'" />
-			</td>
-		</c:if>
-		<c:if test="${ocanStaffForm == null}">
-			<td><span style="color: red">None found</span></td>
-			<td></td>
-			<td>
-				<input type="button" value="New FULL OCAN Form" onclick="document.location='ClientManager/ocan_form.jsp?ocanType=FULL&demographicId=<%=currentDemographic.getDemographicNo()%>'" />						
-			</td>
-		</c:if>
-	</tr>
-	
-	<tr>
-		<td width="20%">FULL OCAN 2.0 Consumer Self-Assessment</td>
-		<c:if test="${ocanStaffForm != null}">
-			<td><c:out value="${ocanStaffForm.clientFormCreated}" /></td>
-			<td><c:out value="${ocanStaffForm.clientFormProviderName}" /></td>
-			<td>N/A</td>
-			<td>
-				<input type="button" value="Update" onclick="document.location='ClientManager/ocan_client_form.jsp?ocanType=FULL&demographicId=<%=currentDemographic.getDemographicNo()%>'" />
-				<input type="button" value="Blank Form" onclick="window.open('<html:rewrite page="/ocan/OCAN_2.0_FULL_v2.0.5.pdf"/>')"/>											
-				<input type="button" value="Print Preview" onclick="document.location='<%=request.getContextPath()%>/ClientManager/ocan_client_form.jsp?ocanType=FULL&demographicId=<%=currentDemographic.getDemographicNo()%>&print=true'" />
-			</td>
-		</c:if>
-		<c:if test="${ocanStaffForm == null}">
-			<td><span style="color: red">None found</span></td>
-			<td></td>
-			<td>
-				<input type="button" value="New FULL OCAN Form" onclick="document.location='ClientManager/ocan_client_form.jsp?ocanType=FULL&demographicId=<%=currentDemographic.getDemographicNo()%>'" />							
-			</td>
-		</c:if>
-	</tr>
-	
-	
-	<tr>
-		<td width="20%">SELF+CORE OCAN 2.0 Staff Assessment</td>
-		<c:if test="${selfOcanStaffForm != null}">
-			<td><c:out value="${selfOcanStaffForm.created}" /></td>
-			<td><c:out value="${selfOcanStaffForm.providerName}" /></td>
-			<td><c:out value="${selfOcanStaffForm.assessmentStatus}" /></td>
-			<td>
-				<input type="button" value="Update" onclick="document.location='ClientManager/ocan_form.jsp?ocanType=SELF&demographicId=<%=currentDemographic.getDemographicNo()%>'" />
-				<input type="button" value="Blank Form" onclick="window.open('<html:rewrite page="/ocan/OCAN_2.0_CORE_SELF_v2.0.5.pdf"/>')"/>			
-				<input type="button" value="Print Preview" onclick="document.location='<%=request.getContextPath()%>/ClientManager/ocan_form.jsp?ocanType=SELF&demographicId=<%=currentDemographic.getDemographicNo()%>&print=true'" />
-			</td>
-		</c:if>
-		<c:if test="${selfOcanStaffForm == null}">
-			<td><span style="color: red">None found</span></td>
-			<td></td>
-			<td>
-				<input type="button" value="New SELF+CORE OCAN Form" onclick="document.location='ClientManager/ocan_form.jsp?ocanType=SELF&demographicId=<%=currentDemographic.getDemographicNo()%>'" />						
-			</td>
-		</c:if>
-	</tr>
-	
-	<tr>
-		<td width="20%">SELF+CORE OCAN 2.0 Consumer Self-Assessment</td>
-		<c:if test="${selfOcanStaffForm != null}">
-			<td><c:out value="${selfOcanStaffForm.clientFormCreated}" /></td>
-			<td><c:out value="${selfOcanStaffForm.clientFormProviderName}" /></td>
-			<td>N/A</td>
-			<td>
-				<input type="button" value="Update" onclick="document.location='ClientManager/ocan_client_form.jsp?ocanType=SELF&demographicId=<%=currentDemographic.getDemographicNo()%>'" />
-				<input type="button" value="Blank Form" onclick="window.open('<html:rewrite page="/ocan/OCAN_2.0_CORE_SELF_v2.0.5.pdf"/>')"/>											
-				<input type="button" value="Print Preview" onclick="document.location='<%=request.getContextPath()%>/ClientManager/ocan_client_form.jsp?ocanType=SELF&demographicId=<%=currentDemographic.getDemographicNo()%>&print=true'" />
-			</td>
-		</c:if>
-		<c:if test="${selfOcanStaffForm == null}">
-			<td><span style="color: red">None found</span></td>
-			<td></td>
-			<td>
-				<input type="button" value="New SELF+CORE OCAN Form" onclick="document.location='ClientManager/ocan_client_form.jsp?ocanType=SELF&demographicId=<%=currentDemographic.getDemographicNo()%>'" />							
-			</td>
-		</c:if>
-	</tr>
-	
-	<tr>
-		<td width="20%">CORE OCAN 2.0 Assessment</td>
-		<c:if test="${coreOcanStaffForm != null}">
-			<td><c:out value="${coreOcanStaffForm.created}" /></td>
-			<td><c:out value="${coreOcanStaffForm.providerName}" /></td>
-			<td><c:out value="${coreOcanStaffForm.assessmentStatus}" /></td>
-			<td>
-				<input type="button" value="Update" onclick="document.location='ClientManager/ocan_form.jsp?ocanType=CORE&demographicId=<%=currentDemographic.getDemographicNo()%>'" />
-				<input type="button" value="Blank Form" onclick="window.open('<html:rewrite page="/ocan/OCAN_2.0_CORE_v2.0.5.pdf"/>')"/>			
-				<input type="button" value="Print Preview" onclick="document.location='<%=request.getContextPath()%>/ClientManager/ocan_form.jsp?ocanType=CORE&demographicId=<%=currentDemographic.getDemographicNo()%>&print=true'" />
-			</td>
-		</c:if>
-		<c:if test="${coreOcanStaffForm == null}">
-			<td><span style="color: red">None found</span></td>
-			<td></td>
-			<td>
-				<input type="button" value="New CORE OCAN Form" onclick="document.location='ClientManager/ocan_form.jsp?ocanType=CORE&demographicId=<%=currentDemographic.getDemographicNo()%>'" />						
-			</td>
-		</c:if>
-	</tr>
-	
-	<% } %>
 </table>
 <br />
 
@@ -671,57 +543,42 @@ function openSurvey() {
 </table>
 </div>
 
-<% boolean bShowEncounterLink = false; 
-String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
-%>
-<security:oscarSec roleName="<%=roleName$%>" objectName="_eChart" rights="r">
-<% bShowEncounterLink = true; %>
-</security:oscarSec>
-<%
-String curUser_no = (String) session.getAttribute("user");
-String rsAppointNO="0";
-int demographic_no = currentDemographic.getDemographicNo();
-String status = "T";
-String userfirstname = (String) session.getAttribute("userfirstname");;
-String userlastname = (String) session.getAttribute("userlastname");
-String reason ="";
-%>
-<display:table class="simple" cellspacing="2" cellpadding="3" id="admission" name="admissions" export="false" pagesize="10"	requestURI="/PMmodule/ClientManager.do">
+<display:table class="simple" cellspacing="2" cellpadding="3"
+	id="admission" name="admissions" export="false" pagesize="10"
+	requestURI="/PMmodule/ClientManager.do">
 	<display:setProperty name="paging.banner.placement" value="bottom" />
-	<display:setProperty name="basic.msg.empty_list" value="This client is not currently admitted to any programs." />
+	<display:setProperty name="basic.msg.empty_list"
+		value="This client is not currently admitted to any programs." />
 
-	<display:column property="facilityName" sortable="true" title="Facility" />
-	<display:column property="programName" sortable="true" title="Program" />
-	<display:column sortable="true" title="">	
-		<% if(bShowEncounterLink) {	
-			HttpSession se = request.getSession();			
-			AdmissionForDisplay tempAdmission=(AdmissionForDisplay)pageContext.getAttribute("admission");
-			
-			if (!tempAdmission.isFromIntegrator())
-			{
-				//Check program is in provider's program domain:
-				if(ppd.isThisProgramInProgramDomain(curUser_no,tempAdmission.getProgramId())) 
-				{
-					String eURL = "../oscarEncounter/IncomingEncounter.do?programId="+tempAdmission.getProgramId()+"&providerNo="+curUser_no+"&appointmentNo="+rsAppointNO+"&demographicNo="+demographic_no+"&curProviderNo="+curUser_no+"&reason="+java.net.URLEncoder.encode(reason)+"&encType="+java.net.URLEncoder.encode("face to face encounter with client","UTF-8")+"&userName="+java.net.URLEncoder.encode( userfirstname+" "+userlastname)+"&curDate=null&appointmentDate=null&startTime=0:0"+"&status="+status+"&source=cm";
-					%>	
-					<logic:notEqual value="community" property="programType" name="admission">
-						<a href=# onClick="popupPage(710, 1024,'../oscarSurveillance/CheckSurveillance.do?programId=<%=tempAdmission.getProgramId()%>&demographicNo=<%=demographic_no%>&proceed=<%=java.net.URLEncoder.encode(eURL)%>');return false;" title="<bean:message key="global.encounter"/>">
-						   <bean:message key="provider.appointmentProviderAdminDay.btnE" />
-						</a> 
-					</logic:notEqual>
-					<% 		
-				}
-			}
-		}
-	%>
+	<display:column property="programName" sortable="true"
+		title="Program Name" />
+	<display:column property="programType" sortable="true"
+		title="Program Type" />
+	<display:column property="admissionDate"
+		format="{0, date, yyyy-MM-dd kk:mm}" sortable="true"
+		title="Admission Date" />
+	<display:column sortable="true" title="Days in Program">
+		<%
+			Admission tempAdmission=(Admission)pageContext.getAttribute("admission");
+					Date admissionDate=tempAdmission.getAdmissionDate();
+					Date dischargeDate=tempAdmission.getDischargeDate()!=null?tempAdmission.getDischargeDate():new Date();
+
+					long diff=dischargeDate.getTime()-admissionDate.getTime();
+					diff=diff/1000; // seconds
+					diff=diff/60; // minutes
+					diff=diff/60; // hours
+					diff=diff/24; // days
+
+					String numDays=String.valueOf(diff);
+		%>
+		<%=numDays%>
 	</display:column>
-
-	<display:column property="programType" sortable="true" title="Program Type" />
-	<display:column property="admissionDate" sortable="true" title="Admission Date" />
-	<display:column property="daysInProgram" sortable="true" title="Days in Program" />
 	<caisi:isModuleLoad moduleName="pmm.refer.temporaryAdmission.enabled">
-		<display:column property="temporaryAdmission" sortable="true" title="Temporary Admission" />
+		<display:column property="temporaryAdmission" sortable="true"
+			title="Temporary Admission" />
 	</caisi:isModuleLoad>
+	<display:column property="admissionNotes" sortable="true"
+		title="Admission Notes" />
 </display:table>
 
 <br />
@@ -741,6 +598,6 @@ String reason ="";
 	<display:column property="programName" sortable="true" title="Facility / Program Name" />
 	<display:column property="programType" sortable="true" title="Program Type" />
 	<display:column property="referralDate" sortable="true" title="Referral Date" />
-	<display:column property="referringProvider" sortable="true" title="Referring Provider/Facility" />
+	<display:column property="referringProvider" sortable="true" title="Referring Provider" />
 	<display:column property="daysInQueue" sortable="true" title="Days in Queue" />
 </display:table>

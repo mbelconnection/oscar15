@@ -25,7 +25,8 @@ package org.oscarehr.PMmodule.task;
 import java.util.Date;
 import java.util.TimerTask;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oscarehr.PMmodule.exception.AdmissionException;
 import org.oscarehr.PMmodule.model.Bed;
 import org.oscarehr.PMmodule.model.BedDemographic;
@@ -43,7 +44,7 @@ import org.oscarehr.util.ShutdownException;
 
 public class BedProgramDischargeTask extends TimerTask {
 
-	private static final Logger log=MiscUtils.getLogger();
+	private static final Log log = LogFactory.getLog(BedProgramDischargeTask.class);
 
 	// TODO IC Bedlog bedProgram.getDischargeTime();
 	private static final String DISCHARGE_TIME = "8:00 AM";

@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University 
+ * McMaster Unviersity 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -26,6 +26,7 @@
 <%
   if(session.getValue("user") == null) response.sendRedirect("../../logout.jsp");
 %>
+<%@ page language="java"%>
 <%@ page import="java.util.*,oscar.oscarReport.pageUtil.*"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
@@ -86,7 +87,7 @@ $("document").ready(function(){
 	<div id="messages">
 	</div>
 	</br>
-	<form method="post">
+	<form>
 	<input id="migrate_step1" type="button" class="mbttn"
 			style="width: 180px" value="Preview" />
 	&nbsp;&nbsp;	

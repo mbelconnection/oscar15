@@ -18,6 +18,7 @@
 <%@ taglib uri="/WEB-INF/streethealth.tld" prefix="sh"%>
 
 <%
+	response.setHeader("Cache-Control", "no-cache");
 String project_home = request.getContextPath().substring(1);
 %>
 
@@ -26,6 +27,7 @@ String project_home = request.getContextPath().substring(1);
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title>Street Health Mental Health Report</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <html:base />
 </head>
 <body>

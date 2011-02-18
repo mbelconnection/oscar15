@@ -28,20 +28,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.oscarehr.util.MiscUtils;
-import org.oscarehr.util.SpringUtils;
+import org.caisi.model.Appointment;
+import org.oscarehr.casemgmt.dao.ApptDAO;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -54,12 +53,11 @@ import oscar.oscarBilling.ca.bc.data.BillingHistoryDAO;
 import oscar.oscarBilling.ca.bc.data.BillingNote;
 import oscar.oscarBilling.ca.bc.data.BillingmasterDAO;
 import oscar.oscarDB.DBHandler;
-import oscar.service.OscarSuperManager;
 import oscar.util.UtilDateUtilities;
 
 public class BillingSaveBillingAction extends Action {
 
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(BillingSaveBillingAction.class);
 
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
@@ -76,7 +74,8 @@ public class BillingSaveBillingAction extends Action {
         //Get rid of this
         WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getSession().getServletContext());
         BillingmasterDAO billingmasterDAO = (BillingmasterDAO) ctx.getBean("BillingmasterDAO");
-        MiscUtils.getLogger().debug("appointment_no---: " + bean.getApptNo());
+        ApptDAO apptDAO = (ApptDAO) ctx.getBean("ApptDAO");
+        System.out.println("appointment_no---: " + bean.getApptNo());
         oscar.appt.ApptStatusData as = new oscar.appt.ApptStatusData();
         String sql = "";
 
@@ -91,25 +90,25 @@ public class BillingSaveBillingAction extends Action {
         }
 
         ////////////
-        OscarSuperManager oscarSuperManager = (OscarSuperManager)SpringUtils.getBean("oscarSuperManager");
         if (bean.getApptNo() != null && !bean.getApptNo().trim().equals("0") &&  !bean.getApptNo().trim().equals("")){
-            String apptStatus = "";
-            List<Map> resultList  = oscarSuperManager.find("appointmentDao", "search", new Object[]{bean.getApptNo()});
-            if (resultList.size() < 1) {
-                log.error("LLLOOK: APPT ERROR - APPT ("+bean.getApptNo()+") NOT FOUND - FOR demo:" + bean.getPatientName() +" date " + curDate);
-            } else {
-                Map m_status = resultList.get(0);
-                apptStatus = (String)m_status.get("status");
-            }
-            String billStatus = as.billStatus(apptStatus);
+            Appointment appt = apptDAO.getAppt(""+bean.getApptNo());
+            String billStatus = as.billStatus(appt.getStatus());
             ///Update Appointment information
             log.debug("appointment_no: " + bean.getApptNo());
             log.debug("BillStatus:" + billStatus);
-            oscarSuperManager.update("appointmentDao", "archive_appt", new Object[]{bean.getApptNo()});
-            int rowsAffected = oscarSuperManager.update("appointmentDao", "updatestatusc", new Object[]{billStatus,bean.getCreator(),bean.getApptNo()});
+            sql = "update appointment set status='" + billStatus + "' where appointment_no='" + bean.getApptNo() + "'";
 
-            if (rowsAffected<1) log.error("LLLOOK: APPT ERROR - CANNOT UPDATE APPT ("+bean.getApptNo()+") FOR demo:" + bean.getPatientName() +" date " + curDate);
+            try {
+                DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+                db.RunSQL(sql);
+
+            }catch (SQLException e) {
+                log.error(e.getMessage(),e);
+                log.error("LLLOOK: APPT ERROR FOR demo:" + bean.getPatientName() +" date " + curDate);
+                e.printStackTrace();
+            }
         }
+        ////////////
        
 
         char billingAccountStatus = getBillingAccountStatus( bean);
@@ -128,7 +127,6 @@ public class BillingSaveBillingAction extends Action {
 
             if(request.getParameter("dispPrice+"+bItem.getServiceCode())!= null){
                 String updatedPrice = request.getParameter("dispPrice+"+bItem.getServiceCode());
-                log.debug(bItem.getServiceCode()+"Original "+bItem.price+ " updated price "+Double.parseDouble(updatedPrice));
                 bItem.price = Double.parseDouble(updatedPrice);
                 bItem.getLineTotal();
             }
@@ -147,7 +145,7 @@ public class BillingSaveBillingAction extends Action {
             Billingmaster billingmaster = saveBill(billingid, "" + billingAccountStatus, dataCenterId, billedAmount, "" + paymentMode, bean, bItem);//billItem.get(i));
             
             String WCBid = request.getParameter("WCBid");
-            MiscUtils.getLogger().debug("WCB:"+WCBid);
+            System.out.println("WCB:"+WCBid);
             if (bean.getBillingType().equals("WCB")) {
                 billingmaster.setWcbId(Integer.parseInt(bean.getWcbId()));
             }
@@ -180,18 +178,21 @@ public class BillingSaveBillingAction extends Action {
             // HOW TO DO THIS PART
             /* Need to link the id of a WCB for with a bill
                 -Continue to put it in the WCB form ?   + no data structure change - not sure how will it work.
+                ===============================================================================================
                 On submission how would this work??  for each bill submission that would look for it's id in the wcb table?
                 The problem is that it's not really logical but it would work.  Not every form would have a billing. 
                 
              
                 -Add a field to Billingmaster?   + data structure change + data migration + initial reaction
+                ===============================================================================================
                 Data conversion wouldn't be that big of a deal though.  because everything else would be coming over too.
                 Most logical
              
                 -Add a separate table ?       + data structure change + data migration + 2nd initial reacion
+                ===============================================================================================
              
              */ 
-            MiscUtils.getLogger().debug("WCB BILL!!");
+            System.out.println("WCB BILL!!");
             
             
         }
@@ -203,7 +204,7 @@ public class BillingSaveBillingAction extends Action {
 //            //NOT ANY MORE  
 //            billingid = getInsertIdFromBilling(billingSQL);//--
 //            billingIds.add(billingid);//--
-//            
+//            DBHandler db = null;
 //            String status = new String(new char[]{billingAccountStatus});//--
 //            WCBForm wcb = (WCBForm) request.getSession().getAttribute("WCBForm");
 //            wcb.setW_demographic(bean.getPatientNo());
@@ -211,7 +212,7 @@ public class BillingSaveBillingAction extends Action {
 //            String insertBillingMaster = createBillingMasterInsertString(bean,billingid, billingAccountStatus, wcb.getW_payeeno());//--
 //            String amnt = getFeeByCode(wcb.getW_feeitem());
 //            try {
-//                
+//                db = new DBHandler(DBHandler.OSCAR_DATA);
 //                
 //                Billingmaster billingmaster = saveBill(billingid, "" + billingAccountStatus, dataCenterId, amnt, "" + paymentMode, bean, "1",wcb.getW_feeitem()) ;
 //                billingmasterDAO.save(billingmaster);
@@ -224,7 +225,7 @@ public class BillingSaveBillingAction extends Action {
 //                //whereas WCB table stores it as single char.
 //                String serviceLocation = bean.getVisitType().substring(0);
 //                wcb.setW_servicelocation(serviceLocation);
-//                DBHandler.RunSQL(wcb.SQL(billingid, amnt));
+//                db.RunSQL(wcb.SQL(billingid, amnt));
 //
 //                //If an extra fee item was declared on the WCB form, save it in
 //                //The billingmaster table as well
@@ -233,12 +234,12 @@ public class BillingSaveBillingAction extends Action {
 //                    String secondWCBBillingId = null;
 //                    String secondBillingAmt = this.getFeeByCode(wcb.getW_extrafeeitem());
 //                    //save entry in billing table
-//                    DBHandler.RunSQL(billingSQL);
+//                    db.RunSQL(billingSQL);
 //                    secondWCBBillingId = this.getLastInsertId(db);
 //                    billingIds.add(secondWCBBillingId);
 //                    //Link new billing record to billing line in billingmaster table
 //                    String secondBillingMaster = createBillingMasterInsertString(bean, secondWCBBillingId, billingAccountStatus, wcb.getW_payeeno());
-//                    DBHandler.RunSQL(secondBillingMaster);
+//                    db.RunSQL(secondBillingMaster);
 //                    //get most recent billingmaster id
 //                    billingMasterId = getLastInsertId(db);
 //
@@ -253,27 +254,27 @@ public class BillingSaveBillingAction extends Action {
 //                    //if processing an existing WCB form, update values for second fee item
 //                    String updateWCBSQL = createWCBUpdateSQL(secondWCBBillingId,
 //                    secondBillingAmt, wcb.getWcbFormId());
-//                    DBHandler.RunSQL(updateWCBSQL);
+//                    db.RunSQL(updateWCBSQL);
 //                    }
 //                    else {
 //                    //This form was created from the billing screen
 //                    //Store a new WCB entry for the second fee item
-//                    DBHandler.RunSQL(wcb.secondSQLItem(secondWCBBillingId, secondBillingAmt));
+//                    db.RunSQL(wcb.secondSQLItem(secondWCBBillingId, secondBillingAmt));
 //                    }**/
-//                    DBHandler.RunSQL(wcb.secondSQLItem(secondWCBBillingId, secondBillingAmt));
+//                    db.RunSQL(wcb.secondSQLItem(secondWCBBillingId, secondBillingAmt));
 //
 //                    //Update patient echart with the clinical info from the WCB form
 //                    updatePatientChartWithWCBInfo(wcb);
 //                }
 //            } catch (SQLException e) {
 //                log.error(e.getMessage(), e);
-//                MiscUtils.getLogger().error("Error", e);
+//                e.printStackTrace();
 //            } finally {
 //                if (db != null) {
 //                    try {
 //                    } catch (SQLException ex) {
 //                        log.error(ex.getMessage(), ex);
-//MiscUtils.getLogger().error("Error", ex);
+//                        ex.printStackTrace();
 //                    }
 //                }
 //            }
@@ -288,7 +289,7 @@ public class BillingSaveBillingAction extends Action {
             af = mapping.findForward("anotherBill");
 
         } else if (frm.getSubmit().equals("Save & Print Receipt")) {
-            StringBuilder stb = new StringBuilder();
+            StringBuffer stb = new StringBuffer();
             for (String s : billingIds) {
                 log.debug("String " + s);
                 stb.append("billing_no=" + s + "&");
@@ -303,16 +304,16 @@ public class BillingSaveBillingAction extends Action {
 //    private String getInsertIdFromBilling(final String billingSQL) {
 //        String billingId = "";
 //        try {
-//            
-//            DBHandler.RunSQL(billingSQL);
-//            java.sql.ResultSet rs = DBHandler.GetSQL("SELECT LAST_INSERT_ID()");
+//            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+//            db.RunSQL(billingSQL);
+//            java.sql.ResultSet rs = db.GetSQL("SELECT LAST_INSERT_ID()");
 //            if (rs.next()) {
 //                billingId = rs.getString(1);
 //            }
 //            rs.close();
 //        } catch (SQLException e) {
 //            log.error(e.getMessage(), e);
-//            MiscUtils.getLogger().error("Error", e);
+//            e.printStackTrace();
 //        }
 //        return billingId;
 //    }
@@ -396,28 +397,45 @@ public class BillingSaveBillingAction extends Action {
 
     private String getFeeByCode(String feeitem) {
         ResultSet rs = null;
-        
+        DBHandler db = null;
         String amnt = "0.00";
         try {
-            
-            rs = DBHandler.GetSQL("SELECT value FROM billingservice WHERE service_code='" +
+            db = new DBHandler(DBHandler.OSCAR_DATA);
+            rs = db.GetSQL("SELECT value FROM billingservice WHERE service_code='" +
                     feeitem + "'");
             if (rs.next()) {
                 amnt = rs.getString("value");
             }
         } catch (SQLException ex) {
-            log.error(ex.getMessage(), ex);MiscUtils.getLogger().error("Error", ex);
+            log.error(ex.getMessage(), ex);
+            ex.printStackTrace();
         } finally {
             if (rs != null) {
                 try {
                     rs.close();
                 } catch (SQLException ex2) {
-                    log.error(ex2.getMessage(), ex2);MiscUtils.getLogger().error("Error", ex2);
+                    log.error(ex2.getMessage(), ex2);
+                    ex2.printStackTrace();
                 }
             }
         }
 
         return amnt;
+    }
+
+    private String updateAppt(String billStatus, BillingSessionBean bean, Date curDate) {
+        String sql = "update appointment set status='" + billStatus + "' where appointment_no='" + bean.getApptNo() + "'";
+
+        try {
+            DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+            db.RunSQL(sql);
+        } catch (SQLException e) {
+            log.error(e.getMessage(), e);
+            log.error("LLLOOK: APPT ERROR FOR demo:" + bean.getPatientName() + " date " + curDate);
+            e.printStackTrace();
+        }
+        ////End of updating appt information
+        return sql;
     }
 
 //    private void updatePatientChartWithWCBInfo(
@@ -472,7 +490,7 @@ public class BillingSaveBillingAction extends Action {
     }
 
 //    private String getLastInsertId(DBHandler db) throws SQLException {
-//        ResultSet rs = DBHandler.GetSQL("SELECT LAST_INSERT_ID()");
+//        ResultSet rs = db.GetSQL("SELECT LAST_INSERT_ID()");
 //        String id = null;
 //        if (rs.next()) {
 //            id = rs.getString(1);
@@ -579,7 +597,6 @@ public class BillingSaveBillingAction extends Action {
             bill.setBirthDate("00000000");
 
         }
-        log.debug("Bill "+bill.getBillingCode()+" "+bill.getBillAmount());
         return bill;
     }
 }

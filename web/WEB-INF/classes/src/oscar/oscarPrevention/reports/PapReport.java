@@ -40,8 +40,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.util.MiscUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBean;
 import oscar.oscarEncounter.oscarMeasurements.bean.EctMeasurementsDataBeanHandler;
@@ -54,7 +54,7 @@ import oscar.util.UtilDateUtilities;
  * @author jay
  */
 public class PapReport implements PreventionReport {
-    private static Logger log = MiscUtils.getLogger();
+    private static Log log = LogFactory.getLog(PapReport.class);
     /** Creates a new instance of PapReport */
     public PapReport() {
     }
@@ -76,7 +76,6 @@ public class PapReport implements PreventionReport {
              PreventionReportDisplay prd = new PreventionReportDisplay();
              prd.demographicNo = demo;
              prd.bonusStatus = "N";
-             prd.billStatus = "N";
              if(ineligible(prevs)){
                 prd.rank = 5;
                 prd.lastDate = "------"; 
@@ -133,7 +132,7 @@ public class PapReport implements PreventionReport {
                 
                 Calendar cal2 = GregorianCalendar.getInstance();
                 cal2.add(Calendar.YEAR, -2);
-                
+                Date dueDate2 = cal.getTime();
                 //cal2.roll(Calendar.YEAR, -1);
                 cal2.add(Calendar.MONTH,-6);
                 Date cutoffDate2 = cal2.getTime();
@@ -165,7 +164,6 @@ public class PapReport implements PreventionReport {
                 
                 if (!dateIsRefused && bonusStartDate.before(prevDate) && asofDate.after(prevDate)){
                    prd.bonusStatus = "Y";
-                   prd.billStatus = "Y";
                    done++;
                 }
                 //outcomes        
@@ -237,7 +235,6 @@ public class PapReport implements PreventionReport {
           h.put("inEligible", ""+inList);
           h.put("eformSearch","Mam");
           h.put("followUpType","PAPF");
-          h.put("BillCode", "Q001A");
           log.debug("set returnReport "+returnReport);
           return h;
     }
@@ -308,7 +305,7 @@ public class PapReport implements PreventionReport {
               
               Collection followupData = measurementDataHandler.getMeasurementsDataVector();
               //NO Contact
-
+              System.out.print("fluFollowupData size = "+followupData.size());
               if ( followupData.size() == 0 ){
                   prd.nextSuggestedProcedure = this.LETTER1;
                   return this.LETTER1;
@@ -366,6 +363,7 @@ public class PapReport implements PreventionReport {
               EctMeasurementsDataBeanHandler measurementDataHandler = new EctMeasurementsDataBeanHandler(prd.demographicNo,measurementType);
               log.debug("getting followup data for "+prd.demographicNo);
               Collection followupData = measurementDataHandler.getMeasurementsDataVector();
+              System.out.print("fluFollowupData size = "+followupData.size());
               if ( followupData.size() > 0 ){
                   EctMeasurementsDataBean measurementData = (EctMeasurementsDataBean) followupData.iterator().next();
                   prd.lastFollowup = measurementData.getDateObservedAsDate();
@@ -381,7 +379,7 @@ public class PapReport implements PreventionReport {
               EctMeasurementsDataBeanHandler measurementDataHandler = new EctMeasurementsDataBeanHandler(prd.demographicNo,measurementType);
               log.debug("getting followup data for "+prd.demographicNo);
               Collection followupData = measurementDataHandler.getMeasurementsDataVector();
-
+              System.out.print("fluFollowupData size = "+followupData.size());
               if ( followupData.size() > 0 ){
                   EctMeasurementsDataBean measurementData = (EctMeasurementsDataBean) followupData.iterator().next();
                   prd.lastFollowup = measurementData.getDateObservedAsDate();

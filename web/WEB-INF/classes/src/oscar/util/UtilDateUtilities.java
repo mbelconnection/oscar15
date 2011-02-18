@@ -17,7 +17,7 @@
 // * <OSCAR TEAM>
 // * This software was written for the 
 // * Department of Family Medicine 
-// * McMaster University 
+// * McMaster Unviersity 
 // * Hamilton 
 // * Ontario, Canada 
 // *
@@ -62,7 +62,7 @@ public class UtilDateUtilities {
         return DateToString(date, defaultPattern, locale);
     }
     public static String DateToString(Date date, String spattern)    {
-    	return DateToString(date, spattern, defaultLocale);
+        return DateToString(date, spattern, defaultLocale);
     }
     public static String DateToString(Date date, String spattern, Locale locale)    {
         if(date != null) {
@@ -102,8 +102,6 @@ public class UtilDateUtilities {
     }
     
     public static Date calcDate(String s, String s1, String s2)    {
-    	if (s==null || s1==null || s2==null || s=="" || s1=="" || s2=="") return(null);
-    	
         int i = Integer.parseInt(s);
         int j = Integer.parseInt(s1) - 1;
         int k = Integer.parseInt(s2);
@@ -123,8 +121,6 @@ public class UtilDateUtilities {
      * @return age string ( ie 2 months, 4 years .etc )
      */    
     public static String calcAgeAtDate(Date DOB,Date pointInTime)    {
-    	if (DOB==null) return(null);
-    	
         GregorianCalendar now = new GregorianCalendar();
         now.setTime(pointInTime);
         int curYear = now.get(Calendar.YEAR);
@@ -224,8 +220,6 @@ public class UtilDateUtilities {
      * @return the number of months
      */    
     public static int getNumMonths(Date dStart, Date dEnd) {
-    	if (dStart==null || dEnd==null) return(0);
-    	
        int i = 0;
        Calendar calendar = Calendar.getInstance();
        calendar.setTime(dStart);
@@ -238,7 +232,7 @@ public class UtilDateUtilities {
        return i;
    }
 
-
+    
     //This if probably not the most effiecent way to calcu
     /**
      * Gets the number of months between two date objects
@@ -247,9 +241,8 @@ public class UtilDateUtilities {
      * @return the number of months
      */
     public static long getNumDays(Date dStart, Date dEnd) {
-    	if (dStart==null || dEnd==null) return(0);
-
-    	long msDifference = dEnd.getTime() - dStart.getTime();
+       if (dStart==null || dEnd==null) return(0);
+       long msDifference = dEnd.getTime() - dStart.getTime();
        long daysDifference = msDifference / (1000*60*60*24);
        return daysDifference;
    }
@@ -261,8 +254,6 @@ public class UtilDateUtilities {
      * @return Number of year between
      */    
    public static int getNumYears(Date dStart,Date dEnd){
-	   if (dStart==null || dEnd==null) return(0);
-
         GregorianCalendar now = new GregorianCalendar();
         now.setTime(dEnd);
         int curYear = now.get(Calendar.YEAR);

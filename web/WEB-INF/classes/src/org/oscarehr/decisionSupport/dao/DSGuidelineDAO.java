@@ -7,11 +7,10 @@ package org.oscarehr.decisionSupport.dao;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oscarehr.decisionSupport.model.DSGuideline;
 import org.oscarehr.decisionSupport.model.DSGuidelineProviderMapping;
-import org.oscarehr.util.MiscUtils;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 /**
@@ -19,7 +18,7 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
  * @author apavel
  */
 public class DSGuidelineDAO extends HibernateDaoSupport {
-    private static final Logger log2 = MiscUtils.getLogger();
+    private static Log _log = LogFactory.getLog(DSGuidelineDAO.class);
 
     public DSGuidelineDAO() {
     }
@@ -103,7 +102,7 @@ public class DSGuidelineDAO extends HibernateDaoSupport {
             String xmlString = FileUtils.readFileToString(file);
             dsGuidelineFake.setXml(xmlString);
         } catch (Exception e) {
-            MiscUtils.getLogger().error("Error", e);
+            e.printStackTrace();
         }
         
         return dsGuidelineFake;

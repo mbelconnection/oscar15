@@ -1,3 +1,5 @@
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
 <%@page import="java.util.*,org.oscarehr.PMmodule.dao.*,org.oscarehr.PMmodule.service.*,org.oscarehr.PMmodule.model.*,org.springframework.web.context.support.*,org.springframework.web.context.*" %>
 <%@ taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi" %>
 <%@ include file="/taglibs.jsp" %>
@@ -7,6 +9,7 @@
 <html>
     <head>
 	    <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Edit Intake</title>
         <script type="text/javascript">
             function add(id,nodeTemplateId,parentId,pos,psize){
@@ -200,7 +203,7 @@ void  goRunner(IntakeNode in,JspWriter out) throws Exception{
     
     
     String si = ""+in.getChildren().size();
-  
+    System.out.println(node.getId()+" : "+si);
     
     boolean hasChildren = false;
     
@@ -298,11 +301,7 @@ void  goRunner(IntakeNode in,JspWriter out) throws Exception{
 	    out.write("<label>"+in.getLabelStr()+" <select>");
 	    for (int i=0; i<elements.length; i++) {
 		IntakeAnswerElement answerElement = (IntakeAnswerElement) elements[i];
-			if(answerElement.getLabel()==null) {
-				out.write("<option>"+answerElement.getElement()+"</option>");
-			} else {
-				out.write("<option>"+answerElement.getLabel()+"</option>");
-			}
+		out.write("<option>"+answerElement.getElement()+"</option>");
 	    }
 	    out.write("</select></label>");
 	    out.write(" <a href=\"javascript: void(0);\" onclick=\"del('"+in.getId()+"','"+pId+"');\">-</a>");

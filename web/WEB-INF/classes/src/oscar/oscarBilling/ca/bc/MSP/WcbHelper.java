@@ -19,7 +19,7 @@
  * McMaster University
  * Hamilton
  * Ontario, Canada   Creates a new instance of WcbHelper
- 
+
  * WcbHelper.java
  *
  * Created on October 15, 2004, 8:07 PM
@@ -30,8 +30,6 @@ package oscar.oscarBilling.ca.bc.MSP;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
-import org.oscarehr.util.MiscUtils;
-
 import oscar.oscarDB.DBHandler;
 
 /**
@@ -39,50 +37,50 @@ import oscar.oscarDB.DBHandler;
  * @author Jay Gallagher
  */
 public class WcbHelper {
-   
+
    ArrayList empList = null;
    ArrayList claimList = null;
-   
+
    public WcbHelper() {
    }
-   
+
    public WcbHelper(String demographic_no){
       getInfo(demographic_no);
    }
-   
+
    public ArrayList getEmployers(String demographic_no){
       ArrayList employers  = new ArrayList();
-      
+
       try{
-      
+      DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
       String sql = "select distinct w_empname,w_emparea,w_empphone,w_opaddress,w_opcity from wcb where demographic_no = '"+demographic_no+"'";
-      ResultSet rs = DBHandler.GetSQL(sql);
-      while(rs.next()){         
+      ResultSet rs = db.GetSQL(sql);
+      while(rs.next()){
          WCBEmployer wcbEmp = new WCBEmployer();
             wcbEmp.w_empname   = rs.getString("w_empname");
             wcbEmp.w_emparea   = rs.getString("w_emparea");
             wcbEmp.w_empphone  = rs.getString("w_empphone");
             wcbEmp.w_opaddress = rs.getString("w_opaddress");
-            wcbEmp.w_opcity    = rs.getString("w_opcity");         
-         employers.add(wcbEmp);                  
+            wcbEmp.w_opcity    = rs.getString("w_opcity");
+         employers.add(wcbEmp);
       }
-      rs.close();                    
+      rs.close();
       }catch (Exception e){
-         MiscUtils.getLogger().error("Error", e);        
+         e.printStackTrace();
       }
       return employers;
    }
-   
-   
+
+
    private void getInfo(String demographic_no){
       empList = new ArrayList();
       claimList = new ArrayList();
       try{
-      
+      DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
       String sql = "select * from wcb where demographic_no = '"+demographic_no+"'";
-      ResultSet rs = DBHandler.GetSQL(sql);
+      ResultSet rs = db.GetSQL(sql);
       while(rs.next()){
-         MiscUtils.getLogger().debug("wcbno "+rs.getString("w_wcbno"));
+         System.out.println("wcbno "+rs.getString("w_wcbno"));
          WCBClaim wcb = new WCBClaim(rs.getString("w_wcbno"));
          WCBEmployer wcbEmp = new WCBEmployer();
             wcbEmp.w_empname   = rs.getString("w_empname");
@@ -92,27 +90,27 @@ public class WcbHelper {
             wcbEmp.w_opcity    = rs.getString("w_opcity");
          wcb.wcbEmp = wcbEmp;
          empList.add(wcbEmp);
-         
+
          claimList.add(wcb);
       }
-      rs.close();                    
+      rs.close();
       }catch (Exception e){
-         MiscUtils.getLogger().error("Error", e);        
+         e.printStackTrace();
       }
-      
+
    }
-   
-   public ArrayList getClaimInfo(String demographic_no){      
+
+   public ArrayList getClaimInfo(String demographic_no){
       ArrayList claimList = new ArrayList();
       try{
-      
+      DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
       String sql = "select distinct w_empname,w_emparea,w_empphone,w_opaddress,w_opcity,w_wcbno,w_icd9,w_bp,w_side,w_noi,w_doi from wcb where demographic_no = '"+demographic_no+"'";
 
 
 
-      ResultSet rs = DBHandler.GetSQL(sql);
+      ResultSet rs = db.GetSQL(sql);
       while(rs.next()){
-         
+
          WCBClaim wcb = new WCBClaim(rs.getString("w_wcbno"));
          wcb.w_icd9 = rs.getString("w_icd9");
          wcb.w_bp   = rs.getString("w_bp");
@@ -126,16 +124,16 @@ public class WcbHelper {
             wcbEmp.w_empphone  = rs.getString("w_empphone");
             wcbEmp.w_opaddress = rs.getString("w_opaddress");
             wcbEmp.w_opcity    = rs.getString("w_opcity");
-         wcb.wcbEmp = wcbEmp;                  
+         wcb.wcbEmp = wcbEmp;
          claimList.add(wcb);
       }
-      rs.close();                    
+      rs.close();
       }catch (Exception e){
-         MiscUtils.getLogger().error("Error", e);        
+         e.printStackTrace();
       }
       return claimList;
    }
-   
+
    /**
     * Getter for property empList.
     * @return Value of property empList.
@@ -143,7 +141,7 @@ public class WcbHelper {
    public java.util.ArrayList getEmpList() {
       return empList;
    }
-   
+
    /**
     * Setter for property empList.
     * @param empList New value of property empList.
@@ -151,7 +149,7 @@ public class WcbHelper {
    public void setEmpList(java.util.ArrayList empList) {
       this.empList = empList;
    }
-   
+
    /**
     * Getter for property claimList.
     * @return Value of property claimList.
@@ -159,7 +157,7 @@ public class WcbHelper {
    public java.util.ArrayList getClaimList() {
       return claimList;
    }
-   
+
    /**
     * Setter for property claimList.
     * @param claimList New value of property claimList.
@@ -167,10 +165,10 @@ public class WcbHelper {
    public void setClaimList(java.util.ArrayList claimList) {
       this.claimList = claimList;
    }
-   
+
    public class WCBClaim{
       public String w_wcbNo = "";
-      
+
       public String w_icd9 = "";
       public String w_bp= "";
       public String w_side= "";
@@ -180,16 +178,16 @@ public class WcbHelper {
       public WCBClaim(String clm){
          w_wcbNo = clm;
       }
-      
+
       public String getClaimNumber(){
          return w_wcbNo;
       }
-      
-      
+
+
    }
-   
-   
-   
+
+
+
    public class WCBEmployer{
       public String w_empname;
       public String w_emparea;
@@ -197,7 +195,7 @@ public class WcbHelper {
       public String w_opaddress;
       public String w_opcity;
    }
-/*   
+/*
 demographic_no
 
 w_empname
@@ -238,5 +236,5 @@ w_servicelocation
 ID
 formNeeded
 */
-   
+
 }

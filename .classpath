@@ -286,5 +286,6 @@
 	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/javax.servlet.jsp_2.0.0.v200806031607.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/apache-mime4j-0.6.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/oscar-triggers-common-0.1.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/cxf-rt-frontend-jaxrs-2.1.3.jar"/>
 	<classpathentry kind="output" path="build/tmp/web/classes"/>
 </classpath>

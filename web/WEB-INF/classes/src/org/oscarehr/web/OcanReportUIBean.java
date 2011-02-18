@@ -326,7 +326,8 @@ public class OcanReportUIBean implements CallbackHandler {
 		application.setVersion("10.06");
 		
 		Organization org = new Organization();
-		String orgId = OscarProperties.getInstance().getProperty("ocan.iar.org.id");	     
+		//String orgId = OscarProperties.getInstance().getProperty("ocan.iar.org.id");
+		String orgId = LoggedInInfo.loggedInInfo.get().currentFacility.getOcanServiceOrgNumber();
 		org.setId(orgId);
 		org.setName("CAISI");
 		

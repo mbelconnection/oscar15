@@ -518,31 +518,31 @@ function toggleView(form) {
 						<!--td width=10px></td-->
 						<td><span><input type=button
 							value="Print PDF" class="ControlPushButton"
-							style="width: 120px" onClick="<%=reprint.equalsIgnoreCase("true") ? "javascript:return onPrint2('rePrint');" : "javascript:return onPrint2('print');" %>" /></span></td>
+							style="width: 150px;" onClick="<%=reprint.equalsIgnoreCase("true") ? "javascript:return onPrint2('rePrint');" : "javascript:return onPrint2('print');" %>" /></span></td>
 					</tr>
                                         <tr>
 						<!--td width=10px></td-->
 						<td><span><input type=button
 							value="Create New Prescription" class="ControlPushButton"
-                                                        style="width: 120px"  onClick="resetStash();resetReRxDrugList();javascript:parent.myLightWindow.deactivate();" /></span></td>
+                            style="width: 150px;"  onClick="resetStash();resetReRxDrugList();javascript:parent.myLightWindow.deactivate();" /></span></td>
 					</tr>
 					<tr>
 						<!--td width=10px></td-->
 						<td><span><input type=button value="<bean:message key="ViewScript.msgBackToOscar"/>"
-							class="ControlPushButton" style="width: 120px"
+							class="ControlPushButton" style="width: 150px"
                                                         onClick="javascript:clearPending('close');parent.window.close();" /></span></td>
 							<!--onClick="javascript:clearPending('close');" /></span></td>-->
 					</tr>
 					<tr>
 						<!--td width=10px></td-->
 						<td><span><input type=button value="<bean:message key="ViewScript.msgPrint"/>"
-							class="ControlPushButton" style="width: 120px"
+							class="ControlPushButton" style="width: 150px"
 							onClick="javascript:printIframe();" /></span></td>
 					</tr>
 					<tr>
 					<td><span><input type=button
 							<%=reprint.equals("true")?"disabled='true'":""%> value="<bean:message key="ViewScript.msgPrintPasteEmr"/>"
-							class="ControlPushButton" style="width: 120px"
+							class="ControlPushButton" style="width: 150px"
 							onClick="javascript:printPaste2Parent();" /></span></td>
 					</tr>
                                        <%if(prefPharmacy.length()>0 && prefPharmacyId.length()>0){   %>

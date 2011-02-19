@@ -6,6 +6,8 @@
     var caisiEnabled = false;
     var passwordEnabled = false;
     var requireIssue = true;
+    var requireObsDate = true;
+    
 
     var X       = 10;
     var small   = 60;
@@ -1859,7 +1861,7 @@ function ajaxSaveNote(div,noteId,noteTxt) {
             return false;
         }
 
-        if( $("observationDate").value.length == 0 ) {
+        if(requireObsDate && $("observationDate").value.length == 0 ) {
             alert(assignObservationDateError);
             return false;
         }
@@ -1921,7 +1923,7 @@ function savePage(method, chain) {
             return false;
         }
 
-        if( $("observationDate").value.length == 0 ) {
+        if( requireObsDate && $("observationDate").value.length == 0 ) {
             alert(assignObservationDateError);
             return false;
         }

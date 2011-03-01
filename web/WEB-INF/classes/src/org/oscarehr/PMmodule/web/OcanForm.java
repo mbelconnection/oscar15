@@ -84,7 +84,7 @@ public class OcanForm {
 				ocanStaffForm.setPhoneNumber(demographic.getPhone());
 				ocanStaffForm.setEmail(demographic.getEmail());
 				ocanStaffForm.setHcNumber(demographic.getHin());
-				ocanStaffForm.setHcVersion(demographic.getVer());
+				ocanStaffForm.setHcVersion(demographic.getVer());				
 				ocanStaffForm.setDateOfBirth(demographic.getFormattedDob());
 				ocanStaffForm.setClientDateOfBirth(demographic.getFormattedDob());
 				ocanStaffForm.setGender(convertGender(demographic.getSex()));

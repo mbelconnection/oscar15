@@ -5,7 +5,11 @@
 <%@page import="org.oscarehr.PMmodule.web.OcanForm"%>
 <%@page import="org.oscarehr.util.LoggedInInfo"%>
 <%@page import="java.util.List"%>
+<%@page import="org.oscarehr.common.dao.DemographicDao"%>
+<%@page import="org.oscarehr.PMmodule.dao.AdmissionDao"%>
 
+<%@page import="org.oscarehr.util.SpringUtils"%>
+<%@page import="org.apache.commons.lang.time.DateFormatUtils" %>
 <%@include file="/layouts/caisi_html_top-jquery.jspf"%>
 
 
@@ -35,8 +39,26 @@
 			}
 		}		
 	}
-	
 
+	DemographicDao demographicDao = (DemographicDao) SpringUtils.getBean("demographicDao");
+	String hc_type = demographicDao.getDemographicById(currentDemographicId).getHcType();
+	String admissionDate = "0001-01-01";
+	AdmissionDao admissionDao = (AdmissionDao) SpringUtils.getBean("admissionDao");	
+	List<Admission> admissions = admissionDao.getAdmissionsASC(currentDemographicId);
+	for(Admission ad : admissions) {
+		if(!"community".equalsIgnoreCase(ad.getProgramType())) {
+			System.out.println("program Id is "+ ad.getProgramId());
+			System.out.println("admission DATE is "+ ad.getAdmissionDate());
+			admissionDate = DateFormatUtils.ISO_DATE_FORMAT.format(ad.getAdmissionDate());
+			break;			
+		}
+	}
+	String admission_year = admissionDate.substring(0,4);
+	String admission_month = admissionDate.substring(5,7);
+	System.out.println("admission date = "+ admissionDate);
+	System.out.println("admission year = "+ admission_year);
+	System.out.println("admission month = "+ admission_month);
+	
 	boolean printOnly=request.getParameter("print")!=null;
 	if (printOnly) request.setAttribute("noMenus", true);
 	
@@ -589,7 +611,7 @@ $("document").ready(function(){
 		</tr>
 		
 		<tr>
-			<td class="genericTableHeader">Postal Code</td>
+			<td class="genericTableHeader">Postal Code (e.g. M4H 2T1)</td>
 			<td class="genericTableData">
 				<input type="text" name="postalCode" id="postalCode" value="<%=ocanStaffForm.getPostalCode()%>" size="8" maxlength="8" class="{validate: {postalCode:true}}"/>
 			</td>
@@ -638,8 +660,8 @@ $("document").ready(function(){
 		<tr>
 			<td class="genericTableHeader">Issuing Territory</td>
 			<td class="genericTableData">
-				<select name="issuingTerritory">
-					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "issuingTerritory", OcanForm.getOcanFormOptions("Province List"),prepopulationLevel)%>
+				<select name="issuingTerritory">				
+					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "issuingTerritory", OcanForm.getOcanFormOptions("Province List"),  hc_type, prepopulationLevel)%>
 				</select>				
 			</td>
 		</tr>
@@ -700,6 +722,12 @@ $("document").ready(function(){
 		</tr>	
 		
 			
+		<tr>
+			<td colspan="2"></td>
+		</tr>
+		<tr>
+			<td colspan="2"></td>
+		</tr>
 		<tr>
 			<td colspan="2"></td>
 		</tr>
@@ -780,6 +808,12 @@ $("document").ready(function(){
 			</td>
 		</tr>
 
+		<tr>
+			<td colspan="2"></td>
+		</tr>
+		<tr>
+			<td colspan="2"></td>
+		</tr>
 		<tr>
 			<td colspan="2"></td>
 		</tr>
@@ -867,12 +901,24 @@ $("document").ready(function(){
 			<td colspan="2"></td>
 		</tr>
 		<tr>
+			<td colspan="2"></td>
+		</tr>
+		<tr>
+			<td colspan="2"></td>
+		</tr>
+		<tr>
 			<td class="genericTableHeader">Other Contact</td>
 			<td class="genericTableData">
 				<select name="otherContact" id="otherContact" >
 					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "otherContact", OcanForm.getOcanFormOptions("Other Contacts Agency"),prepopulationLevel)%>
 				</select>					
 			</td>
+		</tr>
+		<tr>
+			<td colspan="2"></td>
+		</tr>
+		<tr>
+			<td colspan="2"></td>
 		</tr>
 		<tr>
 			<td colspan="2"></td>
@@ -959,7 +1005,12 @@ $("document").ready(function(){
 		<tr>
 			<td colspan="2"></td>
 		</tr>
-		
+		<tr>
+			<td colspan="2"></td>
+		</tr>
+		<tr>
+			<td colspan="2"></td>
+		</tr>
 		<tr>
 			<td class="genericTableHeader">Contact Type</td>
 			<td class="genericTableData">
@@ -1043,7 +1094,12 @@ $("document").ready(function(){
 		<tr>
 			<td colspan="2"></td>
 		</tr>
-		
+		<tr>
+			<td colspan="2"></td>
+		</tr>
+		<tr>
+			<td colspan="2"></td>
+		</tr>
 		<tr>
 			<td class="genericTableHeader">Contact Type</td>
 			<td class="genericTableData">
@@ -1127,7 +1183,12 @@ $("document").ready(function(){
 		<tr>
 			<td colspan="2"></td>
 		</tr>
-						
+		<tr>
+			<td colspan="2"></td>
+		</tr>
+		<tr>
+			<td colspan="2"></td>
+		</tr>				
 		<tr>
 			<td class="genericTableHeader">Other Agency</td>
 			<td class="genericTableData">
@@ -1135,6 +1196,12 @@ $("document").ready(function(){
 					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "otherAgency", OcanForm.getOcanFormOptions("Other Contacts Agency"),prepopulationLevel)%>
 				</select>					
 			</td>
+		</tr>
+		<tr>
+			<td colspan="2"></td>
+		</tr>
+		<tr>
+			<td colspan="2"></td>
 		</tr>
 		<tr>
 			<td colspan="2"></td>
@@ -1213,7 +1280,12 @@ $("document").ready(function(){
 		<tr>
 			<td colspan="2"></td>
 		</tr>
-			
+		<tr>
+			<td colspan="2"></td>
+		</tr>
+		<tr>
+			<td colspan="2"></td>
+		</tr>	
 		
 		<tr>
 			<td class="genericTableHeader">Name</td>
@@ -1288,7 +1360,12 @@ $("document").ready(function(){
 		<tr>
 			<td colspan="2"></td>
 		</tr>
-		
+		<tr>
+			<td colspan="2"></td>
+		</tr>
+		<tr>
+			<td colspan="2"></td>
+		</tr>
 		<tr>
 			<td class="genericTableHeader">Name</td>
 			<td class="genericTableData">
@@ -1550,12 +1627,12 @@ $("document").ready(function(){
 			<td class="genericTableData">
 			Year: 
 				<select name="year_firstEntryDate">
-					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "year_firstEntryDate", OcanForm.getOcanFormOptions("Year of First Entry Date"),prepopulationLevel)%>
+					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "year_firstEntryDate", OcanForm.getOcanFormOptions("Year of First Entry Date"),admission_year,prepopulationLevel)%>
 				</select>
 			&nbsp;&nbsp;
 			Month:
 				<select name="month_firstEntryDate">
-					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "month_firstEntryDate", OcanForm.getOcanFormOptions("Month of First Entry Date"),prepopulationLevel)%>
+					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "month_firstEntryDate", OcanForm.getOcanFormOptions("Month of First Entry Date"),admission_month,prepopulationLevel)%>
 				</select>		
 			</td>
 			
@@ -1630,7 +1707,9 @@ $("document").ready(function(){
 						<%=OcanForm.renderAsTextField(ocanStaffForm.getId(),"immigration_issues_other",128,prepopulationLevel)%>
 			</td>
 		</tr>
-		
+		<tr>
+			<td colspan="2"></td>
+		</tr>
 		<tr>
 			<td class="genericTableHeader">Do you have any experience of discrimination? (Select all that apply)</td>
 			<td class="genericTableData">
@@ -3739,7 +3818,7 @@ This information is collected from a variety of sources, including self-report, 
 		</tr>		
 		
 		<tr>
-			<td colspan="2" vheight="4"></td>
+			<td colspan="2" height="4"></td>
 		</tr>
 	<% } if(!"CORE".equals(ocanType)) { %>	
 		

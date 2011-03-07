@@ -81,15 +81,6 @@
 		}});
 
 	}
-
-
-	function submitManual() {
-		var ctx = '<%=request.getContextPath()%>';
-
-		document.getElementById('ocanForm').action='ocan_report_export_iar_manual.jsp';
-		document.getElementById('ocanForm').submit();
-		
-	}
 </script>
 				
 <form method="post" id="ocanForm" action="ocan_report_export_iar.jsp">
@@ -140,8 +131,6 @@
 	</table>	
 	<br/>
 	<input type="button" value="Submit Pending Records" id="subPending" onclick="submitPending();return false;"/>
-	&nbsp;&nbsp;
-	<input type="button" value="Generate Manual File" id="subManual" onclick="submitManual();return false;"/>
 </form>
 
 

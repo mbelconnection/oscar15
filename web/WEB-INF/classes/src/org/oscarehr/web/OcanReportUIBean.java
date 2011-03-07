@@ -17,8 +17,6 @@ import java.util.Map;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.BindingProvider;
@@ -176,8 +174,6 @@ import ca.on.iar.types.SubmissionType.Text;
 import ca.on.iar.types.TransmissionHeaderType.Application;
 import ca.on.iar.types.TransmissionHeaderType.Organization;
 
-import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
-
 public class OcanReportUIBean implements CallbackHandler {
 
 	static Log logger = LogFactory.getLog(OcanReportUIBean.class);
@@ -330,8 +326,7 @@ public class OcanReportUIBean implements CallbackHandler {
 		application.setVersion("10.06");
 		
 		Organization org = new Organization();
-		//String orgId = OscarProperties.getInstance().getProperty("ocan.iar.org.id");
-		String orgId = LoggedInInfo.loggedInInfo.get().currentFacility.getOcanServiceOrgNumber();
+		String orgId = OscarProperties.getInstance().getProperty("ocan.iar.org.id");	     
 		org.setId(orgId);
 		org.setName("CAISI");
 		
@@ -380,23 +375,6 @@ public class OcanReportUIBean implements CallbackHandler {
 		is.getTransmissionHeader().setSubmissionId(String.valueOf(log.getId()));		
 		logger.info("the submissionId is " + log.getId());		
 		
-		//XMLBeanStreamSerializer serializer = new XMLBeanStreamSerializer();
-		/*
-		try {
-
-	    JAXBContext context = JAXBContext.newInstance(IARSubmission.class);
-        Marshaller marshaller = context.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new NamespacePrefixmapperImpl() );  
-        marshaller.marshal(is, System.out);
-        
-		}
-		catch(Exception e) {
-			logger.error(e);
-		}
-*/		
-		//if(true) return 0;
-		
 		try {
 			String user = OscarProperties.getInstance().getProperty("ocan.iar.user");		     
 			SubmissionService service = new SubmissionService();
@@ -406,7 +384,7 @@ public class OcanReportUIBean implements CallbackHandler {
 				    "https://iarintest.ccim.on.ca/iar/services/SubmissionService"); 
 			CxfClientUtils.configureClientConnection(port);
 			CxfClientUtils.configureWSSecurity(port,user,OcanReportUIBean.class);
-			CxfClientUtils.configureLogging(port);
+			//CxfClientUtils.configureLogging(port);
 			
 			SubmissionResultType result=port.submitAssessment(is);
 			Result res = result.getResult();	
@@ -439,123 +417,6 @@ public class OcanReportUIBean implements CallbackHandler {
 	}
 
 
-	public static void writeExportIar(OutputStream out) {		
-		OCANv2SubmissionFileDocument submissionDoc = generateOCANSubmission("FULL");
-		
-		if(submissionDoc.getOCANv2SubmissionFile().getOCANv2SubmissionRecordArray().length == 0) {
-			logger.info("No records to send");
-			return;
-		}
-		if(submissionDoc.getOCANv2SubmissionFile().getOCANv2SubmissionRecordArray().length > 500) {
-			logger.warn("over 500 to send..will probably fail");
-		}
-		
-		//serialize the data
-		ByteArrayOutputStream sos = new ByteArrayOutputStream();
-		try {
-			XmlOptions options = new XmlOptions();
-			options.setUseDefaultNamespace();
-			//options.setSavePrettyPrint();
-			options.setCharacterEncoding("UTF-8");		
-			Map<String,String> implicitNamespaces = new HashMap<String,String>();
-			implicitNamespaces.put("", "http://oscarehr.org/ocan");
-			options.setSaveImplicitNamespaces(implicitNamespaces);
-			submissionDoc.save(sos,options);
-		}catch(IOException e) {
-			logger.error(e);
-			return;
-		}
-		
-		//generate the envelope
-		IARSubmission is = new IARSubmission();
-		is.setVersion("1.1");
-		
-		Application application = new Application();
-		application.setId("1");
-		application.setName("OSCAR");
-		application.setVendor("CAISI");
-		application.setVersion("10.06");
-		
-		Organization org = new Organization();
-		//String orgId = OscarProperties.getInstance().getProperty("ocan.iar.org.id");
-		String orgId = LoggedInInfo.loggedInInfo.get().currentFacility.getOcanServiceOrgNumber();
-		org.setId(orgId);
-		org.setName("CAISI");
-		
-		XMLGregorianCalendar cal = null;
-		
-		try {
-			GregorianCalendar gc = new GregorianCalendar();
-			DatatypeFactory dtf = DatatypeFactory.newInstance();
-			cal = dtf.newXMLGregorianCalendar(gc);
-		}catch(Exception e) {
-			logger.error(e);
-		}
-		
-		TransmissionHeaderType th = new TransmissionHeaderType();
-		th.setApplication(application);
-		th.setAssessmentType("OCAN");
-		th.setExportTimestamp(cal);
-		th.setOrganization(org);
-		th.setSubmissionId("1");
-
-		is.setTransmissionHeader(th);
-		
-		Text t = new Text();
-		t.setValue(sos.toString());
-		
-		Record r = new Record();
-		r.setRecordType("Assessment");
-		r.setMimeType("text/xml");
-		r.setText(t);
-		
-		SubmissionContent sc = new SubmissionContent();
-		sc.getRecord().add(r);
-		
-		is.setSubmissionContent(sc);
-		
-		//create the log entry and get the submission id
-		OcanSubmissionLog log = new OcanSubmissionLog();
-		log.setSubmitDateTime(new Date());
-		logDao.persist(log);										
-		
-		if(log.getId() == null) {
-			logger.info("log has no id!");
-			return;
-		}
-		
-		is.getTransmissionHeader().setSubmissionId(String.valueOf(log.getId()));		
-		logger.info("the submissionId is " + log.getId());		
-				
-		try {
-
-		    JAXBContext context = JAXBContext.newInstance(IARSubmission.class);
-	        Marshaller marshaller = context.createMarshaller();
-	        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-	        marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new NamespacePrefixmapperImpl() );  
-	        marshaller.marshal(is, out);
-        
-	        log.setResult("true");
-	        log.setResultMessage("Manual Export");
-	        log.setTransactionId("");
-		}
-		catch(Exception e) {
-			logger.error(e);
-		}
-	
-		logDao.merge(log);
-		
-		if(log.getResult()!=null && log.getResult().equals("true")) {
-			for(int x=0;x<submissionDoc.getOCANv2SubmissionFile().getOCANv2SubmissionRecordArray().length;x++) {
-				OCANv2SubmissionRecord subRec = submissionDoc.getOCANv2SubmissionFile().getOCANv2SubmissionRecordArray()[x];
-				String id = subRec.getAssessmentID();
-				OcanStaffForm staffForm = ocanStaffFormDao.find(Integer.parseInt(id));
-				staffForm.setSubmissionId(log.getId());
-				ocanStaffFormDao.merge(staffForm);
-			}
-		}	
-		
-	}
 	
 	public static void writeXmlExportData(int startYear, int startMonth, int endYear, int endMonth, int increment, OutputStream out, String ocanType) {
 		
@@ -2133,10 +1994,3 @@ public class OcanReportUIBean implements CallbackHandler {
 	}
 }
 
-class NamespacePrefixmapperImpl extends NamespacePrefixMapper {
-	
-	public String getPreferredPrefix(String a,String b, boolean c) {
-		return "";
-	}
-	
-}

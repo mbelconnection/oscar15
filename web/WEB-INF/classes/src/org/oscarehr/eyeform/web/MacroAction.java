@@ -61,9 +61,6 @@ public class MacroAction extends DispatchAction {
     	
     	MacroDao dao = (MacroDao)SpringUtils.getBean("MacroDAO");
     	
-    	if(macro.getId()!=null && macro.getId()==0) {
-    		macro.setId(null);
-    	}
     	dao.save(macro);
     	
     	return mapping.findForward("success");

@@ -34,44 +34,12 @@ on Libraries node in Projects view can be used to add the JSTL 1.1 library.
     if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
     String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
     boolean isTeamBillingOnly=false;
-    boolean isSiteAccessPrivacy=false;
-    boolean isTeamAccessPrivacy=false; 
 %>
 <security:oscarSec objectName="_team_billing_only" roleName="<%=roleName$ %>" rights="r" reverse="false">
 <% isTeamBillingOnly=true; %>
 </security:oscarSec>
-<security:oscarSec objectName="_site_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%isSiteAccessPrivacy=true; %>
-</security:oscarSec>
-<security:oscarSec objectName="_team_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%isTeamAccessPrivacy=true; %>
-</security:oscarSec>
 
 <%
-	//multi-site office , save all bgcolor to Hashmap
-	HashMap<String,String> siteBgColor = new HashMap<String,String>();
-	HashMap<String,String> siteShortName = new HashMap<String,String>();
-	int patientCount = 0;
-	if (bMultisites) {
-    	SiteDao siteDao = (SiteDao)WebApplicationContextUtils.getWebApplicationContext(application).getBean("siteDao");
-    	
-    	List<Site> sites = siteDao.getAllSites();
-    	for (Site st : sites) {
-    		siteBgColor.put(st.getName(),st.getBgColor());
-    		siteShortName.put(st.getName(),st.getShortName());
-    	}
-	}
-%>
-
-<%//
-response.setHeader("Pragma","no-cache"); //HTTP 1.0
-response.setHeader("Cache-Control","no-cache"); //HTTP 1.1
-response.setDateHeader("Expires", 0); //prevents caching at the proxy server
-response.setHeader("Cache-Control", "private"); // HTTP 1.1 
-response.setHeader("Cache-Control", "no-store"); // HTTP 1.1 
-response.setHeader("Cache-Control", "max-stale=0"); // HTTP 1.1 
-
-
 boolean bSearch = true;
 String[] billType = request.getParameterValues("billType");
 String strBillType = "";
@@ -95,8 +63,6 @@ String raCode     = request.getParameter("raCode");
 String dx = request.getParameter("dx");
 String visitType = request.getParameter("visitType");
 String filename = request.getParameter("demographicNo");
-
-String selectedSite = (String) request.getParameter("site");
 
 if ( statusType == null ) { statusType = "O"; } 
 if ( "_".equals(statusType) ) { demoNo = "";}
@@ -419,13 +385,14 @@ var _providers = [];
 	%><option value='<%= p.getProviderNo() %>'><%= p.getLastName() %>, <%= p.getFirstName() %></option><% }} %>";
 <% } %>
 function changeSite(sel) {
-	sel.form.providerview.innerHTML=sel.value=="none"?"":"<option value='none'>---select provider---</option>"+_providers[sel.value];
+	sel.form.providerview.innerHTML=sel.value=="none"?"":_providers[sel.value];
 	sel.style.backgroundColor=sel.options[sel.selectedIndex].style.backgroundColor;
-	if (sel.value=='<%=request.getParameter("site")%>') {
+	if (sel.value!="none") {
 		if (document.serviceform.provider_ohipNo.value!='')
 			sel.form.providerview.value='<%=request.getParameter("providerview")%>';
 	}
 	changeProvider(false);
+	
 }
       </script>
       	<select id="site" name="site" onchange="changeSite(this)">
@@ -454,7 +421,7 @@ function changeSite(sel) {
 			<%
 			} else {
 			%>
-       <option value="all">All Providers</option>
+       <option value="">All Providers</option>
     <% for (int i = 0 ; i < pList.size(); i++) { 
 		String temp[] = ((String) pList.get(i)).split("\\|");
 	%>
@@ -605,9 +572,6 @@ if(statusType.equals("_")) { %>
              <th>TYPE</th>
              <th>ACCOUNT</th>
              <th>MESSAGES</th>
-		<% if (bMultisites) {%>
-			 <th>SITE</th>             
-        <% }%>     
           </tr>
        
           
@@ -619,14 +583,9 @@ if(statusType.equals("_")) { %>
     	   BillingClaimHeader1Data ch1Obj = (BillingClaimHeader1Data) bList.get(i);
     	   
     	   if (bMultisites && ch1Obj.getClinic()!=null && curSite!=null 
-    			   && !ch1Obj.getClinic().equals(curSite) && isSiteAccessPrivacy) // only applies on user have siteAccessPrivacy (SiteManager)
+    			   && !ch1Obj.getClinic().equals(curSite))
 				continue; // multisite: skip if the line doesn't belong to the selected clinic    		   
     		   
-	       if (bMultisites && selectedSite != null && (!selectedSite.equals(ch1Obj.getClinic())))
-	    	   continue;
-	       
-	       patientCount ++;
-			       
     	   // ra code
     	   if(raCode.trim().length() == 2) {
     		   if(!raData.isErrorCode(ch1Obj.getId(), raCode)) {
@@ -677,7 +636,6 @@ if(statusType.equals("_")) { %>
                else {
                    settleDate = settleDate.substring(0, settleDate.indexOf(" "));
                }
-	      
        %>       
           <tr <%=color %>> 
              <td align="center"><%= ch1Obj.getBilling_date()%>  <%--=ch1Obj.getBilling_time()--%></td>  <!--SERVICE DATE-->
@@ -704,18 +662,13 @@ if(statusType.equals("_")) { %>
                  <a href="javascript: function myFunction() {return false; }"  onclick="javascript:popup(700,700,'billingONCorrection.jsp?billing_no=<%=ch1Obj.getId()%>','BillCorrection<%=ch1Obj.getId()%>');return false;">Edit</a>
                  <%=errorCode%>
              </td><!--MESSAGES-->
-             <% if (bMultisites) {%>
-				 <td "<%=(ch1Obj.getClinic()== null || ch1Obj.getClinic().equalsIgnoreCase("null") ? "" : "bgcolor='" + siteBgColor.get(ch1Obj.getClinic()) + "'")%>">
-				 	<%=(ch1Obj.getClinic()== null || ch1Obj.getClinic().equalsIgnoreCase("null") ? "" : siteShortName.get(ch1Obj.getClinic()))%>
-				 </td>     <!--SITE-->          
-        	<% }%>     
           </tr>
        <% } %>  
        
           <tr class="myYellow"> 
              <td>Count:</td>  
-             <td align="center"><%=patientCount%></td> 
-             <td align="center"><%=patientCount%></td> 
+             <td align="center"><%=bList.size()%></td> 
+             <td align="center"><%=bList.size()%></td> 
              <td>&nbsp;</td> <!--STAT-->
              <td>&nbsp;</td>
              <td>Total:</td><!--CODE-->
@@ -727,9 +680,6 @@ if(statusType.equals("_")) { %>
              <td>&nbsp;</td><!--DX3-->
              <td>&nbsp;</td><!--ACCOUNT-->
              <td>&nbsp;</td><!--MESSAGES-->
-             <% if (bMultisites) {%>
-				 <td>&nbsp;</td><!--SITE-->          
-        	<% }%>    
           </tr>
        <table>
     </div>

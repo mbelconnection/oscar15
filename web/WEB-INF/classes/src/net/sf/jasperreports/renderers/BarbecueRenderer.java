@@ -47,7 +47,7 @@ import net.sourceforge.barbecue.Barcode;
  * used to allow JFreeChart objects to be included in the output report in vector form.
  *
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id: BarbecueRenderer.java,v 1.1 2008-03-27 21:34:02 tonywzt1 Exp $
+ * @version $Id: BarbecueRenderer.java,v 1.1 2008/03/27 21:34:02 tonywzt1 Exp $
  */
 public class BarbecueRenderer extends JRAbstractSvgRenderer
 {

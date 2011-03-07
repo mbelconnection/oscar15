@@ -1,6 +1,6 @@
 /*--
 
- $Id: ResultSetBuilder.java,v 1.2 2008-03-18 19:41:43 tedleung Exp $
+ $Id: ResultSetBuilder.java,v 1.2 2008/03/18 19:41:43 tedleung Exp $
 
  Copyright (C) 2000-2004 Jason Hunter & Brett McLaughlin.
  All rights reserved.

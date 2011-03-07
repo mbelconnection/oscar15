@@ -1,3 +1,35 @@
+<%!  boolean bMultisites=org.oscarehr.common.IsPropertiesOn.isMultisitesEnable(); %>
+<%!  String [] bgColors; %>
+<%
+  
+  String weekdaytag[] = {"SUN","MON","TUE","WED","THU","FRI","SAT"};
+  boolean bAlternate =(request.getParameter("alternate")!=null&&request.getParameter("alternate").equals("checked") )?true:false;
+  boolean bOrigAlt = false;
+
+  OscarProperties props = OscarProperties.getInstance();
+  
+  boolean bMoreAddr = bMultisites
+  						? true
+  						: (props.getProperty("scheduleSiteID", "").equals("") ? false : true);
+  String [] addr;
+  if (bMultisites) {
+	//multisite starts =====================	  
+	  SiteDao siteDao = (SiteDao)WebApplicationContextUtils.getWebApplicationContext(application).getBean("siteDao");
+      List<Site> sites = siteDao.getActiveSitesByProviderNo((String)request.getParameter("provider_no")); 
+	  addr = new String[sites.size()+1];
+	  bgColors = new String[sites.size()+1];
+      for (int i=0; i<sites.size(); i++) {
+		  addr[i]=sites.get(i).getName();
+		  bgColors[i]=sites.get(i).getBgColor();
+      }
+	  addr[sites.size()]="NONE";
+	  bgColors[sites.size()]="white";
+	//multisite ends =====================	 
+  } else {
+  	  addr = props.getProperty("scheduleSiteID", "").split("\\|");
+  }
+  
+%>
 <%@ page
 	import="java.util.*, java.net.*, java.sql.*, oscar.*, oscar.util.*, java.text.*, java.lang.*, org.apache.struts.util.*"
 	errorPage="../appointment/errorpage.jsp"%>
@@ -8,8 +40,6 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/rewrite-tag.tld" prefix="rewrite"%>
-<%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
-
 <!--  
 /*
  * 
@@ -39,80 +69,9 @@
 <%@page import="org.oscarehr.common.dao.SiteDao"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.oscarehr.common.model.Site"%><html:html locale="true">
-
-<%
-    if(session.getAttribute("user") == null ) response.sendRedirect("../logout.jsp");
-    String CurProviderNo = (String) session.getAttribute("user");
-
-    if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
-    String CurRoleName = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
-    
-    boolean isSiteAccessPrivacy=false;
-%>
-
 <%  if(!scheduleMainBean.getBDoConfigure()) { %>
 <%@ include file="scheduleMainBeanConn.jspf"%>
 <% } %>
-
-
-
-<security:oscarSec objectName="_site_access_privacy" roleName="<%=CurRoleName%>" rights="r" reverse="false">
-	<%isSiteAccessPrivacy=true; %>
-</security:oscarSec>
-
-
-<%!  boolean bMultisites=org.oscarehr.common.IsPropertiesOn.isMultisitesEnable(); %>
-<%!  String [] bgColors; %>
-<%!  List<String> excludedSites = new ArrayList<String>(); %>
-<%
-  
-  String weekdaytag[] = {"SUN","MON","TUE","WED","THU","FRI","SAT"};
-  boolean bAlternate =(request.getParameter("alternate")!=null&&request.getParameter("alternate").equals("checked") )?true:false;
-  boolean bOrigAlt = false;
-
-  OscarProperties props = OscarProperties.getInstance();
-  
-  boolean bMoreAddr = bMultisites
-  						? true
-  						: (props.getProperty("scheduleSiteID", "").equals("") ? false : true);
-  String [] addr;
-  
-  if (bMultisites) {
-	//multisite starts =====================	  
-	  SiteDao siteDao = (SiteDao)WebApplicationContextUtils.getWebApplicationContext(application).getBean("siteDao");
-      List<Site> sites = siteDao.getActiveSitesByProviderNo((String)request.getParameter("provider_no")); 
-      List<Site> managerSites; 
-
-	  if (isSiteAccessPrivacy) {
-		  // login user have site manager role
-		  managerSites = siteDao.getActiveSitesByProviderNo(CurProviderNo);
-		  //build excluded sites list for sites that not in current site manager 
-		  for (Site site : sites) {
-			  if (!managerSites.contains(site)) {
-				  excludedSites.add(site.getName());
-			  }
-		  }
-		  
-	  }
-
-	  //login user have admin role
-	  addr = new String[sites.size()+1];
-	  bgColors = new String[sites.size()+1];
-  
-      for (int i=0; i<sites.size(); i++) {
-		  addr[i]=sites.get(i).getName();
-		  bgColors[i]=sites.get(i).getBgColor();
-      }
-	  addr[sites.size()]="NONE";
-	  bgColors[sites.size()]="white";
-
-
-	//multisite ends =====================	 
-  } else {
-  	  addr = props.getProperty("scheduleSiteID", "").split("\\|");
-  }
-  
-%>
 <%
   String today = UtilDateUtilities.DateToString(UtilDateUtilities.now(), "yyyy-MM-dd" );  
   String lastYear = (Integer.parseInt(today.substring(0,today.indexOf('-'))) - 2) + today.substring(today.indexOf('-'));
@@ -887,37 +846,17 @@ function tranbuttonb7_click() {
 %>
 </body>
 <%! String getSelectAddr(String s, String [] site, String sel) {
-	
-		boolean isExcludedSiteSelected = false;
-		if (bMultisites && excludedSites.contains(sel)) 	
-			isExcludedSiteSelected = true; //"; text-decoration:line-through;";
-		
-		String ret = "<select name='" + s + "' "  + (isExcludedSiteSelected ? " disabled style='text-decoration:line-through;'  " : "")  
-			+ " onchange='this.style.backgroundColor=this.options[this.selectedIndex].style.backgroundColor'>";
+		String ret = "<select name='" + s + "' onchange='this.style.backgroundColor=this.options[this.selectedIndex].style.backgroundColor'>";
 		int ind=0;
-		boolean isSiteSel=false;
-		
 		for(int i=0; i<site.length; i++) {
 			String t = site[i].equals(sel) ? " selected" : "";
-			if (site[i].equals(sel)) {
+			if (site[i].equals(sel))
 				ind=i;
-				isSiteSel = true;
-			}
-			if (i==site.length - 1 && isSiteSel ==false) {
-				//if None of the site has been selected, default select to the last one "None"
-				ind=i;
-				t = " selected";
-			}
-			
-			if ((isExcludedSiteSelected) || (!excludedSites.contains(site[i]))) {
-				ret += "<option value='" + site[i] + "'" + t + (bMultisites? " style='background-color:"+bgColors[i] + "'": "") +">" + site[i] + "</option>";
-			}
+			ret += "<option value='" + site[i] + "'" + t + (bMultisites? " style='background-color:"+bgColors[i]+"'" : "") +">" + site[i] + "</option>";
 		}
 		ret += "</select>";
 		if (bMultisites)
-			ret += "<script>document.schedule."+s+".style.backgroundColor='"+bgColors[ind]+"';</script>";
-		if (isExcludedSiteSelected)
-			ret += "<script>document.schedule.check"+s.substring(0,3)+".disabled='true';</script>";
+			ret += "<script>document.schedule."+s+".style.backgroundColor='"+bgColors[ind]+"'</script>";
 		return ret;
 }
 %>

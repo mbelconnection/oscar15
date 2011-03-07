@@ -113,10 +113,6 @@ public final class EctConsultationFormRequestForm extends ActionForm {
 	String submission;
 
 	String urgency;
-	
-	//multi-site
-	String siteName;
-
 
 	private String patientFirstName;
 	private String patientLastName;
@@ -560,16 +556,4 @@ public final class EctConsultationFormRequestForm extends ActionForm {
     public void setFollowUpDate(String followUpDate) {
         this.followUpDate = followUpDate;
     }
-	public String getSiteName() {
-    	if (siteName == null) {
-	    	siteName = new String();
-		}
-      	return siteName;
-  	}
-  
-  	public void setSiteName(String str) {
-	  	this.siteName = str;
-  	}
-  
-
 }

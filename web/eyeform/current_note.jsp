@@ -61,12 +61,7 @@ function saveEyeformNote() {
         if(data.length>0) {notetext+='\n';}
     }});
 
-	
-	var noteTa = document.getElementById('caseNote_note<%=request.getParameter("noteId") %>');
-	var noteTaVal = noteTa.value;
-	noteTaVal = noteTaVal + '\n' + notetext;
-	noteTa.value = noteTaVal;
-	
+	alert(notetext);
  }
 
 
@@ -74,31 +69,8 @@ function saveNoteAndSendTickler() {
 	//alert("save function called for eyeform - " + savedNoteId);
 	//do the ajax call to save form values 	
 	saveFlags();
-
-	var notetext = '';
-	//get consults/procedures/tests/checkboxes to generate text
-	jQuery.ajax({ url: ctx+"/eyeform/FollowUp.do?method=getNoteText&appointmentNo="+<%=aptNo%>, async:false, success: function(data){
-        notetext += data;
-        if(data.length>0) {notetext+='\n';}
-    }});
-	jQuery.ajax({ url: ctx+"/eyeform/ProcedureBook.do?method=getNoteText&appointmentNo="+<%=aptNo%>, async:false, success: function(data){
-        notetext += data;
-        if(data.length>0) {notetext+='\n';}
-    }});
-	jQuery.ajax({ url: ctx+"/eyeform/TestBook.do?method=getNoteText&appointmentNo="+<%=aptNo%>, async:false, success: function(data){
-        notetext += data;
-        if(data.length>0) {notetext+='\n';}
-    }});
-	jQuery.ajax({ url: ctx+"/eyeform/NoteData.do?method=getNoteText&appointmentNo="+<%=aptNo%>, async:false, success: function(data){
-        notetext += data;
-        if(data.length>0) {notetext+='\n';}
-    }});
-
-	var ticklerRecip = document.getElementById('ticklerRecip');
 	
-	jQuery.ajax({ url: ctx+"/eyeform/NoteData.do?method=sendTickler&appointmentNo="+<%=aptNo%>+"&text="+notetext+"&recip=" + ticklerRecip.value +"&demographicNo=<%=demographicNo %>", async:false, success: function(data){
-        alert('tickler sent');
-    }});
+	
 	
  }
 
@@ -310,7 +282,7 @@ function saveFlags() {
             
             
 
-	        <select name="front" tabindex="250" class="special2" id="ticklerRecip">
+	        <select name="front" tabindex="250" class="special2">
 	        	<c:forEach var="item" items="${internalList}">
             		<option value="<c:out value="${item.providerNo}"/>"><c:out value="${item.formattedName}"/></option>
             	</c:forEach>           
@@ -321,7 +293,7 @@ function saveFlags() {
            </td>
            <td width="15%">
             
-			<input tabindex="251" value="Send Tickler" onclick="saveNoteAndSendTickler();return false;" id="stickler" style="color: black;" type="button">
+			<input tabindex="251" value="Send Tickler" onclick="saveNoteAndSendTickler();return false;" id="stickler" style="color: black;" type="submit">
 			 
             </td>
             <td width="45%"></td>

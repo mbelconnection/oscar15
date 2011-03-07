@@ -7,7 +7,7 @@
  *   http://www.opensource.org/licenses/mit-license.php
  *   http://www.gnu.org/licenses/gpl.html
  *
- * Revision: $Id: jquery.form.js,v 1.1 2009-09-02 20:58:49 hexbinary Exp $
+ * Revision: $Id: jquery.form.js,v 1.1 2009/09/02 20:58:49 hexbinary Exp $
  */
  (function($) {
 /**

@@ -28,11 +28,11 @@
 <!-- Developed to comply with XML 1.0 specifications. This DTD has been custom developed to meet the needs of the COMPETE II Project. -->
 <!--
     $Revision: 1.6 $
-    $Date: 2010-05-15 22:10:57 $
+    $Date: 2010/05/15 22:10:57 $
     COMPETE II Project DTD
     Copyright 2003, All Rights Reserved
 
-    $Name:  $
+    $Name: RELEASE_10_12 $
 
 -->
 <!ELEMENT encounter (contact_healthnumber, encounter_date?, encounter_entry_date, encounter_class_ID, vitals*, lab*, health_conditions*, surgical*, med_alert*, referal*, risk_factors*, family_history*, other_treatment*, immunization*, adverse_reactions*, medication*, health_status*)>

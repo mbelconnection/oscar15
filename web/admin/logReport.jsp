@@ -30,22 +30,12 @@
 	import="oscar.login.*,oscar.util.SqlUtils, oscar.oscarDB.*, oscar.MyDateFormat"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
-<%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
-
 <%
 if(session.getAttribute("user") == null )
 	response.sendRedirect("../logout.jsp");
 String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
 String curUser_no = (String)session.getAttribute("user");
-
-boolean isSiteAccessPrivacy=false;
 %>
-
-
-<security:oscarSec objectName="_site_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%isSiteAccessPrivacy=true; %>
-</security:oscarSec>
-
 
 <%
   String   tdTitleColor = "#CCCC99";
@@ -64,12 +54,7 @@ boolean isSiteAccessPrivacy=false;
   DBPreparedHandler dbObj = new DBPreparedHandler();
   Properties propName = new   Properties();
   // select provider list
-  if (isSiteAccessPrivacy) { 
- 	sql = "select p.* from provider p INNER JOIN providersite s ON p.provider_no = s.provider_no WHERE s.site_id IN (SELECT site_id from providersite where provider_no=" + curUser_no + ") order by p.first_name, p.last_name"; 
-  }
-  else {
-  	sql = "select * from provider p order by p.first_name, p.last_name ";
-  }
+  sql   = "select * from provider p order by p.first_name, p.last_name ";
   ResultSet rs = dbObj.queryResults(sql);
 
   while (rs.next()) {
@@ -193,16 +178,8 @@ function onSub() {
 
       if("*".equals(providerNo)) {
 		  bAll = true;
-		   if (isSiteAccessPrivacy)   { 
-			      sql = "select * from log force index (datetime) where dateTime <= ?";
-			      sql += " and dateTime >= ? and content like '" + content + "' ";
-			      sql += "and provider_no IN (SELECT provider_no FROM providersite WHERE site_id IN (SELECT site_id from providersite where provider_no= " + curUser_no +") )";
-			      sql += " order by dateTime desc ";
-		   }
-		   else {
-		      sql = "select * from log force index (datetime) where dateTime <= ?";
-		      sql += " and dateTime >= ? and content like '" + content + "' order by dateTime desc ";
-		   }
+	      sql = "select * from log force index (datetime) where dateTime <= ?";
+	      sql += " and dateTime >= ? and content like '" + content + "' order by dateTime desc ";
       }
       rs = dbObj.queryResults(sql, params);
       while (rs.next()) {

@@ -66,10 +66,9 @@ public class EctDisplayMacroAction extends EctDisplayAction {
     String winName = "macro" + bean.demographicNo;
     String pathview, pathedit;
     
-    pathview = request.getContextPath() + "/eyeform/Macro.do?method=list";
-    //pathedit = request.getContextPath() + "/eyeform/Macro.do?method=list";
-    pathedit = request.getContextPath() + "/eyeform/Macro.do?method=addMacro";
-   
+    pathview = "javascript:alert('Not yet available');";
+    pathedit = request.getContextPath() + "/eyeform/Macro.do?method=list";
+    
     
     String url = "popupPage(500,900,'" + winName + "','" + pathview + "')";
     Dao.setLeftHeading(messages.getMessage(request.getLocale(), "global.macro"));

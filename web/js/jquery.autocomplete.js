@@ -7,7 +7,7 @@
  *   http://www.opensource.org/licenses/mit-license.php
  *   http://www.gnu.org/licenses/gpl.html
  *
- * Revision: $Id: jquery.autocomplete.js,v 1.1 2010-03-28 00:56:29 tobybian Exp $
+ * Revision: $Id: jquery.autocomplete.js,v 1.1 2010/03/28 00:56:29 tobybian Exp $
  */
 
 ;(function($) {

@@ -49,32 +49,6 @@ String billingRegion = (oscar.OscarProperties.getInstance()).getProperty("billre
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar"%>
-<%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
-
-<%
-
-	if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
-	String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
-	
-    boolean isSiteAccessPrivacy=false;
-    boolean isTeamAccessPrivacy=false; 
-    String provider_dboperation = "search_provider";
-    String mygroup_dboperation = "search_group";
-%>
-<security:oscarSec objectName="_site_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%
-		isSiteAccessPrivacy =true;
-		provider_dboperation = "site_search_provider";
-		mygroup_dboperation = "site_search_group";
-	%>
-</security:oscarSec>
-<security:oscarSec objectName="_team_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
-	<%
-		isTeamAccessPrivacy =true; 
-		provider_dboperation = "team_search_provider";
-	%>
-	
-</security:oscarSec>
 <html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
@@ -307,10 +281,8 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
 			key="report.reportindex.formDaySheet" /></td>
 		<td><select name="provider_no">
 			<%
-               ResultSet rsgroup = reportMainBean.queryResults(mygroup_dboperation);
+               ResultSet rsgroup = reportMainBean.queryResults("search_group");
                      while (rsgroup.next()) {
-                    	 if (isTeamAccessPrivacy) 
-                    		 continue;	//skip mygroup display if user have TeamAccessPrivacy 
             %>
 			<option value="<%="_grp_"+rsgroup.getString("mygroup_no")%>"
 				<%=mygroupno.equals(rsgroup.getString("mygroup_no"))?"selected":""%>><%="GRP: "+rsgroup.getString("mygroup_no")%></option>
@@ -318,7 +290,7 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
                      }
             %>
 			<%
-                 rsgroup = reportMainBean.queryResults(provider_dboperation);
+                 rsgroup = reportMainBean.queryResults("search_provider");
                      while (rsgroup.next()) {
             %>
 			<option value="<%=rsgroup.getString("provider_no")%>"
@@ -472,10 +444,8 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
 			key="report.reportindex.formBadAppt" /></a></td>
 		<td><select name="pprovider_no">
 			<%
-               rsgroup = reportMainBean.queryResults(mygroup_dboperation);
+               rsgroup = reportMainBean.queryResults("search_group");
                      while (rsgroup.next()) {
-                    	 if (isTeamAccessPrivacy) 
-                    		 continue;	//skip mygroup display if user have TeamAccessPrivacy 
             %>
 			<option value="<%="_grp_"+rsgroup.getString("mygroup_no")%>"
 				<%=mygroupno.equals(rsgroup.getString("mygroup_no"))?"selected":""%>><%="GRP: "+rsgroup.getString("mygroup_no")%></option>
@@ -483,7 +453,7 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
                      }
             %>
 			<%
-                 rsgroup = reportMainBean.queryResults(provider_dboperation);
+                 rsgroup = reportMainBean.queryResults("search_provider");
                      while (rsgroup.next()) {
             %>
 			<option value="<%=rsgroup.getString("provider_no")%>"
@@ -518,10 +488,8 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
 			key="report.reportindex.btnPatientChartList" /></a></td>
 		<td><select name="pcprovider_no">
 			<%
-               rsgroup = reportMainBean.queryResults(mygroup_dboperation);
+               rsgroup = reportMainBean.queryResults("search_group");
                      while (rsgroup.next()) {
-                    	 if (isTeamAccessPrivacy) 
-                    		 continue;	//skip mygroup display if user have TeamAccessPrivacy 
             %>
 			<option value="<%="_grp_"+rsgroup.getString("mygroup_no")%>"
 				<%=mygroupno.equals(rsgroup.getString("mygroup_no"))?"selected":""%>><%="GRP: "+rsgroup.getString("mygroup_no")%></option>
@@ -529,7 +497,7 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
                      }
             %>
 			<%
-                 rsgroup = reportMainBean.queryResults(provider_dboperation);
+                 rsgroup = reportMainBean.queryResults("search_provider");
                      while (rsgroup.next()) {
             %>
 			<option value="<%=rsgroup.getString("provider_no")%>"
@@ -551,10 +519,8 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
 			key="report.reportindex.btnOldPatient" /></a></td>
 		<td><select name="opcprovider_no">
 			<%
-               rsgroup = reportMainBean.queryResults(mygroup_dboperation);
+               rsgroup = reportMainBean.queryResults("search_group");
                      while (rsgroup.next()) {
-                    	 if (isTeamAccessPrivacy) 
-                    		 continue;	//skip mygroup display if user have TeamAccessPrivacy 
             %>
 			<option value="<%="_grp_"+rsgroup.getString("mygroup_no")%>"
 				<%=mygroupno.equals(rsgroup.getString("mygroup_no"))?"selected":""%>><%="GRP: "+rsgroup.getString("mygroup_no")%></option>
@@ -562,7 +528,7 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
                      }
             %>
 			<%
-                 rsgroup = reportMainBean.queryResults(provider_dboperation);
+                 rsgroup = reportMainBean.queryResults("search_provider");
                      while (rsgroup.next()) {
             %>
 			<option value="<%=rsgroup.getString("provider_no")%>"
@@ -585,10 +551,8 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
 			key="report.reportindex.btnNoShowAppointmentList" /></a></td>
 		<td><select name="nsprovider_no">
 			<%
-               rsgroup = reportMainBean.queryResults(mygroup_dboperation);
+               rsgroup = reportMainBean.queryResults("search_group");
                      while (rsgroup.next()) {
-                    	 if (isTeamAccessPrivacy) 
-                    		 continue;	//skip mygroup display if user have TeamAccessPrivacy 
             %>
 			<option value="<%="_grp_"+rsgroup.getString("mygroup_no")%>"
 				<%=mygroupno.equals(rsgroup.getString("mygroup_no"))?"selected":""%>><%="GRP: "+rsgroup.getString("mygroup_no")%></option>
@@ -596,7 +560,7 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
                      }
             %>
 			<%
-                 rsgroup = reportMainBean.queryResults(provider_dboperation);
+                 rsgroup = reportMainBean.queryResults("search_provider");
                      while (rsgroup.next()) {
             %>
 			<option value="<%=rsgroup.getString("provider_no")%>"

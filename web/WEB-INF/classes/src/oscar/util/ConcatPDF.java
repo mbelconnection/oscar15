@@ -31,8 +31,8 @@ package oscar.util;
 
 
 /*
- * $Id: ConcatPDF.java,v 1.4 2010-07-12 20:04:12 tedleung Exp $
- * $Name:  $
+ * $Id: ConcatPDF.java,v 1.4 2010/07/12 20:04:12 tedleung Exp $
+ * $Name: RELEASE_10_12 $
  *
  * This code is free software. It may only be copied or modified
  * if you include the following copyright notice:

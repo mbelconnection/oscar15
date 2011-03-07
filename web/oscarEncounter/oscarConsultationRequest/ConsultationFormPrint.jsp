@@ -44,9 +44,7 @@
     oscar.oscarEncounter.oscarConsultationRequest.pageUtil.EctConsultationFormRequestUtil reqFrm;
     reqFrm = new oscar.oscarEncounter.oscarConsultationRequest.pageUtil.EctConsultationFormRequestUtil ();
     reqFrm.estRequestFromId((String)request.getAttribute("reqId"));
-    
-	String selectedSite = reqFrm.siteName;
-	
+
     reqFrm.specPhone = request.getParameter("phone");
 
     if (reqFrm.specPhone == null || reqFrm.specPhone.equals("null")){
@@ -104,10 +102,7 @@
                 vecAddressName.add(s.getName());
                 vecAddress.add(s.getAddress() + ", " + s.getCity() + ", " + s.getProvince() + "  " + s.getPostal());
                 vecAddressPhone.add(s.getPhone());
-                vecAddressFax.add(s.getFax());    
-                if (selectedSite.equals(s.getName())) {
-                	defaultSite = s;
-                }
+                vecAddressFax.add(s.getFax());      			
       		}
             // default address
         if (defaultSite!=null) {
@@ -324,8 +319,8 @@
 		<% } %>
 		<% if(vecAddress != null) { %>
             <td align="center">
-                Address 
-                <select name="addressSel" id="addressSel" onChange="addressSelect()" <%=(bMultisites && selectedSite != null ? " disabled " : " ") %>>>
+                Address
+                <select name="addressSel" id="addressSel" onChange="addressSelect()">
             <%  for (int i =0; i < vecAddressName.size();i++){
                  String te = (String) vecAddressName.get(i);
             %>

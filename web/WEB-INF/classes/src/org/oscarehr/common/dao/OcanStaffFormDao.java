@@ -182,15 +182,15 @@ public List<OcanStaffForm> findUnsubmittedOcanFormsByOcanType(Integer facilityId
 		// Multiple ocan forms with same assessmentId, only the latest updated one can be submitted. 
 		// Don't need to display other assessments with same assessment ID as submitted one's, 
 		// but the submission ID is 0.
-		/*List<OcanStaffForm> list1 = new ArrayList<OcanStaffForm>();
+		List<OcanStaffForm> list1 = new ArrayList<OcanStaffForm>();
 		for(OcanStaffForm form: list1) {
 			if(findSubmittedOcanFormsByAssessmentId(form.getAssessmentId()).size() > 0) {
 				continue;
 			} else {
 				list1.add(form);
 			}
-		}*/
-		return list;				
+		}
+		return list1;				
     }
     
 
@@ -219,15 +219,15 @@ public List<OcanStaffForm> findUnsubmittedOcanFormsByOcanType(Integer facilityId
 		// Multiple ocan forms with same assessmentId, only the latest updated one can be submitted. 
 		// Don't need to display other assessments with same assessment ID as submitted one's, 
 		// but the submission ID is 0.
-		/*List<OcanStaffForm> list1 = new ArrayList<OcanStaffForm>();
+		List<OcanStaffForm> list1 = new ArrayList<OcanStaffForm>();
 		for(OcanStaffForm form: list1) {
 			if(findSubmittedOcanFormsByAssessmentId(form.getAssessmentId()).size() > 0) {
 				continue;
 			} else {
 				list1.add(form);
 			}
-		}*/
-		return list;				
+		}
+		return list1;				
     }
     
     public List<OcanStaffForm> findSubmittedOcanFormsByAssessmentId(Integer assessmentId) {

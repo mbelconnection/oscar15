@@ -47,17 +47,12 @@
 	List<Admission> admissions = admissionDao.getAdmissionsASC(currentDemographicId);
 	for(Admission ad : admissions) {
 		if(!"community".equalsIgnoreCase(ad.getProgramType())) {
-			System.out.println("program Id is "+ ad.getProgramId());
-			System.out.println("admission DATE is "+ ad.getAdmissionDate());
 			admissionDate = DateFormatUtils.ISO_DATE_FORMAT.format(ad.getAdmissionDate());
 			break;			
 		}
 	}
 	String admission_year = admissionDate.substring(0,4);
 	String admission_month = admissionDate.substring(5,7);
-	System.out.println("admission date = "+ admissionDate);
-	System.out.println("admission year = "+ admission_year);
-	System.out.println("admission month = "+ admission_month);
 	
 	boolean printOnly=request.getParameter("print")!=null;
 	if (printOnly) request.setAttribute("noMenus", true);

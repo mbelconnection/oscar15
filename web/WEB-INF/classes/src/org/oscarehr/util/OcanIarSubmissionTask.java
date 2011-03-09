@@ -15,8 +15,16 @@ public class OcanIarSubmissionTask extends TimerTask {
 		logger.info("Running OCAN IAR Submission Task");
 		FacilityDao facilityDao = (FacilityDao)SpringUtils.getBean("facilityDao");
 		LoggedInInfo.loggedInInfo.get().currentFacility = facilityDao.find(1);
-		int submissionId = OcanReportUIBean.sendSubmissionToIAR(OcanReportUIBean.generateOCANSubmission("FULL"));		
-		logger.info("Completed: submissionId="+ submissionId);
+		
+		int submissionId_full = OcanReportUIBean.sendSubmissionToIAR(OcanReportUIBean.generateOCANSubmission("FULL"));		
+		logger.info("FULL OCAN upload Completed: submissionId="+ submissionId_full);
+		
+		int submissionId_self = OcanReportUIBean.sendSubmissionToIAR(OcanReportUIBean.generateOCANSubmission("SELF"));		
+		logger.info("FULL OCAN upload Completed: submissionId="+ submissionId_self);
+		
+		int submissionId_core = OcanReportUIBean.sendSubmissionToIAR(OcanReportUIBean.generateOCANSubmission("CORE"));		
+		logger.info("FULL OCAN upload Completed: submissionId="+ submissionId_core);
+		
 	}
 
 }

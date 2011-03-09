@@ -231,7 +231,7 @@ public class OcanReportUIBean implements CallbackHandler {
 		int increment = 1;
 		LoggedInInfo loggedInInfo = LoggedInInfo.loggedInInfo.get();
 		
-		List<OcanStaffForm> ocanStaffForms = ocanStaffFormDao.findUnsubmittedOcanForms(loggedInInfo.currentFacility.getId());
+		List<OcanStaffForm> ocanStaffForms = ocanStaffFormDao.findUnsubmittedOcanFormsByOcanType(loggedInInfo.currentFacility.getId(), ocanType);
 		logger.info("# of staff forms found for submission = " + ocanStaffForms.size());
 		
 		OCANv2SubmissionFileDocument submissionFileDoc = OCANv2SubmissionFileDocument.Factory.newInstance();		
@@ -252,6 +252,7 @@ public class OcanReportUIBean implements CallbackHandler {
 
 			OcanClientForm clientForm = null;
 			List<OcanClientFormData> clientFormData = null;
+			
 			OCANv2SubmissionRecord submissionRecord = convertOcanForm(staffForm,ocanStaffFormDataDao.findByForm(staffForm.getId()),clientForm,clientFormData, ocanType);
 			submissionRecordList.add(submissionRecord);			
 		}
@@ -428,8 +429,11 @@ public class OcanReportUIBean implements CallbackHandler {
 		if(log.getResult()!=null && log.getResult().equals("true")) {
 			for(int x=0;x<submissionDoc.getOCANv2SubmissionFile().getOCANv2SubmissionRecordArray().length;x++) {
 				OCANv2SubmissionRecord subRec = submissionDoc.getOCANv2SubmissionFile().getOCANv2SubmissionRecordArray()[x];
-				String id = subRec.getAssessmentID();
-				OcanStaffForm staffForm = ocanStaffFormDao.find(Integer.parseInt(id));
+				String id = subRec.getAssessmentID();			
+				//OcanStaffForm staffForm = ocanStaffFormDao.find(Integer.parseInt(id));
+				// assessment ID is not form ID.
+				OcanStaffForm staffForm = ocanStaffFormDao.findLatestByAssessmentId(LoggedInInfo.loggedInInfo.get().currentFacility.getId(), Integer.valueOf(id));
+				
 				staffForm.setSubmissionId(log.getId());
 				ocanStaffFormDao.merge(staffForm);
 			}
@@ -438,9 +442,19 @@ public class OcanReportUIBean implements CallbackHandler {
 		return log.getId();
 	}
 
-
-	public static void writeExportIar(OutputStream out) {		
-		OCANv2SubmissionFileDocument submissionDoc = generateOCANSubmission("FULL");
+	
+	public static void writeExportIar(OutputStream out) {	
+		
+		writeExportIar_forOneOcanType(out, "FULL");
+		
+		writeExportIar_forOneOcanType(out, "SELF");
+		
+		writeExportIar_forOneOcanType(out, "CORE");
+	}
+		
+	public static void writeExportIar_forOneOcanType(OutputStream out, String ocanType) {			
+		
+		OCANv2SubmissionFileDocument submissionDoc = generateOCANSubmission(ocanType);
 		
 		if(submissionDoc.getOCANv2SubmissionFile().getOCANv2SubmissionRecordArray().length == 0) {
 			logger.info("No records to send");
@@ -549,7 +563,10 @@ public class OcanReportUIBean implements CallbackHandler {
 			for(int x=0;x<submissionDoc.getOCANv2SubmissionFile().getOCANv2SubmissionRecordArray().length;x++) {
 				OCANv2SubmissionRecord subRec = submissionDoc.getOCANv2SubmissionFile().getOCANv2SubmissionRecordArray()[x];
 				String id = subRec.getAssessmentID();
-				OcanStaffForm staffForm = ocanStaffFormDao.find(Integer.parseInt(id));
+				//OcanStaffForm staffForm = ocanStaffFormDao.find(Integer.parseInt(id));
+				// attention: assessment ID is not form ID.
+				OcanStaffForm staffForm = ocanStaffFormDao.findLatestByAssessmentId(LoggedInInfo.loggedInInfo.get().currentFacility.getId(), Integer.valueOf(id));
+				
 				staffForm.setSubmissionId(log.getId());
 				ocanStaffFormDao.merge(staffForm);
 			}
@@ -995,19 +1012,9 @@ public class OcanReportUIBean implements CallbackHandler {
 		NeedRating needRating = NeedRating.Factory.newInstance();
 		
 		if("FULL".equals(ocanType)) {
-			String staffAnswer = getStaffAnswer(domainNumber+"_1",ocanStaffFormData);
+			String staffAnswer = getStaffAnswer(domainNumber+"_1",ocanStaffFormData);            
 			needRating.setStaff(Byte.valueOf(staffAnswer));
-			if(getStaffAnswer("consumerSelfAxCompleted",ocanStaffFormData).equals("TRUE")) {
-				// merge clientform with staffform, so don't need the following code.
-				//if(ocanClientForm != null) {
-				//	String clientAnswer = getClientAnswer(domainNumber+"_1",ocanClientFormData);
-				//	if(clientAnswer.length()>0)
-				//		needRating.setClient(Byte.valueOf(clientAnswer));
-				//	else
-				//		needRating.setClient((byte)-1);
-				//} else {
-				//	needRating.setClient((byte)-1);
-				//}
+			if(getStaffAnswer("consumerSelfAxCompleted",ocanStaffFormData).equals("TRUE")) {				
 				String clientAnswer = getStaffAnswer("client_"+domainNumber+"_1",ocanStaffFormData);
 				if(clientAnswer.length()>0) {
 					needRating.setClient(Byte.valueOf(clientAnswer));
@@ -1018,7 +1025,7 @@ public class OcanReportUIBean implements CallbackHandler {
 				needRating.setClient((byte)-1);
 			}
 		} else if("SELF".equals(ocanType)) {
-			String clientAnswer = getStaffAnswer("client_"+domainNumber+"_1",ocanStaffFormData);
+			String clientAnswer = getStaffAnswer("client_"+domainNumber+"_1",ocanStaffFormData);            
 			if(clientAnswer.length()>0) {
 				needRating.setClient(Byte.valueOf(clientAnswer));
 			} else {

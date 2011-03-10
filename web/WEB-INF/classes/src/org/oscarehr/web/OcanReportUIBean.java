@@ -23,8 +23,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.BindingProvider;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.apache.ws.security.WSPasswordCallback;
 import org.apache.xmlbeans.XmlOptions;
 import org.oscarehr.PMmodule.caisi_integrator.CxfClientUtils;
@@ -161,6 +160,7 @@ import org.oscarehr.ocan.SymptomListDocument.SymptomList;
 import org.oscarehr.ocan.TimeLivedInCanadaDocument.TimeLivedInCanada;
 import org.oscarehr.ocan.VisitEmergencyDepartmentDocument.VisitEmergencyDepartment;
 import org.oscarehr.util.LoggedInInfo;
+import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 
 import oscar.OscarProperties;
@@ -180,8 +180,9 @@ import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 
 public class OcanReportUIBean implements CallbackHandler {
 
-	static Log logger = LogFactory.getLog(OcanReportUIBean.class);
-
+	//static Log logger = LogFactory.getLog(OcanReportUIBean.class);
+	private static final Logger logger = MiscUtils.getLogger();
+	
 	private static OcanStaffFormDao ocanStaffFormDao = (OcanStaffFormDao) SpringUtils.getBean("ocanStaffFormDao");
 	private static OcanStaffFormDataDao ocanStaffFormDataDao = (OcanStaffFormDataDao) SpringUtils.getBean("ocanStaffFormDataDao");	
 	private static OcanClientFormDao ocanClientFormDao = (OcanClientFormDao) SpringUtils.getBean("ocanClientFormDao");
@@ -407,7 +408,7 @@ public class OcanReportUIBean implements CallbackHandler {
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new NamespacePrefixmapperImpl() );  
-        marshaller.marshal(is, System.out);
+        marshaller.marshal(is, sstemout);
         
 		}
 		catch(Exception e) {
@@ -512,7 +513,7 @@ public class OcanReportUIBean implements CallbackHandler {
 		//String orgId = OscarProperties.getInstance().getProperty("ocan.iar.org.id");
 		String orgId = LoggedInInfo.loggedInInfo.get().currentFacility.getOcanServiceOrgNumber();
 		org.setId(orgId);
-		org.setName("CAISI");
+		org.setName(LoggedInInfo.loggedInInfo.get().currentFacility.getName());
 		
 		XMLGregorianCalendar cal = null;
 		
@@ -696,7 +697,7 @@ public class OcanReportUIBean implements CallbackHandler {
 					
 				}			
 				
-			}catch(IOException e) {e.printStackTrace();}
+			}catch(IOException e) {logger.error(e);}
 		}
 		*/
 		try {

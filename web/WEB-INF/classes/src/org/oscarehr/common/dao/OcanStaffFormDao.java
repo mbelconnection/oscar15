@@ -183,7 +183,7 @@ public List<OcanStaffForm> findUnsubmittedOcanFormsByOcanType(Integer facilityId
 		// Don't need to display other assessments with same assessment ID as submitted one's, 
 		// but the submission ID is 0.
 		List<OcanStaffForm> list1 = new ArrayList<OcanStaffForm>();
-		for(OcanStaffForm form: list1) {
+		for(OcanStaffForm form: list) {
 			if(findSubmittedOcanFormsByAssessmentId(form.getAssessmentId()).size() > 0) {
 				continue;
 			} else {
@@ -220,7 +220,7 @@ public List<OcanStaffForm> findUnsubmittedOcanFormsByOcanType(Integer facilityId
 		// Don't need to display other assessments with same assessment ID as submitted one's, 
 		// but the submission ID is 0.
 		List<OcanStaffForm> list1 = new ArrayList<OcanStaffForm>();
-		for(OcanStaffForm form: list1) {
+		for(OcanStaffForm form: list) {
 			if(findSubmittedOcanFormsByAssessmentId(form.getAssessmentId()).size() > 0) {
 				continue;
 			} else {

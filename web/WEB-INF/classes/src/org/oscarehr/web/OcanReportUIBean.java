@@ -198,7 +198,25 @@ public class OcanReportUIBean implements CallbackHandler {
 		LoggedInInfo loggedInInfo = LoggedInInfo.loggedInInfo.get();
 		//get all completed ones
 		List<OcanStaffForm> ocanStaffForms = ocanStaffFormDao.findUnsubmittedOcanForms(loggedInInfo.currentFacility.getId());		
-		return ocanStaffForms;
+		
+		List<OcanStaffForm> forms = new ArrayList<OcanStaffForm>();
+		int assessmentId_0=0;
+		for(OcanStaffForm staffForm:ocanStaffForms) {		
+			
+				int assessmentId_1 = staffForm.getAssessmentId().intValue();
+				if(assessmentId_0!=assessmentId_1) {
+					assessmentId_0 = assessmentId_1;					
+					//If ReasonForAssessment is Review or Re-key, this assessment should not be submitted.
+					String answer = staffForm.getReasonForAssessment();
+					if(answer.equals("REV") || answer.equals("REK")) {
+						continue;
+					}
+					forms.add(staffForm);
+				}
+						
+		}
+		
+		return forms;
 	}
 	
 	public static List<OcanSubmissionLog> getAllSubmissions() {
@@ -334,7 +352,7 @@ public class OcanReportUIBean implements CallbackHandler {
 		//String orgId = OscarProperties.getInstance().getProperty("ocan.iar.org.id");
 		String orgId = LoggedInInfo.loggedInInfo.get().currentFacility.getOcanServiceOrgNumber();
 		org.setId(orgId);
-		org.setName("CAISI");
+		org.setName(LoggedInInfo.loggedInInfo.get().currentFacility.getName());
 		
 		XMLGregorianCalendar cal = null;
 		

@@ -758,6 +758,7 @@ function fetchAttached() {
 			//  new request
 			if (demo != null)
 			{
+				EctViewRequestAction.fillFormValues(thisForm,consultUtil);
 				thisForm.setAllergies(demographic.RxInfo.getAllergies());
 
 				if (props.getProperty("currentMedications", "").equalsIgnoreCase("otherMedications"))

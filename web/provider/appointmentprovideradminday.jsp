@@ -128,10 +128,10 @@ public boolean patientHasOutstandingPrivateBills(String demographicNo){
     //String userprofession = (String) session.getAttribute("userprofession");
     int startHour=Integer.parseInt(((String) session.getAttribute("starthour")).trim());
     int endHour=Integer.parseInt(((String) session.getAttribute("endhour")).trim());
-    int everyMin=Integer.parseInt(((String) session.getAttribute("everymin")).trim());
+    int everyMin=Integer.parseInt(((String) session.getAttribute("everymin")).trim());    
     String defaultServiceType = (String) session.getAttribute("default_servicetype");
     if( defaultServiceType == null ) {
-        List<Map> prefList = oscarSuperManager.find("providerDao", "search_pref_defaultbill", new Object[] {curUser_no});
+    	List<Map> prefList = oscarSuperManager.find("providerDao", "search_pref_defaultbill", new Object[] {curUser_no});
         if (prefList.size() > 0) {
             defaultServiceType = String.valueOf(prefList.get(0).get("default_servicetype"));
         }
@@ -145,20 +145,29 @@ public boolean patientHasOutstandingPrivateBills(String demographicNo){
     String default_pmm=null;
     String programId_oscarView=null;
 	String ocanWarningWindow=null;
+	String caisiBillingPreferenceNotDelete = null;
 	
-if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable()){
-	newticklerwarningwindow = (String) session.getAttribute("newticklerwarningwindow");
-	default_pmm = (String)session.getAttribute("default_pmm");
-	ocanWarningWindow = (String)session.getAttribute("ocanWarningWindow");
-	
-	//Disable schedule view associated with the program
-	//Made the default program id "0";
-	//programId_oscarView= (String)session.getAttribute("programId_oscarView");
-	programId_oscarView = "0";
-} else {
-	programId_oscarView="0";
-	session.setAttribute("programId_oscarView",programId_oscarView);
-}
+	if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable()){
+		newticklerwarningwindow = (String) session.getAttribute("newticklerwarningwindow");
+		default_pmm = (String)session.getAttribute("default_pmm");
+		ocanWarningWindow = (String)session.getAttribute("ocanWarningWindow");
+		caisiBillingPreferenceNotDelete = (String)session.getAttribute("caisiBillingPreferenceNotDelete");
+		if(caisiBillingPreferenceNotDelete==null) {
+			List<Map> prefBillingList = oscarSuperManager.find("providerDao", "search_pref_defaultbill", new Object[] {curUser_no});
+			if (prefBillingList.size() > 0) {
+				caisiBillingPreferenceNotDelete = String.valueOf(prefBillingList.get(0).get("defaultDoNotDeleteBilling"));
+	        }
+		}
+		
+		//Disable schedule view associated with the program
+		//Made the default program id "0";
+		//programId_oscarView= (String)session.getAttribute("programId_oscarView");
+		programId_oscarView = "0";
+	} else {
+		programId_oscarView="0";
+		session.setAttribute("programId_oscarView",programId_oscarView);
+	}
+
     int lenLimitedL=11, lenLimitedS=3; //L - long, S - short
     int len = lenLimitedL;
     int view = request.getParameter("view")!=null ? Integer.parseInt(request.getParameter("view")) : 0; //0-multiple views, 1-single view
@@ -512,6 +521,11 @@ popupPage(700,720, url);
 }
 }
 
+function onUpdatebill(url) {	
+		popupPage(700,720, url);
+}
+
+
 function changeGroup() {
 var s = document.appointmentForm.elements['mygroup_no'];
 var newGroupNo = s.options[s.selectedIndex].value;
@@ -528,7 +542,7 @@ if(newGroupNo.indexOf("_grp_") != -1) {
 	var programId = 0;
 	var programId_forCME = document.getElementById("bedprogram_no").value;
 	
-	popupPage(10,10, "providercontrol.jsp?provider_no=<%=curUser_no%>&start_hour=<%=startHour%>&end_hour=<%=endHour%>&every_min=<%=everyMin%>&new_tickler_warning_window=<%=newticklerwarningwindow%>&default_pmm=<%=default_pmm%>&color_template=deepblue&dboperation=updatepreference&displaymode=updatepreference&default_servicetype=<%=defaultServiceType%>&mygroup_no="+newGroupNo+"&programId_oscarView="+programId+"&case_program_id="+programId_forCME);
+	popupPage(10,10, "providercontrol.jsp?provider_no=<%=curUser_no%>&start_hour=<%=startHour%>&end_hour=<%=endHour%>&every_min=<%=everyMin%>&caisiBillingPreferenceNotDelete=<%=caisiBillingPreferenceNotDelete%>&new_tickler_warning_window=<%=newticklerwarningwindow%>&default_pmm=<%=default_pmm%>&color_template=deepblue&dboperation=updatepreference&displaymode=updatepreference&default_servicetype=<%=defaultServiceType%>&mygroup_no="+newGroupNo+"&programId_oscarView="+programId+"&case_program_id="+programId_forCME);
 <%}else {%>
   var programId=0;
   popupPage(10,10, "providercontrol.jsp?provider_no=<%=curUser_no%>&start_hour=<%=startHour%>&end_hour=<%=endHour%>&every_min=<%=everyMin%>&color_template=deepblue&dboperation=updatepreference&displaymode=updatepreference&default_servicetype=<%=defaultServiceType%>&mygroup_no="+newGroupNo+"&programId_oscarView="+programId);
@@ -841,7 +855,7 @@ java.util.Locale vLocale =(java.util.Locale)session.getAttribute(org.apache.stru
 
 <li>    <!-- remove this and let providerpreference check -->
     <caisi:isModuleLoad moduleName="ticklerplus">
-	<a href=# onClick ="popupPage(715,680,'providerpreference.jsp?provider_no=<%=curUser_no%>&start_hour=<%=startHour%>&end_hour=<%=endHour%>&every_min=<%=everyMin%>&mygroup_no=<%=mygroupno%>&new_tickler_warning_window=<%=newticklerwarningwindow%>&default_pmm=<%=default_pmm%>');return false;" TITLE='<bean:message key="provider.appointmentProviderAdminDay.msgSettings"/>' OnMouseOver="window.status='<bean:message key="provider.appointmentProviderAdminDay.msgSettings"/>' ; return true"><bean:message key="global.pref"/></a>
+	<a href=# onClick ="popupPage(715,680,'providerpreference.jsp?provider_no=<%=curUser_no%>&start_hour=<%=startHour%>&end_hour=<%=endHour%>&every_min=<%=everyMin%>&mygroup_no=<%=mygroupno%>&new_tickler_warning_window=<%=newticklerwarningwindow%>&default_pmm=<%=default_pmm%>&caisiBillingPreferenceNotDelete=<%=caisiBillingPreferenceNotDelete%>');return false;" TITLE='<bean:message key="provider.appointmentProviderAdminDay.msgSettings"/>' OnMouseOver="window.status='<bean:message key="provider.appointmentProviderAdminDay.msgSettings"/>' ; return true"><bean:message key="global.pref"/></a>
     </caisi:isModuleLoad>
     <caisi:isModuleLoad moduleName="ticklerplus" reverse="true">
 	<a href=# onClick ="popupPage(715,680,'providerpreference.jsp?provider_no=<%=curUser_no%>&start_hour=<%=startHour%>&end_hour=<%=endHour%>&every_min=<%=everyMin%>&mygroup_no=<%=mygroupno%>');return false;" TITLE='<bean:message key="provider.appointmentProviderAdminDay.msgSettings"/>' OnMouseOver="window.status='<bean:message key="provider.appointmentProviderAdminDay.msgSettings"/>' ; return true"><bean:message key="global.pref"/></a>
@@ -1472,9 +1486,13 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
              <% } else {%>
               <a href=# onClick='popupPage(755,1200, "../billing.do?billRegion=<%=URLEncoder.encode(prov)%>&billForm=<%=URLEncoder.encode(oscarVariables.getProperty("default_view"))%>&hotclick=<%=URLEncoder.encode("")%>&appointment_no=<%=appointment.get("appointment_no")%>&demographic_name=<%=URLEncoder.encode(name)%>&status=<%=status%>&demographic_no=<%=demographic_no%>&providerview=<%=curProvider_no[nProvider]%>&user_no=<%=curUser_no%>&apptProvider_no=<%=curProvider_no[nProvider]%>&appointment_date=<%=year+"-"+month+"-"+day%>&start_time=<%=iS+":"+iSm%>&bNewForm=1");return false;' title="<bean:message key="global.billing"/>">|<bean:message key="provider.appointmentProviderAdminDay.btnB"/></a>
              <% } %>
-<% } else {%>
-    <a href=# onClick='onUnbilled("../billing/CA/<%=prov%>/billingDeleteWithoutNo.jsp?status=<%=status%>&appointment_no=<%=appointment.get("appointment_no")%>");return false;' title="<bean:message key="global.billingtag"/>">|-<bean:message key="provider.appointmentProviderAdminDay.btnB"/></a>
-<% } %>
+		<% } else { %>
+			<%if(caisiBillingPreferenceNotDelete!=null && caisiBillingPreferenceNotDelete.equals("1")) {%>	
+				<a href=# onClick='onUpdatebill("../billing/CA/<%=prov%>/billingONCorrection.jsp?status=<%=status%>&appointment_no=<%=appointment.get("appointment_no")%>");return false;' title="<bean:message key="global.billingtag"/>">|=<bean:message key="provider.appointmentProviderAdminDay.btnB"/></a>
+			<% } else { %>
+    			<a href=# onClick='onUnbilled("../billing/CA/<%=prov%>/billingDeleteWithoutNo.jsp?status=<%=status%>&appointment_no=<%=appointment.get("appointment_no")%>");return false;' title="<bean:message key="global.billingtag"/>">|-<bean:message key="provider.appointmentProviderAdminDay.btnB"/></a>
+			<% }%>
+		<%} %>
 <!--/security:oscarSec-->
 	  </security:oscarSec>
 <% } %>
@@ -1653,7 +1671,7 @@ document.onkeydown=function(e){
 			case <bean:message key="global.reportShortcut"/> : popupOscarRx(650,1090,'../report/reportindex.jsp','reportPage');  return false;  //run code for 'R'eports
 			case <bean:message key="global.prefShortcut"/> : {
 				    <caisi:isModuleLoad moduleName="ticklerplus">
-					popupOscarRx(715,680,'providerpreference.jsp?provider_no=<%=curUser_no%>&start_hour=<%=startHour%>&end_hour=<%=endHour%>&every_min=<%=everyMin%>&mygroup_no=<%=mygroupno%>&new_tickler_warning_window=<%=newticklerwarningwindow%>&default_pmm=<%=default_pmm%>'); //run code for tickler+ 'P'references
+					popupOscarRx(715,680,'providerpreference.jsp?provider_no=<%=curUser_no%>&start_hour=<%=startHour%>&end_hour=<%=endHour%>&every_min=<%=everyMin%>&mygroup_no=<%=mygroupno%>&caisiBillingPreferenceNotDelete=<%=caisiBillingPreferenceNotDelete%>&new_tickler_warning_window=<%=newticklerwarningwindow%>&default_pmm=<%=default_pmm%>'); //run code for tickler+ 'P'references
 					return false;
 				    </caisi:isModuleLoad>
 			            <caisi:isModuleLoad moduleName="ticklerplus" reverse="true">

@@ -260,16 +260,23 @@ function checkSettle(status) {
 				BillingItemData itemObj = null;
 
 				// bFlag - fill in data?
-				boolean bFlag = false;
-				String billNo = request.getParameter("billing_no").trim();
+				boolean bFlag = false;				
+				String billNo = request.getParameter("billing_no")==null?null:request.getParameter("billing_no").trim();
                                 String claimNo = request.getParameter("claim_no");
                                 
                                 if( billNo == null || billNo.length() == 0 ) {                                    
                                     if( claimNo != null && claimNo.length() > 0 ) {
                                         claimNo = claimNo.trim();
                                         billNo = raObj.getRABilllingNo4ClaimNo(claimNo);
+                                    } else {
+	                                    String apptNo = request.getParameter("appointment_no");
+	                    				if(apptNo!=null && !apptNo.equals("")&& apptNo.length()>0) {
+	                    					//search bill status
+	                    					  BillingCorrectionPrep dbObj = new BillingCorrectionPrep();
+	                    					  List billStatus = dbObj.getBillingNoStatusByAppt(apptNo);
+	                    					  billNo = (String)billStatus.get(0);  	  
+	                    				}
                                     }
-                                    
                                 }
 				if (billNo != null && billNo.length() > 0) {
 					bFlag = true;

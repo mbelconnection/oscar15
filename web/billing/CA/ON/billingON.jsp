@@ -221,7 +221,24 @@
 			}
 
 			String paraName = request.getParameter("dxCode");
-			String dxCode = getDefaultValue(paraName, vecHistD, "diagnostic_code");
+			String dxCode=null;
+			if(paraName==null || paraName.equals("")) {
+				// get the default diagnostic code
+				String sql_dx = "select defaultDxCode from preference where provider_no='";
+	            if( apptProvider_no.equalsIgnoreCase("none") ) {
+	                sql_dx += user_no + "'";
+	            }
+	            else {
+	                sql_dx += apptProvider_no + "'";
+	            }
+	            
+				rs = dbObj.searchDBRecord(sql_dx);
+				if (rs.next() && rs.getString("defaultDxCode")!=null) {
+					dxCode = rs.getString("defaultDxCode");
+				} 
+			}	
+			paraName = dxCode;
+			dxCode = getDefaultValue(paraName, vecHistD, "diagnostic_code");
 
 			//visitType
 			paraName = request.getParameter("xml_visittype");

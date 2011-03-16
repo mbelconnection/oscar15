@@ -68,7 +68,7 @@ public class PreventionManager {
                     Prevention prev = prevData.getPrevention(demo);
                     pf.getMessages(prev);
                     ArrayList warnings = prev.getWarnings();
-                    ret = StringUtils.join(warnings, ". ");
+                    ret = StringUtils.join(warnings.toArray(), ". ");
                     //warnings = prev.getReminder();
                     if( ret.length() > 0 ) {
                         ret += ". ";

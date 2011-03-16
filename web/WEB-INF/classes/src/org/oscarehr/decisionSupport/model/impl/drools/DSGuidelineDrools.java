@@ -216,7 +216,7 @@ public class DSGuidelineDrools extends DSGuideline {
     public Element getDroolsCondition(DSCondition condition) throws DecisionSupportException {
         String accessMethod = condition.getConditionType().getAccessMethod();
         Element javaCondition = new Element("condition", javaNamespace);
-        String parameters = "\"" + StringUtils.join(condition.getValues(), ",") + "\"";
+        String parameters = "\"" + StringUtils.join(condition.getValues().toArray(), ",") + "\"";
         accessMethod = accessMethod + StringUtils.capitalize(condition.getListOperator().name());
         String functionStr = "a." + accessMethod + "(" + parameters; // + ")";
         if( condition.getParam() != null && !condition.getParam().isEmpty()){

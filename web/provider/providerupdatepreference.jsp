@@ -61,7 +61,7 @@ String programId_forCME = request.getParameter("case_program_id");
 request.getSession().setAttribute("case_program_id",programId_forCME);
 
 if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable()){
-  param = new String[9];
+  param = new String[10];
   param[6]=request.getParameter("new_tickler_warning_window");
   if (param[6] == null) {
 	param[6] = (String) session.getAttribute("newticklerwarningwindow");
@@ -70,7 +70,13 @@ if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.Is
   if (param[7] == null) {
 	  param[7] = session.getAttribute("default_pmm")==null?"disabled":(String) session.getAttribute("default_pmm");
   }
-  param[8]=request.getParameter("provider_no");
+  
+  param[8]=request.getParameter("caisiBillingPreferenceNotDelete");
+  if (param[8] == null) {
+	  param[8] = session.getAttribute("caisiBillingPreferenceNotDelete")==null?"0":(String) session.getAttribute("caisiBillingPreferenceNotDelete");
+  }
+  
+  param[9]=request.getParameter("provider_no");
   op += "_newtickler";
 } else {
   param = new String[7];
@@ -94,6 +100,7 @@ if (rowsAffected >= 1) { //Successful Update of a Preference Record.
   if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable()){
     session.setAttribute("newticklerwarningwindow", param[6]);
     session.setAttribute("default_pmm", param[7]);
+    session.setAttribute("caisiBillingPreferenceNotDelete", param[8]);
   }
 %>
 <script LANGUAGE="JavaScript">
@@ -120,6 +127,10 @@ if (rowsAffected >= 1) { //Successful Update of a Preference Record.
 	if (param[8] == null) {
 		param[8] = session.getAttribute("default_pmm")==null?"disabled":(String) session.getAttribute("default_pmm");
 	}
+	param[9]=request.getParameter("caisiBillingPreferenceNotDelete");
+	  if (param[9] == null) {
+		  param[9] = session.getAttribute("caisiBillingPreferenceNotDelete")==null?"0":(String) session.getAttribute("caisiBillingPreferenceNotDelete");
+	  }
 	op += "_newtickler";
   }
   rowsAffected = oscarSuperManager.update("providerDao", op, param);
@@ -132,6 +143,7 @@ if (rowsAffected >= 1) { //Successful Update of a Preference Record.
   if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable()){
     session.setAttribute("newticklerwarningwindow", param[7]);
     session.setAttribute("default_pmm", param[8]);
+    session.setAttribute("caisiBillingPreferenceNotDelete", param[9]);
   }
 %>
 <script LANGUAGE="JavaScript">

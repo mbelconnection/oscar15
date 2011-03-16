@@ -246,9 +246,36 @@ function showHideBillPref() {
             </td>
           </tr>
           
-          
-          
-      </caisi:isModuleLoad>
+           
+          <tr BGCOLOR="<%=weakcolor%>"> 
+            <td width="20%"> 
+            </td>
+            <td width="40%"> 
+              <div align="right"><font face="arial"><bean:message key="provider.btnCaisiBillPreferenceNotDelete"/>:</font></div>
+            </td>
+            <td width="20%"> 
+             <%  String myCheck5 = "";
+             	 String myCheck6 = ""; 
+             	 String value1 = request.getParameter("caisiBillingPreferenceNotDelete");
+                  if(value1!=null && value1.equals("1"))
+                  { myCheck5 = "checked";
+                  	  myCheck6 = "unchecked";}
+                  else
+                  { myCheck5 = "unchecked";
+              	  	  myCheck6 = "checked";}
+     
+               %>
+              
+   				<input type="radio" name="caisiBillingPreferenceNotDelete" value="1" <%= myCheck5 %> > Enabled
+				<br>
+				<input type="radio" name="caisiBillingPreferenceNotDelete" value="0" <%= myCheck6 %> > Disabled
+   				
+            </td>
+            <td width="20%"> 
+            </td>
+          </tr>
+        </caisi:isModuleLoad>  
+      
       
               <INPUT TYPE="hidden" NAME="provider_no" VALUE='<%=request.getParameter("provider_no")%>'>
               <INPUT TYPE="hidden" NAME="color_template" VALUE='deepblue'>
@@ -274,6 +301,9 @@ function showHideBillPref() {
     </tr>
   </oscar:oscarPropertiesCheck>
   </caisi:isModuleLoad>   
+  <tr> 
+    <TD align="center"><a href=# onClick ="popupPage(230,600,'providerDefaultDxCode.jsp?provider_no=<%=request.getParameter("provider_no") %>');return false;">Edit Default Billing Diagnostic Code</a> &nbsp;&nbsp;&nbsp; </td>
+  </tr>
   <tr> 
     <TD align="center"><a href=# onClick ="popupPage(230,600,'providerchangepassword.jsp');return false;"><bean:message key="provider.btnChangePassword"/></a> &nbsp;&nbsp;&nbsp; <!--| a href=# onClick ="popupPage(350,500,'providercontrol.jsp?displaymode=savedeletetemplate');return false;"><bean:message key="provider.btnAddDeleteTemplate"/></a> | <a href=# onClick ="popupPage(200,500,'providercontrol.jsp?displaymode=savedeleteform');return false;"><bean:message key="provider.btnAddDeleteForm"/></a></td>
   </tr>
@@ -330,7 +360,7 @@ function showHideBillPref() {
 	  </div>
       </td>
   </tr>
-  
+   
       <tr>
           <td align="center"><a href=# onClick ="popupPage(230,860,'providerFax.jsp');return false;"><bean:message key="provider.btnEditFaxNumber"/></a></td>
       </tr>

@@ -68,12 +68,13 @@
    ResultSet rsprovider = null;  
 // String proNO = request.getParameter("xml_provider");
 String billNo ="";
-  rsprovider = null;
- rsprovider = apptMainBean.queryResults(apptNo, "search_bill_beforedelete");
- while(rsprovider.next()){
- billCode = rsprovider.getString("status");
- billNo = rsprovider.getString("billing_no");
- }
+  rsprovider = null;    
+	 rsprovider = apptMainBean.queryResults(apptNo, "search_bill_beforedelete");
+	 while(rsprovider.next()){
+	 billCode = rsprovider.getString("status");
+	 billNo = rsprovider.getString("billing_no");
+	 }
+  
    if (billCode.substring(0,1).compareTo("B") == 0) {
    %>
 <p>

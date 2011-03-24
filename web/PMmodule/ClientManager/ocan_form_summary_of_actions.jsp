@@ -30,16 +30,11 @@
 %>
 <%if(size>0){  %>
 
-<table>	
-	<tr>
-		<td width="10%">Priority</td>
-		<td width="40%">Domain</td>
-		<td width="50%">Action(s)</td>
-	</tr>	
-<%} %>
+
 								
 <% for(int x=1;x<=size;x++) { %>
-			
+<div id="summary_of_actions_<%=x %>">
+<table>		
 <tr>
 	<td>
 		<input type="text" value="<%=x%>" readonly="readonly"/>					
@@ -55,7 +50,8 @@
 	</td>
 </tr>		
 
-
-<%}%>
+</table></div>
+<%}
+}%>
 
 </table>

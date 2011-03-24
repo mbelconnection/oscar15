@@ -25,6 +25,10 @@
 <%@ page import="java.util.*,java.net.*,java.sql.*,oscar.*,oscar.util.*,oscar.appt.*"%>
 <%@ page import="oscar.oscarBilling.ca.on.data.*"%>
 <%@ page import="oscar.oscarBilling.ca.on.pageUtil.*"%>
+<%@page import="org.oscarehr.common.model.Preference"%>
+<%@page import="org.oscarehr.common.dao.PreferenceDao"%>
+<%@page import="org.oscarehr.util.SpringUtils"%>
+
 <%--<jsp:useBean id="oscarVariables" class="java.util.Properties" scope="session" />--%>
 <jsp:useBean id="providerBean" class="java.util.Properties" scope="session" />
 <%//
@@ -32,7 +36,7 @@
 				response.sendRedirect("../../../logout.jsp");
 			}
                         oscar.OscarProperties oscarVariables = oscar.OscarProperties.getInstance();
-                        
+                   
 			String user_no = (String) session.getAttribute("user");
 			String providerview = request.getParameter("providerview") == null ? "" : request
 					.getParameter("providerview");
@@ -67,6 +71,21 @@
 			String m_review = request.getParameter("m_review")!=null ? request.getParameter("m_review") : "";
 			String ctlBillForm = request.getParameter("billForm");
 			String curBillForm = request.getParameter("curBillForm");
+			
+			String provider_no;
+			if( apptProvider_no.equalsIgnoreCase("none") ) {
+				provider_no = user_no;
+            }
+            else {
+            	provider_no = apptProvider_no;
+            }
+			
+			PreferenceDao preferenceDao = (PreferenceDao) SpringUtils.getBean("preferenceDao");	
+			Preference preference = null;	
+			preference=preferenceDao.findPreferenceByProviderNo(provider_no);
+			
+				
+			
 			
 			BillingONDataHelp dbObj = new BillingONDataHelp();
 			
@@ -173,12 +192,11 @@
 			//rs = dbObj.searchDBRecord(sql);
 
 			Vector vecHistD = new Vector();
-			if (aL.size()>0) {
-				BillingClaimHeader1Data obj = (BillingClaimHeader1Data) aL.get(0);
+			if (aL.size()>0) {					
+				BillingClaimHeader1Data obj= (BillingClaimHeader1Data) aL.get(0);
 				BillingItemData iobj = (BillingItemData) aL.get(1);
-
 				propHist = new Properties();
-
+				
 				//propHist.setProperty("billing_no", "" + rs.getInt("id"));
 				propHist.setProperty("visitdate", obj.getAdmission_date()); // admission date
 				//propHist.setProperty("billing_date", rs.getString("billing_date")); // service date
@@ -197,6 +215,9 @@
 				//}
 			}
 
+			
+			
+			
 			// display the fixed billing part
 			// Retrieving Provider
 			Vector vecProvider = new Vector();
@@ -221,28 +242,17 @@
 			}
 
 			String paraName = request.getParameter("dxCode");
-			String dxCode=null;
 			if(paraName==null || paraName.equals("")) {
-				// get the default diagnostic code
-				String sql_dx = "select defaultDxCode from preference where provider_no='";
-	            if( apptProvider_no.equalsIgnoreCase("none") ) {
-	                sql_dx += user_no + "'";
-	            }
-	            else {
-	                sql_dx += apptProvider_no + "'";
-	            }
-	            
-				rs = dbObj.searchDBRecord(sql_dx);
-				if (rs.next() && rs.getString("defaultDxCode")!=null) {
-					dxCode = rs.getString("defaultDxCode");
-				} 
-			}	
-			paraName = dxCode;
-			dxCode = getDefaultValue(paraName, vecHistD, "diagnostic_code");
-
+				// get the default diagnostic code				
+				if(preference!=null) {
+					paraName = preference.getDefaultDxCode();
+				}
+			}				
+			String dxCode = getDefaultValue(paraName, vecHistD, "diagnostic_code");
+			
 			//visitType
 			paraName = request.getParameter("xml_visittype");
-                        
+			           
 			String xml_visittype = getDefaultValue(paraName, vecHist, "visitType");                         
 			//xml_visittype = paraName != null && !"".equals(paraName)? paraName : "00" ;
                         
@@ -253,6 +263,7 @@
 			}
                         
 			paraName = request.getParameter("xml_location");
+			  
 			String xml_location = getDefaultValue(paraName, vecHist, "clinic_ref_code");
 			xml_location = paraName != null && !"".equals(paraName)? paraName : "0000";                   
 			if (!"".equals(xml_location)) {
@@ -1221,6 +1232,7 @@ function changeSite(sel) {
 		
 		String bgcolor = i % 2 == 0 ? "bgcolor='#FFFFFF'" : "class='myGreen'";
 		if (request.getParameter("xml_" + serviceCode) != null) bgcolor = "bgcolor='#66FF66'";
+		
 %>
 			    <tr <%=bgcolor%>>
 				<td align="left" nowrap>
@@ -1362,7 +1374,10 @@ function changeSite(sel) {
     <input type="hidden" name="curBillForm" value="<%=ctlBillForm%>" />
     <input type="hidden" name="services_checked">
     <input type="hidden" name="url_back">
-
+    
+	<input type="hidden" name="billNo_old" id="billNo_old" value="<%=request.getParameter("billNo_old")%>" />
+	<input type="hidden" name="billStatus_old" id="billStatus_old" value="<%=request.getParameter("billStatus_old")%>" />
+	
 </table>
 
 <table border="0" cellpadding="0" cellspacing="2" width="100%" class="myIvory">
@@ -1430,8 +1445,6 @@ Calendar.setup( { inputField : "xml_vdate", ifFormat : "%Y-%m-%d", showsTime :fa
 		//System.out.println("paraName:" + paraName + " propName:" + propName + " :" + ret);
 		return ret;
 	}
-
-
         String noNull(String str){
             if (str != null){
                return str;    

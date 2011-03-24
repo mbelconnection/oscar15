@@ -125,7 +125,7 @@
 				<property name="testDataPath" value="C:/TEMP/ocan_test" />
 			</bean>
 		</property>
-		<property name="delay" value="60000" />
+		<property name="delay" value="43200000000" />
 		<property name="period" value="36000000" />
 	</bean>
 	
@@ -135,8 +135,8 @@
 			<bean class="org.oscarehr.util.OcanIarSubmissionTask">				
 			</bean>
 		</property>
-		<property name="delay" value="60000" />
-		<property name="period" value="36000000" />
+		<property name="delay" value="43200000000" />
+		<property name="period" value="86400000" />
 	</bean>
 	
 	

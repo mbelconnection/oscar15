@@ -1488,7 +1488,8 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
              <% } %>
 		<% } else { %>
 			<%if(caisiBillingPreferenceNotDelete!=null && caisiBillingPreferenceNotDelete.equals("1")) {%>	
-				<a href=# onClick='onUpdatebill("../billing/CA/<%=prov%>/billingONCorrection.jsp?status=<%=status%>&appointment_no=<%=appointment.get("appointment_no")%>");return false;' title="<bean:message key="global.billingtag"/>">|=<bean:message key="provider.appointmentProviderAdminDay.btnB"/></a>
+				<a href=# onClick='onUpdatebill("../billing/CA/ON/billingEditWithApptNo.jsp?billRegion=<%=URLEncoder.encode(prov)%>&billForm=<%=URLEncoder.encode(oscarVariables.getProperty("default_view"))%>&hotclick=<%=URLEncoder.encode("")%>&appointment_no=<%=appointment.get("appointment_no")%>&demographic_name=<%=URLEncoder.encode(name)%>&status=<%=status%>&demographic_no=<%=demographic_no%>&providerview=<%=curProvider_no[nProvider]%>&user_no=<%=curUser_no%>&apptProvider_no=<%=curProvider_no[nProvider]%>&appointment_date=<%=year+"-"+month+"-"+day%>&start_time=<%=iS+":"+iSm%>&bNewForm=1");return false;' title="<bean:message key="global.billingtag"/>">|=<bean:message key="provider.appointmentProviderAdminDay.btnB"/></a>
+
 			<% } else { %>
     			<a href=# onClick='onUnbilled("../billing/CA/<%=prov%>/billingDeleteWithoutNo.jsp?status=<%=status%>&appointment_no=<%=appointment.get("appointment_no")%>");return false;' title="<bean:message key="global.billingtag"/>">|-<bean:message key="provider.appointmentProviderAdminDay.btnB"/></a>
 			<% }%>

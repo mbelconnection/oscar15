@@ -6333,6 +6333,8 @@ CREATE TABLE preference (
   default_servicetype varchar(10) default NULL,
   default_caisi_pmm varchar(10) default 'disabled',
   default_new_oscar_cme varchar(10) default 'disabled',
+  defaultDoNotDeleteBilling  tinyint(1) default 0,
+  defaultDxCode varchar(4) default NULL,
   PRIMARY KEY  (preference_no),
   KEY provider_no (provider_no)
 ) ;

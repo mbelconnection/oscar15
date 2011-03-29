@@ -240,7 +240,7 @@
 %>
 
  			<input type="hidden" name="<%=xml_serviceCode %>" id="<%=xml_serviceCode %>" value="checked" />  
-	 		<input type="hidden" name="services_checked" id="services_checked" value=<%=services_checked_num %>>
+	 		
 <%
 		} else {
 			String serviceCode_ = "serviceCode".concat(String.valueOf(serviceN));
@@ -254,8 +254,9 @@
 <%
 		}
 	}
-	
-  }	
+%>
+	<input type="hidden" name="services_checked" id="services_checked" value="<%=services_checked_num %>" />
+<%  }	
 %>
 
 

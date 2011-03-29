@@ -541,7 +541,6 @@ function openSurvey() {
 			<td>
 				<input type="button" value="Update" onclick="document.location='ClientManager/ocan_client_form.jsp?ocanType=FULL&demographicId=<%=currentDemographic.getDemographicNo()%>'" />
 				<input type="button" value="Print Preview" onclick="document.location='ClientManager/ocan_client_form.jsp?ocanType=FULL&demographicId=<%=currentDemographic.getDemographicNo()%>&print=true'" />
-				<input type="button" value="Blank Form" onclick="window.open('<html:rewrite page="/ocan/OCAN_2.0_FULL_v2.0.5.pdf"/>')"/>											
 			</td>
 		</c:if>
 		<c:if test="${ocanStaffForm == null}">

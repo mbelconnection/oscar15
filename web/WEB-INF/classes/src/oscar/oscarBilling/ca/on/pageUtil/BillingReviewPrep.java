@@ -231,10 +231,11 @@ public class BillingReviewPrep {
 					&& (temp.length() == 9 || temp.startsWith(paramNameCode
 							+ "_")) && !temp.equals("xml_vdate")) {
 				// _logger.info(requestData.getParameter(temp) +
-				// "getRequestFormCodeVec:" + temp);
-				ret[0].add(temp.substring(4));
-				ret[1].add(defaultParamValue(paramNameUnit));
-				ret[2].add(defaultParamValue(paramNameAt));
+				// "getRequestFormCodeVec:" + temp);				
+					ret[0].add(temp.substring(4));
+					ret[1].add(defaultParamValue(paramNameUnit));
+					ret[2].add(defaultParamValue(paramNameAt));
+				
 			}
 		}
 		return ret;

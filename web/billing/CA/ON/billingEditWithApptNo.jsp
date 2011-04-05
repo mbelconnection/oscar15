@@ -171,7 +171,7 @@
 <form method="post" name="editBillingForm" action="billingON.jsp" >
 	<input type="hidden" name="billNo_old" id="billNo_old" value="<%=billNo%>" />	
 	<input type="hidden" name="billStatus_old" id="billStatus_old" value="<%=status%>" />	
-	<input type="hidden" name="billForm" id="billForm" value="<%=billForm%>" />	
+	
 	<input type="hidden" name="apptProvider_no" id="apptProvider_no" value="<%=apptProvider_no%>" />					
 			
 	<input type="hidden" name="providerview" id="providerview" value="<%=providerview%>"/>
@@ -186,8 +186,7 @@
     <input type="hidden" name="assgProvider_no" id="assgProvider_no" value="<%=assgProvider_no%>" />      
     <input type="hidden" name="sex" id="sex"/>
     <input type="hidden" name="m_review" id="m_review" value="<%=m_review%>" />
-    <input type="hidden" name="billForm" id="billForm" value="<%=billForm%>" />
-   
+    
     <input type="hidden" name="xml_provider" id="xml_provider" value="<%=xml_provider%>" />
     <input type="hidden" name="dxCode" id="dxCode" value="<%=dxCode%>" />
     <input type="hidden" name="dxCode1" id="dxCode1" value="<%=dxCode1%>" />
@@ -231,7 +230,8 @@
 			String sql = "select distinct servicetype_name, servicetype from ctl_billingservice where status='A' and service_code='"+service_code_+"'";
 			ResultSet rs = dbObj.searchDBRecord(sql);
 			while (rs.next()) {
-				curBillForm = rs.getString("servicetype");
+				curBillForm = rs.getString("servicetype");	
+				billForm = curBillForm;
 				break;
 			}
 			
@@ -261,6 +261,8 @@
 
 
  <input type="hidden" name="curBillForm" id="curBillForm" value="<%=curBillForm%>" /> 
+ <input type="hidden" name="billForm" id="billForm" value="<%=billForm%>" />	
+ 
 <center>
 <p>
 Do you want to edit the billing?

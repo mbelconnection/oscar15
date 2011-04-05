@@ -44,7 +44,9 @@
 			String asstProvider_no = "", color = "", premiumFlag = "", service_form = "";
 			String sql = null;
 			ResultSet rs = null;
-
+			String sql0 = null;
+			ResultSet rs0 = null;
+			
 			String strToday = UtilDateUtilities.getToday("yyyy-MM-dd");
 
 			boolean bSingleClick = oscarVariables.getProperty("onBillingSingleClick", "").equals("yes") ? true : false;
@@ -123,9 +125,12 @@
 			Properties propHist = null;
 			Vector vecHist = new Vector();
 
-			if (request.getParameter("xml_provider") != null)
+			if (request.getParameter("xml_provider") != null) {
 				providerview = request.getParameter("xml_provider");
-
+				if(providerview.indexOf("|")!=-1)
+					providerview = providerview.substring(0,providerview.indexOf("|"));
+			}
+			
 			// get patient's detail
 			String errorFlag = "";
 			String warningMsg = "", errorMsg = "";
@@ -287,49 +292,71 @@
 			}
 
 			// get billing dx/form info
-			Vector vecCodeCol1 = new Vector();
-			Vector vecCodeCol2 = new Vector();
-			Vector vecCodeCol3 = new Vector();
+			//Vector vecCodeCol1 = new Vector();
+			//Vector vecCodeCol2 = new Vector();
+			//Vector vecCodeCol3 = new Vector();
+			HashMap<String, ArrayList<Properties>> billingServiceCodesMap = 
+		        new HashMap<String, ArrayList<Properties>>();
+			ArrayList<String> listServiceType = new ArrayList<String>();
+			HashMap<String, String> titleMap = new HashMap<String, String>();
 			Properties propPremium = new Properties();
 			String serviceCode, serviceDesc, serviceValue, servicePercentage, serviceType, serviceDisp = "";
 			String headerTitle1 = "", headerTitle2 = "", headerTitle3 = "";
+			boolean displayForm = false;
+			
 
-			//int CountService = 0;
-			//int Count2 = 0;
+		sql0 = "select distinct servicetype_name, servicetype from ctl_billingservice where status='A'";
+		rs0 = dbObj.searchDBRecord(sql0);
+		while (rs0.next()) {			
+			ArrayList<Properties> listGroup1 = new ArrayList<Properties>();
+			ArrayList<Properties> listGroup2 = new ArrayList<Properties>();
+			ArrayList<Properties> listGroup3 = new ArrayList<Properties>();
+			
+			String ctlcode = rs0.getString("servicetype");
+			String ctlcodename = rs0.getString("servicetype_name");
+			
+			listServiceType.add(ctlcode);
 
-			sql = "select c.service_group_name, c.service_order,b.service_code, b.description, b.value, b.percentage from billingservice b, ctl_billingservice c where c.service_code=b.service_code and c.status='A' and c.servicetype ='"
-					+ ctlBillForm + "' and c.service_group ='" + "Group1" + "' and b.billingservice_date in (select max(b2.billingservice_date) from billingservice b2 where b2.billingservice_date <= '" + billReferenceDate + "' and b2.service_code = b.service_code  ) order by c.service_order";
+			//sql = "select c.servicetype_name, c.servicetype, c.service_group_name, c.service_order,b.service_code, b.description, b.value, b.percentage from billingservice b, ctl_billingservice c where c.service_code=b.service_code and c.status='A' and c.servicetype ='"
+			//		+ ctlBillForm + "' and c.service_group ='" + "Group1" + "' and b.billingservice_date in (select max(b2.billingservice_date) from billingservice b2 where b2.billingservice_date <= '" + billReferenceDate + "' and b2.service_code = b.service_code  ) order by c.service_order";
+			sql = "select c.servicetype_name, c.servicetype, c.service_group_name, c.service_order,b.service_code, b.description, b.value, b.percentage from billingservice b, ctl_billingservice c where c.service_code=b.service_code and c.status='A' and c.servicetype ='"
+					+ ctlcode + "' and c.service_group ='" + "Group1" + "' and b.billingservice_date in (select max(b2.billingservice_date) from billingservice b2 where b2.billingservice_date <= '" + billReferenceDate + "' and b2.service_code = b.service_code  ) order by c.service_order";
+				
 			rs = dbObj.searchDBRecord(sql);
 			while (rs.next()) {
-				propT = new Properties();
-				//serviceCode = rs.getString("service_code");
-				//serviceDesc = rs.getString("description");
-				//serviceValue = rs.getString("value");
-				//servicePercentage = rs.getString("percentage");
-				headerTitle1 = rs.getString("service_group_name");
-				//serviceDisp = serviceValue;
+				propT = new Properties();				
+				//headerTitle1 = rs.getString("service_group_name");				
 				propT.setProperty("serviceCode", rs.getString("service_code"));
 				propT.setProperty("serviceDesc", rs.getString("description"));
 				propT.setProperty("serviceDisp", rs.getString("value"));
 				propT.setProperty("servicePercentage", noNull(rs.getString("percentage")));
+				propT.setProperty("serviceType", rs.getString("servicetype"));
+				propT.setProperty("serviceTypeName", rs.getString("servicetype_name"));
 				//propT.setProperty("headerTitle1",rs.getString("service_group_name"));
-				vecCodeCol1.add(propT);
+				titleMap.put("group1_".concat(ctlcode),rs.getString("service_group_name"));
+				//vecCodeCol1.add(propT);
+				listGroup1.add(propT);
 			}
 
-			if (vecCodeCol1.size() > 0) {
+			if (listGroup1.size()> 0) {
 				sql = "select service_code,status from ctl_billingservice_premium where ";
-				for (int i = 0; i < vecCodeCol1.size(); i++) {
+				for (int i = 0; i < listGroup1.size(); i++) {
 					sql += (i == 0 ? "" : " or ") + "service_code='"
-							+ ((Properties) vecCodeCol1.get(i)).getProperty("serviceCode") + "'";
+							+ ((Properties) listGroup1.get(i)).getProperty("serviceCode") + "'";
 				}
 				rs = dbObj.searchDBRecord(sql);
 				while (rs.next()) {
 					propPremium.setProperty(rs.getString("service_code"), "A");
 				}
 			}
-			sql = "select c.service_group_name, c.service_order,b.service_code, b.description, b.value, b.percentage from billingservice b, ctl_billingservice c where c.service_code=b.service_code and c.status='A' and c.servicetype ='"
-					+ ctlBillForm + "' and c.service_group ='" + "Group2" + "' and b.billingservice_date in (select max(b2.billingservice_date) from billingservice b2 where b2.billingservice_date <= '" + billReferenceDate + "' and b2.service_code = b.service_code) order by c.service_order";
-                        rs = dbObj.searchDBRecord(sql);
+			billingServiceCodesMap.put("group1_".concat(ctlcode),listGroup1);
+			
+			//sql = "select c.servicetype_name, c.servicetype, c.service_group_name, c.service_order,b.service_code, b.description, b.value, b.percentage from billingservice b, ctl_billingservice c where c.service_code=b.service_code and c.status='A' and c.servicetype ='"
+			//		+ ctlBillForm + "' and c.service_group ='" + "Group2" + "' and b.billingservice_date in (select max(b2.billingservice_date) from billingservice b2 where b2.billingservice_date <= '" + billReferenceDate + "' and b2.service_code = b.service_code) order by c.service_order";
+			sql = "select c.servicetype_name, c.servicetype, c.service_group_name, c.service_order,b.service_code, b.description, b.value, b.percentage from billingservice b, ctl_billingservice c where c.service_code=b.service_code and c.status='A' and c.servicetype ='"
+					+ ctlcode + "' and c.service_group ='" + "Group2" + "' and b.billingservice_date in (select max(b2.billingservice_date) from billingservice b2 where b2.billingservice_date <= '" + billReferenceDate + "' and b2.service_code = b.service_code) order by c.service_order";
+						       
+			rs = dbObj.searchDBRecord(sql);
                         
 			while (rs.next()) {
 				propT = new Properties();
@@ -338,15 +365,20 @@
 				propT.setProperty("serviceDesc", rs.getString("description"));
 				propT.setProperty("serviceDisp", rs.getString("value"));
 				propT.setProperty("servicePercentage", noNull(rs.getString("percentage")));
-				vecCodeCol2.add(propT);
+				propT.setProperty("serviceType", rs.getString("servicetype"));
+				propT.setProperty("serviceTypeName", rs.getString("servicetype_name"));
+				//propT.setProperty("headerTitle1",rs.getString("service_group_name"));
+				titleMap.put("group2_".concat(ctlcode),rs.getString("service_group_name"));
+				//vecCodeCol2.add(propT);
+				listGroup2.add(propT);
 			}
-
-                        if (vecCodeCol2.size() > 0){
+			
+                        if (listGroup2.size() > 0){
                             sql = "select service_code,status from ctl_billingservice_premium where ";
-                            for (int i = 0; i < vecCodeCol2.size(); i++) {
+                            for (int i = 0; i < listGroup2.size(); i++) {
 
 				sql += (i == 0 ? "" : " or ") + "service_code='"
-						+ ((Properties) vecCodeCol2.get(i)).getProperty("serviceCode") + "'";
+						+ ((Properties) listGroup2.get(i)).getProperty("serviceCode") + "'";
                             }
                         
                             rs = dbObj.searchDBRecord(sql);
@@ -354,9 +386,14 @@
                                     propPremium.setProperty(rs.getString("service_code"), "A");
                             }
                         }   
-                        
-			sql = "select c.service_group_name, c.service_order,b.service_code, b.description, b.value, b.percentage from billingservice b, ctl_billingservice c where c.service_code=b.service_code and c.status='A' and c.servicetype ='"
-					+ ctlBillForm + "' and c.service_group ='" + "Group3" + "' and b.billingservice_date in (select max(b2.billingservice_date) from billingservice b2 where b2.billingservice_date <= '" + billReferenceDate + "' and b2.service_code = b.service_code) order by c.service_order";
+             
+            billingServiceCodesMap.put("group2_".concat(ctlcode),listGroup2);
+            			
+			//sql = "select c.servicetype_name, c.servicetype, c.service_group_name, c.service_order,b.service_code, b.description, b.value, b.percentage from billingservice b, ctl_billingservice c where c.service_code=b.service_code and c.status='A' and c.servicetype ='"
+			//		+ ctlBillForm + "' and c.service_group ='" + "Group3" + "' and b.billingservice_date in (select max(b2.billingservice_date) from billingservice b2 where b2.billingservice_date <= '" + billReferenceDate + "' and b2.service_code = b.service_code) order by c.service_order";
+			sql = "select c.servicetype_name, c.servicetype, c.service_group_name, c.service_order,b.service_code, b.description, b.value, b.percentage from billingservice b, ctl_billingservice c where c.service_code=b.service_code and c.status='A' and c.servicetype ='"
+					+ ctlcode + "' and c.service_group ='" + "Group3" + "' and b.billingservice_date in (select max(b2.billingservice_date) from billingservice b2 where b2.billingservice_date <= '" + billReferenceDate + "' and b2.service_code = b.service_code) order by c.service_order";
+			
 			rs = dbObj.searchDBRecord(sql);
 			while (rs.next()) {
 				propT = new Properties();
@@ -365,28 +402,38 @@
 				propT.setProperty("serviceDesc", rs.getString("description"));
 				propT.setProperty("serviceDisp", rs.getString("value"));
 				propT.setProperty("servicePercentage", noNull(rs.getString("percentage")));
-				vecCodeCol3.add(propT);
+				propT.setProperty("serviceType", rs.getString("servicetype"));
+				propT.setProperty("serviceTypeName", rs.getString("servicetype_name"));
+				//propT.setProperty("headerTitle1",rs.getString("service_group_name"));
+				titleMap.put("group3_".concat(ctlcode),rs.getString("service_group_name"));
+				//vecCodeCol3.add(propT);
+				listGroup3.add(propT);
 			}
 
-			sql = "select billtype from ctl_billingtype where servicetype='" + ctlBillForm +"'";
-			rs = dbObj.searchDBRecord(sql);
-			String defaultBillType = "";
-			if (rs.next()) {
-			    defaultBillType = rs.getString("billtype");
-			}
-                        
-                        if (vecCodeCol3.size() > 0){
+			       
+                        if (listGroup3.size() > 0){
                             sql = "select service_code,status from ctl_billingservice_premium where ";
-                            for (int i = 0; i < vecCodeCol3.size(); i++) {
+                            for (int i = 0; i < listGroup3.size(); i++) {
 
 				sql += (i == 0 ? "" : " or ") + "service_code='"
-						+ ((Properties) vecCodeCol3.get(i)).getProperty("serviceCode") + "'";
+						+ ((Properties) listGroup3.get(i)).getProperty("serviceCode") + "'";
                             }
                             rs = dbObj.searchDBRecord(sql);
                             while (rs.next()) {
 			      propPremium.setProperty(rs.getString("service_code"), "A");
                             }
                         }
+                        
+            billingServiceCodesMap.put("group3_".concat(ctlcode),listGroup3);
+		}     
+		
+		sql = "select billtype from ctl_billingtype where servicetype='" + ctlBillForm +"'";
+		rs = dbObj.searchDBRecord(sql);
+		String defaultBillType = "";
+		if (rs.next()) {
+		    defaultBillType = rs.getString("billtype");
+		}
+             
 			// create msg
 			msg += errorMsg + warningMsg;
 			//System.out.println(" * ******************************" + sql);
@@ -737,17 +784,65 @@ function onHistory() {
     popupPage("800","640","billingONHistorySpec.jsp?demographic_no=<%=demo_no%>&demo_name=<%=demoname%>&orderby=appointment_date&day=" + dd);
 }
 
-function prepareBack() {
+function prepareBack() {	
     document.forms[0].services_checked.value = "<%=request.getParameter("services_checked")%>";
     if (document.forms[0].services_checked.value=="null") document.forms[0].services_checked.value = 0;
-    document.forms[0].url_back.value = location.href;    
+    document.forms[0].url_back.value = location.href;  
+   
+    showBillFormDiv ("group1_", "<%=ctlBillForm%>");
+    showBillFormDiv ("group2_", "<%=ctlBillForm%>");
+    showBillFormDiv ("group3_", "<%=ctlBillForm%>");
+    showBillFormDiv ("dxCodeSearchDiv_", "<%=ctlBillForm%>"); 
+
 }
 
+function showBillFormDiv (group, selectedForm) {
+	var selectedFormDivGroupId = group + selectedForm;  	
+  	var thisDiv = document.getElementById(selectedFormDivGroupId);
+  	if (thisDiv)
+  	{
+    	if (thisDiv.style.display == "none") {
+      		thisDiv.style.display = "block";
+    	}
+  	}
+  	else {
+    	alert("Error: Could not locate div with id: " + selectedFormDivGroupId);
+  	}
+}
+
+function hideBillFormDiv (group, selectedForm) {
+	var selectedFormDivGroupId = group + selectedForm;  	
+  	var thisDiv = document.getElementById(selectedFormDivGroupId);
+  	if (thisDiv)
+  	{
+    	if (thisDiv.style.display == "block") {
+      		thisDiv.style.display = "none";
+    	}
+  	}
+  	else {
+    	alert("Error: Could not locate div with id: " + selectedFormDivGroupId);
+  	}
+}
+
+
 function refreshServicesChecked(chkd) {
-    if (chkd) {
-	document.forms[0].services_checked.value++;
-    } else {
-	document.forms[0].services_checked.value--;
+	var name_id = chkd.name;
+    if (chkd.checked) {
+		document.forms[0].services_checked.value++;
+		
+		//check other checkbox with same name			
+		for(i=0;i<document.forms[0][name_id].length; i++) {
+			document.forms[0][name_id][i].checked = true;
+		}
+		
+	
+    } else {    
+		document.forms[0].services_checked.value--;
+		
+		//uncheck other checkbox with same name	
+		for(i=0;i<document.forms[0][name_id].length; i++) {
+			document.forms[0][name_id][i].checked = false;
+		}
     }
 }
 
@@ -761,13 +856,49 @@ function changeCodeDesc() {
     
     var descAjax = new Ajax.Updater("code_desc",url, {method: "get", parameters: pars});
 }
+
+function selfSubmit(){
+	  document.titlesearch.action="";
+	  document.titlesearch.submit();	  
+}
+
+//this function will show the content within the <div> tag
+function toggleDiv(selectedBillForm, selectedBillFormName)
+{
+	document.getElementById("billForm").value=selectedBillForm;
+	document.getElementById("billFormName").value=selectedBillFormName;
+
+	//dx search
+	showBillFormDiv("dxCodeSearchDiv_",selectedBillForm);
+	
+  	//var selectedForm = selectedBillForm.options[selectedBillForm.selectedIndex].value;
+  	showBillFormDiv ("group1_", selectedBillForm);
+  	showBillFormDiv ("group2_", selectedBillForm);
+  	showBillFormDiv ("group3_", selectedBillForm);
+  	
+  	  	//hide other billing codes whose forms are not selected
+<%
+  	for( int j=0; j< listServiceType.size(); j++) {
+  		String st = listServiceType.get(j);
+ %>
+  	if(selectedBillForm!="<%=st%>") {
+
+  		hideBillFormDiv ("group1_", "<%=st%>");
+  	  	hideBillFormDiv ("group2_", "<%=st%>");
+  	  	hideBillFormDiv ("group3_", "<%=st%>");  	
+  	  	  	
+  	  	hideBillFormDiv ("dxCodeSearchDiv_", "<%=st%>");  
+  	}
+
+	<% }  %>
+}
 //-->
 </script>
 </head>
 
 <body onload="prepareBack();changeCodeDesc();" topmargin="0">
 <div id="Instrdiv" class="demo1">
-
+ 	 
     <table bgcolor='#007FFF' width='99%'>
 	<tr><th align='right'><a href=# onclick="showHideBox('Instrdiv',0); return false;"><font color="red">X</font></a></th></tr>
 	<tr><th><a href=# onclick="showHideBox('Instrdiv',0); return false;"><font color="#66FF66">Double clicking any code below will move up to specialist billing.</font><br>&nbsp;</a></th></tr>
@@ -786,6 +917,7 @@ function changeCodeDesc() {
 <%
 		String ctlcode = "", ctlcodename = "", currentFormName = "";
 		int ctlCount = 0;
+		
 		sql = "select distinct servicetype_name, servicetype from ctl_billingservice where status='A'";
 		rs = dbObj.searchDBRecord(sql);
 		while (rs.next()) {
@@ -793,14 +925,13 @@ function changeCodeDesc() {
 			ctlcodename = rs.getString("servicetype_name");
 			ctlCount++;
 			if (ctlcode.equals(ctlBillForm)) {
-			    currentFormName = ctlcodename;
+			    currentFormName = ctlcodename;			    
 			}
 %>
 	<tr bgcolor=<%=ctlCount%2==0 ? "#FFFFFF" : "#EEEEFF"%>>
 	    <td colspan="2">
 		<b><font size="-1" color="#7A388D">
-		    <a href="billingON.jsp?curBillForm=<%=ctlcode%>&hotclick=<%=URLEncoder.encode("","UTF-8")%>&appointment_no=<%=request.getParameter("appointment_no")%>&demographic_name=<%=URLEncoder.encode(demoname,"UTF-8")%>&demographic_no=<%=request.getParameter("demographic_no")%>&user_no=<%=user_no%>&apptProvider_no=<%=request.getParameter("apptProvider_no")%>&providerview=<%=request.getParameter("apptProvider_no")%>&appointment_date=<%=request.getParameter("appointment_date")%>&status=<%=request.getParameter("status")%>&start_time=<%=request.getParameter("start_time")%>&bNewForm=1"
-		       onclick="showHideLayers('Layer1','','hide');"><%=ctlcodename%></a>
+		    <a href="#" onclick="toggleDiv('<%=ctlcode%>', '<%=ctlcodename %>');showHideLayers('Layer1','','hide');" > <%=ctlcodename %></a>
 	    </font></b></td>
 	</tr>
 <%}%>
@@ -814,18 +945,31 @@ function changeCodeDesc() {
 	    <td width="76%"><b><font size="-2">Description</font></b></td>
 	    <td width="6%"><a href="#" onclick="showHideLayers('Layer2','','hide');return false">X</a></td>
 	</tr>
-<%
+	</table>
+<%	
+		for( int j=0; j< listServiceType.size(); j++) {
+			String st = listServiceType.get(j);
+		
 			String ctldiagcode = "", ctldiagcodename = "";
 			ctlCount = 0;
+%>
+	
+	<div id="dxCodeSearchDiv_<%=st%>" style="display: none;" >	
+	
+<%		
 			sql = "select d.diagnostic_code dcode, d.description des from diagnosticcode d, ctl_diagcode c where c.diagnostic_code=d.diagnostic_code and c.servicetype='"
-					+ ctlBillForm + "' order by d.description";
+					+ st + "' order by d.description";
+			//sql = "select d.diagnostic_code dcode, d.description des from diagnosticcode d, ctl_diagcode c where c.diagnostic_code=d.diagnostic_code order by d.description";
 			rs = dbObj.searchDBRecord(sql);
 			while (rs.next()) {
 				ctldiagcode = rs.getString("dcode");
 				ctldiagcodename = rs.getString("des");
 				ctlCount++;
+				
 %>
-	<tr bgcolor=<%=ctlCount%2==0 ? "#FFFFFF" : "#EEEEFF"%>>
+	
+	<table width="98%" border="0" cellspacing="0" cellpadding="0" align=center>
+	<tr bgcolor=<%=ctlCount%2==0 ? "#FFFFFF" : "#EEEEFF"%> >
 	    <td width="18%">
 		<b><font size="-1" color="#7A388D">
 		    <a href="#"	onclick="document.forms[0].dxCode.value='<%=ctldiagcode%>';showHideLayers('Layer2','','hide');changeCodeDesc();return false;"><%=ctldiagcode%></a>
@@ -837,11 +981,14 @@ function changeCodeDesc() {
 		</font>
 	    </td>
 	</tr>
-			<%}%>
+	</table>
+<%} %>
+	</div>
+<%} %>
 </table>
 </div>
 
-<form method="post" name="titlesearch" action="billingONReview.jsp" onsubmit="return onNext();">
+<form method="post" id="titlesearch" name="titlesearch" action="billingONReview.jsp" onsubmit="return onNext();">
 <%String checkFlag = request.getParameter("checkFlag");
 	if(checkFlag == null) checkFlag = "0";
 %>
@@ -868,7 +1015,7 @@ function changeCodeDesc() {
 			    </select>
 			</td>
 			<td align="right" width="10%" nowrap>
-			    <input type="submit" name="submit" value="Next" style="width: 120px;" />
+			      <input type="submit" name="submit" value="Next" style="width: 120px;" />
 			    <input type="button" name="button" value="Exit" style="width: 120px;" onclick="self.close();" />&nbsp;
 			</td>
 		    </tr>
@@ -1172,8 +1319,9 @@ function changeSite(sel) {
 				    </td>
 				    <td colspan="2">
 					<a href="#" onclick="showHideLayers('Layer1','','show');return false;">
-					    Billing form</a>:
-					    <%=currentFormName.length() < 30 ? currentFormName : currentFormName.substring(0, 30)%>
+					    Billing form :</a>
+				   <input type="text" name="billFormName" id="billFormName" size="30"  readonly  value="<%=currentFormName.length() < 40 ? currentFormName : currentFormName.substring(0, 40)%>" />
+				   <input type="hidden" name="billForm" id="billForm" size="30" maxlength="30" readonly  value="<%=ctlBillForm%>" />
 				    </td>
 				</tr>
 <% if (!org.oscarehr.common.IsPropertiesOn.isMultisitesEnable()) 
@@ -1213,30 +1361,45 @@ function changeSite(sel) {
     	<td>
 	    <table width="100%" border="0" cellspacing="0" cellpadding="0" height="137">
 		<tr>
-		    <td valign="top" width="33%">
-			<table width="100%" border="1" cellspacing="0" cellpadding="1" height="0"
+		    <td valign="top" width="33%">		   
+			
+			
+<%	  for( int j=0; j< listServiceType.size(); j++) {
+
+		ArrayList<Properties> vecCodeCol1 = new ArrayList<Properties>();
+		vecCodeCol1 = billingServiceCodesMap.get("group1_".concat(listServiceType.get(j)));
+		headerTitle1 = titleMap.get("group1_".concat(listServiceType.get(j)));
+%>
+		<div id="group1_<%=listServiceType.get(j) %>" style="display: none;">
+		<table width="100%" border="1" cellspacing="0" cellpadding="1" height="0"
 			       bordercolorlight="#99A005" bordercolordark="#FFFFFF">
 			    <tr class="myYellow">
 				<th width="10%" nowrap><div class="smallFont"><%=headerTitle1%></div></th>
 				<th width="70%"><div class="smallFont">Description</div></th>
 				<th><div class="smallFont">Fee</div></th>
 			    </tr>
-<%	    for (int i = 0; i < vecCodeCol1.size(); i++) {
+			
+<%
+		for (int i = 0; i < vecCodeCol1.size(); i++) {
 		propT = (Properties) vecCodeCol1.get(i);
 		serviceCode = propT.getProperty("serviceCode");
 		serviceDesc = propT.getProperty("serviceDesc");
 		serviceDisp = propT.getProperty("serviceDisp");
 		servicePercentage = propT.getProperty("servicePercentage");
+		serviceType = propT.getProperty("serviceType");
+		headerTitle1 = propT.getProperty("headerTitle1");
+		
 		if (propPremium.getProperty(serviceCode) != null) premiumFlag = "A";
 		else premiumFlag = "";
 		
 		String bgcolor = i % 2 == 0 ? "bgcolor='#FFFFFF'" : "class='myGreen'";
-		if (request.getParameter("xml_" + serviceCode) != null) bgcolor = "bgcolor='#66FF66'";
+		if (request.getParameter("xml_" + serviceCode) != null) bgcolor = "bgcolor='#66FF66'";	
 		
-%>
-			    <tr <%=bgcolor%>>
+%>	
+		
+			    <tr <%=bgcolor%> >
 				<td align="left" nowrap>
-				    <input type="checkbox" id="xml_<%=serviceCode%>" name="xml_<%=serviceCode%>" value="checked" onclick="refreshServicesChecked(checked);"
+				    <input type="checkbox" id="xml_<%=serviceCode%>" name="xml_<%=serviceCode%>" value="checked" onclick="refreshServicesChecked(this);"
 					   <%=request.getParameter("xml_"+serviceCode)!=null?request.getParameter("xml_"+serviceCode):""%> 
 					   <%=bSingleClick? "onClick='onClickServiceCode(this)'" :""%> />
 				    <b><font size="-1" color="<%=premiumFlag.equals("A")? "#993333" : "black"%>">
@@ -1252,33 +1415,52 @@ function changeSite(sel) {
 				    <!--<input type="hidden" name="price_xml_<%=serviceCode%>" value="<%=serviceDisp%>" />
 				    <input type="hidden" name="perc_xml_<%=serviceCode%>" value="<%=servicePercentage%>" />-->
 				</td>
-			    </tr>
-<%	    } %>
+			    </tr>	
+	<% } %>
 			</table>
+			</div>
+<%	    } 	%>
+			
 		    </td>
 		    <td width="33%" valign="top">
-			<table width="100%" border="1" cellspacing="0" cellpadding="1" height="0"
+			
+<%	   for( int j=0; j< listServiceType.size(); j++) {
+
+		ArrayList<Properties> vecCodeCol2 = new ArrayList<Properties>();
+		vecCodeCol2 = billingServiceCodesMap.get("group2_".concat(listServiceType.get(j)));
+		headerTitle2 = titleMap.get("group2_".concat(listServiceType.get(j)));
+%>
+		<div id="group2_<%=listServiceType.get(j) %>" style="display: none;">
+		<table width="100%" border="1" cellspacing="0" cellpadding="1" height="0"
 			       bordercolorlight="#99A005" bordercolordark="#FFFFFF">
 			    <tr class="myYellow">
 				<th width="10%" nowrap>	<div class="smallFont"><%=headerTitle2%></div></th>
 				<th width="70%"><div class="smallFont">Description</div></th>
 				<th><div class="smallFont">Fee</div></th>
 			    </tr>
-<%	    for (int i = 0; i < vecCodeCol2.size(); i++) {
+			   
+<%		
+		
+		for (int i = 0; i < vecCodeCol2.size(); i++) {
+			
 		propT = (Properties) vecCodeCol2.get(i);
 		serviceCode = propT.getProperty("serviceCode");
 		serviceDesc = propT.getProperty("serviceDesc");
 		serviceDisp = propT.getProperty("serviceDisp");
 		servicePercentage = propT.getProperty("servicePercentage");
+		serviceType = propT.getProperty("serviceType");
+		
 		if (propPremium.getProperty(serviceCode) != null) premiumFlag = "A";
 		else premiumFlag = "";
 
 		String bgcolor = i % 2 == 0 ? "bgcolor='#FFFFFF'" : "class='myGreen'";
-		if (request.getParameter("xml_" + serviceCode) != null) bgcolor = "bgcolor='#66FF66'";
-%>
+		if (request.getParameter("xml_" + serviceCode) != null) bgcolor = "bgcolor='#66FF66'";		
+		
+%>	
+		 
 			    <tr <%=bgcolor%>>
 				<td align="left" nowrap>
-				    <input type="checkbox" id="xml_<%=serviceCode%>" name="xml_<%=serviceCode%>" value="checked" onclick="refreshServicesChecked(checked);"
+				    <input type="checkbox" id="xml_<%=serviceCode%>" name="xml_<%=serviceCode%>" value="checked" onclick="refreshServicesChecked(this);"
 					   <%=request.getParameter("xml_"+serviceCode)!=null?request.getParameter("xml_"+serviceCode):""%> 
 					   <%=bSingleClick? "onClick='onClickServiceCode(this)'" :""%> />
 				   <b><font	size="-1" color="<%=premiumFlag.equals("A")? "#993333" : "black"%>">
@@ -1297,14 +1479,26 @@ function changeSite(sel) {
 					<input type="hidden" name="perc_xml_<%=serviceCode%>" value="<%=servicePercentage%>" />-->
 				</td>
 			    </tr>
-<%	    } %>
-			</table>
+	<% } %>
+		 </table>
+		</div>
+<%	    }   %>
+			
 		    </td>
 		    <td width="33%" valign="top">
+		    
+<%	   for( int j=0; j< listServiceType.size(); j++) {
+
+		ArrayList<Properties> vecCodeCol3 = new ArrayList<Properties>();
+		vecCodeCol3 = billingServiceCodesMap.get("group3_".concat(listServiceType.get(j)));
+		headerTitle3 = titleMap.get("group3_".concat(listServiceType.get(j)));
+%>
+		<div id="group3_<%=listServiceType.get(j) %>" style="display: none;">
+			    
 			<table width="100%" border="1" cellspacing="0" cellpadding="1" height="0"
 			       bordercolorlight="#99A005" bordercolordark="#FFFFFF">
 			    <tr class="myYellow">
-				<th width="10%" nowrap><div class="smallFont"><%=headerTitle3%></div></th>
+				<th width="10%" nowrap><div class="smallFont"><%=headerTitle3 %></div></th>
 				<th width="70%"><div class="smallFont">Description</div></th>
 				<th><div class="smallFont">Fee</div></th>
 			    </tr>
@@ -1314,15 +1508,19 @@ function changeSite(sel) {
 		serviceDesc = propT.getProperty("serviceDesc");
 		serviceDisp = propT.getProperty("serviceDisp");
 		servicePercentage = propT.getProperty("servicePercentage");
+		serviceType = propT.getProperty("serviceType");
+		
 		if (propPremium.getProperty(serviceCode) != null) premiumFlag = "A";
 		else premiumFlag = "";
 
 		String bgcolor = i % 2 == 0 ? "bgcolor='#FFFFFF'" : "class='myGreen'";
-		if (request.getParameter("xml_" + serviceCode) != null) bgcolor = "bgcolor='#66FF66'";
-%>
+		if (request.getParameter("xml_" + serviceCode) != null) bgcolor = "bgcolor='#66FF66'";		
+		
+%>	
+		
 			    <tr <%=bgcolor%>>
 				<td align="left" nowrap>
-				    <input type="checkbox" id="xml_<%=serviceCode%>" name="xml_<%=serviceCode%>" value="checked" onclick="refreshServicesChecked(checked);"
+				    <input type="checkbox" id="xml_<%=serviceCode%>" name="xml_<%=serviceCode%>" value="checked" onclick="refreshServicesChecked(this);"
 					   <%=request.getParameter("xml_"+serviceCode)!=null?request.getParameter("xml_"+serviceCode):""%>
 					   <%=bSingleClick? "onClick='onClickServiceCode(this)'" :""%> />
 				   <b><font size="-1" color="<%=premiumFlag.equals("A")? "#993333" : "black"%>">
@@ -1341,8 +1539,11 @@ function changeSite(sel) {
 					<input type="hidden" name="perc_xml_<%=serviceCode%>" value="<%=servicePercentage%>" />-->
 				</td>
 			    </tr>
-<%		} %>
-			</table>
+	<% } %>
+		</table>
+		</div>	    
+<%		}  %>
+			
 		    </td>
 		</tr>
 	    </table>

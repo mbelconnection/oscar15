@@ -379,6 +379,7 @@ window.onload=function(){
     <input type="hidden" name="url_back" value="<%=request.getParameter("url_back")%>">
     <input type="hidden" name="billNo_old" id="billNo_old" value="<%=request.getParameter("billNo_old")%>" />
 	<input type="hidden" name="billStatus_old" id="billStatus_old" value="<%=request.getParameter("billStatus_old")%>" />
+	<input type="hidden" name="billForm" id="billForm" value="<%=request.getParameter("billForm")%>" />
 	
 <table border="0" cellpadding="0" cellspacing="2" width="100%" class="myIvory">
 	<tr>

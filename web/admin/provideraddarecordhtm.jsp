@@ -19,8 +19,10 @@
   ArrayList<Hashtable> list = ProviderData.getProviderListOfAllTypes(true);
   ArrayList<Integer> providerList = new ArrayList<Integer>();
   for (Hashtable h : list) {
+     try{
       String pn = (String)h.get("providerNo");
       providerList.add(Integer.valueOf(pn));
+     }catch(Exception alphaProviderNumber){}
   }
 
   String suggestProviderNo = "";

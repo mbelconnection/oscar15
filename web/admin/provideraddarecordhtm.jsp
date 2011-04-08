@@ -22,7 +22,7 @@
      try{
       String pn = (String)h.get("providerNo");
       providerList.add(Integer.valueOf(pn));
-     }catch(Exception alphaProviderNumber){}
+     }catch(Exception alphaProviderNumber){} /*No need to do anything. Just want to avoid a NumberFormatException from provider numbers with alphanumeric Characters*/
   }
 
   String suggestProviderNo = "";

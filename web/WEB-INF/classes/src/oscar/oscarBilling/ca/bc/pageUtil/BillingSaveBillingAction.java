@@ -39,8 +39,8 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.caisi.model.Appointment;
 import org.oscarehr.casemgmt.dao.ApptDAO;
+import org.oscarehr.common.model.OscarAppointment;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -91,7 +91,7 @@ public class BillingSaveBillingAction extends Action {
 
         ////////////
         if (bean.getApptNo() != null && !bean.getApptNo().trim().equals("0") &&  !bean.getApptNo().trim().equals("")){
-            Appointment appt = apptDAO.getAppt(""+bean.getApptNo());
+            OscarAppointment appt = apptDAO.getAppt(""+bean.getApptNo());
             String billStatus = as.billStatus(appt.getStatus());
             ///Update Appointment information
             log.debug("appointment_no: " + bean.getApptNo());

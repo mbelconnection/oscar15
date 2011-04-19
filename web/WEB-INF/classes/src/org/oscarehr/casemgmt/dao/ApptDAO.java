@@ -24,17 +24,17 @@ package org.oscarehr.casemgmt.dao;
 
 import java.util.List;
 
-import org.caisi.model.Appointment;
+import org.oscarehr.common.model.OscarAppointment;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 public class ApptDAO extends HibernateDaoSupport {
     public void updateAppointmentStatus(String apptId, String status, String type) {
 
-        String sql = "from Appointment appt where appt.id = ?";
+        String sql = "from OscarAppointment appt where appt.id = ?";
         List list = getHibernateTemplate().find(sql, new Long(apptId));
-        Appointment appt;
+        OscarAppointment appt;
         if (list.size() != 0) {
-            appt = (Appointment)list.get(list.size() - 1);
+            appt = (OscarAppointment)list.get(list.size() - 1);
             oscar.appt.ApptStatusData as = new oscar.appt.ApptStatusData();
             as.setApptStatus(status);
             if (type.equalsIgnoreCase("sign")) appt.setStatus(as.signStatus());
@@ -44,8 +44,8 @@ public class ApptDAO extends HibernateDaoSupport {
         }
     }
     
-    public Appointment getAppt(String apptId) {
-       Appointment appt = (Appointment) getHibernateTemplate().get(Appointment.class,new Long(apptId));
+    public OscarAppointment getAppt(String apptId) {
+    	OscarAppointment appt = (OscarAppointment) getHibernateTemplate().get(OscarAppointment.class,new Long(apptId));
        return appt;
     }
     

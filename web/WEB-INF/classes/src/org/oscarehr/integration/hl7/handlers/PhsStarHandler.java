@@ -14,9 +14,11 @@ import org.oscarehr.PMmodule.dao.ProviderDao;
 import org.oscarehr.PMmodule.model.Admission;
 import org.oscarehr.PMmodule.model.Program;
 import org.oscarehr.common.OtherIdManager;
+import org.oscarehr.common.dao.BillingreferralDao;
 import org.oscarehr.common.dao.OscarAppointmentDao;
 import org.oscarehr.common.dao.OscarLogDao;
 import org.oscarehr.common.model.Appointment;
+import org.oscarehr.common.model.Billingreferral;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.OscarLog;
 import org.oscarehr.common.model.OtherId;
@@ -577,11 +579,37 @@ public class PhsStarHandler extends BasePhsStarHandler {
 		//practitioner - do we need this?
 		String praPractId = this.extractOrEmpty("/MF_STAFF/PRA-1-1"); //should be same as pract_id
 		//specialty = 1&FAMILY PRACTITIONER&99H62&1&FAMILY PRACTITIONER&99SPC
-		String praSpecialty = this.extractOrEmpty("/MF_STAFF/PRA-5-1"); //should be same as pract_id
+		String praSpecialty = this.extractOrEmpty("/MF_STAFF/PRA-5-1-2"); //should be same as pract_id
 		
 		logger.info("need to do a provider add/update for id " + practId);
 		
 		//logger.info("mfId="+mfId);
+		BillingreferralDao brDao = (BillingreferralDao)SpringUtils.getBean("BillingreferralDAO");
+		Billingreferral br = null;
+		@SuppressWarnings("unchecked")
+		List<Billingreferral> brs = brDao.getBillingreferral(practId);
+		if(brs != null && brs.size()>0) {
+			//update
+			br = brs.get(0);
+		} else {
+			//insert
+			br = new Billingreferral();
+			br.setReferralNo(practId);
+		}
+		//update fields
+		br.setLastName(lastName);
+		br.setFirstName(firstName);
+		br.setSpecialty(praSpecialty);
+		br.setAddress1(address);
+		br.setAddress2(address2);
+		br.setCity(city);
+		br.setProvince(province);
+		br.setCountry(country);
+		br.setPostal(postal);
+		br.setPhone(phone);
+		//br.setFax(fax);
+		
+		brDao.updateBillingreferral(br);	
 	}
 	
 	/**

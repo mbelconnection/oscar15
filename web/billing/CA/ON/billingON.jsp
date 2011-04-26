@@ -93,7 +93,11 @@
 					if (dv!=null) ctlBillForm = dv;
 			    }
 			}
-			
+			//if everything has failed to set ctlBillForm initialize to ""
+			if( ctlBillForm == null ) {
+            	ctlBillForm = "";
+            }
+
 			GregorianCalendar now = new GregorianCalendar();
 			int curYear = now.get(Calendar.YEAR);
 			int curMonth = (now.get(Calendar.MONTH) + 1);

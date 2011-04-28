@@ -544,6 +544,7 @@ try
 			noteStr = StringEscapeUtils.escapeHtml(noteStr);
 			// for remote notes, the full text is always shown.
 			fulltxt = fullTxtFormat.get(pos) || note.getRemoteFacilityId()!=null;
+			--pos;
 			bgColour = CaseManagementViewAction.getNoteColour(note);
 			if (fulltxt)
 			{
@@ -908,7 +909,7 @@ try
 							{
 								lockedNotes.add(note.getNoteId());
 							}
-							else if (!fulltxt)
+							else if (!fulltxt && !note.isDocument() && !note.isEformData() && !note.isEncounterForm() && !note.isRxAnnotation())
 							{
 								unLockedNotes.add(note.getNoteId());
 							}

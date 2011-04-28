@@ -915,6 +915,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 		// update appointment and add verify message to note if verified
 		String strBeanName = "casemgmt_oscar_bean" + demo;
 		EctSessionBean sessionBean = (EctSessionBean) request.getSession().getAttribute(strBeanName);
+		System.out.println("Session Bean ApptNo " + sessionBean.appointmentNo + " ; " + sessionBean.appointmentDate);
 		String verify = request.getParameter("verify");
 		OscarSuperManager oscarSuperManager = (OscarSuperManager) SpringUtils.getBean("oscarSuperManager");
 
@@ -928,7 +929,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 			note.setNote(n);
 
 			// only update appt if there is one
-			if (sessionBean.appointmentNo != null && !sessionBean.appointmentNo.equals("")) {
+			if (sessionBean.appointmentNo != null && !(sessionBean.appointmentNo.equals("") || sessionBean.appointmentNo.equals("0"))) {
 				String apptStatus = updateApptStatus(sessionBean.status, "verify");
 				oscarSuperManager.update("appointmentDao", "archive_appt", new Object[] { sessionBean.appointmentNo });
 				oscarSuperManager.update("appointmentDao", "updatestatusc", new Object[] { apptStatus, providerNo, sessionBean.appointmentNo });
@@ -941,7 +942,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 			note.setNote(n);
 
 			// only update appt if there is one
-			if (sessionBean.appointmentNo != null && !sessionBean.appointmentNo.equals("")) {
+			if (sessionBean.appointmentNo != null && !(sessionBean.appointmentNo.equals("") || sessionBean.appointmentNo.equals("0"))) {
 				String apptStatus = updateApptStatus(sessionBean.status, "sign");
 				oscarSuperManager.update("appointmentDao", "archive_appt", new Object[] { sessionBean.appointmentNo });
 				oscarSuperManager.update("appointmentDao", "updatestatusc", new Object[] { apptStatus, providerNo, sessionBean.appointmentNo });

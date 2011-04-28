@@ -525,10 +525,11 @@ function openSurvey() {
 			<td><span style="color: red">None found</span></td>
 			<td></td>
 			<td>
-				<input type="button" value="New FULL OCAN Form" onclick="document.location='ClientManager/ocan_form.jsp?ocanType=FULL&demographicId=<%=currentDemographic.getDemographicNo()%>'" />						
+				<input type="button" value="New FULL OCAN Form" onclick="document.location='ClientManager/ocan_form.jsp?prepopulate=0&ocanType=FULL&demographicId=<%=currentDemographic.getDemographicNo()%>'" />						
+				<input type="button" value="New FULL OCAN Form - Prepopulated" onclick="document.location='ClientManager/ocan_form.jsp?prepopulate=1&ocanType=FULL&demographicId=<%=currentDemographic.getDemographicNo()%>'" />						
 			</td>
 			<td><input type="button" value="Blank Form" onclick="window.open('<html:rewrite page="/ocan/OCAN_2.0_FULL_v2.0.5.pdf"/>')"/>			
-				</td>
+			</td>
 		</c:if>
 	</tr>
 	
@@ -547,9 +548,10 @@ function openSurvey() {
 			<td><span style="color: red">None found</span></td>
 			<td></td>
 			<td>
-				<input type="button" value="New FULL OCAN Form" onclick="document.location='ClientManager/ocan_client_form.jsp?ocanType=FULL&demographicId=<%=currentDemographic.getDemographicNo()%>'" />							
+				<input type="button" value="New FULL OCAN Form" onclick="document.location='ClientManager/ocan_client_form.jsp?prepopulate=0&ocanType=FULL&demographicId=<%=currentDemographic.getDemographicNo()%>'" />	
 			</td>
-			<td></td>
+			<td>
+			</td>
 		</c:if>
 	</tr>
 	
@@ -571,7 +573,8 @@ function openSurvey() {
 			<td><span style="color: red">None found</span></td>
 			<td></td>
 			<td>
-				<input type="button" value="New SELF+CORE OCAN Form" onclick="document.location='ClientManager/ocan_form.jsp?ocanType=SELF&demographicId=<%=currentDemographic.getDemographicNo()%>'" />						
+				<input type="button" value="New SELF+CORE OCAN Form" onclick="document.location='ClientManager/ocan_form.jsp?prepopulate=0&ocanType=SELF&demographicId=<%=currentDemographic.getDemographicNo()%>'" />						
+				<input type="button" value="New SELF+CORE OCAN Form - Prepopulated" onclick="document.location='ClientManager/ocan_form.jsp?prepopulate=1&ocanType=SELF&demographicId=<%=currentDemographic.getDemographicNo()%>'" />						
 			</td>
 			<td><input type="button" value="Blank Form" onclick="window.open('<html:rewrite page="/ocan/OCAN_2.0_CORE_SELF_v2.0.5.pdf"/>')"/>			
 				</td>
@@ -595,7 +598,7 @@ function openSurvey() {
 			<td><span style="color: red">None found</span></td>
 			<td></td>
 			<td>
-				<input type="button" value="New SELF+CORE OCAN Form" onclick="document.location='ClientManager/ocan_client_form.jsp?ocanType=SELF&demographicId=<%=currentDemographic.getDemographicNo()%>'" />							
+				<input type="button" value="New SELF+CORE OCAN Form" onclick="document.location='ClientManager/ocan_client_form.jsp?prepopulate=0&ocanType=SELF&demographicId=<%=currentDemographic.getDemographicNo()%>'" />							
 			</td>
 			<td></td>
 		</c:if>
@@ -618,7 +621,9 @@ function openSurvey() {
 			<td><span style="color: red">None found</span></td>
 			<td></td>
 			<td>
-				<input type="button" value="New CORE OCAN Form" onclick="document.location='ClientManager/ocan_form.jsp?ocanType=CORE&demographicId=<%=currentDemographic.getDemographicNo()%>'" />						
+				<input type="button" value="New CORE OCAN Form" onclick="document.location='ClientManager/ocan_form.jsp?prepopulate=0&ocanType=CORE&demographicId=<%=currentDemographic.getDemographicNo()%>'" />						
+			
+				<input type="button" value="New CORE OCAN Form - Prepopulated" onclick="document.location='ClientManager/ocan_form.jsp?prepopulate=1&ocanType=CORE&demographicId=<%=currentDemographic.getDemographicNo()%>'" />						
 			</td>
 			<td><input type="button" value="Blank Form" onclick="window.open('<html:rewrite page="/ocan/OCAN_2.0_CORE_v2.0.5.pdf"/>')"/>			
 				</td>

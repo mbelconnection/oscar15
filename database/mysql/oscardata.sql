@@ -1072,7 +1072,7 @@ INSERT INTO oscarcommlocations VALUES (145,'Oscar Users',NULL,1,'<?xml version=\
 -- Dumping data for table 'preference'
 --
 
-INSERT INTO preference VALUES (138,'999998','8','18','15','.default','deepblue','','disabled','disabled');
+INSERT INTO preference VALUES (138,'999998','8','18','15','.default','deepblue','','disabled','disabled',0,''');
 
 --
 -- Dumping data for table 'prescribe'
@@ -1402,7 +1402,7 @@ insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values(
 insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.bedCheck', 'Program - Bed Check',0);
 insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.clientStatus', 'Program - Client Status',0);
 insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_pmm_editProgram.serviceRestrictions', 'Program - Service Restrictions',0);
-insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values ('_pmm.eidtor','Caisi Intake Editor',0);
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values ('_pmm.editor','Caisi Intake Editor',0);
 
 -- Quatro Group Report
 insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values('_reportRunner', 'Report Runner', 0);

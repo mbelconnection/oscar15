@@ -39,6 +39,8 @@
 	
 	OcanStaffForm ocanStaffForm=OcanFormAction.createOcanStaffForm(ocanStaffFormId, clientId, signed);
 	
+	int prepopulate = 0;
+	prepopulate = Integer.parseInt(request.getParameter("prepopulate")==null?"0":request.getParameter("prepopulate"));
 	
 	
 	ocanStaffForm.setLastName(request.getParameter("lastName"));

@@ -147,10 +147,14 @@ public boolean patientHasOutstandingPrivateBills(String demographicNo){
 	String ocanWarningWindow=null;
 	String caisiBillingPreferenceNotDelete = null;
 	
+	if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.IsPropertiesOn.propertiesOn("OCAN_warning_window") ) {
+		ocanWarningWindow = (String)session.getAttribute("ocanWarningWindow");
+	}
+	
 	if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable()){
 		newticklerwarningwindow = (String) session.getAttribute("newticklerwarningwindow");
 		default_pmm = (String)session.getAttribute("default_pmm");
-		ocanWarningWindow = (String)session.getAttribute("ocanWarningWindow");
+		
 		caisiBillingPreferenceNotDelete = (String)session.getAttribute("caisiBillingPreferenceNotDelete");
 		if(caisiBillingPreferenceNotDelete==null) {
 			List<Map> prefBillingList = oscarSuperManager.find("providerDao", "search_pref_defaultbill", new Object[] {curUser_no});

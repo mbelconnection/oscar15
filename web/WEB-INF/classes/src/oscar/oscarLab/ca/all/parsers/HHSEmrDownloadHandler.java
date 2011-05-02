@@ -558,10 +558,11 @@ public class HHSEmrDownloadHandler extends DefaultGenericHandler implements Mess
 //        return("");
 //    }
 //    
-//    public String getOrderStatus(){
-//        //usually a message type specific location
-//        return("");
-//    }
+    public String getOrderStatus(){
+        //usually a message type specific location
+	String status = "F";
+        return status;
+    }
 //    
 //    public String getClientRef(){
 //        try{

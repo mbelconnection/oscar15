@@ -805,9 +805,9 @@ function showBillFormDiv (group, selectedForm) {
       		thisDiv.style.display = "block";
     	}
   	}
-  	else {
-    	alert("Error: Could not locate div with id: " + selectedFormDivGroupId);
-  	}
+  	//else {
+    //	alert("Error: Could not locate div with id: " + selectedFormDivGroupId);
+  	//}
 }
 
 function hideBillFormDiv (group, selectedForm) {
@@ -819,9 +819,9 @@ function hideBillFormDiv (group, selectedForm) {
       		thisDiv.style.display = "none";
     	}
   	}
-  	else {
-    	alert("Error: Could not locate div with id: " + selectedFormDivGroupId);
-  	}
+  	//else {
+    //	alert("Error: Could not locate div with id: " + selectedFormDivGroupId);
+  	//}
 }
 
 

@@ -8,7 +8,24 @@
 <%@page import="org.oscarehr.util.MiscUtils"%>
 <%@page import="org.oscarehr.PMmodule.dao.ClientDao"%>
 <%@page import="java.util.List"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="java.util.Collection"%>
+<%@page import="java.util.Collections"%>
+<%@page import="java.util.Iterator"%>
+<%@page import="java.text.SimpleDateFormat"%>
 <%@page import="oscar.util.StringUtils"%>
+<%@page import="org.oscarehr.casemgmt.dao.AllergyDAO" %>
+<%@page import="org.oscarehr.casemgmt.model.Allergy" %>
+<%@page import="org.oscarehr.casemgmt.dao.CaseManagementNoteDAO" %>
+<%@page import="org.oscarehr.casemgmt.model.CaseManagementNote" %>
+<%@page import="oscar.oscarEncounter.oscarMeasurements.dao.MeasurementsDao" %>
+<%@page import="oscar.oscarEncounter.oscarMeasurements.model.Measurements" %>
+<%@page import="org.oscarehr.casemgmt.service.CaseManagementManager" %>
+<%@page import="org.oscarehr.common.model.Drug"%>
+<%@page import="oscar.oscarLab.ca.on.CommonLabResultData" %>
+<%@page import="oscar.oscarLab.ca.on.LabResultData" %>
+<%@page import="org.oscarehr.PMmodule.dao.ProviderDao" %>
+<%@page import="org.oscarehr.common.model.Provider" %>
 
 <%
 	String strMrn = request.getParameter("mrn");
@@ -34,6 +51,36 @@
 	if(demographicCust!=null) {
 		alert = demographicCust.getCust3();
 	}
+	
+	//allergies
+	AllergyDAO allergyDao = (AllergyDAO)SpringUtils.getBean("AllergyDAO");
+	@SuppressWarnings("unchecked")
+	List<Allergy> allergies = allergyDao.getAllergies(String.valueOf(demographic.getDemographicNo()));
+
+	//history
+	ProviderDao providerDao = (ProviderDao)SpringUtils.getBean("providerDao");
+	CaseManagementNoteDAO caseManagementNoteDao = (CaseManagementNoteDAO)SpringUtils.getBean("CaseManagementNoteDAO");
+	Collection<CaseManagementNote> socialHistory = caseManagementNoteDao.findNotesByDemographicAndIssueCode(demographic.getDemographicNo(),new String[] {"SocHistory"});
+	Collection<CaseManagementNote> medicalHistory = caseManagementNoteDao.findNotesByDemographicAndIssueCode(demographic.getDemographicNo(),new String[] {"MedHistory"});
+	Collection<CaseManagementNote> familyHistory = caseManagementNoteDao.findNotesByDemographicAndIssueCode(demographic.getDemographicNo(),new String[] {"FamHistory"});
+
+	//measurements
+	MeasurementsDao measurementsDao = (MeasurementsDao)SpringUtils.getBean("measurementsDao");
+	List<Measurements> bp = measurementsDao.getMeasurementsByDemographicAndType(demographic.getDemographicNo(),"BP");
+	List<Measurements> ht = measurementsDao.getMeasurementsByDemographicAndType(demographic.getDemographicNo(),"HT");
+	List<Measurements> wt = measurementsDao.getMeasurementsByDemographicAndType(demographic.getDemographicNo(),"WT");
+	List<Measurements> bmi = measurementsDao.getMeasurementsByDemographicAndType(demographic.getDemographicNo(),"BMI");
+	
+	//medications
+	CaseManagementManager caseManagementManager = (CaseManagementManager) SpringUtils.getBean("caseManagementManager");
+	List<Drug> prescriptDrugs = caseManagementManager.getPrescriptions(demographic.getDemographicNo(), true);
+        
+	//labs
+	CommonLabResultData comLab = new CommonLabResultData();
+    ArrayList labs = comLab.populateLabResultsData("",String.valueOf(demographic.getDemographicNo()), "", "","","U");
+    Collections.sort(labs);
+	System.out.println("# of labs="+labs.size());    
+ 
 %>
 
 
@@ -88,7 +135,7 @@ padding-right: 30px;
 }
 
 .noLink{
-text-decoration: none; color: #003162; font-size:12px;
+text-decoration: none; color: #003162; font-size:12px; font-weight:bold; text-decoration:underline;
 }
 
 a.NavMenu:link {text-decoration: none; color: #003162; font-size:12px;}
@@ -150,9 +197,9 @@ padding-left:5px;
 		<%
 			for(int x=0;x<navArray.length;x++) {
 				
-				%>if(name == '<%=navArray[x]%>') {document.getElementById('<%=navArray[x]%>').style.display='block'; document.getElementById('main_title').innerHTML='<%=navArray[x]%>';}<%
+				%>if(name == '<%=navArray[x]%>') {document.getElementById('<%=navArray[x]%>').style.display='block'; document.getElementById('main_title').innerHTML='<%=navArray[x]%>';document.getElementById('nav_<%=navArray[x]%>').className='noLink';}<%
 				out.println();
-				%>else {document.getElementById('<%=navArray[x]%>').style.display='none';}<%
+				%>else {document.getElementById('<%=navArray[x]%>').style.display='none';;document.getElementById('nav_<%=navArray[x]%>').className='';}<%
 				out.println();
 			}
 		%>		
@@ -206,15 +253,13 @@ padding-left:5px;
 				 int i=0;
 				 for(i=0;i<navArray.length;i++)
 				 { 
+					 String className = (navArray[i].equals(view))?"noLink":"";
 					//create the navigation options and underline and bold if item is selected
-					if (navArray[i].equals(view)) {
-						out.print("<span class='noLink'><b><u>"+navArray[i]+"</u></b></span> | ");		
 					
-					}else{
-						out.print("<a href='#' onclick=\"changeView('"+navArray[i]+"');return false;\" class='"+LinkParam+"'>");
+						out.print("<span id='nav_"+navArray[i]+"' class='"+className+"'><a href='#' onclick=\"changeView('"+navArray[i]+"');return false;\" class='"+LinkParam+"'>");
 							out.print(navArray[i]);
-						out.print("</a> | ");	
-					}
+						out.print("</a></span> | ");	
+					
 				 }
 				%>			
 			</td>
@@ -271,71 +316,77 @@ padding-left:5px;
 					</tr>
 					<tr><td valign="top" >
 						<table width="300" bgcolor="#8D8D69" cellspacing="1" cellpadding="1" align="left">
-							<tr><td bgcolor="#996633" height="16"> </td></tr>
-							<tr><td bgcolor="#ffffff">
-							<font size="2"><b>Documentation Date: 05-Aug-2010 14:57</b><br />
-							<i>Signed by oscartrain, oscartrain</i>
-						
-							
-
-							<p><font size="2">
-							On ODSP<br />
-							lives alone<br />
-							minimal family supports<br />
-							</p>
-
-							</font>
-							
-							</td></tr>
+							<%
+								SimpleDateFormat noteFormatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm");
+								Iterator<CaseManagementNote> iter = socialHistory.iterator();
+								while(iter.hasNext()) {
+									CaseManagementNote note = iter.next();											
+							%>
+							<tr>
+								<td bgcolor="#996633" height="16"> </td>
+							</tr>
+							<tr>
+								<td bgcolor="#ffffff">
+									<font size="2"><b>Documentation Date: <%=noteFormatter.format(note.getUpdate_date()) %></b>
+									<br />
+									<i>Signed by <%=providerDao.getProvider(note.getSigning_provider_no()).getFormattedName() %></i>
+									<p><font size="2">
+									<%=note.getNote()%>									
+									</font></p></font>							
+								</td>
+							</tr>
+							<% } %>
 						</table>
 							
 					</td>
-					<td>
+					<td valign="top">
 					<table width="300" bgcolor="#8D8D69" cellspacing="1" cellpadding="1" align="left">
+							<%
+							iter = medicalHistory.iterator();
+							while(iter.hasNext()) {
+								CaseManagementNote note = iter.next();	
+							%>
 							<tr><td bgcolor="#993333" height="16"> </td></tr>
 							
 							<tr><td bgcolor="#ffffff">
-							<font size="2"><b>Documentation Date: 05-Aug-2010 14:57</b><br />
-							<i>Signed by oscartrain, oscartrain</i>
-							
-							
-							
-							
+							<font size="2"><b>Documentation Date: <%=noteFormatter.format(note.getUpdate_date()) %></b><br />
+							<i>Signed by <%=providerDao.getProvider(note.getSigning_provider_no()).getFormattedName() %></i>
 
 							<p><font size="2">
-							On ODSP<br />
-							lives alone<br />
-							minimal family supports<br />
+							<%=note.getNote() %>
+							</font>
 							</p>
 
 							</font>
 							
 							</td></tr>
+							<% } %>
 						</table>
 						
 						
 					</td>
 					
-					<td>
+					<td valign="top">
 					<table width="300" bgcolor="#8D8D69" cellspacing="1" cellpadding="1" align="left">
+							<%
+							iter = familyHistory.iterator();
+							while(iter.hasNext()) {
+								CaseManagementNote note = iter.next();	
+							%>
 							<tr><td bgcolor="#006600" height="16"> </td></tr>
 							<tr><td bgcolor="#ffffff">
-							<font size="2"><b>Documentation Date: 05-Aug-2010 14:57</b><br />
-							<i>Signed by oscartrain, oscartrain</i>
-							
-							
-							
-							
-	
+							<font size="2"><b>Documentation Date: <%=noteFormatter.format(note.getUpdate_date()) %></b><br />
+							<i>Signed by <%=providerDao.getProvider(note.getSigning_provider_no()).getFormattedName() %></i>
+														
 							<p><font size="2">
-							On ODSP<br />
-							lives alone<br />
-							minimal family supports<br />
+							<%=note.getNote() %>
+							</font>
 							</p>
 
 							</font>
 							
 							</td></tr>
+							<% } %>
 						</table>
 					</td>
 					</tr>
@@ -350,28 +401,120 @@ padding-left:5px;
 					<tr class="patient_list_head">
 					<td>Type</td><td> 	Measurement</td><td> 	Date</td>
 					</tr>
-					<tr class="patient_list_results"><td>BP</td><td>200/105</td><td>13-Oct-2011</td></tr>					
-					<tr class="patient_list_results"><td>HT</td><td>164 cm</td><td>26-Nov-2011</td></tr>
-					<tr class="patient_list_results"><td>WT</td><td>164 kg</td><td>26-Nov-2011</td></tr>
-					<tr class="patient_list_results"><td>BMI</td><td>25.84</td><td>26-Nov-2011</td></tr>
+					<%
+					SimpleDateFormat measFormatter = new SimpleDateFormat("dd-MMM-yyyy");
+					if(bp.size()>0) {
+						Measurements latestBp = bp.get(0);					
+					%>
+					<tr class="patient_list_results">
+						<td>BP</td>
+						<td><%=latestBp.getDataField() %></td>
+						<td><%=measFormatter.format(latestBp.getDateObserved()) %></td>
+					</tr>					
+					<% } else {%>
+					<tr class="patient_list_results">
+						<td>BP</td>
+						<td><i>No Recorded Date</i></td>
+						<td><i>N/A</i></td>
+					</tr>		
+					<%} %>
+					
+					<%
+					if(ht.size()>0) {
+						Measurements latestBp = ht.get(0);					
+					%>
+					<tr class="patient_list_results">
+						<td>HT</td>
+						<td><%=latestBp.getDataField() %> cm</td>
+						<td><%=measFormatter.format(latestBp.getDateObserved()) %></td>
+					</tr>					
+					<% } else {%>
+					<tr class="patient_list_results">
+						<td>HT</td>
+						<td><i>No Recorded Date</i></td>
+						<td><i>N/A</i></td>
+					</tr>		
+					<%} %>
+					<%
+					if(wt.size()>0) {
+						Measurements latestBp = wt.get(0);					
+					%>
+					<tr class="patient_list_results">
+						<td>WT</td>
+						<td><%=latestBp.getDataField() %> kg</td>
+						<td><%=measFormatter.format(latestBp.getDateObserved()) %></td>
+					</tr>					
+					<% } else {%>
+					<tr class="patient_list_results">
+						<td>WT</td>
+						<td><i>No Recorded Date</i></td>
+						<td><i>N/A</i></td>
+					</tr>		
+					<%} %>
+					<%
+					if(bmi.size()>0) {
+						Measurements latestBp = bmi.get(0);					
+					%>
+					<tr class="patient_list_results">
+						<td>BMI</td>
+						<td><%=latestBp.getDataField() %></td>
+						<td><%=measFormatter.format(latestBp.getDateObserved()) %></td>
+					</tr>					
+					<% } else {%>
+					<tr class="patient_list_results">
+						<td>BMI</td>
+						<td><i>No Recorded Date</i></td>
+						<td><i>N/A</i></td>
+					</tr>		
+					<%} %>
+					
+					
 					</table>
 					</div>
 					
 					<div id="Medications" style="display:none;">
 					<!--Table alloted for Legend-->
+					<!-- 
 					<table width="<%=tblWidth%>"><td align="right"><img src="images/notes.gif" border="0" width="10" height="12" alt="rxAnnotation"><font size="1"> = rxAnnotation</font></td></table>
-					
+					-->
 					<table width="<%=tblWidth%>"  bgcolor="#8D8D69" cellspacing="1" cellpadding="1">
 					<tr  class="patient_list_head">
-					<td>Rx Date </td><td>	Days to Exp</td><td> 	LT Med </td><td>	Prescription </td><td width="18" align="center">	<img src="images/notes.gif" border="0" alt="rxAnnotation"> </td><td> 	Location Prescribed </td>
+					<td>Rx Date </td><td>	Days to Exp</td><td> 	LT Med </td><td>	Prescription </td><td> 	Location Prescribed </td>
 					</tr>
-					<tr class="patient_list_results"><td>2011-04-25 </td><td>	25</td><td> 	L </td><td>LIPITOR 40MG TABLETS 1 OD Qty:30 Repeats:3 </td><td align="center"> <a href="#" ><img src="images/notes.gif" border="0" alt="rxAnnotation"> </td><td> 	local </td></tr>					
+					<%
+					SimpleDateFormat rxFormatter = new SimpleDateFormat("yyyy-MM-dd");
+					for (Drug prescriptDrug : prescriptDrugs) {
 					
-					<tr class="patient_list_results"><td>2011-04-25 </td><td>	115</td><td> 	L </td><td>NOVOLIN GE TORONTO INJ 100U/ML 15-20-20-0 for 3 months Qty:12 cartridges Repeats:3 </td><td align="center">	<a href="#"   ><img src="images/notes.gif" border="0" alt="rxAnnotation"> </td><td> 	local </td></tr>		
+				        if( prescriptDrug.isArchived() )
+				            continue;
+				    
+				        boolean longTerm = prescriptDrug.getLongTerm();
+				        String lt = "No";
+				        if(longTerm) {
+				        	lt = "Yes";
+				        }
+				     
+				        
+					%>
+					<tr class="patient_list_results">
+						<td><%=rxFormatter.format(prescriptDrug.getRxDate()) %></td>
+						<td><%=prescriptDrug.daysToExpire()%></td>
+						<td><%=lt%></td>
+						<td><%=prescriptDrug.getSpecial()%></td>
+						<td>
+						<%
+			                if (prescriptDrug.getRemoteFacilityName() != null){ %>
+			                    <%=prescriptDrug.getRemoteFacilityName()%>
+			                <%}else if(  prescriptDrug.getOutsideProviderName() !=null && !prescriptDrug.getOutsideProviderName().equals("")  ){%>
+			                    <%=prescriptDrug.getOutsideProviderName()%>
+			                <%}else{%>
+			                    local
+			                <%}%>
+						</td>
+					</tr>					
 					
-					<tr class="patient_list_results"><td>2011-04-25 </td><td>	355</td><td> 	L </td><td>AVALIDE 150/12.5 MG 1 OD Qty:30 Repeats:3 </td><td align="center">	<a href="#" "><a href="#" alt="rxAnnotation" ><img src="images/notes.gif" border="0" alt="rxAnnotation"></td><td> 	local </td></tr>		
+					<% } %>
 					
-					<tr class="patient_list_results"><td>2011-04-25 </td><td>	1165</td><td> 	L </td><td>LANTUS -(CARTRIDGE) SC Hs as directed: for 3 months Qty:2 boxes Repeats:12 </td><td align="center">	<a href="#"   ><img src="images/notes.gif" border="0" alt="rxAnnotation"> </td><td> 	local </td></tr>		
 					</table>
 					</div>
 					
@@ -383,22 +526,54 @@ padding-left:5px;
 					<tr  class="patient_list_head">
 					<td>Discipline</td><td> 	Date of Test </td><td>	Requesting Client </td><td>	Result Status </td><td>	Report Status</td>
 					</tr>
-					<tr  class="patient_list_results"><td>CHEMISTRY </td><td>2010-11-29 21:43:32 </td><td>H.D. FULLER </td><td>Abnormal </td><td>Final</td></tr>					
-					<tr  class="patient_list_results"><td>CHEMISTRY </td><td>2010-09-30 22:28:15  </td><td>H.D. FULLER </td><td> </td><td>Final</td></tr>					
+					<%
+						SimpleDateFormat labFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						for(int x=0;x<labs.size();x++) {
+							LabResultData lab = (LabResultData)labs.get(x);	
+							String resultStatus = lab.isAbnormal()?"Abnormal":"";
+					%>
+					<tr  class="patient_list_results">
+						<td><%=lab.getDiscipline() %></td>
+						<td><%=lab.getDateTime() %></td>
+						<td><%=lab.getRequestingClient() %></td>
+						<td><%=resultStatus%></td>
+						<td><%= ( (String) ( lab.isFinal() ? "Final" : "Partial") )%></td>
+					</tr>					
+					
+					<%} %>
 					</table>
 					</div>
 					
 					<div id="Allergies">
-					<!--Table alloted for Legend-->
-					<table width="<%=tblWidth%>"><td align="right"><img src="images/notes.gif" border="0" width="10" height="12" alt="Annotation"><font size="1"> = Annotation</font></td></table>
-					
-					<table width="<%=tblWidth%>"  bgcolor="#8D8D69" cellspacing="1" cellpadding="1">
-					<tr  class="patient_list_head">
-					<td>Entry Date</td> 	<td>Description</td> 	<td>Allergy Type</td> 	<td>Severity</td> 	<td>Onset of Reaction</td> 	<td>Reaction</td> 	<td>Start Date</td> <td width="18" align="center">	<img src="images/notes.gif" border="0" alt="Annotation"> </td>
-					</tr>
-					<tr  class="patient_list_results"><td>2010-12-30</td> 	<td>METFORMIN</td> 	<td>ATC Class </td> 	<td>Moderate</td> 	<td>Immediate</td> 	<td></td> 	<td></td> <td align="center"><a href="#"><img src="images/notes.gif" border="0" alt="Annotation"></a></td></tr>
-					<tr  class="patient_list_results"><td>2011-04-25</td> 	<td>PEANUT OIL</td> 	<td>Generic Name </td> 	<td>Moderate</td> 	<td>Immediate</td> 	<td>Itchy throat</td> 	<td></td> <td align="center"><a href="#"><img src="images/notes.gif" border="0" alt="Annotation"></a></td></tr>
-					</table>			
+						<!--Table alloted for Legend-->
+						<!-- 
+						<table width="<%=tblWidth%>"><td align="right"><img src="images/notes.gif" border="0" width="10" height="12" alt="Annotation"><font size="1"> = Annotation</font></td></table>
+						-->
+						<table width="<%=tblWidth%>"  bgcolor="#8D8D69" cellspacing="1" cellpadding="1">
+							<tr  class="patient_list_head">
+							<td>Entry Date</td> 	<td>Description</td> 	<td>Allergy Type</td> 	<td>Severity</td> 	<td>Onset of Reaction</td> 	<td>Reaction</td> 	<td>Start Date</td> <!-- <td width="18" align="center">	<img src="images/notes.gif" border="0" alt="Annotation"> </td> -->
+							</tr>
+	
+							<%
+								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+								for(int x=0;x<allergies.size();x++) {
+									Allergy allergy = allergies.get(x);
+							%>
+									<tr class="patient_list_results">
+										<td><%=formatter.format(allergy.getEntry_date()) %></td>
+										<td><%=allergy.getDescription()%></td>
+										<td><%=allergy.getTypeDesc() %></td>
+										<td><%=allergy.getSeverityDesc() %></td>
+										<td><%=allergy.getOnsetDesc() %></td>
+										<td><%=allergy.getReaction()%></td>
+										<td><%=formatter.format(allergy.getStart_date()) %></td>
+										<!-- 
+										<td align="center"><a href="#"><img src="images/notes.gif" border="0" alt="Annotation"></a></td>
+										-->
+									</tr>
+							
+							<% 	} %>							
+						</table>			
 					</div>		
 
 					

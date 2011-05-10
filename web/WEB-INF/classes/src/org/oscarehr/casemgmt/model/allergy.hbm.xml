@@ -29,5 +29,10 @@
 		<property name="description" column="DESCRIPTION" />
 		<property name="reaction" />
 		<property name="entry_date" type="java.util.Date" />
+		<property name="start_date" type="java.util.Date" />
+		<property name="severity" column="severity_of_reaction"/>
+		<property name="onset" column="onset_of_reaction"/>
+		<property name="type" column="TYPECODE"/>
+		
 	</class>
 </hibernate-mapping>

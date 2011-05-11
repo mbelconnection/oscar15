@@ -169,8 +169,7 @@
            
        }
 
-
-       var appointmentNo = <%=request.getParameter("appointmentNo")%>;
+       var appointmentNo = <%=request.getParameter("appointmentNo") != null && !request.getParameter("appointmentNo").equals("") ? request.getParameter("appointmentNo") : "''"%>;
               
    </script>
  

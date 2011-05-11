@@ -763,8 +763,8 @@ public class CaseManagementViewAction extends BaseCaseManagementViewAction {
 			notesToDisplay.add(new NoteDisplayNonNote(eform));
 		}
 
-		// add forms to notes list as single line items
-		ArrayList<PatientForm> allPatientForms=EctFormData.getAllPatientFormsFromAllTables(demographicId);
+		// add forms to notes list as single line items filtered to one entry per day
+		ArrayList<PatientForm> allPatientForms=EctFormData.getGroupedPatientFormsFromAllTables(demographicId);
 		for (PatientForm patientForm : allPatientForms) {
 			notesToDisplay.add(new NoteDisplayNonNote(patientForm));
 		}

@@ -332,10 +332,16 @@ function formatPhoneNum() {
     }
 }
 function checkONReferralNo() {
+	<%
+		String skip = oscar.OscarProperties.getInstance().getProperty("SKIP_REFERRAL_NO_CHECK","false");
+		if(!skip.equals("true")) {
+	%>
   var referralNo = document.updatedelete.r_doctor_ohip.value ;
   if (document.updatedelete.hc_type.value == 'ON' && referralNo.length > 0 && referralNo.length != 6) {
     alert("<bean:message key="demographic.demographiceditdemographic.msgWrongReferral"/>") ;
   }
+  
+  <% } %>
 }
 
 

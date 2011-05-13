@@ -28,6 +28,8 @@ import org.oscarehr.integration.hl7.model.StaffId;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 
+import oscar.OscarProperties;
+
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.parser.GenericParser;
 import ca.uhn.hl7v2.parser.Parser;
@@ -134,6 +136,10 @@ public class PhsStarHandler extends BasePhsStarHandler {
 		demo.setSex(getSex());
 		demo.setDateJoined(new Date());
 		demo.setEffDate(new Date());
+		
+		if(OscarProperties.getInstance().hasProperty("DEFAULT_PHS_PROVIDER")) {
+			demo.setProviderNo(OscarProperties.getInstance().getProperty("DEFAULT_PHS_PROVIDER"));
+		}
 		
 		//set MRN
 		Map<String,PatientId> internalIds = this.extractInternalPatientIds();
@@ -560,10 +566,24 @@ public class PhsStarHandler extends BasePhsStarHandler {
 		
 		//repetition
 		//(905)555-1212X1234^WPN^PH^^^905^5551212^1234
-		//[NNN] [(999)]999-9999 [X99999] [B99999] [C any text] ^ <telecommunication use code (ID)> ^ <telecommunication equipment type (ID)> ^ <email address (ST)> ^ <county code (NM)> ^ <area/city code (NM)> ^ <phone number (NM) ^ <extension (NM)> ^ <any text (st)> 
-		String phone = this.extractOrEmpty("/MF_STAFF/STF-10-1");
-		String phoneLoc = this.extractOrEmpty("/MF_STAFF/STF-10-2");
-		String phoneType = this.extractOrEmpty("/MF_STAFF/STF-10-3");
+		//[NNN] [(999)]999-9999 [X99999] [B99999] [C any text] ^ <telecommunication use code (ID)> ^ <telecommunication equipment type (ID)> ^ <email address (ST)> ^ <county code (NM)> ^ <area/city code (NM)> ^ <phone number (NM) ^ <extension (NM)> ^ <any text (st)>
+		String phone = null;		
+		String fax = null;
+		
+		for(int x=0;x<3;x++) {
+			String phoneTmp = this.extractOrEmpty("/MF_STAFF/STF-10("+x+")-1");
+			if(phoneTmp != null&& phoneTmp.indexOf("C")!=-1) {
+				phoneTmp = phoneTmp.substring(0,phoneTmp.indexOf("C"));
+			}
+			String phoneType = this.extractOrEmpty("/MF_STAFF/STF-10("+x+")-3");
+			
+			if(phoneType != null && phoneType.equals("PH")) {
+				phone = phoneTmp;
+			}
+			if(phoneType != null && phoneType.equals("FX")) {
+				fax = phoneTmp;
+			}
+		}
 		
 		//repetitive		
 		String address = this.extractOrEmpty("/MF_STAFF/STF-11-1");
@@ -607,7 +627,7 @@ public class PhsStarHandler extends BasePhsStarHandler {
 		br.setCountry(country);
 		br.setPostal(postal);
 		br.setPhone(phone);
-		//br.setFax(fax);
+		br.setFax(fax);
 		
 		brDao.updateBillingreferral(br);	
 	}
@@ -995,5 +1015,5 @@ public class PhsStarHandler extends BasePhsStarHandler {
 		logDao.persist(log);
 	}
 	
-	
+
 }

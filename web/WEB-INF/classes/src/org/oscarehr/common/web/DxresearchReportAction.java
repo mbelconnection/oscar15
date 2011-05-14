@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import oscar.oscarResearch.oscarDxResearch.bean.dxCodeSearchBean;
 import oscar.oscarResearch.oscarDxResearch.bean.dxQuickListBeanHandler;
+import oscar.oscarResearch.oscarDxResearch.bean.dxQuickListItemsHandler;
 import oscar.oscarResearch.oscarDxResearch.util.dxResearchCodingSystem;
 
 /**
@@ -69,7 +70,14 @@ public class DxresearchReportAction extends DispatchAction {
  
         List codeSearch = (List)request.getSession().getAttribute("codeSearch");
         List patientInfo = dxresearchdao.patientRegistedAll(codeSearch,providerNoList);
-        request.getSession().setAttribute("listview", patientInfo);
+        request.getSession().setAttribute("listview", patientInfo);    
+        
+        if (patientInfo == null || patientInfo.size()==0)
+        {       
+            request.getSession().setAttribute("Counter", 0);
+        }else
+            request.getSession().setAttribute("Counter", patientInfo.size());
+        
         request.getSession().setAttribute("radiovaluestatus", "patientRegistedAll");
         return mapping.findForward(SUCCESS);
     }
@@ -89,6 +97,13 @@ public class DxresearchReportAction extends DispatchAction {
         List codeSearch = (List)request.getSession().getAttribute("codeSearch");
         List patientInfo = dxresearchdao.patientRegistedDistincted(codeSearch,providerNoList);
         request.getSession().setAttribute("listview", patientInfo);
+        
+        if (patientInfo == null || patientInfo.size()==0)
+        {
+            request.getSession().setAttribute("Counter", 0);
+        }else
+            request.getSession().setAttribute("Counter", patientInfo.size());
+        
         request.getSession().setAttribute("radiovaluestatus", "patientRegistedDistincted");
         return mapping.findForward(SUCCESS);
     }
@@ -108,6 +123,13 @@ public class DxresearchReportAction extends DispatchAction {
         List codeSearch = (List)request.getSession().getAttribute("codeSearch");
         List patientInfo = dxresearchdao.patientRegistedDeleted(codeSearch,providerNoList);
         request.getSession().setAttribute("listview", patientInfo);
+        
+        if (patientInfo == null || patientInfo.size()==0)
+        {
+            request.getSession().setAttribute("Counter", 0);
+        }else
+            request.getSession().setAttribute("Counter", patientInfo.size());
+                
         request.getSession().setAttribute("radiovaluestatus", "patientRegistedDeleted");
         return mapping.findForward(SUCCESS);
     }
@@ -127,6 +149,13 @@ public class DxresearchReportAction extends DispatchAction {
         List codeSearch = (List)request.getSession().getAttribute("codeSearch");
         List patientInfo = dxresearchdao.patientRegistedActive(codeSearch,providerNoList);
         request.getSession().setAttribute("listview", patientInfo);
+        
+        if (patientInfo == null || patientInfo.size()==0)
+        {
+            request.getSession().setAttribute("Counter", 0);
+        }else
+            request.getSession().setAttribute("Counter", patientInfo.size());
+                
         request.getSession().setAttribute("radiovaluestatus", "patientRegistedActive");
         return mapping.findForward(SUCCESS);
     }
@@ -146,10 +175,34 @@ public class DxresearchReportAction extends DispatchAction {
         List codeSearch = (List)request.getSession().getAttribute("codeSearch");
         List patientInfo = dxresearchdao.patientRegistedResolve(codeSearch,providerNoList);
         request.getSession().setAttribute("listview", patientInfo);
+        
+        if (patientInfo == null || patientInfo.size()==0)
+        {
+            request.getSession().setAttribute("Counter", 0);
+        }else
+            request.getSession().setAttribute("Counter", patientInfo.size());        
+        
         request.getSession().setAttribute("radiovaluestatus", "patientRegistedResolve");
         return mapping.findForward(SUCCESS);
     }
 
+    public ActionForward editDesc( ActionMapping mapping, ActionForm  form,
+            HttpServletRequest request, HttpServletResponse response)
+            throws Exception
+	{
+		String editingCodeType = request.getParameter( "editingCodeType" );
+		String editingCodeCode = request.getParameter( "editingCodeCode" );
+		String editingCodeDesc = request.getParameter( "editingCodeDesc" );
+		
+		dxQuickListItemsHandler.updatePatientCodeDesc( editingCodeType, editingCodeCode, editingCodeDesc );
+		
+		editingCodeDesc = String.format( "\"%s\"", editingCodeDesc );
+		request.getSession().setAttribute( "editingCodeDesc", editingCodeDesc );
+		
+		return mapping.findForward(SUCCESS);
+	}
+
+    
     public ActionForward addSearchCode(ActionMapping mapping, ActionForm  form,
             HttpServletRequest request, HttpServletResponse response)
             throws Exception {

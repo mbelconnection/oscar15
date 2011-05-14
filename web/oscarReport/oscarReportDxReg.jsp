@@ -190,7 +190,15 @@ objectName="_admin,_admin.reporting" rights="r" reverse="<%=true%>">
                             </tbody>
                         </table>
 
-                        Filter: &nbsp;&nbsp;
+                         <table border="0">
+                            <thead>
+                                <tr>
+                                    <th>Total Number(s): <%= (Integer) session.getAttribute("Counter")%></th>
+                                </tr>
+                            </thead>
+                       </table>
+                        Filter:
+
                         <label>
                             <input type="radio" name="SearchBy" value="radio" id="SearchBy_0" <%="patientRegistedDistincted".equals(radiostatus)?"checked":""%> onclick="javascript:this.form.action='<%= request.getContextPath()%>/report/DxresearchReport.do?method=patientRegistedDistincted'">
                             ALL(distincted)</label>

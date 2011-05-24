@@ -1027,7 +1027,7 @@ if (iviewTag!=null && !"".equalsIgnoreCase(iviewTag.trim())){
 							<li><bean:message
 								key="demographic.demographiceditdemographic.formRosterStatus" />:
 							<b><%=apptMainBean.getString(rs,"roster_status")%></b> <bean:message
-								key="demographic.demographiceditdemographic.DateJoined" />: <b><%=MyDateFormat.getMyStandardDate(apptMainBean.getString(rs,"hc_renew_date"))%></b>
+								key="demographic.demographiceditdemographic.DateJoined" />: <b><%=MyDateFormat.getMyStandardDate(apptMainBean.getString(rs,"date_joined"))%></b>
 							</li>
 
 							<li>

@@ -45,24 +45,26 @@
 	</div>
 	<div class="axial">
 	<table border="0" cellspacing="2" cellpadding="3">
+		
 		<tr>
 			<th>Client No</th>
 			<td><html:text property="criteria.demographicNo" size="15" /></td>
 		</tr>
+		
 		<tr>
-			<th>Client First Name</th>
+			<th>First Name</th>
 			<td><html:text property="criteria.firstName" size="15" /></td>
 		</tr>
 
 		<tr>
-			<th>Client Last Name</th>
+			<th>Last Name</th>
 			<td><html:text property="criteria.lastName" size="15" /></td>
 		</tr>
 
 		<tr>
-			<th>Date of Birth <br>
-			(yyyy/mm/dd)</th>
-			<td><html:text property="criteria.dob" size="15" /></td>
+			<th>Date of Birth </th>
+			<td><html:text property="criteria.dob" size="15" /><br>
+				<font size="1">yyyy/mm/dd</font></td></td>
 		</tr>
 		<caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">
 			<caisi:isModuleLoad moduleName="GET_OHIP_INFO" reverse="false">
@@ -81,6 +83,7 @@
 
 			<!--  <th>Search outside of domain <a href="javascript:void(0)" onclick="popupHelp('domain')">?</a></th>
 				-->
+			
 			<tr>
 				<caisi:isModuleLoad
 					moduleName="pmm.client.search.outside.of.domain.enabled">
@@ -89,12 +92,15 @@
 					<td><html:checkbox property="criteria.searchOutsideDomain" /></td>
 				</caisi:isModuleLoad>
 			</tr>
+			
 
 			<tr>
 				<th>Soundex on names <a href="javascript:void(0)"
 					onclick="popupHelp('soundex')">?</a></th>
 				<td><html:checkbox property="criteria.searchUsingSoundex" /></td>
 			</tr>
+			
+			
 			<%--
 				<tr>
 					<th>Bed Program</th>
@@ -108,22 +114,22 @@
 				</tr>
 				 --%>
 			<tr>
-				<th>Admission Date From<br>
-				(yyyy/mm/dd)</th>
-				<td><html:text property="criteria.dateFrom" size="12" /></td>
+				<th>Admission Date From</th>
+				<td><html:text property="criteria.dateFrom" size="15" /><br>
+				<font size="1">yyyy/mm/dd</font></td>
 			</tr>
 			<tr>
-				<th>Admission Date To<br>
-				(yyyy/mm/dd)</th>
-				<td><html:text property="criteria.dateTo" size="12" /></td>
+				<th>Admission Date To</th>
+				<td><html:text property="criteria.dateTo" size="15" /><br>
+				<font size="1">yyyy/mm/dd</font></td></td>
 			</tr>
 		</caisi:isModuleLoad>
 		<tr>
-			<th>Active?</th>
+			<th>Status</th>
 			<td><html:select property="criteria.active">
-				<html:option value="">Any</html:option>
-				<html:option value="1">Yes</html:option>
-				<html:option value="0">No</html:option>
+				<html:option value="1">Admitted</html:option>
+				<html:option value="0">Discharged</html:option>
+				<html:option value="">ALL</html:option>
 			</html:select></td>
 		</tr>
 		<tr>

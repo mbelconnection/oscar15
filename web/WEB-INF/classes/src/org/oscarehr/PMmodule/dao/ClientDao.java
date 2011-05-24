@@ -196,6 +196,11 @@ public class ClientDao extends HibernateDaoSupport {
 			criteria.add(Restrictions.or(condLastName,condAlias2));
 		}
 */		
+		
+		if (bean.getChartNo() != null && bean.getChartNo().length() > 0) {
+			criteria.add(Expression.eq("ChartNo", bean.getChartNo()));
+		}
+		
 		if (bean.getDob() != null && bean.getDob().length() > 0) {
 			criteria.add(Expression.eq("DateOfBirth", MyDateFormat.getCalendar(bean.getDob())));
 		}
@@ -328,6 +333,9 @@ public class ClientDao extends HibernateDaoSupport {
 			}
 		}
 		
+		if (bean.getChartNo() != null && bean.getChartNo().length() > 0) {
+			criteria.add(Expression.eq("ChartNo", bean.getChartNo()));
+		}
 		
 		if (bean.getDob() != null && bean.getDob().length() > 0) {
 			criteria.add(Expression.eq("YearOfBirth", bean.getYearOfBirth()));

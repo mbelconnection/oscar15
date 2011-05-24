@@ -29,6 +29,7 @@
 		// form.elements['criteria.bedProgramId'].selectedIndex = 0;
 		form.elements['criteria.active'].selectedIndex = 0;
 		form.elements['criteria.gender'].selectedIndex = 0;
+		form.elements['criteria.chartNo'].value='';
 	}
 
 	function popupHelp(type) {
@@ -71,6 +72,12 @@
 					<html:text property="criteria.healthCardVersion" size="2" /></td>
 				</tr>
 			</caisi:isModuleLoad>
+
+			<tr>
+				<th>Chart No (MRN)</th>
+				<td><html:text property="criteria.chartNo" size="15" /></td>
+			</tr>
+
 
 			<!--  <th>Search outside of domain <a href="javascript:void(0)" onclick="popupHelp('domain')">?</a></th>
 				-->

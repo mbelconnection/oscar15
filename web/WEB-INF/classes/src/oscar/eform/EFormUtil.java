@@ -390,7 +390,7 @@ public class EFormUtil {
 			for (int i = 0; i < names.size(); i++) {
 				EFormValue eFormValue = new EFormValue();
 				eFormValue.setFormId(fid);
-				eFormValue.setFormDataId(fid);
+				eFormValue.setFormDataId(fdid);
 				eFormValue.setDemographicId(demographic_no);
 				eFormValue.setVarName(names.get(i));
 				eFormValue.setVarValue(values.get(i));

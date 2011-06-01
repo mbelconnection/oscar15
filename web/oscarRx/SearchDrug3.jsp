@@ -183,6 +183,15 @@
 
 
         <script type="text/javascript">
+        //for IE 6/7/8 - uses this one, not the one in prescribe.jsp
+        function showHideSpecInst(elementId){
+            if($(elementId).getStyle('display')=='none'){
+                Effect.BlindDown(elementId);
+            }else{
+                Effect.BlindUp(elementId);
+            }
+          }
+        
             function resetReRxDrugList(){
                 var url="<c:out value="${ctx}"/>" + "/oscarRx/deleteRx.do?parameterValue=clearReRxDrugList";
                        var data = "";

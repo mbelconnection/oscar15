@@ -29,7 +29,6 @@ import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 
 import oscar.OscarProperties;
-
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.parser.GenericParser;
 import ca.uhn.hl7v2.parser.Parser;
@@ -632,6 +631,26 @@ public class PhsStarHandler extends BasePhsStarHandler {
 		brDao.updateBillingreferral(br);	
 	}
 	
+	
+	public void updatePrimaryPhysician(int demographicNo) {
+		String attendingId = this.getAttendingId();
+		if(attendingId.length()>0) {
+			OtherId otherId = OtherIdManager.searchTable(OtherIdManager.PROVIDER, "STAR", attendingId);
+			if(otherId != null) {
+				String providerNo = otherId.getTableId();
+				Demographic d = clientDao.getClientByDemographicNo(demographicNo);
+				if(d != null) {
+					d.setProviderNo(providerNo);
+					clientDao.saveClient(d);
+					logger.info("Updated primary physician to attending - " + providerNo);
+				}
+			} else {
+				logger.warn("Attending not found in oscar");
+			}
+		}
+		
+	}
+	
 	/**
 	 * This method is the entry point.
 	 * 
@@ -721,6 +740,7 @@ public class PhsStarHandler extends BasePhsStarHandler {
         	updateDemographic(demographicNo);
         	updateAppointmentAccountNumber();
         	updateAppointmentStatus("H");
+        	updatePrimaryPhysician(demographicNo);
         	this.logPatientMessage(controlId,msgType+"^"+triggerEvent,hl7Body,demographicNo);
         }
         
@@ -967,14 +987,16 @@ public class PhsStarHandler extends BasePhsStarHandler {
 
 
 	public String getPrimaryPractitionerId() {
+		String var = null;
 		try {
-			String var = this.extractOrEmpty("/PD1-4-1");
-			return var;
+			var = this.extractOrEmpty("/PD1-4-1");			
 		}catch(Exception e) {/*swallow exception*/}
-		try {
-			String var = this.extractOrEmpty("/INSURANCE/PD1-4-1");
-			return var;
-		}catch(Exception ee) {/*swallow exception*/}			
+		if(var == null || var.equals("")) {
+			try {
+				var = this.extractOrEmpty("/INSURANCE/PD1-4-1");
+				return var;
+			}catch(Exception ee) {/*swallow exception*/}
+		}
 		return new String();
 		
 	}
@@ -1015,5 +1037,84 @@ public class PhsStarHandler extends BasePhsStarHandler {
 		logDao.persist(log);
 	}
 	
+	//PV1-7
+	public String getAttendingId() {
+		try {
+			String var = this.extractOrEmpty("/PV1-7-1");			
+		}catch(Exception e) {/*swallow exception*/}
+		
+		try {
+			String var = this.extractOrEmpty("/INSURANCE/PV1-7-1");
+			return var;
+		}catch(Exception ee) {/*swallow exception*/}			
+		return new String();
+		
+	}
+	
+	public String getAttendingLastName() {
+		try {
+			String var = this.extractOrEmpty("/PV1-7-2");
+			return var;
+		}catch(Exception e) {/*swallow exception*/}
+		try {
+			String var = this.extractOrEmpty("/INSURANCE/PV1-7-2");
+			return var;
+		}catch(Exception ee) {/*swallow exception*/}			
+		return new String();
+		
+	}
+	
+	public String getAttendingFirstName() {
+		try {
+			String var = this.extractOrEmpty("/PV1-7-3");
+			return var;
+		}catch(Exception e) {/*swallow exception*/}
+		try {
+			String var = this.extractOrEmpty("/INSURANCE/PV1-7-3");
+			return var;
+		}catch(Exception ee) {/*swallow exception*/}			
+		return new String();
+		
+	}
 
+	
+	//PV1-17
+	public String getAdmittingId() {
+		try {
+			String var = this.extractOrEmpty("/PV1-17-1");
+			return var;
+		}catch(Exception e) {/*swallow exception*/}
+		try {
+			String var = this.extractOrEmpty("/INSURANCE/PV1-17-1");
+			return var;
+		}catch(Exception ee) {/*swallow exception*/}			
+		return new String();
+		
+	}
+	
+	public String getAdmittingLastName() {
+		try {
+			String var = this.extractOrEmpty("/PV1-17-2");
+			return var;
+		}catch(Exception e) {/*swallow exception*/}
+		try {
+			String var = this.extractOrEmpty("/INSURANCE/PV1-17-2");
+			return var;
+		}catch(Exception ee) {/*swallow exception*/}			
+		return new String();
+		
+	}
+	
+	public String getAdmittingFirstName() {
+		try {
+			String var = this.extractOrEmpty("/PV1-17-3");
+			return var;
+		}catch(Exception e) {/*swallow exception*/}
+		try {
+			String var = this.extractOrEmpty("/INSURANCE/PV1-17-3");
+			return var;
+		}catch(Exception ee) {/*swallow exception*/}			
+		return new String();
+		
+	}
 }

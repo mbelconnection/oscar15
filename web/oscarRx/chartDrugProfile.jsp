@@ -96,7 +96,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster Unviersity 
+ * McMaster University 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -105,8 +105,7 @@
     <head>
         <script type="text/javascript" src="<%= request.getContextPath()%>/js/global.js"></script>
         <html:base />
-        <title><%=""/*lab.pLastName*/%>, <%=""/*lab.pFirstName*/%> <bean:message
-            key="oscarMDS.segmentDisplay.title" /></title>
+        <title><bean:message key="oscarRx.chartDrugProfile.title" /></title>
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
         <link rel="stylesheet" type="text/css" href="../../../share/css/OscarStandardLayout.css">
         <link rel="stylesheet" type="text/css" media="all" href="../share/css/extractedFromPages.css"  />

@@ -172,6 +172,11 @@
         <!--script type="text/javascript" src="<%--c:out value="modaldbox.js"/--%>"></script-->
 
 
+	   <script src="<c:out value="${ctx}/js/jquery.js"/>"></script>
+	   <script>
+	     jQuery.noConflict();
+	   </script>
+
 
         <link rel="stylesheet" type="text/css" href="<c:out value="${ctx}/share/yui/css/fonts-min.css"/>" >
         <link rel="stylesheet" type="text/css" href="<c:out value="${ctx}/share/yui/css/autocomplete.css"/>" >
@@ -183,6 +188,17 @@
 
 
         <script type="text/javascript">
+        
+        function saveLinks(randNumber) {
+            $('method_'+randNumber).onblur();
+            $('route_'+randNumber).onblur();
+            $('frequency_'+randNumber).onblur();
+            $('minimum_'+randNumber).onblur();
+            $('maximum_'+randNumber).onblur();
+            $('duration_'+randNumber).onblur();
+            $('durationUnit_'+randNumber).onblur();
+        }
+        
         //for IE 6/7/8 - uses this one, not the one in prescribe.jsp
         function showHideSpecInst(elementId){
             if($(elementId).getStyle('display')=='none'){
@@ -294,6 +310,9 @@ addEvent(window, "load", sortables_init);
 
 var SORT_COLUMN_INDEX;
 
+function testblur() {
+	alert('test');
+}
 function sortables_init() {
     // Find all tables with class sortable and make them sortable
 
@@ -522,9 +541,7 @@ function checkFav(){
     }
             .highlight {
                 background-color : #99FFCC;
-                border: 1px solid #008000;
-                width: 230px;
-
+                border: 1px solid #008000;             
             }
             .rxStr a:hover{
                 color:blue;
@@ -1049,6 +1066,8 @@ function changeLt(drugId){
      function focusTo(elementId){
          $(elementId).contentEditable='true';
          $(elementId).focus();
+         //IE 6/7 bug..will this call onfocus twice?? may need to do browser check.
+         document.getElementById(elementId).onfocus();
      }
 
      function updateSpecialInstruction(elementId){

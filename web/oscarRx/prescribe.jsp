@@ -131,7 +131,7 @@ if(listRxDrugs!=null){
         <%if(genericName!=null&&!genericName.equalsIgnoreCase("null")){%>
         <div><a>Ingredient:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%=genericName%></a></div><%}%>
        <div class="rxStr" title="not what you mean?" >
-           <a tabindex="-1" href="javascript:void(0);" onclick="focusTo('method_<%=rand%>')">Method:</a><a   id="method_<%=rand%>" onclick="focusTo(this.id)" onfocus="lookEdittable(this.id)" onblur="lookNonEdittable(this.id);updateProperty(this.id);"><%=methodStr%></a>
+           <a tabindex="-1" href="javascript:void(0);" onclick="focusTo('method_<%=rand%>')">Method:</a><a   id="method_<%=rand%>" onclick="focusTo(this.id)" onfocus="lookEdittable(this.id)" onblur="lookNonEdittable(this.id);updateProperty(this.id);" ><%=methodStr%></a>
            <a tabindex="-1" href="javascript:void(0);" onclick="focusTo('route_<%=rand%>')">Route:</a><a id="route_<%=rand%>" onclick="focusTo(this.id)" onfocus="lookEdittable(this.id)" onblur="lookNonEdittable(this.id);updateProperty(this.id);"> <%=routeStr%></a>
            <a tabindex="-1" href="javascript:void(0);" onclick="focusTo('frequency_<%=rand%>')">Frequency:</a><a  id="frequency_<%=rand%>" onclick="focusTo(this.id) " onfocus="lookEdittable(this.id)" onblur="lookNonEdittable(this.id);updateProperty(this.id);"> <%=frequencyStr%></a>
            <a tabindex="-1" href="javascript:void(0);" onclick="focusTo('minimum_<%=rand%>')">Min:</a><a  id="minimum_<%=rand%>" onclick="focusTo(this.id) " onfocus="lookEdittable(this.id)" onblur="lookNonEdittable(this.id);updateProperty(this.id);"> <%=minimumStr%></a>
@@ -142,6 +142,7 @@ if(listRxDrugs!=null){
            <a> </a><a tabindex="-1" id="unitName_<%=rand%>"> </a>
            <a> </a><a tabindex="-1" href="javascript:void(0);" id="prn_<%=rand%>" onclick="setPrn('<%=rand%>');updateProperty('prnVal_<%=rand%>');"><%=prnStr%></a>
            <input id="prnVal_<%=rand%>"  style="display:none" <%if(prnStr.trim().length()==0){%>value="false"<%} else{%>value="true" <%}%> />
+           <input id="rx_save_updates_<%=rand%>" type="button" value="Save Changes" onclick="saveLinks('<%=rand%>')"/>
        </div>
        <div id="rx_more_<%=rand%>" style="display:none;padding:2px;">
           <bean:message key="WriteScript.msgPrescribedByOutsideProvider"/>
@@ -184,7 +185,17 @@ if(listRxDrugs!=null){
 
 </fieldset>
 
-        <script type="text/javascript">                     
+		<script type="text/javascript">
+			jQuery("document").ready(function() {
+				if ( jQuery.browser.msie ) {
+					jQuery('#rx_save_updates_<%=rand%>').show();
+				} else {
+					jQuery('#rx_save_updates_<%=rand%>').hide();
+				}
+			});
+		</script>
+        <script type="text/javascript">              
+
             $('drugName_'+'<%=rand%>').value=decodeURIComponent(encodeURIComponent('<%=drugName%>'));
             calculateRxData('<%=rand%>');
             handleEnter=function handleEnter(inField, ev){

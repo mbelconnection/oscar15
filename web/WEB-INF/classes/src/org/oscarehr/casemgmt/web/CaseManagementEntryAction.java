@@ -52,6 +52,7 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
+import org.oscarehr.PMmodule.model.Admission;
 import org.oscarehr.PMmodule.service.AdmissionManager;
 import org.oscarehr.PMmodule.service.ProgramManager;
 import org.oscarehr.casemgmt.dao.CaseManagementIssueDAO;
@@ -73,8 +74,9 @@ import org.oscarehr.util.SessionConstants;
 import org.oscarehr.util.SpringUtils;
 import org.oscarehr.util.WebUtils;
 import org.springframework.web.context.WebApplicationContext;
-import oscar.dms.EDocUtil;
+
 import oscar.OscarProperties;
+import oscar.dms.EDocUtil;
 import oscar.log.LogAction;
 import oscar.log.LogConst;
 import oscar.oscarEncounter.pageUtil.EctSessionBean;
@@ -899,10 +901,17 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
         note.setReporter_caisi_role(role);
 
         try {
-            team = String.valueOf((admissionManager.getAdmission(note.getProgram_no(), Integer.valueOf(note.getDemographic_no()))).getTeamId());
+        	
+        	Admission admission = admissionManager.getAdmission(note.getProgram_no(), Integer.valueOf(note.getDemographic_no()) );
+        	if(admission != null) {
+        		team = String.valueOf(admission.getTeamId());
+        	} else {
+        		log.info("Admission not found..using programId="+note.getProgram_no() + " on demographic=" + note.getDemographic_no());
+        		team = "0";
+        	}
         }
         catch (Throwable e) {
-            log.error(e);
+            log.error("Error",e);
             team = "0";
         }
         note.setReporter_program_team(team);

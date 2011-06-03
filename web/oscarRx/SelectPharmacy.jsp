@@ -112,6 +112,7 @@ oscar.oscarRx.pageUtil.RxSessionBean bean = (oscar.oscarRx.pageUtil.RxSessionBea
 						<td><bean:message key="SelectPharmacy.table.phone" /></td>
 						<td><bean:message key="SelectPharmacy.table.fax" /></td>
 						<td>&nbsp;</td>
+						<td>&nbsp;</td>
 					</tr>
 					<% for (int i = 0 ; i < pharList.size(); i++){ 
                                RxPharmacyData.Pharmacy ph = (RxPharmacyData.Pharmacy) pharList.get(i);
@@ -125,6 +126,8 @@ oscar.oscarRx.pageUtil.RxSessionBean bean = (oscar.oscarRx.pageUtil.RxSessionBea
 						<td><%=ph.fax%></td>
 						<td><a href="ManagePharmacy.jsp?type=Edit&ID=<%=ph.ID%>"><bean:message
 							key="SelectPharmacy.editLink" /></a></td>
+						<td><a href="ManagePharmacy.jsp?type=Delete&ID=<%=ph.ID%>"><bean:message
+							key="SelectPharmacy.deleteLink" /></a></td>
 					</tr>
 					<% } %>
 				</table>

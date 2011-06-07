@@ -208,6 +208,19 @@
             }
           }
         
+        function handleEnter(inField, ev){
+            var charCode;
+            if(ev && ev.which)
+                charCode=ev.which;
+            else if(window.event){
+                ev=window.event;
+                charCode=ev.keyCode;
+            }
+            var id=inField.id.split("_")[1];
+            if(charCode==13)
+                showHideSpecInst('siAutoComplete_'+id);
+        }
+        
             function resetReRxDrugList(){
                 var url="<c:out value="${ctx}"/>" + "/oscarRx/deleteRx.do?parameterValue=clearReRxDrugList";
                        var data = "";

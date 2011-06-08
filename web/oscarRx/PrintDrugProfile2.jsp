@@ -9,7 +9,7 @@
 <%@page import="java.util.List"%>
 <%@page import="org.oscarehr.util.LoggedInInfo"%>
 <%@page import="java.util.ArrayList,oscar.util.*,java.util.*,org.oscarehr.common.model.Drug,org.oscarehr.common.dao.*"%>
-<
+
 <% response.setHeader("Cache-Control", "no-cache");%>
 <logic:notPresent name="RxSessionBean" scope="session">
     <logic:redirect href="error.html" />

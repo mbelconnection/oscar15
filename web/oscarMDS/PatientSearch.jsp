@@ -80,6 +80,12 @@ function checkTypeIn() {
   }
 }
 
+function confirmMatch(last_name,first_name) {
+	if(confirm("Are you sure you want to associate lab with patient " + last_name + "," + first_name + "?")) {
+		return true;	
+	}
+	return false;
+}
 //-->
 </SCRIPT>
 </head>
@@ -285,8 +291,9 @@ function checkTypeIn() {
 %>
 
 	<tr bgcolor="<%=bodd?"ivory":"white"%>" align="center">
-		<td><input type="submit" name="demographicNo"
-			value="<%=db.getString(rs,"demographic_no")%>"></td>
+		<td>
+			<input type="submit" name="demographicNo" value="<%=db.getString(rs,"demographic_no")%>" onclick="return confirmMatch('<%=nbsp( Misc.toUpperLowerCase(db.getString(rs,"last_name")) )%>','<%=nbsp( Misc.toUpperLowerCase(db.getString(rs,"first_name")) )%>');">
+		</td>
 		<td><%=nbsp( Misc.toUpperLowerCase(db.getString(rs,"last_name")) )%></td>
 		<td><%=nbsp( Misc.toUpperLowerCase(db.getString(rs,"first_name")) )%></td>
 		<td><%= age %></td>

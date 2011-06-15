@@ -28,7 +28,9 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ page import="oscar.oscarProvider.data.*"%>
-
+<%@ page import="org.oscarehr.common.dao.UserPropertyDAO"%>
+<%@ page import="org.oscarehr.common.model.UserProperty"%>
+<%@ page import="org.oscarehr.util.SpringUtils"%>
 
 <%
   if(session.getValue("user") == null) response.sendRedirect("../logout.htm");
@@ -42,18 +44,18 @@
 <link rel="stylesheet" type="text/css"
 	href="../oscarEncounter/encounterStyles.css">
 
-<title><bean:message key="provider.editRxFax.title" /></title>
+<title><bean:message key="provider.editRxPhone.title" /></title>
 
 <script type="text/javascript">
-    function validate() {        
+    function validate() {       
         var msg = "<bean:message key="provider.editRxFax.msgPhoneFormat" />";
         var strnum = document.forms[0].elements[0].value;
-        if(strnum.length > 0) {
+		if(strnum.length > 0) {        
 	        if( !strnum.match(/^\d{3}-\d{3}-\d{4}$/) ) {
 	            alert(msg);
 	            return false;
 	        }
-        }
+		}
                     
         return true;        
     }
@@ -68,24 +70,27 @@
 		<td class="MainTableTopRowLeftColumn"><bean:message
 			key="provider.editRxFax.msgPrefs" /></td>
 		<td style="color: white" class="MainTableTopRowRightColumn"><bean:message
-			key="provider.editRxFax.msgProviderFaxNumber" /></td>
+			key="provider.editRxPhone.msgProviderPhoneNumber" /></td>
 	</tr>
 	<tr>
 		<td class="MainTableLeftColumn">&nbsp;</td>
 		<td class="MainTableRightColumn">
 		<%
-               ProviderFaxUpdater faxUpdater = new ProviderFaxUpdater(curUser_no);
-               String faxNum = faxUpdater.getFax();
-               
+			UserPropertyDAO propertyDao = (UserPropertyDAO)SpringUtils.getBean("UserPropertyDAO");
+			UserProperty prop = propertyDao.getProp(curUser_no,"rxPhone");			
+			String phoneNum = "";
+            if(prop!=null) {
+            	phoneNum = prop.getValue();
+            }
                if( request.getAttribute("status") == null )
                {
       
-            %> <html:form action="/EditFaxNum.do">
+            %> <html:form action="/EditPhoneNum.do">
 
-			<bean:message key="provider.editRxFax.msgEdit" />
+			<bean:message key="provider.editRxPhone.msgEdit" />
 			<br>
 
-			<html:text property="faxNumber" value="<%=faxNum%>" size="40" />
+			<html:text property="faxNumber" value="<%=phoneNum%>" size="40" />
 			<br>
 
 			<input type="submit" onclick="return validate();"
@@ -93,8 +98,8 @@
 		</html:form> <%
                }
                else if( ((String)request.getAttribute("status")).equals("complete") ) {
-            %> <bean:message key="provider.editRxFax.msgSuccess" /> <br>
-		<%=faxNum%> <%
+            %> <bean:message key="provider.editRxPhone.msgSuccess" /> <br>
+		<%=phoneNum%> <%
                }
             %>
 		</td>

@@ -334,7 +334,7 @@ function refreshTabAlerts(id) {
 				key="global.month" /></a></li>
 			<li><a href="#"
 				ONCLICK="popupOscarRx(550,687,'<%=resourcebaseurl%>');return false;"
-				title="<bean:message key="global.resources"/>"
+				title="<bean:message key="provider.appointmentProviderAdminDay.viewResources"/>"
 				onmouseover="window.status='<bean:message key="provider.appointmentProviderAdminDay.viewResources"/>';return true"><bean:message
 				key="global.resources" /></a></li>
 			<li><caisi:isModuleLoad moduleName="caisi">

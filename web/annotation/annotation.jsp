@@ -101,7 +101,8 @@
 	    }
 	    if (tableName.equals(cml.CASEMGMTNOTE) || tableId.equals(0L)) {
 		if (!attrib_name.equals("")) se.setAttribute(attrib_name, cmn);
-	    } else { //annotated subject exists                   
+	    }
+            if (!tableId.equals(0L)) {
                     cmm.saveNoteSimple(cmn);
                     cml = new CaseManagementNoteLink();
                     cml.setTableName(tableName);

@@ -458,10 +458,10 @@ function refreshTabAlerts(id) {
 			SIZE="5">&nbsp;&nbsp;
 
 		  <a href="javascript: function myFunction() {return false; }" onClick="popup(700,1000,'../scratch/index.jsp','scratch')"><span id="oscar_scratch"></span></a>&nbsp;
-		  <!--<a href="#" onClick ="popupPage(600,750,'<%=resourcebaseurl%>')"><bean:message key="global.help"/></a>-->
+		  
 
 		  <caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">
-		  <a href="#" class="menuanchorclass" rel="anylinkmenu1"><bean:message key="global.help"/></a> 
+		  <a href="#" onClick ="popupPage(600,750,'<%=resourcebaseurl%>')"><bean:message key="global.help"/></a> 
 		  </caisi:isModuleLoad>			
 			
 			| <a href="../logout.jsp"><bean:message key="provider.appointmentprovideradminmonth.btnlogOut" />  &nbsp;</a>			

@@ -241,11 +241,11 @@ if(prop!=null && prop.getValue().equalsIgnoreCase("yes")){
                                             </c:choose> <input type="hidden" name="patientName"
                                                     value="<%= StringEscapeUtils.escapeHtml(patient.getFirstName())+ " " +StringEscapeUtils.escapeHtml(patient.getSurname()) %>" />
                                             <input type="hidden" name="patientDOB" value="<%= StringEscapeUtils.escapeHtml(patientDOBStr) %>" />
-                                            <input type="hidden" name="showPatientDOB" value="<%=showPatientDOB%>"
+                                            <input type="hidden" name="showPatientDOB" value="<%=showPatientDOB%>" />
                                             <input type="hidden" name="patientAddress"
                                                     value="<%= StringEscapeUtils.escapeHtml(patient.getAddress()) %>" />
                                             <input type="hidden" name="patientCityPostal"
-                                                    value="<%= StringEscapeUtils.escapeHtml(patient.getCity())+ " " + StringEscapeUtils.escapeHtml(patient.getPostal())%>" />
+                                                    value="<%= StringEscapeUtils.escapeHtml(patient.getCity())+ ", " + StringEscapeUtils.escapeHtml(patient.getProvince()) + " " + StringEscapeUtils.escapeHtml(patient.getPostal())%>" />
                                             <input type="hidden" name="patientPhone"
                                                     value="<bean:message key="RxPreview.msgTel"/><%=StringEscapeUtils.escapeHtml(patient.getPhone()) %>" />
 
@@ -329,7 +329,7 @@ if(prop!=null && prop.getValue().equalsIgnoreCase("yes")){
                                                             <td align=left valign=top><br>
                                                                 <%= patient.getFirstName() %> <%= patient.getSurname() %> <%if(showPatientDOB){%>&nbsp;&nbsp; DOB:<%= StringEscapeUtils.escapeHtml(patientDOBStr) %> <%}%><br>
                                                             <%= patient.getAddress() %><br>
-                                                            <%= patient.getCity() %> <%= patient.getPostal() %><br>
+                                                            <%= patient.getCity() %>, <%= patient.getProvince() %> <%= patient.getPostal() %><br>
                                                             <%= patient.getPhone() %><br>
                                                             <b> <% if(!props.getProperty("showRxHin", "").equals("false")) { %>
                                                             <bean:message key="oscar.oscarRx.hin" /><%= patient.getHin() %> <% } %>

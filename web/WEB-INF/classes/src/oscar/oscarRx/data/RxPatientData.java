@@ -47,7 +47,7 @@ public class RxPatientData {
          Patient p;         
          rs = db.GetSQL(
          "SELECT demographic_no, last_name, first_name, sex, year_of_birth, "         
-         + "month_of_birth, date_of_birth, address, city, postal, phone "         
+         + "month_of_birth, date_of_birth, address, city, province, postal, phone "         
          + "FROM demographic WHERE last_name LIKE '"         
          + surname + "%' AND first_name LIKE '" + firstName + "%'");
          
@@ -57,7 +57,8 @@ public class RxPatientData {
             calcDate(db.getString(rs,"year_of_birth"),
             db.getString(rs,"month_of_birth"),            
             db.getString(rs,"date_of_birth")),            
-            db.getString(rs,"address"), db.getString(rs,"city"),
+            db.getString(rs,"address"), db.getString(rs,"city"), 
+            db.getString(rs,"province"),
             db.getString(rs,"postal"),            
             db.getString(rs,"phone"), db.getString(rs,"hin"));            
             lst.add(p);            
@@ -81,7 +82,7 @@ public class RxPatientData {
       try {         
          rs = db.GetSQL(
          "SELECT demographic_no, last_name, first_name, sex, year_of_birth, "         
-         + "month_of_birth, date_of_birth, address, city, postal, phone,hin "         
+         + "month_of_birth, date_of_birth, address, city, province, postal, phone,hin "         
          + "FROM demographic WHERE demographic_no = " + demographicNo);
          
          if (rs.next()) {            
@@ -91,6 +92,7 @@ public class RxPatientData {
             db.getString(rs,"month_of_birth"),            
             db.getString(rs,"date_of_birth")),            
             db.getString(rs,"address"), db.getString(rs,"city"),
+            db.getString(rs,"province"),
             db.getString(rs,"postal"),            
             db.getString(rs,"phone"), db.getString(rs,"hin"));            
             System.out.println(db.getString(rs,"first_name"));
@@ -122,6 +124,7 @@ public class RxPatientData {
             db.getString(rs,"month_of_birth"),            
             db.getString(rs,"date_of_birth")),            
             db.getString(rs,"address"), db.getString(rs,"city"),
+            db.getString(rs,"province"),
             db.getString(rs,"postal"),            
             db.getString(rs,"phone"), db.getString(rs,"hin"));            
          }         
@@ -171,13 +174,14 @@ public class RxPatientData {
       String sex;      
       java.util.Date DOB;      
       String address;      
-      String city;      
+      String city;
+      String province;
       String postal;      
       String phone;
       String hin;
       
       public Patient(int demographicNo, String surname, String firstName,String sex, java.util.Date DOB,
-                     String address, String city, String postal, String phone,String hin) {
+                     String address, String city, String province, String postal, String phone,String hin) {
          
          this.demographicNo = demographicNo;         
          this.surname = surname;         
@@ -185,7 +189,8 @@ public class RxPatientData {
          this.sex = sex;         
          this.DOB = DOB;         
          this.address = address;         
-         this.city = city;         
+         this.city = city;
+         this.province = province; 
          this.postal = postal;        
          this.phone = phone;
          this.hin = hin;         
@@ -226,6 +231,10 @@ public class RxPatientData {
       public String getCity() {         
          return this.city;         
       }
+      
+      public String getProvince() {         
+          return this.province;         
+       }
       
       public String getPostal() {         
          return this.postal;         

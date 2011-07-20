@@ -1596,6 +1596,7 @@ CREATE TABLE `issue` (
   `update_date` datetime NOT NULL default '0000-00-00 00:00:00',
   `priority` CHAR(10) DEFAULT NULL,
   `type` VARCHAR(32) DEFAULT NULL,
+  `sortOrderId` int not null,
   PRIMARY KEY  (`issue_id`),
 	index(code)
 );

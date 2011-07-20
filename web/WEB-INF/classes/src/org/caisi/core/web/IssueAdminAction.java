@@ -39,13 +39,21 @@ import org.apache.struts.action.DynaActionForm;
 import org.apache.struts.actions.DispatchAction;
 import org.caisi.model.IssueAdmin;
 import org.caisi.service.IssueAdminManager;
+import org.oscarehr.common.dao.OcanStaffFormDao;
+import org.oscarehr.common.dao.SecRoleDao;
+import org.oscarehr.util.SpringUtils;
 
 // use your IDE to handle imports
 public class IssueAdminAction extends DispatchAction {
     private static Log log = LogFactory.getLog(IssueAdminAction.class);
     private IssueAdminManager mgr = null;
    // private CaisiRoleManager caisiRoleMgr = null;
-
+    private SecRoleDao secRoleDao;
+    
+    public void setSecRoleDao(SecRoleDao secRoleDao) {
+    	this.secRoleDao = secRoleDao;
+    }
+    
     public void setIssueAdminManager(IssueAdminManager issueAdminManager) {
         this.mgr = issueAdminManager;
     }
@@ -101,6 +109,7 @@ public class IssueAdminAction extends DispatchAction {
             issueAdminForm.set("issueAdmin", issueAdmin);
         }
         //request.setAttribute("caisiRoles", caisiRoleMgr.getRoles());
+        request.setAttribute("caisiRoles", secRoleDao.findAll(null));
         return mapping.findForward("edit");
     }
     public ActionForward list(ActionMapping mapping, ActionForm form,

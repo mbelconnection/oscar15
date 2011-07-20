@@ -31,6 +31,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 
+import org.apache.commons.lang.StringUtils;
+
 import oscar.oscarDB.DBHandler;
 
 public class RxPatientData {
@@ -134,7 +136,7 @@ public class RxPatientData {
       return p;      
    }
    private java.util.Date calcDate(String year, String month, String day) {   
-	   if (year==null || month==null || day==null) return(null);
+	   if (StringUtils.isBlank(year) || StringUtils.isBlank(month) || StringUtils.isBlank(day)) return(null);
 	   
       int iYear = Integer.parseInt(year);
       int iMonth = Integer.parseInt(month) - 1;      

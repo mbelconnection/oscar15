@@ -446,7 +446,12 @@ $("document").ready(function(){
 .error {color:red;}
 </style>
 
-
+Client name :<%=ocanStaffForm.getLastName()%>,&nbsp;<%=ocanStaffForm.getFirstName()%>  
+<br />
+Client date of birth : <%=ocanStaffForm.getClientDateOfBirth()%>
+<br />
+<br />
+			
 <form id="ocan_staff_form" name="ocan_staff_form" action="ocan_form_action.jsp" method="post" onsubmit="return submitOcanForm()">
 	<% if("FULL".equals(ocanType)) { %>
 	<h3>FULL OCAN 2.0 Staff Assessment</h3>	
@@ -2771,7 +2776,7 @@ This information is collected from a variety of sources, including self-report, 
 
 		
 		<tr>
-			<td colspan="2">10. Safefy to self</td>
+			<td colspan="2">10. Safety to self</td>
 		</tr>			
 
 		<tr>

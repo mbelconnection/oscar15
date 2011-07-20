@@ -300,8 +300,8 @@ CREATE TABLE ctl_billingservice (
   servicetype_name varchar(150) default NULL,
   servicetype varchar(10) default NULL,
   service_code varchar(10) default NULL,
-  service_group_name varchar(20) default NULL,
-  service_group varchar(20) default NULL,
+  service_group_name varchar(30) default NULL,
+  service_group varchar(30) default NULL,
   status char(1) default NULL,
   service_order int(4) default NULL
 ) ;

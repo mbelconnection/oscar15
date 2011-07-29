@@ -46,8 +46,9 @@ public class RxAllergyData {
         int AGCSP;
         int AGCCS;
         int TYPECODE;
+        String archived;
         String reaction;
-	java.util.Date startDate = null;
+	    java.util.Date startDate = null;
         String ageOfOnset = null;
         String severityOfReaction = null;
         String onSetOfReaction = null;
@@ -79,6 +80,15 @@ public class RxAllergyData {
         public void setReaction(String reaction) {
             this.reaction = reaction;
         }
+        
+        public String getArchived() {
+            return this.archived;
+        }
+        
+        public void setArchived(String archived) {
+            this.archived = archived;
+        }
+        
         
         public int getPickID() {
             return this.PickID;
@@ -283,6 +293,8 @@ public class RxAllergyData {
         public void setRegionalIdentifier(String regionalIdentifier) {
             this.regionalIdentifier = regionalIdentifier;
         }
+
+
         
     }
     

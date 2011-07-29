@@ -52,6 +52,7 @@ public final class RxShowAllergyAction extends Action {
         
         String user_no = (String) request.getSession().getAttribute("user");
         String demo_no = (String) request.getParameter("demographicNo");
+        String view = (String) request.getParameter("view");
                
         
         if(demo_no == null){
@@ -73,6 +74,10 @@ public final class RxShowAllergyAction extends Action {
         
         bean.setProviderNo(user_no);
         bean.setDemographicNo(Integer.parseInt(demo_no));
+        if(view != null) {
+        	bean.setView(view);
+        }
+        
         
         request.getSession().setAttribute("RxSessionBean", bean);
         

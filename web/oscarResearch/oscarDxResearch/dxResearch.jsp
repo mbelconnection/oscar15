@@ -211,8 +211,17 @@ function processKey(e) {
 								<logic:iterate id="quickLists" name="allQuickLists"
 									property="dxQuickListBeanVector">
 									<option value="<bean:write name="quickLists" property="quickListName" />"
-										<bean:write name="quickLists" property="lastUsed" />><bean:write
-										name="quickLists" property="quickListName" /></option>
+										<bean:write name="quickLists" property="lastUsed" />
+										<%
+											String ql = request.getParameter("quickList");
+										%>
+										<logic:equal name="quickLists" property="quickListName" value="<%=ql%>">
+											selected
+										</logic:equal> >
+ 
+									
+										<bean:write	name="quickLists" property="quickListName" />
+									</option>
 								</logic:iterate>
 							</html:select> 
 							<%if(disable) { %>

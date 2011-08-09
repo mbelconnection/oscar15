@@ -99,6 +99,7 @@ function validateEdit() {
 		}
 	}
 
+	/*
 	var month = parseInt(getElement('client.monthOfBirth').value, 10);
 	var day = parseInt(getElement('client.dateOfBirth').value, 10);
 	var year = parseInt(getElement('client.yearOfBirth').value, 10);
@@ -112,6 +113,9 @@ function validateEdit() {
 	{
 		return error(getElement('client.yearOfBirth'), "This client does not meet the age range requirements for this program.");
 	}
+	
+	*/
+	
 
 	// only allow numbers to be entered
 	var hinProvince = getElement('client.hcType').value;
@@ -145,7 +149,24 @@ function validateEdit() {
 	if (!hasSelection(getElement('serviceProgramIds'))) {
 		return window.confirm("No service program has been selected.\nAre you sure you want to submit?");
 	}
-
+	
+	//since the date fields can be editable, we need to check them.
+	
+	var pattern=new RegExp("[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]","");
+	if(!pattern.test(document.forms[0].elements['client.formattedDob'].value)) {
+		return error(getElement('client.formattedDob'), "The birth date you've entered is not a valid date.Please use the yyyy-MM-dd pattern");		
+	}
+	if(document.forms[0].elements['client.formattedEffDate'].value.length > 0) {
+		if(!pattern.test(document.forms[0].elements['client.formattedEffDate'].value)) {
+			return error(getElement('client.formattedEffDate'), "The HC Effective Date you've entered is not a valid date.Please use the yyyy-MM-dd pattern");		
+		}
+	}
+	if(document.forms[0].elements['client.formattedRenewDate'].value.length > 0) {
+		if(!pattern.test(document.forms[0].elements['client.formattedRenewDate'].value)) {
+			return error(getElement('client.formattedRenewDate'), "The HC Renewal Date you've entered is not a valid date.Please use the yyyy-MM-dd pattern");		
+		}
+	}
+	
 	return true;
 }
 

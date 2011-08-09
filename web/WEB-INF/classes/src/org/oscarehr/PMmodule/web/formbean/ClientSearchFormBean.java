@@ -42,6 +42,7 @@ public class ClientSearchFormBean {
 	private String dob;
 	private String healthCardNumber;
 	private String healthCardVersion;
+	private String chartNo;
 	private String gender;
 	private String active;
 	private boolean searchOutsideDomain;
@@ -270,5 +271,14 @@ public class ClientSearchFormBean {
 	public void setAssignedToProviderNo(String assignedToProviderNo) {
 		this.assignedToProviderNo = assignedToProviderNo;
 	}
+
+	public String getChartNo() {
+		return chartNo;
+	}
+
+	public void setChartNo(String chartNo) {
+		this.chartNo = chartNo;
+	}
+	
 	
 }

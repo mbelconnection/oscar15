@@ -308,5 +308,10 @@ public class ClientManager {
     public void setOutsideOfDomainEnabled(boolean outsideOfDomainEnabled) {
         this.outsideOfDomainEnabled = outsideOfDomainEnabled;
     }
+    
+    public boolean checkHealthCardExists(String hin, String hcType) {
+    	List<Demographic> results = this.dao.searchByHealthCard(hin,hcType);    	
+    	return (results.size()>0)?true:false;
+    }
 
 }

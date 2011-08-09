@@ -22,10 +22,11 @@
 
 package com.quatro.dao.security;
 
+import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
 import org.hibernate.Query;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -160,4 +161,19 @@ public class SecobjprivilegeDao extends HibernateDaoSupport {
 			throw re;
 		}
 	}
+       
+    public List<Secobjprivilege> getByObjectNameAndRoles(String o,List<String> roles) {    	
+		String queryString = "from Secobjprivilege obj where obj.objectname_code='" + o +"'";
+		List<Secobjprivilege> results = new ArrayList<Secobjprivilege>();
+		
+		@SuppressWarnings("unchecked")
+		List<Secobjprivilege> lst = getHibernateTemplate().find(queryString);
+		
+		for(Secobjprivilege p:lst) {
+			if(roles.contains(p.getRoleusergroup())) {
+				results.add(p);
+			}
+		}
+		return results;
+    }
 }

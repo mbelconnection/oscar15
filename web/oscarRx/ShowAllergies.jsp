@@ -28,6 +28,9 @@ OscarProperties props = OscarProperties.getInstance();
 <%
 oscar.oscarRx.pageUtil.RxSessionBean bean = (oscar.oscarRx.pageUtil.RxSessionBean)pageContext.findAttribute("bean");
 String annotation_display = org.oscarehr.casemgmt.model.CaseManagementNoteLink.DISP_ALLERGY;
+
+com.quatro.service.security.SecurityManager securityManager = new com.quatro.service.security.SecurityManager();
+
 %>
 
 <!--  
@@ -336,9 +339,11 @@ padding-right:6;
 									<td><%=allergy.getAllergy().getStartDate()!=null?allergy.getAllergy().getStartDate():""%></td>
 									<td><a href="#" title="Annotation" onclick="window.open('../annotation/annotation.jsp?display=<%=annotation_display%>&table_id=<%=String.valueOf(allergy.getAllergyId())%>&demo=<jsp:getProperty name="patient" property="demographicNo"/>','anwin','width=400,height=250');"><img src="../images/notes.gif" border="0"></a></td>
 									<td>
-									
+									<%
+										if(securityManager.hasDeleteAccess("_allergies",roleName$)) {
+									%>
 									<a href="deleteAllergy.do?ID=<%= String.valueOf(allergy.getAllergyId()) %>&demographicNo=<%=demoNo %>&action=<%=actionPath %>" onClick="return confirm('Are you sure want to set the allergy <bean:write name="allergy" property="allergy.DESCRIPTION" /> to <%=labelConfirmAction%>?');"><%=labelAction%></a>
-									
+									<% } %>
 									</td>
 								
 								</tr>
@@ -354,6 +359,8 @@ padding-right:6;
 				</table>
 				</td>
 			</tr>
+			
+			<%if(securityManager.hasWriteAccess("_allergies",roleName$)) {%>
 			<tr> 
 				<td>
 				<div class="DivContentSectionHead"><bean:message
@@ -481,7 +488,7 @@ padding-right:6;
 		<td width="100%" height="0%" style="padding: 5" bgcolor="#DCDCDC"
 			colspan="2"></td>
 	</tr>
-
+	<% } %>
 </table>
 </body>
 </html:html>

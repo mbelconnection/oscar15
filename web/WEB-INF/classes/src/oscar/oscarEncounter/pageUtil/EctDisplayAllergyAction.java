@@ -66,6 +66,9 @@ public class EctDisplayAllergyAction extends EctDisplayAction {
         
         
         for(int idx = 0; idx < allergies.length; ++idx ) {
+		if(allergies[idx].getAllergy().getArchived().equals("1")) {
+			continue;
+		}
             NavBarDisplayDAO.Item item = Dao.Item();                                    
                                      
             date = allergies[idx].getEntryDate();

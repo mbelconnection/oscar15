@@ -39,6 +39,7 @@ import oscar.oscarRx.data.RxPrescriptionData;
 public class RxSessionBean {
     private String providerNo = null;
     private int demographicNo = 0;
+    private String view = "Active";
     
     private ArrayList<RxPrescriptionData.Prescription> stash = new ArrayList();
    // private ArrayList stash=new ArrayList();
@@ -97,6 +98,14 @@ public class RxSessionBean {
     }
     public void setProviderNo(String RHS) {
         this.providerNo = RHS;
+    }
+    
+	public void setView(String view) {
+		 this.view = view;
+	}  
+	
+    public String getView() {
+        return view;
     }
     
     public int getDemographicNo() {
@@ -378,4 +387,9 @@ public class RxSessionBean {
        System.out.println("took "+end+ "milliseconds vs "+end2);
        return interactions;
     }
+    
+    
+
+	
+
 }

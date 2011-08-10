@@ -93,6 +93,11 @@ public class Demographic implements Serializable {
 		AC, IN, DE, IC, ID, MO, FI
 	}
 
+	private String title;
+	private String officialLanguage;
+	private String spokenLanguage;
+	
+	
 	public static Demographic create(String firstName, String lastName, String gender, String monthOfBirth, String dateOfBirth, String yearOfBirth, String hin, String ver, boolean applyDefaultBirthDate) {
 		Demographic demographic = new Demographic();
 
@@ -880,4 +885,31 @@ public class Demographic implements Serializable {
 
 		return (cal);
 	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getOfficialLanguage() {
+		return officialLanguage;
+	}
+
+	public void setOfficialLanguage(String officialLanguage) {
+		this.officialLanguage = officialLanguage;
+	}
+
+	public String getSpokenLanguage() {
+		return spokenLanguage;
+	}
+
+	public void setSpokenLanguage(String spokenLanguage) {
+		this.spokenLanguage = spokenLanguage;
+	}
+	
+	
+	
 }

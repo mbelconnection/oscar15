@@ -24,6 +24,9 @@
 		<id column="demographic_no" name="DemographicNo" type="integer">
 			<generator class="native" />
 		</id>
+		<property column="title" name="title" type="string" />
+		<property column="spoken_lang" name="spokenLanguage" type="string" />
+		<property column="official_lang" name="officialLanguage" type="string" />
 		<property column="first_name" length="30" name="FirstName"
 			not-null="true" type="string" />
 		<property column="last_name" length="30" name="LastName"

@@ -444,9 +444,9 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 			}
 
 			// if (!formBean.getSelectedServiceProgramIds().isEmpty() && "RFQ_admit".endsWith(saveWhich)) {
-			if (!formBean.getSelectedServiceProgramIds().isEmpty()) {
-				admitServicePrograms(client.getDemographicNo(), providerNo, formBean.getSelectedServiceProgramIds(), null);
-			}
+			
+			admitServicePrograms(client.getDemographicNo(), providerNo, formBean.getSelectedServiceProgramIds(), null);
+			
 
 			if ("normal".equals(saveWhich)) {
 				// normal intake saving . eg. seaton house
@@ -905,6 +905,13 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 
 		if (admissionText == null) admissionText = "intake admit";
 
+		if( serviceProgramIds.isEmpty()) {
+			for(Object programId : currentServicePrograms) {
+				admissionManager.processDischarge((Integer) programId, clientId, "intake discharge", "0");
+			}
+			return;
+		}
+		
 		Collection<?> discharge = CollectionUtils.subtract(currentServicePrograms, serviceProgramIds);
 
 		for (Object programId : discharge) {

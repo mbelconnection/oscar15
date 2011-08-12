@@ -49,6 +49,7 @@ public class EctDisplayMeasurementsAction extends EctDisplayAction {
     
    public boolean getInfo(EctSessionBean bean, HttpServletRequest request, NavBarDisplayDAO Dao, MessageResources messages) {              
         String menuId = "3"; //div id for popup menu
+        String roleName$ = request.getSession().getAttribute("userrole") + "," + request.getSession().getAttribute("user"); 
        
         //set text for lefthand module title
         Dao.setLeftHeading(messages.getMessage(request.getLocale(), "oscarEncounter.Index.measurements")); 
@@ -63,21 +64,25 @@ public class EctDisplayMeasurementsAction extends EctDisplayAction {
         Dao.setMenuHeader(messages.getMessage("oscarEncounter.LeftNavBar.InputGrps"));
         Dao.setRightURL("return !showMenu('" + menuId + "', event);");
                 
+        com.quatro.service.security.SecurityManager securityMgr = new com.quatro.service.security.SecurityManager();
+        
         ArrayList<String> flowsheets = MeasurementTemplateFlowSheetConfig.getInstance().getUniveralFlowsheets();                            
         int hash;
         for (int f = 0; f < flowsheets.size();f++){
             NavBarDisplayDAO.Item item = Dao.Item();
             String flowsheetName = (String) flowsheets.get(f);
-            String dispname = MeasurementTemplateFlowSheetConfig.getInstance().getDisplayName(flowsheetName);
-
-            winName = flowsheetName + bean.demographicNo;
-            hash = Math.abs(winName.hashCode());
-            url = "popupPage(700,1000,'" + hash + "','" + request.getContextPath() + "/oscarEncounter/oscarMeasurements/TemplateFlowSheet.jsp?demographic_no=" + bean.demographicNo + "&template=" + flowsheetName + "');return false;";
-            item.setLinkTitle(dispname);
-            dispname = StringUtils.maxLenString(dispname, MAX_LEN_TITLE, CROP_LEN_TITLE, ELLIPSES);
-            item.setTitle(dispname);
-            item.setURL(url);
-            Dao.addItem(item);            
+            if(securityMgr.hasReadAccess("_flowsheet."+flowsheetName, roleName$)) {
+	            String dispname = MeasurementTemplateFlowSheetConfig.getInstance().getDisplayName(flowsheetName);
+	
+	            winName = flowsheetName + bean.demographicNo;
+	            hash = Math.abs(winName.hashCode());
+	            url = "popupPage(700,1000,'" + hash + "','" + request.getContextPath() + "/oscarEncounter/oscarMeasurements/TemplateFlowSheet.jsp?demographic_no=" + bean.demographicNo + "&template=" + flowsheetName + "');return false;";
+	            item.setLinkTitle(dispname);
+	            dispname = StringUtils.maxLenString(dispname, MAX_LEN_TITLE, CROP_LEN_TITLE, ELLIPSES);
+	            item.setTitle(dispname);
+	            item.setURL(url);
+	            Dao.addItem(item);
+            }
         }
         //next we add dx triggered flowsheets to the module items
         dxResearchBeanHandler dxRes = new dxResearchBeanHandler(bean.demographicNo);
@@ -86,16 +91,18 @@ public class EctDisplayMeasurementsAction extends EctDisplayAction {
         for (int f = 0; f < flowsheets.size();f++){
             NavBarDisplayDAO.Item item = Dao.Item();
             String flowsheetName = (String) flowsheets.get(f);
-            String dispname = MeasurementTemplateFlowSheetConfig.getInstance().getDisplayName(flowsheetName);
-
-            winName = flowsheetName + bean.demographicNo;
-            hash = Math.abs(winName.hashCode());
-            url = "popupPage(700,1000,'" + hash + "','" + request.getContextPath() + "/oscarEncounter/oscarMeasurements/TemplateFlowSheet.jsp?demographic_no=" + bean.demographicNo + "&template=" + flowsheetName + "');return false;";
-            item.setLinkTitle(dispname);
-            dispname = StringUtils.maxLenString(dispname, MAX_LEN_TITLE, CROP_LEN_TITLE, ELLIPSES);
-            item.setTitle(dispname);
-            item.setURL(url);
-            Dao.addItem(item);            
+            if(securityMgr.hasReadAccess("_flowsheet."+flowsheetName, roleName$)) {
+	            String dispname = MeasurementTemplateFlowSheetConfig.getInstance().getDisplayName(flowsheetName);
+	
+	            winName = flowsheetName + bean.demographicNo;
+	            hash = Math.abs(winName.hashCode());
+	            url = "popupPage(700,1000,'" + hash + "','" + request.getContextPath() + "/oscarEncounter/oscarMeasurements/TemplateFlowSheet.jsp?demographic_no=" + bean.demographicNo + "&template=" + flowsheetName + "');return false;";
+	            item.setLinkTitle(dispname);
+	            dispname = StringUtils.maxLenString(dispname, MAX_LEN_TITLE, CROP_LEN_TITLE, ELLIPSES);
+	            item.setTitle(dispname);
+	            item.setURL(url);
+	            Dao.addItem(item);            
+            }
         }
         
         //next we add program based flowsheets
@@ -109,16 +116,18 @@ public class EctDisplayMeasurementsAction extends EctDisplayAction {
         for (int f = 0; f < flowsheets.size();f++){
             NavBarDisplayDAO.Item item = Dao.Item();
             String flowsheetName = (String) flowsheets.get(f);
-            String dispname = MeasurementTemplateFlowSheetConfig.getInstance().getDisplayName(flowsheetName);
-
-            winName = flowsheetName + bean.demographicNo;
-            hash = Math.abs(winName.hashCode());
-            url = "popupPage(700,1000,'" + hash + "','" + request.getContextPath() + "/oscarEncounter/oscarMeasurements/TemplateFlowSheet.jsp?demographic_no=" + bean.demographicNo + "&template=" + flowsheetName + "');return false;";
-            item.setLinkTitle(dispname);
-            dispname = StringUtils.maxLenString(dispname, MAX_LEN_TITLE, CROP_LEN_TITLE, ELLIPSES);
-            item.setTitle(dispname);
-            item.setURL(url);
-            Dao.addItem(item);            
+            if(securityMgr.hasReadAccess("_flowsheet."+flowsheetName, roleName$)) {
+	            String dispname = MeasurementTemplateFlowSheetConfig.getInstance().getDisplayName(flowsheetName);
+	
+	            winName = flowsheetName + bean.demographicNo;
+	            hash = Math.abs(winName.hashCode());
+	            url = "popupPage(700,1000,'" + hash + "','" + request.getContextPath() + "/oscarEncounter/oscarMeasurements/TemplateFlowSheet.jsp?demographic_no=" + bean.demographicNo + "&template=" + flowsheetName + "');return false;";
+	            item.setLinkTitle(dispname);
+	            dispname = StringUtils.maxLenString(dispname, MAX_LEN_TITLE, CROP_LEN_TITLE, ELLIPSES);
+	            item.setTitle(dispname);
+	            item.setURL(url);
+	            Dao.addItem(item);
+            }
         }
         
         //now we grab measurement groups for popup menu

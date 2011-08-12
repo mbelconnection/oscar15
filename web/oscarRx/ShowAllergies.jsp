@@ -428,6 +428,16 @@ padding-right:6;
                                         frm.type4.checked = true;
                                         //frm.type5.checked = true;
                                     }
+                                    
+                                    function initialTypeSelect(){
+                                        var frm = document.forms.RxSearchAllergyForm;
+
+                                        frm.type1.checked = true;
+                                        frm.type2.checked = true;
+                                        frm.type3.checked = false;
+                                        frm.type4.checked = true;
+                                        //frm.type5.checked = true;
+                                    }
 
                                     function typeClear(){
                                         var frm = document.forms.RxSearchAllergyForm;
@@ -439,7 +449,7 @@ padding-right:6;
                                         frm.type5.checked = false;
                                     }
 
-                                    typeSelect();
+                                    initialTypeSelect();
                                 </script> <input type=button
 								class="ControlPushButton" onclick="javascript:typeSelect();"
 								value="Select All" /> <input type=button

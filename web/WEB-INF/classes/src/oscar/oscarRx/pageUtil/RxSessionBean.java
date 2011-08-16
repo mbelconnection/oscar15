@@ -269,7 +269,7 @@ public class RxSessionBean {
     
     private void preloadAllergyWarnings(String atccode){
        try{
-         oscar.oscarRx.data.RxPatientData.Patient.Allergy[] allergies = new oscar.oscarRx.data.RxPatientData().getPatient(getDemographicNo()).getAllergies();
+         oscar.oscarRx.data.RxPatientData.Patient.Allergy[] allergies = new oscar.oscarRx.data.RxPatientData().getPatient(getDemographicNo()).getActiveAllergies();
          RxAllergyWarningWorker worker = new RxAllergyWarningWorker(this,atccode,allergies);
          addToWorkingAllergyWarnings(atccode,worker);       
          worker.start();         
@@ -319,7 +319,7 @@ public class RxSessionBean {
              System.out.println("NEW ATC CODE for allergy");
              try{                                
                 RxDrugData drugData = new RxDrugData();
-                oscar.oscarRx.data.RxPatientData.Patient.Allergy[]  allAllergies = new oscar.oscarRx.data.RxPatientData().getPatient(getDemographicNo()).getAllergies();
+                oscar.oscarRx.data.RxPatientData.Patient.Allergy[]  allAllergies = new oscar.oscarRx.data.RxPatientData().getPatient(getDemographicNo()).getActiveAllergies();
                 allergies = drugData.getAllergyWarnings(atccode,allAllergies);                 
                     if (allergies != null){                   
                        addAllergyWarnings(atccode,allergies);            

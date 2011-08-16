@@ -322,6 +322,44 @@ public class RxPatientData {
          
          return arr;         
       }
+      
+      public Allergy[] getActiveAllergies() {         
+          Allergy[] arr = {};         
+          LinkedList lst = new LinkedList();         
+          try {            
+             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);            
+             ResultSet rs;            
+             Allergy allergy;                        
+                        
+             rs = db.GetSQL("SELECT * FROM allergies WHERE demographic_no = '" + getDemographicNo() + "'  and archived=0 ORDER BY severity_of_reaction DESC");
+             
+             while (rs.next()) {               
+                allergy = new Allergy(rs.getInt("allergyid"), 
+                rs.getDate("entry_date"),               
+                db.getString(rs,"DESCRIPTION"),
+                rs.getInt("HICL_SEQNO"), rs.getInt("HIC_SEQNO"),               
+                rs.getInt("AGCSP"), rs.getInt("AGCCS"),
+                rs.getInt("TYPECODE"));
+                
+                allergy.getAllergy().setArchived(db.getString(rs,"archived"));
+                allergy.getAllergy().setReaction(db.getString(rs,"reaction"));
+                allergy.getAllergy().setStartDate(rs.getDate("start_date"));
+                allergy.getAllergy().setAgeOfOnset(db.getString(rs,"age_of_onset"));
+                allergy.getAllergy().setSeverityOfReaction(db.getString(rs,"severity_of_reaction"));
+                allergy.getAllergy().setOnSetOfReaction(db.getString(rs,"onset_of_reaction"));
+                allergy.getAllergy().setRegionalIdentifier(db.getString(rs,"regional_identifier"));
+                
+                lst.add(allergy);               
+             }            
+             rs.close();            
+             arr = (Allergy[]) lst.toArray(arr);            
+          }
+          catch (SQLException e) {            
+             System.out.println(e.getMessage());            
+          }
+          
+          return arr;         
+       }
             
       
       public Allergy addAllergy(java.util.Date entryDate,RxAllergyData.Allergy allergyCode) {         

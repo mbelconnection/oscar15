@@ -56,6 +56,17 @@ public class IssueDAO extends HibernateDaoSupport {
         
         return null;
     }
+    
+    public Issue findIssueByTypeAndCode(String type,String code) {
+    	
+    	@SuppressWarnings("unchecked")
+        List<Issue>list = this.getHibernateTemplate().find("from Issue i where i.type=? and i.code = ?", new Object[] {type,code});
+    	
+        if( list.size() > 0 )
+            return list.get(0);
+        
+        return null;
+    }
 
     public void saveIssue(Issue issue) {
         this.getHibernateTemplate().saveOrUpdate(issue);

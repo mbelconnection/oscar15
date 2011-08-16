@@ -34,7 +34,7 @@
 <div class="PropSheetMenu">
 <p class="PropSheetLevel1CurrentItem<%=alle%>">
     <bean:message key="oscarRx.sideLinks.msgAllergies"/>
-    <a href="javascript:void(0);" name="cmdAllergies"   onclick="javascript:window.location.href='ShowAllergies.jsp';" style="width: 200px" >+</a>
+    <a href="javascript:void(0);" name="cmdAllergies"   onclick="javascript:window.location.href='ShowAllergies2.jsp';" style="width: 200px" >+</a>
 </p>
 <p class="PropSheetMenuItemLevel1">
 <%

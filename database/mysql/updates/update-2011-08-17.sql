@@ -1,0 +1,8 @@
+create table Flowsheet (
+  id int(10) auto_increment primary key,
+  name varchar(25),
+  content text,
+  enabled tinyint(1),
+  external tinyint(1),
+  createdDate date	
+);

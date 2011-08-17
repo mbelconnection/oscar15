@@ -710,6 +710,9 @@ div.logoutBox {
             onclick='popupPage(800,1000,&quot;<html:rewrite page="/admin/uploadEntryText.jsp"/>&quot;);return false;'><bean:message key="admin.admin.uploadEntryTxt"/></a>
             </li>
             </oscar:oscarPropertiesCheck>
+            <li><a href="#"
+            onclick='popupPage(800,1000,&quot;<html:rewrite page="/admin/manageFlowsheets.jsp"/>&quot;);return false;'><bean:message key="admin.admin.flowsheetManager"/></a>
+            </li>
 		</ul>
 		</div>
 	</security:oscarSec>

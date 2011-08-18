@@ -574,7 +574,7 @@ div.recommendations li{
             <div class="wrapper" id="allergFullListing"  >
 
                 <%  oscar.oscarRx.data.RxPatientData.Patient.Allergy[] allergies;
-                    allergies = new oscar.oscarRx.data.RxPatientData().getPatient(Integer.parseInt(demographic_no)).getAllergies();
+                    allergies = new oscar.oscarRx.data.RxPatientData().getPatient(Integer.parseInt(demographic_no)).getActiveAllergies();
                     
                     if (allergies.length > 0){%>
                 <ul>

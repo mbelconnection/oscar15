@@ -58,7 +58,12 @@ if(listRxDrugs!=null){
          if(drugName==null || drugName.equalsIgnoreCase("null"))
              drugName="" ;
 
+         String comment			= rx.getComment();
+         if(comment == null)
+        	 comment = "";
          boolean pastMed        = rx.getPastMed();
+         boolean homeMed		= rx.getHomeMed();
+         boolean startDateUnknown = rx.getStartDateUnknown();
          String quantity        = rx.getQuantity();
          String quantityText="";
          String unitName=rx.getUnitName();
@@ -155,6 +160,10 @@ if(listRxDrugs!=null){
         <bean:message key="WriteScript.msgPastMedication"/>
             <input  type="checkbox" name="pastMed_<%=rand%>" id="pastMed_<%=rand%>" <%if(pastMed) {%> checked="true" <%}%> />
 
+		<bean:message key="WriteScript.msgHomeMedication"/>
+            <input  type="checkbox" name="homeMed_<%=rand%>" id="homeMed_<%=rand%>" <%if(homeMed) {%> checked="true" <%}%> />
+
+
 	<bean:message key="WriteScript.msgPatientCompliance"/>:
           <bean:message key="WriteScript.msgYes"/>
             <input type="checkbox"  name="patientComplianceY_<%=rand%>" id="patientComplianceY_<%=rand%>" <%if(patientCompliance==1) {%> checked="true" <%}%> />
@@ -163,15 +172,29 @@ if(listRxDrugs!=null){
             <input type="checkbox"  name="patientComplianceN_<%=rand%>" id="patientComplianceN_<%=rand%>" <%if(patientCompliance==-1) {%> checked="true" <%}%> /><br/>
 
 
-
-        <label style="float:left;width:80px;">Start Date:</label>
-           <input type="text" id="rxDate_<%=rand%>" name="rxDate_<%=rand%>" value="<%=startDate%>"/>
-	<label style="">Last Refill Date:</label>
-           <input type="text" id="lastRefillDate_<%=rand%>"  name="lastRefillDate_<%=rand%>" value="<%=lastRefillDate%>" />
+		<table border="0" width="100%">
+		<tr>
+        <td width="10%" nowrap><label style="float:left;width:80px;">Start Date:</label></td>
+        <td colspan="2"><input type="text" id="rxDate_<%=rand%>" name="rxDate_<%=rand%>" value="<%=startDate%>"/>&nbsp;
+		<bean:message key="WriteScript.msgUnknown"/>
+            <input  type="checkbox" name="startDateUnknown_<%=rand%>" id="startDateUnknown_<%=rand%>" <%if(startDateUnknown) {%> checked="true" <%}%> />
+		</td>
+		
+           
+          </tr><tr>
+           
+		<td width="10%" nowrap><label style="">Last Refill Date:</label></td>
+        <td><input type="text" id="lastRefillDate_<%=rand%>"  name="lastRefillDate_<%=rand%>" value="<%=lastRefillDate%>" /></td>
+        <td></td>
+		</tr><tr>
+        <td width="10%" nowrap><label style="float:left;width:80px;">Written Date:</label></td>
+           <td><input type="text" id="writtenDate_<%=rand%>"  name="writtenDate_<%=rand%>" value="<%=writtenDate%>" /></td>
+           <td align="right"><a href="javascript:void(0);" style="float:right;margin-top:0px;padding-top:0px;" onclick="addFav('<%=rand%>','<%=drugName%>')">Add to Favorite</a></td>
+		</tr>
+	</table>
 	<br/>
-        <label style="float:left;width:80px;">Written Date:</label>
-           <input type="text" id="writtenDate_<%=rand%>"  name="writtenDate_<%=rand%>" value="<%=writtenDate%>" />
-           <a href="javascript:void(0);" style="float:right;margin-top:0px;padding-top:0px;" onclick="addFav('<%=rand%>','<%=drugName%>')">Add to Favorite</a>
+	<bean:message key="WriteScript.msgComment"/>:
+	 <input type="text" id="comment_<%=rand%>" name="comment_<%=rand%>" value="<%=comment%>" size="60"/>           
        </div>
 
            <div id="renalDosing_<%=rand%>" ></div>

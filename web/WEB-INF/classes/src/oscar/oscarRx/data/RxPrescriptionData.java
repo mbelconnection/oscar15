@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -1056,9 +1057,16 @@ public class RxPrescriptionData {
         private boolean durationSpecifiedByUser=false;
         private boolean customNote=false;
         private String comment = null;
+        private List<String> policyViolations = new ArrayList<String>();
         
         
-        public String getComment() {
+        public List<String> getPolicyViolations() {
+			return policyViolations;
+		}
+		public void setPolicyViolations(List<String> policyViolations) {
+			this.policyViolations = policyViolations;
+		}
+		public String getComment() {
 			return comment;
 		}
 		public void setComment(String comment) {

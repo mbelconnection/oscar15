@@ -84,6 +84,13 @@ if (heading != null){
             <th align="center" width="35px"><b><bean:message key="SearchDrug.msgReprescribe"/></b></th>
             <th align="center" width="35px"><b><bean:message key="SearchDrug.msgDelete"/></b></th>
             <th align="center" width="35px"><b>Discontinue</b></th>
+            <%
+            	String listHomeMed = OscarProperties.getInstance().getProperty("rx.list_home_med");
+            	if(listHomeMed != null && listHomeMed.equals("true")) {
+            %>
+            <th align="center" width="35px"><b><bean:message key="SearchDrug.msgHomeMed"/></b></th>
+            <% } %>
+            <th align="center" width="35px"><b><bean:message key="SearchDrug.msgPastMed"/></b></th>
             <th align="center" width="15px">&nbsp;</th>
             <th align="center"><bean:message key="SearchDrug.msgLocationPrescribed"/></th>
         </tr>
@@ -171,6 +178,12 @@ if (heading != null){
                   <%=prescriptDrug.getArchivedReason()%>
                 <%}%>
             </td>
+            <%
+            if(listHomeMed != null && listHomeMed.equals("true")) {
+            %>	            
+            <td align="center" valign="top"><%=(prescriptDrug.getHomeMed())?"yes":"no" %></td>
+            <% } %>
+            <td align="center" valign="top"><%=(prescriptDrug.getPastMed())?"yes":"no" %></td>
 
             <td width="10px" align="center" valign="top">
                 <a href="javascript:void(0);" title="Annotation" onclick="window.open('../annotation/annotation.jsp?display=<%=annotation_display%>&amp;table_id=<%=prescriptIdInt%>&amp;demo=<%=bean.getDemographicNo()%>&amp;drugSpecial=<%=specialText%>','anwin','width=400,height=250');">

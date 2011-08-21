@@ -100,6 +100,12 @@ public class Drug extends AbstractModel<Integer> implements Serializable {
         @Column(name = "hide_from_drug_profile")
         private boolean hideFromDrugProfile ;
 
+    @Column(name="home_med")
+    private boolean homeMed;
+    @Column(name="start_date_unknown")
+    private boolean startDateUnknown;    
+    private String comment;    
+    
         /////
         @Transient
         private String remoteFacilityName = null;
@@ -575,5 +581,30 @@ public class Drug extends AbstractModel<Integer> implements Serializable {
        }
        return days;
     }
+
+	public boolean getHomeMed() {
+		return homeMed;
+	}
+
+	public void setHomeMed(boolean homeMed) {
+		this.homeMed = homeMed;
+	}
+
+	public boolean getStartDateUnknown() {
+		return startDateUnknown;
+	}
+
+	public void setStartDateUnknown(boolean startDateUnknown) {
+		this.startDateUnknown = startDateUnknown;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+    
     
 }

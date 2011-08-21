@@ -102,7 +102,11 @@ public final class RxMyDrugrefInfoAction extends DispatchAction {
             }
             UserProperty prop = propDAO.getProp(provider, UserProperty.MYDRUGREF_ID);
             String myDrugrefId = null;
-            if (prop != null){
+            //get from system first
+            myDrugrefId  = OscarProperties.getInstance().getProperty("mydrugref_id");
+            
+            //override with user pref
+            if (prop != null && prop.getValue().length()>0){
                 myDrugrefId = prop.getValue();
                // System.out.println(myDrugrefId);
             }

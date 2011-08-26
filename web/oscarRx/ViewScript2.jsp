@@ -416,13 +416,7 @@ function toggleView(form) {
 		<td width="100%"
 			style="padding-left: 3; padding-right: 3; padding-top: 2; padding-bottom: 2"
 			height="0%" colspan="2">
-		<p class="HelpAboutLogout">
-                    <span class="FakeLink"><a href="Help.htm"><bean:message key="ViewScript.msgHelp"/></a></span>
-                    <span> | </span>
-                    <span class="FakeLink"><a href="About.htm"><bean:message key="ViewScript.msgAbout"/></a></span>
-                    <span> | </span>
-                    <span class="FakeLink"><a href="Disclaimer.htm"><bean:message key="ViewScript.msgDisclaimer"/></a></span>
-                </p>
+
 		</td>
 	</tr>
 
@@ -536,19 +530,7 @@ function toggleView(form) {
 							value="Print PDF" class="ControlPushButton"
 							style="width: 150px;" onClick="<%=reprint.equalsIgnoreCase("true") ? "javascript:return onPrint2('rePrint');" : "javascript:return onPrint2('print');" %>" /></span></td>
 					</tr>
-                                        <tr>
-						<!--td width=10px></td-->
-						<td><span><input type=button
-							value="Create New Prescription" class="ControlPushButton"
-                            style="width: 150px;"  onClick="resetStash();resetReRxDrugList();javascript:parent.myLightWindow.deactivate();" /></span></td>
-					</tr>
-					<tr>
-						<!--td width=10px></td-->
-						<td><span><input type=button value="<bean:message key="ViewScript.msgBackToOscar"/>"
-							class="ControlPushButton" style="width: 150px"
-                                                        onClick="javascript:clearPending('close');parent.window.close();" /></span></td>
-							<!--onClick="javascript:clearPending('close');" /></span></td>-->
-					</tr>
+
 					<tr>
 						<!--td width=10px></td-->
 						<td><span><input type=button value="<bean:message key="ViewScript.msgPrint"/>"
@@ -561,6 +543,21 @@ function toggleView(form) {
 							class="ControlPushButton" style="width: 150px"
 							onClick="javascript:printPaste2Parent();" /></span></td>
 					</tr>
+					
+					<tr>
+						<!--td width=10px></td-->
+						<td><span><input type=button
+							value="<bean:message key="ViewScript.msgCreateNewRx"/>" class="ControlPushButton"
+                            style="width: 150px;"  onClick="resetStash();resetReRxDrugList();javascript:parent.myLightWindow.deactivate();" /></span></td>
+					</tr>
+					<tr>
+						<!--td width=10px></td -->
+						<td><span><input type=button value="<bean:message key="ViewScript.msgBackToOscar"/>"
+							class="ControlPushButton" style="width: 150px"
+                                                        onClick="javascript:clearPending('close');parent.window.close();" /></span></td>
+							<!--onClick="javascript:clearPending('close');" /></span></td>-->
+					</tr>
+					
                                        <%if(prefPharmacy.length()>0 && prefPharmacyId.length()>0){   %>
                                            <tr><td><span><input id="selectPharmacyButton" type=button value="<bean:message key='oscarRx.printPharmacyInfo.addPharmacyButton'/>" class="ControlPushButton" style="width:120px;"
                                                              onclick="printPharmacy('<%=prefPharmacyId%>','<%=prefPharmacy%>');"/>

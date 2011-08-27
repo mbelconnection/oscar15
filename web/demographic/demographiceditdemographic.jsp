@@ -384,6 +384,9 @@ function showHideDetail(){
     showHideItem('viewDemographics2');
     showHideItem('updateButton');
     showHideItem('swipeButton');
+    
+    showHideItem('editBtn');
+    showHideItem('closeBtn');
 }
 
 function showHideItem(id){
@@ -955,7 +958,8 @@ if (iviewTag!=null && !"".equalsIgnoreCase(iviewTag.trim())){
                             <%
                                                     if( head.equals(demographic_no)) {
                                                     %>
-                                                        <a href="javascript: showHideDetail();"><bean:message key="demographic.demographiceditdemographic.msgEdit"/></a>
+                                                        <a href="javascript: showHideDetail();" id="editBtn"><bean:message key="demographic.demographiceditdemographic.msgEdit"/></a>
+                                                        <a href="javascript: showHideDetail();" id="closeBtn" style="display:none">Close</a>
                                                    <% } %>
 						</td>
 					</tr>

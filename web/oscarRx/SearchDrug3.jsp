@@ -25,6 +25,7 @@
 <%
         if (session.getAttribute("userrole") == null) response.sendRedirect("../logout.jsp");
         String roleName$ = (String)session.getAttribute("userrole") + "," + (String)session.getAttribute("user");
+        com.quatro.service.security.SecurityManager securityManager = new com.quatro.service.security.SecurityManager();        
 %>
 <security:oscarSec roleName="<%=roleName$%>" objectName="_rx" rights="r"
                    reverse="<%=true%>">
@@ -752,10 +753,12 @@ body {
                                                     &nbsp;
                                                     <a href="javascript:popupWindow(720,700,'PrintDrugProfile2.jsp','PrintDrugProfile')"><bean:message key="SearchDrug.Print"/></a>
                                                     &nbsp;
+                                                    <%if(securityManager.hasWriteAccess("_rx",roleName$,true)) {%>
                                                     <a href="#" onclick="$('reprint').toggle();return false;"><bean:message key="SearchDrug.Reprint"/></a>
-                                                    &nbsp;
+                                                    &nbsp;                                                    
                                                     <a href="javascript:void(0);"name="cmdRePrescribe"  onclick="javascript:RePrescribeLongTerm();" style="width: 200px" ><bean:message key="SearchDrug.msgReprescribeLongTermMed"/></a>
                                                     &nbsp;
+                                                    <%} %>
                                                     <a href="javascript:popupWindow(720,920,'chartDrugProfile.jsp?demographic_no=<%=bean.getDemographicNo()%>','PrintDrugProfile2')"><bean:message key="SearchDrug.TimelineDrugProfile"/></a>
                                                     &nbsp;
                                                     <a href="javascript: void(0);" onclick="callReplacementWebService('GetmyDrugrefInfo.do?method=view','interactionsRxMyD');" ><bean:message key="SearchDrug.DSRun"/></a>

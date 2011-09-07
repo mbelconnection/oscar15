@@ -474,9 +474,22 @@ function popup1(height, width, url, windowName){
 					       onclick="window.open('../annotation/annotation.jsp?display=<%=annotation_display%>&table_id=<%=curdoc.getDocId()%>&demo=<%=moduleid%>','anwin','width=400,height=250');">
 					      <img src="../images/notes.gif" border="0">
 					    </a>
-                          <%} if(!moduleid.equals((String)session.getAttribute("user"))) {%>
-                                            &nbsp;<a href="javascript:void(0);" title="Tickler" onclick="popup(450,600,'../tickler/ForwardDemographicTickler.do?docType=DOC&docId=<%=curdoc.getDocId()%>&demographic_no=<%=moduleid%>','tickler')">T</a>
-                          <%}%>
+                          <%} if(!moduleid.equals((String)session.getAttribute("user"))) {
+                          
+                          
+                          String tickler_url;
+                          if( org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable() ) {
+                          	tickler_url = request.getContextPath()+"/Tickler.do?method=edit&tickler.demographic_webName="+moduleName+"&tickler.demographic_no="+moduleid;
+                          } else {
+                          	tickler_url = request.getContextPath()+"/tickler/ForwardDemographicTickler.do?docType=DOC&docId="+curdoc.getDocId()+"&demographic_no="+moduleid;
+                          }
+                         
+                          %>
+                          
+                          &nbsp;<a href="javascript:void(0);" title="Tickler" onclick="popup(450,600,'<%=tickler_url%>','tickler')">T</a>
+                          
+                          
+                          <%}%>		
                                             </td>
 				</tr>
 

@@ -175,9 +175,9 @@ if(listRxDrugs!=null){
 		<table border="0" width="100%">
 		<tr>
         <td width="10%" nowrap><label style="float:left;width:80px;">Start Date:</label></td>
-        <td colspan="2"><input type="text" id="rxDate_<%=rand%>" name="rxDate_<%=rand%>" value="<%=startDate%>"/>&nbsp;
+        <td colspan="2"><input type="text" id="rxDate_<%=rand%>" name="rxDate_<%=rand%>" value="<%=startDate%>" <%if(startDateUnknown) {%> disabled="disabled" <%}%>/>&nbsp;
 		<bean:message key="WriteScript.msgUnknown"/>
-            <input  type="checkbox" name="startDateUnknown_<%=rand%>" id="startDateUnknown_<%=rand%>" <%if(startDateUnknown) {%> checked="true" <%}%> />
+            <input  type="checkbox" name="startDateUnknown_<%=rand%>" id="startDateUnknown_<%=rand%>" <%if(startDateUnknown) {%> checked="true" <%}%> onchange="toggleStartDateUnknown('<%=rand%>');"/>
 		</td>
 		
            

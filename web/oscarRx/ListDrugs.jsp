@@ -79,6 +79,7 @@ if (heading != null){
 <div class="drugProfileText" style="">
     <table width="100%" cellpadding="3" border="0" class="sortable" id="Drug_table<%=heading%>">
         <tr>
+        	<th align="left"><b>Entered Date</b></th>
             <th align="left"><b><bean:message key="SearchDrug.msgRxDate"/></b></th>
             <th align="left"><b>Days to Exp</b></th>
             <th align="left"><b>LT Med</b></th>
@@ -155,6 +156,7 @@ if (heading != null){
                 String bn=prescriptDrug.getBrandName();
         %>
         <tr>
+        	<td valign="top"><a id="createDate_<%=prescriptIdInt%>"   <%=styleColor%> href="StaticScript2.jsp?regionalIdentifier=<%=prescriptDrug.getRegionalIdentifier()%>&amp;cn=<%=response.encodeURL(prescriptDrug.getCustomName())%>&amp;bn=<%=response.encodeURL(bn)%>"><%=oscar.util.UtilDateUtilities.DateToString(prescriptDrug.getCreateDate())%></a></td>
             <td valign="top"><a id="rxDate_<%=prescriptIdInt%>"   <%=styleColor%> href="StaticScript2.jsp?regionalIdentifier=<%=prescriptDrug.getRegionalIdentifier()%>&amp;cn=<%=response.encodeURL(prescriptDrug.getCustomName())%>&amp;bn=<%=response.encodeURL(bn)%>"><%=oscar.util.UtilDateUtilities.DateToString(prescriptDrug.getRxDate())%></a></td>
             <td valign="top"><%=prescriptDrug.daysToExpire()%></td>
             <td valign="top">

@@ -115,8 +115,7 @@ public class RxPrescriptionData {
                 prescription.setDosage(db.getString(rs, "dosage"));
                 prescription.setLongTerm(rs.getBoolean("long_term"));
                 prescription.setCustomNote(rs.getBoolean("custom_note"));
-                prescription.setPastMed(rs.getBoolean("past_med"));
-                prescription.setHomeMed(rs.getBoolean("home_med"));
+                prescription.setPastMed(rs.getBoolean("past_med"));                
                 prescription.setStartDateUnknown(rs.getBoolean("start_date_unknown"));
                 prescription.setComment(rs.getString("comment"));
                 prescription.setPatientCompliance(rs.getInt("patient_compliance"));
@@ -216,8 +215,7 @@ public class RxPrescriptionData {
         prescription.setDosage(rePrescribe.getDosage());
         prescription.setLongTerm(rePrescribe.getLongTerm());
         prescription.setCustomNote(rePrescribe.isCustomNote());
-        prescription.setPastMed(rePrescribe.getPastMed());
-        prescription.setHomeMed(rePrescribe.getHomeMed());
+        prescription.setPastMed(rePrescribe.getPastMed());       
        // prescription.setStartDateUnknown();
        // prescription.setComment();
         prescription.setPatientCompliance(rePrescribe.getPatientCompliance());
@@ -282,8 +280,7 @@ public class RxPrescriptionData {
                 p.setDosage(db.getString(rs, "dosage"));
                 p.setLongTerm(rs.getBoolean("long_term"));
                 p.setCustomNote(rs.getBoolean("custom_note"));
-                p.setPastMed(rs.getBoolean("past_med"));
-                p.setHomeMed(rs.getBoolean("home_med"));
+                p.setPastMed(rs.getBoolean("past_med"));                
                 p.setStartDateUnknown(rs.getBoolean("start_date_unknown"));
                 p.setComment(rs.getString("comment"));
                 p.setPatientCompliance(rs.getInt("patient_compliance"));
@@ -340,8 +337,7 @@ public class RxPrescriptionData {
         p.setDosage(oscar.Misc.getString(rs, "dosage"));
         p.setLongTerm(rs.getBoolean("long_term"));
         p.setCustomNote(rs.getBoolean("custom_note"));
-        p.setPastMed(rs.getBoolean("past_med"));
-        p.setHomeMed(rs.getBoolean("home_med"));
+        p.setPastMed(rs.getBoolean("past_med"));        
         p.setStartDateUnknown(rs.getBoolean("start_date_unknown"));
         p.setComment(rs.getString("comment"));
         p.setPatientCompliance(rs.getInt("patient_compliance"));
@@ -506,8 +502,7 @@ public class RxPrescriptionData {
                 p.setDosage(db.getString(rs, "dosage"));
                 p.setLongTerm(rs.getBoolean("long_term"));
                 p.setCustomNote(rs.getBoolean("custom_note"));
-                p.setPastMed(rs.getBoolean("past_med"));
-                p.setHomeMed(rs.getBoolean("home_med"));
+                p.setPastMed(rs.getBoolean("past_med"));                
                 p.setStartDateUnknown(rs.getBoolean("start_date_unknown"));
                 p.setComment(rs.getString("comment"));
                 p.setPatientCompliance(rs.getInt("patient_compliance"));
@@ -584,8 +579,7 @@ public class RxPrescriptionData {
                 p.setDosage(db.getString(rs, "dosage"));
                 p.setLongTerm(rs.getBoolean("long_term"));
                 p.setCustomNote(rs.getBoolean("custom_note"));
-                p.setPastMed(rs.getBoolean("past_med"));
-                p.setHomeMed(rs.getBoolean("home_med"));
+                p.setPastMed(rs.getBoolean("past_med"));                
                 p.setStartDateUnknown(rs.getBoolean("start_date_unknown"));
                 p.setComment(rs.getString("comment"));
                 p.setPatientCompliance(rs.getInt("patient_compliance"));
@@ -661,8 +655,7 @@ public class RxPrescriptionData {
                 p.setDosage(db.getString(rs, "dosage"));
                 p.setLongTerm(rs.getBoolean("long_term"));
                 p.setCustomNote(rs.getBoolean("custom_note"));
-                p.setPastMed(rs.getBoolean("past_med"));
-                p.setHomeMed(rs.getBoolean("home_med"));
+                p.setPastMed(rs.getBoolean("past_med"));                
                 p.setStartDateUnknown(rs.getBoolean("start_date_unknown"));
                 p.setComment(rs.getString("comment"));
                 p.setPatientCompliance(rs.getInt("patient_compliance"));
@@ -772,8 +765,7 @@ public class RxPrescriptionData {
                     p.setDosage(db.getString(rs, "dosage"));
                     p.setLongTerm(rs.getBoolean("long_term"));
                     p.setCustomNote(rs.getBoolean("custom_note"));
-                    p.setPastMed(rs.getBoolean("past_med"));
-                    p.setHomeMed(rs.getBoolean("home_med"));
+                    p.setPastMed(rs.getBoolean("past_med"));                    
                     p.setStartDateUnknown(rs.getBoolean("start_date_unknown"));
                     p.setComment(rs.getString("comment"));
                     p.setPatientCompliance(rs.getInt("patient_compliance"));
@@ -1026,8 +1018,7 @@ public class RxPrescriptionData {
         boolean nosubs = false;
         boolean prn = false;
         boolean longTerm = false;
-        boolean pastMed = false;
-        boolean homeMed = false;
+        boolean pastMed = false;        
         boolean startDateUnknown = false;
         int patientCompliance = 0;
         String special = null;
@@ -1509,13 +1500,6 @@ public class RxPrescriptionData {
             this.pastMed = pm;
         }                
 
-        public boolean getHomeMed() {
-			return homeMed;
-		}
-		public void setHomeMed(boolean homeMed) {
-			this.homeMed = homeMed;
-		}		
-		
 		public boolean getStartDateUnknown() {
 			return startDateUnknown;
 		}
@@ -1880,7 +1864,7 @@ public class RxPrescriptionData {
                             "special = '" +escapedSpecial+ "' AND " + "outside_provider_name = '" + this.getOutsideProviderName() + "' AND " +
                             "outside_provider_ohip = '" + this.getOutsideProviderOhip() + "' AND " + "custom_instructions = " + this.getCustomInstr() + " AND " + "long_term = " +
                             this.getLongTerm() +" AND " + "custom_note = " + this.isCustomNote() + " AND " + "past_med = " + this.getPastMed() + " AND " + "patient_compliance = " + this.getPatientCompliance()
-                            +" AND "+" special_instruction = '"+this.getSpecialInstruction()+"' AND home_med = " + this.getHomeMed() + " AND comment = '" + this.getComment() + "' AND start_date_unknown = " + this.getStartDateUnknown();
+                            +" AND "+" special_instruction = '"+this.getSpecialInstruction()+"' AND comment = '" + this.getComment() + "' AND start_date_unknown = " + this.getStartDateUnknown();
                     System.out.println(sql);
                     rs = db.GetSQL(sql);
 
@@ -1895,7 +1879,7 @@ public class RxPrescriptionData {
                     // if it doesn't already exist add it.
                     if (this.getDrugId() == 0) {
                       //   System.out.println("if it doesn't already exist add it");
-                        sql = "INSERT INTO drugs (provider_no, demographic_no, " + "rx_date, end_date, written_date, BN, GCN_SEQNO, customName, " + "takemin, takemax, freqcode, duration, durunit, quantity, " + "`repeat`, last_refill_date, nosubs, prn, special, GN, script_no, ATC, " + "regional_identifier, unit, method, route, drug_form, create_date, " + "outside_provider_name, outside_provider_ohip, custom_instructions, " + "dosage, unitName, long_term, custom_note, past_med, special_instruction,patient_compliance, home_med, comment, start_date_unknown) " + "VALUES ('" + this.getProviderNo() + "', " + this.getDemographicNo() + ", '" + RxUtil.DateToString(this.getRxDate()) + "', '" + RxUtil.DateToString(this.getEndDate()) + "', '" + RxUtil.DateToString(this.getWrittenDate()) + "', '" + StringEscapeUtils.escapeSql(this.getBrandName()) + "', " + this.getGCN_SEQNO() + ", '" + StringEscapeUtils.escapeSql(this.getCustomName()) + "', " + this.getTakeMin() + ", " + this.getTakeMax() + ", '" + this.getFrequencyCode() + "', '" + this.getDuration() + "', '" + this.getDurationUnit() + "', '" + this.getQuantity() + "', " + this.getRepeat() + ", '" + RxUtil.DateToString(this.getLastRefillDate()) + "', " + this.getNosubsInt() + ", " + this.getPrnInt() + ", '" + escapedSpecial + "','" + StringEscapeUtils.escapeSql(this.getGenericName()) + "','" + scriptId + "', '" + this.getAtcCode() + "', '" + this.getRegionalIdentifier() + "','" + this.getUnit() + "','" + this.getMethod() + "','" + this.getRoute() + "','" + this.getDrugForm() + "',now(),'" + this.getOutsideProviderName() + "','" + this.getOutsideProviderOhip() + "', " + this.getCustomInstr() + ",'" + this.getDosage() + "', '" + this.getUnitName() + "', " + this.getLongTerm() + ", "  + this.isCustomNote() + ", " + this.getPastMed() + ", '" +this.special_instruction+"', "+ this.getPatientCompliance() + "," + this.getHomeMed() + ",'" + this.getComment() + "'," + this.getStartDateUnknown() + ")";
+                        sql = "INSERT INTO drugs (provider_no, demographic_no, " + "rx_date, end_date, written_date, BN, GCN_SEQNO, customName, " + "takemin, takemax, freqcode, duration, durunit, quantity, " + "`repeat`, last_refill_date, nosubs, prn, special, GN, script_no, ATC, " + "regional_identifier, unit, method, route, drug_form, create_date, " + "outside_provider_name, outside_provider_ohip, custom_instructions, " + "dosage, unitName, long_term, custom_note, past_med, special_instruction,patient_compliance, comment, start_date_unknown) " + "VALUES ('" + this.getProviderNo() + "', " + this.getDemographicNo() + ", '" + RxUtil.DateToString(this.getRxDate()) + "', '" + RxUtil.DateToString(this.getEndDate()) + "', '" + RxUtil.DateToString(this.getWrittenDate()) + "', '" + StringEscapeUtils.escapeSql(this.getBrandName()) + "', " + this.getGCN_SEQNO() + ", '" + StringEscapeUtils.escapeSql(this.getCustomName()) + "', " + this.getTakeMin() + ", " + this.getTakeMax() + ", '" + this.getFrequencyCode() + "', '" + this.getDuration() + "', '" + this.getDurationUnit() + "', '" + this.getQuantity() + "', " + this.getRepeat() + ", '" + RxUtil.DateToString(this.getLastRefillDate()) + "', " + this.getNosubsInt() + ", " + this.getPrnInt() + ", '" + escapedSpecial + "','" + StringEscapeUtils.escapeSql(this.getGenericName()) + "','" + scriptId + "', '" + this.getAtcCode() + "', '" + this.getRegionalIdentifier() + "','" + this.getUnit() + "','" + this.getMethod() + "','" + this.getRoute() + "','" + this.getDrugForm() + "',now(),'" + this.getOutsideProviderName() + "','" + this.getOutsideProviderOhip() + "', " + this.getCustomInstr() + ",'" + this.getDosage() + "', '" + this.getUnitName() + "', " + this.getLongTerm() + ", "  + this.isCustomNote() + ", " + this.getPastMed() + ", '" +this.special_instruction+"', "+ this.getPatientCompliance() + ",'" + this.getComment() + "'," + this.getStartDateUnknown() + ")";
                           System.out.println("sql="+sql);
                        
                         db.RunSQL(sql);
@@ -1917,7 +1901,7 @@ public class RxPrescriptionData {
                 } else { // update the database
                   //  System.out.println("update the database");
                     //create_date is not updated
-                    sql = "UPDATE drugs SET " + "provider_no = '" + this.getProviderNo() + "', " + "demographic_no = " + this.getDemographicNo() + ", " + "rx_date = '" + RxUtil.DateToString(this.getRxDate()) + "', " + "end_date = '" + RxUtil.DateToString(this.getEndDate()) + "', " + "written_date = '" + RxUtil.DateToString(this.getWrittenDate()) + "', " + "BN = '" + StringEscapeUtils.escapeSql(this.getBrandName()) + "', " + "GCN_SEQNO = " + this.getGCN_SEQNO() + ", " + "customName = '" + StringEscapeUtils.escapeSql(this.getCustomName()) + "', " + "takemin = " + this.getTakeMin() + ", " + "takemax = " + this.getTakeMax() + ", " + "freqcode = '" + this.getFrequencyCode() + "', " + "duration = '" + this.getDuration() + "', " + "durunit = '" + this.getDurationUnit() + "', " + "quantity = '" + this.getQuantity() + "', " + "`repeat` = " + this.getRepeat() + ", " + "last_refill_date = '" + RxUtil.DateToString(this.getLastRefillDate()) + "', " + "nosubs = " + this.getNosubsInt() + ", " + "prn = " + this.getPrnInt() + ", " + "special = '" + escapedSpecial + "', " + "ATC = '" + this.atcCode + "', " + "regional_identifier = '" + this.regionalIdentifier + "', " + "unit = '" + this.getUnit() + "', " + "method = '" + this.getMethod() + "', " + "route = '" + this.getRoute() + "', " + "drug_form = '" + this.getDrugForm() + "', " + "dosage = '" + this.getDosage() + "', " + "outside_provider_name = '" + this.getOutsideProviderName() + "', " + "outside_provider_ohip = '" + this.getOutsideProviderOhip() + "', " + "custom_instructions = " + this.getCustomInstr() + ", " + "unitName = '" + this.getUnitName() + "', " + "long_term = " + this.getLongTerm() + ", " +"custom_note = " + this.isCustomNote() +", " + "past_med = " + this.getPastMed() + ", " +"special_instruction = '"+this.getSpecialInstruction()+"', " + "patient_compliance = " + this.getPatientCompliance() + ", " + "home_med=" + this.getHomeMed() + ", " + "comment='" + comment + "'," + "start_date_unknown=" + this.getStartDateUnknown() + " WHERE drugid = " + this.getDrugId();
+                    sql = "UPDATE drugs SET " + "provider_no = '" + this.getProviderNo() + "', " + "demographic_no = " + this.getDemographicNo() + ", " + "rx_date = '" + RxUtil.DateToString(this.getRxDate()) + "', " + "end_date = '" + RxUtil.DateToString(this.getEndDate()) + "', " + "written_date = '" + RxUtil.DateToString(this.getWrittenDate()) + "', " + "BN = '" + StringEscapeUtils.escapeSql(this.getBrandName()) + "', " + "GCN_SEQNO = " + this.getGCN_SEQNO() + ", " + "customName = '" + StringEscapeUtils.escapeSql(this.getCustomName()) + "', " + "takemin = " + this.getTakeMin() + ", " + "takemax = " + this.getTakeMax() + ", " + "freqcode = '" + this.getFrequencyCode() + "', " + "duration = '" + this.getDuration() + "', " + "durunit = '" + this.getDurationUnit() + "', " + "quantity = '" + this.getQuantity() + "', " + "`repeat` = " + this.getRepeat() + ", " + "last_refill_date = '" + RxUtil.DateToString(this.getLastRefillDate()) + "', " + "nosubs = " + this.getNosubsInt() + ", " + "prn = " + this.getPrnInt() + ", " + "special = '" + escapedSpecial + "', " + "ATC = '" + this.atcCode + "', " + "regional_identifier = '" + this.regionalIdentifier + "', " + "unit = '" + this.getUnit() + "', " + "method = '" + this.getMethod() + "', " + "route = '" + this.getRoute() + "', " + "drug_form = '" + this.getDrugForm() + "', " + "dosage = '" + this.getDosage() + "', " + "outside_provider_name = '" + this.getOutsideProviderName() + "', " + "outside_provider_ohip = '" + this.getOutsideProviderOhip() + "', " + "custom_instructions = " + this.getCustomInstr() + ", " + "unitName = '" + this.getUnitName() + "', " + "long_term = " + this.getLongTerm() + ", " +"custom_note = " + this.isCustomNote() +", " + "past_med = " + this.getPastMed() + ", " +"special_instruction = '"+this.getSpecialInstruction()+"', " + "patient_compliance = " + this.getPatientCompliance() + ", " + "comment='" + comment + "'," + "start_date_unknown=" + this.getStartDateUnknown() + " WHERE drugid = " + this.getDrugId();
                     System.out.println("sql="+sql);
                     db.RunSQL(sql);
 

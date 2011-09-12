@@ -641,8 +641,9 @@ public class RxUtil {
                 Matcher matcher = p.matcher(instructions);
                 if (matcher.find()) {
                     frequency = (instructions.substring(matcher.start(), matcher.end())).trim();
+                    String origFrequency = (instructions.substring(matcher.start(), matcher.end())).trim();
                     frequency=changeToStandardFrequencyCode(frequency);
-                    Pattern p2 = Pattern.compile("\\s*\\d*\\.*\\d+\\s+" + frequency); //allow to detect decimal number.
+                    Pattern p2 = Pattern.compile("\\s*\\d*\\.*\\d+\\s+" + origFrequency); //allow to detect decimal number.
                     Matcher m2 = p2.matcher(instructions);
 
 

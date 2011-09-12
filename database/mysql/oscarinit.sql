@@ -620,7 +620,6 @@ CREATE TABLE drugs (
   archived_reason varchar(100) default '',
   archived_date datetime,
   hide_from_drug_profile tinyint(1) default '0',
-  home_med boolean,
   comment varchar(255),
   start_date_unknown boolean,
   PRIMARY KEY  (drugid)

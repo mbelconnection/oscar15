@@ -8,12 +8,15 @@
 <%@page import="org.oscarehr.util.SpringUtils" %>
 <%@page import="org.oscarehr.casemgmt.service.CaseManagementManager" %>
 <%@page import="org.oscarehr.casemgmt.model.CaseManagementNoteLink" %>
+<%@page import="org.oscarehr.casemgmt.model.CaseManagementNote" %>
 
 <%
 OscarProperties props = OscarProperties.getInstance();
 
     if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
     String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
+    CaseManagementManager caseManagementManager = (CaseManagementManager) SpringUtils.getBean("caseManagementManager");
+    
 %>
 <security:oscarSec roleName="<%=roleName$%>" objectName="_rx" rights="r"
 	reverse="<%=true%>">
@@ -342,7 +345,13 @@ padding-right:6;
 										trColour="#E0E0E0";
 										sevColour=ColourCodesArray[intSOR];
 									}
-													
+											
+									boolean isPrevAnnotation=false;
+									Integer tableName = caseManagementManager.getTableNameByDisplay(annotation_display);
+					                CaseManagementNoteLink cml = caseManagementManager.getLatestLinkByTableId(tableName, new Long(allergy.getAllergyId()));
+					                CaseManagementNote p_cmn = null;
+					                if (cml!=null) {p_cmn = caseManagementManager.getNote(cml.getNoteId().toString());}
+					                if (p_cmn!=null){isPrevAnnotation=true;}
 									
 									if(!filterOut) {
 								%>
@@ -357,7 +366,11 @@ padding-right:6;
 									<td ><bean:write name="allergy" property="allergy.onSetOfReactionDesc" /></td>
 									<td ><bean:write name="allergy" property="allergy.reaction" /></td>
 									<td ><%=allergy.getAllergy().getStartDate()!=null?allergy.getAllergy().getStartDate():""%></td>
-									<td ><a href="#" title="Annotation" onclick="window.open('../annotation/annotation.jsp?display=<%=annotation_display%>&table_id=<%=String.valueOf(allergy.getAllergyId())%>&demo=<jsp:getProperty name="patient" property="demographicNo"/>','anwin','width=400,height=250');"><img src="../images/notes.gif" border="0"></a></td>
+									<td >
+										<a href="#" title="Annotation" onclick="window.open('../annotation/annotation.jsp?display=<%=annotation_display%>&table_id=<%=String.valueOf(allergy.getAllergyId())%>&demo=<jsp:getProperty name="patient" property="demographicNo"/>','anwin','width=400,height=250');">
+											<%if(!isPrevAnnotation){%> <img src="../images/notes.gif" alt="rxAnnotation" height="16" width="13" border="0"><%} else{%><img src="../images/filledNotes.gif" height="16" width="13" alt="rxFilledNotes" border="0"> <%}%>
+										</a>
+									</td>
 									<td >
 									<%
 										if(securityManager.hasDeleteAccess("_allergies",roleName$)) {

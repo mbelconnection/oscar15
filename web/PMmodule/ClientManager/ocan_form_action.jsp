@@ -11,6 +11,7 @@
 <%@page import="java.util.Date"%>
 <%@page import="java.util.List"%>
 <%@page import="org.apache.commons.lang.StringUtils"%>
+<%@page import="org.apache.commons.lang.ArrayUtils"%>
 <%
 	@SuppressWarnings("unchecked")
 	HashMap<String,String[]> parameters=new HashMap(request.getParameterMap());
@@ -24,19 +25,25 @@
 		}
 		boolean var4 = false;
 		boolean var3 = false;
-		int length = parameters.get("immigration_issues").length;
-		String[] immi = new String[length+1];	
-		int i=0;
-		for(String ii : parameters.get("immigration_issues")) {
-			immi[i] = ii;
-			if(ii.equalsIgnoreCase("4")) var4 = true;
-			if(ii.equalsIgnoreCase("3")) var3 = true;
-			i++;
+		int length = 0;
+		
+		if(!ArrayUtils.isEmpty(parameters.get("immigration_issues"))) {
+			length = parameters.get("immigration_issues").length;
+		
+			String[] immi = new String[length+1];	
+			int i=0;
+			for(String ii : parameters.get("immigration_issues")) {
+				immi[i] = ii;
+				if(ii.equalsIgnoreCase("4")) var4 = true;
+				if(ii.equalsIgnoreCase("3")) var3 = true;
+				i++;
+			}
+			if(var4 && !var3) {
+				immi[length] = "3"; 
+				parameters.put("immigration_issues", immi);
+			}
 		}
-		if(var4 && !var3) {
-			immi[length] = "3"; 
-			parameters.put("immigration_issues", immi);
-		}
+		
 	}	
 	
 	// for these values get them and pop them from map so subsequent iterating through map doesn't process these parameters again.

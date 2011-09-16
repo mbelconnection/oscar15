@@ -23,6 +23,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.BindingProvider;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.ws.security.WSPasswordCallback;
 import org.apache.xmlbeans.XmlOptions;
@@ -759,7 +760,9 @@ public class OcanReportUIBean implements CallbackHandler {
 		for(int x=0;x<actionCount;x++) {
 			int index = x+1;
 			Action action = Action.Factory.newInstance();
-			action.setPriority(index);			
+			action.setPriority(index);	
+			if(StringUtils.isBlank(getStaffAnswer(index+"_summary_of_actions_domain",ocanStaffFormData))) 
+					continue;
 			action.setDomain(ActionDocument.Action.Domain.Enum.forString(getDomainName(Integer.valueOf(getStaffAnswer(index+"_summary_of_actions_domain",ocanStaffFormData)))));
 			action.setAction(getStaffAnswer(index+"_summary_of_actions_action",ocanStaffFormData));
 			actions.add(action);

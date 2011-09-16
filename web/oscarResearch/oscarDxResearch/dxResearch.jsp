@@ -274,11 +274,12 @@ function processKey(e) {
 					<table width="100%" border="0" cellpadding="0" cellspacing="0"
 						bgcolor="#FFFFFF">
 						<tr>
-							<td class="heading" width="48%"><b><bean:message key="oscarResearch.oscarDxResearch.dxResearch.msgDiagnosis" /></b></td>
+							<td class="heading" width="10%"><b><bean:message key="oscarResearch.oscarDxResearch.dxResearch.msgCode" /></b></td>
+							<td class="heading" width="40%"><b><bean:message key="oscarResearch.oscarDxResearch.dxResearch.msgDiagnosis" /></b></td>
 							<td class="heading" width="15%"><b><bean:message key="oscarResearch.oscarDxResearch.dxResearch.msgFirstVisit" /></b></td>
 							<td class="heading" width="15%"><b><bean:message key="oscarResearch.oscarDxResearch.dxResearch.msgLastVisit" /></b></td>
 							<% if(!disable){ %>
-							<td class="heading" width="22%"><b><bean:message key="oscarResearch.oscarDxResearch.dxResearch.msgAction" /></b></td>
+							<td class="heading" width="20%"><b><bean:message key="oscarResearch.oscarDxResearch.dxResearch.msgAction" /></b></td>
 							<%} %>
 						</tr>
 						<logic:iterate id="diagnotics" name="allDiagnostics"
@@ -294,7 +295,8 @@ function processKey(e) {
                         }       
                     %>
 							<logic:equal name="diagnotics" property="status" value="A">
-								<tr bgcolor="<%=color%>">
+								<tr bgcolor="<%=color%>"> 
+									<td class="notResolved"> <bean:write name="diagnotics" property="dxSearchCode" /></td>
 									<td class="notResolved"><bean:write name="diagnotics" property="description" /></td>
 									<td class="notResolved"><bean:write name="diagnotics" property="start_date" /></td>
 									<td class="notResolved"><bean:write name="diagnotics" property="end_date" /></td>
@@ -311,6 +313,7 @@ function processKey(e) {
 							</logic:equal>
 							<logic:equal name="diagnotics" property="status" value="C">
 								<tr bgcolor="<%=color%>">
+									<td> <bean:write name="diagnotics" property="dxSearchCode" /></td>
 									<td><bean:write name="diagnotics" property="description" /></td>
 									<td><bean:write name="diagnotics" property="start_date" /></td>
 									<td><bean:write name="diagnotics" property="end_date" /></td>

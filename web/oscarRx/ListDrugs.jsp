@@ -86,7 +86,9 @@ if (heading != null){
             <th align="left"><b><bean:message key="SearchDrug.msgPrescription"/></b></th>
             <%if(securityManager.hasWriteAccess("_rx",roleName$,true)) {%>
             	<th align="center" width="35px"><b><bean:message key="SearchDrug.msgReprescribe"/></b></th>            
-            	<!--<th align="center" width="35px"><b><bean:message key="SearchDrug.msgDelete"/></b></th>-->
+            	<%if(!OscarProperties.getInstance().getProperty("rx.delete_drug.hide","false").equals("true")) { %>
+            	<th align="center" width="35px"><b><bean:message key="SearchDrug.msgDelete"/></b></th>
+            	<%} %>
             	<th align="center" width="35px"><b>Discontinue</b></th>
             <%} %>
             <th align="center" width="35px"><b><bean:message key="SearchDrug.msgPastMed"/></b></th>
@@ -200,13 +202,13 @@ if (heading != null){
                 </form>
                 <%}%>
             </td>            
-            <!-- 
+            <%if(!OscarProperties.getInstance().getProperty("rx.delete_drug.hide","false").equals("true")) { %>
             <td width="20px" align="center" valign="top">
                 <%if (prescriptDrug.getRemoteFacilityName() == null) {%>
                    <a id="del_<%=prescriptIdInt%>" name="delete" <%=styleColor%> href="javascript:void(0);" onclick="Delete2(this);">Del</a>
                 <%}%>
             </td>
-            -->
+            <%} %>
             <td width="20px" align="center" valign="top">
                 <%if(!prescriptDrug.isDiscontinued()){%>
                 <a id="discont_<%=prescriptIdInt%>" href="javascript:void(0);" onclick="Discontinue(event,this);" <%=styleColor%> >Discon</a>

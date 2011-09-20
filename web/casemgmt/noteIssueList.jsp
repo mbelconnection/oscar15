@@ -119,9 +119,10 @@
 	name="ajaxsave">
 	<html:select styleId="<%=encSelect%>" styleClass="encTypeCombo"
 		name="caseManagementEntryForm" property="caseNote.encounter_type">
-		<html:option value=""></html:option>
-		<html:option value="face to face encounter with client"><bean:message key="oscarEncounter.faceToFaceEnc.title"/></html:option>
+		<html:option value=""></html:option> 
+		<html:option value="face to face encounter with client"><bean:message key="oscarEncounter.faceToFaceEnc.title"/> </html:option>
 		<html:option value="telephone encounter with client"><bean:message key="oscarEncounter.telephoneEnc.title"/></html:option>
+		<html:option value="email encounter with client"><bean:message key="oscarEncounter.emailEnc.title"/></html:option>
 		<html:option value="encounter without client"><bean:message key="oscarEncounter.noClientEnc.title"/></html:option>
 	</html:select>
 </nested:empty> <nested:notEmpty name="ajaxsave">

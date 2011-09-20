@@ -1098,7 +1098,7 @@ function changeLt(drugId){
        mb.hide();
    }
     var modalBox=function(){ 
-        this.show=function(randomId){
+        this.show=function(randomId, displaySRC, H){
             if(!document.getElementById("xmaskframe")){
                 var divFram=document.createElement('iframe');
                 divFram.setAttribute("id","xmaskframe");
@@ -1109,8 +1109,8 @@ function changeLt(drugId){
                 var divSty=document.getElementById("xmaskframe").style;
                 divSty.position="fixed";
                 divSty.top="0px";
-                divSty.left="0px";
-                divSty.width="400px"
+                divSty.right="0px";
+                divSty.width="390px"
                 //divSty.border="solid";
                 divSty.backgroundColor="#F5F5F5";
                 divSty.zIndex="45";
@@ -1118,8 +1118,9 @@ function changeLt(drugId){
             }
             this.waitifrm=document.getElementById("xmaskframe");
 
-            this.waitifrm.setAttribute("src","displayMedHistory.jsp?randomId="+randomId);
+            this.waitifrm.setAttribute("src",displaySRC+".jsp?randomId="+randomId);
             this.waitifrm.style.display="block";
+            this.waitifrm.style.height=H;
             $("dragifm").appendChild(this.waitifrm);
             Effect.Appear('xmaskframe');
         };
@@ -1134,9 +1135,14 @@ function changeLt(drugId){
            var data="randomId="+randomId;
            new Ajax.Request("<c:out value='${ctx}'/>"+ "/oscarRx/WriteScript.do?parameterValue=listPreviousInstructions", 
            {method: 'post',parameters:data,asynchronous:false,onSuccess:function(transport){
-                 mb.show(randomId);
+                 mb.show(randomId,'displayMedHistory', '200px');
                 }});
     }
+    
+    function displayInstructions(randomId){
+              mb.show(randomId,'displayInstructions', '600px');
+
+ 	}
 
     function updateProperty(elementId){
          var randomId=elementId.split("_")[1];

@@ -564,9 +564,25 @@ function checkFav(){
     		txt.disabled=false;
     	}
     }
+    
+    function emptyWrittenDate(rand){
+    	var cb = document.getElementById('pastMed_'+rand);
+    	var txt = document.getElementById('writtenDate_'+rand); 
+    	
+    	if(cb.checked){
+    		txt.value='0001-01-01';
+    		txt.disabled=true;		
+    	}else{
+    		txt.disabled=false;
+    		
+    	}
+    	
+    }
+    
      //this is a SJHH specific feature
      function completeMedRec() {
-    	 var ok = confirm("Are you sure you would like to mark the Med Rec as complete?");
+    	 //var ok = confirm("Are you sure you would like to mark the Med Rec as complete?");
+    	 var ok = confirm("Is Med Rec complete?")
     	 if(ok) {
     		 var url = "<c:out value="${ctx}"/>" + "/oscarRx/completeMedRec.jsp?demographicNo=<%=bean.getDemographicNo()%>";
     		 var data;
@@ -758,7 +774,7 @@ body {
                                                     <%
                                                     	if(OscarProperties.getInstance().getProperty("oscarrx.medrec","false").equals("true")) {
                                                     %>
-                                                    <input id="completeMedRecButton" type="button"  onclick="completeMedRec();" value="Complete Med Rec" />
+                                                    <input id="completeMedRecButton" type="button"  onclick="completeMedRec();" value="Med Rec Complete?" />
                                                     <% } %>                                                    
                                                 </div>
                                             </td>
@@ -1952,10 +1968,14 @@ function updateQty(element){
     	return x;
     }
 
+
+    
+    
     function updateSaveAllDrugsPrint(){
     	if(!validateWrittenDate()) {
     		return false;
     	}
+    	
         var data=Form.serialize($('drugForm'));
         var url= "<c:out value="${ctx}"/>" + "/oscarRx/WriteScript.do?parameterValue=updateSaveAllDrugs&rand="+Math.floor(Math.random()*10001);
         new Ajax.Request(url,

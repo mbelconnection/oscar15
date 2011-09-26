@@ -2,9 +2,11 @@
   if(session.getValue("user") == null) response.sendRedirect("../logout.jsp");
   String provider_name = (String) session.getAttribute("userlastname")+", "+(String) session.getAttribute("userfirstname");
   String deepcolor = "#CCCCFF", weakcolor = "#EEEEFF" ;
+  String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
 %>
 
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
+<%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi" %>
 <%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %>
@@ -291,6 +293,7 @@ function showHideBillPref() {
     </td>
   </tr>
   <oscar:oscarPropertiesCheck property="TORONTO_RFQ" value="no" defaultVal="true">
+  <security:oscarSec roleName="<%=roleName$%>" objectName="_billing" rights="r">
   <tr>
     <td align="center">
 <% String br = OscarProperties.getInstance().getProperty("billregion");
@@ -325,7 +328,7 @@ function showHideBillPref() {
 	  </div>
       </td>
   </tr>
-
+</security:oscarSec>
 		<tr>
           <td align="center"><a href=# onClick ="popupPage(230,860,'providerPhone.jsp');return false;"><bean:message key="provider.btnEditPhoneNumber"/></a></td>
       </tr>
@@ -353,9 +356,11 @@ function showHideBillPref() {
       <tr>
           <td align="center"><a href=# onClick ="popupPage(230,860,'../setProviderStaleDate.do?method=view&provider_no=<%=request.getParameter("provider_no")%>');return false;"><bean:message key="provider.btnEditStaleDate"/></a></td>
       </tr>
+     
       <tr>
           <td align="center"><a href=# onClick ="popupPage(230,860,'../setProviderStaleDate.do?method=viewMyDrugrefId');return false;"><bean:message key="provider.btnSetmyDrugrefID"/></a></td>
       </tr>
+
       <tr>
           <td align="center"><a href=# onClick ="popupPage(230,860,'../setProviderStaleDate.do?method=viewConsultationRequestCuffOffDate');return false;"><bean:message key="provider.btnSetConsultationCutoffTimePeriod"/></a></td>
       </tr>

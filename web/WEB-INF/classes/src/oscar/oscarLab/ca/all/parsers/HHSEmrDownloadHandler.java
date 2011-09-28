@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.oscarehr.integration.hl7.model.PatientId;
+import org.oscarehr.util.MiscUtils;
 
 import ca.uhn.hl7v2.HL7Exception;
 
@@ -674,6 +675,7 @@ public String getAccessionNum(){
 			if(identifier != null) {
 				PatientId tmp = new PatientId(identifier, authority, typeId);
 				ids.put(typeId,tmp);
+				MiscUtils.getLogger().info("Found PatientId:" + tmp);
 			}
 			
 			if(identifier == null && terser.get("PID-3("+(x+1)+")-1")==null) {

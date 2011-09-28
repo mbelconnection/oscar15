@@ -20,6 +20,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.oscarehr.PMmodule.dao.ClientDao;
 import org.oscarehr.common.model.Demographic;
+import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 
 import oscar.OscarProperties;
@@ -74,13 +75,16 @@ public class MessageUploader {
             obrDate = UtilDateUtilities.DateToString(UtilDateUtilities.StringToDate(obrDate, format), "yyyy-MM-dd HH:mm:ss");
             
             if(h instanceof HHSEmrDownloadHandler) {
+            	MiscUtils.getLogger().info("RouteReport on an HHSEmrDownloadHandler lab");
             	String chartNo = ((HHSEmrDownloadHandler)h).getPatientIdByType("MR");
             	if(chartNo != null) {
+            		MiscUtils.getLogger().info("Chart # found. We have an MRN - " + chartNo);
             		//let's get the hin
             		ClientDao clientDao = (ClientDao)SpringUtils.getBean("clientDao");
             		List<Demographic> clients = clientDao.getClientsByChartNo(chartNo);
             		if(clients!=null && clients.size()>0) {
             			hin = clients.get(0).getHin();
+            			MiscUtils.getLogger().info("Found patient with the MRN, setting hin to " + hin);            			
             		}
             	}
             }

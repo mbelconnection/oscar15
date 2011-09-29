@@ -553,9 +553,12 @@ public String getAccessionNum(){
             if ((docNum = terser.get("/.Z01-1-1")) != null){
                 System.out.println("Adding doc Num"+Misc.forwardZero(docNum, 6));
                 nums.add(Misc.forwardZero(docNum, 6));
+            } else {
+            	return super.getDocNums();
             }
 
         }catch(Exception e){
+        	return super.getDocNums();
         }
 
         return(nums);

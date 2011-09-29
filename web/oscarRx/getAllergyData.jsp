@@ -28,6 +28,9 @@ System.out.println("In getAllerfyData");
 String atcCode =  request.getParameter("atcCode");
 String id = request.getParameter("id");
 
+String disabled = oscar.OscarProperties.getInstance().getProperty("rx3.disable_allergy_warnings","false");
+if(disabled.equals("false")) {
+
 oscar.oscarRx.pageUtil.RxSessionBean rxSessionBean = (oscar.oscarRx.pageUtil.RxSessionBean) session.getAttribute("RxSessionBean");
 oscar.oscarRx.data.RxPatientData.Patient.Allergy[] allergies = new oscar.oscarRx.data.RxPatientData().getPatient(rxSessionBean.getDemographicNo()).getAllergies();
 
@@ -58,5 +61,5 @@ oscar.oscarRx.data.RxPatientData.Patient.Allergy[] allergyWarnings = null;
    catch(Exception e){
         e.getCause().printStackTrace();
     }
-    
+}    
 %>

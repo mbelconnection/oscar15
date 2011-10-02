@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster University test2
+ * McMaster University 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -48,6 +48,7 @@ String parentAjaxId = request.getParameter("parentAjaxId");
 %>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
+<%@ taglib uri="/WEB-INF/security.tld" prefix="security" %>
 
 <html:html locale="true">
 
@@ -124,8 +125,7 @@ function updateAjax() {
 		<a
 			href="efmpatientformlistdeleted.jsp?demographic_no=<%=demographic_no%>&apptProvider=<%=apptProvider%>&appointment=<%=appointment%>&parentAjaxId=<%=parentAjaxId%>"
 			class="current"><bean:message key="eform.showmyform.btnDeleted" /></a>
-		<security:oscarSec roleName="<%=roleName$%>"
-			objectName="_admin,_admin.eform" rights="r" reverse="<%=false%>">
+		<security:oscarSec roleName="<%=roleName$%>" objectName="_admin,_admin.eform" rights="w" reverse="<%=false%>">
 			<br />
 			<a href="#"
 				onclick="javascript: return popup(600, 750, '../eform/efmformmanager.jsp', 'manageeforms');"
@@ -158,9 +158,7 @@ function updateAjax() {
 					onmouseover="window.status='View This Form'; return true"><%=curform.get("formName")%></a></td>
 				<td><%=curform.get("formSubject")%></td>
 				<td align='center'><%=curform.get("formDate")%></td>
-				<td align='center'><a
-					href="../eform/unRemoveEForm.do?fdid=<%=curform.get("fdid")%>&demographic_no=<%=demographic_no%>&parentAjaxId=<%=parentAjaxId%>"><bean:message
-					key="global.btnRestore" /></a></td>
+				<td align='center'><a href="../eform/unRemoveEForm.do?fdid=<%=curform.get("fdid")%>&demographic_no=<%=demographic_no%>&parentAjaxId=<%=parentAjaxId%>" onClick="javascript: return confirm('Are you sure you want to restore this eform?');"><bean:message key="global.btnRestore" /></a></td>
 			</tr>
 			<%
   }

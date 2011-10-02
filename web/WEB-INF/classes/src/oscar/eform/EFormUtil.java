@@ -842,7 +842,7 @@ public class EFormUtil {
 		cmNote.setSigning_provider_no(providerNo);
 		cmNote.setSigned(true);
 		cmNote.setHistory("");
-		cmNote.setReporter_caisi_role("1");  //caisi_role for "doctor"
+		cmNote.setReporter_caisi_role("2");  //caisi_role for "doctor"
 		cmNote.setReporter_program_team("0");
 		cmNote.setProgram_no(programNo);
 		cmNote.setUuid(UUID.randomUUID().toString());

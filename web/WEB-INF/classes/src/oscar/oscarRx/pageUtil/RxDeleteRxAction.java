@@ -297,7 +297,7 @@ public ActionForward clearStash(ActionMapping mapping,ActionForm form,HttpServle
         cmn.setSigned(true);
         cmn.setSigning_provider_no(user);
         cmn.setProgram_no(prog_no);
-        cmn.setReporter_caisi_role("1");//1 for doctor, 2 for nurse
+        cmn.setReporter_caisi_role("2");//2 for doctor, 5 for nurse
         cmn.setReporter_program_team("0");
         cmn.setPassword("NULL");
         cmn.setLocked(false);

@@ -49,9 +49,9 @@ if( users != null && users.size() > 0 )
 
 
 //Caisi roles; Declared in function section below
-roles.put("doctor","1");
-roles.put("locum","1");
-roles.put("nurse","2");
+roles.put("doctor","2");
+roles.put("locum","4");
+roles.put("nurse","5");
 
 
 String ip = request.getRemoteAddr();

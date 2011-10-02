@@ -230,7 +230,7 @@ public class AddEditDocumentAction extends DispatchAction {
             cmn.setSigned(true);
             cmn.setSigning_provider_no("-1");
             cmn.setProgram_no(prog_no);
-            cmn.setReporter_caisi_role("1");
+            cmn.setReporter_caisi_role("2");
             cmn.setReporter_program_team("0");
             cmn.setPassword("NULL");
             cmn.setLocked(false);

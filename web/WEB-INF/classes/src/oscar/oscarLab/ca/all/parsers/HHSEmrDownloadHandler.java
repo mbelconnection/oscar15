@@ -20,6 +20,7 @@ import org.oscarehr.util.MiscUtils;
 import ca.uhn.hl7v2.HL7Exception;
 
 import oscar.Misc;
+import oscar.OscarProperties;
 
 /**
  *
@@ -498,6 +499,16 @@ public class HHSEmrDownloadHandler extends DefaultGenericHandler implements Mess
 
 
 public String getAccessionNum(){
+	String useOrderNumber = OscarProperties.getInstance().getProperty("hhs.emr.handler.accession.use_order_number","false");
+	if(useOrderNumber.equals("true")) {
+		try{
+            String accessionNum = getString(terser.get("/.OBR-3-1"));
+            return accessionNum;
+        }catch(Exception e){
+            return("");
+        }
+	}
+	
         try{
             String accessionNum = getString(terser.get("/.MSH-10-1"));
             return accessionNum;

@@ -108,7 +108,9 @@ if(listRxDrugs!=null){
                         prnStr="prn";
                 drugName=drugName.replace("'", "\\'");
                 drugName=drugName.replace("\"","\\\"");
-
+                
+                //added this line since this char was displaying when µ present in drugName ie: DURAGESIC MAT 12.0µG (DURAGESIC MAT 12.0ÂµG)
+                drugName=drugName.replace("Â","");
 %>
 
 <fieldset style="margin-top:2px;width:580px;" id="set_<%=rand%>">

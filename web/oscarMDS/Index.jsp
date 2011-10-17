@@ -5,8 +5,9 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
+<%@ taglib uri="/WEB-INF/security.tld" prefix="security" %>
 <%
-    
+String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
 
     //oscar.oscarMDS.data.MDSResultsData mDSData = new oscar.oscarMDS.data.MDSResultsData();
     CommonLabResultData comLab = new CommonLabResultData();
@@ -388,7 +389,10 @@ function wrapUp() {
                             <td align="right" valign="center" width="30%">
                                 <a href="javascript:popupStart(300,400,'../oscarEncounter/Help.jsp')" style="color: #FFFFFF;"><bean:message key="global.help"/></a>
                                 | <a href="javascript:popupStart(300,400,'../oscarEncounter/About.jsp')" style="color: #FFFFFF;" ><bean:message key="global.about"/></a>
+                                
+                                <security:oscarSec roleName="<%=roleName$%>" objectName="_labs" rights="w">
                                 | <a href="javascript:popupStart(800,1000,'../lab/CA/ALL/testUploader.jsp')" style="color: #FFFFFF; "><bean:message key="admin.admin.hl7LabUpload"/></a>
+                            	</security:oscarSec> 
                             </td>
                         </tr>
                     </table>                        

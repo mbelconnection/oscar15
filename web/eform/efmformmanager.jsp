@@ -121,10 +121,10 @@ else if (orderByRequest.equals("file_name")) orderBy = EFormUtil.FILE_NAME;
                         <table class="eformInputHeadingTable">
                             <tr>
                                 <td class="eformInputHeading" style="width: 20px; background-color: white;">&nbsp;</td>
-                                <td class="eformInputHeading eformInputHeadingActive" onclick="openUpload(this)" id="uploadHeading">Upload New EForm</td>
-                                <td class="eformInputHeading" onclick="openImport()" id="importHeading">Import EForm</td>
+                                <td class="eformInputHeading eformInputHeadingActive" onclick="openUpload(this)" id="uploadHeading">Upload New eForm</td>
+                                <td class="eformInputHeading" onclick="openImport()" id="importHeading">Import eForm</td>
                                 <td class="eformInputHeading" onclick="openCreate()" id="createHeading">Create In Editor</td>
-                                <td class="eformInputHeading" onclick="openDownload()" id="createHeading">Download Eforms</td>
+                                <td class="eformInputHeading" onclick="openDownload()" id="createHeading">Download eForms</td>
                             </tr>
                         </table>
                     <div id="uploadDiv" class="inputDiv">

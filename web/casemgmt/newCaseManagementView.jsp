@@ -358,10 +358,9 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
 	<input type="hidden" id="serverDate" value="<%=strToday%>">
 	<input type="hidden" id="resetFilter" name="resetFilter" value="false">
 	<%--<div id="rightNavBar" style="width:25%; height:100%; display:inline; float:right; background-color:white;"><jsp:include page="rightColumn.jsp" /></div>--%>
-	<div id="topContent"
-		style="float: left; width: 100%; margin-right: -2px; padding-bottom: 10px; background-color: #CCCCFF; font-size: 10px;">
-	<nested:notEmpty name="caseManagementViewForm"
-		property="filter_providers">
+	<div id="topContent" style="width: 100%; margin-right: -2px; padding-bottom: 10px; background-color: #CCCCFF; font-size: 10px;">
+	
+	<nested:notEmpty name="caseManagementViewForm" 	property="filter_providers">
 		<div style="float: left; margin-left: 30px; margin-top: 0px;"><u><bean:message key="oscarEncounter.providers.title"/>:</u><br>
 		<nested:iterate type="String" id="filter_provider"
 			property="filter_providers">
@@ -378,7 +377,8 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
 					</nested:iterate>
 				</c:otherwise>
 			</c:choose>
-		</nested:iterate></div>
+		</nested:iterate>
+		</div>
 	</nested:notEmpty> <nested:notEmpty name="caseManagementViewForm" property="filter_roles">
 		<div style="float: left; margin-left: 30px; margin-top: 0px;"><u><bean:message key="oscarEncounter.roles.title"/>:</u><br>
 		<nested:iterate type="String" id="filter_role" property="filter_roles">
@@ -403,8 +403,8 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
 	</nested:notEmpty>
 
 	<div id="filter" style="display: none;">
-	<div
-		style="clear: both; height: 150px; width: auto; overflow: auto; float: left; position: relative; left: 10%;">
+	<div style="text-align: right;"><span  onclick="return filter(false);" style="cursor: pointer; text-decoration: underline;"><bean:message key="oscarEncounter.showView.title"/></span> | <span onclick="return filter(true);" style="cursor: pointer; text-decoration: underline;"><bean:message key="oscarEncounter.resetFilter.title"/></span></div>
+	<div style="clear: both; height: 150px; width: auto; overflow: auto; float: left; position: relative; left: 2%;">
 	<bean:message key="oscarEncounter.providers.title"/>:
 	<ul
 		style="margin-left: 0px; padding-left: 0px; margin-top: 1px; list-style: none inside none;">
@@ -428,11 +428,9 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
 	</ul>
 	</div>
 
-	<div
-		style="height: 150px; width: auto; overflow: auto; float: left; position: relative; left: 20%;">
+	<div style="height: 150px; width: auto; overflow: auto; float: left; position: relative; left: 5%;">
 	Role:
-	<ul
-		style="margin-left: 0px; padding-left: 0px; margin-top: 1px; list-style: none inside none;">
+	<ul	style="margin-left: 0px; padding-left: 0px; margin-top: 1px; list-style: none inside none;">
 		<li><html:multibox property="filter_roles" value="a"
 			onclick="filterCheckBox(this)"></html:multibox><bean:message key="oscarEncounter.sortAll.title"/></li>
 		<%
@@ -449,7 +447,7 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
 	</ul>
 	</div>
 
-	<div style="float: left; position: relative; left: 25%;"><bean:message key="oscarEncounter.sort.title"/>:
+	<div style="float: left; position: relative; left: 5%;"><bean:message key="oscarEncounter.sort.title"/>:
 	<ul
 		style="margin-left: 0px; padding-left: 0px; margin-top: 1px; list-style: none inside none;">
 		<li><html:radio property="note_sort" value="observation_date_asc"><bean:message key="oscarEncounter.sortDateAsc.title"/></html:radio></li>
@@ -461,13 +459,12 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
 	</ul>
 	</div>
 
-	<div
-		style="text-align: right; cursor: pointer; text-decoration: underline; margin-right: 10px;"
-		onclick="return filter(false);"><bean:message key="oscarEncounter.showView.title"/></div>
-	<div
-		style="text-align: right; cursor: pointer; text-decoration: underline; margin-right: 10px;"
-		onclick="return filter(true);"><bean:message key="oscarEncounter.resetFilter.title"/></div>
+	
+	<div style=" margin-right: 10px;"></div>
+	<div style=" margin-right: 10px;"></div>
 	</div>
+	
+	
 	<div
 		style="float: left; clear: both; margin-top: 5px; margin-bottom: 5px; width: 100%; text-align: center;">
             <img alt="<bean:message key="oscarEncounter.msgFind"/>"src="<c:out value="${ctx}/oscarEncounter/graphics/edit-find.png"/>">
@@ -497,19 +494,17 @@ WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplication
 		onClick="popupPage(600,800,'<bean:message key="oscarEncounter.Index.popupSearchPageWindow"/>',$('channel').options[$('channel').selectedIndex].value+urlencode($F('keyword')) ); return false;">
 
 	</div>
-	<div style="clear: both; text-align: right"><img
-		style="cursor: pointer;" title="<bean:message key="oscarEncounter.viewFilter.title"/>" alt="<bean:message key="oscarEncounter.viewFilter.title"/>"
-		onclick="showFilter();"
-		src="<c:out value="${ctx}/oscarEncounter/graphics/folder-saved-search.png"/>">&nbsp;<bean:message key="oscarEncounter.Filter.title"/>
-	&nbsp;&nbsp; <img style="cursor: pointer;" title="<bean:message key="oscarEncounter.print.title"/>"
-		id='imgPrintCPP' alt="<bean:message key="oscarEncounter.togglePrintCPP.title"/>"
-		onclick="return printInfo(this,'printCPP');"
-		src='<c:out value="${ctx}"/>/oscarEncounter/graphics/printer.png' >&nbsp;<bean:message key="oscarEncounter.cpp.title"/>
-	&nbsp;&nbsp; <img style="cursor: pointer;" title="<bean:message key="oscarEncounter.print.title"/>"
-		id='imgPrintRx' alt="<bean:message key="oscarEncounter.togglePrintRx.title"/>"
-		onclick="return printInfo(this, 'printRx');"
-		src='<c:out value="${ctx}"/>/oscarEncounter/graphics/printer.png' >&nbsp;<bean:message key="oscarEncounter.Rx.title"/>
-	&nbsp;&nbsp;</div>
+		<div style="clear: both; text-align: right">
+				
+		<img style="cursor: pointer;" title="<bean:message key="oscarEncounter.viewFilter.title"/>" alt="<bean:message key="oscarEncounter.viewFilter.title"/>" onclick="showFilter();" src="<c:out value="${ctx}/oscarEncounter/graphics/folder-saved-search.png"/>">&nbsp;<bean:message key="oscarEncounter.Filter.title"/>
+		&nbsp;&nbsp; 
+		<img style="cursor: pointer;" title="<bean:message key="oscarEncounter.print.title"/>" id='imgPrintCPP' alt="<bean:message key="oscarEncounter.togglePrintCPP.title"/>" onclick="return printInfo(this,'printCPP');" src='<c:out value="${ctx}"/>/oscarEncounter/graphics/printer.png' >&nbsp;<bean:message key="oscarEncounter.cpp.title"/>
+		&nbsp;&nbsp; 
+		<img style="cursor: pointer;" title="<bean:message key="oscarEncounter.print.title"/>" id='imgPrintRx' alt="<bean:message key="oscarEncounter.togglePrintRx.title"/>" onclick="return printInfo(this, 'printRx');" src='<c:out value="${ctx}"/>/oscarEncounter/graphics/printer.png' >&nbsp;<bean:message key="oscarEncounter.Rx.title"/>
+		&nbsp;&nbsp;
+		
+	
+		</div>
 	</div>
 </html:form>
 <%

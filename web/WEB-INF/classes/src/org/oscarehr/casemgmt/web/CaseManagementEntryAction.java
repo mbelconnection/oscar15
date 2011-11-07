@@ -772,19 +772,28 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 	    /* Save annotation */
 	    String attrib_name = request.getParameter("annotation_attrib");
 	    HttpSession se = request.getSession();
-	    if (attrib_name!=null) {
-		CaseManagementNote cmn = (CaseManagementNote)se.getAttribute(attrib_name);
-		if (cmn!=null) {
-		    caseManagementMgr.saveNoteSimple(cmn);
-		    CaseManagementNoteLink cml = new CaseManagementNoteLink();
-		    cml.setTableName(cml.CASEMGMTNOTE);
-		    cml.setTableId(note.getId());
-		    cml.setNoteId(cmn.getId());
-		    caseManagementMgr.saveNoteLink(cml);
-                    LogAction.addLog(providerNo, LogConst.ANNOTATE, LogConst.CON_CME_NOTE, String.valueOf(cmn.getId()), request.getRemoteAddr(), demo, cmn.getNote());
-		    se.removeAttribute(attrib_name);
-		}
-	    }
+            CaseManagementNote cmn = (CaseManagementNote)se.getAttribute(attrib_name);
+            if (cmn!=null) {
+                //new annotation created and got it in session attribute
+                
+                caseManagementMgr.saveNoteSimple(cmn);
+                CaseManagementNoteLink cml = new CaseManagementNoteLink();
+                cml.setTableName(cml.CASEMGMTNOTE);
+                cml.setTableId(note.getId());
+                cml.setNoteId(cmn.getId());
+                caseManagementMgr.saveNoteLink(cml);
+                LogAction.addLog(providerNo, LogConst.ANNOTATE, LogConst.CON_CME_NOTE, String.valueOf(cmn.getId()), request.getRemoteAddr(), demo, cmn.getNote());
+                se.removeAttribute(attrib_name);
+            } else if (!noteId.equals("0")) {
+                //Not a new note, look for old annotation
+
+                CaseManagementNoteLink cml = caseManagementMgr.getLatestLinkByTableId(CaseManagementNoteLink.CASEMGMTNOTE, Long.valueOf(noteId));
+                if (cml!=null) {//old annotation exists - create new link
+
+                    CaseManagementNoteLink cml_n = new CaseManagementNoteLink(CaseManagementNoteLink.CASEMGMTNOTE,note.getId(),cml.getNoteId());
+                    caseManagementMgr.saveNoteLink(cml_n);
+                }
+            }
             caseManagementMgr.getEditors(note);
             
             if( newNote ) {                

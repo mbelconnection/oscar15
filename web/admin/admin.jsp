@@ -197,7 +197,7 @@ div.logoutBox {
 
 <div class="logoutBox">
 <% if(roleName$.equals("admin"+ "," +curProvider_no)) {%><html:link
-	page="/admin/logout.jsp">
+	page="/logout.jsp">
 	<bean:message key="global.btnLogout" />
 </html:link>&nbsp;<% }%>
 </div>
@@ -710,6 +710,9 @@ div.logoutBox {
             onclick='popupPage(800,1000,&quot;<html:rewrite page="/admin/uploadEntryText.jsp"/>&quot;);return false;'><bean:message key="admin.admin.uploadEntryTxt"/></a>
             </li>
             </oscar:oscarPropertiesCheck>
+            <li><a href="#"
+            onclick='popupPage(800,1000,&quot;<html:rewrite page="/admin/manageFlowsheets.jsp"/>&quot;);return false;'><bean:message key="admin.admin.flowsheetManager"/></a>
+            </li>
 		</ul>
 		</div>
 	</security:oscarSec>

@@ -59,6 +59,8 @@
 </logic:present>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 <%
+		String roleName$ = (String)session.getAttribute("userrole") + "," + (String)session.getAttribute("user");
+		com.quatro.service.security.SecurityManager securityManager = new com.quatro.service.security.SecurityManager();
         oscar.oscarRx.pageUtil.RxSessionBean bean = (oscar.oscarRx.pageUtil.RxSessionBean) pageContext.findAttribute("bean");
         boolean showall = false;
         if (request.getParameter("show") != null) {
@@ -77,20 +79,29 @@ if (heading != null){
 <div class="drugProfileText" style="">
     <table width="100%" cellpadding="3" border="0" class="sortable" id="Drug_table<%=heading%>">
         <tr>
-            <th align="left"><b>Rx Date</b></th>
+        	<th align="left"><b>Entered Date</b></th>
+            <th align="left"><b><bean:message key="SearchDrug.msgRxDate"/></b></th>
             <th align="left"><b>Days to Exp</b></th>
             <th align="left"><b>LT Med</b></th>
             <th align="left"><b><bean:message key="SearchDrug.msgPrescription"/></b></th>
-            <th align="center" width="35px"><b><bean:message key="SearchDrug.msgReprescribe"/></b></th>
-            <th align="center" width="35px"><b><bean:message key="SearchDrug.msgDelete"/></b></th>
-            <th align="center" width="35px"><b>Discontinue</b></th>
-            <th align="center" width="15px">&nbsp;</th>
+            <%if(securityManager.hasWriteAccess("_rx",roleName$,true)) {%>
+            	<th align="center" width="35px"><b><bean:message key="SearchDrug.msgReprescribe"/></b></th>            
+            	<!--<th align="center" width="35px"><b><bean:message key="SearchDrug.msgDelete"/></b></th>-->
+            	<th align="center" width="35px"><b>Discontinue</b></th>
+            <%} %>
+            <th align="center" width="35px"><b><bean:message key="SearchDrug.msgPastMed"/></b></th>
+            <%if(securityManager.hasWriteAccess("_rx",roleName$,true)) {%>
+            	<th align="center" width="15px">&nbsp;</th>
+            <% } %>
             <th align="center"><bean:message key="SearchDrug.msgLocationPrescribed"/></th>
         </tr>
 
         <%
             CaseManagementManager caseManagementManager = (CaseManagementManager) SpringUtils.getBean("caseManagementManager");
             List<Drug> prescriptDrugs = caseManagementManager.getPrescriptions(patient.getDemographicNo(), showall);
+            if(showall) {
+            	Collections.sort(prescriptDrugs,new oscar.oscarRx.util.ShowAllSorter());
+            }
             //DrugDao drugDao = (DrugDao) SpringUtils.getBean("drugDao");
             //List<Drug> prescriptDrugs = drugDao.getPrescriptions(""+patient.getDemographicNo(), showall);
             List<String> reRxDrugList=bean.getReRxDrugIdList();
@@ -140,14 +151,44 @@ if (heading != null){
                 specialText=specialText.replace("\n"," ");
                 Integer prescriptIdInt=prescriptDrug.getId();
                 String bn=prescriptDrug.getBrandName();
+                
+                boolean startDateUnknown = prescriptDrug.getStartDateUnknown();
         %>
         <tr>
-            <td valign="top"><a id="rxDate_<%=prescriptIdInt%>"   <%=styleColor%> href="StaticScript2.jsp?regionalIdentifier=<%=prescriptDrug.getRegionalIdentifier()%>&amp;cn=<%=response.encodeURL(prescriptDrug.getCustomName())%>&amp;bn=<%=response.encodeURL(bn)%>"><%=oscar.util.UtilDateUtilities.DateToString(prescriptDrug.getRxDate())%></a></td>
-            <td valign="top"><%=prescriptDrug.daysToExpire()%></td>
-            <td valign="top"><%if(prescriptDrug.isLongTerm()){%>*<%}else{%><a id="notLongTermDrug_<%=prescriptIdInt%>" title="<bean:message key='oscarRx.Prescription.changeDrugLongTerm'/>" onclick="changeLt('<%=prescriptIdInt%>');" href="javascript:void(0);">L</a><%}%></td>
+        	<td valign="top"><a id="createDate_<%=prescriptIdInt%>"   <%=styleColor%> href="StaticScript2.jsp?regionalIdentifier=<%=prescriptDrug.getRegionalIdentifier()%>&amp;cn=<%=response.encodeURL(prescriptDrug.getCustomName())%>&amp;bn=<%=response.encodeURL(bn)%>"><%=oscar.util.UtilDateUtilities.DateToString(prescriptDrug.getCreateDate())%></a></td>
+            <td valign="top">
+            	<% if(startDateUnknown) { %>
+            		
+            	<% } else { %>
+            		<a id="rxDate_<%=prescriptIdInt%>"   <%=styleColor%> href="StaticScript2.jsp?regionalIdentifier=<%=prescriptDrug.getRegionalIdentifier()%>&amp;cn=<%=response.encodeURL(prescriptDrug.getCustomName())%>&amp;bn=<%=response.encodeURL(bn)%>"><%=oscar.util.UtilDateUtilities.DateToString(prescriptDrug.getRxDate())%></a>
+            	<% } %>
+            </td>
+            <td valign="top">
+            	<% if(startDateUnknown) { %>
+            		
+            	<% } else { %>
+            		<%=prescriptDrug.daysToExpire()%>
+            	<% } %>
+            </td>
+            <td valign="top">
+            	<%if(prescriptDrug.isLongTerm()){%>*
+            	<%}else{%>
+            		<%            			
+            			if(securityManager.hasWriteAccess("_rx",roleName$,true)) {            		
+            		%>
+            			<a id="notLongTermDrug_<%=prescriptIdInt%>" title="<bean:message key='oscarRx.Prescription.changeDrugLongTerm'/>" onclick="changeLt('<%=prescriptIdInt%>');" href="javascript:void(0);">L</a>
+            		<% } else { %>
+            			<span style="color:blue">L</span>
+            		<% } %>
+           		<%}%>
+            </td>
             
             <td valign="top"><a id="prescrip_<%=prescriptIdInt%>" <%=styleColor%> href="StaticScript2.jsp?regionalIdentifier=<%=prescriptDrug.getRegionalIdentifier()%>&amp;cn=<%=response.encodeURL(prescriptDrug.getCustomName())%>&amp;bn=<%=response.encodeURL(bn)%>"><%=RxPrescriptionData.getFullOutLine(prescriptDrug.getSpecial()).replaceAll(";", " ")%></a></td>
+            <%            			
+            	if(securityManager.hasWriteAccess("_rx",roleName$,true)) {            		
+           	%>
             <td width="20px" align="center" valign="top">
+            
                 <%if (prescriptDrug.getRemoteFacilityName() == null) {%>
                 <input id="reRxCheckBox_<%=prescriptIdInt%>" type=CHECKBOX onclick="updateReRxDrugId(this.id)" <%if(reRxDrugList.contains(prescriptIdInt.toString())){%>checked<%}%> name="checkBox_<%=prescriptIdInt%>">
                 <a name="rePrescribe" style="vertical-align:top" id="reRx_<%=prescriptIdInt%>" <%=styleColor%> href="javascript:void(0)" onclick="represcribe(this)">ReRx</a>
@@ -158,12 +199,14 @@ if (heading != null){
                     <input type="submit" class="ControlPushButton" value="Search to Re-prescribe" />
                 </form>
                 <%}%>
-            </td>
+            </td>            
+            <!-- 
             <td width="20px" align="center" valign="top">
                 <%if (prescriptDrug.getRemoteFacilityName() == null) {%>
                    <a id="del_<%=prescriptIdInt%>" name="delete" <%=styleColor%> href="javascript:void(0);" onclick="Delete2(this);">Del</a>
                 <%}%>
             </td>
+            -->
             <td width="20px" align="center" valign="top">
                 <%if(!prescriptDrug.isDiscontinued()){%>
                 <a id="discont_<%=prescriptIdInt%>" href="javascript:void(0);" onclick="Discontinue(event,this);" <%=styleColor%> >Discon</a>
@@ -171,11 +214,16 @@ if (heading != null){
                   <%=prescriptDrug.getArchivedReason()%>
                 <%}%>
             </td>
+            <% } %>
+                      
+            <td align="center" valign="top"><%=(prescriptDrug.getPastMed())?"yes":"no" %></td>
 
+			<%if(securityManager.hasWriteAccess("_rx",roleName$,true)) {%>
             <td width="10px" align="center" valign="top">
                 <a href="javascript:void(0);" title="Annotation" onclick="window.open('../annotation/annotation.jsp?display=<%=annotation_display%>&amp;table_id=<%=prescriptIdInt%>&amp;demo=<%=bean.getDemographicNo()%>&amp;drugSpecial=<%=specialText%>','anwin','width=400,height=250');">
                     <%if(!isPrevAnnotation){%> <img src="../images/notes.gif" alt="rxAnnotation" height="16" width="13" border="0"><%} else{%><img src="../images/filledNotes.gif" height="16" width="13" alt="rxFilledNotes" border="0"> <%}%></a>
             </td>
+            <% } %>
             
             <td width="10px" align="center" valign="top">
                 <%

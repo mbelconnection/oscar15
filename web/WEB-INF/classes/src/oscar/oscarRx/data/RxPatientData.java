@@ -24,6 +24,7 @@
 
 package oscar.oscarRx.data;
 
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -31,7 +32,10 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 
+import org.oscarehr.util.MiscUtils;
+
 import oscar.oscarDB.DBHandler;
+
 
 public class RxPatientData {
    
@@ -47,7 +51,7 @@ public class RxPatientData {
          Patient p;         
          rs = db.GetSQL(
          "SELECT demographic_no, last_name, first_name, sex, year_of_birth, "         
-         + "month_of_birth, date_of_birth, address, city, postal, phone "         
+         + "month_of_birth, date_of_birth, address, city, province, postal, phone "         
          + "FROM demographic WHERE last_name LIKE '"         
          + surname + "%' AND first_name LIKE '" + firstName + "%'");
          
@@ -57,7 +61,8 @@ public class RxPatientData {
             calcDate(db.getString(rs,"year_of_birth"),
             db.getString(rs,"month_of_birth"),            
             db.getString(rs,"date_of_birth")),            
-            db.getString(rs,"address"), db.getString(rs,"city"),
+            db.getString(rs,"address"), db.getString(rs,"city"), 
+            db.getString(rs,"province"),
             db.getString(rs,"postal"),            
             db.getString(rs,"phone"), db.getString(rs,"hin"));            
             lst.add(p);            
@@ -81,7 +86,7 @@ public class RxPatientData {
       try {         
          rs = db.GetSQL(
          "SELECT demographic_no, last_name, first_name, sex, year_of_birth, "         
-         + "month_of_birth, date_of_birth, address, city, postal, phone,hin "         
+         + "month_of_birth, date_of_birth, address, city, province, postal, phone,hin "         
          + "FROM demographic WHERE demographic_no = " + demographicNo);
          
          if (rs.next()) {            
@@ -91,6 +96,7 @@ public class RxPatientData {
             db.getString(rs,"month_of_birth"),            
             db.getString(rs,"date_of_birth")),            
             db.getString(rs,"address"), db.getString(rs,"city"),
+            db.getString(rs,"province"),
             db.getString(rs,"postal"),            
             db.getString(rs,"phone"), db.getString(rs,"hin"));            
             System.out.println(db.getString(rs,"first_name"));
@@ -122,6 +128,7 @@ public class RxPatientData {
             db.getString(rs,"month_of_birth"),            
             db.getString(rs,"date_of_birth")),            
             db.getString(rs,"address"), db.getString(rs,"city"),
+            db.getString(rs,"province"),
             db.getString(rs,"postal"),            
             db.getString(rs,"phone"), db.getString(rs,"hin"));            
          }         
@@ -164,6 +171,7 @@ public class RxPatientData {
       return age;      
    }
    
+     
    public class Patient {      
       int demographicNo;      
       String surname;      
@@ -171,13 +179,14 @@ public class RxPatientData {
       String sex;      
       java.util.Date DOB;      
       String address;      
-      String city;      
+      String city;
+      String province;
       String postal;      
       String phone;
       String hin;
       
       public Patient(int demographicNo, String surname, String firstName,String sex, java.util.Date DOB,
-                     String address, String city, String postal, String phone,String hin) {
+                     String address, String city, String province, String postal, String phone,String hin) {
          
          this.demographicNo = demographicNo;         
          this.surname = surname;         
@@ -185,7 +194,8 @@ public class RxPatientData {
          this.sex = sex;         
          this.DOB = DOB;         
          this.address = address;         
-         this.city = city;         
+         this.city = city;
+         this.province = province; 
          this.postal = postal;        
          this.phone = phone;
          this.hin = hin;         
@@ -227,6 +237,10 @@ public class RxPatientData {
          return this.city;         
       }
       
+      public String getProvince() {         
+          return this.province;         
+       }
+      
       public String getPostal() {         
          return this.postal;         
       }
@@ -234,6 +248,9 @@ public class RxPatientData {
       public String getPhone() {         
          return this.phone;         
       }
+  
+      
+     
       
       public Allergy getAllergy(int id) {
            Allergy allergy = null;
@@ -251,7 +268,7 @@ public class RxPatientData {
                rs.getInt("TYPECODE"));
                               
                allergy.getAllergy().setReaction(db.getString(rs,"reaction"));
-	       allergy.getAllergy().setStartDate(rs.getDate("start_date"));
+	           allergy.getAllergy().setStartDate(rs.getDate("start_date"));
                allergy.getAllergy().setAgeOfOnset(db.getString(rs,"age_of_onset"));
                allergy.getAllergy().setSeverityOfReaction(db.getString(rs,"severity_of_reaction"));
                allergy.getAllergy().setOnSetOfReaction(db.getString(rs,"onset_of_reaction"));
@@ -274,19 +291,21 @@ public class RxPatientData {
          try {            
             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);            
             ResultSet rs;            
-            Allergy allergy;
-            
-            rs = db.GetSQL("SELECT * FROM allergies WHERE demographic_no = '" + getDemographicNo() + "' and archived = '0' ORDER BY DESCRIPTION");
+            Allergy allergy;                        
+                       
+            rs = db.GetSQL("SELECT * FROM allergies WHERE demographic_no = '" + getDemographicNo() + "'  ORDER BY severity_of_reaction DESC, archived");
             
             while (rs.next()) {               
-               allergy = new Allergy(rs.getInt("allergyid"), rs.getDate("entry_date"),               
+               allergy = new Allergy(rs.getInt("allergyid"), 
+               rs.getDate("entry_date"),               
                db.getString(rs,"DESCRIPTION"),
                rs.getInt("HICL_SEQNO"), rs.getInt("HIC_SEQNO"),               
                rs.getInt("AGCSP"), rs.getInt("AGCCS"),
                rs.getInt("TYPECODE"));
-                              
+               
+               allergy.getAllergy().setArchived(db.getString(rs,"archived"));
                allergy.getAllergy().setReaction(db.getString(rs,"reaction"));
-	       allergy.getAllergy().setStartDate(rs.getDate("start_date"));
+               allergy.getAllergy().setStartDate(rs.getDate("start_date"));
                allergy.getAllergy().setAgeOfOnset(db.getString(rs,"age_of_onset"));
                allergy.getAllergy().setSeverityOfReaction(db.getString(rs,"severity_of_reaction"));
                allergy.getAllergy().setOnSetOfReaction(db.getString(rs,"onset_of_reaction"));
@@ -303,6 +322,45 @@ public class RxPatientData {
          
          return arr;         
       }
+      
+      public Allergy[] getActiveAllergies() {         
+          Allergy[] arr = {};         
+          LinkedList lst = new LinkedList();         
+          try {            
+             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);            
+             ResultSet rs;            
+             Allergy allergy;                        
+                        
+             rs = db.GetSQL("SELECT * FROM allergies WHERE demographic_no = '" + getDemographicNo() + "'  and archived=0 ORDER BY severity_of_reaction DESC");
+             
+             while (rs.next()) {               
+                allergy = new Allergy(rs.getInt("allergyid"), 
+                rs.getDate("entry_date"),               
+                db.getString(rs,"DESCRIPTION"),
+                rs.getInt("HICL_SEQNO"), rs.getInt("HIC_SEQNO"),               
+                rs.getInt("AGCSP"), rs.getInt("AGCCS"),
+                rs.getInt("TYPECODE"));
+                
+                allergy.getAllergy().setArchived(db.getString(rs,"archived"));
+                allergy.getAllergy().setReaction(db.getString(rs,"reaction"));
+                allergy.getAllergy().setStartDate(rs.getDate("start_date"));
+                allergy.getAllergy().setAgeOfOnset(db.getString(rs,"age_of_onset"));
+                allergy.getAllergy().setSeverityOfReaction(db.getString(rs,"severity_of_reaction"));
+                allergy.getAllergy().setOnSetOfReaction(db.getString(rs,"onset_of_reaction"));
+                allergy.getAllergy().setRegionalIdentifier(db.getString(rs,"regional_identifier"));
+                
+                lst.add(allergy);               
+             }            
+             rs.close();            
+             arr = (Allergy[]) lst.toArray(arr);            
+          }
+          catch (SQLException e) {            
+             System.out.println(e.getMessage());            
+          }
+          
+          return arr;         
+       }
+            
       
       public Allergy addAllergy(java.util.Date entryDate,RxAllergyData.Allergy allergyCode) {         
          Allergy allergy = null;
@@ -327,6 +385,19 @@ public class RxPatientData {
          }
          return b;
       }
+      
+      public boolean activateAllergy(int allergyId) {         
+          boolean b = false;
+          try {            
+             DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);            
+             String sql = "update allergies set archived = '0'  WHERE allergyid = '"+allergyId+"'";            
+             b = db.RunSQL(sql);                                  
+          }catch (SQLException e) {            
+             MiscUtils.getLogger().error("Error",e);            
+             b = false;            
+          }
+          return b;
+       }
       
       public Disease[] getDiseases() {         
          Disease[] arr = {};         
@@ -384,6 +455,8 @@ public class RxPatientData {
             this.entryDate = entryDate;            
             this.allergy = allergy;            
          }
+         
+         
          
          public Allergy(java.util.Date entryDate, RxAllergyData.Allergy allergy) {            
             this.allergyId = 0;            

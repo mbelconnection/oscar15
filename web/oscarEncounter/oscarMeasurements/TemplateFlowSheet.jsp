@@ -206,10 +206,10 @@ div.headPrevention a:visited { color:black; }
 }
 
 
-div.headPrevention a:active { color:blue; }
-div.headPrevention a:hover { color:blue; }
-div.headPrevention a:link { color:blue; }
-div.headPrevention a:visited { color:blue; }
+div.headPrevention a:active { color:black; }
+div.headPrevention a:hover { color:black; }
+div.headPrevention a:link { color:black; }
+div.headPrevention a:visited { color:black; }
 
 div.headPrevention p {
     background: #ddddff;
@@ -277,6 +277,17 @@ div.headPrevention p {
 
         $(e).update(val);
         
+    }
+    
+    
+    function fsPopup(width,height,url,window) {
+    	<%
+    		com.quatro.service.security.SecurityManager securityMgr = new com.quatro.service.security.SecurityManager();
+    		if(securityMgr.hasWriteAccess("_flowsheet."+mFlowsheet.getName(),roleName$)) {
+    	%>
+    	
+    	return popup(width,height,url,window);
+    	<%}%>
     }
 </script>
 
@@ -431,8 +442,10 @@ div.recommendations li{
                     <oscar:nameage demographicNo="<%=demographic_no%>"/>
                     <oscar:oscarPropertiesCheck property="SPEC3" value="yes"> 
                     <span class="DoNotPrint">
+                    <security:oscarSec roleName="<%=roleName$%>" objectName="_flowsheet" rights="w">
                     <a href="adminFlowsheet/EditFlowsheet.jsp?flowsheet=<%=temp%>&demographic=<%=demographic_no%>" target="_new">Edit</a>
                     &nbsp;
+                    </security:oscarSec>
                     <a href="TemplateFlowSheet.jsp?demographic_no=<%=demographic_no%>&template=<%=temp%>&show=lastOnly">Last Only</a>
                     &nbsp;
                     <a href="TemplateFlowSheet.jsp?demographic_no=<%=demographic_no%>&template=<%=temp%>&show=outOfRange">Only out of Range</a>
@@ -469,11 +482,15 @@ div.recommendations li{
 </tr>
 <tr>
 <td class="MainTableLeftColumn" valign="top">
+    
+    <security:oscarSec roleName="<%=roleName$%>" objectName="_flowsheet" rights="w">
     <% if (recList.size() > 0){ %>
-    <a class="DoNotPrint" href="javascript: function myFunction() {return false; }"  onclick="javascript:popup(465,635,'AddMeasurementData.jsp?demographic_no=<%=demographic_no%><%=recListBuffer.toString()%>&amp;template=<%=temp%>','addMeasurementData<%=Math.abs( "ADDTHEMALL".hashCode() ) %>')">
+    <a class="DoNotPrint" href="javascript: function myFunction() {return false; }"  onclick="javascript:fsPopup(465,635,'AddMeasurementData.jsp?demographic_no=<%=demographic_no%><%=recListBuffer.toString()%>&amp;template=<%=temp%>','addMeasurementData<%=Math.abs( "ADDTHEMALL".hashCode() ) %>')">
         ADD ALL
     </a>
     <%}%>
+    </security:oscarSec>
+    
     <!-- only show disease registry and prescriptions for flowsheets which aren't medical in nature -->
     <% if (mFlowsheet.isMedical()) {%>
     <div class="leftBox">
@@ -563,7 +580,7 @@ div.recommendations li{
             <div class="wrapper" id="allergFullListing"  >
 
                 <%  oscar.oscarRx.data.RxPatientData.Patient.Allergy[] allergies;
-                    allergies = new oscar.oscarRx.data.RxPatientData().getPatient(Integer.parseInt(demographic_no)).getAllergies();
+                    allergies = new oscar.oscarRx.data.RxPatientData().getPatient(Integer.parseInt(demographic_no)).getActiveAllergies();
                     
                     if (allergies.length > 0){%>
                 <ul>
@@ -728,9 +745,15 @@ div.recommendations li{
            <%}%>
             <% System.out.println(h2.get("display_name")+ " "+ h2.get("value_name")); %>
             <% System.out.println("NAME " + h.get("name")); %>
-            <a class="noborder" href="javascript: function myFunction() {return false; }"  onclick="javascript:popup(465,635,'AddMeasurementData.jsp?measurement=<%= response.encodeURL( measure) %>&amp;demographic_no=<%=demographic_no%>&amp;template=<%= URLEncoder.encode(temp,"UTF-8") %>','addMeasurementData<%=Math.abs( ((String) h.get("name")).hashCode() ) %>')">
+            <security:oscarSec roleName="<%=roleName$%>" objectName="_flowsheet" rights="w">
+            <a class="noborder" href="javascript: function myFunction() {return false; }"  onclick="javascript:fsPopup(465,635,'AddMeasurementData.jsp?measurement=<%= response.encodeURL( measure) %>&amp;demographic_no=<%=demographic_no%>&amp;template=<%= URLEncoder.encode(temp,"UTF-8") %>','addMeasurementData<%=Math.abs( ((String) h.get("name")).hashCode() ) %>')">
+            </security:oscarSec>    
+                
                 <span  class="noborder" style="font-weight:bold;"><%=h2.get("display_name")%></span>
+            
+            <security:oscarSec roleName="<%=roleName$%>" objectName="_flowsheet" rights="w">
             </a>
+			</security:oscarSec>
 
         </p>
     </div>
@@ -778,7 +801,7 @@ div.recommendations li{
             }
             
     %>
-    <div style="<%=hider%>" class="preventionProcedure"  onclick="javascript:popup(465,635,'AddMeasurementData.jsp?measurement=<%= response.encodeURL( measure) %>&amp;id=<%=hdata.get("id")%>&amp;demographic_no=<%=demographic_no%>&amp;template=<%= URLEncoder.encode(temp,"UTF-8") %>','addMeasurementData')" >
+    <div style="<%=hider%>" class="preventionProcedure"  onclick="javascript:fsPopup(465,635,'AddMeasurementData.jsp?measurement=<%= response.encodeURL( measure) %>&amp;id=<%=hdata.get("id")%>&amp;demographic_no=<%=demographic_no%>&amp;template=<%= URLEncoder.encode(temp,"UTF-8") %>','addMeasurementData')" >
         <p <%=indColour%> title="fade=[on] header=[<%=hdata.get("age")%> -- Date:<%=hdata.get("prevention_date")%>] body=[<%=com%>&lt;br/&gt;Entered By:<%=mdb.getProviderFirstName()%> <%=mdb.getProviderLastName()%>]"><%=h2.get("value_name")%>: <%=hdata.get("age")%> <br/>
             <%=hdata.get("prevention_date")%>&nbsp;<%=mdb.getNumMonthSinceObserved()%>M
             <%if (comb) {%>
@@ -802,7 +825,7 @@ div.recommendations li{
 <div class="preventionSection" style="<%=hidden%>" >
     <div style="margin-left: <%=String.valueOf(marginLeft * step)%>px;" class="headPrevention">
         <p title="fade=[on] header=[<%=h2.get("display_name")%>] body=[<%=wrapWithSpanIfNotNull(mi.getWarning(measure),"red")%><%=wrapWithSpanIfNotNull(mi.getRecommendation(measure),"red")%><%=h2.get("guideline")%>]">
-            <a href="javascript: function myFunction() {return false; }"  onclick="javascript:popup(465,635,'../../oscarPrevention/AddPreventionData.jsp?prevention=<%= response.encodeURL( prevType) %>&amp;demographic_no=<%=demographic_no%>','addPreventionData<%=Math.abs( prevType.hashCode() ) %>')">
+            <a href="javascript: function myFunction() {return false; }"  onclick="javascript:fsPopup(465,635,'../../oscarPrevention/AddPreventionData.jsp?prevention=<%= response.encodeURL( prevType) %>&amp;demographic_no=<%=demographic_no%>','addPreventionData<%=Math.abs( prevType.hashCode() ) %>')">
                 <span title="<%=h2.get("guideline")%>" style="font-weight:bold;"><%=h2.get("display_name")%></span>
             </a>
             &nbsp;
@@ -824,7 +847,7 @@ div.recommendations li{
                 com ="";
             }
     %>
-    <div class="preventionProcedure"  onclick="javascript:popup(465,635,'../../oscarPrevention/AddPreventionData.jsp?id=<%=hdata.get("id")%>&amp;demographic_no=<%=demographic_no%>','addPreventionData')" >
+    <div class="preventionProcedure"  onclick="javascript:fsPopup(465,635,'../../oscarPrevention/AddPreventionData.jsp?id=<%=hdata.get("id")%>&amp;demographic_no=<%=demographic_no%>','addPreventionData')" >
         <p <%=r(hdata.get("refused"))%> title="fade=[on] header=[<%=hdata.get("age")%> -- Date:<%=hdata.get("prevention_date")%>] body=[<%=com%>]" >Age: <%=hdata.get("age")%> <br/>
             <!--<%=refused(hdata.get("refused"))%>-->Date: <%=hdata.get("prevention_date")%>
             <%if (comb) {%>
@@ -893,7 +916,7 @@ div.recommendations li{
         out.flush();
         for (oscar.oscarRx.data.RxPrescriptionData.Prescription pres : arr){
     %>
-    <div class="preventionProcedure"  onclick="javascript:popup(465,635,'','addPreventionData')" >
+    <div class="preventionProcedure"  onclick="javascript:fsPopup(465,635,'','addPreventionData')" >
         <p <%=""/*r(hdata.get("refused"))*/%> title="fade=[on] header=[<%=""/*hdata.get("age")*/%> -- Date:<%=""/*hdata.get("prevention_date")*/%>] body=[<%=""/*com*/%>]" ><%=pres.getBrandName()%> <br/>
             Date: <%=pres.getRxDate()%>
             <%-- if (comb) {%>

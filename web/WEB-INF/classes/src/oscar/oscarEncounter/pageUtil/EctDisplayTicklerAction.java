@@ -51,7 +51,7 @@ public class EctDisplayTicklerAction extends EctDisplayAction {
     String winName = "ViewTickler" + bean.demographicNo;
     String pathview, pathedit;
     if( org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable() ) {
-        pathview = request.getContextPath() + "/Tickler.do";
+        pathview = request.getContextPath() + "/Tickler.do?filter.demographic_webName="+bean.patientLastName + "," + bean.patientFirstName+"&filter.demographic_no=" + bean.demographicNo +"&filter.assignee=";
         pathedit = request.getContextPath() + "/Tickler.do?method=edit&tickler.demographic_webName="+bean.patientLastName + "," + bean.patientFirstName+"&tickler.demographic_no=" + bean.demographicNo;
     }
     else {
@@ -93,7 +93,11 @@ public class EctDisplayTicklerAction extends EctDisplayAction {
         item.setTitle(itemHeader);
         winName = StringUtils.maxLenString(oscar.Misc.getString(rs,"message"), MAX_LEN_TITLE, MAX_LEN_TITLE, "");                
         hash = Math.abs(winName.hashCode());        
-        url = "popupPage(500,900,'" + hash + "','" + request.getContextPath() + "/tickler/ticklerDemoMain.jsp?demoview=" + bean.demographicNo + "&parentAjaxId=" + cmd + "'); return false;";        
+        if( org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable() ) {
+        	url = "popupPage(500,900,'" + hash + "','" + request.getContextPath() + "/Tickler.do?method=view&id="+oscar.Misc.getString(rs,"tickler_no")+"'); return false;";
+        } else {
+        	url = "popupPage(500,900,'" + hash + "','" + request.getContextPath() + "/tickler/ticklerDemoMain.jsp?demoview=" + bean.demographicNo + "&parentAjaxId=" + cmd + "'); return false;";
+        }
         item.setURL(url);        
         Dao.addItem(item);
 

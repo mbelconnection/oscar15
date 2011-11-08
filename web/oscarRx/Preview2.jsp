@@ -37,13 +37,15 @@
 <%@ page import="oscar.*,java.lang.*,java.util.Date,oscar.oscarRx.util.RxUtil,org.springframework.web.context.WebApplicationContext,
          org.springframework.web.context.support.WebApplicationContextUtils,
          org.oscarehr.common.dao.UserPropertyDAO,org.oscarehr.common.model.UserProperty"%>
+<%@ page import="org.oscarehr.util.SpringUtils"%>
+         
 <% response.setHeader("Cache-Control","no-cache");%>
 
 <html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <script type="text/javascript" src="../share/javascript/prototype.js"></script>
-<script type="text/javascript" src="../share/javascript/Oscar.js"/>"></script>
+<script type="text/javascript" src="../share/javascript/Oscar.js"/></script>
 <title><bean:message key="RxPreview.title"/></title>
 <html:base />
 
@@ -181,34 +183,69 @@ if(prop!=null && prop.getValue().equalsIgnoreCase("yes")){
                                                     <c:when test="${empty infirmaryView_programAddress}">
                                                             <input type="hidden" name="clinicName"
                                                                     value="<%= StringEscapeUtils.escapeHtml(clinicTitle.replaceAll("(<br>)","\\\n")) %>" />
+                                                            <!-- override phone & fax -->
+                                               <%
+                                                	UserProperty phoneProp = userPropertyDAO.getProp(provider.getProviderNo(),"rxPhone");
+                                                	UserProperty faxProp = userPropertyDAO.getProp(provider.getProviderNo(),"faxnumber");
+                                                
+                                                	String finalPhone = provider.getClinicPhone();
+                                                	String finalFax = provider.getClinicFax();
+                                                	//if(providerPhone != null) {
+                                                	//	finalPhone = providerPhone;
+                                                	//}
+                                                	if(phoneProp != null && phoneProp.getValue().length()>0) {                                                		
+                                                		finalPhone = phoneProp.getValue();
+                                                	}
+                                                	
+                                                	if(faxProp != null && faxProp.getValue().length()>0) {                                                		
+                                                		finalFax = faxProp.getValue();
+                                                	}
+                                                	
+                                                	request.setAttribute("phone",finalPhone);
+                                                
+                                             	%>                                                            
                                                             <input type="hidden" name="clinicPhone"
-                                                                    value="<%= StringEscapeUtils.escapeHtml(providerPhone==null?provider.getClinicPhone():providerPhone) %>" />
+                                                                    value="<%= StringEscapeUtils.escapeHtml(finalPhone) %>" />
                                                             <input type="hidden" name="clinicFax"
-                                                                    value="<%= StringEscapeUtils.escapeHtml(provider.getClinicFax()) %>" />
+                                                                    value="<%= StringEscapeUtils.escapeHtml(finalFax) %>" />
                                                     </c:when>
                                                     <c:otherwise>
-                                                    		<%
-                                                    			String phone = providerPhone;
-                                                    			if(phone == null) {
-                                                    				phone = (String)session.getAttribute("infirmaryView_programTel");
-                                                    			}
-                                                    			request.setAttribute("phone",phone);
-                                                    		%>
+                                               <%
+                                                	UserProperty phoneProp = userPropertyDAO.getProp(provider.getProviderNo(),"rxPhone");
+                                                	UserProperty faxProp = userPropertyDAO.getProp(provider.getProviderNo(),"faxnumber");
+                                                
+                                                	String finalPhone = (String)session.getAttribute("infirmaryView_programTel");
+                                                	String finalFax =(String)session.getAttribute("infirmaryView_programFax");
+                                                	
+                                                	//if(providerPhone != null) {
+                                                	//	finalPhone = providerPhone;
+                                                	//}
+                                                	if(phoneProp != null && phoneProp.getValue().length()>0) {                                                		
+                                                		finalPhone = phoneProp.getValue();
+                                                	}
+                                                	
+                                                	if(faxProp != null && faxProp.getValue().length()>0) {                                                		
+                                                		finalFax = faxProp.getValue();
+                                                	}
+                                                	
+                                                	request.setAttribute("phone",finalPhone);
+                                                
+                                             	%>                                                           		
                                                             <input type="hidden" name="clinicName"
                                                                     value="<c:out value="${infirmaryView_programAddress}"/>" />
                                                             <input type="hidden" name="clinicPhone"
-                                                                    value="<c:out value="${phone}"/>" />
+                                                                    value="<%=finalPhone %>" />
                                                             <input type="hidden" name="clinicFax"
-                                                                    value="<c:out value="${infirmaryView_programFax}"/>" />
+                                                                    value="<%=finalFax %>" />
                                                     </c:otherwise>
                                             </c:choose> <input type="hidden" name="patientName"
                                                     value="<%= StringEscapeUtils.escapeHtml(patient.getFirstName())+ " " +StringEscapeUtils.escapeHtml(patient.getSurname()) %>" />
                                             <input type="hidden" name="patientDOB" value="<%= StringEscapeUtils.escapeHtml(patientDOBStr) %>" />
-                                            <input type="hidden" name="showPatientDOB" value="<%=showPatientDOB%>"
+                                            <input type="hidden" name="showPatientDOB" value="<%=showPatientDOB%>" />
                                             <input type="hidden" name="patientAddress"
                                                     value="<%= StringEscapeUtils.escapeHtml(patient.getAddress()) %>" />
                                             <input type="hidden" name="patientCityPostal"
-                                                    value="<%= StringEscapeUtils.escapeHtml(patient.getCity())+ " " + StringEscapeUtils.escapeHtml(patient.getPostal())%>" />
+                                                    value="<%= StringEscapeUtils.escapeHtml(patient.getCity())+ ", " + StringEscapeUtils.escapeHtml(patient.getProvince()) + " " + StringEscapeUtils.escapeHtml(patient.getPostal())%>" />
                                             <input type="hidden" name="patientPhone"
                                                     value="<bean:message key="RxPreview.msgTel"/><%=StringEscapeUtils.escapeHtml(patient.getPhone()) %>" />
 
@@ -217,33 +254,70 @@ if(prop!=null && prop.getValue().equalsIgnoreCase("yes")){
                                             <input type="hidden" name="sigDoctorName"
                                                     value="<%= StringEscapeUtils.escapeHtml(doctorName) %>" /> <!--img src="img/rx.gif" border="0"-->
                                             </td>
-                                            <td valign=top height="100px" id="clinicAddress"><b><%=doctorName%></b><br>
+                                            <td valign=top height="100px" id="clinicAddress"><b><%=doctorName%></b><br>                                            
+                                                
                                             <c:choose>
                                                     <c:when test="${empty infirmaryView_programAddress}">
                                                             <%= provider.getClinicName().replaceAll("\\(\\d{6}\\)","") %><br>
                                                             <%= provider.getClinicAddress() %><br>
                                                             <%= provider.getClinicCity() %>&nbsp;&nbsp;<%=provider.getClinicProvince()%>&nbsp;&nbsp;
                                                 <%= provider.getClinicPostal() %><br>
-                                                <bean:message key="RxPreview.msgTel"/>: <%= providerPhone==null?provider.getClinicPhone():providerPhone %><br>
+                                                <!-- override with user properties - phone and fax -->                 
+                                                <%
+                                                	UserProperty phoneProp = userPropertyDAO.getProp(provider.getProviderNo(),"rxPhone");
+                                                	UserProperty faxProp = userPropertyDAO.getProp(provider.getProviderNo(),"faxnumber");
+                                                
+                                                	String finalPhone = provider.getClinicPhone();
+                                                	String finalFax = provider.getClinicFax();
+                                                	//if(providerPhone != null) {
+                                                	//	finalPhone = providerPhone;
+                                                	//}
+                                                	if(phoneProp != null && phoneProp.getValue().length()>0) {                                                		
+                                                		finalPhone = phoneProp.getValue();
+                                                	}
+                                                	
+                                                	if(faxProp != null && faxProp.getValue().length()>0) {                                                		
+                                                		finalFax = faxProp.getValue();
+                                                	}
+                                                	
+                                                	request.setAttribute("phone",finalPhone);
+                                                
+                                             	%>
+                                                <bean:message key="RxPreview.msgTel"/>: <%= finalPhone %><br>
                                                 <oscar:oscarPropertiesCheck property="RXFAX" value="yes">
-                                                    <bean:message key="RxPreview.msgFax"/>: <%= provider.getClinicFax() %><br>
+                                                    <bean:message key="RxPreview.msgFax"/>: <%= finalFax %><br>
                                                 </oscar:oscarPropertiesCheck>
                                                     </c:when>
                                                     <c:otherwise>
-                                                    <%
-                                                    			String phone = providerPhone;
-                                                    			if(phone == null) {
-                                                    				phone = (String)session.getAttribute("infirmaryView_programTel");
-                                                    			}
-                                                    			request.setAttribute("phone",phone);
-                                                    		%>
+                                                <%   
+                                                	UserProperty phoneProp = userPropertyDAO.getProp(provider.getProviderNo(),"rxPhone");
+                                                	UserProperty faxProp = userPropertyDAO.getProp(provider.getProviderNo(),"faxnumber");
+                                                
+                                                	String finalPhone = (String)session.getAttribute("infirmaryView_programTel");
+                                                	String finalFax =(String)session.getAttribute("infirmaryView_programFax");
+                                                	
+                                                	//if(providerPhone != null) {
+                                                	//	finalPhone = providerPhone;
+                                                	//}
+                                                	if(phoneProp != null && phoneProp.getValue().length()>0) {                                                		
+                                                		finalPhone = phoneProp.getValue();
+                                                	}
+                                                	
+                                                	if(faxProp != null && faxProp.getValue().length()>0) {                                                		
+                                                		finalFax = faxProp.getValue();
+                                                	}
+                                                	
+                                                	request.setAttribute("phone",finalPhone);
+                                                
+                                             	%>
+                                                                                                 
                                                     		
                                                             <c:out value="${infirmaryView_programAddress}" escapeXml="false" />
                                                             <br />
-                                                    <bean:message key="RxPreview.msgTel"/>: <c:out value="${phone}" />
+                                                    <bean:message key="RxPreview.msgTel"/>: <%=finalPhone %>
                                                             <br />
                                                             <oscar:oscarPropertiesCheck property="RXFAX" value="yes">
-                                                        <bean:message key="RxPreview.msgFax"/>: <c:out value="${infirmaryView_programFax}" />
+                                                        <bean:message key="RxPreview.msgFax"/>: <%=finalFax %>
                                                     </oscar:oscarPropertiesCheck>
                                                     </c:otherwise>
                                             </c:choose></td>
@@ -255,7 +329,7 @@ if(prop!=null && prop.getValue().equalsIgnoreCase("yes")){
                                                             <td align=left valign=top><br>
                                                                 <%= patient.getFirstName() %> <%= patient.getSurname() %> <%if(showPatientDOB){%>&nbsp;&nbsp; DOB:<%= StringEscapeUtils.escapeHtml(patientDOBStr) %> <%}%><br>
                                                             <%= patient.getAddress() %><br>
-                                                            <%= patient.getCity() %> <%= patient.getPostal() %><br>
+                                                            <%= patient.getCity() %>, <%= patient.getProvince() %> <%= patient.getPostal() %><br>
                                                             <%= patient.getPhone() %><br>
                                                             <b> <% if(!props.getProperty("showRxHin", "").equals("false")) { %>
                                                             <bean:message key="oscar.oscarRx.hin" /><%= patient.getHin() %> <% } %>

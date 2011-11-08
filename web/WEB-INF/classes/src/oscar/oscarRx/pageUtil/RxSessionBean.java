@@ -39,6 +39,7 @@ import oscar.oscarRx.data.RxPrescriptionData;
 public class RxSessionBean {
     private String providerNo = null;
     private int demographicNo = 0;
+    private String view = "Active";
     
     private ArrayList<RxPrescriptionData.Prescription> stash = new ArrayList();
    // private ArrayList stash=new ArrayList();
@@ -97,6 +98,14 @@ public class RxSessionBean {
     }
     public void setProviderNo(String RHS) {
         this.providerNo = RHS;
+    }
+    
+	public void setView(String view) {
+		 this.view = view;
+	}  
+	
+    public String getView() {
+        return view;
     }
     
     public int getDemographicNo() {
@@ -260,7 +269,7 @@ public class RxSessionBean {
     
     private void preloadAllergyWarnings(String atccode){
        try{
-         oscar.oscarRx.data.RxPatientData.Patient.Allergy[] allergies = new oscar.oscarRx.data.RxPatientData().getPatient(getDemographicNo()).getAllergies();
+         oscar.oscarRx.data.RxPatientData.Patient.Allergy[] allergies = new oscar.oscarRx.data.RxPatientData().getPatient(getDemographicNo()).getActiveAllergies();
          RxAllergyWarningWorker worker = new RxAllergyWarningWorker(this,atccode,allergies);
          addToWorkingAllergyWarnings(atccode,worker);       
          worker.start();         
@@ -310,7 +319,7 @@ public class RxSessionBean {
              System.out.println("NEW ATC CODE for allergy");
              try{                                
                 RxDrugData drugData = new RxDrugData();
-                oscar.oscarRx.data.RxPatientData.Patient.Allergy[]  allAllergies = new oscar.oscarRx.data.RxPatientData().getPatient(getDemographicNo()).getAllergies();
+                oscar.oscarRx.data.RxPatientData.Patient.Allergy[]  allAllergies = new oscar.oscarRx.data.RxPatientData().getPatient(getDemographicNo()).getActiveAllergies();
                 allergies = drugData.getAllergyWarnings(atccode,allAllergies);                 
                     if (allergies != null){                   
                        addAllergyWarnings(atccode,allergies);            
@@ -378,4 +387,9 @@ public class RxSessionBean {
        System.out.println("took "+end+ "milliseconds vs "+end2);
        return interactions;
     }
+    
+    
+
+	
+
 }

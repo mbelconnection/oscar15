@@ -31,15 +31,28 @@
 <%@page
 	import="java.util.List, java.util.Set, java.util.Iterator, org.oscarehr.casemgmt.model.CaseManagementIssue, org.oscarehr.casemgmt.model.CaseManagementNoteExt"%>
 <%@page import="org.oscarehr.common.model.Provider"%>
+<%@page import="org.oscarehr.common.dao.UserPropertyDAO"%>
+<%@page import="org.oscarehr.common.model.UserProperty"%>
+<%@page import="org.oscarehr.util.SpringUtils"%>
+<%@page import="org.oscarehr.util.LoggedInInfo"%>
+
 <c:set var="ctx" value="${pageContext.request.contextPath}"
 	scope="request" />
 <nested:size id="num" name="Notes" />
-
 <div style="width: 10%; float: right; text-align: center;">
-<h3 style="padding:0px; background-color:<c:out value="${param.hc}"/>"><a
-	href="#" title='Add Item'
-	onclick="return showEdit(event,'<bean-el:message key="${param.title}" />','',0,'','','','<%=request.getAttribute("addUrl")%>0', '<c:out value="${param.cmd}"/>','<%=request.getAttribute("identUrl")%>','<%=request.getAttribute("cppIssue")%>','','<c:out value="${param.demographicNo}"/>');">+</a></h3>
+<h3 style="padding:0px; background-color:<c:out value="${param.hc}"/>">
+<%
+	String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
+	com.quatro.service.security.SecurityManager securityManager = new com.quatro.service.security.SecurityManager();
+	if(securityManager.hasWriteAccess("_" + request.getParameter("issue_code"),roleName$)) {
+%>
+	<a href="#" title='Add Item' onclick="return showEdit(event,'<bean-el:message key="${param.title}" />','',0,'','','','<%=request.getAttribute("addUrl")%>0', '<c:out value="${param.cmd}"/>','<%=request.getAttribute("identUrl")%>','<%=request.getAttribute("cppIssue")%>','','<c:out value="${param.demographicNo}"/>');">+</a>
+<% } else { %>
+	&nbsp;
+<% } %>
+</h3>
 </div>
+
 <div style="clear: left; float: left; width: 90%;">
 <h3 style="width:100%; background-color:<c:out value="${param.hc}"/>"><a
 	href="#"
@@ -67,7 +80,20 @@
                 }             
                 
                 String htmlNoteTxt = note.getNote();
-                htmlNoteTxt = htmlNoteTxt.replaceAll("\n", "<br>");
+                //single line or 'normal' view.
+                boolean singleLine = Boolean.valueOf(oscar.OscarProperties.getInstance().getProperty("echart.cpp.single_line","false"));
+                UserPropertyDAO userPropertyDao = (UserPropertyDAO)SpringUtils.getBean("UserPropertyDAO");
+                UserProperty prop = userPropertyDao.getProp(LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo(),UserProperty.CPP_SINGLE_LINE);
+                if(prop != null) {
+                	singleLine = Boolean.valueOf((prop.getValue().equals("yes")?true:false));
+                }
+                if(singleLine) {
+                	if(htmlNoteTxt.indexOf("\n")!=-1) {
+                    	htmlNoteTxt = htmlNoteTxt.substring(0,htmlNoteTxt.indexOf("\n")) + "...";
+                    }	
+                } else {
+                	htmlNoteTxt = htmlNoteTxt.replaceAll("\n", "<br>");
+                }                            
                 
                 String noteTxt = note.getNote();
                 noteTxt = noteTxt.replaceAll("\"","");

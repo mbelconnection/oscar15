@@ -42,6 +42,11 @@ public class Allergy extends BaseObject {
 	private String description;
 	private String reaction;
 	private String archived;
+	private Date start_date;
+	private int severity;
+	private int onset;
+	private int type;
+	
 	
 	
 	public String getArchived() {
@@ -82,5 +87,90 @@ public class Allergy extends BaseObject {
 	{
 		this.reaction = reaction;
 	}
+	public Date getStart_date() {
+		return start_date;
+	}
+	public void setStart_date(Date start_date) {
+		this.start_date = start_date;
+	}
+	public int getSeverity() {
+		return severity;
+	}
+	public void setSeverity(int severity) {
+		this.severity = severity;
+	}
+	public int getOnset() {
+		return onset;
+	}
+	public void setOnset(int onset) {
+		this.onset = onset;
+	}
+	public int getType() {
+		return type;
+	}
+	public void setType(int type) {
+		this.type = type;
+	}
 	
+	
+    public String getTypeDesc() {
+        String s;
+        /** 6 |  1 | generic
+            7 |  2 | compound
+            8 |  3 | brandname
+            9 |  4 | ther_class
+           10 |  5 | chem_class
+           13 |  6 | ingredient
+        **/
+        switch(this.type) {
+            /*
+            *|  8 | anatomical class
+            *|  9 | chemical class
+            *| 10 | therapeutic class
+            *| 11 | generic
+            *| 12 | composite generic
+            *| 13 | branded product
+            *| 14 | ingredient
+            */
+            case 11:
+                s = "Generic Name";
+                break;                
+            case 12:
+                s = "Compound";
+                break;
+            case 13:
+                s = "Brand Name";
+                break;
+            case 8:
+                s = "ATC Class";
+                break;
+            case 10:
+                s = "AHFS Class";
+                break;
+            case 14:
+                s = "Ingredient";
+                break;
+            default:
+                s = "";
+        }
+        return s;
+    }
+    
+    public String getSeverityDesc() {
+    	switch(severity) {
+    	case 1: return "Mild";
+    	case 2: return "Moderate";
+    	case 3: return "Severe";
+    	default: return "Unknown";
+    	}
+    }
+    
+    public String getOnsetDesc() {
+    	switch(onset) {
+    	case 1: return "Immediate";
+    	case 2: return "Gradual";
+    	case 3: return "Slow";
+    	default: return "Unknown";
+    	}
+    }
 }

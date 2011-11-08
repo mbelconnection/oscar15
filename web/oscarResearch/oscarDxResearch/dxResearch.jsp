@@ -18,7 +18,7 @@
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster Unviersity 
+ * McMaster University 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -28,15 +28,32 @@
 	import="oscar.oscarResearch.oscarDxResearch.util.dxResearchCodingSystem"%>
 <%@ page
 	import="oscar.OscarProperties"%>
+<%@ page import="com.quatro.service.security.SecurityManager" %>
+
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
 <%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar"%>
 <%   
     if(session.getValue("user") == null) response.sendRedirect("../../logout.jsp");
-
-	String disableVal = OscarProperties.getInstance().getProperty("dxResearch_disable_entry", "false");
-	boolean disable = Boolean.valueOf(disableVal).booleanValue();
+	String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
+	
+	//String disableVal = OscarProperties.getInstance().getProperty("dxResearch_disable_entry", "false");
+	//boolean disable = Boolean.valueOf(disableVal).booleanValue();
+	boolean disable;
+	SecurityManager sm = new SecurityManager();
+	
+	if(sm.hasWriteAccess("_dx.code",roleName$)) {
+		disable=false;
+	}else{
+		disable=true;
+	}
+	
+	boolean showQuicklist=false;
+	
+	if(sm.hasWriteAccess("_dx.quicklist",roleName$)) {
+		showQuicklist=true;
+	}
 	
     String user_no = (String) session.getAttribute("user");
     String color ="";
@@ -158,8 +175,7 @@ function processKey(e) {
 					<table width="100%" border="0" cellspacing="0" cellpadding="2"
 						height="500" bgcolor="#FFFFFF">
 						<tr>
-							<td class="heading"><bean:message key="oscarResearch.oscarDxResearch.codingSystem" />: <html:select
-								property="selectedCodingSystem">
+							<td class="heading"><bean:message key="oscarResearch.oscarDxResearch.codingSystem" />: <html:select property="selectedCodingSystem" disabled="<%=disable%>">
 								<logic:iterate id="codingSys" name="codingSystem" property="codingSystems">
 									<option value="<bean:write name="codingSys"/>"><bean:write name="codingSys" /></option>
 								</logic:iterate>
@@ -207,12 +223,27 @@ function processKey(e) {
 							<td class="heading"><bean:message key="oscarResearch.oscarDxResearch.quickList" /></td>
 						</tr>
 						<tr>
-							<td><%-- RJ --%> <html:select property="quickList" style="width:200px" onchange="javascript:changeList();">
+							<%
+								String disableQl="false";
+								if(!showQuicklist) {
+									disableQl = "true";
+								}
+							%>
+							<td><%-- RJ --%> <html:select property="quickList" style="width:200px" onchange="javascript:changeList();" disabled="<%=Boolean.valueOf(disableQl) %>">
 								<logic:iterate id="quickLists" name="allQuickLists"
 									property="dxQuickListBeanVector">
 									<option value="<bean:write name="quickLists" property="quickListName" />"
-										<bean:write name="quickLists" property="lastUsed" />><bean:write
-										name="quickLists" property="quickListName" /></option>
+										<bean:write name="quickLists" property="lastUsed" />
+										<%
+											String ql = request.getParameter("quickList");
+										%>
+										<logic:equal name="quickLists" property="quickListName" value="<%=ql%>">
+											selected
+										</logic:equal> >
+ 
+									
+										<bean:write	name="quickLists" property="quickListName" />
+									</option>
 								</logic:iterate>
 							</html:select> 
 							<%if(disable) { %>
@@ -246,7 +277,9 @@ function processKey(e) {
 							<td class="heading" width="48%"><b><bean:message key="oscarResearch.oscarDxResearch.dxResearch.msgDiagnosis" /></b></td>
 							<td class="heading" width="15%"><b><bean:message key="oscarResearch.oscarDxResearch.dxResearch.msgFirstVisit" /></b></td>
 							<td class="heading" width="15%"><b><bean:message key="oscarResearch.oscarDxResearch.dxResearch.msgLastVisit" /></b></td>
+							<% if(!disable){ %>
 							<td class="heading" width="22%"><b><bean:message key="oscarResearch.oscarDxResearch.dxResearch.msgAction" /></b></td>
+							<%} %>
 						</tr>
 						<logic:iterate id="diagnotics" name="allDiagnostics"
 							property="dxResearchBeanVector" indexId="ctr">
@@ -265,12 +298,15 @@ function processKey(e) {
 									<td class="notResolved"><bean:write name="diagnotics" property="description" /></td>
 									<td class="notResolved"><bean:write name="diagnotics" property="start_date" /></td>
 									<td class="notResolved"><bean:write name="diagnotics" property="end_date" /></td>
-									<td class="notResolved"><a
-										href='dxResearchUpdate.do?status=C&did=<bean:write name="diagnotics" property="dxResearchNo" />&demographicNo=<bean:write name="demographicNo" />&providerNo=<bean:write name="providerNo" />'><bean:message
+									
+									<% if(!disable){ %>
+									<td class="notResolved">									
+									<a href='dxResearchUpdate.do?status=C&did=<bean:write name="diagnotics" property="dxResearchNo" />&demographicNo=<bean:write name="demographicNo" />&providerNo=<bean:write name="providerNo" />'><bean:message
 										key="oscarResearch.oscarDxResearch.dxResearch.btnResolve" /></a> |
-									<a
-										href='dxResearchUpdate.do?status=D&did=<bean:write name="diagnotics" property="dxResearchNo" />&demographicNo=<bean:write name="demographicNo" />&providerNo=<bean:write name="providerNo" />'><bean:message
-										key="oscarResearch.oscarDxResearch.dxResearch.btnDelete" /></a></td>
+									<a href='dxResearchUpdate.do?status=D&did=<bean:write name="diagnotics" property="dxResearchNo" />&demographicNo=<bean:write name="demographicNo" />&providerNo=<bean:write name="providerNo" />' onClick="javascript: return confirm('Are you sure you would like to delete: <bean:write name="diagnotics" property="description" /> ?')"><bean:message
+										key="oscarResearch.oscarDxResearch.dxResearch.btnDelete" /></a>
+									</td>
+									<% } %> 								
 								</tr>
 							</logic:equal>
 							<logic:equal name="diagnotics" property="status" value="C">
@@ -278,8 +314,10 @@ function processKey(e) {
 									<td><bean:write name="diagnotics" property="description" /></td>
 									<td><bean:write name="diagnotics" property="start_date" /></td>
 									<td><bean:write name="diagnotics" property="end_date" /></td>
+									<% if(!disable){ %>
 									<td><bean:message key="oscarResearch.oscarDxResearch.dxResearch.btnResolve" /> |
-									<a href='dxResearchUpdate.do?status=D&did=<bean:write name="diagnotics" property="dxResearchNo" />&demographicNo=<bean:write name="demographicNo" />&providerNo=<bean:write name="providerNo" />'><bean:message key="oscarResearch.oscarDxResearch.dxResearch.btnDelete" /></a></td>
+									<a href='dxResearchUpdate.do?status=D&did=<bean:write name="diagnotics" property="dxResearchNo" />&demographicNo=<bean:write name="demographicNo" />&providerNo=<bean:write name="providerNo" />' onClick="javascript: return confirm('Are you sure you would like to delete this?')"><bean:message key="oscarResearch.oscarDxResearch.dxResearch.btnDelete" /></a></td>
+								<%} %>
 								</tr>
 							</logic:equal>
 						</logic:iterate>

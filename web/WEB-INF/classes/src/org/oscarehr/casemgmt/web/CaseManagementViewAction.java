@@ -1128,7 +1128,15 @@ public class CaseManagementViewAction extends BaseCaseManagementViewAction {
 		// filter the notes by the checked issues
 		// UserProperty userProp = caseManagementMgr.getUserProperty(providerNo, UserProperty.STALE_NOTEDATE);
 
+		com.quatro.service.security.SecurityManager securityManager = new com.quatro.service.security.SecurityManager();
+		
 		String[] codes = request.getParameterValues("issue_code");
+		//these are the ones on the right nav bar.
+		if(codes != null && codes.length > 0) {
+			if(!securityManager.hasReadAccess("_"  + codes[0], request.getSession().getAttribute("userrole") + "," + request.getSession().getAttribute("user"))) {
+				return null;
+			}
+		}
 		List<Issue> issues = caseManagementMgr.getIssueInfoByCode(providerNo, codes);
 		StringBuffer checked_issues = new StringBuffer();
                 StringBuffer cppIssues = new StringBuffer();

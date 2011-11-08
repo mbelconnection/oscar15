@@ -10,8 +10,13 @@
 package oscar.oscarLab.ca.all.parsers;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.oscarehr.integration.hl7.model.PatientId;
+
+import ca.uhn.hl7v2.HL7Exception;
 
 import oscar.Misc;
 
@@ -239,7 +244,12 @@ public class HHSEmrDownloadHandler extends DefaultGenericHandler implements Mess
 //    }
 //
     public String getOBXReferenceRange(int i, int j){
-        return(getOBXField(i, j, 7, 0, 3));
+        String tmp = getOBXField(i, j, 7, 0, 3);
+        if(tmp.equals("")) {
+        	//try the first component
+        	tmp = getOBXField(i, j, 7, 0, 1);
+        }
+        return tmp;
     }
 //
 //    public String getOBXUnits(int i, int j){
@@ -462,10 +472,20 @@ public class HHSEmrDownloadHandler extends DefaultGenericHandler implements Mess
 //        return("");
 //    }
 //
-//    public String getOrderStatus(){
-//        //usually a message type specific location
-//        return("");
-//    }
+    public String getOrderStatus(){
+        String status = "F";
+        
+        for(int x=0;x<this.getOBRCount();x++) {
+        	for(int y=0;y<this.getOBXCount(x);y++) {
+        		String val = this.getOBXResultStatus(x, y);
+        		if(!val.equals("F")) {
+        			return val;
+        		}
+        	}
+        }
+        
+        return(status);
+    }
 //
 //    public String getClientRef(){
 //        try{
@@ -635,4 +655,32 @@ public String getAccessionNum(){
 //        }
 //    }
 
+    public String getPatientIdByType(String type) throws HL7Exception {
+    	PatientId id = extractInternalPatientIds().get(type);
+    	if(id != null) {
+    		return id.getId();
+    	}
+    	return null;
+    }
+    
+	protected Map<String,PatientId> extractInternalPatientIds() throws HL7Exception {
+		Map<String,PatientId> ids = new LinkedHashMap<String,PatientId>();
+		int x=0;
+		while(true) {
+			String identifier = terser.get("PID-3("+x+")-1");
+			String authority = terser.get("PID-3("+x+")-4");
+			String typeId = terser.get("PID-3("+x+")-5");
+			
+			if(identifier != null) {
+				PatientId tmp = new PatientId(identifier, authority, typeId);
+				ids.put(typeId,tmp);
+			}
+			
+			if(identifier == null && terser.get("PID-3("+(x+1)+")-1")==null) {
+				break;
+			}
+			x++;
+		}		
+		return ids;
+	}
 }

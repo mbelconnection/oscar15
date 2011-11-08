@@ -43,14 +43,23 @@ package org.oscarehr.common.model;
 public class OtherId {
     private Integer	id;
     private Integer	tableName=0;
-    private Integer	tableId=0;
-    private String	otherKey="";
-    private String	otherId="";
+    private String	tableId=null;
+    private String	otherKey=null;
+    private String	otherId=null;
     private Boolean	deleted=false;
 
-	public OtherId() {}
+	public OtherId() {
+		//default constructor
+	}
 
 	public OtherId(Integer tableName, Integer tableId, String otherKey, String otherId) {
+		this.tableName = tableName;
+		this.tableId = String.valueOf(tableId);
+		this.otherKey = otherKey;
+		this.otherId = otherId!=null ? otherId : "";
+	}
+	
+	public OtherId(Integer tableName, String tableId, String otherKey, String otherId) {
 		this.tableName = tableName;
 		this.tableId = tableId;
 		this.otherKey = otherKey;
@@ -73,11 +82,11 @@ public class OtherId {
         this.tableName = tableName;
     }
 
-    public Integer getTableId() {
+    public String getTableId() {
         return tableId;
     }
 
-    public void setTableId(Integer tableId) {
+    public void setTableId(String tableId) {
         this.tableId = tableId;
     }
 

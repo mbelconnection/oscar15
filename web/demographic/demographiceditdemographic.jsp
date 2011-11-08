@@ -332,10 +332,16 @@ function formatPhoneNum() {
     }
 }
 function checkONReferralNo() {
+	<%
+		String skip = oscar.OscarProperties.getInstance().getProperty("SKIP_REFERRAL_NO_CHECK","false");
+		if(!skip.equals("true")) {
+	%>
   var referralNo = document.updatedelete.r_doctor_ohip.value ;
   if (document.updatedelete.hc_type.value == 'ON' && referralNo.length > 0 && referralNo.length != 6) {
     alert("<bean:message key="demographic.demographiceditdemographic.msgWrongReferral"/>") ;
   }
+  
+  <% } %>
 }
 
 
@@ -378,6 +384,9 @@ function showHideDetail(){
     showHideItem('viewDemographics2');
     showHideItem('updateButton');
     showHideItem('swipeButton');
+    
+    showHideItem('editBtn');
+    showHideItem('closeBtn');
 }
 
 function showHideItem(id){
@@ -626,6 +635,8 @@ if(wLReadonly.equals("")){
 				<bean:message key="demographic.demographiceditdemographic.msgWaitList"/></a></td>
 			</tr>
 <%}%>
+
+<security:oscarSec roleName="<%=roleName$%>" objectName="_billing" rights="r">
 			<tr class="Header">
 				<td style="font-weight: bold"><bean:message
 					key="admin.admin.billing" /></td>
@@ -702,8 +713,10 @@ if(wLReadonly.equals("")){
 					title='<bean:message key="demographic.demographiceditdemographic.msgINRBilling"/>'><bean:message key="demographic.demographiceditdemographic.msgINRBill"/></a>
 				</td>
 			</tr>
+		
 <%      } %>
 <% } %>
+		</security:oscarSec>
 			<tr class="Header">
 				<td style="font-weight: bold"><bean:message
 					key="oscarEncounter.Index.clinicalModules" /></td>
@@ -791,10 +804,19 @@ if(wLReadonly.equals("")){
       			</special:SpecialEncounterTag>
       		</plugin:hideWhenCompExists>
 			<tr>
-				<td><a
+				<td>
+				<%if( org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable() ) {%>
+				<a
+					href="javascript: function myFunction() {return false; }"
+					onClick="popupPage(700,1000,'../Tickler.do?filter.demographic_no=<%=demographic_no%>');return false;">
+				<bean:message key="global.tickler" /></a>
+				<% }else { %>
+				<a
 					href="javascript: function myFunction() {return false; }"
 					onClick="popupPage(700,1000,'../tickler/ticklerDemoMain.jsp?demoview=<%=demographic_no%>');return false;">
-				<bean:message key="global.tickler" /></a></td>
+				<bean:message key="global.tickler" /></a>
+				<% } %>				
+				</td>
 			</tr>
 			<tr>
 				<td><a
@@ -936,7 +958,8 @@ if (iviewTag!=null && !"".equalsIgnoreCase(iviewTag.trim())){
                             <%
                                                     if( head.equals(demographic_no)) {
                                                     %>
-                                                        <a href="javascript: showHideDetail();"><bean:message key="demographic.demographiceditdemographic.msgEdit"/></a>
+                                                        <a href="javascript: showHideDetail();" id="editBtn"><bean:message key="demographic.demographiceditdemographic.msgEdit"/></a>
+                                                        <a href="javascript: showHideDetail();" id="closeBtn" style="display:none">Close</a>
                                                    <% } %>
 						</td>
 					</tr>
@@ -1017,7 +1040,7 @@ if (iviewTag!=null && !"".equalsIgnoreCase(iviewTag.trim())){
 							<li><bean:message
 								key="demographic.demographiceditdemographic.formRosterStatus" />:
 							<b><%=apptMainBean.getString(rs,"roster_status")%></b> <bean:message
-								key="demographic.demographiceditdemographic.DateJoined" />: <b><%=MyDateFormat.getMyStandardDate(apptMainBean.getString(rs,"hc_renew_date"))%></b>
+								key="demographic.demographiceditdemographic.DateJoined" />: <b><%=MyDateFormat.getMyStandardDate(apptMainBean.getString(rs,"date_joined"))%></b>
 							</li>
 
 							<li>

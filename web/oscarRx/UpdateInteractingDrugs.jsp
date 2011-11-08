@@ -20,7 +20,7 @@
     var errorMsg="<bean:message key='oscarRx.MyDrugref.InteractingDrugs.error.msgFailed' />" ;
     //oscarLog("errorMsg="+errorMsg);
             var interactStr='<%=interactingDrugList%>';
-            var randomIds='<%=allRandomIdInStash%>';
+            var randomIds='<%=allRandomIdInStash%>';           
                 //clear all warnings
                 randomIds=randomIds.replace(/\[/, "");
                 randomIds=randomIds.replace(/\]/, "");
@@ -57,6 +57,7 @@
                         var title=arr2[1];
                         var htmlStr="<a title='"+title+"'>&nbsp;&nbsp;</a>";
                         id=id.replace(/\s/g,"");
+                       //alert('showing ' + id + ","+htmlStr);
                         $(id).show();
                         $(id).update(htmlStr);
                     }

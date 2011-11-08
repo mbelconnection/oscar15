@@ -620,6 +620,8 @@ CREATE TABLE drugs (
   archived_reason varchar(100) default '',
   archived_date datetime,
   hide_from_drug_profile tinyint(1) default '0',
+  comment varchar(255),
+  start_date_unknown boolean,
   PRIMARY KEY  (drugid)
 ) ;
 
@@ -8031,5 +8033,25 @@ CREATE TABLE `other_id` (
 	`other_key` varchar(30) NOT NULL,
 	`other_id` varchar(30) NOT NULL,
 	`deleted` boolean NOT NULL
+);
+
+CREATE TABLE SecurityToken (
+  id int(10) NOT NULL auto_increment,
+  token varchar(100) not null,
+  created timestamp not null,
+  expiry datetime not null,
+  data varchar(255),
+  providerNo varchar(10),
+  PRIMARY KEY  (id),
+  KEY (token)
+);
+
+create table Flowsheet (
+  id int(10) auto_increment primary key,
+  name varchar(25),
+  content text,
+  enabled tinyint(1),
+  external tinyint(1),
+  createdDate date 
 );
 

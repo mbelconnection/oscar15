@@ -17,6 +17,9 @@
 </logic:present>
 <%
 oscar.oscarRx.pageUtil.RxSessionBean bean = (oscar.oscarRx.pageUtil.RxSessionBean)pageContext.findAttribute("bean");
+
+String userfirstname = (String) session.getAttribute("userfirstname");
+String userlastname = (String) session.getAttribute("userlastname");
 %>
 
 <% RxPharmacyData pharmacyData = new RxPharmacyData();
@@ -89,8 +92,7 @@ oscar.oscarRx.pageUtil.RxSessionBean bean = (oscar.oscarRx.pageUtil.RxSessionBea
 			height="100%">
 			<!----Start new rows here-->
 			<tr>
-				<td align="right"><span><input type="button"
-					onclick="window.print();" value="Print" class="printCell"></span>
+				<td align="right">
 				</td>
 			</tr>
 			<tr>
@@ -100,19 +102,45 @@ oscar.oscarRx.pageUtil.RxSessionBean bean = (oscar.oscarRx.pageUtil.RxSessionBea
 				</td>
 			</tr>
 			<tr>
-				<td><b><bean:message key="SearchDrug.nameText" /></b> 
-<jsp:getProperty name="patient" property="surname" />,
-<jsp:getProperty name="patient" property="firstName" />
-</td>
-			</tr>
-			<tr>
-				<td><b><bean:message key="SearchDrug.ageText" /></b> <jsp:getProperty
-					name="patient" property="age" /></td>
+				<td><!-- <b><bean:message key="SearchDrug.nameText" /></b>-->
+                 <jsp:getProperty name="patient" property="surname" />,
+                 <jsp:getProperty name="patient" property="firstName" />
+                 <br/>
+                 
+                 <jsp:getProperty name="patient" property="address" />
+				 <br />
+				 <jsp:getProperty name="patient" property="city" />, <jsp:getProperty name="patient" property="province" /> <jsp:getProperty name="patient" property="postal" />
+				 <br />
+				 <br />
+                </td>
 			</tr>
 			<tr>
 				<td>
-				<div class="DivContentSectionHead"><bean:message
-					key="SearchDrug.section2Title" /></div>
+		            <b><bean:message key="SearchDrug.ageText" /></b> <jsp:getProperty name="patient" property="age" /> <b>Gender:</b> <jsp:getProperty name="patient" property="sex" /> <b>HC:</b> <jsp:getProperty name="patient" property="hin" />
+					 <br />
+					 <b>User:</b> <%=userlastname%>, <%=userfirstname %><br />
+				</td>	 
+			</tr>
+			<tr>
+				<td>
+				
+					<table cellspacing="0" width="100%" cellpadding="0">
+					<tr><td>
+					<div class="DivContentSectionHead"><bean:message key="SearchDrug.section2Title" /></div>
+					</td>
+					<td align="right" class="noPrint">
+					<div class="DivContentSectionHead">
+						<% if(showall) { %> 
+						  <a href="PrintDrugProfile.jsp">Show Current</a> 
+						 <% } else { %> 
+						  <a href="PrintDrugProfile.jsp?show=all">Show All</a> 
+						<% } %>	
+						| <a href="javascript:void(0);window.print();">Print</a>			
+					</div>
+					</td>
+					</tr>
+					</table>
+					
 				</td>
 			</tr>
 			<tr>
@@ -122,8 +150,8 @@ oscar.oscarRx.pageUtil.RxSessionBean bean = (oscar.oscarRx.pageUtil.RxSessionBea
 						<td width="100%"><!--<div class="Step1Text" style="width:100%">-->
 						<table width="100%" cellpadding="3">
 							<tr>
-								<th align=left width=20%><b>Rx Date</b></th>
-								<th align=left width=100%><b>Prescription</b></th>
+								<th align=left width=20%><b><bean:message key="SearchDrug.msgRxDate"/></b></th>
+								<th align=left width=100%><b><bean:message key="SearchDrug.msgPrescription"/></b></th>
 							</tr>
 
 							<%
@@ -160,19 +188,7 @@ oscar.oscarRx.pageUtil.RxSessionBean bean = (oscar.oscarRx.pageUtil.RxSessionBea
                                 %>
 						</table>
 
-						</div>
-						<div style="margin-top: 10px; margin-left: 20px; width: 100%">
-						<table width="100%" cellspacing=0 cellpadding=0>
-							<tr>
-								<td align=left>
-								<% if(showall) { %> <a href="PrintDrugProfile.jsp">Show
-								Current</a> <% } else { %> <a href="PrintDrugProfile.jsp?show=all">Show
-								All</a> <% } %>
-								</td>
 
-							</tr>
-						</table>
-						<!--</div>-->
 						</td>
 					</tr>
 				</table>
@@ -180,7 +196,19 @@ oscar.oscarRx.pageUtil.RxSessionBean bean = (oscar.oscarRx.pageUtil.RxSessionBea
 			</tr>
 
 
-
+			<tr>
+				<td align="right" class="noPrint">
+				<div class="DivContentSectionHead">
+					
+					<% if(showall) { %> 
+					  <a href="PrintDrugProfile.jsp">Show Current</a> 
+					 <% } else { %> 
+					  <a href="PrintDrugProfile.jsp?show=all">Show All</a> 
+					<% } %>
+					| <a href="javascript:void(0);window.print();">Print</a> 
+				</div>
+				</td>
+						</tr>
 
 
 			<!----End new rows here-->

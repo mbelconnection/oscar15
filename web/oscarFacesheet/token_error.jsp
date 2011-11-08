@@ -1,3 +1,4 @@
+<!-- 
 /*
 * 
 * Copyright (c) 2001-2002. Centre for Research on Inner City Health, St. Michael's Hospital, Toronto. All Rights Reserved. *
@@ -19,49 +20,14 @@
 * Centre for Research on Inner City Health, St. Michael's Hospital, 
 * Toronto, Ontario, Canada 
 */
+-->
 
-package org.caisi.model;
+<%@ page language="java" isErrorPage="true"%>
+<head>
+<script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<title>Unauthenticated</title>
+</head>
+<h2>Authentication Error.</h2>
 
-import java.util.Date;
+<h4 style="color:red">Invalid Token</h4>
 
-public class Appointment extends BaseObject {
-	private Long id;
-	private Date apptDate;
-	private int demographicNo;
-	private String providerNo;
-	private String status;
-	
-        public void setApptDate( Date date ) {
-            this.apptDate = date;
-        }
-        
-        public Date getApptDate() {
-            return this.apptDate;
-        }
-        
-	public int getDemographicNo() {
-		return demographicNo;
-	}
-	public void setDemographicNo(int demographicNo) {
-		this.demographicNo = demographicNo;
-	}
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long apptId) {
-		id = apptId;
-	}
-        public String getProviderNo() {
-		return providerNo;
-	}
-	public void setProviderNo(String providerNo) {
-		this.providerNo = providerNo;
-	}
-	public String getStatus() {
-		return status;
-	}
-	public void setStatus(String status) {
-		this.status = status;
-	}
-	
-}

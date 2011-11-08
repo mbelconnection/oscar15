@@ -110,7 +110,8 @@
 	    if (tableName.equals(cml.CASEMGMTNOTE) || tableId.equals(0L)) {
                 System.out.println("NOT SAVING");
 		if (!attrib_name.equals("")) se.setAttribute(attrib_name, cmn);
-	    } else { //annotated subject exists
+	    }
+            if (!tableId.equals(0L)) {
                     System.out.println("saving annotation here");
                     cmm.saveNoteSimple(cmn);
                     cml = new CaseManagementNoteLink();

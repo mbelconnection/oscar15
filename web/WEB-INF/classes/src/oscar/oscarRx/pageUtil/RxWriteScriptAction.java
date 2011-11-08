@@ -660,6 +660,7 @@ public final class RxWriteScriptAction extends DispatchAction {
                 hm.put("prn", rx.getPrn());
                 hm.put("calQuantity", rx.getQuantity());
                 hm.put("unitName", rx.getUnitName());
+                hm.put("policyViolations", rx.getPolicyViolations());
                 JSONObject jsonObject = JSONObject.fromObject(hm);
                 p("jsonObject", jsonObject.toString());
                 response.getOutputStream().write(jsonObject.toString().getBytes());
@@ -885,7 +886,8 @@ public final class RxWriteScriptAction extends DispatchAction {
                         boolean patientComplianceN = false;
                         boolean isOutsideProvider = false;
                         boolean isLongTerm = false;
-                        boolean isPastMed = false;
+                        boolean isPastMed = false;                        
+                        boolean isStartDateUnknown  = false;
         
                             em = request.getParameterNames();
                             while (em.hasMoreElements()) {
@@ -933,7 +935,9 @@ public final class RxWriteScriptAction extends DispatchAction {
                                     rx.setLastRefillDate(RxUtil.StringToDate(val, "yyyy-MM-dd"));
                                 } else if (elem.equals("outsideProviderName_" + num)) {
                                     rx.setOutsideProviderName(val);
-                                } else if (elem.equals("rxDate_" + num)) {
+                                } else if (elem.equals("comment_" + num)) {
+                                	rx.setComment(val);
+                            	} else if (elem.equals("rxDate_" + num)) {
                                     if ((val == null) || (val.equals(""))) {
                                         rx.setRxDate(RxUtil.StringToDate("0000-00-00", "yyyy-MM-dd"));
                                     } else {
@@ -966,7 +970,13 @@ public final class RxWriteScriptAction extends DispatchAction {
                                         isPastMed = true;
                                     } else {
                                         isPastMed = false;
-                                    }
+                                    }                                
+                                } else if (elem.equals("startDateUnknown_" + num)) {
+                                    if (val.equals("on")) {
+                                        isStartDateUnknown = true;
+                                    } else {
+                                    	isStartDateUnknown = false;
+                                    } 
                                 } else if (elem.equals("patientComplianceY_" + num)) {
                                     if (val.equals("on")) {
                                         patientComplianceY = true;
@@ -986,7 +996,8 @@ public final class RxWriteScriptAction extends DispatchAction {
                                 rx.setOutsideProviderName("");
                                 rx.setOutsideProviderOhip("");
                             }
-                            rx.setPastMed(isPastMed);
+                            rx.setPastMed(isPastMed);                            
+                            rx.setStartDateUnknown(isStartDateUnknown);
                             rx.setLongTerm(isLongTerm);
                             String newline = System.getProperty("line.separator");
                             rx.setPatientCompliance(patientComplianceY, patientComplianceN);

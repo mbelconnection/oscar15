@@ -99,7 +99,11 @@ public class Drug extends AbstractModel<Integer> implements Serializable {
 	private String outsideProviderOhip = null;
         @Column(name = "hide_from_drug_profile")
         private boolean hideFromDrugProfile ;
-
+   
+    @Column(name="start_date_unknown")
+    private boolean startDateUnknown;    
+    private String comment;    
+    
         /////
         @Transient
         private String remoteFacilityName = null;
@@ -575,5 +579,22 @@ public class Drug extends AbstractModel<Integer> implements Serializable {
        }
        return days;
     }
+
+	public boolean getStartDateUnknown() {
+		return startDateUnknown;
+	}
+
+	public void setStartDateUnknown(boolean startDateUnknown) {
+		this.startDateUnknown = startDateUnknown;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+    
     
 }

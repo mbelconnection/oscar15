@@ -136,6 +136,12 @@ div.ImmSet li a:visited {
 div.onPrint {
 	display: none;
 }
+
+span.footnote {
+    background-color: #ccccee;
+    border: 1px solid #000;
+    width: 4px;
+}
 </style>
 
 <link rel="stylesheet" type="text/css"
@@ -359,7 +365,45 @@ div.recommendations ul {
 div.recommendations li {
 	
 }
+
+table.legend{
+border:0;
+padding-top:10px;
+width:370px;
+}
+
+table.legend td{
+font-size:8;
+text-align:left;
+
+}
+
+
+table.colour_codes{
+width:8px;
+height:10px;
+border:1px solid #999999;
+}
+
+
 </style>
+
+<!--[if IE]>
+<style type="text/css">
+
+table.legend{
+border:0;
+margin-top:10px;
+width:370px;
+}
+
+table.legend td{
+font-size:10;
+text-align:left;
+}
+
+</style>
+<![endif]-->
 
 </head>
 
@@ -412,6 +456,7 @@ div.recommendations li {
 			<br>
 		</oscar:oscarPropertiesCheck></td>
 		<td valign="top" class="MainTableRightColumn">
+		<a href="#" onclick="popup(600,800,'http://www.phac-aspc.gc.ca/im/is-cv/index-eng.php')">Immunization Schedules - Public Health Agency of Canada</a>
 		<%             
                 if (warnings.size() > 0 || recomendations.size() > 0  || dsProblems) { %>
 		<div class="recommendations">
@@ -422,8 +467,8 @@ div.recommendations li {
 		trying to print</p>
 		<%
                     }
-                   %> <span style="font-size: larger;">Prevention
-		Recommendations</span>
+                   %> 
+             <span style="font-size: larger;">Prevention Recommendations</span>
 		<ul>
 			<% for (int i = 0 ;i < warnings.size(); i++){ 
                        String warn = (String) warnings.get(i);%>
@@ -440,9 +485,41 @@ div.recommendations li {
 			<% } %>
 		</ul>
 		</div>
-		<% } %>
-
+		<% } 
+		
+	 String[] ColourCodesArray=new String[5];
+	 ColourCodesArray[1]="#F0F0E7"; //very light grey - completed or normal
+	 ColourCodesArray[2]="#FFDDDD"; //light pink - Refused
+	 ColourCodesArray[3]="#FFCC24"; //orange - Ineligible
+	 ColourCodesArray[4]="#FF00FF"; //dark pink - pending	
+		
+	 //labels for colour codes
+	 String[] lblCodesArray=new String[5];
+	 lblCodesArray[1]="Completed or Normal"; 
+	 lblCodesArray[2]="Refused"; 
+	 lblCodesArray[3]="Ineligible"; 
+	 lblCodesArray[4]="Pending"; 
+	 
+	 //Title ie: Legend or Profile Legend
+	 String legend_title="Legend: ";
+			
+	 //creat empty builder string
+	 String legend_builder=" ";
+		
+		
+	 	for (int iLegend = 1; iLegend < 5; iLegend++){
+			
+			legend_builder +="<td> <table class='colour_codes' bgcolor='"+ColourCodesArray[iLegend]+"'><td> </td></table> </td> <td align='center'>"+lblCodesArray[iLegend]+"</td>";
+			
+		}
+		
+	 	String legend = "<table class='legend' cellspacing='0'><tr><td><b>"+legend_title+"</b></td>"+legend_builder+" </tr></table>";
+		
+		out.print(legend);
+%>
+		
 		<div>
+		
 		<form name="printFrm" method="post" onsubmit="return onPrint();"
 			action="<rewrite:reWrite jspPage="printPrevention.do"/>">
 		<input type="hidden" name="demographic_no" value="<%=demographic_no%>">
@@ -478,7 +555,7 @@ div.recommendations li {
 		<p><a href="javascript: function myFunction() {return false; }"
 			onclick="javascript:popup(465,635,'AddPreventionData.jsp?prevention=<%= response.encodeURL( (String) h.get("name")) %>&amp;demographic_no=<%=demographic_no%>','addPreventionData<%=Math.abs( ((String) h.get("name")).hashCode() ) %>')">
 		<span title="<%=h.get("desc")%>" style="font-weight: bold;"><%=h.get("name")%></span>
-		</a> &nbsp; <a href="#" onclick="popup(465,635,'<%=h.get("link")%>')">#</a>
+		</a> 
 		<br />
 		</p>
 		</div>
@@ -494,6 +571,9 @@ div.recommendations li {
 		<div class="preventionProcedure" onclick="<%=onClickCode%>">
 		<p <%=r(hdata.get("refused"),result)%>>Age: <%=hdata.get("age")%> <br />
 		<!--<%=refused(hdata.get("refused"))%>-->Date: <%=hdata.get("prevention_date")%>
+		<%if (hExt.get("comments") != null && ((String)hExt.get("comments")).length()>0) {%>
+            <span class="footnote">1</span>
+            <%}%>
 		<%=getFromFacilityMsg(hdata)%></p>
 		</div>
 		<%}%>
@@ -524,7 +604,7 @@ div.recommendations li {
 		<p><a href="javascript: function myFunction() {return false; }"
 			onclick="javascript:popup(465,635,'AddPreventionData.jsp?prevention=<%= response.encodeURL( (String) h.get("name")) %>&amp;demographic_no=<%=demographic_no%>','addPreventionData<%=Math.abs( ((String) h.get("name")).hashCode() ) %>')">
 		<span title="<%=h.get("desc")%>" style="font-weight: bold;"><%=h.get("name")%></span>
-		</a> &nbsp; <a href="#" onclick="popup(465,635,'<%=h.get("link")%>');">#</a>
+		</a>
 		<br />
 		</p>
 		</div>
@@ -539,6 +619,9 @@ div.recommendations li {
 			onclick="javascript:popup(465,635,'AddPreventionData.jsp?id=<%=hdata.get("id")%>&amp;demographic_no=<%=demographic_no%>','addPreventionData')">
 		<p <%=r(hdata.get("refused"), result)%>>Age: <%=hdata.get("age")%> <br />
 		<!--<%=refused(hdata.get("refused"))%>-->Date: <%=hdata.get("prevention_date")%>
+		<%if (hExt.get("comments") != null && ((String)hExt.get("comments")).length()>0) {%>
+            <span class="footnote">1</span>
+            <%}%>
 		</p>
 		</div>
 		<%}%>
@@ -567,7 +650,7 @@ div.recommendations li {
 		<p><a href="javascript: function myFunction() {return false; }"
 			onclick="javascript:popup(465,635,'AddPreventionData.jsp?prevention=<%= response.encodeURL( (String) h.get("name")) %>&amp;demographic_no=<%=demographic_no%>','addPreventionData<%=Math.abs( ((String) h.get("name")).hashCode() ) %>')">
 		<span title="<%=h.get("desc")%>" style="font-weight: bold;"><%=h.get("name")%></span>
-		</a> &nbsp; <a href="<%=h.get("link")%>">#</a> <br />
+		</a>  <br />
 		</p>
 		</div>
 		<%
@@ -596,6 +679,7 @@ div.recommendations li {
 		<!--immSet--> <%}
                     }%>
 		</div>
+		<%=legend %>
 		</td>
 	</tr>
 	<tr>

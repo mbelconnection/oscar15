@@ -243,6 +243,7 @@
             <form-property name="rxProfileViewProperty" type="org.oscarehr.common.model.UserProperty" />
             <form-property name="rxUseRx3Property" type="org.oscarehr.common.model.UserProperty" />
             <form-property name="rxShowPatientDOBProperty" type="org.oscarehr.common.model.UserProperty"/>
+            <form-property name="cppSingleLineProperty" type="org.oscarehr.common.model.UserProperty"/>
         </form-bean>
         <form-bean name="setMyOscarIdForm" type="org.apache.struts.action.DynaActionForm">
             <form-property name="myOscarLoginId" type="java.lang.String" />
@@ -705,6 +706,7 @@
         </action>
         <action input="/oscarRx/ChooseAllergy.jsp" path="/oscarRx/showAllergy" scope="request" type="oscar.oscarRx.pageUtil.RxShowAllergyAction">
             <forward name="success" path="/oscarRx/ShowAllergies.jsp" />
+            <forward name="successRX3" path="/oscarRx/ShowAllergies2.jsp" />
         </action>
         <action input="/oscarRx/ChooseDrug.jsp" path="/oscarRx/drugInfo" scope="request" type="oscar.oscarRx.pageUtil.RxDrugInfoAction">
             <forward name="success" path="/oscarRx/SearchDrug.jsp" />
@@ -1165,6 +1167,10 @@
         <action input="/provider/editSignature.jsp" name="ProEditSignatureForm" path="/EnterSignature" scope="request" type="oscar.oscarProvider.pageUtil.ProEditSignatureAction">
             <forward name="success" path="/provider/providerSignature.jsp" />
         </action>
+        <action input="/provider/providerPhone.jsp" name="editProviderFaxForm" path="/EditPhoneNum" scope="request" type="oscar.oscarProvider.pageUtil.ProEditPhoneNumAction">
+            <forward name="success" path="/provider/providerPhone.jsp" />
+            <forward name="eject" path="/index.jsp" />
+        </action>
         <action input="/provider/providerFax.jsp" name="editProviderFaxForm" path="/EditFaxNum" scope="request" type="oscar.oscarProvider.pageUtil.ProEditFaxNumAction">
             <forward name="success" path="/provider/providerFax.jsp" />
             <forward name="error" path="/provider/providerFaxErr.jsp" />
@@ -1183,6 +1189,7 @@
             <forward name="genRxProfileView"     path="/provider/setGenRxProfileViewProperty.jsp"/>
             <forward name="genRxUseRx3"     path="/provider/setToUseRx3.jsp"/>
             <forward name="genShowPatientDOB" path="/provider/setShowPatientDOB.jsp"/>
+            <forward name="genCppSingleLine"     path="/provider/setCppSingleLine.jsp"/>
         </action>
         <action input="/provider/providerIndivoIdSetter.jsp" name="setMyOscarIdForm" path="/setMyOscarId" scope="request" type="oscar.oscarProvider.pageUtil.ProEditMyOscarIdAction">
             <forward name="success" path="/provider/providerIndivoIdSetter.jsp" />
@@ -1882,6 +1889,10 @@
             <forward name="expired" path="/casemgmt/expired.jsp" />
             <forward name="surveillance" path="/oscarSurveillance/CheckSurveillance.do" />
         </action>
+	<action path="/OscarChartPrint" type="org.oscarehr.casemgmt.web.EChartPrintAction" parameter="method" scope="request">
+
+	</action>
+
         <action path="/ClientImage" type="org.springframework.web.struts.DelegatingActionProxy" parameter="method" scope="request" name="clientImageForm" input="/casemgmt/uploadimage.jsp">
             <forward name="success" path="/casemgmt/uploadimage.jsp" />
         </action>

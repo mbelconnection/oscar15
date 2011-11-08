@@ -169,7 +169,7 @@ public class RxDrugData {
             this.name = (String) h.get("name");
             //this.type = (String) h.get("category");//type
             this.type = ((Integer) h.get("category")).toString();
-            System.out.println("pkey "+pKey+" name "+name+" type "+type);
+           // System.out.println("pkey "+pKey+" name "+name+" type "+type);
             //d.tag  = (Tag)    h.get("tag");
         }
         

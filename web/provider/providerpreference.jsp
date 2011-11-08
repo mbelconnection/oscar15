@@ -326,6 +326,9 @@ function showHideBillPref() {
       </td>
   </tr>
 
+		<tr>
+          <td align="center"><a href=# onClick ="popupPage(230,860,'providerPhone.jsp');return false;"><bean:message key="provider.btnEditPhoneNumber"/></a></td>
+      </tr>
       <tr>
           <td align="center"><a href=# onClick ="popupPage(230,860,'providerFax.jsp');return false;"><bean:message key="provider.btnEditFaxNumber"/></a></td>
       </tr>
@@ -337,6 +340,9 @@ function showHideBillPref() {
       </tr>
       <tr>
           <td align="center"><a href=# onClick ="popupPage(230,860,'../setProviderStaleDate.do?method=viewUseRx3');return false;"><bean:message key="provider.btnSetRx3"/></a></td>
+      </tr>
+      <tr>
+          <td align="center"><a href=# onClick ="popupPage(230,860,'../setProviderStaleDate.do?method=viewCppSingleLine');return false;"><bean:message key="provider.btnSetCppSingleLine"/></a></td>
       </tr>
       <tr>
           <td align="center"><a href=# onClick ="popupPage(230,860,'../setProviderStaleDate.do?method=viewShowPatientDOB');return false;"><bean:message key="provider.btnSetShowPatientDOB"/></a></td>

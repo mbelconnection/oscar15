@@ -95,6 +95,7 @@ public class EctDisplayAction extends Action {
         String params = (String)request.getAttribute("cmd");
         if( params == null )
             params = request.getParameter("cmd");
+        request.setAttribute("cmd", params);
 
         if( params != null ) {
             //Check to see if this call is for us
@@ -111,29 +112,35 @@ public class EctDisplayAction extends Action {
                 if (headingColour != null){
                    Dao.setHeadingColour(headingColour);
                 }
-                
-                if( getInfo(bean,request, Dao,messages) ) {
-                    request.setAttribute("DAO",Dao);
 
-                    String regex = "\\b" + cmd + "\\b";                                                
-                    String remainingCmds = params.replaceAll(regex,"").trim();                        
-
-                    //Are there more commmands to forward to or do we print what we have?
-                    if( remainingCmds.length() > 0 ) {
-                        request.setAttribute("cmd",remainingCmds);
-                        int pos = remainingCmds.indexOf(' ');
-                        if( pos > -1 )
-                            forward = remainingCmds.substring(0,pos);
-                        else
-                            forward = remainingCmds;
-                        
-                        if( Actions.get(forward) == null )
-                            forward = "error";
-                    }
-                    else
-                        forward = "success";    
-
-                }
+                com.quatro.service.security.SecurityManager securityMgr = new com.quatro.service.security.SecurityManager();
+            	if(securityMgr.hasReadAccess("_" + cmd.toLowerCase(), request.getSession().getAttribute("userrole") + "," + request.getSession().getAttribute("user"))) {
+            		
+	                if( getInfo(bean,request, Dao,messages) ) {
+	                    request.setAttribute("DAO",Dao);
+	
+	                    String regex = "\\b" + cmd + "\\b";                                                
+	                    String remainingCmds = params.replaceAll(regex,"").trim();                        
+	
+	                    //Are there more commmands to forward to or do we print what we have?
+	                    if( remainingCmds.length() > 0 ) {
+	                        request.setAttribute("cmd",remainingCmds);
+	                        int pos = remainingCmds.indexOf(' ');
+	                        if( pos > -1 )
+	                            forward = remainingCmds.substring(0,pos);
+	                        else
+	                            forward = remainingCmds;
+	                        
+	                        if( Actions.get(forward) == null )
+	                            forward = "error";
+	                    }
+	                    else {
+	                        forward = "success";
+	                    } //remaining cmds
+	                } //get info	            
+	            } else { //security	            	
+	            	return null;
+	            }
             }
         }
                 

@@ -1,9 +1,11 @@
-<%@ page language="java"%>
+<%@ page language="java" import="oscar.OscarProperties"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
 <%
+OscarProperties props = OscarProperties.getInstance();
+
     if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
     String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
 %>
@@ -26,6 +28,9 @@
 <%
 oscar.oscarRx.pageUtil.RxSessionBean bean = (oscar.oscarRx.pageUtil.RxSessionBean)pageContext.findAttribute("bean");
 String annotation_display = org.oscarehr.casemgmt.model.CaseManagementNoteLink.DISP_ALLERGY;
+
+com.quatro.service.security.SecurityManager securityManager = new com.quatro.service.security.SecurityManager();
+
 %>
 
 <!--  
@@ -48,7 +53,7 @@ String annotation_display = org.oscarehr.casemgmt.model.CaseManagementNoteLink.D
  * 
  * This software was written for the 
  * Department of Family Medicine 
- * McMaster Unviersity 
+ * McMaster University 
  * Hamilton 
  * Ontario, Canada 
  */
@@ -62,11 +67,70 @@ String annotation_display = org.oscarehr.casemgmt.model.CaseManagementNoteLink.D
 <title><bean:message key="EditAllergies.title" /></title>
 <link rel="stylesheet" type="text/css" href="styles.css">
 
+<style type="text/css">
+.view_menu{
+font-style:normal;
+font-size:12;
+font-weight:normal;
+padding-right:12px;
+}
+
+.view_selected{
+font-style:normal;
+font-size:12;
+font-weight:normal;
+padding-right:12px;
+
+}
+
+table.allergy_legend{
+border:0;
+padding-left:20px;
+}
+
+table.allergy_legend td{
+font-size:8;
+padding-right:6;
+}
+
+.at_border{
+border-top: 1px solid black;
+border-bottom: 1px solid black;
+}
+
+
+table.colour_codes{
+width:8px;
+height:10px;
+border:1px solid #999999;
+}
+
+table.allergy_table td{
+	border-collapse: collapse;
+	border-bottom: 1px #8F8F8F solid thin;
+	border-top: none;
+	border-left: none;
+	border-right: none;
+	
+	empty-cells: show;	
+}
+
+
+</style>
+
+<!--[if IE]>
+<style type="text/css">
+
+table.allergy_legend td{
+font-size:10;
+padding-right:6;
+}
+
+</style>
+<![endif]-->
+
 
 <script type="text/javascript">
-
-
-
     function isEmpty(){  
         if (document.RxSearchAllergyForm.searchString.value.length == 0){
             alert("Search Field is Empty");
@@ -83,7 +147,20 @@ String annotation_display = org.oscarehr.casemgmt.model.CaseManagementNoteLink.D
             window.location="addReaction.do?ID=0&type=0&name="+name;
         }
     }
+    
+    
+    function show_Search_Criteria(){
+    	var tbl_as = document.getElementById("advancedSearch");
+    	
+    	if (tbl_as.style.display == '') {
+    		tbl_as.style.display = 'none';
+    	}else{ 
+    		tbl_as.style.display = '';
+    	}
+    	
+    }
 </script>
+
 </head>
 <bean:define id="patient"
 	type="oscar.oscarRx.data.RxPatientData.Patient" name="Patient" />
@@ -136,19 +213,68 @@ String annotation_display = org.oscarehr.casemgmt.model.CaseManagementNoteLink.D
 
 			<tr>
 				<td>
-				<div class="DivContentSectionHead"><bean:message
-					key="EditAllergies.section2Title" /></div>
+				<div class="DivContentSectionHead">
+				<bean:message key="EditAllergies.section2Title" />
+								
+				| <span class="view_menu">View: 
+				
+				<%
+					 
+					 String demoNo=request.getParameter("demographicNo");
+					 if(demoNo==null) {
+						 demoNo = (String)request.getAttribute("demographicNo");
+					 }
+				     String strView=request.getParameter("view");
+					
+					 String[] navArray={"Active","All","Inactive"};	
+				
+					 int i=0;
+					 for(i=0;i<navArray.length;i++)
+					 { 
+						
+						if( (strView!=null && strView.equals(navArray[i]) || ( strView==null && i==0 ) )){
+
+							out.print(" <span class='view_selected'>"+navArray[i]+"</span>");		
+						
+							
+						}else{
+							out.print("<span class='view_menu'><a href='showAllergy.do?demographicNo="+demoNo+"&view="+navArray[i]+"'>");
+								out.print(navArray[i]);
+							out.print("</a></span>");	
+						}
+					 }
+					//1 mild 2 moderate 3 severe 4 unknown
+					 
+					 String[] ColourCodesArray=new String[5];
+					 ColourCodesArray[1]="#F5F5F5"; // Mild Was set to yellow (#FFFF33) SJHH requested not to flag mild
+					 ColourCodesArray[2]="#FF6600"; // Moderate
+					 ColourCodesArray[3]="#CC0000"; // Severe
+					 ColourCodesArray[4]="#E0E0E0"; // unknown 
+					
+					 String allergy_colour_codes = "<table class='allergy_legend' cellspacing='0'><tr><td><b>Legend:</b></td> <td > <table class='colour_codes' bgcolor='"+ColourCodesArray[1]+"'><td> </td></table></td> <td >Mild</td> <td > <table class='colour_codes' bgcolor='"+ColourCodesArray[2]+"'><td> </td></table></td> <td >Moderate</td><td > <table class='colour_codes' bgcolor='"+ColourCodesArray[3]+"'><td> </td></table></td> <td >Severe</td> </tr></table>";
+				%>
+				</span>
+
+				</div>
+					
+					
 				</td>
 			</tr>
 			<tr>
 				<td>
-				<table border=0>
+				<table border="0">
 					<tr>
 						<td width="100%">
-						<div class="Step1Text" style="width: 800px;">
-						<table width="100%" cellpadding="3">
-							<thead>
-								<td>&nbsp;</td>
+						<%=allergy_colour_codes%>
+						<div class="Step1Text" style="width: 830px;">
+						
+						                                                                          <!-- frame="below" and rules="all" 
+						                                                                          are here so the browser displays 
+						                                                                          cells that are empty so the bottom 
+						                                                                          border appears -->                   
+						<table width="100%" cellpadding="3" cellspacing="0" class="allergy_table" frame="below" rules="all">
+							<tr>
+								<td><b>Status</b></td>
 								<td><b>Entry Date</b></td>
 								<td><b>Description</b></td>
 								<td><b>Allergy Type</b></td>
@@ -156,40 +282,101 @@ String annotation_display = org.oscarehr.casemgmt.model.CaseManagementNoteLink.D
 								<td><b>Onset of Reaction</b></td>
 								<td><b>Reaction</b></td>
 								<td><b>Start Date</b></td>
-								<td><b>&nbsp;</b></td>
-							</thead>
+								<td><img src="../images/notes.gif" border="0" width="10" height="12" alt="Annotation"></td>
+								<td><b>Action</b></td>
+							</tr>
+							<% 
+							String strArchived;
+							int intArchived;
+							String labelStatus;
+							String labelAction;
+							String actionPath;
+							String trColour;
+							String labelConfirmAction;
+							String strSOR;
+							int intSOR;
+							%>
+							
 							<logic:iterate id="allergy"
 								type="oscar.oscarRx.data.RxPatientData.Patient.Allergy"
 								name="patient" property="allergies">
-								<tr>
-									<td><a
-										href="deleteAllergy.do?ID=<%= String.valueOf(allergy.getAllergyId()) %>">
-									Delete </a></td>
-									<td><bean:write name="allergy" property="entryDate" /></td>
-									<td><bean:write name="allergy"
-										property="allergy.DESCRIPTION" /></td>
-									<td><bean:write name="allergy" property="allergy.typeDesc" />
-									</td>
-									<td><bean:write name="allergy"
-										property="allergy.severityOfReactionDesc" /></td>
-									<td><bean:write name="allergy"
-										property="allergy.onSetOfReactionDesc" /></td>
-									<td><bean:write name="allergy" property="allergy.reaction" />
-									</td>
-									<td><%=allergy.getAllergy().getStartDate()!=null?allergy.getAllergy().getStartDate():""%>
-									</td>
-									<td><a href="#" title="Annotation" onclick="window.open('../annotation/annotation.jsp?display=<%=annotation_display%>&table_id=<%=String.valueOf(allergy.getAllergyId())%>&demo=<jsp:getProperty name="patient" property="demographicNo"/>','anwin','width=400,height=250');"><img src="../images/notes.gif" border="0"></a>
-									</td>
-								</tr>
+								
+								<%
+								
+								boolean filterOut=false;
+								
+								strArchived=allergy.getAllergy().getArchived();
+								intArchived = Integer.parseInt(strArchived);
+								
+								if(bean.getView().equals("Active") && intArchived == 1) {
+									filterOut=true;
+								}
+								
+								if(bean.getView().equals("Inactive") && intArchived == 0) {
+									filterOut=true;
+								}
+								
+								strSOR=allergy.getAllergy().getSeverityOfReaction();
+							    intSOR = Integer.parseInt(strSOR);
+							    String sevColour;
+							    								
+									if(intArchived==1){
+										//if allergy is set as archived
+										labelStatus="Inactive";
+										labelAction="Activate";
+										labelConfirmAction="Active";
+										actionPath="activate";
+										trColour="#C0C0C0";
+										
+										sevColour=" "; //clearing severity bgcolor
+									}else{
+										labelStatus="Active";
+										labelAction="Inactivate";
+										labelConfirmAction="Inactive";
+										actionPath="delete";
 
+										trColour="#E0E0E0";
+										sevColour=ColourCodesArray[intSOR];
+									}
+													
+									
+									if(!filterOut) {
+								%>
+								
+							 
+								<tr bgcolor="<%=trColour%>" >
+									<td><%=labelStatus%></td>
+									<td><bean:write name="allergy" property="entryDate" /></td>
+									<td><bean:write name="allergy" property="allergy.DESCRIPTION" /></td>
+									<td><bean:write name="allergy" property="allergy.typeDesc" /> </td>
+									<td bgcolor="<%=sevColour%>"><bean:write name="allergy" property="allergy.severityOfReactionDesc" /></td>
+									<td ><bean:write name="allergy" property="allergy.onSetOfReactionDesc" /></td>
+									<td><bean:write name="allergy" property="allergy.reaction" /></td>
+									<td><%=allergy.getAllergy().getStartDate()!=null?allergy.getAllergy().getStartDate():""%></td>
+									<td><a href="#" title="Annotation" onclick="window.open('../annotation/annotation.jsp?display=<%=annotation_display%>&table_id=<%=String.valueOf(allergy.getAllergyId())%>&demo=<jsp:getProperty name="patient" property="demographicNo"/>','anwin','width=400,height=250');"><img src="../images/notes.gif" border="0"></a></td>
+									<td>
+									<%
+										if(securityManager.hasDeleteAccess("_allergies",roleName$)) {
+									%>
+									<a href="deleteAllergy.do?ID=<%= String.valueOf(allergy.getAllergyId()) %>&demographicNo=<%=demoNo %>&action=<%=actionPath %>" onClick="return confirm('Are you sure want to set the allergy <bean:write name="allergy" property="allergy.DESCRIPTION" /> to <%=labelConfirmAction%>?');"><%=labelAction%></a>
+									<% } %>
+									</td>
+								
+								</tr>
+							
+								<% } %>
 							</logic:iterate>
+							
 						</table>
 						</div>
+						<%=allergy_colour_codes%>
 						</td>
 					</tr>
 				</table>
 				</td>
 			</tr>
+			
+			<%if(securityManager.hasWriteAccess("_allergies",roleName$)) {%>
 			<tr> 
 				<td>
 				<div class="DivContentSectionHead"><bean:message
@@ -200,28 +387,51 @@ String annotation_display = org.oscarehr.casemgmt.model.CaseManagementNoteLink.D
 				<td><html:form action="/oscarRx/searchAllergy"
 					focus="searchString" onsubmit="return isEmpty()">
 					<table>
-						<tr valign="center">
+						<tr>
 							<td>Search:</td>
-                                                        <td><html:text property="searchString" size="16" styleId="searchString" maxlength="16" /></td>
+                        </tr>
+                        <tr>
+                            <td><html:text property="searchString" size="50" styleId="searchString" maxlength="50" /></td>
 						</tr>
 						<tr>
 							<td><html:submit property="submit" value="Search"
 								styleClass="ControlPushButton" />
-                                                        </td>
-							<td><input type=button class="ControlPushButton"
+								
+								<input type=button class="ControlPushButton"
 								onclick="javascript:document.forms.RxSearchAllergyForm.searchString.value='';document.forms.RxSearchAllergyForm.searchString.focus();"
 								value="Reset" />
-                                                             <input type=button class="ControlPushButton" onclick="javascript:addCustomAllergy();" value="Custom Allergy" />
-                                                            
-                                                             
-                                                        </td>
+                            
+                               <input type=button class="ControlPushButton" onclick="javascript:addCustomAllergy();" value="Custom Allergy" />                                                                       
+                           <% 
+                           String shPref;
+                           String showClose;
+                           if (props.getProperty("ALLERGIES_SIMPLE_SEARCH", "").equals("1")) { %>
+                           		<a href="#" onclick="show_Search_Criteria();">Advanced Search</a>
+                           <%
+                            
+                            shPref="display:none";	 
+                            showClose="<a href='#' onclick='show_Search_Criteria();'>Close [x]</a>";
+                            }else{
+                            	
+                            shPref="";	
+                            showClose="";
+                            }
+                           %>
+                            </td>
 						</tr>
 					</table>
                       &nbsp;
-                      <table bgcolor="#F5F5F5" cellpadding=3>
+                      
+                      <% 
+
+                      
+                      %>
+                      
+                      <table bgcolor="#F5F5F5" cellpadding="3" id="advancedSearch" style="<%=shPref%>">
 						<tr>
-							<td colspan=4>Search the following categories: <i>(Listed
+							<td colspan="3">Search the following categories: <i>(Listed
 							general to specific)</i></td>
+							<td align="right"><%=showClose%></td>
 						</tr>
 
 						<tr>
@@ -241,6 +451,16 @@ String annotation_display = org.oscarehr.casemgmt.model.CaseManagementNoteLink.D
                                         frm.type4.checked = true;
                                         //frm.type5.checked = true;
                                     }
+                                    
+                                    function initialTypeSelect(){
+                                        var frm = document.forms.RxSearchAllergyForm;
+
+                                        frm.type1.checked = true;
+                                        frm.type2.checked = true;
+                                        frm.type3.checked = false;
+                                        frm.type4.checked = true;
+                                        //frm.type5.checked = true;
+                                    }
 
                                     function typeClear(){
                                         var frm = document.forms.RxSearchAllergyForm;
@@ -252,7 +472,7 @@ String annotation_display = org.oscarehr.casemgmt.model.CaseManagementNoteLink.D
                                         frm.type5.checked = false;
                                     }
 
-                                    typeSelect();
+                                    initialTypeSelect();
                                 </script> <input type=button
 								class="ControlPushButton" onclick="javascript:typeSelect();"
 								value="Select All" /> <input type=button
@@ -260,11 +480,14 @@ String annotation_display = org.oscarehr.casemgmt.model.CaseManagementNoteLink.D
 								value="Clear All" /></td>
 						</tr>
 					</table>
+					
 				</html:form> <br>
 				<br>
-				<%
-                        String sBack="SearchDrug.jsp";
-                      %> <input type=button class="ControlPushButton"
+				<% 
+				String sBack="SearchDrug.jsp"; 
+				%> 
+				
+				<input type=button class="ControlPushButton"
 					onclick="javascript:window.location.href='<%=sBack%>';"
 					value="Back to Search Drug" /></td>
 			</tr>
@@ -291,16 +514,7 @@ String annotation_display = org.oscarehr.casemgmt.model.CaseManagementNoteLink.D
 		<td width="100%" height="0%" style="padding: 5" bgcolor="#DCDCDC"
 			colspan="2"></td>
 	</tr>
-
+	<% } %>
 </table>
 </body>
 </html:html>
-
-
-
-
-
-
-
-
-

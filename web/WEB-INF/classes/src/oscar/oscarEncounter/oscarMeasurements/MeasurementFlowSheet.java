@@ -82,7 +82,7 @@ public class MeasurementFlowSheet {
     //Hashtable dsRulesHash = new Hashtable();   //Each items Rules ** Not sure what to do with yet
     //String demographic = null;   //not used
     String[] dxTriggers = null; // triggers that will cause this flowsheet to show up in a patients profice
-    
+    String[] programTriggers = null;
      
     
     
@@ -116,9 +116,17 @@ public class MeasurementFlowSheet {
     public void parseDxTriggers(String s) {
         dxTriggers = s.split(","); //TODO: what do about different coding systems.
     }
+    
+    public void parseProgramTriggers(String s) {
+        programTriggers = s.split(",");
+    }
 
     public String[] getDxTriggers() {
         return dxTriggers;
+    }
+    
+    public String[] getProgramTriggers() {
+        return programTriggers;
     }
     
     public String getDxTriggersString(){ 
@@ -134,6 +142,20 @@ public class MeasurementFlowSheet {
        }
        return sb.toString();
     }
+    
+    public String getProgramTriggersString(){ 
+        StringBuffer sb = new StringBuffer();
+        boolean firstElement = true;
+        if (programTriggers != null){
+            for(String s:programTriggers){
+                 if (!firstElement){
+                     sb.append(",");
+                 }   
+                 sb.append(s);
+            }  
+        }
+        return sb.toString();
+     }
 
     /** Creates a new instance of MeasurementFlowSheet */
     public MeasurementFlowSheet() {

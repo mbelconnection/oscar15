@@ -65,6 +65,8 @@
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 <%
 	oscar.oscarRx.pageUtil.RxSessionBean bean=(oscar.oscarRx.pageUtil.RxSessionBean)pageContext.findAttribute("bean");
+	String roleName$ = (String)session.getAttribute("userrole") + "," + (String)session.getAttribute("user");
+	com.quatro.service.security.SecurityManager securityManager = new com.quatro.service.security.SecurityManager();
 %>
 
 
@@ -156,7 +158,7 @@
 						<th align="left"><b>Provider</b></th>
 						<th align="left"><b>Start Date</b></th>
 						<th align="left"><b>End Date</b></th>
-						<th align="left"><b>Prescription Date</b></th>
+						<th align="left"><b>Written Date</b></th>
 						<th align="left"><b>Prescription Details</b></th>
 						<th colspan="2"></th>
 					</tr>
@@ -177,12 +179,12 @@
 						<td><%=drug.prescriptionDetails%></td>
 						<td>
 						<%
-							if (drug.customName==null)
-									{
+							if (drug.customName==null) {
 						%> <a href="javascript:ShowDrugInfo('<%=drug.genericName%>');">Info</a> <%
 							}
 						%>
 						</td>
+						<%if(securityManager.hasWriteAccess("_rx",roleName$,true)) {%>
 						<td>
 							<%
 								if (drug.isLocal)
@@ -227,10 +229,9 @@
 								}
 							%>
 						</td>
+						<% } %>
 					</tr>
-					<%
-						}
-					%>
+					<% } %>
 				</table>
 				</td>
 			</tr>

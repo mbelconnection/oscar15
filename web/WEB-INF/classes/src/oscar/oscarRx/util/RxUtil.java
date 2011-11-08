@@ -547,10 +547,15 @@ public class RxUtil {
         String takeMax = "0";
         String durationSpec = "";
         int quantity = 0;
+        List<String> policyViolations = new ArrayList<String>();
 
         if (instructions.trim().length() == 0) {
             setEmptyValues(rx);
         } else {
+        	
+        	//do we have some policies/restrictions we want to run?
+        	policyViolations.addAll(RxInstructionPolicy.checkInstructions(instructions.trim()));
+        	
             String[] prns = {"\\s(?i)prn$", "^(?i)prn\\s+", "\\s+(?i)prn\\s+"};
             for (String s : prns) {
                 Pattern prnP = Pattern.compile(s);
@@ -636,8 +641,9 @@ public class RxUtil {
                 Matcher matcher = p.matcher(instructions);
                 if (matcher.find()) {
                     frequency = (instructions.substring(matcher.start(), matcher.end())).trim();
+                    String origFrequency = (instructions.substring(matcher.start(), matcher.end())).trim();
                     frequency=changeToStandardFrequencyCode(frequency);
-                    Pattern p2 = Pattern.compile("\\s*\\d*\\.*\\d+\\s+" + frequency); //allow to detect decimal number.
+                    Pattern p2 = Pattern.compile("\\s*\\d*\\.*\\d+\\s+" + origFrequency); //allow to detect decimal number.
                     Matcher m2 = p2.matcher(instructions);
 
 
@@ -996,6 +1002,7 @@ public class RxUtil {
             rx.setQuantity(null);
             rx.setUnitName(null);
         }
+        rx.setPolicyViolations(policyViolations);
         p("below set special");
         HashMap hm = new HashMap();
         hm.put("takeMin", rx.getTakeMin());
@@ -1007,6 +1014,7 @@ public class RxUtil {
         hm.put("durationUnit", rx.getDurationUnit());
         hm.put("prn", rx.getPrn());
         hm.put("quantity", rx.getQuantity());
+        hm.put("policyViolations", policyViolations);
         //    p(instructions);
         System.out.println("in parse instruction: " + hm);
         return;
@@ -1131,7 +1139,12 @@ public class RxUtil {
 
     public static void setDefaultSpecialQuantityRepeat(RxPrescriptionData.Prescription rx) {
 
-        rx.setSpecial("1 OD");
+    	String defaultRx = OscarProperties.getInstance().getProperty("rx.default_instruction");
+    	if(defaultRx != null) {
+    		rx.setSpecial(defaultRx);
+    	} else {
+    		rx.setSpecial("1 OD");
+    	}
         rx.setQuantity(getDefaultQuantity());
         rx.setRepeat(0);
 

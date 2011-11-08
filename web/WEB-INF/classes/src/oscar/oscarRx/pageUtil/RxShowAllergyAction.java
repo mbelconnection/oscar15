@@ -33,7 +33,11 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.oscarehr.common.dao.UserPropertyDAO;
+import org.oscarehr.common.model.UserProperty;
+import org.oscarehr.util.SpringUtils;
 
+import oscar.OscarProperties;
 import oscar.oscarRx.data.RxPatientData;
 
 
@@ -50,8 +54,21 @@ public final class RxShowAllergyAction extends Action {
             return (mapping.findForward("Logout"));
         }
         
+        boolean useRx3=false;
+        String rx3 = OscarProperties.getInstance().getProperty("RX3");
+        if(rx3!=null&&rx3.equalsIgnoreCase("yes")) {
+        	useRx3=true;
+        }        
+        UserPropertyDAO userPropertyDAO = (UserPropertyDAO) SpringUtils.getBean("UserPropertyDAO");
+        String provider = (String) request.getSession().getAttribute("user");        
+        UserProperty propUseRx3 = userPropertyDAO.getProp(provider, UserProperty.RX_USE_RX3);
+        if(propUseRx3!=null && propUseRx3.getValue().equalsIgnoreCase("yes"))
+                useRx3=true;
+        
+        
         String user_no = (String) request.getSession().getAttribute("user");
         String demo_no = (String) request.getParameter("demographicNo");
+        String view = (String) request.getParameter("view");
                
         
         if(demo_no == null){
@@ -73,6 +90,10 @@ public final class RxShowAllergyAction extends Action {
         
         bean.setProviderNo(user_no);
         bean.setDemographicNo(Integer.parseInt(demo_no));
+        if(view != null) {
+        	bean.setView(view);
+        }
+        
         
         request.getSession().setAttribute("RxSessionBean", bean);
         
@@ -86,9 +107,13 @@ public final class RxShowAllergyAction extends Action {
             throw new ServletException(ex);
         }
         
+        String forward="success";
+        if(useRx3) {
+        	forward="successRX3";
+        }
         if(patient!=null) {
             request.getSession().setAttribute("Patient", patient);
-            return (mapping.findForward("success"));            
+            return (mapping.findForward(forward));            
         } else {//no records found        
             response.sendRedirect("error.html");
             return null;

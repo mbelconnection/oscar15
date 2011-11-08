@@ -713,7 +713,7 @@ java.util.Locale vLocale =(java.util.Locale)session.getAttribute(org.apache.stru
     <a href="providercontrol.jsp?year=<%=year%>&month=<%=month%>&day=1&view=<%=view==0?"0":("1&curProvider="+request.getParameter("curProvider")+"&curProviderName="+request.getParameter("curProviderName") )%>&displaymode=month&dboperation=searchappointmentmonth" TITLE='<bean:message key="provider.appointmentProviderAdminDay.viewMonthSched"/>' OnMouseOver="window.status='<bean:message key="provider.appointmentProviderAdminDay.viewMonthSched"/>' ; return true"><bean:message key="global.month"/></a>
  </li>
  <li>
-    <a href="#" ONCLICK ="popupPage2('<%=resourcebaseurl%>');return false;" title="<bean:message key="global.resources"/>" onmouseover="window.status='<bean:message key="provider.appointmentProviderAdminDay.viewResources"/>';return true"><bean:message key="global.resources"/></a>
+    <a href="#" ONCLICK ="popupPage2('<%=resourcebaseurl%>');return false;" title="<bean:message key="provider.appointmentProviderAdminDay.viewResources"/>" onmouseover="window.status='<bean:message key="provider.appointmentProviderAdminDay.viewResources"/>';return true"><bean:message key="global.resources"/></a>
  </li>
 </caisi:isModuleLoad>
 
@@ -732,6 +732,8 @@ java.util.Locale vLocale =(java.util.Locale)session.getAttribute(org.apache.stru
 </li>
 
 <oscar:oscarPropertiesCheck property="NOT_FOR_CAISI" value="no" defaultVal="true">
+
+<security:oscarSec roleName="<%=roleName$%>" objectName="_billing" rights="r">
 <li>
      <%if (vLocale.getCountry().equals("BR")) { %>
        <a HREF="#" ONCLICK ="popupPage2('../oscar/billing/consultaFaturamentoMedico/init.do');return false;" TITLE='<bean:message key="global.genBillReport"/>' onMouseOver="window.status='<bean:message key="global.genBillReport"/>';return true"><bean:message key="global.billing"/></a>
@@ -739,6 +741,8 @@ java.util.Locale vLocale =(java.util.Locale)session.getAttribute(org.apache.stru
 	<a HREF="#" ONCLICK ="popupPage2('../billing/CA/<%=prov%>/billingReportCenter.jsp?displaymode=billreport&providerview=<%=curUser_no%>');return false;" TITLE='<bean:message key="global.genBillReport"/>' onMouseOver="window.status='<bean:message key="global.genBillReport"/>';return true"><bean:message key="global.billing"/></a>
      <% } %>
 </li>
+</security:oscarSec>
+
 <security:oscarSec roleName="<%=roleName$%>" objectName="_appointment.doctorLink" rights="r">
    <li>
        <a HREF="#" ONCLICK ="popupPage2('../oscarMDS/Index.jsp?providerNo=<%=curUser_no%>', 'Lab');return false;" TITLE='<bean:message key="provider.appointmentProviderAdminDay.viewLabReports"/>'>
@@ -784,7 +788,7 @@ java.util.Locale vLocale =(java.util.Locale)session.getAttribute(org.apache.stru
 	<span id="oscar_new_tickler"><bean:message key="global.btntickler"/></span></a>
    </caisi:isModuleLoad>
    <caisi:isModuleLoad moduleName="ticklerplus">
-    <a HREF="#" ONCLICK ="popupPage2('../Tickler.do?filter.demographic_no=','<bean:message key="global.tickler"/>');return false;" TITLE='<bean:message key="global.tickler"/>'+'+'>
+    <a HREF="#" ONCLICK ="popupPage2('../Tickler.do?filter.assignee=<%=curUser_no%>&filter.demographic_no=&filter.demographic_webName=','<bean:message key="global.tickler"/>');return false;" TITLE='<bean:message key="global.tickler"/>'+'+'>
 	<span id="oscar_new_tickler"><bean:message key="global.btntickler"/></span></a>
    </caisi:isModuleLoad>
 </li>
@@ -839,11 +843,17 @@ java.util.Locale vLocale =(java.util.Locale)session.getAttribute(org.apache.stru
 <caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">
 <INPUT TYPE="text" NAME="providername" VALUE="" WIDTH="2" HEIGHT="10" border="0" size="10" maxlength="10">-
 <INPUT TYPE="SUBMIT" NAME="Go" VALUE='<bean:message key="receptionist.appointmentreceptionistadminday.btnGo"/>' onClick="findProvider(<%=year%>,<%=month%>,<%=day%>);return false;">
-
-<a href=# onClick ="popupPage(600,750,'<%=resourcebaseurl%>')"><bean:message key="global.help"/></a>
-&nbsp;&nbsp;
+&nbsp;&nbsp;<!--space for scratch pad-->
 </caisi:isModuleLoad>
+
   <a href="javascript: function myFunction() {return false; }" onClick="popup(700,1000,'../scratch/index.jsp','scratch')"><span id="oscar_scratch"></span></a>&nbsp;
+
+	<caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">
+	<a href=# onClick ="popupPage(600,750,'<%=resourcebaseurl%>')"><bean:message key="global.help"/></a>
+	</caisi:isModuleLoad>
+	
+	| <a href="../logout.jsp"><bean:message key="global.btnLogout"/>&nbsp;</a>
+	
 </td>
 </form>
 
@@ -956,11 +966,11 @@ if (curProvider_no[provIndex].equals(provNum)) { %>
 </security:oscarSec>
 </select>
 
-
+&nbsp;|&nbsp;
 <% if(request.getParameter("viewall")!=null && request.getParameter("viewall").equals("1") ) { %>
-         <a href=# onClick = "review('0')" title="<bean:message key="provider.appointmentProviderAdminDay.viewProvAval"/>"><bean:message key="provider.appointmentProviderAdminDay.schedView"/></a> &nbsp;|&nbsp;
+         <a href=# onClick = "review('0')" title="<bean:message key="provider.appointmentProviderAdminDay.viewProvAval"/>"><bean:message key="provider.appointmentProviderAdminDay.schedView"/></a>
 <% } else {  %>
-         <a href=# onClick = "review('1')" title="<bean:message key="provider.appointmentProviderAdminDay.viewAllProv"/>"><bean:message key="provider.appointmentProviderAdminDay.viewAll"/></a> &nbsp;|&nbsp;
+         <a href=# onClick = "review('1')" title="<bean:message key="provider.appointmentProviderAdminDay.viewAllProv"/>"><bean:message key="provider.appointmentProviderAdminDay.viewAll"/></a>
 <% } %>
 </logic:notEqual>
 
@@ -972,7 +982,7 @@ if (curProvider_no[provIndex].equals(provNum)) { %>
 </logic:equal>
 
 <% } %>
-         <a href="../logout.jsp"><bean:message key="global.btnLogout"/> <img src="../images/next.gif"  border="0" width="10" height="9" align="absmiddle"> &nbsp;</a>
+         
          
 <!-- caisi infirmary view extension add fffffffffffff-->
 <caisi:isModuleLoad moduleName="caisi">
@@ -1491,7 +1501,7 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
         <a href=# onClick ="popupPage(310,430,'../share/CalendarPopup.jsp?urlfrom=../provider/providercontrol.jsp&year=<%=strYear%>&month=<%=strMonth%>&param=<%=URLEncoder.encode("&view=0&displaymode=day&dboperation=searchappointmentday","UTF-8")%><%=isWeekView?URLEncoder.encode("&provider_no="+provNum, "UTF-8"):""%>')"><bean:message key="global.calendar"/></a></td>
 
         	<td ALIGN="RIGHT" BGCOLOR="Ivory">
-           <a href="../logout.jsp"><bean:message key="global.btnLogout"/> <img src="../images/next.gif"  border="0" width="10" height="9" align="absmiddle"> &nbsp;</a> </td>
+           | <a href="../logout.jsp"><bean:message key="global.btnLogout"/> &nbsp;</a> </td>
   			</TR>
 			</table>
 		</td></tr>

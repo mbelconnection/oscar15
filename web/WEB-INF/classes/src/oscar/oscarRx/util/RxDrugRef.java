@@ -237,10 +237,15 @@ public class RxDrugRef {
          return vec;
      }
 
-     public Vector list_drug_element3(String searchStr) throws Exception{
+     public Vector list_drug_element3(String searchStr, boolean rightWildcardOnly) throws Exception{
           Vector params = new Vector();
           params.addElement(searchStr);
-          Vector<Hashtable> vec = (Vector)  callWebserviceLite("list_search_element3",params);
+          Vector<Hashtable> vec = null;
+          if(rightWildcardOnly) {
+        	  vec  = (Vector)  callWebserviceLite("list_search_element3_right",params);
+          } else {
+        	  vec  = (Vector)  callWebserviceLite("list_search_element3",params);
+          }
           return vec;
      }
      
@@ -279,12 +284,20 @@ public class RxDrugRef {
      }	
      
      
-     
      public Vector list_search_element_select_categories(String searchStr,Vector catVec){
+        return list_search_element_select_categories(searchStr,catVec,false);
+     }
+     
+     public Vector list_search_element_select_categories(String searchStr,Vector catVec, boolean wildcardRightOnly){
          Vector params = new Vector();
          params.addElement(searchStr);
          params.addElement(catVec);
-         Vector vec = (Vector) callWebservice("list_search_element_select_categories",params);             
+         Vector vec = null;
+         if(wildcardRightOnly) {
+        	 vec = (Vector) callWebservice("list_search_element_select_categories_right",params);             
+         } else {
+        	 vec = (Vector) callWebservice("list_search_element_select_categories",params);    
+         }
          return vec;		         
      }	
      
@@ -795,6 +808,13 @@ public class RxDrugRef {
          Vector vec = (Vector) callWebserviceLite("get_allergy_warnings",params);             
          return vec;		         
      }
+    
+    public Vector getAllergyClasses(Vector allergies)throws Exception{
+        Vector params = new Vector();
+        params.addElement(allergies);
+        Vector vec = (Vector) callWebserviceLite("get_allergy_classes",params);             
+        return vec;		         
+    }
 
 
     public Vector getInactiveDate(String din) throws Exception{

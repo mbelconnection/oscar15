@@ -19,4 +19,6 @@ public interface MeasurementsDao {
 			String demo);
 	
 	public SortedMap<String,String> getPatientMeasurementTypeDescriptions(String demo);
+	
+	public List<Measurements> getMeasurementsByDemographicAndType(Integer demographicNo, String type);
 }

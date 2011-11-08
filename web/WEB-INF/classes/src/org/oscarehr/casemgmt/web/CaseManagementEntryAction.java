@@ -52,6 +52,7 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
+import org.oscarehr.PMmodule.model.Admission;
 import org.oscarehr.PMmodule.service.AdmissionManager;
 import org.oscarehr.PMmodule.service.ProgramManager;
 import org.oscarehr.casemgmt.dao.CaseManagementIssueDAO;
@@ -73,8 +74,9 @@ import org.oscarehr.util.SessionConstants;
 import org.oscarehr.util.SpringUtils;
 import org.oscarehr.util.WebUtils;
 import org.springframework.web.context.WebApplicationContext;
-import oscar.dms.EDocUtil;
+
 import oscar.OscarProperties;
+import oscar.dms.EDocUtil;
 import oscar.log.LogAction;
 import oscar.log.LogConst;
 import oscar.oscarEncounter.pageUtil.EctSessionBean;
@@ -770,19 +772,28 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 	    /* Save annotation */
 	    String attrib_name = request.getParameter("annotation_attrib");
 	    HttpSession se = request.getSession();
-	    if (attrib_name!=null) {
-		CaseManagementNote cmn = (CaseManagementNote)se.getAttribute(attrib_name);
-		if (cmn!=null) {
-		    caseManagementMgr.saveNoteSimple(cmn);
-		    CaseManagementNoteLink cml = new CaseManagementNoteLink();
-		    cml.setTableName(cml.CASEMGMTNOTE);
-		    cml.setTableId(note.getId());
-		    cml.setNoteId(cmn.getId());
-		    caseManagementMgr.saveNoteLink(cml);
-                    LogAction.addLog(providerNo, LogConst.ANNOTATE, LogConst.CON_CME_NOTE, String.valueOf(cmn.getId()), request.getRemoteAddr(), demo, cmn.getNote());
-		    se.removeAttribute(attrib_name);
-		}
-	    }
+            CaseManagementNote cmn = (CaseManagementNote)se.getAttribute(attrib_name);
+            if (cmn!=null) {
+                //new annotation created and got it in session attribute
+                
+                caseManagementMgr.saveNoteSimple(cmn);
+                CaseManagementNoteLink cml = new CaseManagementNoteLink();
+                cml.setTableName(cml.CASEMGMTNOTE);
+                cml.setTableId(note.getId());
+                cml.setNoteId(cmn.getId());
+                caseManagementMgr.saveNoteLink(cml);
+                LogAction.addLog(providerNo, LogConst.ANNOTATE, LogConst.CON_CME_NOTE, String.valueOf(cmn.getId()), request.getRemoteAddr(), demo, cmn.getNote());
+                se.removeAttribute(attrib_name);
+            } else if (!noteId.equals("0")) {
+                //Not a new note, look for old annotation
+
+                CaseManagementNoteLink cml = caseManagementMgr.getLatestLinkByTableId(CaseManagementNoteLink.CASEMGMTNOTE, Long.valueOf(noteId));
+                if (cml!=null) {//old annotation exists - create new link
+
+                    CaseManagementNoteLink cml_n = new CaseManagementNoteLink(CaseManagementNoteLink.CASEMGMTNOTE,note.getId(),cml.getNoteId());
+                    caseManagementMgr.saveNoteLink(cml_n);
+                }
+            }
             caseManagementMgr.getEditors(note);
             
             if( newNote ) {                
@@ -899,10 +910,17 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
         note.setReporter_caisi_role(role);
 
         try {
-            team = String.valueOf((admissionManager.getAdmission(note.getProgram_no(), Integer.valueOf(note.getDemographic_no()))).getTeamId());
+        	
+        	Admission admission = admissionManager.getAdmission(note.getProgram_no(), Integer.valueOf(note.getDemographic_no()) );
+        	if(admission != null) {
+        		team = String.valueOf(admission.getTeamId());
+        	} else {
+        		log.info("Admission not found..using programId="+note.getProgram_no() + " on demographic=" + note.getDemographic_no());
+        		team = "0";
+        	}
         }
         catch (Throwable e) {
-            log.error(e);
+            log.error("Error",e);
             team = "0";
         }
         note.setReporter_program_team(team);

@@ -63,7 +63,7 @@ public class EctDisplayEFormAction extends EctDisplayAction {
 
         StringBuffer javascript = new StringBuffer("<script type=\"text/javascript\">");        
         String js = ""; 
-        ArrayList eForms = EFormUtil.listEForms(EFormUtil.DATE, EFormUtil.NAME, EFormUtil.CURRENT);
+        ArrayList eForms = EFormUtil.listEForms(EFormUtil.DATE, EFormUtil.CURRENT, EFormUtil.NAME );
         String key;
         int hash;
         String BGCOLOUR = request.getParameter("hC");

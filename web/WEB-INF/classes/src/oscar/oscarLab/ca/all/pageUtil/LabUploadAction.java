@@ -30,15 +30,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.upload.FormFile;
+import org.oscarehr.common.OtherIdManager;
+import org.oscarehr.common.model.OtherId;
 
+import oscar.OscarProperties;
 import oscar.oscarDB.DBHandler;
 import oscar.oscarLab.FileUploadCheck;
+import oscar.oscarLab.ca.all.parsers.HHSEmrDownloadHandler;
 import oscar.oscarLab.ca.all.upload.HandlerClassFactory;
 import oscar.oscarLab.ca.all.upload.handlers.MessageHandler;
 import oscar.oscarLab.ca.all.util.Utilities;
@@ -75,6 +80,20 @@ public class LabUploadAction extends Action {
                 logger.debug("Validated Successfully");
                 HandlerClassFactory f = new HandlerClassFactory();
                 MessageHandler msgHandler = f.getHandler(type);
+                
+                if(type.equals("HHSEMR") && OscarProperties.getInstance().getProperty("lab.hhsemr.filter_ordering_provider", "false").equals("true")) {
+                	logger.info("Applying filter to HHS EMR lab");
+                	String hl7Data = FileUtils.readFileToString(file, "UTF-8");
+                	HHSEmrDownloadHandler filterHandler = new HHSEmrDownloadHandler();
+                	filterHandler.init(hl7Data);
+                	OtherId providerOtherId = OtherIdManager.searchTable(OtherIdManager.PROVIDER, "STAR", filterHandler.getClientRef());
+                	if(providerOtherId == null) {
+                		logger.info("Filtering out this message, as we don't have client ref " + filterHandler.getClientRef() + " in our database (" + file + ")");
+                		outcome="uploaded";
+                		request.setAttribute("outcome", outcome);
+                		return mapping.findForward("success");
+                	}
+                }
                 
                 is = new FileInputStream(file);
                 FileUploadCheck fileC = new FileUploadCheck();

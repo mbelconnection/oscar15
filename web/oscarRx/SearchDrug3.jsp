@@ -1955,12 +1955,28 @@ function updateQty(element){
              new Ajax.Updater(divId,url,{method:'get',parameters:params,insertion:Insertion.Bottom,asynchronous:true});
          }
 
+    function validateRxDate() {
+          	var rx=true;
+          	jQuery('input[name^="rxDate_"]').each(function(){    		
+          		var strRx  = jQuery(this).val(); 
+          		
+          		if(!checkAndValidateDate(strRx,null)) {
+          			jQuery(this).focus();
+          			rx=false;
+          			return false;
+          		}
+          		 
+          	});
+          	return rx;
+     }          
+         
     function validateWrittenDate() {
     	var x=true;
     	jQuery('input[name^="writtenDate_"]').each(function(){    		
     		var str1  = jQuery(this).val(); 
     		
     		if(!checkAndValidateDate(str1,null)) {
+    			jQuery(this).focus();
     			x=false;
     			return false;
     		}
@@ -1986,6 +2002,9 @@ function updateQty(element){
     	if(!validateWrittenDate()) {
     		return false;
     	}
+		if(!validateRxDate()) {
+    		return false;
+    	}
     	
         var data=Form.serialize($('drugForm'));
         var url= "<c:out value="${ctx}"/>" + "/oscarRx/WriteScript.do?parameterValue=updateSaveAllDrugs&rand="+Math.floor(Math.random()*10001);
@@ -2001,7 +2020,10 @@ function updateQty(element){
     function updateSaveAllDrugs(){
     	if(!validateWrittenDate()) {
     		return false;    		
-    	}    	
+    	}
+		if(!validateRxDate()) {
+    		return false;
+    	}
         var data=Form.serialize($('drugForm'));
         var url= "<c:out value="${ctx}"/>" + "/oscarRx/WriteScript.do?parameterValue=updateSaveAllDrugs&rand="+Math.floor(Math.random()*10001);
         new Ajax.Request(url,

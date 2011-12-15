@@ -475,6 +475,45 @@ public class PhsStarHandler extends BasePhsStarHandler {
 	}
 
 	/**
+	 * For debugging
+	 */
+	public void printApptStatusInfo() throws HL7Exception {
+		//find appt by TAN/AN
+		PatientId id = this.getTemporaryAccountNumber();
+		Map<String,PatientId> ids = this.extractInternalPatientIds();
+		OtherId otherId = null;
+		if(id != null) {
+			otherId = OtherIdManager.searchTable(OtherIdManager.APPOINTMENT,"TAN",id.getId());
+		} else {
+			if(ids.get("TAN")!=null) {
+				otherId = OtherIdManager.searchTable(OtherIdManager.APPOINTMENT,"TAN",ids.get("TAN").getId());
+			}
+			if(ids.get("AN")!=null) {
+				otherId = OtherIdManager.searchTable(OtherIdManager.APPOINTMENT,"AN",ids.get("AN").getId());
+			}
+			if(otherId==null && extractPatientAccountNumber() != null) {
+				otherId = OtherIdManager.searchTable(OtherIdManager.APPOINTMENT,"AN",extractPatientAccountNumber().getId());
+			}
+		}
+
+
+		if(otherId == null) {
+			logger.warn("Could not find appt to reschedule");
+			return;
+		}
+
+		Appointment appt = appointmentDao.find(Integer.parseInt(otherId.getTableId()));
+
+		if(appt == null) {
+			logger.warn("couldn't load up the appt");
+			return;
+		}
+
+		logger.info("APPOINTMENT STATUS INFORMATION FOR APPOINTMENT " + appt.getId() + ":" + appt.getStatus());
+
+	}
+
+	/**
 	 * Update the appointment status.
 	 *
 	 * @param newStatus
@@ -797,6 +836,9 @@ public class PhsStarHandler extends BasePhsStarHandler {
     		}
 
     		this.logPatientMessage(controlId,msgType+"^"+triggerEvent,hl7Body,demographicNo);
+
+    		logger.info("printing out appt status info from database");
+    		printApptStatusInfo();
         }
 
 

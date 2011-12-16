@@ -23,11 +23,17 @@
 -->
 
 <%@ page language="java" isErrorPage="true"%>
+<%@page import="java.text.SimpleDateFormat" %>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
-<title>Doh!</title>
+<title>Error - <%=request.getParameter("msg")%></title>
 </head>
 <h2>An Error has occurred in this application.</h2>
 
 <h4 style="color:red"><%=request.getParameter("msg")%></h4>
+<%
+java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+String today = formatter.format(new java.util.Date());
+%>
+<%System.out.println(today + " Error:" + request.getParameter("msg") + " - Requested MRN: " + request.getParameter("mrn")); %>
 

@@ -27,7 +27,9 @@
 <%@page import="org.oscarehr.PMmodule.dao.ProviderDao" %>
 <%@page import="org.oscarehr.common.model.Provider" %>
 
+
 <%
+
 	String strMrn = request.getParameter("mrn");
 	if(strMrn == null || strMrn.equals("")) {
 		response.sendRedirect("error.jsp?msg=No Patient Context present. Please contact system administrator.");
@@ -36,7 +38,7 @@
 	ClientDao clientDao = (ClientDao)SpringUtils.getBean("clientDao");
 	List<Demographic> clientList = clientDao.getClientsByChartNo(strMrn);
 	if(clientList.size() == 0) {
-		response.sendRedirect("error.jsp?msg=Patient not found in OSCAR. Please contact system administrator.");		
+		response.sendRedirect("error.jsp?mrn=" + request.getParameter("mrn") + "&msg=Patient not found in OSCAR. Please contact system administrator.");		
 	}
 	
 	if(clientList.size() > 1) {
@@ -53,10 +55,12 @@
 	}
 	
 	//allergies
+
 	AllergyDAO allergyDao = (AllergyDAO)SpringUtils.getBean("AllergyDAO");
 	@SuppressWarnings("unchecked")
 	List<Allergy> allergies = allergyDao.getAllergies(String.valueOf(demographic.getDemographicNo()));
-
+	System.out.println(allergies);
+	
 	//history
 	ProviderDao providerDao = (ProviderDao)SpringUtils.getBean("providerDao");
 	CaseManagementNoteDAO caseManagementNoteDao = (CaseManagementNoteDAO)SpringUtils.getBean("CaseManagementNoteDAO");
@@ -79,8 +83,8 @@
 	CommonLabResultData comLab = new CommonLabResultData();
     ArrayList labs = comLab.populateLabResultsData("",String.valueOf(demographic.getDemographicNo()), "", "","","U");
     Collections.sort(labs);
-	System.out.println("# of labs="+labs.size());    
- 
+	System.out.println("# of labs="+labs.size());   
+	 
 %>
 
 
@@ -88,6 +92,7 @@
 //String[] navArray={"Patient List","Allergies","Consultations","Current Issues","Treatments","History","Measurements","Medications","Exams","Labs","Risk Factors","Tests","Hospitalizations","Resources"};
 
 String[] navArray={"Allergies","History","Measurements","Medications","Labs"};
+
 
 
 //table width
@@ -108,7 +113,7 @@ String LinkParam="NavMenu";
 <html>
 <head>
 
-<title>Oscar - Portal Integration</title>
+<title>OSCAR - Portal Integration</title>
 
 <STYLE type="text/css" >
 body{
@@ -190,9 +195,25 @@ border-bottom: 1px solid #8D8D69;
 td.padding_body{
 padding-left:5px;
 }
+
+table.allergy_legend{
+border:0;
+padding-left:20px;
+}
+
+table.allergy_legend td{
+font-size:8;
+padding-right:6;
+}
+
+table.colour_codes{
+width:8px;
+height:10px;
+border:1px solid #999999;
+}
 </style>
 
-<script>
+<script type="text/javascript" language="javascript"> 
 	function changeView(name) {		
 		<%
 			for(int x=0;x<navArray.length;x++) {
@@ -204,7 +225,24 @@ padding-left:5px;
 			}
 		%>		
 	}
+	
+	function popupPage(varpage, windowname) {
+	    var page = "" + varpage;
+	    windowprops = "height=700,width=800,location=no,"
+	    + "scrollbars=yes,menubars=no,status=yes,toolbars=no,resizable=yes,top=10,left=200";
+	    var popup = window.open(page, windowname, windowprops);
+	    if (popup != null) {
+	       if (popup.opener == null) {
+	          popup.opener = self;
+	       }
+	       popup.focus();
+	    }
+	}	
 </script>
+
+
+
+
 </head>
 
 <body bgcolor="#F7F7EC">
@@ -215,7 +253,10 @@ padding-left:5px;
 	
 	<!--start of search table-->
 	<table width="100%" cellspacing='0' cellpadding="1" bgcolor="#BABA97" border="0" >
-		<tr >			
+		<tr >
+			<td align="left">
+			<font color="#333333" size="3"><b>Patient: <%=demographic.getFormattedName().toUpperCase()%> </b></font>
+			</td>		
 			<td align="right">
 				<font color="#333333" size="5"><b>OSCAR</b></font>
 			</td>
@@ -229,7 +270,7 @@ padding-left:5px;
 		<td>
 
 			<table  class="patient_record" >
-				<td>Patient Name: <span class="patient_record_text"><%=demographic.getFormattedName()%></span></td> <td>Sex: <span class="patient_record_text"><%=demographic.getSex()%></span></td> <td>Age: <span class="patient_record_text"><%=demographic.getAge() %></span></td> <td>DOB: <span class="patient_record_text"><%=demographic.getFormattedDob()%></span></td> <td>HIN: <span class="patient_record_text"><%=demographic.getHin()%></span></td> <td></td>
+				<td>MRN: <span class="patient_record_text"><%=demographic.getChartNo() %></span></td> <td>Sex: <span class="patient_record_text"><%=demographic.getSex()%></span></td> <td>Age: <span class="patient_record_text"><%=demographic.getAge() %></span></td> <td>DOB: <span class="patient_record_text"><%=demographic.getFormattedDob()%></span></td> <td>HIN: <span class="patient_record_text"><%=demographic.getHin()%></span></td> <td></td>
 			</table>
 
 			<table  class="patient_record" >
@@ -266,9 +307,13 @@ padding-left:5px;
 		</tr>
 	</table>	
 	<!--end of navigation menu table-->
+	
 		
 	<!--start of alert table-->
 	<!--This table will only appear if there is an alert in the patients master file-->
+	<%
+	//Display alert only when there is one
+	if(alert.length()!=0){%>
 	<table width="100%" cellspacing="0" cellpadding="0" bgcolor="#F8EF8B">
 		<tr>
 			<td class="padding_body">
@@ -278,6 +323,7 @@ padding-left:5px;
 			</td>
 		</tr>
 	</table>		
+	<%} %>
 	<!--end of alert table-->
 	
 	
@@ -527,6 +573,7 @@ padding-left:5px;
 					<td>Discipline</td><td> 	Date of Test </td><td>	Requesting Client </td><td>	Result Status </td><td>	Report Status</td>
 					</tr>
 					<%
+					if(labs.size()!=0){
 						SimpleDateFormat labFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						for(int x=0;x<labs.size();x++) {
 							LabResultData lab = (LabResultData)labs.get(x);	
@@ -540,45 +587,94 @@ padding-left:5px;
 						<td><%= ( (String) ( lab.isFinal() ? "Final" : "Partial") )%></td>
 					</tr>					
 					
-					<%} %>
+					<%}
+					}else{ 
+					%>
+					<tr  class="patient_list_results">
+						<td colspan="5" width="100%">No lab results available.</td>
+					</tr>
+					<%}%>
 					</table>
 					</div>
+														
+					<div id="Allergies" >
+									
+					<%
 					
-					<div id="Allergies">
+					 //1 mild 2 moderate 3 severe 4 unknown
+					 
+					 String[] ColourCodesArray=new String[5];
+					 ColourCodesArray[1]="#F5F5F5"; // Mild Was set to yellow (#FFFF33) SJHH requested not to flag mild
+					 ColourCodesArray[2]="#FF6600"; // Moderate
+					 ColourCodesArray[3]="#CC0000"; // Severe
+					 ColourCodesArray[4]="#E0E0E0"; // unknown
+					 
+					 String allergy_colour_codes = "<table width='"+tblWidth+"'><td align='right'><table class='allergy_legend' cellspacing='0'><tr><td><b>Legend:</b></td> <td > <table class='colour_codes' bgcolor='"+ColourCodesArray[1]+"'><td> </td></table></td> <td >Mild</td> <td > <table class='colour_codes' bgcolor='"+ColourCodesArray[2]+"'><td> </td></table></td> <td >Moderate</td><td > <table class='colour_codes' bgcolor='"+ColourCodesArray[3]+"'><td> </td></table></td> <td >Severe</td> </tr></table></td></table>";
+					 out.print(allergy_colour_codes);
+					%>
+				
 						<!--Table alloted for Legend-->
 						<!-- 
 						<table width="<%=tblWidth%>"><td align="right"><img src="images/notes.gif" border="0" width="10" height="12" alt="Annotation"><font size="1"> = Annotation</font></td></table>
 						-->
+						
 						<table width="<%=tblWidth%>"  bgcolor="#8D8D69" cellspacing="1" cellpadding="1">
 							<tr  class="patient_list_head">
-							<td>Entry Date</td> 	<td>Description</td> 	<td>Allergy Type</td> 	<td>Severity</td> 	<td>Onset of Reaction</td> 	<td>Reaction</td> 	<td>Start Date</td> <!-- <td width="18" align="center">	<img src="images/notes.gif" border="0" alt="Annotation"> </td> -->
+							<td>Entry Date</td> 	<td>Description</td> 	<!--  <td>Allergy Type</td>--> 	<td>Severity</td> 	<td>Onset of Reaction</td> 	<td>Reaction</td> 	<td>Start Date</td> <!-- <td width="18" align="center">	<img src="images/notes.gif" border="0" alt="Annotation"> </td> -->
 							</tr>
 	
-							<%
+							<%if(allergies.size()!=0){
 								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 								for(int x=0;x<allergies.size();x++) {
 									Allergy allergy = allergies.get(x);
+									
+									
+									String sevColour;
+									// Mild Moderate=2 Severe=3 Unknown=4
+									String strSOR=allergy.getSeverityDesc();
+								    if(strSOR.equals("Mild")){
+								    	sevColour=ColourCodesArray[1]; 
+								    }else if(strSOR.equals("Moderate")){
+								    	sevColour=ColourCodesArray[2]; 	
+								    }else if(strSOR.equals("Severe")){
+								    	sevColour=ColourCodesArray[3]; 	
+								    }else if(strSOR.equals("Unknown")){
+								    	sevColour=ColourCodesArray[4]; 	
+								    }else{
+								    	
+								    sevColour="#ffffff"; //clearing severity bgcolor
+								    
+								    }   
 							%>
 									<tr class="patient_list_results">
 										<td><%=formatter.format(allergy.getEntry_date()) %></td>
 										<td><%=allergy.getDescription()%></td>
-										<td><%=allergy.getTypeDesc() %></td>
-										<td><%=allergy.getSeverityDesc() %></td>
+										<!--Hiding for now on reequest from the SJHH Clinical Team  <td><%//=allergy.getTypeDesc() %></td>-->
+										<td bgcolor="<%=sevColour%>"><%=allergy.getSeverityDesc() %></td>
 										<td><%=allergy.getOnsetDesc() %></td>
 										<td><%=allergy.getReaction()%></td>
-										<td><%=formatter.format(allergy.getStart_date()) %></td>
+										<td><%if(allergy.getStart_date()!=null){out.print(formatter.format(allergy.getStart_date())); } %></td>
 										<!-- 
 										<td align="center"><a href="#"><img src="images/notes.gif" border="0" alt="Annotation"></a></td>
 										-->
 									</tr>
 							
-							<% 	} %>							
+							<%}
+							}else{ 
+							%>
+							<tr  class="patient_list_results">
+								<td colspan="7" width="100%">No Allergy data available.</td>
+							</tr>
+							<%}%>						
 						</table>			
-					</div>		
+					</div>
+					
+	
 
 					
 					<!--START Paging Table
-					<table width="<%=tblWidth%>" align="left" cellspacing="1" cellpadding="1">
+					
+					<table width="" align="left" cellspacing="1" cellpadding="1">
 						<td align="right">
 						<font size="2"> 1 of 1 </font>
 						</td>

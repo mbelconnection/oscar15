@@ -88,6 +88,10 @@ public class AddEFormAction extends Action {
          //Check if eform same as previous, if same -> not saved
          String prev_fdid = (String)request.getSession().getAttribute("eform_data_id");
          request.getSession().removeAttribute("eform_data_id");
+         
+         //eforms viewed from oscarFacesheet are currently read only
+         //checking to see if eform_data_id=r 
+         if (prev_fdid!="r"){ 
          boolean sameform = false;
          if (StringUtils.filled(prev_fdid)) {
              EForm prevForm = new EForm(prev_fdid);
@@ -111,7 +115,7 @@ public class AddEFormAction extends Action {
          else {
              MiscUtils.getLogger().debug("Warning! Form HTML exactly the same, new form data not saved.");
          }
-
+         }//end of oscarFacesheet read only check
          return(mapping.findForward("close"));
     }
 }

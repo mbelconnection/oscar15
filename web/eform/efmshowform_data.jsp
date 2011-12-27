@@ -38,7 +38,11 @@
       String parentAjaxId = request.getParameter("parentAjaxId");
       if(parentAjaxId != null) eForm.setAction(parentAjaxId);
 
+      //if eform is viewed from oscarFacesheet a value of "r" is set for eform_data_id
+      //this will prevent the eform from being saved from the oscarFacesheet view since it is readonly
+      if(null == session.getAttribute("eform_data_id")){ 
       session.setAttribute("eform_data_id", id);
+      }
       out.print(eForm.getFormHtml());
   } else {  //if form is viewed from admin screen
       EForm eForm = new EForm(id, "1"); //form cannot be submitted, demographic_no "1" doesn't matter

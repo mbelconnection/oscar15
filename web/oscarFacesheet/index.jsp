@@ -27,7 +27,11 @@
 <%@page import="org.oscarehr.PMmodule.dao.ProviderDao" %>
 <%@page import="org.oscarehr.common.model.Provider" %>
 
+<%-- edoc imports --%>
+<%@ page import="java.util.*, oscar.dms.*"%>
 
+<%-- eform inports --%>
+<%@ page import="oscar.eform.*"%>
 <%
 
 	String strMrn = request.getParameter("mrn");
@@ -54,8 +58,10 @@
 		alert = demographicCust.getCust3();
 	}
 	
+	//demographic_no
+	int demographic_no=demographic.getDemographicNo();
+	
 	//allergies
-
 	AllergyDAO allergyDao = (AllergyDAO)SpringUtils.getBean("AllergyDAO");
 	@SuppressWarnings("unchecked")
 	List<Allergy> allergies = allergyDao.getAllergies(String.valueOf(demographic.getDemographicNo()));
@@ -74,6 +80,8 @@
 	List<Measurements> ht = measurementsDao.getMeasurementsByDemographicAndType(demographic.getDemographicNo(),"HT");
 	List<Measurements> wt = measurementsDao.getMeasurementsByDemographicAndType(demographic.getDemographicNo(),"WT");
 	List<Measurements> bmi = measurementsDao.getMeasurementsByDemographicAndType(demographic.getDemographicNo(),"BMI");
+	List<Measurements> spls = measurementsDao.getMeasurementsByDemographicAndType(demographic.getDemographicNo(),"SPLS");
+	List<Measurements> wc = measurementsDao.getMeasurementsByDemographicAndType(demographic.getDemographicNo(),"WC");
 	
 	//medications
 	CaseManagementManager caseManagementManager = (CaseManagementManager) SpringUtils.getBean("caseManagementManager");
@@ -83,7 +91,70 @@
 	CommonLabResultData comLab = new CommonLabResultData();
     ArrayList labs = comLab.populateLabResultsData("",String.valueOf(demographic.getDemographicNo()), "", "","","U");
     Collections.sort(labs);
-	System.out.println("# of labs="+labs.size());   
+	System.out.println("# of labs="+labs.size()); 
+
+	//eforms
+	String orderByRequest = request.getParameter("orderby");
+	String orderBy = "";
+	if (orderByRequest == null) orderBy = EFormUtil.DATE;
+	else if (orderByRequest.equals("form_subject")) orderBy = EFormUtil.SUBJECT;
+	else if (orderByRequest.equals("form_name")) orderBy = EFormUtil.NAME;
+	
+	String groupView = request.getParameter("group_view");
+	if (groupView == null) {
+	    groupView = "";
+	}	
+	
+	//edocuments
+	String user_no = (String) request.getParameter("providerNo");
+
+	for( Enumeration e = request.getParameterNames(); e.hasMoreElements(); ) {
+	    String name = (String)e.nextElement();
+	    System.out.println("oscarFacesheet: " + name + " -> " + request.getParameter(name));
+	}
+	    
+	//view  - tabs
+	String edoc_view = "all";
+	if (request.getParameter("edoc_view") != null) {
+		edoc_view = (String) request.getParameter("edoc_view");
+	} else if (request.getAttribute("edoc_view") != null) {
+		edoc_view = (String) request.getAttribute("edoc_view");
+	}
+	
+	
+	// "Module" and "function" is the same thing (old dms module)
+	String module = "demographic";
+	String moduleid = String.valueOf(demographic.getDemographicNo());
+	
+	/*if (request.getParameter("function") != null) {
+	    module = request.getParameter("function");
+	    moduleid = request.getParameter("functionid");
+	} else if (request.getAttribute("function") != null) {
+	    module = (String) request.getAttribute("function");
+	    moduleid = (String) request.getAttribute("functionid");
+	}*/
+	
+	String moduleName = EDocUtil.getModuleName(module, moduleid);
+	
+	
+	//sorting
+	String sort = EDocUtil.SORT_OBSERVATIONDATE;
+	String sortRequest = request.getParameter("sort");
+	if (sortRequest != null) {
+	    if (sortRequest.equals("description")) sort = EDocUtil.SORT_DESCRIPTION;
+	    else if (sortRequest.equals("type")) sort = EDocUtil.SORT_DOCTYPE;
+	    else if (sortRequest.equals("contenttype")) sort = EDocUtil.SORT_CONTENTTYPE;
+	    else if (sortRequest.equals("creator")) sort = EDocUtil.SORT_CREATOR;
+	    else if (sortRequest.equals("uploaddate")) sort = EDocUtil.SORT_DATE;
+	    else if (sortRequest.equals("observationdate")) sort = EDocUtil.SORT_OBSERVATIONDATE;
+	}
+	
+	ArrayList doctypes = EDocUtil.getDoctypes(module);
+	
+	   
+	//for now view status will only be active so just setting it to active - John Wilson
+	String viewstatus = "active";
+
 	 
 %>
 
@@ -91,7 +162,7 @@
 <%
 //String[] navArray={"Patient List","Allergies","Consultations","Current Issues","Treatments","History","Measurements","Medications","Exams","Labs","Risk Factors","Tests","Hospitalizations","Resources"};
 
-String[] navArray={"Allergies","History","Measurements","Medications","Labs"};
+String[] navArray={"Allergies","History","Measurements","Medications","Labs", "eForms", "eDocuments"};
 
 
 
@@ -237,7 +308,21 @@ border:1px solid #999999;
 	       }
 	       popup.focus();
 	    }
-	}	
+	}
+	
+	//edocument popup script
+	function popup1(height, width, url, windowName){   
+	  var page = url;  
+	  windowprops = "height="+height+",width="+width+",location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=yes,screenX=0,screenY=0,top=0,left=0";  
+	  var popup=window.open(url, windowName, windowprops);  
+	  if (popup != null){  
+	    if (popup.opener == null){  
+	      popup.opener = self;  
+	    }  
+	  }  
+	  popup.focus();  
+	  
+	}
 </script>
 
 
@@ -443,7 +528,7 @@ border:1px solid #999999;
 					<!--Table alloted for Legend-->
 					<table width="<%=tblWidth%>"><td align="right">&nbsp;</td></table>
 					
-					<table  width="260" bgcolor="#8D8D69" cellspacing="1" cellpadding="1">
+					<table  width="340" bgcolor="#8D8D69" cellspacing="1" cellpadding="1">
 					<tr class="patient_list_head">
 					<td>Type</td><td> 	Measurement</td><td> 	Date</td>
 					</tr>
@@ -453,67 +538,98 @@ border:1px solid #999999;
 						Measurements latestBp = bp.get(0);					
 					%>
 					<tr class="patient_list_results">
-						<td>BP</td>
+						<td>Blood Pressure</td>
 						<td><%=latestBp.getDataField() %></td>
 						<td><%=measFormatter.format(latestBp.getDateObserved()) %></td>
 					</tr>					
 					<% } else {%>
 					<tr class="patient_list_results">
-						<td>BP</td>
+						<td>Blood Pressure</td>
 						<td><i>No Recorded Date</i></td>
 						<td><i>N/A</i></td>
 					</tr>		
 					<%} %>
 					
 					<%
-					if(ht.size()>0) {
-						Measurements latestBp = ht.get(0);					
+					if(spls.size()>0) {
+						Measurements latestSpls = spls.get(0);					
 					%>
 					<tr class="patient_list_results">
-						<td>HT</td>
-						<td><%=latestBp.getDataField() %> cm</td>
-						<td><%=measFormatter.format(latestBp.getDateObserved()) %></td>
+						<td>Pulse</td>
+						<td><%=latestSpls.getDataField() %></td>
+						<td><%=measFormatter.format(latestSpls.getDateObserved()) %></td>
 					</tr>					
 					<% } else {%>
 					<tr class="patient_list_results">
-						<td>HT</td>
+						<td>Pulse</td>
 						<td><i>No Recorded Date</i></td>
 						<td><i>N/A</i></td>
 					</tr>		
-					<%} %>
+					<%} %>					
 					<%
 					if(wt.size()>0) {
-						Measurements latestBp = wt.get(0);					
+						Measurements latestWt = wt.get(0);					
 					%>
 					<tr class="patient_list_results">
-						<td>WT</td>
-						<td><%=latestBp.getDataField() %> kg</td>
-						<td><%=measFormatter.format(latestBp.getDateObserved()) %></td>
+						<td>Weight (kg)</td>
+						<td><%=latestWt.getDataField() %> kg</td>
+						<td><%=measFormatter.format(latestWt.getDateObserved()) %></td>
 					</tr>					
 					<% } else {%>
 					<tr class="patient_list_results">
-						<td>WT</td>
+						<td>Weight (kg)</td>
+						<td><i>No Recorded Date</i></td>
+						<td><i>N/A</i></td>
+					</tr>		
+					<%} %>					
+					<%
+					if(ht.size()>0) {
+						Measurements latestHt = ht.get(0);					
+					%>
+					<tr class="patient_list_results">
+						<td>Height (cm)</td>
+						<td><%=latestHt.getDataField() %> cm</td>
+						<td><%=measFormatter.format(latestHt.getDateObserved()) %></td>
+					</tr>					
+					<% } else {%>
+					<tr class="patient_list_results">
+						<td>Height (cm)</td>
 						<td><i>No Recorded Date</i></td>
 						<td><i>N/A</i></td>
 					</tr>		
 					<%} %>
 					<%
 					if(bmi.size()>0) {
-						Measurements latestBp = bmi.get(0);					
+						Measurements latestBmi = bmi.get(0);					
 					%>
 					<tr class="patient_list_results">
-						<td>BMI</td>
-						<td><%=latestBp.getDataField() %></td>
-						<td><%=measFormatter.format(latestBp.getDateObserved()) %></td>
+						<td>Body Mass Index (BMI)</td>
+						<td><%=latestBmi.getDataField() %></td>
+						<td><%=measFormatter.format(latestBmi.getDateObserved()) %></td>
 					</tr>					
 					<% } else {%>
 					<tr class="patient_list_results">
-						<td>BMI</td>
+						<td>Body Mass Index (BMI)</td>
 						<td><i>No Recorded Date</i></td>
 						<td><i>N/A</i></td>
 					</tr>		
 					<%} %>
-					
+					<%
+					if(wc.size()>0) {
+						Measurements latestWc = wc.get(0);					
+					%>
+					<tr class="patient_list_results">
+						<td>Wasit Circ (cm)</td>
+						<td><%=latestWc.getDataField() %> cm</td>
+						<td><%=measFormatter.format(latestWc.getDateObserved()) %></td>
+					</tr>					
+					<% } else {%>
+					<tr class="patient_list_results">
+						<td>Wasit Circ (cm)</td>
+						<td><i>No Recorded Date</i></td>
+						<td><i>N/A</i></td>
+					</tr>		
+					<%} %>
 					
 					</table>
 					</div>
@@ -595,6 +711,151 @@ border:1px solid #999999;
 					</tr>
 					<%}%>
 					</table>
+					</div>
+					
+					<div id="eForms" style="display:none;">
+				<table  width="600">
+				<tr >
+				<td align="right">
+				<font size="2"><b><font color="red">Note:</font></b> eForms presented here are READ ONLY. Any changes you make will not be saved.</font>
+				</td>
+				</tr>
+				</table>
+
+
+				<table  width="600" bgcolor="#8D8D69" cellspacing="1" cellpadding="1">
+					<tr  class="patient_list_head">
+						<td>eForm</td> 	<td>Modified Date</td> 	
+					</tr>
+			<%
+			//set eform_data_id to read only for all eforms
+        	session.setAttribute("eform_data_id", "r");
+			
+ 			ArrayList eForms;
+
+     		String str_demographic_no= Integer.toString(demographic_no); 
+			eForms = EFormUtil.listPatientEForms(orderBy, EFormUtil.CURRENT, str_demographic_no);
+      
+			  for (int f=0; f< eForms.size(); f++) {
+			        Hashtable curform = (Hashtable) eForms.get(f);
+			%>
+					<tr class="patient_list_results" bgcolor="<%= ((f%2) == 1)?"#F2F2F2":"white"%>">
+						<td><a href="#"
+							ONCLICK="popupPage('../eform/efmshowform_data.jsp?fdid=<%= curform.get("fdid")%>', '<%="ReadOnly" + f%>'); return false;"
+							TITLE="<bean:message key="eform.showmyform.msgViewFrm"/>" 
+							onmouseover="window.status='<bean:message key="eform.showmyform.msgViewFrm"/>'; return true"><%=curform.get("formName")%></a></td>
+						
+						<td align='center'><%=curform.get("formDate")%></td>
+						
+					</tr>
+			<%
+  				}
+			 if (eForms.size() <= 0) {
+			%>
+						<tr>
+							<td align='center' colspan='5'>no eforms</td>
+						</tr>
+						<%
+			  }
+			%>
+		</table>
+		            </div>	
+					
+					<div id="eDocuments" style="display:none;">
+					
+
+					<table >
+					<tr>
+						<td  colspan="2" valign="top">
+		
+					<%-- STUFF TO DISPLAY --%> 
+					<%
+					
+						ArrayList categories = new ArrayList();
+		                ArrayList categoryKeys = new ArrayList();
+		                ArrayList privatedocs = new ArrayList();
+		                
+		                privatedocs = EDocUtil.listDocs(module, moduleid, edoc_view, EDocUtil.PRIVATE, sort, viewstatus);
+		
+		                categories.add(privatedocs);
+		                categoryKeys.add(moduleName);
+		                if (module.equals("provider")) {
+		                    ArrayList publicdocs = new ArrayList();
+		                    publicdocs = EDocUtil.listDocs(module, moduleid, edoc_view, EDocUtil.PUBLIC, sort, viewstatus);
+		                    categories.add(publicdocs);
+		                    categoryKeys.add("Public Documents");
+		                }
+		                
+		                
+		                for (int d=0; d<categories.size();d++) {
+		                    String currentkey = (String) categoryKeys.get(d);
+		                    ArrayList category = (ArrayList) categories.get(d);
+		             %>
+
+					<%-- order edoc_view goes here will continue with this development when SJHH CI decides they want to 
+					keep eDocuments in the oscarFacesheet viewer- John Wilson--%>
+	
+					<table id="privateDocs" width="<%=tblWidth%>"  bgcolor="#8D8D69" cellspacing="1" cellpadding="1">
+						<tr class="patient_list_head">
+							<td ><bean:message key="dms.documentReport.msgDocDesc" /></td>
+							<td ><bean:message key="dms.documentReport.msgContent"/></td>
+							<td ><bean:message key="dms.documentReport.msgType"/></td>
+							<td ><bean:message key="dms.documentReport.msgCreator" /></td>
+							<td ><bean:message key="dms.documentReport.msgDate"/></td>		
+						</tr>
+
+					<%
+	                for (int i2=0; i2<category.size(); i2++) {
+	                    EDoc curdoc = (EDoc) category.get(i2);
+	                    //content type (take everything following '/')
+	                    int slash = 0;
+	                    String contentType = "";
+	                    if ((slash = curdoc.getContentType().indexOf('/')) != -1) {
+	                        contentType = curdoc.getContentType().substring(slash+1);
+	                    } else {
+						contentType = curdoc.getContentType();
+			    		}
+	                    
+	            	%>
+					<tr  class="patient_list_results">
+						<td>
+						<%                   
+	                      String url = "../dms/ManageDocument.do?method=display&doc_no="+curdoc.getDocId()+"&providerNo="+user_no;
+	                              
+	                      if (curdoc.getStatus() == 'H') { %> 
+	                      	<a
+							<%=curdoc.getStatus() == 'D' ? "style='text-decoration:line-through'" : ""%>
+							href="<%=url%>" target="_blank"> 
+							
+						 <% } else { %> 
+							
+							<a
+							<%=curdoc.getStatus() == 'D' ? "style='text-decoration:line-through'" : ""%>
+							href="javascript:popup1(480, 480, '<%=url%>', 'edoc<%=i2%>')">
+						<% } %> 
+						<%=curdoc.getDescription()%></a></td>
+						<td><%=contentType%></td>
+						<td><%=curdoc.getType()%></td>
+						<td><%=curdoc.getCreatorName()%></td>
+						<td><%=curdoc.getObservationDate()%></td>				
+					</tr>
+	
+					<%}
+	            if (category.size() == 0) {%>
+					<tr>
+						<td colspan="6"><bean:message key="dms.documentReport.msgNoDocumentsToDisplay"/></td>
+					</tr>
+				<%}%>
+				</table>
+	
+				<%}%>
+
+					</td>
+				</tr>
+			</table>
+
+
+
 					</div>
 														
 					<div id="Allergies" >

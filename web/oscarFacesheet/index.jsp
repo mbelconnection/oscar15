@@ -168,7 +168,7 @@ String[] navArray={"Allergies","History","Measurements","Medications","Labs", "e
 
 //table width
 int tblWidth_main=980; //main wrapper table
-int tblWidth=960; //sub tables
+int tblWidth=790; //sub tables
 
 //-- Switch Control --
 String view = request.getParameter("view");
@@ -184,7 +184,7 @@ String LinkParam="NavMenu";
 <html>
 <head>
 
-<title>OSCAR - Portal Integration</title>
+<title>oscarFacesheet - Portlet Integration</title>
 
 <STYLE type="text/css" >
 body{
@@ -528,9 +528,9 @@ border:1px solid #999999;
 					<!--Table alloted for Legend-->
 					<table width="<%=tblWidth%>"><td align="right">&nbsp;</td></table>
 					
-					<table  width="340" bgcolor="#8D8D69" cellspacing="1" cellpadding="1">
+					<table width="340" bgcolor="#8D8D69" cellspacing="1" cellpadding="1">
 					<tr class="patient_list_head">
-					<td>Type</td><td> 	Measurement</td><td> 	Date</td>
+					<td>Type</td><td>Measurement</td><td>Date</td>
 					</tr>
 					<%
 					SimpleDateFormat measFormatter = new SimpleDateFormat("dd-MMM-yyyy");
@@ -565,7 +565,8 @@ border:1px solid #999999;
 						<td><i>No Recorded Date</i></td>
 						<td><i>N/A</i></td>
 					</tr>		
-					<%} %>					
+					<%} %>							
+									
 					<%
 					if(wt.size()>0) {
 						Measurements latestWt = wt.get(0);					
@@ -631,48 +632,33 @@ border:1px solid #999999;
 					</tr>		
 					<%} %>
 					
+					
+					
 					</table>
 					</div>
 					
 					<div id="Medications" style="display:none;">
 					<!--Table alloted for Legend-->
+					<table width="<%=tblWidth%>"><td align="right"> &nbsp;</td></table>
 					<!-- 
 					<table width="<%=tblWidth%>"><td align="right"><img src="images/notes.gif" border="0" width="10" height="12" alt="rxAnnotation"><font size="1"> = rxAnnotation</font></td></table>
 					-->
 					<table width="<%=tblWidth%>"  bgcolor="#8D8D69" cellspacing="1" cellpadding="1">
 					<tr  class="patient_list_head">
-					<td>Rx Date </td><td>	Days to Exp</td><td> 	LT Med </td><td>	Prescription </td><td> 	Location Prescribed </td>
+					<td><bean:message key="SearchDrug.msgRxDate"/></td><td><bean:message key="SearchDrug.msgPrescription"/></td>
 					</tr>
 					<%
 					SimpleDateFormat rxFormatter = new SimpleDateFormat("yyyy-MM-dd");
 					for (Drug prescriptDrug : prescriptDrugs) {
 					
 				        if( prescriptDrug.isArchived() )
-				            continue;
-				    
-				        boolean longTerm = prescriptDrug.getLongTerm();
-				        String lt = "No";
-				        if(longTerm) {
-				        	lt = "Yes";
-				        }
-				     
+				            continue;		     
 				        
 					%>
 					<tr class="patient_list_results">
 						<td><%=rxFormatter.format(prescriptDrug.getRxDate()) %></td>
-						<td><%=prescriptDrug.daysToExpire()%></td>
-						<td><%=lt%></td>
 						<td><%=prescriptDrug.getSpecial()%></td>
-						<td>
-						<%
-			                if (prescriptDrug.getRemoteFacilityName() != null){ %>
-			                    <%=prescriptDrug.getRemoteFacilityName()%>
-			                <%}else if(  prescriptDrug.getOutsideProviderName() !=null && !prescriptDrug.getOutsideProviderName().equals("")  ){%>
-			                    <%=prescriptDrug.getOutsideProviderName()%>
-			                <%}else{%>
-			                    local
-			                <%}%>
-						</td>
+
 					</tr>					
 					
 					<% } %>
@@ -686,7 +672,7 @@ border:1px solid #999999;
 					
 					<table width="<%=tblWidth%>"  bgcolor="#8D8D69" cellspacing="1" cellpadding="1">
 					<tr  class="patient_list_head">
-					<td>Discipline</td><td> 	Date of Test </td><td>	Requesting Client </td><td>	Result Status </td><td>	Report Status</td>
+					<td> Date of Test </td><td>Discipline</td><td>	Requesting Client </td><td>	Result Status </td><td>	Report Status</td>
 					</tr>
 					<%
 					if(labs.size()!=0){
@@ -696,8 +682,8 @@ border:1px solid #999999;
 							String resultStatus = lab.isAbnormal()?"Abnormal":"";
 					%>
 					<tr  class="patient_list_results">
-						<td><%=lab.getDiscipline() %></td>
 						<td><%=lab.getDateTime() %></td>
+						<td><%=lab.getDiscipline() %></td>
 						<td><%=lab.getRequestingClient() %></td>
 						<td><%=resultStatus%></td>
 						<td><%= ( (String) ( lab.isFinal() ? "Final" : "Partial") )%></td>
@@ -714,7 +700,7 @@ border:1px solid #999999;
 					</div>
 					
 					<div id="eForms" style="display:none;">
-				<table  width="600">
+				<table  width="550">
 				<tr >
 				<td align="right">
 				<font size="2"><b><font color="red">Note:</font></b> eForms presented here are READ ONLY. Any changes you make will not be saved.</font>
@@ -723,9 +709,9 @@ border:1px solid #999999;
 				</table>
 
 
-				<table  width="600" bgcolor="#8D8D69" cellspacing="1" cellpadding="1">
+				<table  width="550" bgcolor="#8D8D69" cellspacing="1" cellpadding="1">
 					<tr  class="patient_list_head">
-						<td>eForm</td> 	<td>Modified Date</td> 	
+						<td>Modified Date</td> 	<td>eForm</td> 
 					</tr>
 			<%
 			//set eform_data_id to read only for all eforms
@@ -740,20 +726,22 @@ border:1px solid #999999;
 			        Hashtable curform = (Hashtable) eForms.get(f);
 			%>
 					<tr class="patient_list_results" bgcolor="<%= ((f%2) == 1)?"#F2F2F2":"white"%>">
+						
+						<td align='left' width="105"><%=curform.get("formDate")%></td>
 						<td><a href="#"
 							ONCLICK="popupPage('../eform/efmshowform_data.jsp?fdid=<%= curform.get("fdid")%>', '<%="ReadOnly" + f%>'); return false;"
 							TITLE="<bean:message key="eform.showmyform.msgViewFrm"/>" 
 							onmouseover="window.status='<bean:message key="eform.showmyform.msgViewFrm"/>'; return true"><%=curform.get("formName")%></a></td>
 						
-						<td align='center'><%=curform.get("formDate")%></td>
+						
 						
 					</tr>
 			<%
   				}
 			 if (eForms.size() <= 0) {
 			%>
-						<tr>
-							<td align='center' colspan='5'>no eforms</td>
+						<tr class="patient_list_results">
+							<td align='center' colspan='5'>No eForms to display.</td>
 						</tr>
 						<%
 			  }
@@ -762,8 +750,9 @@ border:1px solid #999999;
 		            </div>	
 					
 					<div id="eDocuments" style="display:none;">
+					<!--Table alloted for Legend-->
+					<table width="<%=tblWidth%>"><td align="right"> &nbsp;</td></table>
 					
-
 					<table >
 					<tr>
 						<td  colspan="2" valign="top">
@@ -797,27 +786,19 @@ border:1px solid #999999;
 	
 					<table id="privateDocs" width="<%=tblWidth%>"  bgcolor="#8D8D69" cellspacing="1" cellpadding="1">
 						<tr class="patient_list_head">
+							<td width="105"><bean:message key="dms.documentReport.msgDate"/></td>	
 							<td ><bean:message key="dms.documentReport.msgDocDesc" /></td>
-							<td ><bean:message key="dms.documentReport.msgContent"/></td>
 							<td ><bean:message key="dms.documentReport.msgType"/></td>
 							<td ><bean:message key="dms.documentReport.msgCreator" /></td>
-							<td ><bean:message key="dms.documentReport.msgDate"/></td>		
+								
 						</tr>
 
 					<%
 	                for (int i2=0; i2<category.size(); i2++) {
-	                    EDoc curdoc = (EDoc) category.get(i2);
-	                    //content type (take everything following '/')
-	                    int slash = 0;
-	                    String contentType = "";
-	                    if ((slash = curdoc.getContentType().indexOf('/')) != -1) {
-	                        contentType = curdoc.getContentType().substring(slash+1);
-	                    } else {
-						contentType = curdoc.getContentType();
-			    		}
-	                    
+	                    EDoc curdoc = (EDoc) category.get(i2);	                    
 	            	%>
 					<tr  class="patient_list_results">
+						<td><%=curdoc.getObservationDate()%></td>	
 						<td>
 						<%                   
 	                      String url = "../dms/ManageDocument.do?method=display&doc_no="+curdoc.getDocId()+"&providerNo="+user_no;
@@ -834,15 +815,14 @@ border:1px solid #999999;
 							href="javascript:popup1(480, 480, '<%=url%>', 'edoc<%=i2%>')">
 						<% } %> 
 						<%=curdoc.getDescription()%></a></td>
-						<td><%=contentType%></td>
+						
 						<td><%=curdoc.getType()%></td>
-						<td><%=curdoc.getCreatorName()%></td>
-						<td><%=curdoc.getObservationDate()%></td>				
+						<td><%=curdoc.getCreatorName()%></td>				
 					</tr>
 	
 					<%}
 	            if (category.size() == 0) {%>
-					<tr>
+					<tr class="patient_list_results">
 						<td colspan="6"><bean:message key="dms.documentReport.msgNoDocumentsToDisplay"/></td>
 					</tr>
 				<%}%>

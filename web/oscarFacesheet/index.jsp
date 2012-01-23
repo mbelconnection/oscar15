@@ -620,7 +620,7 @@ border:1px solid #999999;
 						Measurements latestWc = wc.get(0);					
 					%>
 					<tr class="patient_list_results">
-						<td>Wasit Circ (cm)</td>
+						<td>Waist Circ (cm)</td>
 						<td><%=latestWc.getDataField() %> cm</td>
 						<td><%=measFormatter.format(latestWc.getDateObserved()) %></td>
 					</tr>					

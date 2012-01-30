@@ -26,12 +26,12 @@
 <%@page import="oscar.oscarLab.ca.on.LabResultData" %>
 <%@page import="org.oscarehr.PMmodule.dao.ProviderDao" %>
 <%@page import="org.oscarehr.common.model.Provider" %>
-
-<%-- edoc imports --%>
-<%@ page import="java.util.*, oscar.dms.*"%>
-
-<%-- eform inports --%>
+<%@ page import="oscar.dms.*"%>
 <%@ page import="oscar.eform.*"%>
+<%@ page import="java.util.*, java.sql.*, oscar.oscarDB.*, oscar.oscarLab.ca.all.*, oscar.oscarLab.ca.all.util.*, oscar.oscarLab.ca.all.parsers.* " %>
+
+
+
 <%
 
 	String strMrn = request.getParameter("mrn");
@@ -88,10 +88,10 @@
 	List<Drug> prescriptDrugs = caseManagementManager.getPrescriptions(demographic.getDemographicNo(), true);
         
 	//labs
-	CommonLabResultData comLab = new CommonLabResultData();
-    ArrayList labs = comLab.populateLabResultsData("",String.valueOf(demographic.getDemographicNo()), "", "","","U");
-    Collections.sort(labs);
-	System.out.println("# of labs="+labs.size()); 
+	//CommonLabResultData comLab = new CommonLabResultData();
+    //ArrayList labs = comLab.populateLabResultsData("",String.valueOf(demographic.getDemographicNo()), "", "","","U");
+    //Collections.sort(labs);
+	//System.out.println("# of labs="+labs.size()); 
 
 	//eforms
 	String orderByRequest = request.getParameter("orderby");
@@ -282,6 +282,32 @@ width:8px;
 height:10px;
 border:1px solid #999999;
 }
+
+.AbnormalRes {  font-size: 10pt; color: red; font-family: Arial, Verdana, Helvetica }
+.AbnormalRes a:link { color: red }
+.AbnormalRes a:hover { color: red }
+.AbnormalRes a:visited { color: red }
+.AbnormalRes a:active { color: red }
+
+.NormalRes   { font-size: 10pt; color: black; font-family: Arial, Verdana, Helvetica }
+.NormalRes a:link { color: black }
+.NormalRes a:hover { color: black }
+.NormalRes a:visited { color: black }
+.NormalRes a:active { color: black }
+
+.HiLoRes     {  font-size: 10pt; color: blue; font-family: Arial, Verdana, Helvetica }
+.HiLoRes a:link { color: blue }
+.HiLoRes a:hover { color: blue }
+.HiLoRes a:visited { color: blue }
+.HiLoRes a:active { color: blue }
+
+.Field2      { font-weight: bold; font-size: 10pt; color: #003162; font-family: Arial, Verdana, Helvetica }
+
+
+.Cell        { background-color: #BABA97; border-left: thin solid #DCDCCB; 
+               border-right: thin solid #959579; 
+               border-top: thin solid #DCDCCB; 
+               border-bottom: thin solid #959579 }
 </style>
 
 <script type="text/javascript" language="javascript"> 
@@ -669,34 +695,195 @@ border:1px solid #999999;
 					<div id="Labs" style="display:none;">
 					<!--Table alloted for Legend-->
 					<table width="<%=tblWidth%>"><td align="right"> &nbsp;</td></table>
+<!-- 
+Lab notes 
+- need to add legend or clean way to describe flagging.
+- clean up alignment
+- think about the Field2 css
+-->					
+<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td bgcolor="#8D8D69">
+					   <table width="975" border="0" cellspacing="1" cellpadding="2"  >
+					   <tr class="Field2" >
+					       <td valign="bottom" class="Cell">ID</td> <!-- ID column is tmp while developing and test - John Wilson Jan 30, 2012 -->
+					       <td  valign="bottom" class="Cell"><bean:message key="oscarMDS.segmentDisplay.formTestName"/></td>
+					       <td  valign="bottom" class="Cell"><bean:message key="oscarMDS.segmentDisplay.formResult"/></td>
+					       <td  valign="bottom" class="Cell"><bean:message key="oscarMDS.segmentDisplay.formReferenceRange"/></td>
+					       <td  valign="bottom" class="Cell"><bean:message key="oscarMDS.segmentDisplay.formUnits"/></td>
+					       <td  valign="bottom" class="Cell"><bean:message key="oscarMDS.segmentDisplay.formAbn"/></td>
+					       <td  valign="bottom" class="Cell"><bean:message key="oscarMDS.segmentDisplay.formDateTimeCompleted"/></td>
+					       <td  valign="bottom" class="Cell"><bean:message key="oscarMDS.segmentDisplay.formNew"/></td>
+					       <td class="Cell">Facility</td>
+					       <td class="Cell">Requestor</td>
+					       
+					   </tr>
+
+<%
+		
+String sql = "SELECT DISTINCT hin FROM demographic WHERE demographic_no='" + demographic_no + "';";
+		
+DBHandler db = new DBHandler(DBHandler.OSCAR_DATA);
+ResultSet rs = db.GetSQL(sql);
+String hin = "";
+
+while(rs.next()){
+    hin = db.getString(rs,"hin");
+}
+rs.close();
+
+//here grab all the lab_no
+String sql2 = "SELECT lab_no FROM hl7TextInfo WHERE health_no='" + hin + "' ORDER BY lab_no DESC";
+ResultSet rs2 = db.GetSQL(sql2);
+
+
+ArrayList labArray=new ArrayList();
+
+int rsCnt = 1;
+while(rs2.next()){
+	labArray.add(db.getString(rs2,"lab_no"));	  
+}
+rs2.close();
+
+String segmentID = labArray.get(1).toString();
+
+int jack;   //tmp                         
+for(jack=0; jack < labArray.size(); jack++){ //tmp
+	
+Factory f = new Factory();
+MessageHandler handler = f.getHandler(labArray.get(jack).toString());
+
+
+int h=0;
+int j=0;
+int k=0;
+int l=0;
+int linenum=0;
+String highlight = "#E0E0FF";
+
+ArrayList headers = handler.getHeaders();
+
+int OBRCount = handler.getOBRCount();
+
+
+for(h=0;h<headers.size();h++){
+    linenum=0;
+
+    
+                            for ( j=0; j < OBRCount; j++) {
+                                
+                                boolean obrFlag = false;
+                                int obxCount = handler.getOBXCount(j);
+                                for (k=0; k < obxCount; k++){ 
+                                    String obxName = handler.getOBXName(j, k);
+                                    if ( !handler.getOBXResultStatus(j, k).equals("DNS") && !obxName.equals("") && handler.getObservationHeader(j, k).equals(headers.get(h))){ // <<--  DNS only needed for MDS messages
+                                        String obrName = handler.getOBRName(j);
+                                       
+         
+                                        String lineClass = "NormalRes";
+                                        String abnormal = handler.getOBXAbnormalFlag(j, k);
+                                        if ( abnormal != null && abnormal.startsWith("L")){
+                                            lineClass = "HiLoRes";
+                                        } else if ( abnormal != null && ( abnormal.equals("A") || abnormal.startsWith("H") || handler.isOBXAbnormal( j, k) ) ){
+                                            lineClass = "AbnormalRes";
+                                        }
+                                        
+                                        
+                                        
+                                        if(handler.getOBXValueType(j,k) != null &&  handler.getOBXValueType(j,k).equalsIgnoreCase("FT")){
+                                            String[] dividedString  =divideStringAtFirstNewline(handler.getOBXResult( j, k));
+                                         %>
+                                            <tr bgcolor="#ffffff" class="<%=lineClass%>" >
+                                                <td><%=labArray.get(jack).toString() %></td>
+                                                <td valign="top" align="left"><%= obrFlag ? "&nbsp; &nbsp; &nbsp;" : "&nbsp;" %><%=obxName %></td>
+                                                <td align="right"><%= dividedString[0] %></td>
+                                                <td align="left" valign="top"><%=handler.getOBXReferenceRange( j, k)%></td>
+                                                <td align="left" valign="top"><%=handler.getOBXUnits( j, k) %></td>
+                                                <td align="center" valign="top"><%= handler.getOBXAbnormalFlag(j, k)%></td>
+                                                <td align="center" valign="top"><%= handler.getTimeStamp(j, k) %></td>
+                                                <td align="center" valign="top"> <%= handler.getOBXResultStatus( j, k) %></td>
+                                            	<td><%=handler.getPatientLocation()%></td>
+                                            	<td><%= handler.getDocName()%></td>
+                                            	
+                                            </tr>
+                                            <%if(dividedString[1] != null){ %>
+                                            <tr>
+                                                <td colspan="7" style="padding-left:10px;"><%=dividedString[1]%></td>
+                                            </tr>
+                                        <%}
+                                        }else{%>
+                                        <tr bgcolor="#ffffff" class="<%=lineClass%>">
+                                        	<td><%=labArray.get(jack).toString() %></td>
+                                            <td valign="top" align="left"><%= obrFlag ? "&nbsp; &nbsp; &nbsp;" : "&nbsp;" %><%=obxName %></td>                                         
+                                            <td align="right"><%= handler.getOBXResult( j, k) %></td>
+                                            <td align="left"><%=handler.getOBXReferenceRange( j, k)%></td>
+                                            <td align="left"><%=handler.getOBXUnits( j, k) %></td>
+                                            <td align="center"><%= handler.getOBXAbnormalFlag(j, k)%></td>
+                                            <td align="center"><%= handler.getTimeStamp(j, k) %></td>
+                                            <td align="center"><%= handler.getOBXResultStatus( j, k) %></td>
+                                            <td><%=handler.getPatientLocation()%></td>
+                                            <td><%= handler.getDocName()%></td>
+                                            
+                                        </tr>
+                                        <%}
+               						}
+ 								}                                                             
+                                                       
+
+                                if (handler.getObservationHeader(j, 0).equals(headers.get(h))) {
+                                for (k=0; k < handler.getOBRCommentCount(j); k++){
+                                    // the obrName should only be set if it has not been
+                                    // set already which will only have occured if the
+                                    // obx name is "" or if it is the same as the obr name
+                                    if(!obrFlag && handler.getOBXName(j, 0).equals("")){%>
+                                        <tr bgcolor="<%=(linenum % 2 == 1 ? highlight : "")%>" >
+                                            <td valign="top" align="left"><%=handler.getOBRName(j)%></td>
+                                            <td colspan="6">&nbsp;</td>
+                                        </tr>
+                                        <%obrFlag = true;
+                                    }%>
+                                <tr bgcolor="<%=(linenum % 2 == 1 ? highlight : "")%>" class="NormalRes">
+                                    <td valign="top" align="left" colspan="8"><pre  style="margin:0px 0px 0px 100px;"><%=handler.getOBRComment(j, k)%></pre></td>
+                                </tr>
+                                <% if(handler.getOBXName(j,k).equals("")){
+                                       String result = handler.getOBXResult(j, k);%>
+                                        <tr bgcolor="<%=(linenum % 2 == 1 ? highlight : "")%>" >
+                                                <td colspan="7" valign="top"  align="left"> <%=result%></td>
+                                        </tr>
+                                <%
+ 		 							}
+
+
+								}
+   							  }
+ 							}
+}
+
+}
+%>
+                          </table>
+		</td>
+	</tr>
+</table>
+
+<%!
+    public String[] divideStringAtFirstNewline(String s){
+        int i = s.indexOf("<br />");
+        String[] ret  = new String[2];
+        if(i == -1){
+               ret[0] = new String(s);
+               ret[1] = null;
+            }else{
+               ret[0] = s.substring(0,i);
+               ret[1] = s.substring(i+6);
+            }
+        return ret;
+    }
+%>
 					
-					<table width="<%=tblWidth%>"  bgcolor="#8D8D69" cellspacing="1" cellpadding="1">
-					<tr  class="patient_list_head">
-					<td> Date of Test </td><td>Discipline</td><td>	Requesting Client </td><td>	Result Status </td><td>	Report Status</td>
-					</tr>
-					<%
-					if(labs.size()!=0){
-						SimpleDateFormat labFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-						for(int x=0;x<labs.size();x++) {
-							LabResultData lab = (LabResultData)labs.get(x);	
-							String resultStatus = lab.isAbnormal()?"Abnormal":"";
-					%>
-					<tr  class="patient_list_results">
-						<td><%=lab.getDateTime() %></td>
-						<td><%=lab.getDiscipline() %></td>
-						<td><%=lab.getRequestingClient() %></td>
-						<td><%=resultStatus%></td>
-						<td><%= ( (String) ( lab.isFinal() ? "Final" : "Partial") )%></td>
-					</tr>					
+
 					
-					<%}
-					}else{ 
-					%>
-					<tr  class="patient_list_results">
-						<td colspan="5" width="100%">No lab results available.</td>
-					</tr>
-					<%}%>
-					</table>
+					
 					</div>
 					
 					<div id="eForms" style="display:none;">

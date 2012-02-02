@@ -124,10 +124,10 @@ public class PhsStarHandler extends BasePhsStarHandler {
 	 * @throws HL7Exception
 	 */
 	private Integer createDemographic() throws HL7Exception {
-		logger.info("creating new patient record for " + getLastName() + "," + getFirstName());
+		logger.info("creating new patient record for " + getLastName() + "," + getFirstName()+ " " + getMiddleName() );
 		Demographic demo = new Demographic();
 		demo.setLastName(getLastName());
-		demo.setFirstName(getFirstName());
+		demo.setFirstName(getFirstName() + " " + getMiddleName());
 		demo.setAddress(getAddress());
 		Date dob = this.convertToDate(getDateOfBirth());
 		Calendar cal = Calendar.getInstance();
@@ -208,7 +208,7 @@ public class PhsStarHandler extends BasePhsStarHandler {
 
 		//update the details
 		demo.setLastName(getLastName());
-		demo.setFirstName(getFirstName());
+		demo.setFirstName(getFirstName()+ " " + getMiddleName());
 		demo.setAddress(getAddress());
 		Date dob = this.convertToDate(getDateOfBirth());
 		Calendar cal = Calendar.getInstance();
@@ -1065,13 +1065,26 @@ public class PhsStarHandler extends BasePhsStarHandler {
 
 	public String getFirstName() {
 		try {
-			String lastName = this.extractOrEmpty("PID-5-2");
-			return lastName;
+			String firstName = this.extractOrEmpty("PID-5-2");	
+			return firstName;
+		}catch(Exception e) {
+			return "";
+		}
+	}
+	
+	public String getMiddleName() {
+		try {
+			String middleName = this.extractOrEmpty("PID-5-3");
+			//"" populating middleName when middlename removed on update
+			if(middleName.equals("\"\"")){middleName="";}
+			return middleName;
 		}catch(Exception e) {
 			return "";
 		}
 	}
 
+
+	
 	public String getLastName() {
 		try {
 			String lastName = this.extractOrEmpty("PID-5-1");

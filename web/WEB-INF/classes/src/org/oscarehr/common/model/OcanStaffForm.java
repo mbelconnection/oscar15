@@ -78,6 +78,8 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 	
 	private int submissionId;
 	
+	private String consent;
+	
 	public OcanStaffForm() {
 		province = "ON";
 		setAssessmentStatus("In Progress");
@@ -428,5 +430,11 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 	}
 	
 
-	
+	public String getConsent() {
+		return consent;
+	}
+
+	public void setConsent(String consent) {
+		this.consent = consent;
+	}	
 }

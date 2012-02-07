@@ -67,6 +67,7 @@
 	String reasonForAssessment = parameters.get("reasonForAssessment")[0];
 	String gender = parameters.get("gender")[0];	
 	String ocanStaffFormId = parameters.get("ocanStaffFormId")[0];
+	String consent = parameters.get("consent")[0];
 	
 	OcanStaffForm ocanStaffForm=OcanFormAction.createOcanStaffForm(ocanStaffFormId, clientId, signed);
 	
@@ -90,6 +91,7 @@
 	ocanStaffForm.setGender(gender==null?"":gender);
 	//ocanStaffForm.setAdmissionId(admissionId);
 	ocanStaffForm.setOcanType(request.getParameter("ocanType")==null?"":request.getParameter("ocanType"));
+	ocanStaffForm.setConsent(request.getParameter("consent")==null?"NOT_SPECIFIED":request.getParameter("consent"));
 	
 	//Once ocan assessment was completed, it can not be changed to other status.
 	if(!"Completed".equals(ocanStaffForm.getAssessmentStatus())) {	
@@ -136,6 +138,7 @@
 	parameters.remove("completionDate");
 	parameters.remove("reasonForAssessment");
 	parameters.remove("gender");
+	parameters.remove("consent");
 	
 	Integer ocanStaffFormId_Int=0;
 	if(ocanStaffFormId!=null && !"".equals(ocanStaffFormId) && !"null".equals(ocanStaffFormId)) {
@@ -153,7 +156,6 @@
 	
 		for (Map.Entry<String, String[]> entry : parameters.entrySet())
 		{
-			System.out.println(entry.getKey());
 			if (entry.getValue()!=null)
 			{
 				for (String value : entry.getValue())

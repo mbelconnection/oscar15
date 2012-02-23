@@ -134,6 +134,16 @@ function disableifchecked(ele,nextDate){
        document.getElementById(nextDate).disabled = false;              
     }
 }
+
+function masterDateFill(v){
+	var x=<%=measurements.length%>;
+	
+	
+	for(i = 0; i <= x; i++){
+	document.getElementById('prevDate'+ i).value=v;
+	}
+	
+}
 </SCRIPT>
 
 <style type="text/css">
@@ -273,6 +283,33 @@ clear: left;
                   } 
                %>
                
+            <!-- Place Master Calendar Input Here -->
+            <%
+            int iDate;
+            //only display if more than one measurement
+            if(measurements.length>1){
+            	iDate = measurements.length; 	//create a master date value
+            %>
+            <fieldset>
+               <legend><b>Master Date/Time</b></legend>
+               <div style="float:left;margin-left:30px;">
+        		<label for="prevDate" class="fields" >Obs Date/Time: </label> 
+				 
+				<input type="text" name="value(date-<%=iDate%>)" id="prevDate<%=iDate%>" value="<%=prevDate%>" size="17" onchange="javascript:masterDateFill(this.value);"> 
+				<% if ( id == null ) { %>
+				<a id="date<%=iDate%>"><img title="Calendar" src="../../images/cal.gif" alt="Calendar" border="0" /></a> 
+				<%}%>
+				<br /><font size="1">*Use this field to change the observation date/time for all items below.</font>
+				</div>
+			</fieldset>
+			<br />
+			<%
+				iDate = iDate + 1; //after names are assigned to input above increasing iDate for the Cal script	
+            }else{
+				iDate = measurements.length;
+			}	
+			%>
+            <!-- END of Master Calendar Input -->              
                <html:form action="<%=saveAction%>" styleId="measurementForm" >
                
                <input type="hidden" name="value(numType)" value="<%=measurements.length%>"/>                                                
@@ -389,7 +426,7 @@ clear: left;
         document.getElementById('deleteCheck').disabled = false;
         
     <% } %>
-  <% for (int i =0; i < measurements.length; i++){ %>  
+  <% for (int i =0; i < iDate; i++){ %>  
 Calendar.setup( { inputField : "prevDate<%=i%>", ifFormat : "%Y-%m-%d %H:%M", showsTime :true, button : "date<%=i%>", singleClick : true, step : 1 } );
   <%}%>
 //Calendar.setup( { inputField : "nextDate", ifFormat : "%Y-%m-%d", showsTime :false, button : "nextDateCal", singleClick : true, step : 1 } );

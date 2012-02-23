@@ -436,9 +436,9 @@ div.recommendations li{
         <%=flowSheet%>
     </td>
     <td class="MainTableTopRowRightColumn">
-        <table class="TopStatusBar">
+        <table class="TopStatusBar" cellpadding="2">
             <tr>
-                <td >
+                <td colspan="3">
                     <oscar:nameage demographicNo="<%=demographic_no%>"/>
                     <oscar:oscarPropertiesCheck property="SPEC3" value="yes"> 
                     <span class="DoNotPrint">
@@ -461,7 +461,12 @@ div.recommendations li{
                         &nbsp;
                         <a href="TemplateFlowSheet.jsp?demographic_no=<%=demographic_no%>&template=<%=temp%>&format=treeformat">Tree View</a>
                     <%}%>
-                    <br>
+                    </span>
+                    </td>
+                    </tr>
+                    <tr>
+                    <td>
+                    <span class="DoNotPrint">
                     #Of Elements <input type="text" size="3" id="numEle"/>
                     
                     Start Date <input type="text" size="10" id="flowsheetStartDate" />
@@ -470,10 +475,10 @@ div.recommendations li{
                     </span>
                     </oscar:oscarPropertiesCheck>
                 </td>
-                <td  >&nbsp;
-
+                <td >
+                &nbsp;
                 </td>
-                <td style="text-align:right">
+                <td style="text-align:right" valign="bottom">
                     <a class="DoNotPrint" href="javascript:popupStart(300,400,'Help.jsp')"  ><bean:message key="global.help" /></a> | <a href="javascript:popupStart(300,400,'About.jsp')" ><bean:message key="global.about" /></a> | <a href="javascript:popupStart(300,400,'License.jsp')" ><bean:message key="global.license" /></a>
                 </td>
             </tr>
@@ -485,7 +490,10 @@ div.recommendations li{
     
     <security:oscarSec roleName="<%=roleName$%>" objectName="_flowsheet" rights="w">
     <% if (recList.size() > 0){ %>
-	<p><a class="DoNotPrint" href="javascript: function myFunction() {return false; }"  onclick="javascript:fsPopup(465,635,'AddMeasurementData.jsp?demographic_no=<%=demographic_no%><%=recListBuffer.toString()%>&amp;template=<%=temp%>','addMeasurementData<%=Math.abs( "ADDTHEMALL".hashCode() ) %>')" TITLE="Add all measurements that are overdue.">
+    <p><a class="DoNotPrint" href="javascript: function myFunction() {return false; }"  onclick="javascript:createAddAll(<%=demographic_no%>, '<%= URLEncoder.encode(temp,"UTF-8") %>', <%=Math.abs( "ADDTHEMALL".hashCode() ) %>)" TITLE="Add all measurements.">
+	    Add All 
+	</a> </p>
+	<p><a class="DoNotPrint" href="javascript: function myFunction() {return false; }"  onclick="javascript:fsPopup(760,670,'AddMeasurementData.jsp?demographic_no=<%=demographic_no%><%=recListBuffer.toString()%>&amp;template=<%=temp%>','addMeasurementData<%=Math.abs( "ADDTHEMALL".hashCode() ) %>')" TITLE="Add all overdue measurements.">
 	        Add Overdue
 	</a></p>
     <%}%>
@@ -663,6 +671,11 @@ div.recommendations li{
             userPropertyDAO.saveProp(userProperty);
         }
     }
+    
+    //set add all link array
+	String[] addAllLink = new String[measurements.size()];
+	int mCount=0;
+	
     EctMeasurementTypeBeanHandler mType = new EctMeasurementTypeBeanHandler();
     long startTimeToLoopAndPrint = System.currentTimeMillis();
     List<MeasurementTemplateFlowSheetConfig.Node>nodes = mFlowsheet.getItemHeirarchy();
@@ -746,7 +759,7 @@ div.recommendations li{
             <% System.out.println(h2.get("display_name")+ " "+ h2.get("value_name")); %>
             <% System.out.println("NAME " + h.get("name")); %>
             <security:oscarSec roleName="<%=roleName$%>" objectName="_flowsheet" rights="w">
-            <a class="noborder" href="javascript: function myFunction() {return false; }"  onclick="javascript:fsPopup(465,635,'AddMeasurementData.jsp?measurement=<%= response.encodeURL( measure) %>&amp;demographic_no=<%=demographic_no%>&amp;template=<%= URLEncoder.encode(temp,"UTF-8") %>','addMeasurementData<%=Math.abs( ((String) h.get("name")).hashCode() ) %>')">
+            <a class="noborder" href="javascript: function myFunction() {return false; }"  onclick="javascript:fsPopup(760,670,'AddMeasurementData.jsp?measurement=<%= response.encodeURL( measure) %>&amp;demographic_no=<%=demographic_no%>&amp;template=<%= URLEncoder.encode(temp,"UTF-8") %>','addMeasurementData<%=Math.abs( ((String) h.get("name")).hashCode() ) %>')">
             </security:oscarSec>    
                 
                 <span  class="noborder" style="font-weight:bold;"><%=h2.get("display_name")%></span>
@@ -801,7 +814,7 @@ div.recommendations li{
             }
             
     %>
-    <div style="<%=hider%>" class="preventionProcedure"  onclick="javascript:fsPopup(465,635,'AddMeasurementData.jsp?measurement=<%= response.encodeURL( measure) %>&amp;id=<%=hdata.get("id")%>&amp;demographic_no=<%=demographic_no%>&amp;template=<%= URLEncoder.encode(temp,"UTF-8") %>','addMeasurementData')" >
+    <div style="<%=hider%>" class="preventionProcedure"  onclick="javascript:fsPopup(760,670,'AddMeasurementData.jsp?measurement=<%= response.encodeURL( measure) %>&amp;id=<%=hdata.get("id")%>&amp;demographic_no=<%=demographic_no%>&amp;template=<%= URLEncoder.encode(temp,"UTF-8") %>','addMeasurementData')" >
         <p <%=indColour%> title="fade=[on] header=[<%=hdata.get("age")%> -- Date:<%=hdata.get("prevention_date")%>] body=[<%=com%>&lt;br/&gt;Entered By:<%=mdb.getProviderFirstName()%> <%=mdb.getProviderLastName()%>]"><%=h2.get("value_name")%>: <%=hdata.get("age")%> <br/>
             <%=hdata.get("prevention_date")%>&nbsp;<%=mdb.getNumMonthSinceObserved()%>M
             <%if (comb) {%>
@@ -811,7 +824,12 @@ div.recommendations li{
     </div>
     <%}%>
 </div>
-<%}else{
+<%
+	//creating add all link array
+	addAllLink[mCount]=measure;
+	mCount++;
+	
+    }else{
     String prevType = (String) h2.get("prevention_type");
     long startPrevType = System.currentTimeMillis();
     ArrayList alist = pd.getPreventionData(prevType, demographic_no);
@@ -825,7 +843,7 @@ div.recommendations li{
 <div class="preventionSection" style="<%=hidden%>" >
     <div style="margin-left: <%=String.valueOf(marginLeft * step)%>px;" class="headPrevention">
         <p title="fade=[on] header=[<%=h2.get("display_name")%>] body=[<%=wrapWithSpanIfNotNull(mi.getWarning(measure),"red")%><%=wrapWithSpanIfNotNull(mi.getRecommendation(measure),"red")%><%=h2.get("guideline")%>]">
-            <a href="javascript: function myFunction() {return false; }"  onclick="javascript:fsPopup(465,635,'../../oscarPrevention/AddPreventionData.jsp?prevention=<%= response.encodeURL( prevType) %>&amp;demographic_no=<%=demographic_no%>','addPreventionData<%=Math.abs( prevType.hashCode() ) %>')">
+            <a href="javascript: function myFunction() {return false; }"  onclick="javascript:fsPopup(760,670,'../../oscarPrevention/AddPreventionData.jsp?prevention=<%= response.encodeURL( prevType) %>&amp;demographic_no=<%=demographic_no%>','addPreventionData<%=Math.abs( prevType.hashCode() ) %>')">
                 <span title="<%=h2.get("guideline")%>" style="font-weight:bold;"><%=h2.get("display_name")%></span>
             </a>
             &nbsp;
@@ -847,7 +865,7 @@ div.recommendations li{
                 com ="";
             }
     %>
-    <div class="preventionProcedure"  onclick="javascript:fsPopup(465,635,'../../oscarPrevention/AddPreventionData.jsp?id=<%=hdata.get("id")%>&amp;demographic_no=<%=demographic_no%>','addPreventionData')" >
+    <div class="preventionProcedure"  onclick="javascript:fsPopup(760,670,'../../oscarPrevention/AddPreventionData.jsp?id=<%=hdata.get("id")%>&amp;demographic_no=<%=demographic_no%>','addPreventionData')" >
         <p <%=r(hdata.get("refused"))%> title="fade=[on] header=[<%=hdata.get("age")%> -- Date:<%=hdata.get("prevention_date")%>] body=[<%=com%>]" >Age: <%=hdata.get("age")%> <br/>
             <!--<%=refused(hdata.get("refused"))%>-->Date: <%=hdata.get("prevention_date")%>
             <%if (comb) {%>
@@ -886,8 +904,22 @@ div.recommendations li{
         }
   }
     System.out.println("Looping display took  "+ (System.currentTimeMillis() - startTimeToLoopAndPrint) );
+    
+    
 %>
 
+<script language="javascript">
+function createAddAll(d,t,h){
+	
+	//most likely will remove this and create qs above to account for prevention
+	var newMtype;
+	newMtype='<%for(int i=0;i<mCount;i++){
+   				out.print("&measurement="+ addAllLink[i]);	
+   				}%>';
+	
+	return fsPopup(760,670,'AddMeasurementData.jsp?demographic_no='+d+'&template='+t+newMtype,'addMeasurementData'+h);
+}
+</script>	
 
 
 <%
@@ -916,7 +948,7 @@ div.recommendations li{
         out.flush();
         for (oscar.oscarRx.data.RxPrescriptionData.Prescription pres : arr){
     %>
-    <div class="preventionProcedure"  onclick="javascript:fsPopup(465,635,'','addPreventionData')" >
+    <div class="preventionProcedure"  onclick="javascript:fsPopup(760,670,'','addPreventionData')" >
         <p <%=""/*r(hdata.get("refused"))*/%> title="fade=[on] header=[<%=""/*hdata.get("age")*/%> -- Date:<%=""/*hdata.get("prevention_date")*/%>] body=[<%=""/*com*/%>]" ><%=pres.getBrandName()%> <br/>
             Date: <%=pres.getRxDate()%>
             <%-- if (comb) {%>
@@ -928,18 +960,6 @@ div.recommendations li{
 </div>
 
 <%}%>
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 </div>

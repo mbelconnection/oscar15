@@ -491,11 +491,15 @@ public class OcanReportUIBean implements CallbackHandler {
 
 		try {
 			String user = OscarProperties.getInstance().getProperty("ocan.iar.user");
+			String url = OscarProperties.getInstance().getProperty("ocan.iar.url");
+			if(url == null || url.length() == 0) {
+				//validation environment
+				url = "https://iarvt.ccim.on.ca/iarws-2.0/services/SubmissionService";
+			}
 			SubmissionService service = new SubmissionService();
 			SubmissionPortType port =  service.getSubmissionPort();
 			((BindingProvider)port).getRequestContext().put(
-				    BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
-				    "https://iarvt.ccim.on.ca/iarws-2.0/services/SubmissionService");
+				    BindingProvider.ENDPOINT_ADDRESS_PROPERTY,url);
 			CxfClientUtils.configureClientConnection(port);
 			CxfClientUtils.configureWSSecurity(port,user,OcanReportUIBean.class);
 			CxfClientUtils.configureLogging(port);

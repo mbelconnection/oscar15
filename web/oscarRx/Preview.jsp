@@ -264,9 +264,10 @@ System.out.println("==========================done first java part Preview.jsp2=
 				</tr>
 				<tr valign=bottom>
 					<td height=25px></td>
-                                        <td height=25px>&nbsp; <%= doctorName%> <% if ( pracNo != null && ! pracNo.equals("") && !pracNo.equalsIgnoreCase("null")) { %>
-                                            Pract. No. <%= pracNo%> <% } %>
-					</td>
+                    
+                     <td height=25px>&nbsp; <%= doctorName%> <% if ( pracNo != null && ! pracNo.equals("") && !pracNo.equalsIgnoreCase("null")) { %>
+                         <br /> &nbsp; <bean:message key="RxPreview.PractNo"/> <%= pracNo%> <% } %>                                                         
+                     </td>
 
 
 

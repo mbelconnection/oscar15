@@ -460,7 +460,7 @@
 	<form-bean name="courseManagerForm" type="org.apache.struts.validator.DynaValidatorForm">
 		<form-property name="name" type="java.lang.String" />
 	</form-bean>
-	
+
     </form-beans>
 
     <global-forwards>
@@ -2124,7 +2124,14 @@
             <forward name="success" path="/PMmodule/Admin/migrateCaisiRoles.jsp" redirect="true"/>
         </action>
 
-        <action path="/OcanIarSubmit" type="org.oscarehr.web.OcanIarSubmitAction" parameter="method" scope="request">            
+        <action path="/OcanIarSubmit" type="org.oscarehr.web.OcanIarSubmitAction" parameter="method" scope="request">
+        </action>
+
+        <action path="/OcanReporting" type="org.oscarehr.web.OcanReportingAction" parameter="method" scope="request">
+        </action>
+
+		<action path="/PMmodule/OcanWorkload" type="org.oscarehr.PMmodule.web.OcanWorkloadAction" parameter="method" scope="request" >
+            <forward name="view" path="/PMmodule/OcanWorkload.jsp" />
         </action>
 
     </action-mappings>

@@ -614,13 +614,15 @@ div.logoutBox {
 			<li><html:link page="/oscarReport/mis_report_form.jsp"><bean:message key="admin.admin.misRpt"/></html:link></li>
 			<li><html:link page="/oscarReport/ocan_report_form.jsp"><bean:message key="admin.admin.ocanRpt"/></html:link></li>
 			<li><html:link page="/oscarReport/ocan_iar.jsp"><bean:message key="admin.admin.ocanIarRpt"/></html:link></li>
+			<li><html:link page="/oscarReport/ocan_reporting.jsp"><bean:message key="admin.admin.ocanReporting"/></html:link></li>
+
 			<oscar:oscarPropertiesCheck property="SERVERLOGGING" value="yes">
 				<li><a href="#"
 					onclick="popupPage(600,900, &quot;<html:rewrite page="/admin/oscarLogging.jsp"/>&quot;)"><bean:message key="admin.admin.serverLog"/></a></li>
 			</oscar:oscarPropertiesCheck>
                         <li><a href="#"
                                onclick="popupPage(600,900,&quot;<html:rewrite page="/report/DxresearchReport.do"/>&quot;)"><bean:message key="admin.admin.diseaseRegister"/></a></li>
-            
+
 		</ul>
 		</div>
 	</security:oscarSec>
@@ -711,7 +713,7 @@ div.logoutBox {
 <%
 	if (org.oscarehr.common.IsPropertiesOn.isMultisitesEnable())
 				{
-%>                        
+%>
 			<li><a href="#"
 				onclick='popupPage(550,800,&quot;<html:rewrite page="/admin/ManageSites.do"/>&quot;);return false;'><bean:message key="admin.admin.sitesAdmin"/></a></li>
 <%
@@ -793,10 +795,10 @@ div.logoutBox {
 			<li><a href="#"
 				onclick='popupPage(550,800,&quot;<html:rewrite page="/demographic/demographicImport.jsp"/>&quot;);return false;'><bean:message key="admin.admin.learning.importPatient"/></a></li>
 			<li><a href="#"
-				onclick='popupPage(550,800,&quot;<html:rewrite page="/oscarLearning/StudentImport.jsp"/>&quot;);return false;'><bean:message key="admin.admin.learning.importStudent"/></a></li>		
+				onclick='popupPage(550,800,&quot;<html:rewrite page="/oscarLearning/StudentImport.jsp"/>&quot;);return false;'><bean:message key="admin.admin.learning.importStudent"/></a></li>
 		</ul>
 		</div>
-	</security:oscarSec>	
+	</security:oscarSec>
 </oscar:oscarPropertiesCheck>
 
 </caisi:isModuleLoad>

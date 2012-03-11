@@ -89,6 +89,7 @@ public class OcanStaffFormDao extends AbstractDao<OcanStaffForm> {
 		return getSingleResultOrNull(query);
 	}
 
+
 	public OcanStaffForm getLastCompletedOcanForm(Integer facilityId, Integer clientId) {
 
 		String sqlCommand = "select * from OcanStaffForm where facilityId=?1 and clientId=?2 and assessmentStatus=?3 order by created desc , id desc limit 1";
@@ -150,6 +151,33 @@ public class OcanStaffFormDao extends AbstractDao<OcanStaffForm> {
 		query.setParameter(4, startDate);
 		query.setParameter(5, endDate);
 		query.setParameter(6, ocanType);
+
+		@SuppressWarnings("unchecked")
+		List<OcanStaffForm> results=query.getResultList();
+
+		//Because staff could modify completed assessment. So it one assessment ID could have multiple assessment records.
+		//Only export the one with latest update.
+		List<OcanStaffForm> list = new ArrayList<OcanStaffForm>();
+		int assessmentId_0=0;
+		for(OcanStaffForm res:results) {
+			int assessmentId_1 = res.getAssessmentId().intValue();
+			if(assessmentId_0!=assessmentId_1) {
+				assessmentId_0 = assessmentId_1;
+				list.add(res);
+			}
+		}
+		return list;
+
+    }
+
+    public List<OcanStaffForm> findLatestSignedOcanForms(Integer facilityId, Integer clientId) {
+
+		String sqlCommand="select x from OcanStaffForm x where x.facilityId=?1 and x.assessmentStatus=?2 and clientId=?3 order by x.assessmentId DESC, x.created DESC, x.id DESC";
+
+		Query query = entityManager.createQuery(sqlCommand);
+		query.setParameter(1, facilityId);
+		query.setParameter(2, "Completed");
+		query.setParameter(3, clientId);
 
 		@SuppressWarnings("unchecked")
 		List<OcanStaffForm> results=query.getResultList();
@@ -305,4 +333,65 @@ public List<OcanStaffForm> findUnsubmittedOcanFormsByOcanType(Integer facilityId
 
 	}
 
+    public List<OcanStaffForm> findLatestOcanFormsByStaff(Integer facilityId, String providerNo) {
+
+		String sqlCommand="select x from OcanStaffForm x where x.facilityId=?1 and providerNo=?2 order by x.assessmentId DESC, x.created DESC, x.id DESC";
+
+		Query query = entityManager.createQuery(sqlCommand);
+		query.setParameter(1, facilityId);
+		query.setParameter(2, providerNo);
+
+		@SuppressWarnings("unchecked")
+		List<OcanStaffForm> results=query.getResultList();
+
+		//Because staff could modify completed assessment. So it one assessment ID could have multiple assessment records.
+		//Only export the one with latest update.
+		List<OcanStaffForm> list = new ArrayList<OcanStaffForm>();
+		int assessmentId_0=0;
+		for(OcanStaffForm res:results) {
+			int assessmentId_1 = res.getAssessmentId().intValue();
+			if(assessmentId_0!=assessmentId_1) {
+				assessmentId_0 = assessmentId_1;
+				list.add(res);
+			}
+		}
+
+		List<OcanStaffForm> filteredList = new ArrayList<OcanStaffForm>();
+		for(OcanStaffForm f:list) {
+			OcanStaffForm tmp = this.findLatestByAssessmentId(facilityId,f.getAssessmentId());
+			if(f.getId().intValue() == tmp.getId().intValue()) {
+				filteredList.add(f);
+			}
+		}
+
+		return filteredList;
+
+    }
+
+    public List<OcanStaffForm> findLatestByConsumer(Integer facilityId, Integer consumerId) {
+
+		String sqlCommand="select x from OcanStaffForm x where x.facilityId=?1 and x.clientId=?2 order by x.clientId ASC, x.assessmentId DESC, x.created DESC, x.id DESC";
+
+		Query query = entityManager.createQuery(sqlCommand);
+		query.setParameter(1, facilityId);
+		query.setParameter(2, consumerId);
+
+
+		@SuppressWarnings("unchecked")
+		List<OcanStaffForm> results=query.getResultList();
+
+		//Because staff could modify completed assessment. So it one assessment ID could have multiple assessment records.
+		//Only export the one with latest update.
+		List<OcanStaffForm> list = new ArrayList<OcanStaffForm>();
+		int assessmentId_0=0;
+		for(OcanStaffForm res:results) {
+			int assessmentId_1 = res.getAssessmentId().intValue();
+			if(assessmentId_0!=assessmentId_1) {
+				assessmentId_0 = assessmentId_1;
+				list.add(res);
+			}
+		}
+		return list;
+
+    }
 }

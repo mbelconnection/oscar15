@@ -37,6 +37,7 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.oscarehr.PMmodule.caisi_integrator.CaisiIntegratorManager;
+import org.oscarehr.PMmodule.dao.ProgramProviderDAO;
 import org.oscarehr.PMmodule.model.Intake;
 import org.oscarehr.PMmodule.service.SurveyManager;
 import org.oscarehr.PMmodule.web.formbean.ClientSearchFormBean;
@@ -56,6 +57,9 @@ import org.oscarehr.common.model.Provider;
 import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SessionConstants;
+import org.oscarehr.util.SpringUtils;
+
+import oscar.OscarProperties;
 
 import com.quatro.model.LookupCodeValue;
 
@@ -89,11 +93,11 @@ public class GenericIntakeSearchAction extends BaseGenericIntakeAction {
 	private static final String FORWARD_INTAKE_EDIT = "intakeEdit";
 
 	private ClientImageDAO clientImageDAO = null;
-	
+
 	public void setClientImageDAO(ClientImageDAO clientImageDAO) {
 		this.clientImageDAO = clientImageDAO;
 	}
-	
+
 	private SurveyManager surveyManager;
 
 	public void setSurveyManager(SurveyManager mgr) {
@@ -158,12 +162,12 @@ public class GenericIntakeSearchAction extends BaseGenericIntakeAction {
 		// if matches found display results, otherwise create local intake
 		@SuppressWarnings("unchecked")
 		List<MatchingDemographicTransferScore> remoteMatches = (List<MatchingDemographicTransferScore>) request.getAttribute("remoteMatches");
-		
+
 		String roleName$ = (String)request.getSession().getAttribute("userrole") + "," + (String) request.getSession().getAttribute("user");
 	    if(roleName$.indexOf(UserRoleUtils.Roles.er_clerk.name()) != -1) {
 	    	return mapping.findForward(FORWARD_SEARCH_FORM);
 	    }
-	    
+
 		if (!localMatches.isEmpty() || (remoteMatches != null && remoteMatches.size() > 0)) {
 			return mapping.findForward(FORWARD_SEARCH_FORM);
 		} else {
@@ -237,8 +241,8 @@ public class GenericIntakeSearchAction extends BaseGenericIntakeAction {
 	    	request.setAttribute("demographicNo", new Long(intakeSearchBean.getDemographicId()));
 	    	return mapping.findForward("clientEdit");
 	    }
-	    
-		
+
+
 		return forwardIntakeEditUpdate(mapping, intakeSearchBean.getDemographicId(), request);
 	}
 
@@ -256,19 +260,19 @@ public class GenericIntakeSearchAction extends BaseGenericIntakeAction {
 			Demographic demographic = new Demographic();
 			demographic.setFirstName(demographicTransfer.getFirstName());
 			demographic.setLastName(demographicTransfer.getLastName());
-			
+
 			if (demographicTransfer.getBirthDate()!=null)
 			{
 				GregorianCalendar cal = new GregorianCalendar();
 				cal.setTime(demographicTransfer.getBirthDate());
 				demographic.setBirthDay(cal);
 			}
-			
+
 			if (demographicTransfer.getGender()!=null) demographic.setSex(demographicTransfer.getGender().name());
-	
+
 			demographic.setPatientStatus("AC");
 			demographic.setDateJoined(new Date());
-			
+
 			//TODO: if this is ER clerk, go to their consent form.
 			//client.setProviderNo(providerNo);
 			//clientManager.saveClient(client);
@@ -276,11 +280,11 @@ public class GenericIntakeSearchAction extends BaseGenericIntakeAction {
 		    if(roleName$.indexOf(UserRoleUtils.Roles.er_clerk.name()) != -1) {
 		    	clientManager.saveClient(demographic);
 		    	request.setAttribute("demographicNo", new Long(demographic.getDemographicNo()));
-		    	String providerNo = ((Provider) request.getSession().getAttribute(SessionConstants.LOGGED_IN_PROVIDER)).getProviderNo();		    	
+		    	String providerNo = ((Provider) request.getSession().getAttribute(SessionConstants.LOGGED_IN_PROVIDER)).getProviderNo();
 		    	this.erClerklinkRemoteDemographic(remoteFacilityId, remoteDemographicId, providerNo, demographic);
 		    	return mapping.findForward("clientEdit");
 		    }
-		    
+
 			return forwardIntakeEditCreate(mapping, request, demographic);
 		} catch (Exception e) {
 			log.error("Unexpected error.", e);
@@ -289,11 +293,19 @@ public class GenericIntakeSearchAction extends BaseGenericIntakeAction {
 	}
 
 	private List<Demographic> localSearch(GenericIntakeSearchFormBean intakeSearchBean) {
+		String strictSearch = OscarProperties.getInstance().getProperty("caisi.new_client.strict_search", "false");
+
 		ClientSearchFormBean clientSearchBean = new ClientSearchFormBean();
 		clientSearchBean.setFirstName(intakeSearchBean.getFirstName());
 		clientSearchBean.setLastName(intakeSearchBean.getLastName());
 		clientSearchBean.setGender(intakeSearchBean.getGender());
-		clientSearchBean.setSearchOutsideDomain(true);
+		if(strictSearch.equalsIgnoreCase("true")) {
+			ProgramProviderDAO ppDao = (ProgramProviderDAO) SpringUtils.getBean("programProviderDAO");
+			clientSearchBean.setSearchOutsideDomain(false);
+			clientSearchBean.setProgramDomain(ppDao.getProgramDomain(LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo()));
+		} else {
+			clientSearchBean.setSearchOutsideDomain(true);
+		}
 		clientSearchBean.setSearchUsingSoundex(true);
 
 		return clientManager.search(clientSearchBean);
@@ -359,10 +371,10 @@ public class GenericIntakeSearchAction extends BaseGenericIntakeAction {
 	public static List<LookupCodeValue> getGenders() {
 		return genders;
 	}
-	
+
 	private void erClerklinkRemoteDemographic(int remoteFacilityId, int remoteDemographicId, String providerNo, Demographic client) {
-		
-		try {			
+
+		try {
 			DemographicWs demographicWs = CaisiIntegratorManager.getDemographicWs();
 
 			// link the clients

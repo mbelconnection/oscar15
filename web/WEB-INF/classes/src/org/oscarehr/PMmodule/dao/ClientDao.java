@@ -1,23 +1,23 @@
 /*
- * 
+ *
  * Copyright (c) 2001-2002. Centre for Research on Inner City Health, St. Michael's Hospital, Toronto. All Rights Reserved. *
- * This software is published under the GPL GNU General Public License. 
- * This program is free software; you can redistribute it and/or 
- * modify it under the terms of the GNU General Public License 
- * as published by the Free Software Foundation; either version 2 
- * of the License, or (at your option) any later version. * 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
- * GNU General Public License for more details. * * You should have received a copy of the GNU General Public License 
- * along with this program; if not, write to the Free Software 
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. * 
- * 
+ * This software is published under the GPL GNU General Public License.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version. *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details. * * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *
+ *
  * <OSCAR TEAM>
- * 
- * This software was written for 
- * Centre for Research on Inner City Health, St. Michael's Hospital, 
- * Toronto, Ontario, Canada 
+ *
+ * This software was written for
+ * Centre for Research on Inner City Health, St. Michael's Hospital,
+ * Toronto, Ontario, Canada
  */
 
 package org.oscarehr.PMmodule.dao;
@@ -76,7 +76,7 @@ public class ClientDao extends HibernateDaoSupport {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.oscarehr.PMmodule.dao.ClientDao#exists(java.lang.Integer)
 	 */
 	public boolean clientExists(Integer demographicNo) {
@@ -132,32 +132,32 @@ public class ClientDao extends HibernateDaoSupport {
 		String WHERE = " where ";
 		String sql = "";
 		String sql2 = "";
-		
+
 		//@SuppressWarnings("unchecked")
 		List results = null;
 
 		if (bean.getFirstName() != null && bean.getFirstName().length() > 0) {
 			firstName = bean.getFirstName();
 			// firstName = StringEscapeUtils.escapeSql(firstName);
-			firstNameL = firstName + "%"; 
+			firstNameL = firstName + "%";
 		}
-		
+
 		if (bean.getLastName() != null && bean.getLastName().length() > 0) {
 			lastName = bean.getLastName();
 //			lastName = StringEscapeUtils.escapeSql(lastName);
 			lastNameL =  lastName + "%";
 		}
-		
-		String clientNo = bean.getDemographicNo(); 
-		//exclude merged client 
+
+		String clientNo = bean.getDemographicNo();
+		//exclude merged client
 		if(excludeMerged)criteria.add(Expression.eq("merged", Boolean.FALSE));
 		if (clientNo != null && !"".equals(clientNo))
 		{
 			if (com.quatro.util.Utility.IsInt(clientNo) ) {
 				criteria.add(Expression.eq("DemographicNo", Integer.valueOf(clientNo)));
 				results = criteria.list();
-			} 
-			else 
+			}
+			else
 			{
 				/* invalid client no generates a empty search results */
 				results = new ArrayList();
@@ -195,7 +195,7 @@ public class ClientDao extends HibernateDaoSupport {
 		{
 			criteria.add(Restrictions.or(condLastName,condAlias2));
 		}
-*/		
+*/
 		if (bean.getDob() != null && bean.getDob().length() > 0) {
 			criteria.add(Expression.eq("DateOfBirth", MyDateFormat.getCalendar(bean.getDob())));
 		}
@@ -207,25 +207,25 @@ public class ClientDao extends HibernateDaoSupport {
 		if (bean.getHealthCardVersion() != null && bean.getHealthCardVersion().length() > 0) {
 			criteria.add(Expression.eq("Ver", bean.getHealthCardVersion()));
 		}
-		
+
 		if(bean.getBedProgramId() != null && bean.getBedProgramId().length() > 0) {
-			bedProgramId = bean.getBedProgramId(); 
-			sql = " demographic_no in (select decode(dm.merged_to,null,i.client_id,dm.merged_to) from intake i,demographic_merged dm where i.client_id=dm.demographic_no(+) and i.program_id in (" + bedProgramId + "))";		
+			bedProgramId = bean.getBedProgramId();
+			sql = " demographic_no in (select decode(dm.merged_to,null,i.client_id,dm.merged_to) from intake i,demographic_merged dm where i.client_id=dm.demographic_no(+) and i.program_id in (" + bedProgramId + "))";
 			criteria.add(Restrictions.sqlRestriction(sql));
 		}
 		if(bean.getAssignedToProviderNo() != null && bean.getAssignedToProviderNo().length() > 0) {
 			assignedToProviderNo = bean.getAssignedToProviderNo();
-			sql = " demographic_no in (select decode(dm.merged_to,null,a.client_id,dm.merged_to) from admission a,demographic_merged dm where a.client_id=dm.demographic_no(+)and a.primaryWorker='" + assignedToProviderNo + "')"; 
+			sql = " demographic_no in (select decode(dm.merged_to,null,a.client_id,dm.merged_to) from admission a,demographic_merged dm where a.client_id=dm.demographic_no(+)and a.primaryWorker='" + assignedToProviderNo + "')";
 			criteria.add(Restrictions.sqlRestriction(sql));
 		}
-		
+
 		active = bean.getActive();
 		if("1".equals(active)) {
 			criteria.add(Expression.ge("activeCount", new Integer(1)));
 		}else if ("0".equals(active)){
 			criteria.add(Expression.eq("activeCount", new Integer(0)));
 		}
-			
+
 		gender = bean.getGender();
 		if (gender != null && !"".equals(gender)){
 			criteria.add(Expression.eq("Sex", gender));
@@ -244,46 +244,40 @@ public class ClientDao extends HibernateDaoSupport {
 	 * use program_client table to do domain based search
 	 */
 	public List<Demographic> search(ClientSearchFormBean bean) {
-
 		Criteria criteria = getSession().createCriteria(Demographic.class);
 		String firstName = "";
 		String lastName = "";
 		String firstNameL = "";
 		String lastNameL = "";
-		String bedProgramIdCond = "";
-		String admitDateFromCond = "";
-		String admitDateToCond = "";
+
 		String active = "";
 		String gender = "";
-		String AND = " and ";
-		String WHERE = " where ";
+
 		String sql = "";
 		String sql2 = "";
-		
+
 		@SuppressWarnings("unchecked")
 		List<Demographic> results = null;
 
-		boolean isOracle = OscarProperties.getInstance().getDbType().equals("oracle");
 		if (bean.getFirstName() != null && bean.getFirstName().length() > 0) {
 			firstName = bean.getFirstName();
 			firstName = StringEscapeUtils.escapeSql(firstName);
-			firstNameL = "%" + firstName + "%"; 
+			firstNameL = "%" + firstName + "%";
 		}
-		
+
 		if (bean.getLastName() != null && bean.getLastName().length() > 0) {
 			lastName = bean.getLastName();
 			lastName = StringEscapeUtils.escapeSql(lastName);
 			lastNameL = "%" + lastName + "%";
 		}
-		
-		String clientNo = bean.getDemographicNo(); 
-		if (clientNo != null && !"".equals(clientNo))
-		{
+
+		String clientNo = bean.getDemographicNo();
+		if (clientNo != null && !"".equals(clientNo)) {
 			if (com.quatro.util.Utility.IsInt(clientNo) ) {
 				criteria.add(Expression.eq("DemographicNo", Integer.valueOf(clientNo).intValue()));
 				results = criteria.list();
-			} 
-			else 
+			}
+			else
 			{
 				/* invalid client no generates a empty search results */
 				results = new ArrayList();
@@ -294,32 +288,36 @@ public class ClientDao extends HibernateDaoSupport {
 		LogicalExpression condAlias2 = null;
 		LogicalExpression condFirstName = null;
 		LogicalExpression condLastName = null;
-		
+
 		if (firstName.length() > 0) {
 			sql = "(LEFT(SOUNDEX(first_name),2) = LEFT(SOUNDEX('" + firstName + "'),2))";
 			sql2 = "(LEFT(SOUNDEX(alias),2) = LEFT(SOUNDEX('" + firstName + "'),2))";
 			condFirstName = Restrictions.or(Restrictions.ilike("FirstName", firstNameL), Restrictions.sqlRestriction(sql));
 			condAlias1 = Restrictions.or(Restrictions.ilike("Alias", firstNameL),Restrictions.sqlRestriction(sql2));
-			
+
 		}
 		if (lastName.length() > 0) {
-				sql = "(LEFT(SOUNDEX(last_name),2) = LEFT(SOUNDEX('" + lastName + "'),2))";
-				sql2 = "(LEFT(SOUNDEX(alias),2) = LEFT(SOUNDEX('" + lastName + "'),2))";
-				condLastName = Restrictions.or(Restrictions.ilike("LastName", lastNameL), Restrictions.sqlRestriction(sql));
-				condAlias2 = Restrictions.or(Restrictions.ilike("Alias", lastNameL),Restrictions.sqlRestriction(sql2));
-		}	
-				
+			sql = "(LEFT(SOUNDEX(last_name),2) = LEFT(SOUNDEX('" + lastName + "'),2))";
+			sql2 = "(LEFT(SOUNDEX(alias),2) = LEFT(SOUNDEX('" + lastName + "'),2))";
+			condLastName = Restrictions.or(Restrictions.ilike("LastName", lastNameL), Restrictions.sqlRestriction(sql));
+			condAlias2 = Restrictions.or(Restrictions.ilike("Alias", lastNameL),Restrictions.sqlRestriction(sql2));
+		}
+
+		if (bean.getChartNo() != null && bean.getChartNo().length() > 0) {
+			criteria.add(Expression.like("ChartNo", "%"+bean.getChartNo()+"%"));
+		}
+
 		if (!bean.isSearchUsingSoundex()) {
-			
+
 			if (firstName.length() > 0) {
 				criteria.add(Restrictions.or(Restrictions.ilike("FirstName",firstNameL),Restrictions.ilike("Alias",firstNameL)));
 			}
-			if (lastName.length() > 0) {				
+			if (lastName.length() > 0) {
 				criteria.add(Restrictions.or(Restrictions.ilike("LastName",lastNameL),Restrictions.ilike("Alias",lastNameL)));
 			}
 		}
 		else { // soundex variation
-			
+
 			if (firstName.length() > 0) {
 				criteria.add(Restrictions.or(condFirstName,condAlias1));
 			}
@@ -327,8 +325,8 @@ public class ClientDao extends HibernateDaoSupport {
 				criteria.add(Restrictions.or(condLastName,condAlias2));
 			}
 		}
-		
-		
+
+
 		if (bean.getDob() != null && bean.getDob().length() > 0) {
 			criteria.add(Expression.eq("YearOfBirth", bean.getYearOfBirth()));
 			criteria.add(Expression.eq("MonthOfBirth", bean.getMonthOfBirth()));
@@ -342,24 +340,19 @@ public class ClientDao extends HibernateDaoSupport {
 		if (bean.getHealthCardVersion() != null && bean.getHealthCardVersion().length() > 0) {
 			criteria.add(Expression.eq("Ver", bean.getHealthCardVersion()));
 		}
-		
+
 		if (bean.getChartNo() != null && bean.getChartNo().length() > 0) {
 			criteria.add(Expression.like("ChartNo", "%"+bean.getChartNo()+"%"));
 		}
 
-		
-		if(bean.getBedProgramId() != null && bean.getBedProgramId().length() > 0) {
-			bedProgramIdCond = " program_id = " + bean.getBedProgramId();
-		}
-		
-// -------- start splice from 1.31 for 2270307
-		DetachedCriteria subq = DetachedCriteria.forClass(Admission.class)
-	    .setProjection(Property.forName("ClientId") );
-		/* 
-		// this code seems not to work properly... Bug 2270307 encapsulates this.
-		if (bean.getProgramDomain() != null && !bean.getProgramDomain().isEmpty() && !bean.isSearchOutsideDomain()) {
+		if(!bean.isSearchOutsideDomain()) {
+			// program domain limited search
+			if(bean.getProgramDomain() == null) {
+				bean.setProgramDomain(new ArrayList<ProgramProvider>());
+			}
 
-			// program domain search
+			DetachedCriteria subq = DetachedCriteria.forClass(Admission.class).setProjection(Property.forName("ClientId") );
+
 			StringBuilder programIds = new StringBuilder();
 			for (int x = 0; x < bean.getProgramDomain().size(); x++) {
 				ProgramProvider p = (ProgramProvider)bean.getProgramDomain().get(x);
@@ -367,71 +360,54 @@ public class ClientDao extends HibernateDaoSupport {
 					programIds.append(",");
 				}
 				programIds.append(p.getProgramId());
-			}		
-			
-			String [] pIds ;			
-			if(bean.getBedProgramId()==null || bean.getBedProgramId().length()==0) {
-				pIds = programIds.toString().split(",");
-			} else {
-				pIds = bean.getBedProgramId().split(",");
 			}
-			
+
+			String [] pIds = {};
+			pIds = programIds.toString().split(",");
+			logger.info("programIds is " + programIds.toString());
+
+			if(programIds.length() == 0) {
+				logger.info("provider not staff in any program, ie. can't see ANYONE.");
+				//provider not staff in any program, ie. can't see ANYONE.
+				return new ArrayList<Demographic>();
+			}
 			Integer [] pIdi = new Integer[pIds.length];
 			for(int i=0;i<pIds.length;i++)
 			{
 				pIdi[i] = Integer.parseInt(pIds[i]);
 			}
-		    subq.add(Restrictions.in("ProgramId", pIdi));	
-			
-		}else{  
-			String extraCond = "";
-			if(bedProgramIdCond.length()>0){
-				String [] pIds ;
-				pIds = bean.getBedProgramId().split(",");
-				Integer [] pIdi = new Integer[pIds.length];
-				for(int i=0;i<pIds.length;i++)
-				{
-					pIdi[i] = Integer.parseInt(pIds[i]);
-				}
-				
-			    subq.add(Restrictions.in("ProgramId", pIdi));		
-			}	
+
+			if(pIdi.length>0) {
+				subq.add(Restrictions.in("ProgramId", pIdi));
+			}
+
+			if(bean.getDateFrom() != null && bean.getDateFrom().length() > 0) {
+				Date dt = MyDateFormat.getSysDate(bean.getDateFrom().trim());
+		    	subq.add(Restrictions.ge("AdmissionDate",dt ));
+		    }
+		    if(bean.getDateTo() != null && bean.getDateTo().length() > 0) {
+		    	Date dt1 =  MyDateFormat.getSysDate(bean.getDateTo().trim());
+		    	subq.add(Restrictions.le("AdmissionDate",dt1));
+		    }
+
+	    	criteria.add(Property.forName("DemographicNo").in(subq));
 		}
-		*/
-		if(bean.getDateFrom() != null && bean.getDateFrom().length() > 0) {
-	    	Date dt = MyDateFormat.getSysDate(bean.getDateFrom().trim());
-	    	subq.add(Restrictions.ge("AdmissionDate",dt ));
-	    }
-	    if(bean.getDateTo() != null && bean.getDateTo().length() > 0) {
-	    	Date dt1 =  MyDateFormat.getSysDate(bean.getDateTo().trim());
-	    	subq.add(Restrictions.le("AdmissionDate",dt1));
-	    }
-	    
-	    
-	    criteria.add(Property.forName("DemographicNo").in(subq));
-// -------- end splice from 1.31
-		
-		
+
 		active = bean.getActive();
 		if("1".equals(active)) {
 			criteria.add(Expression.ge("activeCount", 1));
 		}
-		else if ("0".equals(active))
-		{
+		else if ("0".equals(active)) {
 			criteria.add(Expression.eq("activeCount", 0));
 		}
-			
+
 		gender = bean.getGender();
-		if (gender != null && !"".equals(gender))
-		{
+		if (gender != null && !"".equals(gender)) {
 			criteria.add(Expression.eq("Sex", gender));
 		}
-		
-		//filter out non unique anonymous
-	//	criteria.add(Expression.ne("anonymous", "one-time-anonymous"));
-		//criteria.add(Expression.isNull("anonymous"));
-		
+
 		criteria.add(Expression.or(Expression.ne("anonymous", "one-time-anonymous"), Expression.isNull("anonymous")));
+
 		results = criteria.list();
 
 		if (log.isDebugEnabled()) {
@@ -440,7 +416,7 @@ public class ClientDao extends HibernateDaoSupport {
 
 		return results;
 	}
-	
+
 	public Date getMostRecentIntakeADate(Integer demographicNo) {
 
 		Date date = null;
@@ -711,67 +687,67 @@ public class ClientDao extends HibernateDaoSupport {
 		public int programId;
 		public String programName;
 	}
-	
+
     public Map<String, ClientListsReportResults> findByReportCriteria(ClientListsReportFormBean x) {
 
 		StringBuilder sqlCommand=new StringBuilder();
         boolean joinCaseMgmtNote=StringUtils.trimToNull(x.getProviderId())!=null || StringUtils.trimToNull(x.getSeenStartDate())!=null || StringUtils.trimToNull(x.getSeenEndDate())!=null;
 
-        // this is a horrid join, no one is allowed to give me grief about it, until we refactor *everything*, some nasty hacks will happen. 
+        // this is a horrid join, no one is allowed to give me grief about it, until we refactor *everything*, some nasty hacks will happen.
 		sqlCommand.append("select * from demographic"+(joinCaseMgmtNote?",casemgmt_note":"")+",admission,program where demographic.demographic_no=admission.client_id"+(joinCaseMgmtNote?" and demographic.demographic_no=casemgmt_note.demographic_no":"")+" and admission.program_id=program.id");
-		
+
 		// status
-		if (StringUtils.trimToNull(x.getAdmissionStatus())!=null) sqlCommand.append(" and demographic.patient_status=?");			
+		if (StringUtils.trimToNull(x.getAdmissionStatus())!=null) sqlCommand.append(" and demographic.patient_status=?");
 
 		// provider
-		if (StringUtils.trimToNull(x.getProviderId())!=null) sqlCommand.append(" and casemgmt_note.provider_no=?");			
-		
-		// seen date
-		if (StringUtils.trimToNull(x.getSeenStartDate())!=null) sqlCommand.append(" and casemgmt_note.update_date>=?");			
-		if (StringUtils.trimToNull(x.getSeenEndDate())!=null) sqlCommand.append(" and casemgmt_note.update_date<=?");			
-		
-		// program
-		if (StringUtils.trimToNull(x.getProgramId())!=null) sqlCommand.append(" and admission.program_id=?");			
-		
-		// admission date
-		if (StringUtils.trimToNull(x.getEnrolledStartDate())!=null) sqlCommand.append(" and admission.admission_date>=?");			
-		if (StringUtils.trimToNull(x.getEnrolledEndDate())!=null) sqlCommand.append(" and admission.admission_date<=?");			
-		
-		sqlCommand.append(" order by last_name,first_name");		
+		if (StringUtils.trimToNull(x.getProviderId())!=null) sqlCommand.append(" and casemgmt_note.provider_no=?");
 
-        // yeah I know using a treeMap isn't an efficient way of making this unique but given the current constraints this was quick and dirty and should work for the size of our data set 
+		// seen date
+		if (StringUtils.trimToNull(x.getSeenStartDate())!=null) sqlCommand.append(" and casemgmt_note.update_date>=?");
+		if (StringUtils.trimToNull(x.getSeenEndDate())!=null) sqlCommand.append(" and casemgmt_note.update_date<=?");
+
+		// program
+		if (StringUtils.trimToNull(x.getProgramId())!=null) sqlCommand.append(" and admission.program_id=?");
+
+		// admission date
+		if (StringUtils.trimToNull(x.getEnrolledStartDate())!=null) sqlCommand.append(" and admission.admission_date>=?");
+		if (StringUtils.trimToNull(x.getEnrolledEndDate())!=null) sqlCommand.append(" and admission.admission_date<=?");
+
+		sqlCommand.append(" order by last_name,first_name");
+
+        // yeah I know using a treeMap isn't an efficient way of making this unique but given the current constraints this was quick and dirty and should work for the size of our data set
 		TreeMap<String, ClientListsReportResults> results=new TreeMap<String, ClientListsReportResults>();
-		
+
 		Connection c=null;
 		PreparedStatement ps=null;
 		ResultSet rs=null;
 		try
-		{            
+		{
 		    c=DbConnectionFilter.getThreadLocalDbConnection();
 			ps=c.prepareStatement(sqlCommand.toString());
-			
+
 			// filter by provider
 			String temp;
 			int parameterPosition=1;
 
 			// status
-			if ((temp=StringUtils.trimToNull(x.getAdmissionStatus()))!=null) ps.setString(parameterPosition++, temp);			
-			
-			// provider 
-			if ((temp=StringUtils.trimToNull(x.getProviderId()))!=null) ps.setString(parameterPosition++, temp);			
-			
-			// seen date 
+			if ((temp=StringUtils.trimToNull(x.getAdmissionStatus()))!=null) ps.setString(parameterPosition++, temp);
+
+			// provider
+			if ((temp=StringUtils.trimToNull(x.getProviderId()))!=null) ps.setString(parameterPosition++, temp);
+
+			// seen date
 			// yes I know the date format is crap and is error prone and will return bad messages to the user, I don't care right now, we'll fix it after a re-write
-			if ((temp=StringUtils.trimToNull(x.getSeenStartDate()))!=null) ps.setString(parameterPosition++, temp);			
-			if ((temp=StringUtils.trimToNull(x.getSeenEndDate()))!=null) ps.setString(parameterPosition++, temp);							
-			
-			// program 
-			if ((temp=StringUtils.trimToNull(x.getProgramId()))!=null) ps.setString(parameterPosition++, temp);			
-			
-			// admission date 
+			if ((temp=StringUtils.trimToNull(x.getSeenStartDate()))!=null) ps.setString(parameterPosition++, temp);
+			if ((temp=StringUtils.trimToNull(x.getSeenEndDate()))!=null) ps.setString(parameterPosition++, temp);
+
+			// program
+			if ((temp=StringUtils.trimToNull(x.getProgramId()))!=null) ps.setString(parameterPosition++, temp);
+
+			// admission date
 			// yes I know the date format is crap and is error prone and will return bad messages to the user, I don't care right now, we'll fix it after a re-write
-			if ((temp=StringUtils.trimToNull(x.getEnrolledStartDate()))!=null) ps.setString(parameterPosition++, temp);			
-			if ((temp=StringUtils.trimToNull(x.getEnrolledEndDate()))!=null) ps.setString(parameterPosition++, temp);					
+			if ((temp=StringUtils.trimToNull(x.getEnrolledStartDate()))!=null) ps.setString(parameterPosition++, temp);
+			if ((temp=StringUtils.trimToNull(x.getEnrolledEndDate()))!=null) ps.setString(parameterPosition++, temp);
 
 			rs=ps.executeQuery();
 			while (rs.next())
@@ -785,13 +761,13 @@ public class ClientDao extends HibernateDaoSupport {
 				calendar.set(Calendar.MONTH, rs.getInt("demographic.month_of_birth")-1);
 				calendar.set(Calendar.DAY_OF_MONTH,  rs.getInt("demographic.date_of_birth"));
 				clientListsReportResults.dateOfBirth=calendar;
-				
+
 				clientListsReportResults.demographicId=rs.getInt("demographic.demographic_no");
 				clientListsReportResults.firstName=oscar.Misc.getString(rs,"demographic.first_name");
 				clientListsReportResults.lastName=oscar.Misc.getString(rs,"demographic.last_name");
 				clientListsReportResults.programId=rs.getInt("program.id");
 				clientListsReportResults.programName=oscar.Misc.getString(rs,"program.name");
-				
+
 				results.put(clientListsReportResults.lastName+clientListsReportResults.firstName,clientListsReportResults);
 			}
 		}
@@ -804,7 +780,7 @@ public class ClientDao extends HibernateDaoSupport {
             // odd not sure what the stupid spring template is doing here but I have to close the session.
 			SqlUtils.closeResources(c,ps, rs);
 		}
-		
+
 		return results;
 	}
 
@@ -813,7 +789,7 @@ public class ClientDao extends HibernateDaoSupport {
     	List<String> results = getHibernateTemplate().find("SELECT DISTINCT d.RosterStatus FROM Demographic d where d.RosterStatus != '' and d.RosterStatus != 'RO' and d.RosterStatus != 'NR' and d.RosterStatus != 'TE' and d.RosterStatus != 'FS'");
     	return results;
     }
-    
+
     public List<Demographic> searchByHealthCard(String hin, String hcType) {
     	@SuppressWarnings("unchecked")
     	List<Demographic> results = getHibernateTemplate().find("FROM Demographic d where d.Hin=? and d.HcType=?",new Object[]{hin,hcType});

@@ -93,8 +93,8 @@
 	oscar.oscarRx.data.RxPatientData.Patient patient=new oscar.oscarRx.data.RxPatientData().getPatient(currentDemographicNo);
 	String annotation_display=org.oscarehr.casemgmt.model.CaseManagementNoteLink.DISP_PRESCRIP;
 %>
-<script type="text/javascript" src="../share/javascript/prototype.js"/>"></script>
-<script type="text/javascript" src="../share/javascript/scriptaculous.js"/>"></script>
+<script type="text/javascript" src="../share/javascript/prototype.js"/></script>
+<script type="text/javascript" src="../share/javascript/scriptaculous.js"/></script>
 
 <script language="javascript">
 
@@ -139,11 +139,6 @@
 				</td>
 			</tr>
 			<!----Start new rows here-->
-			<tr>
-				<td>
-				<div class="DivContentTitle"><bean:message key="StaticScript.title" /></div>
-				</td>
-			</tr>
 			<tr>
 				<td style="font-size: small;"><br />
 				<br />

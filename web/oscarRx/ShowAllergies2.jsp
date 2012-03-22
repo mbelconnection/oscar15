@@ -195,12 +195,6 @@ padding-right:6;
 			<!----Start new rows here-->
 			<tr>
 				<td>
-				<div class="DivContentTitle"><bean:message
-					key="EditAllergies.title" /></div>
-				</td>
-			</tr>
-			<tr>
-				<td>
 				<div class="DivContentSectionHead"><bean:message
 					key="EditAllergies.section1Title" /></div>
 				</td>
@@ -209,7 +203,7 @@ padding-right:6;
 				<td>
 				<table>
 					<tr>
-<td><b>Name:</b> <jsp:getProperty name="patient" property="surname" />, <jsp:getProperty name="patient" property="firstName" /> </td>
+<td><b><bean:message key="SearchDrug.nameText" /></b> <jsp:getProperty name="patient" property="surname" />, <jsp:getProperty name="patient" property="firstName" /> </td>
 						<td>&nbsp;</td>
 						<td><b>Age:</b> <jsp:getProperty name="patient"
 							property="age" /></td>

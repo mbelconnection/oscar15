@@ -177,6 +177,10 @@ if(view == null || view.equals("")) {
 }
 String LinkParam="NavMenu";
 			
+
+
+String patientName = demographic.getFormattedName().toUpperCase();
+
 %>
 
 
@@ -366,7 +370,7 @@ border:1px solid #999999;
 	<table width="100%" cellspacing='0' cellpadding="1" bgcolor="#BABA97" border="0" >
 		<tr >
 			<td align="left">
-			<font color="#333333" size="3"><b>Patient: <%=demographic.getFormattedName().toUpperCase()%> </b></font>
+			<font color="#333333" size="3"><b>Patient: <%=patientName%> </b></font>
 			</td>		
 			<td align="right">
 				<font color="#333333" size="5"><b>OSCAR</b></font>
@@ -476,6 +480,7 @@ border:1px solid #999999;
 							<%
 								SimpleDateFormat noteFormatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm");
 								Iterator<CaseManagementNote> iter = socialHistory.iterator();
+								if(socialHistory.size()>0){
 								while(iter.hasNext()) {
 									CaseManagementNote note = iter.next();											
 							%>
@@ -492,7 +497,27 @@ border:1px solid #999999;
 									</font></p></font>							
 								</td>
 							</tr>
-							<% } %>
+							<% } 
+							
+							}else{
+								
+							%>
+							<tr>
+								<td bgcolor="#996633" height="16"> </td>
+							</tr>
+							<tr>
+								<td bgcolor="#ffffff">
+									<font size="2"><b>No Social History found for this patient.</b>
+									<br />
+									<i></i>
+									<p><font size="2">
+																	
+									</font></p></font>							
+								</td>
+							</tr>	
+							<%
+								}
+							%>
 						</table>
 							
 					</td>
@@ -500,6 +525,8 @@ border:1px solid #999999;
 					<table width="300" bgcolor="#8D8D69" cellspacing="1" cellpadding="1" align="left">
 							<%
 							iter = medicalHistory.iterator();
+							
+							if(medicalHistory.size()>0){				
 							while(iter.hasNext()) {
 								CaseManagementNote note = iter.next();	
 							%>
@@ -517,7 +544,29 @@ border:1px solid #999999;
 							</font>
 							
 							</td></tr>
-							<% } %>
+							<% } 
+							
+							}else{
+							%>		
+							<tr><td bgcolor="#993333" height="16"> </td></tr>
+							
+							<tr><td bgcolor="#ffffff">
+							<font size="2"><b>No Medical History found for this patient.</b><br />
+							<i></i>
+
+							<p><font size="2">
+							
+							</font>
+							</p>
+
+							</font>
+							
+							</td></tr>								
+								
+								
+							<%
+							}	
+							%>
 						</table>
 						
 						
@@ -527,6 +576,8 @@ border:1px solid #999999;
 					<table width="300" bgcolor="#8D8D69" cellspacing="1" cellpadding="1" align="left">
 							<%
 							iter = familyHistory.iterator();
+							
+							if(familyHistory.size()>0){		
 							while(iter.hasNext()) {
 								CaseManagementNote note = iter.next();	
 							%>
@@ -543,7 +594,28 @@ border:1px solid #999999;
 							</font>
 							
 							</td></tr>
-							<% } %>
+							<% } 
+							
+							}else{
+							%>		
+							<tr><td bgcolor="#006600" height="16"> </td></tr>
+							<tr><td bgcolor="#ffffff">
+							<font size="2"><b>No Family History found for this patient.</b><br />
+							<i></i>
+														
+							<p><font size="2">
+							
+							</font>
+							</p>
+
+							</font>
+							
+							</td></tr>							
+							
+							<%	
+							}
+							
+							%>
 						</table>
 					</td>
 					</tr>
@@ -675,6 +747,8 @@ border:1px solid #999999;
 					</tr>
 					<%
 					SimpleDateFormat rxFormatter = new SimpleDateFormat("yyyy-MM-dd");
+					
+					if(prescriptDrugs.size()>0){
 					for (Drug prescriptDrug : prescriptDrugs) {
 					
 				        if( prescriptDrug.isArchived() )
@@ -687,8 +761,13 @@ border:1px solid #999999;
 
 					</tr>					
 					
-					<% } %>
+					<% } 
 					
+					}else{
+					%>
+					
+					<tr class="patient_list_results"><td colspan="2"> No medication's found for patient: <i><%=patientName%></i>.</td></tr>
+					<%} %>
 					</table>
 					</div>
 					
@@ -737,14 +816,18 @@ String sql2 = "SELECT lab_no FROM hl7TextInfo WHERE health_no='" + hin + "' ORDE
 ResultSet rs2 = db.GetSQL(sql2);
 
 
+	
 ArrayList labArray=new ArrayList();
 
-int rsCnt = 1;
+
+//int rsCnt = 1;
+
 while(rs2.next()){
 	labArray.add(db.getString(rs2,"lab_no"));	  
 }
 rs2.close();
 
+if(labArray.size()>0){
 String segmentID = labArray.get(1).toString();
 
 int jack;   //tmp                         
@@ -860,6 +943,12 @@ for(h=0;h<headers.size();h++){
 }
 
 }
+
+}else{
+%>	
+<tr class="patient_list_results"><td colspan="10"> No lab results found for patient: <i><%=patientName%></i>.</td></tr>
+<%	
+}
 %>
                           </table>
 		</td>
@@ -928,7 +1017,7 @@ for(h=0;h<headers.size();h++){
 			 if (eForms.size() <= 0) {
 			%>
 						<tr class="patient_list_results">
-							<td align='center' colspan='5'>No eForms to display.</td>
+							<td colspan='5'>No eForms found for patient: <i><%=patientName%></i>. </td>
 						</tr>
 						<%
 			  }
@@ -1091,7 +1180,7 @@ for(h=0;h<headers.size();h++){
 							}else{ 
 							%>
 							<tr  class="patient_list_results">
-								<td colspan="7" width="100%">No Allergy data available.</td>
+								<td colspan="7" width="100%">No allergy data found for patient: <i><%=patientName%></i>.</td>
 							</tr>
 							<%}%>						
 						</table>			

@@ -121,7 +121,8 @@ public class EctDisplayDocsAction extends EctDisplayAction {
         String user = (String) request.getSession().getAttribute("user");
         item.setDate(date);
         hash = Math.abs(winName.hashCode());
-        url = "popupPage(700,800,'" + hash + "', '" + request.getContextPath() + "/dms/ManageDocument.do?method=display&doc_no="+dispDocNo+"&providerNo="+user+ "');";
+        //hash+i for the IE
+        url = "popupPage(700,800,'" + hash+i + "', '" + request.getContextPath() + "/dms/ManageDocument.do?method=display&doc_no="+dispDocNo+"&providerNo="+user+ "');";
         if (inboxflag){
         	String path=oscar.util.plugin.IsPropertiesOn.getProperty("DOCUMENT_DIR");
         	url="popupPage(700,800,'" + hash + "', '" + request.getContextPath() +

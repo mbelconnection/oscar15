@@ -222,6 +222,7 @@ public class RxPrescriptionData {
         prescription.setOutsideProviderName(rePrescribe.getOutsideProviderName());
         prescription.setOutsideProviderOhip(rePrescribe.getOutsideProviderOhip());
         prescription.setSpecialInstruction(rePrescribe.getSpecialInstruction());
+        prescription.setDrugReferenceId(rePrescribe.getDrugId());
 
         return prescription;
     }
@@ -1049,14 +1050,26 @@ public class RxPrescriptionData {
         private boolean customNote=false;
         private String comment = null;
         private List<String> policyViolations = new ArrayList<String>();
+		private int drugReferenceId;
         
         
         public List<String> getPolicyViolations() {
 			return policyViolations;
 		}
+		
 		public void setPolicyViolations(List<String> policyViolations) {
 			this.policyViolations = policyViolations;
 		}
+		
+		public void setDrugReferenceId(int drugId2) {
+			this.drugReferenceId = drugId2;
+			
+		}
+		
+		public int getDrugReferenceId() {
+			return drugReferenceId;
+		}
+		
 		public String getComment() {
 			return comment;
 		}

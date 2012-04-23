@@ -9,7 +9,7 @@
   String userlastname = (String) session.getAttribute("userlastname");
 
   //String curDemoNo = request.getParameter("demographic_no")!=null?request.getParameter("demographic_no"):"";
-  //String curDemoName = request.getParameter("demographic_name")!=null?request.getParameter("demographic_name"):"";  
+  //String curDemoName = request.getParameter("demographic_name")!=null?request.getParameter("demographic_name"):"";
 
   int everyMin=Integer.parseInt(((String) session.getAttribute("everymin")).trim());
 
@@ -34,7 +34,7 @@
 <%--RJ 07/07/2006 --%>
 <jsp:useBean id="providerBean" class="java.util.Properties" scope="session" />
 
-<%      
+<%
   int iPageSize=5;
 
   ApptData apptObj = ApptUtil.getAppointmentFromSession(request);
@@ -45,29 +45,29 @@
   AppointmentStatusMgr apptStatusMgr = (AppointmentStatusMgr)webApplicationContext.getBean("AppointmentStatusMgr");
   List allStatus = apptStatusMgr.getAllActiveStatus();
 %>
-<!--  
+<!--
 /*
- * 
+ *
  * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved. *
- * This software is published under the GPL GNU General Public License. 
- * This program is free software; you can redistribute it and/or 
- * modify it under the terms of the GNU General Public License 
- * as published by the Free Software Foundation; either version 2 
- * of the License, or (at your option) any later version. * 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
- * GNU General Public License for more details. * * You should have received a copy of the GNU General Public License 
- * along with this program; if not, write to the Free Software 
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. * 
- * 
+ * This software is published under the GPL GNU General Public License.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version. *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details. * * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *
+ *
  * <OSCAR TEAM>
- * 
- * This software was written for the 
- * Department of Family Medicine 
- * McMaster University 
- * Hamilton 
- * Ontario, Canada 
+ *
+ * This software was written for the
+ * Department of Family Medicine
+ * McMaster University
+ * Hamilton
+ * Ontario, Canada
  */
 
 -->
@@ -127,7 +127,7 @@ function checkTimeTypeIn(obj) {
 	  if(obj.value.indexOf(':')==-1) {
 	    if(obj.value.length < 3) alert("<bean:message key="Appointment.msgFillValidTimeField"/>");
 	    obj.value = obj.value.substring(0, obj.value.length-2 )+":"+obj.value.substring( obj.value.length-2 );
-	  } 
+	  }
 	}
 }
 
@@ -201,7 +201,7 @@ function pasteAppt() {
   SimpleDateFormat outform = new SimpleDateFormat ("EEE");
 
   java.util.Date apptDate;
-  
+
   if(request.getParameter("year")==null || request.getParameter("month")==null || request.getParameter("day")==null){
     Calendar cal = Calendar.getInstance();
     String sDay = String.valueOf(cal.get(Calendar.DATE));
@@ -236,7 +236,7 @@ function pasteAppt() {
   param[6] = param[2];
   param[7] = param[3];
   param[8] = request.getParameter("programId_oscarView");
-  
+
   List<Map> resultList = oscarSuperManager.find("appointmentDao", "search_appt", param);
   long apptnum = resultList.size() > 0 ? (Long)resultList.get(0).get("n") : 0;
 
@@ -248,7 +248,7 @@ function pasteAppt() {
     String apptName = (String) apt.get("name");
     if (apptName.equalsIgnoreCase(DONOTBOOK)) bDnb = true;
   }
-  
+
   // select provider lastname & firstname
   String pLastname = "";
   String pFirstname = "";
@@ -283,15 +283,15 @@ function pasteAppt() {
 	for (Map status : resultList) {
 
         patientStatus      = (String) status.get("patient_status");
-        address            = (String) status.get("address");                    
+        address            = (String) status.get("address");
         city               = (String) status.get("city");
-        province           = (String) status.get("province"); 
+        province           = (String) status.get("province");
         postal             = (String) status.get("postal");
-        phone              = (String) status.get("phone"); 
+        phone              = (String) status.get("phone");
         phone2             = (String) status.get("phone2");
         email              = (String) status.get("email");
         String year_of_birth   = (String) status.get("year_of_birth");
-        String month_of_birth  = (String) status.get("month_of_birth"); 
+        String month_of_birth  = (String) status.get("month_of_birth");
         String date_of_birth   = (String) status.get("date_of_birth");
         dob = "("+year_of_birth+"-"+month_of_birth+"-"+date_of_birth+")";
         sex = (String) status.get("sex");
@@ -324,7 +324,7 @@ function pasteAppt() {
                 </td>
 	</tr>
 </table>
-<% 
+<%
 
         }
 	}
@@ -340,7 +340,7 @@ function pasteAppt() {
 		<td><font color='red'><bean:message key="Appointment.formAlert" />: <b><%=alert.get("cust3")%></b></font></td>
 	</tr>
 </table>
-<%    
+<%
 
 		}
 	}
@@ -468,9 +468,10 @@ function pasteAppt() {
 					TYPE="hidden" NAME="limit1" VALUE="0"> <INPUT
 					TYPE="hidden" NAME="limit2" VALUE="5"> <INPUT
 					TYPE="hidden" NAME="ptstatus" VALUE="active"> <!--input type="hidden" name="displaymode" value="Search " -->
+					<input type="hidden" name="outofdomain" value="<%=OscarProperties.getInstance().getProperty("pmm.client.search.outside.of.domain.enabled","true")%>"/>
 				<INPUT TYPE="submit"
 					onclick="document.forms['ADDAPPT'].displaymode.value='Search '"
-					VALUE="<bean:message key="appointment.addappointment.btnSearch"/> 
+					VALUE="<bean:message key="appointment.addappointment.btnSearch"/>
 "></font></div>
 				</td>
 				<td width="20%"><input type="TEXT" name="demographic_no"
@@ -509,11 +510,11 @@ function pasteAppt() {
 				<div align="right"><font face="arial"><bean:message
 					key="Appointment.formLocation" />:</font></div>
 				</td>
-				<% 
+				<%
 			// multisites start ==================
 			boolean bMultisites = org.oscarehr.common.IsPropertiesOn.isMultisitesEnable();
         	SiteDao siteDao = (SiteDao)WebApplicationContextUtils.getWebApplicationContext(application).getBean("siteDao");
-          	List<Site> sites = siteDao.getActiveSitesByProviderNo((String) session.getAttribute("user")); 
+          	List<Site> sites = siteDao.getActiveSitesByProviderNo((String) session.getAttribute("user"));
 			// multisites end ==================
 
             OscarProperties props = OscarProperties.getInstance();
@@ -536,13 +537,13 @@ if (bMultisites) { %>
 					<option value="<%=s.getName()%>" style="background-color: <%=s.getBgColor()%>" <%=s.getName().equals(loc)?"selected":"" %>><%=s.getName()%></option>
 				<% } %>
 				</select>
-<% } else { 
+<% } else {
 	// multisites end ==================
-%>				
+%>
 				<input type="TEXT" name="location"
 					style="background-color: <%=colo%>" tabindex="4" value="<%=loc%>"
 					width="25" height="20" border="0" hspace="2">
-<% } %>					
+<% } %>
 				</td>
 				<td width="5%"></td>
 				<td width="20%">
@@ -599,11 +600,11 @@ if (bMultisites) { %>
 		<% if(!bDnb) { %>
 		<TD nowrap><INPUT TYPE="submit"
 			onclick="document.forms['ADDAPPT'].displaymode.value='Group Appt'"
-			VALUE="<bean:message key="appointment.addappointment.btnGroupAppt"/> 
+			VALUE="<bean:message key="appointment.addappointment.btnGroupAppt"/>
 "
 			<%=disabled%>> <%
 
-  if(dateString2.equals( inform.format(inform.parse(now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.get(Calendar.DAY_OF_MONTH))) ) 
+  if(dateString2.equals( inform.format(inform.parse(now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.get(Calendar.DAY_OF_MONTH))) )
 
      || dateString2.equals( inform.format(inform.parse(cal.get(Calendar.YEAR)+"-"+(cal.get(Calendar.MONTH)+1)+"-"+cal.get(Calendar.DAY_OF_MONTH))) ) ) {
 
@@ -620,7 +621,7 @@ if (bMultisites) { %>
 
 %>
 
-    
+
 <INPUT TYPE="submit"
 			onclick="document.forms['ADDAPPT'].displaymode.value='Add Appointment'"
 			tabindex="6"
@@ -644,7 +645,7 @@ if (bMultisites) { %>
 
 <table align="center" style="font-family: arial, sans-serif">
 <tr>
-    <td valign="top">    
+    <td valign="top">
         <%if( bFromWL && demoNo != null && demoNo.length() > 0 ) {%>
         <table style="font-size: 9pt;" bgcolor="#c0c0c0" align="center" valign="top" cellpadding="3px">
             <tr bgcolor="#ccccff">
@@ -686,8 +687,8 @@ if (bMultisites) { %>
 		<th style="padding-right: 25px"><bean:message key="appointment.addappointment.msgProvider" /></th>
 		<th><bean:message key="appointment.addappointment.msgComments" /></th>
 	</tr>
-	<%        
-        
+	<%
+
         int iRow=0;
         if( bFromWL && demoNo != null && demoNo.length() > 0 ) {
 

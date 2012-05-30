@@ -184,8 +184,16 @@ if (heading != null){
             		<% } %>
            		<%}%>
             </td>
-            
-            <td valign="top"><a id="prescrip_<%=prescriptIdInt%>" <%=styleColor%> href="StaticScript2.jsp?regionalIdentifier=<%=prescriptDrug.getRegionalIdentifier()%>&amp;cn=<%=response.encodeURL(prescriptDrug.getCustomName())%>&amp;bn=<%=response.encodeURL(bn)%>"><%=RxPrescriptionData.getFullOutLine(prescriptDrug.getSpecial()).replaceAll(";", " ")%></a></td>
+			<%
+			//display comment as tooltip if not null - simply using the TITLE attr
+			String xComment=prescriptDrug.getComment();
+			String tComment="";
+			if(xComment!=null ){
+				tComment="TITLE='"+xComment+" '";
+			}
+			
+			%>            
+            <td valign="top"><a id="prescrip_<%=prescriptIdInt%>" <%=styleColor%> href="StaticScript2.jsp?regionalIdentifier=<%=prescriptDrug.getRegionalIdentifier()%>&amp;cn=<%=response.encodeURL(prescriptDrug.getCustomName())%>&amp;bn=<%=response.encodeURL(bn)%>" <%=tComment%> ><%=RxPrescriptionData.getFullOutLine(prescriptDrug.getSpecial()).replaceAll(";", " ")%></a></td>
             <%            			
             	if(securityManager.hasWriteAccess("_rx",roleName$,true)) {            		
            	%>

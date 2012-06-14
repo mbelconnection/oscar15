@@ -25,8 +25,14 @@
 <%@ page import="java.util.Calendar" %>
 <%@ page import="java.net.URLEncoder" %>
 
+<%@ page import="oscar.dao.*" %>
+<%@ page import="oscar.service.*" %>
+<%@ page import="java.util.*" %>
+
 <%@ include file="/taglibs.jsp"%>
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security" %>
+
+<%@ include file="/common/webAppContextAndSuperMgr.jsp"%>
 
 <jsp:useBean id="oscarVariables" class="java.util.Properties" scope="session" />
 
@@ -50,6 +56,12 @@ String prov= ((String ) oscarVariables.getProperty("billregion","")).trim().toUp
 String userfirstname = (String) session.getAttribute("userfirstname");
 String userlastname = (String) session.getAttribute("userlastname");
 String mygroupno = (String) session.getAttribute("groupno");
+String resourcebaseurl = oscarVariables.getProperty("resource_base_url");
+
+List<Map> resultList = oscarSuperManager.find("providerDao", "search_resource_baseurl", new Object[] {"resource_baseurl"});
+for (Map url : resultList) {
+        resourcebaseurl = (String)url.get("value");
+}
 
 String newticklerwarningwindow=null;
 String default_pmm=null;
@@ -70,7 +82,7 @@ if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.Is
 					<a href="<html:rewrite page="/provider/providercontrol.jsp"/>?year=<%=curYear%>&month=<%=curMonth%>&day=1&view=0&displaymode=month&dboperation=searchappointmentmonth" TITLE="<bean:message key="provider.appointmentProviderAdminDay.viewMonthSched"/>">Mo<u>n</u>th</a>
 				</li>
 				<li>
-					<a href="#" ONCLICK ="popupPage2('http://www.oscarmanual.org/copy_of_oscar-emr');return false;" title="<bean:message key="provider.appointmentProviderAdminDay.viewResources"/>">R<u>e</u>sources</a>
+					<a href="#" ONCLICK ="popupPage2('<%=resourcebaseurl%>');return false;" title="<bean:message key="provider.appointmentProviderAdminDay.viewResources"/>">R<u>e</u>sources</a>
 				</li>
 				<li>
 					<a href="<html:rewrite page="/PMmodule/ClientSearch2.do"/>" title="Search for patient records"><u>S</u>earch</a>

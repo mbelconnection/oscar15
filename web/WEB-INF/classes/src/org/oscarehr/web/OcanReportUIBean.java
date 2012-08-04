@@ -439,20 +439,27 @@ public class OcanReportUIBean implements CallbackHandler {
 				actionType.setAccessLevel(CdConsentActionType.AccessLevel.UNSUPPORTED);
 			} else {
 				actionType.setAccessLevel(CdConsentActionType.AccessLevel.GRANT);
-			}
+			}			
+			Calendar cal2 = Calendar.getInstance();
+			cal2.setTime(staffForm.getCreated());
+			actionType.setEffectiveDate(cal2);
+			actionType.setRequestedTime(cal2);			
 			cd.setDirective(actionType);
 
 			RecordedByInfo rbi = RecordedByInfo.Factory.newInstance();
 			rbi.setNameOrUserID(staffForm.getProviderName());
-			Calendar cal2 = Calendar.getInstance();
-			cal2.setTime(staffForm.getCreated());
+			
 			rbi.setTimeRecorded(cal2);
 			cd.setRecordedByInfo(rbi);
-
+			
 		}
 
 		Text t2 = new Text();
-		t2.setValue("<ConsentSubmission xsi:schemaLocation=\"http://www.ehealthontario.ca/CCIMConsentSubmission-1.0.xsd\" xmlns=\"http://www.ehealthontario.ca/CCIM\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" + cs.toString() + "</ConsentSubmission>");
+		
+		String cs1 = cs.toString().replace("<xml-fragment xmlns:ccim=\"http://www.ehealthontario.ca/CCIM\">", "");
+		String cs2 = cs1.replace("</xml-fragment>", "");
+		String cs3 = cs2.replaceAll("ccim:","");
+		t2.setValue("<ConsentSubmission xsi:schemaLocation=\"http://www.ehealthontario.ca/CCIMConsentSubmission-1.0.xsd\" xmlns=\"http://www.ehealthontario.ca/CCIM\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" + cs3 + "</ConsentSubmission>");
 		consent.setText(t2);
 
 		SubmissionContent sc = new SubmissionContent();

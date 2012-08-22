@@ -109,7 +109,7 @@ public class Drug extends AbstractModel<Integer> implements Serializable {
         private String remoteFacilityName = null;
 
         public static final String DELETED = "deleted";
-	public static final String DOSE_CHANGE = "doseChange";
+        public static final String DOSE_CHANGE = "doseChange";
         public static final String NOT_SELECTED = "notSelected";
         public static final String UNKNOWN = "unknown";
         public static final String ADVERSE_REACTION = "adverseReaction";
@@ -119,6 +119,7 @@ public class Drug extends AbstractModel<Integer> implements Serializable {
         public static final String NO_LONGER_NECESSARY = "noLongerNecessary";
         public static final String SIMPLIFYING_TREATMENT =  "simplifyingTreatment";
         public static final String PATIENT_REQUEST = "patientRequest";
+        public static final String REPRESCRIBED = "represcribed";
         public static final String NEW_SCIENTIFIC_EVIDENCE = "newScientificEvidence";
         public static final String INCREASED_RISK_BENEFIT_RATIO = "increasedRiskBenefitRatio";
         public static final String DISCONTINUED_BY_ANOTHER_PHYSICIAN = "discontinuedByAnotherPhysician";
@@ -138,7 +139,7 @@ public class Drug extends AbstractModel<Integer> implements Serializable {
             String ar=getArchivedReason();
 		if (isArchived()
 		        && (UNKNOWN.equals(ar)|| NOT_SELECTED.equals(ar) || DOSE_CHANGE.equals(ar) || ADVERSE_REACTION.equals(ar) || ALLERGY.equals(ar) || INEFFECTIVE_TREATMENT.equals(ar) || PRESCRIBING_ERROR.equals(ar) || NO_LONGER_NECESSARY.equals(ar) || SIMPLIFYING_TREATMENT.equals(ar) || PATIENT_REQUEST.equals(ar) || NEW_SCIENTIFIC_EVIDENCE.equals(ar)
-		                || INCREASED_RISK_BENEFIT_RATIO.equals(ar) || DISCONTINUED_BY_ANOTHER_PHYSICIAN.equals(ar) || COST.equals(ar) || DRUG_INTERACTION.equals(ar) || OTHER.equals(ar))) {
+		                || INCREASED_RISK_BENEFIT_RATIO.equals(ar) || DISCONTINUED_BY_ANOTHER_PHYSICIAN.equals(ar) || COST.equals(ar) || DRUG_INTERACTION.equals(ar) || REPRESCRIBED.equals(ar)  || OTHER.equals(ar))) {
             return true;
             }
             return false;

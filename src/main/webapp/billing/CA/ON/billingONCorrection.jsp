@@ -365,6 +365,9 @@ function checkSettle(status) {
     
     String billNo = request.getParameter("billing_no").trim();
     String claimNo = request.getParameter("claim_no");
+    if( claimNo != null && claimNo.equals("null") ) {
+		claimNo = null;
+    }
 
     if( billNo == null || billNo.length() == 0 ) {
         if( claimNo != null && claimNo.length() > 0 ) {
@@ -946,7 +949,7 @@ function changeSite(sel) {
                             bService = bServiceDao.searchBillingCode(bItem.getServiceCode(),"ON",bItem.getServiceDate());
 
                         serviceCode = bItem.getServiceCode();
-                        serviceDesc = bService.getDescription();
+                        serviceDesc = bService == null ? "N/A" : bService.getDescription();
                         billAmount = bItem.getFee();
                         diagCode = bItem.getDx();
                         billingunit = bItem.getServiceCount();								

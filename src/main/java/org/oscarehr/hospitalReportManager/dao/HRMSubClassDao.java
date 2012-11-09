@@ -1,27 +1,11 @@
 /**
- * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved.
- * This software is published under the GPL GNU General Public License.
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version. 
+ * Copyright (c) 2008-2012 Indivica Inc.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- * This software was written for the
- * Department of Family Medicine
- * McMaster University
- * Hamilton
- * Ontario, Canada
+ * This software is made available under the terms of the
+ * GNU General Public License, Version 2, 1991 (GPLv2).
+ * License details are available via "indivica.ca/gplv2"
+ * and "gnu.org/licenses/gpl-2.0.html".
  */
-
 
 package org.oscarehr.hospitalReportManager.dao;
 
@@ -55,6 +39,25 @@ public class HRMSubClassDao extends AbstractDao<HRMSubClass> {
 
 		@SuppressWarnings("unchecked")
 		List<HRMSubClass> subclasses = query.getResultList();
+		return subclasses;
+	}
+	
+	public List<HRMSubClass> findBySendingFacilityId(String sendingFacilityId) {
+		String sql = "select x from " + this.modelClass.getName() + " x  where x.sendingFacilityId = ?1";
+		Query query = entityManager.createQuery(sql);
+		query.setParameter(1, sendingFacilityId);
+
+		@SuppressWarnings("unchecked")
+		List<HRMSubClass> subclasses = query.getResultList();
+		return subclasses;
+	}
+	
+	public List<String> findAllSendingFacilityIds() {
+		String sql = "select distinct(x.sendingFacilityId) from " + this.modelClass.getName() + " x";
+		Query query = entityManager.createQuery(sql);
+	
+		@SuppressWarnings("unchecked")
+		List<String> subclasses = query.getResultList();
 		return subclasses;
 	}
 
@@ -115,5 +118,46 @@ public class HRMSubClassDao extends AbstractDao<HRMSubClass> {
 			}
 		}
 		return mapping;
+	}
+	
+	
+	public HRMSubClass findByClassNameMnemonicFacility(String className, String sendingFacilityId, String subClassMnemonic){ 
+		String sql = null;
+
+		sql = "select x from " + this.modelClass.getName() + " x where x.className=?  and x.sendingFacilityId=? and x.subClassMnemonic=?";
+
+		Query query = entityManager.createQuery(sql);
+		query.setParameter(1, className);
+		query.setParameter(2, sendingFacilityId);
+		query.setParameter(3, subClassMnemonic);
+		
+		@SuppressWarnings("unchecked")
+		List<HRMSubClass> subclasses = query.getResultList();
+ 		
+        if (subclasses != null && !subclasses.isEmpty()) {
+        	return subclasses.get(0);
+        }
+		
+        return null;
+	}
+	
+	public HRMSubClass findByClassNameSubClassNameFacility(String className, String sendingFacilityId, String subClassName){ 
+		String sql = null;
+
+		sql = "select x from " + this.modelClass.getName() + " x where x.className=?  and x.sendingFacilityId=? and x.subClassName=?";
+
+		Query query = entityManager.createQuery(sql);
+		query.setParameter(1, className);
+		query.setParameter(2, sendingFacilityId);
+		query.setParameter(3, subClassName);
+		
+		@SuppressWarnings("unchecked")
+		List<HRMSubClass> subclasses = query.getResultList();
+ 		
+        if (subclasses != null && !subclasses.isEmpty()) {
+        	return subclasses.get(0);
+        }
+		
+        return null;
 	}
 }

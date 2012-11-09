@@ -23,6 +23,7 @@
     Ontario, Canada
 
 --%>
+<%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %>
 <%@page import="org.oscarehr.util.SessionConstants"%>
 <%
   if(session.getAttribute("user") == null) response.sendRedirect("../logout.jsp");
@@ -53,6 +54,8 @@
 <%
 	String [][] dbQueries=new String[][] {
     {"search_provider", "select * from provider where provider_type='doctor' and status='1' order by last_name"},
+    {"search_provider_nurse", "select * from provider p, secUserRole s where p.provider_no = s.provider_no and p.status='1' and s.role_name = 'nurse' order by p.last_name, p.first_name"},
+    {"search_provider_midwife", "select * from provider p, secUserRole s where p.provider_no = s.provider_no and p.status='1' and s.role_name = 'midwife' order by p.last_name, p.first_name"},
     {"search_rsstatus", "select distinct roster_status from demographic where roster_status != '' and roster_status != 'RO' and roster_status != 'NR' and roster_status != 'TE' and roster_status != 'FS' "},
     {"search_ptstatus", "select distinct patient_status from demographic where patient_status != '' and patient_status != 'AC' and patient_status != 'IN' and patient_status != 'DE' and patient_status != 'MO' and patient_status != 'FI'"},
     {"search_waiting_list", "select * from waitingListName where group_no='" + ((ProviderPreference)session.getAttribute(SessionConstants.LOGGED_IN_PROVIDER_PREFERENCE)).getMyGroupNo() +"' and is_history='N'  order by name"}
@@ -147,6 +150,13 @@
 
 <link rel="stylesheet" type="text/css" media="all" href="../share/css/extractedFromPages.css"  />
 <script language="JavaScript">
+
+function setfocus() {
+  this.focus();
+  document.adddemographic.last_name.focus();
+  document.adddemographic.last_name.select();
+  window.resizeTo(1000,700);
+}
 function upCaseCtrl(ctrl) {
 	ctrl.value = ctrl.value.toUpperCase();
 }
@@ -413,8 +423,8 @@ function autoFillHin(){
 </script>
 </head>
 <!-- Databases have alias for today. It is not necessary give the current date -->
-
-<body bgproperties="fixed" topmargin="0"
+<!--<body  background="../images/gray_bg.jpg" bgproperties="fixed" onLoad="setfocus();showDate();"  topmargin="0" leftmargin="0" rightmargin="0">-->
+<body bgproperties="fixed" onLoad="setfocus();" topmargin="0"
 	leftmargin="0" rightmargin="0">
 <table border="0" cellspacing="0" cellpadding="0" width="100%">
 	<tr bgcolor="#CCCCFF">
@@ -879,7 +889,17 @@ function autoFillHin(){
 					id="eff_date_year" name="eff_date_year" size="4" maxlength="4"> <input
 					type="text" id="eff_date_month" name="eff_date_month" size="2" maxlength="2"> <input
 					type="text" id="eff_date_date" name="eff_date_date" size="2" maxlength="2"> </b></td>
-			</tr>                       
+			</tr> 
+			<tr valign="top">
+				<td align="right">&nbsp;</td>
+				<td align="right">&nbsp;</td>
+				<td align="right"><b><bean:message
+					key="demographic.demographiceditdemographic.formHCRenewDate" /></b><b>: </b></td>
+				<td align="left"><b> <input type="text"
+					name="hc_renew_date_year" size="4" maxlength="4"> <input
+					type="text" name="hc_renew_date_month" size="2" maxlength="2"> <input
+					type="text" name="hc_renew_date_date" size="2" maxlength="2"> </b></td>
+			</tr>                      
 			<tr>
 				<td id="hcTypeLbl" align="right"><b><bean:message
 					key="demographic.demographicaddrecordhtm.formHCType" />: </b></td>
@@ -1006,7 +1026,8 @@ function autoFillHin(){
                                                 <bean:message key="demographic.demographicaddrecordhtm.formDoctor"/><% } %>
                                                 : </b></td>
       <td id="demoDoctorCell" align="left" >
-        <select name="staff">
+        <select name="staff" style="min-width: 150px">
+					<option value=""></option>
           <%
   ResultSet rsdemo = addDemoBean.queryResults("search_provider");
   while (rsdemo.next()) {
@@ -1021,10 +1042,10 @@ function autoFillHin(){
 				</select></td>
 				<td id="nurseLbl" align="right"><b><bean:message
 					key="demographic.demographicaddrecordhtm.formNurse" />: </b></td>
-				<td id="nurseCell" ><select name="cust1">
+				<td id="nurseCell" ><select name="cust1" style="min-width: 150px">
 					<option value=""></option>
 					<%
-  rsdemo=addDemoBean.queryResults("search_provider");
+  rsdemo=addDemoBean.queryResults("search_provider_nurse");
   while (rsdemo.next()) {
 %>
 					<option value="<%=rsdemo.getString("provider_no")%>"><%=Misc.getShortStr( (Misc.getString(rsdemo,"last_name")+","+Misc.getString(rsdemo,"first_name")),"",12)%></option>
@@ -1037,10 +1058,10 @@ function autoFillHin(){
 			<tr valign="top">
 				<td id="midwifeLbl" align="right"><b><bean:message
 					key="demographic.demographicaddrecordhtm.formMidwife" />: </b></td>
-				<td id="midwifeCell"><select name="cust4">
+				<td id="midwifeCell"><select name="cust4" style="min-width: 150px">
 					<option value=""></option>
 					<%
-  rsdemo=addDemoBean.queryResults("search_provider");
+  rsdemo=addDemoBean.queryResults("search_provider_midwife");
   while (rsdemo.next()) {
 %>
 					<option value="<%=Misc.getString(rsdemo,"provider_no")%>">
@@ -1052,7 +1073,7 @@ function autoFillHin(){
 				</select></td>
 				<td id="residentLbl" align="right"><b><bean:message
 					key="demographic.demographicaddrecordhtm.formResident" />: </b></td>
-				<td id="residentCell" align="left"><select name="cust2">
+				<td id="residentCell" align="left"><select name="cust2" style="min-width: 150px">
 					<option value=""></option>
 					<%
   rsdemo=addDemoBean.queryResults("search_provider");

@@ -9,15 +9,12 @@
 
 package oscar.oscarEncounter.oscarMeasurements.pageUtil;
 
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -33,6 +30,7 @@ import org.oscarehr.common.dao.FlowSheetCustomizationDao;
 import org.oscarehr.common.dao.MeasurementDao;
 import org.oscarehr.common.model.FlowSheetCustomization;
 import org.oscarehr.common.model.Measurement;
+import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -48,16 +46,12 @@ import oscar.oscarMessenger.util.MsgStringQuote;
 public class FormUpdateAction extends Action {
 
 	public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+   {
 
-		java.util.Calendar calender = java.util.Calendar.getInstance();
-        String day =  Integer.toString(calender.get(java.util.Calendar.DAY_OF_MONTH));
-        String month =  Integer.toString(calender.get(java.util.Calendar.MONTH)+1);
-        String year = Integer.toString(calender.get(java.util.Calendar.YEAR));
-        String dateEntered = request.getParameter("date");
+		String dateEntered = request.getParameter("date");
 
 		String testOutput = "";
-		String textOnEncounter = "********Diabetes Flowsheet Update******** \\n";
+		String textOnEncounter = "********CDM Indicators Update******** \\n";
 		boolean valid = true;
 		boolean errorPage = false;
 
@@ -84,7 +78,7 @@ public class FormUpdateAction extends Action {
 
 	    FlowSheetItem item;
 	    String measure;
-
+	    boolean hasComments = false;
 	    for (int i = 0; i < nodes.size(); i++) {
 	    	MeasurementTemplateFlowSheetConfig.Node node = nodes.get(i);
 
@@ -94,7 +88,6 @@ public class FormUpdateAction extends Action {
 	    		if (child.children == null && child.flowSheetItem != null) {
 	    			item = child.flowSheetItem;
 	    			measure = item.getItemName();
-	    			Map h2 = mFlowsheet.getMeasurementFlowSheetInfo(measure);
 	    			EctMeasurementTypesBean mtypeBean = mType.getMeasurementType(measure);
 
 	    			String name = child.flowSheetItem.getDisplayName().replaceAll("\\W","");
@@ -112,6 +105,7 @@ public class FormUpdateAction extends Action {
 	    					testOutput += child.flowSheetItem.getDisplayName() + ": " + request.getParameter(name) + "\n";
 	    					errorPage = true;
 	    				} else {
+	    					hasComments = true;
 	    					textOnEncounter += name + " " + request.getParameter(name) + "\\n";
 	    				}
 
@@ -124,15 +118,12 @@ public class FormUpdateAction extends Action {
 	    	}
 	    }
 
-	    //if (request.getParameter("ycoord") != null) {
-	    //	request.setAttribute("ycoord", request.getParameter("ycoord"));
-	    //}
 
 	    if (errorPage) {
 	    	request.setAttribute("testOutput",testOutput);
 	    	return mapping.findForward("failure");
 	    }
-	    session.setAttribute("textOnEncounter",textOnEncounter);
+	    session.setAttribute("textOnEncounter", hasComments ? textOnEncounter : "");
 	    if (request.getParameter("submit").equals("Update")) {
 	    	return mapping.findForward("reload");
 	    } else {
@@ -317,7 +308,7 @@ public class FormUpdateAction extends Action {
             }
 
         } catch(SQLException e) {
-
+        	MiscUtils.getLogger().error("Error",e);
         }
 
 		return valid;

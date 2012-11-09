@@ -753,6 +753,9 @@ text-align:left;
 		            	Map<String,Object> hdata = alist.get(k);
                                 Map<String,String> hExt = PreventionData.getPreventionKeyValues((String)hdata.get("id"));
 		    %>
+		<input type="hidden" id="preventProcedureStatus<%=i%>-<%=k%>"
+			name="preventProcedureStatus<%=i%>-<%=k%>"
+			value="<%=hdata.get("refused")%>">
 		<input type="hidden" id="preventProcedureAge<%=i%>-<%=k%>"
 			name="preventProcedureAge<%=i%>-<%=k%>"
 			value="<%=hdata.get("age")%>">

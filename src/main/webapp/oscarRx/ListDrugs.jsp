@@ -103,17 +103,19 @@ if (heading != null){
         </tr>
 
         <%
+	        List<Drug> prescriptDrugs = null;
             CaseManagementManager caseManagementManager = (CaseManagementManager) SpringUtils.getBean("caseManagementManager");
-            List<Drug> prescriptDrugs = caseManagementManager.getPrescriptions(patient.getDemographicNo(), showall);
-			if(showall) {
+    
+            if(showall) {
+            	prescriptDrugs = caseManagementManager.getPrescriptions(patient.getDemographicNo(), showall);
             	Collections.sort(prescriptDrugs,new oscar.oscarRx.util.ShowAllSorter());
             }
-
-            DrugReasonDao drugReasonDao  = (DrugReasonDao) SpringUtils.getBean("drugReasonDao");
+            else {
+                prescriptDrugs = caseManagementManager.getCurrentPrescriptions(patient.getDemographicNo());
+            }
 			
-            
+            DrugReasonDao drugReasonDao  = (DrugReasonDao) SpringUtils.getBean("drugReasonDao");
             List<String> reRxDrugList=bean.getReRxDrugIdList();
-
 
             long now = System.currentTimeMillis();
             long month = 1000L * 60L * 60L * 24L * 30L;
@@ -138,9 +140,9 @@ if (heading != null){
 
                 if (request.getParameter("status") != null) { //TODO: Redo this in a better way
                     String stat = request.getParameter("status");
-                    if (stat != null && stat.equals("active") && prescriptDrug.isExpired()) {
+                    if (stat.equals("active") && !prescriptDrug.isLongTerm() && !prescriptDrug.isCurrent()) {
                         continue;
-                    } else if (stat != null && stat.equals("inactive") && !prescriptDrug.isExpired()) {
+                    } else if (stat.equals("inactive") && prescriptDrug.isCurrent()) {
                         continue;
                     }
                 }
@@ -234,7 +236,7 @@ if (heading != null){
             <td width="20px" align="center" valign="top">
                 <%if (prescriptDrug.getRemoteFacilityName() == null) {%>
                 <input id="reRxCheckBox_<%=prescriptIdInt%>" type=CHECKBOX onclick="updateReRxDrugId(this.id)" <%if(reRxDrugList.contains(prescriptIdInt.toString())){%>checked<%}%> name="checkBox_<%=prescriptIdInt%>">
-                <a name="rePrescribe" style="vertical-align:top" id="reRx_<%=prescriptIdInt%>" <%=styleColor%> href="javascript:void(0)" onclick="represcribe(this)">ReRx</a>
+                <a name="rePrescribe" style="vertical-align:top" id="reRx_<%=prescriptIdInt%>" <%=styleColor%> href="javascript:void(0)" onclick="represcribe(this, <%=prescriptIdInt%>)">ReRx</a>
                 <%} else {%>
                 <form action="<%=request.getContextPath()%>/oscarRx/searchDrug.do" method="post">
                     <input type="hidden" name="demographicNo" value="<%=patient.getDemographicNo()%>" />
@@ -388,11 +390,11 @@ String getName(Drug prescriptDrug){
     String getClassColour(Drug drug, long referenceTime, long durationToSoon){
         StringBuffer sb = new StringBuffer("class=\"");
 
-        if (!drug.isExpired() && drug.getEndDate()!=null && (drug.getEndDate().getTime() - referenceTime <= durationToSoon)) {  // ref = now and duration will be a month
+        if (!drug.isLongTerm() && (drug.isCurrent() && (drug.getEndDate().getTime() - referenceTime <= durationToSoon))) {
             sb.append("expireInReference ");
         }
 
-        if (!drug.isExpired() && !drug.isArchived()) {
+        if ((drug.isCurrent() && !drug.isArchived()) || drug.isLongTerm()) {
             sb.append("currentDrug ");
         }
 
@@ -400,7 +402,7 @@ String getName(Drug prescriptDrug){
             sb.append("archivedDrug ");
         }
 
-        if(drug.isExpired()) {
+        if(!drug.isLongTerm() && !drug.isCurrent()) {
             sb.append("expiredDrug ");
         }
 

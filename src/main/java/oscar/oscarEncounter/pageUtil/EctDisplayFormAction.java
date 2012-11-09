@@ -41,11 +41,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts.util.MessageResources;
+import org.oscarehr.PMmodule.caisi_integrator.CaisiIntegratorManager;
 import org.oscarehr.common.dao.EncounterFormDao;
 import org.oscarehr.common.model.EncounterForm;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 
+import oscar.OscarProperties;
 import oscar.oscarEncounter.data.EctFormData;
 import oscar.oscarLab.LabRequestReportLink;
 import oscar.util.DateUtils;
@@ -61,7 +63,6 @@ public class EctDisplayFormAction extends EctDisplayAction {
 
 	@Override
     public boolean getInfo(EctSessionBean bean, HttpServletRequest request, NavBarDisplayDAO Dao, MessageResources messages) {
-
 		boolean a = true;
 		Vector v = OscarRoleObjectPrivilege.getPrivilegeProp("_newCasemgmt.forms");
 		String roleName = (String) request.getSession().getAttribute("userrole") + "," + (String) request.getSession().getAttribute("user");
@@ -98,6 +99,17 @@ public class EctDisplayFormAction extends EctDisplayAction {
 				
 				String BGCOLOUR = request.getParameter("hC");
 				for (EncounterForm encounterForm : encounterForms) {
+					if (encounterForm.getFormName().equalsIgnoreCase("Discharge Summary")) {
+						String caisiProperty = OscarProperties.getInstance().getProperty("caisi");
+						if (caisiProperty != null && (caisiProperty.equalsIgnoreCase("yes")
+								||caisiProperty.equalsIgnoreCase("true")
+								||caisiProperty.equalsIgnoreCase("on"))) {
+							; // form in
+						}
+						else {	
+							continue; //form out
+						}
+					}
 					winName = encounterForm.getFormName() + bean.demographicNo;
 
 					String table = encounterForm.getFormTable();
@@ -192,6 +204,7 @@ public class EctDisplayFormAction extends EctDisplayAction {
 						javascript.append(js);
 					}
 				}
+				CaisiIntegratorManager.setIntegratorEchartPull(false);
 				url = new StringBuilder("return !showMenu('" + menuId + "', event);");
 				Dao.setRightURL(url.toString());
 

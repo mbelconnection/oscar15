@@ -27,7 +27,9 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ page import="oscar.oscarProvider.data.*"%>
-
+<%@ page import="org.oscarehr.common.dao.UserPropertyDAO"%>
+<%@ page import="org.oscarehr.common.model.UserProperty"%>
+<%@ page import="org.oscarehr.util.SpringUtils"%>
 
 <%
   if(session.getValue("user") == null) response.sendRedirect("../logout.htm");
@@ -72,16 +74,27 @@
 		<td class="MainTableLeftColumn">&nbsp;</td>
 		<td class="MainTableRightColumn">
 		<%
-               ProviderFaxUpdater faxUpdater = new ProviderFaxUpdater(curUser_no);
-               String faxNum = faxUpdater.getFax();
+		UserPropertyDAO propertyDao = (UserPropertyDAO)SpringUtils.getBean("UserPropertyDAO");
+		UserProperty prop = propertyDao.getProp(curUser_no,"faxnumber");			
+		String faxNum = "";
+        if(prop!=null) {
+        	faxNum = prop.getValue();
+        }
                
                if( request.getAttribute("status") == null )
                {
       
             %> <html:form action="/EditFaxNum.do">
 
-			<bean:message key="provider.editRxFax.msgEdit" />
-			<br>
+
+			<span style="color:blue">By entering in a value, you will 
+			<ul>
+			<li>Override the fax # in prescriptions</li>
+			<li> When choosing your letterhead in consult requests, the clinic fax # and your provider record's fax # will be overridden
+			</li>
+			</ul>
+			</span>
+            <br/>
 
 			<html:text property="faxNumber" value="<%=faxNum%>" size="40" />
 			<br>

@@ -247,6 +247,12 @@
 		<form-bean name="editProviderFaxForm" type="org.apache.struts.action.DynaActionForm">
 			<form-property name="faxNumber" type="java.lang.String" />
 		</form-bean>
+		<form-bean name="editProviderAddressForm" type="org.apache.struts.action.DynaActionForm">
+			<form-property name="address" type="java.lang.String" />
+			<form-property name="city" type="java.lang.String" />
+			<form-property name="province" type="java.lang.String" />
+			<form-property name="postal" type="java.lang.String" />
+		</form-bean>
 		<form-bean name="setProviderColour" type="org.apache.struts.action.DynaActionForm">
 			<form-property name="colour" type="java.lang.String" />
 		</form-bean>
@@ -1386,6 +1392,10 @@
             <forward name="success" path="/provider/providerPhone.jsp" />
             <forward name="eject" path="/index.jsp" />
         </action>
+        <action input="/provider/providerAddress.jsp" name="editProviderAddressForm" path="/EditAddress" scope="request" type="oscar.oscarProvider.pageUtil.ProEditAddressAction">
+            <forward name="success" path="/provider/providerAddress.jsp" />
+            <forward name="eject" path="/index.jsp" />
+        </action>
 		<action input="/provider/providerFax.jsp" name="editProviderFaxForm" path="/EditFaxNum" scope="request" type="oscar.oscarProvider.pageUtil.ProEditFaxNumAction">
 			<forward name="success" path="/provider/providerFax.jsp" />
 			<forward name="error" path="/provider/providerFaxErr.jsp" />
@@ -1530,7 +1540,7 @@
 			<forward name="success" path="/billing/CA/BC/billStatement.jsp" />
 		</action>
 
-		<action path="/billing/CA/ON/BatchBill" scope="request" parameter="method" type="org.oscarehr.billing.CA.ON.web.BatchBillAction">
+		<action path="/billing/CA/ON/BatchBill" scope="request" parameter="method" type="org.springframework.web.struts.DelegatingActionProxy">
 			<forward name="saved" path="/billing/CA/ON/batchsaved.jsp" />
 			<forward name="error" path="/billing/CA/ON/batcherror.jsp" />
 			<forward name="success" path="/billing/CA/ON/batchBilling.jsp" />
@@ -2221,6 +2231,7 @@
 
 		<action path="/provider/CppPreferences" type="org.oscarehr.provider.web.CppPreferencesAction" parameter="method" scope="request" validate="false" input="/provider/cpp_preferences.jsp">
 			<forward name="form" path="/provider/cpp_preferences.jsp" />
+			<forward name="exit" path="/oscarEncounter/close.jsp" />
 		</action>
 
 		<action path="/provider/OlisPreferences" type="org.oscarehr.provider.web.OlisPreferencesAction" parameter="method" scope="request" validate="false" input="/provider/olis_preferences.jsp">
@@ -2238,6 +2249,7 @@
 			<forward name="pForm" path="/demographic/addEditProfessionalContact.jsp" />
 			<forward name="cForm" path="/demographic/addEditContact.jsp" />
 			<forward name="manage" path="/demographic/ManageContacts.jsp" />
+			<forward name="windowClose" path="/demographic/close.jsp" />
 		</action>
 
 		<action path="/oscarMDS/SubmitLab" type="oscar.oscarLab.ca.all.web.SubmitLabByFormAction" parameter="method" scope="request" validate="false">
@@ -2421,7 +2433,10 @@
         <action path="/PMmodule/OcanWorkload" type="org.oscarehr.PMmodule.web.OcanWorkloadAction" parameter="method" scope="request" >
             <forward name="view" path="/PMmodule/OcanWorkload.jsp" />
        </action>
-
+       
+		<action input="/billing/CA/ON/viewMOHFiles.jsp" path="/billing/CA/ON/moveMOHFiles" scope="request" type="org.oscarehr.billing.CA.ON.web.MoveMOHFilesAction" validate="false">
+            <forward name="success" path="/billing/CA/ON/viewMOHFiles.jsp"/>
+        </action>
 
         <action input="/billing/CA/ON/endYearStatement.jsp" name="PatientEndYearStatementForm" path="/billing/CA/ON/endYearStatement" scope="request" type="oscar.oscarBilling.ca.on.pageUtil.PatientEndYearStatementAction" validate="false">
             <forward name="success" path="/billing/CA/ON/endYearStatement.jsp"/>
@@ -2455,6 +2470,8 @@
 		<action path="/hospitalReportManager/HRMPreferences" type="org.oscarehr.hospitalReportManager.HRMPreferencesAction" scope="request" validate="false">
 			<forward name="success" path="/hospitalReportManager/hrmPreferences.jsp" />
 		</action>
+		<action path="/hospitalReportManager/HRMDownloadFile" type="org.oscarehr.hospitalReportManager.HRMDownloadFileAction" />
+		
 
 
 		<action path="/caseload/CaseloadContent" scope="request" type="org.oscarehr.caseload.CaseloadContentAction" parameter="method" />
@@ -2519,6 +2536,10 @@
                 <action input="/billing/CA/ON/genRADesc.jsp" name="applyPractitionerPremium" path="/billing/CA/ON/ApplyPractitionerPremium" scope="request" type="org.oscarehr.common.web.ApplyPractitionerPremiumAction" parameter="method">
                         <forward name="success" path="/billing/CA/ON/genRADesc.jsp" />                        
                         <forward name="failure" path="/failure.jsp" />                       
+		</action>
+		<action path="/admin/GenerateTraceAction" type="org.oscarehr.admin.traceability.GenerateTraceAction">
+		</action>
+		<action path="/admin/GenerateTraceabilityReportAction" type="org.oscarehr.admin.traceability.GenerateTraceabilityReportAction">
 		</action>
 	</action-mappings>
 	<controller processorClass="org.apache.struts.tiles.TilesRequestProcessor" maxFileSize="25M" />

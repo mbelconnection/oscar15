@@ -49,6 +49,7 @@ public class LogConst {
     public static final String REPRESCRIBE = "represcribe";
     public static final String ANNOTATE = "annotate";
     public static final String VERIFY = "verify";
+    public static final String REFUSED = "refused";
 
     public static final String CON_LOGIN_AGREEMENT = "login agreement";
     public static final String CON_LOGIN = "login";
@@ -60,6 +61,7 @@ public class LogConst {
     public static final String CON_PRIVILEGE = "privilege";
     public static final String CON_FORM = "form";
     public static final String CON_PRESCRIPTION = "prescription";
+    public static final String CON_MEDICATION = "medication";
     public static final String CON_DRUGS="drugs";
     public static final String CON_DRUGREASON="drugReason";
     public static final String CON_ALLERGY = "allergy";

@@ -254,26 +254,39 @@ boolean dupServiceCode = false;
 <head>
 <title>OscarBilling</title>
 <link rel="stylesheet" type="text/css" href="billingON.css" />
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.js"></script>
+   <script>
+     jQuery.noConflict();
+   </script>
+<oscar:customInterface section="billingReview"/>
 <script language="JavaScript">
         ctx = "<c:out value="${ctx}"/>";
     	demographicNo = "<c:out value="${demographicNo}"/>";
     
 	var bClick = false;
-	    function onSave() {
 
-            var ret = true;
-
-
-
-
-            bClick = false;
-
-                return ret;
-            }
-	    function onClickSave() {
+	function onSave() {
+		var ret = checkTotal();
+		
+		bClick = false;
+	
+		return ret;
+	}
+	    
+	function onClickSave() {
 			bClick = true;
 	    }
-		function popupPage(vheight,vwidth,varpage) {
+		
+    function checkTotal() {
+ 	   var totValue = document.getElementById("total").value;
+ 	   if(isNaN(totValue)) {
+ 		   alert("Please enter a valid fee");
+ 		   return false;
+ 	   }
+ 	   return true;
+    }
+
+    function popupPage(vheight,vwidth,varpage) {
 		  var page = "" + varpage;
 		  windowprops = "height="+vheight+",width="+vwidth+",location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=yes,screenX=0,screenY=0,top=0,left=0";
 		  var popup=window.open(page, "billcorrection", windowprops);
@@ -693,7 +706,7 @@ window.onload=function(){
                         if (codeValid) {
 			%>
 			<tr>
-				<td align='right' colspan='3' class="myGreen">Total: <input type="text" id="total" name="total" size="5" value="0.00" />
+				<td align='right' colspan='3' class="myGreen">Total: <input type="text" id="total" name="total" size="5" value="0.00" onblur="checkTotal();"  />
 				<input type="hidden" name="totalItem" value="<%=vecServiceParam[0].size() %>" /></td>
 <script Language="JavaScript">
 <!--
@@ -836,7 +849,6 @@ if(request.getParameter("xml_billtype")!=null && !request.getParameter("xml_bill
                              + "Fax: "+provider.getClinicFax() ;
 
 if (codeValid) { %>
-%>
 
 <%
 // for satellite clinics

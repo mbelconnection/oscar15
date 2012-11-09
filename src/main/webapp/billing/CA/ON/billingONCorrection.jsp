@@ -17,6 +17,7 @@
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 --%>
+<%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %>
 <%@page import="java.math.*,java.util.*,java.sql.*,oscar.*,java.net.*" errorPage="errorpage.jsp"%>
 <%@page import="oscar.oscarBilling.ca.on.data.*"%>
 <%@page import="oscar.oscarBilling.ca.on.pageUtil.*"%>
@@ -166,6 +167,12 @@
        adding a calendar a matter of 1 or 2 lines of code. -->
 <script type="text/javascript"
 	src="../../../share/calendar/calendar-setup.js"></script>
+	<script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.js"></script>
+   <script>
+     jQuery.noConflict();
+   </script>
+<oscar:customInterface section="editInvoice"/>
+
 <script language="JavaScript">
 <!--
 
@@ -884,6 +891,8 @@ function changeSite(sel) {
 				<option value="IHF " <%=sliCode.startsWith("IHF")?"selected":""%>><bean:message key="oscar.billing.CA.ON.billingON.OB.SLIcode.IHF" /></option>
 				<option value="OFF " <%=sliCode.startsWith("OFF")?"selected":""%>><bean:message key="oscar.billing.CA.ON.billingON.OB.SLIcode.OFF" /></option>
 				<option value="OTN " <%=sliCode.startsWith("OTN")?"selected":""%>><bean:message key="oscar.billing.CA.ON.billingON.OB.SLIcode.OTN" /></option>
+				<option value="PDF " <%=sliCode.startsWith("PDF")?"selected":""%>><bean:message key="oscar.billing.CA.ON.billingON.OB.SLIcode.PDF" /></option>
+				<option value="RTF " <%=sliCode.startsWith("RTF")?"selected":""%>><bean:message key="oscar.billing.CA.ON.billingON.OB.SLIcode.RTF" /></option>
 			</select>
 	   </td>
 </table>

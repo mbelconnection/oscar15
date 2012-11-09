@@ -330,7 +330,7 @@ try
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
 				<select id="channel">
-					<option value="http://resource.oscarmcmaster.org/oscarResource/OSCAR_search/OSCAR_search_results?title="><bean:message key="oscarEncounter.Index.oscarSearch" /></option>
+					<option value="http://resource.oscarmcmaster.org/oscarResource/OSCAR_search?query="><bean:message key="oscarEncounter.Index.oscarSearch" /></option>
 					<option value="http://www.google.com/search?q="><bean:message key="global.google" /></option>
 					<option value="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?SUBMIT=y&amp;CDM=Search&amp;DB=PubMed&amp;term="><bean:message key="global.pubmed" /></option>
 					<option value="http://search.nlm.nih.gov/medlineplus/query?DISAMBIGUATION=true&amp;FUNCTION=search&amp;SERVER2=server2&amp;SERVER1=server1&amp;PARAMETER="><bean:message key="global.medlineplus" /></option>
@@ -351,12 +351,14 @@ try
 				<security:oscarSec roleName="<%=roleName%>" objectName="_newCasemgmt.calculators" rights="r" reverse="false">
 					<%@include file="calculatorsSelectList.jspf" %>
 				</security:oscarSec>
-				<security:oscarSec roleName="<%=roleName%>" objectName="_newCasemgmt.templates" rights="r" reverse="false">
-					<select>
-						<option><bean:message key="oscarEncounter.Header.Templates"/></option>
-						<option>------------------</option>
-						<option onClick="popupPage(700,700,'Templates','<%=request.getContextPath()%>/admin/providertemplate.jsp');">New Template</option>
-						<option>------------------</option>
+				<security:oscarSec roleName="<%=roleName%>" objectName="_newCasemgmt.templates" rights="r">
+					<select onchange="javascript:popupPage(700,700,'Templates',this.value);">
+						<option value="-1"><bean:message key="oscarEncounter.Header.Templates"/></option>
+						<option value="-1">------------------</option>
+						<security:oscarSec roleName="<%=roleName%>" objectName="_newCasemgmt.templates" rights="w">
+						<option value="<%=request.getContextPath()%>/admin/providertemplate.jsp">New / Edit Template</option>
+						<option value="-1">------------------</option>
+						</security:oscarSec>
 						<%
 							EncounterTemplateDao encounterTemplateDao=(EncounterTemplateDao)SpringUtils.getBean("encounterTemplateDao");
 							List<EncounterTemplate> allTemplates=encounterTemplateDao.findAll();
@@ -365,7 +367,7 @@ try
 							{
 								String templateName=StringEscapeUtils.escapeHtml(encounterTemplate.getEncounterTemplateName());
 								%>
-									<option onClick="popupPage(700,700,'Templates','<%=request.getContextPath()+"/admin/providertemplate.jsp?dboperation=Edit&name="+templateName%>');"><%=templateName%></option>
+									<option value="<%=request.getContextPath()+"/admin/providertemplate.jsp?dboperation=Edit&name="+templateName%>"><%=templateName%></option>
 								<%
 							}
 						%>
@@ -407,7 +409,7 @@ try
 		String provView = request.getParameter("providerview");
 		if (provView == null || provView.equals("") || provView.equals("null"))
 		{
-			provView = "1";
+			provView = provNo;
 		}
 	%>
 	<html:hidden property="appointmentNo" value="<%=apptNo%>" />

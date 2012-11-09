@@ -1,27 +1,11 @@
 /**
- * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved.
- * This software is published under the GPL GNU General Public License.
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version. 
+ * Copyright (c) 2008-2012 Indivica Inc.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- * This software was written for the
- * Department of Family Medicine
- * McMaster University
- * Hamilton
- * Ontario, Canada
+ * This software is made available under the terms of the
+ * GNU General Public License, Version 2, 1991 (GPLv2).
+ * License details are available via "indivica.ca/gplv2"
+ * and "gnu.org/licenses/gpl-2.0.html".
  */
-
 
 package org.oscarehr.hospitalReportManager;
 
@@ -35,14 +19,18 @@ import org.oscarehr.util.DbConnectionFilter;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 
+/**
+* This job is set to run every minute, and the thing that really controls it is hrm_interval in the property table.
+**/
 public class SchedulerJob extends TimerTask {
 	private static Logger logger=MiscUtils.getLogger();
 	
-	private static long lastRun = new Date().getTime();
+	private static Date lastRun = new Date();
 	private static boolean firstRun = true;
 
 	@Override
 	public void run() {
+		Date startTime = new Date();
 		try {
 			UserPropertyDAO userPropertyDao = (UserPropertyDAO) SpringUtils.getBean("UserPropertyDAO");
 
@@ -58,18 +46,28 @@ public class SchedulerJob extends TimerTask {
 				intervalTime = 1800000;
 			}
 
+
 			if (!firstRun) {
-				if (lastRun + intervalTime <= new Date().getTime()) {
+				long tmp = lastRun.getTime() + intervalTime;
+				Date nowDt = new Date();
+				long now= nowDt.getTime();
+
+				if ((tmp/1000) <= ((now/1000)+1)) {
+					logger.info("Starting HRM fetch");
 					// Run now
 					SFTPConnector.startAutoFetch();
+					//I want the last run to be when the job started, not the random point it ended.
+					//so that I can have consistent polling required for conformance.
+					lastRun = startTime;
 				}
 			} else {
+				logger.info("first run");
 				SFTPConnector.startAutoFetch();
 				SchedulerJob.firstRun = false;
+				lastRun = startTime;
 			}
 
-			lastRun = new Date().getTime();
-			logger.debug("===== HRM JOB RUNNING....");
+			logger.debug("===== HRM JOB DONE RUNNING....");
 		} catch (Exception e) {
 			logger.error("Error", e);
 		} finally {

@@ -42,11 +42,16 @@
 <%@page import="org.oscarehr.common.model.ConsultationRequestExt"%>
 <%@page import="org.oscarehr.common.dao.ConsultationRequestExtDao"%>
 
+<%@page import="org.oscarehr.PMmodule.dao.ProviderDao"%>
+<%@page import="org.oscarehr.common.model.Provider"%>
+
 <%@page import="org.oscarehr.common.dao.SiteDao"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.oscarehr.common.model.Site"%><html:html locale="true">
 
 <%
+	ProviderDao providerDao = SpringUtils.getBean(ProviderDao.class);
+
     oscar.oscarEncounter.oscarConsultationRequest.pageUtil.EctConsultationFormRequestUtil reqFrm;
     reqFrm = new oscar.oscarEncounter.oscarConsultationRequest.pageUtil.EctConsultationFormRequestUtil ();
     reqFrm.estRequestFromId((String)request.getAttribute("reqId"));
@@ -113,55 +118,76 @@
                 vecAddressFax.add(s.getFax());
                 if (selectedSite.equals(s.getName())) {
                 	defaultSite = s;
-                }
-      		}
+            	}
+     		}
             // default address
-        if (defaultSite!=null) {
-            clinic.setClinic_address(defaultSite.getAddress());
-            clinic.setClinic_city(defaultSite.getCity());
-            clinic.setClinic_province(defaultSite.getProvince());
-            clinic.setClinic_postal(defaultSite.getPostal());
-            clinic.setClinic_phone(defaultSite.getPhone());
-            clinic.setClinic_fax(defaultSite.getFax());
-            clinic.setClinic_name(defaultSite.getName());
-   			defaultAddrName=defaultSite.getName();
-        }
-    } else
-    if(props.getProperty("clinicSatelliteName") != null) {
-        vecAddressName = new Vector();
-        vecAddress = new Vector();
-        vecAddressPhone = new Vector();
-        vecAddressFax = new Vector();
-        vecAddressBillingNo = new Vector();
-        String[] temp0 = props.getProperty("clinicSatelliteName", "").split("\\|");
-        String[] temp1 = props.getProperty("clinicSatelliteAddress", "").split("\\|");
-        String[] temp2 = props.getProperty("clinicSatelliteCity", "").split("\\|");
-        String[] temp3 = props.getProperty("clinicSatelliteProvince", "").split("\\|");
-        String[] temp4 = props.getProperty("clinicSatellitePostal", "").split("\\|");
-        String[] temp5 = props.getProperty("clinicSatellitePhone", "").split("\\|");
-        String[] temp6 = props.getProperty("clinicSatelliteFax", "").split("\\|");
-        String[] temp7 = props.getProperty("clinicDocBillingNoList", "").split("\\|");
-        for(int i=0; i<temp0.length; i++) {
-            vecAddressName.add(temp0[i]);
-            vecAddress.add(temp1[i] + ", " + temp2[i] + ", " + temp3[i] + "  " + temp4[i]);
-            vecAddressPhone.add(temp5[i]);
-            vecAddressFax.add(temp6[i]);
-        }
-        for(int i=0; i<temp7.length; i++) {
-            vecAddressBillingNo.add(temp7[i]);
-        }
-        // default address
-        //clinic.setClinic_name();
-        clinic.setClinic_address(temp1[0]);
-        clinic.setClinic_city(temp2[0]);
-        clinic.setClinic_province(temp3[0]);
-        clinic.setClinic_postal(temp4[0]);
-        clinic.setClinic_phone(temp5[0]);
-        clinic.setClinic_fax(temp6[0]);
-    }
+	        if (defaultSite!=null) {
+	            clinic.setClinic_address(defaultSite.getAddress());
+	            clinic.setClinic_city(defaultSite.getCity());
+	            clinic.setClinic_province(defaultSite.getProvince());
+	            clinic.setClinic_postal(defaultSite.getPostal());
+	            clinic.setClinic_phone(defaultSite.getPhone());
+	            clinic.setClinic_fax(defaultSite.getFax());
+	            clinic.setClinic_name(defaultSite.getName());
+	   			defaultAddrName=defaultSite.getName();
+	        }
+    } else {
+	    if(props.getProperty("clinicSatelliteName") != null) {
+	        vecAddressName = new Vector();
+	        vecAddress = new Vector();
+	        vecAddressPhone = new Vector();
+	        vecAddressFax = new Vector();
+	        vecAddressBillingNo = new Vector();
+	        String[] temp0 = props.getProperty("clinicSatelliteName", "").split("\\|");
+	        String[] temp1 = props.getProperty("clinicSatelliteAddress", "").split("\\|");
+	        String[] temp2 = props.getProperty("clinicSatelliteCity", "").split("\\|");
+	        String[] temp3 = props.getProperty("clinicSatelliteProvince", "").split("\\|");
+	        String[] temp4 = props.getProperty("clinicSatellitePostal", "").split("\\|");
+	        String[] temp5 = props.getProperty("clinicSatellitePhone", "").split("\\|");
+	        String[] temp6 = props.getProperty("clinicSatelliteFax", "").split("\\|");
+	        String[] temp7 = props.getProperty("clinicDocBillingNoList", "").split("\\|");
+	        for(int i=0; i<temp0.length; i++) {
+	            vecAddressName.add(temp0[i]);
+	            vecAddress.add(temp1[i] + ", " + temp2[i] + ", " + temp3[i] + "  " + temp4[i]);
+	            vecAddressPhone.add(temp5[i]);
+	            vecAddressFax.add(temp6[i]);
+	        }
+	        for(int i=0; i<temp7.length; i++) {
+	            vecAddressBillingNo.add(temp7[i]);
+	        }
+	        // default address
+	        //clinic.setClinic_name();
+	        clinic.setClinic_address(temp1[0]);
+	        clinic.setClinic_city(temp2[0]);
+	        clinic.setClinic_province(temp3[0]);
+	        clinic.setClinic_postal(temp4[0]);
+	        clinic.setClinic_phone(temp5[0]);
+	        clinic.setClinic_fax(temp6[0]);
+	    } else {
+	    	//is letterhead different?
+	    	if(!reqFrm.letterheadName.equals(clinic.getClinicName()) && !reqFrm.letterheadName.equals("-1")) {
+	    		Provider p = providerDao.getProvider(reqFrm.letterheadName);
+	    		if(p != null) {
+		    		//why, yes it is
+		    		vecAddressName = new Vector();
+			        vecAddress = new Vector();
+			        vecAddressPhone = new Vector();
+			        vecAddressFax = new Vector();
+			        vecAddressBillingNo = new Vector();
+			        
+			        vecAddressName.add(p.getFormattedName());
+			        vecAddress.add(reqFrm.letterheadAddress);
+			        vecAddressPhone.add(reqFrm.letterheadPhone);
+			        vecAddressFax.add(reqFrm.letterheadFax);
+	    		}
+		        
+	    	}
+	    }
 
+    }
     ConsultationRequestExtDao consultationRequestExtDao = (ConsultationRequestExtDao)SpringUtils.getBean("consultationRequestExtDao");
     List<ConsultationRequestExt> exts =consultationRequestExtDao.getConsultationRequestExts(Integer.parseInt((String)request.getAttribute("reqId")));
+    
 %>
     <head>
     <html:base/>
@@ -285,7 +311,7 @@
     <bean:message key="oscarEncounter.oscarConsultationRequest.consultationFormPrint.title"/>
     </title>
     </head>
-    <body>
+    <body onLoad="addressSelect();">
         <form  method="get "action="attachmentReport.jsp">
             <input type="hidden" name="reqId" value="<%=request.getAttribute("reqId")%>"/>
             <input type="hidden" name="demographicNo" value="<%=request.getParameter("demographicNo")%>"/>
@@ -332,6 +358,7 @@
             </td>
 		<% } %>
 		<% if(vecAddress != null) { %>
+			<% if(vecAddress.size()>1) { %>
             <td align="center">
                 Address
                 <select name="addressSel" id="addressSel" onChange="addressSelect()" <%=(bMultisites && selectedSite != null ? " disabled " : " ") %>>>
@@ -342,7 +369,9 @@
             <%  }%>
                 </select>
             </td>
-		<% } %>
+            <% } else { %>
+            	<input type="hidden" name="addressSel" id="addressSel" value="0"/>
+		<% } }%>
             </tr>
         </table>
         </form>
@@ -442,16 +471,7 @@
                                         <td class="subTitles">
                                             <bean:message key="oscarEncounter.oscarConsultationRequest.consultationFormPrint.msgDate"/>:
                                         </td>
-                                        <td class="fillLine">
-			<%
-                                	if(reqFrm.pwb.equals("1")){
-                                %>
-                                            <bean:message key="oscarEncounter.oscarConsultationRequest.consultationFormPrint.pwb"/>
-                                <%}else{
-                                %>
-                                <%=reqFrm.referalDate%>
-                                <%}%>
-                                        </td>
+                                        <td class="fillLine"><%=reqFrm.referalDate%></td>
                                     </tr>
                                     <tr>
                                         <td class="subTitles">
@@ -574,19 +594,27 @@ for(ConsultationRequestExt ext:exts) {
                                     </tr>
                                     <tr>
                                         <td class="subTitles">
+                                            <bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.msgSex"/>:
+                                        </td>
+                                        <td class="fillLine">
+                                <%=reqFrm.patientSex %>
+                                        </td>
+                                    </tr>                                    
+                                    <tr>
+                                        <td class="subTitles">
                                             <bean:message key="oscarEncounter.oscarConsultationRequest.consultationFormPrint.msgCard"/>
                                         </td>
                                         <td class="fillLine">
                              (<%=reqFrm.patientHealthCardType%>)&nbsp;<%=reqFrm.patientHealthNum %>&nbsp;<%=reqFrm.patientHealthCardVersionCode%>&nbsp;
                                         </td>
-                                    </tr>
+                                    </tr>                                     
                                     <tr>
                                         <td class="subTitles">
                                             <bean:message key="oscarEncounter.oscarConsultationRequest.consultationFormPrint.msgappDate"/>:
                                         </td>
                                         <td class="fillLine">
                             <%if (Integer.parseInt(reqFrm.status) > 2 ){%>
-                             <%=reqFrm.appointmentYear %>/<%=reqFrm.appointmentMonth %>/<%=reqFrm.appointmentDay %>  (y/m/d)
+                             <%=reqFrm.appointmentDate %>  (y/m/d)
                             <%}else{%>
                                             &nbsp;
                 			    <%}%>
@@ -597,11 +625,22 @@ for(ConsultationRequestExt ext:exts) {
                                             <bean:message key="oscarEncounter.oscarConsultationRequest.consultationFormPrint.msgTime"/>:
                                         </td>
                                         <td class="fillLine">
-                            <%if (Integer.parseInt(reqFrm.status) > 2 ){%>
-                                <%=reqFrm.appointmentHour %>:<%=reqFrm.appointmentMinute %> <%=reqFrm.appointmentPm %>
-                            <%}else{%>
-                                &nbsp;
-		                      <%}%>
+                                        <%
+                                        	if(reqFrm.pwb.equals("1")) {
+                                        %>
+                                        	<bean:message key="oscarEncounter.oscarConsultationRequest.consultationFormPrint.pwb"/>
+                                        <%	} else {
+                                        		if (Integer.parseInt(reqFrm.status) > 2 ) {
+                                        %>
+                                        			<%=reqFrm.appointmentHour %>:<%=reqFrm.appointmentMinute %> <%=reqFrm.appointmentPm %>
+                                        <%		} else {
+                                        	
+                                        %>
+                                        			&nbsp;
+                                        <%
+                                        		}
+                                        	}
+                                        %> 
                                         </td>
                                     </tr>
                                     <tr>
@@ -609,7 +648,7 @@ for(ConsultationRequestExt ext:exts) {
                                             <bean:message key="oscarEncounter.oscarConsultationRequest.consultationFormPrint.msgChart"/>
                                         </td>
                                         <td class="fillLine">
-                                <%=reqFrm.patientChartNo%>
+                                				<%=reqFrm.patientChartNo == null || "null".equalsIgnoreCase(reqFrm.patientChartNo) ? "" : reqFrm.patientChartNo%>
                                         </td>
                                     </tr>
                                 </table>
@@ -629,7 +668,7 @@ for(ConsultationRequestExt ext:exts) {
                     &nbsp;<br>
                 </td>
             </tr>
-            <% if(getlen(reqFrm.clinicalInformation) > 1) {%>
+            <% if(getlen(reqFrm.clinicalInformation) > 0) {%>
             <tr>
                 <td class="subTitles">
                     <bean:message key="oscarEncounter.oscarConsultationRequest.consultationFormPrint.msgClinicalInfom"/>:
@@ -641,7 +680,7 @@ for(ConsultationRequestExt ext:exts) {
                 </td>
             </tr>
             <%}%>
-            <% if(getlen(reqFrm.concurrentProblems) > 1) {%>
+            <% if(getlen(reqFrm.concurrentProblems) > 0) {%>
             <tr>
                 <td class="subTitles">
 	            <% if(props.getProperty("significantConcurrentProblemsTitle", "").length() > 1) {
@@ -695,7 +734,7 @@ for(ConsultationRequestExt ext:exts) {
 
 
 
-            <% if(getlen(reqFrm.currentMedications) > 1) {%>
+            <% if(getlen(reqFrm.currentMedications) > 0) {%>
             <tr>
                 <td class="subTitles">
 		            <% if(props.getProperty("currentMedicationsTitle", "").length() > 1) {
@@ -712,7 +751,7 @@ for(ConsultationRequestExt ext:exts) {
                 </td>
             </tr>
             <%}%>
-            <% if(getlen(reqFrm.allergies) > 1) {%>
+            <% if(getlen(reqFrm.allergies) > 0) {%>
             <tr>
                 <td class="subTitles">
                     <bean:message key="oscarEncounter.oscarConsultationRequest.consultationFormPrint.msgAllergies"/>
@@ -795,7 +834,7 @@ public String wrap(String in,int len) {
 		return x + "\n" + wrap(in.substring(in.indexOf("\n") + 1), len);
 	}
 	int place=Math.max(Math.max(in.lastIndexOf(" ",len),in.lastIndexOf("\t",len)),in.lastIndexOf("-",len));
-	if( place == 0 ) {
+	if( place <= 0 ) {
 		place = len;
 	}
 	return in.substring(0,place).trim()+"\n"+wrap(in.substring(place),len);

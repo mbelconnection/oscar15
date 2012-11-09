@@ -281,6 +281,12 @@ if (bMultisites) {
 <%@page import="oscar.appt.ApptUtil"%><html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.js"></script>
+   <script>
+     jQuery.noConflict();
+   </script>
+<oscar:customInterface section="monthview"/>
+
 <title><bean:message
 	key="provider.appointmentprovideradminmonth.title" /></title>
 <link rel="stylesheet" href="../receptionist/receptionistapptstyle.css"
@@ -424,12 +430,12 @@ function refreshTabAlerts(id) {
 		<td>
 		<ul id="navlist">
 			<li><a
-				href="providercontrol.jsp?year=<%=curYear%>&month=<%=curMonth%>&day=<%=curDay%>&view=<%=view==0?"0":("1&curProvider="+request.getParameter("curProvider")+"&curProviderName="+request.getParameter("curProviderName") )%>&displaymode=day&dboperation=searchappointmentday"
+				href="providercontrol.jsp?year=<%=curYear%>&month=<%=curMonth%>&day=<%=curDay%>&view=<%=view==0?"0":("1&curProvider="+request.getParameter("curProvider")+"&curProviderName="+request.getParameter("curProviderName") )%>&displaymode=day&dboperation=searchappointmentday&viewall=<%=request.getParameter("viewall")%>"
 				TITLE='<bean:message key="provider.appointmentProviderAdminDay.viewDaySched"/>'
 				OnMouseOver="window.status='<bean:message key="provider.appointmentProviderAdminDay.viewDaySched"/>' ; return true"><bean:message
 				key="global.today" /></a></li>
 			<li><a
-				href="providercontrol.jsp?year=<%=year%>&month=<%=month%>&day=1&view=<%=view==0?"0":("1&curProvider="+request.getParameter("curProvider")+"&curProviderName="+request.getParameter("curProviderName") )%>&displaymode=month&dboperation=searchappointmentmonth"
+				href="providercontrol.jsp?year=<%=year%>&month=<%=month%>&day=1&view=<%=view==0?"0":("1&curProvider="+request.getParameter("curProvider")+"&curProviderName="+request.getParameter("curProviderName") )%>&displaymode=month&dboperation=searchappointmentmonth&viewall=<%=request.getParameter("viewall")%>"
 				TITLE='<bean:message key="provider.appointmentProviderAdminDay.viewMonthSched"/>'
 				OnMouseOver="window.status='<bean:message key="provider.appointmentProviderAdminDay.viewMonthSched"/>' ; return true"><bean:message
 				key="global.month" /></a></li>

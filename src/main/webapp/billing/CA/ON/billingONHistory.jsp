@@ -35,6 +35,7 @@
 	errorPage="errorpage.jsp"%>
 <%@ page import="oscar.oscarBilling.ca.on.data.*"%>
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
+<%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <jsp:useBean id="providerBean" class="java.util.Properties"
 	scope="session" />
@@ -51,6 +52,12 @@ function onUnbilled(url) {
 }
 
 </SCRIPT>
+<script src="<c:out value="../js/jquery.js"/>"></script>
+<script>
+	jQuery.noConflict();
+</script>
+
+<oscar:customInterface section="billingONHistory"/>
 </head>
 <body topmargin="0">
 

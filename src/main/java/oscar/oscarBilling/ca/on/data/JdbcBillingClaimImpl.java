@@ -119,7 +119,7 @@ public class JdbcBillingClaimImpl {
                 mVal.put("payDate", dateTime);
 		for (int i = 0; i < temp.length; i++) {
 			String sql = "insert into billing_on_ext values(\\N, " + id + "," + demoNo + ", '" + temp[i] + "', '"
-					+ mVal.get(temp[i]) + "', '" + dateTime + "', '1', null )";
+					+ StringEscapeUtils.escapeSql(mVal.get(temp[i])) + "', '" + dateTime + "', '1', null )";
 			retval = dbObj.updateDBRecord(sql);
 			if (!retval) {
 				_logger.error("add3rdBillExt(sql = " + sql + ")");
@@ -201,7 +201,7 @@ public class JdbcBillingClaimImpl {
 	public String[] getLatestSoloMonthCodeBatchNum(String providerNo) {
 		String[] retval = null;
 		String sql = "select monthCode, batchcount from billing_on_diskname d, billing_on_filename f where f.providerohipno='"
-				+ providerNo + "' and d.id=f.disk_id order by d.id desc limit 1";
+				+ providerNo + "' and d.groupNo='' and d.id=f.disk_id order by d.id desc limit 1";
 		// _logger.info("getLatestSoloMonthCodeBatchNum(sql = " + sql + ")");
 		ResultSet rs = dbObj.searchDBRecord(sql);
 

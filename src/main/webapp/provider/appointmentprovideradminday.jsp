@@ -31,7 +31,10 @@
 <%@page import="org.oscarehr.common.dao.UserPropertyDAO, org.oscarehr.common.dao.DemographicDao, org.oscarehr.common.model.Demographic, org.oscarehr.common.model.UserProperty" %>
 <%@ page import="org.oscarehr.common.dao.MyGroupAccessRestrictionDao" %>
 <%@ page import="org.oscarehr.common.model.MyGroupAccessRestriction" %>
+<%@ page import="org.oscarehr.PMmodule.dao.ProviderDao" %>
+<%@ page import="org.oscarehr.common.model.Provider" %>
 <%
+			
 	if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
 	String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
 
@@ -260,12 +263,16 @@ if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.Is
 	programId_oscarView="0";
 	session.setAttribute("programId_oscarView",programId_oscarView);
 }
-    int lenLimitedL=11, lenLimitedS=3; //L - long, S - short
+    int lenLimitedL=11; //L - long
+    if(OscarProperties.getInstance().isPropertyActive("APPT_SHOW_FULL_NAME")) {
+    	lenLimitedL = 25;
+    }
+    int lenLimitedS=3; //S - short
     int len = lenLimitedL;
     int view = request.getParameter("view")!=null ? Integer.parseInt(request.getParameter("view")) : 0; //0-multiple views, 1-single view
     //// THIS IS THE VALUE I HAVE BEEN LOOKING FOR!!!!!
 	boolean bDispTemplatePeriod = ( oscarVariables.getProperty("receptionist_alt_view") != null && oscarVariables.getProperty("receptionist_alt_view").equals("yes") ); // true - display as schedule template period, false - display as preference
-
+	
 %>
 <%
 
@@ -584,7 +591,7 @@ function popupWithApptNo(vheight,vwidth,varpage,name,apptNo) {
 	if (name=='master')
 		popup(vheight,vwidth,varpage,name);
 	else if (name=='encounter')
-		popupPage(vheight, vwidth, varpage);
+		popUpEncounter(vheight, vwidth, varpage);
 	else
 		popupOscarRx(vheight,vwidth,varpage);
 }
@@ -755,7 +762,7 @@ function getParameter(paramName) {
 }
 </style>
 
-<% if (OscarProperties.getInstance().getBooleanProperty("indivica_hc_read_enabled", "true")) { %>
+<% if (OscarProperties.getInstance().isPropertyActive("indivica_hc_read_enabled")) { %>
 <script language="javascript" src="<%=request.getContextPath() %>/hcHandler/hcHandler.js"></script>
 <script language="javascript" src="<%=request.getContextPath() %>/hcHandler/hcHandlerAppointment.js"></script>
 <link rel="stylesheet" href="<%=request.getContextPath() %>/hcHandler/hcHandler.css" type="text/css" />
@@ -792,7 +799,11 @@ if(mygroupno != null && providerBean.get(mygroupno) != null) { //single appointe
      curProvider_no = new String [numProvider];
      curProviderName = new String [numProvider];
      curProvider_no[0]=mygroupno;
-     curProviderName[0]=providerBean.getProperty(mygroupno);
+     {
+    	 ProviderDao providerDao = SpringUtils.getBean(ProviderDao.class);
+    	    
+     	curProviderName[0]=providerDao.getProvider(mygroupno).getFullName();
+     }
 } else {
 	if(view==0) { //multiple views
 	   if (selectedSite!=null) {
@@ -845,7 +856,9 @@ if(mygroupno != null && providerBean.get(mygroupno) != null) { //single appointe
           if(NameLength>0) {
              len=lenLimitedS= lenLimitedL = NameLength;
           }
-                   }
+     }
+      
+     
      curProvider_no = new String [numProvider];
      curProviderName = new String [numProvider];
 
@@ -858,7 +871,12 @@ if(mygroupno != null && providerBean.get(mygroupno) != null) { //single appointe
      }
      for (Map provider : resultList) {
        curProvider_no[iTemp] = String.valueOf(provider.get("provider_no"));
-       curProviderName[iTemp] = provider.get("first_name")+" "+provider.get("last_name");
+       {
+      	 ProviderDao providerDao = SpringUtils.getBean(ProviderDao.class);
+      	    
+      	 curProviderName[iTemp]=providerDao.getProvider((String)provider.get("provider_no")).getFullName();
+       }
+       
        iTemp++;
      }
     }
@@ -891,6 +909,7 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
    }
 
 java.util.Locale vLocale =(java.util.Locale)session.getAttribute(org.apache.struts.Globals.LOCALE_KEY);
+
 %>
 
 
@@ -902,12 +921,12 @@ java.util.Locale vLocale =(java.util.Locale)session.getAttribute(org.apache.stru
 <caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">
 <security:oscarSec roleName="<%=roleName$%>" objectName="_day" rights="r">
 <li id="today">
-    <a class="rightButton top" href="providercontrol.jsp?year=<%=curYear%>&month=<%=curMonth%>&day=<%=curDay%>&view=<%=view==0?"0":("1&curProvider="+request.getParameter("curProvider")+"&curProviderName="+request.getParameter("curProviderName") )%>&displaymode=day&dboperation=searchappointmentday" TITLE='<bean:message key="provider.appointmentProviderAdminDay.viewDaySched"/>' OnMouseOver="window.status='<bean:message key="provider.appointmentProviderAdminDay.viewDaySched"/>' ; return true"><bean:message key="global.today"/></a>
+    <a class="rightButton top" href="providercontrol.jsp?year=<%=curYear%>&month=<%=curMonth%>&day=<%=curDay%>&view=<%=view==0?"0":("1&curProvider="+request.getParameter("curProvider")+"&curProviderName="+request.getParameter("curProviderName") )%>&displaymode=day&dboperation=searchappointmentday&viewall=<%=request.getParameter("viewall")%>" TITLE='<bean:message key="provider.appointmentProviderAdminDay.viewDaySched"/>' OnMouseOver="window.status='<bean:message key="provider.appointmentProviderAdminDay.viewDaySched"/>' ; return true"><bean:message key="global.today"/></a>
 </li>
 </security:oscarSec>
 <security:oscarSec roleName="<%=roleName$%>" objectName="_month" rights="r">
  <li>
-    <a href="providercontrol.jsp?year=<%=year%>&month=<%=month%>&day=1&view=<%=view==0?"0":("1&curProvider="+request.getParameter("curProvider")+"&curProviderName="+request.getParameter("curProviderName") )%>&displaymode=month&dboperation=searchappointmentmonth" TITLE='<bean:message key="provider.appointmentProviderAdminDay.viewMonthSched"/>' OnMouseOver="window.status='<bean:message key="provider.appointmentProviderAdminDay.viewMonthSched"/>' ; return true"><bean:message key="global.month"/></a>
+    <a href="providercontrol.jsp?year=<%=year%>&month=<%=month%>&day=1&view=<%=view==0?"0":("1&curProvider="+request.getParameter("curProvider")+"&curProviderName="+request.getParameter("curProviderName") )%>&displaymode=month&dboperation=searchappointmentmonth&viewall=<%=request.getParameter("viewall")%>" TITLE='<bean:message key="provider.appointmentProviderAdminDay.viewMonthSched"/>' OnMouseOver="window.status='<bean:message key="provider.appointmentProviderAdminDay.viewMonthSched"/>' ; return true"><bean:message key="global.month"/></a>
  </li>
  </security:oscarSec>
  <security:oscarSec roleName="<%=roleName$%>" objectName="_resource" rights="r">
@@ -1287,7 +1306,7 @@ if (curProvider_no[provIndex].equals(provNum)) { %>
 </caisi:isModuleLoad>
 <!-- caisi infirmary view extension add end fffffffffffff-->
 
-| <a href='providercontrol.jsp?year=<%=curYear%>&month=<%=curMonth%>&day=<%=curDay%>&view=0&displaymode=day&dboperation=searchappointmentday&caseload=1&clProv=<%=curUser_no%>'>Caseload</a>
+| <a href='providercontrol.jsp?year=<%=curYear%>&month=<%=curMonth%>&day=<%=curDay%>&view=0&displaymode=day&dboperation=searchappointmentday&caseload=1&clProv=<%=curUser_no%>&viewall=<%=request.getParameter("viewall")%>'>Caseload</a>
       </td>
       </tr>
 
@@ -1493,7 +1512,10 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
 <%
         while (bFirstTimeRs?it.hasNext():true) { //if it's not the first time to parse the standard time, should pass it by
                   appointment = bFirstTimeRs?it.next():appointment;
-                  len = bFirstTimeRs&&!bFirstFirstR?lenLimitedS:lenLimitedL;
+                  if(!OscarProperties.getInstance().isPropertyActive("APPT_ALWAYS_SHOW_LONG_NAME")) {
+                	len = bFirstTimeRs&&!bFirstFirstR?lenLimitedS:lenLimitedL;
+                  }
+                  
                   iS=Integer.parseInt(String.valueOf(appointment.get("start_time")).substring(0,2));
                   iSm=Integer.parseInt(String.valueOf(appointment.get("start_time")).substring(3,5));
                   iE=Integer.parseInt(String.valueOf(appointment.get("end_time")).substring(0,2));
@@ -1594,6 +1616,7 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
                   String status = String.valueOf(appointment.get("status")).trim();
           	  String sitename = String.valueOf(appointment.get("location")).trim();
           	  String urgency = (String)appointment.get("urgency");
+          	  String apptType = (String)appointment.get("type");
 
           	  bFirstTimeRs=true;
 			    as.setApptStatus(status);
@@ -1636,6 +1659,7 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
 <%--|--%>
         <%
         			if(demographic_no==0) {
+        				//MARC
         %>
         	<!--  caisi  -->
         	<% if (tickler_no.compareTo("") != 0) {%>
@@ -1645,13 +1669,32 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
     			<caisi:isModuleLoad moduleName="ticklerplus">
     				<a href="../ticklerPlus/index.jsp" title="<bean:message key="provider.appointmentProviderAdminDay.ticklerMsg"/>: <%=UtilMisc.htmlEscape(tickler_note)%>"><font color="red">!</font></a>
     			</caisi:isModuleLoad>
-    		<%} %>
+    		<%} //end of tickler %>
 <a href=# onClick ="popupPage(535,860,'../appointment/appointmentcontrol.jsp?appointment_no=<%=appointment.get("appointment_no")%>&provider_no=<%=curProvider_no[nProvider]%>&year=<%=year%>&month=<%=month%>&day=<%=day%>&start_time=<%=iS+":"+iSm%>&demographic_no=0&displaymode=edit&dboperation=search');return false;" title="<%=iS+":"+(iSm>10?"":"0")+iSm%>-<%=iE+":"+iEm%>
 <%=name%>
 <bean:message key="provider.appointmentProviderAdminDay.reason"/>: <%=UtilMisc.htmlEscape(reason)%>
 <bean:message key="provider.appointmentProviderAdminDay.notes"/>: <%=UtilMisc.htmlEscape(notes)%>" >
+
             .<%=(view==0&&numAvailProvider!=1)?(name.length()>len?name.substring(0,len).toUpperCase():name.toUpperCase()):name.toUpperCase()%>
             </font></a><!--Inline display of reason -->
+        <% if(OscarProperties.getInstance().isPropertyActive("APPT_MULTILINE") || OscarProperties.getInstance().isPropertyActive("APPT_THREE_LINE") || !OscarProperties.getInstance().hasProperty("APPT_THREE_LINE")) { %>
+	      	<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<%if((apptType != null && apptType.length()>0) && (reason != null && reason.length()>0) ) { %>	
+			<%=UtilMisc.htmlEscape(apptType)%>&nbsp;|&nbsp;<%=UtilMisc.htmlEscape(reason)%>
+		<% } %>
+		<%if((apptType != null && apptType.length()>0) && (reason == null || reason.length() == 0) ) { %>	
+			<%=UtilMisc.htmlEscape(apptType)%>
+		<% } %>
+		<%if((apptType == null || apptType.length()==0) && (reason != null && reason.length() > 0) ) { %>	
+			<%=UtilMisc.htmlEscape(reason)%>
+		<% } %>
+		
+		<%if(OscarProperties.getInstance().isPropertyActive("APPT_THREE_LINE") || !OscarProperties.getInstance().hasProperty("APPT_THREE_LINE")) { %>
+		<br/>
+		<% } %>
+	<% } %>
+	
       <oscar:oscarPropertiesCheck property="SHOW_APPT_REASON_TOOLTIP" value="yes" defaultVal="true"><span class="reason"><bean:message key="provider.appointmentProviderAdminDay.Reason"/>:<%=UtilMisc.htmlEscape(reason)%></span></oscar:oscarPropertiesCheck></td>
         <%
         			} else {
@@ -1683,7 +1726,7 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
 boolean disableStopSigns = PreventionManager.isDisabled();
 boolean propertyExists = PreventionManager.isCreated();
 if(disableStopSigns!=true){
-if( OscarProperties.getInstance().getProperty("SHOW_PREVENTION_STOP_SIGNS","false").equals("true") || propertyExists==true) {
+if( OscarProperties.getInstance().isPropertyActive("SHOW_PREVENTION_STOP_SIGNS") || propertyExists==true) {
 
 		String warning = prevMgr.getWarnings(String.valueOf(demographic_no));
 		warning = PreventionManager.checkNames(warning);
@@ -1702,7 +1745,23 @@ if( OscarProperties.getInstance().getProperty("SHOW_PREVENTION_STOP_SIGNS","fals
 <a class="apptLink" href=# onClick ="popupPage(535,860,'../appointment/appointmentcontrol.jsp?appointment_no=<%=appointment.get("appointment_no")%>&provider_no=<%=curProvider_no[nProvider]%>&year=<%=year%>&month=<%=month%>&day=<%=day%>&start_time=<%=iS+":"+iSm%>&demographic_no=<%=demographic_no%>&displaymode=edit&dboperation=search');return false;"  <oscar:oscarPropertiesCheck property="SHOW_APPT_REASON_TOOLTIP" value="yes" defaultVal="true"> title="<%=name%>
 &nbsp; reason: <%=UtilMisc.htmlEscape(reason)%>
 &nbsp; notes: <%=UtilMisc.htmlEscape(notes)%>"</oscar:oscarPropertiesCheck>   ><%=(view==0)?(name.length()>len?name.substring(0,len):name):name%></a>
-<% if(len==lenLimitedL || view!=0 || numAvailProvider==1 ) {%>
+<%if(OscarProperties.getInstance().isPropertyActive("APPT_THREE_LINE")){  %>
+	<%if((apptType != null && apptType.length()>0) || (reason != null && reason.length() > 0)) {%>
+	<br/>
+	<%} %>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<%if((apptType != null && apptType.length()>0) && (reason != null && reason.length()>0) ) { %>	
+			<%=UtilMisc.htmlEscape(apptType)%>&nbsp;|&nbsp;<%=UtilMisc.htmlEscape(reason)%>
+		<% } %>
+		<%if((apptType != null && apptType.length()>0) && (reason == null || reason.length() == 0) ) { %>	
+			<%=UtilMisc.htmlEscape(apptType)%>
+		<% } %>
+		<%if((apptType == null || apptType.length()==0) && (reason != null && reason.length() > 0) ) { %>	
+			<%=UtilMisc.htmlEscape(reason)%>
+		<% } %>
+	<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<% } %>
+<% if(len==lenLimitedL || view!=0 || numAvailProvider==1 || OscarProperties.getInstance().isPropertyActive("APPT_ALWAYS_SHOW_LINKS") ) {%>
 
 <security:oscarSec roleName="<%=roleName$%>" objectName="_eChart" rights="r">
 <oscar:oscarPropertiesCheck property="eform_in_appointment" value="yes">
@@ -1715,7 +1774,8 @@ if( OscarProperties.getInstance().getProperty("SHOW_PREVENTION_STOP_SIGNS","fals
 <% if(bShowEncounterLink && !isWeekView) { %>
 <% String  eURL = "../oscarEncounter/IncomingEncounter.do?providerNo="+curUser_no+"&appointmentNo="+appointment.get("appointment_no")+"&demographicNo="+demographic_no+"&curProviderNo="+curProvider_no[nProvider]+"&reason="+URLEncoder.encode(reason)+"&encType="+URLEncoder.encode("face to face encounter with client","UTF-8")+"&userName="+URLEncoder.encode( userfirstname+" "+userlastname)+"&curDate="+curYear+"-"+curMonth+"-"+curDay+"&appointmentDate="+year+"-"+month+"-"+day+"&startTime="+iS+":"+iSm+"&status="+status + "&apptProvider_no=" + curProvider_no[nProvider] + "&providerview=" + curProvider_no[nProvider];%>
 <a href=# class="encounterBtn" onClick="popupWithApptNo(710, 1024,'<%=eURL%>','encounter',<%=appointment.get("appointment_no")%>);return false;" title="<bean:message key="global.encounter"/>">
-            |<bean:message key="provider.appointmentProviderAdminDay.btnE"/></a>
+            <%if(OscarProperties.getInstance().isPropertyActive("APPT_THREE_LINE") || !OscarProperties.getInstance().hasProperty("APPT_THREE_LINE")){  %>| <%} %>
+            <bean:message key="provider.appointmentProviderAdminDay.btnE"/></a>
 <% } %>
 
 
@@ -1817,23 +1877,49 @@ if( OscarProperties.getInstance().getProperty("SHOW_PREVENTION_STOP_SIGNS","fals
       <!--Inline display of reason -->
       <oscar:oscarPropertiesCheck property="SHOW_APPT_REASON_TOOLTIP" value="yes" defaultVal="true"><span class="reason"><bean:message key="provider.appointmentProviderAdminDay.Reason"/>:<%=UtilMisc.htmlEscape(reason)%></span></oscar:oscarPropertiesCheck>
       <% } %>
-<% } %>
+      <% if(OscarProperties.getInstance().isPropertyActive("APPT_MULTILINE")) { %>
+	      	<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<%if((apptType != null && apptType.length()>0) && (reason != null && reason.length()>0) ) { %>	
+			<%=UtilMisc.htmlEscape(apptType)%>&nbsp;|&nbsp;<%=UtilMisc.htmlEscape(reason)%>
+		<% } %>
+		<%if((apptType != null && apptType.length()>0) && (reason == null || reason.length() == 0) ) { %>	
+			<%=UtilMisc.htmlEscape(apptType)%>
+		<% } %>
+		<%if((apptType == null || apptType.length()==0) && (reason != null && reason.length() > 0) ) { %>	
+			<%=UtilMisc.htmlEscape(reason)%>
+		<% } %>
+	<% } %>
+<% } else {%>
+	<!-- no links -->
+	<% if(OscarProperties.getInstance().isPropertyActive("APPT_MULTILINE")) { %>
+	<br/>&nbsp;
+	<% } %>
+	
+	<%}%>
+	
+
         		</font></td>
         <%
         			}
         			}
         			bFirstFirstR = false;
-          	}
+        			
+          	} 
+                  
             //out.println("<td width='1'>&nbsp;</td></tr>"); give a grid display
             out.println("<td class='noGrid' width='1'></td></tr>"); //no grid display
-          }
+          } 
+         
 				%>
 
           </table> <!-- end table for each provider schedule display -->
 <!-- caisi infirmary view extension add fffffffffff-->
 </logic:notEqual>
 <!-- caisi infirmary view extension add end fffffffffffffff-->
-
+	
+		
+		
          </td></tr>
           <tr><td class="infirmaryView" ALIGN="center" BGCOLOR="<%=bColor?"#bfefff":"silver"%>">
 <!-- caisi infirmary view extension modify fffffffffffffffffff-->
@@ -1987,7 +2073,7 @@ document.onkeydown=function(e){
 
 </script>
 <!-- end of keycode block -->
-<% if (OscarProperties.getInstance().getBooleanProperty("indivica_hc_read_enabled", "true")) { %>
+<% if (OscarProperties.getInstance().isPropertyActive("indivica_hc_read_enabled")) { %>
 <%@include file="/hcHandler/hcHandler.html" %>
 <% } %>
 </html:html>

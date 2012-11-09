@@ -55,9 +55,9 @@ function typeInDate(year1,month1,day1) {
   close();
 }
 function typeSrvDate(year1,month1,day1) {
-opener.EctConsultationFormRequestForm.appointmentYear.value=year1;
-opener.EctConsultationFormRequestForm.appointmentMonth.options.selectedIndex = (month1-1);
-opener.EctConsultationFormRequestForm.appointmentDay.options.selectedIndex = (day1-1); close();
+opener.document.EctConsultationFormRequestForm.appointmentYear.value=year1;
+opener.document.EctConsultationFormRequestForm.appointmentMonth.options.selectedIndex = (month1-1);
+opener.document.EctConsultationFormRequestForm.appointmentDay.options.selectedIndex = (day1-1); close();
 }
 //-->
 </script>
@@ -72,8 +72,7 @@ opener.EctConsultationFormRequestForm.appointmentDay.options.selectedIndex = (da
 	<tr>
 		<td BGCOLOR="#bbbbff" width="50%" align="center"><a
 			href="CalendarPopup.jsp?year=<%=year%>&month=<%=month%>&delta=-1&type=<%=type%>">
-		&nbsp;&nbsp;<img src="../images/previous.gif" WIDTH="10" HEIGHT="9"
-			BORDER="0"
+		<img src="<%= request.getContextPath() %>/images/previous.gif" WIDTH="10" HEIGHT="9" BORDER="0"
 			ALT="<bean:message key="oscarEncounter.oscarConsultationRequest.CalendarPopUp.msgVLastMonth"/>"
 			vspace="2"> <bean:message
 			key="oscarEncounter.oscarConsultationRequest.CalendarPopUp.msgLastMonth" />&nbsp;&nbsp;
@@ -81,9 +80,9 @@ opener.EctConsultationFormRequestForm.appointmentDay.options.selectedIndex = (da
 			href="CalendarPopup.jsp?year=<%=year%>&month=<%=month%>&delta=1&type=<%=type%>">
 		&nbsp;&nbsp;<bean:message
 			key="oscarEncounter.oscarConsultationRequest.CalendarPopUp.msgNextMonth" />
-		<img src="../images/next.gif" WIDTH="10" HEIGHT="9" BORDER="0"
+		<img src="<%= request.getContextPath() %>/images/next.gif" WIDTH="10" HEIGHT="9" BORDER="0"
 			ALT="<bean:message key="oscarEncounter.oscarConsultationRequest.CalendarPopUp.msgVNextMonth"/>"
-			vspace="2">&nbsp;&nbsp;</a></td>
+			vspace="2"></a></td>
 	</TR>
 </table>
 <p>

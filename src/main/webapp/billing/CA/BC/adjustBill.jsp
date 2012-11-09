@@ -106,7 +106,7 @@
   int curMonth = (now.get(Calendar.MONTH)+1);
   int curDay = now.get(Calendar.DAY_OF_MONTH);
 
-  String codes[] = {"W","O","P","N","X","T","D"};
+  String codes[] = {"W","O","P","N","X","T","D","I"};
   request.setAttribute("codes",codes);
   String serviceLocation = allFields.getProperty("service_location");
 
@@ -727,19 +727,19 @@ if(billService != null){
                 </tr>
                 <tr>
                   <td class="bCellData">
-                    <a href="javascript:ScriptAttach('dx1')">DX 1</a><input type="text" name="dx1" value="<%=allFields.getProperty("dx_code1")%>" size="10">
+                    <a href="javascript:ScriptAttach('dx1')">DX 1</a><input type="text" name="dx1" onClick="checkSubmitType()" value="<%=allFields.getProperty("dx_code1")%>" size="10">
                   </td>
                   <td><%=billform.getDiagDesc(allFields.getProperty("dx_code1"),billRegion)%></td>
                 </tr>
                 <tr>
                   <td   class="bCellData">
-                    <a href="javascript:ScriptAttach('dx2')">DX 2</a><input type="text" name="dx2" value="<%=allFields.getProperty("dx_code2")%>" size="10">
+                    <a href="javascript:ScriptAttach('dx2')">DX 2</a><input type="text" name="dx2" onClick="checkSubmitType()" value="<%=allFields.getProperty("dx_code2")%>" size="10">
                   </td>
                   <td><%=billform.getDiagDesc(allFields.getProperty("dx_code2"),billRegion)%></td>
                 </tr>
                 <tr>
                   <td class="bCellData">
-                    <a href="javascript:ScriptAttach('dx3')">DX 3</a><input type="text" name="dx3" value="<%=allFields.getProperty("dx_code3")%>" size="10">
+                    <a href="javascript:ScriptAttach('dx3')">DX 3</a><input type="text" name="dx3" onClick="checkSubmitType()" value="<%=allFields.getProperty("dx_code3")%>" size="10">
                   </td>
                   <td><%=billform.getDiagDesc(allFields.getProperty("dx_code3"),billRegion)%></td>
                 </tr>
@@ -861,7 +861,7 @@ if(billService != null){
             </td>
             <td class="bCellData">Insurer Code</td><!--OIN-INSURER-C0DE-->
             <td class="bCellData">
-                <select name="insurerCode2" >
+                <select name="insurerCode" >
                     <option value="" <%=allFields.getProperty("oin_insurer_code").equals("0")?"selected":""%>>None</option>
                     <option value="IN" <%=allFields.getProperty("oin_insurer_code").equals("IN")?"selected":""%>>Institutional Claim</option>
                     <option value="PP" <%=allFields.getProperty("oin_insurer_code").equals("PP")?"selected":""%>>Pay Patient</option>

@@ -29,6 +29,7 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/rewrite-tag.tld" prefix="rewrite"%>
+<%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar"%>
 <%@ page import="oscar.OscarProperties"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils,oscar.oscarLab.ca.all.*,oscar.oscarMDS.data.*,oscar.oscarLab.ca.all.util.*"%>
 <%@page import="org.springframework.web.context.WebApplicationContext,org.oscarehr.common.dao.*,org.oscarehr.common.model.*,org.oscarehr.util.SpringUtils"%><%
@@ -47,7 +48,7 @@
                 inQueueB=true;
 
             String creator = (String) session.getAttribute("user");
-            ArrayList doctypes = EDocUtil.getDoctypes("demographic");
+            ArrayList doctypes = EDocUtil.getActiveDocTypes("demographic");
             EDoc curdoc = EDocUtil.getDoc(documentNo);
              
             String demographicID = curdoc.getModuleId();
@@ -289,7 +290,10 @@
 
                     <td colspan="8">
                         <div style="text-align: right;font-weight: bold">
-                        <!-- Page navigation can go here -->
+                        	<a id="firstP_<%=docId%>" href="javascript:void(0);" onclick="firstPage('<%=docId%>','<%=cp%>');">First</a>
+                            <a id="prevP_<%=docId%>" href="javascript:void(0);" onclick="prevPage('<%=docId%>','<%=cp%>');">Prev</a>
+                            <a id="nextP_<%=docId%>" href="javascript:void(0);" onclick="nextPage('<%=docId%>','<%=cp%>');">Next</a>
+                            <a id="lastP_<%=docId%>" href="javascript:void(0);" onclick="lastPage('<%=docId%>','<%=cp%>');">Last</a>
                         </div>
                         <a href="<%=url2%>" target="_blank"><img alt="document" id="docImg_<%=docId%>"  src="<%=url%>" /></a></td>
 
@@ -309,7 +313,7 @@
                                     <td><bean:message key="inboxmanager.document.NumberOfPages"/></td>
                                     <td>
                                     	<input id="shownPage_<%=docId %>" type="hidden" value="1" />
-                                    	<span id="numPages_<%=docId %>" class="<%= numOfPage > 1 ? "multiPage" : "singlePage" %>"><%=numOfPageStr%></span>
+                                    	<span id="viewedPage_<%=docId%>" class="<%= numOfPage > 1 ? "multiPage" : "singlePage" %>">1</span>&nbsp; of &nbsp;<span id="numPages_<%=docId %>" class="<%= numOfPage > 1 ? "multiPage" : "singlePage" %>"><%=numOfPageStr%></span>
                                     </td>
                                 </tr>
 
@@ -392,8 +396,8 @@
                                     </tr>
 
                                     <tr>
-                                        <td width="30%" colspan="1" align="right"><a id="saveSucessMsg_<%=docId%>" style="display:none;color:blue;"><bean:message key="inboxmanager.document.SuccessfullySavedMsg"/></a></td>
-                                        <td width="30%" colspan="1" align="right"><%if(demographicID.equals("-1")){%><input type="submit" name="save" disabled id="save<%=docId%>" value="Save" /><input type="button" name="save" id="saveNext<%=docId%>" onclick="saveNext(<%=docId%>)" disabled value='<bean:message key="inboxmanager.document.SaveAndNext"/>' /><%}
+                                        <td width="30%" colspan="1" align="left"><a id="saveSucessMsg_<%=docId%>" style="display:none;color:blue;"><bean:message key="inboxmanager.document.SuccessfullySavedMsg"/></a></td>
+                                        <td width="30%" colspan="1" align="left"><%if(demographicID.equals("-1")){%><input type="submit" name="save" disabled id="save<%=docId%>" value="Save" /><input type="button" name="save" id="saveNext<%=docId%>" onclick="saveNext(<%=docId%>)" disabled value='<bean:message key="inboxmanager.document.SaveAndNext"/>' /><%}
             else{%><input type="submit" name="save" id="save<%=docId%>" value="Save" /><input type="button" name="save" onclick="saveNext(<%=docId%>)" id="saveNext<%=docId%>" value='<bean:message key="inboxmanager.document.SaveAndNext"/>' /> <%}%>
 
                                     </tr>

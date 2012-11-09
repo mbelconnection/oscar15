@@ -25,6 +25,7 @@
 --%>
 
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
+<%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar"%>
 <%@ page import="java.util.*,java.io.*,oscar.oscarLab.ca.all.util.KeyPairGen"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
@@ -68,8 +69,8 @@ if (name != null){
             }else{
 
                 String keyPairOut = "-------- Service Name --------\n"+name+"\n------------------------------\n"+
-                        "----- Client Private Key -----\n"+clientKey+"\n------------------------------\n"+
-                        "------ Oscar Public Key ------\n"+oscarKey+"\n------------------------------";
+                        "----- Client Private Key -----\n"+clientKey.replaceAll("\\r?\\n", "")+"\n------------------------------\n"+
+                        "------ Oscar Public Key ------\n"+oscarKey.replaceAll("\\r?\\n", "")+"\n------------------------------";
                 response.setContentType("text");
                 response.setContentLength(keyPairOut.length());
                 response.setHeader("Content-Disposition","attachment; filename=keyPair.key");

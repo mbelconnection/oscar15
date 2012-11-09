@@ -76,7 +76,7 @@
 
     // repeat adding
     if (request.getParameter("groupappt").equals("Add Group Appointment") ) {
-        String[] param = new String[19];
+        String[] param = new String[20];
         int rowsAffected=0, datano=0;
 
             param[0]=request.getParameter("provider_no");
@@ -96,12 +96,13 @@
             param[14]=userName;  //request.getParameter("creator");
             param[15]=request.getParameter("remarks");
             param[17]=(String)request.getSession().getAttribute("programId_oscarView");
+			param[18]=(request.getParameter("urgency")!=null)?request.getParameter("urgency"):"";
+			param[19]=request.getParameter("createdatetime");
 
   	    if (request.getParameter("demographic_no")!=null && !(request.getParameter("demographic_no").equals(""))) {
 			param[16]=request.getParameter("demographic_no");
 	    } else param[16]="0";
 
-  	    	param[18] = request.getParameter("urgency");
 
 		while (true) {
 			rowsAffected = oscarSuperManager.update("appointmentDao", "add_apptrecord", param);
@@ -203,7 +204,7 @@
 
 			// repeat doing
 			while (true) {
-				List<Appointment> appts = appointmentDao.find(dayFormatter.parse((String)paramE[0]), (String)paramE[1], (java.sql.Time)paramE[2],(java.sql.Time) paramE[3],
+				List<Appointment> appts = appointmentDao.find(dayFormatter.parse((String)param[11]), (String)paramE[1], (java.sql.Time)paramE[2],(java.sql.Time) paramE[3],
 						(String)paramE[4], (String)paramE[5], (String)paramE[6], (java.sql.Timestamp)paramE[7], (String)paramE[8], (Integer)paramE[9]);
 				for(Appointment appt:appts) {
 					appointmentArchiveDao.archiveAppointment(appt);

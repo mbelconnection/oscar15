@@ -75,8 +75,8 @@
   if(demographic == null) {
 	  //we have a problem!
   }
-  demographic.setLastName(request.getParameter("last_name"));
-  demographic.setFirstName(request.getParameter("first_name"));
+  demographic.setLastName(request.getParameter("last_name").trim());
+  demographic.setFirstName(request.getParameter("first_name").trim());
   demographic.setAddress(request.getParameter("address"));
   demographic.setCity(request.getParameter("city"));
   demographic.setProvince(request.getParameter("province"));
@@ -263,9 +263,10 @@
         }
     }
 
-    DemographicArchive da = new DemographicArchive();
-	da.setDemographicNo(Integer.parseInt(request.getParameter("demographic_no")));
-    demographicArchiveDao.persist(da);
+    demographicArchiveDao.archiveRecord(demographic);
+    //DemographicArchive da = new DemographicArchive();
+	//da.setDemographicNo(Integer.parseInt(request.getParameter("demographic_no")));
+    //demographicArchiveDao.persist(da);
 
     demographicDao.save(demographic);
     int rowsAffected=1;

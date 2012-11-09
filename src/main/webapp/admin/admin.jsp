@@ -67,6 +67,12 @@
 <link rel="stylesheet" type="text/css"
 	href="../share/css/OscarStandardLayout.css" />
 <script type="text/javascript" src="../share/javascript/Oscar.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.js"></script>
+   <script>
+     jQuery.noConflict();
+   </script>
+<oscar:customInterface section="admin"/>
+
 <script type="text/JavaScript">
 function onsub() {
 	if(document.searchprovider.keyword.value=="") {
@@ -513,8 +519,8 @@ div.logoutBox {
 			<% } %>
 			<li><a href="#"
 				onclick='popupPage(600,900,&quot;<html:rewrite page="/servlet/oscar.DocumentUploadServlet"/>&quot;);return false;'><bean:message
-				key="admin.admin.btnBillingReconcilliation" /></a></li>                       
-                        <!--  li><a href="#" onclick ='popupPage(600,900,&quot;<html:rewrite page="/billing/CA/ON/billingRA.jsp"/>&quot;);return false;'><bean:message key="admin.admin.btnBillingReconcilliation"/></a></li-->
+				key="admin.admin.btnBillingReconciliation" /></a></li>                       
+                        <!--  li><a href="#" onclick ='popupPage(600,900,&quot;<html:rewrite page="/billing/CA/ON/billingRA.jsp"/>&quot;);return false;'><bean:message key="admin.admin.btnBillingReconciliation"/></a></li-->
 			<!--  li><a href="#" onclick ='popupPage(600,1000,&quot;<html:rewrite page="/billing/CA/ON/billingOBECEA.jsp"/>&quot;);return false;'><bean:message key="admin.admin.btnEDTBillingReportGenerator"/></a></li-->
 			<li><a href="#"
 				onclick='popupPage(800,1000,&quot;<html:rewrite page="/billing/CA/ON/billStatus.jsp"/>&quot;);return false;'><bean:message key="admin.admin.invoiceRpts"/></a></li>
@@ -610,10 +616,13 @@ div.logoutBox {
 				onclick="popupPage(600,900,&quot;<html:rewrite page="/oscarReport/oscarReportRehabStudy.jsp"/>&quot;)"><bean:message key="admin.admin.rehabStudy"/></a></li>
 			<li><a href="#"
 				onclick="popupPage(600,900,&quot;<html:rewrite page="/oscarReport/patientlist.jsp"/>&quot;)"><bean:message key="admin.admin.exportPatientbyAppt"/></a></li>
-			<li><html:link page="/PMmodule/reports/activity_report_form.jsp"><bean:message key="admin.admin.activityRpt"/></html:link></li>
-			<li><html:link
-				page="/oscarReport/provider_service_report_form.jsp"><bean:message key="admin.admin.providerServiceRpt"/></html:link></li>
-			<li><html:link page="/PopulationReport.do"><bean:message key="admin.admin.popRpt"/></html:link></li>
+			<caisi:isModuleLoad moduleName="caisi">
+				<li><html:link page="/PMmodule/reports/activity_report_form.jsp"><bean:message key="admin.admin.activityRpt"/></html:link></li>
+			</caisi:isModuleLoad>	
+			<li><html:link page="/oscarReport/provider_service_report_form.jsp"><bean:message key="admin.admin.providerServiceRpt"/></html:link></li>
+			<caisi:isModuleLoad moduleName="caisi">
+				<li><html:link page="/PopulationReport.do"><bean:message key="admin.admin.popRpt"/></html:link></li>
+			</caisi:isModuleLoad>
 			<li><html:link page="/oscarReport/cds_4_report_form.jsp"><bean:message key="admin.admin.cdsRpt"/></html:link></li>
 			<li><html:link page="/oscarReport/mis_report_form.jsp"><bean:message key="admin.admin.misRpt"/></html:link></li>
 			<li><html:link page="/oscarReport/ocan_report_form.jsp"><bean:message key="admin.admin.ocanRpt"/></html:link></li>
@@ -788,11 +797,11 @@ div.logoutBox {
 			<li><a href="#" onclick='popupPage(600,600,&quot;<html:rewrite page="/FacilityManager.do"/>&quot;);return false;'><bean:message key="admin.admin.manageFacilities" /></a></li>
 			<li><a href="#" onClick="popupPage(900, 500, '../setProviderStaleDate.do?method=viewIntegratorProperties');return false;"><bean:message key="provider.btnSetIntegratorPreferences" /></a></li>
 			<li><a href="<%=request.getContextPath()%>/lab/CA/ALL/sendOruR01.jsp"><bean:message key="admin.admin.sendOruR01" /></a></li>
-			<li><a href="#" onclick='popupPage(400, 400,&quot;<html:rewrite page="/hospitalReportManager/hospitalReportManager.jsp"/>&quot;);return false;'>Hospital Report Manager (HRM) Status</a></li>
-			<li><a href="#" onclick='popupPage(400, 400,&quot;<html:rewrite page="/hospitalReportManager/hrmPreferences.jsp"/>&quot;);return false;'>Hospital Report Manager (HRM) Preferences</a></li>
-			<li><a href="#" onclick='popupPage(400, 400,&quot;<html:rewrite page="/hospitalReportManager/hrmShowMapping.jsp"/>&quot;);return false;'>Hospital Report Manager (HRM) Class Mappings</a></li>
-			<li><a href="#" onclick='popupPage(400, 400,&quot;<html:rewrite page="/hospitalReportManager/hrmCategories.jsp"/>&quot;);return false;'>Hospital Report Manager (HRM) Categories</a></li>
-
+			<li><a href="#" onclick='popupPage(800, 1000,&quot;<html:rewrite page="/hospitalReportManager/hospitalReportManager.jsp"/>&quot;);return false;'>Hospital Report Manager (HRM) Status</a></li>
+			<li><a href="#" onclick='popupPage(800, 1000,&quot;<html:rewrite page="/hospitalReportManager/hrmPreferences.jsp"/>&quot;);return false;'>Hospital Report Manager (HRM) Preferences</a></li>
+			<li><a href="#" onclick='popupPage(800, 1000,&quot;<html:rewrite page="/hospitalReportManager/hrmShowMapping.jsp"/>&quot;);return false;'>Hospital Report Manager (HRM) Class Mappings</a></li>
+			<li><a href="#" onclick='popupPage(800, 1000,&quot;<html:rewrite page="/hospitalReportManager/hrmCategories.jsp"/>&quot;);return false;'>Hospital Report Manager (HRM) Categories</a></li>
+			
 			<li><a href="#" onclick='popupPage(800, 700,&quot;<html:rewrite page="/oscarPrevention/PreventionManager.jsp"/>&quot;);return false;' title="Customize prevention notifications."><bean:message key="admin.admin.preventionNotification.title" /></a></li>
 
 			<%
@@ -831,6 +840,16 @@ div.logoutBox {
             <li><a href="#" onclick='popupPage(600, 800,&quot;<html:rewrite page="/admin/faxStatus.do" />&quot;);return false;'><bean:message key="admin.faxStatus.faxStatus" /></a></li>
             <% } %>
 			<li><a href="#" onclick='popupPage(800, 800,&quot;<html:rewrite page="/admin/oscarStatus.do" />&quot;);return false;'><bean:message key="admin.oscarStatus.oscarStatus" /></a></li>
+	    
+	    <security:oscarSec roleName="<%=roleName$%>"
+                  objectName="_admin,_admin.traceability" rights="r">
+                  <li><a href="#"
+                           onclick='popupPage(500,800,&quot;<html:rewrite page="/admin/traceReport.jsp"/>?keyword=admin&quot;);return false'>
+                    <bean:message key="admin.admin.traceabilityReport"/></a>
+                  </li>
+            </security:oscarSec>
+
+
 
             <oscar:oscarPropertiesCheck property="LOGINTEST" value="yes">
             <li><a href="#"

@@ -115,7 +115,9 @@ public class ContactAction extends DispatchAction {
 
 				c.setDemographicNo(Integer.parseInt(request.getParameter("demographic_no")));
     			c.setRole(request.getParameter("contact_"+x+".role"));
-    			c.setType(Integer.parseInt(request.getParameter("contact_"+x+".type")));
+    			if (request.getParameter("contact_"+x+".type") != null) {
+    				c.setType(Integer.parseInt(request.getParameter("contact_"+x+".type")));
+    			}
     			c.setNote(request.getParameter("contact_"+x+".note"));
     			c.setContactId(otherId);
     			c.setCategory(DemographicContact.CATEGORY_PERSONAL);
@@ -157,6 +159,7 @@ public class ContactAction extends DispatchAction {
 		        			c.setCategory(DemographicContact.CATEGORY_PERSONAL);
 		        			c.setSdm("");
 		        			c.setEc("");
+		        			c.setCreator(LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo());
 		        			if(c.getId() == null)
 		        				demographicContactDao.persist(c);
 		        			else
@@ -192,10 +195,12 @@ public class ContactAction extends DispatchAction {
     			if(id.length()>0 && Integer.parseInt(id)>0) {
     				c = demographicContactDao.find(Integer.parseInt(id));
     			}
-
 				c.setDemographicNo(Integer.parseInt(request.getParameter("demographic_no")));
     			c.setRole(request.getParameter("procontact_"+x+".role"));
-    			c.setType(Integer.parseInt(request.getParameter("procontact_"+x+".type")));
+    			
+    			if (request.getParameter("procontact_"+x+".type") != null) {
+    				c.setType(Integer.parseInt(request.getParameter("procontact_"+x+".type")));
+    			}
     			c.setContactId(otherId);
     			c.setCategory(DemographicContact.CATEGORY_PROFESSIONAL);
     			c.setFacilityId(LoggedInInfo.loggedInInfo.get().currentFacility.getId());
@@ -218,7 +223,7 @@ public class ContactAction extends DispatchAction {
     			demographicContactDao.merge(dc);
     		}
     	}
-		return manage(mapping,form,request,response);
+		return mapping.findForward("windowClose");
 	}
 
 	private String getReverseRole(String roleName, int targetDemographicNo) {
@@ -294,6 +299,7 @@ public class ContactAction extends DispatchAction {
 		if(contact.getId() != null && contact.getId()>0) {
 			contactDao.merge(contact);
 		} else {
+			contact.setId(null);
 			contactDao.persist(contact);
 		}
 	   return mapping.findForward("cForm");

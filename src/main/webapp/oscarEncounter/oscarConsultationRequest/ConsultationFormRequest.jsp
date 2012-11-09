@@ -170,6 +170,8 @@ displayServiceUtil.estSpecialist();
 	var demographicNo = '<%=demo%>';
 	var demoNo = '<%=demo%>';
 	var appointmentNo = '<%=appNo%>';
+	
+	
 </script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/global.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.js"></script>
@@ -317,9 +319,7 @@ function disableDateFields(){
 
 function setDisabledDateFields(form, disabled)
 {
-	form.appointmentYear.disabled = disabled;
-	form.appointmentMonth.disabled = disabled;
-	form.appointmentDay.disabled = disabled;
+	form.appointmentDate.disabled = disabled;
 	form.appointmentHour.disabled = disabled;
 	form.appointmentMinute.disabled = disabled;
 	form.appointmentPm.disabled = disabled;
@@ -881,7 +881,7 @@ for (Provider p : prList) {
 		%>
 	 providerData['<%=prov_no%>'] = new Object(); //{};
 
-	providerData['<%=prov_no%>'].address = "<%=(p.getClinicAddress() + "  " + p.getClinicCity() + "   " + p.getClinicProvince() + "  " + p.getClinicPostal()).trim() %>";
+	providerData['<%=prov_no%>'].address = "<%=p.getFullAddress() %>";
 	providerData['<%=prov_no%>'].phone = "<%=p.getClinicPhone().trim() %>";
 	providerData['<%=prov_no%>'].fax = "<%=p.getClinicFax().trim() %>";
 
@@ -1111,8 +1111,6 @@ function updateFaxButton() {
 			thisForm.setStatus("1");
 
 			thisForm.setSendTo(team);
-			//thisForm.setConcurrentProblems(demographic.EctInfo.getOngoingConcerns());
-			thisForm.setAppointmentYear(year);
         		if (bMultisites) {
 	        		thisForm.setSiteName(defaultSiteName);
         		}
@@ -1327,17 +1325,18 @@ function updateFaxButton() {
 						<tr>						
 							<td class="tite4"><bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.formRefDate" />:
 							</td>
-							<td align="right" class="tite1">
+                            <td align="right" class="tite3"><img alt="calendar" id="referalDate_cal" src="../../images/cal.gif"> 
 							<%
-								if (request.getAttribute("id") != null)
-										{
-							%> <html:text styleClass="righty" property="referalDate" /> <%
- 	}
- 			else
- 			{
- %> <html:text styleClass="righty" property="referalDate" value="<%=formattedDate%>" /> <%
- 	}
- %>
+							if (request.getAttribute("id") != null)	{
+							%> 
+							<html:text styleId="referalDate" property="referalDate" readonly="true" ondblclick="this.value='';"/>
+							 <%
+ 							} else {
+ 							%> 
+ 							<html:text styleId="referalDate" property="referalDate" readonly="true" ondblclick="this.value='';" value="<%=formattedDate%>"/>
+ 							<%
+ 							}
+	 						%>
 							</td>
 						</tr>
 						<tr>
@@ -1426,73 +1425,15 @@ function updateFaxButton() {
 							<td align="right" class="tite3"><html:checkbox property="patientWillBook" value="1" onclick="disableDateFields()">
 							</html:checkbox></td>
 						</tr>
-						<tr>
-							<td class="tite4">
-							<%
-								if (thisForm.iseReferral())
-								{
-									%>
-										<bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.btnAppointmentDate" /> :
-									<%
-								}
-								else
-								{
-									%>
-									<a href="javascript:popupOscarCal(300,380,'https://<%=request.getServerName()%>:<%=request.getServerPort()%><%=request.getContextPath()%>/oscarEncounter/oscarConsultationRequest/CalendarPopup.jsp?year=<%=year%>&month=<%=mon%>')">
-										<bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.btnAppointmentDate" /> :
-									</a>
-									<%
-								}
-							%>
-							</td>
-							<td align="right" class="tite3">
-							<table bgcolor="white">
-								<tr>
-									<th class="tite2"><bean:message key="global.year" /></th>
-									<th class="tite2"><bean:message key="global.month" /></th>
-									<th class="tite2"><bean:message key="global.day" /></th>
-								</tr>
-								<tr>
-									<td class="tite3"><html:text size="5" maxlength="4"	property="appointmentYear" /></td>
-									<td class="tite3">
-										<html:select property="appointmentMonth">
-										<%
-											for (int i = 1; i < 13; i = i + 1)
-											{
-												String month = Integer.toString(i);
-												if (i < 10)
-												{
-													month = "0" + month;
-												}
-												%>
-												<html:option value="<%=String.valueOf(i)%>"><%=month%></html:option>
-												<%
-											}
-										%>
-										</html:select>
-									</td>
 
-									<td class="tite3">
-										<html:select property="appointmentDay">
-										<%
-											for (int i = 1; i < 32; i = i + 1)
-											{
-												String dayOfWeek = Integer.toString(i);
-												if (i < 10)
-												{
-													dayOfWeek = "0" + dayOfWeek;
-												}
-												%>
-                                                                                                <html:option value="<%=String.valueOf(i)%>"><%=dayOfWeek%></html:option>
-												<%
-											}
-										%>
-										</html:select>
-									</td>
-								</tr>
-							</table>
+						<tr>						
+							<td class="tite4"><bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.btnAppointmentDate" />:
+							</td>
+                            <td align="right" class="tite3"><img alt="calendar" id="appointmentDate_cal" src="../../images/cal.gif"> 
+ 							<html:text styleId="appointmentDate" property="appointmentDate" readonly="true" ondblclick="this.value='';" />
 							</td>
 						</tr>
+
 						<tr>
 							<td class="tite4"><bean:message	key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.formAppointmentTime" />:
 							</td>
@@ -1500,6 +1441,7 @@ function updateFaxButton() {
 							<table>
 								<tr>
 									<td><html:select property="appointmentHour">
+										<html:option value=""></html:option>
 										<%
 											for (int i = 1; i < 13; i = i + 1)
 														{
@@ -1511,6 +1453,7 @@ function updateFaxButton() {
 										%>
 									</html:select></td>
 									<td><html:select property="appointmentMinute">
+										<html:option value=""></html:option>
 										<%
 											for (int i = 0; i < 60; i = i + 1)
 														{
@@ -1520,7 +1463,7 @@ function updateFaxButton() {
 																minuteOfhour = "0" + minuteOfhour;
 															}
 										%>
-										<html:option value="<%=minuteOfhour%>"><%=minuteOfhour%></html:option>
+										<html:option value="<%=String.valueOf(i)%>"><%=minuteOfhour%></html:option>
 										<%
 											}
 										%>
@@ -2068,7 +2011,11 @@ if (defaultSiteId!=0) aburl2+="&site="+defaultSiteId;
 <script type="text/javascript" language="javascript">
 
 Calendar.setup( { inputField : "followUpDate", ifFormat : "%Y/%m/%d", showsTime :false, button : "followUpDate_cal", singleClick : true, step : 1 } );
+Calendar.setup( { inputField : "referalDate", ifFormat : "%Y/%m/%d", showsTime :false, button : "referalDate_cal", singleClick : true, step : 1 } );
+Calendar.setup( { inputField : "appointmentDate", ifFormat : "%Y/%m/%d", showsTime :false, button : "appointmentDate_cal", singleClick : true, step : 1 } );
 </script>
+</script>
+
 </html:html>
 
 <%!protected String listNotes(CaseManagementManager cmgmtMgr, String code, String providerNo, String demoNo)
@@ -2088,7 +2035,7 @@ Calendar.setup( { inputField : "followUpDate", ifFormat : "%Y/%m/%d", showsTime 
 		StringBuffer noteStr = new StringBuffer();
 		for (CaseManagementNote n : notes)
 		{
-			if (!n.isLocked()) noteStr.append(n.getNote() + "\n");
+			if (!n.isLocked() && !n.isArchived()) noteStr.append(n.getNote() + "\n");
 		}
 
 		return noteStr.toString();

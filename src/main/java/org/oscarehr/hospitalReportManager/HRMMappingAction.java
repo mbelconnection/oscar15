@@ -6,7 +6,6 @@
  * License details are available via "indivica.ca/gplv2"
  * and "gnu.org/licenses/gpl-2.0.html".
  */
-
 package org.oscarehr.hospitalReportManager;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,16 +33,30 @@ public class HRMMappingAction extends DispatchAction {
 				hrmSubClassDao.remove(Integer.parseInt(request.getParameter("deleteMappingId")));
 				return mapping.findForward("success");
 			}
+			String id = request.getParameter("id");
 			
 			String className = request.getParameter("class"); 
 			String subClass = request.getParameter("subclass");
 			String mnemonic = request.getParameter("mnemonic");
 			String description = request.getParameter("description");
+			String sendingFacilityIdSelect = request.getParameter("sendingFacilityIdSelect");
 			String sendingFacilityId = request.getParameter("sendingFacilityId");
 			String categoryId = request.getParameter("category");
 
+			if(sendingFacilityIdSelect.equals("0")) {
+				MiscUtils.getLogger().warn("Not a valid sending facility id chosen by user");
+				request.setAttribute("success", false);
+			}else if(!sendingFacilityIdSelect.equals("-1")) {
+				sendingFacilityId = sendingFacilityIdSelect;
+			}
 
-			HRMSubClass hrmSubClass = new HRMSubClass();
+			HRMSubClass hrmSubClass =null;
+			if(id == null) {
+				 hrmSubClass = new HRMSubClass();
+			} else {
+				hrmSubClass = hrmSubClassDao.find(Integer.parseInt(id));
+			}
+			
 			hrmSubClass.setClassName(className);
 			hrmSubClass.setSubClassName(subClass);
 			hrmSubClass.setSendingFacilityId(sendingFacilityId);

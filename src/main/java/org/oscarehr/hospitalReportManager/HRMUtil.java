@@ -1,27 +1,11 @@
 /**
- * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved.
- * This software is published under the GPL GNU General Public License.
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version. 
+ * Copyright (c) 2008-2012 Indivica Inc.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- * This software was written for the
- * Department of Family Medicine
- * McMaster University
- * Hamilton
- * Ontario, Canada
+ * This software is made available under the terms of the
+ * GNU General Public License, Version 2, 1991 (GPLv2).
+ * License details are available via "indivica.ca/gplv2"
+ * and "gnu.org/licenses/gpl-2.0.html".
  */
-
 
 package org.oscarehr.hospitalReportManager;
 
@@ -33,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-
 import org.oscarehr.hospitalReportManager.dao.HRMDocumentDao;
 import org.oscarehr.hospitalReportManager.dao.HRMDocumentSubClassDao;
 import org.oscarehr.hospitalReportManager.dao.HRMDocumentToDemographicDao;
@@ -54,6 +37,7 @@ public class HRMUtil {
 	
 	public static final String DATE = "time_received";
 	public static final String TYPE = " report_type";
+	private final String  MedicalRecordsReport = "Medical Records Report";
 	
 	private static HRMDocumentDao hrmDocumentDao = (HRMDocumentDao) SpringUtils.getBean("HRMDocumentDao");
 	private static HRMDocumentToDemographicDao hrmDocumentToDemographicDao = (HRMDocumentToDemographicDao) SpringUtils.getBean("HRMDocumentToDemographicDao");
@@ -220,4 +204,47 @@ public class HRMUtil {
 			return hrmdocslist;
 			
 		}
+	
+	/**
+	 * Check the HRMSubClass for the corresponding descriptions, change the description
+	 * @param subClassList
+	 * @param reportType
+	 * @param sendingFacilityId
+	 */
+	public void findCorrespondingHRMSubClassDescriptions(List<HRMDocumentSubClass> subClassList, String reportType, String sendingFacilityId, String reportSubClass ) {
+		
+		if (reportType == null || reportType.isEmpty()) {
+			return;
+		}
+		
+		if (sendingFacilityId == null || sendingFacilityId.isEmpty()) {
+			return;
+		}
+		
+	    for(HRMDocumentSubClass hrmDocumentSubClass: subClassList) {
+	    	
+	    	HRMSubClass hrmSubClass = hrmSubClassDao.findByClassNameMnemonicFacility(reportType, sendingFacilityId, hrmDocumentSubClass.getSubClassMnemonic());
+	    	
+	    	if (hrmSubClass != null) {
+	    		hrmDocumentSubClass.setSubClassDescription(hrmSubClass.getSubClassDescription());
+	    	}	    	
+	    }		
+	    
+	    if (subClassList != null && subClassList.size() == 0 && reportType.equalsIgnoreCase(MedicalRecordsReport) && reportSubClass != null && !reportSubClass.isEmpty()) {
+	    	String[] subClassFromReport = reportSubClass.split("\\^");
+	    	String subClass = "";
+	    	if (subClassFromReport.length == 2) {
+	    		subClass =  subClassFromReport[1];	    		
+	    	}
+	    	
+	    	HRMSubClass hrmSubClass = hrmSubClassDao.findByClassNameSubClassNameFacility(reportType,  sendingFacilityId, subClass);
+	    	if (hrmSubClass != null) {
+	    		HRMDocumentSubClass hrmDocumentSubClass = new HRMDocumentSubClass();
+	    		hrmDocumentSubClass.setSubClassDescription(hrmSubClass.getSubClassDescription());
+	    		subClassList.add(hrmDocumentSubClass);
+	    	}
+	    }
+		
+	}
+
 }

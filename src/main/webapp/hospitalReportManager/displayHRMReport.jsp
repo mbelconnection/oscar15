@@ -1,31 +1,17 @@
 <%--
 
-    Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved.
-    This software is published under the GPL GNU General Public License.
-    This program is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License
-    as published by the Free Software Foundation; either version 2
-    of the License, or (at your option) any later version.
+    Copyright (c) 2008-2012 Indivica Inc.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-
-    This software was written for the
-    Department of Family Medicine
-    McMaster University
-    Hamilton
-    Ontario, Canada
+    This software is made available under the terms of the
+    GNU General Public License, Version 2, 1991 (GPLv2).
+    License details are available via "indivica.ca/gplv2"
+    and "gnu.org/licenses/gpl-2.0.html".
 
 --%>
-
 <%@page import="org.apache.commons.lang.StringUtils,oscar.log.*"%>
 <%@page import="org.apache.commons.lang.StringEscapeUtils"%>
+<%@page import="java.util.Map"%>
+<%@page import="java.text.SimpleDateFormat" %>
 <%@ page language="java" contentType="text/html" %>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
@@ -112,7 +98,7 @@ if(demographicLink != null){
 	background-color: red;
 }
 
-#metadataBox, #commentBox {
+#commentBox {
 	clear: both;
 	border: 1px solid black;
 	margin: 20px;
@@ -123,6 +109,7 @@ if(demographicLink != null){
 	margin: 10px;
 }
 
+
 #metadataBox th {
 	text-align: right;
 }
@@ -131,7 +118,27 @@ if(demographicLink != null){
 	#infoBox {
 		display: none;
 	}
+	.boxButton {
+	  display: none;
+    }
 }
+
+#confidentiality-footer{display:none;}
+
+@media print {
+    #confidentiality-footer{
+    position: fixed;
+    bottom: 0;
+    display: block;
+    }
+}
+
+@page {
+    size: letter portrait;
+    margin: 1.2in 1.2in 1.2in 1.2in;
+    @top-left { content: element(confidentiality-footer); }
+}
+
 </style>
 
 <script type="text/javascript">
@@ -287,11 +294,45 @@ function revokeSignOffHrm(reportId) {
 		<% 	seenBefore.add(relationshipDocument.getId().intValue());
 			}
 		} %>
-		 <input type="button" onClick="makeIndependent('<%=hrmReportId %>')" value="Make Independent" />
+		 <div class="boxButton">
+		   <input type="button" onClick="makeIndependent('<%=hrmReportId %>')" value="Make Independent" />
+		 </div>  
 	<% } %>
 	</div>
 
+<%
+	if(hrmReport.isBinary()) {
+		String reportFileData = hrmReport.getFileData();
+		String noMessageIdFileData = reportFileData.replaceAll("<MessageUniqueID>.*?</MessageUniqueID>", "<MessageUniqueID></MessageUniqueID>");
+		String noMessageIdHash = org.apache.commons.codec.digest.DigestUtils.md5Hex(noMessageIdFileData);
+		
+		if(hrmReport.getFileExtension() != null && (".gif".equals(hrmReport.getFileExtension()) || ".jpg".equals(hrmReport.getFileExtension()) || ".png".equals(hrmReport.getFileExtension()))) {
+			%><img src="<%=request.getContextPath() %>/hospitalReportManager/HRMDownloadFile.do?hash=<%=noMessageIdHash%>"/><br/><%	
+		}
+		%><a href="<%=request.getContextPath() %>/hospitalReportManager/HRMDownloadFile.do?hash=<%=noMessageIdHash%>"><%=(hrmReport.getLegalLastName() + "-" + hrmReport.getLegalFirstName() + "-" +  hrmReport.getFirstReportClass() + hrmReport.getFileExtension()).replaceAll("\\s", "_") %></a>&nbsp;&nbsp;
+		<br/>
+		<%
+		if(hrmReport.getFileExtension() != null && (".gif".equals(hrmReport.getFileExtension()) || ".jpg".equals(hrmReport.getFileExtension()) || ".png".equals(hrmReport.getFileExtension()))) {
+			%>
+		<span>(Please use the link above to download the attachement.)</span>
+		<%
+		}
+		
+		else {
+		%>
+		<span style="color:red">(This report contains an attachment which cannot be viewed in your browser. Please use the link above to view/download the content contained within.)</span>
+		<%
+		}
+		
+		
+	} else {
+
+%>
 	<%=hrmReport.getFirstReportTextContent().replaceAll("\n", "<br />") %>
+	
+	<% } %>
+	
+	<div id="confidentiality-footer">
 	<%
 	String confidentialityStatement = (String) request.getAttribute("confidentialityStatement");
 	if (confidentialityStatement != null && confidentialityStatement.trim().length() > 0) {
@@ -299,6 +340,8 @@ function revokeSignOffHrm(reportId) {
 	<hr />
 	<em><strong>Provider Confidentiality Statement</strong><br /><%=confidentialityStatement %></em>
 	<% } %>
+   </div>
+	
 </div>
 
 <div id="infoBox">
@@ -339,7 +382,7 @@ function revokeSignOffHrm(reportId) {
 				<div id="provstatus<%=hrmReportId %>"></div>
 				<% if (providerLinkList != null || providerLinkList.size() >= 1) {
 					for (HRMDocumentToProvider p : providerLinkList) { 
-						if (!p.getProviderNo().equalsIgnoreCase("-1")) { %>
+						if (p.getSignedOff() == 1 && p.getProviderNo() != null && p.getProviderNo().length()>0) { %>
 						<%=providerDao.getProviderName(p.getProviderNo())%> <%=p.getSignedOff() !=null && p.getSignedOff()  == 1 ? "<abbr title='" + p.getSignedOffTimestamp() + "'>(Signed-Off)</abbr>" : "" %> <a href="#" onclick="removeProvFromHrm('<%=p.getId() %>', '<%=hrmReportId %>')">(remove)</a><br />
 				<%		}  
 					}
@@ -382,7 +425,7 @@ function revokeSignOffHrm(reportId) {
 				} %><br />
 				<%
 				if (subClassListFromDb != null && subClassListFromDb.size() > 0) { %>
-				<i>Stored in Database</i><br />
+				<i>Description</i><br />
 					<div id="subclassstatus<%=hrmReportId %>"></div>
 					<% for (HRMDocumentSubClass subClass : subClassListFromDb) { %>
 						<abbr title="Type: <%=subClass.getSubClass() %>; Date of Observation: <%=subClass.getSubClassDateTime().toString() %>">(<%=subClass.getSubClassMnemonic() %>) <%=subClass.getSubClassDescription() %></abbr>
@@ -392,17 +435,32 @@ function revokeSignOffHrm(reportId) {
 			</td>
 		</tr>
 		<% } else { %>
-		<tr>
-			<th>Subclass</th>
-			<td>
-				<%
-				String[] subClassFromReport = hrmReport.getFirstReportSubClass().split("\\^");
-				if (subClassFromReport.length == 2) {
+			<tr>
+				<th>Subclass</th>
+				<td>
+					<%
+					String[] subClassFromReport = hrmReport.getFirstReportSubClass().split("\\^");
+					if (subClassFromReport.length == 2) {
+					%>
+					<abbr title="Subclass: <%=subClassFromReport[0] %>"><%=subClassFromReport[1] %></abbr>
+					<% } %>
+				</td>
+			</tr>
+		
+			<% if (hrmReport.getFirstReportClass().equalsIgnoreCase("Medical Records Report")) {
+				List<HRMDocumentSubClass> subClassListFromDb = (List<HRMDocumentSubClass>) request.getAttribute("subClassList");
+				if (subClassListFromDb != null && subClassListFromDb.size() > 0) {			
 				%>
-				<abbr title="Subclass: <%=subClassFromReport[0] %>"><%=subClassFromReport[1] %></abbr>
-				<% } %>
-			</td>
-		</tr>
+				<tr>
+				<th>Description</th>
+				    <td>
+						<% for (HRMDocumentSubClass subClass : subClassListFromDb) { %>
+						<abbr title="description"> <%=subClass.getSubClassDescription() %></abbr>						
+					    <% } %>
+					</td>
+				</tr>
+			<% }
+			  } %>
 		<% } %>
 		<tr>
 			<th>Categorization</th>
@@ -440,8 +498,10 @@ function revokeSignOffHrm(reportId) {
 <div id="commentBox">
 Add a comment to this report:<br />
 <textarea rows="10" cols="50" id="commentField_<%=hrmReportId %>_hrm"></textarea><br />
-<input type="button" onClick="addComment('<%=hrmReportId %>')" value="Add Comment" /><span id="commentstatus<%=hrmReportId %>"></span><br /><br />
 
+ <div class="boxButton">
+   <input type="button" onClick="addComment('<%=hrmReportId %>')" value="Add Comment" /><span id="commentstatus<%=hrmReportId %>"></span><br /><br />
+ </div>
 <%
 List<HRMDocumentComment> documentComments = (List<HRMDocumentComment>) request.getAttribute("hrmDocumentComments");
 
@@ -457,7 +517,7 @@ if (documentComments != null) {
 </div>
 
 <div id="metadataBox">
-	<table>
+	<table style="border: 1px solid black;margin: 20px;">
 		<tr>
 			<th>Message Unique ID</th>
 			<td><%=hrmReport.getMessageUniqueId() %></td>
@@ -572,21 +632,43 @@ YAHOO.example.BasicRemote = function() {
 String duplicateLabIdsString=StringUtils.trimToNull(request.getParameter("duplicateLabIds"));
 if (duplicateLabIdsString!=null)
 {
+	Map<Integer,Date> dupReportDates = (Map<Integer,Date>)request.getAttribute("dupReportDates");
+	Map<Integer,Date> dupTimeReceived = (Map<Integer,Date>)request.getAttribute("dupTimeReceived");
+	SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm");
 	%>
 		<hr />
-		Duplicate Labs found : <br />
+		Report History:<br />
+		
+		<table border="1">
+			<tr>
+				<th>ID</th>
+				<th>Report Date</th>
+				<th>Date Received</th>
+				<th></th>
+			</tr>
 	<%
+	//need datetime of report.
 	String[] duplicateLabIdsStringSplit=duplicateLabIdsString.split(",");
 	for (String tempId : duplicateLabIdsStringSplit)
 	{
 		%>
-			<input type="button" value="View labId=<%=tempId%>" onclick="window.open('?id=<%=tempId%>&segmentId=<%=tempId%>&providerNo=<%=request.getParameter("providerNo")%>&searchProviderNo=<%=request.getParameter("searchProviderNo")%>&status=<%=request.getParameter("status")%>&demoName=<%=StringEscapeUtils.escapeHtml(request.getParameter("demoName"))%>', null)" /> 
-			<br />
+			<tr>
+				<td><%=tempId %></td>
+				<td><%=formatter.format(dupReportDates.get(Integer.parseInt(tempId))) %></td>
+				<td><%=formatter.format(dupTimeReceived.get(Integer.parseInt(tempId))) %></td>
+			    <td><input type="button" value="Open Report" onclick="window.open('?id=<%=tempId%>&segmentId=<%=tempId%>&providerNo=<%=request.getParameter("providerNo")%>&searchProviderNo=<%=request.getParameter("searchProviderNo")%>&status=<%=request.getParameter("status")%>&demoName=<%=StringEscapeUtils.escapeHtml(request.getParameter("demoName"))%>', null)" /> </td> 
+			</tr>
+			
 		<%
 	}
+	
+	%></table><%
 }
 %>
 
+<br/>
+
+Duplicates of this report have been received <%=request.getAttribute("hrmDuplicateNum")!=null?request.getAttribute("hrmDuplicateNum"):"0"%> time(s).
 
 </body>
 </html>

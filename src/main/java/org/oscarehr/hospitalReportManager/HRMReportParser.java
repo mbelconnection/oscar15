@@ -1,27 +1,11 @@
 /**
- * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved.
- * This software is published under the GPL GNU General Public License.
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version. 
+ * Copyright (c) 2008-2012 Indivica Inc.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- * This software was written for the
- * Department of Family Medicine
- * McMaster University
- * Hamilton
- * Ontario, Canada
+ * This software is made available under the terms of the
+ * GNU General Public License, Version 2, 1991 (GPLv2).
+ * License details are available via "indivica.ca/gplv2"
+ * and "gnu.org/licenses/gpl-2.0.html".
  */
-
 
 package org.oscarehr.hospitalReportManager;
 
@@ -66,15 +50,18 @@ import org.xml.sax.SAXException;
 public class HRMReportParser {
 
 	private static Logger logger = MiscUtils.getLogger();
-	private static OmdCds root = null;
-
+	
 	private HRMReportParser() {}
 
 
 	public static HRMReport parseReport(String hrmReportFileLocation) {
-
+		OmdCds root = null;
+		
+		logger.info("Parsing the Report in the location:"+hrmReportFileLocation);
+		
 		String fileData = null;
 		if (hrmReportFileLocation != null) {
+			
 			try {
 				//a lot of the parsers need to refer to a file and even when they provide functions like parse(String text)
 				//it will not parse the same way because it will treat the text as a URL
@@ -96,6 +83,8 @@ public class HRMReportParser {
 
 				JAXBContext jc = JAXBContext.newInstance("org.oscarehr.hospitalReportManager.xsd");
 				Unmarshaller u = jc.createUnmarshaller();
+				u.setSchema(schema);
+				
 				root = (OmdCds) u.unmarshal(tmpXMLholder);
 
 				tmpXMLholder = null;
@@ -107,6 +96,12 @@ public class HRMReportParser {
 			} catch (JAXBException e) {
 				// TODO Auto-generated catch block
 				logger.error("error",e);
+				if(e.getLinkedException() != null) {
+					SFTPConnector.notifyHrmError(e.getLinkedException().getMessage());
+				} else {
+					SFTPConnector.notifyHrmError(e.getMessage());
+				}
+				
 			}
 
                         if (root!=null && hrmReportFileLocation!=null && fileData!=null)
@@ -117,6 +112,9 @@ public class HRMReportParser {
 	}
 
 	public static void addReportToInbox(HRMReport report) {
+		
+		logger.info("Adding Report to Inbox, for file:"+report.getFileLocation());
+		
 		HRMDocument document = new HRMDocument();
 
 		document.setReportFile(report.getFileLocation());
@@ -150,6 +148,7 @@ public class HRMReportParser {
 			List<HRMDocument> sameReportDifferentRecipientReportList = hrmDocumentDao.findByNoTransactionInfoHash(noTransactionInfoHash);
 
 			if (sameReportDifferentRecipientReportList != null && sameReportDifferentRecipientReportList.size() > 0) {
+				logger.info("Same Report Different Recipient, for file:"+report.getFileLocation());
 				HRMReportParser.routeReportToProvider(sameReportDifferentRecipientReportList.get(0), report);
 			} else {
 				// New report
@@ -162,8 +161,11 @@ public class HRMReportParser {
 				// Attempt a route to the provider listed in the report -- if they don't exist, note that in the record
 				Boolean routeSuccess = HRMReportParser.routeReportToProvider(report, document.getId());
 				if (!routeSuccess) {
+					
+					logger.info("Adding the provider name to the list of unidentified providers, for file:"+report.getFileLocation());
+					
 					// Add the provider name to the list of unidentified providers for this report
-					document.setUnmatchedProviders((document.getUnmatchedProviders() != null ? document.getUnmatchedProviders() : "") + "|" + report.getDeliverToUserIdLastName() + ", " + report.getDeliverToUserIdFirstName() + " (" + report.getDeliverToUserId() + ")");
+					document.setUnmatchedProviders((document.getUnmatchedProviders() != null ? document.getUnmatchedProviders() : "") + "|" + ((report.getDeliverToUserIdLastName()!=null)?report.getDeliverToUserIdLastName() + ", " + report.getDeliverToUserIdFirstName():report.getDeliverToUserId()) + " (" + report.getDeliverToUserId() + ")");
 					hrmDocumentDao.merge(document);
 					// Route this report to the "system" user so that a search for "all" in the inbox will come up with them
 					HRMReportParser.routeReportToProvider(document.getId().toString(), "-1");
@@ -173,6 +175,9 @@ public class HRMReportParser {
 			}
 		} else if (exactMatchList != null && exactMatchList.size() > 0) {
 			// We've seen this one before.  Increment the counter on how many times we've seen it before
+			
+			logger.info("We've seen this report before. Increment the counter on how many times we've seen it before, for file:"+report.getFileLocation());
+			
 			HRMDocument existingDocument = hrmDocumentDao.findById(exactMatchList.get(0)).get(0);
 			existingDocument.setNumDuplicatesReceived((existingDocument.getNumDuplicatesReceived() != null ? existingDocument.getNumDuplicatesReceived() : 0) + 1);
 
@@ -181,6 +186,9 @@ public class HRMReportParser {
 	}
 
 	private static void routeReportToDemographic(HRMReport report, HRMDocument mergedDocument) {
+		
+		logger.info("Routing Report To Demographic, for file:"+report.getFileLocation());
+		
 		// Search the demographics on the system for a likely match and route it to them automatically
 		DemographicDao demographicDao = (DemographicDao) SpringUtils.getBean("demographicDao");
 
@@ -204,7 +212,17 @@ public class HRMReportParser {
 	}
 
 
+	private static boolean hasSameStatus(HRMReport report, HRMReport loadedReport) {
+		if(report.getResultStatus() != null) {
+			return report.getResultStatus().equalsIgnoreCase(loadedReport.getResultStatus());
+		}
+		 
+		return true;
+	}
 	private static void doSimilarReportCheck(HRMReport report, HRMDocument mergedDocument) {
+		
+		logger.info("Identifying if this is a report that we received before, but was sent to the wrong demographic, for file:"+report.getFileLocation());
+		
 		HRMDocumentDao hrmDocumentDao = (HRMDocumentDao) SpringUtils.getBean("HRMDocumentDao");
 
 		// Check #1: Identify if this is a report that we received before, but was sent to the wrong demographic
@@ -224,7 +242,7 @@ public class HRMReportParser {
 
 		for (HRMReport loadedReport : thisDemoHrmReportList) {
 			boolean hasSameReportContent = report.getFirstReportTextContent().equalsIgnoreCase(loadedReport.getFirstReportTextContent());
-			boolean hasSameStatus = report.getResultStatus().equalsIgnoreCase(loadedReport.getResultStatus());
+			boolean hasSameStatus = hasSameStatus(report,loadedReport);
 			boolean hasSameClass = report.getFirstReportClass().equalsIgnoreCase(loadedReport.getFirstReportClass());
 			boolean hasSameDate = false;
 
@@ -295,6 +313,9 @@ public class HRMReportParser {
 
 
 	public static void routeReportToSubClass(HRMReport report, Integer reportId) {
+		
+		logger.info("Routing Report To SubClass, for file:"+report.getFileLocation());
+		
 		HRMDocumentSubClassDao hrmDocumentSubClassDao = (HRMDocumentSubClassDao) SpringUtils.getBean("HRMDocumentSubClassDao");
 
 		if (report.getFirstReportClass().equalsIgnoreCase("Diagnostic Imaging Report") || report.getFirstReportClass().equalsIgnoreCase("Cardio Respiratory Report")) {
@@ -309,7 +330,7 @@ public class HRMReportParser {
 				newSubClass.setSubClassMnemonic((String) subClass.get(1));
 				newSubClass.setSubClassDescription((String) subClass.get(2));
 				newSubClass.setSubClassDateTime((Date) subClass.get(3));
-
+				newSubClass.setSendingFacilityId(report.getSendingFacilityId());
 				if (firstSubClass) {
 					newSubClass.setActive(true);
 					firstSubClass = false;
@@ -333,6 +354,9 @@ public class HRMReportParser {
 	}
 
 	public static boolean routeReportToProvider(HRMReport report, Integer reportId) {
+		
+		logger.info("Routing Report to Provider, for file:"+report.getFileLocation());
+		
 		HRMDocumentToProviderDao hrmDocumentToProviderDao = (HRMDocumentToProviderDao) SpringUtils.getBean("HRMDocumentToProviderDao");
 		ProviderDao providerDao = (ProviderDao) SpringUtils.getBean("providerDao"); 
 
@@ -356,13 +380,18 @@ public class HRMReportParser {
 		//		}
 
 		for (Provider p : sendToProviderList) {
-			HRMDocumentToProvider providerRouting = new HRMDocumentToProvider();
-			providerRouting.setHrmDocumentId(reportId.toString());
-
-			providerRouting.setProviderNo(p.getProviderNo());
-			providerRouting.setSignedOff(0);
-
-			hrmDocumentToProviderDao.merge(providerRouting);
+						
+			List<HRMDocumentToProvider> existingHRMDocumentToProviders =  hrmDocumentToProviderDao.findByHrmDocumentIdAndProviderNoList(reportId.toString(), p.getProviderNo());
+			
+			if (existingHRMDocumentToProviders == null || existingHRMDocumentToProviders.size() == 0) {	
+				HRMDocumentToProvider providerRouting = new HRMDocumentToProvider();
+				providerRouting.setHrmDocumentId(reportId.toString());
+	
+				providerRouting.setProviderNo(p.getProviderNo());
+				providerRouting.setSignedOff(0);
+	
+				hrmDocumentToProviderDao.merge(providerRouting);
+			}	
 		}
 
 		return sendToProviderList.size() > 0;

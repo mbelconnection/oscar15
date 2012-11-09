@@ -20,6 +20,10 @@
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
 <%@ page import="oscar.login.DBHelp"%>
 
+<%@page import="org.oscarehr.common.model.ProviderBillCenter" %>
+<%@page import="org.oscarehr.common.dao.ProviderBillCenterDao" %>
+<%@page import="org.oscarehr.util.SpringUtils" %>
+
 <%
 	if(session.getAttribute("user") == null ) response.sendRedirect("../logout.jsp");
 	String curProvider_no = (String) session.getAttribute("user");
@@ -120,6 +124,15 @@ if (isSiteAccessPrivacy || isTeamAccessPrivacy) {
 			%>
 <script language="JavaScript" type="text/JavaScript">
 <!--
+function validateGroupReport() {
+	var e = document.getElementsByName('provider')[0];
+	var val = e.options[e.selectedIndex].value;
+	if(val == 'all') {
+		alert("This function will create the billing for the selected provider's group. No applicable to 'All Providers'");
+		return false;
+	}
+	return true;
+}
 
 var checkSubmitFlg = false;
 function checkSubmit() {
@@ -131,7 +144,7 @@ function checkSubmit() {
 	return true;   
 }
 function recreate(si) {
-    ret = confirm("Are you sure you want to do the action?");
+    ret = confirm("Are you sure you want to regenerate the file? \n\nWARNING: This should only be performed in very specific circumstances. If you are unsure, consult your OSCAR administrator before using this feature.");
 	if(ret) {
 		ss=document.forms[0].billcenter[document.forms[0].billcenter.selectedIndex].value;
 		var su = document.forms[0].useProviderMOH.checked;
@@ -175,9 +188,50 @@ obj.visibility=v; }
        adding a calendar a matter of 1 or 2 lines of code. -->
 <script type="text/javascript"
 	src="../../../share/calendar/calendar-setup.js"></script>	
+
+<script>
+var providerBillCenterMap = new Object();
+<%
+ProviderBillCenterDao providerBillCenterDao = (ProviderBillCenterDao)SpringUtils.getBean("providerBillCenterDao");
+
+ResultSet rsProviders = apptMainBean.queryResults("%", "search_provider_dt");
+while(rsProviders.next()) {
+	String providerNo = rsProviders.getString("provider_no");
+	ProviderBillCenter pbc = providerBillCenterDao.find(providerNo);
+	if(pbc != null) {
+	%>
+		providerBillCenterMap['<%=providerNo%>'] = '<%=pbc.getBillCenterCode()%>';
+	<%
+	}
+}
+%>
+
+function setBillingCenter( providerNo ) {
+	var bcDropdown = document.getElementById("billcenter");
+	
+	var textToFind = providerBillCenterMap[providerNo];
+	
+	if (bcDropdown) {
+		for (var i = 0; i < bcDropdown.options.length; i++) {
+	    if (bcDropdown.options[i].value === textToFind) {
+	        bcDropdown.selectedIndex = i;
+	        break;
+	    }
+	}
+	}
+}
+
+function checkGroup() {
+	if (document.forms[0].isGroup.value == "true") {
+		alert("You have selected a provider that is configured for group billing. To generate group billing files, 'All Providers' must be selected in the Select Provider dropdown.");
+		document.forms[0].isGroup.value = "false";
+	}
+}
+</script>
+
 </head>
 
-<body bgcolor="#FFFFFF" text="#000000" onLoad="setfocus()" topmargin="0"
+<body bgcolor="#FFFFFF" text="#000000" onLoad="checkGroup()" topmargin="0"
 	leftmargin="0" rightmargin="0">
 <div id="Layer1"
 	style="position: absolute; left: 90px; top: 35px; width: 0px; height: 12px; z-index: 1"></div>
@@ -220,7 +274,7 @@ obj.visibility=v; }
 		<td width="220"><a href="#"
 			onClick="showHideLayers('Layer2','','show')">Show Archive</a></td>
 		<td width="220">Select Provider</td>
-		<td width="254"><select name="provider">
+		<td width="254"><select name="provider" onchange = "setBillingCenter(this.value);">
 			<%
 			List providerStr; 
 			
@@ -254,7 +308,7 @@ obj.visibility=v; }
 			%>
 		</select></td>
 		<td width="200">Billing Center</td>
-		<td width="254"><select name="billcenter">
+		<td width="254"><select name="billcenter" id="billcenter">
 
 			<%for (Enumeration e = BillingDataHlp.propBillingCenter.propertyNames(); e.hasMoreElements();) {
 				String centerCode = (String) e.nextElement();
@@ -267,11 +321,15 @@ obj.visibility=v; }
 			%>
 
 		</select></td>
-		<td><input type="submit" name="Submit" value="Create Report">
+		<td>
+		<input type="submit" name="Submit" value="Create Report">
 		<input type="hidden" name="monthCode" value="<%=monthCode%>">
-		<input type="hidden" name="verCode" value="V03"> <input
-			type="hidden" name="curUser" value="<%=user_no%>"> <input
-			type="hidden" name="curDate" value="<%=nowDate%>"></td>
+		<input type="hidden" name="verCode" value="V03">
+		<input type="hidden" name="curUser" value="<%=user_no%>"> 
+		<input type="hidden" name="curDate" value="<%=nowDate%>">
+		<%-- <input type="hidden" name="isGroup" value="<%=isGroup%>"> --%>
+		<input type="hidden" name="isGroup" value="${param.isGroup}">
+		</td>
 	</tr>
 	<tr>
 		<td><font face="Arial, Helvetica, sans-serif" size="2"><b>

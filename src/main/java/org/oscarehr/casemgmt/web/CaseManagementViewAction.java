@@ -1837,6 +1837,12 @@ public class CaseManagementViewAction extends BaseCaseManagementViewAction {
 				if(sb.length()>0) {sb.append(" ");}
 				sb.append("Procedure Date:"+getNoteExt(noteId, "Procedure Date",noteExts));
 			}
+			if (prefsBean.getMedHxTreatment().equals("on")) {
+				if (sb.length() > 0) {
+					sb.append(" ");
+				}
+				sb.append("Treatment:" + getNoteExt(noteId, "Treatment", noteExts));
+			}
 		}
 		if(sb.length()>0) {
 			sb.insert(0, " (");
@@ -1902,6 +1908,7 @@ public class CaseManagementViewAction extends BaseCaseManagementViewAction {
 		Map<String,Object> filteredNotes = new LinkedHashMap<String,Object>();
 
 		//This gets rid of old revisions (better than left join on a computed subset of itself
+		Integer programNo;
 		for(Map<String,Object> note:notes) {
 			if(filteredNotes.get(note.get("uuid"))!=null)
 				continue;
@@ -1910,7 +1917,9 @@ public class CaseManagementViewAction extends BaseCaseManagementViewAction {
 			e.setId(note.get("id"));
 			e.setDate((Date)note.get("observation_date"));
 			e.setProviderNo((String)note.get("providerNo"));
-			e.setProgramId(Integer.parseInt((String)note.get("program_no")));
+			
+			programNo = note.get("program_no").equals("") ? null : Integer.parseInt((String)note.get("program_no"));
+			e.setProgramId(programNo);
 			e.setRole((String)note.get("reporter_caisi_role"));
 			e.setType("local_note");
 			entries.add(e);
@@ -2048,18 +2057,6 @@ public class CaseManagementViewAction extends BaseCaseManagementViewAction {
 		logger.info("FILTER NOTES ISSUES " + (System.currentTimeMillis() - intTime) + "ms");
 		intTime = System.currentTimeMillis();
 
-		//TODO: issue filter for remote notes
-		if(checkedIssues != null && checkedIssues.length>0) {
-			for(String cmnIssueId:checkedIssues) {
-				if(cmnIssueId.length()>0) {
-					Issue issue = this.caseManagementMgr.getIssueIByCmnIssueId(Integer.parseInt(cmnIssueId));
-					if(issue != null) {
-						issue.getCode();
-						issue.getType();
-					}
-				}
-			}
-		}
 
 		List<EChartNoteEntry> slice = new ArrayList<EChartNoteEntry>();
 

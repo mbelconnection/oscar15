@@ -1,25 +1,10 @@
 /**
- * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved.
- * This software is published under the GPL GNU General Public License.
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version. 
+ * Copyright (c) 2008-2012 Indivica Inc.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- * This software was written for the
- * Department of Family Medicine
- * McMaster University
- * Hamilton
- * Ontario, Canada
+ * This software is made available under the terms of the
+ * GNU General Public License, Version 2, 1991 (GPLv2).
+ * License details are available via "indivica.ca/gplv2"
+ * and "gnu.org/licenses/gpl-2.0.html".
  */
 
 
@@ -41,15 +26,18 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts.util.MessageResources;
+import org.oscarehr.common.dao.OscarLogDao;
 import org.oscarehr.hospitalReportManager.HRMReport;
 import org.oscarehr.hospitalReportManager.HRMReportParser;
+import org.oscarehr.hospitalReportManager.HRMUtil;
 import org.oscarehr.hospitalReportManager.dao.HRMDocumentDao;
+import org.oscarehr.hospitalReportManager.dao.HRMDocumentSubClassDao;
 import org.oscarehr.hospitalReportManager.dao.HRMDocumentToDemographicDao;
 import org.oscarehr.hospitalReportManager.model.HRMDocument;
+import org.oscarehr.hospitalReportManager.model.HRMDocumentSubClass;
 import org.oscarehr.hospitalReportManager.model.HRMDocumentToDemographic;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
-import org.oscarehr.common.dao.OscarLogDao;
 
 import oscar.oscarLab.ca.on.HRMResultsData;
 import oscar.util.DateUtils;
@@ -63,6 +51,7 @@ public class EctDisplayHRMAction extends EctDisplayAction {
 	private HRMDocumentToDemographicDao hrmDocumentToDemographicDao = (HRMDocumentToDemographicDao) SpringUtils.getBean("HRMDocumentToDemographicDao");
 	private HRMDocumentDao hrmDocumentDao = (HRMDocumentDao) SpringUtils.getBean("HRMDocumentDao");
 	private OscarLogDao oscarLogDao = (OscarLogDao) SpringUtils.getBean("oscarLogDao");
+	private HRMDocumentSubClassDao hrmDocumentSubClassDao = (HRMDocumentSubClassDao) SpringUtils.getBean("HRMDocumentSubClassDao");
 	
 	public boolean getInfo(EctSessionBean bean, HttpServletRequest request, NavBarDisplayDAO Dao, MessageResources messages) {
 
@@ -189,9 +178,26 @@ public class EctDisplayHRMAction extends EctDisplayAction {
 				String dispFilename = hrmDocument.getReportType();
 				String dispDocNo    = hrmDocument.getId().toString();
 
+				//This section has been added for the change request #985 HRM Reports alternative description for HRM documents 
+				HRMReport report = HRMReportParser.parseReport(hrmDocument.getReportFile());
+				
+				List<HRMDocumentSubClass> subClassList = hrmDocumentSubClassDao.getSubClassesByDocumentId(hrmDocument.getId());
+				
+				HRMUtil hRMUtil = new HRMUtil();
+				hRMUtil.findCorrespondingHRMSubClassDescriptions(subClassList, hrmDocument.getReportType(), report.getSendingFacilityId() , report.getFirstReportSubClass());
 				
 				title = StringUtils.maxLenString(dispFilename, MAX_LEN_TITLE, CROP_LEN_TITLE, ELLIPSES);
 
+				//try to find the alternative title if exists
+				for (HRMDocumentSubClass subClass : subClassList) { 
+				           subClass.getSubClassDescription() ;						
+			    } 
+				
+				if (subClassList != null && subClassList.size() > 0 && subClassList.get(0) != null && subClassList.get(0).getSubClassDescription() != null && !subClassList.get(0).getSubClassDescription().isEmpty()) {
+					title = subClassList.get(0).getSubClassDescription();
+				}
+				
+				
 				if (reportStatus != null && reportStatus.equalsIgnoreCase("C")) {
 					title = StringUtils.maxLenString("(Cancelled) " + dispFilename, MAX_LEN_TITLE, CROP_LEN_TITLE, ELLIPSES);
 				}

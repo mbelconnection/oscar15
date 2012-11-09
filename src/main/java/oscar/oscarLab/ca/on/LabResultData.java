@@ -301,18 +301,18 @@ public class LabResultData implements Comparable{
 			this.dateTimeObr = UtilDateUtilities.getDateFromString(this.getDateTime(), "yyyy-MM-dd HH:mm:ss");
 		}else if(CML.equals(this.labType)){
 			String date="";
-			String sql = "select print_date, print_time from labReportInformation, labPatientPhysicianInfo where labPatientPhysicianInfo.id = '"+this.segmentID+"' and labReportInformation.id = labPatientPhysicianInfo.labReportInfo_id ";
+			String sql = "select collection_date from labReportInformation, labPatientPhysicianInfo where labPatientPhysicianInfo.id = '"+this.segmentID+"' and labReportInformation.id = labPatientPhysicianInfo.labReportInfo_id ";
 			try{
 
 				ResultSet rs = DBHandler.GetSQL(sql);
 				if(rs.next()){
-					date=oscar.Misc.getString(rs, "print_date")+oscar.Misc.getString(rs, "print_time");
+					date=oscar.Misc.getString(rs, "collection_date");
 				}
 				rs.close();
 			}catch(Exception e){
 				logger.error("Error in getDateObj (CML message)", e);
 			}
-			this.dateTimeObr = UtilDateUtilities.getDateFromString(date, "yyyyMMddHH:mm");
+			this.dateTimeObr = UtilDateUtilities.getDateFromString(date, "yyyy-MM-dd");
 		}
 
 		return this.dateTimeObr;
@@ -325,11 +325,14 @@ public class LabResultData implements Comparable{
 	public int compareTo(Object object) {
 		//int ret = 1;
 		int ret = 0;
-		if (this.getDateObj() != null){
-			if (this.dateTimeObr.after( ((LabResultData) object).getDateObj() )){
-				ret = -1;
-			}else if(this.dateTimeObr.before( ((LabResultData) object).getDateObj() )){
-				ret = 1;
+		if (this.getDateObj() != null && object != null){
+			LabResultData otherLabResultData = (LabResultData) object;
+			if (otherLabResultData.getDateObj() != null) {
+				if (this.dateTimeObr.after( ((LabResultData) object).getDateObj() )){
+					ret = -1;
+				}else if(this.dateTimeObr.before( ((LabResultData) object).getDateObj() )){
+					ret = 1;
+				}
 			}else if(this.finalResultsCount > ((LabResultData) object).finalResultsCount){
 				ret = -1;
 			}else if(this.finalResultsCount < ((LabResultData) object).finalResultsCount){

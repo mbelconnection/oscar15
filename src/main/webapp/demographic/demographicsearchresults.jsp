@@ -23,6 +23,7 @@
     Ontario, Canada
 
 --%>
+<%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
@@ -62,11 +63,26 @@
         int curMonth = (now.get(Calendar.MONTH)+1);
         int curDay = now.get(Calendar.DAY_OF_MONTH);
         String curProvider_no = (String) session.getAttribute("user");
+        
+    	java.util.ResourceBundle oscarResources = ResourceBundle.getBundle("oscarResources", request.getLocale());
+        String noteReason = oscarResources.getString("oscarEncounter.noteReason.TelProgress");
+
+    	if (OscarProperties.getInstance().getProperty("disableTelProgressNoteTitleInEncouterNotes") != null 
+    			&& OscarProperties.getInstance().getProperty("disableTelProgressNoteTitleInEncouterNotes").equals("yes")) {
+    		noteReason = "";
+    	}
+        
 %>
 <html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <script type="text/javascript" src="<c:out value="${ctx}/share/javascript/Oscar.js"/>"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.js"></script>
+   <script>
+     jQuery.noConflict();
+   </script>
+<oscar:customInterface section="demoSearch"/>
+
 <title><bean:message
 	key="demographic.demographicsearchresults.title" /></title>
 <% if (isMobileOptimized) { %>
@@ -151,7 +167,7 @@ function popup(vheight,vwidth,varpage) {
 function popupEChart(vheight,vwidth,varpage) { //open a new popup window
   var page = "" + varpage;
   windowprops = "height="+vheight+",width="+vwidth+",location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=yes,screenX=50,screenY=50,top=20,left=20";
-  var popup=window.open(page, "Encounter", windowprops);
+  var popup=window.open(page, "encounter", windowprops);
   if (popup != null) {
     if (popup.opener == null) {
       popup.opener = self;
@@ -186,21 +202,21 @@ function popupEChart(vheight,vwidth,varpage) { //open a new popup window
 <table width="95%" border="0">
 	<tr>
 		<td align="left"><i><bean:message
-			key="demographic.demographicsearchresults.msgSearchKeys" /></i> : <%=request.getParameter("keyword")%></td>
+			key="demographic.demographicsearchresults.msgSearchKeys" /></i> : <%=java.net.URLDecoder.decode(request.getParameter("keyword"), "UTF-8")%></td>
 	</tr>
 </table>
     <ul bgcolor="#ffffff">
         <li class="tableHeadings deep">
-		<% if ( fromMessenger ) {%>
-		<! -- leave blank -->
-		<%} else {%>
+
                 <div class="demoIdSearch">
                     <a href="demographiccontrol.jsp?fromMessenger=<%=fromMessenger%>&keyword=<%=request.getParameter("keyword")%>&displaymode=<%=request.getParameter("displaymode")%>&search_mode=<%=request.getParameter("search_mode")%>&dboperation=<%=request.getParameter("dboperation")%>&orderby=demographic_no&limit1=0&limit2=<%=strLimit2%>"><bean:message
                         key="demographic.demographicsearchresults.btnDemoNo" /></a>
                 </div>
-		<div class="links">&nbsp;<!-- b><a href="demographiccontrol.jsp?fromMessenger=<%=fromMessenger%>&keyword=<%=request.getParameter("keyword")%>&displaymode=<%=request.getParameter("displaymode")%>&search_mode=<%=request.getParameter("search_mode")%>&dboperation=<%=request.getParameter("dboperation")%>&orderby=demographic_no&limit1=0&limit2=<%=strLimit2%>">Links<sup>*</sup></a></b --></div>
+		<% if(!fromMessenger)  { %>
+		<div class="links">
+			<a href="demographiccontrol.jsp?fromMessenger=<%=fromMessenger%>&keyword=<%=request.getParameter("keyword")%>&displaymode=<%=request.getParameter("displaymode")%>&search_mode=<%=request.getParameter("search_mode")%>&dboperation=<%=request.getParameter("dboperation")%>&orderby=demographic_no&limit1=0&limit2=<%=strLimit2%>">&nbsp Links<sup>*</sup></a></div>
+		<% } %>
 
-		<%}%>
 		<div class="name"><a
                     href="demographiccontrol.jsp?fromMessenger=<%=fromMessenger%>&keyword=<%=request.getParameter("keyword")%>&displaymode=<%=request.getParameter("displaymode")%>&search_mode=<%=request.getParameter("search_mode")%>&dboperation=<%=request.getParameter("dboperation")%>&orderby=last_name&limit1=0&limit2=<%=strLimit2%>"><bean:message
                     key="demographic.demographicsearchresults.btnDemoName"/><sup>1</sup></a>
@@ -281,6 +297,8 @@ function popupEChart(vheight,vwidth,varpage) { //open a new popup window
 
     }else{  //MySQL
           dboperation += "_mysql";
+          keyword = (keyword == null)?"":java.net.URLDecoder.decode(keyword, "UTF-8");
+          keyword = keyword.trim();
 	  if(request.getParameter("search_mode").equals("search_name")) {
 		 keyword="^"+keyword;
 		 if(keyword.indexOf(",")==-1)
@@ -345,7 +363,7 @@ function popupEChart(vheight,vwidth,varpage) { //open a new popup window
 		<div class="links"><security:oscarSec roleName="<%=roleName$%>"
 			objectName="_eChart" rights="r">
 			<a class="encounterBtn" title="Encounter" href="#"
-				onclick="popupEChart(710,1024,'<c:out value="${ctx}"/>/oscarEncounter/IncomingEncounter.do?providerNo=<%=curProvider_no%>&appointmentNo=&demographicNo=<%=dem_no%>&curProviderNo=&reason=<%=URLEncoder.encode("Tel-Progress Notes")%>&encType=&curDate=<%=""+curYear%>-<%=""+curMonth%>-<%=""+curDay%>&appointmentDate=&startTime=&status=');return false;">E</a>
+				onclick="popupEChart(710,1024,'<c:out value="${ctx}"/>/oscarEncounter/IncomingEncounter.do?providerNo=<%=curProvider_no%>&appointmentNo=&demographicNo=<%=dem_no%>&curProviderNo=&reason=<%=URLEncoder.encode(noteReason)%>&encType=&curDate=<%=""+curYear%>-<%=""+curMonth%>-<%=""+curDay%>&appointmentDate=&startTime=&status=');return false;">E</a>
 		</security:oscarSec> <!-- Rights --> <security:oscarSec roleName="<%=roleName$%>"
 			objectName="_rx" rights="r">
 			<a class="rxBtn" title="Prescriptions" href="#" onclick="popup(700,1027,'../oscarRx/choosePatient.do?providerNo=<%=rs.getString("provider_no")%>&demographicNo=<%=dem_no%>')">Rx</a>

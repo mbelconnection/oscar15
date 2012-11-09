@@ -1,25 +1,10 @@
 /**
- * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved.
- * This software is published under the GPL GNU General Public License.
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * Copyright (c) 2008-2012 Indivica Inc.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- * This software was written for the
- * Department of Family Medicine
- * McMaster University
- * Hamilton
- * Ontario, Canada
+ * This software is made available under the terms of the
+ * GNU General Public License, Version 2, 1991 (GPLv2).
+ * License details are available via "indivica.ca/gplv2"
+ * and "gnu.org/licenses/gpl-2.0.html".
  */
 
 
@@ -166,8 +151,17 @@ public class HRMResultsData {
 		return labResults.values();
 	}
 
+	public static String getMessageDate(String messageUniqueId) {
+		String[] parts = messageUniqueId.split("\\^");
+		if(parts.length > 5) {
+			return parts[5];
+		}
+		return null;
+	}
 	/**
 	 * @return true if the currentEntry is deemed to be newer than the previousEntry
+	 * <Hospital Report Manager Process Date>^<Accession Number>^<Sending Facility>^<Report Class>^<Report Number>^<Message Date>^<Environment Mode>^<Site Instance>^<Report Status>^<Visit Number>
+	 * 
 	 */
 	public static boolean isNewer(HRMReport currentEntry, HRMReport previousEntry) {
 		// try to parse messageUniqueId for date portion to compare, no gurantees it exists or is well formed.
@@ -175,8 +169,8 @@ public class HRMResultsData {
 		{
 			String currentUid=currentEntry.getMessageUniqueId();
 			String previousUid=previousEntry.getMessageUniqueId();
-			String currentDatePart=currentUid.substring(0, currentUid.indexOf('^'));
-			String previousDatePart=previousUid.substring(0, previousUid.indexOf('^'));
+			String currentDatePart=getMessageDate(currentUid);
+			String previousDatePart=getMessageDate(previousUid);
 			long currentDateNum=Long.parseLong(currentDatePart);
 			long previousDateNum=Long.parseLong(previousDatePart);
 

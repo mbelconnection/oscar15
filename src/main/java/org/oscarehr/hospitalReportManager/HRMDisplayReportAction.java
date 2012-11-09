@@ -1,35 +1,23 @@
 /**
- * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved.
- * This software is published under the GPL GNU General Public License.
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version. 
+ * Copyright (c) 2008-2012 Indivica Inc.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- * This software was written for the
- * Department of Family Medicine
- * McMaster University
- * Hamilton
- * Ontario, Canada
+ * This software is made available under the terms of the
+ * GNU General Public License, Version 2, 1991 (GPLv2).
+ * License details are available via "indivica.ca/gplv2"
+ * and "gnu.org/licenses/gpl-2.0.html".
  */
-
 
 package org.oscarehr.hospitalReportManager;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -92,6 +80,12 @@ public class HRMDisplayReportAction extends DispatchAction {
                             request.setAttribute("providerLinkList", providerLinkList);
 
                             List<HRMDocumentSubClass> subClassList = hrmDocumentSubClassDao.getSubClassesByDocumentId(document.getId());
+                            
+                            //Check the HRMSubClass for the corresponding descriptions, change the description
+                            HRMUtil hRMUtil = new HRMUtil();
+                            
+                            hRMUtil.findCorrespondingHRMSubClassDescriptions(subClassList, document.getReportType(), report.getSendingFacilityId() , report.getFirstReportSubClass());
+                           
                             request.setAttribute("subClassList", subClassList);
 
                             String loggedInProviderNo = LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo();
@@ -118,7 +112,7 @@ public class HRMDisplayReportAction extends DispatchAction {
                             
                             HRMCategory category = null;
                             if (hrmDocumentSubClass != null) {
-                                category = hrmCategoryDao.findBySubClassNameMnemonic(hrmDocumentSubClass.getSubClass()+':'+hrmDocumentSubClass.getSubClassMnemonic());
+                                category = hrmCategoryDao.findBySubClassNameMnemonic(hrmDocumentSubClass.getSendingFacilityId(),hrmDocumentSubClass.getSubClass()+':'+hrmDocumentSubClass.getSubClassMnemonic());
                             }
                             else
                             {
@@ -138,6 +132,23 @@ public class HRMDisplayReportAction extends DispatchAction {
 
                             String confidentialityStatement = hrmProviderConfidentialityStatementDao.getConfidentialityStatementForProvider(loggedInProviderNo);
                             request.setAttribute("confidentialityStatement", confidentialityStatement);
+                            
+                            String duplicateLabIdsString=StringUtils.trimToNull(request.getParameter("duplicateLabIds"));
+                            Map<Integer,Date> dupReportDates = new HashMap<Integer,Date>();
+                            Map<Integer,Date> dupTimeReceived = new HashMap<Integer,Date>();
+                            
+                            if (duplicateLabIdsString!=null) {
+                            	String[] duplicateLabIdsStringSplit=duplicateLabIdsString.split(",");
+                            	for (String tempId : duplicateLabIdsStringSplit) {
+                            		HRMDocument doc = hrmDocumentDao.find(Integer.parseInt(tempId));
+                            		dupReportDates.put(Integer.parseInt(tempId),doc.getReportDate());
+                            		dupTimeReceived.put(Integer.parseInt(tempId),doc.getTimeReceived());
+                            	}
+                            
+                            }
+                            
+                            request.setAttribute("dupReportDates",dupReportDates);
+                            request.setAttribute("dupTimeReceived", dupTimeReceived);
                         }
                     }
 			
@@ -146,7 +157,7 @@ public class HRMDisplayReportAction extends DispatchAction {
 		
 		return mapping.findForward("display");
 	}
-	
+		
 	
 	public static HRMDocumentToProvider getHRMDocumentFromCurrentProvider(Integer hrmDocumentId)
 	{

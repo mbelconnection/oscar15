@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.oscarehr.PMmodule.model.Program;
 import org.oscarehr.common.model.Appointment;
 import org.oscarehr.common.model.AppointmentArchive;
 import org.oscarehr.common.model.Facility;
@@ -88,6 +89,35 @@ public class OscarAppointmentDao extends AbstractDao<Appointment> {
 
 		@SuppressWarnings("unchecked")
 		List<Appointment> rs = query.getResultList();
+
+		return rs;
+	}
+	
+	public List<Appointment> getAllByDemographicNoSince(Integer demographicNo,Date lastUpdateDate ) {
+		String sql = "SELECT a FROM Appointment a WHERE a.demographicNo = " + demographicNo + " and a.updateDateTime > ? ORDER BY a.id";
+		Query query = entityManager.createQuery(sql);
+		query.setParameter(1, lastUpdateDate);
+
+		@SuppressWarnings("unchecked")
+		List<Appointment> rs = query.getResultList();
+
+		return rs;
+	}
+	
+	public List<Integer> getAllDemographicNoSince(Date lastUpdateDate, List<Program> programs ) {
+		StringBuilder sb = new StringBuilder();
+    	int i=0;
+    	for(Program p:programs) {
+    		if(i++ > 0)
+    			sb.append(",");
+    		sb.append(p.getId());
+    	}
+		String sql = "select a.demographicNo SELECT a FROM Appointment a WHERE a.updateDateTime > ? and program_id in ("+sb.toString()+") ORDER BY a.id";
+		Query query = entityManager.createQuery(sql);
+		query.setParameter(1, lastUpdateDate);
+
+		@SuppressWarnings("unchecked")
+		List<Integer> rs = query.getResultList();
 
 		return rs;
 	}
@@ -222,6 +252,24 @@ public class OscarAppointmentDao extends AbstractDao<Appointment> {
 		query.setParameter("demographicNo", demographicId);
 		return query.getResultList();
 	}
+	
+	/**
+	 * Finds appointment after current date and time for the specified demographic
+	 * 
+	 * @param demographicId
+	 * 		Demographic to find appointment for
+	 * @return
+	 * 		Returns the next non-cancelled future appointment or null if there are no appointments
+	 * 	scheduled
+	 */
+	public Appointment findNextAppointment(Integer demographicId) {
+		Query query = entityManager.createQuery("FROM Appointment appt WHERE appt.demographicNo = :demographicNo AND appt.status NOT LIKE '%C%' " +
+				" AND (appt.appointmentDate > CURRENT_DATE OR (appt.appointmentDate = CURRENT_DATE AND appt.startTime >= CURRENT_TIME)) ORDER BY appt.appointmentDate");
+		query.setParameter("demographicNo", demographicId);
+		query.setMaxResults(1);
+		return getSingleResultOrNull(query);
+	}
+
 
 	public Appointment findDemoAppointmentToday(Integer demographicNo) {
 		Appointment appointment = null;

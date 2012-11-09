@@ -80,6 +80,7 @@
 	errorPage="../appointment/errorpage.jsp"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
+<%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %>
 <%--RJ 07/07/2006 --%>
 <jsp:useBean id="providerBean" class="java.util.Properties" scope="session" />
 <%@page import="org.oscarehr.util.SpringUtils" %>
@@ -124,6 +125,11 @@
     <link rel="stylesheet" href="appointmentstyle.css" type="text/css">
 <% }%>
 <title><bean:message key="appointment.addappointment.title" /></title>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.js"></script>
+   <script>
+     jQuery.noConflict();
+   </script>
+<oscar:customInterface section="addappt"/>
 <script type="text/javascript">
 
 <!--
@@ -216,6 +222,11 @@ function calculateEndTime() {
   var smin = stime.substring(stime.length-vlen) ;
   var duration = document.ADDAPPT.duration.value ;
 
+  if(isNaN(duration)) {
+	  alert("<bean:message key="Appointment.msgFillTimeField"/>");
+	  return false;
+  }
+
   if(eval(duration) == 0) { duration =1; }
   if(eval(duration) < 0) { duration = Math.abs(duration) ; }
 
@@ -286,10 +297,11 @@ function pasteAppt(multipleSameDayGroupAppt) {
         //document.forms[0].chart_no.value = "<%=apptObj.getChart_no()%>";
         document.forms[0].keyword.value = "<%=apptObj.getName()%>";
         document.forms[0].demographic_no.value = "<%=apptObj.getDemographic_no()%>";
-        document.forms[0].reason.value = "<%=apptObj.getReason()%>";
-        document.forms[0].notes.value = "<%=apptObj.getNotes()%>";
+        document.forms[0].reason.value = "<%=StringEscapeUtils.escapeJavaScript(apptObj.getReason()) %>";
+        document.forms[0].notes.value = "<%=StringEscapeUtils.escapeJavaScript(apptObj.getNotes()) %>";
         //document.forms[0].location.value = "<%=apptObj.getLocation()%>";
         document.forms[0].resources.value = "<%=apptObj.getResources()%>";
+        document.forms[0].type.value = "<%=apptObj.getType()%>";
         if('<%=apptObj.getUrgency()%>' == 'critical') {
                 document.forms[0].urgency.checked = "checked";
         }
@@ -823,7 +835,7 @@ function pasteAppt(multipleSameDayGroupAppt) {
 
             <div class="input">
                 <INPUT TYPE="TEXT" NAME="type"
-                    VALUE='<%=bFirstDisp?"":request.getParameter("type").equals("")?"":request.getParameter("type")%>'
+                    VALUE="<%=bFirstDisp?"":request.getParameter("type").equals("")?"":StringEscapeUtils.escapeHtml(request.getParameter("type"))%>"
                     WIDTH="25" HEIGHT="20" border="0" hspace="2">
             </div>
         </li>
@@ -846,8 +858,12 @@ function pasteAppt(multipleSameDayGroupAppt) {
         <li class="row deep">
             <div class="label"><bean:message key="appointment.addappointment.formSurName" />:</div>
             <div class="input">
+            	<% 
+            		String name="";
+            		name = String.valueOf((bFirstDisp && !bFromWL)?"":request.getParameter("name")==null?session.getAttribute("appointmentname")==null?"":session.getAttribute("appointmentname"):request.getParameter("name"));
+            	%>
                 <INPUT TYPE="TEXT" NAME="keyword"
-                        VALUE='<%=(bFirstDisp && !bFromWL)?"":request.getParameter("name")==null?session.getAttribute("appointmentname")==null?"":session.getAttribute("appointmentname"):request.getParameter("name")%>'
+                        VALUE="<%=StringEscapeUtils.escapeHtml(name)%>"
                         HEIGHT="20" border="0" hspace="2" width="25" tabindex="1">
             </div>
             <div class="space">
@@ -858,6 +874,9 @@ function pasteAppt(multipleSameDayGroupAppt) {
     String searchMode = request.getParameter("search_mode");
     if (searchMode == null || searchMode.isEmpty()) {
         searchMode = OscarProperties.getInstance().getProperty("default_search_mode","search_name");
+        if (searchMode == null || searchMode.isEmpty()) {
+        	searchMode = "search_name";
+        }
     }
 %> 
             <INPUT TYPE="hidden" NAME="search_mode" VALUE="<%=searchMode%>"> 
@@ -915,7 +934,7 @@ function pasteAppt(multipleSameDayGroupAppt) {
 		<% } else {
 			// multisites end ==================
 		%>
-		                <input type="TEXT" name="location" tabindex="4" value="<%=loc%>" width="25" height="20" border="0" hspace="2">
+		                <input type="TEXT" name="location" tabindex="4" value="<%=StringEscapeUtils.escapeHtml(loc)%>" width="25" height="20" border="0" hspace="2">
 		<% } %>
             </div>
             <div class="space">&nbsp;</div>
@@ -923,7 +942,7 @@ function pasteAppt(multipleSameDayGroupAppt) {
             <div class="input">
                 <input type="TEXT" name="resources"
                     tabindex="5"
-                    value='<%=bFirstDisp?"":request.getParameter("resources").equals("")?"":request.getParameter("resources")%>'
+                    value="<%=bFirstDisp?"":request.getParameter("resources").equals("")?"":StringEscapeUtils.escapeHtml(request.getParameter("resources"))%>"
                     width="25" height="20" border="0" hspace="2">
             </div>
         </li>
@@ -931,7 +950,7 @@ function pasteAppt(multipleSameDayGroupAppt) {
             <div class="label"><bean:message key="Appointment.formCreator" />:</div>
             <div class="input">
                 <INPUT TYPE="TEXT" NAME="user_id" readonly
-                    VALUE='<%=bFirstDisp?(StringEscapeUtils.escapeHtml(userlastname)+", "+StringEscapeUtils.escapeHtml(userfirstname)):request.getParameter("user_id").equals("")?"Unknown":request.getParameter("user_id")%>'
+                    VALUE="<%=bFirstDisp?(StringEscapeUtils.escapeHtml(userlastname)+", "+StringEscapeUtils.escapeHtml(userfirstname)):request.getParameter("user_id").equals("")?"Unknown":request.getParameter("user_id")%>"
                     WIDTH="25" HEIGHT="20" border="0" hspace="2">
             </div>
             <div class="space">&nbsp;</div>
@@ -947,7 +966,7 @@ function pasteAppt(multipleSameDayGroupAppt) {
                 <INPUT TYPE="TEXT" NAME="createdatetime" readonly VALUE="<%=strDateTime%>" WIDTH="25" HEIGHT="20" border="0" hspace="2">
                 <INPUT TYPE="hidden" NAME="provider_no" VALUE="<%=curProvider_no%>">
                 <INPUT TYPE="hidden" NAME="dboperation" VALUE="add_apptrecord">
-                <INPUT TYPE="hidden" NAME="creator" VALUE='<%=StringEscapeUtils.escapeHtml(userlastname)+", "+StringEscapeUtils.escapeHtml(userfirstname)%>'>
+                <INPUT TYPE="hidden" NAME="creator" VALUE="<%=StringEscapeUtils.escapeHtml(userlastname)+", "+StringEscapeUtils.escapeHtml(userfirstname)%>">
                 <INPUT TYPE="hidden" NAME="remarks" VALUE="">
             </div>
         </li>

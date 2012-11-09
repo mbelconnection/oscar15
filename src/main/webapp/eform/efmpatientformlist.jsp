@@ -143,19 +143,17 @@ function updateAjax() {
 		
 		</td>
 		<td class="MainTableRightColumn" valign="top">
-
 			<form action="efmpatientformlistSendPhrAction.jsp">
 				<input type="hidden" name="clientId" value="<%=demographic_no%>" />
 				<table class="elements" width="100%">
 					<tr bgcolor=<%=deepColor%>>
-						<%
-							if (isMyOscarAvailable)
-							{
-								%>
-									<th>&nbsp;</th>
-								<%
-							}
-						%>
+					<%
+						if (isMyOscarAvailable) {
+					%>
+							<th>&nbsp;</th>
+					<%
+						}
+					%>
 						<th>
 							<a href="efmpatientformlist.jsp?demographic_no=<%=demographic_no%>&orderby=form_name&group_view=<%=groupView%>&parentAjaxId=<%=parentAjaxId%>">
 								<bean:message key="eform.showmyform.btnFormName" />
@@ -185,16 +183,15 @@ function updateAjax() {
 							HashMap<String,? extends Object> curform = eForms.get(i);
 					%>
 					<tr bgcolor="<%=((i % 2) == 1)?"#F2F2F2":"white"%>">
-						<%
-							if (isMyOscarAvailable)
-							{
-								%>
-									<td>
-										<input type="checkbox" name="sendToPhr" value="<%=curform.get("fdid")%>" />
-									</td>
-								<%
-							}
-						%>
+					<%
+						if (isMyOscarAvailable) {
+					%>
+							<td>
+								<input type="checkbox" name="sendToPhr" value="<%=curform.get("fdid")%>" />
+							</td>
+					<%
+						}
+					%>
 						<td><a href="#"
 							ONCLICK="popupPage('efmshowform_data.jsp?fdid=<%=curform.get("fdid")%>&appointment=<%=appointment%>', '<%="FormP" + i%>'); return false;"
 							TITLE="<bean:message key="eform.showmyform.msgViewFrm"/>"
@@ -218,9 +215,14 @@ function updateAjax() {
 						}
 					%>
 				</table>
-				<input type="submit" value="Send To PHR" />
+				<%
+					if (isMyOscarAvailable) {
+				%>
+					<input type="submit" value="Send To PHR" />
+				<%
+					}
+				%>
 			</form>
-		
 		</td>
 	</tr>
 	<tr>

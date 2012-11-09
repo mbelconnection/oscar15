@@ -125,7 +125,7 @@ if (sortRequest != null) {
     else if (sortRequest.equals("reviewer")) sort = EDocUtil.SORT_REVIEWER;
 }
 
-ArrayList doctypes = EDocUtil.getDoctypes(module);
+ArrayList doctypes = EDocUtil.getActiveDocTypes(module);
 
 //Retrieve encounter id for updating encounter navbar if info this page changes anything
 String parentAjaxId;
@@ -216,14 +216,13 @@ function showhide(hideelement, button) {
     }
 }
 
-
-function checkAll(checkboxId,parentEle, className){
-   var f = document.getElementById(checkboxId);
-   var val = f.checked;
-   var chkList = document.getElementsByClassName(className, parentEle);
-   for (i =0; i < chkList.length; i++){
-      chkList[i].checked = val;
-   }
+function selectAll(checkboxId,parentEle, className) {
+	var f = document.getElementById(checkboxId);
+	var val = f.checked;
+	var chkList = document.getElementsByClassName(className, parentEle);
+	for (i =0; i < chkList.length; i++){
+		chkList[i].checked = val;
+	}	
 }
 
 function submitForm(actionPath) {
@@ -313,7 +312,9 @@ function popup1(height, width, url, windowName){
 		<table class="TopStatusBar">
 			<tr>
 				<td><bean:message key="dms.documentReport.msgDocuments"/> &nbsp;
-				<oscar:nameage demographicNo="<%=moduleid%>"/> &nbsp; <oscar:phrverification demographicNo="<%=moduleid%>"><bean:message key="phr.verification.link"/></oscar:phrverification>
+				<% if(module.equals("demographic")) { %>
+					<oscar:nameage demographicNo="<%=moduleid%>"/> &nbsp; <oscar:phrverification demographicNo="<%=moduleid%>"><bean:message key="phr.verification.link"/></oscar:phrverification>
+				<%} %>
 				</td>
 				<td>&nbsp;</td>
 				<td style="text-align: right;"><oscar:help keywords="2.6.1" key="app.top1" /> | <a
@@ -406,7 +407,7 @@ function popup1(height, width, url, windowName){
 			<table id="privateDocs" class="docTable">
 				<tr>
 					<td>
-						<input class="tightCheckbox" type="checkbox" id="pdfCheck<%=i%>" onclick="checkAll('pdfCheck<%=i%>','privateDocsDiv', 'tightCheckbox<%=i%>');" />
+						<input class="tightCheckbox" type="checkbox" id="pdfCheck<%=i%>" onclick="selectAll('pdfCheck<%=i%>','privateDocsDiv', 'tightCheckbox<%=i%>');" />
 					</td>
 					<td width="30%"><b><a
 						href="?sort=description&function=<%=module%>&functionid=<%=moduleid%>&view=<%=view%>&viewstatus=<%=viewstatus%>"><bean:message
@@ -465,7 +466,7 @@ function popup1(height, width, url, windowName){
                               //String url = "documentGetFile.jsp?document=" + StringEscapeUtils.escapeJavaScript(curdoc.getFileName()) + "&type=" + dStatus + "&doc_no=" + curdoc.getDocId();
 
 					%>	<a <%=curdoc.getStatus() == 'D' ? "style='text-decoration:line-through'" : ""%>
-						href="<%=url%>" target="_blank"> <%=curdoc.getDescription()%></a></td>
+						href="javascript:void(0);" onclick="popupFocusPage(500,700,'<%=url%>','demographic_document');"> <%=curdoc.getDescription()%></a></td>
 					<td><%=contentType%></td>
 					<td><%=curdoc.getType()%></td>
 					<td><%=curdoc.getCreatorName()%></td>

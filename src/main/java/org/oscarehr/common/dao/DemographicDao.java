@@ -60,15 +60,14 @@ import org.oscarehr.PMmodule.web.formbean.ClientListsReportFormBean;
 import org.oscarehr.PMmodule.web.formbean.ClientSearchFormBean;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.DemographicExt;
+import org.oscarehr.integration.hl7.generators.HL7A04Generator;
 import org.oscarehr.util.DbConnectionFilter;
 import org.oscarehr.util.MiscUtils;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-import oscar.OscarProperties;
 import oscar.MyDateFormat;
+import oscar.OscarProperties;
 import oscar.util.SqlUtils;
-
-import org.oscarehr.integration.hl7.generators.HL7A04Generator;
 
 /**
  */
@@ -267,6 +266,30 @@ public class DemographicDao extends HibernateDaoSupport {
         return list;
     }
 
+    public List<Demographic> searchDemographicActive(String searchStr) {
+        String fieldname = "", regularexp = "like";
+        if (searchStr.indexOf(",") == -1) {
+            fieldname = "last_name";
+         } else if (searchStr.trim().indexOf(",") == (searchStr.trim().length() - 1)) {
+            fieldname = "last_name";
+         } else {
+            fieldname = "last_name " + regularexp + " ?" + " and first_name ";
+        }
+        
+        String hql = "From Demographic d where " + fieldname + " " + regularexp + " ?  and patient_status = 'AC'";
+        
+        String[] lastfirst = searchStr.split(",");
+        Object[] object = null;
+        if (lastfirst.length > 1) {
+            object = new Object[] { lastfirst[0].trim() + "%", lastfirst[1].trim() + "%" };
+        } else {
+            object = new Object[] { lastfirst[0].trim() + "%" };
+        }
+        List list = getHibernateTemplate().find(hql, object);
+        return list;
+     }
+
+
 
      public List<Demographic> getDemographicsByExtKey(String key, String value) {
     	 List<DemographicExt> extras = this.getHibernateTemplate().find("from DemographicExt d where d.key=? and d.value=?", new Object[] {key,value});
@@ -297,6 +320,7 @@ public class DemographicDao extends HibernateDaoSupport {
 		if (demographic.getDemographicNo() != null)
 			objExists = clientExistsThenEvict(demographic.getDemographicNo());
 
+		demographic.setLastUpdateDate(new Date());
  		this.getHibernateTemplate().saveOrUpdate(demographic);
  		
  		if (OscarProperties.getInstance().isHL7A04GenerationEnabled() && !objExists)
@@ -726,6 +750,7 @@ public static List<Integer> getDemographicIdsAlteredSinceTime(Date value) {
 		if (client.getDemographicNo() != null)
 			objExists = clientExistsThenEvict(client.getDemographicNo());
 
+		client.setLastUpdateDate(new Date());
  		this.getHibernateTemplate().saveOrUpdate(client);
  		
  		if (OscarProperties.getInstance().isHL7A04GenerationEnabled() && !objExists)
@@ -988,6 +1013,15 @@ public static List<Integer> getDemographicIdsAlteredSinceTime(Date value) {
 	public List<Demographic> getDemographicsByHealthNum(String hin) {
 		return this.getHibernateTemplate().find("from Demographic d where d.Hin=?", new Object[] { hin });
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Integer> getActiveDemographicIds() {
+		return this.getHibernateTemplate().find("select d.DemographicNo from Demographic d where d.PatientStatus=?", new Object[] { "AC" });
+	}
+	
+	public List<Integer> getDemographicIdsAddedSince(Date value) {
+		return this.getHibernateTemplate().find("select d.DemographicNo from Demographic d where d.lastUpdateDate >?", value);
+    }
 }
 
 

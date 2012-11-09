@@ -635,7 +635,16 @@ if(statusType.equals("_")) { %>
     			<td><%=bObj.getAdmitted_date() %></td>
     			<td><%=bObj.getClaim_error() %></td>
     			<td><%=bObj.getCode() %></td>
-    			<td align="right"><%=ch2StdCurrFromNoDot(""+Integer.parseInt(bObj.getFee())) %></td>
+    			<%
+    				String formattedFee = null;
+    				try {
+    				    formattedFee = String.valueOf(Integer.parseInt(bObj.getFee()));
+    				}
+    				catch( NumberFormatException e ) {
+    				    formattedFee = "N/A";
+    				}
+    			%>
+    			<td align="right"><%=ch2StdCurrFromNoDot(formattedFee)%></td>
     			<td align="right"><%=bObj.getUnit() %></td>
     			<td><font size="-1"><%=bObj.getCode_date() %></font></td>
     			<td><%=bObj.getDx() %></td>
@@ -719,7 +728,7 @@ if(statusType.equals("_")) { %>
 	       // 3rd party billing
 	       if(ch1Obj.getPay_program().matches("PAT|OCF|ODS|CPP|STD|IFH")) {
 	    	   amountPaid = ch1Obj.getPaid();
-	    	   amountPaid = (amountPaid==null||amountPaid.equals(""))? "0.00" : amountPaid;
+	    	   amountPaid = (amountPaid==null||amountPaid.equals("")||amountPaid.equals("null"))? "0.00" : amountPaid;
 	       }
 	       BigDecimal bTemp = (new BigDecimal(amountPaid.trim())).setScale(2,BigDecimal.ROUND_HALF_UP);
 	       paidTotal = paidTotal.add(bTemp);

@@ -1,33 +1,16 @@
 /**
- * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved.
- * This software is published under the GPL GNU General Public License.
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version. 
+ * Copyright (c) 2008-2012 Indivica Inc.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- * This software was written for the
- * Department of Family Medicine
- * McMaster University
- * Hamilton
- * Ontario, Canada
+ * This software is made available under the terms of the
+ * GNU General Public License, Version 2, 1991 (GPLv2).
+ * License details are available via "indivica.ca/gplv2"
+ * and "gnu.org/licenses/gpl-2.0.html".
  */
-
 
 package org.oscarehr.hospitalReportManager.dao;
 
 import java.util.List;
 
-import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
 import org.oscarehr.common.dao.AbstractDao;
@@ -58,16 +41,51 @@ public class HRMCategoryDao extends AbstractDao<HRMCategory> {
 		return documents;
 	}
 	
+	public List<String> findAllSendingFacilityIds() {
+		String sql = "select distinct(x.sendingFacilityId) from " + this.modelClass.getName() + " x";
+		Query query = entityManager.createQuery(sql);
+	
+		@SuppressWarnings("unchecked")
+		List<String> subclasses = query.getResultList();
+		return subclasses;
+	}
+
+	
+	@SuppressWarnings("unchecked")
+	public List<HRMCategory> findBySendingFacilityId(String sendingFacilityId)
+	{
+		String sql = "select x from " + modelClass.getSimpleName() + " x where x.sendingFacilityId=?1";
+		Query query = entityManager.createQuery(sql);
+		query.setParameter(1, sendingFacilityId);
+		return query.getResultList();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<HRMCategory> findBySendingFacilityIdAndSubClassNameMnemonic(String sendingFacilityId, String subClassNameMnemonic)
+	{
+		String sql = "select x from " + modelClass.getSimpleName() + " x where x.sendingFacilityId=?1 and x.subClassNameMnemonic=?2";
+		Query query = entityManager.createQuery(sql);
+		query.setParameter(1, sendingFacilityId);
+		query.setParameter(2, subClassNameMnemonic);
+		return query.getResultList();
+	}
+	
+	public HRMCategory findBySubClassNameMnemonic(String sendingFacilityId, String subClassNameMnemonic)
+	{
+		String sql = "select x from " + modelClass.getSimpleName() + " x where x.subClassNameMnemonic=?1 and x.sendingFacilityId = ?2";
+		Query query = entityManager.createQuery(sql);
+		query.setParameter(1, subClassNameMnemonic);
+		query.setParameter(2, sendingFacilityId);
+		return getSingleResultOrNull(query);
+		
+	}
+	
 	public HRMCategory findBySubClassNameMnemonic(String subClassNameMnemonic)
 	{
-		try{
-			String sql = "select x from " + modelClass.getSimpleName() + " x where x.subClassNameMnemonic=?1";
-			Query query = entityManager.createQuery(sql);
-			query.setParameter(1, subClassNameMnemonic);
-			return (HRMCategory) (query.getSingleResult());
-		} catch(NoResultException e) {
-	        return null;
-	    }
+		String sql = "select x from " + modelClass.getSimpleName() + " x where x.subClassNameMnemonic=?1";
+		Query query = entityManager.createQuery(sql);
+		query.setParameter(1, subClassNameMnemonic);
+		return getSingleResultOrNull(query);
 	}
 	
 }

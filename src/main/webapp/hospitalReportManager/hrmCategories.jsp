@@ -1,29 +1,13 @@
 <%--
 
-    Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved.
-    This software is published under the GPL GNU General Public License.
-    This program is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License
-    as published by the Free Software Foundation; either version 2
-    of the License, or (at your option) any later version.
+    Copyright (c) 2008-2012 Indivica Inc.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-
-    This software was written for the
-    Department of Family Medicine
-    McMaster University
-    Hamilton
-    Ontario, Canada
+    This software is made available under the terms of the
+    GNU General Public License, Version 2, 1991 (GPLv2).
+    License details are available via "indivica.ca/gplv2"
+    and "gnu.org/licenses/gpl-2.0.html".
 
 --%>
-
 <%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@page import="org.oscarehr.hospitalReportManager.model.HRMCategory"%>
 <%@page import="org.oscarehr.util.SpringUtils"%>
@@ -42,6 +26,8 @@
 	<br />
 	SubClass Name Mnemonic : <input type="text" name="subClassNameMnemonic" /> (should be of the format &lt;subclass_name&gt;:&lt;subclass_mnemonic&gt;)
 	<br />
+	Sending Facility ID : <input type="text" name="sendingFacilityID" />
+	<br />
 	
 	<input type="submit" value="Add" />
 </form>
@@ -53,9 +39,8 @@
 		<td style="border:solid black 1px">ID</td>
 		<td style="border:solid black 1px">CategoryName</td>
 		<td style="border:solid black 1px">SubClass Name Mnemonic</td>
-		<%--
-		<td style="border:solid black 1px"></td>
-		 --%>
+		<td style="border:solid black 1px">Sending Facility ID</td>
+        <td style="border:solid black 1px">Action</td>
 	</tr>
 	<%
 		HRMCategoryDao hrmCategoryDao = (HRMCategoryDao) SpringUtils.getBean("HRMCategoryDao");
@@ -73,11 +58,13 @@
 					<td style="border:solid black 1px">
 						<%=StringEscapeUtils.escapeHtml(category.getSubClassNameMnemonic())%>
 					</td>
-					<%--
 					<td style="border:solid black 1px">
-						<input type="button" value="delete" onclick="if (confirm('are you sure you want to delete this?')) window.location.href='hrm_categories_action.jsp?action=delete&id=<%=category.getId()%>'" />
+						<%=StringEscapeUtils.escapeHtml(category.getSendingFacilityId())%>
 					</td>
-					 --%>
+					<td style="border:solid black 1px">
+					  <b><a href="hrm_categories_action.jsp?id=<%=category.getId()%>&action=delete">Delete</a></b>-	
+					  <b><a href="hrmCategoriesUpdate.jsp?id=<%=category.getId()%>">Update</a></b>				
+					</td>
 				</tr>
 			<%
 		}

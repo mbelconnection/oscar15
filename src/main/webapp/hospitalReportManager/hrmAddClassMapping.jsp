@@ -9,14 +9,21 @@
 
 --%>
 <%@page import="java.util.*, org.oscarehr.hospitalReportManager.*, org.oscarehr.hospitalReportManager.model.HRMCategory, org.oscarehr.hospitalReportManager.dao.HRMCategoryDao, org.oscarehr.util.SpringUtils"%>
-
+<%@page import="org.oscarehr.util.MiscUtils" %>
+<%@page import="org.oscarehr.hospitalReportManager.dao.HRMSubClassDao" %>
 <%
 	
 	String deepColor = "#CCCCFF", weakColor = "#EEEEFF";
 
 	String country = request.getLocale().getCountry();
 	
-
+	HRMSubClassDao hrmSubClassDao = (HRMSubClassDao)SpringUtils.getBean("HRMSubClassDao");
+	HRMCategoryDao categoryDao = (HRMCategoryDao) SpringUtils.getBean("HRMCategoryDao");
+	
+	List<String> sendingFacilityIds = categoryDao.findAllSendingFacilityIds();
+	
+	List<HRMCategory> categoryList = categoryDao.findAll();
+	
 %>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
@@ -25,7 +32,8 @@
 
 <head>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/global.js"></script>
-<title>Show Mappings</title>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js"></script>
+<title>Show HRM Mappings</title>
 <link rel="stylesheet" type="text/css"
 	href="../share/css/OscarStandardLayout.css">
 <link rel="stylesheet" type="text/css"
@@ -33,26 +41,51 @@
 
 <script type="text/javascript" language="JavaScript"
 	src="../share/javascript/Oscar.js"></script>
+	
+<script type="text/javascript">
+
+var categoryList = new Array();
+
+<%
+for(HRMCategory cat:categoryList) {
+	%>
+	categoryList.push({id:"<%=cat.getId()%>",name:"<%=cat.getCategoryName()%>",sendingFacilityId:"<%=cat.getSendingFacilityId()%>"});
+	<%
+}%>
+
+function getCategories(sendingFacilityId) {
+	var response = "";
+	
+	for(var x=0;x<categoryList.length;x++) {
+		if(categoryList[x].sendingFacilityId == sendingFacilityId)
+			response += "<option value='"+categoryList[x].id+"'>"+categoryList[x].name+"</option>";	
+	}
+	return response;
+}
+
+$(document).ready(function() {
+	$("#sendingFacilityIdSelect").bind('change',function(){
+		$("#category").html(getCategories($("#sendingFacilityIdSelect").val()));
+		
+	});
+});
+</script>
+
 </head>
 
-<body onunload="updateAjax()" class="BodyStyle" vlink="#0000FF">
-<!--  -->
+<body class="BodyStyle" vlink="#0000FF">
+
 <table class="MainTable" id="scrollNumber1" name="encounterTable">
 	<tr class="MainTableTopRow">
-		<td class="MainTableTopRowLeftColumn" width="175"><bean:message
-			key="eform.showmyform.msgMyForm" /></td>
+		<td class="MainTableTopRowLeftColumn" width="175">HRM</td>
 		<td class="MainTableTopRowRightColumn">
 		<table class="TopStatusBar">
 			<tr>
-				<td>Add Mapping</td>
+				<td>Add HRM Mapping</td>
 				<td>&nbsp;</td>
 				<td style="text-align: right"><a
 					href="javascript:popupStart(300,400,'Help.jsp')"><bean:message
-					key="global.help" /></a> | <a
-					href="javascript:popupStart(300,400,'About.jsp')"><bean:message
-					key="global.about" /></a> | <a
-					href="javascript:popupStart(300,400,'License.jsp')"><bean:message
-					key="global.license" /></a></td>
+					key="global.help" /></a></td>
 			</tr>
 		</table>
 		</td>
@@ -62,19 +95,27 @@
 			</td>
 		<td class="MainTableRightColumn" valign="top">
 			<form method="post" action="<%=request.getContextPath() %>/hospitalReportManager/Mapping.do">
-				Report class: <select name="class"><option value="Medical Records Report">Medical Records Report</option><option value="Diagnostic Imaging Report">Diagnostic Imaging Report</option><option value="Cardio Respiratory Report">Cardio Respiratory Report</option></select><br />
+				Report class:
+				<select name="class">
+					<option value="Medical Records Report">Medical Records Report</option>
+					<option value="Diagnostic Imaging Report">Diagnostic Imaging Report</option>
+					<option value="Cardio Respiratory Report">Cardio Respiratory Report</option>
+				</select>
+				<br />
 				Sub-class: <input type="text" name="subclass" /><br />  
-				Sub-class mmenoic: <input type="text" name="mnemonic" /><br />
+				Sub-class mnemonic: <input type="text" name="mnemonic" /><br />
 				Sub-class description: <input type="text" name="description" /><br />
-				Sending Facility ID (* for all): <input type="text" name="sendingFacilityId" value="*" /><br /> 
-				Category: <select name="category">
-				<%
-				HRMCategoryDao categoryDao = (HRMCategoryDao) SpringUtils.getBean("HRMCategoryDao");
-				List<HRMCategory> categoryList = categoryDao.findAll();
-				for (HRMCategory category : categoryList) {
-				%>
-				<option value="<%=category.getId() %>"><%=category.getCategoryName() %></option>
-				<% } %>
+				Sending Facility ID : 
+				<select name="sendingFacilityIdSelect" id="sendingFacilityIdSelect"> 
+					<option value="0">Select Option or New</option>
+					<option value="-1">New</option>
+				<%for(String tmp:sendingFacilityIds) { %>
+					<option value="<%=tmp%>"><%=tmp %></option>
+				<%} %>
+				</select>
+				
+				or <input type="text" name="sendingFacilityId" placeholder="New Sending Faclity Id"/><br /> 
+				Category: <select name="category" id="category">
 				
 				</select><br /><br />
 				

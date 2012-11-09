@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.oscarehr.common.dao.BillingServiceDao;
 import org.oscarehr.common.dao.DemographicDao;
@@ -259,34 +260,30 @@ public class JdbcBillingCreateBillingFile {
 			Demographic demo = demographicDao.getDemographic(ch1Obj.getDemographic_no());
 			ret += "\n<tr "+(summaryView ? "style='display:none;' class='record"+providerNo+"'": "")+">"; 
 			if (simulation) {
-				ret += "<td class='" + styleClass + "'>"
-					 + ch1Obj.getProvider_ohip_no()
-					 + "</td>";				
+				ret += "<td class='" + styleClass + "'>" + ch1Obj.getProvider_ohip_no() + "</td>"				
+				+ "<td class='" + styleClass + "'><a href=# onclick=\"popupPage(720,640,'billingONCorrection.jsp?billing_no=" 
+						+ ch1Obj.getId()	+ "');return false;\">"	+ ch1Obj.getId() + "</a></td>"
+				+ "<td class='" + styleClass + "'><a href=# onclick=\"popupPage(720,740,'../../../demographic/demographiccontrol.jsp?demographic_no=" 
+						+ ch1Obj.getDemographic_no() + "&displaymode=edit&dboperation=search_detail');return false;\">" + ch1Obj.getDemographic_name() + "</a></td>";
 			}
-			ret += "<td class='" + styleClass + "'><a href=# onclick=\"popupPage(720,640,'billingONCorrection.jsp?billing_no="
-					+ ch1Obj.getId()
-					+ "');return false;\">"
-					+ ch1Obj.getId()
-					+ "</a></td>"
-					+ "<td class='" + styleClass + "'><a href=# onclick=\"popupPage(720,740,'../../../demographic/demographiccontrol.jsp?demographic_no="
-					+ ch1Obj.getDemographic_no()
-					+ "&displaymode=edit&dboperation=search_detail');return false;\">"
-					+ ch1Obj.getDemographic_name()
-					+ "</a></td>"
-					+ "<td class='" + styleClass + "'>" + demo.getRosterStatus() + "</td>"
-					+ "<td class='" + styleClass + "'>" + demo.getBirthDayAsString() + "</td>"
-					+ "<td class='" + styleClass + "'>" + demo.getSex() + "</td>"
-					+ "<td class='" + styleClass + "'>"
-					+ ch1Obj.getHin() + ch1Obj.getVer()
-					+ "</td><td class='" + styleClass + "'>"
-					+ ch1Obj.getBilling_date()
-					+ "</td><td class='" + styleClass + "'>"
-					+ itemObj.getService_code()
-					+ "</td><td align='right' class='" + styleClass + "'>"
-					+ itemObj.getFee()
-					+ "</td><td align='right' class='" + styleClass + "'>"
-					+ itemObj.getDx()
-					+ "</td><td class='" + styleClass + "'> &nbsp; &nbsp;" + referral + hcFlag + m_Flag + " </td></tr>";
+			else {
+				ret += "<td class='" + styleClass + "'>" + ch1Obj.getId() + "</td>"
+					+ "<td class='" + styleClass + "'>" + ch1Obj.getDemographic_name() + "</td>";
+			}
+			ret	+= "<td class='" + styleClass + "'>" + demo.getRosterStatus() + "</td>"
+				+ "<td class='" + styleClass + "'>" + demo.getBirthDayAsString() + "</td>"
+				+ "<td class='" + styleClass + "'>" + demo.getSex() + "</td>"
+				+ "<td class='" + styleClass + "'>"
+				+ ch1Obj.getHin() + ch1Obj.getVer()
+				+ "</td><td class='" + styleClass + "'>"
+				+ ch1Obj.getBilling_date()
+				+ "</td><td class='" + styleClass + "'>"
+				+ itemObj.getService_code()
+				+ "</td><td align='right' class='" + styleClass + "'>"
+				+ itemObj.getFee()
+				+ "</td><td align='right' class='" + styleClass + "'>"
+				+ itemObj.getDx()
+				+ "</td><td class='" + styleClass + "'> &nbsp; &nbsp;" + referral + hcFlag + m_Flag + " </td></tr>";
 		} else {
 			ret = "\n<tr "+(summaryView ? "style='display:none;' class='record"+providerNo+"'": "")+">"+ "<td class='" + styleClass + "'>&nbsp;</td>" + "<td class='" + styleClass + "'>&nbsp;</td> <td class='" + styleClass + "'>&nbsp;</td><td class='" + styleClass + "'>&nbsp;</td><td class='" + styleClass + "'>&nbsp;</td><td class='" + styleClass + "'>&nbsp;</td>"
 					+ "<td class='" + styleClass + "'>&nbsp;</td> <td class='" + styleClass + "'>&nbsp;</td>" + "<td class='" + styleClass + "'>"
@@ -438,7 +435,8 @@ public class JdbcBillingCreateBillingFile {
 		if (ch1Obj.getVer() != null && (ch1Obj.getVer().length() > 2 || "##".equals(ch1Obj.getVer())))
 			errorPartMsg += "Header1: Ver. code wrong!<br>";
 		
-		errorMsg += errorPartMsg;
+		if(errorPartMsg.length() > 0)
+			errorMsg += ch1Obj.getId() + " - " + errorPartMsg;
 	}
 
 	private void checkHeader2() {
@@ -981,7 +979,9 @@ public class JdbcBillingCreateBillingFile {
 				bhObj.setBatch_id(rs.getString("batch_id"));
 				bhObj.setOperator(rs.getString("operator"));
 				bhObj.setGroup_num(rs.getString("group_num"));
-				bhObj.setProvider_reg_num(rs.getString("provider_reg_num"));
+				String billNo = rs.getString("provider_reg_num");
+				billNo = (billNo.length() < 6) ? StringUtils.leftPad(billNo, 6, "0") : billNo;
+				bhObj.setProvider_reg_num(billNo);
 				bhObj.setSpecialty(rs.getString("specialty"));
 				bhObj.setH_count(rs.getString("h_count"));
 				bhObj.setR_count(rs.getString("r_count"));
@@ -1056,7 +1056,7 @@ public class JdbcBillingCreateBillingFile {
 	// readin billingNo 
 	public void readInBillingNo() {
 		String home_dir;
-		home_dir = OscarProperties.getInstance().getProperty("HOME_DIR");
+		home_dir = OscarProperties.getInstance().getProperty("HOME_DIR") + File.separator;
 		propBillingNo = new Properties();
 		
 		try {
@@ -1094,7 +1094,7 @@ public class JdbcBillingCreateBillingFile {
 	// rename OHIP file 
 	public void renameFile() {
 		String home_dir;
-		home_dir = OscarProperties.getInstance().getProperty("HOME_DIR");
+		home_dir = OscarProperties.getInstance().getProperty("HOME_DIR") + File.separator;
 	    File file = new File(home_dir + ohipFilename);
 		
 	    // new filename
@@ -1112,7 +1112,7 @@ public class JdbcBillingCreateBillingFile {
 	public void writeFile(String value1) {
 		try {
 			String home_dir;
-			home_dir = OscarProperties.getInstance().getProperty("HOME_DIR");
+			home_dir = OscarProperties.getInstance().getProperty("HOME_DIR") + File.separator;
 			FileOutputStream out = new FileOutputStream(home_dir + ohipFilename);
 			PrintStream p = new PrintStream(out);
 			p.println(value1);
@@ -1129,7 +1129,7 @@ public class JdbcBillingCreateBillingFile {
 	public void writeHtml(String htmlvalue1) {
 		try {
 			String home_dir1;
-			home_dir1 = OscarProperties.getInstance().getProperty("HOME_DIR");
+			home_dir1 = OscarProperties.getInstance().getProperty("HOME_DIR") + File.separator;
 
 			FileOutputStream out1 = new FileOutputStream(home_dir1 + htmlFilename);
 			PrintStream p1 = new PrintStream(out1);
@@ -1190,12 +1190,14 @@ public class JdbcBillingCreateBillingFile {
 	}
 
 	private String getCompactDateStr(String y) {
-		String ret = y;
-		if (y.length() > 6) {
-			String[] temp = y.split("\\-");
-			if (temp.length == 3) {
-				ret = temp[0] + (temp[1].length() == 1 ? ("0" + temp[1]) : temp[1])
-						+ (temp[2].length() == 1 ? ("0" + temp[2]) : temp[2]);
+		String ret = "";
+		if (y != null) {
+			ret = y;
+			if (y.length() > 6) {
+				String[] temp = y.split("\\-");
+				if (temp.length == 3) {
+					ret = temp[0] + (temp[1].length() == 1 ? ("0" + temp[1]) : temp[1]) + (temp[2].length() == 1 ? ("0" + temp[2]) : temp[2]);
+				}
 			}
 		}
 		return ret;

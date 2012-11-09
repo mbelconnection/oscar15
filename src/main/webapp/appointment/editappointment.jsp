@@ -24,6 +24,7 @@
 
 --%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%
   if (session.getAttribute("user") == null)    response.sendRedirect("../logout.jsp");
 
@@ -47,6 +48,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
+<%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %>
 <jsp:useBean id="providerBean" class="java.util.Properties" scope="session" />
 <%@page import="org.oscarehr.common.model.DemographicCust" %>
 <%@page import="org.oscarehr.common.dao.DemographicCustDao" %>
@@ -105,7 +107,11 @@
 <% } %>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="appointment.editappointment.title" /></title>
-
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.js"></script>
+   <script>
+     jQuery.noConflict();
+   </script>
+<oscar:customInterface section="editappt"/>
 <script language="javascript">
 <!-- // start javascript
 function toggleView() {
@@ -176,6 +182,10 @@ function onSub() {
     }
   }
   if( saveTemp==2 ) {
+     if (document.EDITAPPT.notes.value.length > 255) {
+	window.alert("<bean:message key="appointment.editappointment.msgNotesTooBig"/>");
+	return false;
+     }
     return calculateEndTime() ;
   } else
       return true;
@@ -186,10 +196,12 @@ function onSub() {
 function calculateEndTime() {
   var stime = document.EDITAPPT.start_time.value;
   var vlen = stime.indexOf(':')==-1?1:2;
+  
   if(vlen==1 && stime.length==4 ) {
     document.EDITAPPT.start_time.value = stime.substring(0,2) +":"+ stime.substring(2);
     stime = document.EDITAPPT.start_time.value;
   }
+
   if(stime.length!=5) {
     alert("<bean:message key="Appointment.msgInvalidDateFormat"/>");
     return false;
@@ -198,6 +210,12 @@ function calculateEndTime() {
   var shour = stime.substring(0,2) ;
   var smin = stime.substring(stime.length-vlen) ;
   var duration = document.EDITAPPT.duration.value ;
+  
+  if(isNaN(duration)) {
+	  alert("<bean:message key="Appointment.msgFillTimeField"/>");
+	  return false;
+  }
+  
   if(eval(duration) == 0) { duration =1; }
   if(eval(duration) < 0) { duration = Math.abs(duration) ; }
 
@@ -259,9 +277,9 @@ function pasteAppt(multipleSameDayGroupAppt) {
                 document.EDITAPPT.repeatButton.style.display = "none";
            }
         }
-        else {
-           warnMsgId.style.display = "none";
-        }
+        //else {
+        //   warnMsgId.style.display = "none";
+        //}
 	document.EDITAPPT.status.value = "<%=apptObj.getStatus()%>";
 	document.EDITAPPT.duration.value = "<%=apptObj.getDuration()%>";
 	document.EDITAPPT.chart_no.value = "<%=apptObj.getChart_no()%>";
@@ -271,6 +289,7 @@ function pasteAppt(multipleSameDayGroupAppt) {
 	document.EDITAPPT.notes.value = "<%=apptObj.getNotes()%>";
 	document.EDITAPPT.location.value = "<%=apptObj.getLocation()%>";
 	document.EDITAPPT.resources.value = "<%=apptObj.getResources()%>";
+	document.EDITAPPT.type.value = "<%=apptObj.getType()%>";
 	if('<%=apptObj.getUrgency()%>' == 'critical') {
 		document.EDITAPPT.urgency.checked = "checked";
 	}
@@ -350,7 +369,10 @@ function setType(typeSel,reasonSel,locSel,durSel,notesSel,resSel) {
 			return;
 		} else {
 			appt = resultList.get(0);
+			session.setAttribute("appt", appt);
 		}
+	} else {
+	    appt = (Map) session.getAttribute("appt");
 	}
 
 
@@ -508,7 +530,7 @@ function setType(typeSel,reasonSel,locSel,durSel,notesSel,resSel) {
 
             <div class="input">
                 <INPUT TYPE="TEXT" NAME="type"
-					VALUE="<%=bFirstDisp?appt.get("type"):request.getParameter("type")%>"
+					VALUE="<%=bFirstDisp?appt.get("type"):StringEscapeUtils.escapeHtml(request.getParameter("type"))%>"
                     WIDTH="25">
             </div>
         </li>
@@ -569,7 +591,7 @@ function setType(typeSel,reasonSel,locSel,durSel,notesSel,resSel) {
             <div class="input">
                 <INPUT TYPE="TEXT" NAME="keyword"
 					tabindex="1"
-					VALUE="<%=bFirstDisp?nameSb.toString():request.getParameter("name")%>"
+					VALUE="<%=bFirstDisp?nameSb.toString():StringEscapeUtils.escapeHtml(request.getParameter("name"))%>"
                     width="25">
             </div>
             <div class="space">&nbsp;</div>
@@ -652,7 +674,7 @@ if (bMultisites) { %>
 	// multisites end ==================
 %>
             <INPUT TYPE="TEXT" NAME="location" tabindex="4"
-					VALUE="<%=bFirstDisp?appt.get("location"):request.getParameter("location")%>"
+					VALUE="<%=bFirstDisp?appt.get("location"):StringEscapeUtils.escapeHtml(request.getParameter("location"))%>"
 					WIDTH="25">
 <% } %>
             </div>
@@ -661,7 +683,7 @@ if (bMultisites) { %>
             <div class="input">
                 <input type="TEXT"
 					name="resources" tabindex="5"
-					value="<%=bFirstDisp?appt.get("resources"):request.getParameter("resources")%>"
+					value="<%=bFirstDisp?appt.get("resources"):StringEscapeUtils.escapeHtml(request.getParameter("resources"))%>"
                     width="25">
             </div>
         </li>

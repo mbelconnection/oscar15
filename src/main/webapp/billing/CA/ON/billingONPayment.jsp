@@ -321,7 +321,7 @@
                                 }
                                 
                                 BigDecimal claimAmt = new BigDecimal(claimAmtStr);                               
-                                BigDecimal paidAmt = new BigDecimal(rad.getAmountPay());    
+                                BigDecimal paidAmt = new BigDecimal(rad.getAmountPay().trim());    
                                 BigDecimal adjAmt = claimAmt.subtract(paidAmt);              
 
                                 feeTotal = feeTotal.add(feeAmt);

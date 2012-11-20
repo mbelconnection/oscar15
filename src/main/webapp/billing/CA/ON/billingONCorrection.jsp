@@ -187,8 +187,10 @@ function rs(n,u,w,h,x) {
 
 var awnd=null;
 function ScriptAttach() {
-	f0 = escape(document.serviceform.xml_diagnostic_detail.value);
-	f1 = document.serviceform.xml_dig_search1.value;
+        var diagnosticDetail = document.getElementById('xml_diagnostic_detail');
+	f0 = escape(diagnosticDetail.value);
+        var digSearch1 = document.getElementById('xml_dig_search1');
+	f1 = digSearch1.value;
 	// f2 = escape(document.serviceform.elements["File2Data"].value);
 	// fname = escape(document.Compose.elements["FName"].value);
 	awnd=rs('att','billingDigSearch.jsp?name='+f0 + '&search=' + f1,600,600,1);
@@ -974,8 +976,8 @@ function changeSite(sel) {
 	<tr>
 		<td colspan="4"><input type="hidden" name="xml_diagnostic_code"
 			value="<%=diagCode%>"> <input type="text"
-			style="font-size: 80%;" name="xml_diagnostic_detail"
-			value="<%=diagCode%>" size="50"> <input type="hidden"
+			style="font-size: 80%;" id="xml_diagnostic_detail" name="xml_diagnostic_detail"
+			value="<%=diagCode%>" size="50"> <input type="hidden" id="xml_dig_search1"
 			name="xml_dig_search1"> <a href="javascript:ScriptAttach()"><bean:message
 			key="billing.billingCorrection.btnDXSearch" /></a></td>
 		<td colspan="2"></td>

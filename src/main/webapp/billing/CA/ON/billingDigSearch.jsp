@@ -62,7 +62,8 @@ function CodeAttach(File2) {
       <%if(request.getParameter("name2")!=null) {%>
       self.opener.<%=request.getParameter("name2")%> = File2.substring(0,3);
       <%} else {%>
-      self.opener.document.serviceform.xml_diagnostic_detail.value = File2;
+          var diagDetail = self.opener.document.getElementById('xml_diagnostic_detail');
+          diagDetail.value = File2;
       <%}%>
 }
 function setfocus() {

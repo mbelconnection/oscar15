@@ -25,6 +25,7 @@ package org.oscarehr.common.dao;
 
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Query;
 
@@ -56,6 +57,20 @@ public class BillingONCHeader1Dao extends AbstractDao<BillingONCHeader1>{
                 query.setParameter(3,endDate);
                 BigInteger bint =  (BigInteger) query.getSingleResult();
                 return bint.intValue();
+    }
+    
+    public List<BillingONCHeader1> getBillingItemByDxCode(Integer demographicNo, String dxCode) {
+        String queryStr = "select h FROM BillingOnItem b, BillingONCHeader1 h WHERE h.id = b.ch1_id and h.demographicNo=? and b.dx =? or b.dx1 = ? or b.dx2=?";
+        Query query = entityManager.createQuery(queryStr);
+        query.setParameter(1, demographicNo);
+        query.setParameter(2, dxCode);
+        query.setParameter(3, dxCode);
+        query.setParameter(4, dxCode);
+        
+        @SuppressWarnings("unchecked")
+        List<BillingONCHeader1> rs = query.getResultList();
+
+        return rs;
     }
 
 }

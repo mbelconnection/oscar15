@@ -347,17 +347,23 @@ public class ScatterPlotChartServlet extends HttpServlet
                 String mInstrc = request.getParameter("mInstrc");                
                 EctSessionBean bean = (EctSessionBean)request.getSession().getAttribute("EctSessionBean");
                 String demographicNo = null;
-                if ( bean != null){
+                
+                if(request.getParameter("demographicNo") != null) {
+                	demographicNo = request.getParameter("demographicNo");
+                }
+                
+                if (demographicNo == null &&  bean != null){
                     demographicNo = bean.getDemographicNo();                    
                 }
-                try
-		{			
+               
+                
+                try {			
                         //addIAxisPlotDataSet(IAxisPlotDataSet 
-			DataAxisProperties xAxisProperties = new DataAxisProperties();	                        
-			DataAxisProperties yAxisProperties = new DataAxisProperties();						
-                        
-			ChartProperties chartProperties = new ChartProperties();
-			LegendProperties legendProperties = new LegendProperties();
+						DataAxisProperties xAxisProperties = new DataAxisProperties();	                        
+						DataAxisProperties yAxisProperties = new DataAxisProperties();						
+			                        
+						ChartProperties chartProperties = new ChartProperties();
+						LegendProperties legendProperties = new LegendProperties();
 
                         if(type.compareTo("BP")==0){
                             AxisProperties axisProperties = new AxisProperties( false );

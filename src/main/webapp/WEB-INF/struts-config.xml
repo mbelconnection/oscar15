@@ -2492,6 +2492,14 @@
 		<action path="/casemgmt/NotePermissions" type="org.oscarehr.casemgmt.web.NotePermissionsAction"
 			scope="request" validate="false" parameter="method" />
 
+		<action path="/renal/CkdDSA" type="org.oscarehr.renal.web.CkdDSAAction" parameter="method">
+			<forward name="detail" path="/renal/ckd_dsa_detail.jsp" />
+		</action>
+		
+		<action path="/renal/Renal" type="org.oscarehr.renal.web.RenalAction" parameter="method">
+			
+		</action>
+		
 	</action-mappings>
 	<controller processorClass="org.apache.struts.tiles.TilesRequestProcessor" maxFileSize="25M" />
 	<message-resources parameter="oscarResources" null="false" />

@@ -159,6 +159,19 @@
 <link rel="stylesheet" type="text/css" href="../../share/css/OscarStandardLayout.css" />
 <script type="text/javascript" src="../../share/javascript/Oscar.js"></script>
 <script type="text/javascript" src="../../share/javascript/prototype.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath() %>/share/javascript/jquery/jquery-1.4.2.js"></script>
+<script>
+	jQuery.noConflict();
+</script>
+<script>
+	function getDemographicNo() {
+		return '<%=demographic_no%>';
+	}
+	function getContextPath() {
+		return '<%=request.getContextPath()%>';
+	}
+</script>
+<oscar:customInterface name="renal" section="diab"/>
 
 <style type="text/css">
     div.ImmSet { background-color: #ffffff;clear:left;margin-top:10px;}
@@ -469,7 +482,7 @@ div.recommendations li{
     <p><a class="DoNotPrint" href="javascript: function myFunction() {return false; }"  onclick="javascript:createAddAll(<%=demographic_no%>, '<%= URLEncoder.encode(temp,"UTF-8") %>', <%=Math.abs( "ADDTHEMALL".hashCode() ) %>)" TITLE="Add all measurements.">
 	    Add All
 	</a> </p>
-    <p><a class="DoNotPrint" href="javascript: function myFunction() {return false; }"  onclick="javascript:fsPopup(760,670,'AddMeasurementData.jsp?demographic_no=<%=demographic_no%><%=recListBuffer.toString()%>&amp;template=<%=temp%>','addMeasurementData<%=Math.abs( "ADDTHEMALL".hashCode() ) %>')" TITLE="Add all overdue measurements.">
+    <p id="add_overdue"><a class="DoNotPrint" href="javascript: function myFunction() {return false; }"  onclick="javascript:fsPopup(760,670,'AddMeasurementData.jsp?demographic_no=<%=demographic_no%><%=recListBuffer.toString()%>&amp;template=<%=temp%>','addMeasurementData<%=Math.abs( "ADDTHEMALL".hashCode() ) %>')" TITLE="Add all overdue measurements.">
         Add Overdue
     </a></p>
     <%}%>
@@ -586,7 +599,8 @@ div.recommendations li{
 
     </security:oscarSec>
     <% } %>
-<div>
+    
+<div id="print_box">
    <input type="button" class="DoNotPrint" value="Print" onclick="javascript:window.print()">
 </div>
 </td>

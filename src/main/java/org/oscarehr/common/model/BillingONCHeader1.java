@@ -361,7 +361,7 @@ public class BillingONCHeader1 extends AbstractModel<Integer> implements Seriali
 
 	public void setTotal(Long total) {            
 		if(total != null) {                    
-                    this.total = Utility.toCurrency(total/100);                          
+                    this.total = Utility.toCurrency(total*(0.01));                          
                 } else {                    
                     this.total = "0.00";
                 }

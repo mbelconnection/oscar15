@@ -65,13 +65,12 @@ public class BillingONService {
         return billTotal.subtract(paidTotal).add(refundTotal);
     }
     
-     public boolean updateTotal(Integer invoiceNo) {           
-            BillingONCHeader1 billingONCHeader1 = billingONCHeader1Dao.find(invoiceNo);
+     public boolean updateTotal(BillingONCHeader1 bCh1) {                       
             boolean isUpdated = true;
             
             // Update bill total to equal the sum of the billing item fees.             
             BigDecimal feeTotal = new BigDecimal("0.00");
-            List<BillingONItem> billingONItems = billingONCHeader1.getBillingItems();
+            List<BillingONItem> billingONItems = bCh1.getBillingItems();
             if (billingONItems != null) {
                 for (BillingONItem bItem : billingONItems) {
                     if (!bItem.getStatus().equals(BillingONItem.DELETED)) {
@@ -92,11 +91,11 @@ public class BillingONService {
 
             BigDecimal currentTotal = new BigDecimal("0.00");
             try {    
-                Long total = billingONCHeader1.getTotal();                
+                Long total = bCh1.getTotal();                
                 if (total != null) {
                     currentTotal = new BigDecimal(total);
                     currentTotal = currentTotal.movePointLeft(2);
-                }                
+                }
             }
             catch (NumberFormatException e) {
                 isUpdated = false;
@@ -105,7 +104,7 @@ public class BillingONService {
 
             if (isUpdated && (currentTotal.compareTo(feeTotal) != 0)) {
                     feeTotal = feeTotal.movePointRight(2);
-                    billingONCHeader1.setTotal(feeTotal.longValue());
+                    bCh1.setTotal(feeTotal.longValue());
             } 
             
             return isUpdated;

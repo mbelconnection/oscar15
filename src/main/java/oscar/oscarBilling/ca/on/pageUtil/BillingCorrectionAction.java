@@ -151,7 +151,7 @@ public class BillingCorrectionAction extends DispatchAction{
         if (!bCh1.getBillingItems().isEmpty()) {
             updateBillingItems(bCh1, request);
             BillingONService billingONService = (BillingONService) SpringUtils.getBean("billingONService");
-            if (!billingONService.updateTotal(bCh1.getId()))
+            if (!billingONService.updateTotal(bCh1))
                 return mapping.findForward("failure");
         }
                        

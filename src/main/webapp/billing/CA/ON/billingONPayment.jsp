@@ -284,17 +284,20 @@
                                 
                                 boolean isSameBill = true;
                                 
-                                String dxCode = b.getDx();
-                                String bItemFee = "D";
-                                if (!b.getStatus().equals(BillingONItem.DELETED)) {
-                                    bItemFee = b.getFee();
-                                }
-                                
+                                String dxCode = "";
                                 String claimAmtStr = rad.getAmountClaim();
-                                if ((b != null) && b.equals(bLast)) {                                    
-                                    serviceCode = "";
-                                    dxCode = "";
-                                    bItemFee = "";                                    
+                                String bItemFee = "D";
+                                if (b != null) {
+                                    dxCode = b.getDx();                                    
+                                    if (!b.getStatus().equals(BillingONItem.DELETED)) {
+                                        bItemFee = b.getFee();
+                                    }
+                                                                    
+                                    if (b.equals(bLast)) {                                    
+                                        serviceCode = "";
+                                        dxCode = "";
+                                        bItemFee = "";                                    
+                                    }
                                 }
                                          
                                 Integer demoNo = bCh1.getDemographicNo();   
@@ -456,6 +459,7 @@
                         BigDecimal total3rdPaid = new BigDecimal("0.00");
                         BigDecimal total3rdRefunded = new BigDecimal("0.00");
                         BigDecimal total3rdBilled = new BigDecimal("0.00");
+                        final BigDecimal zeroAmt = new BigDecimal("0.00");
                         
                         int num3rdItems = 0;
                         if (ptList != null) {
@@ -463,30 +467,34 @@
                             rowColor = "myWhite";   
 
                             for (BillingONCHeader1 bCh1 : ptList) {   
+                                                            
+                                List<BillingONPayment> bPayList = bPaymentDao.find3rdPartyPayRecordsByBill(bCh1, startDate, endDate);
+                                BigDecimal totalPaid = BillingONPaymentDao.calculatePaymentTotal(bPayList);
+                                BigDecimal totalRefunded = BillingONPaymentDao.calculateRefundTotal(bPayList);
                                 
-                                num3rdItems++;                                                          
-                                
-                                if (rowColor.equals("myWhite"))
-                                    rowColor = "myPurple";
-                                else
-                                    rowColor = "myWhite";
+                                //make sure there were actually payments made in the date range specified on the bill in question
+                                if ((totalPaid.compareTo(zeroAmt) != 0) || (totalRefunded.compareTo(zeroAmt) != 0)) { 
+                                    num3rdItems++;                                                          
+
+                                    if (rowColor.equals("myWhite"))
+                                        rowColor = "myPurple";
+                                    else
+                                        rowColor = "myWhite";
                    %>
                    <tr class="<%=rowColor%>">
                    <%                                                             
-                                String billingDateStr = "";
-                                String demographicName = "";                                
-                                                                
-                                List<BillingONPayment> bPayList = bPaymentDao.find3rdPartyPayRecordsByBill(bCh1, startDate, endDate);
-                                                                          
-                                try {
-                                    billingDateStr = DateUtils.formatDate(bCh1.getBillingDate(), locale);
-                                } catch (java.text.ParseException e) {}
+                                    String billingDateStr = "";
+                                    String demographicName = "";                                                                    
 
-                                Integer demoNo = bCh1.getDemographicNo();     
-                                Demographic d = demographicDao.getDemographicById(demoNo);
-                                demographicName = d.getFormattedName();
-                                String billingNo = String.valueOf(bCh1.getId());
-                                if (!isThisProviderOnly) {  %>                     
+                                    try {
+                                        billingDateStr = DateUtils.formatDate(bCh1.getBillingDate(), locale);
+                                    } catch (java.text.ParseException e) {}
+
+                                    Integer demoNo = bCh1.getDemographicNo();     
+                                    Demographic d = demographicDao.getDemographicById(demoNo);
+                                    demographicName = d.getFormattedName();
+                                    String billingNo = String.valueOf(bCh1.getId());
+                                    if (!isThisProviderOnly) {  %>                     
                                     <td style="text-align:center"><a href="#" onclick="popupPage(700,700,'billingONCorrection.jsp?billing_no=<%=billingNo%>');return false;"><%=bCh1.getId()%></a></td>
                     <%          } else { %>
                                     <td style="text-align:center"><%=billingNo%></td>
@@ -494,34 +502,34 @@
                                  <td style="text-align:center"><%=billingDateStr%></td>
                                  <td style="text-align:center"><a href="#" onclick="popupPage(800,740,'../../../demographic/demographiccontrol.jsp?demographic_no=<%=demoNo%>&displaymode=edit&dboperation=search_detail');return false;"><%=demographicName%></a></td>                                
                     <%                                                   
-                                String dxCode = "";  
-                                String serviceCode = "";
-                                String serviceCount = "";
-                                String amtBilled = "";
-                                
-                                List<BillingONItem> bItems = billingONService.getNonDeletedInvoices(bCh1.getId());
-                                
-                                BigDecimal totalBilled = new BigDecimal("0.00");
-                                
-                                int numBillItems = 0;
-                                for (BillingONItem bItem : bItems) {
-                                    dxCode = bItem.getDx();
-                                    serviceCode = bItem.getServiceCode();
-                                    serviceCount = bItem.getServiceCount();
-                                    amtBilled = bItem.getFee();  
-                                    try {
-                                        totalBilled = totalBilled.add(new BigDecimal(amtBilled));
-                                    } catch (NumberFormatException e) {
-                                       MiscUtils.getLogger().warn("BillItem fee is not a valid amount:" + amtBilled); 
-                                    }
-                                    numBillItems++;
-                                    
-                                    if (numBillItems > 1) {
+                                    String dxCode = "";  
+                                    String serviceCode = "";
+                                    String serviceCount = "";
+                                    String amtBilled = "";
+
+                                    List<BillingONItem> bItems = billingONService.getNonDeletedInvoices(bCh1.getId());
+
+                                    BigDecimal totalBilled = new BigDecimal("0.00");
+
+                                    int numBillItems = 0;
+                                    for (BillingONItem bItem : bItems) {
+                                        dxCode = bItem.getDx();
+                                        serviceCode = bItem.getServiceCode();
+                                        serviceCount = bItem.getServiceCount();
+                                        amtBilled = bItem.getFee();  
+                                        try {
+                                            totalBilled = totalBilled.add(new BigDecimal(amtBilled));
+                                        } catch (NumberFormatException e) {
+                                           MiscUtils.getLogger().warn("BillItem fee is not a valid amount:" + amtBilled); 
+                                        }
+                                        numBillItems++;
+
+                                        if (numBillItems > 1) {
                      %>
                        </tr>
                        <tr class="<%=rowColor%>">
                                 <td colspan="3"></td>
-                    <%              } %>
+                    <%                  } %>
                                  <td style="text-align:center"><%=dxCode%></td>
                                  <td style="text-align:center"><%=serviceCode%></td>
                                  <td style="text-align:center"><%=serviceCount%></td>
@@ -529,64 +537,71 @@
 				 <td colspan="4"></td>
                     
 							                                          
-                     <%       }     %>
+                     <%             }     %>
                                </tr>
                                 <tr class="<%=rowColor%>">
 					<td colspan="6"></td>
                                         <td style="font-weight:bold;text-align:right"><%=totalBilled.toPlainString()%></td>
 
                      
-                     <%
-                                total3rdBilled = total3rdBilled.add(totalBilled);
-                                
-                                int numPayments = 0;
-                                for (BillingONPayment bPay : bPayList) {
-                                    
-                                    numPayments++;
-                                    BigDecimal payAmt = bExtDao.getPayment(bPay);
-                                    BigDecimal refundAmt = bExtDao.getRefund(bPay);
-                                    String payDate = DateUtils.formatDate(bPay.getPayDate(), locale);
-                                    
-                                    String colSpan = "1";
-                                    if (numPayments > 1) {
-                                        colSpan="8";
-                     %>
-                      </tr>
-                      <tr class="<%=rowColor%>">
-                     <%
-                                    }
-                                    
-                                    List<BillingONPayment> paymentRecords = bPaymentDao.find3rdPartyPayRecordsByBill(bCh1);
-                                                                                                            
-                                    String outstandingAmt = "";
-                                    String fontWeight = "";
-                                    if (numPayments == bPayList.size() 
-                                            && !bCh1.getPayProgram().equals("HCP")
-                                            && !bCh1.getPayProgram().equals("WCB")
-                                            && !bCh1.getPayProgram().equals("RMB")
-                                            && !bCh1.getStatus().equals(BillingONCHeader1.DELETED)) {
-                                        BigDecimal amountPaid = BillingONPaymentDao.calculatePaymentTotal(paymentRecords);
-                                        BigDecimal amountRefund = BillingONPaymentDao.calculateRefundTotal(paymentRecords);
-                                        BigDecimal outstandingBalance = totalBilled.subtract(amountPaid).add(amountRefund); 
-                                        outstandingAmt = outstandingBalance.toPlainString();
+                     <%                                    
+                                    total3rdBilled = total3rdBilled.add(totalBilled);
+
+                                    int numPayments = 0;
+                                    for (BillingONPayment bPay : bPayList) {                                        
+                                        BigDecimal payAmt = bExtDao.getPayment(bPay);
+                                        BigDecimal refundAmt = bExtDao.getRefund(bPay);
                                         
-                                        if (outstandingBalance.compareTo(new BigDecimal("0.00")) != 0) {
-                                            fontWeight = "font-weight:bold;";
-                                        }
-                                    }
-                                    total3rdPaid = total3rdPaid.add(payAmt);
-                                    total3rdRefunded = total3rdRefunded.add(refundAmt);
+                                        if ((payAmt.compareTo(zeroAmt)!=0) || (refundAmt.compareTo(zeroAmt)!=0)) {                                                                                    
+                                            numPayments++;
+                                            String payDate = DateUtils.formatDate(bPay.getPayDate(), locale);
+
+                                            String colSpan = "1";                                                                       
+                                            if (numPayments > 1) {
+                                               colSpan="8";
+                     %>
+                                </tr>
+                                <tr class="<%=rowColor%>">
+                     <%
+                     
+                                            }
+
+                      %>
+                                            <td colspan="<%=colSpan%>" style="text-align:right"><%=payAmt.toPlainString()%></td>
+                                            <td style="text-align:right"><%=refundAmt.toPlainString()%></td>                       
+                                            <td style="text-align:center"><%=payDate%></td>  
+                                            <td style="text-align:center"></td>
+                                </tr>
+                                            
+                     <%                     
+                                            total3rdPaid = total3rdPaid.add(payAmt);
+                                            total3rdRefunded = total3rdRefunded.add(refundAmt);
+                                          }
+                                      }
+                                            String outstandingAmt = "";
+                                            String fontWeight = "";
+                                               if (!bCh1.getPayProgram().equals("HCP")
+                                                && !bCh1.getPayProgram().equals("WCB")
+                                                && !bCh1.getPayProgram().equals("RMB")
+                                                && !bCh1.getStatus().equals(BillingONCHeader1.DELETED)) {
+                                                    
+                                                    BigDecimal outstandingBalance = totalBilled.subtract(totalPaid).add(totalRefunded);  
+                                                    outstandingAmt = outstandingBalance.toPlainString();
+
+                                                    if (outstandingBalance.compareTo(zeroAmt) != 0) {
+                                                        fontWeight = "font-weight:bold;";
+                                                    }
+                                                                                            
                       %>              
                    
                       
-                       <td colspan="<%=colSpan%>" style="text-align:right"><%=payAmt.toPlainString()%></td>
-                       <td style="text-align:right"><%=refundAmt.toPlainString()%></td>                       
-                       <td style="text-align:center"><%=payDate%></td>                      
-                       <td style="text-align:right;<%=fontWeight%>"><%=outstandingAmt%></td>               
-                      
-                   <%           } %>
-                     </tr>
-                     <%
+                                <tr  class="<%=rowColor%>">
+                                            <td colspan="11"style="text-align:right;<%=fontWeight%>"><%=outstandingAmt%></td>               
+                                </tr>
+                   <%                   } %>
+                     
+                     <%     
+                               }
                            }                                                       
                         }
                     %> 

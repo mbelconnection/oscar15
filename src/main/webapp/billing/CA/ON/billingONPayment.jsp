@@ -134,13 +134,29 @@
         
     if (errorMsg.isEmpty() && providerNo != null) {  
                        
-        if (providerNo.isEmpty()) {  
-            raList = raDetailDao.getRaDetailByDate(startDate, endDate, locale);            
+        Calendar raCalEndDate = Calendar.getInstance();
+        Calendar raCalStartDate = Calendar.getInstance();
+
+        //Only get OHIP numbers from the last month
+        raCalStartDate.setTime(endDate);
+        raCalEndDate.setTime(endDate);
+
+        int firstDate = raCalStartDate.getActualMinimum(Calendar.DATE);
+        int lastDate = raCalEndDate.getActualMaximum(Calendar.DATE);
+
+        raCalStartDate.set(Calendar.DATE, firstDate);
+        raCalEndDate.set(Calendar.DATE,lastDate);
+
+        Date raStartDate = raCalStartDate.getTime();
+        Date raEndDate = raCalEndDate.getTime();
+
+        if (providerNo.isEmpty()) {
+            raList = raDetailDao.getRaDetailByDate(raStartDate, raEndDate, locale);
             ptList = bCh1Dao.get3rdPartyInvoiceByDate(startDate, endDate,locale);
             premiumList = bPremiumDao.getActiveRAPremiumsByPayDate(startDate, endDate, locale);
         } else {
             Provider p = providerDao.getProvider(providerNo);                       
-            raList = raDetailDao.getRaDetailByDate(p, startDate, endDate, locale);
+            raList = raDetailDao.getRaDetailByDate(p, raStartDate, raEndDate, locale);
             ptList = bCh1Dao.get3rdPartyInvoiceByProvider(p, startDate, endDate,locale);
             premiumList = bPremiumDao.getActiveRAPremiumsByProvider(p, startDate, endDate, locale);
         }       

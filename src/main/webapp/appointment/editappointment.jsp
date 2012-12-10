@@ -50,8 +50,11 @@
 <jsp:useBean id="providerBean" class="java.util.Properties" scope="session" />
 <%@page import="org.oscarehr.common.model.DemographicCust" %>
 <%@page import="org.oscarehr.common.dao.DemographicCustDao" %>
+<%@page import="org.oscarehr.common.model.ProviderPreference"%>
+<%@page import="org.oscarehr.util.SessionConstants"%>
 <%
 	DemographicCustDao demographicCustDao = (DemographicCustDao)SpringUtils.getBean("demographicCustDao");
+        ProviderPreference providerPreference=(ProviderPreference)session.getAttribute(SessionConstants.LOGGED_IN_PROVIDER_PREFERENCE);
 %>
 <%
   ApptData apptObj = ApptUtil.getAppointmentFromSession(request);
@@ -375,7 +378,7 @@ function setType(typeSel,reasonSel,locSel,durSel,notesSel,resSel) {
 
         OscarProperties props = OscarProperties.getInstance();
         String displayStyle="display:none";
-        String myGroupNo = (String) session.getAttribute("groupno");
+        String myGroupNo = providerPreference.getMyGroupNo();
         boolean bMultipleSameDayGroupAppt = false;
         if (props.getProperty("allowMultipleSameDayGroupAppt", "").equalsIgnoreCase("no")) {
 

@@ -1011,12 +1011,27 @@ function changeSite(sel) {
                     <% String useDemoClinicInfoOnInvoice = oscar.OscarProperties.getInstance().getProperty("useDemoClinicInfoOnInvoice","");
                        if (!useDemoClinicInfoOnInvoice.isEmpty() && useDemoClinicInfoOnInvoice.equals("true")) { %>
                        <br><bean:message key="billing.billingCorrection.useDemoContactYesNo"/>:<input type="checkbox" name="overrideUseDemoContact" id="overrideUseDemoContact" onclick="updateReprint('billingON3rdInv.jsp?billingNo=<%=billNo%>')"/>
-                    <% } %>
+                    <% } %>                   
                     </span>
                 
                 <span style="float:left;">
                     <bean:message key="billing.billingCorrection.msgNotes"/>:<br>
                     <textarea name="comment" cols="32" rows=4><%=comment %></textarea>
+                     
+                      <%                            
+                            if (thirdParty && bCh1 != null && OscarProperties.getInstance().hasProperty("invoice_due_date")) {
+                                BillingONExt bExtDueDate = bExtDao.getDueDate(bCh1);
+                                String dueDateStr; 
+                                                               
+                                if (bExtDueDate == null) {
+                                    Integer numDaysTilDue = Integer.parseInt(OscarProperties.getInstance().getProperty("invoice_due_date", "0")); 
+                                    dueDateStr = DateUtils.sumDate(bCh1.getBillingDate(), numDaysTilDue, request.getLocale());
+                                } else {
+                                    dueDateStr = bExtDueDate.getValue();
+                                }
+                          %>
+                          <br/><bean:message key="billing.billingCorrection.dueDate"/><img src="../../../images/cal.gif" id="invoiceDueDate_cal" />:<input type="text" maxlength="10" id="invoiceDueDate" name="invoiceDueDate" value="<%=dueDateStr%>"/>
+                       <% } %>
                 </span>
             </td>
 	</tr>
@@ -1194,6 +1209,13 @@ function changeSite(sel) {
     Calendar.setup( { inputField : "xml_appointment_date", ifFormat : "%Y-%m-%d", showsTime :false, button : "xml_appointment_date_cal", singleClick : true, step : 1 } );
     Calendar.setup( { inputField : "xml_vdate", ifFormat : "%Y-%m-%d", showsTime :false, button : "xml_vdate_cal", singleClick : true, step : 1 } );
 </script>
+
+<% if (thirdParty && bCh1 != null && OscarProperties.getInstance().hasProperty("invoice_due_date")) { %>
+<script type="text/javascript">
+    Calendar.setup( { inputField : "invoiceDueDate", ifFormat : "%Y-%m-%d", showsTime :false, button : "invoiceDueDate_cal", singleClick : true, step : 1 } );
+</script>
+<% } %>
+
 <%!
     String nullToEmpty(String str) {
         return (str == null ? "" : str);

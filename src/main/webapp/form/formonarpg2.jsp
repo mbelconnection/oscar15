@@ -4,6 +4,7 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
+<%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar"%>
 
 
 <%
@@ -57,6 +58,16 @@
 <!-- the following script defines the Calendar.setup helper function, which makes
        adding a calendar a matter of 1 or 2 lines of code. -->
 <script type="text/javascript" src="../share/calendar/calendar-setup.js"></script>
+
+<script type="text/javascript" src="<%=request.getContextPath() %>/js/jquery.js"></script>
+<script type="text/javascript" language="JavaScript">
+<!--
+jQuery.noConflict();
+</script>
+<script>
+var demographicNo = '<%=request.getParameter("demographic_no")%>';
+</script>
+<oscar:customInterface section="formonar"/>
 </head>
 
 <script type="text/javascript" language="Javascript">
@@ -601,7 +612,7 @@ function calToday(field) {
 			<%
   if (!bView) {
 %>
-			<td><a
+			<td id="labRow"><a
 				href="javascript: popPage('formlabreq07.jsp?demographic_no=<%=demoNo%>&formId=0&provNo=<%=provNo%>&labType=AnteNatal','LabReq');">LAB</a>
 			</td>
 

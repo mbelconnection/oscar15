@@ -40,8 +40,9 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.DispatchAction;
 import org.apache.struts.validator.DynaValidatorForm;
-import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.PMmodule.dao.ProviderDao;
+import org.oscarehr.common.dao.DemographicDao;
+import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.Provider;
 import org.oscarehr.eyeform.dao.ConsultationReportDao;
 import org.oscarehr.eyeform.model.EyeformConsultationReport;
@@ -77,6 +78,12 @@ public class ConReportListAction extends DispatchAction {
 		
 		if(crBean.getDemographicNo() != null && crBean.getDemographicNo().length()>0) {
 			cr.setDemographicNo(Integer.parseInt(crBean.getDemographicNo()));
+			if(crBean.getDemographicName() == null || crBean.getDemographicName().equals("")) {
+				Demographic d = demographicDao.getDemographic(crBean.getDemographicNo());
+				if(d != null) {
+					crBean.setDemographicName(d.getFormattedName());
+				}
+			}
 		}
 		
 		Date startDate = null;

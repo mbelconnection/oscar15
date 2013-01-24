@@ -28,6 +28,7 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
+<%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar"%>
 
 <%
     String formClass = "AR";
@@ -59,6 +60,15 @@
 <link rel="stylesheet" type="text/css"
 	href="<%=bView?"arStyleView.css" : "arStyle.css"%>">
 <html:base />
+<script type="text/javascript" src="<%=request.getContextPath() %>/js/jquery.js"></script>
+<script type="text/javascript" language="JavaScript">
+<!--
+jQuery.noConflict();
+</script>
+<script>
+var demographicNo = '<%=request.getParameter("demographic_no")%>';
+</script>
+<oscar:customInterface section="formar"/>
 </head>
 
 <script type="text/javascript" language="Javascript">
@@ -287,8 +297,8 @@ var maxYear=9900;
 			<%
   if (!bView) {
 %>
-			<td><a
-				href="javascript: popPage('formlabreq07.jsp?demographic_no=<%=demoNo%>&formId=0&provNo=<%=provNo%>&labType=AnetNatal','LabReq');">LAB</a>
+			<td id="labRow">
+			<a href="javascript: popPage('formlabreq07.jsp?demographic_no=<%=demoNo%>&formId=0&provNo=<%=provNo%>&labType=AnetNatal','LabReq');">LAB</a>
 			</td>
 
 			<td align="right"><b>View:</b> <a

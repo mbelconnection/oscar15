@@ -44,7 +44,7 @@
   }
   if (groupView == null) {
       if( groups.size() > 0 ) {
-        HashMap tmphash = (HashMap) groups.get(0);
+        Hashtable tmphash = (Hashtable) groups.get(0);
         groupView = (String) tmphash.get("groupName");
       }
       else {
@@ -130,7 +130,7 @@ else if (orderByRequest.equals("file_name")) orderBy = EFormUtil.FILE_NAME;
 				<td nowrap><select name="group_view"
 					onchange="this.form.submit()">
 					<%                              for (int i=0; i<groups.size(); i++) { 
-                                   HashMap curhash = (HashMap) groups.get(i);
+                                   Hashtable curhash = (Hashtable) groups.get(i);
                                    String selected = "";
                                       if (((String) curhash.get("groupName")).equals(groupView)) {
                                           selected = " selected";

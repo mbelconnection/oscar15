@@ -89,24 +89,19 @@ public class NoteDisplayNonNote implements NoteDisplay {
 		Calendar cal1 = Calendar.getInstance();
 		Calendar cal2 = Calendar.getInstance();
 		date = null;
-		Date billDate = null;
-                try {
-                    billDate = h1.getBillingDate();   
-                    if(  billDate != null ) {
-			cal1.setTime(h1.getBillingDate());
-			
-			if( h1.getBillingTime() != null ) {
-				cal2.setTime(h1.getBillingTime());
-				cal1.set(Calendar.HOUR_OF_DAY, cal2.get(Calendar.HOUR_OF_DAY));
-				cal1.set(Calendar.MINUTE, cal2.get(Calendar.MINUTE));
-				cal1.set(Calendar.SECOND, cal2.get(Calendar.SECOND));
-			}
-			
-			date = cal1.getTime();
-                    }                    
-                } catch (java.text.ParseException e) {
-                    MiscUtils.getLogger().error("Unexpected error",e);
-                }
+		Date billDate = h1.getBillingDate();   
+                if(  billDate != null ) {
+                    cal1.setTime(h1.getBillingDate());
+
+                    if( h1.getBillingTime() != null ) {
+                            cal2.setTime(h1.getBillingTime());
+                            cal1.set(Calendar.HOUR_OF_DAY, cal2.get(Calendar.HOUR_OF_DAY));
+                            cal1.set(Calendar.MINUTE, cal2.get(Calendar.MINUTE));
+                            cal1.set(Calendar.SECOND, cal2.get(Calendar.SECOND));
+                    }
+
+                    date = cal1.getTime();
+                }                                    
 		
 		StringBuilder tmpNote = new StringBuilder();
                 BillingONService billingONService = (BillingONService) SpringUtils.getBean("billingONService");

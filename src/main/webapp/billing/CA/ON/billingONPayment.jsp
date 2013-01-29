@@ -499,12 +499,9 @@
                    %>
                    <tr class="<%=rowColor%>">
                    <%                                                             
-                                    String billingDateStr = "";
+                                    String billingDateStr = DateUtils.formatDate(bCh1.getBillingDate(), locale);
                                     String demographicName = "";                                                                    
 
-                                    try {
-                                        billingDateStr = DateUtils.formatDate(bCh1.getBillingDate(), locale);
-                                    } catch (java.text.ParseException e) {}
 
                                     Integer demoNo = bCh1.getDemographicNo();     
                                     Demographic d = demographicDao.getDemographicById(demoNo);

@@ -338,7 +338,7 @@ public class BillingONCHeader1 extends AbstractModel<Integer> implements Seriali
 		this.province = province;
 	}
 
-	public Date getBillingDate() throws ParseException {
+	public Date getBillingDate() {
 		return this.billingDate;
 	}
 
@@ -346,7 +346,7 @@ public class BillingONCHeader1 extends AbstractModel<Integer> implements Seriali
 		this.billingDate = billingDate;
 	}
 
-	public Date getBillingTime() throws ParseException {
+	public Date getBillingTime() {
 		return this.billingTime;
 	}
 

@@ -32,6 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.oscarehr.common.model.BillingONCHeader1;
 import org.oscarehr.common.dao.BillingONCHeader1Dao;
 import org.oscarehr.util.MiscUtils;
+import org.oscarehr.common.model.BillingONPayment;
+import org.oscarehr.common.dao.BillingONPaymentDao;
 
 /**
  *
@@ -42,6 +44,9 @@ public class BillingONService {
     
     @Autowired
     BillingONCHeader1Dao billingONCHeader1Dao;
+    
+    @Autowired
+    BillingONPaymentDao billingONPaymentDao;
     
     public List<BillingONItem> getNonDeletedInvoices(Integer invoiceNo) {
         BillingONCHeader1 billingONCHeader1 = billingONCHeader1Dao.find(invoiceNo);
@@ -57,12 +62,22 @@ public class BillingONService {
         return tempItems;
     }
     
-    public BigDecimal calculateBalanceOwing(Integer invoiceNo, BigDecimal paidTotal, BigDecimal refundTotal) {
+    public BigDecimal calculateBalanceOwing(Integer invoiceNo) {
         BillingONCHeader1 billingONCHeader1 = billingONCHeader1Dao.find(invoiceNo);
-        BigDecimal billTotal = new BigDecimal(billingONCHeader1.getTotal());
-        billTotal = billTotal.movePointLeft(2);
-
-        return billTotal.subtract(paidTotal).add(refundTotal);
+      
+        if (billingONCHeader1 != null) {
+        
+            List<BillingONPayment> paymentRecords = billingONPaymentDao.find3rdPartyPayRecordsByBill(billingONCHeader1);
+            BigDecimal paidTotal = BillingONPaymentDao.calculatePaymentTotal(paymentRecords);
+            BigDecimal refundTotal = BillingONPaymentDao.calculateRefundTotal(paymentRecords);
+            BigDecimal billTotal = new BigDecimal(billingONCHeader1.getTotal());
+            billTotal = billTotal.movePointLeft(2);
+            
+            return billTotal.subtract(paidTotal).add(refundTotal);
+        } else {
+            MiscUtils.getLogger().error("Cannot find BillingONCHeader1 JPA Entity for Invoice No." + invoiceNo);
+            return null;
+        }
     }
     
      public boolean updateTotal(BillingONCHeader1 bCh1) {                       

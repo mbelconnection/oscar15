@@ -167,17 +167,6 @@
 <script type="text/javascript"
 	src="../../../share/calendar/calendar-setup.js"></script>
 <script language="JavaScript">
-var reprintUpdate = 0;
-function updateReprint(hrefValue) {
-   var reprintLink = document.getElementById("reprintLink");   
-   if (reprintUpdate > 0) {
-     reprintUpdate = 0;
-     reprintLink.href=hrefValue;
-   } else {     
-     reprintUpdate = 1;
-     reprintLink.href=hrefValue + "&overrideUseDemoContact=1"
-   }
-}
 <!--
 
 
@@ -1012,8 +1001,16 @@ function changeSite(sel) {
                         <a href="#" onclick="search3rdParty('billTo');return false;"><bean:message key="billing.billingCorrection.msgPayer"/></a><br>
                         <textarea id="billTo" name="billTo" cols="32" rows=4><%=payer%></textarea>
                     <% String useDemoClinicInfoOnInvoice = oscar.OscarProperties.getInstance().getProperty("useDemoClinicInfoOnInvoice","");
-                       if (!useDemoClinicInfoOnInvoice.isEmpty() && useDemoClinicInfoOnInvoice.equals("true")) { %>
-                       <br><bean:message key="billing.billingCorrection.useDemoContactYesNo"/>:<input type="checkbox" name="overrideUseDemoContact" id="overrideUseDemoContact" onclick="updateReprint('billingON3rdInv.jsp?billingNo=<%=billNo%>')"/>
+                       if (!useDemoClinicInfoOnInvoice.isEmpty() && useDemoClinicInfoOnInvoice.equals("true")) {
+                           
+                                BillingONExt bExtUseBillTo = bExtDao.getUseBillTo(bCh1);
+                                String selectUseBillTo=""; 
+                                                               
+                                if ((bExtUseBillTo != null) && bExtUseBillTo.getValue().equalsIgnoreCase("on")) {
+                                    selectUseBillTo = "checked";
+                                }                         
+                     %>
+                       <br><bean:message key="billing.billingCorrection.useDemoContactYesNo"/>:<input type="checkbox" name="overrideUseDemoContact" id="overrideUseDemoContact" <%=selectUseBillTo%> />
                     <% } %>                   
                     </span>
                 

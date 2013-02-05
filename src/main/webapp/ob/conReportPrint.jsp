@@ -132,10 +132,15 @@
     }
 
     function CloseWindow(){
-    	window.close();
+    	//window.close();
+	//appear to close window and go back to form
+	history.go(-1);
     }
 
+var flag =1;
+
     function flipFaxFooter(){
+
         if (flag == 1 ){
             document.getElementById("faxFooter").innerHTML="<hr><bean:message key="oscarEncounter.oscarConsultationRequest.consultationFormPrint.msgFaxFooterMessage"/>";
             flag = 0;
@@ -155,7 +160,7 @@
             <input type="hidden" name="reqId" value=""/>
             <input type="hidden" name="demographicNo" value=""/>
             <input type="hidden" name="providerNo" value=""/>
-        <table class="header" >
+        <table class="header" style="width:100%">
             <tr>
             <td align="center">
                 
@@ -209,6 +214,7 @@
          	</tr>
             <tr>
                     <td id="faxFooter">
+ 			
 
                     </td>
                 </tr>
@@ -224,6 +230,9 @@
         <table class="printTable" name="headerTable">
  
         </table>
+
+
+
     </body>
 </html:html>
 

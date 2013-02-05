@@ -48,7 +48,7 @@ public class ConsultationReport extends AbstractModel<Integer>{
 	private Date date = new Date();
 	
 	@Column(name="referal_id")
-	private Integer referralId;
+	private String referralId;
 	
 	private Integer appointmentNo = 0;
 	
@@ -139,11 +139,11 @@ public class ConsultationReport extends AbstractModel<Integer>{
 		this.date = date;
 	}
 
-	public Integer getReferralId() {
+	public String getReferralId() {
 		return referralId;
 	}
 
-	public void setReferralId(Integer referralId) {
+	public void setReferralId(String referralId) {
 		this.referralId = referralId;
 	}
 

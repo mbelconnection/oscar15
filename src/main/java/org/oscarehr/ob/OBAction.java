@@ -125,7 +125,7 @@ public class OBAction extends DispatchAction {
 		con = (ConsultationReport)f.get("cp");
 		con.setStatusText(formatStatus(con.getStatus()));
 		
-		List<ProfessionalSpecialist> specs = professionalSpecialistDao.findByReferralNo(String.valueOf(con.getReferralId()));
+		List<ProfessionalSpecialist> specs = professionalSpecialistDao.findByReferralNo(con.getReferralId());
 		if(specs.size()>0) {
 			ProfessionalSpecialist ps = specs.get(0);
 			con.setSendTo(ps.getFormattedName());

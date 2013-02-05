@@ -192,6 +192,16 @@ text-align: right;
 		jQuery("#print").val("true");
 		return true;
 	}
+
+
+
+function printCheck(v){
+
+if(v!="" && document.getElementById("referral_doc_name").value!=""){
+document.getElementById("printPreview").disabled = false;
+}
+
+}
 </script>
 </head>
 
@@ -235,7 +245,7 @@ text-align: right;
 							<td class="stat" colspan="2"><bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.msgCreated" />:</td>
 						</tr>
 						<tr>
-							<td class="stat" colspan="2" align="right" nowrap>provider name
+							<td class="stat" colspan="2" align="right" nowrap><%=conReport.getProvider()%>
 							</td>
 						</tr>
 					</table>
@@ -295,8 +305,9 @@ text-align: right;
 								<td class="tite4">Send to:</td>
 
 								<td align="left" class="tite1">
-									<input type="text" name="referral_doc_name" value="<%=referralDocName%>"/>
-									<a href="javascript:referralScriptAttach2('cp.referralId','referral_doc_name')">
+				<input type="text" name="referral_doc_name" id="referral_doc_name" value="<%=referralDocName%>" readonly/>
+				
+				<a href="javascript:referralScriptAttach2('cp.referralId','referral_doc_name')">
 										<span style="font-size: 10;">Search #</span>
 									</a>
 								</td>
@@ -316,26 +327,26 @@ text-align: right;
 					<td class="tite4" colspan="3">
 						Tests request:<br/>
 						<div  style="background-color:white">
-							<input type="checkbox" name="cp.plan" <%=getChecked("CBC",testMap) %> value="CBC"/>CBC<br/>
-							<input type="checkbox" name="cp.plan" <%=getChecked("Blood type and screen",testMap) %> value="Blood type and screen"/>Blood type and screen<br/>
-							<input type="checkbox" name="cp.plan" <%=getChecked("Rubella",testMap) %> value="Rubella"/>Rubella<br/>
-							<input type="checkbox" name="cp.plan" <%=getChecked("HBsAG",testMap) %> value="HBsAG"/>HBsAG<br/>
-							<input type="checkbox" name="cp.plan" <%=getChecked("VDRL",testMap) %> value="VDRL"/>VDRL<br/>
-							<input type="checkbox" name="cp.plan" <%=getChecked("HIV",testMap) %> value="HIV"/>HIV<br/>
-							<input type="checkbox" name="cp.plan" <%=getChecked("PAP",testMap) %> value="PAP"/>PAP<br/>
-							<input type="checkbox" name="cp.plan" <%=getChecked("Cervical swabs",testMap) %> value="Cervical swabs"/>Cervical swabs<br/>
-							<input type="checkbox" name="cp.plan" <%=getChecked("Urine culture",testMap) %> value="Urine culture"/>Urine culture<br/>
-							<input type="checkbox" name="cp.plan" <%=getChecked("Genetic screening results",testMap) %> value="Genetic screening results"/>Genetic screening results<br/>
-							<input type="checkbox" name="cp.plan" <%=getChecked("Ultrasounds",testMap) %> value="Ultrasounds"/>Ultrasounds<br/>
-							<input type="checkbox" name="cp.plan" <%=getChecked("OGCT",testMap) %> value="OGCT"/>OGCT<br/>
-							<input type="checkbox" name="cp.plan"<%=getChecked("Other",testMap) %>  value="Other"/>Other&nbsp;<html:text property="cp.conMemo" size="20"/><br/>
+							<input type="checkbox" name="cp.plan" <%=getChecked("CBC",testMap) %> value="CBC" onchange="return printCheck(this.value)" />CBC<br/>
+							<input type="checkbox" name="cp.plan" <%=getChecked("Blood type and screen",testMap) %> value="Blood type and screen" onchange="return printCheck(this.value)"/>Blood type and screen<br/>
+							<input type="checkbox" name="cp.plan" <%=getChecked("Rubella",testMap) %> value="Rubella" onchange="return printCheck(this.value)"/>Rubella<br/>
+							<input type="checkbox" name="cp.plan" <%=getChecked("HBsAG",testMap) %> value="HBsAG" onchange="return printCheck(this.value)"/>HBsAG<br/>
+							<input type="checkbox" name="cp.plan" <%=getChecked("VDRL",testMap) %> value="VDRL" onchange="return printCheck(this.value)"/>VDRL<br/>
+							<input type="checkbox" name="cp.plan" <%=getChecked("HIV",testMap) %> value="HIV" onchange="return printCheck(this.value)"/>HIV<br/>
+							<input type="checkbox" name="cp.plan" <%=getChecked("PAP",testMap) %> value="PAP" onchange="return printCheck(this.value)"/>PAP<br/>
+							<input type="checkbox" name="cp.plan" <%=getChecked("Cervical swabs",testMap) %> value="Cervical swabs" onchange="return printCheck(this.value)"/>Cervical swabs<br/>
+							<input type="checkbox" name="cp.plan" <%=getChecked("Urine culture",testMap) %> value="Urine culture" onchange="return printCheck(this.value)"/>Urine culture<br/>
+							<input type="checkbox" name="cp.plan" <%=getChecked("Genetic screening results",testMap) %> value="Genetic screening results" onchange="return printCheck(this.value)"/>Genetic screening results<br/>
+							<input type="checkbox" name="cp.plan" <%=getChecked("Ultrasounds",testMap) %> value="Ultrasounds" onchange="return printCheck(this.value)"/>Ultrasounds<br/>
+							<input type="checkbox" name="cp.plan" <%=getChecked("OGCT",testMap) %> value="OGCT" onchange="return printCheck(this.value)"/>OGCT<br/>
+							<input type="checkbox" name="cp.plan"<%=getChecked("Other",testMap) %>  value="Other" onchange="return printCheck(this.value)"/>Other&nbsp;<html:text property="cp.conMemo" size="20" onchange="return printCheck(this.value)"/><br/>
 						</div>
 					</td>
 				</tr>
 
 				<tr>
 					<td colspan="3" style="text-align:right">
-						<input type="submit" value="Print Preview" onclick="return doPrint();"/>
+						<input type="submit" value="Print Preview" id="printPreview" onclick="return doPrint();" disabled/>
 						<input type="submit" value="Save and Close" />
 					</td>
 				</tr>

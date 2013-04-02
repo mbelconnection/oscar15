@@ -3038,6 +3038,7 @@ CREATE TABLE `formLabReq10` (
   `hcType` varchar(4),
   `male` tinyint(1),
   `female` tinyint(1),
+  `letterhead` varchar(25),
   PRIMARY KEY (`ID`)
 );
 

@@ -2502,6 +2502,10 @@
 		<action path="/casemgmt/NotePermissions" type="org.oscarehr.casemgmt.web.NotePermissionsAction"
 			scope="request" validate="false" parameter="method" />
 
+		<action path="/oscarRx/Dispense" type="org.oscarehr.rx.dispensary.DispensaryAction" parameter="method" scope="request">
+			<forward name="list" path="/oscarRx/dispensary/list.jsp" />
+		</action>
+		
 	</action-mappings>
 	<controller processorClass="org.apache.struts.tiles.TilesRequestProcessor" maxFileSize="25M" />
 	<message-resources parameter="oscarResources" null="false" />

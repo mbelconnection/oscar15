@@ -40,9 +40,9 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
+
 import oscar.oscarRx.data.RxPrescriptionData;
 import oscar.oscarRx.util.RxUtil;
-
 import oscar.util.UtilDateUtilities;
 
 @Entity
@@ -155,6 +155,8 @@ public class Drug extends AbstractModel<Integer> implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastUpdateDate;
 
+	private Boolean dispenseInternal;
+	
 	// ///
 	@Transient
 	private String remoteFacilityName = null;
@@ -232,6 +234,7 @@ public class Drug extends AbstractModel<Integer> implements Serializable {
 		this.refillDuration = drug.getRefillDuration();
 		this.refillQuantity = drug.getRefillQuantity();
 		this.dispenseInterval = drug.getDispenseInterval();
+		this.dispenseInternal = drug.getDispenseInternal();
 	}
 
 	@PreUpdate
@@ -847,4 +850,13 @@ public class Drug extends AbstractModel<Integer> implements Serializable {
     	this.lastUpdateDate = lastUpdateDate;
     }
 
+	public Boolean getDispenseInternal() {
+		return dispenseInternal;
+	}
+
+	public void setDispenseInternal(Boolean dispenseInternal) {
+		this.dispenseInternal = dispenseInternal;
+	}
+
+	
 }

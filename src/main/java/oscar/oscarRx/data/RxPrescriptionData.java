@@ -115,6 +115,7 @@ public class RxPrescriptionData {
 		prescription.setLongTerm(drug.isLongTerm());
 		prescription.setCustomNote(drug.isCustomNote());
 		prescription.setPastMed(drug.getPastMed());
+		prescription.setDispenseInternal(drug.getDispenseInternal());
 		prescription.setStartDateUnknown(drug.getStartDateUnknown());
 		prescription.setComment(drug.getComment());
 		if (drug.getPatientCompliance() == null) prescription.setPatientCompliance(null);
@@ -212,6 +213,7 @@ public class RxPrescriptionData {
         prescription.setLongTerm(rePrescribe.getLongTerm());
         prescription.setCustomNote(rePrescribe.isCustomNote());
         prescription.setPastMed(rePrescribe.getPastMed());
+        prescription.setDispenseInternal(rePrescribe.isDispenseInternal());
         prescription.setPatientCompliance(rePrescribe.getPatientCompliance());
         prescription.setOutsideProviderName(rePrescribe.getOutsideProviderName());
         prescription.setOutsideProviderOhip(rePrescribe.getOutsideProviderOhip());
@@ -283,6 +285,7 @@ public class RxPrescriptionData {
                 p.setLongTerm(rs.getBoolean("long_term"));
                 p.setCustomNote(rs.getBoolean("custom_note"));
                 p.setPastMed(rs.getBoolean("past_med"));
+                p.setDispenseInternal(rs.getBoolean("dispenseInternal"));
                 p.setStartDateUnknown(rs.getBoolean("start_date_unknown"));
                 p.setComment(rs.getString("comment"));
                 if (rs.getObject("patient_compliance")==null) p.setPatientCompliance(null);
@@ -348,6 +351,7 @@ public class RxPrescriptionData {
         p.setLongTerm(rs.getBoolean("long_term"));
         p.setCustomNote(rs.getBoolean("custom_note"));
         p.setPastMed(rs.getBoolean("past_med"));
+        p.setDispenseInternal(rs.getBoolean("dispenseInternal"));
         p.setStartDateUnknown(rs.getBoolean("start_date_unknown"));
         p.setComment(rs.getString("comment"));
         if (rs.getObject("patient_compliance")==null) p.setPatientCompliance(null);
@@ -545,6 +549,7 @@ public class RxPrescriptionData {
                 p.setLongTerm(rs.getBoolean("long_term"));
                 p.setCustomNote(rs.getBoolean("custom_note"));
                 p.setPastMed(rs.getBoolean("past_med"));
+                p.setDispenseInternal(rs.getBoolean("dispenseInternal"));
                 p.setStartDateUnknown(rs.getBoolean("start_date_unknown"));
                 p.setComment(rs.getString("comment"));
                 if (rs.getObject("patient_compliance")==null) p.setPatientCompliance(null);
@@ -631,6 +636,7 @@ public class RxPrescriptionData {
                 p.setLongTerm(rs.getBoolean("long_term"));
                 p.setCustomNote(rs.getBoolean("custom_note"));
                 p.setPastMed(rs.getBoolean("past_med"));
+                p.setDispenseInternal(rs.getBoolean("dispenseInternal"));
                 p.setStartDateUnknown(rs.getBoolean("start_date_unknown"));
                 p.setComment(rs.getString("comment"));
                 if (rs.getObject("patient_compliance")==null) p.setPatientCompliance(null);
@@ -714,6 +720,7 @@ public class RxPrescriptionData {
                 p.setLongTerm(rs.getBoolean("long_term"));
                 p.setCustomNote(rs.getBoolean("custom_note"));
                 p.setPastMed(rs.getBoolean("past_med"));
+                p.setDispenseInternal(rs.getBoolean("dispenseInternal"));
                 p.setStartDateUnknown(rs.getBoolean("start_date_unknown"));
                 p.setComment(rs.getString("comment"));
                 if (rs.getObject("patient_compliance")==null) p.setPatientCompliance(null);
@@ -833,6 +840,7 @@ public class RxPrescriptionData {
                     p.setLongTerm(rs.getBoolean("long_term"));
                     p.setCustomNote(rs.getBoolean("custom_note"));
                     p.setPastMed(rs.getBoolean("past_med"));
+                    p.setDispenseInternal(rs.getBoolean("dispenseInternal"));
                     p.setStartDateUnknown(rs.getBoolean("start_date_unknown"));
                     p.setComment(rs.getString("comment"));
                     if (rs.getObject("patient_compliance")==null) p.setPatientCompliance(null);
@@ -1138,6 +1146,8 @@ public class RxPrescriptionData {
         private String drugFormList = "";
         private String datesReprinted = "";
 
+        private boolean dispenseInternal = false;
+        
         private List<String> policyViolations = new ArrayList<String>();
 
         public List<String> getPolicyViolations() {
@@ -1691,8 +1701,20 @@ public class RxPrescriptionData {
         public void setPastMed(boolean pm) {
             this.pastMed = pm;
         }
+        
+        public boolean getDispenseInternal() {
+			return dispenseInternal;
+		}
 
-        public Boolean getPatientCompliance() {
+        public boolean isDispenseInternal() {
+			return dispenseInternal;
+		}
+
+		public void setDispenseInternal(boolean dispenseInternal) {
+			this.dispenseInternal = dispenseInternal;
+		}
+
+		public Boolean getPatientCompliance() {
             return this.patientCompliance;
         }
 
@@ -2067,7 +2089,7 @@ public class RxPrescriptionData {
                             RxUtil.DateToString(this.getLastRefillDate()) + "' AND " + "nosubs = " + this.getNosubsInt() + " AND " + "prn = " + this.getPrnInt() + " AND " +
                             "special = '" +escapedSpecial+ "' AND " + "outside_provider_name = '" + this.getOutsideProviderName() + "' AND " +
                             "outside_provider_ohip = '" + this.getOutsideProviderOhip() + "' AND " + "custom_instructions = " + this.getCustomInstr() + " AND " + "long_term = " +
-                            this.getLongTerm() +" AND " + "custom_note = " + this.isCustomNote() + " AND " + "past_med = " + this.getPastMed() + " AND " + "patient_compliance = " + this.getPatientCompliance()
+                            this.getLongTerm() +" AND " + "custom_note = " + this.isCustomNote() + " AND " + "past_med = " + this.getPastMed() + " AND dispenseInternal=" + this.isDispenseInternal()+  " AND " + "patient_compliance = " + this.getPatientCompliance()
                             +" AND "+" special_instruction = '"+this.getSpecialInstruction()+"' AND comment = '" + this.getComment() + "' AND start_date_unknown = " + this.getStartDateUnknown();
                     MiscUtils.getLogger().debug(sql);
                     rs = DBHandler.GetSQL(sql);
@@ -2136,7 +2158,7 @@ public class RxPrescriptionData {
                     	drug.setPosition(position);
                     	drug.setComment(getComment());
                     	drug.setStartDateUnknown(getStartDateUnknown());
-
+                    	drug.setDispenseInternal(getDispenseInternal());
                     	drugDao.persist(drug);
 
                         drugId = drug.getId();
@@ -2195,7 +2217,7 @@ public class RxPrescriptionData {
                 	drug.setPosition(getPosition());
                 	drug.setComment(comment);
                 	drug.setStartDateUnknown(getStartDateUnknown());
-
+                	drug.setDispenseInternal(getDispenseInternal());
                 	drugDao.merge(drug);
 
                     b = true;

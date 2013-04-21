@@ -135,6 +135,7 @@ if(outcome != null){
 					<option value="SIOUX">SIOUX</option>
 					<option value="TDIS">TDIS</option>
 					<option value="Spire">Spire</option>
+					<option value="BIOTEST">BioTest</option>
 					<option value="OTHER">Other</option>
 				</select></td>
 			</tr>

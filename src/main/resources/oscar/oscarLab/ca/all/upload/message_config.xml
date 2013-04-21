@@ -16,4 +16,5 @@
 	<handler name="MEDVUE"  className="MEDVUEHandler" />
     <handler name="PFHT"	className="PFHTHandler"/>
     <handler name="Spire"	className="SpireHandler"/>
+    <handler name="BIOTEST"	className="BioTestHandler"/>
 </message-configuration>

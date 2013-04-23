@@ -245,5 +245,10 @@ public class TicklerDAO extends HibernateDaoSupport {
     public void activateTickler(Long tickler_id, String provider) {
         updateTickler(tickler_id, provider, 'A');
     }
+    
+    @SuppressWarnings("unchecked")
+    public List<Tickler> search_tickler_bydemo(String demographic_no, String status, Date beginDate, Date endDate) {
+	return this.getHibernateTemplate().find("SELECT t FROM Tickler t WHERE t.demographic_no like ? and t.status = ? and t.service_date >= ? and t.service_date <= ? order by t.service_date desc", new Object[]{demographic_no,status,beginDate, endDate});
+    }
 
 }

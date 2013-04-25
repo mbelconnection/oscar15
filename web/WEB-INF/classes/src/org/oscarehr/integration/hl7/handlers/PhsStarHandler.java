@@ -74,7 +74,7 @@ public class PhsStarHandler extends BasePhsStarHandler {
 		logger.debug("Searching by MRN");
 		PatientId mrn = internalIds.get("MR");
 		if(mrn != null) {
-			logger.debug("MRN found in message");
+			logger.debug("MRN: "+ mrn + " found in message"); //added the mrn to debug
 			List<Demographic> records = clientDao.getClientsByChartNo(mrn.getId());
 			if(records.size() == 1) {
 				logger.debug("Found demographic:"+records.get(0).getDemographicNo());
@@ -89,8 +89,20 @@ public class PhsStarHandler extends BasePhsStarHandler {
 		logger.debug("Searching by Temporary MRN");
 		PatientId tmr = internalIds.get("TMR");
 		if(tmr != null) {
-			logger.debug("Temporary MRN found in message");
+			logger.debug("Temporary " + tmr +  " MRN found in message");
 			OtherId otherId = OtherIdManager.searchTable(OtherIdManager.DEMOGRAPHIC,"TMR",internalIds.get("TMR").getId());
+			if(otherId != null) {
+				logger.debug("Found demographic:"+otherId.getTableId());
+				return Integer.parseInt(otherId.getTableId());
+			}
+		}
+		
+		//search by Temporary Personal Number - TPN
+		logger.debug("Searching by TPN");
+		PatientId tpn = internalIds.get("TPN");
+		if(tpn != null) {
+			logger.debug("TPN " + tpn +  "  found in message");
+			OtherId otherId = OtherIdManager.searchTable(OtherIdManager.DEMOGRAPHIC,"TPN",internalIds.get("TPN").getId());
 			if(otherId != null) {
 				logger.debug("Found demographic:"+otherId.getTableId());
 				return Integer.parseInt(otherId.getTableId());
@@ -101,7 +113,7 @@ public class PhsStarHandler extends BasePhsStarHandler {
 		logger.debug("Searching by Health Card");
 		PatientId hc = internalIds.get("JHN");
 		if(hc != null) {
-			logger.debug("Health Card found in message");
+			logger.debug("Health Card " + hc +  "  found in message");
 			List<Demographic> records = clientDao.getClientsByHealthCard(hc.getId(),hc.getAuthority());
 			if(records.size() == 1) {
 				logger.debug("Found demographic:"+records.get(0).getDemographicNo());
@@ -111,8 +123,13 @@ public class PhsStarHandler extends BasePhsStarHandler {
 				throw new HL7Exception("Found multiple records with same HC!!!! - " + hc.getId() +" " + hc.getAuthority());
 			}
 		}
-
+		
+		//added the condition since the found nothing appears even if something is found
+		if(mrn != null && tmr != null && tpn != null && hc != null) {
 		logger.debug("Found nothing. Done searching");
+		}
+		
+		
 		return null;
 	}
 
@@ -141,7 +158,7 @@ public class PhsStarHandler extends BasePhsStarHandler {
 		demo.setProvince(getProvince());
 		demo.setSex(getSex());
 		demo.setDateJoined(new Date());
-		demo.setEffDate(new Date());
+		
 
 		if(OscarProperties.getInstance().hasProperty("DEFAULT_PHS_PROVIDER")) {
 			demo.setProviderNo(OscarProperties.getInstance().getProperty("DEFAULT_PHS_PROVIDER"));
@@ -167,6 +184,7 @@ public class PhsStarHandler extends BasePhsStarHandler {
 				Date tmp = this.convertToDate(renew);
 				demo.setHcRenewDate(tmp);
 			}
+			demo.setEffDate(new Date());
 		}
 
 		if(this.getPrimaryPractitionerId() != null && this.getPrimaryPractitionerId().length()>0) {
@@ -184,10 +202,16 @@ public class PhsStarHandler extends BasePhsStarHandler {
 			OtherIdManager.saveIdDemographic(demographicNo, "TMR", tempMrn.getId());
 		}
 
+		//need to also save TPN for when there is an update msg seems PHS is only sending TPN
+		PatientId tempPN = internalIds.get("TPN");
+		if(tempPN != null) {
+			OtherIdManager.saveIdDemographic(demographicNo, "TPN", tempPN.getId());
+		}		
+
 		Program p = programDao.getProgramByName(OscarProperties.getInstance().getProperty("phs.default_program", "OSCAR"));
 		if(p != null && admissionDao.getCurrentAdmission(p.getId(), demographicNo) == null) {
 			logger.info("need to do admission");
-			doAdmit(demo,p,"000001");
+			doAdmit(demo,p,"-1");
 		}
 		return demographicNo;
 	}
@@ -401,6 +425,7 @@ public class PhsStarHandler extends BasePhsStarHandler {
 		if(ids.get("AN")!=null) {
 			otherId = OtherIdManager.searchTable(OtherIdManager.APPOINTMENT,"AN",ids.get("AN").getId());
 		}
+
 		if(otherId==null && extractPatientAccountNumber() != null) {
 			otherId = OtherIdManager.searchTable(OtherIdManager.APPOINTMENT,"AN",extractPatientAccountNumber().getId());
 		}
@@ -468,7 +493,7 @@ public class PhsStarHandler extends BasePhsStarHandler {
 			//check to see if they are admitted to program already
 			if(admissionDao.getCurrentAdmission(p.getId(), demographic.getDemographicNo()) == null) {
 				logger.info("need to do admission");
-				doAdmit(demographic,p,"000001");
+				doAdmit(demographic,p,"-1");
 			}
 		}
 
@@ -672,6 +697,7 @@ public class PhsStarHandler extends BasePhsStarHandler {
 		//practitioner - do we need this?
 		String praPractId = this.extractOrEmpty("/MF_STAFF/PRA-1-1"); //should be same as pract_id
 		//specialty = 1&FAMILY PRACTITIONER&99H62&1&FAMILY PRACTITIONER&99SPC
+		
 		String praSpecialty = this.extractOrEmpty("/MF_STAFF/PRA-5-1-2"); //should be same as pract_id
 
 		logger.info("need to do a provider add/update for id " + practId);
@@ -693,6 +719,8 @@ public class PhsStarHandler extends BasePhsStarHandler {
 		br.setLastName(lastName);
 		br.setFirstName(firstName);
 		br.setSpecialty(praSpecialty);
+		
+		if(type.equals("O")){ //only want office address
 		br.setAddress1(address);
 		br.setAddress2(address2);
 		br.setCity(city);
@@ -701,7 +729,8 @@ public class PhsStarHandler extends BasePhsStarHandler {
 		br.setPostal(postal);
 		br.setPhone(phone);
 		br.setFax(fax);
-
+		}
+		
 		brDao.updateBillingreferral(br);
 	}
 
@@ -754,9 +783,9 @@ public class PhsStarHandler extends BasePhsStarHandler {
            	}
         }
 
-        //ADT A08 is UPDATE PATIENT INFORMATION, ADT A31 UPDATE PERSON INFORMATION
-        if(msgType.equals("ADT") && (triggerEvent.equals("A08")||triggerEvent.equals("A31"))) {
-        	logger.info("Update Patient/Person Information");
+        //ADT A08 is UPDATE PATIENT INFORMATION
+        if(msgType.equals("ADT") && triggerEvent.equals("A08")) {
+        	logger.info("Update Patient Information");
 
         	Integer demographicNo = this.doKeyMatching(extractInternalPatientIds());
         	if(demographicNo == null) {
@@ -766,6 +795,40 @@ public class PhsStarHandler extends BasePhsStarHandler {
         	updateDemographic(demographicNo);
         	this.logPatientMessage(controlId,msgType+"^"+triggerEvent,hl7Body,demographicNo);
         }
+        
+        
+        //ADT A31 UPDATE PERSON INFORMATION - if the A31 comes prematurely we need to match on the TPN
+        if(msgType.equals("ADT") && triggerEvent.equals("A31")) {
+        	logger.info("Update Person Information");
+
+        	Integer demographicNo = this.doKeyMatching(extractInternalPatientIds());
+        	if(demographicNo == null) {
+        		logger.error("Patient not found!");
+        		return;
+        	}
+        	
+        	updateDemographic(demographicNo);
+        	//if the A31 does come early we can do the appt/admit at this point
+        	updateAppointmentAccountNumber();
+        	updateAppointmentStatus("H");
+        	String programId = findProgram2();
+    		Program pp = null;
+    		if(programId != null) {
+    			pp = programDao.getProgram(Integer.parseInt(programId));
+    			if(pp != null) {
+    				if(admissionDao.getCurrentAdmission(pp.getId(), demographicNo) == null) {
+    					logger.info("need to do admission");
+    					//-1 since it is an auto function performed by the system
+    					doAdmit(demographicNo,pp,"-1"); 
+    				}
+    			}
+    		}
+        	this.logPatientMessage(controlId,msgType+"^"+triggerEvent,hl7Body,demographicNo);
+        	
+        	logger.info("printing out appt status info from database");
+    		printApptStatusInfo();
+        }
+        
 
         //SIU S12 is NEW APPOINTMENT
         if(msgType.equals("SIU") && triggerEvent.equals("S12")) {
@@ -830,7 +893,8 @@ public class PhsStarHandler extends BasePhsStarHandler {
     			if(pp != null) {
     				if(admissionDao.getCurrentAdmission(pp.getId(), demographicNo) == null) {
     					logger.info("need to do admission");
-    					doAdmit(demographicNo,pp,"000001");
+    					//-1 since it is an auto function performed by the system
+    					doAdmit(demographicNo,pp,"-1"); 
     				}
     			}
     		}
@@ -850,7 +914,8 @@ public class PhsStarHandler extends BasePhsStarHandler {
         }
 
         //MFN M02 is Master file - staff practitioner
-        if(msgType.equals("MFN") && triggerEvent.equals("M02")) {
+        //only return 1 FAMILY PRACTIONER
+        if(msgType.equals("MFN") && triggerEvent.equals("M02") && getPraSpecialtyID().equals("1")) {
         	handleStaffMasterFile();
         }
 
@@ -859,7 +924,15 @@ public class PhsStarHandler extends BasePhsStarHandler {
 
 	/////////// GETTERS ////////////////
 
-
+	public String getPraSpecialtyID() {
+		try {
+			String praSpecialtyID = this.extractOrEmpty("/MF_STAFF/PRA-5-1-1");
+			return praSpecialtyID;
+		}catch(Exception e) {
+			return "";
+		}
+	}
+	
 	public String getAddress() {
 		try {
 			String address1 = this.extractOrEmpty("PID-11-1");

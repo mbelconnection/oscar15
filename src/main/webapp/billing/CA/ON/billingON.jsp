@@ -101,11 +101,13 @@
             	List<DSConsequence> list = BillingGuidelines.getInstance().evaluateAndGetConsequences(request.getParameter("demographic_no"), (String) request.getSession().getAttribute("user"));
 
             	for (DSConsequence dscon : list){
-                	billingRecomendations.append(dscon.getText() + " ");
-           		}
-        	}catch(Exception e){
-            	MiscUtils.getLogger().error("Error", e);
-        	}
+                     if (dscon.getConsequenceStrength().equals(DSConsequence.ConsequenceStrength.warning)) {
+                        billingRecomendations.append(dscon.getText()).append("<br/>");
+                     }
+                }
+            }catch(Exception e){
+                    MiscUtils.getLogger().error("Error", e);
+            }
 
             ProviderPreferenceDao preferenceDao = (ProviderPreferenceDao) SpringUtils.getBean("providerPreferenceDao");
             ProviderPreference preference = null;
@@ -1121,41 +1123,47 @@ function toggleDiv(selectedBillForm, selectedBillFormName,billType)
 				<option selected="selected" value="">- SUPER CODES -</option>
 <% //
 			    List sL = tdbObj.getBillingFavouriteList();
-			    for (int i = 0; i < sL.size(); i = i + 2) { %>
-				<option value="<%=(String) sL.get(i+1)%>"><%=(String) sL.get(i)%></option>
-<% } %>
-			    </select>
-			</td>
-			<td align="right" width="10%" nowrap>
-			    <input type="submit" name="submit" value="Next" style="width: 120px;" />
-			    <input type="button" name="button" value="Exit" style="width: 120px;" onclick="self.close();" />&nbsp;
-			</td>
-		    </tr>
-		</table>
-	    </td>
-	</tr>
-	<tr>
-	    <td>
-		<table border="0" cellspacing="0" cellpadding="0" width="100%" class="myYellow">
-		    <tr>
-			<td nowrap bgcolor="#FFCC99" width="10%" align="center">
-			    <b>&nbsp;<oscar:nameage demographicNo="<%=demo_no%>"/>  <%=roster_status%></b>
-				<%if (appt_no.compareTo("0") == 0) {%>
-			    <img src="../../../images/cal.gif" id="service_date_cal" />
-			    <input type="text" id="service_date" name="service_date"
-				   readonly value="<%=request.getParameter("service_date")!=null? request.getParameter("service_date"):strToday%>"
-				   size="10" />
-				<%} else {%>
-			    <input type="text" name="service_date" readonly value="<%=request.getParameter("appointment_date")%>"
-				   size="10" maxlength="10" style="width:80px;" />
-				<%}%>
-			</td>
-			<td style="color:red; background-color:#FFFFFF; font-size:18px; font-weight:bold;"><%=billingRecomendations.length() > 0 ? billingRecomendations.toString() : ""%></td>
-			<td align="center"><font color="black"><%=msg%></font></td>
-		    </tr>
-		</table>
+			    for (int i = 0; i < sL.size(); i = i + 2) { %>    
+                            <option value="<%=(String) sL.get(i+1)%>"><%=(String) sL.get(i)%></option>
+									<% } %>
+							</select>
+                        </td>
+							<td align="right" width="10%" nowrap>
+                                                            <input type="submit" name="submit" value="Next" style="width: 120px;" /> 
+                                                            <input type="button" name="button" value="Exit" style="width: 120px;" onclick="self.close();" />&nbsp;
+                                                        </td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table border="0" cellspacing="0" cellpadding="0" width="100%" class="myYellow">
+						<tr>
+							<td nowrap bgcolor="#FFCC99" width="10%" align="center">
+                                                            <b>&nbsp;<oscar:nameage demographicNo="<%=demo_no%>"/>  <%=roster_status%></b>
+                                                            <%if (appt_no.compareTo("0") == 0) {%>
+								<img src="../../../images/cal.gif" id="service_date_cal" /> 
+                                                                <input type="text" id="service_date" name="service_date" 
+                                                                 readonly value="<%=request.getParameter("service_date")!=null? request.getParameter("service_date"):strToday%>"
+								size="10" /> 
+                                                            <%} else {%> 
+                                                                <input type="text" name="service_date" readonly value="<%=request.getParameter("appointment_date")%>"
+								  size="10" maxlength="10" style="width:80px;" />
+                                                            <%}%>
+                                                        </td>
+                                                        <%
+                                                              String warningStyle = "";
+                                                              if (billingRecomendations.length() > 0) {
+                                                                  warningStyle="border:solid 3px red;padding-left:10px;line-height:150%;font-family:Arial;";
+                                                              }
+                                                        %>
+							<td style="<%=warningStyle%> color: red; background-color: #FFFFFF; font-size: 18px; font-weight: bold;"><%=billingRecomendations.toString()%></td>
+							<td align="center"><font color="black"><%=msg%></font></td>
+						</tr>
+					</table>
 
-		<table border="1" cellspacing="0" cellpadding="0" width="100%"
+                                                <table border="1" cellspacing="0" cellpadding="0" width="100%"
 		       bordercolorlight="#99A005" bordercolordark="#FFFFFF" bgcolor="#FFFFFF">
 		    <tr>
 			<td width="46%">

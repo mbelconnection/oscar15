@@ -107,4 +107,18 @@ public abstract class AbstractDao<T extends AbstractModel<?>> {
 		Query query = entityManager.createNativeQuery(sqlCommand);
 		return (((Number) query.getSingleResult()).intValue());
 	}
+
+	/**
+	 * Saves or updates the entity based on depending if it's persistent, as determined by {@link AbstractModel#isPersistent()} 
+	 * 
+	 * @param entity
+	 * 		Entity to be saved or updated
+	 * @return
+	 * 		Returns the entity
+	 */
+	public T saveEntity(T entity) {
+		if (entity.isPersistent()) merge(entity);
+		else persist(entity);
+		return entity;
+	}
 }

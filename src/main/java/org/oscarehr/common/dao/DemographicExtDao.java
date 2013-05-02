@@ -152,7 +152,6 @@ public class DemographicExtDao extends AbstractDao<DemographicExt>{
  	}
 
  	public void removeDemographicExt(Integer id) {
-
  		if (id == null || id.intValue() <= 0) {
  			throw new IllegalArgumentException();
  		}
@@ -182,9 +181,8 @@ public class DemographicExtDao extends AbstractDao<DemographicExt>{
  		@SuppressWarnings("unchecked")
         List<DemographicExt> demographicExts = query.getResultList();
  		for(DemographicExt demographicExt:demographicExts) {
- 			if(demographicExt.getKey() != null && demographicExt.getValue() != null) {
- 				retval.put(demographicExt.getKey(), demographicExt.getValue());
- 			}
+			retval.put(demographicExt.getKey(), demographicExt.getValue());
+			retval.put(demographicExt.getKey() + "_id", demographicExt.getId().toString());
  		}
 
         return retval;

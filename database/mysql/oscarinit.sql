@@ -1,4 +1,3 @@
-
 --
 -- Table structure for table `FaxClientLog`
 --
@@ -7435,6 +7434,19 @@ CREATE TABLE `reportFilter` (
 
 CREATE TABLE `demographicExt` (
   `id` int(10) NOT NULL auto_increment,
+  `demographic_no` int(10) default NULL,
+  `provider_no` varchar(6) default NULL,
+  `key_val` varchar(64) default NULL,
+  `value` text,
+  `date_time` datetime default NULL,
+  `hidden` char(1) default '0',
+  PRIMARY KEY  (`id`),
+  INDEX (demographic_no)
+) ;
+
+CREATE TABLE `demographicExtArchive` (
+  `id` int(10) NOT NULL auto_increment,
+  `archiveId` bigint(20),
   `demographic_no` int(10) default NULL,
   `provider_no` varchar(6) default NULL,
   `key_val` varchar(64) default NULL,

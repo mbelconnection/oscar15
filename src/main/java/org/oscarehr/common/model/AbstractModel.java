@@ -90,4 +90,13 @@ public abstract class AbstractModel<T> implements java.io.Serializable
 		return(false);
 	}
 
+	/**
+	 * Checks if the persistent id has been assigned to this instance.
+	 * 
+	 * @return
+	 * 		Returns true if the ID is not null and false otherwise.
+	 */
+	public boolean isPersistent() {
+		return getId() != null;
+	}
 }

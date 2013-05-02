@@ -73,6 +73,7 @@
 <%@page import="org.oscarehr.common.dao.ProfessionalSpecialistDao" %>
 <%@page import="org.oscarehr.common.model.DemographicCust" %>
 <%@page import="org.oscarehr.common.dao.DemographicCustDao" %>
+<%@page import="org.apache.commons.lang.StringEscapeUtils" %>
 <%
 	ProfessionalSpecialistDao professionalSpecialistDao = (ProfessionalSpecialistDao) SpringUtils.getBean("professionalSpecialistDao");
 	DemographicCustDao demographicCustDao = (DemographicCustDao)SpringUtils.getBean("demographicCustDao");
@@ -1385,6 +1386,16 @@ if (iviewTag!=null && !"".equalsIgnoreCase(iviewTag.trim())){
 						<div class="leftSection">
 						<div class="demographicSection" id="demographic">
 						<h3>&nbsp;<bean:message key="demographic.demographiceditdemographic.msgDemographic"/></h3>
+						<%
+							for (String key : demoExt.keySet()) {
+							    if (key.endsWith("_id")) {
+						%>
+						<input type="hidden" name="<%=key%>" value="<%=StringEscapeUtils.escapeHtml(StringUtils.trimToEmpty(demoExt.get(key)))%>"/>
+						<%
+							    }
+							}
+						%>
+
 						<ul>
                                                     <li><span class="label"><bean:message
                                                             key="demographic.demographiceditdemographic.formLastName" />:</span>

@@ -41,6 +41,7 @@ import oscar.form.FrmRecord;
 import oscar.form.FrmRecordFactory;
 import oscar.form.graphic.FrmGraphicFactory;
 import oscar.form.graphic.FrmPdfGraphic;
+import oscar.log.LogAction;
 import oscar.util.ConcatPDF;
 
 import com.lowagie.text.Document;
@@ -148,6 +149,8 @@ public class FrmPDFServlet extends HttpServlet {
                                     
                        sout.write(buffer,0,bytesRead);  
                 }  
+            
+            LogAction.addLogSynchronous("FrmPDFServlet", "formID=" + req.getParameter("formId") + ",form_class=" + req.getParameter("form_class"));
             
         } catch (DocumentException dex) {
             res.setContentType("text/html");
@@ -292,14 +295,20 @@ public class FrmPDFServlet extends HttpServlet {
 
             //load from DB
             int demoNo = Integer.parseInt(req.getParameter("demographic_no"));
-            int formId = Integer.parseInt(req.getParameter("formId"));
+            String strFormId =req.getParameter("formId");
+            int formId = 0;
+            try {
+            	formId =  Integer.parseInt(strFormId);
+            }catch(NumberFormatException e){/*ignore*/}
             String formClass=req.getParameter("form_class");
             FrmRecord record = (new FrmRecordFactory()).factory(formClass);
             java.util.Properties props = new Properties();
-            try {
-            	props = record.getFormRecord(demoNo, formId);
-            }catch(SQLException e) {
-            	MiscUtils.getLogger().error("Error",e);
+            if(record != null) {
+	            try {
+	            	props = record.getFormRecord(demoNo, formId);
+	            }catch(SQLException e) {
+	            	MiscUtils.getLogger().error("Error",e);
+	            }
             }
             
             // get the print prop values
@@ -472,8 +481,10 @@ public class FrmPDFServlet extends HttpServlet {
 	                String[] fontType;
 	                for (Enumeration e = printCfg[i - 1].propertyNames(); e.hasMoreElements();) {
 	                    tempName = new StringBuilder(e.nextElement().toString());
-	                    
-	                    cfgVal = printCfg[i - 1].getProperty(tempName.toString()).split(" *, *");
+	                    cfgVal = printCfg[i - 1].getProperty(tempName.toString()).split(",");
+	                    for(int x=0;x<cfgVal.length;x++) {
+	                    	cfgVal[x].trim();
+	                    }
 	
 	                    if( cfgVal[4].indexOf(";") > -1 ) {
 	                        fontType = cfgVal[4].split(";");

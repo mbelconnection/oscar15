@@ -232,11 +232,11 @@
 			<artifactId>commons-dbcp</artifactId>
 			<version>1.2.2</version>
 		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>3.0.11</version> <!-- can't change this version until we fix our code to stop using the 3.0.11 glitches -->
-		</dependency>
+                <dependency>
+                        <groupId>mysql</groupId>
+                        <artifactId>mysql-connector-java</artifactId>
+                        <version>5.1.24</version> <!-- this must pair with flagging the connector to round 000-00-00 dates to control the 3.0.11 glitches -->
+                </dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>

@@ -41,6 +41,7 @@
 <%@ page import="org.oscarehr.common.dao.OscarAppointmentDao" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.util.Date" %>
+<%@ page import="java.text.ParseException" %>
 
 <%
     String formClass = "CostQuestionnaire";
@@ -83,8 +84,15 @@
    	SimpleDateFormat dateFormatter =new SimpleDateFormat("dd-MMM-yyyy");
     SimpleDateFormat dobFormatter = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat timeFormatter =new SimpleDateFormat("HH:mm");
-    
-    Date dob = dobFormatter.parse(demographic.getBirthDayAsString());
+    String bdayString =null;
+    Date dob =null;
+    if( (bdayString = demographic.getBirthDayAsString())!= null	){
+    	try{
+    	dob = dobFormatter.parse(bdayString);
+    	}catch(	ParseException e){
+    		//do nothing dob is already null
+    	}
+    }
    	
    	
    	
@@ -198,7 +206,7 @@
 					<input type="hidden" name="demo_address1" value="<%=demographic.getAddress() %>"/>
 					<input type="hidden" name="demo_address2" value="<%=demographic.getCity() + ", " + demographic.getProvince() + ", " + demographic.getPostal() %>"/>
 					<input type="hidden" name="demo_id" value="<%=demographic.getDemographicNo() %>"/>
-					<input type="hidden" name="demo_bday" value="<%=dateFormatter.format(dob) + " (" + demographic.getAgeInYears() + ")" %>"/>
+					<input type="hidden" name="demo_bday" value="<%=(dob != null)?dateFormatter.format(dob) + " (" + demographic.getAgeInYears() + ")":"" %>"/>
 					<input type="hidden" name="demo_hin" value="<%=demographic.getHin() + " (" + demographic.getHcType() + ")" %>"/>
 					<input type="hidden" name="demo_phone" value="<%=demographic.getPhone() %>"/>
 					<tr>
@@ -217,7 +225,7 @@
 						<td align=right>Pat ID:</td>
 						<td><%=demographic.getDemographicNo() %></td>
 						<td align=right>DOB:</td>
-						<td><%=dateFormatter.format(dob)%> (<%=demographic.getAgeInYears() %>)</td>
+						<td><%=(dob !=null)?dateFormatter.format(dob)+"(" +  demographic.getAgeInYears() +")":"" %></td>
 					</tr>
 					
 					<tr>

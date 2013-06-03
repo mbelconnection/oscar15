@@ -48,6 +48,11 @@
   SimpleDateFormat dayFormatter = new SimpleDateFormat("yyyy-MM-dd");
   SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm");
 
+  //by familly member INFODATA - NJOLY - DME
+  String famNo = request.getParameter("by_family");
+  famNo = famNo!=null && !famNo.equals("null")?famNo:null;
+  String name_fam = request.getParameter("famName");
+
   //providers
   String providerNo = request.getParameter("provider_no")!=null?request.getParameter("provider_no"):"";
   ProviderDao providerDao = (ProviderDao)SpringUtils.getBean("providerDao");
@@ -56,14 +61,14 @@
   //day of week
   String dayOfWeek = request.getParameter("dayOfWeek")!=null?request.getParameter("dayOfWeek"):"daily";
   List<LabelValueBean> dayOfWeekOptions = new ArrayList<LabelValueBean>();
-  dayOfWeekOptions.add(new LabelValueBean("Any Weekday","daily"));
-  dayOfWeekOptions.add(new LabelValueBean("Monday",String.valueOf(Calendar.MONDAY)));
-  dayOfWeekOptions.add(new LabelValueBean("Tuesday",String.valueOf(Calendar.TUESDAY)));
-  dayOfWeekOptions.add(new LabelValueBean("Wednesday",String.valueOf(Calendar.WEDNESDAY)));
-  dayOfWeekOptions.add(new LabelValueBean("Thursday",String.valueOf(Calendar.THURSDAY)));
-  dayOfWeekOptions.add(new LabelValueBean("Friday",String.valueOf(Calendar.FRIDAY)));
-  dayOfWeekOptions.add(new LabelValueBean("Saturday",String.valueOf(Calendar.SATURDAY)));
-  dayOfWeekOptions.add(new LabelValueBean("Sunday",String.valueOf(Calendar.SUNDAY)));
+  dayOfWeekOptions.add(new LabelValueBean("N'importe quand","daily")); //Any Weekday
+  dayOfWeekOptions.add(new LabelValueBean("Lundi",String.valueOf(Calendar.MONDAY)));
+  dayOfWeekOptions.add(new LabelValueBean("Mardi",String.valueOf(Calendar.TUESDAY)));
+  dayOfWeekOptions.add(new LabelValueBean("Mercredi",String.valueOf(Calendar.WEDNESDAY)));
+  dayOfWeekOptions.add(new LabelValueBean("Jeudi",String.valueOf(Calendar.THURSDAY)));
+  dayOfWeekOptions.add(new LabelValueBean("Vendredi",String.valueOf(Calendar.FRIDAY)));
+  dayOfWeekOptions.add(new LabelValueBean("Samedi",String.valueOf(Calendar.SATURDAY)));
+  dayOfWeekOptions.add(new LabelValueBean("Dimanche",String.valueOf(Calendar.SUNDAY)));
   
   //time of day
   String startTime = request.getParameter("startTime")!=null?request.getParameter("startTime"):"9";
@@ -109,6 +114,7 @@
 	  searchBean.setEndTimeOfDay(endTime);
 	  searchBean.setCode(code);
 	  searchBean.setNumResults(Integer.parseInt(numberOfResults));
+ 	  searchBean.setByFamillyDemoNo(famNo);
 	  results = NextAppointmentSearchHelper.search(searchBean);
   }
   
@@ -118,6 +124,7 @@
 <html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js"></script>
 <title><bean:message key="appointment.searchnext.title" /></title>
 <link rel="stylesheet" href="../web.css">
 <script>
@@ -153,6 +160,37 @@ function validate() {
 	}
 	return true;
 }
+
+var url = "<%=request.getContextPath()%>/admin/demographicSensibilityAction.jsp?method=";
+function findDemographic() {
+	
+	
+	var method = "searchDemo";
+	var searchTxt = $("input[name='name_fam']").val();
+	//need a minimum of 3 char
+	if (typeof searchTxt != 'undefined' && searchTxt.length >= 3) {
+		var r = launch(method, "&searchTxt="+searchTxt);
+		
+		r.done( function (data) {
+			$("#by_family").children().remove();
+			var opNull = $("<option>");
+			opNull.val("null");
+			opNull.text("------");
+			
+			$("#by_family").append(opNull).append(data);
+			
+		});
+		r.fail(function() {
+			alert("fail");
+		});
+	}
+	
+}
+function launch(method, params) {
+	return $.ajax({
+		url: url+method+params
+	});
+}
 </script>
 </head>
 
@@ -172,7 +210,7 @@ function validate() {
 		<td><bean:message key="appointment.searchnext.provider" />:</td>
 		<td>
 			<select name="provider_no">
-				<option value="">All</option>
+				<option value="">Tous</option>
 				<%
 					for(Provider provider:providers) {
 						String selected = new String();
@@ -262,17 +300,27 @@ function validate() {
 			</select>		
 		</td>
 	</tr>
+	<% //INFODATA - NJOLY - DME3 %>
+	<tr>
+		<td><bean:message key="appointment.searchnext.by_family" />:</td>
+		<td>
+			<input text="text" name="name_fam" value="<%= name_fam!=null?name_fam:"" %>"/>
+			<button type="button" onclick="findDemographic()">Recherche</button>	
+			<select name= "by_family" id="by_family" style="width: 200px;">
+			</select>
+		</td>
+	</tr>
 	<tr>
 		<td colspan="2">
-			<input type="submit" value="Search" />
+			<input type="submit" value="<bean:message key="Search" />" />
 			&nbsp;&nbsp;
-			<input type="button" value="Close" onclick="window.close();window.opener.location.reload();"/>
+			<input type="button" value="<bean:message key="Close" />" onclick="window.close();window.opener.location.reload();"/>
 		</td>
 	</tr>
 </table>
 </form>
 
-<%if(results != null)  { %>
+<%if(results != null && !results.isEmpty())  { %>
 <CENTER>
 <table width="100%" border="1" bgcolor="#ffffff" cellspacing="1" cellpadding="0">
 	<tr bgcolor="#CCCCFF">
@@ -290,7 +338,8 @@ function validate() {
 		</tr>
 	<% } %>
 </table>
-<% } %>
+<% }else if(results!=null){ %><font color="red">Aucune disponibilité trouvée pour le fournisseur séléctionné. 
+<br>Vérifier si un modèle de semaine a été créé et appliqué dans l'horaire ou essayer avec d'autres critères.</font><%} %>
 <br>
 
 </center>

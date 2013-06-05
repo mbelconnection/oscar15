@@ -244,7 +244,7 @@
 						<td align=right>Pat ID:</td>
 						<td><%=demographic.getDemographicNo() %></td>
 						<td align=right>DOB:</td>
-						<td><%=(dob !=null)?dateFormatter.format(dob)+"(" +  demographic.getAgeInYears() +")":"" %></td>
+						<td><%=(dob !=null)?dateFormatter.format(dob)+" (" +  demographic.getAgeInYears() +")":"" %></td>
 					</tr>
 					
 					<tr>

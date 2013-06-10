@@ -27,8 +27,7 @@
 <%@page import="org.oscarehr.common.model.Appointment.BookingSource"%>
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
 <%@page import="org.oscarehr.common.model.Provider,org.oscarehr.common.model.BillingONCHeader1"%>
-<%@page import="org.oscarehr.common.model.ProviderPreference"%>
-<%@page import="org.oscarehr.web.admin.ProviderPreferencesUIBean"%>
+<%@page import="org.oscarehr.common.dao.ProviderPreferenceDao, org.oscarehr.common.model.ProviderPreference"%>
 <%@page import="org.oscarehr.common.dao.UserPropertyDAO, org.oscarehr.common.dao.DemographicDao, org.oscarehr.common.model.Demographic, org.oscarehr.common.model.UserProperty" %>
 <%@ page import="org.oscarehr.common.dao.MyGroupAccessRestrictionDao" %>
 <%@ page import="org.oscarehr.common.model.MyGroupAccessRestriction" %>
@@ -186,9 +185,15 @@ public boolean patientHasOutstandingPrivateBills(String demographicNo){
 	oscar.oscarSecurity.CookieSecurity cs = new oscar.oscarSecurity.CookieSecurity();
     response.addCookie(cs.GiveMeACookie(oscar.oscarSecurity.CookieSecurity.providerCookie));
 
-    ProviderPreference providerPreference2=(ProviderPreference)session.getAttribute(SessionConstants.LOGGED_IN_PROVIDER_PREFERENCE);
+    ProviderPreferenceDao providerPreferenceDao = (ProviderPreferenceDao)SpringUtils.getBean("providerPreferenceDao");
+    ProviderPreference providerPreference = providerPreferenceDao.find(curUser_no);
 
-    String mygroupno = providerPreference2.getMyGroupNo();
+    Integer viewSchedule = providerPreference.getViewSchedule();
+    if (viewSchedule == null) {
+        viewSchedule = ProviderPreference.VIEW_ALL;
+    }
+    
+    String mygroupno = providerPreference.getMyGroupNo();
     if(mygroupno == null){
     	mygroupno = ".default";
     }
@@ -201,11 +206,11 @@ public boolean patientHasOutstandingPrivateBills(String demographicNo){
     String userlastname = (String) session.getAttribute("userlastname");
     String prov= (oscarVariables.getProperty("billregion","")).trim().toUpperCase();
 
-    int startHour=providerPreference2.getStartHour();
-    int endHour=providerPreference2.getEndHour();
-    int everyMin=providerPreference2.getEveryMin();
+    int startHour=providerPreference.getStartHour();
+    int endHour=providerPreference.getEndHour();
+    int everyMin=providerPreference.getEveryMin();
+    
     String defaultServiceType = (String) session.getAttribute("default_servicetype");
-	ProviderPreference providerPreference=ProviderPreferencesUIBean.getLoggedInProviderPreference();
     if( defaultServiceType == null && providerPreference!=null) {
     	defaultServiceType = providerPreference.getDefaultServiceType();
     }
@@ -214,13 +219,13 @@ public boolean patientHasOutstandingPrivateBills(String demographicNo){
         defaultServiceType = "";
     }
 
-    Collection<Integer> eforms = providerPreference2.getAppointmentScreenEForms();
+    Collection<Integer> eforms = providerPreference.getAppointmentScreenEForms();
     StringBuilder eformIds = new StringBuilder();
     for( Integer eform : eforms ) {
     	eformIds = eformIds.append("&eformId=" + eform);
     }
 
-    Collection<String> forms = providerPreference2.getAppointmentScreenForms();
+    Collection<String> forms = providerPreference.getAppointmentScreenForms();
     StringBuilder ectFormNames = new StringBuilder();
     for( String formName : forms ) {
     	ectFormNames = ectFormNames.append("&encounterFormName=" + formName);
@@ -244,15 +249,7 @@ if (org.oscarehr.common.IsPropertiesOn.isCaisiEnable() && org.oscarehr.common.Is
 
 	caisiBillingPreferenceNotDelete = String.valueOf(session.getAttribute("caisiBillingPreferenceNotDelete"));
     if(caisiBillingPreferenceNotDelete==null) {
-    	ProviderPreference pp = ProviderPreferencesUIBean.getProviderPreferenceByProviderNo(curUser_no);
-    	if(pp!=null) {
-    		caisiBillingPreferenceNotDelete = String.valueOf(pp.getDefaultDoNotDeleteBilling());
-    	}
-
-    	//List<Map> prefBillingList = oscarSuperManager.find("providerDao", "search_pref_defaultbill", new Object[] {curUser_no});
-        //if (prefBillingList.size() > 0) {
-       //     caisiBillingPreferenceNotDelete = String.valueOf(prefBillingList.get(0).get("defaultDoNotDeleteBilling"));
-    	//}
+        caisiBillingPreferenceNotDelete = String.valueOf(providerPreference.getDefaultDoNotDeleteBilling());
     }
 
 	//Disable schedule view associated with the program
@@ -367,8 +364,6 @@ if (apptDate.before(minDate)) {
 <%@page import="oscar.appt.ApptUtil"%>
 <%@page import="org.oscarehr.common.dao.SiteDao"%>
 <%@page import="org.oscarehr.common.model.Site"%>
-<%@page import="org.oscarehr.web.admin.ProviderPreferencesUIBean"%>
-<%@page import="org.oscarehr.common.model.ProviderPreference"%>
 <%@page import="org.oscarehr.web.AppointmentProviderAdminDayUIBean"%>
 <%@page import="org.oscarehr.common.model.EForm"%><html:html locale="true">
 <head>
@@ -594,16 +589,6 @@ function popupWithApptNo(vheight,vwidth,varpage,name,apptNo) {
 		popupOscarRx(vheight,vwidth,varpage);
 }
 
-function review(key) {
-  if(self.location.href.lastIndexOf("?") > 0) {
-    if(self.location.href.lastIndexOf("&viewall=") > 0 ) a = self.location.href.substring(0,self.location.href.lastIndexOf("&viewall="));
-    else a = self.location.href;
-  } else {
-    a="providercontrol.jsp?year="+document.jumptodate.year.value+"&month="+document.jumptodate.month.value+"&day="+document.jumptodate.day.value+"&view=0&displaymode=day&dboperation=searchappointmentday&site=" + "<%=(selectedSite==null? "none" : selectedSite)%>";
-  }
-  self.location.href = a + "&viewall="+key ;
-}
-
 function refresh() {
 document.location.reload();
 }
@@ -648,6 +633,19 @@ if(newGroupNo.indexOf("_grp_") != -1) {
   var programId=0;
   popupPage(10,10, "providercontrol.jsp?provider_no=<%=curUser_no%>&start_hour=<%=startHour%>&end_hour=<%=endHour%>&every_min=<%=everyMin%>&color_template=deepblue&dboperation=updatepreference&displaymode=updatepreference&default_servicetype=<%=defaultServiceType%>&mygroup_no="+newGroupNo+"&programId_oscarView="+programId + "<%=eformIds.toString()%><%=ectFormNames.toString()%>");
 <%}%>
+}
+
+function switchViewSchedule(viewKey) {
+    
+    var url = "<%=request.getContextPath()%>/Provider/SwitchViewSchedule.do";
+    new Ajax.Request(
+        url,
+        { method: 'post',
+          postBody: "method=switchViewSchedule&viewSchedule="+viewKey
+        }
+    );
+    location.reload(true);
+      
 }
 
 function ts1(s) {
@@ -787,10 +785,6 @@ if(providerBean.isEmpty()) {
    }
  }
 
-String viewall = request.getParameter("viewall");
-if( viewall == null ) {
-    viewall = "0";
-}
 String _scheduleDate = strYear+"-"+strMonth+"-"+strDay;
 
 if(mygroupno != null && providerBean.get(mygroupno) != null) { //single appointed provider view
@@ -829,8 +823,10 @@ if(mygroupno != null && providerBean.get(mygroupno) != null) { //single appointe
        curProvider_no = new String []{curUser_no};  //[numProvider];
        curProviderName = new String []{(userlastname+", "+userfirstname)}; //[numProvider];
      } else {
-       if(request.getParameter("viewall")!=null && request.getParameter("viewall").equals("1") ) {
-         if(numProvider >= 5) {lenLimitedL = 2; lenLimitedS = 3; }
+       if(viewSchedule.equals(ProviderPreference.VIEW_ALL)) {
+            if (numProvider >= 5) {
+                lenLimitedL = 2; lenLimitedS = 3;
+            }
        } else {
          if(numAvailProvider >= 5) {lenLimitedL = 2; lenLimitedS = 3; }
          if(numAvailProvider == 2) {lenLimitedL = 20; lenLimitedS = 10; len = 20;}
@@ -1117,12 +1113,12 @@ if (caseload) {
 <table BORDER="0" CELLPADDING="1" CELLSPACING="0" WIDTH="100%" BGCOLOR="#C0C0C0">
 <tr id="ivoryBar">
 <td id="dateAndCalendar" BGCOLOR="ivory" width="33%">
- <a class="redArrow" href="providercontrol.jsp?year=<%=year%>&month=<%=month%>&day=<%=isWeekView?(day-7):(day-1)%>&view=<%=view==0?"0":("1&curProvider="+request.getParameter("curProvider")+"&curProviderName="+request.getParameter("curProviderName") )%>&displaymode=day&dboperation=searchappointmentday<%=isWeekView?"&provider_no="+provNum:""%>&viewall=<%=viewall%>">
+ <a class="redArrow" href="providercontrol.jsp?year=<%=year%>&month=<%=month%>&day=<%=isWeekView?(day-7):(day-1)%>&view=<%=view==0?"0":("1&curProvider="+request.getParameter("curProvider")+"&curProviderName="+request.getParameter("curProviderName") )%>&displaymode=day&dboperation=searchappointmentday<%=isWeekView?"&provider_no="+provNum:""%>">
  &nbsp;&nbsp;<img src="../images/previous.gif" WIDTH="10" HEIGHT="9" BORDER="0" ALT="<bean:message key="provider.appointmentProviderAdminDay.viewPrevDay"/>" vspace="2"></a>
  <b><span class="dateAppointment"><% if (isWeekView) { %><bean:message key="provider.appointmentProviderAdminDay.week"/> <%=week%><% } else { %><%=formatDate%><% } %></span></b>
- <a class="redArrow" href="providercontrol.jsp?year=<%=year%>&month=<%=month%>&day=<%=isWeekView?(day+7):(day+1)%>&view=<%=view==0?"0":("1&curProvider="+request.getParameter("curProvider")+"&curProviderName="+request.getParameter("curProviderName") )%>&displaymode=day&dboperation=searchappointmentday<%=isWeekView?"&provider_no="+provNum:""%>&viewall=<%=viewall%>">
+ <a class="redArrow" href="providercontrol.jsp?year=<%=year%>&month=<%=month%>&day=<%=isWeekView?(day+7):(day+1)%>&view=<%=view==0?"0":("1&curProvider="+request.getParameter("curProvider")+"&curProviderName="+request.getParameter("curProviderName") )%>&displaymode=day&dboperation=searchappointmentday<%=isWeekView?"&provider_no="+provNum:""%>">
  <img src="../images/next.gif" WIDTH="10" HEIGHT="9" BORDER="0" ALT="<bean:message key="provider.appointmentProviderAdminDay.viewNextDay"/>" vspace="2">&nbsp;&nbsp;</a>
-<a id="calendarLink" href=# onClick ="popupPage(425,430,'../share/CalendarPopup.jsp?urlfrom=../provider/providercontrol.jsp&year=<%=strYear%>&month=<%=strMonth%>&param=<%=URLEncoder.encode("&view=0&displaymode=day&dboperation=searchappointmentday&viewall="+viewall,"UTF-8")%><%=isWeekView?URLEncoder.encode("&provider_no="+provNum, "UTF-8"):""%>')"><bean:message key="global.calendar"/></a>
+<a id="calendarLink" href=# onClick ="popupPage(425,430,'../share/CalendarPopup.jsp?urlfrom=../provider/providercontrol.jsp&year=<%=strYear%>&month=<%=strMonth%>&param=<%=URLEncoder.encode("&view=0&displaymode=day&dboperation=searchappointmentday","UTF-8")%><%=isWeekView?URLEncoder.encode("&provider_no="+provNum, "UTF-8"):""%>')"><bean:message key="global.calendar"/></a>
 <%
 	boolean anonymousEnabled = LoggedInInfo.loggedInInfo.get().currentFacility.isEnableAnonymous();
 	if(anonymousEnabled) {
@@ -1266,10 +1262,10 @@ if (curProvider_no[provIndex].equals(provNum)) { %>
 </select>
 
 &nbsp;|&nbsp;
-<% if(request.getParameter("viewall")!=null && request.getParameter("viewall").equals("1") ) { %>
-         <a href=# onClick = "review('0')" title="<bean:message key="provider.appointmentProviderAdminDay.viewProvAval"/>"><bean:message key="provider.appointmentProviderAdminDay.schedView"/></a>
+<% if(viewSchedule.equals(ProviderPreference.VIEW_ALL)) { %>
+         <a href=# onClick = "switchViewSchedule('0')" title="<bean:message key="provider.appointmentProviderAdminDay.viewProvAval"/>"><bean:message key="provider.appointmentProviderAdminDay.schedView"/></a>
 <% } else {  %>
-         <a href=# onClick = "review('1')" title="<bean:message key="provider.appointmentProviderAdminDay.viewAllProv"/>"><bean:message key="provider.appointmentProviderAdminDay.viewAll"/></a>
+         <a href=# onClick = "switchViewSchedule('1')" title="<bean:message key="provider.appointmentProviderAdminDay.viewAllProv"/>"><bean:message key="provider.appointmentProviderAdminDay.viewAll"/></a>
 <% } %>
 </logic:notEqual>
 
@@ -1407,8 +1403,8 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
      param1[1] = curProvider_no[nProvider];
      resultList = oscarSuperManager.find("providerDao", "search_scheduledate_single", param1);
 
-     //viewall function
-     if(request.getParameter("viewall")==null || request.getParameter("viewall").equals("0") ) {
+     //view schedule function
+     if(viewSchedule.equals(ProviderPreference.VIEW_AVAILABLE)) {
          if(resultList.size()==0 || "0".equals(resultList.get(0).get("available")) ) {
              if(nProvider!=me ) continue;
              else userAvail = false;
@@ -1622,7 +1618,7 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
             <%
 			    if (as.getNextStatus() != null && !as.getNextStatus().equals("")) {
             %>
-            <a class="apptStatus" href=# onclick="refreshSameLoc('providercontrol.jsp?appointment_no=<%=appointment.get("appointment_no")%>&provider_no=<%=curProvider_no[nProvider]%>&status=&statusch=<%=as.getNextStatus()%>&year=<%=year%>&month=<%=month%>&day=<%=day%>&view=<%=view==0?"0":("1&curProvider="+request.getParameter("curProvider")+"&curProviderName="+request.getParameter("curProviderName") )%>&displaymode=addstatus&dboperation=updateapptstatus&viewall=<%=request.getParameter("viewall")==null?"0":(request.getParameter("viewall"))%><%=isWeekView?"&viewWeek=1":""%>');" title="<%=as.getTitle()%> " >
+            <a class="apptStatus" href=# onclick="refreshSameLoc('providercontrol.jsp?appointment_no=<%=appointment.get("appointment_no")%>&provider_no=<%=curProvider_no[nProvider]%>&status=&statusch=<%=as.getNextStatus()%>&year=<%=year%>&month=<%=month%>&day=<%=day%>&view=<%=view==0?"0":("1&curProvider="+request.getParameter("curProvider")+"&curProviderName="+request.getParameter("curProviderName") )%>&displaymode=addstatus&dboperation=updateapptstatus<%=isWeekView?"&viewWeek=1":""%>');" title="<%=as.getTitle()%> " >
             <%
 				}
 			    if (as.getNextStatus() != null) {
@@ -1969,10 +1965,10 @@ document.onkeydown=function(e){
 			case <bean:message key="global.searchShortcut"/> : popupOscarRx(550,687,'../demographic/search.jsp');  return false;  //run code for 'S'earch
 			case <bean:message key="global.dayShortcut"/> : window.open("providercontrol.jsp?year=<%=curYear%>&month=<%=curMonth%>&day=<%=curDay%>&view=<%=view==0?"0":("1&curProvider="+request.getParameter("curProvider")+"&curProviderName="+request.getParameter("curProviderName") )%>&displaymode=day&dboperation=searchappointmentday","_self") ;  return false;  //run code for 'T'oday
 			case <bean:message key="global.viewShortcut"/> : {
-				<% if(request.getParameter("viewall")!=null && request.getParameter("viewall").equals("1") ) { %>
-				         review('0');  return false; //scheduled providers 'V'iew
+				<% if(viewSchedule.equals(ProviderPreference.VIEW_ALL)) { %>
+				         switchViewSchedule('0');  return false; //scheduled providers 'V'iew
 				<% } else {  %>
-				         review('1');  return false; //all providers 'V'iew
+				         switchViewSchedule('1');  return false; //all providers 'V'iew
 				<% } %>
 			}
 			case <bean:message key="global.workflowShortcut"/> : popupOscarRx(700,1024,'../oscarWorkflow/WorkFlowList.jsp','<bean:message key="global.workflow"/>'); return false ; //code for 'W'orkflow

@@ -52,6 +52,7 @@
 <%@page import="org.oscarehr.common.model.EForm"%>
 <%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@page import="org.oscarehr.common.model.EncounterForm"%><html:html locale="true">
+<%@page import="org.oscarehr.common.model.ProviderPreference, org.oscarehr.common.dao.ProviderPreferenceDao"%>
 
 <head>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
@@ -202,11 +203,15 @@ function showHideERxPref() {
 </head>
 
 <%
-	ProviderPreference providerPreference=ProviderPreferencesUIBean.getLoggedInProviderPreference();
-
+        ProviderPreferenceDao providerPreferenceDao = (ProviderPreferenceDao) SpringUtils.getBean("providerPreferenceDao");
+        ProviderPreference providerPreference = providerPreferenceDao.find(providerNo);
+                                    
 	if (providerPreference == null) {
 	    providerPreference = new ProviderPreference();
+            providerPreference.setViewSchedule(ProviderPreference.VIEW_ALL);
 	}
+        
+        Integer viewSchedule = providerPreference.getViewSchedule();
 %>
 
 <body bgproperties="fixed"  onLoad="setfocus();showHideBillPref();showHideERxPref();" topmargin="0"leftmargin="0" rightmargin="0" style="font-family:sans-serif">
@@ -251,6 +256,15 @@ function showHideERxPref() {
 				<td class="preferenceValue">
 					<INPUT TYPE="TEXT" NAME="mygroup_no" VALUE='<%=request.getParameter("mygroup_no")%>' size="12" maxlength="10">
 					<input type="button" value="<bean:message key="provider.providerpreference.viewedit" />" onClick="popupPage(360,680,'providercontrol.jsp?displaymode=displaymygroup&dboperation=searchmygroupall' );return false;" />
+				</td>
+			</tr>
+                        <tr>
+				<td class="preferenceLabel">
+					<bean:message key="provider.preference.formViewSchedule" />
+				</td>
+				<td class="preferenceValue">                           
+                                    <input type="radio" name="viewSchedule" <%=viewSchedule.equals(ProviderPreference.VIEW_ALL)?"checked":""%> value="<%=ProviderPreference.VIEW_ALL%>"><bean:message key="provider.providerpreference.viewall"/>
+                                    <input type="radio" name="viewSchedule" <%=viewSchedule.equals(ProviderPreference.VIEW_AVAILABLE)?"checked":""%> value="<%=ProviderPreference.VIEW_AVAILABLE%>"><bean:message key="provider.providerpreference.viewavailable"/>
 				</td>
 			</tr>
 			<caisi:isModuleLoad moduleName="ticklerplus">

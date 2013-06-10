@@ -50,7 +50,7 @@ public final class ProviderPreferencesUIBean {
 	private static final EFormDao eFormDao = (EFormDao) SpringUtils.getBean("EFormDao");
 	private static final EncounterFormDao encounterFormDao = (EncounterFormDao) SpringUtils.getBean("encounterFormDao");
 
-	public static final ProviderPreference updateOrCreateProviderPreferences(HttpServletRequest request) {
+	public static ProviderPreference updateOrCreateProviderPreferences(HttpServletRequest request) {
 		ProviderPreference providerPreference = getLoggedInProviderPreference();
 
 		// update preferences based on request parameters
@@ -114,7 +114,13 @@ public final class ProviderPreferencesUIBean {
 
 		temp = StringUtils.trimToNull(request.getParameter("mygroup_no"));
 		if (temp != null) providerPreference.setMyGroupNo(temp);
-
+                
+                temp = StringUtils.trimToNull(request.getParameter("viewSchedule"));
+                if (temp != null) {
+                    Integer viewSchedule = Integer.parseInt(temp);                    
+                    providerPreference.setViewSchedule(viewSchedule);
+                }
+                
 		temp = StringUtils.trimToNull(request.getParameter("default_servicetype"));
 		if (temp != null) providerPreference.setDefaultServiceType(temp);
 

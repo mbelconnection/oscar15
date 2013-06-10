@@ -81,7 +81,10 @@ public class ProviderPreference extends AbstractModel<String> implements Seriali
 	private int defaultDoNotDeleteBilling=0;
 	private String defaultDxCode=null;
 	private byte[] encryptedMyOscarPassword=null;
-	
+
+	private Integer viewSchedule=VIEW_ALL;
+        public static final Integer VIEW_ALL = 1;
+        public static final Integer VIEW_AVAILABLE = 0;
 	/**
 	* Whether or not the provider has enabled the use of an external
 	* prescription service.
@@ -212,6 +215,14 @@ public class ProviderPreference extends AbstractModel<String> implements Seriali
 	public void setMyGroupNo(String myGroupNo) {
     	this.myGroupNo = myGroupNo;
     }
+        
+        public Integer getViewSchedule() {
+            return this.viewSchedule;
+        }
+        
+        public void setViewSchedule(Integer viewSchedule) {
+            this.viewSchedule = viewSchedule;
+        }
 
 	public String getColourTemplate() {
     	return colourTemplate;

@@ -2397,6 +2397,8 @@
 
 		<action path="/Provider/showPersonal" type="org.oscarehr.provider.web.DisplayPersonalInfoAppointmentAction" parameter="method" validate="false" scope="request">
 		</action>
+                
+                <action path="/Provider/SwitchViewSchedule" type="org.oscarehr.provider.web.ProviderPreferenceAction" parameter="method" validate="false" scope="request"/>
 
 		<action parameter="method" path="/PMmodule/Admin/MigrateCaisiRoles" scope="request" type="org.springframework.web.struts.DelegatingActionProxy">
 			<forward name="success" path="/PMmodule/Admin/migrateCaisiRoles.jsp" redirect="true" />

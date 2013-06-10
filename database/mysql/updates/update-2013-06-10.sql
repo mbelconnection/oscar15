@@ -1,0 +1,1 @@
+alter table ProviderPreference add viewSchedule int(10);

@@ -89,6 +89,22 @@ public abstract class AbstractModel<T> implements java.io.Serializable
 
 		return(false);
 	}
+	
+	/**
+	 * THis method returns a comma separated list of the ids as a string, useful for logging or debugging.
+	 */
+	public static <X extends AbstractModel<?>> String getIdsAsStringList(List<X> list)
+	{
+		StringBuilder sb=new StringBuilder();
+		
+		for (X model : list)
+		{
+			sb.append(model.getId().toString());
+			sb.append(',');
+		}
+		
+		return(sb.toString());
+	}
 
 	/**
 	 * Checks if the persistent id has been assigned to this instance.

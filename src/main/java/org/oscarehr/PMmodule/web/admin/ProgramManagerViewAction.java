@@ -349,10 +349,12 @@ public class ProgramManagerViewAction extends BaseAction {
 		Program fullProgram = programManager.getProgram(String.valueOf(programId));
 		String dischargeNotes = request.getParameter("admission.dischargeNotes");
 		String admissionNotes = request.getParameter("admission.admissionNotes");
+		String formattedAdmissionDate = request.getParameter("admissionDate");
+		Date admissionDate = oscar.util.DateUtils.toDate(formattedAdmissionDate);
 		List<Long> dependents = clientManager.getDependentsList(new Long(clientId));
 
 		try {
-			admissionManager.processAdmission(Integer.valueOf(clientId), getProviderNo(request), fullProgram, dischargeNotes, admissionNotes, queue.isTemporaryAdmission(), dependents);
+			admissionManager.processAdmission(Integer.valueOf(clientId), getProviderNo(request), fullProgram, dischargeNotes, admissionNotes, queue.isTemporaryAdmission(), dependents, admissionDate);
 			ActionMessages messages = new ActionMessages();
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("admit.success"));
 			saveMessages(request, messages);
@@ -686,7 +688,7 @@ public class ProgramManagerViewAction extends BaseAction {
 								if (communityProgramId > 0) {
 									try {
 										// discharge to community program
-										admissionManager.processDischargeToCommunity(communityProgramId, bedDemographic.getId().getDemographicNo(), getProviderNo(request), "bed reservation ended - manually discharged", "0");
+										admissionManager.processDischargeToCommunity(communityProgramId, bedDemographic.getId().getDemographicNo(), getProviderNo(request), "bed reservation ended - manually discharged", "0", null);
 									} catch (AdmissionException e) {
 
 										messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.failure", e.getMessage()));
@@ -706,7 +708,7 @@ public class ProgramManagerViewAction extends BaseAction {
 							if (communityProgramId > 0) {
 								try {
 									// discharge to community program
-									admissionManager.processDischargeToCommunity(communityProgramId, bedDemographic.getId().getDemographicNo(), getProviderNo(request), "bed reservation ended - manually discharged", "0");
+									admissionManager.processDischargeToCommunity(communityProgramId, bedDemographic.getId().getDemographicNo(), getProviderNo(request), "bed reservation ended - manually discharged", "0", null);
 								} catch (AdmissionException e) {
 
 									messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.failure", e.getMessage()));

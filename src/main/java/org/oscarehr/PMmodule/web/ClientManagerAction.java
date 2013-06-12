@@ -243,11 +243,12 @@ public class ClientManagerAction extends BaseAction {
 		Program p = (Program) clientForm.get("program");
 		String id = request.getParameter("id");
 		List<Long> dependents = clientManager.getDependentsList(new Long(id));
-
+		String formattedDischargeDate = request.getParameter("dischargeDate");
+		Date  dischargeDate = oscar.util.DateUtils.toDate(formattedDischargeDate);
 		boolean success = true;
 
 		try {
-			admissionManager.processDischarge(p.getId(), new Integer(id), admission.getDischargeNotes(), admission.getRadioDischargeReason(), dependents, false, false);
+			admissionManager.processDischarge(p.getId(), new Integer(id), admission.getDischargeNotes(), admission.getRadioDischargeReason(), dischargeDate, dependents, false, false);
 		} catch (AdmissionException e) {
 			ActionMessages messages = new ActionMessages();
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.failure", e.getMessage()));
@@ -265,6 +266,7 @@ public class ClientManagerAction extends BaseAction {
 		setEditAttributes(form, request, id);
 		admission.setDischargeNotes("");
 		admission.setRadioDischargeReason("");
+		admission.setDischargeDate(new Date());
 		return mapping.findForward("edit");
 	}
 
@@ -279,7 +281,7 @@ public class ClientManagerAction extends BaseAction {
 		ActionMessages messages = new ActionMessages();
 
 		try {
-			admissionManager.processDischargeToCommunity(program.getId(), new Integer(clientId), getProviderNo(request), admission.getDischargeNotes(), admission.getRadioDischargeReason(), dependents);
+			admissionManager.processDischargeToCommunity(program.getId(), new Integer(clientId), getProviderNo(request), admission.getDischargeNotes(), admission.getRadioDischargeReason(), dependents, null);
 			logManager.log("write", "discharge", clientId, request);
 
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.success"));

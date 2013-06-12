@@ -25,6 +25,7 @@ package org.oscarehr.PMmodule.model;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
@@ -87,6 +88,7 @@ public class Admission implements Serializable {
 	private boolean admissionFromTransfer=false;
 	private boolean automaticDischarge=false;
 	
+		
 	public boolean isDischargeFromTransfer() {
         return dischargeFromTransfer;
     }
@@ -242,7 +244,7 @@ public class Admission implements Serializable {
     public java.util.Date getDischargeDate() {
     	return dischargeDate;
     }
-
+    
 	/**
      * Set the value related to the column: discharge_date
      * @param dischargeDate the discharge_date value
@@ -251,6 +253,14 @@ public class Admission implements Serializable {
     	this.dischargeDate = dischargeDate;
     }
 
+    public String getFormattedDischargeDate() {
+		Date d = getDischargeDate();
+		if(d==null) {return "";}
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		return formatter.format(d);
+	}
+    
+    
 	/**
      * Set the value related to the column: team_id
      * @param teamId the team_id value

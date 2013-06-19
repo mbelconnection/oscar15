@@ -782,6 +782,16 @@ String today = now.get(Calendar.YEAR)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.ge
         <td></td>
         <td></td>
     </tr>
+
+    <tr>
+        <td width="2"><%=j%><%j++;%></td>
+        <td width="1"></td>
+        <td width="300"><a href="../oscarReport/OSISReport.jsp" target="_blank"><bean:message key="report.reportindex.btnOSISReport"/></a></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
         
      <tr></tr>  
      <tr></tr>

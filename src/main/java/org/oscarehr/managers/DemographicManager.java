@@ -26,6 +26,7 @@
 package org.oscarehr.managers;
 
 import org.oscarehr.common.dao.DemographicDao;
+import org.oscarehr.common.dao.DemographicExtDao;
 import org.oscarehr.common.model.Demographic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,9 @@ public class DemographicManager
 {
 	@Autowired
 	private DemographicDao demographicDao;
+	@Autowired
+	private DemographicExtDao demographicExtDao;
+	
 	
 	public Demographic getDemographic(Integer demographicId)
 	{
@@ -63,5 +67,25 @@ public class DemographicManager
 		}
 		
 		return(result);
+	}
+	
+	public String getDemographicWorkPhoneAndExtension(Integer demographicNo)
+	{
+		Demographic result=demographicDao.getDemographicById(demographicNo);
+		String workPhone = result.getPhone2();
+		if(workPhone != null && workPhone.length()>0) {
+			String value = demographicExtDao.getValueForDemoKey(demographicNo.toString(), "wPhoneExt");
+			if(value != null && value.length()>0) {
+				workPhone += "x" + value;
+			}
+		}
+		
+		//--- log action ---
+		if (result!=null)
+		{
+			LogAction.addLogSynchronous("DemographicManager.getDemographicWorkPhoneAndExtension", "demographicId="+result.getDemographicNo() + "result=" + workPhone);
+		}
+		
+		return(workPhone);
 	}
 }

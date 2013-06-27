@@ -73,9 +73,11 @@
 <%@page import="org.oscarehr.common.dao.ProfessionalSpecialistDao" %>
 <%@page import="org.oscarehr.common.model.DemographicCust" %>
 <%@page import="org.oscarehr.common.dao.DemographicCustDao" %>
+<%@page import="org.oscarehr.managers.DemographicManager" %>
 <%
 	ProfessionalSpecialistDao professionalSpecialistDao = (ProfessionalSpecialistDao) SpringUtils.getBean("professionalSpecialistDao");
 	DemographicCustDao demographicCustDao = (DemographicCustDao)SpringUtils.getBean("demographicCustDao");
+	DemographicManager demographicManager = SpringUtils.getBean(DemographicManager.class);
 %>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"
 	scope="session" />
@@ -1437,13 +1439,17 @@ if (iviewTag!=null && !"".equalsIgnoreCase(iviewTag.trim())){
                                           ArrayList relList = demoRelation.getDemographicRelationshipsWithNamePhone(demographic.getDemographicNo().toString());
                                           for (int reCounter = 0; reCounter < relList.size(); reCounter++){
                                              Hashtable relHash = (Hashtable) relList.get(reCounter);
+                                             String dNo = (String)relHash.get("demographicNo");
+                                             String workPhone = demographicManager.getDemographicWorkPhoneAndExtension(Integer.valueOf(dNo));
+                                             String formattedWorkPhone = (workPhone != null && workPhone.length()>0)?"  W:"+workPhone:"";
                                              String sdb = relHash.get("subDecisionMaker") == null?"":((Boolean) relHash.get("subDecisionMaker")).booleanValue()?"<span title=\"SDM\" >/SDM</span>":"";
                                              String ec = relHash.get("emergencyContact") == null?"":((Boolean) relHash.get("emergencyContact")).booleanValue()?"<span title=\"Emergency Contact\">/EC</span>":"";
-
+											 String masterLink = "<a target=\"demographic"+dNo+"\" href=\"" + request.getContextPath() + "/demographic/demographiccontrol.jsp?demographic_no="+dNo+"&displaymode=edit&dboperation=search_detail\">M</a>";
+											 String encounterLink = "<a target=\"encounter"+dNo+"\" href=\"javascript: function myFunction() {return false; }\" onClick=\"popupEChart(710,1024,'" + request.getContextPath() + "/oscarEncounter/IncomingEncounter.do?demographicNo="+dNo+"&providerNo="+LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo()+"&appointmentNo=&curProviderNo=&reason=&appointmentDate=&startTime=&status=&userName="+URLEncoder.encode( userfirstname+" "+userlastname)+"&curDate="+curYear+"-"+curMonth+"-"+curDay+"');return false;\">E</a>";												 
                                           %>
 							<li><span class="label"><%=relHash.get("relation")%><%=sdb%><%=ec%>:</span>
-                                                            <span class="info"><%=relHash.get("lastName")%>, <%=relHash.get("firstName")%>, <%=relHash.get("phone")%></span>
-                                                        </li>
+                            	<span class="info"><%=relHash.get("lastName")%>, <%=relHash.get("firstName")%>, H:<%=relHash.get("phone")%><%=formattedWorkPhone %> <%=masterLink%> <%=encounterLink %></span>
+                            </li>
 							<%}%>
 
 						</ul>

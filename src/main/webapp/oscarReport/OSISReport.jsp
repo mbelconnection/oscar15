@@ -54,7 +54,7 @@ if(session.getValue("user") == null)
   String formId = "";
 
   
-  if (request.getParameter("startDate") != null && request.getParameter("startDate") != null && request.getParameter("startDate") != null  ) {
+  if (request.getParameter("startDate") != null && request.getParameter("endDate") != null && request.getParameter("formId") != null &&  request.getParameter("providerIds") != null) {
 
       String startDate =     request.getParameter("startDate");
       String endDate  =      request.getParameter("endDate");

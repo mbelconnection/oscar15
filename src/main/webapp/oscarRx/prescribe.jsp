@@ -144,8 +144,7 @@ if(listRxDrugs!=null){
                         prnStr="prn";
                 drugName=drugName.replace("'", "\\'");
                 drugName=drugName.replace("\"","\\\"");
-                byte[] drugNameBytes = drugName.getBytes("ISO-8859-1");
-                drugName= new String(drugNameBytes, "UTF-8");
+                drugName=drugName.replace("Â","");
                 
 %>
 <%if (OscarProperties.getInstance().getProperty("rx_enhance")!=null && OscarProperties.getInstance().getProperty("rx_enhance").equals("true")) { %>

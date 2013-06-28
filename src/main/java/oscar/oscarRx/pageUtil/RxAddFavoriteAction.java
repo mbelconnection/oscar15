@@ -104,6 +104,8 @@ public final class RxAddFavoriteAction extends DispatchAction {
         }
         String randomId=request.getParameter("randomId");
         String favoriteName=request.getParameter("favoriteName");
+        byte[] favoriteNameBytes = favoriteName.getBytes("ISO-8859-1");
+	favoriteName = new String(favoriteNameBytes, "UTF-8");
         String drugIdStr=request.getParameter("drugId");
         String providerNo = bean.getProviderNo();
 

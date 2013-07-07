@@ -1949,8 +1949,11 @@
         <ViolationValue>/src/main/webapp/common/webAppContextAndSuperMgr.jsp:&lt;%@ page import="oscar.service.OscarSuperManager"%&gt;</ViolationValue>
         <ViolationValue>/src/main/webapp/common/webAppContextAndSuperMgr.jsp:OscarSuperManager oscarSuperManager = (OscarSuperManager)webApplicationContext.getBean("oscarSuperManager");</ViolationValue>
         <ViolationValue>/src/main/webapp/demographic/demographicaddarecord.jsp:DBPreparedHandlerParam [] param =new DBPreparedHandlerParam[34];</ViolationValue>
-        <ViolationValue>/src/main/webapp/demographic/demographicappthistory.jsp:DBPreparedHandlerParam[] params= new DBPreparedHandlerParam[1];</ViolationValue>
+        <ViolationValue>/src/main/webapp/demographic/demographicappthistory.jsp:DBPreparedHandlerParam[] params;</ViolationValue>
+        <ViolationValue>/src/main/webapp/demographic/demographicappthistory.jsp:params = new DBPreparedHandlerParam[1];</ViolationValue>
+        <ViolationValue>/src/main/webapp/demographic/demographicappthistory.jsp:params = new DBPreparedHandlerParam[2];</ViolationValue>
         <ViolationValue>/src/main/webapp/demographic/demographicappthistory.jsp:params[0]= new DBPreparedHandlerParam(Integer.parseInt(request.getParameter("demographic_no")));</ViolationValue>
+        <ViolationValue>/src/main/webapp/demographic/demographicappthistory.jsp:params[1]= new DBPreparedHandlerParam(Integer.parseInt(request.getParameter("demographic_no")));</ViolationValue>
         <ViolationValue>/src/main/webapp/lab/CA/ALL/labDisplay.jsp:ResultSet rs = DBHandler.GetSQL(sql);</ViolationValue>
         <ViolationValue>/src/main/webapp/lab/CA/ALL/labDisplayAjax.jsp:ResultSet rs = DBHandler.GetSQL(sql);</ViolationValue>
         <ViolationValue>/src/main/webapp/lab/CA/BC/demo_select.jsp:java.sql.ResultSet rs = DBHandler.GetSQL(sql);</ViolationValue>

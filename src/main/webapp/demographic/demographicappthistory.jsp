@@ -307,7 +307,10 @@ function popupPageNew(vheight,vwidth,varpage) {
   } else {
 	 Map<String,Boolean> apptsDisplayed = new HashMap<String,Boolean>();
 	 
+	
     while (rs.next()) {
+    	
+    	boolean deleted=false;
     	
     	if(showDeleted != null && showDeleted.equals("true")) {
     		if(apptsDisplayed.get(rs.getString("appointment_no")) != null) {
@@ -316,6 +319,13 @@ function popupPageNew(vheight,vwidth,varpage) {
     	}
     	apptsDisplayed.put(rs.getString("appointment_no"),true);
     	
+    	try {
+	    	if("archive".equals(rs.getString("archive"))) {
+	    		deleted=true;
+	    	}
+    	}catch(Exception e) {
+    		//ignore..just means it's not deleted
+    	}
     	
       iRow ++;
       if(iRow>iPageSize) break;
@@ -326,7 +336,7 @@ function popupPageNew(vheight,vwidth,varpage) {
 	  String statusDescr = as.getTitle();
 	  
 %> 
-<tr bgcolor="<%=bodd?weakColor:"white"%>" appt_no="<%=rs.getString("appointment_no")%>" demographic_no="<%=request.getParameter("demographic_no")%>">	  
+<tr <%=(deleted)?"style='text-decoration: line-through' ":"" %> bgcolor="<%=bodd?weakColor:"white"%>" appt_no="<%=rs.getString("appointment_no")%>" demographic_no="<%=request.getParameter("demographic_no")%>">	  
       <td align="center"><a href=# onClick ="popupPageNew(360,680,'../appointment/appointmentcontrol.jsp?appointment_no=<%=apptMainBean.getString(rs,"appointment_no")%>&displaymode=edit&dboperation=search');return false;" ><%=apptMainBean.getString(rs,"appointment_date")%></a></td>
       <td align="center"><%=apptMainBean.getString(rs,"start_time")%></td>
       <td align="center"><%=apptMainBean.getString(rs,"end_time")%></td>

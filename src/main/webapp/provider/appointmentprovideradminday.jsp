@@ -35,6 +35,7 @@
 <%@ page import="org.oscarehr.common.model.MyGroupAccessRestriction" %>
 <%@ page import="org.oscarehr.PMmodule.dao.ProviderDao" %>
 <%@ page import="org.oscarehr.common.model.Provider" %>
+<%@ page import="org.oscarehr.common.dao.DemographicCustDao, org.oscarehr.common.model.DemographicCust" %>
 <%
 			
 	if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
@@ -44,6 +45,7 @@
     boolean isTeamAccessPrivacy=false;
 
     MyGroupAccessRestrictionDao myGroupAccessRestrictionDao = SpringUtils.getBean(MyGroupAccessRestrictionDao.class);
+    DemographicCustDao demographicCustDao = SpringUtils.getBean(DemographicCustDao.class);
 %>
 <security:oscarSec objectName="_site_access_privacy" roleName="<%=roleName$%>" rights="r" reverse="false">
 	<%isSiteAccessPrivacy=true; %>
@@ -1585,6 +1587,9 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
                                 tickler_no = String.valueOf(tickler.get("tickler_no"));
                                 tickler_note = tickler.get("message")==null?tickler_note:tickler_note + "\n" + tickler.get("message");
                   }
+                          
+                 //alerts and notes
+       			DemographicCust dCust = demographicCustDao.find(demographic_no);
 
                           ver = "";
                   roster = "";
@@ -1692,6 +1697,20 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
     				<a href="../ticklerPlus/index.jsp" title="<bean:message key="provider.appointmentProviderAdminDay.ticklerMsg"/>: <%=UtilMisc.htmlEscape(tickler_note)%>"><font color="red">!</font></a>
     			</caisi:isModuleLoad>
     		<%} //end of tickler %>
+    		
+    		<!-- alerts -->	
+			<% if(OscarProperties.getInstance().getProperty("displayAlertsOnScheduleScreen", "").equals("true")){ %>
+			<% if(dCust != null && dCust.getAlert() != null && !dCust.getAlert().isEmpty()) { %>
+				<a href="#" onClick="return false;" title="<%=StringEscapeUtils.escapeHtml(dCust.getAlert())%>">A</a>
+			<%} }%>	
+			
+			<!-- notes -->	
+			<% if(OscarProperties.getInstance().getProperty("displayNotesOnScheduleScreen", "").equals("true")){ %>	
+			<% if(dCust != null && dCust.getNotes() != null && !SxmlMisc.getXmlContent(dCust.getNotes(),"<unotes>", "</unotes>").isEmpty()) { %>	
+				<a href="#" onClick="return false;" title="<%=StringEscapeUtils.escapeHtml(SxmlMisc.getXmlContent(dCust.getNotes(), "<unotes>", "</unotes>"))%>">N</a>
+			<%} }%>
+			
+			
 <a href=# onClick ="popupPage(535,860,'../appointment/appointmentcontrol.jsp?appointment_no=<%=appointment.get("appointment_no")%>&provider_no=<%=curProvider_no[nProvider]%>&year=<%=year%>&month=<%=month%>&day=<%=day%>&start_time=<%=iS+":"+iSm%>&demographic_no=0&displaymode=edit&dboperation=search');return false;" title="<%=iS+":"+(iSm>10?"":"0")+iSm%>-<%=iE+":"+iEm%>
 <%=name%>
 <bean:message key="provider.appointmentProviderAdminDay.reason"/>: <%=UtilMisc.htmlEscape(reason)%>
@@ -1729,6 +1748,18 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
     						<a href="#" onClick="popupPage(700,1024, '../Tickler.do?method=filter&filter.client=<%=demographic_no %>');return false;" title="<bean:message key="provider.appointmentProviderAdminDay.ticklerMsg"/>: <%=UtilMisc.htmlEscape(tickler_note)%>"><font color="red">!</font></a>
     					</caisi:isModuleLoad>
 					<%} %>
+					
+					<!-- alerts -->	
+			<% if(OscarProperties.getInstance().getProperty("displayAlertsOnScheduleScreen", "").equals("true")){ %>
+			<% if(dCust != null && dCust.getAlert() != null && !dCust.getAlert().isEmpty()) { %>
+				<a href="#" onClick="return false;" title="<%=StringEscapeUtils.escapeHtml(dCust.getAlert())%>">A</a>
+			<%} }%>	
+			
+			<!-- notes -->	
+			<% if(OscarProperties.getInstance().getProperty("displayNotesOnScheduleScreen", "").equals("true")){ %>	
+			<% if(dCust != null && dCust.getNotes() != null && !SxmlMisc.getXmlContent(dCust.getNotes(),"<unotes>", "</unotes>").isEmpty()) { %>	
+				<a href="#" onClick="return false;" title="<%=StringEscapeUtils.escapeHtml(SxmlMisc.getXmlContent(dCust.getNotes(), "<unotes>", "</unotes>"))%>">N</a>
+			<%} }%>
 
 <!-- doctor code block 1 -->
 <% if(bShowDocLink) { %>

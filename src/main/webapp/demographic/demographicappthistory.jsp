@@ -310,6 +310,7 @@ function popupPageNew(vheight,vwidth,varpage) {
 	
     while (rs.next()) {
     	
+    	String style="";
     	boolean deleted=false;
     	
     	if(showDeleted != null && showDeleted.equals("true")) {
@@ -322,6 +323,8 @@ function popupPageNew(vheight,vwidth,varpage) {
     	try {
 	    	if("archive".equals(rs.getString("archive"))) {
 	    		deleted=true;
+	    		style=" style='text-decoration: line-through' ";
+	    		
 	    	}
     	}catch(Exception e) {
     		//ignore..just means it's not deleted
@@ -336,21 +339,21 @@ function popupPageNew(vheight,vwidth,varpage) {
 	  String statusDescr = as.getTitle();
 	  
 %> 
-<tr <%=(deleted)?"style='text-decoration: line-through' ":"" %> bgcolor="<%=bodd?weakColor:"white"%>" appt_no="<%=rs.getString("appointment_no")%>" demographic_no="<%=request.getParameter("demographic_no")%>">	  
-      <td align="center"><a href=# onClick ="popupPageNew(360,680,'../appointment/appointmentcontrol.jsp?appointment_no=<%=apptMainBean.getString(rs,"appointment_no")%>&displaymode=edit&dboperation=search');return false;" ><%=apptMainBean.getString(rs,"appointment_date")%></a></td>
-      <td align="center"><%=apptMainBean.getString(rs,"start_time")%></td>
-      <td align="center"><%=apptMainBean.getString(rs,"end_time")%></td>
-      <td>
+<tr  bgcolor="<%=bodd?weakColor:"white"%>" appt_no="<%=rs.getString("appointment_no")%>" demographic_no="<%=request.getParameter("demographic_no")%>">	  
+      <td <%=style%> align="center"><a href=# onClick ="popupPageNew(360,680,'../appointment/appointmentcontrol.jsp?appointment_no=<%=apptMainBean.getString(rs,"appointment_no")%>&displaymode=edit&dboperation=search');return false;" ><%=apptMainBean.getString(rs,"appointment_date")%></a></td>
+      <td <%=style%> align="center"><%=apptMainBean.getString(rs,"start_time")%></td>
+      <td <%=style%> align="center"><%=apptMainBean.getString(rs,"end_time")%></td>
+      <td <%=style%>>
       <%if(statusDescr != null && statusDescr.length()>0 && !statusDescr.equals("desc")) {%>
       <bean:message	key="<%=statusDescr %>" />
       <% } %>
       </td>
-      <td><%=apptMainBean.getString(rs,"type") %></td>
-      <td><%=apptMainBean.getString(rs,"reason")%></td>
-      <td><%=apptMainBean.getString(rs,"last_name")+","+apptMainBean.getString(rs,"first_name")%></td>
+      <td <%=style%>><%=apptMainBean.getString(rs,"type") %></td>
+      <td <%=style%>><%=apptMainBean.getString(rs,"reason")%></td>
+      <td<%=style%> ><%=apptMainBean.getString(rs,"last_name")+","+apptMainBean.getString(rs,"first_name")%></td>
       <plugin:hideWhenCompExists componentName="specialencounterComp" reverse="true">
       <special:SpecialEncounterTag moduleName="eyeform">      
-      <td><a href="#" onclick="popupPage(800,1000,'<%=request.getContextPath()%>/mod/specialencounterComp/EyeForm.do?method=view&appHis=true&demographicNo=<%=request.getParameter("demographic_no")%>&appNo=<%=rs.getString("appointment_no")%>')">eyeform</a></td>
+      <td <%=style%>><a href="#" onclick="popupPage(800,1000,'<%=request.getContextPath()%>/mod/specialencounterComp/EyeForm.do?method=view&appHis=true&demographicNo=<%=request.getParameter("demographic_no")%>&appNo=<%=rs.getString("appointment_no")%>')">eyeform</a></td>
       </special:SpecialEncounterTag>
       </plugin:hideWhenCompExists>
 
@@ -367,6 +370,9 @@ function popupPageNew(vheight,vwidth,varpage) {
             }
             else if (apptMainBean.getString(rs,"status").equals("C")) {
                comments = "Cancelled";
+            } else if(deleted) {
+            	comments= "Deleted";
+            	style="";
             }
         }
 

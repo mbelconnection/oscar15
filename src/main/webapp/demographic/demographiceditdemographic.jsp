@@ -1451,7 +1451,7 @@ if (iviewTag!=null && !"".equalsIgnoreCase(iviewTag.trim())){
 											 String encounterLink = "<a target=\"encounter"+dNo+"\" href=\"javascript: function myFunction() {return false; }\" onClick=\"popupEChart(710,1024,'" + request.getContextPath() + "/oscarEncounter/IncomingEncounter.do?demographicNo="+dNo+"&providerNo="+LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo()+"&appointmentNo=&curProviderNo=&reason=&appointmentDate=&startTime=&status=&userName="+URLEncoder.encode( userfirstname+" "+userlastname)+"&curDate="+curYear+"-"+curMonth+"-"+curDay+"');return false;\">E</a>";												 
                                           %>
 							<li><span class="label"><%=relHash.get("relation")%><%=sdb%><%=ec%>:</span>
-                            	<span class="info"><%=relHash.get("lastName")%>, <%=relHash.get("firstName")%>, H:<%=relHash.get("phone")%><%=formattedWorkPhone %> <%=masterLink%> <%=encounterLink %></span>
+                            	<span class="info"><%=relHash.get("lastName")%>, <%=relHash.get("firstName")%> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; H:<%=relHash.get("phone")%><%=formattedWorkPhone %> <%=masterLink%> <%=encounterLink %></span>
                             </li>
 							<%}%>
 

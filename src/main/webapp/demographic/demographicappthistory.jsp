@@ -78,6 +78,12 @@ if (org.oscarehr.common.IsPropertiesOn.isMultisitesEnable()) {
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar"%>
+<%@page import="org.oscarehr.util.SpringUtils" %>
+<%@page import="oscar.appt.status.dao.AppointmentStatusDAO" %>
+<%@page import="oscar.appt.status.model.AppointmentStatus" %>
+<%
+	AppointmentStatusDAO apptStatusDao = (AppointmentStatusDAO)SpringUtils.getBean("appointStatusDao");
+%>
 <html:html locale="true">
 
 <head>
@@ -282,15 +288,19 @@ function popupPageNew(vheight,vwidth,varpage) {
 		  providerPk.setIntegratorFacilityId(a.getFacilityIdIntegerCompositePk().getIntegratorFacilityId());
 		  providerPk.setCaisiItemId(a.getCaisiProviderId());
 		  CachedProvider p = CaisiIntegratorManager.getProvider(providerPk);
-		  oscar.appt.ApptStatusData as = new oscar.appt.ApptStatusData();
-		  as.setApptStatus(a.getStatus());
-		  
-		  %>
+ 
+		  AppointmentStatus as = apptStatusDao.getByStatus(a.getStatus());
+	%>
 		  <tr bgcolor="<%=bodd?weakColor:"white"%>">
       <td align="center"><%=DateUtils.formatDate(a.getAppointmentDate(), request.getLocale())%></td>
       <td align="center"><%=DateUtils.formatTime(a.getStartTime(), request.getLocale())%></td>
       <td align="center"><%=DateUtils.formatTime(a.getEndTime(), request.getLocale())%></td>
-      <td><%=as.getTitle() %></td>
+      <td>
+      <%if(as != null && as.getDescription() != null) {%>
+    	 <%=as.getDescription()%>
+      <% } %>
+     
+      </td>
       <td><%=a.getType() %></td>
       <td><%=StringUtils.trimToEmpty(a.getReason())%></td>
       <td>
@@ -334,9 +344,10 @@ function popupPageNew(vheight,vwidth,varpage) {
       if(iRow>iPageSize) break;
       bodd=bodd?false:true; //for the color of rows
       nItems++; //to calculate if it is the end of records
-      oscar.appt.ApptStatusData as = new oscar.appt.ApptStatusData();
-	  as.setApptStatus(apptMainBean.getString(rs,"status"));
-	  String statusDescr = as.getTitle();
+     
+	  
+	  AppointmentStatus as = apptStatusDao.getByStatus(apptMainBean.getString(rs,"status"));
+	  
 	  
 %> 
 <tr  bgcolor="<%=bodd?weakColor:"white"%>" appt_no="<%=rs.getString("appointment_no")%>" demographic_no="<%=request.getParameter("demographic_no")%>">	  
@@ -344,8 +355,8 @@ function popupPageNew(vheight,vwidth,varpage) {
       <td <%=style%> align="center"><%=apptMainBean.getString(rs,"start_time")%></td>
       <td <%=style%> align="center"><%=apptMainBean.getString(rs,"end_time")%></td>
       <td <%=style%>>
-      <%if(statusDescr != null && statusDescr.length()>0 && !statusDescr.equals("desc")) {%>
-      <bean:message	key="<%=statusDescr %>" />
+      <%if(as != null && as.getDescription() != null) {%>
+    	 <%=as.getDescription() %>
       <% } %>
       </td>
       <td <%=style%>><%=apptMainBean.getString(rs,"type") %></td>

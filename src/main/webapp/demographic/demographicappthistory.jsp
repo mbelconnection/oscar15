@@ -50,12 +50,15 @@ if (org.oscarehr.common.IsPropertiesOn.isMultisitesEnable()) {
   String curProvider_no = (String) session.getAttribute("user");
   String demographic_no = request.getParameter("demographic_no");
   String strLimit1="0";
-  String strLimit2="25";
+  String strLimit2="50";
   if(request.getParameter("limit1")!=null) strLimit1 = request.getParameter("limit1");
   if(request.getParameter("limit2")!=null) strLimit2 = request.getParameter("limit2");
   String demolastname = request.getParameter("last_name")==null?"":request.getParameter("last_name");
   String demofirstname = request.getParameter("first_name")==null?"":request.getParameter("first_name");
   String deepColor = "#CCCCFF" , weakColor = "#EEEEFF" ;
+  String showDeleted = request.getParameter("deleted");
+  String orderby="";
+  if(request.getParameter("orderby")!=null) orderby=request.getParameter("orderby");
 %>
 <%@ page
 	import="java.util.*, java.sql.*, java.net.*, oscar.*, oscar.oscarDB.*"
@@ -75,6 +78,12 @@ if (org.oscarehr.common.IsPropertiesOn.isMultisitesEnable()) {
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar"%>
+<%@page import="org.oscarehr.util.SpringUtils" %>
+<%@page import="oscar.appt.status.dao.AppointmentStatusDAO" %>
+<%@page import="oscar.appt.status.model.AppointmentStatus" %>
+<%
+	AppointmentStatusDAO apptStatusDao = (AppointmentStatusDAO)SpringUtils.getBean("appointStatusDao");
+%>
 <html:html locale="true">
 
 <head>
@@ -144,6 +153,24 @@ function popupPageNew(vheight,vwidth,varpage) {
 		});
 	}
 
+	function toggleShowDeleted(value) {
+		if(value) {
+			//show deleted
+			//appt_history_w_deleted
+			location.href='<%=request.getContextPath()%>/demographic/demographiccontrol.jsp?demographic_no=<%=demographic_no%>&last_name=<%=demolastname%>&first_name=<%=demofirstname%>&orderby=<%=orderby%>&displaymode=appt_history&dboperation=appt_history_w_deleted&limit1=<%=strLimit1%>&limit2=<%=strLimit2%>&deleted=true';
+		} else {
+			//don't show deleted
+			location.href='<%=request.getContextPath()%>/demographic/demographiccontrol.jsp?demographic_no=<%=demographic_no%>&last_name=<%=demolastname%>&first_name=<%=demofirstname%>&orderby=<%=orderby%>&displaymode=appt_history&dboperation=appt_history&limit1=<%=strLimit1%>&limit2=<%=strLimit2%>';
+		}
+	}
+	
+	jQuery(document).ready(function(){
+		<%if(showDeleted != null && showDeleted.equals("true")) { %>
+		jQuery("#showDeleted").attr('checked',true);
+		<% } else {%>
+		jQuery("#showDeleted").attr('checked',false);
+		<%} %>
+	});
 </script>
 
 <link rel="stylesheet" type="text/css" media="all" href="../share/css/extractedFromPages.css"  />
@@ -177,13 +204,10 @@ function popupPageNew(vheight,vwidth,varpage) {
 		<td class="MainTableLeftColumn" valign="top"><a
 			href="javascript:history.go(-1)"
 			onMouseOver="self.status=document.referrer;return true"><bean:message
-			key="global.btnBack" /></a> <!--
-            <% if (country.equals("BR")) { %>
-                    <a href="../demographic/demographiccontrol.jsp?demographic_no=<%=demographic_no%>&displaymode=edit&dboperation=search_detail_ptbr"><bean:message key="global.btnBack" /> &nbsp;</a>
-            <%}else{%>
-                   <a href="../demographic/demographiccontrol.jsp?demographic_no=<%=demographic_no%>&displaymode=edit&dboperation=search_detail"><bean:message key="global.btnBack" /> &nbsp;</a>
-          <%}%>   
-    --></td>
+			key="global.btnBack" /></a> 
+			<br/>
+			<input type="checkbox" name="showDeleted" id="showDeleted" onChange="toggleShowDeleted(this.checked);"/><bean:message key="demographic.demographicappthistory.msgShowDeleted" />
+			</td>
 		<td class="MainTableRightColumn">
 		<table width="95%" border="0" bgcolor="#ffffff" id="apptHistoryTbl">
 			<tr  bgcolor="<%=deepColor%>">				
@@ -193,6 +217,10 @@ function popupPageNew(vheight,vwidth,varpage) {
 					key="demographic.demographicappthistory.msgFrom" /></b></TH>
 				<TH width="10%"><b><bean:message
 					key="demographic.demographicappthistory.msgTo" /></b></TH>
+					<TH width="10%"><b><bean:message
+					key="demographic.demographicappthistory.msgStatus" /></b></TH>
+					<TH width="10%"><b><bean:message
+					key="demographic.demographicappthistory.msgType" /></b></TH>
 				<TH width="15%"><b><bean:message
 					key="demographic.demographicappthistory.msgReason" /></b></TH>
 				<TH width="15%"><b><bean:message
@@ -217,8 +245,16 @@ function popupPageNew(vheight,vwidth,varpage) {
   if(request.getParameter("limit2")!=null) iPageSize = Integer.parseInt(request.getParameter("limit2"));
 
   ResultSet rs=null ;
-  DBPreparedHandlerParam[] params= new DBPreparedHandlerParam[1];
-  params[0]= new DBPreparedHandlerParam(Integer.parseInt(request.getParameter("demographic_no")));
+  DBPreparedHandlerParam[] params;
+  if("appt_history_w_deleted".equals(request.getParameter("dboperation"))) {
+	  params = new DBPreparedHandlerParam[2];
+	  params[0]= new DBPreparedHandlerParam(Integer.parseInt(request.getParameter("demographic_no")));
+	  params[1]= new DBPreparedHandlerParam(Integer.parseInt(request.getParameter("demographic_no")));
+  } else {
+  	params = new DBPreparedHandlerParam[1];
+  	params[0]= new DBPreparedHandlerParam(Integer.parseInt(request.getParameter("demographic_no")));
+  }
+  
   rs = apptMainBean.queryResults_paged(params, request.getParameter("dboperation"), iRSOffSet);
 
   boolean bodd=false;
@@ -252,13 +288,20 @@ function popupPageNew(vheight,vwidth,varpage) {
 		  providerPk.setIntegratorFacilityId(a.getFacilityIdIntegerCompositePk().getIntegratorFacilityId());
 		  providerPk.setCaisiItemId(a.getCaisiProviderId());
 		  CachedProvider p = CaisiIntegratorManager.getProvider(providerPk);
-		  
-		  
-		  %>
+ 
+		  AppointmentStatus as = apptStatusDao.getByStatus(a.getStatus());
+	%>
 		  <tr bgcolor="<%=bodd?weakColor:"white"%>">
       <td align="center"><%=DateUtils.formatDate(a.getAppointmentDate(), request.getLocale())%></td>
       <td align="center"><%=DateUtils.formatTime(a.getStartTime(), request.getLocale())%></td>
       <td align="center"><%=DateUtils.formatTime(a.getEndTime(), request.getLocale())%></td>
+      <td>
+      <%if(as != null && as.getDescription() != null) {%>
+    	 <%=as.getDescription()%>
+      <% } %>
+     
+      </td>
+      <td><%=a.getType() %></td>
       <td><%=StringUtils.trimToEmpty(a.getReason())%></td>
       <td>
       	<%=(p != null ? p.getLastName() +","+ p.getFirstName() : "") %> (remote)</td>
@@ -272,22 +315,56 @@ function popupPageNew(vheight,vwidth,varpage) {
   if(rs==null) {
     out.println("failed!!!");
   } else {
+	 Map<String,Boolean> apptsDisplayed = new HashMap<String,Boolean>();
+	 
+	
     while (rs.next()) {
+    	
+    	String style="";
+    	boolean deleted=false;
+    	
+    	if(showDeleted != null && showDeleted.equals("true")) {
+    		if(apptsDisplayed.get(rs.getString("appointment_no")) != null) {
+    			continue;
+    		}
+    	}
+    	apptsDisplayed.put(rs.getString("appointment_no"),true);
+    	
+    	try {
+	    	if("archive".equals(rs.getString("archive"))) {
+	    		deleted=true;
+	    		style=" style='text-decoration: line-through' ";
+	    		
+	    	}
+    	}catch(Exception e) {
+    		//ignore..just means it's not deleted
+    	}
+    	
       iRow ++;
       if(iRow>iPageSize) break;
       bodd=bodd?false:true; //for the color of rows
       nItems++; //to calculate if it is the end of records
-       
+     
+	  
+	  AppointmentStatus as = apptStatusDao.getByStatus(apptMainBean.getString(rs,"status"));
+	  
+	  
 %> 
-<tr bgcolor="<%=bodd?weakColor:"white"%>" appt_no="<%=rs.getString("appointment_no")%>" demographic_no="<%=request.getParameter("demographic_no")%>">	  
-      <td align="center"><a href=# onClick ="popupPageNew(360,680,'../appointment/appointmentcontrol.jsp?appointment_no=<%=apptMainBean.getString(rs,"appointment_no")%>&displaymode=edit&dboperation=search');return false;" ><%=apptMainBean.getString(rs,"appointment_date")%></a></td>
-      <td align="center"><%=apptMainBean.getString(rs,"start_time")%></td>
-      <td align="center"><%=apptMainBean.getString(rs,"end_time")%></td>
-      <td><%=apptMainBean.getString(rs,"reason")%></td>
-      <td><%=apptMainBean.getString(rs,"last_name")+","+apptMainBean.getString(rs,"first_name")%></td>
+<tr  bgcolor="<%=bodd?weakColor:"white"%>" appt_no="<%=rs.getString("appointment_no")%>" demographic_no="<%=request.getParameter("demographic_no")%>">	  
+      <td <%=style%> align="center"><a href=# onClick ="popupPageNew(360,680,'../appointment/appointmentcontrol.jsp?appointment_no=<%=apptMainBean.getString(rs,"appointment_no")%>&displaymode=edit&dboperation=search');return false;" ><%=apptMainBean.getString(rs,"appointment_date")%></a></td>
+      <td <%=style%> align="center"><%=apptMainBean.getString(rs,"start_time")%></td>
+      <td <%=style%> align="center"><%=apptMainBean.getString(rs,"end_time")%></td>
+      <td <%=style%>>
+      <%if(as != null && as.getDescription() != null) {%>
+    	 <%=as.getDescription() %>
+      <% } %>
+      </td>
+      <td <%=style%>><%=apptMainBean.getString(rs,"type") %></td>
+      <td <%=style%>><%=apptMainBean.getString(rs,"reason")%></td>
+      <td<%=style%> ><%=apptMainBean.getString(rs,"last_name")+","+apptMainBean.getString(rs,"first_name")%></td>
       <plugin:hideWhenCompExists componentName="specialencounterComp" reverse="true">
       <special:SpecialEncounterTag moduleName="eyeform">      
-      <td><a href="#" onclick="popupPage(800,1000,'<%=request.getContextPath()%>/mod/specialencounterComp/EyeForm.do?method=view&appHis=true&demographicNo=<%=request.getParameter("demographic_no")%>&appNo=<%=rs.getString("appointment_no")%>')">eyeform</a></td>
+      <td <%=style%>><a href="#" onclick="popupPage(800,1000,'<%=request.getContextPath()%>/mod/specialencounterComp/EyeForm.do?method=view&appHis=true&demographicNo=<%=request.getParameter("demographic_no")%>&appNo=<%=rs.getString("appointment_no")%>')">eyeform</a></td>
       </special:SpecialEncounterTag>
       </plugin:hideWhenCompExists>
 
@@ -304,6 +381,9 @@ function popupPageNew(vheight,vwidth,varpage) {
             }
             else if (apptMainBean.getString(rs,"status").equals("C")) {
                comments = "Cancelled";
+            } else if(deleted) {
+            	comments= "Deleted";
+            	style="";
             }
         }
 

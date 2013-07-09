@@ -47,6 +47,20 @@ public class AppointmentStatusDAOHibernate extends HibernateDaoSupport
         List list = c.list();
         return list;
     }
+    
+    public AppointmentStatus getByStatus(String status) {
+    	if(status == null || status.length() == 0){ 
+    		return null;
+    	}
+    	@SuppressWarnings("unchecked")
+    	List<AppointmentStatus> results =  getHibernateTemplate().find("from AppointmentStatus a where a.Status like ?",status.substring(0,1) + "%");
+    	for(AppointmentStatus r:results) {
+    		if(r.getStatus() != null && r.getStatus().length()>0 && r.getStatus().charAt(0) == status.charAt(0)) {
+    			return r;
+    		}
+    	}
+    	return null;
+    }
 
     public AppointmentStatus getStatus(int ID) {
         return getHibernateTemplate().get(AppointmentStatus.class, new Integer(ID));

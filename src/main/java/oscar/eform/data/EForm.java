@@ -32,6 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionMessages;
 import org.oscarehr.common.OtherIdManager;
@@ -86,27 +87,30 @@ public class EForm extends EFormBase {
 	}
 
 	public EForm(String fdid) {
-		EFormData eFormData = eFormDataDao.find(new Integer(fdid));
-		if (eFormData != null) {
-			this.fdid = fdid;
-			this.fid = eFormData.getFormId().toString();
-			this.providerNo = eFormData.getProviderNo();
-			this.demographicNo = eFormData.getDemographicId().toString();
-			this.formName = eFormData.getFormName();
-			this.formSubject = eFormData.getSubject();
-			this.formDate = eFormData.getFormDate().toString();
-			this.formHtml = eFormData.getFormData();
-			this.patientIndependent = eFormData.getPatientIndependent();
-			this.roleType = eFormData.getRoleType();
-		} else {
+	    if(!StringUtils.isBlank(fdid) && !"null".equalsIgnoreCase(fdid)) {
+			EFormData eFormData = eFormDataDao.find(new Integer(fdid));
+			if (eFormData != null) {
+				this.fdid = fdid;
+				this.fid = eFormData.getFormId().toString();
+				this.providerNo = eFormData.getProviderNo();
+				this.demographicNo = eFormData.getDemographicId().toString();
+				this.formName = eFormData.getFormName();
+				this.formSubject = eFormData.getSubject();
+				this.formDate = eFormData.getFormDate().toString();
+				this.formHtml = eFormData.getFormData();
+				this.showLatestFormOnly = eFormData.isShowLatestFormOnly();
+				this.patientIndependent = eFormData.isPatientIndependent();
+				this.roleType = eFormData.getRoleType();
+			} 
+	    } else {
 			this.formName = "";
 			this.formSubject = "";
 			this.formHtml = "No Such Form in Database";
-		}
+        }
 	}
 
 	public void loadEForm(String fid, String demographicNo) {
-		Hashtable loaded = EFormUtil.loadEForm(fid);
+		HashMap<String, Object> loaded = EFormUtil.loadEForm(fid);
 		this.fid = fid;
 		this.formName = (String) loaded.get("formName");
 		this.formHtml = (String) loaded.get("formHtml");
@@ -115,6 +119,7 @@ public class EForm extends EFormBase {
 		this.formFileName = (String) loaded.get("formFileName");
 		this.formCreator = (String) loaded.get("formCreator");
 		this.demographicNo = demographicNo;
+		this.showLatestFormOnly = (Boolean) loaded.get("showLatestFormOnly");
 		this.patientIndependent = (Boolean) loaded.get("patientIndependent");
 		this.roleType = (String) loaded.get("roleType");
 	}

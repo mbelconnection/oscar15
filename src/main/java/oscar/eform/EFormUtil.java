@@ -28,6 +28,8 @@ package oscar.eform;
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -55,6 +57,7 @@ import org.oscarehr.casemgmt.model.CaseManagementNote;
 import org.oscarehr.casemgmt.model.CaseManagementNoteLink;
 import org.oscarehr.casemgmt.model.Issue;
 import org.oscarehr.casemgmt.service.CaseManagementManager;
+import org.oscarehr.common.dao.EFormDao;
 import org.oscarehr.common.dao.EFormDataDao;
 import org.oscarehr.common.dao.EFormValueDao;
 import org.oscarehr.common.dao.SecRoleDao;
@@ -74,7 +77,6 @@ import oscar.oscarDB.DBHandler;
 import oscar.oscarMessenger.data.MsgMessageData;
 import oscar.oscarProvider.data.ProviderData;
 import oscar.util.OscarRoleObjectPrivilege;
-import oscar.util.UtilDateUtilities;
 
 public class EFormUtil {
 	private static final Logger logger = MiscUtils.getLogger();
@@ -91,6 +93,7 @@ public class EFormUtil {
 
 	private static CaseManagementManager cmm = (CaseManagementManager) SpringUtils.getBean("caseManagementManager");
 	private static CaseManagementNoteLinkDAO cmDao = (CaseManagementNoteLinkDAO) SpringUtils.getBean("CaseManagementNoteLinkDAO");
+	private static EFormDao eFormDao = (EFormDao) SpringUtils.getBean("EFormDao");
 	private static EFormDataDao eFormDataDao = (EFormDataDao) SpringUtils.getBean("EFormDataDao");
 	private static EFormValueDao eFormValueDao = (EFormValueDao) SpringUtils.getBean("EFormValueDao");
 
@@ -98,32 +101,34 @@ public class EFormUtil {
 	}
 
 	public static String saveEForm(EForm eForm) {
-		return saveEForm(eForm.getFormName(), eForm.getFormSubject(), eForm.getFormFileName(), eForm.getFormHtml(), eForm.getFormCreator(), eForm.getPatientIndependent(), eForm.getRoleType());
+		return saveEForm(eForm.getFormName(), eForm.getFormSubject(), eForm.getFormFileName(), eForm.getFormHtml(), eForm.getFormCreator(), eForm.isShowLatestFormOnly(), eForm.isPatientIndependent(), eForm.getRoleType());
 	}
 
 	public static String saveEForm(String formName, String formSubject, String fileName, String htmlStr) {
-		return saveEForm(formName, formSubject, fileName, htmlStr, false, null);
+		return saveEForm(formName, formSubject, fileName, htmlStr, false, false, null);
 	}
 
-	public static String saveEForm(String formName, String formSubject, String fileName, String htmlStr, boolean patientIndependent, String roleType) {
-		return saveEForm(formName, formSubject, fileName, htmlStr, null, patientIndependent, roleType);
+	public static String saveEForm(String formName, String formSubject, String fileName, String htmlStr, boolean showLatestFormOnly, boolean patientIndependent, String roleType) {
+		return saveEForm(formName, formSubject, fileName, htmlStr, null, showLatestFormOnly, patientIndependent, roleType);
 	}
 
-	public static String saveEForm(String formName, String formSubject, String fileName, String htmlStr, String creator, boolean patientIndependent, String roleType) {
+	public static String saveEForm(String formName, String formSubject, String fileName, String htmlStr, String creator, boolean showLatestFormOnly, boolean patientIndependent, String roleType) {
 		// called by the upload action, puts the uploaded form into DB
-		String nowDate = UtilDateUtilities.DateToString(UtilDateUtilities.now(), "yyyy-MM-dd");
-		String nowTime = UtilDateUtilities.DateToString(UtilDateUtilities.now(), "HH:mm:ss");
-		htmlStr = "\n" + org.apache.commons.lang.StringEscapeUtils.escapeSql(htmlStr);
-		formName = org.apache.commons.lang.StringEscapeUtils.escapeSql(formName);
-		formSubject = org.apache.commons.lang.StringEscapeUtils.escapeSql(formSubject);
-		fileName = org.apache.commons.lang.StringEscapeUtils.escapeSql(fileName);
-		roleType = org.apache.commons.lang.StringEscapeUtils.escapeSql(roleType);
-		if (creator == null) creator = "NULL";
-		else creator = "'" + creator + "'";
-		if (roleType == null) roleType = "NULL";
-		else roleType = "'" + roleType + "'";
-		String sql = "INSERT INTO eform (form_name, file_name, subject, form_date, form_time, form_creator, status, form_html, patient_independent,roleType) VALUES " + "('" + formName + "', '" + fileName + "', '" + formSubject + "', '" + nowDate + "', '" + nowTime + "', " + creator + ", 1, '" + htmlStr + "', " + patientIndependent + "," + roleType + ")";
-		return (runSQLinsert(sql));
+
+		org.oscarehr.common.model.EForm eform = new org.oscarehr.common.model.EForm();
+		eform.setFormName(formName);
+		eform.setFileName(fileName);
+		eform.setSubject(formSubject);
+		eform.setCreator(creator);
+		eform.setCurrent(true);
+		eform.setFormHtml(htmlStr);
+		eform.setShowLatestFormOnly(showLatestFormOnly);
+		eform.setPatientIndependent(patientIndependent);
+		eform.setRoleType(roleType);
+
+		eFormDao.persist(eform);
+
+		return eform.getId().toString();
 	}
 
 	public static ArrayList<HashMap<String, ? extends Object>> listEForms(String sortBy, String deleted) {
@@ -217,7 +222,7 @@ public class EFormUtil {
 		if (deleted.equals("deleted")) current = false;
 		else if (deleted.equals("current")) current = true;
 
-		List<EFormData> allEformDatas = eFormDataDao.findByDemographicIdCurrentPatientIndependent(Integer.parseInt(demographic_no), current, false);
+		List<EFormData> allEformDatas = eFormDataDao.findByDemographicIdCurrent(Integer.parseInt(demographic_no), current);
 
 		if (NAME.equals(sortBy)) Collections.sort(allEformDatas, EFormData.FORM_NAME_COMPARATOR);
 		else if (SUBJECT.equals(sortBy)) Collections.sort(allEformDatas, EFormData.FORM_SUBJECT_COMPARATOR);
@@ -292,7 +297,7 @@ public class EFormUtil {
 
 		Boolean current = true;
 		
-		List<Map<String,Object>> allEformDatas = eFormDataDao.findByDemographicIdCurrentPatientIndependentNoData(Integer.parseInt(demographic_no), current, false);
+		List<Map<String,Object>> allEformDatas = eFormDataDao.findByDemographicIdCurrentNoData(Integer.parseInt(demographic_no), current);
 		
 
 		ArrayList<HashMap<String, ? extends Object>> results = new ArrayList<HashMap<String, ? extends Object>>();
@@ -352,11 +357,11 @@ public class EFormUtil {
 		return (results);
 	}
 
-	public static Hashtable<String,Object> loadEForm(String fid) {
+	public static HashMap<String,Object> loadEForm(String fid) {
 		// opens an eform that was uploaded (used to fill out patient data)
 		String sql = "SELECT * FROM eform where fid=" + fid + " LIMIT 1";
 		ResultSet rs = getSQL(sql);
-		Hashtable<String,Object> curht = new Hashtable<String,Object>();
+		HashMap<String,Object> curht = new HashMap<String,Object>();
 		try {
 			rs.next();
 			// must have FID and form_name otherwise throws null pointer on the hashtable
@@ -368,6 +373,7 @@ public class EFormUtil {
 			curht.put("formTime", rsGetString(rs, "form_time"));
 			curht.put("formCreator", rsGetString(rs, "form_creator"));
 			curht.put("formHtml", rsGetString(rs, "form_html"));
+			curht.put("showLatestFormOnly", rs.getBoolean("showLatestFormOnly"));
 			curht.put("patientIndependent", rs.getBoolean("patient_independent"));
 			curht.put("roleType", rsGetString(rs, "roleType"));
 			rs.close();
@@ -381,14 +387,24 @@ public class EFormUtil {
 
 	public static void updateEForm(EFormBase updatedForm) {
 		// Updates the form - used by editForm
-		String formHtml = "\n" + org.apache.commons.lang.StringEscapeUtils.escapeSql(updatedForm.getFormHtml());
-		String formName = org.apache.commons.lang.StringEscapeUtils.escapeSql(updatedForm.getFormName());
-		String formSubject = org.apache.commons.lang.StringEscapeUtils.escapeSql(updatedForm.getFormSubject());
-		String fileName = org.apache.commons.lang.StringEscapeUtils.escapeSql(updatedForm.getFormFileName());
-		String roleType = org.apache.commons.lang.StringEscapeUtils.escapeSql(updatedForm.getRoleType());
-
-		String sql = "UPDATE eform SET " + "form_name='" + formName + "', " + "file_name='" + fileName + "', " + "subject='" + formSubject + "', " + "form_date='" + updatedForm.getFormDate() + "', " + "form_time='" + updatedForm.getFormTime() + "', " + "form_html='" + formHtml + "', " + "patient_independent=" + updatedForm.getPatientIndependent() + ", " + "roleType='" + roleType + "' " + "WHERE fid=" + updatedForm.getFid() + ";";
-		runSQL(sql);
+	
+		org.oscarehr.common.model.EForm eform = eFormDao.find(Integer.parseInt(updatedForm.getFid()));
+		if (eform == null) {
+			logger.error("Unable to find eform for update: " + updatedForm);
+			return;
+		}
+		
+		eform.setFormName(updatedForm.getFormName());
+		eform.setFileName(updatedForm.getFormFileName());
+		eform.setSubject(updatedForm.getFormSubject());
+		eform.setFormDate(fromDateString(updatedForm.getFormDate(), "yyyy-MM-dd"));
+		eform.setFormTime(fromDateString(updatedForm.getFormTime(), "HH:mm:ss"));
+		eform.setFormHtml(updatedForm.getFormHtml());
+		eform.setShowLatestFormOnly(updatedForm.isShowLatestFormOnly());
+		eform.setPatientIndependent(updatedForm.isPatientIndependent());
+		eform.setRoleType(updatedForm.getRoleType());
+		
+		eFormDao.merge(eform);
 	}
 
 	/*
@@ -406,6 +422,7 @@ public class EFormUtil {
 		else if (Column.equalsIgnoreCase("formTime")) dbColumn = "form_time";
 		else if (Column.equalsIgnoreCase("formStatus")) dbColumn = "status";
 		else if (Column.equalsIgnoreCase("formHtml")) dbColumn = "form_html";
+		else if (Column.equalsIgnoreCase("showLatestFormOnly")) dbColumn = "showLatestFormOnly";
 		else if (Column.equalsIgnoreCase("patientIndependent")) dbColumn = "patient_independent";
 		else if (Column.equalsIgnoreCase("roleType")) dbColumn = "roleType";
 		String sql = "SELECT " + dbColumn + " FROM eform WHERE fid=" + fid;
@@ -786,6 +803,55 @@ public class EFormUtil {
 	public static boolean blank(String s) {
 		return (s == null || s.trim().equals(""));
 	}
+	
+	public static ArrayList<HashMap<String, ? extends Object>> getFormsSameFidSamePatient(String fdid, String sortBy, String userRoles)
+	{
+		List<EFormData> allEformDatas =  eFormDataDao.getFormsSameFidSamePatient(Integer.valueOf(fdid));
+
+		if (SUBJECT.equals(sortBy)) Collections.sort(allEformDatas, EFormData.FORM_SUBJECT_COMPARATOR);
+		else Collections.sort(allEformDatas, EFormData.FORM_DATE_COMPARATOR);
+
+		ArrayList<HashMap<String, ? extends Object>> results = new ArrayList<HashMap<String, ? extends Object>>();
+		try {
+			for (EFormData eFormData : allEformDatas) {
+				// filter eform by role type
+				String tempRole = StringUtils.trimToNull(eFormData.getRoleType());
+				if (userRoles != null && tempRole != null) {
+					// ojectName: "_admin,_admin.eform"
+					// roleName: "doctor,admin"
+					String objectName = "_eform." + tempRole;
+					Vector v = OscarRoleObjectPrivilege.getPrivilegeProp(objectName);
+					if (!OscarRoleObjectPrivilege.checkPrivilege(userRoles, (Properties) v.get(0), (Vector) v.get(1))) {
+						continue;
+					}
+				}
+				HashMap<String, Object> curht = new HashMap<String, Object>();
+				curht.put("fdid", eFormData.getId().toString());
+				curht.put("fid", eFormData.getFormId().toString());
+				curht.put("formName", eFormData.getFormName());
+				curht.put("formSubject", eFormData.getSubject());
+				curht.put("formDate", eFormData.getFormDate().toString());
+				curht.put("formTime", eFormData.getFormTime().toString());
+				curht.put("formDateAsDate", eFormData.getFormDate());
+				curht.put("roleType", eFormData.getRoleType());
+				curht.put("providerNo", eFormData.getProviderNo());
+				results.add(curht);
+			}
+		} catch (Exception sqe) {
+			logger.error("Error", sqe);
+		}
+		return (results);
+	}
+	
+    public static boolean isLatestPatientForm(String fdid)
+    {
+    	return eFormDataDao.isLatestPatientForm(Integer.valueOf(fdid));
+    }
+    
+    public static boolean isShowLatestFormOnlyInMany(String fdid)
+    {
+    	return eFormDataDao.isShowLatestFormOnlyInMany(Integer.valueOf(fdid));
+    }
 
 	// ------------------private
 	private static void runSQL(String sql) {
@@ -1141,4 +1207,14 @@ public class EFormUtil {
 		return fileList;
 	}
 
+	private static Date fromDateString(String dateString, String formatPattern) {
+		if (dateString == null || "".equals(dateString.trim())) return null;
+
+		SimpleDateFormat format = new SimpleDateFormat(formatPattern);
+		try {
+			return format.parse(dateString);
+		} catch (ParseException e) {
+			return null;
+		}
+	}
 }

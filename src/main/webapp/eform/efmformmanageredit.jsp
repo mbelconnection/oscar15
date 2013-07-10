@@ -32,10 +32,10 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%
-   Hashtable curform = new Hashtable();
+   HashMap<String, Object> curform = new HashMap<String, Object>();
    Hashtable errors = new Hashtable();
 if (request.getAttribute("submitted") != null) {
-    curform = (Hashtable) request.getAttribute("submitted");
+    curform = (HashMap<String, Object>) request.getAttribute("submitted");
     errors = (Hashtable) request.getAttribute("errors");
 } else if (request.getParameter("fid") != null) {
     String curfid = request.getParameter("fid");
@@ -54,8 +54,9 @@ if (request.getAttribute("submitted") != null) {
    }
    if (curform.get("formDate") == null) curform.put("formDate", "--");
    if (curform.get("formTime") == null) curform.put("formTime", "--");
+   
+   if (curform.get("showLatestFormOnly") ==null) curform.put("showLatestFormOnly", false);
    if (curform.get("patientIndependent") ==null) curform.put("patientIndependent", false);
-   boolean patientIndependent = (Boolean) curform.get("patientIndependent");
    
    String formHtmlRaw = (String) curform.get("formHtml");
    String formHtml = "";
@@ -120,6 +121,21 @@ function disablenupload() {
 			<font class="warning"><bean:message key="<%=formNameMissing%>" /></font> <%} else if (errors.containsKey("formNameExists")) { %>
 			<font class="warning"><bean:message key="<%=formNameMissing%>" /></font> <%} %>
 			</td>
+			<td rowspan="3">
+				<input type="checkbox" name="showLatestFormOnly" value="true" <%= (Boolean)curform.get("showLatestFormOnly")?"checked":"" %> />
+				<bean:message key="eform.uploadhtml.showLatestFormOnly" />
+				<br/>
+				<input type="checkbox" name="patientIndependent" value="true" <%= (Boolean)curform.get("patientIndependent")?"checked":"" %> />
+				<bean:message key="eform.uploadhtml.patientIndependent" />
+			</td>
+		</tr>
+		<tr class="highlight">
+			<th style="text-align: right;"><bean:message
+				key="eform.uploadhtml.formSubject" />:</th>
+                        <td colspan="2"><input type="text" name="formSubject"
+				value="<%= curform.get("formSubject") %>" size="30" /></td>
+		</tr>
+		<tr class="highlight">
 			<th><bean:message key="eform.uploadhtml.btnRoleType"/></th>
 			<td><select name="roleType">
 				<option value="">- select one -</option>
@@ -136,15 +152,6 @@ function disablenupload() {
                 <%} %>
                 </select>
             </td>
-			<th style="text-align: right;"><bean:message
-				key="eform.uploadhtml.patientIndependent" /><input type="checkbox" name="patientIndependent" value="true"
-                                   <%= patientIndependent?"checked":"" %> /></th>
-		</tr>
-		<tr class="highlight">
-			<th style="text-align: right;"><bean:message
-				key="eform.uploadhtml.formSubject" />:</th>
-                        <td colspan="2"><input type="text" name="formSubject"
-				value="<%= curform.get("formSubject") %>" size="30" /></td>
 		</tr>
 		<tr class="highlight">
 			<th style="text-align: right;"><bean:message key="eform.uploadhtml.formFileName" /> <sup>optional</sup>: </th>

@@ -5,3 +5,4 @@ delete from measurementType where type='WT' && measuringInstruction = 'in BMI' &
 		select * from measurementType where type='WT' GROUP BY type HAVING (COUNT(type) > 1)
 	) AS find
 );
+

@@ -44,7 +44,7 @@
 	<table class="MainTable" id="scrollNumber1" name="encounterTable"
 		style="margin: 0px;">
 		<tr class="topbar">
-			<td class="MainTableTopRowLeftColumn" width="60px">eAAPs</td>
+			<td class="MainTableTopRowLeftColumn" width="60px">eAAPS</td>
 			<td class="MainTableTopRowRightColumn">
 				<table class="TopStatusBar">
 					<tr>

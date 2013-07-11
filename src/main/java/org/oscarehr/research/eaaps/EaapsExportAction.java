@@ -126,10 +126,14 @@ public class EaapsExportAction extends Action {
 			handler.connect();
 			for(ExportEntry e : docs) {
 				// make sure we persist hash for further lookup
-				StudyData studyData = getStudyData(e.getDemographicId(), studyId); 
+				StudyData studyData = getStudyData(e.getDemographicId(), studyId);
 				studyData.setProviderNo(e.getProviderNo());
 				studyData.setContent(e.getHash());
-				studyDataDao.persist(studyData);
+				if (studyData.getId() == null) {
+					studyDataDao.persist(studyData);
+				} else {
+					studyDataDao.merge(studyData);
+				}
 				
 				//  now save the record to the server
 				String demographicData = e.getDocContent();

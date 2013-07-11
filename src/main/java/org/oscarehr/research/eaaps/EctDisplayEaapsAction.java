@@ -104,7 +104,7 @@ public class EctDisplayEaapsAction extends EctDisplayAction {
 			return true;
 		}
 		
-		Dao.setLeftHeading("eAAPs");
+		Dao.setLeftHeading("eAAPS");
 		Dao.setHeadingColour("FF6600"); // orange
 		Dao.setMenuHeader("Menu Header");
 		Dao.setRightURL(getEaapsUrl(request.getContextPath() + "/eaaps/eaaps.jsp"));  
@@ -213,7 +213,7 @@ public class EctDisplayEaapsAction extends EctDisplayAction {
 		}
 		
 		// in case status changed after resource was updated - still display the notification
-		// this takes care of the case when status changed on the eAAPs side, but notification 
+		// this takes care of the case when status changed on the eAAPS side, but notification 
 		// has been dismissed
 		for(UserDSMessagePrefs pref : prefs) {
 			if (pref.getResourceUpdatedDate() == null ) {

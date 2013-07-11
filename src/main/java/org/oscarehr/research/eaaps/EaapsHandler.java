@@ -73,7 +73,7 @@ import ca.uhn.hl7v2.validation.impl.NoValidation;
 import com.lowagie.text.pdf.PdfReader;
 
 /**
- * Handler class for uploading eAAPs PDF documents.
+ * Handler class for uploading eAAPS PDF documents.
  */
 public class EaapsHandler extends DefaultGenericHandler implements oscar.oscarLab.ca.all.upload.handlers.MessageHandler {
 
@@ -125,7 +125,7 @@ public class EaapsHandler extends DefaultGenericHandler implements oscar.oscarLa
 					provider = "";
 				}
 			}
-			String description = "eAAPs Action plan for " + demo.getFormattedName();
+			String description = "eAAPS Action plan for " + demo.getFormattedName();
 			
 			EDoc doc = createEDoc(message, fileName, demo, provider, description);
 			// save edoc
@@ -181,8 +181,8 @@ public class EaapsHandler extends DefaultGenericHandler implements oscar.oscarLa
 			sentToWho = sentToWho + " " + message.getRemoteNames(remoteProviders);
 		}
 
-		String subject = "eAAPs: Recommendations ready for " + demo.getFormattedName();
-		String userName = "eAAPs";
+		String subject = "eAAPS: Recommendations ready for " + demo.getFormattedName();
+		String userName = "eAAPS";
 		String userNo = "N/A";
 		String attachment = null;
 		String pdfAttachment = null;
@@ -259,7 +259,7 @@ public class EaapsHandler extends DefaultGenericHandler implements oscar.oscarLa
 		String reviewDateTime = "";
 
 		MSH mshSegment = message.getMSH();
-		String source = "eaaps";
+		String source = "eAAPS";
 		String sourceFacility = mshSegment.getSendingApplication().getValue();
 		char status = 'A';
 		String module = "demographic";

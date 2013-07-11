@@ -494,3 +494,4 @@ if(currentFacility.isEnableEncounterTransportationTime() || (currentProgram != n
         Calendar.setup({ inputField : "observationDate", ifFormat : "%d-%b-%Y %H:%M ", showsTime :true, button : "observationDate_cal", singleClick : true, step : 1 });    
    }
 </script>
+</div>

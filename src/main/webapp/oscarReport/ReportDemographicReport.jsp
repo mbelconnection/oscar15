@@ -43,6 +43,11 @@
     patientArray  = searchData.getPatientTypes();
     providerArray = searchData.getProvidersWithDemographics();
     queryArray    = searchData.getQueryTypes();
+    
+    String studyId = request.getParameter("studyId");
+    if( studyId == null ) {
+		studyId = (String)request.getAttribute("studyId");
+    }
 %>
 
 <html:html>
@@ -128,6 +133,7 @@ function checkQuery() {
             </td>
             <td class="MainTableTopRowRightColumn">
             <html:form action="/report/DemographicReport" onsubmit="return checkQuery();">
+            <html:hidden property="studyId" value='<%=studyId == null ? "" : studyId%>'/>
                 <table class="TopStatusBar">
                     <tr>
                         <td >
@@ -423,8 +429,10 @@ if ( thisForm != null || thisForm.getAgeStyle() == null || thisForm.getAgeStyle(
     </table>
 <html:text property="queryName"/><br>
 <input type="submit" value="Save Query" name="query"/>
-<input type="submit" value="Run Query"  name="query"/>
-
+<input type="submit" value="Run Query"  name="query"/><br/>
+<%if( studyId != null && !studyId.equals("") && !studyId.equalsIgnoreCase("null")) {%>
+<input type="submit" value="Add to Study" name="query"/>
+<%} %>
     </td>
     <td valign=top>
 
@@ -529,11 +537,15 @@ if ( thisForm != null || thisForm.getAgeStyle() == null || thisForm.getAgeStyle(
 
                     <%
                     for (int i =0 ; i < providerArray.size(); i++){
-                    String pro = (String) providerArray.get(i);%>
+                    	String pro = (String) providerArray.get(i);
+                    	if( pro != null && !"".equals(pro) ) {
+                    %>
                      <li > <%=providerBean.getProperty(pro,pro)%>
                        <html:multibox property="providerNo" value="<%=pro%>"/>
                      </li>
-                    <%}%>
+                    <%}
+                    }
+                    %>
                     </ul>
                 </td>                
             </tr>
@@ -560,6 +572,14 @@ if ( thisForm != null || thisForm.getAgeStyle() == null || thisForm.getAgeStyle(
                     </table>                    
                 </td>                
             </tr>
+            <tr>
+            	<td>
+             		Demographic ID(s):
+				</td>
+				<td colspan="3">
+					<html:textarea property="demoIds" cols="60" rows="5"> </html:textarea>
+				</td>
+			</tr>            
             <tr>
                 <td>
                     Order By

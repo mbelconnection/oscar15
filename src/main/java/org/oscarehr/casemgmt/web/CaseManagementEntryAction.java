@@ -134,6 +134,7 @@ import oscar.oscarLab.ca.on.CommonLabResultData;
 import oscar.oscarLab.ca.on.LabResultData;
 import oscar.oscarSurveillance.SurveillanceMaster;
 import oscar.util.ConcatPDF;
+import oscar.util.ConversionUtils;
 import oscar.util.UtilDateUtilities;
 
 import com.lowagie.text.DocumentException;
@@ -179,7 +180,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 
 		logger.debug("Get demo and provider no");
 		String demono = getDemographicNo(request);
-		Integer demographicNo = Integer.parseInt(demono);
+		Integer demographicNo = ConversionUtils.fromIntString(demono);
 		String providerNo = getProviderNo(request);
 		current = System.currentTimeMillis();
 		logger.debug("Get demo and provider no " + String.valueOf(current - start));
@@ -188,7 +189,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 		String programIdString = (String) session.getAttribute("case_program_id");
 		Integer programId = null;
 		try {
-			programId = Integer.parseInt(programIdString);
+			programId = ConversionUtils.fromIntString(programIdString);
 		} catch (Exception e) {
 			logger.warn("Error parsing programId:" + programIdString, e);
 		}
@@ -339,7 +340,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 
 		}
 		// get an existing non-temp note?
-		else if (nId != null && Integer.parseInt(nId) > 0) {
+		else if (nId != null && ConversionUtils.fromIntString(nId) > 0) {
 			logger.debug("Using nId " + nId + " to fetch note");
 			session.setAttribute("newNote", "false");
 			note = caseManagementMgr.getNote(nId);
@@ -423,7 +424,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 			
 			checkedList = checkBoxBeanList.toArray(new CheckBoxBean[checkBoxBeanList.size()]);
 			/*
-			 * List<CaseManagementIssue> issues = caseManagementMgr.filterIssues(caseManagementMgr.getIssues(Integer.parseInt(demono)), programIdString); checkedList = new CheckBoxBean[issues.size()]; // set issue checked list
+			 * List<CaseManagementIssue> issues = caseManagementMgr.filterIssues(caseManagementMgr.getIssues(ConversionUtils.fromIntString(demono)), programIdString); checkedList = new CheckBoxBean[issues.size()]; // set issue checked list
 			 * log.debug("Set Checked Issues " + String.valueOf(current-start)); List allNotes = this.caseManagementMgr.getNotes(demono); for (int i = 0; i < issues.size(); i++) { checkedList[i] = new CheckBoxBean(); CaseManagementIssue iss =
 			 * issues.get(i); checkedList[i].setIssue(iss); checkedList[i].setUsed(haveIssue(iss.getId(), allNotes)); current = System.currentTimeMillis(); log.debug("Set Checked Issues " + String.valueOf(current-start)); start = current; }
 			 */
@@ -543,7 +544,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 					&& note.getNote().equalsIgnoreCase(strNote))
 				return null;
 
-			note.setRevision(Integer.parseInt(note.getRevision())+1 + "");
+			note.setRevision(ConversionUtils.fromIntString(note.getRevision())+1 + "");
 
 			if (archived != null && archived.equalsIgnoreCase("true"))
 				note.setArchived(true);
@@ -567,7 +568,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 				else
 					issue = this.caseManagementMgr.getIssue(issueCode);
 
-				cIssue = this.newIssueToCIssue(demographicNo, issue, Integer.parseInt("10016"));
+				cIssue = this.newIssueToCIssue(demographicNo, issue, ConversionUtils.fromIntString("10016"));
 				cIssue.setNotes(noteSet);
 			}
 
@@ -581,7 +582,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 		}
 
 		try {
-			note.setAppointmentNo(Integer.parseInt(appointmentNo));
+			note.setAppointmentNo(ConversionUtils.fromIntString(appointmentNo));
 		} catch (Exception e) {
 			// No appointment number set for this encounter
 		}
@@ -610,7 +611,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 			if (request.getParameter("signAndExit") != null && request.getParameter("signAndExit").equalsIgnoreCase("true")) {
 				OscarAppointmentDao appointmentDao = (OscarAppointmentDao) SpringUtils.getBean("oscarAppointmentDao");
 				try {
-					Appointment appointment = appointmentDao.find(Integer.parseInt(appointmentNo));
+					Appointment appointment = appointmentDao.find(ConversionUtils.fromIntString(appointmentNo));
 					if (appointment != null) {
 						ApptStatusData statusData = new ApptStatusData();
 						appointment.setStatus(statusData.signStatus());
@@ -795,7 +796,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 		note.setReporter_program_team(team);
 		if (appointmentNo != null && appointmentNo.length() > 0) {
 			try {
-				note.setAppointmentNo(Integer.parseInt(appointmentNo));
+				note.setAppointmentNo(ConversionUtils.fromIntString(appointmentNo));
 			} catch (NumberFormatException e) {
 				logger.info("no appt no");
 			}
@@ -877,7 +878,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 				cIssue = this.caseManagementMgr.getIssueById(demo, issue_id[idx]);
 				if (cIssue == null) {
 					Issue issue = this.caseManagementMgr.getIssue(issue_id[idx]);
-					cIssue = this.newIssueToCIssue(demo, issue, Integer.parseInt(programId));
+					cIssue = this.newIssueToCIssue(demo, issue, ConversionUtils.fromIntString(programId));
 					cIssue.setNotes(noteSet);
 
 					// we have a new issue so add it to sessionfrm list
@@ -902,7 +903,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 		// if the note has been removed or archived we move notes up in the order
 		// else we check if position has changed and move the note down
 		int position = -1;
-		int newPos = Integer.parseInt(request.getParameter("position"));
+		int newPos = ConversionUtils.fromIntString(request.getParameter("position"));
 
 		List<Issue> cppIssue = caseManagementMgr.getIssueInfoByCode(providerNo, cppStrIssue);
 		List<CaseManagementNote> curCPPNotes = new ArrayList<CaseManagementNote>();
@@ -978,7 +979,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 		int revision;
 
 		if (note.getRevision() != null) {
-			revision = Integer.parseInt(note.getRevision());
+			revision = ConversionUtils.fromIntString(note.getRevision());
 			++revision;
 		} else revision = 1;
 
@@ -1284,7 +1285,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 			// only update appt if there is one
 			if (sessionBean.appointmentNo != null && !(sessionBean.appointmentNo.equals("") || sessionBean.appointmentNo.equals("0"))) {
 				String apptStatus = updateApptStatus(sessionBean.status, "verify");
-				Appointment appointment = appointmentDao.find(Integer.parseInt(sessionBean.appointmentNo));
+				Appointment appointment = appointmentDao.find(ConversionUtils.fromIntString(sessionBean.appointmentNo));
 				appointmentArchiveDao.archiveAppointment(appointment);
 				appointment.setStatus(apptStatus);
 				appointment.setLastUpdateUser(providerNo);
@@ -1300,7 +1301,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 			// only update appt if there is one
 			if (sessionBean.appointmentNo != null && !(sessionBean.appointmentNo.equals("") || sessionBean.appointmentNo.equals("0"))) {
 				String apptStatus = updateApptStatus(sessionBean.status, "sign");
-				Appointment appointment = appointmentDao.find(Integer.parseInt(sessionBean.appointmentNo));
+				Appointment appointment = appointmentDao.find(ConversionUtils.fromIntString(sessionBean.appointmentNo));
 				appointmentArchiveDao.archiveAppointment(appointment);
 				appointment.setStatus(apptStatus);
 				appointment.setLastUpdateUser(providerNo);
@@ -1346,7 +1347,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 		int revision;
 
 		if (note.getRevision() != null) {
-			revision = Integer.parseInt(note.getRevision());
+			revision = ConversionUtils.fromIntString(note.getRevision());
 			++revision;
 		} else revision = 1;
 
@@ -1390,7 +1391,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 		}
 
 		if (sessionBean.appointmentNo != null && sessionBean.appointmentNo.length() > 0) {
-			note.setAppointmentNo(Integer.parseInt(sessionBean.appointmentNo));
+			note.setAppointmentNo(ConversionUtils.fromIntString(sessionBean.appointmentNo));
 		}
 
 		/* save note including add signature */
@@ -1472,7 +1473,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 
 	private String saveCheckedIssues_oldCme(HttpServletRequest request, String demo, List<CaseManagementIssue> issuelist, CheckBoxBean[] checkedlist, Set<CaseManagementIssue> issueset, Set noteSet, String ongoing) {
 
-		int demographicNo = Integer.parseInt(demo);
+		int demographicNo = ConversionUtils.fromIntString(demo);
 
 		for (int i = 0; i < checkedlist.length; i++) {
 			CheckBoxBean checkBoxBean = checkedlist[i];
@@ -1566,7 +1567,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 		 * issuelist.add(checkedlist[i].getIssue()); } return ongoing;
 		 */
 
-		int demographicNo = Integer.parseInt(demo);
+		int demographicNo = ConversionUtils.fromIntString(demo);
 
 		for (int i = 0; i < checkedlist.length; i++) {
 			CheckBoxBean checkBoxBean = checkedlist[i];
@@ -1766,7 +1767,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 		Set<CaseManagementIssue> issueset = new HashSet<CaseManagementIssue>();
 		Set<CaseManagementNote> noteSet = new HashSet<CaseManagementNote>();
 
-		int numIssues = Integer.parseInt(request.getParameter("numIssues"));
+		int numIssues = ConversionUtils.fromIntString(request.getParameter("numIssues"));
 		// CaseManagementEntryFormBean cform = (CaseManagementEntryFormBean) form;
 
 		CheckBoxBean[] checkedlist = sessionFrm.getIssueCheckList();
@@ -1791,7 +1792,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 		int revision;
 
 		if (note.getRevision() != null) {
-			revision = Integer.parseInt(note.getRevision());
+			revision = ConversionUtils.fromIntString(note.getRevision());
 			++revision;
 		} else revision = 1;
 
@@ -2146,7 +2147,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 		List<Issue> filteredSearchResults = new ArrayList<Issue>();
 
 		// remove issues which we already have - we don't want duplicates
-		List existingIssues = caseManagementMgr.filterIssues(caseManagementMgr.getIssues(Integer.parseInt(demono)), programId);
+		List existingIssues = caseManagementMgr.filterIssues(caseManagementMgr.getIssues(ConversionUtils.fromIntString(demono)), programId);
 		Map existingIssuesMap = convertIssueListToMap(existingIssues);
 		for (Iterator iter = searchResults.iterator(); iter.hasNext();) {
 			Issue issue = (Issue) iter.next();
@@ -2365,7 +2366,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 
 		// get issue we're changing
 		String strIndex = request.getParameter("change_diagnosis_id");
-		int index = Integer.parseInt(strIndex);
+		int index = ConversionUtils.fromIntString(strIndex);
 
 		// change issue
 		CheckBoxBean[] oldList = cform.getIssueCheckList();
@@ -2419,7 +2420,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 
 		// get issue we're changing
 		String strIndex = request.getParameter("change_diagnosis_id");
-		int idx = Integer.parseInt(strIndex);
+		int idx = ConversionUtils.fromIntString(strIndex);
 
 		String substitution = request.getParameter("newIssueId");
 		String sessionFrmName = "caseManagementEntryForm" + getDemographicNo(request);
@@ -2759,7 +2760,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 		LoggedInInfo loggedInInfo = LoggedInInfo.loggedInInfo.get();
 		if (loggedInInfo.currentFacility.isIntegratorEnabled() && remoteNoteUUIDs.size() > 0) {
 			DemographicWs demographicWs = CaisiIntegratorManager.getDemographicWs();
-			List<CachedDemographicNote> remoteNotes = demographicWs.getLinkedCachedDemographicNotes(Integer.parseInt(demono));
+			List<CachedDemographicNote> remoteNotes = demographicWs.getLinkedCachedDemographicNotes(ConversionUtils.fromIntString(demono));
 			for (CachedDemographicNote remoteNote : remoteNotes) {
 				for (String remoteUUID : remoteNoteUUIDs) {
 					if (remoteUUID.equals(remoteNote.getCachedDemographicNoteCompositePk().getUuid())) {
@@ -2894,7 +2895,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 	public ActionForward runMacro(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		CaseManagementEntryFormBean cform = (CaseManagementEntryFormBean) form;
 		MacroDao macroDao = (MacroDao) SpringUtils.getBean("macroDao");
-		Macro macro = macroDao.find(Integer.parseInt(request.getParameter("macro.id")));
+		Macro macro = macroDao.find(ConversionUtils.fromIntString(request.getParameter("macro.id")));
 		logger.info("loaded macro " + macro.getLabel());
 		boolean cppFromMeasurements = false;
 		String cpp = request.getParameter("cpp");
@@ -2908,7 +2909,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 
 		if (fwd.getName().equals("windowClose")) {
 			EyeFormDao eyeformDao = (EyeFormDao) SpringUtils.getBean("EyeFormDao");
-			EyeForm eyeform = eyeformDao.getByAppointmentNo(Integer.parseInt(cform.getAppointmentNo()));
+			EyeForm eyeform = eyeformDao.getByAppointmentNo(ConversionUtils.fromIntString(cform.getAppointmentNo()));
 			// load up the eyeform to set/unset checkboxes
 			if (macro.getDischargeFlag() != null && macro.getDischargeFlag().equals("dischargeFlag")) {
 				eyeform.setDischarge("true");
@@ -2928,9 +2929,9 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 			String followUpDr = macro.getFollowupDoctorId();
 			if (followUpNo > 0) {
 				EyeformFollowUp f = new EyeformFollowUp();
-				f.setAppointmentNo(Integer.parseInt(cform.getAppointmentNo()));
+				f.setAppointmentNo(ConversionUtils.fromIntString(cform.getAppointmentNo()));
 				f.setDate(new Date());
-				f.setDemographicNo(Integer.parseInt(cform.getDemographicNo()));
+				f.setDemographicNo(ConversionUtils.fromIntString(cform.getDemographicNo()));
 				f.setProvider(LoggedInInfo.loggedInInfo.get().loggedInProvider);
 				f.setTimeframe(followUpUnit);
 				f.setTimespan(followUpNo);
@@ -2947,11 +2948,11 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 				String[] parts = test.trim().split("\\|");
 				if (parts.length == 3 || parts.length == 4) {
 					EyeformTestBook rec = new EyeformTestBook();
-					rec.setAppointmentNo(Integer.parseInt(cform.getAppointmentNo()));
+					rec.setAppointmentNo(ConversionUtils.fromIntString(cform.getAppointmentNo()));
 					if (parts.length == 4) rec.setComment(parts[3]);
 					else rec.setComment("");
 					rec.setDate(new Date());
-					rec.setDemographicNo(Integer.parseInt(cform.getDemographicNo()));
+					rec.setDemographicNo(ConversionUtils.fromIntString(cform.getDemographicNo()));
 					rec.setEye(parts[1]);
 					rec.setProvider(LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo());
 					// rec.setStatus(null);
@@ -2967,7 +2968,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 				Tickler t = new Tickler();
 				t.setCreator(LoggedInInfo.loggedInInfo.get().loggedInProvider.getPractitionerNo());
 				t.setDemographic_no(cform.getDemographicNo());
-				t.setMessage(getMacroTicklerText(Integer.parseInt(cform.getAppointmentNo())));
+				t.setMessage(getMacroTicklerText(ConversionUtils.fromIntString(cform.getAppointmentNo())));
 				t.setPriority("Normal");
 				t.setService_date(new Date());
 				t.setStatus('A');
@@ -2986,7 +2987,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 
 				Appointment appt = null;
 				if (cform.getAppointmentNo() != null && cform.getAppointmentNo().length() > 0 && !cform.getAppointmentDate().equals("0")) {
-					appt = apptDao.find(Integer.parseInt(cform.getAppointmentNo()));
+					appt = apptDao.find(ConversionUtils.fromIntString(cform.getAppointmentNo()));
 				}
 
 				SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
@@ -3040,7 +3041,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 				mockReq.addParameter("totalItem", "" + bcodes.length);
 				mockReq.addParameter("total", btotal.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString());
 
-				Demographic demo = demographicDao.getClientByDemographicNo(Integer.parseInt(cform.getDemographicNo()));
+				Demographic demo = demographicDao.getClientByDemographicNo(ConversionUtils.fromIntString(cform.getDemographicNo()));
 				mockReq.setParameter("xml_billtype", macro.getBillingBilltype());
 				if(macro.getSliCode() == null || macro.getSliCode().equals("NA")) {
 					String value = OscarProperties.getInstance().getProperty("clinic_no","");
@@ -3154,7 +3155,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 			e.setId(note.get("id"));
 			e.setDate((Date)note.get("observation_date"));
 			e.setProviderNo((String)note.get("providerNo"));
-			e.setProgramId(Integer.parseInt((String)note.get("program_no")));
+			e.setProgramId(ConversionUtils.fromIntString(note.get("program_no")));
 			e.setRole((String)note.get("reporter_caisi_role"));
 			e.setType("local_note");
 			entries.add(e);

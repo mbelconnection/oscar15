@@ -636,6 +636,16 @@ div.logoutBox {
                         <li><a href="#"
                                onclick="popupPage(600,900,&quot;<html:rewrite page="/report/DxresearchReport.do"/>&quot;)"><bean:message key="admin.admin.diseaseRegister"/></a></li>
 
+			<li><a href="#"
+				onclick='popupPage(550,810,&quot;<html:rewrite page="/admin/demographicstudy.jsp"/>&quot;);return false;'><bean:message
+				key="admin.admin.btnStudy" /></a></li>
+			<caisi:isModuleLoad moduleName="eaaps.enabled">
+	                                <li><a href="#"
+	                                        onclick='popupPage(550,810,&quot;<html:rewrite page="/eaaps/index.jsp"/>&quot;);return false;'>
+						<bean:message key="admin.admin.btnEaaps" /></a>
+					</li>
+                        </caisi:isModuleLoad>
+
 		</ul>
 		</div>
 	</security:oscarSec>

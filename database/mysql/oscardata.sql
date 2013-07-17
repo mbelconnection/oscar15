@@ -2503,3 +2503,4 @@ insert into CtlRelationships (value,label,active) values ('Insurance','Insurance
 insert into CtlRelationships (value,label,active) values ('Guarantor','Guarantor',true);
 insert into CtlRelationships (value,label,active) values ('Other','Other',true);
 
+insert into issue (code,description,role,update_date,type) values ('TicklerNote','Tickler Note', 'nurse',now(),'system');

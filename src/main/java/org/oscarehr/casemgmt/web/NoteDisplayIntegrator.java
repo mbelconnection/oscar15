@@ -233,4 +233,8 @@ public class NoteDisplayIntegrator implements NoteDisplay {
 	    // TODO Auto-generated method stub
 	    return null;
     }
+	
+	public boolean isTicklerNote() {
+		return false;
+	}
 }

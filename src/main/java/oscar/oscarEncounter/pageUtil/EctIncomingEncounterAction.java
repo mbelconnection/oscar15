@@ -68,12 +68,18 @@ public class EctIncomingEncounterAction extends Action {
        		 appointmentNo = (String)request.getSession().getAttribute("cur_appointment_no");
         	}
         	
+        	//when loading the chart with appointmentNo=&... then it should override this bad session variable
+        	if(request.getParameter("appointmentNo") != null &&  request.getParameter("appointmentNo").equals("")) {
+        		appointmentNo = null;
+        		request.getSession().setAttribute("cur_appointment_no","");
+        	}
+        	
             if(request.getParameter("appointmentList")!=null){
-                    bean = (EctSessionBean) request.getSession().getAttribute("EctSessionBean") ;
                     bean.setUpEncounterPage(request.getParameter("appointmentNo"));
                     bean.template = "";                    
             } else if(request.getParameter("demographicSearch")!=null){
             //Coming in from the demographicSearch page
+            	bean = (EctSessionBean) request.getSession().getAttribute("EctSessionBean") ;
                     bean = (EctSessionBean)request.getSession().getAttribute("EctSessionBean") ;
                     //demographicNo is passed from search screen
                     bean.demographicNo=request.getParameter("demographicNo");

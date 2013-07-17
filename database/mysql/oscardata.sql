@@ -2576,6 +2576,7 @@ insert into tickler_text_suggest (creator, suggested_text, create_date, active) 
 insert into tickler_text_suggest (creator, suggested_text, create_date, active) values ("-1", "Re-Booked for followup", now(), "1");
 insert into tickler_text_suggest (creator, suggested_text, create_date, active) values ("-1", "Returned for Lab Work", now(), "1");
 insert into tickler_text_suggest (creator, suggested_text, create_date, active) values ("-1", "Telephone Busy", now(), "1");
+insert into issue (code,description,role,update_date,type) values ('TicklerNote','Tickler Note', 'nurse',now(),'system');
 
 insert into CtlRelationships (value,label,active,maleInverse,femaleInverse) values ('Mother','Mother',true,'Son','Daughter');
 insert into CtlRelationships (value,label,active,maleInverse,femaleInverse) values ('Father','Father',true,'Son','Daughter');

@@ -76,6 +76,77 @@ GregorianCalendar now=new GregorianCalendar();
 <html:html locale="true">
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+ <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+ <script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js"></script>
+ <script>
+jQuery.noConflict();
+</script>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/cupertino/jquery-ui-1.8.18.custom.css">
+
+<script>
+jQuery(document).ready(function() {
+	jQuery( "#note-form" ).dialog({
+		autoOpen: false,
+		height: 340,
+		width: 450,
+		modal: true,
+		
+		close: function() {
+			
+		}
+	});		
+		
+});
+
+function openNoteDialog(demographicNo, ticklerNo) {
+	jQuery("#tickler_note_demographicNo").val(demographicNo);
+	jQuery("#tickler_note_ticklerNo").val(ticklerNo);
+	
+	//is there an existing note?
+	jQuery.ajax({url:'../CaseManagementEntry.do',
+		data: { method: "ticklerGetNote", ticklerNo: jQuery('#tickler_note_ticklerNo').val()  },
+		async:false, 
+		dataType: 'json',
+		success:function(data) {
+			
+			jQuery("#tickler_note_noteId").val(data.noteId);
+			jQuery("#tickler_note").val(data.note);
+			jQuery("#tickler_note_revision").html(data.revision);
+			jQuery("#tickler_note_revision_url").attr('onclick','window.open(\'../CaseManagementEntry.do?method=notehistory&noteId='+data.noteId+'\');return false;');
+			jQuery("#tickler_note_editor").html(data.editor);
+			jQuery("#tickler_note_obsDate").html(data.obsDate);
+		},
+		error: function(jqXHR, textStatus, errorThrown ) {
+			alert(errorThrown);
+		}
+		});
+	
+	jQuery( "#note-form" ).dialog( "open" );
+}
+function closeNoteDialog() {
+	jQuery( "#note-form" ).dialog( "close" );
+}
+function saveNoteDialog() {
+	//alert('not yet implemented');
+	jQuery.ajax({url:'../CaseManagementEntry.do',
+		data: { method: "ticklerSaveNote", noteId: jQuery("#tickler_note_noteId").val(), value: jQuery('#tickler_note').val(), demographicNo: jQuery('#tickler_note_demographicNo').val(), ticklerNo: jQuery('#tickler_note_ticklerNo').val()  },
+		async:false, 
+		success:function(data) {
+		 // alert('ok');		  
+		},
+		error: function(jqXHR, textStatus, errorThrown ) {
+			alert(errorThrown);
+		}
+		});	
+	
+	jQuery( "#note-form" ).dialog( "close" );
+}
+
+
+
+</script>
+  
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/global.js"></script>
 <title><bean:message key="tickler.ticklerDemoMain.title" /></title>
 <script language="JavaScript">
 <!--
@@ -270,6 +341,7 @@ function setup() {
 
 </script>
 <link rel="stylesheet" type="text/css" media="all" href="../share/css/extractedFromPages.css"  />
+<link rel="stylesheet" type="text/css" media="all" href="../share/css/print.css"  />
 </head>
 
 <body onload="setup();" bgcolor="#FFFFFF" text="#000000" leftmargin="0"
@@ -370,6 +442,7 @@ function setup() {
 				<TD width="39%"><FONT FACE="verdana,arial,helvetica"
 					COLOR="#FFFFFF" SIZE="-2"><B><bean:message
 					key="tickler.ticklerMain.msgMessage" /></B></FONT></TD>
+				<td COLOR="#FFFFFF" SIZE="-2">&nbsp;</td>
 			</TR>
 			<%
 String vGrantdate = "1980-01-07 00:00:00.0";
@@ -442,6 +515,11 @@ DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:ss:mm.SSS", request.
 				<TD ROWSPAN="1" class="<%=bodd?"lilacRed":"whiteRed"%>"><%=taskAssignedTo%></TD>
 				<TD ROWSPAN="1" class="<%=bodd?"lilacRed":"whiteRed"%>"><%=apptMainBean.getString(rs,"status").equals("A")?"Active":apptMainBean.getString(rs,"status").equals("C")?"Completed":apptMainBean.getString(rs,"status").equals("D")?"Deleted":apptMainBean.getString(rs,"status")%></TD>
 				<TD ROWSPAN="1" class="<%=bodd?"lilacRed":"whiteRed"%>"><%=apptMainBean.getString(rs,"message")%></TD>
+				  <td ROWSPAN="1" class="<%=bodd?"lilacRed":"whiteRed"%>">
+                	<a href="javascript:void(0)" onClick="openNoteDialog('<%=param[0] %>','<%=apptMainBean.getString(rs,"tickler_no") %>');return false;">
+                		<img border="0" src="<%=request.getContextPath()%>/images/notepad.gif"/>
+                	</a>
+                </td>
 			</tr>
 			<%
 }else {
@@ -523,9 +601,47 @@ if (nItems == 0) {
 	</tr>
 	</form>
 </table>
+
+
+<div id="note-form" title="Tickler Note">
+	<form>
+		
+			<table>
+				<tbody>
+					<textarea id="tickler_note" name="tickler_note" style="width:100%;height:80%"></textarea>		
+					<input type="hidden" name="tickler_note_demographicNo" id="tickler_note_demographicNo" value=""/>	
+					<input type="hidden" name="tickler_note_ticklerNo" id="tickler_note_ticklerNo" value=""/>	
+					<input type="hidden" name="tickler_note_noteId" id="tickler_note_noteId" value=""/>	
+				</tbody>
+			</table>
+			<br/>
+			<table>
+				<tr>
+					<td >
+						<a href="javascript:void()" onclick="saveNoteDialog();return false;">
+							<img src="<%=request.getContextPath()%>/oscarEncounter/graphics/note-save.png"/>
+						</a>
+						<a href="javascript:void()" onclick="closeNoteDialog();return false;">
+							<img src="<%=request.getContextPath()%>/oscarEncounter/graphics/system-log-out.png"/>
+						</a>
+					</td>
+					<td style="width:40%" nowrap="nowrap">
+					Date: <span id="tickler_note_obsDate"></span> rev <a id="tickler_note_revision_url" href="javascript:void(0)" onClick=""><span id="tickler_note_revision"></span></a><br/>
+					Editor: <span id="tickler_note_editor"></span>
+					</td>
+				</tr>
+			
+			</table>
+			
+	</form>	
+</div>
+
+
 <p><font face="Arial, Helvetica, sans-serif" size="2"> </font></p>
 <p>&nbsp;</p>
 <%@ include file="../demographic/zfooterbackclose.jsp"%>
+
+
 
 </body>
 </html:html>

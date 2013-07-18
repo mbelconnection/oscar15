@@ -741,6 +741,13 @@ function autoFillHin(){
 				<td align="left"><input type="text" name="cellphone"
 					onBlur="formatPhoneNum()"></td>
 				<td align="right"><b><bean:message
+						key="demographic.demographicaddrecordhtm.formPhoneComment" />: </b></td>
+				<td align="left" colspan="3">
+						<textarea rows="2" cols="30" name="phoneComment"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td align="right"><b><bean:message
 					key="demographic.demographicaddrecordhtm.formNewsLetter" />: </b></td>
 				<td align="left"><select name="newsletter">
 					<option value="Unknown" selected><bean:message

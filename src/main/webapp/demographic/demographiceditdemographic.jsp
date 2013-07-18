@@ -1600,6 +1600,9 @@ if ( PatStat.equals(Dead) ) {%>
                                                             key="demographic.demographiceditdemographic.formPhoneC" />:</span>
                                                         <span class="info"><%=apptMainBean.getString(demoExt.get("demo_cell"))%></span></li>
                                                     <li><span class="label"><bean:message
+                                                            key="demographic.demographicaddrecordhtm.formPhoneComment" />:</span>
+                                                        <span class="info"><%=StringUtils.trimToEmpty(demoExt.get("phoneComment"))%></span></li>
+                                                    <li><span class="label"><bean:message
                                                             key="demographic.demographiceditdemographic.formAddr" />:</span>
                                                         <span class="info"><%=demographic.getAddress()%></span>
 							</li>
@@ -2234,6 +2237,15 @@ if ( PatStat.equals(Dead) ) {%>
 								<input type="hidden" name="demo_cellOrig"
 									value="<%=apptMainBean.getString(demoExt.get("demo_cell"))%>" />
 								</td>
+								<td align="right"><b><bean:message
+										key="demographic.demographicaddrecordhtm.formPhoneComment" />: </b></td>
+								<td align="left" colspan="3">
+								<input type="hidden" name="phoneCommentOrig"
+									value="<%=StringUtils.trimToEmpty(demoExt.get("phoneComment"))%>" />
+										<textarea rows="2" cols="30" name="phoneComment"><%=StringUtils.trimToEmpty(demoExt.get("phoneComment"))%></textarea>
+								</td>
+							</tr>
+							<tr>
 								<td align="right"><b><bean:message key="demographic.demographiceditdemographic.msgCountryOfOrigin"/>: </b></td>
 								<td align="left"><select name="countryOfOrigin" <%=getDisabled("countryOfOrigin")%>>
 									<option value="-1"><bean:message key="demographic.demographiceditdemographic.msgNotSet"/></option>

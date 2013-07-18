@@ -266,17 +266,14 @@
        demographicExtDao.addKey(proNo, dem, "wPhoneExt", request.getParameter("wPhoneExt"), "");
        demographicExtDao.addKey(proNo, dem, "demo_cell", request.getParameter("cellphone"), "");
        demographicExtDao.addKey(proNo, dem, "cytolNum",  request.getParameter("cytolNum"),  "");
-
        demographicExtDao.addKey(proNo, dem, "ethnicity",     request.getParameter("ethnicity"),     "");
        demographicExtDao.addKey(proNo, dem, "area",          request.getParameter("area"),          "");
        demographicExtDao.addKey(proNo, dem, "statusNum",     request.getParameter("statusNum"),     "");
        demographicExtDao.addKey(proNo, dem, "fNationCom",    request.getParameter("fNationCom"),    "");
        demographicExtDao.addKey(proNo, dem, "given_consent", request.getParameter("given_consent"), "");
-
        demographicExtDao.addKey(proNo, dem, "rxInteractionWarningLevel", request.getParameter("rxInteractionWarningLevel"), "");
-
        demographicExtDao.addKey(proNo, dem, "primaryEMR", request.getParameter("primaryEMR"), "");
-
+       demographicExtDao.addKey(proNo, dem, "phoneComment", request.getParameter("phoneComment"), "");
 
        //for the IBD clinic
 		OtherIdManager.saveIdDemographic(dem, "meditech_id", request.getParameter("meditech_id"));

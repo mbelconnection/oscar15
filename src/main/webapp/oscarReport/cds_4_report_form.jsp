@@ -22,6 +22,8 @@
     Toronto, Ontario, Canada
 
 --%>
+<%@page import="org.oscarehr.PMmodule.model.Program"%>
+<%@page import="org.oscarehr.PMmodule.service.ProgramManager"%>
 <%@page import="org.oscarehr.common.model.Provider"%>
 <%@page import="org.oscarehr.managers.ProviderManager2"%>
 <%@page import="org.oscarehr.common.dao.FunctionalCentreDao"%>
@@ -35,6 +37,7 @@
 <%
 	FunctionalCentreDao functionalCentreDao = (FunctionalCentreDao) SpringUtils.getBean("functionalCentreDao");
     ProviderManager2 providerManager = (ProviderManager2) SpringUtils.getBean("providerManager2");
+    ProgramManager programManager = (ProgramManager) SpringUtils.getBean("programManager");
 	LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
 	List<FunctionalCentre> functionalCentres=functionalCentreDao.findInUseByFacility(loggedInInfo.currentFacility.getId());
 %>
@@ -42,7 +45,8 @@
 <%@include file="/layouts/caisi_html_top.jspf"%>
 
 <h1>CDS Reports</h1>
-				
+
+<script type="text/javascript" src="<%= request.getContextPath() %>/js/jquery-1.7.1.min.js"></script>				
 <script type="text/javascript">
 	function validate(form)
 	{
@@ -135,27 +139,97 @@
 		</tr>
 		<tr>
 			<td>
-				Providers to include
-				<div style="font-size:smaller">
-					(leave blank to report on all providers, multi select is allowed)
-				</div>
+				Filter By
+			</td>
 			<td>
-				<select multiple="multiple" name="providerIds">
-				<%
-					// null for both active and inactive because the report might be for a provider who's just left in the current reporting period.
-					List<Provider> providers=providerManager.getProviders(null);
-				
-					for (Provider provider : providers)
+				<select id="filterCriteriaSelection" onchange="showFilterCriteria()">
+					<option value="">None</option>
+					<option value="PROVIDER">Provider</option>
+					<option value="PROGRAM">Program</option>
+				</select>				
+				<script type="text/javascript">
+					function showFilterCriteria()
 					{
-						// skip (system,system) user
-						if (provider.getProviderNo().equals(Provider.SYSTEM_PROVIDER_NO)) continue;
-	
-						%>
-							<option value="<%=provider.getProviderNo()%>"><%=StringEscapeUtils.escapeHtml(provider.getFormattedName())%></option>
-						<%
+						var selection=jQuery('#filterCriteriaSelection').val();
+						
+						if (selection == "PROVIDER")
+						{
+							jQuery('#providerText').show();
+							jQuery('#providerOptions').show();
+							jQuery('#programText').hide();
+							jQuery('#programOptions').hide();
+						}
+						else if (selection == "PROGRAM")
+						{
+							jQuery('#providerText').hide();
+							jQuery('#providerOptions').hide();
+							jQuery('#programText').show();
+							jQuery('#programOptions').show();							
+						}
+						else
+						{
+							jQuery('#providerText').hide();
+							jQuery('#providerOptions').hide();
+							jQuery('#programText').hide();
+							jQuery('#programOptions').hide();
+						}
 					}
-				%>
-				</select>
+					
+					$(document).ready(function(){
+						showFilterCriteria();
+					});
+					
+				</script>
+			</td>		
+		</tr>
+		<tr>
+			<td>
+				<div id="providerText">
+					Providers to include
+					<div style="font-size:smaller">
+						(multi select is allowed)
+					</div>
+				</div>
+				<div id="programText">
+					Programs to include
+					<div style="font-size:smaller">
+						(multi select is allowed)
+					</div>
+				</div>
+			</td>
+			<td>
+				<div id="providerOptions">
+					<select multiple="multiple" name="providerIds">
+					<%
+						// null for both active and inactive because the report might be for a provider who's just left in the current reporting period.
+						List<Provider> providers=providerManager.getProviders(null);
+					
+						for (Provider provider : providers)
+						{
+							// skip (system,system) user
+							if (provider.getProviderNo().equals(Provider.SYSTEM_PROVIDER_NO)) continue;
+		
+							%>
+								<option value="<%=provider.getProviderNo()%>"><%=StringEscapeUtils.escapeHtml(provider.getFormattedName())%></option>
+							<%
+						}
+					%>
+					</select>
+				</div>
+				<div id="programOptions">
+					<select multiple="multiple" name="programIds">
+					<%
+						List<Program> programs=programManager.getPrograms(loggedInInfo.currentFacility.getId());
+					
+						for (Program program : programs)
+						{
+							%>
+								<option value="<%=program.getId()%>"><%=StringEscapeUtils.escapeHtml(program.getName()+" ("+program.getType()+")")%></option>
+							<%
+						}
+					%>
+					</select>
+				</div>
 			</td>
 		</tr>
 		<tr>

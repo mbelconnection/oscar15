@@ -555,6 +555,12 @@
 	</global-forwards>
 
 	<action-mappings>
+        <!-- Notification Mappings -->
+        <action path="/notification/create"
+                type="org.oscarehr.common.web.ProviderNotificationAction"
+                scope="request">
+        </action>
+        <!-- End of Notification Mappings -->
 	
         <!-- EAAPS Start -->
         <action path="/eaaps/displayEctEaaps" scope="request" type="org.oscarehr.research.eaaps.EctDisplayEaapsAction" />

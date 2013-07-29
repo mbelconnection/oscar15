@@ -128,11 +128,6 @@
     	signingPhysician = providerName;
     }
     
-    
-    /*
-    	Get and display a list of active providers
-    */
-    
    
     
     //get a few things we need.

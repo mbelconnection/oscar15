@@ -109,6 +109,30 @@
     }
     
     
+    /* Doctor Signature
+    If the patient encounter sheet is accessed from the appointment
+    	then display the doctor's name the appointment belongs too.
+    If the patient encounte sheet is not accessed from an appointment then
+    	Then display the doctor the patient is assigned too.
+    */
+    String signingPhysician= null;
+    if(appt != null){
+    	String providerNo = appt.getProviderNo();
+    	if(providerNo != null){
+    		Provider provider = providerDao.getProvider(providerNo);
+    		if(provider != null){
+    			signingPhysician = provider.getFormattedName();
+    		}
+    	}
+    }else{
+    	signingPhysician = providerName;
+    }
+    
+    
+    /*
+    	Get and display a list of active providers
+    */
+    
    
     
     //get a few things we need.
@@ -313,8 +337,8 @@
 					</tr>
 					<tr>
 						<td>&nbsp;</td>
-						<input type="hidden" name="provider_sign" value="Dr. <%=LoggedInInfo.loggedInInfo.get().loggedInProvider.getFormattedName() %>"/>
-						<td>Dr. <%=LoggedInInfo.loggedInInfo.get().loggedInProvider.getFormattedName() %></td>
+						<input type="hidden" name="provider_sign" value="Dr. <%=signingPhysician %>"/>
+						<td>Dr. <%=signingPhysician %></td>
 					</tr>
 				</table>
 		 </td>

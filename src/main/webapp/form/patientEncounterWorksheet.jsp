@@ -40,11 +40,12 @@
 <%@ page import="org.oscarehr.common.model.Appointment" %>
 <%@ page import="org.oscarehr.common.dao.OscarAppointmentDao" %>
 <%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.util.Date" %>
 
 <%
     String formClass = "CostQuestionnaire";
     String formLink = "formcostquestionnaire.jsp";
-
+	String underline="_____________________";
     int demoNo = Integer.parseInt(request.getParameter("demographic_no"));
     int formId = Integer.parseInt(request.getParameter("formId"));
     int provNo = Integer.parseInt((String) session.getAttribute("user"));
@@ -59,21 +60,48 @@
     Demographic demographic = demographicDao.getDemographicById(demoNo);
     StringBuilder allergyString = new StringBuilder();
     List<Allergy> allergies = allergyDao.findActiveAllergies(demoNo);
-	for(int x=0;x<allergies.size();x++) {
-		Allergy allergy = allergies.get(x);
-		if(x>0)
-			allergyString.append(",");
-    	allergyString.append(allergy.getDescription());
-    }
+	
+	    for(int x=0;x<allergies.size();x++) {
+			Allergy allergy = allergies.get(x);
+			if(x>0)
+				allergyString.append(", ");
+	    	allergyString.append(allergy.getDescription());
+	    }
+		
+	
 
     String providerName = providerDao.getProvider(demographic.getProviderNo()).getFormattedName();
+    String referralContent = demographic.getFamilyDoctor();
+    String referralName = new String();
+    String elementString = "<rd>";
+   	int begin = referralContent.indexOf(elementString);
+   	int end = referralContent.indexOf("</rd>");
+   	if(begin != -1 && end != -1){
+   		referralName = referralContent.substring(begin + elementString.length(), end);
+   	}
     
-    Appointment appt = null;
-    if(request.getParameter("appointmentNo") != null)
-    	appt = appointmentDao.find(Integer.parseInt(request.getParameter("appointmentNo")));
-    
-    SimpleDateFormat dateFormatter =new SimpleDateFormat("yyyy-MM-dd");
+   	SimpleDateFormat dateFormatter =new SimpleDateFormat("dd-MMM-yyyy");
+    SimpleDateFormat dobFormatter = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat timeFormatter =new SimpleDateFormat("HH:mm");
+    
+    Date dob = dobFormatter.parse(demographic.getBirthDayAsString());
+   	
+   	
+   	
+    Appointment appt = null;
+    String apptParam = request.getParameter("appointmentNo") ;
+    String apptDate,apptType,apptReason;
+    apptDate=apptType=apptReason = new String();
+    if(apptParam != null && apptParam.compareTo("") != 0){
+    	
+    	appt = appointmentDao.find(Integer.parseInt(request.getParameter("appointmentNo")));
+    	apptDate = dateFormatter.format(appt.getAppointmentDate()) + " " + timeFormatter.format(appt.getStartTime());
+		apptType= appt.getType();
+		apptReason= appt.getReason();
+    }
+    
+    
+   
     
     //get a few things we need.
     //family doc
@@ -107,11 +135,12 @@
 </script>
 
 
+
 <body bgproperties="fixed" topmargin="0" leftmargin="0" rightmargin="0">
 
 
 
-	<h4 style="font-weight:bold;font-size:15px;text-align:center">Patient Encounter Worksheet</h4>
+	<h4 style="padding-top:8px; font-weight:bold;font-size:21px;text-align:center">Patient Encounter Worksheet</h4>
 
 	<div align="center">
 	<form action="../form/createpdf" method="POST">
@@ -122,7 +151,19 @@
 	<input type="hidden" name="__template" value="patientEncounterWorksheet" />
 
 	<table border="1" cellspacing="1" cellpadding="1" width="90%" >
-		
+		<tr>
+			<td valign="top" colspan="2">
+			<table class="Head" class="hidePrint" height="5%" border="0">
+				<tr>
+					<td align="left">
+					<input class="noPrint" type="button" value="Exit" onclick="javascript:return onExit();" /> 
+					<input class="noPrint" type="submit" value="Print" /></td>
+					</td>
+				</tr>
+				
+			</table>
+			</td>
+		</tr>
 		<tr>
 			<td valign="top" width="50%">
 				<table border="0" cellspacing="2" cellpadding="2">
@@ -157,8 +198,9 @@
 					<input type="hidden" name="demo_address1" value="<%=demographic.getAddress() %>"/>
 					<input type="hidden" name="demo_address2" value="<%=demographic.getCity() + ", " + demographic.getProvince() + ", " + demographic.getPostal() %>"/>
 					<input type="hidden" name="demo_id" value="<%=demographic.getDemographicNo() %>"/>
-					<input type="hidden" name="demo_bday" value="<%=demographic.getBirthDayAsString() + " (" + demographic.getAgeInYears() + ")" %>"/>
+					<input type="hidden" name="demo_bday" value="<%=dateFormatter.format(dob) + " (" + demographic.getAgeInYears() + ")" %>"/>
 					<input type="hidden" name="demo_hin" value="<%=demographic.getHin() + " (" + demographic.getHcType() + ")" %>"/>
+					<input type="hidden" name="demo_phone" value="<%=demographic.getPhone() %>"/>
 					<tr>
 						<td valign="top"><b>Patient:</b></td>
 						<td>
@@ -167,18 +209,24 @@
 						<%=demographic.getCity() %>, <%=demographic.getProvince() %>, <%=demographic.getPostal() %>
 						</td>
 					</tr>
+					<!-- 
+						PAT ID  DOB
+						PHONE	HC
+					 -->
 					<tr>
 						<td>Pat ID:</td>
 						<td><%=demographic.getDemographicNo() %></td>
-					</tr>
-					<tr>
 						<td>DOB:</td>
-						<td><%=demographic.getBirthDayAsString() %>(<%=demographic.getAgeInYears() %>)</td>
+						<td><%=dateFormatter.format(dob)%> (<%=demographic.getAgeInYears() %>)</td>
 					</tr>
+					
 					<tr>
+						<td>Phone (H):</td>
+						<td><%=demographic.getPhone() %></td>
 						<td>HC #:</td>
 						<td><%=demographic.getHin() %> (<%=demographic.getHcType() %>)</td>
 					</tr>
+					
 				</table>
 			</td>
 		</tr>
@@ -188,40 +236,40 @@
 			<td valign="top" width="50%">
 				<table border="0" cellspacing="2" cellpadding="2">
 					<input type="hidden" name="mrp_provider" value="<%=providerName %>"/>
-					<input type="hidden" name="fam_provider" value="test,test"/>
-					<input type="hidden" name="ref_provider" value="test,test"/>
-					
+					<input type="hidden" name="ref_provider" value="<%=referralName %>"/>
 					<tr>
-						<td>Provider:</td>
+						<td>Physician:</td>
 						<td><%=providerName %></td>
 					</tr>
-					<tr>
+					<!-- Family doctor is no longer required -->
+				<!--  	<tr>
 						<td>Family Doctor:</td>
 						<td>Smith, John</td>
 					</tr>
+					-->
 					<tr>
-						<td>Referring Doctor:</td>
-						<td>Smith, John</td>
+						<td>Ref Doctor:</td>
+						<td><%=referralName %></td>
 					</tr>
 				</table>
 			</td>
 			<td valign="top" width="50%">
 				<table border="0" cellspacing="2" cellpadding="2">
-					<input type="hidden" name="appt_date" value="<%=dateFormatter.format(appt.getAppointmentDate()) + " " + timeFormatter.format(appt.getStartTime()) %>"/>
-					<input type="hidden" name="appt_type" value="<%=appt.getType() %>"/>
-					<input type="hidden" name="appt_reason" value="<%=appt.getReason() %>"/>
+					<input type="hidden" name="appt_date" value="<%=apptDate %>"/>
+					<input type="hidden" name="appt_type" value="<%=apptType %>"/>
+					<input type="hidden" name="appt_reason" value="<%=apptReason %>"/>
 					
 					<tr>
 						<td>Appt. Date:</td>
-						<td><%=dateFormatter.format(appt.getAppointmentDate()) %>&nbsp;<%=timeFormatter.format(appt.getStartTime()) %></td>
+						<td><%=apptDate %></td>
 					</tr>
 					<tr>
 						<td>Appt. Type:</td>
-						<td><%=appt.getType() %></td>
+						<td><%=apptType %></td>
 					</tr>
 					<tr>
 						<td>Reason:</td>
-						<td><%=appt.getReason() %></td>
+						<td><%=apptReason %></td>
 					</tr>
 				</table>
 			</td>
@@ -229,7 +277,7 @@
 		
 		<tr>
 			<input type="hidden" name="allergies" value="<%=allergyString.toString() %>"/>
-		 <td colspan="2">
+		 <td style="padding-left:6px" valign="top" colspan="2">
 			 Allergies:<br/>
 			<%=allergyString.toString() %>
 		 </td>
@@ -237,9 +285,9 @@
 		
 		<tr>
 		
-		 <td colspan="2">
+		 <td style="padding-left:6px; height:700px; vertical-align:top;" colspan="2">
 			 Encounter Notes:<br/>
-			 <textarea cols="138" rows="50" name="encounter_notes"></textarea>
+			  <!-- <textarea disabled="disabled" cols="138" rows="50" name="encounter_notes"></textarea> -->
 		 </td>
 		</tr>
 		
@@ -249,14 +297,15 @@
 				
 					<tr>
 						<td>Diagnosis:</td>
-						<td><input name="diagnosis" type="text" value=""/><td>
+						<td><%=underline %> <!--  <input name="diagnosis" type="text" value=""/>--><td>
 					</tr>
 					<tr>
 						<td>Signature:</td>
-						<td><input name="signature" type="text" value=""/></td>
+						<td><%=underline %> <!--  <input name="signature" type="text" value=""/>--></td>
 					</tr>
 					<tr>
 						<td>&nbsp;</td>
+						<input type="hidden" name="provider_sign" value="Dr. <%=LoggedInInfo.loggedInInfo.get().loggedInProvider.getFormattedName() %>"/>
 						<td>Dr. <%=LoggedInInfo.loggedInInfo.get().loggedInProvider.getFormattedName() %></td>
 					</tr>
 				</table>
@@ -264,19 +313,7 @@
 		</tr>
 		
 		
-		<tr>
-			<td valign="top" colspan="2">
-			<table class="Head" class="hidePrint" height="5%" border="0">
-				<tr>
-					<td align="left">
-					<input type="button" value="Exit" onclick="javascript:return onExit();" /> 
-					<input type="submit" value="Print" /></td>
-					</td>
-				</tr>
-				
-			</table>
-			</td>
-		</tr>
+		
 	</table>
 	</form>	
 	</div>

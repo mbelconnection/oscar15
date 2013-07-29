@@ -71,7 +71,14 @@
 		
 	
 
-    String providerName = providerDao.getProvider(demographic.getProviderNo()).getFormattedName();
+    //String providerName = providerDao.getProvider(demographic.getProviderNo()).getFormattedName();
+    String providerNo = demographic.getProviderNo();
+    String providerName = "";
+    if(providerNo != null && providerNo.trim().compareToIgnoreCase("") != 0){
+    	providerName = providerDao.getProvider(demographic.getProviderNo()).getFormattedName();
+    }
+    
+    
     String referralContent = demographic.getFamilyDoctor();
     String referralName = new String();
     String elementString = "<rd>";
@@ -117,7 +124,7 @@
     */
     String signingPhysician= null;
     if(appt != null){
-    	String providerNo = appt.getProviderNo();
+    	providerNo = appt.getProviderNo();
     	if(providerNo != null){
     		Provider provider = providerDao.getProvider(providerNo);
     		if(provider != null){
@@ -226,7 +233,7 @@
 					<input type="hidden" name="demo_address2" value="<%=demographic.getCity() + ", " + demographic.getProvince() + ", " + demographic.getPostal() %>"/>
 					<input type="hidden" name="demo_id" value="<%=demographic.getDemographicNo() %>"/>
 					<input type="hidden" name="demo_bday" value="<%=(dob != null)?dateFormatter.format(dob) + " (" + demographic.getAgeInYears() + ")":"" %>"/>
-					<input type="hidden" name="demo_hin" value="<%=demographic.getHin() + " (" + demographic.getHcType() + ")" %>"/>
+					<input type="hidden" name="demo_hin" value="<%=demographic.getHin() + " " + demographic.getVer()+ " (" + demographic.getHcType() + ")" %>"/>
 					<input type="hidden" name="demo_phone" value="<%=demographic.getPhone() %>"/>
 					<tr>
 						<td valign="top"><b>Patient:</b></td>
@@ -251,7 +258,7 @@
 						<td align=right>Ph (H):</td>
 						<td><%=demographic.getPhone() %></td>
 						<td align=right>HC #:</td>
-						<td><%=demographic.getHin() %> (<%=demographic.getHcType() %>)</td>
+						<td><%=demographic.getHin() %> <%= demographic.getVer() %> (<%=demographic.getHcType() %>)</td>
 					</tr>
 					
 				</table>

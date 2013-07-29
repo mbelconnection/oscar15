@@ -183,11 +183,11 @@
 						</td>
 					</tr>
 					<tr>
-						<td>Phone:</td>
+						<td align=right>Phone:</td>
 						<td><%=clinic.getClinicPhone() %></td>
 					</tr>
 					<tr>
-						<td>Fax:</td>
+						<td align=right>Fax:</td>
 						<td><%=clinic.getClinicFax() %></td>
 					</tr>
 				</table>
@@ -203,8 +203,8 @@
 					<input type="hidden" name="demo_phone" value="<%=demographic.getPhone() %>"/>
 					<tr>
 						<td valign="top"><b>Patient:</b></td>
-						<td>
-						<b><%=demographic.getFormattedName() %></b> (<%=demographic.getSex().toUpperCase() %>)<br/>
+						<td colspan=3 width=100% >
+						<%=demographic.getFormattedName() %> (<%=demographic.getSex().toUpperCase() %>)<br/>
 						<%=demographic.getAddress() %><br/>
 						<%=demographic.getCity() %>, <%=demographic.getProvince() %>, <%=demographic.getPostal() %>
 						</td>
@@ -214,16 +214,16 @@
 						PHONE	HC
 					 -->
 					<tr>
-						<td>Pat ID:</td>
+						<td align=right>Pat ID:</td>
 						<td><%=demographic.getDemographicNo() %></td>
-						<td>DOB:</td>
+						<td align=right>DOB:</td>
 						<td><%=dateFormatter.format(dob)%> (<%=demographic.getAgeInYears() %>)</td>
 					</tr>
 					
 					<tr>
-						<td>Phone (H):</td>
+						<td align=right>Ph (H):</td>
 						<td><%=demographic.getPhone() %></td>
-						<td>HC #:</td>
+						<td align=right>HC #:</td>
 						<td><%=demographic.getHin() %> (<%=demographic.getHcType() %>)</td>
 					</tr>
 					
@@ -238,7 +238,7 @@
 					<input type="hidden" name="mrp_provider" value="<%=providerName %>"/>
 					<input type="hidden" name="ref_provider" value="<%=referralName %>"/>
 					<tr>
-						<td>Physician:</td>
+						<td align=right>Physician:</td>
 						<td><%=providerName %></td>
 					</tr>
 					<!-- Family doctor is no longer required -->
@@ -248,7 +248,7 @@
 					</tr>
 					-->
 					<tr>
-						<td>Ref Doctor:</td>
+						<td align=right>Ref Doctor:</td>
 						<td><%=referralName %></td>
 					</tr>
 				</table>
@@ -260,15 +260,15 @@
 					<input type="hidden" name="appt_reason" value="<%=apptReason %>"/>
 					
 					<tr>
-						<td>Appt. Date:</td>
+						<td align=right>Appt. Date:</td>
 						<td><%=apptDate %></td>
 					</tr>
 					<tr>
-						<td>Appt. Type:</td>
+						<td align=right>Appt. Type:</td>
 						<td><%=apptType %></td>
 					</tr>
 					<tr>
-						<td>Reason:</td>
+						<td align=right>Reason:</td>
 						<td><%=apptReason %></td>
 					</tr>
 				</table>

@@ -262,11 +262,11 @@
 		<tr>
 			<td valign="top" width="50%">
 				<table border="0" cellspacing="2" cellpadding="2">
-					<input type="hidden" name="mrp_provider" value="<%=providerName %>"/>
+					<input type="hidden" name="mrp_provider" value="<%=signingPhysician %>"/>
 					<input type="hidden" name="ref_provider" value="<%=referralName %>"/>
 					<tr>
 						<td align=right>Physician:</td>
-						<td><%=providerName %></td>
+						<td><%=signingPhysician %></td>
 					</tr>
 					<!-- Family doctor is no longer required -->
 				<!--  	<tr>
@@ -332,8 +332,8 @@
 					</tr>
 					<tr>
 						<td>&nbsp;</td>
-						<input type="hidden" name="provider_sign" value="Dr. <%=signingPhysician %>"/>
-						<td>Dr. <%=signingPhysician %></td>
+						<input type="hidden" name="provider_sign" value="<%=signingPhysician %>"/>
+						<td><%=signingPhysician %></td>
 					</tr>
 				</table>
 		 </td>

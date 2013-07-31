@@ -69,8 +69,22 @@
 <%@page import="org.oscarehr.common.model.DemographicCust" %>
 <%@page import="org.oscarehr.common.dao.DemographicCustDao" %>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
+<%@ page import="org.apache.commons.lang.StringUtils" %>    
+<%@ page import="org.oscarehr.PMmodule.model.Program" %>    
+<%@ page import="org.oscarehr.PMmodule.model.ProgramProvider" %>    
+<%@ page import="org.oscarehr.common.model.Facility" %> 
+<%@ page import="org.oscarehr.PMmodule.service.ProviderManager" %>  
+<%@ page import="org.oscarehr.PMmodule.service.ProgramManager" %>   
+<%@ page import="org.oscarehr.util.LoggedInInfo"%>
 <%
 	DemographicCustDao demographicCustDao = (DemographicCustDao)SpringUtils.getBean("demographicCustDao");
+	ProviderManager providerManager = SpringUtils.getBean(ProviderManager.class);
+	ProgramManager programManager = SpringUtils.getBean(ProgramManager.class);
+
+	String providerNo = LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo();
+	Facility facility = LoggedInInfo.loggedInInfo.get().currentFacility;
+
+	List<Program> programs = programManager.getActiveProgramByFacility(providerNo, facility.getId());
 %>
 
 <%
@@ -699,7 +713,17 @@ function pasteAppt(multipleSameDayGroupAppt) {
 		<% } else {
 			// multisites end ==================
 		%>
-		                <input type="TEXT" name="location" tabindex="4" value="<%=loc%>" width="25" height="20" border="0" hspace="2">
+		     <select name="location" >
+                <%
+                if (programs != null && !programs.isEmpty()) {
+			       	for (Program program : programs) {
+			       	    String description = StringUtils.isBlank(program.getLocation()) ? program.getName() : program.getLocation();
+			   	%>
+			        <option value="<%=program.getId()%>"><%=StringEscapeUtils.escapeHtml(description)%></option>
+			    <%	}
+                }  
+			  	%>
+            </select>
 		<% } %>
             </div>
             <div class="space">&nbsp;</div>

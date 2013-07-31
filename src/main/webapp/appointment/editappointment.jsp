@@ -50,8 +50,17 @@
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %>
 <jsp:useBean id="providerBean" class="java.util.Properties" scope="session" />
-<%@page import="org.oscarehr.common.model.DemographicCust" %>
-<%@page import="org.oscarehr.common.dao.DemographicCustDao" %>
+<%@ page import="org.oscarehr.common.model.DemographicCust" %>
+<%@ page import="org.oscarehr.common.dao.DemographicCustDao" %>
+<%@ page import="org.apache.commons.lang.StringUtils" %>
+<%@ page import="org.oscarehr.PMmodule.model.Program" %>
+<%@ page import="org.oscarehr.PMmodule.model.ProgramProvider" %>
+<%@ page import="org.oscarehr.common.model.Facility" %>
+<%@ page import="org.oscarehr.PMmodule.service.ProviderManager" %>
+<%@ page import="org.oscarehr.PMmodule.service.ProgramManager" %>
+<%@ page import="org.oscarehr.util.LoggedInInfo"%>
+<%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
+
 <%
 	DemographicCustDao demographicCustDao = (DemographicCustDao)SpringUtils.getBean("demographicCustDao");
 	org.oscarehr.PMmodule.dao.ProviderDao providerDao = SpringUtils.getBean(ProviderDao.class);
@@ -68,6 +77,14 @@
   Boolean isMobileOptimized = session.getAttribute("mobileOptimized") != null;
 
   DemographicDao demographicDao = (DemographicDao)SpringUtils.getBean("demographicDao");
+
+  ProviderManager providerManager = SpringUtils.getBean(ProviderManager.class);
+  ProgramManager programManager = SpringUtils.getBean(ProgramManager.class);
+
+  String providerNo = LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo();
+  Facility facility = LoggedInInfo.loggedInInfo.get().currentFacility;
+
+  List<Program> programs = programManager.getActiveProgramByFacility(providerNo, facility.getId());
 %>
 <%@page import="org.oscarehr.common.dao.SiteDao"%>
 <%@page import="org.oscarehr.common.model.Site"%><html:html locale="true">
@@ -656,9 +673,18 @@ if (bMultisites) { %>
 	isSiteSelected = true;
 	// multisites end ==================
 %>
-            <INPUT TYPE="TEXT" NAME="location" tabindex="4"
-					VALUE="<%=bFirstDisp?appt.get("location"):request.getParameter("location")%>"
-					WIDTH="25">
+            <select name="location" >
+                <%
+                String location = bFirstDisp ?(String) appt.get("location") : request.getParameter("location");
+                if (programs != null && !programs.isEmpty()) {
+			       	for (Program program : programs) {
+			       	    String description = StringUtils.isBlank(program.getLocation()) ? program.getName() : program.getLocation();
+			   	%>
+			        <option value="<%=program.getId()%>" <%=(program.getId().toString().equals(location) ? "selected='selected'" : "") %>><%=StringEscapeUtils.escapeHtml(description)%></option>
+			    <%	}
+                }
+			  	%>
+            </select>
 <% } %>
             </div>
             <div class="space">&nbsp;</div>

@@ -76,6 +76,9 @@
 <%@ page import="org.oscarehr.PMmodule.service.ProviderManager" %>  
 <%@ page import="org.oscarehr.PMmodule.service.ProgramManager" %>   
 <%@ page import="org.oscarehr.util.LoggedInInfo"%>
+<%@ page import="org.oscarehr.managers.LookupListManager"%>
+<%@ page import="org.oscarehr.common.model.LookupList"%>
+<%@ page import="org.oscarehr.common.model.LookupListItem"%>
 <%
 	DemographicCustDao demographicCustDao = (DemographicCustDao)SpringUtils.getBean("demographicCustDao");
 	ProviderManager providerManager = SpringUtils.getBean(ProviderManager.class);
@@ -85,6 +88,9 @@
 	Facility facility = LoggedInInfo.loggedInInfo.get().currentFacility;
 
 	List<Program> programs = programManager.getActiveProgramByFacility(providerNo, facility.getId());
+
+	LookupListManager lookupListManager = SpringUtils.getBean(LookupListManager.class);
+	LookupList reasonCodes = lookupListManager.findLookupListByName("reasonCode");
 %>
 
 <%
@@ -680,7 +686,23 @@ function pasteAppt(multipleSameDayGroupAppt) {
         <li class="row deep">
             <div class="label"><bean:message key="Appointment.formReason" />:</div>
             <div class="input">
-                <textarea name="reason" tabindex="2" rows="2" wrap="virtual" cols="18"><%=bFirstDisp?"":request.getParameter("reason").equals("")?"":request.getParameter("reason")%></textarea>
+                <select name="reasonCode">
+				    <%
+				    if(reasonCodes != null) {
+				    	for(LookupListItem reasonCode : reasonCodes.getItems()) {
+				    %>
+				    <option value="<%=reasonCode.getId()%>"><%=StringEscapeUtils.escapeHtml(reasonCode.getValue())%></option>
+				    <%
+				    	}
+				    } else {
+					%>
+						<option value="-1">Other</option>
+					<%
+					}
+					%>
+				</select>
+				</br>
+				<textarea id="reason" name="reason" tabindex="2" rows="2" wrap="virtual" cols="18"><%=bFirstDisp?"":request.getParameter("reason").equals("")?"":request.getParameter("reason")%></textarea>
             </div>
             <div class="space">&nbsp;</div>
             <div class="label"><bean:message key="Appointment.formNotes" />:</div>

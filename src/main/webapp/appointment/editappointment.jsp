@@ -60,10 +60,15 @@
 <%@ page import="org.oscarehr.PMmodule.service.ProgramManager" %>
 <%@ page import="org.oscarehr.util.LoggedInInfo"%>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
-
+<%@ page import="org.oscarehr.managers.LookupListManager"%>
+<%@ page import="org.oscarehr.common.model.LookupList"%>
+<%@ page import="org.oscarehr.common.model.LookupListItem"%>
+<%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%
 	DemographicCustDao demographicCustDao = (DemographicCustDao)SpringUtils.getBean("demographicCustDao");
 	org.oscarehr.PMmodule.dao.ProviderDao providerDao = SpringUtils.getBean(ProviderDao.class);
+    LookupListManager lookupListManager = SpringUtils.getBean(LookupListManager.class);
+    LookupList reasonCodes = lookupListManager.findLookupListByName("reasonCode");
 %>
 <%
   ApptData apptObj = ApptUtil.getAppointmentFromSession(request);
@@ -623,8 +628,25 @@ function setType(typeSel,reasonSel,locSel,durSel,notesSel,resSel) {
         <li class="row weak">
             <div class="label"><bean:message key="Appointment.formReason" />:</div>
             <div class="input">
-				<textarea name="reason" tabindex="2" rows="2" wrap="virtual"
-					cols="18"><%=bFirstDisp?appt.get("reason"):request.getParameter("reason")%></textarea>
+				<select name="reasonCode">
+					<%
+					Integer apptReasonCode = bFirstDisp ? (appt.get("reasonCode") == null ? 0 : (Integer)appt.get("reasonCode")) : Integer.parseInt(request.getParameter("reasonCode"));
+					if(reasonCodes != null) {
+						for(LookupListItem reasonCode : reasonCodes.getItems()) {
+					%>
+						<option value="<%=reasonCode.getId()%>" <%=apptReasonCode.equals(reasonCode.getId()) ? "selected=\"selected\"" : "" %>><%=StringEscapeUtils.escapeHtml(reasonCode.getValue())%></option>
+					<%
+					 	}
+					} else {
+					%>
+						<option value="-1">Other</option>
+					<%
+					}
+					%>
+				</select>
+ 				</br>
+				<textarea id="reason" name="reason" tabindex="2" rows="2" wrap="virtual"
+					cols="18"><%=bFirstDisp?(String)appt.get("reason"):request.getParameter("reason")%></textarea>
             </div>
             <div class="space">&nbsp;</div>
             <div class="label"><bean:message key="Appointment.formNotes" />:</div>

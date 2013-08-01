@@ -76,7 +76,7 @@
 
     // repeat adding
     if (request.getParameter("groupappt").equals("Add Group Appointment") ) {
-        String[] param = new String[19];
+        String[] param = new String[20];
         int rowsAffected=0, datano=0;
 
             param[0]=request.getParameter("provider_no");
@@ -102,6 +102,7 @@
 	    } else param[16]="0";
 
   	    	param[18] = request.getParameter("urgency");
+  	    	param[19]=request.getParameter("reasonCode");
 
 		while (true) {
 			rowsAffected = oscarSuperManager.update("appointmentDao", "add_apptrecord", param);
@@ -199,7 +200,8 @@
                         param[8]=createdDateTime;
                         param[9]=userName;
                         param[10]=request.getParameter("urgency");
- 	        for(int k=0; k<paramE.length; k++) param[k+11] = paramE[k];
+                        param[11]=request.getParameter("reasonCode");
+ 	        for(int k=0; k<paramE.length; k++) param[k+12] = paramE[k];
 
 			// repeat doing
 			while (true) {

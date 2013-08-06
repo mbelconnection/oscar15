@@ -48,10 +48,10 @@ public class ProviderDao extends OscarSuperDao {
 			{"search_studycount","select count(ds.study_no) from demographicstudy ds, study s where ds.demographic_no=? and ds.study_no=s.study_no and s.current1='1'"},
 			{"search_study","select s.* from demographicstudy d, study s where demographic_no=? and d.study_no = s.study_no limit 1 "},
 			{"searchappointmentday", "select * from appointment where provider_no=? and appointment_date=? and program_id=? order by start_time, status desc "},
+			{"searchappointmentdaywithlocation", "select * from appointment where provider_no=? and appointment_date=? and program_id=? and location=? order by start_time, status desc "},
 			{"searchmygroupcount", "select count(provider_no) from mygroup where mygroup_no=? "},
 			{"searchmygroupprovider", "select provider_no, last_name, first_name from mygroup where mygroup_no=? "},
 			{"searchmygroupall", "select * from mygroup order by mygroup_no"},
-
 			{"searchmygroupno", "select mygroup_no from mygroup group by mygroup_no order by mygroup_no"},
             {"updateapptstatus", "update appointment set status=?, lastupdateuser=?, updatedatetime=now() where appointment_no=? "},
             {"updatepreference", "update preference set start_hour=?, end_hour=?, every_min=?, mygroup_no=?, default_servicetype=?, color_template=? where provider_no=? "},

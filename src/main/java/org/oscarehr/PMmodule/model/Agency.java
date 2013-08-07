@@ -38,9 +38,9 @@ public class Agency implements Serializable {
 
 	private Long id;// fields
 	private Integer intakeQuick;
-	private String intakeQuickState;
+	private String intakeQuickState="HSC";
 	private Integer intakeIndepth;
-	private String intakeIndepthState;
+	private String intakeIndepthState="HSC";
 
 	public static Agency getLocalAgency() {
 		return localAgency;
@@ -94,6 +94,19 @@ public class Agency implements Serializable {
 		return visible;
 	}
 
+	public boolean areCommunityProgramsVisible(String intakeType) {
+		boolean visible = false;
+
+		if (Intake.QUICK.equalsIgnoreCase(intakeType)) {
+			visible = getIntakeQuickState().contains("C");
+		}
+		else if (Intake.INDEPTH.equalsIgnoreCase(intakeType)) {
+			visible = getIntakeIndepthState().contains("C");
+		}
+
+		return visible;
+	}
+	
 	public boolean areServiceProgramsVisible(String intakeType) {
 		boolean visible = false;
 

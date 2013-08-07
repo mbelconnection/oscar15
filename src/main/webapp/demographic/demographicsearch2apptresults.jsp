@@ -51,9 +51,12 @@
   StringBuffer bufChart = null, bufName = null, bufNo = null, bufDoctorNo = null;
   if(request.getParameter("limit1")!=null) strLimit1 = request.getParameter("limit1");
   if(request.getParameter("limit2")!=null) strLimit2 = request.getParameter("limit2");
-  boolean caisi = Boolean.valueOf(request.getParameter("caisi")).booleanValue();
+  boolean caisi = Boolean.valueOf(request.getParameter("caisi")).booleanValue(); //??? no 
+  
 %>
-
+<caisi:isModuleLoad moduleName="caisi" reverse="false">
+<%caisi=true; %>
+</caisi:isModuleLoad>
 <%@ page import="java.util.*, java.sql.*,java.net.*, oscar.*"
 	errorPage="errorpage.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"

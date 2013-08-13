@@ -31,6 +31,10 @@
 	<!-- setup CXF -->
 	<import resource="classpath:spring_ws.xml" />
 
+	<!-- MARC-HI beans -->
+	<bean id="externalDemographicDao" class="org.oscarehr.common.dao.ExternalDemographicDao" autowire="byName" />
+	<bean id="patientDocumentDao" class="org.oscarehr.common.dao.PatientDocumentDao" autowire="byName" />
+
 	<bean id="hl7HandlerMSHMappingDao" class="org.oscarehr.common.dao.HL7HandlerMSHMappingDao" autowire="byName" />
 	<!-- hibernated DAO -->
         <bean id="gstControlDao" class="org.oscarehr.billing.CA.dao.GstControlDao" autowire="byName" />

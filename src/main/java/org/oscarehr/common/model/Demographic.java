@@ -527,6 +527,16 @@ public class Demographic implements Serializable {
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
+ 
+        /**
+         * Gets demographic's full name.
+         * 
+         * @return
+         *              Returns the last name, first name pair.
+         */
+        public String getFullName() {
+                return getLastName() + ", " + getFirstName();
+        }
 
 	/**
 	 * Return the value associated with the column: postal

@@ -1640,6 +1640,9 @@
 		</action>
 		<action input="/demographic/demographicExport.jsp" name="DemographicExportForm" path="/demographic/DemographicExport" scope="request" type="oscar.oscarDemographic.pageUtil.DemographicExportAction4">
 			<forward name="fail" path="/demographic/demographicExport.jsp" />
+			<!-- MARC-HI redirects -->
+			<forward name="shareDemographicWithAffinityDomain" path="/affinitydomain/sharePatientWithAffinityDomain.jsp" />
+			<forward name="sendCDSToAffinityDomain" path="/affinitydomain/registerDocumentWithAffinityDomain.jsp" />
 		</action>
 		<action input="/demographic/diabetesExport.jsp" name="DiabetesExportForm" path="/demographic/DiabetesExport" scope="request" type="oscar.oscarDemographic.pageUtil.DiabetesExportAction">
 		</action>

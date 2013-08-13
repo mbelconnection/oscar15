@@ -1,0 +1,21 @@
+@CHARSET "UTF-8";
+
+.form-container 
+{ 
+	margin-top:15px;
+	margin-bottom:15px;
+	margin-left:5px;
+	margin-right:5px;
+}
+
+.form-pair
+{
+	margin-top:15px;
+	margin-bottom:15px;
+}
+
+.form-pair > *
+{ 
+	margin:1px;
+	display:block;
+}

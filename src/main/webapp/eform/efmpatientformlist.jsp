@@ -24,6 +24,10 @@
 
 --%>
 
+<%@page import="ca.marc.ihe.core.configuration.IheConfiguration"%>
+<%@page import="ca.marc.ihe.core.configuration.IheAffinityDomainConfiguration"%>
+<%@page import="org.oscarehr.web.eform.EfmPatientFormList"%>
+<%@page import="org.oscarehr.affinityDomain.IheConfigurationUtil"%>
 <%@page import="java.util.*,oscar.eform.*"%>
 <%@page import="org.oscarehr.web.eform.EfmPatientFormList"%>
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security" %>
@@ -50,6 +54,7 @@
 	String parentAjaxId = request.getParameter("parentAjaxId");
 
 	boolean isMyOscarAvailable = EfmPatientFormList.isMyOscarAvailable(Integer.parseInt(demographic_no));	
+	boolean isIheConfigEnabled = IheConfigurationUtil.isEnabled();
 %>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
@@ -63,6 +68,8 @@
 	href="../share/css/OscarStandardLayout.css">
 <link rel="stylesheet" type="text/css"
 	href="../share/css/eformStyle.css">
+<link rel="stylesheet" type="text/css" href="../css/FormHelper.css" />	
+	
 <script type="text/javascript" language="javascript">
 function popupPage(varpage, windowname) {
     var page = "" + varpage;
@@ -149,7 +156,7 @@ function updateAjax() {
 				<table class="elements" width="100%">
 					<tr bgcolor=<%=deepColor%>>
 						<%
-							if (isMyOscarAvailable)
+							if (isMyOscarAvailable || isIheConfigEnabled)
 							{
 								%>
 									<th>&nbsp;</th>
@@ -186,7 +193,7 @@ function updateAjax() {
 					%>
 					<tr bgcolor="<%=((i % 2) == 1)?"#F2F2F2":"white"%>">
 						<%
-							if (isMyOscarAvailable)
+							if (isMyOscarAvailable || isIheConfigEnabled)
 							{
 								%>
 									<td>
@@ -219,6 +226,46 @@ function updateAjax() {
 					%>
 				</table>
 				<input type="submit" value="Send To PHR" />
+
+				<div class="form-container">
+				<% if (isIheConfigEnabled) { %>
+				<!--  Only display below if the option is enabled -->
+				<br /><br />
+				<%	
+					IheConfiguration iheConfiguration = IheConfigurationUtil.load();
+					
+					List<IheAffinityDomainConfiguration> affinityDomains = iheConfiguration.getAffinityDomains();
+				
+					if (affinityDomains.size() > 0) {
+				%>
+						
+					<div class="form-pair">
+						<span><bean:message key="marc-hi.labels.affinityDomain"/></span>
+						<select name="affinityDomain">
+							<% for(IheAffinityDomainConfiguration affinityDomainConfig : affinityDomains) { %>
+									<option value="<%=affinityDomainConfig.getName()%>"><%=affinityDomainConfig.getName()%></option>
+							<% } %>
+						</select>
+					</div>
+					
+					<div class="form-pair">
+						<span><bean:message key="marc-hi.labels.confidentialityCode"/></span>
+						<select name="confidentialityCode">
+							<option value="N">Normal</option>
+							<option value="R">Restricted</option>
+							<option value="V">Very Restricted</option>
+						</select>
+					</div>
+					
+					<input type="submit" value="Send" name="SendToAffinityDomain" id="SendToAffinityDomain" />
+						
+					<% } else { %>
+						
+							There are no affinity domains to display.
+					
+					<% } %>	
+			<% } // endif isIheConfigEnabled %>
+			</div><!-- End form container -->
 			</form>
 		
 		</td>

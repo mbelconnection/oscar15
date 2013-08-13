@@ -110,6 +110,11 @@
 			<artifactId>hapi-structures-v22</artifactId>
 			<version>1.0.1</version>
 		</dependency>
+		<dependency>
+			<groupId>ca.uhn.hapi</groupId>
+			<artifactId>hapi-structures-v231</artifactId>
+			<version>1.0.1</version>
+		</dependency>
 
 		<!-- spring -->
 		<dependency>
@@ -495,6 +500,50 @@
 			<artifactId>commons-email</artifactId>
 			<version>1.1</version>
 		</dependency>
+
+		<!--ihe core-->	
+		<dependency>
+			<groupId>ca.marc.ihe</groupId>
+			<artifactId>core</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<!--ihe xds-->	
+		<dependency>
+			<groupId>ca.marc.ihe</groupId>
+			<artifactId>xds</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<!--ihe atna-->	
+		<dependency>
+			<groupId>ca.marc.ihe</groupId>
+			<artifactId>atna</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<!--ihe pix-->	
+		<dependency>
+			<groupId>ca.marc.ihe</groupId>
+			<artifactId>pix</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<!--MARC-HI Everest-->	
+		<dependency>
+			<groupId>org.marc</groupId>
+			<artifactId>everest</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<!--MARC-HI Everest RMIM UV CDAR2-->	
+		<dependency>
+			<groupId>org.marc.everest.rmim.uv</groupId>
+			<artifactId>cdar2</artifactId>
+			<version>1.0</version>
+		</dependency>
+
+		<!--tagsoup-->
+		 <dependency>
+                       <groupId>org.ccil.cowan</groupId>
+                       <artifactId>tagsoup</artifactId>
+                       <version>1.2.1</version>
+               </dependency>
 
 		<!-- jfree charts -->
 		<dependency>

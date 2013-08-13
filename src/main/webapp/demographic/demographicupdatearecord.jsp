@@ -44,6 +44,12 @@
 <%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page import="org.oscarehr.util.MiscUtils"%><html:html locale="true">
 <%@page import="org.oscarehr.util.SpringUtils" %>
+
+<%@page import="ca.marc.ihe.core.configuration.IheAffinityDomainConfiguration"%>
+<%@page import="org.oscarehr.affinityDomain.IheConfigurationUtil"%>
+<%@page import="ca.marc.ihe.core.configuration.IheConfiguration"%>
+<%@page import="org.oscarehr.affinityDomain.IheAffinityDomainUtil"%>
+
 <%@page import="org.oscarehr.common.model.Demographic" %>
 <%@page import="org.oscarehr.common.dao.DemographicDao" %>
 <%@page import="org.oscarehr.common.dao.DemographicArchiveDao" %>
@@ -269,6 +275,44 @@
     //demographicArchiveDao.persist(da);
 
     demographicDao.save(demographic);
+    
+    // MARC-HI's Demographic Sharing Persistence
+    int demographic_no = Integer.parseInt(request.getParameter("demographic_no"));
+    IheConfiguration iheConfig = IheConfigurationUtil.load();
+    List<String> affinityDomains = new ArrayList<String>();
+    if (request.getParameterValues("affinityDomains") != null) {
+    	affinityDomains.addAll(Arrays.asList(request.getParameterValues("affinityDomains")));
+    }
+    
+    // based on the user's input (checkboxes), activate or deactivate sharing for all affinity domains
+    for (IheAffinityDomainConfiguration domain : iheConfig.getAffinityDomains()) {
+    	IheAffinityDomainUtil util = new IheAffinityDomainUtil(domain.getName());
+    	
+    	// Figure out which affinity domains to share patient data with
+    	if (affinityDomains.contains(domain.getName())) {
+    		
+    		// checked (register/update). if the patient is not already sharing with this domain, register & add them
+
+        	//if (util.isPatientRegistered(demographic_no) == false) {
+        		//util.sharePatient(demographic_no);
+        	//}
+
+//         	if (util.isPatientRegistered(demographic_no) == false) {
+//         		if (util.sharePatient(demographic_no))
+//         			util.sendBppc(request.getParameter("provider_no"), demographic_no);
+//         	}
+
+    		
+    	} else {
+    		
+    		// unchecked (remove). if sharing is allowed (registered and active), deactivate.. otherwise do nothing
+    		if (util.isPatientRegistered(demographic_no) == true) {
+    			util.deactivateSharing(demographic_no);
+    		}
+    		
+    	}
+    }
+    
     int rowsAffected=1;
   if (rowsAffected ==1) {
     //find the democust record for update

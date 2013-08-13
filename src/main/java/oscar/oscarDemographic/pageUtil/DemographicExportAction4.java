@@ -28,6 +28,7 @@ package oscar.oscarDemographic.pageUtil;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,6 +53,7 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.xmlbeans.XmlOptions;
+import org.oscarehr.affinityDomain.IheAffinityDomainUtil;
 import org.oscarehr.casemgmt.model.CaseManagementIssue;
 import org.oscarehr.casemgmt.model.CaseManagementNote;
 import org.oscarehr.casemgmt.model.CaseManagementNoteExt;
@@ -174,6 +176,9 @@ public class DemographicExportAction4 extends Action {
 		boolean exReportsReceived = WebUtils.isChecked(request, "exReportsReceived");
 		boolean exAlertsAndSpecialNeeds = WebUtils.isChecked(request, "exAlertsAndSpecialNeeds");
 		boolean exCareElements = WebUtils.isChecked(request, "exCareElements");
+
+		// MARC-HI
+		String cdsFileName = "";
 
 		List<String> list = new ArrayList<String>();
 		if (demographicNo==null) {
@@ -1974,25 +1979,79 @@ public class DemographicExportAction4 extends Action {
 			//PGP encrypt zip file
 			PGPEncrypt pgp = new PGPEncrypt();
 			if (pgp.encrypt(zipName, tmpDir)) {
-				Util.downloadFile(zipName+".pgp", tmpDir, response);
-				Util.cleanFile(zipName+".pgp", tmpDir);
-				ffwd = "success";
+				// If the user is sending the file to an affinity domain, don't prompt for download
+				if (request.getParameter("SendToAffinityDomain") == null) {
+					Util.downloadFile(zipName+".pgp", tmpDir, response);
+					Util.cleanFile(zipName+".pgp", tmpDir);
+					ffwd = "success";
+				} else {
+					// MARC - register the zip file in XDS
+					String affinityDomain = request.getParameter("affinityDomain");	
+					IheAffinityDomainUtil util = new IheAffinityDomainUtil(affinityDomain);
+					if (util.isPatientRegistered(Integer.parseInt(demographicNo))) {
+						// register zip
+						ffwd = "sendCDSToAffinityDomain";
+					} else {
+						// share patient, then register zip
+						ffwd = "shareDemographicWithAffinityDomain";
+					}
+				}
 			} else {
 				request.getSession().setAttribute("pgp_ready", "No");
 			}
 		} else {
-			logger.info("Warning: PGP Encryption NOT available - unencrypted file exported!");
-			Util.downloadFile(zipName, tmpDir, response);
-			ffwd = "success";
+			// If the user is sending the file to an affinity domain, don't prompt for download
+			if (request.getParameter("SendToAffinityDomain") == null) {
+				logger.info("Warning: PGP Encryption NOT available - unencrypted file exported!");
+				Util.downloadFile(zipName, tmpDir, response);
+				ffwd = "success";
+			} else {
+				// register the zip file in XDS
+				String affinityDomain = request.getParameter("affinityDomain");	
+				IheAffinityDomainUtil util = new IheAffinityDomainUtil(affinityDomain);
+				if (util.isPatientRegistered(Integer.parseInt(demographicNo))) {
+					// register zip
+					ffwd = "sendCDSToAffinityDomain";
+				} else {
+					// share patient, then register zip
+					ffwd = "shareDemographicWithAffinityDomain";
+				}
+			}
 		}
 
+		cdsFileName = Util.fixDirName(tmpDir) + zipName;
+		if (ffwd.equalsIgnoreCase("shareDemographicWithAffinityDomain") || ffwd.equalsIgnoreCase("sendCDSToAffinityDomain")) {
+			// create a temp zip file (so that the cleanup process doesn't get corrupted)
+			
+			try {
+				FileInputStream in = new FileInputStream(cdsFileName);
+				FileOutputStream out = new FileOutputStream(cdsFileName + ".bak");
+				byte[] buffer = new byte[1024];
+				int len;
+				while ((len = in.read(buffer)) > 0) {
+				   out.write(buffer, 0, len);
+				}
+				in.close();
+				out.close();
+			} catch (Exception e) {
+				MiscUtils.getLogger().debug("Exception: " + e.getMessage());
+			}
+			
+			cdsFileName = cdsFileName + ".bak";
+		}
 
 		//Remove zip & export files from temp dir
 		Util.cleanFile(zipName, tmpDir);
 		Util.cleanFiles(files);
 	}
 
-	return mapping.findForward(ffwd);
+	if (ffwd.equalsIgnoreCase("shareDemographicWithAffinityDomain")) {
+		return new ActionForward(mapping.findForward("shareDemographicWithAffinityDomain").getPath()+"?affinityDomain="+request.getParameter("affinityDomain")+"&demographic_no="+demographicNo+"&docNo="+cdsFileName+"&source=cds&confidentialityCode="+request.getParameter("confidentialityCode"), false);
+	} else if (ffwd.equalsIgnoreCase("sendCDSToAffinityDomain")) {
+		return new ActionForward(mapping.findForward("sendCDSToAffinityDomain").getPath()+"?affinityDomain="+request.getParameter("affinityDomain")+"&demographic_no="+demographicNo+"&docNo="+cdsFileName+"&source=cds&confidentialityCode="+request.getParameter("confidentialityCode"), false);
+	} else {
+		return mapping.findForward(ffwd);
+	}
 }
 
 	File makeReadMe(ArrayList<File> fs) throws IOException {

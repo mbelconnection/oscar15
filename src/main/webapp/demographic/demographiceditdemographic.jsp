@@ -30,6 +30,13 @@
 <%@page import="org.oscarehr.PMmodule.caisi_integrator.ConformanceTestHelper"%>
 <%@page import="org.oscarehr.common.dao.DemographicExtDao" %>
 <%@page import="org.oscarehr.util.SpringUtils" %>
+
+<%@page import="org.oscarehr.affinityDomain.IheAffinityDomainUtil"%>
+<%@page import="ca.marc.ihe.core.configuration.IheAffinityDomainConfiguration"%>
+<%@page import="org.oscarehr.affinityDomain.IheConfigurationUtil"%>
+<%@page import="ca.marc.ihe.core.configuration.IheConfiguration"%>
+<%@page import="oscar.dms.PatientDocumentsUtil" %>
+
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%
@@ -133,6 +140,14 @@
 %>
 
 
+<%
+	// MARC-HI
+	boolean isIheConfigEnabled = IheConfigurationUtil.isEnabled();
+	// Fetch Documents from All Affinity Domain for the patient
+	if (isIheConfigEnabled) {
+		PatientDocumentsUtil.fetchDocuments(Integer.parseInt(demographic_no), curProvider_no);
+	}
+%>
 
 
 <%@page import="org.oscarehr.util.SpringUtils"%>
@@ -1225,6 +1240,13 @@ if (iviewTag!=null && !"".equalsIgnoreCase(iviewTag.trim())){
 				<bean:message
 					key="demographic.demographiceditdemographic.btnAddEForm" /> </a></td>
 			</tr>
+			<% if (isIheConfigEnabled) { %>
+			<!-- MARC-HI -->
+			<tr>
+				<td><a href="../dms/patientDocuments.jsp?demographic_no=<%=demographic_no%>"><bean:message
+					key="demographic.demographiceditdemographic.patientDocuments" /></a></td>
+			</tr>
+		<% } // endif isIheConfigEnabled %>
 		</table>
 		</td>
 		<td class="MainTableRightColumn" valign="top">
@@ -1575,6 +1597,35 @@ if ( PatStat.equals(Dead) ) {%>
 						<b><%=warningLevelStr %></b>
 						</div>
 
+					<% if (isIheConfigEnabled) { %>
+						<!-- MARC-HI's IHE Affinity Domain Configuration Sharing -->
+						<div class="demographicSection" id="demographicSharing">
+							<h3>&nbsp;<bean:message
+							key="demographic.demographiceditdemographic.demographicSharing" /></h3>
+							<i><bean:message key="demographic.demographiceditdemographic.demographicSharing.viewInfo" />:</i><br />
+							
+							<%
+								// for each aff domain, add an entry and check whether its being shared with
+								IheConfiguration iheConfig = IheConfigurationUtil.load();
+								for (IheAffinityDomainConfiguration domain : iheConfig.getAffinityDomains()) {
+									// check sharing
+									IheAffinityDomainUtil util = new IheAffinityDomainUtil(domain.getName());
+									if (util.isPatientRegistered(Integer.parseInt(demographic_no))) {
+										// current patient is sharing with this affinity domain
+														%>
+										<input type="checkbox" name="affinityDomainsView" value="<%=domain.getName()%>" disabled="disabled" checked="checked" /><%=domain.getName()%><br />
+									<%
+										} else {
+																// the current patient is NOT sharing with the afinity domain
+									%>
+										<input type="checkbox" name="affinityDomainsView" value="<%=domain.getName()%>" disabled="disabled" /><%=domain.getName()%><br />
+									<%
+										}
+								}
+									%>
+							&nbsp;
+						</div>
+					<% } // endif isIheConfigEnabled %>
 
 						</div>
 						<div class="rightSection">
@@ -3007,6 +3058,40 @@ if(oscarVariables.getProperty("demographicExtJScript") != null) { out.println(os
 								</table>
 								</td>
 							</tr>
+
+							
+						<% if (isIheConfigEnabled) { %>
+							<!-- MARC-HI's IHE Affinity Domain Configuration Sharing -->
+							<tr valign="top">
+								<td align="right" nowrap><b><bean:message key="demographic.demographiceditdemographic.demographicSharing" />:</b></td>
+								<td align="left" colspan=3>
+									<i><bean:message key="demographic.demographiceditdemographic.demographicSharing.editInfo" /></i><br />
+									
+									<%
+									// for each aff domain, add an entry and check whether its being shared with
+									IheConfiguration iheConfig = IheConfigurationUtil.load();
+									for (IheAffinityDomainConfiguration domain : iheConfig.getAffinityDomains()) {
+										// check sharing
+										IheAffinityDomainUtil util = new IheAffinityDomainUtil(domain.getName());
+										if (util.isPatientRegistered(Integer.parseInt(demographic_no))) {
+											// current patient is sharing with this affinity domain
+									%>
+												<input type="checkbox" name="affinityDomains" value="<%=domain.getName()%>" checked="checked" /><%=domain.getName()%><br />
+											<%
+										} else {
+											// the current patient is NOT sharing with the afinity domain
+											%>
+												<input type="checkbox" disabled="disabled" name="affinityDomains" value="<%=domain.getName()%>" /><%=domain.getName()%><br />
+											<%
+										}
+									}
+									%>
+									
+								</td>
+							</tr>
+						<% } // endif isIheConfigEnabled %>
+							
+							
 
 						</table>
 						</td>

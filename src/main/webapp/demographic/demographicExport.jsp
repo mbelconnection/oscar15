@@ -26,6 +26,9 @@
 
 <%@page
 	import="java.util.*,oscar.oscarDemographic.data.*,oscar.oscarPrevention.*,oscar.oscarProvider.data.*,oscar.util.*,oscar.oscarReport.data.*,oscar.oscarPrevention.pageUtil.*,oscar.oscarDemographic.pageUtil.*"%>
+<%@page import="ca.marc.ihe.core.configuration.IheConfiguration"%>
+<%@page import="ca.marc.ihe.core.configuration.IheAffinityDomainConfiguration"%>
+<%@page import="org.oscarehr.affinityDomain.IheConfigurationUtil"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar"%>
@@ -55,6 +58,9 @@
 //  ArrayList queryArray = searchData.getQueryTypes();
 
   String userRole = (String)session.getAttribute("userrole");
+  
+	//MARC-HI
+	boolean isIheConfigEnabled = IheConfigurationUtil.isEnabled();
 %>
 
 <html:html locale="true">
@@ -76,6 +82,7 @@
 
 <link rel="stylesheet" type="text/css" media="all" href="../share/css/extractedFromPages.css"  />
 
+<link rel="stylesheet" type="text/css" href="../css/FormHelper.css" />	
 <SCRIPT LANGUAGE="JavaScript">
 
 function showHideItem(id){
@@ -252,12 +259,49 @@ if (!userRole.toLowerCase().contains("admin")) { %>
                        <html:hidden property="pgpReady" value="<%=pgp_ready%>" />
 
 		    <p>&nbsp;</p>
+		    <div class="form-container">
 <%  boolean pgpReady = pgp_ready.equals("Yes") ? true : false;
     pgpReady = true; //To be removed after CMS4
     if (!pgpReady) { %>
-                    WARNING: PGP Encryption NOT available - cannot export!<br>
+                    <br>WARNING: PGP Encryption NOT available - cannot export!<br>
 <%  } %>
-                    <input type="submit" value="Export (CMS spec 4.0)" <%=pgpReady?"":"disabled"%> />
+
+		<input type="submit" value="Export (CMS spec 4.0)" <%=pgpReady?"":"disabled"%> />
+
+                    <%
+                    // MARC-HI, only export demographics for an individual patient, and not a patient set
+                    if (demographicNo != null && isIheConfigEnabled) {
+                    	
+                    	IheConfiguration iheConfiguration = IheConfigurationUtil.load();
+                    	List<IheAffinityDomainConfiguration> affinityDomains = iheConfiguration.getAffinityDomains();
+                    	
+                    	if (affinityDomains.size() > 0) { 
+						%>
+							<div class="form-pair">
+								<span><bean:message key="marc-hi.labels.affinityDomain"/></span>
+								<select name="affinityDomain">
+									<% for(IheAffinityDomainConfiguration affinityDomainConfig : affinityDomains) { %>
+											<option value="<%=affinityDomainConfig.getName()%>"><%=affinityDomainConfig.getName()%></option>
+									<% } %>
+								</select>
+							</div>
+							<div class="form-pair">
+								<span><bean:message key="marc-hi.labels.confidentialityCode"/></span>
+								<select name="confidentialityCode">
+									<option value="N">Normal</option>
+									<option value="R">Restricted</option>
+									<option value="V">Very Restricted</option>
+								</select>
+							</div>
+							<input type="submit" value="Send" name="SendToAffinityDomain" id="SendToAffinityDomain" />
+						
+						<% } else { %>						
+								There are no affinity domains to display.					
+						<% }
+                    	
+                    }
+                    %>
+                    </div><!-- End form container -->
 		</html:form></td>
 	</tr>
 	<tr>

@@ -741,6 +741,7 @@ public final class EDocUtil extends SqlUtilBaseS {
 		doc.setReviewdatetime(MyDateFormat.getSysDate(reviewDateTime));
 		doc.setSource(source);
 		doc.setSourceFacility(sourceFacility);
+		doc.setNumberofpages(1);
 		documentDao.persist(doc);
 
 

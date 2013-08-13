@@ -58,6 +58,12 @@
 	response.addCookie(cs.GiveMeACookie(cs.adminCookie));
 %>
 
+<%@page import="org.oscarehr.affinityDomain.IheConfigurationUtil"%>
+<%
+	// MARC-HI
+	boolean isIheConfigEnabled = IheConfigurationUtil.isEnabled();
+%>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <%@page import="oscar.OscarProperties"%><html:html locale="true">
@@ -849,6 +855,10 @@ div.logoutBox {
             	<li><a href="#" onclick='popupPage(800, 1000,&quot;<html:rewrite page="/demographic/migrate_demographic_contacts.jsp"/>&quot;);return false;'><bean:message key="admin.admin.migrate_contacts"/></a></li>
             <% } %>
 
+		<% if (isIheConfigEnabled) { %>
+            <!-- MARC-HI -->
+            <li><a href="#" onclick='popupPage(800, 800,&quot;<html:rewrite page="/affinitydomain/manageAffinityDomains.jsp" />&quot;);return false;'>Manage Affinity Domains</a></li>
+        <% } // endif isIheConfigEnabled %>
 		</ul>
 		</div>
 	</security:oscarSec>

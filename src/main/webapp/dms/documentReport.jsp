@@ -24,6 +24,9 @@
 
 --%>
 
+<%@page import="ca.marc.ihe.core.configuration.IheConfiguration"%>
+<%@page import="ca.marc.ihe.core.configuration.IheAffinityDomainConfiguration"%>
+<%@page import="org.oscarehr.affinityDomain.IheConfigurationUtil"%>
 <%@page import="org.oscarehr.util.LocaleUtils"%>
 <%@page import="org.oscarehr.phr.util.MyOscarUtils"%>
 <%@page import="org.oscarehr.phr.PHRAuthentication"%>
@@ -45,6 +48,9 @@ int appointmentNo = 0;
 if(appointment != null && appointment.length()>0) {
 	appointmentNo = Integer.parseInt(appointment);
 }
+
+// MARC-HI
+boolean isIheConfigEnabled = IheConfigurationUtil.isEnabled();
 %>
 
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
@@ -170,6 +176,7 @@ if ( up != null && up.getValue() != null && up.getValue().equals("yes")){
 <link rel="stylesheet" type="text/css" href="dms.css" />
 <link rel="stylesheet" type="text/css"
 	href="../share/css/niftyPrint.css" media="print" />
+<link rel="stylesheet" type="text/css" href="../css/FormHelper.css" />  
 <script type="text/javascript" src="../share/javascript/nifty.js"></script>
 <script type="text/javascript" src="../phr/phr.js"></script>
 <script type="text/javascript">
@@ -589,6 +596,37 @@ function popup1(height, width, url, windowName){
 	      					<input type="button" <%=MyOscarUtils.getDisabledStringForMyOscarSendButton(auth, Integer.parseInt(demographicNo))%> value="<%=LocaleUtils.getMessage(request, "SendToMyOscar")%>" onclick="<%=onclickString%>" />
 							<%
                   	  }
+                       if (isIheConfigEnabled) {  
+                                                IheConfiguration iheConfiguration = IheConfigurationUtil.load();
+                                                
+                                                List<IheAffinityDomainConfiguration> affinityDomains = iheConfiguration.getAffinityDomains();
+                                                
+                                                if (affinityDomains.size() > 0) {
+                                                %>
+                                                <div class="form-container">
+                                                        <div class="form-pair">
+                                                                <span><bean:message key="marc-hi.labels.affinityDomain"/></span>
+                                                                <select name="affinityDomain">
+                                                                        <% for(IheAffinityDomainConfiguration affinityDomainConfig : affinityDomains) { %>
+                                                                                        <option value="<%=affinityDomainConfig.getName()%>"><%=affinityDomainConfig.getName()%></option>
+                                                                        <% } %>
+                                                                </select>
+                                                        </div>
+                                                        <div class="form-pair">
+                                                                <span><bean:message key="marc-hi.labels.confidentialityCode"/></span>
+                                                                <select name="confidentialityCode">
+                                                                        <option value="N">Normal</option>
+                                                                        <option value="R">Restricted</option>
+                                                                        <option value="V">Very Restricted</option>
+                                                                </select>
+                                                        </div>
+                                                        <input type="button" value="Send to Affinity Domain" name="SendToAffinityDomain" id="SendToAffinityDomain" onclick="return submitForm('<rewrite:reWrite jspPage="../affinitydomain/sendToAffinityDomainAction.jsp"/>');" />
+                                                
+                                                </div><!-- End form container -->
+                                                <% } else { %>                                          
+                                                                There are no affinity domains to display.                                       
+                                                <% }
+                       }
                     }
              	%>
 			</div>

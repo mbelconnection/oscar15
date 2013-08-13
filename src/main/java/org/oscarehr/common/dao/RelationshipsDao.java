@@ -32,6 +32,8 @@ import javax.persistence.Query;
 import org.oscarehr.common.model.Relationships;
 import org.springframework.stereotype.Repository;
 
+import oscar.util.ConversionUtils;
+
 @Repository
 public class RelationshipsDao extends AbstractDao<Relationships>{
 
@@ -47,4 +49,20 @@ public class RelationshipsDao extends AbstractDao<Relationships>{
         List<Relationships> results =  query.getResultList();
 		return results;
 	}
+ 
+        /**
+         * Finds all active relationships that are marked as sub decision maker.
+         * 
+         * @param demographicNumber
+         *              Demographic ID to find the relationships for
+         * @return
+         *              Returns the non-deleted relationships with the sub decision maker flag set to true for the specified demographic ID   
+         */
+        @SuppressWarnings("unchecked")
+        public List<Relationships> findActiveSubDecisionMaker(Integer demographicNumber) {
+                Query query = entityManager.createQuery("FROM " + modelClass.getSimpleName() + " r WHERE r.demographicNo = :dN AND r.subDecisionMaker = :sdm AND (r.deleted IS NULL OR r.deleted = '0')");
+                query.setParameter("dN", demographicNumber);
+                query.setParameter("sdm", ConversionUtils.toBoolString(Boolean.TRUE));
+                return query.getResultList();
+        }
 }

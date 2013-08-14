@@ -63,7 +63,8 @@ public class EctIncomingEncounterAction extends Action {
         oscar.oscarSecurity.CookieSecurity cs   = new oscar.oscarSecurity.CookieSecurity();
         EctSessionBean bean = new EctSessionBean();
         if(cs.FindThisCookie(request.getCookies(),CookieSecurity.providerCookie)){ //pass security???  
-        	
+        	//Not in need of getting the appointment number from the cookie since it is already added 
+        	//to the request url when the encounter is accessed from an appointment
         	if(request.getSession().getAttribute("cur_appointment_no") != null) {
        		 appointmentNo = (String)request.getSession().getAttribute("cur_appointment_no");
         	}
@@ -115,6 +116,8 @@ public class EctIncomingEncounterAction extends Action {
                 bean.demographicNo=request.getParameter("demographicNo");
                 bean.appointmentNo=request.getParameter("appointmentNo");
                 //use this one.
+                //bean.appointmentNo was already being set by an appointment from the url
+                //no need to set it the the cur_appointment_no from the cookie
                 if(appointmentNo != null) {
                 	bean.appointmentNo = appointmentNo;
                 }

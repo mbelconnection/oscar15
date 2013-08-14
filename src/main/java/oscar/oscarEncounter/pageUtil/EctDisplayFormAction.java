@@ -63,6 +63,8 @@ public class EctDisplayFormAction extends EctDisplayAction {
     public boolean getInfo(EctSessionBean bean, HttpServletRequest request, NavBarDisplayDAO Dao, MessageResources messages) {
 
 		String appointmentNo = bean.appointmentNo;
+		//The bean will already have the appointment number so there is no need to get the appointment number from the cookie
+		//The side affect would result in the appointment number being set in encounter screen not accessed through an appointment.
 		if(appointmentNo == null  && request.getSession().getAttribute("cur_appointment_no") != null) {
 			appointmentNo = (String)request.getSession().getAttribute("cur_appointment_no");
 	   

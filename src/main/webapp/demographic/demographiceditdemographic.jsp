@@ -32,6 +32,7 @@
 <%@page import="org.oscarehr.common.dao.DemographicArchiveDao" %>
 <%@page import="org.oscarehr.common.dao.DemographicExtArchiveDao" %>
 <%@page import="org.oscarehr.util.SpringUtils" %>
+<%@page import="oscar.OscarProperties" %>
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%
@@ -47,6 +48,9 @@
     DemographicExtDao demographicExtDao = SpringUtils.getBean(DemographicExtDao.class);
     DemographicArchiveDao demographicArchiveDao = SpringUtils.getBean(DemographicArchiveDao.class);
     DemographicExtArchiveDao demographicExtArchiveDao = SpringUtils.getBean(DemographicExtArchiveDao.class);
+    
+    String privateConsentEnabledProperty = OscarProperties.getInstance().getProperty("privateConsentEnabled");
+    boolean privateConsentEnabled = privateConsentEnabledProperty != null && privateConsentEnabledProperty.equals("true");
 %>
 <security:oscarSec roleName="<%=roleName$%>" objectName="_demographic"
 	rights="r" reverse="<%=true%>">
@@ -2326,7 +2330,7 @@ if ( PatStat.equals(Dead) ) {%>
 									name="wPhoneExtOrig"
 									value="<%=apptMainBean.getString(demoExt.get("wPhoneExt"))%>" />
 								</td>
-							</tr>
+							</tr>						
 							<tr valign="top">
 								<td align="right"><b><bean:message
 									key="demographic.demographiceditdemographic.formPhoneC" />: </b></td>
@@ -2347,13 +2351,25 @@ if ( PatStat.equals(Dead) ) {%>
 							</tr>
 							<tr>
 								<td align="right"><b><bean:message key="demographic.demographiceditdemographic.msgCountryOfOrigin"/>: </b></td>
-								<td align="left"><select name="countryOfOrigin" <%=getDisabled("countryOfOrigin")%>>
+								<td align="left"><select id="countryOfOrigin" name="countryOfOrigin" <%=getDisabled("countryOfOrigin")%>>
 									<option value="-1"><bean:message key="demographic.demographiceditdemographic.msgNotSet"/></option>
 									<%for(CountryCode cc : countryList){ %>
 									<option value="<%=cc.getCountryId()%>"
 										<% if (oscar.util.StringUtils.noNull(demographic.getCountryOfOrigin()).equals(cc.getCountryId())){out.print("SELECTED") ;}%>><%=cc.getCountryName() %></option>
 									<%}%>
 								</select></td>
+								<%
+									String usSigned = StringUtils.defaultString(apptMainBean.getString(demoExt.get("usSigned")), "unsigned");
+								%>
+								<oscar:oscarPropertiesCheck property="privateConsentEnabled" value="true">
+								<input type="hidden" name="usSignedOrig" value="<%=usSigned%>" />
+								<td colspan="2">
+									<div id="usSigned">
+										<input type="radio" name="usSigned" value="signed" <%=usSigned.equals("signed") ? "checked" : ""%>>U.S. Resident Consent Form Signed 
+									    <input type="radio" name="usSigned" value="unsigned" <%=!usSigned.equals("signed") ? "checked" : ""%>>U.S. Resident Consent Form NOT Signed
+								    </div>
+								</td>
+								</oscar:oscarPropertiesCheck>
 							</tr>
 							<tr valign="top">
 								<td align="right"><b><bean:message
@@ -2960,7 +2976,23 @@ document.updatedelete.r_doctor_ohip.value = refNo;
 								</table>
 								</td>
 							</tr>
-
+							<tr valign="top">
+								<%
+									String privacyConsent = StringUtils.defaultString(apptMainBean.getString(demoExt.get("privacyConsent")), "");
+									String informedConsent = StringUtils.defaultString(apptMainBean.getString(demoExt.get("informedConsent")), "");
+								%>
+								<oscar:oscarPropertiesCheck property="privateConsentEnabled" value="true">
+								<td colspan="2">
+	 								<input type="hidden" name="privacyConsentOrig" value="<%=privacyConsent%>" />
+	 								<input type="hidden" name="informedConsentOrig" value="<%=informedConsent%>" />
+									<br/>
+									<input type="checkbox" name="privacyConsent" value="yes" <%=privacyConsent.equals("yes") ? "checked" : ""%>><b>Privacy Consent (verbal) Obtained</b> 
+									<br/>
+									<input type="checkbox" name="informedConsent" value="yes" <%=informedConsent.equals("yes") ? "checked" : ""%>><b>Informed Consent (verbal) Obtained</b>
+									<br/>
+								</td>
+								</oscar:oscarPropertiesCheck>
+						  	</tr>
 							<tr valign="top">
 								<td align="right" nowrap><b><bean:message
 									key="demographic.demographiceditdemographic.formDateJoined1" />:
@@ -3140,8 +3172,17 @@ if(oscarVariables.getProperty("demographicExtJScript") != null) { out.println(os
 								<!-- security code block --> <span id="updateButton"
 									style="display: none;"> <security:oscarSec
 									roleName="<%=roleName$%>" objectName="_demographic" rights="w">
-									<input type="submit"
-										value="<bean:message key="demographic.demographiceditdemographic.btnUpdate"/>">
+									<%
+										if (privateConsentEnabled) {
+									%>
+									<input type="submit" value="<bean:message key="demographic.demographiceditdemographic.btnUpdate"/>" onclick="return checkSubmit();">
+									<%
+										} else {
+									%>
+									<input type="submit" value="<bean:message key="demographic.demographiceditdemographic.btnUpdate"/>">
+									<%
+										}
+									%>
 								</security:oscarSec> </span> <!-- security code block --></td>
 								<td width="40%" align='right' valign="top"><span
 									id="swipeButton" style="display: none;"> <input
@@ -3209,6 +3250,38 @@ function callEligibilityWebService(url,id){
        new Ajax.Updater(id,url, {method:'get',parameters:params,asynchronous:true,onComplete:function(request){Element.hide('search_spinner')},onLoading:function(request){Element.show('search_spinner')}});
  }
 
+<%
+if (privateConsentEnabled) {
+%>
+function checkSubmit() {
+	var checked = jQuery("input[name='informedConsent']").attr('checked');
+	if (!checked) {
+		alert("Please ensure that Informed Consent has been obtained!");
+		return false;
+	}
+	return true;
+}
+
+jQuery(document).ready(function(){
+	var countryOfOrigin = jQuery("#countryOfOrigin").val();
+	if("US" != countryOfOrigin) {
+		jQuery("#usSigned").hide();
+	} else {
+		jQuery("#usSigned").show();
+	}
+	
+	jQuery("#countryOfOrigin").change(function () {
+		var countryOfOrigin = jQuery("#countryOfOrigin").val();
+		if("US" == countryOfOrigin){
+		   	jQuery("#usSigned").show();
+		} else {
+			jQuery("#usSigned").hide();
+		}
+	});
+});
+<%
+}
+%>
 </script>
 </body>
 </html:html>

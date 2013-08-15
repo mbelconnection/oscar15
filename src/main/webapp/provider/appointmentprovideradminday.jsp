@@ -1495,11 +1495,22 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
 <%
         bFirstTimeRs=true;
         bFirstFirstR=true;
-        String [] param0 = new String[3];
+        
+    	String useProgramLocation = OscarProperties.getInstance().getProperty("useProgramLocation");
+    	String moduleNames = OscarProperties.getInstance().getProperty("ModuleNames");
+    	boolean caisiEnabled = moduleNames != null && org.apache.commons.lang.StringUtils.containsIgnoreCase(moduleNames, "Caisi");
+    	boolean locationEnabled = caisiEnabled && (useProgramLocation != null && useProgramLocation.equals("true"));
+    	
+    	int length = locationEnabled ? 4 : 3;
+        String [] param0 = new String[length];
 
                 param0[0]=curProvider_no[nProvider];
                 param0[1]=year+"-"+month+"-"+day;//e.g."2001-02-02";
 				param0[2]=programId_oscarView;
+				if (locationEnabled) {
+				    param0[3]=request.getParameter("programIdForLocation");
+				    strsearchappointmentday = "searchappointmentdaywithlocation";
+				}
                 List<Map<String,Object>> appointmentList = oscarSuperManager.find("providerDao", strsearchappointmentday, param0);
                 Iterator<Map<String,Object>> it = appointmentList.iterator();
 

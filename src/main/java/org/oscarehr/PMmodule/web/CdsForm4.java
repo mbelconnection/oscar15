@@ -65,7 +65,6 @@ public class CdsForm4 {
 
 		if (cdsClientForm == null) {
 			cdsClientForm = new CdsClientForm();
-
 		}
 
 		return (cdsClientForm);

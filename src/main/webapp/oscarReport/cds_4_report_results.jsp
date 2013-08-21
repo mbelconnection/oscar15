@@ -22,6 +22,10 @@
     Toronto, Ontario, Canada
 
 --%>
+<%@page import="java.util.HashSet"%>
+<%@page import="org.oscarehr.PMmodule.model.Program"%>
+<%@page import="org.oscarehr.PMmodule.service.ProgramManager"%>
+<%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page import="org.oscarehr.common.model.Provider"%>
 <%@page import="org.oscarehr.util.SpringUtils"%>
 <%@page import="org.oscarehr.managers.ProviderManager2"%>
@@ -31,7 +35,8 @@
 <%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%
 	ProviderManager2 providerManager = (ProviderManager2) SpringUtils.getBean("providerManager2");
-	
+    ProgramManager programManager = (ProgramManager) SpringUtils.getBean("programManager");
+
 	int startYear = Integer.parseInt(request.getParameter("startYear"));
 	int startMonth = Integer.parseInt(request.getParameter("startMonth"));
 	int endYear = Integer.parseInt(request.getParameter("endYear"));
@@ -41,18 +46,43 @@
 
 	// null for none selected, array of providerIds if selected
 	String[] providerIdList=request.getParameterValues("providerIds");       
-	Cds4ReportUIBean cds4ReportUIBean=new Cds4ReportUIBean(functionalCentreId, startYear, startMonth, endYear, endMonth, providerIdList);
+	String[] programIdListTemp=request.getParameterValues("programIds");
+	HashSet<Integer> programIds=null;
+	if (programIdListTemp!=null && programIdListTemp.length>0)
+	{
+		programIds=new HashSet<Integer>();
+		
+		for (String s: programIdListTemp)
+		{
+			s=StringUtils.trimToNull(s);
+			if (s!=null)
+			{
+				programIds.add(new Integer(s));
+			}
+		}
+	}
+			
+	Cds4ReportUIBean cds4ReportUIBean=new Cds4ReportUIBean(functionalCentreId, startYear, startMonth, endYear, endMonth, providerIdList, programIds);
 			
 	List<CdsFormOption> cdsFormOptions=Cds4ReportUIBean.getCdsFormOptions();
 	
 	StringBuilder providerNamesList=new StringBuilder();
-	if (providerIdList==null) providerNamesList.append("All Providers");
-	else
+	if (providerIdList!=null  && providerIdList.length>0) 
 	{
 		for (String providerId : providerIdList)
 		{
 			Provider provider=providerManager.getProvider(providerId);
 			providerNamesList.append(provider.getFormattedName()+" ("+provider.getProviderNo()+"), ");
+		}
+	}
+
+	StringBuilder programNamesList=new StringBuilder();
+	if (programIds!=null)
+	{
+		for (Integer programId : programIds)
+		{
+			Program program=programManager.getProgram(programId);
+			programNamesList.append(program.getName()+" ("+program.getType()+"), ");
 		}
 	}
 %>
@@ -65,8 +95,26 @@
 <br />
 <span style="font-weight:bold">Dates : </span><%=cds4ReportUIBean.getDateRangeForDisplay()%>
 <br />
-<span style="font-weight:bold">Providers : </span><%=StringEscapeUtils.escapeHtml(providerNamesList.toString())%>
-<br />
+
+<%
+	if (providerIdList!= null)
+	{
+		%>
+		<span style="font-weight:bold">Providers : </span><%=StringEscapeUtils.escapeHtml(providerNamesList.toString())%>
+		<br />
+		<%
+	}
+
+	if (programIds!=null)
+	{
+		%>
+			<span style="font-weight:bold">Programs : </span><%=StringEscapeUtils.escapeHtml(programNamesList.toString())%>
+			<br />
+		<%
+	}
+%>
+
+
 
 <table class="genericTable borderedTableAndCells" style="font-size:12px">
 	<tr class="genericTableHeader">

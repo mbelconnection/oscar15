@@ -22,6 +22,7 @@
     Toronto, Ontario, Canada
 
 --%>
+<%@page import="oscar.util.DateUtils"%>
 <%@page import="org.oscarehr.PMmodule.model.Program"%>
 <%@page import="org.oscarehr.PMmodule.service.ProgramManager"%>
 <%@page import="org.oscarehr.common.model.Provider"%>
@@ -42,11 +43,10 @@
 	List<FunctionalCentre> functionalCentres=functionalCentreDao.findInUseByFacility(loggedInInfo.currentFacility.getId());
 %>
 
-<%@include file="/layouts/caisi_html_top.jspf"%>
+<%@include file="/layouts/html_top.jspf"%>
 
 <h1>CDS Reports</h1>
 
-<script type="text/javascript" src="<%= request.getContextPath() %>/js/jquery-1.7.1.min.js"></script>				
 <script type="text/javascript">
 	function validate(form)
 	{
@@ -83,58 +83,36 @@
 		<tr>
 			<td>Date Range Start</td>
 			<td>
-				<select name="startYear">
-				<%
-					GregorianCalendar cal=new GregorianCalendar();
-					int year=cal.get(GregorianCalendar.YEAR);
-					for (int i=0; i<10; i++)
-					{
-						%>
-							<option value="<%=year-i%>"><%=year-i%></option>
-						<%
-					}
-				%>
-				</select>
-				-
-				<select name="startMonth">
-				<%
-					DateFormatSymbols dateFormatSymbols=DateFormatSymbols.getInstance();
-					String[] months=dateFormatSymbols.getShortMonths();
+				<input type="text" name="startDate" id="startDate" />
+				<script type="text/javascript">
+					jQuery('#startDate').datepicker({ dateFormat: 'yy-mm-dd' });
 					
-					for (int i=1; i<13; i++)
+					var d=new Date();
+					var month=d.getMonth();
+					if (month>0)
 					{
-						%>
-							<option value="<%=i%>" title="<%=months[i-1]%>"><%=i%></option>
-						<%
+						d.setMonth(month-1);
 					}
-				%>
-				</select>
+					else
+					{
+						d.setMonth(11);
+						d.setYear(d.getYear()-1);
+					}
+					
+					jQuery('#startDate').datepicker("setDate", d);
+					jQuery('#startDate').attr("readonly", true);
+				</script>
 			</td>
 		</tr>
 		<tr>
 			<td>Date Range End (inclusive)</td>
 			<td>
-				<select name="endYear">
-				<%
-					for (int i=0; i<10; i++)
-					{
-						%>
-							<option value="<%=year-i%>"><%=year-i%></option>
-						<%
-					}
-				%>
-				</select>
-				-
-				<select name="endMonth">
-				<%
-					for (int i=1; i<13; i++)
-					{
-						%>
-							<option value="<%=i%>" title="<%=months[i-1]%>"><%=i%></option>
-						<%
-					}
-				%>
-				</select>
+				<input type="text" name="endDate" id="endDate" />
+				<script type="text/javascript">
+					jQuery('#endDate').datepicker({ dateFormat: 'yy-mm-dd' });					
+					jQuery('#endDate').datepicker("setDate", new Date());
+					jQuery('#endDate').attr("readonly", true);
+				</script>
 			</td>
 		</tr>
 		<tr>

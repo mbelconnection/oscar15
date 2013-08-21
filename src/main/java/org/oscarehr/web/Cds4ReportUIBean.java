@@ -172,18 +172,28 @@ public final class Cds4ReportUIBean {
 		LoggedInInfo loggedInInfo = LoggedInInfo.loggedInInfo.get();
 		List<CdsClientForm> cdsForms = cdsClientFormDao.findSignedCdsForms(loggedInInfo.currentFacility.getId(), "4", startDate.getTime(), endDateExclusive.getTime());
 		logger.debug("valid cds form count, "+loggedInInfo.currentFacility.getId()+", 4, "+startDate.getTime()+", "+endDateExclusive.getTime()+", "+cdsForms.size());
-		
+				
 		// sort into single and multiple admissions
 		for (CdsClientForm form : cdsForms) {
 			logger.debug("valid cds form, id="+form.getId());
 			
-			// make sure form is for an admission for which we're interested, i.e. admissions are filtered by provider or program
+			// make sure form is for an admission for which we're interested, i.e. admissions are filtered by program and admission time already
 			Admission admission = admissionMap.get(form.getAdmissionId());
 			if (admission == null) {
-				logger.debug("cds form missing admission. formId="+form.getId()+", admissionId="+form.getAdmissionId());
+				logger.debug("cds form missing admission / or not in admission we're interested in dueto program or time restriction. formId="+form.getId()+", admissionId="+form.getAdmissionId());
 				continue;
 			}
-			
+			else
+			{
+				// check if the cds form is signed by a provider we're reporting on.
+				if (providerIdsToReportOn!=null) // if we've been asked to filter
+				{
+					if (!providerIdsToReportOn.contains(form.getProviderNo())) // if the provider isn't in our allowed list
+					{
+						continue;
+					}
+				}
+			}
 			
 			Integer clientId = form.getClientId();
 
@@ -255,7 +265,7 @@ public final class Cds4ReportUIBean {
 
 		LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
 		List<Program> programs=programDao.getProgramsByFacilityIdAndFunctionalCentreId(loggedInInfo.currentFacility.getId(), functionalCentre.getId());
-		
+
 		for (Program program : programs) {
 			if (programIdsToReportOn!=null && !programIdsToReportOn.contains(program.getId())) continue;
 			
@@ -264,22 +274,11 @@ public final class Cds4ReportUIBean {
 			logger.debug("corresponding cds admissions count (before provider filter) :"+admissions.size());
 			
 			for (Admission admission : admissions) {
-				if (isAdmissionForSelectedProviders(admission))
-				{
-					admissionMap.put(admission.getId().intValue(), admission);
-					logger.debug("valid cds admission, id="+admission.getId());
-				}
+				admissionMap.put(admission.getId().intValue(), admission);
 			}
 		}
 
 		return admissionMap;
-	}
-	
-	private boolean isAdmissionForSelectedProviders(Admission admission)
-	{
-		if (providerIdsToReportOn==null) return(true);
-		
-		return(providerIdsToReportOn.contains(admission.getProviderNo()));
 	}
 
 	private static int getCohortBucket(Admission admission) {

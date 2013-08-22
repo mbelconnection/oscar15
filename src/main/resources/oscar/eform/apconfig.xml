@@ -12,6 +12,18 @@
         <ap-output>${appointment_date}</ap-output>
     </databaseap>
 
+<!-- Current eform information -->
+    <databaseap>
+        <ap-name>current_form_id</ap-name>
+        <ap-sql>SELECT '${fid}' AS fid</ap-sql>
+        <ap-output>${fid}</ap-output>
+    </databaseap>
+    <databaseap>
+        <ap-name>current_form_data_id</ap-name>
+        <ap-sql>SELECT '${fdid}' AS fdid</ap-sql>
+        <ap-output>${fdid}</ap-output>
+    </databaseap>
+
 <!-- Current user information -->
     <databaseap>
         <ap-name>current_user</ap-name>
@@ -40,8 +52,8 @@
     </databaseap>
     <databaseap>
         <ap-name>current_user_id</ap-name>
-        <ap-sql>SELECT '${provider}' AS id</ap-sql>
-        <ap-output>${id}</ap-output>
+        <ap-sql>SELECT '${provider}' AS providerId</ap-sql>
+        <ap-output>${providerId}</ap-output>
     </databaseap>
 
 <!-- Patient demographic information -->
@@ -71,8 +83,8 @@
     </databaseap>
     <databaseap>
         <ap-name>patient_id</ap-name>
-        <ap-sql>SELECT '${demographic}' AS id</ap-sql>
-        <ap-output>${id}</ap-output>
+        <ap-sql>SELECT '${demographic}' AS demographicId</ap-sql>
+        <ap-output>${demographicId}</ap-output>
     </databaseap>
     <databaseap>
         <ap-name>label</ap-name>
@@ -299,6 +311,11 @@
         <ap-sql>SELECT provider.first_name, provider.last_name  FROM provider, demographic WHERE demographic.demographic_no=${demographic} AND demographic.provider_no=provider.provider_no</ap-sql>
         <ap-output>${last_name}, ${first_name}</ap-output>
     </databaseap>
+	<databaseap>
+		<ap-name>doctor_provider_no</ap-name>
+		<ap-sql>SELECT provider_no FROM demographic WHERE demographic_no=${demographic}</ap-sql>
+		<ap-output>${provider_no}</ap-output>
+	</databaseap>
     <databaseap>
         <ap-name>doctor_ohip_no</ap-name>
         <ap-sql>SELECT provider.ohip_no FROM provider, demographic WHERE demographic.demographic_no=${demographic} AND demographic.provider_no=provider.provider_no</ap-sql>
@@ -447,62 +464,114 @@
 <!-- Extended eform tags, cannot be directly called -->
     <databaseap>
         <ap-name>_eform_values_first</ap-name>
-        <ap-sql>SELECT var_value FROM eform_values WHERE var_name='${var_name}' AND fid=${fid}
-                AND demographic_no like '${eform_demographic}'
-                AND fdid IN (SELECT fdid FROM eform_data WHERE status=1) ORDER BY id LIMIT 1</ap-sql>
+        <ap-sql>SELECT var_value FROM eform_values
+                WHERE var_name='${var_name}'
+                AND fdid=
+                (SELECT MIN(fdid) FROM eform_data
+                 WHERE demographic_no like '${eform_demographic}' AND fid=${fid} AND status=1)
+        </ap-sql>
         <ap-output>${var_value}</ap-output>
     </databaseap>
     <databaseap>
         <ap-name>_eform_values_last</ap-name>
-        <ap-sql>SELECT var_value FROM eform_values WHERE var_name='${var_name}' AND fid=${fid}
-                AND demographic_no like '${eform_demographic}'
-                AND fdid IN (SELECT fdid FROM eform_data WHERE status=1) ORDER BY id DESC LIMIT 1</ap-sql>
+        <ap-sql>SELECT var_value FROM eform_values
+                WHERE var_name='${var_name}'
+                AND fdid=
+                (SELECT MAX(fdid) FROM eform_data
+                 WHERE demographic_no like '${eform_demographic}' AND fid=${fid} AND status=1)
+        </ap-sql>
         <ap-output>${var_value}</ap-output>
     </databaseap>
     <databaseap>
+        <ap-name>_eform_values_first_all_json</ap-name>
+        <ap-sql>SELECT var_name AS fieldname, var_value AS fieldvalue FROM eform_values
+                WHERE fdid=
+                (SELECT MIN(fdid) FROM eform_data
+                 WHERE demographic_no like '${eform_demographic}' AND fid=${fid} AND status=1)
+        </ap-sql>
+        <ap-output>${fieldname}, ${fieldvalue}</ap-output>
+        <ap-json-output>true</ap-json-output>
+    </databaseap>
+    <databaseap>
+        <ap-name>_eform_values_last_all_json</ap-name>
+        <ap-sql>SELECT var_name AS fieldname, var_value AS fieldvalue FROM eform_values
+                WHERE fdid=
+                (SELECT MAX(fdid) FROM eform_data
+                 WHERE demographic_no like '${eform_demographic}' AND fid=${fid} AND status=1)
+        </ap-sql>
+        <ap-output>${fieldname}, ${fieldvalue}</ap-output>
+        <ap-json-output>true</ap-json-output>
+    </databaseap>
+    <databaseap>
         <ap-name>_eform_values_count</ap-name>
-        <ap-sql>SELECT count(0) FROM eform_values WHERE var_name='${var_name}' AND var_value='${var_value}'
-                AND demographic_no like '${eform_demographic}'
-                AND fid=${fid} AND fdid IN (SELECT fdid FROM eform_data WHERE status=1)</ap-sql>
+        <ap-sql>SELECT count(0) FROM eform_values
+                WHERE var_name='${var_name}' AND var_value='${var_value}'
+                AND fdid IN
+                (SELECT fdid FROM eform_data
+                 WHERE demographic_no like '${eform_demographic}' AND fid=${fid} AND status=1)
+        </ap-sql>
         <ap-output>${count(0)}</ap-output>
     </databaseap>
     <databaseap>
         <ap-name>_eform_values_countname</ap-name>
-        <ap-sql>SELECT count(0) FROM eform_values WHERE var_name='${var_name}' AND NOT (var_value='' OR var_value IS NULL)
-                AND demographic_no like '${eform_demographic}'
-                AND fid=${fid} AND fdid IN (SELECT fdid FROM eform_data WHERE status=1)</ap-sql>
+        <ap-sql>SELECT count(0) FROM eform_values
+                WHERE var_name='${var_name}' AND NOT (var_value='' OR var_value IS NULL)
+                AND fdid IN
+                (SELECT fdid FROM eform_data
+                 WHERE demographic_no like '${eform_demographic}' AND fid=${fid} AND status=1)
+        </ap-sql>
         <ap-output>${count(0)}</ap-output>
     </databaseap>
     <databaseap>
         <ap-name>_eform_values_count_ref</ap-name>
-        <ap-sql>SELECT count(0) FROM eform_values WHERE var_name='${var_name}' AND var_value='${var_value}'
-                AND fdid IN (SELECT fdid FROM eform_data WHERE status=1
-                AND fdid IN (SELECT fdid FROM eform_values WHERE var_name='${ref_var_name}' AND var_value='${ref_var_value}'
-                AND fid=${fid}))</ap-sql>
+        <ap-sql>SELECT count(0) FROM eform_values
+                WHERE var_name='${var_name}' AND var_value='${var_value}'
+                AND fdid IN
+                (SELECT fdid FROM eform_values
+                 WHERE var_name='${ref_var_name}' AND var_value='${ref_var_value}'
+                 AND fdid IN
+                 (SELECT fdid FROM eform_data
+                  WHERE demographic_no like '${eform_demographic}' AND fid=${fid} AND status=1))
+        </ap-sql>
         <ap-output>${count(0)}</ap-output>
     </databaseap>
     <databaseap>
         <ap-name>_eform_values_countname_ref</ap-name>
-        <ap-sql>SELECT count(0) FROM eform_values WHERE var_name='${var_name}' AND NOT (var_value='' OR var_value IS NULL)
-                AND fdid IN (SELECT fdid FROM eform_data WHERE status=1
-                AND fdid IN (SELECT fdid FROM eform_values WHERE var_name='${ref_var_name}' AND var_value='${ref_var_value}'
-                AND fid=${fid}))</ap-sql>
+        <ap-sql>SELECT count(0) FROM eform_values
+                WHERE var_name='${var_name}' AND NOT (var_value='' OR var_value IS NULL)
+                AND fdid IN
+                (SELECT fdid FROM eform_values
+                 WHERE var_name='${ref_var_name}' AND var_value='${ref_var_value}'
+                 AND fdid IN
+                 (SELECT fdid FROM eform_data
+                  WHERE demographic_no like '${eform_demographic}' AND fid=${fid} AND status=1))
+        </ap-sql>
         <ap-output>${count(0)}</ap-output>
     </databaseap>
     <databaseap>
         <ap-name>_eform_values_count_refname</ap-name>
-        <ap-sql>SELECT count(0) FROM eform_values WHERE var_name='${var_name}' AND var_value='${var_value}'
-                AND fdid IN (SELECT fdid FROM eform_data WHERE status=1
-                AND fdid IN (SELECT fdid FROM eform_values WHERE fid=${fid}
-                AND var_name='${ref_var_name}' AND NOT (var_value='' OR var_value IS NULL)))</ap-sql>
+        <ap-sql>SELECT count(0) FROM eform_values
+                WHERE var_name='${var_name}' AND var_value='${var_value}'
+                AND fdid IN
+                (SELECT fdid FROM eform_values
+                 WHERE var_name='${ref_var_name}' AND NOT (var_value='' OR var_value IS NULL)
+                 AND fdid IN
+                 (SELECT fdid FROM eform_data
+                  WHERE demographic_no like '${eform_demographic}' AND fid=${fid} AND status=1))
+        </ap-sql>
         <ap-output>${count(0)}</ap-output>
     </databaseap>
     <databaseap>
         <ap-name>_eform_values_countname_refname</ap-name>
-        <ap-sql>SELECT count(0) FROM eform_values WHERE var_name='${var_name}' AND NOT (var_value='' OR var_value IS NULL)
-                AND fdid IN (SELECT fdid FROM eform_data WHERE status=1
-                AND fdid IN (SELECT fdid FROM eform_values WHERE fid=${fid}
-                AND var_name='${ref_var_name}' AND NOT (var_value='' OR var_value IS NULL)))</ap-sql>
+        <ap-sql>SELECT count(0) FROM eform_values
+                WHERE var_name='${var_name}' AND NOT (var_value='' OR var_value IS NULL)
+                AND fdid IN
+                (SELECT fdid FROM eform_values
+                 WHERE var_name='${ref_var_name}' AND NOT (var_value='' OR var_value IS NULL)
+                 AND fdid IN
+                 (SELECT fdid FROM eform_data
+                  WHERE demographic_no like '${eform_demographic}' AND fid=${fid} AND status=1))
+        </ap-sql>
         <ap-output>${count(0)}</ap-output>
     </databaseap>
     <databaseap>
@@ -511,6 +580,8 @@
                 AND other_key='${other_key}' AND deleted=false ORDER BY id DESC LIMIT 1</ap-sql>
         <ap-output>${other_id}</ap-output>
     </databaseap>
+<!-- Extended eform tags end -->
+    
     <databaseap>
         <ap-name>dtap_immunization_date</ap-name>
         <ap-sql>select prevention_date from preventions p where p.prevention_type = 'dtap-ipv-hib' and p.deleted = '0' and p.demographic_no = ${demographic} order by p.prevention_date desc limit 1
@@ -559,5 +630,25 @@
         <ap-output>${first_name} ${last_name}\n${address}\n${city} ${province}\n${postal}</ap-output>
     </databaseap>
 
+    <databaseap>
+    	<ap-name>risk_factors_json</ap-name>
+        <ap-sql>select s1.note as note from casemgmt_note s1, (select max(cn.note_id) as note_id from casemgmt_note cn, casemgmt_issue_notes cin 
+                where cn.note_id = cin.note_id and cin.id = (select id from casemgmt_issue 
+                where demographic_no=${demographic} and issue_id = (select issue_id from issue where code='riskfactors' limit 1) limit 1) group by cn.uuid) s2 
+                where s1.note_id = s2.note_id and s1.archived=0;
+        </ap-sql>
+        <ap-output>${note}</ap-output>
+        <ap-json-output>true</ap-json-output>
+    </databaseap>
+    <databaseap>
+    	<ap-name>family_history_json</ap-name>
+        <ap-sql>select s1.note as note from casemgmt_note s1, (select max(cn.note_id) as note_id from casemgmt_note cn, casemgmt_issue_notes cin 
+                where cn.note_id = cin.note_id and cin.id = (select id from casemgmt_issue 
+                where demographic_no=${demographic} and issue_id = (select issue_id from issue where code='famhistory' limit 1) limit 1) group by cn.uuid) s2 
+                where s1.note_id = s2.note_id and s1.archived=0;
+        </ap-sql>
+        <ap-output>${note}</ap-output>
+        <ap-json-output>true</ap-json-output>
+    </databaseap>
 
 </eformap-config>

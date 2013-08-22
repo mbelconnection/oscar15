@@ -180,12 +180,18 @@ function updateAjax() {
 							eForms = EFormUtil.listPatientEForms(orderBy, EFormUtil.CURRENT, demographic_no, groupView, roleName$);
 						}
 						
+						int rowCount = 0;
 						for (int i = 0; i < eForms.size(); i++)
 						{
 							HashMap<String,? extends Object> curform = eForms.get(i);
+							
+							if (EFormUtil.isShowLatestFormOnlyInMany((String)curform.get("fdid")) && !EFormUtil.isLatestPatientForm((String)curform.get("fdid")))
+								continue;
 					%>
-					<tr bgcolor="<%=((i % 2) == 1)?"#F2F2F2":"white"%>">
+					<tr bgcolor="<%=((rowCount % 2) == 1)?"#F2F2F2":"white"%>">
 						<%
+							rowCount++;
+						
 							if (isMyOscarAvailable)
 							{
 								%>
@@ -195,7 +201,12 @@ function updateAjax() {
 								<%
 							}
 						%>
-						<td><a href="#"
+						<td>
+						<% if (EFormUtil.isShowLatestFormOnlyInMany((String)curform.get("fdid"))) { %>
+							<a href="efmpatientformlistsingle.jsp?fdid=<%=curform.get("fdid")%>&demographic_no=<%=demographic_no%>&orderby=<%=orderByRequest%>&appointment=<%=appointment%>&parentAjaxId=<%=parentAjaxId%>"
+							 target="_blank" style="text-decoration:none" title="Show previous eform(s)">+</a>
+						<% } %>
+							<a href="#"
 							ONCLICK="popupPage('efmshowform_data.jsp?fdid=<%=curform.get("fdid")%>&appointment=<%=appointment%>', '<%="FormP" + i%>'); return false;"
 							TITLE="<bean:message key="eform.showmyform.msgViewFrm"/>"
 							onmouseover="window.status='<bean:message key="eform.showmyform.msgViewFrm"/>'; return true"><%=curform.get("formName")%></a></td>
@@ -218,7 +229,9 @@ function updateAjax() {
 						}
 					%>
 				</table>
-				<input type="submit" value="Send To PHR" />
+				<% if (isMyOscarAvailable) { %>
+					<input type="submit" value="Send To PHR" />
+				<% } %>
 			</form>
 		
 		</td>

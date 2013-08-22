@@ -49,6 +49,8 @@ import javax.persistence.PersistenceException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
+import org.caisi.model.Tickler;
+import org.caisi.service.TicklerManager;
 import org.oscarehr.casemgmt.dao.CaseManagementNoteLinkDAO;
 import org.oscarehr.casemgmt.model.CaseManagementIssue;
 import org.oscarehr.casemgmt.model.CaseManagementNote;
@@ -93,7 +95,8 @@ public class EFormUtil {
 	private static CaseManagementNoteLinkDAO cmDao = (CaseManagementNoteLinkDAO) SpringUtils.getBean("CaseManagementNoteLinkDAO");
 	private static EFormDataDao eFormDataDao = (EFormDataDao) SpringUtils.getBean("EFormDataDao");
 	private static EFormValueDao eFormValueDao = (EFormValueDao) SpringUtils.getBean("EFormValueDao");
-
+	private static TicklerManager ticklerMgr = (TicklerManager)SpringUtils.getBean("ticklerManagerT");
+	
 	private EFormUtil() {
 	}
 
@@ -706,7 +709,7 @@ public class EFormUtil {
 			if (blank(belong)) belong = "provider";
 			String docOwner = getInfo("docowner", template, eForm.getProviderNo());
 			if (belong.equalsIgnoreCase("patient")) docOwner = getInfo("docowner", template, eForm.getDemographicNo());
-			String docText = getContent(template);
+			String docText = getContent("content", template);
 			docText = putTemplateEformHtml(eForm.getFormHtml(), docText);
 
                         if (NumberUtils.isDigits(docOwner)) {
@@ -727,11 +730,32 @@ public class EFormUtil {
 			String[] sentList = getSentList(template);
 			String userNo = eForm.getProviderNo();
 			String userName = getProviderName(eForm.getProviderNo());
-			String message = getContent(template);
+			String message = getContent("content", template);
 			message = putTemplateEformHtml(eForm.getFormHtml(), message);
 
 			MsgMessageData msg = new MsgMessageData();
 			msg.sendMessage2(message, subject, userName, sentWho, userNo, msg.getProviderStructure(sentList), null, null);
+		}
+		
+		// write to ticklers
+		templates = getWithin("tickler", text);
+		for (String template : templates) {
+			if (StringUtils.isBlank(template)) continue;
+			
+			String taskAssignedTo = getInfo("taskAssignedTo", template, null);
+			if (taskAssignedTo==null) continue;
+			
+			String message = getContent("tickMsg", template);
+			Tickler tickler = new Tickler();
+			tickler.setTask_assigned_to(taskAssignedTo);
+			tickler.setMessage(message);
+			tickler.setDemographic_no(eForm.getDemographicNo());
+			tickler.setCreator(eForm.getProviderNo());
+			tickler.setPriority("Normal");
+			tickler.setStatus('A');
+			tickler.setService_date(new Date());
+			tickler.setUpdate_date(new Date());
+			ticklerMgr.addTickler(tickler);
 		}
 	}
 
@@ -867,8 +891,8 @@ public class EFormUtil {
 			if (paramNames.contains(field)) {
 				nwTemplate +=  paramValues.get(paramNames.indexOf(field));
 			} else {
-				nwTemplate += "{" + field + "}";
-				logger.error("EForm Template Error! Cannot find input name {" + field + "} in eform");
+				nwTemplate += "";
+				logger.debug("Cannot find input name {" + field + "} in eform");
 			}
 		}
 		nwTemplate += template.substring(pointer, template.length());
@@ -903,8 +927,8 @@ public class EFormUtil {
 				}
 			}
 			if (!match) {
-				nwTemplate += "{" + field + "}";
-				logger.error("EForm Template Error! Cannot find input name {" + field + "} in eform");
+				nwTemplate += "";
+				logger.debug("Cannot find input name {" + field + "} in eform");
 			}
 		}
 		nwTemplate += template.substring(pointer, template.length());
@@ -1025,8 +1049,8 @@ public class EFormUtil {
 		return blank(info) ? deflt : info;
 	}
 
-	private static String getContent(String template) {
-		ArrayList<String> contents = getWithin("content", template);
+	private static String getContent(String tag, String template) {
+		ArrayList<String> contents = getWithin(tag, template);
 		if (contents.isEmpty()) return "";
 
 		String content = contents.get(0).trim();

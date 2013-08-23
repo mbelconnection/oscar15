@@ -25,6 +25,7 @@
 
 package oscar.eform.actions;
 
+import java.util.HashMap;
 import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,6 +55,7 @@ public class HtmlEditAction extends Action {
             String formFileName = fm.getFormFileName();
             String formHtml = fm.getFormHtml();
             FormFile uploadFile = fm.getUploadFile();
+            boolean showLatestFormOnly = WebUtils.isChecked(request, "showLatestFormOnly");
             boolean patientIndependent = WebUtils.isChecked(request, "patientIndependent");
             String roleType = fm.getRoleType();
             
@@ -67,13 +69,12 @@ public class HtmlEditAction extends Action {
                     formHtml = org.apache.commons.lang.StringEscapeUtils.escapeJava(readstream);
                     formFileName = uploadFile.getFileName();
                 }
-                Hashtable curht = createHashtable(fid, formName, formSubject, formFileName, formHtml, patientIndependent, roleType);
+                HashMap<String, Object> curht = createHashMap(fid, formName, formSubject, formFileName, formHtml, showLatestFormOnly, patientIndependent, roleType);
                 request.setAttribute("submitted", curht);
                 request.setAttribute("errors", errors);
                 return(mapping.findForward("success"));
             }
-            formHtml = org.apache.commons.lang.StringEscapeUtils.escapeJava(formHtml);
-            EFormBase updatedform = new EFormBase(fid, formName, formSubject, formFileName, formHtml, patientIndependent, roleType); //property container (bean)
+            EFormBase updatedform = new EFormBase(fid, formName, formSubject, formFileName, formHtml, showLatestFormOnly, patientIndependent, roleType); //property container (bean)
             //validation...
             if ((formName == null) || (formName.length() == 0)) {
                 errors.put("formNameMissing", "eform.errors.form_name.missing.regular");
@@ -82,14 +83,14 @@ public class HtmlEditAction extends Action {
                 errors.put("formNameExists", "eform.errors.form_name.exists.regular");
             }
             if ((fid.length() == 0) && (errors.size() == 0)) {
-                fid = EFormUtil.saveEForm(formName, formSubject, formFileName, formHtml, patientIndependent, roleType);
+                fid = EFormUtil.saveEForm(formName, formSubject, formFileName, formHtml, showLatestFormOnly, patientIndependent, roleType);
                 request.setAttribute("success", "true");
             } else if (errors.size() == 0) {
                 EFormUtil.updateEForm(updatedform);
                 request.setAttribute("success", "true");
             }
             
-            Hashtable curht = createHashtable(fid, formName, formSubject, formFileName, formHtml, patientIndependent, roleType);
+            HashMap<String, Object> curht = createHashMap(fid, formName, formSubject, formFileName, formHtml, showLatestFormOnly, patientIndependent, roleType);
             request.setAttribute("submitted", curht);
             
             request.setAttribute("errors", errors);
@@ -99,12 +100,13 @@ public class HtmlEditAction extends Action {
         return(mapping.findForward("success"));
     }
     
-    private Hashtable createHashtable(String fid, String formName, String formSubject, String formFileName, String formHtml, boolean patientIndependent, String roleType) {
-        Hashtable curht = new Hashtable();
+    private HashMap<String, Object> createHashMap(String fid, String formName, String formSubject, String formFileName, String formHtml, boolean showLatestFormOnly, boolean patientIndependent, String roleType) {
+    	HashMap<String, Object> curht = new HashMap<String, Object>();
         curht.put("fid", fid);  
         curht.put("formName", formName);
         curht.put("formSubject", formSubject);
         curht.put("formFileName", formFileName);
+        curht.put("showLatestFormOnly", showLatestFormOnly);
         curht.put("patientIndependent", patientIndependent);
         curht.put("roleType", roleType);
         
@@ -118,5 +120,4 @@ public class HtmlEditAction extends Action {
         curht.put("formHtml", org.apache.commons.lang.StringEscapeUtils.unescapeJava(formHtml));
         return curht;
     }
-    
 }

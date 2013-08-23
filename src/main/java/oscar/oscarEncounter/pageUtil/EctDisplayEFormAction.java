@@ -104,13 +104,15 @@ public class EctDisplayEFormAction extends EctDisplayAction {
 	        eForms.clear();
 	
 			EFormDataDao eFormDataDao=(EFormDataDao)SpringUtils.getBean("EFormDataDao");
-			List<EFormData> eFormDatas=eFormDataDao.findByDemographicIdCurrentPatientIndependent(new Integer(bean.demographicNo), true, false);
+			List<EFormData> eFormDatas=eFormDataDao.findByDemographicIdCurrent(new Integer(bean.demographicNo), true);
 			filterRoles(eFormDatas, roleName);
 			Collections.sort(eFormDatas, EFormData.FORM_DATE_COMPARATOR);
 			Collections.reverse(eFormDatas);
 	
 			for (EFormData eFormData : eFormDatas)
 			{
+				if (eFormDataDao.isShowLatestFormOnlyInMany(eFormData.getId()) && !eFormDataDao.isLatestPatientForm(eFormData.getId())) continue;
+				
 				boolean skip=false;
 		        for(int x=0;x<omitTypes.length;x++) {
 		        	if(omitTypes[x].equals(eFormData.getFormName())) {

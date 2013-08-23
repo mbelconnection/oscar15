@@ -31,6 +31,8 @@ import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.sf.json.JSONArray;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionMessages;
@@ -630,16 +632,24 @@ public class EForm extends EFormBase {
 			log.debug("SQL----" + sql);
 			ArrayList<String> names = DatabaseAP.parserGetNames(output); // a list of ${apName} --> apName
 			sql = DatabaseAP.parserClean(sql); // replaces all other ${apName} expressions with 'apName'
-			ArrayList<String> values = EFormUtil.getValues(names, sql);
-			if (values.size() != names.size()) {
-				output = "";
-			} else {
-				for (int i = 0; i < names.size(); i++) {
-					output = DatabaseAP.parserReplace( names.get(i), values.get(i), output);
+			
+			if (ap.isJsonOutput()) {
+				JSONArray values = EFormUtil.getJsonValues(names, sql);
+				output = values.toString(); //in case of JsonOutput, return the whole JSONArray and let the javascript deal with it
+			}
+			else {
+				ArrayList<String> values = EFormUtil.getValues(names, sql);
+				if (values.size() != names.size()) {
+					output = "";
+				} else {
+					for (int i = 0; i < names.size(); i++) {
+						output = DatabaseAP.parserReplace( names.get(i), values.get(i), output);
+					}
 				}
 			}
 		}
-                //put values into according controls
+		
+		//put values into according controls
 		if (type.equals("textarea")) {
 			pointer = html.indexOf(">", pointer) + 1;
 			html.insert(pointer, output);

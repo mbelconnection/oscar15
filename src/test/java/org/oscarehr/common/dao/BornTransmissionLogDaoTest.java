@@ -23,37 +23,42 @@
  */
 package org.oscarehr.common.dao;
 
-import java.util.Calendar;
+import static org.junit.Assert.assertEquals;
+
 import java.util.Date;
-import java.util.GregorianCalendar;
 
-import javax.persistence.Query;
-
+import org.junit.Before;
+import org.junit.Test;
+import org.oscarehr.common.dao.utils.EntityDataGenerator;
+import org.oscarehr.common.dao.utils.SchemaUtils;
 import org.oscarehr.common.model.BornTransmissionLog;
-import org.springframework.stereotype.Repository;
+import org.oscarehr.util.SpringUtils;
 
-import oscar.util.UtilDateUtilities;
+public class BornTransmissionLogDaoTest extends DaoTestFixtures {
 
-@Repository
-public class BornTransmissionLogDao extends AbstractDao<BornTransmissionLog>{
+	protected BornTransmissionLogDao dao = SpringUtils.getBean(BornTransmissionLogDao.class);
 
-	public BornTransmissionLogDao() {
-		super(BornTransmissionLog.class);
+	public BornTransmissionLogDaoTest() {
 	}
-	
-	public Long getSeqNoToday(String filenameStart, Integer id) {
-		String today = UtilDateUtilities.getToday("yyyy-MM-dd");
-		Date todayDate = UtilDateUtilities.StringToDate(today, "yyyy-MM-dd");
-		Calendar cal = GregorianCalendar.getInstance();
-		cal.setTime(todayDate);
-		cal.roll(Calendar.DATE, 1);
-		String tomorrow = UtilDateUtilities.DateToString(cal.getTime(), "yyyy-MM-dd");
-		
-		String sql = "select count(*) from BornTransmissionLog b" +
-					 " where b.filename like '" + filenameStart + "%' and b.id < " + id +
-					 " and b.submitDateTime >= '" + today + "' and b.submitDateTime < '" + tomorrow + "'";
-		Query query = entityManager.createQuery(sql);
 
-		return (Long) query.getSingleResult()+1;
+	@Before
+	public void before() throws Exception {
+		SchemaUtils.restoreTable("BornTransmissionLog");
+	}
+
+	@Test
+	public void testCreate() throws Exception {
+		BornTransmissionLog entity = new BornTransmissionLog();
+		EntityDataGenerator.generateTestDataForModelClass(entity);
+		
+		entity.setFilename("test01.xml");
+		entity.setSubmitDateTime(new Date());
+		entity.setSuccess(true);
+		dao.persist(entity);
+		
+		Long expected = 2L;
+		assertEquals(expected, dao.getSeqNoToday("test", 2));
+		expected = 1L;
+		assertEquals(expected, dao.getSeqNoToday("noname", 2));
 	}
 }

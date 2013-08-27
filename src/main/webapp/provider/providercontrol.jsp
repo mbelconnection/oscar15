@@ -84,7 +84,12 @@
 	boolean caisiEnabled = moduleNames != null && StringUtils.containsIgnoreCase(moduleNames, "Caisi");
 	boolean locationEnabled = caisiEnabled && (useProgramLocation != null && useProgramLocation.equals("true"));
 	
-	if(locationEnabled && request.getParameter("programIdForLocation") == null) {
+	String sessionLocation = request.getParameter("programIdForLocation");
+	if (sessionLocation != null) {
+		session.setAttribute("sessionLocation", sessionLocation);   
+	}
+	
+	if(locationEnabled && session.getAttribute("sessionLocation") == null) {
 	    response.sendRedirect("../location.jsp");
 	    return;
 	}

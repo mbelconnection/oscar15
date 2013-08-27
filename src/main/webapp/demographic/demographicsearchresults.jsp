@@ -29,18 +29,13 @@
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@page import="org.oscarehr.common.dao.DemographicExtDao" %>
-<%@page import="org.oscarehr.common.model.DemographicExt" %>
 <%@page import="org.oscarehr.util.SpringUtils" %>
-<%@page import="oscar.OscarProperties" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 
 <%
     long loadPage = System.currentTimeMillis();
     if(session.getAttribute("userrole") == null )  response.sendRedirect("../logout.jsp");
     String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
-    String privateConsentEnabledProperty = OscarProperties.getInstance().getProperty("privateConsentEnabled");
-    boolean privateConsentEnabled = privateConsentEnabledProperty != null && privateConsentEnabledProperty.equals("true");
 %>
 <%@ page
 	import="java.util.*, java.sql.*, java.net.URLEncoder, oscar.*, oscar.util.*, oscar.oscarDemographic.data.DemographicMerged"
@@ -168,14 +163,6 @@ function popupEChart(vheight,vwidth,varpage) { //open a new popup window
     }
     popup.focus();
   }
-}
-
-function checkInformedConsent(msg,vheight,vwidth,varpage) {
-	var privateConsentEnabled = <%=privateConsentEnabled%>;
-	if(privateConsentEnabled && (!msg || "" == msg)) {
-		alert("Please ensure that Informed Consent has been obtained!");
-	}
-	popupEChart(vheight,vwidth,varpage);
 }
 
 </SCRIPT>
@@ -344,16 +331,7 @@ function checkInformedConsent(msg,vheight,vwidth,varpage) {
 		<div class="demoIdSearch">
 		<%DemographicMerged dmDAO = new DemographicMerged();
             String dem_no = apptMainBean.getString(rs,"demographic_no");
-
-            DemographicExtDao demographicExtDao = SpringUtils.getBean(DemographicExtDao.class);
-            DemographicExt infoExt = demographicExtDao.getDemographicExt(Integer.parseInt(dem_no), "informedConsent");
-        	String info = "";
-        	if (infoExt != null) {
-        	    info = infoExt.getValue();
-        	}
- 
             String head = dmDAO.getHead(dem_no);
-
             if(head != null && !head.equals(dem_no)) {
             	//skip non head records
             	continue;
@@ -369,14 +347,8 @@ function checkInformedConsent(msg,vheight,vwidth,varpage) {
 		<!-- Rights -->
 		<div class="links"><security:oscarSec roleName="<%=roleName$%>"
 			objectName="_eChart" rights="r">
-			
-			<%if(null != info && !"".equals(info)){ %>
-			<a class="encounterBtn" title="Encounter" href="#"
-				onclick="checkInformedConsent('<%=info %>',710,1024,'<c:out value="${ctx}"/>/oscarEncounter/IncomingEncounter.do?providerNo=<%=curProvider_no%>&appointmentNo=&demographicNo=<%=dem_no%>&curProviderNo=&reason=<%=URLEncoder.encode("Tel-Progress Notes")%>&encType=&curDate=<%=""+curYear%>-<%=""+curMonth%>-<%=""+curDay%>&appointmentDate=&startTime=&status=');">E</a>
-		    <%}else{ %>
 		    <a class="encounterBtn" title="Encounter" href="#"
-				onclick="checkInformedConsent('',710,1024,'<c:out value="${ctx}"/>/oscarEncounter/IncomingEncounter.do?providerNo=<%=curProvider_no%>&appointmentNo=&demographicNo=<%=dem_no%>&curProviderNo=&reason=<%=URLEncoder.encode("Tel-Progress Notes")%>&encType=&curDate=<%=""+curYear%>-<%=""+curMonth%>-<%=""+curDay%>&appointmentDate=&startTime=&status=');">E</a>
-		    <%} %>			
+				onclick="popup(710,1024,'<c:out value="${ctx}"/>/oscarEncounter/IncomingEncounter.do?providerNo=<%=curProvider_no%>&appointmentNo=&demographicNo=<%=dem_no%>&curProviderNo=&reason=<%=URLEncoder.encode("Tel-Progress Notes")%>&encType=&curDate=<%=""+curYear%>-<%=""+curMonth%>-<%=""+curDay%>&appointmentDate=&startTime=&status=');">E</a>
 		</security:oscarSec> <!-- Rights --> <security:oscarSec roleName="<%=roleName$%>"
 			objectName="_rx" rights="r">
 			<a class="rxBtn" title="Prescriptions" href="#" onclick="popup(700,1027,'../oscarRx/choosePatient.do?providerNo=<%=rs.getString("provider_no")%>&demographicNo=<%=dem_no%>')">Rx</a>

@@ -2359,14 +2359,14 @@ if ( PatStat.equals(Dead) ) {%>
 									<%}%>
 								</select></td>
 								<%
-									String usSigned = StringUtils.defaultString(apptMainBean.getString(demoExt.get("usSigned")), "unsigned");
+									String usSigned = StringUtils.defaultString(apptMainBean.getString(demoExt.get("usSigned")));
 								%>
 								<oscar:oscarPropertiesCheck property="privateConsentEnabled" value="true">
 								<input type="hidden" name="usSignedOrig" value="<%=usSigned%>" />
 								<td colspan="2">
 									<div id="usSigned">
 										<input type="radio" name="usSigned" value="signed" <%=usSigned.equals("signed") ? "checked" : ""%>>U.S. Resident Consent Form Signed 
-									    <input type="radio" name="usSigned" value="unsigned" <%=!usSigned.equals("signed") ? "checked" : ""%>>U.S. Resident Consent Form NOT Signed
+									    <input type="radio" name="usSigned" value="unsigned" <%=usSigned.equals("unsigned") ? "checked" : ""%>>U.S. Resident Consent Form NOT Signed
 								    </div>
 								</td>
 								</oscar:oscarPropertiesCheck>
@@ -3172,17 +3172,7 @@ if(oscarVariables.getProperty("demographicExtJScript") != null) { out.println(os
 								<!-- security code block --> <span id="updateButton"
 									style="display: none;"> <security:oscarSec
 									roleName="<%=roleName$%>" objectName="_demographic" rights="w">
-									<%
-										if (privateConsentEnabled) {
-									%>
-									<input type="submit" value="<bean:message key="demographic.demographiceditdemographic.btnUpdate"/>" onclick="return checkSubmit();">
-									<%
-										} else {
-									%>
 									<input type="submit" value="<bean:message key="demographic.demographiceditdemographic.btnUpdate"/>">
-									<%
-										}
-									%>
 								</security:oscarSec> </span> <!-- security code block --></td>
 								<td width="40%" align='right' valign="top"><span
 									id="swipeButton" style="display: none;"> <input
@@ -3253,15 +3243,6 @@ function callEligibilityWebService(url,id){
 <%
 if (privateConsentEnabled) {
 %>
-function checkSubmit() {
-	var checked = jQuery("input[name='informedConsent']").attr('checked');
-	if (!checked) {
-		alert("Please ensure that Informed Consent has been obtained!");
-		return false;
-	}
-	return true;
-}
-
 jQuery(document).ready(function(){
 	var countryOfOrigin = jQuery("#countryOfOrigin").val();
 	if("US" != countryOfOrigin) {

@@ -32,8 +32,14 @@
  <%@ page import="org.oscarehr.util.MiscUtils"%>
  <%@ page import="java.net.URLEncoder"%>
  <%@ page import="org.oscarehr.PMmodule.caisi_integrator.CaisiIntegratorManager, org.oscarehr.util.LoggedInInfo, org.oscarehr.common.model.Facility" %>
+ <%@page import="org.oscarehr.common.dao.DemographicExtDao" %>
+<%@page import="org.oscarehr.common.model.DemographicExt" %>
+<%@page import="org.oscarehr.util.SpringUtils" %>
+<%@page import="org.apache.commons.lang.StringUtils"%>
+<%@page import="oscar.OscarProperties" %>
+
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security" %>
-<%
+<%	
     oscar.oscarEncounter.pageUtil.EctSessionBean bean = null;
     if((bean=(oscar.oscarEncounter.pageUtil.EctSessionBean)request.getSession().getAttribute("EctSessionBean"))==null) {
         response.sendRedirect("error.jsp");
@@ -49,6 +55,13 @@
     String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
     ProviderColourUpdater colourUpdater = new ProviderColourUpdater(user);
     userColour = colourUpdater.getColour();
+    
+	String privateConsentEnabledProperty = OscarProperties.getInstance().getProperty("privateConsentEnabled");
+	boolean privateConsentEnabled = privateConsentEnabledProperty != null && privateConsentEnabledProperty.equals("true");
+	DemographicExtDao demographicExtDao = SpringUtils.getBean(DemographicExtDao.class);
+    DemographicExt infoExt = demographicExtDao.getDemographicExt(Integer.parseInt(demoNo), "informedConsent");
+    boolean showPopup = infoExt == null || StringUtils.isBlank(infoExt.getValue());
+	
     //we calculate inverse of provider colour for text
     int base = 16;
     if( userColour.length() == 0 )
@@ -80,9 +93,15 @@
 
     java.util.Locale vLocale =(java.util.Locale)session.getAttribute(org.apache.struts.Globals.LOCALE_KEY);
     %>
-
+<script type="text/javascript">
+var privateConsentEnabled = <%=privateConsentEnabled%>;
+var showPopup = <%=showPopup%>;
+if(privateConsentEnabled && showPopup) {
+	alert("Please ensure that Informed Consent has been obtained!");
+}
+</script>
     <c:set var="ctx" value="${pageContext.request.contextPath}" scope="request"/>
-    
+
 <div style="float:left; width: 80%; padding-left:2px; text-align:left; font-size: 12px; color:<%=inverseUserColour%>; background-color:<%=userColour%>" id="encounterHeader">
     <security:oscarSec roleName="<%=roleName$%>" objectName="_newCasemgmt.doctorName" rights="r">
     <span style="border-bottom: medium solid <%=famDocColour%>"><bean:message key="oscarEncounter.Index.msgMRP"/>&nbsp;&nbsp;

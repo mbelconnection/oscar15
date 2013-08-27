@@ -43,6 +43,8 @@ import org.oscarehr.common.model.Study;
 import org.oscarehr.common.model.StudyData;
 import org.oscarehr.util.SpringUtils;
 
+import oscar.util.ConversionUtils;
+
 public class ManageStudyAction extends DispatchAction {
 	
 	
@@ -142,19 +144,26 @@ public class ManageStudyAction extends DispatchAction {
             HttpServletRequest request, HttpServletResponse response) {
 		
 		String studyId = request.getParameter("studyId");
+		Integer studyIdAsInt = ConversionUtils.fromIntString(studyId);
 		String removeType = request.getParameter("submit");
 		
 		if( removeType.equals("Remove Demographic") ) {
 			String[] demoIds = request.getParameterValues("demographicNo");
-			DemographicStudyDao demographicStudyDao = (DemographicStudyDao)SpringUtils.getBean(DemographicStudyDao.class);			
+			DemographicStudyDao demographicStudyDao = (DemographicStudyDao)SpringUtils.getBean(DemographicStudyDao.class);
+            StudyDataDao studyDataDao = SpringUtils.getBean(StudyDataDao.class);
 			DemographicStudyPK demographicStudyPK;
 
 			for( int idx = 0; idx < demoIds.length; ++idx ) {
+				Integer demoIdAsInt = ConversionUtils.fromIntString(demoIds[idx]);
+                if (demoIdAsInt == 0) {
+                        continue;
+                }
 				demographicStudyPK = new DemographicStudyPK();
 				demographicStudyPK.setDemographicNo(Integer.parseInt(demoIds[idx]));
 				demographicStudyPK.setStudyNo(Integer.parseInt(studyId));
 				
 				demographicStudyDao.remove(demographicStudyPK);
+				studyDataDao.removeByDemoAndStudy(demoIdAsInt, studyIdAsInt);
 			}
 		}
 		else if( removeType.equals("Remove Provider") ) {

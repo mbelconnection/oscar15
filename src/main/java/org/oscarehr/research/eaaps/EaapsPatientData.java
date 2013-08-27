@@ -26,16 +26,16 @@ package org.oscarehr.research.eaaps;
 import java.io.Serializable;
 import java.util.Date;
 
-import oscar.util.ConversionUtils;
 import net.sf.json.JSONObject;
+import oscar.util.ConversionUtils;
 
 /**
  * Encapsulates response of the EAAPS web service.
  */
 public class EaapsPatientData implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    
+	private static final long serialVersionUID = 1L;
+
 	private JSONObject json;
 
 	public EaapsPatientData() {
@@ -54,10 +54,17 @@ public class EaapsPatientData implements Serializable {
 	}
 
 	public JSONObject getStatus() {
+		if (!getJson().has("status")) {
+			return null;
+		}
 		return getJson().getJSONObject("status");
 	}
 
 	private boolean getBoolean(String statusFieldName) {
+		if (getStatus() == null || !getStatus().has(statusFieldName)) {
+			return false;
+		}
+
 		String fieldValue = getStatus().getString(statusFieldName);
 		if (fieldValue == null || "0".equals(fieldValue) || "-1".equals(fieldValue)) {
 			return false;
@@ -88,12 +95,16 @@ public class EaapsPatientData implements Serializable {
 	public boolean isRecommendationsReviewStarted() {
 		return getBoolean("recommendationsReviewStarted");
 	}
-	
+
 	public boolean isRecommendationsReviewCompleted() {
 		return getBoolean("recommendationsReviewCompleted");
 	}
-	
+
 	public Date getUpdatedTimestamp() {
+		if (getStatus() == null || !getStatus().has("updatedTimestamp")) {
+			return null;
+		}
+
 		String updatedTimestampString = getStatus().getString("updatedTimestamp");
 		return ConversionUtils.fromDateString(updatedTimestampString);
 	}
@@ -105,12 +116,16 @@ public class EaapsPatientData implements Serializable {
 	public boolean isAapReviewCompleted() {
 		return getBoolean("aapReviewCompleted");
 	}
-	
+
 	public boolean isAapReviewStarted() {
 		return getBoolean("aapReviewStarted");
 	}
 
 	public String getUrl() {
+		if (getStatus() == null || !getStatus().has("url")) {
+			return null;
+		}
+
 		String result = getStatus().getString("url");
 		if ("null".equals(result)) {
 			return null;
@@ -133,6 +148,19 @@ public class EaapsPatientData implements Serializable {
 		String previousUrl = getUrl();
 		getStatus().put("url", url);
 		getStatus().put("previousUrl", previousUrl);
+	}
+
+	/**
+	 * Checks if the external URL (the one that should be referred to) is provided.
+	 *  
+	 * @return
+	 * 		Returns true if the URL is provided and false otherwise
+	 */
+	public boolean isUrlProvided() {
+		if (getUrl() == null || getUrl().isEmpty()) {
+			return false;
+		}
+		return true;
 	}
 
 }

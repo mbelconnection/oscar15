@@ -44,6 +44,9 @@ public class StudyData extends AbstractModel<Integer> {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="studydata_no")
 	private Integer id;
+	
+	@Column(name="deleted")
+	private boolean deleted;
 
 	@Column(name="demographic_no")
 	private int demographicNo;
@@ -117,5 +120,12 @@ public class StudyData extends AbstractModel<Integer> {
     	this.content = content;
     }
 
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
 
 }

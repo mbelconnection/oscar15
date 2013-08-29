@@ -251,4 +251,13 @@ public class EFormDataDao extends AbstractDao<EFormData> {
     	}
     	return efmDataList;
     }
+    
+	@SuppressWarnings("unchecked")
+    public List<EFormData> findByDemographicIdAndFormName(Integer demographicNo, String formName) {
+		String queryString = "FROM EFormData e WHERE e.demographicId = :demographicNo AND e.formName LIKE :formName and status = '1' ORDER BY e.formDate, e.formTime DESC";
+		Query query = entityManager.createQuery(queryString);
+		query.setParameter("demographicNo", demographicNo);
+		query.setParameter("formName", formName);
+		return query.getResultList();
+	}    
 }

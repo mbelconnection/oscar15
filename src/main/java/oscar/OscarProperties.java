@@ -314,5 +314,16 @@ public class OscarProperties extends Properties {
 		String prop = getProperty("EMERALD_HL7_A04_TRANSPORT_PORT", "3987"); // default to port 3987
 		return Integer.parseInt(prop);
 	}
+	
+	public static String getConfidentialityStatement() {
+		String result = null;
+		int count = 1;
+		String statement = null;
+		while ((statement = oscarProperties.getProperty("confidentiality_statement.v" + count)) != null) {
+			count++;
+			result = statement;
+		}
+		return result;
+	}
 
 }

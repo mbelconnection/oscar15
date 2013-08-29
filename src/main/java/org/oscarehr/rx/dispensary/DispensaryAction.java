@@ -69,6 +69,9 @@ public class DispensaryAction extends DispatchAction {
 		String id = request.getParameter("id");
 		if(id == null) {
 			id = (String)request.getAttribute("drugId");
+			if(id == null) {
+				id = request.getParameter("drugId");
+			}
 		}
 		if(id != null && id.length()>0) {
 			Drug drug = drugDao.find(Integer.parseInt(id));
@@ -82,8 +85,11 @@ public class DispensaryAction extends DispatchAction {
 		
 		request.setAttribute("products", drugProductDao.findAllAvailableUnique());
 		
+		
 		Map<String,String> providerNames = new HashMap<String,String>();
 		Map<Integer,String> details = new HashMap<Integer,String>();
+		Map<Integer,Integer> productAmounts = new HashMap<Integer,Integer>();
+		
 		
 		List<DrugDispensing> dispensingEvents = drugDispensingDao.findByDrugId(Integer.parseInt(id));
 		for(DrugDispensing dd:dispensingEvents) {
@@ -101,10 +107,19 @@ public class DispensaryAction extends DispatchAction {
 			}
 			sb.append("</table>");
 			details.put(dd.getId(),sb.toString());
+			
+			
+			DrugProduct dp = drugProductDao.find(dd.getProductId());
+			if(dp != null) {
+				productAmounts.put(dd.getId(),dp.getAmount());
+			}
+			
 		}
 		request.setAttribute("dispensingEvents",dispensingEvents);
+		request.setAttribute("productAmounts",productAmounts);
 		request.setAttribute("providerNames", providerNames);
 		request.setAttribute("details", details);
+		
 		
 	    return mapping.findForward("list");
 	}
@@ -123,20 +138,30 @@ public class DispensaryAction extends DispatchAction {
 		dd.setQuantity(Integer.parseInt(request.getParameter("quantity")));
 		dd.setPaidFor(true);
 		dd.setUnit("");
+		if(request.getSession().getAttribute("case_program_id") != null) {
+			String programId = (String)request.getSession().getAttribute("case_program_id");
+			Integer pId = null;
+			try {
+			 pId = Integer.valueOf(programId);
+			}catch(NumberFormatException e) {
+				//nothing
+			}
+			dd.setProgramNo(pId);
+		}
 		
 		//get lots
-		List<String> lotNumbers = new ArrayList<String>();
+		List<String> productIds = new ArrayList<String>();
 		for(int x=0;x<dd.getQuantity();x++) {
 			String lot = request.getParameter("lot"+x);
-			lotNumbers.add(lot);
+			productIds.add(lot);
 		}
 		
 		DrugDispensingDao drugDispensingDao = SpringUtils.getBean(DrugDispensingDao.class);
 		drugDispensingDao.persist(dd);
 		
-		for(int x=0;x<lotNumbers.size();x++) {
+		for(int x=0;x<productIds.size();x++) {
 			//set the product to dispensed.
-			DrugProduct tmp = drugProductDao.findByCodeAndLotNumber(code,lotNumbers.get(x));
+			DrugProduct tmp = drugProductDao.find(Integer.parseInt(productIds.get(x)));
 			if(tmp != null) {
 				tmp.setDispensingEvent(dd.getId());
 				drugProductDao.merge(tmp);
@@ -144,7 +169,10 @@ public class DispensaryAction extends DispatchAction {
 		}
 		
 		request.setAttribute("drugId", request.getParameter("drugId"));
-		return view(mapping,form,request,response);
+		ActionForward af = new ActionForward();
+		af.setRedirect(true);
+		af.setPath("/oscarRx/Dispense.do?method=view&drugId="+request.getParameter("drugId"));
+		return af;
 	}
 	
 	public ActionForward getProductsByCode(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws IOException  {
@@ -154,7 +182,6 @@ public class DispensaryAction extends DispatchAction {
 		
         JsonConfig config = new JsonConfig();
         config.registerJsonBeanProcessor(java.sql.Date.class, new JsDateJsonBeanProcessor());
-
 
 		JSONArray jsonArray = JSONArray.fromObject( dps , config);
         response.getWriter().print(jsonArray);

@@ -64,44 +64,90 @@
 	List<Object[]> products =  (List<Object[]>)request.getAttribute("products");
 	Map<String,String> providerNames = (Map<String,String>)request.getAttribute("providerNames");
 	Map<Integer,String> details = (Map<Integer,String>)request.getAttribute("details");
+	Map<Integer,Integer> productAmounts = (Map<Integer,Integer>)request.getAttribute("productAmounts");
+	
+	Integer totalDosesAvailable = null;
+	String strTotalDosesAvailable = "<Unknown>";
+	try {
+		int quantity = Integer.parseInt(drug.getQuantity());
+		totalDosesAvailable  = quantity + (quantity * drug.getRepeat());
+		strTotalDosesAvailable = totalDosesAvailable.toString();
+	}catch(NumberFormatException e){
+		//that didn't work
+	}
+	
+	int totalDosesDispensed = 0;
+	int totalDispensingEvents = ((List<DrugDispensing>)request.getAttribute("dispensingEvents")).size();
+	int totalQuantitiesDispensed = 0;
+	
+	for(DrugDispensing dd:(List<DrugDispensing>)request.getAttribute("dispensingEvents")) {
+		totalDosesDispensed += productAmounts.get(dd.getId());
+		totalQuantitiesDispensed += dd.getQuantity();
+	}
+	
+	Integer totalDosesRemaining = (totalDosesAvailable==null)?null:new Integer(totalDosesAvailable-totalDosesDispensed);
+	String strTotalDosesRemaining = (totalDosesRemaining==null)?"<Unknown>":String.valueOf(totalDosesRemaining);
+	
 %>
 
 <script type="text/javascript" src="<c:out value="${ctx}/share/javascript/Oscar.js"/>"></script>
 
 <script>
+var pAmounts = {};
+
 $(document).ready(function(){
 	$("#quantity,#product").bind('change',function(){
-		if($("#product").val() == '' || $("#quantity") == '0') {
+		if($("#product").val() == '' || $("#quantity").val() == '0') {
 			$("#td_lots").html("");
 			return;
 		}
+		$("#current_doses").html('0');
 		$.getJSON(
 				"<%= request.getContextPath() %>/oscarRx/Dispense.do?method=getProductsByCode&code=" +  $("#product").val(),
 		    	function(data,textStatus){
+					pAmounts = {};
 					var quantity = $("#quantity").val();
 					if(data.length < quantity) {
 						alert('Quantity not available. Number of available units for this product is ' + data.length);
+						$("#quantity").val('0');
+						$("#td_lots").html("");
 						return;
 					}
+					<%if(totalDosesRemaining != null) {
+						//so how many doses are they requesting here...qty * amount
+						//quantity * 
+					%>	
+					
+					<%}%>
 					var html = "<table>";
 					for(var x=0;x<quantity;x++) {
-						html += "<tr><td><select name='lot"+x+"' id='lot"+x+"'>";
+						html += "<tr><td><select name='lot"+x+"' id='lot"+x+"'><option value=''></option>";
 						for(var y=0;y<data.length;y++) {
-							html += '<option value="'+data[y].lotNumber+'">'+data[y].lotNumber+' ('+data[y].expiryDateAsString+')</option>'; 
+							html += '<option value="'+data[y].id+'">'+data[y].lotNumber+' (id:'+data[y].id+' + expiry:'+data[y].expiryDateAsString+', amount:'+data[y].amount+')</option>'; 
+							pAmounts[data[y].id] = data[y].amount;
 						}
 						html += "</select></td></tr>";
 					}
 					html+="</table>";
 					$("#td_lots").html(html);
+					
+					updateCurrentDoses();
 			           
 		    }); //close the getJSON
 			
 	}); //close the bind
 	
+	$("select[name^='lot']").live('change',function(){
+		updateCurrentDoses();
+	});
+	
 }); //ready
 
 
-function validateLotNumbers() {
+function updateCurrentDoses() {
+	var x=0;
+	var arr = new Array();
+	
 	var x=0;
 	var arr = new Array();
 	
@@ -110,10 +156,76 @@ function validateLotNumbers() {
 			break;
 		}
 		var curLot = $("#lot"+x).val();
-		arr.push(curLot);
+		if($.inArray(curLot, arr) == -1) 
+			arr.push(curLot);
+		
+		x++;
+		
+	}
+	
+	
+	var totalDosesBeingAsked=0;
+	for(var i=0;i<arr.length;i++) {
+		if(arr[i].length>0) {
+			totalDosesBeingAsked += parseInt(pAmounts[arr[i]]);
+		}
+	}
+	$("#current_doses").css('color','black');
+	<%if(totalDosesAvailable != null){%>
+	if(totalDosesBeingAsked > <%=totalDosesAvailable%>) {
+		$("#current_doses").css('color','red');
+	}
+	<% } %>
+	$("#current_doses").html(totalDosesBeingAsked+'');
+}
+
+
+
+function validateLotNumbers() {
+	//check if we can dispense this much
+	
+	//generate the list of DrugProduct ids chosen. We then need to check the amount on each, and total it up, for the
+	//total doses they are requesting.
+	
+	var x=0;
+	var arr = new Array();
+	
+	while(true) {
+		if($("#lot"+x).length == 0) {
+			break;
+		}
+		var curLot = $("#lot"+x).val();
+		if(curLot.length>0) {
+			//make sure no duplicates
+			if($.inArray(curLot, arr) == -1) 
+				arr.push(curLot);
+		}
+			
 		x++;
 	}
 	
+	//check for duplicates
+	if($("#quantity").val() != arr.length) {
+		alert('Please choose a unique item to dispense for each row presented.');
+		return false;
+	}
+	
+	
+	
+	var totalDosesBeingAsked=0;
+	for(var i=0;i<arr.length;i++) {
+		totalDosesBeingAsked += pAmounts[arr[i]];
+	}
+	
+	if(totalDosesBeingAsked > <%=totalDosesRemaining%>) {
+		alert('You may only dispense a maximum of <%=totalDosesRemaining%> doses for this prescription');
+		
+		return false;
+	}
+	
+	return true;
+	
+	/*
 	arr.sort();
 	var last = arr[0];
 	for (var i=1; i<arr.length; i++) {
@@ -123,7 +235,7 @@ function validateLotNumbers() {
 	   }
 	   last = arr[i];
 	}
-	
+	*/
 	return true;
 	
 }
@@ -162,7 +274,13 @@ function validateLotNumbers() {
 							<td>&nbsp;</td>
 						</tr>
 						<tr>
-							<td><b>Status:</b></td>
+							<td><b>
+							<%if(totalDosesRemaining != null && totalDosesRemaining > 0) { %>
+								Status: Active
+							<%} else { %>
+								Status: Filled
+							<% } %>
+							</b></td>
 							<td>
 								<%
 								//Open, Expired, Filled
@@ -213,7 +331,27 @@ function validateLotNumbers() {
 					</table>
 				</td>
 			</tr>
-			<tr style="width:15px">
+			<tr style="height:15px">
+				<td></td>
+			</tr>
+			<tr style="height:15px">
+				<td>
+				There are <%=strTotalDosesAvailable%> doses available in this prescription.
+				<br/>
+				<%=totalDosesDispensed %> doses have already been dispensed, leaving <%=strTotalDosesRemaining%> doses available.
+				<br/>
+				
+				</td>
+			</tr>
+			
+			<%if(totalDosesRemaining != null && totalDosesRemaining > 0) { %>
+			<tr style="height:15px">
+				<td></td>
+			</tr>
+			<tr>
+				<td>Current doses in this dispensing event:<span id="current_doses">0</span></td>
+			</tr>
+			<tr style="height:15px">
 				<td></td>
 			</tr>
 			<tr>
@@ -236,7 +374,7 @@ function validateLotNumbers() {
 								</td>
 							</tr>
 							<tr>
-								<td>Quantity:</td>
+								<td>Qty of Units:</td>
 								<td>
 									<select name="quantity" id="quantity">
 									<%for(int x=0;x<=20;x++) { %>
@@ -248,7 +386,7 @@ function validateLotNumbers() {
 							</tr>
 							
 							<tr>
-								<td valign="top">Lot #s</td>
+								<td valign="top">Items</td>
 								<td id="td_lots">
 									
 								</td>
@@ -280,6 +418,7 @@ function validateLotNumbers() {
 					</form>
 				</td>
 			</tr>
+			<%} %>
 			<tr>
 				<td><br />
 				<br />

@@ -2496,3 +2496,7 @@ INSERT INTO LookupListItem(lookupListId, `value`, label, displayOrder, active, c
 INSERT INTO LookupListItem(lookupListId, `value`, label, displayOrder, active, createdBy, dateCreated) VALUES(@lookupListId, 'Therapeutic Abortion Follow-Up', 'Therapeutic Abortion Follow-Up', 16, 1, 'oscar', CURRENT_TIMESTAMP);
 INSERT INTO LookupListItem(lookupListId, `value`, label, displayOrder, active, createdBy, dateCreated) VALUES(@lookupListId, 'Others'						 , 'Others'						   , 99, 1, 'oscar', CURRENT_TIMESTAMP);
 
+insert into `secObjectName` (`objectName`) values('_rx.dispense');
+insert into `secObjPrivilege` values('doctor','_rx.dispense','x',0,'999998');
+
+

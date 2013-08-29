@@ -60,6 +60,8 @@ public class DrugDispensing extends AbstractModel<Integer> {
 	
 	private String notes;
 	
+	private int programNo;
+	
 	
 	public Integer getId() {
 		return id;
@@ -145,6 +147,14 @@ public class DrugDispensing extends AbstractModel<Integer> {
 		if(getDateCreated() != null)
 			return DateFormatUtils.ISO_DATE_FORMAT.format(getDateCreated());
 		return null;	
+	}
+
+	public int getProgramNo() {
+		return programNo;
+	}
+
+	public void setProgramNo(int programNo) {
+		this.programNo = programNo;
 	}
 	
 	

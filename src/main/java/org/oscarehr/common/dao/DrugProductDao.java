@@ -37,6 +37,7 @@ public class DrugProductDao extends AbstractDao<DrugProduct>{
 		super(DrugProduct.class);
 	}
 	
+	
 	public List<DrugProduct> findAvailable() {
 		Query query = entityManager.createQuery("SELECT x FROM DrugProduct x where x.dispensingEvent is null");
 		

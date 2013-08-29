@@ -39,6 +39,10 @@ public class DrugProduct extends Product {
 	
 	@Temporal(TemporalType.DATE)
 	private Date expiryDate;
+	
+	//# of doses or tablets so that we can patch to a prescription
+	private int amount;
+	
 
 	public String getLotNumber() {
 		return lotNumber;
@@ -62,6 +66,16 @@ public class DrugProduct extends Product {
 
 	public void setDispensingEvent(Integer dispensingEvent) {
 		this.dispensingEvent = dispensingEvent;
+	}
+
+	
+	
+	public int getAmount() {
+		return amount;
+	}
+
+	public void setAmount(int amount) {
+		this.amount = amount;
 	}
 
 	public String getExpiryDateAsString() {

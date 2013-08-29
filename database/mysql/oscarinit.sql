@@ -10710,6 +10710,8 @@ create table DrugProduct(
 	code varchar(255),
 	lotNumber varchar(255),
 	dispensingEvent int(9),
+	amount int not null,
+	expiryDate date,
 	primary key (id)
 );
 
@@ -10725,6 +10727,7 @@ create table DrugDispensing (
 	providerNo varchar(20),
 	paidFor tinyint(1),
 	notes text,
+	programNo integer,
 	primary key(id)
 );
 

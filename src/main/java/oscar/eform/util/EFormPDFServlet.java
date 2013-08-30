@@ -52,8 +52,6 @@ import net.sf.jasperreports.engine.JasperRunManager;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 import org.apache.log4j.Logger;
-import org.oscarehr.common.printing.FontSettings;
-import org.oscarehr.common.printing.PdfWriterFactory;
 import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.util.MiscUtils;
 
@@ -226,7 +224,7 @@ public class EFormPDFServlet extends HttpServlet {
         Document document = new Document();
         PdfWriter writer = null;
         try {
-            writer = PdfWriterFactory.newInstance(document, baosPDF, FontSettings.HELVETICA_6PT); 
+            writer = PdfWriter.getInstance(document, baosPDF); 
 
             String title = req.getParameter("__title"+suffix) != null ? req.getParameter("__title"+suffix) : "Unknown";
             String template = req.getParameter("__template"+suffix) != null ? req.getParameter("__template"+suffix) + ".pdf" : "";
@@ -238,7 +236,7 @@ public class EFormPDFServlet extends HttpServlet {
             }
             
             //load config files
-            Properties[] printCfg = loadPrintCfg(req, suffix, numPages);
+            Properties[] printCfg = loadPrintCfg(req, suffix);
             Properties[][] graphicCfg = loadGraphicCfg(req, suffix, numPages);
             int cfgFileNo = printCfg==null ? 0 : printCfg.length;
             
@@ -319,19 +317,16 @@ public class EFormPDFServlet extends HttpServlet {
                     		xDate = new ArrayList<String>();
                     		yHeight = new ArrayList<String>();
                     	}
-                    	
                     	plotProperties(tempPropertiesArray[k], props, xDate, yHeight, height, cb, (k%2==0));
                     }
                 } //end: if there are properties to plot
             }
-
         } finally {
             if (document.isOpen())
                 document.close();
             if (writer != null)
                 writer.close();
         }
-
         return baosPDF;
     }
 
@@ -362,7 +357,7 @@ public class EFormPDFServlet extends HttpServlet {
 
     
     
-    private Properties[] loadPrintCfg(HttpServletRequest req, String suffix, int numPages) {
+    private Properties[] loadPrintCfg(HttpServletRequest req, String suffix) {
         Properties[] printCfg = null;
         int cfgFileNo;
         String[] cfgFile = req.getParameterValues("__cfgfile"+suffix);
@@ -513,7 +508,8 @@ public class EFormPDFServlet extends HttpServlet {
         document.addKeywords("pdf, itext");
         document.addCreator("OSCAR");
         document.addAuthor("");
-        
+        document.addHeader("Expires", "0");
+
         // A0-A10, LEGAL, LETTER, HALFLETTER, _11x17, LEDGER, NOTE, B0-B5, ARCH_A-ARCH_E, FLSA
         // and FLSE
         // the following shows a temp way to get a print page size
@@ -530,11 +526,8 @@ public class EFormPDFServlet extends HttpServlet {
     private void writeContent(Properties printCfg, Properties props, Properties measurements, float height, PdfContentByte cb) throws Exception {
         for (Enumeration e = printCfg.propertyNames(); e.hasMoreElements();) {
         	StringBuilder temp = new StringBuilder(e.nextElement().toString());
-            String[] cfgVal = printCfg.getProperty(temp.toString()).split(",");
-            for(int x=0;x<cfgVal.length;x++) {
-            	cfgVal[x].trim();
-            }
-
+            String[] cfgVal = printCfg.getProperty(temp.toString()).split(" *, *");
+            
             String[] fontType = null;
             int fontFlags = 0;
             if( cfgVal[4].indexOf(";") > -1 ) {
@@ -589,20 +582,8 @@ public class EFormPDFServlet extends HttpServlet {
                 continue;
             }
             
-            //adapted by DENNIS WARREN June 2012 to allow a colour rectangle
-            // handy for covering up parts of a document
-            if(temp.toString().startsWith("__$rectangle")) {
-            	
-            	float llx = Float.parseFloat(cfgVal[0].trim());
-            	float lly = Float.parseFloat(cfgVal[1].trim());
-            	float urx = Float.parseFloat(cfgVal[2].trim());
-            	float ury = Float.parseFloat(cfgVal[3].trim());
-            	
-                Rectangle rec = new Rectangle(llx, lly, urx, ury);
-                rec.setBackgroundColor(java.awt.Color.WHITE);
-                cb.rectangle(rec);
-            	
-            } else if (temp.toString().startsWith("__$line")) {
+        	// draw line directly
+            if (temp.toString().startsWith("__$line")) {
                 cb.setRGBColorStrokeF(0f, 0f, 0f);
                 cb.setLineWidth(Float.parseFloat(cfgVal[4].trim()));
                 cb.moveTo(Float.parseFloat(cfgVal[0].trim()), Float.parseFloat(cfgVal[1].trim()));

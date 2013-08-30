@@ -311,6 +311,11 @@
         <ap-sql>SELECT provider.first_name, provider.last_name  FROM provider, demographic WHERE demographic.demographic_no=${demographic} AND demographic.provider_no=provider.provider_no</ap-sql>
         <ap-output>${last_name}, ${first_name}</ap-output>
     </databaseap>
+	<databaseap>
+		<ap-name>doctor_provider_no</ap-name>
+		<ap-sql>SELECT provider_no FROM demographic WHERE demographic_no=${demographic}</ap-sql>
+		<ap-output>${provider_no}</ap-output>
+	</databaseap>
     <databaseap>
         <ap-name>doctor_ohip_no</ap-name>
         <ap-sql>SELECT provider.ohip_no FROM provider, demographic WHERE demographic.demographic_no=${demographic} AND demographic.provider_no=provider.provider_no</ap-sql>

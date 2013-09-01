@@ -88,6 +88,9 @@
 	Integer totalDosesRemaining = (totalDosesAvailable==null)?null:new Integer(totalDosesAvailable-totalDosesDispensed);
 	String strTotalDosesRemaining = (totalDosesRemaining==null)?"<Unknown>":String.valueOf(totalDosesRemaining);
 	
+	String selectedProductCode = (String)request.getAttribute("selectedProductCode");
+	
+	
 %>
 
 <script type="text/javascript" src="<c:out value="${ctx}/share/javascript/Oscar.js"/>"></script>
@@ -96,6 +99,8 @@
 var pAmounts = {};
 
 $(document).ready(function(){
+	
+	
 	$("#quantity,#product").bind('change',function(){
 		if($("#product").val() == '' || $("#quantity").val() == '0') {
 			$("#td_lots").html("");
@@ -141,6 +146,15 @@ $(document).ready(function(){
 		updateCurrentDoses();
 	});
 	
+	<%
+	if(selectedProductCode != null) {
+		
+		%>
+		$("#product").val('<%=selectedProductCode%>');
+		$("#product").attr("disabled", true); 
+		<%
+	}
+	%>
 }); //ready
 
 

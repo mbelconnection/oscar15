@@ -45,10 +45,12 @@ import org.oscarehr.PMmodule.dao.ProviderDao;
 import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.dao.DrugDao;
 import org.oscarehr.common.dao.DrugDispensingDao;
+import org.oscarehr.common.dao.DrugDispensingMappingDao;
 import org.oscarehr.common.dao.DrugProductDao;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.Drug;
 import org.oscarehr.common.model.DrugDispensing;
+import org.oscarehr.common.model.DrugDispensingMapping;
 import org.oscarehr.common.model.DrugProduct;
 import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.util.SpringUtils;
@@ -60,6 +62,7 @@ public class DispensaryAction extends DispatchAction {
 	private ProviderDao providerDao = SpringUtils.getBean(ProviderDao.class);
 	private DrugProductDao drugProductDao = SpringUtils.getBean(DrugProductDao.class);
 	private DrugDispensingDao drugDispensingDao = SpringUtils.getBean(DrugDispensingDao.class);
+	private DrugDispensingMappingDao drugDispensingMappingDao = SpringUtils.getBean(DrugDispensingMappingDao.class);
 	
 	public ActionForward unspecified(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
 	    return mapping.findForward("list");
@@ -73,8 +76,10 @@ public class DispensaryAction extends DispatchAction {
 				id = request.getParameter("drugId");
 			}
 		}
+		
+		Drug drug = null;
 		if(id != null && id.length()>0) {
-			Drug drug = drugDao.find(Integer.parseInt(id));
+			drug= drugDao.find(Integer.parseInt(id));
 			if(drug != null) {
 				Demographic demographic = demographicDao.getDemographicById(drug.getDemographicId());
 				request.setAttribute("demographic", demographic);
@@ -85,6 +90,11 @@ public class DispensaryAction extends DispatchAction {
 		
 		request.setAttribute("products", drugProductDao.findAllAvailableUnique());
 		
+		//try to find a direct mapping
+		DrugDispensingMapping ddm = drugDispensingMappingDao.findMappingByDin(drug.getRegionalIdentifier());
+		if(ddm != null) {
+			request.setAttribute("selectedProductCode",ddm.getProductCode());
+		}
 		
 		Map<String,String> providerNames = new HashMap<String,String>();
 		Map<Integer,String> details = new HashMap<Integer,String>();

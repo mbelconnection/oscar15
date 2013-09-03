@@ -29,6 +29,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.oscarehr.util.MiscUtils;
 
 import oscar.oscarDB.DBHandler;
@@ -59,6 +60,30 @@ public class TicklerCreator {
       catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
       }
     }
+  }
+  
+  /**
+   * createTickler
+   *
+   * @param string String
+   * @param provNo int
+   * @param reason String
+   */
+  public void createTickler(String demoNo, String provNo, String message, String assignedTo) {
+    SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
+      String nowDate = fmt.format(new java.util.Date());
+      
+      String sql = "insert into tickler (demographic_no, message, status, update_date, service_date, creator, priority, task_assigned_to) " +
+          " values(" + demoNo + " ,'" + StringEscapeUtils.escapeSql(message) + "','A',now(),'" + nowDate +
+          "','" + provNo + "','4','" + assignedTo + "')";
+      
+      try {
+        
+        DBHandler.RunSQL(sql);
+      }
+      catch (SQLException ex) {MiscUtils.getLogger().error("Error", ex);
+      }
+   
   }
 
   /**

@@ -2471,3 +2471,6 @@ insert into tickler_text_suggest (creator, suggested_text, create_date, active) 
 insert into tickler_text_suggest (creator, suggested_text, create_date, active) values ("-1", "Re-Booked for followup", now(), "1");
 insert into tickler_text_suggest (creator, suggested_text, create_date, active) values ("-1", "Returned for Lab Work", now(), "1");
 insert into tickler_text_suggest (creator, suggested_text, create_date, active) values ("-1", "Telephone Busy", now(), "1");
+
+INSERT INTO `OscarCode` VALUES (1,'CKDSCREEN','Ckd Screening');
+

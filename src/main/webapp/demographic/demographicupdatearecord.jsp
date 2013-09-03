@@ -220,6 +220,8 @@
 
      demographicExtDao.addKey(proNo, demoNo, "primaryEMR", request.getParameter("primaryEMR"), request.getParameter("primaryEMROrig"));
 
+     demographicExtDao.addKey(proNo, demoNo, "aboriginal", request.getParameter("aboriginal"), request.getParameter("aboriginalOrig"));
+
      // for the IBD clinic
 	 OtherIdManager.saveIdDemographic(demoNo, "meditech_id", request.getParameter("meditech_id"));
 

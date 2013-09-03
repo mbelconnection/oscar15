@@ -24,6 +24,7 @@
 package org.oscarehr.common.model;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -312,5 +313,22 @@ public class Appointment extends AbstractModel<Integer> implements Serializable 
 	protected void jpaUpdateLastUpdateTime() {
 		this.updateDateTime = new Date();
 	}
+	
+    public static final Comparator<Appointment> APPT_DATE_COMPARATOR =new Comparator<Appointment>()
+    {
+        public int compare(Appointment o1, Appointment o2) {
+        	Date d1 = o1.getAppointmentDate();
+        	Date d2 = o2.getAppointmentDate();
+        	int tmp = d1.compareTo(d2);
+        	if(tmp == 0) {
+        		Date t1 = o1.getStartTime();
+        		Date t2 = o2.getStartTime();
+        		return t1.compareTo(t2);
+        	} else {
+        		return tmp;
+        	}     
+        }       
+    };
+
 
 }

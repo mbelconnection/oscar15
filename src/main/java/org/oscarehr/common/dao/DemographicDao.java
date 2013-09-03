@@ -1012,9 +1012,34 @@ public static List<Integer> getDemographicIdsAlteredSinceTime(Date value) {
 		return this.getHibernateTemplate().find("from Demographic d where d.Hin=?", new Object[] { hin });
 	}
 	
+   public List<Integer> getActiveDemographicIds() {
+        String q = "SELECT d.DemographicNo FROM Demographic d WHERE d.PatientStatus=?";
+        
+        @SuppressWarnings("unchecked")
+        List<Integer> results = getHibernateTemplate().find(q, "AC");
+
+        return results;
+    }
+	
 	@SuppressWarnings("unchecked")
-	public List<Integer> getActiveDemographicIds() {
-		return this.getHibernateTemplate().find("select d.DemographicNo from Demographic d where d.PatientStatus=?", new Object[] { "AC" });
+	public List<Integer> getActiveDemographicIdsOlderThan(int age) {
+		List<Integer> ids = new ArrayList<Integer>();
+		Calendar c = Calendar.getInstance();
+		c.set(Calendar.YEAR,Integer.parseInt(String.valueOf("-"+(age+1))));
+		
+		List<Object[]> demographics = getHibernateTemplate().find("SELECT d.DemographicNo,d.YearOfBirth,d.MonthOfBirth,d.DateOfBirth FROM Demographic d WHERE d.PatientStatus = 'AC'");
+		for(Object[] tm:demographics) {
+			Demographic d= new Demographic();
+			d.setDemographicNo((Integer)tm[0]);
+			d.setYearOfBirth((String)tm[1]);
+			d.setMonthOfBirth((String)tm[2]);
+			d.setDateOfBirth((String)tm[3]);
+			
+			if(Integer.parseInt(d.getAge()) > 55) {
+				ids.add(d.getDemographicNo());
+			}
+		}
+		return ids;
 	}
 }
 

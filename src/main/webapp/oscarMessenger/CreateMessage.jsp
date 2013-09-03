@@ -57,6 +57,25 @@ if (request.getParameter("bFirstDisp")!=null) bFirstDisp= (request.getParameter(
 
 String demographic_no = (String) request.getAttribute("demographic_no");
 
+String subjectText = request.getParameter("subject");
+if(subjectText == null) {
+        if (request.getAttribute("ReSubject") != null){
+                bean.setSubject((String)request.getAttribute("ReSubject"));
+        }
+}
+else if (subjectText != null) {
+        bean.setSubject(subjectText);
+}
+
+String messageText = request.getParameter("message");
+if(messageText == null) {
+        if (request.getAttribute("ReText") != null){
+                bean.setMessage((String)request.getAttribute("ReText"));
+        }
+}
+else if (messageText != null) {
+        bean.setMessage(messageText);
+}
 %>
 
 
@@ -65,6 +84,10 @@ String demographic_no = (String) request.getAttribute("demographic_no");
 
 <%@page import="org.oscarehr.util.MiscUtils"%><html:html locale="true">
 <head>
+<script type="text/javascript" src="../js/jquery-1.7.1.min.js"></script>
+<script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js"></script>
+<script src="<%=request.getContextPath()%>/js/fg.menu.js"></script>
+
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="oscarMessenger.CreateMessage.title" />
 </title>
@@ -280,6 +303,21 @@ function popupSearchDemo(keyword){ // open a new popup window
 }
 
 function popupAttachDemo(demographic){ // open a new popup window
+    var subject = document.forms[0].subject.value;
+    var message = document.forms[0].message.value;
+    var formData = "subject=" + subject + "&message=" + message;
+
+    $.ajax({
+    	type: "post",
+    	data : formData,
+    	success: function(data){
+    		console.log(data);
+    	},
+    	error: function (jqXHR, textStatus, errorThrown){
+ 			alert("Error: " + textStatus);
+    	}
+	});
+
     var vheight = 700;
     var vwidth = 900;  
     windowprops = "height="+vheight+",width="+vwidth+",location=0,scrollbars=1,menubar=0,toolbar=1,resizable=1,screenX=0,screenY=0,top=0,left=0";    
@@ -477,7 +515,7 @@ function popupAttachDemo(demographic){ // open a new popup window
 
                                                                         for (int ii = 0; ii < lst.getLength(); ii++){
                                                                            Node firstnode = lst.item(ii);
-                                                                           displayNodes(firstnode,out,0,theProviders,CurrentLocationName);
+                                                                           displayNodes(firstnode,out,0,theProviders,CurrentLocationName, addressBook);
                                                                         }
                                                                     %>
 											</td>
@@ -493,17 +531,20 @@ function popupAttachDemo(demographic){ // open a new popup window
 							<td bgcolor="#EEEEFF" valign=top><!--Message and Subject Cell-->
 							<bean:message key="oscarMessenger.CreateMessage.formSubject" /> :
 							<html:text name="msgCreateMessageForm" property="subject"
-								size="67" /> <br>
+								size="67" value="${bean.subject}"/> <br>
 							<br>
 							<html:textarea name="msgCreateMessageForm" property="message"
-								cols="60" rows="18" /> <%
+								cols="60" rows="18" value="${bean.message}"/> <%
                                                 String att = bean.getAttachment();
                                                 String pdfAtt = bean.getPDFAttachment();
                                                 if (att != null || pdfAtt != null){ %>
 							<br>
 							<bean:message key="oscarMessenger.CreateMessage.msgAttachments" />
 
-							<% }
+							<% 
+							bean.setSubject(null);
+                                                        bean.setMessage(null);
+							}
 
                                                 %>
 							</td>
@@ -581,7 +622,7 @@ function popupAttachDemo(demographic){ // open a new popup window
 
 <%!
 
- public void displayNodes(Node node,JspWriter out,int depth,String[] thePros,String CurrentLocationName ){
+ public void displayNodes(Node node,JspWriter out,int depth,String[] thePros,String CurrentLocationName, oscar.oscarMessenger.data.MsgAddressBook addressBook){
       depth++;
 
       Element element = (Element) node;
@@ -621,17 +662,19 @@ function popupAttachDemo(demographic){ // open a new popup window
             }
 
          }else{
-
+               String providerNo = element.getAttribute("id");
+               String providerName = element.getAttribute("desc");
+               providerName = addressBook.getRealProviderName(providerNo, providerName);
                if ( java.util.Arrays.binarySearch(thePros,element.getAttribute("id")) < 0 ){
-                  out.print("<input type=\"checkbox\" name=provider value="+element.getAttribute("id")+"  > <font color=#0e8ef7>"+personTitler(element.getAttribute("desc"))+"</font>\n");
+                  out.print("<input type=\"checkbox\" name=provider value="+providerNo+"  > <font color=#0e8ef7>"+personTitler(providerName)+"</font>\n");
                }else{
-                  out.print("<input type=\"checkbox\" name=provider value="+element.getAttribute("id")+" checked > "+personTitler(element.getAttribute("desc"))+"\n");
+                  out.print("<input type=\"checkbox\" name=provider value="+providerNo+" checked > "+personTitler(providerName)+"\n");
                }
          }
          if (node.hasChildNodes()){
             NodeList nlst = node.getChildNodes();
             for (int i = 0; i < nlst.getLength(); i++){
-               displayNodes(nlst.item(i), out,depth,thePros,CurrentLocationName);
+               displayNodes(nlst.item(i), out,depth,thePros,CurrentLocationName, addressBook);
             }
          }
          out.print("</td>\n");

@@ -422,7 +422,7 @@ CREATE TABLE demographic (
   last_name varchar(30) NOT NULL default '',
   first_name varchar(30) NOT NULL default '',
   address varchar(60),
-  city varchar(20),
+  city varchar(50),
   province varchar(20),
   postal varchar(9),
   phone varchar(20),
@@ -462,7 +462,7 @@ CREATE TABLE demographic (
   newsletter varchar(32),
   anonymous varchar(32),
   lastUpdateUser varchar(6),
-  lastUpdateDate date,
+  lastUpdateDate datetime not null,
   PRIMARY KEY  (demographic_no),
   KEY hin (hin),
   KEY name (last_name,first_name),
@@ -680,7 +680,7 @@ CREATE TABLE dxresearch (
   dxresearch_no int(10) NOT NULL auto_increment,
   demographic_no int(10) default '0',
   start_date date default '0001-01-01',
-  update_date date default '0001-01-01',
+  update_date datetime not null,
   status char(1) default 'A',
   dxresearch_code varchar(10) default '',
   coding_system varchar(20),
@@ -6648,6 +6648,7 @@ CREATE TABLE patientLabRouting (
   lab_no int(10) NOT NULL default '0',
   lab_type char(3) NOT NULL default 'MDS',
   id int(10) NOT NULL auto_increment,
+  created datetime not null,
   PRIMARY KEY  (`id`),
   KEY `demographic` (`demographic_no`),
   KEY `lab_type_index` (`lab_type`),
@@ -6777,7 +6778,7 @@ CREATE TABLE provider (
   `email` varchar(60) default NULL,
   `title` varchar(20) default NULL,
   `lastUpdateUser` varchar(6) default NULL,
-  `lastUpdateDate` date default NULL,
+  `lastUpdateDate` datetime not null,
   `signed_confidentiality` datetime,
   PRIMARY KEY  (provider_no)
 );
@@ -7343,6 +7344,7 @@ create table secUserRole(
   `role_name` VARCHAR(30) not null,
   `orgcd` VARCHAR(80) default 'R0000001',
   `activeyn`    int(1),
+  `lastUpdateDate` datetime not null,
   primary key (id)
 );
 
@@ -8799,6 +8801,7 @@ CREATE TABLE `HRMCategory` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `categoryName` varchar(255) NOT NULL,
   subClassNameMnemonic varchar(255),
+  `sendingFacilityId` varchar(50),
   PRIMARY KEY (`id`)
 );
 
@@ -8828,6 +8831,7 @@ CREATE TABLE `HRMDocumentSubClass` (
   `subClassDescription` varchar(255) ,
   `subClassDateTime` date ,
   `isActive` tinyint(4) NOT NULL ,
+  `sendingFacilityId` varchar(50),
   PRIMARY KEY (`id`)
 ) ;
 
@@ -8855,7 +8859,7 @@ CREATE TABLE `HRMSubClass` (
   `subClassName` varchar(255) ,
   `subClassMnemonic` varchar(255) ,
   `subClassDescription` varchar(255) ,
-  `sendingFacilityId` varchar(50) NOT NULL,
+  `sendingFacilityId` varchar(50),
   `hrmCategoryId` int(11) ,
   PRIMARY KEY (`id`)
 );
@@ -9127,7 +9131,7 @@ CREATE TABLE `program` (
 	index(facilityId),
 	foreign key (facilityId) references Facility(id),
 	intakeProgram int,
-  `name` varchar(70) NOT NULL,
+	`name` varchar(70) NOT NULL,
 	description varchar(255),
 	functionalCentreId varchar(64),
   `address` varchar(255),
@@ -9165,7 +9169,7 @@ CREATE TABLE `program` (
   `capacity_funding` int(10),
   `capacity_space` int(10),
   `lastUpdateUser` varchar(6),
-  `lastUpdateDate` date,
+ lastUpdateDate datetime not null,
   `enableEncounterTime` tinyint(1),
   `enableEncounterTransportationTime` tinyint(1),
   `siteSpecificField` varchar(255),

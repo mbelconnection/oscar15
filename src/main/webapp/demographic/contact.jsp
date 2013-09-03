@@ -67,15 +67,14 @@
 	            	
 	            	<!--  they can be an internal (Demographic) or external (Contact) contact -->
 	            		             
-		            <select name="contact_<%=id%>.type" id="contact_<%=id%>.type">
+		            <select name="contact_<%=id%>.type" id="contact_<%=id%>.type" onchange="clearContactName('<%=id%>');">
 		            	<option value="<%=DemographicContact.TYPE_DEMOGRAPHIC%>">Internal</option>
 		            	<option value="<%=DemographicContact.TYPE_CONTACT%>">External</option>
 					</select>
 	            			           
 	            	<input type="hidden" name="contact_<%=id%>.contactId" value="0"/>
-		             <input type="text" name="contact_<%=id%>.contactName" id="contact_<%=id%>.contactName" size="20" readonly="readonly"/>		             
-		             <a href="#" onclick="doPersonalSearch('<%=id%>');return false;">Search</a>
-		             
+		             <input type="text" name="contact_<%=id%>.contactName" id="contact_<%=id%>.contactName" size="20" readonly="readonly"/>             
+		             <a href="#" onclick="doPersonalSearch('<%=id%>');return false;">${param.search}</a>
 		             &nbsp;
 		             SDM:<input type="checkbox" name="contact_<%=id%>.sdm"/>
 		             EC:<input type="checkbox" name="contact_<%=id%>.ec"/>

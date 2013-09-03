@@ -41,6 +41,25 @@ public class HRMSubClassDao extends AbstractDao<HRMSubClass> {
 		List<HRMSubClass> subclasses = query.getResultList();
 		return subclasses;
 	}
+	
+	public List<HRMSubClass> findBySendingFacilityId(String sendingFacilityId) {
+		String sql = "select x from " + this.modelClass.getName() + " x  where x.sendingFacilityId = ?1";
+		Query query = entityManager.createQuery(sql);
+		query.setParameter(1, sendingFacilityId);
+
+		@SuppressWarnings("unchecked")
+		List<HRMSubClass> subclasses = query.getResultList();
+		return subclasses;
+	}
+	
+	public List<String> findAllSendingFacilityIds() {
+		String sql = "select distinct(x.sendingFacilityId) from " + this.modelClass.getName() + " x";
+		Query query = entityManager.createQuery(sql);
+	
+		@SuppressWarnings("unchecked")
+		List<String> subclasses = query.getResultList();
+		return subclasses;
+	}
 
 	public boolean subClassMappingExists(String className, String subClassName) {
 		return subClassMappingExists(className, subClassName, "*");
@@ -99,5 +118,46 @@ public class HRMSubClassDao extends AbstractDao<HRMSubClass> {
 			}
 		}
 		return mapping;
+	}
+	
+	
+	public HRMSubClass findByClassNameMnemonicFacility(String className, String sendingFacilityId, String subClassMnemonic){ 
+		String sql = null;
+
+		sql = "select x from " + this.modelClass.getName() + " x where x.className=?  and x.sendingFacilityId=? and x.subClassMnemonic=?";
+
+		Query query = entityManager.createQuery(sql);
+		query.setParameter(1, className);
+		query.setParameter(2, sendingFacilityId);
+		query.setParameter(3, subClassMnemonic);
+		
+		@SuppressWarnings("unchecked")
+		List<HRMSubClass> subclasses = query.getResultList();
+ 		
+        if (subclasses != null && !subclasses.isEmpty()) {
+        	return subclasses.get(0);
+        }
+		
+        return null;
+	}
+	
+	public HRMSubClass findByClassNameSubClassNameFacility(String className, String sendingFacilityId, String subClassName){ 
+		String sql = null;
+
+		sql = "select x from " + this.modelClass.getName() + " x where x.className=?  and x.sendingFacilityId=? and x.subClassName=?";
+
+		Query query = entityManager.createQuery(sql);
+		query.setParameter(1, className);
+		query.setParameter(2, sendingFacilityId);
+		query.setParameter(3, subClassName);
+		
+		@SuppressWarnings("unchecked")
+		List<HRMSubClass> subclasses = query.getResultList();
+ 		
+        if (subclasses != null && !subclasses.isEmpty()) {
+        	return subclasses.get(0);
+        }
+		
+        return null;
 	}
 }

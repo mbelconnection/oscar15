@@ -39,14 +39,15 @@ import org.apache.commons.lang.time.DateUtils;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.oscarehr.caisi_integrator.ws.CachedDemographicNote;
-import org.oscarehr.caisi_integrator.ws.CachedDemographicPrevention;
 import org.oscarehr.caisi_integrator.ws.CachedDemographicNoteCompositePk;
+import org.oscarehr.caisi_integrator.ws.CachedDemographicPrevention;
 import org.oscarehr.caisi_integrator.ws.CachedFacility;
 import org.oscarehr.caisi_integrator.ws.CachedMeasurement;
 import org.oscarehr.caisi_integrator.ws.CachedProgram;
 import org.oscarehr.caisi_integrator.ws.CachedProvider;
 import org.oscarehr.caisi_integrator.ws.ConnectException_Exception;
 import org.oscarehr.caisi_integrator.ws.DemographicTransfer;
+import org.oscarehr.caisi_integrator.ws.DemographicWs;
 import org.oscarehr.caisi_integrator.ws.DemographicWsService;
 import org.oscarehr.caisi_integrator.ws.DuplicateHinExceptionException;
 import org.oscarehr.caisi_integrator.ws.FacilityConsentPair;
@@ -65,7 +66,6 @@ import org.oscarehr.caisi_integrator.ws.ProviderWsService;
 import org.oscarehr.caisi_integrator.ws.ReferralWs;
 import org.oscarehr.caisi_integrator.ws.ReferralWsService;
 import org.oscarehr.caisi_integrator.ws.SetConsentTransfer;
-import org.oscarehr.caisi_integrator.ws.DemographicWs;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.Facility;
 import org.oscarehr.common.model.IntegratorConsent;
@@ -107,6 +107,15 @@ public class CaisiIntegratorManager {
 		}
 	}
 	
+	public static void setIntegratorEchartPull(boolean status){
+		HttpSession session = LoggedInInfo.loggedInInfo.get().session;
+		if(status){
+		session.setAttribute(SessionConstants.INTEGRATOR_ECHART_PULL,true);
+		}else{
+			session.removeAttribute(SessionConstants.INTEGRATOR_ECHART_PULL);
+		}
+	}
+	
 	public static void checkForConnectionError(Throwable exception){
 		Throwable rootException = ExceptionUtils.getRootCause(exception);
 		MiscUtils.getLogger().debug("Exception: "+exception.getClass().getName()+" --- "+rootException.getClass().getName());
@@ -119,6 +128,15 @@ public class CaisiIntegratorManager {
 	public static boolean isIntegratorOffline(){
 		HttpSession session = LoggedInInfo.loggedInInfo.get().session;
 		Object object = session.getAttribute(SessionConstants.INTEGRATOR_OFFLINE);
+		if (object != null){
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean isIntegratorEchartPull(){
+		HttpSession session = LoggedInInfo.loggedInInfo.get().session;
+		Object object = session.getAttribute(SessionConstants.INTEGRATOR_ECHART_PULL);
 		if (object != null){
 			return true;
 		}

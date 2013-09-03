@@ -607,14 +607,6 @@ for(ConsultationRequestExt ext:exts) {
                                         <td class="fillLine">
                              (<%=reqFrm.patientHealthCardType%>)&nbsp;<%=reqFrm.patientHealthNum %>&nbsp;<%=reqFrm.patientHealthCardVersionCode%>&nbsp;
                                         </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="subTitles">
-                                            <bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.formAppointmentNotes"/>:
-                                        </td>
-                                        <td class="fillLine">
-                                <%=reqFrm.appointmentNotes %>
-                                        </td>
                                     </tr>                                     
                                     <tr>
                                         <td class="subTitles">
@@ -622,7 +614,7 @@ for(ConsultationRequestExt ext:exts) {
                                         </td>
                                         <td class="fillLine">
                             <%if (Integer.parseInt(reqFrm.status) > 2 ){%>
-                             <%=reqFrm.appointmentYear %>/<%=reqFrm.appointmentMonth %>/<%=reqFrm.appointmentDay %>  (y/m/d)
+                             <%=reqFrm.appointmentDate %>  (y/m/d)
                             <%}else{%>
                                             &nbsp;
                 			    <%}%>
@@ -656,7 +648,7 @@ for(ConsultationRequestExt ext:exts) {
                                             <bean:message key="oscarEncounter.oscarConsultationRequest.consultationFormPrint.msgChart"/>
                                         </td>
                                         <td class="fillLine">
-                                <%=reqFrm.patientChartNo%>
+                                				<%=reqFrm.patientChartNo == null || "null".equalsIgnoreCase(reqFrm.patientChartNo) ? "" : reqFrm.patientChartNo%>
                                         </td>
                                     </tr>
                                 </table>

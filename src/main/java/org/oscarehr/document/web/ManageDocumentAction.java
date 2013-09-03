@@ -555,7 +555,7 @@ public class ManageDocumentAction extends DispatchAction {
 	}
 
 	public ActionForward view(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
-		return getPage(mapping, form, request, response, 0);
+		return getPage(mapping, form, request, response, 1);//Jpedal index for first page is 1 (not 0)
 	}
 
 	// PNG version
@@ -831,7 +831,7 @@ public class ManageDocumentAction extends DispatchAction {
 
 		response.setContentType(contentType);
 		response.setContentLength(contentBytes.length);
-		response.setHeader("Content-Disposition", "inline; filename=" + filename);
+		response.setHeader("Content-Disposition", "inline; filename=\"" + filename + "\"");
 		log.debug("about to Print to stream");
 		ServletOutputStream outs = response.getOutputStream();
 		outs.write(contentBytes);

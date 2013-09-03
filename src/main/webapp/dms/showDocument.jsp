@@ -29,6 +29,7 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/rewrite-tag.tld" prefix="rewrite"%>
+<%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar"%>
 <%@ page import="oscar.OscarProperties"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils,oscar.oscarLab.ca.all.*,oscar.oscarMDS.data.*,oscar.oscarLab.ca.all.util.*"%>
 <%@page import="org.springframework.web.context.WebApplicationContext,org.oscarehr.common.dao.*,org.oscarehr.common.model.*"%><%
@@ -47,7 +48,7 @@
                 inQueueB=true;
 
             String creator = (String) session.getAttribute("user");
-            ArrayList doctypes = EDocUtil.getDoctypes("demographic");
+            ArrayList doctypes = EDocUtil.getActiveDocTypes("demographic");
             EDoc curdoc = EDocUtil.getDoc(documentNo);
 
             String demographicID = curdoc.getModuleId();
@@ -340,7 +341,8 @@
                                             <input type="text" id="autocompletedemo<%=docId%>" onchange="checkSave('<%=docId%>');" name="demographicKeyword" />
                                             <div id="autocomplete_choices<%=docId%>"class="autocomplete"></div>
                                             <%}%>
-											<input type="button" id="createNewDemo" value="Create New Demographic"  onclick="popup(700,960,'<%= request.getContextPath() %>/demographic/demographicaddarecordhtm.jsp','demographic')"/>
+											<input type="button" id="createNewDemo" value="Create New Demographic"  onclick="popup(700,960,'<%= request.getContextPath() %>/demographic/demographiccontrol.jsp?displaymode=Create')"/>
+											
 
                                                    <input id="saved_<%=docId%>" type="hidden" name="saved" value="false"/>
                                                    <br><input id="mrp_<%=docId%>" style="display: none;" type="checkbox" onclick="sendMRP(this)"  name="demoLink" >
@@ -368,8 +370,8 @@
                                     </tr>
 
                                     <tr>
-                                        <td width="30%" colspan="1" align="right"><a id="saveSucessMsg_<%=docId%>" style="display:none;color:blue;"><bean:message key="inboxmanager.document.SuccessfullySavedMsg"/></a></td>
-                                        <td width="30%" colspan="1" align="right"><%if(demographicID.equals("-1")){%><input type="submit" name="save" disabled id="save<%=docId%>" value="Save" /><input type="button" name="save" id="saveNext<%=docId%>" onclick="saveNext(<%=docId%>)" disabled value='<bean:message key="inboxmanager.document.SaveAndNext"/>' /><%}
+                                        <td width="30%" colspan="1" align="left"><a id="saveSucessMsg_<%=docId%>" style="display:none;color:blue;"><bean:message key="inboxmanager.document.SuccessfullySavedMsg"/></a></td>
+                                        <td width="30%" colspan="1" align="left"><%if(demographicID.equals("-1")){%><input type="submit" name="save" disabled id="save<%=docId%>" value="Save" /><input type="button" name="save" id="saveNext<%=docId%>" onclick="saveNext(<%=docId%>)" disabled value='<bean:message key="inboxmanager.document.SaveAndNext"/>' /><%}
             else{%><input type="submit" name="save" id="save<%=docId%>" value="Save" /><input type="button" name="save" onclick="saveNext(<%=docId%>)" id="saveNext<%=docId%>" value='<bean:message key="inboxmanager.document.SaveAndNext"/>' /> <%}%>
 
                                     </tr>

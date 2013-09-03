@@ -75,6 +75,6 @@ public class HRMDocumentToProvider extends AbstractModel<Integer>  {
 	public void setViewed(Integer viewed) {
     	this.viewed = viewed;
     }
-	
+
 	
 }

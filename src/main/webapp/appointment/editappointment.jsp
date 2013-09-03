@@ -25,6 +25,7 @@
 --%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%@page import="org.oscarehr.PMmodule.dao.ProviderDao"%>
+<%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%
   if (session.getAttribute("user") == null)    response.sendRedirect("../logout.jsp");
 
@@ -81,27 +82,6 @@
         .deep { background-color: <%= deepcolor %>; }
         .weak { background-color: <%= weakcolor %>; }
     </style>
-    <!-- Must change styles for browsers that do not understand display:table properties -->
-    <!--[if lt IE 8]>
-        <style type="text/css">
-            body { min-width: 760px; }
-            .row { clear: both; }
-            li.deep { background-color: <%= weakcolor %>; }
-            .label, .space { float:left; width: 100px !important; }
-            .panel li div { border:none; }
-            .input, .space { text-align: right; float:left; }
-            .panel { background-color: #EEEEFF; }
-        </style>
-    <![endif]-->
-    <!-- Min-width doesn't work properly in IE6, so we simulate it using JavaScript.
-    It's important to set a min-width since many elements will be floating, and
-    resizing may otherwise cause elements to collapse in strange ways
-    -->
-    <!--[if lt IE 7]>
-        <script language="JavaScript">
-            window.onresize = function() { setMinWidth(860); }
-        </script>
-    <![endif]-->
 <% } %>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
 <title><bean:message key="appointment.editappointment.title" /></title>
@@ -528,7 +508,7 @@ function setType(typeSel,reasonSel,locSel,durSel,notesSel,resSel) {
 
             <div class="input">
                 <INPUT TYPE="TEXT" NAME="type"
-					VALUE="<%=bFirstDisp?appt.get("type"):request.getParameter("type")%>"
+					VALUE="<%=bFirstDisp?appt.get("type"):StringEscapeUtils.escapeHtml(request.getParameter("type"))%>"
                     WIDTH="25">
             </div>
         </li>
@@ -589,7 +569,7 @@ function setType(typeSel,reasonSel,locSel,durSel,notesSel,resSel) {
             <div class="input">
                 <INPUT TYPE="TEXT" NAME="keyword"
 					tabindex="1"
-					VALUE="<%=bFirstDisp?nameSb.toString():request.getParameter("name")%>"
+					VALUE="<%=bFirstDisp?nameSb.toString():StringEscapeUtils.escapeHtml(request.getParameter("name"))%>"
                     width="25">
             </div>
             <div class="space">&nbsp;</div>
@@ -672,7 +652,7 @@ if (bMultisites) { %>
 	// multisites end ==================
 %>
             <INPUT TYPE="TEXT" NAME="location" tabindex="4"
-					VALUE="<%=bFirstDisp?appt.get("location"):request.getParameter("location")%>"
+					VALUE="<%=bFirstDisp?appt.get("location"):StringEscapeUtils.escapeHtml(request.getParameter("location"))%>"
 					WIDTH="25">
 <% } %>
             </div>
@@ -681,16 +661,16 @@ if (bMultisites) { %>
             <div class="input">
                 <input type="TEXT"
 					name="resources" tabindex="5"
-					value="<%=bFirstDisp?appt.get("resources"):request.getParameter("resources")%>"
+					value="<%=bFirstDisp?appt.get("resources"):StringEscapeUtils.escapeHtml(request.getParameter("resources"))%>"
                     width="25">
             </div>
         </li>
         <li class="weak row">
-            <div class="label"><bean:message key="Appointment.formLastCreator" />:</div>
+ 			<div class="label"><bean:message key="Appointment.formLastEditor" />:</div>
             <div class="input">
-		<% String lastCreatorNo = bFirstDisp?(String)appt.get("creator"):request.getParameter("user_id"); %>
-
-            <INPUT TYPE="TEXT" NAME="user_id" VALUE="<%=lastCreatorNo%>" readonly WIDTH="25">
+			<% String lastEditor = appt.get("lastUpdateUser")==null?(String)appt.get("creator"):providerDao.getProvider((String)appt.get("lastUpdateUser")).getFormattedName(); %>
+			<INPUT TYPE="TEXT" NAME="user_id" VALUE="<%=lastEditor%>" readonly WIDTH="25">            
+            
             </div>
             <div class="space">&nbsp;</div>
             <div class="label"><bean:message key="Appointment.formLastTime" />:</div>

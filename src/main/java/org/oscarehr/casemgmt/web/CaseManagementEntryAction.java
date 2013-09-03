@@ -1285,11 +1285,13 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 			// only update appt if there is one
 			if (sessionBean.appointmentNo != null && !(sessionBean.appointmentNo.equals("") || sessionBean.appointmentNo.equals("0"))) {
 				String apptStatus = updateApptStatus(sessionBean.status, "verify");
-				Appointment appointment = appointmentDao.find(ConversionUtils.fromIntString(sessionBean.appointmentNo));
-				appointmentArchiveDao.archiveAppointment(appointment);
-				appointment.setStatus(apptStatus);
-				appointment.setLastUpdateUser(providerNo);
-				appointmentDao.merge(appointment);
+				Appointment appointment = appointmentDao.find(Integer.parseInt(sessionBean.appointmentNo));
+				if (appointment != null) {
+					appointmentArchiveDao.archiveAppointment(appointment);
+					appointment.setStatus(apptStatus);
+					appointment.setLastUpdateUser(providerNo);
+					appointmentDao.merge(appointment);
+				}
 			}
 
 		} else if (note.isSigned()) {
@@ -1301,11 +1303,14 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 			// only update appt if there is one
 			if (sessionBean.appointmentNo != null && !(sessionBean.appointmentNo.equals("") || sessionBean.appointmentNo.equals("0"))) {
 				String apptStatus = updateApptStatus(sessionBean.status, "sign");
-				Appointment appointment = appointmentDao.find(ConversionUtils.fromIntString(sessionBean.appointmentNo));
-				appointmentArchiveDao.archiveAppointment(appointment);
-				appointment.setStatus(apptStatus);
-				appointment.setLastUpdateUser(providerNo);
-				appointmentDao.merge(appointment);
+				Appointment appointment = appointmentDao.find(Integer.parseInt(sessionBean.appointmentNo));
+				// don't process appointment if it's been already deleted
+				if (appointment != null) {
+					appointmentArchiveDao.archiveAppointment(appointment);
+					appointment.setStatus(apptStatus);
+					appointment.setLastUpdateUser(providerNo);
+					appointmentDao.merge(appointment);
+				}
 			}
 		}
 

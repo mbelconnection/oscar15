@@ -1428,7 +1428,7 @@ insert into ProviderPreference (providerNo, startHour, endHour, everyMin, myGrou
 -- Dumping data for table 'provider'
 --
 
-INSERT INTO provider VALUES ('999998','oscardoc','doctor','doctor','','','','0001-01-01','','','','','','','','1','','','','','','','','',NULL,'0001-01-01');
+INSERT INTO provider VALUES ('999998','oscardoc','doctor','doctor','','','','0001-01-01','','','','','','','','1','','','','','','','','',now(),'0001-01-01');
 
 --
 -- Dumping data for table 'quickList'
@@ -1884,7 +1884,10 @@ insert into `secObjPrivilege` values('admin','_pmm_agencyList','x',0,'999998');
 insert into `secObjPrivilege` values('admin','_newCasemgmt.apptHistory','x',0,'999998');
 insert into `secObjPrivilege` values('admin','_newCasemgmt.doctorName','x',0,'999998');
 
+insert into `secObjPrivilege` values('doctor','_admin.traceability','x',0,'999998');	
+insert into `secObjPrivilege` values('admin','_admin.traceability','x',0,'999998');	
 
+insert into `secObjectName` (`objectName`,`description`,`orgapplicable`) values ('_admin.traceability', 'Right to generate trace and run traceability report',0);
 
 -- for defaultqueue
 insert into queue values(1,'default');
@@ -2226,26 +2229,26 @@ VALUES
         ('eyeformProblem', 'Problem List Item for Eyeform', 'nurse', NOW(), NULL, 'system');
 
 
-insert into HRMCategory values (null, 'General Oscar Lab', 'DEFAULT');
-insert into HRMCategory values (null, 'Oscar HRM Category CT:ABDW' ,'CT:ABDW');
-insert into HRMCategory values (null, 'Oscar HRM Category RAD:CSP5' ,'RAD:CSP5');
-insert into HRMCategory values (null, 'Oscar HRM Category NM:THYSAN' ,'NM:THYSAN');
-insert into HRMCategory values (null, 'Oscar HRM Category NM:BLDPOL' ,'NM:BLDPOL');
-insert into HRMCategory values (null, 'Oscar HRM Category US:ABDC' ,'US:ABDC');
-insert into HRMCategory values (null, 'Oscar HRM Category US:PELVLT' ,'US:PELVLT');
-insert into HRMCategory values (null, 'Oscar HRM Category RAD:ABD' ,'RAD:ABD');
-insert into HRMCategory values (null, 'Oscar HRM Category RAD:CXR2' ,'RAD:CXR2');
-insert into HRMCategory values (null, 'Oscar HRM Category RAD:ABD2' ,'RAD:ABD2');
-insert into HRMCategory values (null, 'Oscar HRM Category RAD:ANKB' ,'RAD:ANKB');
-insert into HRMCategory values (null, 'Oscar HRM Category RAD:CSP' ,'RAD:CSP');
-insert into HRMCategory values (null, 'Oscar HRM Category RAD:TSP' ,'RAD:TSP');
-insert into HRMCategory values (null, 'Oscar HRM Category RAD:LSP4ER' ,'RAD:LSP4ER');
-insert into HRMCategory values (null, 'Oscar HRM Category RAD:DIGB' ,'RAD:DIGB');
-insert into HRMCategory values (null, 'Oscar HRM Category RAD:ELBB' ,'RAD:ELBB');
-insert into HRMCategory values (null, 'Oscar HRM Category MAM:MAMMOB' ,'MAM:MAMMOB');
-insert into HRMCategory values (null, 'Oscar HRM Category ECHO:ECHO' ,'ECHO:ECHO');
-insert into HRMCategory values (null, 'Oscar HRM Category ECHOWL:ECH0520' ,'ECHOWL:ECH0520');
-insert into HRMCategory values (null, 'Oscar HRM Category ECHO:MDAB' ,'ECHO:MDAB');
+insert into HRMCategory (id, categoryName, subClassNameMnemonic) values (null, 'General Oscar Lab', 'DEFAULT');
+insert into HRMCategory (id, categoryName, subClassNameMnemonic) values (null, 'Oscar HRM Category CT:ABDW' ,'CT:ABDW');
+insert into HRMCategory (id, categoryName, subClassNameMnemonic) values (null, 'Oscar HRM Category RAD:CSP5' ,'RAD:CSP5');
+insert into HRMCategory (id, categoryName, subClassNameMnemonic) values (null, 'Oscar HRM Category NM:THYSAN' ,'NM:THYSAN');
+insert into HRMCategory (id, categoryName, subClassNameMnemonic) values (null, 'Oscar HRM Category NM:BLDPOL' ,'NM:BLDPOL');
+insert into HRMCategory (id, categoryName, subClassNameMnemonic) values (null, 'Oscar HRM Category US:ABDC' ,'US:ABDC');
+insert into HRMCategory (id, categoryName, subClassNameMnemonic) values (null, 'Oscar HRM Category US:PELVLT' ,'US:PELVLT');
+insert into HRMCategory (id, categoryName, subClassNameMnemonic) values (null, 'Oscar HRM Category RAD:ABD' ,'RAD:ABD');
+insert into HRMCategory (id, categoryName, subClassNameMnemonic) values (null, 'Oscar HRM Category RAD:CXR2' ,'RAD:CXR2');
+insert into HRMCategory (id, categoryName, subClassNameMnemonic) values (null, 'Oscar HRM Category RAD:ABD2' ,'RAD:ABD2');
+insert into HRMCategory (id, categoryName, subClassNameMnemonic) values (null, 'Oscar HRM Category RAD:ANKB' ,'RAD:ANKB');
+insert into HRMCategory (id, categoryName, subClassNameMnemonic) values (null, 'Oscar HRM Category RAD:CSP' ,'RAD:CSP');
+insert into HRMCategory (id, categoryName, subClassNameMnemonic) values (null, 'Oscar HRM Category RAD:TSP' ,'RAD:TSP');
+insert into HRMCategory (id, categoryName, subClassNameMnemonic) values (null, 'Oscar HRM Category RAD:LSP4ER' ,'RAD:LSP4ER');
+insert into HRMCategory (id, categoryName, subClassNameMnemonic) values (null, 'Oscar HRM Category RAD:DIGB' ,'RAD:DIGB');
+insert into HRMCategory (id, categoryName, subClassNameMnemonic) values (null, 'Oscar HRM Category RAD:ELBB' ,'RAD:ELBB');
+insert into HRMCategory (id, categoryName, subClassNameMnemonic) values (null, 'Oscar HRM Category MAM:MAMMOB' ,'MAM:MAMMOB');
+insert into HRMCategory (id, categoryName, subClassNameMnemonic) values (null, 'Oscar HRM Category ECHO:ECHO' ,'ECHO:ECHO');
+insert into HRMCategory (id, categoryName, subClassNameMnemonic) values (null, 'Oscar HRM Category ECHOWL:ECH0520' ,'ECHOWL:ECH0520');
+insert into HRMCategory (id, categoryName, subClassNameMnemonic) values (null, 'Oscar HRM Category ECHO:MDAB' ,'ECHO:MDAB');
 
 INSERT INTO HL7HandlerMSHMapping
  (hospital_site,facility,facility_name) VALUES ("Lakeridge Health",".","Lakeridge Health Oshawa");

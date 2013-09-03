@@ -42,6 +42,8 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -126,8 +128,7 @@ public class Document extends AbstractModel<Integer> implements Serializable {
     private String reviewer;
     @Column(name = "reviewdatetime")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date reviewdatetime;
-    @Basic(optional = false)
+    private Date reviewdatetime;    
     @Column(name = "number_of_pages")
     private int numberofpages;
     @Column(name="appointment_no")
@@ -326,5 +327,10 @@ public class Document extends AbstractModel<Integer> implements Serializable {
     }
 
 
+	@PrePersist
+	@PreUpdate
+	protected void jpaUpdateDate() {
+		this.updatedatetime = new Date();
+	}
 
 }

@@ -51,7 +51,7 @@
 	            	
 	            	<!--  they can be an internal (Demographic) or external (Contact) contact -->
 	            		             
-		            <select name="procontact_<%=id%>.type" id="procontact_<%=id%>.type">
+		            <select name="procontact_<%=id%>.type" id="procontact_<%=id%>.type" onchange="clearProContactName('<%=id%>');">
 		            	<option value="<%=DemographicContact.TYPE_PROVIDER%>">Internal</option>
 		            	<option value="<%=DemographicContact.TYPE_CONTACT%>">External</option>
 					</select>
@@ -60,5 +60,5 @@
 	            			           
 	            	<input type="hidden" name="procontact_<%=id%>.contactId" value="0"/>
 		             <input type="text" name="procontact_<%=id%>.contactName" id="procontact_<%=id%>.contactName" size="20" readonly="readonly"/>		             
-		             <a href="#" onclick="doProfessionalSearch('<%=id%>');return false;">Search</a>		             
+		             <a href="#" onclick="doProfessionalSearch('<%=id%>');return false;">${param.search}</a>		             
 </div>

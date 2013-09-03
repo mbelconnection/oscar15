@@ -1,3 +1,4 @@
+	 	
 <%--
 
     Copyright (c) 2006-. OSCARservice, OpenSoft System. All Rights Reserved.
@@ -47,9 +48,7 @@
                         oscar.OscarProperties oscarVariables = oscar.OscarProperties.getInstance();
 
 			String user_no = (String) session.getAttribute("user");
-			String providerview = request.getParameter("providerview") == null ? "" : request
-					.getParameter("providerview");
-			providerview = providerview.equals("1") ? user_no : providerview;
+			String providerview = request.getParameter("providerview") == null ? "" : request.getParameter("providerview");
 			String asstProvider_no = "", color = "", premiumFlag = "", service_form = "";
 			String sql = null;
 			ResultSet rs = null;
@@ -225,14 +224,14 @@
 				propHist = new Properties();
 
 				//propHist.setProperty("billing_no", "" + rs.getInt("id"));
-				propHist.setProperty("visitdate", obj.getAdmission_date()); // admission date
+				propHist.setProperty("visitdate", StringUtils.trimToEmpty(obj.getAdmission_date())); // admission date
 				//propHist.setProperty("billing_date", rs.getString("billing_date")); // service date
 				//propHist.setProperty("update_date", rs.getString("timestamp")); // create date
-				propHist.setProperty("visitType", obj.getVisittype());
-				propHist.setProperty("clinic_ref_code", obj.getFacilty_num());
+				propHist.setProperty("visitType", StringUtils.trimToEmpty(obj.getVisittype()));
+				propHist.setProperty("clinic_ref_code", StringUtils.trimToEmpty(obj.getFacilty_num()));
 				vecHist.add(propHist);
 				//propHist.setProperty("service_code", serCode);
-				propHist.setProperty("diagnostic_code", iobj.getDx());
+				propHist.setProperty("diagnostic_code", StringUtils.trimToEmpty(iobj.getDx()));
 				vecHistD.add(propHist);
 				//r_doctor_ohip = rs.getString("ref_num");
 				// get the latest ref. doctor number
@@ -1401,6 +1400,9 @@ function changeSite(sel) {
                                 <option value="IHF"><bean:message key="oscar.billing.CA.ON.billingON.OB.SLIcode.IHF" /></option>
                                 <option value="OFF"><bean:message key="oscar.billing.CA.ON.billingON.OB.SLIcode.OFF" /></option>
                                 <option value="OTN"><bean:message key="oscar.billing.CA.ON.billingON.OB.SLIcode.OTN" /></option>
+				<option value="PDF"><bean:message key="oscar.billing.CA.ON.billingON.OB.SLIcode.PDF" /></option>
+				<option value="RTF"><bean:message key="oscar.billing.CA.ON.billingON.OB.SLIcode.RTF" /></option>
+
                         </select>
                     </td>
                 </tr>
@@ -1424,7 +1426,7 @@ function changeSite(sel) {
 					<!--input type="text" name="xml_vdate" id="xml_vdate" value="<%--=request.getParameter("xml_vdate")!=null? request.getParameter("xml_vdate"):visitdate--%>" size='10' maxlength='10' -->
 					<input type="text" name="xml_vdate" id="xml_vdate"
 					       value="<%=request.getParameter("xml_vdate")!=null? request.getParameter("xml_vdate"):admDate%>"
-					       size='10' maxlength='10'>
+					       size='10' maxlength='10' readonly = 'readonly'>
 				        <img src="../../../images/cal.gif" id="xml_vdate_cal" />
 				    </td>
 				    <td colspan="2">

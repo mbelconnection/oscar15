@@ -72,6 +72,8 @@ if(listRxDrugs!=null){
          String eTreatmentType  = rx.getETreatmentType()!=null ? rx.getETreatmentType() : "";
          String rxStatus        = rx.getRxStatus()!=null ? rx.getRxStatus() : "";
          String drugForm		= rx.getDrugForm();
+         //remove from the rerx list
+         int DrugReferenceId = rx.getDrugReferenceId();
          
          if(ATC != null && ATC.trim().length()>0)
              ATC="ATC: "+ATC;
@@ -119,8 +121,7 @@ if(listRxDrugs!=null){
                 archivedReason=rx.getLastArchReason();
                 archivedDate=rx.getLastArchDate();
          }
-         else{
-         }
+
           if((outsideProvOhip!=null && !outsideProvOhip.equals("")) || (outsideProvName!=null && !outsideProvName.equals(""))){
              isOutsideProvider=true;
          }
@@ -154,7 +155,7 @@ if(listRxDrugs!=null){
     <a tabindex="-1" href="javascript:void(0);" style="float:right;margin-top:0px;padding-top:0px;" onclick="$('rx_more_<%=rand%>').toggle();">  <span id="moreLessWord_<%=rand%>" onclick="updateMoreLess(id)" >more</span> </a>
 
     <label style="float:left;width:80px;" title="<%=ATC%>" >Name:</label>
-    <input tabindex="-1" type="text" id="drugName_<%=rand%>"  name="drugName_<%=rand%>"  size="60" <%if(gcn==0){%> onkeyup="saveCustomName(this);" value="<%=drugName%>"<%} else{%> value='<%=drugName%>'  onchange="changeDrugName('<%=rand%>','<%=drugName%>');" <%}%>/><span id="alleg_<%=rand%>" style="color:red;"></span>&nbsp;&nbsp;<span id="inactive_<%=rand%>" style="color:red;"></span><br>
+    <input tabindex="-1" type="text" id="drugName_<%=rand%>"  name="drugName_<%=rand%>"  size="60" <%if(gcn==0){%> onkeyup="saveCustomName(this);" value="<%=drugName%>"<%} else{%> value='<%=drugName%>'  onkeyup="changeDrugName('<%=rand%>','<%=drugName%>');" <%}%>/><span id="alleg_<%=rand%>" style="color:red;"></span>&nbsp;&nbsp;<span id="inactive_<%=rand%>" style="color:red;"></span><br>
     <a tabindex="-1" href="javascript:void(0);" onclick="showHideSpecInst('siAutoComplete_<%=rand%>')" style="float:left;width:80px;">Instructions:</a>
     <input type="text" id="instructions_<%=rand%>" name="instructions_<%=rand%>" onkeypress="handleEnter(this,event);" value="<%=instructions%>" size="60" onchange="parseIntr(this);" /><a href="javascript:void(0);" tabindex="-1" onclick="displayMedHistory('<%=rand%>');" style="color:red;font-size:13pt;vertical-align:super;text-decoration:none" ><b>*</b></a>  <a href="javascript:void(0);" tabindex="-1" onclick="displayInstructions('<%=rand%>');"><img src="<c:out value="${ctx}/images/icon_help_sml.gif"/>" border="0" TITLE="Instructions Field Reference"></a> 
        <br>
@@ -232,6 +233,16 @@ if(listRxDrugs!=null){
            <a href="javascript:void(0);" style="float:right;margin-top:0px;padding-top:0px;" onclick="addFav('<%=rand%>','<%=drugName%>')">Add to Favorite</a>
        </div>
        
+       <!--  g.d. added -->
+        <br/>
+        <bean:message key="WriteScript.msgPickUpDate"/>: 
+           <input type="text" id="pickupDate_<%=rand%>"  name="pickupDate_<%=rand%>" value="<%=pickupDate%>" onchange="if (!isValidDate(this.value)) {this.value=null}" />
+           <bean:message key="WriteScript.msgPickUpTime"/>: 
+           <input type="text" id="pickupTime_<%=rand%>"  name="pickupTime_<%=rand%>" value="<%=pickupTime%>" onchange="if (!isValidTime(this.value)) {this.value=null}" />
+       <br/>
+       
+       
+       
        <bean:message key="WriteScript.msgComment"/>:
            <input type="text" id="comment_<%=rand%>" name="comment_<%=rand%>" value="<%=comment%>" size="60"/>
            <br/>  
@@ -279,11 +290,11 @@ if(listRxDrugs!=null){
 </fieldset>
 <%}else{%>
 <fieldset style="margin-top:2px;width:620px;" id="set_<%=rand%>">
-    <a tabindex="-1" href="javascript:void(0);"  style="float:right;margin-left:5px;margin-top:0px;padding-top:0px;" onclick="$('set_<%=rand%>').remove();deletePrescribe('<%=rand%>');">X</a>
+    <a tabindex="-1" href="javascript:void(0);"  style="float:right;margin-left:5px;margin-top:0px;padding-top:0px;" onclick="$('set_<%=rand%>').remove();deletePrescribe('<%=rand%>');removeReRxDrugId('<%=DrugReferenceId%>')"><img src='<c:out value="${ctx}/images/close.png"/>' border="0"></a>
     <a tabindex="-1" href="javascript:void(0);" style="float:right;margin-top:0px;padding-top:0px;" onclick="$('rx_more_<%=rand%>').toggle();">  <span id="moreLessWord_<%=rand%>" onclick="updateMoreLess(id)" >more</span> </a>
 
     <label style="float:left;width:80px;" title="<%=ATC%>" >Name:</label>
-    <input tabindex="-1" type="text" id="drugName_<%=rand%>"  name="drugName_<%=rand%>"  size="30" <%if(gcn==0){%> onkeyup="saveCustomName(this);" value="<%=drugName%>"<%} else{%> value='<%=drugName%>'  onchange="changeDrugName('<%=rand%>','<%=drugName%>');" <%}%> TITLE="<%=drugName%>"/>&nbsp;<span id="inactive_<%=rand%>" style="color:red;"></span><br>
+    <input tabindex="-1" type="text" id="drugName_<%=rand%>"  name="drugName_<%=rand%>"  size="30" <%if(gcn==0){%> onkeyup="saveCustomName(this);" value="<%=drugName%>"<%} else{%> value='<%=drugName%>'  onkeyup="changeDrugName('<%=rand%>','<%=drugName%>');" <%}%> TITLE="<%=drugName%>"/>&nbsp;<span id="inactive_<%=rand%>" style="color:red;"></span><br>
 
 	<!-- Allergy Alert Table-->
 	<table width="570px" border="1" bordercolor="#CCCCCC" cellspacing="0" cellpadding="0" style="border-collapse: collapse;display: none;" id="alleg_tbl_<%=rand%>">
@@ -381,7 +392,6 @@ if(listRxDrugs!=null){
            <a href="javascript:void(0);" style="float:right;margin-top:0px;padding-top:0px;" onclick="addFav('<%=rand%>','<%=drugName%>')">Add to Favorite</a>
        
            <br />
-           
            <bean:message key="WriteScript.msgPickUpDate"/>: 
            <input type="text" id="pickupDate_<%=rand%>"  name="pickupDate_<%=rand%>" value="<%=pickupDate%>" onchange="if (!isValidDate(this.value)) {this.value=null}" />
            <bean:message key="WriteScript.msgPickUpTime"/>: 
@@ -503,9 +513,9 @@ if(listRxDrugs!=null){
             var isDiscontinuedLatest=<%=isDiscontinuedLatest%>;
             //oscarLog("isDiscon "+isDiscontinuedLatest);
             //pause(1000);
-            if(isDiscontinuedLatest){
+            var archR='<%=archivedReason%>';
+            if(isDiscontinuedLatest && archR!="represcribed"){
                var archD='<%=archivedDate%>';
-               var archR='<%=archivedReason%>';
                //oscarLog("in js discon "+archR+"--"+archD);
 
                     if(confirm('This drug was discontinued on <%=archivedDate%> because of <%=archivedReason%> are you sure you want to continue it?')==true){

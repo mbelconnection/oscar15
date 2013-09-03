@@ -30,6 +30,7 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/rewrite-tag.tld" prefix="rewrite"%>
+<%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils,oscar.oscarLab.ca.all.*,oscar.oscarMDS.data.*,oscar.oscarLab.ca.all.util.*"%>
 <%@page import="org.springframework.web.context.WebApplicationContext,org.oscarehr.common.dao.*,org.oscarehr.common.model.*, org.oscarehr.PMmodule.dao.ProviderDao"%>
 <%
@@ -55,7 +56,7 @@
             
             Provider provider = providerDao.getProvider(providerNo);
             String creator = (String) session.getAttribute("user");
-            ArrayList doctypes = EDocUtil.getDoctypes("demographic");
+            ArrayList doctypes = EDocUtil.getActiveDocTypes("demographic");
             EDoc curdoc = EDocUtil.getDoc(documentNo);
 
             String demographicID = curdoc.getModuleId();
@@ -85,6 +86,8 @@
 
 <html>
     <head>
+    <!-- Global js import -->
+	<script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
             <!-- main calendar program -->
 <script type="text/javascript" src="../share/calendar/calendar.js"></script>
 <!-- language for the calendar -->
@@ -630,7 +633,7 @@ function sendMRP(ele){
                                                        	%>
                                                         <input type="button"  tabindex="<%=tabindex++%>" value="Msg" onclick="popup(700,960,'../oscarMessenger/SendDemoMessage.do?demographic_no=<%=demographicID%>','msg')"/>
                                                         <input type="button"  tabindex="<%=tabindex++%>" value="Tickler" onclick="popup(450,600,'../tickler/ForwardDemographicTickler.do?docType=DOC&docId=<%=docId%>&demographic_no=<%=demographicID%>','tickler')"/>
-                                                        <input type="button"  tabindex="<%=tabindex++%>" value="eChart" onclick="popup(710,1024,'<%=eURL%>','eChart')"/>
+                                                        <input type="button"  tabindex="<%=tabindex++%>" value="eChart" onclick="popupEChart(710,1024,'<%=eURL%>')"/>
                                                         <% }
 
                                                         %>

@@ -989,21 +989,8 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
                         int linenum=0;
                         String highlight = "#E0E0FF";
 
-                        ArrayList headers = handler.getHeaders();
+                        ArrayList<String> headers = handler.getHeaders();
                         int OBRCount = handler.getOBRCount();
-                       	boolean isUnstructuredDoc = false;
-                       	boolean	isVIHARtf = false;
-                       	//Checks to see if the PATHL7 lab is an unstructured document, and sets isUnstructuredDoc to true if it is
-                    	if(handler.getMsgType().equals("PATHL7")){
-                    		for(i=0; i<headers.size(); i++){
-                    			if((headers.get(i).equals("DIAG IMAGE")) || (headers.get(i).equals("CELLPATH")) || (headers.get(i).equals("TRANSCRIP"))|| (headers.get(i).equals("CELLPATHR"))){
-                    				isUnstructuredDoc = true;
-                    			}
-                    			if(headers.get(i).equals("CELLPATHR")){
-                    				isVIHARtf = true;
-                    			}
-                    		}
-                    	}//end of PATHL7 Doc check
 
                         if (handler.getMsgType().equals("MEDVUE")) { %>
                         <table style="page-break-inside:avoid;" bgcolor="#003399" border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -1051,7 +1038,19 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
 
                       for(i=0;i<headers.size();i++){
                            linenum=0;
-                       	if(isUnstructuredDoc){%>
+						boolean isUnstructuredDoc = false;
+						boolean	isVIHARtf = false;
+						boolean isSGorCDC = false;
+
+						//Checks to see if the PATHL7 lab is an unstructured document, a VIHA RTF pathology report, or if the patient location is SG/CDC
+						//labs that fall into any of these categories have certain requirements per Excelleris
+						if(handler.getMsgType().equals("PATHL7")){
+							isUnstructuredDoc = ((PATHL7Handler) handler).unstructuredDocCheck(headers.get(i));
+							isVIHARtf = ((PATHL7Handler) handler).vihaRtfCheck(headers.get(i));
+							if(handler.getPatientLocation().equals("SG") || handler.getPatientLocation().equals("CDC")){
+								isSGorCDC = true;
+							}
+						}%>
 		                       <table style="page-break-inside:avoid;" bgcolor="#003399" border="0" cellpadding="0" cellspacing="0" width="100%">
 	                           <tr>
 	                               <td colspan="4" height="7">&nbsp;</td>
@@ -1068,7 +1067,7 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
 	                               <td width="*">&nbsp;</td>
 	                           </tr>
 	                       </table>
-
+                       	<%if(isUnstructuredDoc){%>
 	                       <table width="100%" border="0" cellspacing="0" cellpadding="2" bgcolor="#CCCCFF" bordercolor="#9966FF" bordercolordark="#bfcbe3" name="tblDiscs" id="tblDiscs">
 	                           <tr class="Field2">
 	                               <td width="20%" align="middle" valign="bottom" class="Cell"><bean:message key="oscarMDS.segmentDisplay.formTestName"/></td>
@@ -1076,23 +1075,6 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
 	                               <td width="20%" align="middle" valign="bottom" class="Cell"><bean:message key="oscarMDS.segmentDisplay.formDateTimeCompleted"/></td>
 	                           </tr><%
 						} else {%>
-                       <table style="page-break-inside:avoid;" bgcolor="#003399" border="0" cellpadding="0" cellspacing="0" width="100%">
-                           <tr>
-                               <td colspan="4" height="7">&nbsp;</td>
-                           </tr>
-                           <tr>
-                               <td bgcolor="#FFCC00" width="300" valign="bottom">
-                                   <div class="Title2">
-                                       <%=headers.get(i)%>
-                                   </div>
-                               </td>
-                               <%--<td align="right" bgcolor="#FFCC00" width="100">&nbsp;</td>--%>
-                               <td width="9">&nbsp;</td>
-                               <td width="9">&nbsp;</td>
-                               <td width="*">&nbsp;</td>
-                           </tr>
-                       </table>
-
                        <table width="100%" border="0" cellspacing="0" cellpadding="2" bgcolor="#CCCCFF" bordercolor="#9966FF" bordercolordark="#bfcbe3" name="tblDiscs" id="tblDiscs">
                            <tr class="Field2">
                                <td width="25%" align="middle" valign="bottom" class="Cell"><bean:message key="oscarMDS.segmentDisplay.formTestName"/></td>
@@ -1113,7 +1095,15 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
                                for (k=0; k < obxCount; k++){
 
                                	String obxName = handler.getOBXName(j, k);
-                                                         	
+
+								boolean isAllowedDuplicate = false;
+								if(handler.getMsgType().equals("PATHL7")){
+									//if the obxidentifier and result name are any of the following, they must be displayed (they are the Excepetion to Excelleris TX/FT duplicate result name display rules)
+									if((handler.getOBXName(j, k).equals("Culture") && handler.getOBXIdentifier(j, k).equals("6463-4")) || 
+									(handler.getOBXName(j, k).equals("Organism") && (handler.getOBXIdentifier(j, k).equals("X433") || handler.getOBXIdentifier(j, k).equals("X30011")))){
+					   					isAllowedDuplicate = true;
+					   				}
+								}
                                    boolean b1=false, b2=false, b3=false;
 
                                    boolean fail = true;
@@ -1341,9 +1331,9 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
 
                                     } else if ((!handler.getOBXResultStatus(j, k).equals("TDIS") && !handler.getMsgType().equals("EPSILON")) )  {
 
-                                   		if(isUnstructuredDoc){%>
+                                    	if(isUnstructuredDoc){%>
                                    			<tr bgcolor="<%=(linenum % 2 == 1 ? highlight : "")%>" class="<%="NarrativeRes"%>"><% 
-                                   			if(handler.getOBXIdentifier(j, k).equals(handler.getOBXIdentifier(j, k-1)) && (obxCount>1)){%>
+                                   			if(handler.getOBXIdentifier(j, k).equalsIgnoreCase(handler.getOBXIdentifier(j, k-1)) && (obxCount>1)){%>
                                    				<td valign="top" align="left"><%= obrFlag ? "&nbsp; &nbsp; &nbsp;" : "&nbsp;" %><a href="javascript:popupStart('660','900','../ON/labValues.jsp?testName=<%=obxName%>&demo=<%=demographicID%>&labType=HL7&identifier='+encodeURIComponent('<%= handler.getOBXIdentifier(j, k)%>'))"></a><%
                                    				}
                                    			else{%> <td valign="top" align="left"><%= obrFlag ? "&nbsp; &nbsp; &nbsp;" : "&nbsp;" %><a href="javascript:popupStart('660','900','../ON/labValues.jsp?testName=<%=obxName%>&demo=<%=demographicID%>&labType=HL7&identifier=<%= handler.getOBXIdentifier(j, k) %>')"><%=obxName %></a><%}%>
@@ -1357,7 +1347,7 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
 										    	javax.swing.text.Document doc = rtfParser.createDefaultDocument();
 										    	rtfParser.read(rtfStream, doc, 0);
 										    	String rtfText = doc.getText(0, doc.getLength()).replaceAll("\n", "<br>");
-										    	String disclaimer = "IMPORTANT DISCLAIMER: You are viewing a PREVIEW of the original report. The rich text formatting contained in the original report may convey critical information that must be considered for clinical decision making. Please refer to the ORIGINAL report, by clicking 'Print', prior to making any decision on diagnosis or treatment.";%>
+										    	String disclaimer = "<br>IMPORTANT DISCLAIMER: You are viewing a PREVIEW of the original report. The rich text formatting contained in the original report may convey critical information that must be considered for clinical decision making. Please refer to the ORIGINAL report, by clicking 'Print', prior to making any decision on diagnosis or treatment.";%>
 										    	<td align="left"><%= rtfText + disclaimer %></td><%} %><%
 											else{%>
                                            		<td align="left"><%= handler.getOBXResult( j, k) %></td><%} %>
@@ -1369,7 +1359,9 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
                                    			else{//if it isn't a PATHL7 doc%>
 
                                		<tr bgcolor="<%=(linenum % 2 == 1 ? highlight : "")%>" class="<%=lineClass%>"><%
-                               				if(handler.getMsgType().equals("PATHL7") && (obxCount>1) && handler.getOBXIdentifier(j, k).equals(handler.getOBXIdentifier(j, k-1)) && (handler.getOBXValueType(j, k).equals("TX") || handler.getOBXValueType(j, k).equals("FT"))){%>
+
+                               				//for pathl7, if there are duplicate FT/TX obxNames, only display the first 
+                               				if(handler.getMsgType().equals("PATHL7") && !isAllowedDuplicate && (obxCount>1) && handler.getOBXIdentifier(j, k).equalsIgnoreCase(handler.getOBXIdentifier(j, k-1)) && (handler.getOBXValueType(j, k).equals("TX") || handler.getOBXValueType(j, k).equals("FT"))){%>
                                    				<td valign="top" align="left"><%= obrFlag ? "&nbsp; &nbsp; &nbsp;" : "&nbsp;" %><a href="javascript:popupStart('660','900','../ON/labValues.jsp?testName=<%=obxName%>&demo=<%=demographicID%>&labType=HL7&identifier=<%= handler.getOBXIdentifier(j, k) %>')"></a><%
                                    				}
                                				else{%>
@@ -1377,8 +1369,12 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
                                            &nbsp;<%if(loincCode != null){ %>
                                                 	<a href="javascript:popupStart('660','1000','http://apps.nlm.nih.gov/medlineplus/services/mpconnect.cfm?mainSearchCriteria.v.cs=2.16.840.1.113883.6.1&mainSearchCriteria.v.c=<%=loincCode%>&informationRecipient.languageCode.c=en')"> info</a>
                                                 	<%} %> </td><%}%>
-                                                	<%//String result = handler.getOBXResult( j, k).replace("\\.Zt\\", "\t"); %>
-                                           <td align="right"><%= handler.getOBXResult( j, k) %></td>
+                                           	<%
+                                          	//for pathl7, if it is an SG/CDC result greater than 100 characters, left justify it
+                                           	if((handler.getOBXResult(j, k).length() > 100) && (isSGorCDC)){%>
+                                           		<td align="left"><%= handler.getOBXResult( j, k) %></td><%
+                                           	}else{%>
+                                           <td align="right"><%= handler.getOBXResult( j, k) %></td><%}%>
 
                                            <td align="center">
                                                    <%= handler.getOBXAbnormalFlag(j, k)%>
@@ -1395,11 +1391,11 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
 
 										<%}
 
-                                       for (l=0; l < handler.getOBXCommentCount(j, k); l++){%>
-                                            <tr bgcolor="<%=(linenum % 2 == 1 ? highlight : "")%>" class="NormalRes">
-                                               <td valign="top" align="left" colspan="8"><pre  style="margin:0px 0px 0px 100px;"><%=handler.getOBXComment(j, k, l)%></pre></td>
-                                            </tr>
-                                       <%}
+                                        for (l=0; l < handler.getOBXCommentCount(j, k); l++){%>
+                                        <tr bgcolor="<%=(linenum % 2 == 1 ? highlight : "")%>" class="NormalRes">
+                                           <td valign="top" align="left" colspan="8"><pre  style="margin:0px 0px 0px 100px;"><%=handler.getOBXComment(j, k, l)%></pre></td>
+                                        </tr>
+                                   <%}
 
 
                                     } else { %>

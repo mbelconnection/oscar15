@@ -25,10 +25,15 @@
 
 package oscar.dms;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.oscarehr.PMmodule.caisi_integrator.CaisiIntegratorManager;
 import org.oscarehr.PMmodule.caisi_integrator.IntegratorFallBackManager;
@@ -966,4 +972,68 @@ public final class EDocUtil extends SqlUtilBaseS {
 
 		documentDao.merge(doc);
 	}
+	
+    /**
+		 * Reads content of the specified file with.
+		 * 
+		 * @param fileName
+		 * 		Name of the file to use for saving the content
+		 * @param content
+		 * 		Content to be saved into the file
+		 * @return
+		 * 		Returns the content of the file
+		 * @throws IOException
+		 * 		IOException is thrown in case file can not be read  
+		 */
+     public static byte[] readContent(String fileName) throws IOException {
+ 		InputStream is = null;
+ 		try {
+ 			is = new BufferedInputStream(new FileInputStream(new File(fileName)));
+ 			return IOUtils.toByteArray(is);
+ 		} finally {
+ 			try {
+	                is.close();
+             } catch (IOException e) {
+             	logger.error("Unable to close output stream", e);
+             }
+ 		}
+     }
+     
+		/**
+		 * Saves content to the OSCAR document directory as a file with the specified name.
+		 * File with the same name will be overwritten.
+		 * 
+		 * @param fileName
+		 * 		Name of the file to use for saving the content
+		 * @param content
+		 * 		Content to be saved into the file
+		 * @throws IOException
+		 * 		IOException is thrown in case of any save errors  
+		 */
+     public static void writeDocContent(String fileName, byte[] content) throws IOException {
+     	String docDir = OscarProperties.getInstance().getProperty("DOCUMENT_DIR");
+     	File file = new File(docDir, fileName);
+     	writeContent(file.getAbsolutePath(), content);        	
+     }
+     
+     public static void writeContent(String fileName, byte[] content) throws IOException {
+     	OutputStream os = null;
+ 		try {
+ 			File file = new File(fileName);
+ 			if (!file.exists()) {
+ 				file.createNewFile();
+ 			}
+ 			os = new BufferedOutputStream(new FileOutputStream(file));
+ 			os.write(content);
+ 			os.flush();
+ 		} finally {
+ 			if (os != null) {
+ 				try {
+ 					os.close();
+ 				} catch (IOException e) {
+ 					logger.error("Unable to close output stream", e);
+ 				}
+ 			}
+ 		}
+     }
 }

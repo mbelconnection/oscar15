@@ -25,6 +25,10 @@
 
 package org.oscarehr.common.dao;
 
+import java.util.List;
+
+import javax.persistence.Query;
+
 import org.oscarehr.common.model.StudyData;
 import org.springframework.stereotype.Repository;
 
@@ -35,4 +39,49 @@ public class StudyDataDao extends AbstractDao<StudyData>{
 		super(StudyData.class);
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<StudyData> findByContent(String content) {
+		Query query = entityManager.createQuery("FROM StudyData s WHERE s.content LIKE :content AND s.deleted = false");
+		query.setParameter("content", content);
+		return query.getResultList();
+	}
+	
+	public StudyData findSingleByContent(String content) {
+		Query query = entityManager.createQuery("FROM StudyData s WHERE s.content LIKE :content AND s.deleted = false");
+		query.setParameter("content", content);
+		return getSingleResultOrNull(query);
+	}
+	
+	 public int removeByDemoAndStudy(Integer demographicNo, Integer studyId ) {
+         Query query = entityManager.createQuery("from StudyData s where s.demographicNo = :demoNo and s.studyNo = :studyId");
+         query.setParameter("demoNo", demographicNo);
+         query.setParameter("studyId", studyId);
+         
+         int i = 0;
+         for(Object o : query.getResultList()) {
+        	 StudyData data = (StudyData) o;
+        	 remove(data);
+        	 i++;
+         }
+         
+         return i;
+	 }
+	
+	public List<StudyData> findByDemoAndStudy(Integer demographicNo, Integer studyId ) {
+		Query query = entityManager.createQuery("select s from StudyData s where s.demographicNo = :demoNo and s.studyNo = :studyId AND s.deleted = false");
+		
+		query.setParameter("demoNo", demographicNo);
+		query.setParameter("studyId", studyId);
+		
+		@SuppressWarnings("unchecked")
+        List<StudyData> studyDataList = query.getResultList();
+		
+		return studyDataList;
+	}
+
+	@Override
+    public void remove(StudyData o) {
+		o.setDeleted(true);
+		entityManager.merge(o);
+    }
 }

@@ -81,6 +81,16 @@ public  class RptDemographicReportAction extends Action {
             RptDemographicQueryLoader demoL = new RptDemographicQueryLoader();
             RptDemographicReportForm dRF = demoL.queryLoader(frm);
             request.setAttribute("formBean",dRF);
+        }else if( query.equals("Add to Study")) {
+        	String studyId = frm.getStudyId();
+        	RptDemographicQueryBuilder demoQ = new RptDemographicQueryBuilder();
+            java.util.ArrayList searchedArray = demoQ.buildQuery(frm);
+            request.setAttribute("searchedArray",searchedArray);
+            MiscUtils.getLogger().info("SELECT ARRAY IS NULL " + String.valueOf(select == null));
+            MiscUtils.getLogger().info("STUDY ID IS " + studyId);
+            request.setAttribute("selectArray",select);
+            request.setAttribute("studyId", studyId);
+            return (mapping.findForward("addToStudy"));
         }
 
         return (mapping.findForward("success"));

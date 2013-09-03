@@ -26,12 +26,17 @@
 package org.oscarehr.common.model;
 
 import java.util.Date;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -67,6 +72,11 @@ public class Study extends AbstractModel<Integer> {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date timestamp;
 
+	@ManyToMany(fetch=FetchType.EAGER)
+	@JoinTable(name="demographicstudy", joinColumns= @JoinColumn(name="study_no"),
+										inverseJoinColumns= @JoinColumn(name="demographic_no"))
+	Set<Demographic>demographics;
+	
 	public Integer getId() {
     	return id;
     }
@@ -138,6 +148,14 @@ public class Study extends AbstractModel<Integer> {
 	public void setTimestamp(Date timestamp) {
     	this.timestamp = timestamp;
     }
+
+	public Set<Demographic> getDemographics() {
+		return demographics;
+	}
+
+	public void setDemographics(Set<Demographic> demographics) {
+		this.demographics = demographics;
+	}
 
 
 

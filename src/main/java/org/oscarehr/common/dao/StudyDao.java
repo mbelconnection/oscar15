@@ -25,6 +25,10 @@
 
 package org.oscarehr.common.dao;
 
+import java.util.List;
+
+import javax.persistence.Query;
+
 import org.oscarehr.common.model.Study;
 import org.springframework.stereotype.Repository;
 
@@ -34,4 +38,12 @@ public class StudyDao extends AbstractDao<Study>{
 	public StudyDao() {
 		super(Study.class);
 	}
+
+	@SuppressWarnings("unchecked")
+    public List<Study> findAll() {
+		Query query = entityManager.createQuery("FROM Study s");
+	    return query.getResultList();
+    }
+	
+	
 }

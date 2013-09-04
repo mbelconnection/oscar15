@@ -192,7 +192,10 @@ public final class MyOscarUtils {
 		try {
 			ProviderPreferenceDao providerPreferenceDao = (ProviderPreferenceDao) SpringUtils.getBean("providerPreferenceDao");
 			ProviderPreference providerPreference = providerPreferenceDao.find(loggedInInfo.loggedInProvider.getProviderNo());
-
+			if (providerPreference == null) {
+				return;
+			}
+			
 			byte[] encryptedMyOscarPassword = providerPreference.getEncryptedMyOscarPassword();
 			if (encryptedMyOscarPassword == null) return;
 

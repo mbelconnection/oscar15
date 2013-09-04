@@ -44,31 +44,26 @@ public class EaapsIntegrationTest extends DaoTestFixtures {
 
 	private static Logger logger = Logger.getLogger(EaapsIntegrationTest.class);
 	
+	/* SYSTEM-SPECIFIC TEST VALUES */
+	
 	/**
 	 * Public OSCAR key
 	 */
-	private static final String OSCAR_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDSnQgp+7u+lGyFjieM3OFu7dxOE9uC8P33KKOk" + 
-			"s463Qym6+Oj3omRcPxkbQJVuYZq/UmH5HOa/y2PIhumnSEBgx+jf7a6OZ7SRFcTyljs7njjwMkOg" + 
-			"y4GZAgVZ/IqtecetcqHWqcvyCYTVJPfkMfREC2otT0C+b1P+5PqaqYvlEwIDAQAB";
+	private static final String OSCAR_KEY = "";
 	
 	/**
 	 * Public client key
 	 */
-	private static final String CLIENT_KEY = 
-			"MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAJNQtylAhAOmT3fKNb3eBWMIyG9A" + 
-			"9Le0i16tPxxY5YlSc5qLGUzWjpEYqo0112F9ZPIFU19hXpXZTjfxRPy95asJ2CGKIQkHuKvqTNrZ" + 
-			"4nhI5O9omreEmz+xbcqhXQioPasLDGrgRiCMZ2h5Eq5hHCepnuKw327xXKko+gl/UjgDAgMBAAEC" + 
-			"gYASPI7AE5WEIiV6TdUDUSXXkbHGXAMvbrFGIipK5xJbQpK/EfMq2PDDM4uBeaXVEsHZWCFvEE22" + 
-			"PTV6pWqF4zg4GRVdvS0mqCvl3nm2BbXEcgKJpgt5TYQ+HW69dvbWSx5iJHPAZJpgK9AHbI8gWa9l" + 
-			"xjmCuMximo87CtkSVd55iQJBAMyWf9HmlE6xGpSjCT184eg8bn4ZQu+KzVjxpOxYSUhAY6m+zpoG" + 
-			"K4l8nRhs5ixpaqW453KapN6RgJCBgD6Ulf0CQQC4VcTaoEFfro1AmSyJgJ/h57e1HKj2dIRXguc1" + 
-			"FoEmuoBveXG6YH8mcOSKD542iUsFf6cL76y6yzv3qqN59GX/AkBAUq0bVHCakSo3Q087atEoEB/5" + 
-			"O34FDFHlvgvJVzSrJ7tt+hTA7mGv12MY89wmaHpkYk86hA6D/6E5Tc4BXvwNAkBiIQaSfA1RKlL3" + 
-			"uJME//wc/oXFXGR2DsEE9SKwGDLYsx/8N+JbHVOS2zZOaNIIpj3Rx4rdx9Fj/x0FU0mDep9xAkAr" + 
-			"7O9i5j8yVDDarrJJh/1WrKLMHTodmtzJ8Mn42q1Y0mb/tp3gtW4sDuofmT8HSNY8UxIww9R7siSk" + 
-			"k1stXzeY";
+	private static final String CLIENT_KEY = "";
+	
+	static final String HASH = "";
+	
+	static final String PROVIDER_ID = "1";
+	
+	/* END OF SYSTEM-SPECIFIC TEST VALUES */
+
 		
-	private static final String PDF = "JVBERi0xLjQKJeLjz9MKMyAwIG9iago8PC9MZW5ndGggNjE5L0ZpbHRlci9GbGF0ZURlY29kZT4+c3RyZWFtCnichZVfb9MwFMXf8yn8CA8U23H957WITUKq0KAC7dFNXBgLDcs6+vVJ44s05" + 
+	static final String PDF = "JVBERi0xLjQKJeLjz9MKMyAwIG9iago8PC9MZW5ndGggNjE5L0ZpbHRlci9GbGF0ZURlY29kZT4+c3RyZWFtCnichZVfb9MwFMXf8yn8CA8U23H957WITUKq0KAC7dFNXBgLDcs6+vVJ44s05" + 
 			"ea4mqZV+p3Tc5xd3zxVm11VW+GlFbu2kuKdctOnj7vqrnqafrX4NILbSq7W4lx5v6qFC1IoaVZWKCuGVH0lqIJeBUh1cONfRI3UKwVpjnWmFAsoxQJKsYDm2LUvxQJKsYBSLKA51uhSLKAUCy" + 
 			"jFAppjtS3FAkqxgFIsoDlWFUcKUIoFlGIBnWJtKI0UojkW0RyLaI51pZFClGIBpVhAc6wtjRSiFAsoxQKaY01ppBClWEApFtAcW5dGClGKBZRiGb27LFIl5PijRJDTjtRi97t6f6OEGj8dqjf" + 
 			"bvk3d292vy3J9pVbBTEtzLr9PceBqHcK0RNmXx+PLITanlyEtuMxYVi24PvRdvyDPB7i8CS5q/V9tnE5tjA6egTlUCAaegam/pGN86U6wPjPcDikdUX0rZ+rWee38fg3rM4cKbuGwVJ+pb9Iw" + 
@@ -89,34 +84,28 @@ public class EaapsIntegrationTest extends DaoTestFixtures {
 			"BmIAowMDAwMDAwODY3IDAwMDAwIG4gCjAwMDAwMDExOTQgMDAwMDAgbiAKMDAwMDAwMDAxNSAwMDAwMCBuIAowMDAwMDAxNzAyIDAwMDAwIG4gCjAwMDAwMDA3MDEgMDAwMDAgbiAKMDAwMDA" + 
 			"wMTc2NSAwMDAwMCBuIAowMDAwMDAxODEwIDAwMDAwIG4gCnRyYWlsZXIKPDwvUm9vdCA2IDAgUi9JRCBbPDkyMThlYWZhYmZkOWM0ZjcyNmY2YjlkNDZmZDI1NmZkPjw4ODc3YzNkN2RjZDIz" + 
 			"ODAxMTU5NmMxZDJlZDQ2YjgyZj5dL0luZm8gNyAwIFIvU2l6ZSA4Pj4Kc3RhcnR4cmVmCjE5MzIKJSVFT0YK";
+		
+	static final String TIMESTAMP_STRING = ConversionUtils.toDateString(new Date(), "yyyyMMddHHmmss");
 	
-	// 221b0a55cff1f973bcf3fb927ae4c96232dcfb539ba1398a224e97dab3d0ec29 - 6
-	// c28e21162eea908aa65f70eaab08a429a42170b1068d274c3bac1d444d16265a - 8
-	// 64546ac46047a74ae6edcf73c0d84c8fa08f1ffff4dc9cf745e4a0ceab9369e9 - 9
-	// f5b57b900d6d251b1deebcc0c4fb9cbfa1807a055c0364e86b1681d8c36ffd07 - 31
-	private static final String HASH = "7ab6205ca33b5489e51df3eaff2020dbb594e1caf7a0cf7880960d7bd9ba8221";
-	
-	private static final String TIMESTAMP_STRING = ConversionUtils.toDateString(new Date(), "yyyyMMddHHmmss");
-	
-	private static final String HL7 = 
+	static final String HL7 = 
 			"MSH|^~\\&|SENDING APP||||" + TIMESTAMP_STRING + ".001-0400||ORU^R01|2501|01|2.2|1\r" + 
 			"PID||" + HASH + "\r" + 
-			"OBR||||SERVICE ID: EAAPS\r" + 
+			"OBR||||SERVICE ID: EAAPS||||||||||||" + PROVIDER_ID + "\r" + 
 			"NTE|1|eaaps_" + HASH + "_" + System.currentTimeMillis() + ".pdf|" + PDF + "\r" +
 			"NTE|2||Note comment for message with the AAP attachment " + HASH + "\r" +
 			"NTE|3||MRP message for message with the AAP attachment " + HASH + "\r";
 	
-	private static final String HL7_EMPTY_MESSAGE = 
+	static final String HL7_EMPTY_MESSAGE = 
 			"MSH|^~\\&|SENDING APP||||" + TIMESTAMP_STRING + ".002-0400||ORU^R01|2501|01|2.2|1\r" + 
 			"PID||" + HASH + "\r" + 
-			"OBR||||SERVICE ID: EAAPS\r" + 
+			"OBR||||SERVICE ID: EAAPS||||||||||||" + PROVIDER_ID + "\r" +
 			"NTE|1|eaaps_" + HASH + "_" + (System.currentTimeMillis() + 1) + ".pdf|" + PDF + "\r" +
 			"NTE|2||Note comment for the message without MRP note " + HASH + "\r";
 	
-	private static final String HL7_EMPTY_PDF = 
+	static final String HL7_EMPTY_PDF = 
 			"MSH|^~\\&|SENDING APP||||" + TIMESTAMP_STRING + ".003-0400||ORU^R01|2501|01|2.2|1\r" + 
 			"PID||" + HASH + "\r" + 
-			"OBR||||SERVICE ID: EAAPS\r" + 
+			"OBR||||SERVICE ID: EAAPS||||||||||||999998\r" + 
 			"NTE|1||\r" +
 			"NTE|2||\r" +
 			"NTE|3||MRP message only without AAP attachment " + HASH + "\r";
@@ -154,11 +143,13 @@ public class EaapsIntegrationTest extends DaoTestFixtures {
 		PublicKey publicOscarKey = SendingUtils.getPublicOscarKey(publicOscarKeyString); 
 		PrivateKey publicServiceKey = SendingUtils.getPublicServiceKey(publicServiceKeyString);
 		
-		for(String messageText : new String[] {HL7_EMPTY_MESSAGE}) { // HL7_EMPTY_PDF, HL7, HL7_EMPTY_MESSAGE
+		for(String messageText : new String[] {HL7, HL7_EMPTY_PDF, HL7_EMPTY_MESSAGE}) {
 			byte[] bytes = messageText.getBytes(); 
 			int statusCode = SendingUtils.send(bytes, url, publicOscarKey, publicServiceKey, "eaaps");
 			logger.info("Completed EAAPS call with status " + statusCode);
 			assertEquals(200, statusCode);
+			
+			break;
 		}
 		
 	}

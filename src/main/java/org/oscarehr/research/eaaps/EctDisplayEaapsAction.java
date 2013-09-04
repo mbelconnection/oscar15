@@ -57,6 +57,8 @@ import oscar.oscarEncounter.pageUtil.NavBarDisplayDAO;
 public class EctDisplayEaapsAction extends EctDisplayAction {
 
 	private static final String EAAPS = "eaaps";
+	
+	private static final String EAAPS_ERROR_MESSAGE = "Patient not found in eAAPS database";
 
 	private static Logger logger = Logger.getLogger(EctDisplayEaapsAction.class);
 
@@ -112,13 +114,13 @@ public class EctDisplayEaapsAction extends EctDisplayAction {
 		EaapsPatientData patientData;
 		try {
 			EaapsServiceClient client = new EaapsServiceClient();
-			patientData = client.getPatient(hash.getHash());
-		} catch (Exception e) {
-			logger.debug("Unable to retrieve patient data", e);
-			request.getSession().removeAttribute("eaapsInfo");
-			Dao.addItem(newItem("Unable to retrive patient data"));
-			return true;
-		}
+	        patientData = client.getPatient(hash.getHash());
+        } catch (Exception e) {
+        	logger.debug("Unable to retrieve patient data", e);
+        	request.getSession().removeAttribute("eaapsInfo");        	
+        	Dao.addItem(newItem(EAAPS_ERROR_MESSAGE));
+        	return true;
+        }
 
 		configureMostResponsiblePhysicianFlag(patientData, demographic);
 		request.getSession().setAttribute("eaapsInfo", patientData);
@@ -138,34 +140,12 @@ public class EctDisplayEaapsAction extends EctDisplayAction {
 		if (patientData.isUrlProvided()) {
 			eaapsUrl = getEaapsUrl(patientData.getUrl(), true);
 		}
-
-		if (!patientData.isEligibleForStudy()) {
-			Dao.addItem(newItem("Not eligible", eaapsUrl, null));
-			return true;
+		
+		String widgetMessage = patientData.getWidgetMessage();
+		if (widgetMessage == null || widgetMessage.isEmpty()) {
+			widgetMessage = EAAPS_ERROR_MESSAGE;
 		}
-
-		if (patientData.isAapReviewCompleted()) {
-			Dao.addItem(newItem("AAP delivered", eaapsUrl, "red"));
-			return true;
-		}
-
-		if (patientData.isAapReviewStarted()) {
-			Dao.addItem(newItem("AAP review started", eaapsUrl, "red"));
-			return true;
-		}
-
-		if (patientData.isRecommendationsAvailable()) {
-			Dao.addItem(newItem("Recommendations are available", eaapsUrl, null));
-		}
-
-		NavBarDisplayDAO.Item item;
-		if (patientData.isAapAvailable()) {
-			item = newItem("AAP is available", eaapsUrl);
-		} else {
-			item = newItem("AAP is <b>not</b> available", eaapsUrl, "red");
-		}
-		Dao.addItem(item);
-
+		Dao.addItem(newItem(widgetMessage, eaapsUrl, null));
 		return true;
 	}
 
@@ -178,25 +158,27 @@ public class EctDisplayEaapsAction extends EctDisplayAction {
 	 * 		Demographic being loaded
 	 */
 	private void configureMostResponsiblePhysicianFlag(EaapsPatientData patientData, Demographic demo) {
-		String url = patientData.getUrl();
-		if (url == null || url.trim().isEmpty()) {
+		String urlString = patientData.getUrl();		
+		if (urlString == null || urlString.trim().isEmpty()) {
 			logger.debug("URL is not provided - exiting without replacing");
 			return;
 		}
-
-		String loggedInProviderNo = getProviderNo();
-		String mrpProviderNo = demo.getProviderNo();
-		boolean isMrpPhysicianLookingAtTheRecord = loggedInProviderNo.equals(mrpProviderNo);
-
-		if (url.contains("?")) {
-			url = url.concat("&");
-		} else {
-			url = url.concat("?");
-		}
-		url = url.concat("isMrp=" + isMrpPhysicianLookingAtTheRecord);
-
-		patientData.replaceUrl(url);
-	}
+		
+	    String loggedInProviderNo = getProviderNo();
+	    String mrpProviderNo = demo.getProviderNo();
+	    boolean isMrpPhysicianLookingAtTheRecord = loggedInProviderNo.equals(mrpProviderNo);
+	    
+	    StringBuilder buf = new StringBuilder(urlString);
+	    
+	    if (urlString.contains("?")) {
+	    	buf.append("&");
+	    } else {
+	    	buf.append("?");
+	    }
+	    buf.append("isMrp=").append(isMrpPhysicianLookingAtTheRecord);
+	    buf.append("&pNo=").append(loggedInProviderNo);
+	    patientData.replaceUrl(buf.toString());
+    }
 
 	private boolean isNotificationRequired(String hash, EaapsPatientData patientData) {
 		String providerNo = getProviderNo();
@@ -267,10 +249,6 @@ public class EctDisplayEaapsAction extends EctDisplayAction {
 		item.setURLJavaScript(true);
 
 		return item;
-	}
-
-	private String getEaapsUrl(String url) {
-		return getEaapsUrl(url, false);
 	}
 
 	private String getEaapsUrl(String url, boolean isNarrow) {

@@ -1010,30 +1010,46 @@ public final class EDocUtil extends SqlUtilBaseS {
 		 * @throws IOException
 		 * 		IOException is thrown in case of any save errors  
 		 */
-     public static void writeDocContent(String fileName, byte[] content) throws IOException {
-     	String docDir = OscarProperties.getInstance().getProperty("DOCUMENT_DIR");
-     	File file = new File(docDir, fileName);
-     	writeContent(file.getAbsolutePath(), content);        	
-     }
-     
-     public static void writeContent(String fileName, byte[] content) throws IOException {
-     	OutputStream os = null;
- 		try {
- 			File file = new File(fileName);
- 			if (!file.exists()) {
- 				file.createNewFile();
- 			}
- 			os = new BufferedOutputStream(new FileOutputStream(file));
- 			os.write(content);
- 			os.flush();
- 		} finally {
- 			if (os != null) {
- 				try {
- 					os.close();
- 				} catch (IOException e) {
- 					logger.error("Unable to close output stream", e);
- 				}
- 			}
- 		}
-     }
-}
+        public static void writeDocContent(String fileName, byte[] content) throws IOException {
+        	String docDir = OscarProperties.getInstance().getProperty("DOCUMENT_DIR");
+        	File file = new File(docDir, fileName);
+        	writeContent(file.getAbsolutePath(), content);        	
+        }
+        
+        /**
+         * Resolves file name for the specified OSCAR file into the absolute path on the file system.
+         * 
+         * @param fileName
+         * 		OSCAR file name.
+         * @return
+         * 		Returns the absolute path on the file system.
+         */
+        public static String resovePath(String fileName) {
+        	String docDir = OscarProperties.getInstance().getProperty("DOCUMENT_DIR");
+        	File file = new File(docDir, fileName);
+        	return file.getAbsolutePath();
+        }
+        
+        public static void writeContent(String fileName, byte[] content) throws IOException {
+        	OutputStream os = null;
+    		try {
+    			File file = new File(fileName);
+    			if (!file.exists()) {
+    				file.createNewFile();
+    			}
+    			os = new BufferedOutputStream(new FileOutputStream(file));
+    			os.write(content);
+    			os.flush();
+    		} finally {
+    			if (os != null) {
+    				try {
+    					os.close();
+    				} catch (IOException e) {
+    					logger.error("Unable to close output stream", e);
+    				}
+    			}
+    		}
+        }
+
+	}
+

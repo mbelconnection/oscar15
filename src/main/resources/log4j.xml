@@ -55,7 +55,7 @@
 	<category name="org.oscarehr">
 		<priority value="INFO" />
 	</category>
-	
+
 	<!-- //debugging soap messages 
 	<category name="httpclient.wire">
 		<priority value="DEBUG" />
@@ -99,6 +99,11 @@
 	<!-- HAPI is logging an info message at error level which isn't an error, this will squelch it -->	
 	<category name="ca.uhn.hl7v2.model.v26.segment.UAC">
 		<priority value="FATAL" />
+	</category>
+	
+	<!-- This enable successful upload of file to BORN ftp server -->
+	<category name="org.springframework.integration.ftp.session">
+		<priority value="DEBUG" />
 	</category>
 
 	

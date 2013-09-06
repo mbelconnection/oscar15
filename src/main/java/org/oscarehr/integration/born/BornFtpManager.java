@@ -28,6 +28,7 @@ package org.oscarehr.integration.born;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+
 import org.apache.commons.net.ftp.FTPFile;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
@@ -54,7 +55,7 @@ public class BornFtpManager {
 	}
 	
 	public static boolean upload18MEWBVDataToRepository(byte[] xmlFile, String filename) {
-		String remotePath = OscarProperties.getInstance().getProperty("born_ftps_remote_dir","");
+		String remotePath = OscarProperties.getInstance().getProperty("born18m_ftps_remote_dir","");
 		DefaultFtpsSessionFactory ftpFactory = (DefaultFtpsSessionFactory)SpringUtils.getBean("ftpClientFactoryBORN18M");		
 		Session<FTPFile> session = null;
 		

@@ -41,6 +41,18 @@ public class DrugDispensingMapping extends AbstractModel<Integer>{
 
 	private String din;
 	
+	private String duration;
+	
+	private String durUnit;
+	
+	private String freqCode;
+	
+	private String quantity;
+	
+	private Float takeMin;
+	
+	private Float takeMax;
+	
 	private String productCode;
 	
 	@Temporal(TemporalType.TIMESTAMP)
@@ -60,6 +72,54 @@ public class DrugDispensingMapping extends AbstractModel<Integer>{
 
 	public void setDin(String din) {
 		this.din = din;
+	}
+
+	public String getDuration() {
+		return duration;
+	}
+
+	public void setDuration(String duration) {
+		this.duration = duration;
+	}
+
+	public String getDurUnit() {
+		return durUnit;
+	}
+
+	public void setDurUnit(String durUnit) {
+		this.durUnit = durUnit;
+	}
+
+	public String getFreqCode() {
+		return freqCode;
+	}
+
+	public void setFreqCode(String freqCode) {
+		this.freqCode = freqCode;
+	}
+
+	public String getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(String quantity) {
+		this.quantity = quantity;
+	}
+
+	public Float getTakeMin() {
+		return takeMin;
+	}
+
+	public void setTakeMin(Float takeMin) {
+		this.takeMin = takeMin;
+	}
+
+	public Float getTakeMax() {
+		return takeMax;
+	}
+
+	public void setTakeMax(Float takeMax) {
+		this.takeMax = takeMax;
 	}
 
 	public String getProductCode() {

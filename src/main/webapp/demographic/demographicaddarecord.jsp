@@ -274,6 +274,9 @@
        demographicExtDao.addKey(proNo, dem, "rxInteractionWarningLevel", request.getParameter("rxInteractionWarningLevel"), "");
        demographicExtDao.addKey(proNo, dem, "primaryEMR", request.getParameter("primaryEMR"), "");
        demographicExtDao.addKey(proNo, dem, "phoneComment", request.getParameter("phoneComment"), "");
+       demographicExtDao.addKey(proNo, dem, "usSigned", request.getParameter("usSigned"), "");
+       demographicExtDao.addKey(proNo, dem, "privacyConsent", request.getParameter("privacyConsent"), "");
+       demographicExtDao.addKey(proNo, dem, "informedConsent", request.getParameter("informedConsent"), "");
 
        //for the IBD clinic
 		OtherIdManager.saveIdDemographic(dem, "meditech_id", request.getParameter("meditech_id"));

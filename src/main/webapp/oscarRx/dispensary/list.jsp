@@ -237,6 +237,9 @@ function validateLotNumbers() {
 		return false;
 	}
 	
+	//if the product is disabled, it doesn't send it in the query..here's a backup
+	$("#productCode").val($("#product").val());
+	
 	return true;
 	
 	/*
@@ -375,6 +378,7 @@ function validateLotNumbers() {
 					<form action="<%=request.getContextPath()%>/oscarRx/Dispense.do">
 					<input type="hidden" name="method" value="saveEvent"/>
 					<input type="hidden" name="drugId" value="<%=drug.getId()%>"/>
+					<input type="hidden" name="productCode" id="productCode" value=""/>
 						<table>
 							<tr>
 								<td>Product:</td>

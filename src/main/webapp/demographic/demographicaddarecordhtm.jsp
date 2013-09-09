@@ -25,6 +25,9 @@
 --%>
 <%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %>
 <%@page import="org.oscarehr.util.SessionConstants"%>
+<%@page import="org.apache.commons.lang.StringUtils" %>
+<%@page import="oscar.OscarProperties" %>
+<jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean" scope="session" />
 <%
   if(session.getAttribute("user") == null) response.sendRedirect("../logout.jsp");
   String curUser_no = (String) session.getAttribute("user");
@@ -104,6 +107,8 @@
   }
   // Use this value as the default value for province, as well
   String defaultProvince = HCType;
+  String privateConsentEnabledProperty = OscarProperties.getInstance().getProperty("privateConsentEnabled");
+  boolean privateConsentEnabled = privateConsentEnabledProperty != null && privateConsentEnabledProperty.equals("true");
 %>
 <html:html locale="true">
 <head>
@@ -962,17 +967,28 @@ function autoFillHin(){
           </select>
         <% }%>
       </td>
+    </tr>
+    <tr>
       <td align="right">
          <b><bean:message key="demographic.demographicaddrecordhtm.msgCountryOfOrigin"/>:</b>
       </td>
       <td>
-          <select name="countryOfOrigin">
+          <select id="countryOfOrigin" name="countryOfOrigin">
               <option value="-1"><bean:message key="demographic.demographicaddrecordhtm.msgNotSet"/></option>
               <%for(CountryCode cc : countryList){ %>
               <option value="<%=cc.getCountryId()%>"><%=cc.getCountryName() %></option>
               <%}%>
           </select>
       </td>
+        <oscar:oscarPropertiesCheck property="privateConsentEnabled" value="true">
+		<td colspan="2">
+			<div id="usSigned">
+				<input type="radio" name="usSigned" value="signed">U.S. Resident Consent Form Signed
+				<br/>
+			    <input type="radio" name="usSigned" value="unsigned">U.S. Resident Consent Form NOT Signed
+		    </div>
+		</td>
+		</oscar:oscarPropertiesCheck>
     </tr>
     <tr valign="top">
 	<td  align="right"><b><bean:message key="demographic.demographicaddrecordhtm.msgSIN"/>:</b> </td>
@@ -1229,7 +1245,16 @@ document.forms[1].r_doctor_ohip.value = refNo;
 				</table>
 				</td>
 			</tr>
-
+			<tr valign="top">
+				<oscar:oscarPropertiesCheck property="privateConsentEnabled" value="true">
+				<td colspan="2">
+					<input type="checkbox" name="privacyConsent" value="yes"><b>Privacy Consent (verbal) Obtained</b> 
+					<br/>
+					<input type="checkbox" name="informedConsent" value="yes"><b>Informed Consent (verbal) Obtained</b>
+					<br/>
+				</td>
+				</oscar:oscarPropertiesCheck>
+		  	</tr>
 			<tr valign="top">
 				<td align="right"><b><bean:message
 					key="demographic.demographicaddrecordhtm.formDateJoined" /></b><b>:
@@ -1322,6 +1347,30 @@ if(oscarVariables.getProperty("demographicExtJScript") != null) { out.println(os
 
 <script type="text/javascript">
 Calendar.setup({ inputField : "waiting_list_referral_date", ifFormat : "%Y-%m-%d", showsTime :false, button : "referral_date_cal", singleClick : true, step : 1 });
+
+<%
+if (privateConsentEnabled) {
+%>
+jQuery(document).ready(function(){
+	var countryOfOrigin = jQuery("#countryOfOrigin").val();
+	if("US" != countryOfOrigin) {
+		jQuery("#usSigned").hide();
+	} else {
+		jQuery("#usSigned").show();
+	}
+	
+	jQuery("#countryOfOrigin").change(function () {
+		var countryOfOrigin = jQuery("#countryOfOrigin").val();
+		if("US" == countryOfOrigin){
+		   	jQuery("#usSigned").show();
+		} else {
+			jQuery("#usSigned").hide();
+		}
+	});
+});
+<%
+}
+%>
 </script>
 </body>
 </html:html>

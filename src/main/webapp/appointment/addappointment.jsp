@@ -737,13 +737,14 @@ function pasteAppt(multipleSameDayGroupAppt) {
 		%>
 		     <select name="location" >
                 <%
+                String programIdForLocation = (String) session.getAttribute(SessionConstants.CURRENT_PROGRAM_ID);
                 if (programs != null && !programs.isEmpty()) {
 			       	for (Program program : programs) {
 			       	    String description = StringUtils.isBlank(program.getLocation()) ? program.getName() : program.getLocation();
 			   	%>
-			        <option value="<%=program.getId()%>"><%=StringEscapeUtils.escapeHtml(description)%></option>
+			        <option value="<%=program.getId()%>" <%=program.getId().toString().equals(programIdForLocation) ? "selected" : ""%>><%=StringEscapeUtils.escapeHtml(description)%></option>
 			    <%	}
-                }  
+                }
 			  	%>
             </select>
 		<% } %>

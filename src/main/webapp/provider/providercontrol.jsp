@@ -84,18 +84,17 @@
 	boolean caisiEnabled = moduleNames != null && StringUtils.containsIgnoreCase(moduleNames, "Caisi");
 	boolean locationEnabled = caisiEnabled && (useProgramLocation != null && useProgramLocation.equals("true"));
 	
-	String sessionLocation = request.getParameter("programIdForLocation");
-	if (sessionLocation != null) {
-		session.setAttribute("sessionLocation", sessionLocation);   
+	String programIdForLocation = request.getParameter("programIdForLocation");
+	
+	if (programIdForLocation != null) {
+		session.setAttribute(SessionConstants.CURRENT_PROGRAM_ID, programIdForLocation);
 	}
 	
-	if(locationEnabled && session.getAttribute("sessionLocation") == null) {
+	if(locationEnabled && programIdForLocation == null) {
 	    response.sendRedirect("../location.jsp");
 	    return;
 	}
-	
-	String programIdForLocation = request.getParameter("programIdForLocation");
-	
+		
     if(request.getParameter("year")==null && request.getParameter("month")==null && request.getParameter("day")==null && request.getParameter("displaymode")==null && request.getParameter("dboperation")==null) {
         OscarProperties props = OscarProperties.getInstance();
         GregorianCalendar now=new GregorianCalendar();

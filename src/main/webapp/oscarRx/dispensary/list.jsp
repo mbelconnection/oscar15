@@ -292,20 +292,21 @@ function validateLotNumbers() {
 						</tr>
 						<tr>
 							<td><b>
-							<%if(totalDosesRemaining != null && totalDosesRemaining > 0) { %>
-								Status: Active
-							<%} else { %>
-								Status: Filled
-							<% } %>
+							<%
+								String status="Active";
+							if(totalDosesRemaining != null && totalDosesRemaining > 0) {
+								status = "Active";
+							} else {
+									status="Filled";
+							}
+							if(status.equals("Active") && drug.isExpired()) {
+								status="Expired";
+								
+							}%>
+							<%="Status:" + status %>
 							</b></td>
 							<td>
-								<%
-								//Open, Expired, Filled
-								String status = "Open";
-								if(drug.isExpired())
-									status = "Expired";
 								
-								%>
 							</td>
 						</tr>
 					</table>
@@ -361,7 +362,7 @@ function validateLotNumbers() {
 				</td>
 			</tr>
 			
-			<%if(totalDosesRemaining != null && totalDosesRemaining > 0) { %>
+			<%if((totalDosesRemaining != null && totalDosesRemaining > 0) && !drug.isExpired()) { %>
 			<tr style="height:15px">
 				<td></td>
 			</tr>

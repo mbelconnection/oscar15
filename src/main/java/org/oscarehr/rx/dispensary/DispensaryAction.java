@@ -103,7 +103,11 @@ public class DispensaryAction extends DispatchAction {
 		
 		
 		List<DrugDispensing> dispensingEvents = drugDispensingDao.findByDrugId(Integer.parseInt(id));
+		
+		
 		for(DrugDispensing dd:dispensingEvents) {
+			int totalAmountForDD = 0;
+			
 			if(providerNames.get(dd.getDispensingProviderNo()) == null) {
 				providerNames.put(dd.getDispensingProviderNo(), providerDao.getProvider(dd.getDispensingProviderNo()).getFormattedName());
 			}
@@ -115,15 +119,14 @@ public class DispensaryAction extends DispatchAction {
 			for(int x=0;x<dps.size();x++) {
 				DrugProduct dp = dps.get(x);
 				sb.append("<tr><td>" + dp.getLotNumber() + "</td><td>"+dp.getExpiryDateAsString()+"</td></tr>");
+				totalAmountForDD += dp.getAmount();
 			}
 			sb.append("</table>");
 			details.put(dd.getId(),sb.toString());
 			
 			
-			DrugProduct dp = drugProductDao.find(dd.getProductId());
-			if(dp != null) {
-				productAmounts.put(dd.getId(),dp.getAmount());
-			}
+			productAmounts.put(dd.getId(),totalAmountForDD);
+			
 			
 		}
 		request.setAttribute("dispensingEvents",dispensingEvents);

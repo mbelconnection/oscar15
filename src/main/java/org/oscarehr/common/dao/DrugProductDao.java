@@ -56,10 +56,18 @@ public class DrugProductDao extends AbstractDao<DrugProduct>{
 	}
 	
 	public List<Object[]> findAllAvailableUnique() {
-		Query query = entityManager.createQuery("SELECT distinct x.code, x.name FROM DrugProduct x  where x.dispensingEvent is null");
+		Query query = entityManager.createQuery("SELECT distinct x.code, x.name FROM DrugProduct x  where x.dispensingEvent is null order by x.name");
 		
 		@SuppressWarnings("unchecked")
-        List<Object[]> results = query.getResultList();
+        	List<Object[]> results = query.getResultList();
+		return results;
+	}
+	
+	public List<Object[]> findAllUnique() {
+		Query query = entityManager.createQuery("SELECT distinct x.code, x.name FROM DrugProduct x order by x.name");
+		
+		@SuppressWarnings("unchecked")
+	        List<Object[]> results = query.getResultList();
 		return results;
 	}
 	

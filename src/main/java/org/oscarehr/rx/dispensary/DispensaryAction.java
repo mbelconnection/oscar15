@@ -143,6 +143,10 @@ public class DispensaryAction extends DispatchAction {
 		dd.setDrugId(Integer.parseInt(request.getParameter("drugId")));
 		dd.setNotes(request.getParameter("notes"));
 		String code = request.getParameter("product");
+		//if the drop down was read-only, we passed it as "productCode" instead.
+		if(code == null) {
+			code = request.getParameter("productCode");
+		}
 		List<DrugProduct> dp = drugProductDao.findAvailableByCode(code);
 		dd.setProductId(dp.get(0).getId());
 		dd.setProviderNo(LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo());

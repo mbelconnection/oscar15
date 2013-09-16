@@ -879,6 +879,7 @@ CREATE TABLE favorites (
   dosage text,
   custom_instructions boolean default false,
   unitName varchar(10) default NULL,
+  dispenseInternal boolean not null,
   PRIMARY KEY  (favoriteid)
 ) ;
 

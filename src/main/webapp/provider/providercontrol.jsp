@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="org.apache.commons.lang.StringUtils"%>
 <%@ taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
@@ -84,13 +85,16 @@
 	boolean caisiEnabled = moduleNames != null && StringUtils.containsIgnoreCase(moduleNames, "Caisi");
 	boolean locationEnabled = caisiEnabled && (useProgramLocation != null && useProgramLocation.equals("true"));
 	
-	String programIdForLocation = request.getParameter("programIdForLocation");
+	String programIdForLocation = request.getParameter("infirmaryView_programId");
+	if (StringUtils.isBlank(programIdForLocation) || programIdForLocation.equals("null")) {
+	    programIdForLocation = request.getParameter("programIdForLocation");
+	}
 	
-	if (programIdForLocation != null) {
+	if (StringUtils.isNotBlank(programIdForLocation) && !programIdForLocation.equals("null")) {
 		session.setAttribute(SessionConstants.CURRENT_PROGRAM_ID, programIdForLocation);
 	}
 	
-	if(locationEnabled && programIdForLocation == null) {
+	if(locationEnabled && session.getAttribute(SessionConstants.CURRENT_PROGRAM_ID) == null) {
 	    response.sendRedirect("../location.jsp");
 	    return;
 	}

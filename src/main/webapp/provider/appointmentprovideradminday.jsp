@@ -1508,7 +1508,7 @@ for(nProvider=0;nProvider<numProvider;nProvider++) {
                 param0[1]=year+"-"+month+"-"+day;//e.g."2001-02-02";
 				param0[2]=programId_oscarView;
 				if (locationEnabled) {
-				    param0[3]=request.getParameter("programIdForLocation");
+				    param0[3]=(String) session.getAttribute(SessionConstants.CURRENT_PROGRAM_ID);
 				    strsearchappointmentday = "searchappointmentdaywithlocation";
 				}
                 List<Map<String,Object>> appointmentList = oscarSuperManager.find("providerDao", strsearchappointmentday, param0);

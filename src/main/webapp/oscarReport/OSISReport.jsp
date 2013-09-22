@@ -202,7 +202,6 @@ table.ele {
 
 	<tr>
 		<th>&nbsp;</th>
-		<th>O</th>
 		<th>N</th>
 		<th>O</th>
 		<th>N</th>
@@ -217,7 +216,8 @@ table.ele {
 		<th>O</th>
 		<th>N</th>
 		<th>O</th>
-		<th>N</th>		
+		<th>N</th>
+		<th>O</th>
 	</tr>
 	<tr>
 		<td>15-21 years</td>
@@ -400,8 +400,8 @@ table.ele {
 	<table border="1">
 	<tr>
 		<th>Activity</th>
-		<th>O</th>
 		<th>N</th>
+		<th>O</th>
 	</tr>
 	<tr>
 		<td ><strong>Assisted With Housing</strong></td>
@@ -507,7 +507,6 @@ table.ele {
 	</tr>
 	<tr>
 		<th>&nbsp;</th>
-		<th>O</th>
 		<th>N</th>
 		<th>O</th>
 		<th>N</th>
@@ -523,6 +522,7 @@ table.ele {
 		<th>N</th>
 		<th>O</th>
 		<th>N</th>		
+		<th>O</th>
 	</tr>	
 	<tr>
 		<td>Aboriginal/Metis/First Nation/Inuit</td>		
@@ -562,8 +562,8 @@ table.ele {
 	</tr>
 	<tr>
 		<th>&nbsp;</th>
-		<th>O</th>
 		<th>N</th>
+		<th>O</th>
 	</tr>	
 	
 	<tr style="background-color:gainsboro;">

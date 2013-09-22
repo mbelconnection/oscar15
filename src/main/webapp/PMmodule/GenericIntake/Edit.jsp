@@ -544,7 +544,7 @@
 </div>
 
 <%if(!Intake.INDEPTH.equalsIgnoreCase(intakeType)) { %>
-<c:if test="${not empty sessionScope.genericIntakeEditForm.bedCommunityPrograms || not empty sessionScope.genericIntakeEditForm.servicePrograms}">
+<c:if test="${not empty sessionScope.genericIntakeEditForm.bedPrograms || not empty sessionScope.genericIntakeEditForm.communityPrograms || not empty sessionScope.genericIntakeEditForm.servicePrograms}">
     <div id="admissionsTable" dojoType="TitlePane" label="Program Admissions" labelNodeClass="intakeSectionLabel"
          containerNodeClass="intakeSectionContainer">
         <logic:messagesPresent>
@@ -558,21 +558,25 @@
         </logic:messagesPresent>
         <table class="intakeTable">
             <tr>
-                <c:if test="${not empty sessionScope.genericIntakeEditForm.bedCommunityPrograms}">
+                <c:if test="${not empty sessionScope.genericIntakeEditForm.bedPrograms}">
                     <td class="intakeBedCommunityProgramCell"><label><c:out
-                            value="${sessionScope.genericIntakeEditForm.bedCommunityProgramLabel}"/></label></td>
+                            value="${sessionScope.genericIntakeEditForm.bedProgramLabel}"/></label></td>
                 </c:if>
                 <c:if test="${not empty sessionScope.genericIntakeEditForm.servicePrograms}">
                     <td><label>Service Programs</label></td>
+                </c:if>
+                <c:if test="${not empty sessionScope.genericIntakeEditForm.communityPrograms}">
+                    <td class="intakeBedCommunityProgramCell"><label><c:out
+                            value="${sessionScope.genericIntakeEditForm.communityProgramLabel}"/></label></td>
                 </c:if>
                 <td><label>Admission Date</label></td>
             </tr>
             <tr>
 				<input type="hidden" name="remoteReferralId" value="<%=StringUtils.trimToEmpty(request.getParameter("remoteReferralId"))%>" />
-                <c:if test="${not empty sessionScope.genericIntakeEditForm.bedCommunityPrograms}">
+                <c:if test="${not empty sessionScope.genericIntakeEditForm.bedPrograms}">
                     <td class="intakeBedCommunityProgramCell">
-                        <html:select property="bedCommunityProgramId" value='<%=request.getParameter("destinationProgramId")%>' >
-                            <html:optionsCollection property="bedCommunityPrograms" value="value" label="label"/>
+                        <html:select property="bedProgramId" value='<%=request.getParameter("destinationProgramId")%>' >
+                            <html:optionsCollection property="bedPrograms" value="value" label="label"/>
                         </html:select>
                     </td>
                 </c:if>
@@ -582,6 +586,13 @@
                             <html-el:multibox property="serviceProgramIds" value="${serviceProgram.value}"/>&nbsp;<c:out
                                 value="${serviceProgram.label}"/><br/>
                         </c:forEach>
+                    </td>
+                </c:if>
+                <c:if test="${not empty sessionScope.genericIntakeEditForm.communityPrograms}">
+                    <td class="intakeBedCommunityProgramCell">
+                        <html:select property="communityProgramId" value='<%=request.getParameter("destinationProgramId")%>' >
+                            <html:optionsCollection property="communityPrograms" value="value" label="label"/>
+                        </html:select>
                     </td>
                 </c:if>
                <td><input id="admissionDate" name="admissionDate" value="" 

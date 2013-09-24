@@ -98,8 +98,118 @@
 <script>
 var pAmounts = {};
 
+function updateLots() {
+	$.getJSON(
+			"<%= request.getContextPath() %>/oscarRx/Dispense.do?method=findDistinctLotsAvailableByCode&code=" +  $("#product").val(),
+	    	function(data,textStatus){
+				var html = "";
+				for(var x=0;x<data.length;x++) {
+					html += "<tr><td><input type='button' value='-' name='remove' id='remove_"+data[x].hash+"' />&nbsp;<input type='input' length='20' readonly='readonly' name='lot' id='lot_"+data[x].hash+"' amount='"+data[x].amount+"' value='"+data[x].name+ " - " + data[x].amount + " - "+ "(" + data[x].expiryDateAsString  + ")" + "' style='text-align:center'>&nbsp;<input type='button' value='+' name='add' id='add_"+data[x].hash+"'/>&nbsp;<span id='current_"+data[x].hash+"'>0</span>/<span id='max_"+data[x].hash+"'>"+data[x].numberAvailable+"</span>&nbsp;<span id='error_"+data[x].hash+"' style='color:red'></span></td></tr>";
+				}
+				$("#td_lots").html(html);
+			}
+	);
+}
+var amountsSelected = new Object(); 
+
+
+function getCurrentDoses() {
+	var total = 0;
+	
+	$("input[name='lot']").each(function(){
+		var hash = $(this).attr('id').substring("lot_".length);
+		var amount = $(this).attr('amount');
+		var qty = amountsSelected[hash];
+		if(qty == undefined) qty = 0;
+		total += (qty * amount);
+	});
+	
+	return total;
+}
+
+function clearErrors() {
+	$("input[name='lot']").each(function(){
+		var hash = $(this).attr('id').substring("lot_".length);
+		$("#error_"+hash).html("");
+	});
+}
+
+function postError(hash,msg) {
+	$("#error_"+hash).html(msg);
+}
+
+function doSubmit() {
+	//we need to have a list of form parameters that specify what has been chosen.
+	//so basically a list of qty/hash
+	
+	if(getCurrentDoses() == 0) {
+		alert('You have not chosen to dispense any product');
+		return false;
+	}
+	
+	if($("select[name='dispensedBy']").val() == 'Select Below') {
+		alert('You must choose a dispensing provider');
+		return false;
+	}
+
+	
+	$("input[name='lot']").each(function(){
+		var hash = $(this).attr('id').substring("lot_".length);
+		var amount = amountsSelected[hash];
+		if(amount == undefined) amount = 0;
+		
+		$("form").append("<input type='hidden' name='dispense_"+hash+"' value='"+amount+"'/>"); 
+		
+	});
+	$("#productCode").val($("#product").val());
+	
+}
+
 $(document).ready(function(){
 	
+	$("input[name='remove']").live('click',function(){
+		clearErrors();
+		
+		var hash = $(this).attr('id').substring("remove_".length);
+		//alert(hash);
+		if(amountsSelected[hash] == undefined) {
+			amountsSelected[hash] = 0;
+		} else {
+			if(amountsSelected[hash] == 0)
+				return;
+			amountsSelected[hash] = amountsSelected[hash] - 1;
+			$('#current_'+hash).html(amountsSelected[hash]);
+		}
+	}); 
+	
+	$("input[name='add']").live('click',function(){
+		clearErrors();
+		
+		var hash = $(this).attr('id').substring("add_".length);
+		if(amountsSelected[hash] == undefined) {
+			amountsSelected[hash] = 0;
+		}
+		
+		//can we add this as a dose?
+		var amount = parseInt($("#lot_"+hash).attr('amount'));
+		var currentDoses = parseInt(getCurrentDoses());
+		
+		if((currentDoses + amount) <= <%=totalDosesAvailable%>) {
+			var maxAvailable = parseInt($("#max_"+hash).html());
+			if((amountsSelected[hash]+1)<=maxAvailable) {
+				amountsSelected[hash] = amountsSelected[hash] + 1;
+			} else {
+				postError(hash,'No more units available');
+			}
+		} else {
+			postError(hash,'No more doses available under this prescription.');
+		}
+		
+		
+		$('#current_'+hash).html(amountsSelected[hash]);
+	
+		
+	}); 
 	
 	$("#quantity,#product").bind('change',function(){
 		if($("#product").val() == '' || $("#quantity").val() == '0') {
@@ -107,44 +217,12 @@ $(document).ready(function(){
 			return;
 		}
 		$("#current_doses").html('0');
-		$.getJSON(
-				"<%= request.getContextPath() %>/oscarRx/Dispense.do?method=getProductsByCode&code=" +  $("#product").val(),
-		    	function(data,textStatus){
-					pAmounts = {};
-					var quantity = $("#quantity").val();
-					if(data.length < quantity) {
-						alert('Quantity not available. Number of available units for this product is ' + data.length);
-						$("#quantity").val('0');
-						$("#td_lots").html("");
-						return;
-					}
-					<%if(totalDosesRemaining != null) {
-						//so how many doses are they requesting here...qty * amount
-						//quantity * 
-					%>	
-					
-					<%}%>
-					var html = "<table>";
-					for(var x=0;x<quantity;x++) {
-						html += "<tr><td><select name='lot"+x+"' id='lot"+x+"'><option value=''></option>";
-						for(var y=0;y<data.length;y++) {
-							html += '<option value="'+data[y].id+'">'+data[y].lotNumber+' (id:'+data[y].id+' + expiry:'+data[y].expiryDateAsString+', amount:'+data[y].amount+')</option>'; 
-							pAmounts[data[y].id] = data[y].amount;
-						}
-						html += "</select></td></tr>";
-					}
-					html+="</table>";
-					$("#td_lots").html(html);
-					
-					updateCurrentDoses();
-			           
-		    }); //close the getJSON
-			
+		
+		updateLots();
+
 	}); //close the bind
 	
-	$("select[name^='lot']").live('change',function(){
-		updateCurrentDoses();
-	});
+	
 	
 	<%
 	if(selectedProductCode != null) {
@@ -152,6 +230,7 @@ $(document).ready(function(){
 		%>
 		$("#product").val('<%=selectedProductCode%>');
 		$("#product").attr("disabled", true); 
+		updateLots();
 		<%
 	}
 	%>
@@ -392,20 +471,9 @@ function validateLotNumbers() {
 									</select>
 								</td>
 							</tr>
-							<tr>
-								<td>Qty of Units:</td>
-								<td>
-									<select name="quantity" id="quantity">
-									<%for(int x=0;x<=20;x++) { %>
-										<option value="<%=x%>"><%=x %></option>
-									<%} %>
-									</select>
-									
-								</td>
-							</tr>
 							
 							<tr>
-								<td valign="top">Items</td>
+								<td valign="top">Lots Available</td>
 								<td id="td_lots">
 									
 								</td>
@@ -429,7 +497,7 @@ function validateLotNumbers() {
 							</tr>
 							<tr>
 								<td colspan="2">
-									<input type="submit" value="Save" class="ControlPushButton" onclick="return validateLotNumbers();"/>
+									<input type="submit" value="Save" class="ControlPushButton" onclick="return doSubmit();"/>
 								</td>
 							</tr>
 							

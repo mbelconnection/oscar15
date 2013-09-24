@@ -23,11 +23,14 @@
  */
 package org.oscarehr.common.dao;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
 
 import org.oscarehr.common.model.DrugProduct;
+import org.oscarehr.rx.dispensary.LotBean;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -68,6 +71,42 @@ public class DrugProductDao extends AbstractDao<DrugProduct>{
 		
 		@SuppressWarnings("unchecked")
 	        List<Object[]> results = query.getResultList();
+		return results;
+	}
+	
+	public int getAvailableCount(String lotNumber, Date expiryDate, int amount) {
+		Query query = entityManager.createQuery("SELECT count(*)  FROM DrugProduct x  where x.dispensingEvent is null and x.lotNumber = ?1 and x.expiryDate = ?2 and x.amount = ?3");
+		query.setParameter(1, lotNumber);
+		query.setParameter(2, expiryDate);
+		query.setParameter(3, amount);
+		
+		 Long count = (Long)query.getSingleResult();
+		 
+		 return count.intValue();
+	}
+	
+	public List<DrugProduct> getAvailableDrugProducts(String lotNumber, Date expiryDate, int amount) {
+		Query query = entityManager.createQuery("SELECT x  FROM DrugProduct x  where x.dispensingEvent is null and x.lotNumber = ?1 and x.expiryDate = ?2 and x.amount = ?3");
+		query.setParameter(1, lotNumber);
+		query.setParameter(2, expiryDate);
+		query.setParameter(3, amount);
+		
+		@SuppressWarnings("unchecked")
+		List<DrugProduct> results = query.getResultList();
+		
+		return results;
+	}
+	
+	public List<LotBean> findDistinctLotsAvailableByCode(String code) {
+		List<LotBean> results = new ArrayList<LotBean>();
+		Query query = entityManager.createQuery("SELECT distinct x.lotNumber, x.expiryDate, x.amount  FROM DrugProduct x  where x.dispensingEvent is null and x.code = ?1 order by x.lotNumber,x.expiryDate,x.amount");
+		query.setParameter(1, code);
+		
+		@SuppressWarnings("unchecked")
+		List<Object[]> tmp = query.getResultList();
+		for(Object[] result:tmp) {
+			results.add(new LotBean((String)result[0],(Date)result[1],(Integer)result[2],getAvailableCount((String)result[0],(Date)result[1],(Integer)result[2])));
+		}
 		return results;
 	}
 	

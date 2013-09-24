@@ -10709,6 +10709,7 @@ create table DrugProduct(
 	id int(9) NOT NULL auto_increment, 
 	name varchar(255),
 	code varchar(255),
+	location int,
 	lotNumber varchar(255),
 	dispensingEvent int(9),
 	amount int not null,

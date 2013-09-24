@@ -40,6 +40,7 @@ public abstract class Product extends AbstractModel<Integer> {
 
 	private String name;
 	private String code;
+	private Integer location;
 	
 	
 	public Integer getId() {
@@ -65,8 +66,13 @@ public abstract class Product extends AbstractModel<Integer> {
 	public void setCode(String code) {
 		this.code = code;
 	}
-	
-	
-	
+
+	public Integer getLocation() {
+		return location;
+	}
+
+	public void setLocation(Integer location) {
+		this.location = location;
+	}
 	
 }

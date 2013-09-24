@@ -24,8 +24,8 @@
 package org.oscarehr.rx.dispensary;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -134,28 +134,26 @@ public class DispensaryAction extends DispatchAction {
 		request.setAttribute("providerNames", providerNames);
 		request.setAttribute("details", details);
 		
-		
+
 	    return mapping.findForward("list");
 	}
 	
 	public ActionForward saveEvent(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)  {
+		
 		DrugDispensing dd = new DrugDispensing();
 		dd.setDateCreated(new Date());
-		
 		dd.setDispensingProviderNo(request.getParameter("dispensedBy"));
 		dd.setDrugId(Integer.parseInt(request.getParameter("drugId")));
 		dd.setNotes(request.getParameter("notes"));
+		dd.setProviderNo(LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo());
+		dd.setPaidFor(true);
+		
 		String code = request.getParameter("product");
 		//if the drop down was read-only, we passed it as "productCode" instead.
 		if(code == null) {
 			code = request.getParameter("productCode");
 		}
-		List<DrugProduct> dp = drugProductDao.findAvailableByCode(code);
-		dd.setProductId(dp.get(0).getId());
-		dd.setProviderNo(LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo());
-		dd.setQuantity(Integer.parseInt(request.getParameter("quantity")));
-		dd.setPaidFor(true);
-		dd.setUnit("");
+		
 		if(request.getSession().getAttribute("case_program_id") != null) {
 			String programId = (String)request.getSession().getAttribute("case_program_id");
 			Integer pId = null;
@@ -167,24 +165,47 @@ public class DispensaryAction extends DispatchAction {
 			dd.setProgramNo(pId);
 		}
 		
-		//get lots
-		List<String> productIds = new ArrayList<String>();
-		for(int x=0;x<dd.getQuantity();x++) {
-			String lot = request.getParameter("lot"+x);
-			productIds.add(lot);
-		}
+		
+		dd.setUnit("");
 		
 		DrugDispensingDao drugDispensingDao = SpringUtils.getBean(DrugDispensingDao.class);
 		drugDispensingDao.persist(dd);
 		
-		for(int x=0;x<productIds.size();x++) {
-			//set the product to dispensed.
-			DrugProduct tmp = drugProductDao.find(Integer.parseInt(productIds.get(x)));
-			if(tmp != null) {
-				tmp.setDispensingEvent(dd.getId());
-				drugProductDao.merge(tmp);
+		
+		int qty = 0;
+		Enumeration<String> params = request.getParameterNames();
+		while(params.hasMoreElements()) {
+			String key = params.nextElement();
+			if(key.startsWith("dispense_")) {
+				String value = request.getParameter(key);
+				int amount = Integer.parseInt(value);
+				String hash = key.substring("dispense_".length());
+				//lets find x of these candidates, and take them
+				List<LotBean> lots = drugProductDao.findDistinctLotsAvailableByCode(code); 
+				for(LotBean lot:lots) {
+					if(lot.getHash().equals(hash)) {
+						//ok, we found the right category of them
+						//lets get the actual list
+						List<DrugProduct> dps = drugProductDao.getAvailableDrugProducts(lot.getName(), lot.getExpiryDate(), lot.getAmount());
+						//should check that amount available >= amount here
+						
+						for(int x=0;x<amount;x++) {
+							DrugProduct dp = dps.get(x);
+							dp.setDispensingEvent(dd.getId());
+							drugProductDao.merge(dp);
+							qty++;
+						}
+						
+						break;
+					}
+				}
 			}
+			
+			dd.setQuantity(qty);
+			drugDispensingDao.merge(dd);
+			
 		}
+		
 		
 		request.setAttribute("drugId", request.getParameter("drugId"));
 		ActionForward af = new ActionForward();
@@ -208,4 +229,19 @@ public class DispensaryAction extends DispatchAction {
 
 	}
 	
+	public ActionForward findDistinctLotsAvailableByCode(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws IOException  {
+	String code = request.getParameter("code");
+	
+	List<LotBean> dps = drugProductDao.findDistinctLotsAvailableByCode(code);
+	
+    JsonConfig config = new JsonConfig();
+    config.registerJsonBeanProcessor(java.sql.Date.class, new JsDateJsonBeanProcessor());
+
+	JSONArray jsonArray = JSONArray.fromObject( dps , config);
+    response.getWriter().print(jsonArray);
+
+    return null;
+
+	}
+
 }

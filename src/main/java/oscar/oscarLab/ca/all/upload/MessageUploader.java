@@ -81,17 +81,21 @@ public final class MessageUploader {
 			String obrDate = h.getMsgDate();
 
 			if(h instanceof HHSEmrDownloadHandler) {
-            	String chartNo = ((HHSEmrDownloadHandler)h).getPatientIdByType("MR");
-            	if(chartNo != null) {
-            		//let's get the hin
-            		DemographicDao demographicDao = (DemographicDao)SpringUtils.getBean("demographicDao");
-            		List<Demographic> clients = demographicDao.getClientsByChartNo(chartNo);
-            		if(clients!=null && clients.size()>0) {
-            			hin = clients.get(0).getHin();
-            		}
-            	}
-            }
-
+			   try{
+            	              String chartNo = ((HHSEmrDownloadHandler)h).getPatientIdByType("MR");
+            	              if(chartNo != null) {
+            		         //let's get the hin
+            		         DemographicDao demographicDao = (DemographicDao)SpringUtils.getBean("demographicDao");
+            		         List<Demographic> clients = demographicDao.getClientsByChartNo(chartNo);
+            		         if(clients!=null && clients.size()>0) {
+            			    hin = clients.get(0).getHin();
+            		         }
+            	              }
+                           }catch(Exception e){
+				logger.error("HHS ERROR",e);
+			   }
+			
+			}
 			try {
 				// reformat date
 				String format = "yyyy-MM-dd HH:mm:ss".substring(0, obrDate.length() - 1);

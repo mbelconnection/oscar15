@@ -2506,6 +2506,10 @@
 			<forward name="list" path="/oscarRx/dispensary/list.jsp" />
 		</action>
 		
+		<action path="/DemographicExtService" type="org.oscarehr.common.web.DemographicExtServiceAction" parameter="method" scope="request">
+		
+		</action>
+		
 	</action-mappings>
 	<controller processorClass="org.apache.struts.tiles.TilesRequestProcessor" maxFileSize="25M" />
 	<message-resources parameter="oscarResources" null="false" />

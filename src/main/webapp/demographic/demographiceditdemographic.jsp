@@ -1685,6 +1685,16 @@ if ( PatStat.equals(Dead) ) {%>
 						&nbsp;
 						<b><%=warningLevelStr %></b>
 						</div>
+						
+						
+						<div class="demographicSection" id="consentDiv">
+						<h3>&nbsp;<bean:message
+							key="demographic.demographiceditdemographic.consent" /></h3>
+                             
+						<b>Privacy Consent - <%=("yes".equalsIgnoreCase(StringUtils.defaultString(apptMainBean.getString(demoExt.get("privacyConsent")), "")))?"Obtained":"Not obtained" %></b><br/>
+						<b>Informed Consent - <%=("yes".equalsIgnoreCase(StringUtils.defaultString(apptMainBean.getString(demoExt.get("informedConsent")), "")))?"Obtained":"Not obtained" %> </b>
+						
+						</div>
 
 
 						</div>

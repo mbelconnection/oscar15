@@ -75,7 +75,10 @@ String privateConsentEnabledProperty = OscarProperties.getInstance().getProperty
 boolean privateConsentEnabled = privateConsentEnabledProperty != null && privateConsentEnabledProperty.equals("true");
 DemographicExtDao demographicExtDao = SpringUtils.getBean(DemographicExtDao.class);
 DemographicExt infoExt = demographicExtDao.getDemographicExt(Integer.parseInt(demoNo), "informedConsent");
-boolean showPopup = infoExt == null || StringUtils.isBlank(infoExt.getValue());
+boolean showPopup = false;
+if(infoExt == null || !"yes".equalsIgnoreCase(infoExt.getValue())) {
+	showPopup=true;
+}
 
 try
 {
@@ -344,8 +347,8 @@ try
 					<%
 						if (privateConsentEnabled && showPopup) {
 					%>				
-					<div style="background-color: orange; padding: 5px; font-weight: bold;">
-						Please ensure that Informed Consent has been obtained!
+					<div id="informedConsentDiv" style="background-color: orange; padding: 5px; font-weight: bold;">
+						<input type="checkbox" value="ic" name="informedConsentCheck" id="informedConsentCheck" onClick="return doInformedConsent('<%=demoNo%>');"/>&nbsp;Please ensure that Informed Consent has been obtained!
 					</div>
 					<%
 						}

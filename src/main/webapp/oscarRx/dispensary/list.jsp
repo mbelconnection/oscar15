@@ -379,9 +379,9 @@ function validateLotNumbers() {
 									status="Filled";
 							}
 							if(status.equals("Active") && drug.isExpired()) {
-								status="Expired";
-								
-							}%>
+								status="Expired";	
+							}
+							%>
 							<%="Status:" + status %>
 							</b></td>
 							<td>
@@ -441,7 +441,7 @@ function validateLotNumbers() {
 				</td>
 			</tr>
 			
-			<%if((totalDosesRemaining != null && totalDosesRemaining > 0) && !drug.isExpired()) { %>
+			<%if((totalDosesRemaining != null && totalDosesRemaining > 0) /*  && !drug.isExpired() */) { %>
 			<tr style="height:15px">
 				<td></td>
 			</tr>

@@ -71,7 +71,8 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 	private Integer admissionId=null;
 	private Integer clientAge=null;
 	
-	private String lastName;
+	private String lastName;  //current last name
+	private String lastNameAtBirth="";
 	private String firstName;
 	private String addressLine1="";
 	private String addressLine2="";
@@ -83,6 +84,7 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 	private String hcNumber="";
 	private String hcVersion="";
 	private String dateOfBirth;
+	private String estimatedAge="";
 	private String clientDateOfBirth;
 	private String gender;
 	
@@ -101,6 +103,11 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 	private int submissionId;
 	
 	private String consent;
+	
+	private Date referralDate;
+	private Date admissionDate;
+	private Date serviceInitDate;
+	private Date dischargeDate;
 	
 	public OcanStaffForm() {
 		province = "ON";
@@ -236,6 +243,14 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
+	
+	public String getLastNameAtBirth() {
+    	return lastNameAtBirth;
+    }
+
+	public void setLastNameAtBirth(String lastNameAtBirth) {
+    	this.lastNameAtBirth = lastNameAtBirth;
+    }
 
 	public String getFirstName() {
 		return firstName;
@@ -332,7 +347,15 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 	public void setClientDateOfBirth(String clientDateOfBirth) {
 		this.clientDateOfBirth = clientDateOfBirth;
 	}
-	
+		
+	public String getEstimatedAge() {
+    	return estimatedAge;
+    }
+
+	public void setEstimatedAge(String estimatedAge) {
+    	this.estimatedAge = estimatedAge;
+    }
+
 	public void setCreated(Date created) {
 		this.created = created;
 	}
@@ -408,6 +431,34 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 		return formatter.format(d);
 	}
 	
+	public String getFormattedReferralDate() {
+		Date d = getReferralDate();
+		if(d==null) {return "";}
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		return formatter.format(d);
+	}
+	
+	public String getFormattedAdmissionDate() {
+		Date d = getAdmissionDate();
+		if(d==null) {return "";}
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		return formatter.format(d);
+	}
+	
+	public String getFormattedServiceInitDate() {
+		Date d = getServiceInitDate();
+		if(d==null) {return "";}
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		return formatter.format(d);
+	}
+	
+	public String getFormattedDischargeDate() {
+		Date d = getDischargeDate();
+		if(d==null) {return "";}
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		return formatter.format(d);
+	}
+	
 	public String getReasonForAssessment() {
 		return reasonForAssessment;
 	}
@@ -458,5 +509,39 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 
 	public void setConsent(String consent) {
 		this.consent = consent;
-	}	
+	}
+
+	public Date getReferralDate() {
+    	return referralDate;
+    }
+
+	public void setReferralDate(Date referralDate) {
+    	this.referralDate = referralDate;
+    }
+
+	public Date getAdmissionDate() {
+    	return admissionDate;
+    }
+
+	public void setAdmissionDate(Date admissionDate) {
+    	this.admissionDate = admissionDate;
+    }
+
+	public Date getServiceInitDate() {
+    	return serviceInitDate;
+    }
+
+	public void setServiceInitDate(Date serviceInitDate) {
+    	this.serviceInitDate = serviceInitDate;
+    }
+
+	public Date getDischargeDate() {
+    	return dischargeDate;
+    }
+
+	public void setDischargeDate(Date dischargeDate) {
+    	this.dischargeDate = dischargeDate;
+    }	
+	
+	
 }

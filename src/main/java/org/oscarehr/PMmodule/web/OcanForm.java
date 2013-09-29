@@ -34,10 +34,12 @@ import java.util.TreeMap;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.oscarehr.PMmodule.dao.AdmissionDao;
+import org.oscarehr.PMmodule.dao.ClientReferralDAO;
+import org.oscarehr.PMmodule.dao.ProgramDao;
 import org.oscarehr.PMmodule.model.Admission;
+import org.oscarehr.PMmodule.model.ClientReferral;
 import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.dao.OcanClientFormDao;
-import org.oscarehr.common.dao.OcanClientFormDataDao;
 import org.oscarehr.common.dao.OcanConnexOptionDao;
 import org.oscarehr.common.dao.OcanFormOptionDao;
 import org.oscarehr.common.dao.OcanStaffFormDao;
@@ -51,6 +53,7 @@ import org.oscarehr.common.model.OcanStaffFormData;
 import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.util.SpringUtils;
 
+
 public class OcanForm {
 	
 	public static final int PRE_POPULATION_LEVEL_ALL 			= 3;
@@ -62,10 +65,10 @@ public class OcanForm {
 	private static OcanFormOptionDao ocanFormOptionDao = (OcanFormOptionDao) SpringUtils.getBean("ocanFormOptionDao");
 	private static OcanStaffFormDao ocanStaffFormDao = (OcanStaffFormDao) SpringUtils.getBean("ocanStaffFormDao");
 	private static OcanStaffFormDataDao ocanStaffFormDataDao = (OcanStaffFormDataDao) SpringUtils.getBean("ocanStaffFormDataDao");	
-	private static OcanClientFormDao ocanClientFormDao = (OcanClientFormDao) SpringUtils.getBean("ocanClientFormDao");
-	private static OcanClientFormDataDao ocanClientFormDataDao = (OcanClientFormDataDao) SpringUtils.getBean("ocanClientFormDataDao");
+	private static OcanClientFormDao ocanClientFormDao = (OcanClientFormDao) SpringUtils.getBean("ocanClientFormDao");	
 	private static OcanConnexOptionDao ocanConnexOptionDao = (OcanConnexOptionDao) SpringUtils.getBean("ocanConnexOptionDao");
-	
+	private static ProgramDao programDao = (ProgramDao) SpringUtils.getBean("programDao");
+
 	
 	public static Demographic getDemographic(String demographicId)
 	{
@@ -111,7 +114,59 @@ public class OcanForm {
 				ocanStaffForm.setDateOfBirth(demographic.getFormattedDob());
 				ocanStaffForm.setClientDateOfBirth(demographic.getFormattedDob());
 				ocanStaffForm.setGender(convertGender(demographic.getSex()));
+				
 			}				             
+		}
+		
+		return(ocanStaffForm);
+	}
+	
+	public static OcanStaffForm getCbiInitForm(Integer clientId, int prepopulationLevel,String ocanType, Integer programId)
+	{		
+		OcanStaffForm ocanStaffForm=new OcanStaffForm();
+		ocanStaffForm.setAddressLine2("");
+		ocanStaffForm.setOcanType(ocanType);
+		ocanStaffForm.setAssessmentId(ocanStaffForm.getId());
+		
+		//get admission info
+		List<Admission> admissions = admissionDao.getAdmissionsByProgramAndClient(clientId, programId);
+		if(admissions.size()>0) {
+			Admission ad = admissions.get(0);
+			ocanStaffForm.setAdmissionId(ad.getId().intValue());
+			ocanStaffForm.setServiceInitDate(ad.getAdmissionDate());
+			ocanStaffForm.setAdmissionDate(ad.getAdmissionDate());
+			ocanStaffForm.setDischargeDate(ad.getDischargeDate());
+			
+			//Find referral date
+			ClientReferralDAO clientReferralDao = (ClientReferralDAO) SpringUtils.getBean("clientReferralDAO");
+			List<ClientReferral> referrals = clientReferralDao.getActiveReferralsByClientAndProgram(Long.valueOf(clientId.longValue()), Long.valueOf(programId.longValue()));
+			if(referrals.size() > 0 ) {
+				ClientReferral ref = referrals.get(0);
+				if(ref.getReferralDate()!=null)
+					ocanStaffForm.setReferralDate(ref.getReferralDate());
+				else
+					ocanStaffForm.setReferralDate(ad.getAdmissionDate());
+			} else {
+				ocanStaffForm.setReferralDate(ad.getAdmissionDate());
+			}
+			
+		}
+		
+		if(prepopulationLevel == OcanForm.PRE_POPULATION_LEVEL_DEMOGRAPHIC) {				
+				Demographic demographic=demographicDao.getDemographicById(clientId);		
+				ocanStaffForm.setLastName(demographic.getLastName());
+				ocanStaffForm.setFirstName(demographic.getFirstName());	
+				ocanStaffForm.setAddressLine1(demographic.getAddress());
+				ocanStaffForm.setCity(demographic.getCity());
+				ocanStaffForm.setProvince(demographic.getProvince());
+				ocanStaffForm.setPostalCode(demographic.getPostal());
+				ocanStaffForm.setPhoneNumber(demographic.getPhone());
+				ocanStaffForm.setEmail(demographic.getEmail());
+				ocanStaffForm.setHcNumber(demographic.getHin());
+				ocanStaffForm.setHcVersion(demographic.getVer());
+				ocanStaffForm.setDateOfBirth(demographic.getFormattedDob());
+				ocanStaffForm.setClientDateOfBirth(demographic.getFormattedDob());
+				ocanStaffForm.setGender(convertGender(demographic.getSex()));						             
 		}
 		
 		return(ocanStaffForm);
@@ -1003,4 +1058,17 @@ public class OcanForm {
 	public static List<OcanStaffFormData> getOcanFormDataByFormId(Integer ocanStaffFormId) {
 		return ocanStaffFormDataDao.findByForm(ocanStaffFormId);		
 	}
+	
+	public static List<Admission> getServiceAndBedProgramAdmissions(Integer clientId) {
+		LoggedInInfo loggedInInfo = LoggedInInfo.loggedInInfo.get();
+
+		return (admissionDao.getServiceAndBedProgramAdmissions(clientId, loggedInInfo.currentFacility.getId()));
+	}
+	
+	public static OcanStaffForm findLatestCbiFormsByFacilityAdmissionId(Integer admissionId, Boolean signed) {
+		LoggedInInfo loggedInInfo = LoggedInInfo.loggedInInfo.get();
+
+		return (ocanStaffFormDao.findLatestCbiFormsByFacilityAdmissionId(loggedInInfo.currentFacility.getId(), admissionId, signed));
+	}
+	
 }

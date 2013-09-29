@@ -4334,5 +4334,9 @@
         <ViolationValue>/src/main/webapp/schedule/scheduleholidaysetting.jsp:strHolidayName = new StringBuffer("");</ViolationValue>
         <ViolationValue>/src/main/webapp/schedule/scheduleholidaysetting.jsp:strHolidayName = new StringBuffer(aHScheduleHoliday.holiday_name) ;</ViolationValue>
         <ViolationValue>/src/main/webapp/scratch/index.jsp:Hashtable hashtable = scratchData.getLatest(user_no);</ViolationValue>
+	<ViolationValue>/src/main/java/oscar/util/CBIUtil.java:public StringBuffer generateTree(List&lt;Date&gt; list)</ViolationValue>
+	<ViolationValue>/src/main/java/oscar/util/CBIUtil.java:StringBuffer strbuff = new StringBuffer();</ViolationValue>
+	<ViolationValue>/src/main/webapp/admin/cbiAdmin.jsp:StringBuffer treeDataStr = cbiUtil.generateTree(submissionDateList);</ViolationValue>
+	<ViolationValue>/src/main/webapp/oscarReport/cbi_report_form.jsp:StringBuffer treeDataStr = cbiUtil.generateTree(submissionDateList);</ViolationValue>
     </ViolationSet>
 </TrackingRegexpCheck>

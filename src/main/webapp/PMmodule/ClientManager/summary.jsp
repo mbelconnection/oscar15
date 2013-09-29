@@ -60,6 +60,7 @@
 <%@page import="org.oscarehr.util.LoggedInInfo"%>
 <%@page import="org.oscarehr.util.MiscUtils"%>
 <%@page import="org.oscarehr.common.model.CdsClientForm"%>
+<%@page import="org.oscarehr.common.model.OcanStaffForm"%>
 <%@page import="org.oscarehr.PMmodule.web.ClientManagerAction"%>
 <%@page import="org.oscarehr.util.SpringUtils"%>
 <%@page import="org.oscarehr.common.model.DemographicCust"%>
@@ -688,6 +689,37 @@ function openSurvey() {
 	</tr>
 
 	<% } %>
+	
+	
+	<%
+	if (LoggedInInfo.loggedInInfo.get().currentFacility.isEnableCbiForm())
+	{
+		List<OcanStaffForm> allLatestCbiForms=(List<OcanStaffForm>)request.getAttribute("allLatestCbiForms");
+		if (allLatestCbiForms!=null && allLatestCbiForms.size()>0)
+		{
+			for (OcanStaffForm cbiForm : allLatestCbiForms)
+			{
+				%>
+					<tr>
+						<td width="20%"><b>CBI :</b> <%=ClientManagerAction.getCbiProgramDisplayString(cbiForm)%></td>
+						<td><%=StringEscapeUtils.escapeHtml(DateUtils.formatDateTime(cbiForm.getCreated(), request.getLocale()))%></td>
+						<td><%=ClientManagerAction.getEscapedProviderDisplay(cbiForm.getProviderNo())%></td>
+						<td><%=cbiForm.isSigned()?"signed":"unsigned"%></td>
+						<td>
+							<input type="button" value="Update" onclick="document.location='ClientManager/cbi_form.jsp?ocanStaffFormId=<%=cbiForm.getId()%>&ocanType=CBI&demographicId=<%=currentDemographic.getDemographicNo()%>'" />
+							
+						</td>
+					</tr>
+				<%				
+			}
+		}
+		%>
+			<tr>
+				<td colspan="5">
+					<input type="button" value="New CBI Form" onclick="document.location='ClientManager/cbi_form.jsp?ocanStaffFormId=0&prepopulate=0&ocanType=CBI&demographicId=<%=currentDemographic.getDemographicNo()%>'" />
+				</td>
+			</tr>
+	<%} %>
 </table>
 <br />
 

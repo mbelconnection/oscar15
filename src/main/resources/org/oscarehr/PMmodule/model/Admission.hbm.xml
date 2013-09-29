@@ -68,5 +68,8 @@
 			formula="(select p.name from program p where p.id = program_id)" />
 		<property name="programType" type="string"
 			formula="(select p.type from program p where p.id = program_id)" />
+		<many-to-one name="Program"
+			class="org.oscarehr.PMmodule.model.Program" column="program_id"
+			update="false" insert="false" lazy="false" not-found="ignore" />
 	</class>
 </hibernate-mapping>

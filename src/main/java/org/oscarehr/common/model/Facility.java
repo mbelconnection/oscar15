@@ -58,6 +58,7 @@ public class Facility extends AbstractModel<Integer> implements Serializable {
 	private boolean allowSims = true;
 	private boolean enableDigitalSignatures = false;
 	private boolean enableOcanForms = false;
+	private boolean enableCbiForm = false;
 	private boolean enableAnonymous = false;
 	private String ocanServiceOrgNumber;
 	private boolean enableGroupNotes = false;
@@ -239,6 +240,14 @@ public class Facility extends AbstractModel<Integer> implements Serializable {
     }
 	
 	
+	public boolean isEnableCbiForm() {
+    	return enableCbiForm;
+    }
+
+	public void setEnableCbiForm(boolean enableCbiForm) {
+    	this.enableCbiForm = enableCbiForm;
+    }
+
 	public String getOcanServiceOrgNumber() {
 		return ocanServiceOrgNumber;
 	}

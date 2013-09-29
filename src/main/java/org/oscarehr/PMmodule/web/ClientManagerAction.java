@@ -1441,7 +1441,10 @@ public class ClientManagerAction extends BaseAction {
 			} else {
 				request.setAttribute("coreOcanStaffForm", null);
 			}
-
+			
+			//CBI form and OCAN forms are stored in same table OcanStaffForm.
+			populateCbiData(request, Integer.parseInt(demographicNo), facilityId);
+			
 			// CDS
 			populateCdsData(request, Integer.parseInt(demographicNo), facilityId);
 		}
@@ -1766,6 +1769,20 @@ public class ClientManagerAction extends BaseAction {
 	    request.setAttribute("allLatestCdsForms", allLatestCdsForms);
     }
 
+	private void populateCbiData(HttpServletRequest request, Integer demographicNo, Integer facilityId) {
+		List<Admission> admissions=admissionDao.getAdmissions(demographicNo);
+		
+		ArrayList<OcanStaffForm> allLatestCbiForms=new ArrayList<OcanStaffForm>();
+		
+		for (Admission admission : admissions)
+		{
+			OcanStaffForm cbiForm=ocanStaffFormDao.findLatestCbiFormsByFacilityAdmissionId(facilityId, admission.getId().intValue(), null);
+			if (cbiForm!=null) allLatestCbiForms.add(cbiForm);
+		}
+	
+	    request.setAttribute("allLatestCbiForms", allLatestCbiForms);
+    }
+	
 	private void addRemoteAdmissions(ArrayList<AdmissionForDisplay> admissionsForDisplay, Integer demographicId) {
 		LoggedInInfo loggedInInfo = LoggedInInfo.loggedInInfo.get();
 
@@ -1940,6 +1957,15 @@ public class ClientManagerAction extends BaseAction {
 	public static String getCdsProgramDisplayString(CdsClientForm cdsClientForm)
 	{
 		Admission admission=admissionDao.getAdmission(cdsClientForm.getAdmissionId());
+		Program program=programDao.getProgram(admission.getProgramId());
+		
+		String displayString=program.getName()+" : "+DateFormatUtils.ISO_DATE_FORMAT.format(admission.getAdmissionDate());
+		return(StringEscapeUtils.escapeHtml(displayString));
+	}
+	
+	public static String getCbiProgramDisplayString(OcanStaffForm ocanStaffForm)
+	{
+		Admission admission=admissionDao.getAdmission(ocanStaffForm.getAdmissionId());
 		Program program=programDao.getProgram(admission.getProgramId());
 		
 		String displayString=program.getName()+" : "+DateFormatUtils.ISO_DATE_FORMAT.format(admission.getAdmissionDate());

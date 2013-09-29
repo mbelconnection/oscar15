@@ -124,6 +124,37 @@ public class OcanStaffFormDao extends AbstractDao<OcanStaffForm> {
 		query.setParameter(4, ocanType);
 		
 		return getSingleResultOrNull(query);
+	}	
+	
+	
+	public OcanStaffForm findLatestCbiFormsByFacilityAdmissionId(Integer facilityId, Integer admissionId, Boolean signed)
+	{
+		String sqlCommand = "select x from OcanStaffForm x where x.facilityId=?1 and x.admissionId=?2 and x.ocanType='CBI' "+(signed!=null?" and signed=?4":"")+" order by x.created desc";
+
+		Query query = entityManager.createQuery(sqlCommand);
+		query.setParameter(1, facilityId);
+		query.setParameter(2, admissionId);		
+		if (signed!=null) query.setParameter(3, signed);
+		
+		@SuppressWarnings("unchecked")
+		List<OcanStaffForm> results=query.getResultList();
+		if (results.size()>0) return(results.get(0));
+		else return (null);
+	}
+	
+	
+	public List<OcanStaffForm> getLatestCbiFormsByGroupOfAdmissionId() {
+			//Get latest CBI form for each group of admissionId
+			
+			String sqlCommand = "select x1 from OcanStaffForm x1 where x1.id = (select max(x2.id) from OcanStaffForm x2 where x2.admissionId!=null and x2.admissionId=x1.admissionId and x2.ocanType=?) ";
+			
+			Query query = entityManager.createQuery(sqlCommand);		
+			query.setParameter(1, "CBI");			
+						
+			@SuppressWarnings("unchecked")
+			List<OcanStaffForm> results=query.getResultList();
+			
+			return (results);
 	}
 	
 	public List<Integer> findClientsWithOcan(Integer facilityId) {

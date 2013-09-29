@@ -23,6 +23,7 @@
 
 package org.oscarehr.PMmodule.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -50,4 +51,38 @@ public class OcanSubmissionLogDao extends AbstractDao<OcanSubmissionLog> {
 		return results;
 	}
 	
+	public List<OcanSubmissionLog> findBySubmissionDate(Date submissionDate) {
+		Query query = entityManager.createQuery("select l from OcanSubmissionLog l where date(l.submitDateTime)=?  order by l.submitDateTime DESC");
+		query.setParameter(1, submissionDate);
+		@SuppressWarnings("unchecked")
+		List<OcanSubmissionLog> results = query.getResultList();
+		return results;
+	}
+	
+	public List<OcanSubmissionLog> findByCbiSubmissionDate(Date submissionDate) {
+		Query query = entityManager.createQuery("select l from OcanSubmissionLog l where date(l.submitDateTime)=?  and submissionType=? order by l.submitDateTime DESC");
+		query.setParameter(1, submissionDate);
+		query.setParameter(2, "CBI");
+		@SuppressWarnings("unchecked")
+		List<OcanSubmissionLog> results = query.getResultList();
+		return results;
+	}
+	
+	public List<OcanSubmissionLog> findByCbiSubmissionDate(Date submissionStartDate, Date submissionEndDate) {
+		Query query = entityManager.createQuery("select l from OcanSubmissionLog l where submitDateTime>=?  and l.submitDateTime<=? and submissionType=? order by l.submitDateTime DESC");
+		query.setParameter(1, submissionStartDate);
+		query.setParameter(2, submissionEndDate);
+		query.setParameter(3, "CBI");
+		@SuppressWarnings("unchecked")
+		List<OcanSubmissionLog> results = query.getResultList();
+		return results;
+	}
+	
+	public List<OcanSubmissionLog> findAllCbi() {
+		Query query = entityManager.createQuery("select l from OcanSubmissionLog l where l.submissionType=? order by l.submitDateTime DESC");
+		query.setParameter(1, "CBI");
+		@SuppressWarnings("unchecked")
+		List<OcanSubmissionLog> results = query.getResultList();
+		return results;
+	}
 }

@@ -2562,6 +2562,7 @@ create table OcanStaffForm
         clientAge int,
         index(clientAge),
         lastName varchar(100),
+        lastNameAtBirth varchar(100),
         firstName varchar(100),
         addressLine1 varchar(100),
         addressLine2 varchar(100),
@@ -2573,6 +2574,7 @@ create table OcanStaffForm
         hcNumber varchar(100),
         hcVersion varchar(100),
         dateOfBirth varchar(100),
+	estimatedAge varchar(3),
         clientDateOfBirth varchar(10),
         reasonForAssessment varchar(100),
 	assessmentStatus varchar(40),
@@ -2585,6 +2587,10 @@ create table OcanStaffForm
 	providerName varchar(100),
 	clientFormProviderName varchar(100),	
 	consent varchar(50),
+	referralDate date;
+	admissionDate date;
+	serviceInitDate date;
+	dischargeDate date;
 	index(startDate),
 	index(completionDate)
 );
@@ -2680,5 +2686,8 @@ submitDateTime timestamp,
 result varchar(255),
 transactionId varchar(100),
 resultMessage text,
-submissionData longtext
+submissionData longtext,
+submissionType varchar(30),
+KEY `submitDateIndex` (`submitDateTime`),
+KEY `submissionTypeIndex` (`submissionType`)
 );

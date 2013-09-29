@@ -183,6 +183,38 @@ public class AdmissionDao extends HibernateDaoSupport {
         return rs;
     }
    
+   public List<Admission> getServiceAndBedProgramAdmissions(Integer demographicNo, Integer facilityId) {
+       if (demographicNo == null || demographicNo <= 0) {
+           throw new IllegalArgumentException();
+       }
+
+       String queryStr = "FROM Admission a WHERE a.programType!='community' and a.ClientId=? and a.ProgramId in " +
+          "(select s.id from Program s where s.facilityId=? or s.facilityId is null) ORDER BY a.AdmissionDate DESC";
+       @SuppressWarnings("unchecked")
+       List<Admission> rs = getHibernateTemplate().find(queryStr, new Object[] { demographicNo, facilityId });
+
+       if (log.isDebugEnabled()) {
+           log.debug("getServiceAndBedProgramAdmissions for clientId " + demographicNo + ", # of admissions: " + rs.size());
+       }
+
+       return rs;
+   }
+   
+   public List<Admission> getAdmissionsByProgramAndClient(Integer demographicNo, Integer programId ) {
+       if (demographicNo == null || demographicNo <= 0) {
+           throw new IllegalArgumentException();
+       }
+
+       String queryStr = "FROM Admission a WHERE a.ClientId=? and a.ProgramId=? ORDER BY a.AdmissionDate DESC";
+       @SuppressWarnings("unchecked")
+       List<Admission> rs = getHibernateTemplate().find(queryStr, new Object[] { demographicNo, programId });
+
+       if (log.isDebugEnabled()) {
+           log.debug("getCurrentAdmissionsByProgramAndClient for clientId " + demographicNo + " programId " + programId + ", # of admissions: " + rs.size());
+       }
+
+       return rs;
+   }
    
    
     public List<Admission> getAdmissionsByProgramId(Integer programId, Boolean automaticDischarge, Integer days) {
@@ -665,6 +697,7 @@ public class AdmissionDao extends HibernateDaoSupport {
         List rs = getHibernateTemplate().find(q, new Object[] { "one-time-anonymous",status});
 
         return rs;
-    }
+    }  
+    
    
 }

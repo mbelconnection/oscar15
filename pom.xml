@@ -202,6 +202,18 @@
 			</exclusions>
 		</dependency>
 
+<dependency>
+    <groupId>org.apache.cxf</groupId>
+    <artifactId>cxf-rt-frontend-jaxws</artifactId>
+    <version>2.6.0</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.cxf</groupId>
+    <artifactId>cxf-rt-transports-http</artifactId>
+    <version>2.6.0</version>
+</dependency>
+
+
 		<!-- pdf / jpedal -->
 		<dependency>
   			<groupId>org</groupId>
@@ -259,6 +271,11 @@
 			<artifactId>itext</artifactId>
 			<version>2.1.7</version>
 		</dependency>
+		<dependency>
+      			<groupId>com.itextpdf.tool</groupId>
+      			<artifactId>xmlworker</artifactId>
+      			<version>1.2.1</version>
+    		</dependency>
 
 		<!-- rtf / lowagie -->
 		<dependency>
@@ -312,7 +329,7 @@
 		<dependency>
 			<groupId>org.oscarehr.caisi_integrator</groupId>
 			<artifactId>caisi_integrator_client_stubs</artifactId>
-			<version>SNAPSHOT</version>
+			<version>1.0</version>
 		</dependency>
 
 		<!-- macplus -->
@@ -812,16 +829,34 @@
           		</resource>
         	</resources>	
 	<plugins>
-	<plugin>
-        	<groupId>org.codehaus.mojo</groupId>
-                <artifactId>buildnumber-maven-plugin</artifactId>
-                <version>1.1</version>
-                <executions>
-                	<execution>
-                        	<phase>validate</phase>
-                            	<goals>
-                              		<goal>create</goal>
-                            	</goals>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <nonFilteredFileExtensions>
+            <nonFilteredFileExtension>pdf</nonFilteredFileExtension>
+            <nonFilteredFileExtension>jar</nonFilteredFileExtension>
+            <nonFilteredFileExtension>xls</nonFilteredFileExtension>
+            <nonFilteredFileExtension>dat</nonFilteredFileExtension>
+            <nonFilteredFileExtension>xsd</nonFilteredFileExtension>
+            <nonFilteredFileExtension>jasper</nonFilteredFileExtension>
+            <nonFilteredFileExtension>doc</nonFilteredFileExtension>
+          </nonFilteredFileExtensions>
+        </configuration>
+      </plugin>
+
+		 <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>buildnumber-maven-plugin</artifactId>
+                    <version>1.1</version>
+                      <executions>
+                        <execution>
+                          <phase>validate</phase>
+                            <goals>
+                              <goal>create</goal>
+                            </goals>
                         </execution>
                      </executions>
                  </plugin>
@@ -1038,6 +1073,7 @@
                            			<filtering>true</filtering>
                          		</webResource>
                        		</webResources>
+
 			    </configuration>
 			</plugin>	
 

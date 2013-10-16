@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import javax.persistence.Query;
 
@@ -187,6 +188,66 @@ public class EFormDataDao extends AbstractDao<EFormData> {
 		return(results);
 	}
     
+    public List<EFormData> findByFormId(Integer formId)
+	{
+	
+	Query query = entityManager.createQuery("select x from " + modelClass.getSimpleName() + " x where x.formId = ?1 and x.current = 1");
+		query.setParameter(1,formId);
+	
+		@SuppressWarnings("unchecked")
+		List<EFormData> results=query.getResultList();
+	
+		return results;
+	}
+    
+    public List<EFormData> findByFormIdProviderNo(List<String> providerNo, Integer formId)
+	{
+	
+	Query query = entityManager.createQuery("select x from " + modelClass.getSimpleName() + " x where x.formId = ?1 and x.providerNo in (?2) and x.current = 1");
+		//query.setParameter(1,fid);
+		query.setParameter(1,formId);
+		query.setParameter(2,providerNo);
+	
+		@SuppressWarnings("unchecked")
+		List<EFormData> results=query.getResultList();
+	
+		return results;
+	}
+
+	/**
+	 * Finds form data for the specified demographic record and form name
+	 * 
+	 * @param demographicNo
+	 * 		Demographic number to find the form data for
+	 * @param formName
+	 * 		Form name to find the data for
+	 * @return
+	 * 		Returns all active matching form data, ordered by creation date and time
+	 */
+	@SuppressWarnings("unchecked")
+    public List<EFormData> findByDemographicIdAndFormName(Integer demographicNo, String formName) {
+		String queryString = "FROM EFormData e WHERE e.demographicId = :demographicNo AND e.formName LIKE :formName and status = '1' ORDER BY e.formDate, e.formTime DESC";
+		Query query = entityManager.createQuery(queryString);
+		query.setParameter("demographicNo", demographicNo);
+		query.setParameter("formName", formName);
+		return query.getResultList();
+	}    
+
+    public List<Integer> findFdidsByFidsAndDates(TreeSet<Integer> fids, Date dateStart, Date dateEnd)
+    {
+    	if (fids==null || fids.isEmpty()) return new ArrayList<Integer>();
+    	
+    	Query query = entityManager.createQuery("select x.id from " + modelClass.getSimpleName() + " x where x.current=1 and x.formId in (?1) and x.formDate>=?2 and x.formDate<?3");
+    	query.setParameter(1, fids);
+    	query.setParameter(2, dateStart);
+    	query.setParameter(3, dateEnd);
+    	
+    	@SuppressWarnings("unchecked")
+    	List<Integer> results=query.getResultList();
+    	
+    	return(results);
+    }
+
     public List<EFormData> findByFdids(List<Integer> ids)
 	{
     	if(ids.size()==0)
@@ -251,13 +312,4 @@ public class EFormDataDao extends AbstractDao<EFormData> {
     	}
     	return efmDataList;
     }
-    
-	@SuppressWarnings("unchecked")
-    public List<EFormData> findByDemographicIdAndFormName(Integer demographicNo, String formName) {
-		String queryString = "FROM EFormData e WHERE e.demographicId = :demographicNo AND e.formName LIKE :formName and status = '1' ORDER BY e.formDate, e.formTime DESC";
-		Query query = entityManager.createQuery(queryString);
-		query.setParameter("demographicNo", demographicNo);
-		query.setParameter("formName", formName);
-		return query.getResultList();
-	}    
 }

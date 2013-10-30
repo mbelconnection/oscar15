@@ -615,15 +615,7 @@ for(ConsultationRequestExt ext:exts) {
                                         <td class="fillLine">
                              (<%=reqFrm.patientHealthCardType%>)&nbsp;<%=reqFrm.patientHealthNum %>&nbsp;<%=reqFrm.patientHealthCardVersionCode%>&nbsp;
                                         </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="subTitles">
-                                            <bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.formAppointmentNotes"/>:
-                                        </td>
-                                        <td class="fillLine">
-                                <%=reqFrm.appointmentNotes %>
-                                        </td>
-                                    </tr>                                           
+                                    </tr>                                                                           
                                     <tr>
                                         <td class="subTitles">
                                             <bean:message key="oscarEncounter.oscarConsultationRequest.consultationFormPrint.msgappDate"/>:
@@ -653,7 +645,7 @@ for(ConsultationRequestExt ext:exts) {
                                             <bean:message key="oscarEncounter.oscarConsultationRequest.consultationFormPrint.msgChart"/>
                                         </td>
                                         <td class="fillLine">
-                                <%=reqFrm.patientChartNo%>
+                                <%=reqFrm.patientChartNo == null || "null".equalsIgnoreCase(reqFrm.patientChartNo) ? "" : reqFrm.patientChartNo%>
                                         </td>
                                     </tr>
                                 </table>
@@ -673,7 +665,7 @@ for(ConsultationRequestExt ext:exts) {
                     &nbsp;<br>
                 </td>
             </tr>
-            <% if(getlen(reqFrm.clinicalInformation) > 1) {%>
+            <% if(getlen(reqFrm.clinicalInformation) > 0) {%>
             <tr>
                 <td class="subTitles">
                     <bean:message key="oscarEncounter.oscarConsultationRequest.consultationFormPrint.msgClinicalInfom"/>:
@@ -685,7 +677,7 @@ for(ConsultationRequestExt ext:exts) {
                 </td>
             </tr>
             <%}%>
-            <% if(getlen(reqFrm.concurrentProblems) > 1) {%>
+            <% if(getlen(reqFrm.concurrentProblems) > 0) {%>
             <tr>
                 <td class="subTitles">
 	            <% if(props.getProperty("significantConcurrentProblemsTitle", "").length() > 1) {
@@ -739,7 +731,7 @@ for(ConsultationRequestExt ext:exts) {
 
 
 
-            <% if(getlen(reqFrm.currentMedications) > 1) {%>
+            <% if(getlen(reqFrm.currentMedications) > 0) {%>
             <tr>
                 <td class="subTitles">
 		            <% if(props.getProperty("currentMedicationsTitle", "").length() > 1) {
@@ -756,7 +748,7 @@ for(ConsultationRequestExt ext:exts) {
                 </td>
             </tr>
             <%}%>
-            <% if(getlen(reqFrm.allergies) > 1) {%>
+            <% if(getlen(reqFrm.allergies) > 0) {%>
             <tr>
                 <td class="subTitles">
                     <bean:message key="oscarEncounter.oscarConsultationRequest.consultationFormPrint.msgAllergies"/>
@@ -771,7 +763,7 @@ for(ConsultationRequestExt ext:exts) {
             <%}%>
             <tr>
                 <td class="subTitles">
-                    <bean:message key="oscarEncounter.oscarConsultationRequest.consultationFormPrint.msgAssociated"/> : <%=reqFrm.getProviderName(reqFrm.providerNo) %>
+                    <bean:message key="oscarEncounter.oscarConsultationRequest.consultationFormPrint.msgAssociated"/> : <%=reqFrm.getFamilyDoctor() %>
                     &nbsp;<br>
                 </td>
             </tr>
@@ -786,7 +778,7 @@ for(ConsultationRequestExt ext:exts) {
 	   <% } else { %>
                 <bean:message key="oscarEncounter.oscarConsultationRequest.consultationFormPrint.msgFamilyDoc"/>
        <% } %>
-                : <%=reqFrm.getFamilyDoctor() %>
+                : <%=reqFrm.getProviderName(reqFrm.providerNo) %>
                         &nbsp;<br>
                     </td>
                 </tr>

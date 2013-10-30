@@ -250,8 +250,19 @@ div.logoutBox {
 		<ul>
             <security:oscarSec roleName="<%=roleName$%>" objectName="_admin,_admin.billing" rights="r" reverse="<%=false%>">
 			<%
-				if (oscarVariables.getProperty("billregion", "").equals("BC"))
-								{
+				// Only show link to Clinicaid admin if Clinicaid Billing is enabled
+				if (oscarVariables.getProperty("billregion", "").equals("CLINICAID"))
+				{ 
+			%>
+					<li>
+					<a href="../billing.do?billRegion=CLINICAID&action=invoice_reports" target="_blank">
+							<bean:message key="admin.admin.invoiceRpts"/>
+						</a>
+					</li>
+			<%
+				}
+				else if (oscarVariables.getProperty("billregion", "").equals("BC"))
+				{
 			%>
 			<li><a href="#"
 				onclick='popupPage(700,1000,&quot;<html:rewrite page="/billing/manageBillingform.jsp"/>&quot;);return false;'><bean:message key="admin.admin.ManageBillFrm"/></a></li>
@@ -296,6 +307,14 @@ div.logoutBox {
 				onclick='popupPage(800,1000,&quot;<html:rewrite page="/billing/CA/BC/billStatus.jsp"/>&quot;);return false;'><bean:message key="admin.admin.editInvoices"/></a></li>
 			<li><a href="#"
 				onclick='popupPage(200,300,&quot;<html:rewrite page="/billing/CA/BC/settleBG.jsp"/>&quot;);return false;'><bean:message key="admin.admin.settlePaidClaims"/></a></li>
+			
+			<%-- Addition of BC MSP Quick Billing by Dennis Warren - December 2011 --%>
+			<li>
+				<a href="javascript: popupPage( 500, 900,&quot;<html:rewrite page="/quickBillingBC.do" />&quot );" >
+					BC MSP Quick Billing
+				</a>
+			</li>
+			
 			<%
 				}
 								else if (oscarVariables.getProperty("billregion", "").equals("ON"))
@@ -479,6 +498,8 @@ div.logoutBox {
 			<li><html:link page="/oscarReport/ocan_report_form.jsp"><bean:message key="admin.admin.ocanRpt"/></html:link></li>
 			<li><html:link page="/oscarReport/ocan_iar.jsp"><bean:message key="admin.admin.ocanIarRpt"/></html:link></li>
 			<li><html:link page="/oscarReport/ocan_reporting.jsp"><bean:message key="admin.admin.ocanReporting"/></html:link></li>
+
+			<li><html:link page="/admin/cbiAdmin.jsp"><bean:message key="admin.admin.cbi.reportlink"/></html:link></li>
 
 			<li><html:link page="/admin/UsageReport.jsp"><bean:message key="admin.admin.usageRpt"/></html:link></li>
 			<oscar:oscarPropertiesCheck property="SERVERLOGGING" value="yes">
@@ -671,7 +692,10 @@ div.logoutBox {
 		
 			<li><a href="#"
 				onclick='popupPage(550,800,&quot;<html:rewrite page="/admin/displayDocumentCategories.jsp"/>&quot;);return false;'><bean:message key="admin.admin.DocumentCategories"/></a></li>
-
+                        
+                        <li><a href="#"
+				onclick='popupPage(550,800,&quot;<html:rewrite page="/admin/displayDocumentDescriptionTemplate.jsp?setDefault=true"/>&quot;);return false;'><bean:message key="admin.admin.DocumentDescriptionTemplate"/></a></li>
+                                
 			<li><a href="#"
 				onclick='popupPage(550,800,&quot;<html:rewrite page="/admin/ManageClinic.do"/>&quot;);return false;'><bean:message key="admin.admin.clinicAdmin"/></a></li>
 			<%
@@ -769,7 +793,14 @@ div.logoutBox {
 			<li><a href="#"
 				onclick='popupPage(500,800,&quot;<html:rewrite page="/admin/logReport.jsp"/>?keyword=admin&quot;);return false;'>
 			<bean:message key="admin.admin.securityLogReport"/></a></li>
-		</security:oscarSec>		
+		</security:oscarSec>
+		<security:oscarSec roleName="<%=roleName$%>"
+			objectName="_admin, _admin.traceability" rights="r">
+			<li><a href="#"
+				onclick='popupPage(500,800,&quot;<html:rewrite page="/admin/traceReport.jsp"/>?keyword=admin&quot;);return false;'>
+			<bean:message key="admin.admin.traceabilityReport"/></a></li>
+		</security:oscarSec>
+				
 					
 		</ul>
 		</div>

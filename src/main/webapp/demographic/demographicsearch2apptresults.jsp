@@ -70,9 +70,14 @@
 	int limit = Integer.parseInt(strLimit2);
 	boolean caisi = Boolean.valueOf(request.getParameter("caisi")).booleanValue();
 
+	OscarProperties props = OscarProperties.getInstance();
+
 	List<Demographic> demoList = null;  
 	DemographicDao demographicDao = (DemographicDao)SpringUtils.getBean("demographicDao");
 %>
+<caisi:isModuleLoad moduleName="caisi" reverse="false">
+<%caisi=true; %>
+</caisi:isModuleLoad>
 
 <html>
 <head>
@@ -330,29 +335,75 @@ function addNameCaisi(demographic_no,lastname,firstname,chartno,messageID) {
 
 
 <%
+	String ptstatus = request.getParameter("ptstatus") == null ? "active" : request.getParameter("ptstatus");
+	org.oscarehr.util.MiscUtils.getLogger().info("PSTATUS " + ptstatus);
+
 	int rowCounter=0;
 	String bgColor = rowCounter%2==0?"#EEEEFF":"white";
 
-	if (searchMode == null || searchMode.isEmpty())
-		searchMode = "search_name";
-	
-	if(searchMode.equals("search_name")) {
-		demoList = demographicDao.searchDemographicByName(keyword, limit, offset);
+	String pstatus = props.getProperty("inactive_statuses", "IN, DE, IC, ID, MO, FI");
+	pstatus = pstatus.replaceAll("'","").replaceAll("\\s", "");
+	List<String>stati = Arrays.asList(pstatus.split(","));
+
+	if( "".equals(ptstatus) ) {
+		if(searchMode.equals("search_name")) {
+			demoList = demographicDao.searchDemographicByName(keyword, limit, offset);
+		}
+		else if(searchMode.equals("search_phone")) {
+			demoList = demographicDao.searchDemographicByPhone(keyword, limit, offset);
+		}
+		else if(searchMode.equals("search_dob")) {
+			demoList = demographicDao.searchDemographicByDOB(keyword, limit, offset);
+		}
+		else if(searchMode.equals("search_address")) {
+			demoList = demographicDao.searchDemographicByAddress(keyword, limit, offset);
+		}
+		else if(searchMode.equals("search_hin")) {
+			demoList = demographicDao.searchDemographicByHIN(keyword, limit, offset);
+		}
+		else if(searchMode.equals("search_chart_no")) {
+			demoList = demographicDao.findDemographicByChartNo(keyword, limit, offset);
+		}
 	}
-	else if(searchMode.equals("search_phone")) {
-		demoList = demographicDao.searchDemographicByPhone(keyword, limit, offset);
+	else if( "active".equals(ptstatus) ) {
+	    if(searchMode.equals("search_name")) {
+			demoList = demographicDao.searchDemographicByNameAndNotStatus(keyword, stati, limit, offset);
+		}
+	    else if(searchMode.equals("search_phone")) {
+			demoList = demographicDao.searchDemographicByPhoneAndNotStatus(keyword, stati, limit, offset);
+		}
+		else if(searchMode.equals("search_dob")) {
+			demoList = demographicDao.searchDemographicByDOBAndNotStatus(keyword, stati, limit, offset);
+		}
+		else if(searchMode.equals("search_address")) {
+			demoList = demographicDao.searchDemographicByAddressAndNotStatus(keyword, stati, limit, offset);
+		}
+		else if(searchMode.equals("search_hin")) {
+			demoList = demographicDao.searchDemographicByHINAndNotStatus(keyword, stati, limit, offset);
+		}
+		else if(searchMode.equals("search_chart_no")) {
+			demoList = demographicDao.findDemographicByChartNoAndNotStatus(keyword, stati, limit, offset);
+		}
 	}
-	else if(searchMode.equals("search_dob")) {
-		demoList = demographicDao.searchDemographicByDOB(keyword, limit, offset);
-	}
-	else if(searchMode.equals("search_address")) {
-		demoList = demographicDao.searchDemographicByAddress(keyword, limit, offset);
-	}
-	else if(searchMode.equals("search_hin")) {
-		demoList = demographicDao.searchDemographicByHIN(keyword, limit, offset);
-	}
-	else if(searchMode.equals("search_chart_no")) {
-		demoList = demographicDao.findDemographicByChartNo(keyword, limit, offset);
+	else if( "inactive".equals(ptstatus) ) {
+	    if(searchMode.equals("search_name")) {
+			demoList = demographicDao.searchDemographicByNameAndStatus(keyword, stati, limit, offset);
+		}
+	    else if(searchMode.equals("search_phone")) {
+			demoList = demographicDao.searchDemographicByPhoneAndStatus(keyword, stati, limit, offset);
+		}
+		else if(searchMode.equals("search_dob")) {
+			demoList = demographicDao.searchDemographicByDOBAndStatus(keyword, stati, limit, offset);
+		}
+		else if(searchMode.equals("search_address")) {
+			demoList = demographicDao.searchDemographicByAddressAndStatus(keyword, stati, limit, offset);
+		}
+		else if(searchMode.equals("search_hin")) {
+			demoList = demographicDao.searchDemographicByHINAndStatus(keyword, stati, limit, offset);
+		}
+		else if(searchMode.equals("search_chart_no")) {
+			demoList = demographicDao.findDemographicByChartNoAndStatus(keyword, stati, limit, offset);
+		}
 	}
 
 	if(demoList == null) {
@@ -389,7 +440,7 @@ function addNameCaisi(demographic_no,lastname,firstname,chartno,messageID) {
 		<td class="rosterStatus"><%=demo.getRosterStatus()==null||demo.getRosterStatus().equals("")?"&nbsp;":demo.getRosterStatus()%></td>
 		<td class="sex"><%=demo.getSex()%></td>
 		<td class="dob"><%=demo.getYearOfBirth() + "-" + demo.getMonthOfBirth() + "-" + demo.getDateOfBirth()%></td>
-        <td class="doctor"><%=providerBean.getProperty(demo.getProviderNo())==null?"":providerBean.getProperty(demo.getProviderNo())%></td>
+        <td class="doctor"><%=providerBean.getProperty(demo.getProviderNo()==null?"":demo.getProviderNo())==null?"":providerBean.getProperty(demo.getProviderNo())%></td>
         </tr>
 
 <%
@@ -400,6 +451,9 @@ function addNameCaisi(demographic_no,lastname,firstname,chartno,messageID) {
   List<MatchingDemographicTransferScore> integratorSearchResults=(List<MatchingDemographicTransferScore>)request.getAttribute("integratorSearchResults");
   if (integratorSearchResults!=null) {
 	  for (MatchingDemographicTransferScore matchingDemographicTransferScore : integratorSearchResults) {
+	      if( isLocal(matchingDemographicTransferScore, demoList)) {
+		  	continue;
+	      }
 		  rowCounter++;
 		  bgColor = rowCounter%2==0?"#EEEEFF":"white";
 		  DemographicTransfer demographicTransfer=matchingDemographicTransferScore.getDemographicTransfer();
@@ -547,3 +601,19 @@ function addNameCaisi(demographic_no,lastname,firstname,chartno,messageID) {
 </div>
 </body>
 </html>
+<%!
+
+Boolean isLocal(MatchingDemographicTransferScore matchingDemographicTransferScore, List<Demographic> demoList) {
+    String hin = matchingDemographicTransferScore.getDemographicTransfer().getHin(); 
+    for( Demographic demo : demoList ) {
+		
+		if( hin != null && hin.equals(demo.getHin()) ) {
+		    return true;
+		}
+    }
+    
+    return false;
+    
+}
+
+%>

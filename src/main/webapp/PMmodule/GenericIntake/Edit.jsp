@@ -35,6 +35,8 @@
 <%@ page import="org.oscarehr.PMmodule.web.ProgramUtils" %>
 <%@ page import="org.oscarehr.util.SpringUtils" %>
 <%@ page import="org.oscarehr.common.dao.DemographicDao" %>
+<%@ page import="org.oscarehr.PMmodule.dao.ProviderDao" %>
+<%@ page import="org.oscarehr.common.model.Provider" %>
 <%@ page import="oscar.OscarProperties" %>
 
 <%@ taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi" %>
@@ -514,7 +516,15 @@
 			</html:select>    			
     		</label>
     	</td>
-    	<td></td>
+	<td><label>Doctor<br/><html:select property="client.providerNo">
+		<html:option value=""></html:option>
+             	<% ProviderDao providerDao = (ProviderDao)SpringUtils.getBean("providerDao");
+		List<Provider> doctors = providerDao.getBillableProviders();
+		for(Provider doctor : doctors) { 
+		%>
+		<html:option value="<%=doctor.getProviderNo() %>"><%=doctor.getFormattedName() %></html:option>
+		<% }%>
+		</html:select></label></td>
     	<td></td>
     </tr>        
 <oscar:oscarPropertiesCheck property="ENABLE_CME_ON_REG_INTAKE" value="true">
@@ -534,7 +544,7 @@
 </div>
 
 <%if(!Intake.INDEPTH.equalsIgnoreCase(intakeType)) { %>
-<c:if test="${not empty sessionScope.genericIntakeEditForm.bedCommunityPrograms || not empty sessionScope.genericIntakeEditForm.servicePrograms}">
+<c:if test="${not empty sessionScope.genericIntakeEditForm.bedPrograms || not empty sessionScope.genericIntakeEditForm.communityPrograms || not empty sessionScope.genericIntakeEditForm.servicePrograms}">
     <div id="admissionsTable" dojoType="TitlePane" label="Program Admissions" labelNodeClass="intakeSectionLabel"
          containerNodeClass="intakeSectionContainer">
         <logic:messagesPresent>
@@ -548,20 +558,25 @@
         </logic:messagesPresent>
         <table class="intakeTable">
             <tr>
-                <c:if test="${not empty sessionScope.genericIntakeEditForm.bedCommunityPrograms}">
+                <c:if test="${not empty sessionScope.genericIntakeEditForm.bedPrograms}">
                     <td class="intakeBedCommunityProgramCell"><label><c:out
-                            value="${sessionScope.genericIntakeEditForm.bedCommunityProgramLabel}"/></label></td>
+                            value="${sessionScope.genericIntakeEditForm.bedProgramLabel}"/></label></td>
                 </c:if>
                 <c:if test="${not empty sessionScope.genericIntakeEditForm.servicePrograms}">
                     <td><label>Service Programs</label></td>
                 </c:if>
+                <c:if test="${not empty sessionScope.genericIntakeEditForm.communityPrograms}">
+                    <td class="intakeBedCommunityProgramCell"><label><c:out
+                            value="${sessionScope.genericIntakeEditForm.communityProgramLabel}"/></label></td>
+                </c:if>
+		<td><label>Admission Date</label></td>
             </tr>
             <tr>
 				<input type="hidden" name="remoteReferralId" value="<%=StringUtils.trimToEmpty(request.getParameter("remoteReferralId"))%>" />
-                <c:if test="${not empty sessionScope.genericIntakeEditForm.bedCommunityPrograms}">
+                <c:if test="${not empty sessionScope.genericIntakeEditForm.bedPrograms}">
                     <td class="intakeBedCommunityProgramCell">
-                        <html:select property="bedCommunityProgramId" value='<%=request.getParameter("destinationProgramId")%>' >
-                            <html:optionsCollection property="bedCommunityPrograms" value="value" label="label"/>
+                        <html:select property="bedProgramId" value='<%=request.getParameter("destinationProgramId")%>' >
+                            <html:optionsCollection property="bedPrograms" value="value" label="label"/>
                         </html:select>
                     </td>
                 </c:if>
@@ -573,6 +588,18 @@
                         </c:forEach>
                     </td>
                 </c:if>
+                <c:if test="${not empty sessionScope.genericIntakeEditForm.communityPrograms}">
+                    <td class="intakeBedCommunityProgramCell">
+                        <html:select property="communityProgramId" value='<%=request.getParameter("destinationProgramId")%>' >
+                            <html:optionsCollection property="communityPrograms" value="value" label="label"/>
+                        </html:select>
+                    </td>
+                </c:if>
+               <td><input id="admissionDate" name="admissionDate" value="" 
+                <%=(readOnlyDates?"readonly=\"readonly\" onfocus=\"this.blur()\"":"") %> type="text"><img title="Calendar" id="cal_admissionDate" 
+                src="<%=request.getContextPath()%>/images/cal.gif" alt="Calendar" border="0">
+                <script type="text/javascript">Calendar.setup({inputField:'admissionDate',ifFormat :'%Y-%m-%d',button :'cal_admissionDate',align :'cr',singleClick :true,firstDay :1});</script>                                     
+                </td>
             </tr>
         </table>
     </div>

@@ -23,6 +23,8 @@
 
 --%>
 
+<%@page import="java.util.Hashtable"%>
+<%@page import="oscar.util.UtilDateUtilities"%>
 <%@page import="java.util.Collections"%>
 <%@page import="oscar.MyDateFormat"%>
 <%@page import="oscar.util.DateUtils"%>
@@ -43,7 +45,9 @@
 <%@page import="org.oscarehr.casemgmt.web.NoteDisplay,org.oscarehr.casemgmt.web.NoteDisplayLocal"%>
 <%@page import="org.oscarehr.util.SpringUtils"%>
 <%@page import="org.oscarehr.casemgmt.service.CaseManagementManager,org.oscarehr.casemgmt.model.CaseManagementNote"%>
-
+<%@page import="org.oscarehr.common.dao.CtlDocClassDao,org.oscarehr.common.dao.QueueDao" %>
+<%@page import="org.springframework.web.context.WebApplicationContext"%>
+<%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%
     if (session.getAttribute("userrole") == null) {
         response.sendRedirect("../logout.jsp");
@@ -65,7 +69,7 @@
 </security:oscarSec>
 
 <%
-
+    String errorMessage="";
 //if delete request is made
     if (request.getParameter("delDocumentNo") != null && request.getParameter("delDocumentNo").length() > 0) {
         EDocUtil.deleteDocument(request.getParameter("delDocumentNo"));
@@ -75,6 +79,19 @@
     if (request.getParameter("undelDocumentNo") != null && request.getParameter("undelDocumentNo").length() > 0) {
         EDocUtil.undeleteDocument(request.getParameter("undelDocumentNo"));
     }
+
+    if (request.getParameter("refileDocumentNo") != null && request.getParameter("refileDocumentNo").length() > 0) {
+        try {
+            EDocUtil.refileDocument(request.getParameter("refileDocumentNo"),request.getParameter("queueId"));
+        } catch (Exception e) {
+            errorMessage= e.getMessage();
+        }
+    }
+    
+    WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+    QueueDao queueDao = (QueueDao) ctx.getBean("queueDao");
+    List<Hashtable> queues = queueDao.getQueues();
+    int queueId=1;
 
     String viewstatus = request.getParameter("viewstatus");
     if (viewstatus == null) {
@@ -97,9 +114,12 @@
     if (request.getParameter("sortorder") != null && request.getParameter("sortorder").equals("Observation")) {
     	sort = EDocUtil.EDocSort.OBSERVATIONDATE;
         sortorder="Observation";
-    } else  {
-    	sort = EDocUtil.EDocSort.DATE;
-        sortorder="Upload";
+    } else  if (request.getParameter("sortorder") != null && request.getParameter("sortorder").equals("Update")) {
+        sort = EDocUtil.EDocSort.DATE;
+        sortorder="Update";
+    } else {
+    	sort = EDocUtil.EDocSort.CONTENTDATE;
+        sortorder="Content";
     }
     docs = EDocUtil.listDocs(module, demographicID, view, EDocUtil.PRIVATE, sort, viewstatus);
     
@@ -148,7 +168,18 @@
                 document.DisplayDoc.viewstatus.value=document.DisplayDoc.selviewstatus.options[document.DisplayDoc.selviewstatus.selectedIndex].value;
                 document.DisplayDoc.submit();
             }
-           
+
+            function RefileDoc()
+            {
+                document.DisplayDoc.refileDocumentNo.value=docid;
+                document.DisplayDoc.viewstatus.value=document.DisplayDoc.selviewstatus.options[document.DisplayDoc.selviewstatus.selectedIndex].value;
+                document.DisplayDoc.submit();
+            }
+
+            function setQueue(){
+                document.DisplayDoc.queueId.value=document.getElementById('queueList').options[document.getElementById('queueList').selectedIndex].value;
+            }
+
             function getWidth() {
                 var myWidth = 0;
                 if( typeof( window.innerWidth ) == 'number' ) {
@@ -288,6 +319,15 @@
                     showPageImg(docid,doctype);
                     var div_ref = document.all("docbuttons");                    
                     div_ref.style.visibility = "visible";
+                    if(doctype=="text/html") {
+                        var div_ref = document.all("refilebutton");
+                        div_ref.style.visibility = "hidden";
+                    }
+                    else
+                    {
+                            var div_ref = document.all("refilebutton");
+                            div_ref.style.visibility = "visible";
+                    }
                 }
             }
 
@@ -424,6 +464,7 @@
         <form name="DisplayDoc" method="post" action="noteBrowser.jsp">
 
             <table>
+                <%if (errorMessage.length() > 0) {%><tr><td><b><font color="red"><%=errorMessage%></font></b></td></tr><%}%>
                 <tr><td  align="left" valign="top" width="50%">
                         <oscar:nameage demographicNo="<%=demographicID%>"/><br>                     
 
@@ -441,10 +482,12 @@
 
                         <bean:message key="oscarEncounter.noteBrowser.msgSortDate"/>
                         <select id="selsortorder" name="selsortorder" onchange="ReLoadDoc()">
+                            <option value="Content"
+                                    <%=sortorder.equalsIgnoreCase("Content") ? "selected":""%>><bean:message key="oscarEncounter.noteBrowser.msgContent"/></option>
                             <option value="Observation"
                                     <%=sortorder.equalsIgnoreCase("Observation") ? "selected":""%>><bean:message key="oscarEncounter.noteBrowser.msgObservation"/></option>
-                            <option value="Upload"
-                                    <%=sortorder.equalsIgnoreCase("Upload") ? "selected":""%>><bean:message key="oscarEncounter.noteBrowser.msgUpload"/></option>
+                            <option value="Update"
+                                    <%=sortorder.equalsIgnoreCase("Update") ? "selected":""%>><bean:message key="oscarEncounter.noteBrowser.msgUpdate"/></option>
 				
 			</select>
                         <fieldset><legend><bean:message key="oscarEncounter.noteBrowser.msgView"/>:</legend>      
@@ -452,6 +495,8 @@
                             <input type="hidden" name="demographic_no" value="<%=demographicID%>">
                             <input type="hidden" name="undelDocumentNo" value="">
                             <input type="hidden" name="delDocumentNo" value="">
+                            <input type="hidden" name="refileDocumentNo" value="">
+                            <input type="hidden" name="queueId" value="<%=queueId%>">
 
                             <a
                                 href="#" onclick="LoadView('all')" ><%=view.equals("all") ? "<b>":""%>All<%=view.equals("all") ? "</b>":""%></a> <% for (int i3 = 0; i3 < doctypes.size(); i3++) {%>
@@ -462,11 +507,24 @@
                         <div id="docbuttons">
                                 <% if (viewstatus.equalsIgnoreCase("active")) {%>
                                 <% if (module.equalsIgnoreCase("demographic")) {%>
-                                <input type="button" value="Add Tickler" onclick="AddTickler();" > <%}%>
-                                <input type="button" value="Annotate" onclick="DocAnnotation()" >
-                                <input type="button" value="Edit" onclick="DocEdit();" >                        
-                                <input type="button" value="Delete" onclick="DeleteDoc();" > <%} else if (viewstatus.equalsIgnoreCase("deleted")) {%>
-                                <input type="button" value="UnDelete" onclick="UnDeleteDoc();" >   
+                                <input type="button" value="<bean:message key="oscarEncounter.noteBrowser.msgAddTickler"/>" onclick="AddTickler();" > <%}%>
+                                <input type="button" value="<bean:message key="oscarEncounter.noteBrowser.msgAnnotate"/>" onclick="DocAnnotation()" >
+                                <input type="button" value="<bean:message key="oscarEncounter.noteBrowser.msgEdit"/>" onclick="DocEdit();" >
+                                <input type="button" value="<bean:message key="oscarEncounter.noteBrowser.msgDelete"/>" onclick="DeleteDoc();" >
+                                <div id="refilebutton">
+                                    <input type="button" value="<bean:message key="oscarEncounter.noteBrowser.msgRefile"/>" onclick="RefileDoc();" >
+                                    <select  id="queueList" name="queueList" onchange="setQueue();">
+                                        <%
+                                            for (Hashtable ht : queues) {
+                                                int id = (Integer) ht.get("id");
+                                                String qName = (String) ht.get("queue");
+                                        %>
+                                        <option value="<%=id%>" <%=((id == queueId) ? " selected" : "")%>><%= qName%> </option>
+                                    <%}%>
+                                    </select>
+                                </div>
+                                <%} else if (viewstatus.equalsIgnoreCase("deleted")) {%>
+                                <input type="button" value="<bean:message key="oscarEncounter.noteBrowser.msgUndelete"/>" onclick="UnDeleteDoc();" >   
                                 <%}%>
                         </div>
                             
@@ -474,13 +532,17 @@
                         <div id="docinfo"></div>
                         <div id="printnotesbutton"><input type='image' src="../oscarEncounter/graphics/document-print.png" onclick="PrintEncounter();" title='<bean:message key="oscarEncounter.Index.btnPrint"/>' id="imgPrintEncounter"></div>  
                     </td><td valign="top">
-                        <fieldset><legend><bean:message key="oscarEncounter.noteBrowser.UploadObservationTypeDescription"/></legend>
+                        <fieldset><legend><%
+                        if(sortorder.equals("Content")) { %>
+                        <bean:message key="oscarEncounter.noteBrowser.msgContent"/><%} else {%>
+                        <bean:message key="oscarEncounter.noteBrowser.msgUpdate"/> <%}%>
+                        <bean:message key="oscarEncounter.noteBrowser.ObservationTypeDescription"/></legend>
                             <SELECT MULTIPLE SIZE=5 id="doclist" onchange="getDoc();">
                                 <%
                                     for (int i2 = 0; i2 < docs.size(); i2++) {
                                         EDoc cmicurdoc = docs.get(i2);
                                 %>
-                                <option VALUE="<%=cmicurdoc.getDocId()%>-<%=cmicurdoc.getContentType()%>" title="<%=cmicurdoc.getDescription()%>"><%=cmicurdoc.getDateTimeStamp()%>&nbsp;&nbsp; <%=cmicurdoc.getObservationDate()%> [<%=cmicurdoc.getType()%>] <%=(cmicurdoc.getDescription().length()<30?cmicurdoc.getDescription():cmicurdoc.getDescription().substring(0,30)+"...")%>
+                                <option VALUE="<%=cmicurdoc.getDocId()%>-<%=cmicurdoc.getContentType()%>" title="<%=cmicurdoc.getDescription()%>"><%=sortorder.equals("Content")?UtilDateUtilities.DateToString(cmicurdoc.getContentDateTime(),"yyyy-MM-dd"):cmicurdoc.getDateTimeStamp()%>&nbsp;&nbsp; <%=cmicurdoc.getObservationDate()%> [<%=cmicurdoc.getType()%>] <%=(cmicurdoc.getDescription().length()<30?cmicurdoc.getDescription():cmicurdoc.getDescription().substring(0,30)+"...")%>
                                 </option> <%}%>
                             </SELECT>
                         </fieldset>

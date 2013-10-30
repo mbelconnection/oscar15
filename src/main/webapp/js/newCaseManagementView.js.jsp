@@ -58,6 +58,9 @@
         var calendar;
 
         function popupPage(vheight,vwidth,name,varpage) { //open a new popup window
+		  if (varpage == null || varpage == -1) {
+		  	return false;
+		  }
           if( varpage.indexOf("..") == 0 ) {
             varpage = ctx + varpage.substr(2);
           }
@@ -103,13 +106,16 @@
         var okToClose = false;
         function onClosing() {
         	
-            for( var idx = 0; idx < measurementWindows.length; ++idx ) {
-                if( !measurementWindows[idx].closed )
-                    measurementWindows[idx].parentChanged = true;
+            for( var name in openWindows ) {
+                if( !openWindows[name].closed )
+                    openWindows[name].close();
             }
 
+            
+            
+            
             //check to see if we need to save
-            if( $(caseNote) != null && tmpSaveNeeded && (origCaseNote != $(caseNote).value || origObservationDate != $("observationDate").value) ) {
+            if( $(caseNote) != null && tmpSaveNeeded || ( (origCaseNote != $(caseNote).value || origObservationDate != $("observationDate").value) )) {
                 tmpSaveNeeded = false;
                 //autoSave(false);
                 document.forms['caseManagementEntryForm'].sign.value='persist';
@@ -1289,7 +1295,7 @@ function removeLock(id) {
 	var regEx = /\d+/;
     var nId = regEx.exec(id);
 	var url = ctx + "/CaseManagementEntry.do";
-	params = "method=releaseNoteLock&providerNo=" + providerNo + "&demographicNo=" + demographicNo + "&noteId=" + nId;
+	params = "method=releaseNoteLock&providerNo=" + providerNo + "&demographicNo=" + demographicNo + "&noteId=" + nId + "&force=true";
 	
 	new Ajax.Request(
 		url,
@@ -1877,7 +1883,7 @@ function editNote(e) {
 				data: params
 			});
     		    		
-    		params = "method=updateNoteLock&demographicNo=" + demographicNo;
+    		params = "method=updateNoteLock&demographicNo=" + demographicNo + "&noteId=" + nId;
 			jQuery.ajax({
 				type: "POST",
 				url:  ctx + "/CaseManagementEntry.do",
@@ -2137,6 +2143,17 @@ function issueIsAssigned() {
 
 var filterError;
 
+function resetInputElements(element) {
+	if (Object.prototype.toString.call(element) == "[object NodeList]") {
+		var size = element.length;
+		for (var i = 0; i < size; i++) {
+			element[i].checked = false;
+		}
+	} else {
+		element.checked = false;
+	}
+}
+
 function filter(reset) {
     var url = ctx + "/CaseManagementEntry.do";
     var params = "ajaxview=ajaxView&fullChart=" + fullChart;
@@ -2149,6 +2166,13 @@ function filter(reset) {
     document.forms["caseManagementViewForm"].method.value = "view";
     document.forms["caseManagementViewForm"].resetFilter.value = reset;
 
+	if (reset) {
+		resetInputElements(document.forms["caseManagementViewForm"].filter_providers);
+		resetInputElements(document.forms["caseManagementViewForm"].filter_roles);
+		resetInputElements(document.forms["caseManagementViewForm"].note_sort);
+		resetInputElements(document.forms["caseManagementViewForm"].issues);
+	}
+	
     var caseMgtEntryfrm = document.forms["caseManagementEntryForm"];
     var caseMgtViewfrm = document.forms["caseManagementViewForm"];
     params +=  "&" + Form.serialize(caseMgtEntryfrm);
@@ -2511,6 +2535,9 @@ function savePage(method, chain) {
     tmpSaveNeeded = false;
     if( method == "saveAndExit" ) {
     	needToReleaseLock = false;
+    }
+    else {
+    	needToReleaseLock = true;
     }
 
     caseMgtEntryfrm.submit();

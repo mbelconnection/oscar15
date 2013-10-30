@@ -1,5 +1,4 @@
 
-
 CREATE TABLE `surveyData` (
   surveyDataId int(10) NOT NULL auto_increment,
   surveyId varchar(5) default NULL,
@@ -76,7 +75,8 @@ CREATE TABLE appointment (
   name varchar(50) default NULL,
   demographic_no int(10) default NULL,
   program_id int default 0,
-  notes varchar(80) default NULL,
+  notes varchar(255),
+  reasonCode INT(11),
   reason varchar(80) default NULL,
   location varchar(30) default NULL,
   resources varchar(255) default NULL,
@@ -595,7 +595,7 @@ CREATE TABLE diseases (
 
 CREATE TABLE document (
   document_no int(20) NOT NULL auto_increment,
-  doctype varchar(20) default NULL,
+  doctype varchar(60),
   docClass varchar(60),
   docSubClass varchar(60),
   docdesc varchar(255) NOT NULL default '',
@@ -609,6 +609,7 @@ CREATE TABLE document (
   updatedatetime datetime default NULL,
   status char(1) NOT NULL default '',
   contenttype varchar(60) NOT NULL default '',
+  contentdatetime datetime,
   public1 int(1) NOT NULL default '0',
   observationdate date default NULL,
   reviewer varchar(30) default '',
@@ -754,7 +755,8 @@ CREATE TABLE eform (
   form_creator varchar(255) default NULL,
   status tinyint(1) NOT NULL default '1',
   form_html mediumtext,
-  patient_independent boolean,
+  showLatestFormOnly boolean NOT NULL,
+  patient_independent boolean NOT NULL,
   roleType varchar(50) default NULL,
   PRIMARY KEY  (fid),
   UNIQUE KEY id (fid)
@@ -775,7 +777,8 @@ CREATE TABLE eform_data (
   form_time time default NULL,
   form_provider varchar(255) default NULL,
   form_data mediumtext,
-  patient_independent tinyint(1) not null,
+  showLatestFormOnly boolean NOT NULL,
+  patient_independent boolean NOT NULL,
   roleType varchar(50) default NULL,
   PRIMARY KEY  (fdid),
   UNIQUE KEY id (fdid),
@@ -7404,6 +7407,7 @@ CREATE TABLE security (
   password varchar(80) NOT NULL default '',
   provider_no varchar(6) default NULL,
   pin varchar(6) default NULL,
+  forcePasswordReset tinyint(1),
   PRIMARY KEY  (security_no),
   UNIQUE user_name (user_name)
 ) ;
@@ -7457,6 +7461,7 @@ CREATE TABLE study (
 CREATE TABLE studydata (
   studydata_no int(10) NOT NULL auto_increment,
   demographic_no int(10) NOT NULL default '0',
+  deleted tinyint not null,
   study_no int(3) NOT NULL default '0',
   provider_no varchar(6) NOT NULL default '',
   timestamp timestamp NOT NULL,
@@ -7767,6 +7772,19 @@ CREATE TABLE `reportFilter` (
 
 CREATE TABLE `demographicExt` (
   `id` int(10) NOT NULL auto_increment,
+  `demographic_no` int(10) default NULL,
+  `provider_no` varchar(6) default NULL,
+  `key_val` varchar(64) default NULL,
+  `value` text,
+  `date_time` datetime default NULL,
+  `hidden` char(1) default '0',
+  PRIMARY KEY  (`id`),
+  INDEX (demographic_no)
+) ;
+
+CREATE TABLE `demographicExtArchive` (
+  `id` int(10) NOT NULL auto_increment,
+  `archiveId` bigint(20),
   `demographic_no` int(10) default NULL,
   `provider_no` varchar(6) default NULL,
   `key_val` varchar(64) default NULL,
@@ -9420,6 +9438,7 @@ create table Facility (
 	enableDigitalSignatures tinyint(1) not null,
         ocanServiceOrgNumber int(10) not null,
         enableOcanForms tinyint(1) not null,
+        enableCbiForm tinyint(1) not null,
 	enableAnonymous tinyint(1) unsigned NOT NULL,
 	enablePhoneEncounter tinyint(1) unsigned NOT NULL,
 	enableGroupNotes tinyint(1) unsigned NOT NULL,
@@ -10778,6 +10797,10 @@ CREATE TABLE formONAREnhanced(
   pg2_formDate date default NULL,
   pg2_signature2 varchar(50) default NULL,
   pg2_formDate2 date default NULL,
+  pg1_geneticA_riskLevel varchar(25),
+  pg1_geneticB_riskLevel varchar(25),
+  pg1_geneticC_riskLevel varchar(25),
+  pg1_labCustom3Result_riskLevel varchar(25),
   PRIMARY KEY (ID)
 ) ENGINE=MyISAM CHARSET=latin1;
 
@@ -11289,4 +11312,48 @@ create table labPatientPhysicianInfo(
   collection_date varchar(20)
 );
 
+
+create table LookupList (
+        id int(11) NOT NULL AUTO_INCREMENT,
+        name varchar(50) NOT NULL,
+        description varchar(255),
+        categoryId int,
+        `active` tinyint(1) not null,
+        createdBy varchar(8) not null,
+        dateCreated timestamp not null,
+        primary key(id)
+);
+
+create table LookupListItem (
+        id int(11) NOT NULL AUTO_INCREMENT,
+        lookupListId int(11) not null,
+        value varchar(50) NOT NULL,
+        label varchar(255),
+        displayOrder int not null,
+        `active` tinyint(1) not null,
+        createdBy varchar(8) not null,
+        dateCreated timestamp not null,
+        primary key(id)
+);
+
+
+create table CtlRelationships (
+        id int(11) NOT NULL AUTO_INCREMENT,
+        value varchar(50) NOT NULL,
+        label varchar(255),
+        `active` tinyint(1) not null,
+	maleInverse varchar(50),
+	femaleInverse varchar(50),
+        primary key(id)
+);
+
+CREATE TABLE  documentDescriptionTemplate (
+  id int(10) unsigned NOT NULL AUTO_INCREMENT,
+  doctype varchar(60) NOT NULL,
+  description varchar(255) NOT NULL,
+  descriptionShortcut varchar(20) NOT NULL,
+  provider_no varchar(6),
+  lastUpdated timestamp NOT NULL,
+  PRIMARY KEY (id)
+);
 

@@ -102,10 +102,15 @@ if (heading != null){
         </tr>
 
         <%
+	        List<Drug> prescriptDrugs = null;
             CaseManagementManager caseManagementManager = (CaseManagementManager) SpringUtils.getBean("caseManagementManager");
-            List<Drug> prescriptDrugs = caseManagementManager.getPrescriptions(patient.getDemographicNo(), showall);
-			if(showall) {
+
+            if(showall) {
+            	prescriptDrugs = caseManagementManager.getPrescriptions(patient.getDemographicNo(), showall);
             	Collections.sort(prescriptDrugs,new oscar.oscarRx.util.ShowAllSorter());
+            }
+            else {
+                prescriptDrugs = caseManagementManager.getCurrentPrescriptions(patient.getDemographicNo());
             }
 
             DrugReasonDao drugReasonDao  = (DrugReasonDao) SpringUtils.getBean("drugReasonDao");
@@ -137,9 +142,9 @@ if (heading != null){
 
                 if (request.getParameter("status") != null) { //TODO: Redo this in a better way
                     String stat = request.getParameter("status");
-                    if (stat != null && stat.equals("active") && prescriptDrug.isExpired()) {
+                    if (stat.equals("active") && !prescriptDrug.isCurrent()) {
                         continue;
-                    } else if (stat != null && stat.equals("inactive") && !prescriptDrug.isExpired()) {
+                    } else if (stat.equals("inactive") && prescriptDrug.isCurrent()) {
                         continue;
                     }
                 }
@@ -385,11 +390,11 @@ String getName(Drug prescriptDrug){
     String getClassColour(Drug drug, long referenceTime, long durationToSoon){
         StringBuffer sb = new StringBuffer("class=\"");
 
-        if (!drug.isExpired() && drug.getEndDate()!=null && (drug.getEndDate().getTime() - referenceTime <= durationToSoon)) {  // ref = now and duration will be a month
+        if (drug.isCurrent() && drug.getEndDate()!=null && (drug.getEndDate().getTime() - referenceTime <= durationToSoon)) {  // ref = now and duration will be a month
             sb.append("expireInReference ");
         }
 
-        if (!drug.isExpired() && !drug.isArchived()) {
+        if (drug.isCurrent() && !drug.isArchived()) {
             sb.append("currentDrug ");
         }
 
@@ -397,7 +402,7 @@ String getName(Drug prescriptDrug){
             sb.append("archivedDrug ");
         }
 
-        if(drug.isExpired()) {
+        if(!drug.isCurrent()) {
             sb.append("expiredDrug ");
         }
 

@@ -33,6 +33,7 @@
     <head>
                 <title>Documents In Queues</title>
 <script type="text/javascript" src="<%= request.getContextPath() %>/share/javascript/oscarMDSIndex.js"></script>
+<script type="text/javascript" src="<%= request.getContextPath() %>/share/javascript/jquery/jquery-1.4.2.js"></script>
 <script type="text/javascript" src="<%= request.getContextPath() %>/share/javascript/prototype.js"></script>
    <!-- main calendar program -->
 <script type="text/javascript" src="../share/calendar/calendar.js"></script>
@@ -2043,7 +2044,7 @@ List<String> abnormals=(List<String>)request.getAttribute("abnormals");
 
                                 <input type="hidden" name="selectedProviders">
 
-                                <input type="button" class="smallButton" onclick="window.close();" value="<bean:message key="oscarMDS.index.btnClose"/>"
+                                <input type="button" class="smallButton" onclick="window.close();" value="<bean:message key="oscarMDS.index.btnClose"/>">
 
                             </td>
                             
@@ -2060,7 +2061,7 @@ List<String> abnormals=(List<String>)request.getAttribute("abnormals");
                 <th class="Cell" align="left" valign="bottom"  nowrap>Documents</th>
             </tr>
             <tr >
-                <td valign="top"  id="queueNames" width="20%">
+                <td valign="top"  id="queueNames" width="10%">
                     <%
                     while(itr.hasNext()){
                         Integer qId=(Integer)itr.next();
@@ -2073,7 +2074,7 @@ List<String> abnormals=(List<String>)request.getAttribute("abnormals");
 
                 </td>
 
-                <td valign="top" id="docs" width="80%"></td>
+                <td valign="top" id="docs" width="90%"></td>
             </tr>
         </table>
                     <script type="text/javascript">

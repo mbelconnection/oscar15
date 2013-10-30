@@ -23,6 +23,8 @@
 
 package org.caisi.model;
 
+import org.oscarehr.common.model.CustomFilter;
+
 
 public class DefaultCustomFilter extends CustomFilter {
 	

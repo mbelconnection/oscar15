@@ -108,7 +108,7 @@ public class EaapsServiceClient {
 		setUserName(user);
 		
 		if (pass == null) {
-			pass = props.getProperty("eeaps.ws.pass", "test");
+			pass = props.getProperty("eaaps.ws.pass", "test");
 		}
 		setPassword(pass);
 	}
@@ -164,7 +164,7 @@ public class EaapsServiceClient {
 			String code = json.getString("code");
 			if (code != null && code.equals("InternalError")) {
 				String message = json.containsKey("message") ? json.getString("message") : "";
-				throw new Exception("eAAPs Web Service Error: " + message);
+				throw new Exception("eAAPS Web Service Error: " + message);
 			}
 		}
 		if (!json.containsKey("status")) {

@@ -31,12 +31,24 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar"%>
 
-<%
-String d = request.getParameter("demographic_no") ;
-if(d==null){
-	d = request.getParameter("demo"); //TODO: fix me
-	
+<style>
+.print{display:none;}
+
+@media print{
+.DoNotPrint{display: none}
+.print{display:block}
 }
+</style>
+<%
+String d = null;
+if(request.getParameter("demographic_no")!=null){
+	d = request.getParameter("demographic_no");	
+}else if(request.getParameter("demo")!=null){
+	d = request.getParameter("demo"); 
+}else{
+	d = request.getParameter("demographic");
+}
+
 DemographicDao demographicDao_header = SpringUtils.getBean(DemographicDao.class); 
 Demographic demographic_header=demographicDao_header.getDemographic(d);
  
@@ -53,13 +65,18 @@ Demographic demographic_header=demographicDao_header.getDemographic(d);
 <!--<a><bean:message key="demographic.demographiceditdemographic.msgNextAppt"/>: <oscar:nextAppt demographicNo='<%=d%>' /></a>-->
 
 <div class="span6" style="margin-left:15px;">
-<h4><a style="color:#333;text-decoration:none;" href="<%=request.getContextPath()%>/demographic/demographiccontrol.jsp?demographic_no=<%=d%>&displaymode=edit&dboperation=search_detail"><%=demographic_header.getLastName()%>, <%=demographic_header.getFirstName()%> <%if(demographic_header.getTitle() != null && !demographic_header.getTitle().isEmpty()) {%>(<%=demographic_header.getTitle() %>) <%}%></a>
+<h4 class="DoNotPrint"><a href="<%=request.getContextPath()%>/demographic/demographiccontrol.jsp?demographic_no=<%=d%>&displaymode=edit&dboperation=search_detail" style="color:#333;text-decoration:none;"><%=demographic_header.getLastName()%>, <%=demographic_header.getFirstName()%> <%if(demographic_header.getTitle() != null && !demographic_header.getTitle().isEmpty()) {%>(<%=demographic_header.getTitle() %>) <%}%></a>
+
 
 <%if(alert.length()!=0){%>
 <a title="<%=alert%>"><i class="icon-warning-sign"></i></a>
 <%}%>
 </h4>
+
+<h4 class="print"><%=demographic_header.getLastName()%>, <%=demographic_header.getFirstName()%> <%if(demographic_header.getTitle() != null && !demographic_header.getTitle().isEmpty()) {%>(<%=demographic_header.getTitle() %>) <%}%></h4>
 </div>
+
+
 
 <div  style="text-align:right;padding-top:8px;margin-right:15px;">
 

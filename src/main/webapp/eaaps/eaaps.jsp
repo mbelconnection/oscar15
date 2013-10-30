@@ -48,7 +48,7 @@
 	<table class="MainTable" id="scrollNumber1" name="encounterTable"
 		style="margin: 0px;">
 		<tr class="topbar">
-			<td class="MainTableTopRowLeftColumn" width="60px">eAAPs</td>
+			<td class="MainTableTopRowLeftColumn" width="60px">eAAPS</td>
 			<td class="MainTableTopRowRightColumn">
 				<table class="TopStatusBar">
 					<tr>
@@ -68,18 +68,25 @@
 
 	<c:choose>
 		<c:when test="${empty eaapsInfo}">
-			<h4>eAAPs information is not available</h4>
+			<h4>eAAPS information is not available</h4>
 		</c:when>
 		<c:otherwise>
 			<h2 style="margin: 1em;">
 				<c:out value="${eaapsInfo.message}" />
 			</h2>
 
-			<c:if test="${not empty eaapsInfo.url}">
-				<p style="padding: 0 2em;">
-					<a href="${eaapsInfo.url}" target="_blank">${eaapsInfo.url}</a>
-				</p>
-			</c:if>
+			<c:choose>
+				<c:when test="${not empty eaapsInfo.url}">
+					<p style="padding: 0 2em;">
+						<a href="${eaapsInfo.url}" target="_blank">${eaapsInfo.url}</a>
+					</p>
+				</c:when>
+				<c:otherwise>
+					<p style="padding: 0 2em;">
+						URL is not provided by AAP server
+					</p>
+				</c:otherwise>
+			</c:choose>
 
 			<ul>
 				<c:choose>
@@ -117,11 +124,14 @@
 					</c:otherwise>
 				</c:choose>
 				<c:choose>
-					<c:when test="${eaapsInfo.recommendationsConfirmed}">
-						<li>Recommendations are confirmed for this patient</li>
+					<c:when test="${eaapsInfo.recommendationsReviewStarted}">
+						<li>Recommendations review completed for this patient</li>
+					</c:when>
+					<c:when test="${eaapsInfo.recommendationsReviewCompleted}">
+						<li>Recommendations review completed for this patient</li>
 					</c:when>
 					<c:otherwise>
-						<li>Recommendations haven't been confirmed for this patient</li>
+						<li>Recommendations review hasn't started for this patient</li>
 					</c:otherwise>
 				</c:choose>
 				<c:choose>
@@ -135,11 +145,14 @@
 					</c:otherwise>
 				</c:choose>
 				<c:choose>
-					<c:when test="${eaapsInfo.aapConfirmed}">
-						<li>Asthma action plan is confirmed for this patient</li>
+					<c:when test="${eaapsInfo.aapReviewStarted}">
+						<li>Asthma action plan review has started for this patient</li>
+					</c:when>
+					<c:when test="${eaapsInfo.aapReviewCompleted}">
+						<li>Asthma action plan review completed for this patient</li>
 					</c:when>
 					<c:otherwise>
-						<li>Asthma action plan hasn't been confirmed for this patient</li>
+						<li>Asthma action plan hasn't been reviewed for this patient</li>
 					</c:otherwise>
 				</c:choose>
 			</ul>

@@ -22,82 +22,125 @@
     Toronto, Ontario, Canada
 
 --%>
+
+<%@page import="org.apache.commons.lang.time.DateFormatUtils"%>
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="org.oscarehr.PMmodule.model.Program"%>
+<%@page import="java.util.HashSet"%>
+<%@page import="org.apache.commons.lang.StringUtils"%>
+<%@page import="org.oscarehr.PMmodule.service.ProgramManager"%>
 <%@page import="org.oscarehr.common.model.Provider"%>
 <%@page import="org.oscarehr.util.SpringUtils"%>
 <%@page import="org.oscarehr.managers.ProviderManager2"%>
+<%@page import="java.util.Date"%>
 <%@page import="java.util.List"%>
 <%@page import="org.oscarehr.common.model.CdsFormOption"%>
 <%@page import="org.oscarehr.web.Cds4ReportUIBean"%>
 <%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%
 	ProviderManager2 providerManager = (ProviderManager2) SpringUtils.getBean("providerManager2");
+	ProgramManager programManager = (ProgramManager) SpringUtils.getBean("programManager");
 
-    int startYear = Integer.parseInt(request.getParameter("startYear"));
-	int startMonth = Integer.parseInt(request.getParameter("startMonth"));
-	int endYear = Integer.parseInt(request.getParameter("endYear"));
-	int endMonth = Integer.parseInt(request.getParameter("endMonth"));
-	String functionalCentreId=request.getParameter("functionalCentreId");
+    SimpleDateFormat sdf=new SimpleDateFormat(DateFormatUtils.ISO_DATE_FORMAT.getPattern());
+	Date startDate=sdf.parse(request.getParameter("startDate"));
+	Date endDateInclusive=sdf.parse(request.getParameter("endDate"));
+
 	
+	String functionalCentreId=request.getParameter("functionalCentreId");
+
 	// null for none selected, array of providerIds if selected
 	String[] providerIdList=request.getParameterValues("providerIds");
-	
-	Cds4ReportUIBean cds4ReportUIBean=new Cds4ReportUIBean(functionalCentreId, startYear, startMonth, endYear, endMonth, providerIdList);
+	String[] programIdListTemp=request.getParameterValues("programIds");
+	HashSet<Integer> programIds=null;
+	if (programIdListTemp!=null && programIdListTemp.length>0)
+	{
+		programIds=new HashSet<Integer>();
+		
+		for (String s: programIdListTemp)
+		{
+			s=StringUtils.trimToNull(s);
+			if (s!=null)
+			{
+				programIds.add(new Integer(s));
+			}
+		}
+	}
+			
+	Cds4ReportUIBean cds4ReportUIBean=new Cds4ReportUIBean(functionalCentreId, startDate, endDateInclusive, providerIdList, programIds);
 	
 	List<CdsFormOption> cdsFormOptions=Cds4ReportUIBean.getCdsFormOptions();
 	
 	StringBuilder providerNamesList=new StringBuilder();
-	if (providerIdList==null) providerNamesList.append("All Providers");
-	else
+	if (providerIdList!=null  && providerIdList.length>0) 
 	{
 		for (String providerId : providerIdList)
 		{
 			Provider provider=providerManager.getProvider(providerId);
-
 			providerNamesList.append(provider.getFormattedName()+" ("+provider.getProviderNo()+"), ");
+		}
+	}
+
+	StringBuilder programNamesList=new StringBuilder();
+	if (programIds!=null)
+	{
+		for (Integer programId : programIds)
+		{
+			Program program=programManager.getProgram(programId);
+			programNamesList.append(program.getName()+" ("+program.getType()+"), ");
 		}
 	}
 %>
 
-<%@include file="/layouts/caisi_html_top.jspf"%>
-
-
-<%@page import="org.apache.commons.lang.StringEscapeUtils"%><h3>CDS Report</h3>
+<h3>CDS Report</h3>
 <span style="font-weight:bold">Functional Centre : </span><%=cds4ReportUIBean.getFunctionalCentreDescription()%>
 <br />
 <span style="font-weight:bold">Dates : </span><%=cds4ReportUIBean.getDateRangeForDisplay()%>
 <br />
-<span style="font-weight:bold">Providers : </span><%=StringEscapeUtils.escapeHtml(providerNamesList.toString())%>
-<br />
 
-<table class="genericTable borderedTableAndCells" style="font-size:12px">
-	<tr class="genericTableHeader">
-		<td style="width:5em">CDS Category ID</td>
-		<td style="width:15em">CDS Category Description</td>
-		<td>Multi<br />Admn</td>
+<%
+	if (providerIdList!= null)
+	{
+		%>
+		<span style="font-weight:bold">Providers : </span><%=StringEscapeUtils.escapeHtml(providerNamesList.toString())%>
+		<br />
+		<%
+	}
+
+	if (programIds!=null)
+	{
+		%>
+			<span style="font-weight:bold">Programs : </span><%=StringEscapeUtils.escapeHtml(programNamesList.toString())%>
+			<br />
+		<%
+	}
+%>
+
+<table class="table table-bordered table-striped table-hover">
+	<thead>
+		<tr>
+		<th>CDS Category ID</th>
+		<th>CDS Category Description</th>
+		<th>Multi<br />Admn</th>
 		<%
 			for (int i=0; i<Cds4ReportUIBean.NUMBER_OF_COHORT_BUCKETS; i++)
 			{
 				%>
-					<td>Coh<br /><%=i%></td>
+					<th>Coh<br /><%=i%></th>
 				<%
 			}
 		%>
-		<td>Coh<br />Total</td>
+		<th>Coh<br />Total</th>
 	</tr>
+	</thead>
+	<tbody>
 	<%
-		int rowCounter=0;
 		for (CdsFormOption cdsFormOption : cdsFormOptions)
 		{
-			rowCounter++;
-			String backgroundColour;
-			if (rowCounter%2==0) backgroundColour="#eeeeee";
-			else backgroundColour="#dddddd";
-				
 			int[] dataRow=cds4ReportUIBean.getDataRow(cdsFormOption);
 			%>
-				<tr class="genericTableRow" style="background-color:<%=backgroundColour%>">
-					<td style="font-weight:bold"><%=StringEscapeUtils.escapeHtml(cdsFormOption.getCdsDataCategory())%></td>
-					<td style="font-weight:bold"><%=StringEscapeUtils.escapeHtml(cdsFormOption.getCdsDataCategoryName())%></td>
+				<tr>
+					<td><%=StringEscapeUtils.escapeHtml(cdsFormOption.getCdsDataCategory())%></td>
+					<td><%=StringEscapeUtils.escapeHtml(cdsFormOption.getCdsDataCategoryName())%></td>
 					<%
 						for (int dataElement : dataRow)
 						{
@@ -111,6 +154,5 @@
 			<%
 		}
 	%>
+	</tbody>
 </table>
-
-<%@include file="/layouts/caisi_html_bottom.jspf"%>

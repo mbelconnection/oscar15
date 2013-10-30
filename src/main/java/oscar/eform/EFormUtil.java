@@ -44,6 +44,9 @@ import java.util.regex.Pattern;
 
 import javax.persistence.PersistenceException;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
@@ -60,10 +63,12 @@ import org.oscarehr.common.dao.EFormDataDao;
 import org.oscarehr.common.dao.EFormGroupDao;
 import org.oscarehr.common.dao.EFormValueDao;
 import org.oscarehr.common.dao.SecRoleDao;
+import org.oscarehr.common.dao.TicklerDao;
 import org.oscarehr.common.model.EFormData;
 import org.oscarehr.common.model.EFormGroup;
 import org.oscarehr.common.model.EFormValue;
 import org.oscarehr.common.model.SecRole;
+import org.oscarehr.common.model.Tickler;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 
@@ -99,23 +104,24 @@ public class EFormUtil {
 	private static EFormValueDao eFormValueDao = (EFormValueDao) SpringUtils.getBean(EFormValueDao.class);
 	private static EFormGroupDao eFormGroupDao = (EFormGroupDao) SpringUtils.getBean(EFormGroupDao.class);
 	private static ProviderDao providerDao = (ProviderDao) SpringUtils.getBean(ProviderDao.class);
+	private static TicklerDao ticklerDao = SpringUtils.getBean(TicklerDao.class);
 
 	private EFormUtil() {
 	}
 
 	public static String saveEForm(EForm eForm) {
-		return saveEForm(eForm.getFormName(), eForm.getFormSubject(), eForm.getFormFileName(), eForm.getFormHtml(), eForm.getFormCreator(), eForm.getPatientIndependent(), eForm.getRoleType());
+		return saveEForm(eForm.getFormName(), eForm.getFormSubject(), eForm.getFormFileName(), eForm.getFormHtml(), eForm.getFormCreator(), eForm.isShowLatestFormOnly(), eForm.isPatientIndependent(), eForm.getRoleType());
 	}
 
 	public static String saveEForm(String formName, String formSubject, String fileName, String htmlStr) {
-		return saveEForm(formName, formSubject, fileName, htmlStr, false, null);
+		return saveEForm(formName, formSubject, fileName, htmlStr, false, false, null);
 	}
 
-	public static String saveEForm(String formName, String formSubject, String fileName, String htmlStr, boolean patientIndependent, String roleType) {
-		return saveEForm(formName, formSubject, fileName, htmlStr, null, patientIndependent, roleType);
+	public static String saveEForm(String formName, String formSubject, String fileName, String htmlStr, boolean showLatestFormOnly, boolean patientIndependent, String roleType) {
+		return saveEForm(formName, formSubject, fileName, htmlStr, null, showLatestFormOnly, patientIndependent, roleType);
 	}
 
-	public static String saveEForm(String formName, String formSubject, String fileName, String htmlStr, String creator, boolean patientIndependent, String roleType) {
+	public static String saveEForm(String formName, String formSubject, String fileName, String htmlStr, String creator, boolean showLatestFormOnly, boolean patientIndependent, String roleType) {
 		// called by the upload action, puts the uploaded form into DB		
 
 		org.oscarehr.common.model.EForm eform = new org.oscarehr.common.model.EForm();
@@ -125,6 +131,7 @@ public class EFormUtil {
 		eform.setCreator(creator);
 		eform.setCurrent(true);
 		eform.setFormHtml(htmlStr);
+		eform.setShowLatestFormOnly(showLatestFormOnly);
 		eform.setPatientIndependent(patientIndependent);
 		eform.setRoleType(roleType);
 
@@ -220,8 +227,8 @@ public class EFormUtil {
 		Boolean current = null;
 		if (deleted.equals("deleted")) current = false;
 		else if (deleted.equals("current")) current = true;
-
-		List<EFormData> allEformDatas = eFormDataDao.findByDemographicIdCurrentPatientIndependent(Integer.parseInt(demographic_no), current, false);
+		
+		List<EFormData> allEformDatas = eFormDataDao.findByDemographicIdCurrent(Integer.parseInt(demographic_no), current);
 
 		if (NAME.equals(sortBy)) Collections.sort(allEformDatas, EFormData.FORM_NAME_COMPARATOR);
 		else if (SUBJECT.equals(sortBy)) Collections.sort(allEformDatas, EFormData.FORM_SUBJECT_COMPARATOR);
@@ -297,7 +304,7 @@ public class EFormUtil {
 
 		Boolean current = true;
 
-		List<Map<String, Object>> allEformDatas = eFormDataDao.findByDemographicIdCurrentPatientIndependentNoData(Integer.parseInt(demographic_no), current, false);
+		List<Map<String, Object>> allEformDatas = eFormDataDao.findByDemographicIdCurrentNoData(Integer.parseInt(demographic_no), current);
 
 		ArrayList<HashMap<String, ? extends Object>> results = new ArrayList<HashMap<String, ? extends Object>>();
 		try {
@@ -377,6 +384,7 @@ public class EFormUtil {
 		curht.put("formTime", eform.getFormTime().toString());
 		curht.put("formCreator", eform.getCreator());
 		curht.put("formHtml", eform.getFormHtml());
+		curht.put("showLatestFormOnly", eform.isShowLatestFormOnly());
 		curht.put("patientIndependent", eform.isPatientIndependent());
 		curht.put("roleType", eform.getRoleType());
 
@@ -399,7 +407,8 @@ public class EFormUtil {
 		eform.setFormDate(ConversionUtils.fromDateString(updatedForm.getFormDate()));
 		eform.setFormTime(ConversionUtils.fromTimeString(updatedForm.getFormTime()));
 		eform.setFormHtml(updatedForm.getFormHtml());
-		eform.setPatientIndependent(updatedForm.getPatientIndependent());
+		eform.setShowLatestFormOnly(updatedForm.isShowLatestFormOnly());
+		eform.setPatientIndependent(updatedForm.isPatientIndependent());
 		eform.setRoleType(updatedForm.getRoleType());
 		
 		dao.merge(eform);
@@ -443,12 +452,14 @@ public class EFormUtil {
 			return ConversionUtils.toBoolString(eform.isCurrent());
 		else if (fieldName.equalsIgnoreCase("formHtml"))
 			return eform.getFormHtml();
+		else if (fieldName.equalsIgnoreCase("showLatestFormOnly"))
+			return ConversionUtils.toBoolString(eform.isShowLatestFormOnly());
 		else if (fieldName.equalsIgnoreCase("patientIndependent")) 
 			return ConversionUtils.toBoolString(eform.isPatientIndependent());
 		else if (fieldName.equalsIgnoreCase("roleType"))
 			return eform.getRoleType();
 		
-		logger.warn("Invalid field name: " + fieldName + ". Please use one of formName, formSubject, formFileName, formDate, formTime, formStatus, formHtml, patientIndependent or roleType.");
+		logger.warn("Invalid field name: " + fieldName + ". Please use one of formName, formSubject, formFileName, formDate, formTime, formStatus, formHtml, showLatestFormOnly, patientIndependent or roleType.");
 		
 		return null;
 	}
@@ -459,17 +470,6 @@ public class EFormUtil {
 		Integer maxId = dao.findMaxIdForActiveForm(name);
 		
 		return (maxId == null ? null : maxId.toString());
-	}
-
-	private static void setFormStatus(String fid, boolean status) {
-		EFormDao dao = SpringUtils.getBean(EFormDao.class);
-		org.oscarehr.common.model.EForm eform = dao.find(ConversionUtils.fromIntString(fid));
-		if (eform == null) {
-			logger.error("Unable to find EForm for " + fid);
-			return;
-		}
-		eform.setCurrent(status);
-		dao.merge(eform);
 	}
 	
 	public static void delEForm(String fid) {
@@ -503,6 +503,30 @@ public class EFormUtil {
 			logger.error("Error", sqe);
 		}
 		return (values);
+	}
+	
+	public static JSONArray getJsonValues(ArrayList<String> names, String sql) {
+		// gets the values for each column name in the sql (used by DatabaseAP)
+		ResultSet rs = getSQL(sql);
+		JSONArray values = new JSONArray();
+		try {
+			while (rs.next()) {
+				JSONObject value = new JSONObject();
+				for (int i = 0; i < names.size(); i++) {
+					try {
+						value.element(names.get(i), oscar.Misc.getString(rs, names.get(i)));
+					} catch (Exception sqe) {
+						value.element(names.get(i), "<(" + names.get(i) + ")NotFound>");
+						logger.error("Error", sqe);
+					}
+				}
+				values.add(value);
+			}
+			rs.close();
+		} catch (SQLException sqe) {
+			logger.error("Error", sqe);
+		}
+		return values;
 	}
 
 	// used by addEForm for escaping characters
@@ -740,7 +764,7 @@ public class EFormUtil {
 			if (StringUtils.isBlank(belong)) belong = "provider";
 			String docOwner = getInfo("docowner", template, eForm.getProviderNo());
 			if (belong.equalsIgnoreCase("patient")) docOwner = getInfo("docowner", template, eForm.getDemographicNo());
-			String docText = getContent(template);
+			String docText = getContent("content", template);
 			docText = putTemplateEformHtml(eForm.getFormHtml(), docText);
 
 			if (NumberUtils.isDigits(docOwner)) {
@@ -761,11 +785,29 @@ public class EFormUtil {
 			String[] sentList = getSentList(template);
 			String userNo = eForm.getProviderNo();
 			String userName = providerDao.getProviderName(eForm.getProviderNo());
-			String message = getContent(template);
+			String message = getContent("content", template);
 			message = putTemplateEformHtml(eForm.getFormHtml(), message);
 
 			MsgMessageData msg = new MsgMessageData();
 			msg.sendMessage2(message, subject, userName, sentWho, userNo, msg.getProviderStructure(sentList), null, null);
+		}
+		
+		// write to ticklers
+		templates = getWithin("tickler", text);
+		for (String template : templates) {
+			if (StringUtils.isBlank(template)) continue;
+			
+			String taskAssignedTo = getInfo("taskAssignedTo", template, null);
+			if (taskAssignedTo==null) continue; //no assignee
+			if (providerDao.getProvider(taskAssignedTo.trim())==null) continue; //assignee provider no not exists
+			
+			String message = getContent("tickMsg", template);
+			Tickler tickler = new Tickler();
+			tickler.setTaskAssignedTo(taskAssignedTo);
+			tickler.setMessage(message);
+			tickler.setDemographicNo(Integer.valueOf(eForm.getDemographicNo()));
+			tickler.setCreator(eForm.getProviderNo());
+			ticklerDao.persist(tickler);
 		}
 	}
 
@@ -828,6 +870,60 @@ public class EFormUtil {
 
 		return fileList;
 	}
+	
+	public static ArrayList<HashMap<String, ? extends Object>> getFormsSameFidSamePatient(String fdid, String sortBy, String userRoles)
+	{
+		List<EFormData> allEformDatas =  eFormDataDao.getFormsSameFidSamePatient(Integer.valueOf(fdid));
+
+		if (SUBJECT.equals(sortBy)) Collections.sort(allEformDatas, EFormData.FORM_SUBJECT_COMPARATOR);
+		else Collections.sort(allEformDatas, EFormData.FORM_DATE_COMPARATOR);
+
+		ArrayList<HashMap<String, ? extends Object>> results = new ArrayList<HashMap<String, ? extends Object>>();
+		try {
+			for (EFormData eFormData : allEformDatas) {
+				// filter eform by role type
+				String tempRole = StringUtils.trimToNull(eFormData.getRoleType());
+				if (userRoles != null && tempRole != null) {
+					// ojectName: "_admin,_admin.eform"
+					// roleName: "doctor,admin"
+					String objectName = "_eform." + tempRole;
+					Vector v = OscarRoleObjectPrivilege.getPrivilegeProp(objectName);
+					if (!OscarRoleObjectPrivilege.checkPrivilege(userRoles, (Properties) v.get(0), (Vector) v.get(1))) {
+						continue;
+					}
+				}
+				HashMap<String, Object> curht = new HashMap<String, Object>();
+				curht.put("fdid", eFormData.getId().toString());
+				curht.put("fid", eFormData.getFormId().toString());
+				curht.put("formName", eFormData.getFormName());
+				curht.put("formSubject", eFormData.getSubject());
+				curht.put("formDate", eFormData.getFormDate().toString());
+				curht.put("formTime", eFormData.getFormTime().toString());
+				curht.put("formDateAsDate", eFormData.getFormDate());
+				curht.put("roleType", eFormData.getRoleType());
+				curht.put("providerNo", eFormData.getProviderNo());
+				results.add(curht);
+			}
+		} catch (Exception sqe) {
+			logger.error("Error", sqe);
+		}
+		return (results);
+		
+		
+		
+		
+		
+	}
+
+    public static boolean isLatestPatientForm(String fdid)
+    {
+    	return eFormDataDao.isLatestPatientForm(Integer.valueOf(fdid));
+    }
+    
+    public static boolean isShowLatestFormOnlyInMany(String fdid)
+    {
+    	return eFormDataDao.isShowLatestFormOnlyInMany(Integer.valueOf(fdid));
+    }
 
 	
 	
@@ -841,6 +937,17 @@ public class EFormUtil {
 			logger.error("Error", sqe);
 		}
 		return (rs);
+	}
+
+	private static void setFormStatus(String fid, boolean status) {
+		EFormDao dao = SpringUtils.getBean(EFormDao.class);
+		org.oscarehr.common.model.EForm eform = dao.find(ConversionUtils.fromIntString(fid));
+		if (eform == null) {
+			logger.error("Unable to find EForm for " + fid);
+			return;
+		}
+		eform.setCurrent(status);
+		dao.merge(eform);
 	}
 
 	private static String rsGetString(ResultSet rs, String column) throws SQLException {
@@ -886,8 +993,8 @@ public class EFormUtil {
 			if (paramNames.contains(field)) {
 				nwTemplate += paramValues.get(paramNames.indexOf(field));
 			} else {
-				nwTemplate += "{" + field + "}";
-				logger.error("EForm Template Error! Cannot find input name {" + field + "} in eform");
+				nwTemplate += "";
+				logger.debug("Cannot find input name {" + field + "} in eform");
 			}
 		}
 		nwTemplate += template.substring(pointer, template.length());
@@ -922,8 +1029,8 @@ public class EFormUtil {
 				}
 			}
 			if (!match) {
-				nwTemplate += "{" + field + "}";
-				logger.error("EForm Template Error! Cannot find input name {" + field + "} in eform");
+				nwTemplate += "";
+				logger.debug("Cannot find input name {" + field + "} in eform");
 			}
 		}
 		nwTemplate += template.substring(pointer, template.length());
@@ -1044,8 +1151,8 @@ public class EFormUtil {
 		return StringUtils.isBlank(info) ? deflt : info;
 	}
 
-	private static String getContent(String template) {
-		ArrayList<String> contents = getWithin("content", template);
+	private static String getContent(String tag, String template) {
+		ArrayList<String> contents = getWithin(tag, template);
 		if (contents.isEmpty()) return "";
 
 		String content = contents.get(0).trim();
@@ -1126,10 +1233,12 @@ public class EFormUtil {
 		String sentWho = "";
 		for (String sent : sentList) {
 			sent = providerDao.getProviderName(sent);
-			if (!StringUtils.isBlank(sentWho) && !StringUtils.isBlank(sent)) {
-				sentWho += ", " + sent;
-			} else {
-				sentWho += sent;
+			if( !StringUtils.isBlank(sent) ) {
+				if (!StringUtils.isBlank(sentWho) ) {
+					sentWho += ", " + sent;
+				} else {
+					sentWho += sent;
+				}
 			}
 		}
 		return sentWho;

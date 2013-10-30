@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="org.oscarehr.myoscar.commons.MedicalDataType"%>
 <%@page import="org.oscarehr.phr.util.MyOscarUtils"%>
 <%@page import="org.oscarehr.util.LoggedInInfo"%>
 <%@page import="org.oscarehr.myoscar.client.ws_manager.MessageManager"%>
@@ -37,7 +38,6 @@
 <%@page import="org.oscarehr.common.model.Demographic"%>
 <%@page import="org.oscarehr.phr.web.MyOscarMessagesHelper"%>
 <%@page import="org.oscarehr.myoscar_server.ws.MessageTransfer"%>
-<%@page import="org.oscarehr.myoscar_server.ws.MedicalDataType"%>
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.net.URLEncoder"%>
 
@@ -377,7 +377,14 @@ request.setAttribute("pageMethod",pageMethod);
                                     %>
                                 </tr>
                             </table><!--cell spacing=3-->
-                           	<button style="float:right" onclick="window.open('<%=request.getContextPath()%>/myoscar/myoscar_page_link_action.jsp?redirectPage=/messages/messaging_preferences.jsf');">MyOscar Message Settings</button>
+                            <%
+                            	if (MyOscarUtils.isMyOscarEnabled() && myOscarLoggedInInfo!=null && myOscarLoggedInInfo.isLoggedIn())
+                            	{
+                            		%>
+                           				<button style="float:right" onclick="window.open('<%=request.getContextPath()%>/myoscar/myoscar_page_link_action.jsp?redirectPage=/messages/messaging_preferences.jsf');">MyOscar Message Settings</button>
+                           			<%
+                           		}
+                           	%>
                         </td>
                     </tr>
                 </table><!--table width="100%">-->

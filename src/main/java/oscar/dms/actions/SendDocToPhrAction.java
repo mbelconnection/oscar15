@@ -40,9 +40,9 @@ import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.RemoteDataLog;
 import org.oscarehr.common.service.myoscar.MyOscarMedicalDataManagerUtils;
 import org.oscarehr.myoscar.client.ws_manager.AccountManager;
+import org.oscarehr.myoscar.commons.MedicalDataType;
 import org.oscarehr.myoscar.utils.MyOscarLoggedInInfo;
 import org.oscarehr.myoscar_server.ws.MedicalDataTransfer4;
-import org.oscarehr.myoscar_server.ws.MedicalDataType;
 import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
@@ -104,6 +104,7 @@ public class SendDocToPhrAction extends Action {
     		MyOscarLoggedInInfo myOscarLoggedInInfo=MyOscarLoggedInInfo.getLoggedInInfo(request.getSession());
 
     		Long patientMyOscarUserId=AccountManager.getUserId(myOscarLoggedInInfo, demo.getMyOscarUserName());
+    		logger.debug("patient userName="+demo.getMyOscarUserName()+", patientPersonId="+patientMyOscarUserId);
     		GregorianCalendar dateOfData=new GregorianCalendar();
     		if (eDoc.getDateTimeStampAsDate()!=null) dateOfData.setTime(eDoc.getDateTimeStampAsDate());
 

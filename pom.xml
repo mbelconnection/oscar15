@@ -52,13 +52,23 @@
 			<name>HAPI Sourceforge Repository</name>
 			<url>http://hl7api.sourceforge.net/m2</url>
 		</repository>
+
+		<repository>
+			<id>oscar_repo</id>
+			<url>http://oscarmcmaster.sourceforge.net/m2</url>
+		</repository>
 	</repositories>
 
 	<pluginRepositories>
-        	<pluginRepository>
+       	<pluginRepository>
 			<id>local_repo</id>
 			<url>file://${basedir}/local_repo</url>
-        	</pluginRepository>
+       	</pluginRepository>
+
+		<pluginRepository>
+			<id>oscar_repo</id>
+			<url>http://oscarmcmaster.sourceforge.net/m2</url>
+		</pluginRepository>
 	</pluginRepositories>
 
 	<dependencies>
@@ -95,10 +105,16 @@
                     <version>1.3.1</version>
                 </dependency>
 		<dependency>
-			<groupId>org.apache.commons</groupId>
+			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>1.3.2</version>
+			<version>2.4</version>
 		</dependency>
+		 <dependency>
+                        <groupId>commons-fileupload</groupId>
+                        <artifactId>commons-fileupload</artifactId>
+                        <version>1.3</version>
+                </dependency>
+
 		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
@@ -182,6 +198,11 @@
 			<version>2.1.0.RELEASE</version>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-sftp</artifactId>
+			<version>2.2.5.RELEASE</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aspects</artifactId>
 			<version>2.5.5</version>
@@ -230,6 +251,12 @@
 	      <version>1.2.1</version>
 	    </dependency>
 
+		<!-- google collections lib -->
+	    <dependency>
+    		<groupId>com.google.guava</groupId>
+    		<artifactId>guava</artifactId>
+    		<version>15.0-rc1</version>
+	    </dependency>
 		<!-- struts -->
 		<dependency>
 			<groupId>struts</groupId>
@@ -284,6 +311,13 @@
                         <version>5.4.1</version>
                         <type>jar</type>
                 </dependency>
+
+		<!-- rtf / lowagie -->
+		<dependency>
+			<groupId>com.lowagie</groupId>
+			<artifactId>itext-rtf</artifactId>
+			<version>2.1.7</version>
+		</dependency>
 
 		<!-- json -->
 		<dependency>
@@ -443,6 +477,13 @@
 			<version>1.0</version>
 		</dependency>
 
+		<!-- HRM module -->
+		<dependency>
+			<groupId>org.oscarehr.hrm</groupId>
+			<artifactId>hrm-jaxb</artifactId>
+			<version>4.1a</version>
+		</dependency>
+
 		<!-- hsfo -->
 		<dependency>
 			<groupId>hsfo</groupId>
@@ -540,6 +581,13 @@
 			<groupId>org.oscarehr.ar2005</groupId>
 			<artifactId>ar2005</artifactId>
 			<version>0.12-DRAFT</version>
+		</dependency>
+
+		<!-- FOR BORN18MWBV Project - Rourke, NDDS, 18M Summary in XML format -->
+		<dependency>
+			<groupId>ca.bornontario</groupId>
+			<artifactId>x18MEWBV</artifactId>
+			<version>1.6.2</version>
 		</dependency>
 
         <!-- FOR ORN Project - CKD config in XML format -->
@@ -825,31 +873,54 @@
 
 			</exclusions>
 		</dependency>
-
-		<dependency>
-			<groupId>org.oscarehr</groupId>
-			<artifactId>util</artifactId>
-			<version>2013.04.24</version>
-		</dependency>
-		<dependency>
-			<groupId>org.oscarehr.myoscar_server</groupId>
-			<artifactId>myoscar_server_client_stubs</artifactId>
-			<version>2013.02-SNAPSHOT</version>
-		</dependency>		
-		<dependency>
-			<groupId>org.oscarehr</groupId>
-			<artifactId>myoscar_client_server_commons</artifactId>
-			<version>2013.03.13</version>
-		</dependency>
+		
 		<dependency>
 			<groupId>org.oscarehr</groupId>
 			<artifactId>myoscar_client_utils</artifactId>
-			<version>2013.05.03</version>
+			<version>2013.07.22</version>
 		</dependency>
+		
+        <dependency>
+                <groupId>org.marc.everest</groupId>
+                <artifactId>everest-core</artifactId>
+                <version>1.0</version>
+        </dependency>
+                
+        <dependency>
+                <groupId>org.marc.everest</groupId>
+                <artifactId>everest-rmim-ca-r02-04-03</artifactId>
+                <version>1.0</version>
+        </dependency>
+
+		<dependency>
+				 <groupId>com.cbi.ws</groupId>
+				 <artifactId>cbi_ws_client</artifactId>
+				 <version>1.0</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
-		<plugins>
+	 <resources>
+          <resource>
+            <directory>${basedir}/src/main/resources</directory>
+            <filtering>true</filtering>
+          </resource>
+        </resources>
+	<plugins>
+		 <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>buildnumber-maven-plugin</artifactId>
+                    <version>1.1</version>
+                      <executions>
+                        <execution>
+                          <phase>validate</phase>
+                            <goals>
+                              <goal>create</goal>
+                            </goals>
+                        </execution>
+                     </executions>
+                 </plugin>
 	<plugin>
        		<groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
@@ -1042,8 +1113,22 @@
 			    <version>2.1.1</version>
 			    <configuration>
 			        <failOnMissingWebXml>false</failOnMissingWebXml>
+				<archive>
+                         		<manifest>
+                           			<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                         		</manifest>
+                         		<manifestEntries>
+                           			<git-SHA-1>${buildNumber}</git-SHA-1>
+                         		</manifestEntries>
+                       		</archive>
+                       		<webResources>
+                         		<webResource>
+                           			<directory>${basedir}/src/main/webapp/admin</directory>
+                           			<filtering>true</filtering>
+                         		</webResource>
+                       		</webResources>
 			    </configuration>
-			</plugin>	
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -1096,6 +1181,37 @@
 								<ant antfile="jspc.xml" target="jspc" />
 							</tasks>
 						</configuration>
+					</execution>
+					
+					<execution>
+						<id>deploy_local_catalina_base</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<copy todir="catalina_base/webapps/oscar">
+									<fileset dir="target/oscar-1.0-SNAPSHOT" />
+								</copy>
+							</tasks>
+						</configuration>
+					</execution>
+					<execution>
+						<id>clean_local_catalina_base</id>
+						<phase>clean</phase>
+						<configuration>
+							<tasks>
+								<delete dir="catalina_base/webapps/oscar" />
+								<delete includeemptydirs="true" quiet="true">
+									<fileset dir="catalina_base/logs" excludes=".gitignore" />
+									<fileset dir="catalina_base/work" excludes=".gitignore" />
+								</delete>
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>

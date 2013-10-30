@@ -564,7 +564,7 @@ Event.observe('rxInteractionWarningLevel', 'change', function(event) {
 	</tr>
   <tr>
 
-    <TD align="center"><a href=# onClick ="popupPage(230,600,'providerchangepassword.jsp');return false;"><bean:message key="provider.btnChangePassword"/></a> &nbsp;&nbsp;&nbsp;</td>
+    <TD align="center"><a href=# onClick ="popupPage(370,700,'providerchangepassword.jsp');return false;"><bean:message key="provider.btnChangePassword"/></a> &nbsp;&nbsp;&nbsp;</td>
   </tr>
   <tr>
       <td align="center"><a href=# onClick ="popupPage(230,860,'../setProviderStaleDate.do?method=viewDefaultSex');return false;"><bean:message key="provider.btnSetDefaultSex" /></a></td>
@@ -707,10 +707,15 @@ Event.observe('rxInteractionWarningLevel', 'change', function(event) {
       <tr>
           <td align="center"><a href=# onClick ="popupPage(230,860,'../setProviderStaleDate.do?method=viewPatientNameLength');return false;"><bean:message key="provider.btnEditSetPatientNameLength"/></a></td>
       </tr>
+       <tr>
+          <td align="center"><a href=# onClick ="popupPage(230,860,'../admin/displayDocumentDescriptionTemplate.jsp');return false;"><bean:message key="provider.btnSetDocumentDescriptionTemplate"/></a></td>
+      </tr>
 	  <tr>
           <td align="center"><a href=# onClick ="popupPage(500,900,'clients.jsp');return false;"><bean:message key="provider.btnEditClients"/></a></td>
       </tr>
-
+    <tr>
+        <td align="center"><a href=# onClick ="popupPage(230,860,'../setProviderStaleDate.do?method=viewDisplayDocumentAs');return false;"><bean:message key="provider.btnSetDisplayDocumentAs"/></a></td>
+    </tr>
 	 <oscar:oscarPropertiesCheck property="util.erx.enabled" value="true">
 	 	<security:oscarSec roleName="<%=roleName$%>" objectName="_rx" rights="r">
         <tr>

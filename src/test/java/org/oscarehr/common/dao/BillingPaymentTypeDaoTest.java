@@ -24,12 +24,20 @@
 package org.oscarehr.common.dao;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.oscarehr.common.dao.utils.EntityDataGenerator;
 import org.oscarehr.common.dao.utils.SchemaUtils;
 import org.oscarehr.common.model.BillingPaymentType;
+import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 
 public class BillingPaymentTypeDaoTest extends DaoTestFixtures {
@@ -38,7 +46,7 @@ public class BillingPaymentTypeDaoTest extends DaoTestFixtures {
 
 	@Before
 	public void before() throws Exception {
-		SchemaUtils.restoreTable("billing_payment_type");
+		SchemaUtils.restoreTable(false, "billing_payment_type");
 	}
 
 	@Test
@@ -49,4 +57,36 @@ public class BillingPaymentTypeDaoTest extends DaoTestFixtures {
 		assertNotNull(entity.getId());
 	}
 	
+	@Test
+	public void testFindAll() throws Exception {
+		
+		BillingPaymentType bPT1 = new BillingPaymentType();
+		EntityDataGenerator.generateTestDataForModelClass(bPT1);
+		dao.persist(bPT1);
+		
+		BillingPaymentType bPT2 = new BillingPaymentType();
+		EntityDataGenerator.generateTestDataForModelClass(bPT2);
+		dao.persist(bPT2);
+		
+		BillingPaymentType bPT3 = new BillingPaymentType();
+		EntityDataGenerator.generateTestDataForModelClass(bPT3);
+		dao.persist(bPT3);
+		
+		List<BillingPaymentType> expectedResult = new ArrayList<BillingPaymentType>(Arrays.asList(bPT1, bPT2, bPT3));
+		List<BillingPaymentType> result = dao.findAll();
+
+		Logger logger = MiscUtils.getLogger();
+		
+		if (result.size() != expectedResult.size()) {
+			logger.warn("Array sizes do not match.");
+			fail("Array sizes do not match.");
+		}
+		for (int i = 0; i < expectedResult.size(); i++) {
+			if (!expectedResult.get(i).equals(result.get(i))){
+				logger.warn("Items  do not match.");
+				fail("Items  do not match.");
+			}
+		}
+		assertTrue(true);
+	}	
 }

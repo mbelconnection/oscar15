@@ -334,7 +334,7 @@ try
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
 				<select id="channel">
-					<option value="http://resource.oscarmcmaster.org/oscarResource/OSCAR_search/OSCAR_search_results?title="><bean:message key="oscarEncounter.Index.oscarSearch" /></option>
+					<option value="http://resource.oscarmcmaster.org/oscarResource/OSCAR_search?query="><bean:message key="oscarEncounter.Index.oscarSearch" /></option>
 					<option value="http://www.google.com/search?q="><bean:message key="global.google" /></option>
 					<option value="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?SUBMIT=y&amp;CDM=Search&amp;DB=PubMed&amp;term="><bean:message key="global.pubmed" /></option>
 					<option value="http://search.nlm.nih.gov/medlineplus/query?DISAMBIGUATION=true&amp;FUNCTION=search&amp;SERVER2=server2&amp;SERVER1=server1&amp;PARAMETER="><bean:message key="global.medlineplus" /></option>
@@ -355,12 +355,15 @@ try
 				<security:oscarSec roleName="<%=roleName%>" objectName="_newCasemgmt.calculators" rights="r" reverse="false">
 					<%@include file="calculatorsSelectList.jspf" %>
 				</security:oscarSec>
-				<security:oscarSec roleName="<%=roleName%>" objectName="_newCasemgmt.templates" rights="r" reverse="false">
+				<%--<security:oscarSec roleName="<%=roleName%>" objectName="_admin.templates" rights="r"> --%>
+				<security:oscarSec roleName="<%=roleName%>" objectName="_newCasemgmt.templates" rights="r">
 					<select style="width:100px;" onchange="javascript:popupPage(700,700,'Templates',this.value);">
-						<option><bean:message key="oscarEncounter.Header.Templates"/></option>
-						<option>------------------</option>
-						<option value="<%=request.getContextPath()%>/admin/providertemplate.jsp">New Template</option>
-						<option>------------------</option>
+						<option value="-1"><bean:message key="oscarEncounter.Header.Templates"/></option>
+						<option value="-1">------------------</option>
+						<security:oscarSec roleName="<%=roleName%>" objectName="_newCasemgmt.templates" rights="w">
+						<option value="<%=request.getContextPath()%>/admin/providertemplate.jsp">New / Edit Template</option>
+						<option value="-1">------------------</option>
+						</security:oscarSec>
 						<%
 							EncounterTemplateDao encounterTemplateDao=(EncounterTemplateDao)SpringUtils.getBean("encounterTemplateDao");
 							List<EncounterTemplate> allTemplates=encounterTemplateDao.findAll();
@@ -393,19 +396,19 @@ try
 	<html:hidden property="includeIssue" value="off" />
 	<%
 		String apptNo = request.getParameter("appointmentNo");
-		if (apptNo == null || apptNo.equals(""))
+		if (apptNo == null || apptNo.equals("") || apptNo.equals("null"))
 		{
 			apptNo = "0";
 		}
 
 		String apptDate = request.getParameter("appointmentDate");
-		if (apptDate == null || apptDate.equals(""))
+		if (apptDate == null || apptDate.equals("") || apptDate.equals("null"))
 		{
 			apptDate = oscar.util.UtilDateUtilities.getToday("yyyy-MM-dd");
 		}
 
 		String startTime = request.getParameter("start_time");
-		if (startTime == null || startTime.equals(""))
+		if (startTime == null || startTime.equals("") || startTime.equals("null"))
 		{
 			startTime = "00:00:00";
 		}

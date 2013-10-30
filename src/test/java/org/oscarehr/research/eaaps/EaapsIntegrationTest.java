@@ -23,47 +23,47 @@
  */
 package org.oscarehr.research.eaaps;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.oscarehr.common.dao.DaoTestFixtures;
+import org.oscarehr.common.dao.utils.AuthUtils;
 import org.oscarehr.common.dao.utils.SchemaUtils;
 import org.oscarehr.common.hl7.v2.oscar_to_oscar.SendingUtils;
+import org.oscarehr.common.model.Demographic;
+
+import oscar.util.ConversionUtils;
 
 public class EaapsIntegrationTest extends DaoTestFixtures {
 
 	private static Logger logger = Logger.getLogger(EaapsIntegrationTest.class);
 	
+	/* SYSTEM-SPECIFIC TEST VALUES */
+	
 	/**
 	 * Public OSCAR key
 	 */
-	private static final String OSCAR_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC3twPfm6XhWdcfjA9e0cSwNda2DtQpdNwQ8XBk" + 
-			"/s4tSLbcZuNIjuC7AXxqI5SiuYL8AJDx8bqA3Y+egSV2QQJDUkRXDr/XqT5zl9TPQE49gPaLPZv2" + 
-			"m7cBhTy8l5p1wKuvJdhIahx7/Ca3Inj6q2vMUObcOyqhQKOms143StRBFwIDAQAB";
+	private static final String OSCAR_KEY = "";
+
 	
 	/**
 	 * Public client key
 	 */
-	private static final String CLIENT_KEY = 
-			"MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJYYlZ79cV1ijlPohPfvVF14zvTA" + 
-			"TU9v+Z4HUTVlWrb5yboiPBXd2MhYI0iYznvAzlkRBDRueXcRGPUbApN9KYZYF0uBQT4ptXiOD9uj" + 
-			"Ptq26EyrzDyE5km88Ekt/vyZvBQ7O50hXuIr9IU8vhWiZyXAU/v7e3vb8OZreKSm5J4dAgMBAAEC" + 
-			"gYBwEi81pXuOBNbM5CLUlYjiuh+dNDEFjVBOpJwISINxeBUdvA4tLZZ+EQFXZXFXieEJM+F13L8p" + 
-			"HkUKTn6f7aagmeGzFpyCppp2ht/bIZx8LpjT2cdsIn9fEEzfRKOiXf9MUeF0gFEtZXoKmaE7JURj" + 
-			"ag3Fdh2zbk0S3YCp+1LXwQJBAM7p9auMCOxawTSGYoYh5PARV+1cq6MZfh7drB+f23q6z5X6/64u" + 
-			"RcYe8rkLUwHM9LzChMqD/QD6+MNjnPj1S8kCQQC5tAglFTM25z1lSPfdvYRZ8fgm1GYmuQsb7u/K" + 
-			"S0vtbsM2DVKz9T61QH56uMscPIXAhm35UW2R/78/9MO7eEG1AkAt062AoBQ93N/btUPO92TQMtcp" + 
-			"kBPHnNbNGUWM/4fJx+RAEIZeWotDlQknKLXquS0fPWnRvKfldrBv/fj/PrzZAkEAqRZU6DcCd/Zb" + 
-			"f9LN5jg+v4tD8U8qaA3LILcR3Xdr/hgBZUECUdt3KqA7ydBjGCW/f4qnrgDHrM1aPYjHg/Y+lQJA" + 
-			"YZmSJwDD8dYciDJXJm0ktRDiGGlFkOG1wJ7WnZrqHq7R7VWDMPBVwJxvCE+iiU8M+Y/llTlhKgkw" + 
-			"DKwMGCzL4A==";
+	private static final String CLIENT_KEY = "";
+	
+	static final String HASH = "";
+	
+	static final String PROVIDER_ID = "";
+	
+	/* END OF SYSTEM-SPECIFIC TEST VALUES */
 		
-	private static final String PDF = "JVBERi0xLjQKJeLjz9MKMyAwIG9iago8PC9MZW5ndGggNjE5L0ZpbHRlci9GbGF0ZURlY29kZT4+c3RyZWFtCnichZVfb9MwFMXf8yn8CA8U23H957WITUKq0KAC7dFNXBgLDcs6+vVJ44s05" + 
+	static final String PDF = "JVBERi0xLjQKJeLjz9MKMyAwIG9iago8PC9MZW5ndGggNjE5L0ZpbHRlci9GbGF0ZURlY29kZT4+c3RyZWFtCnichZVfb9MwFMXf8yn8CA8U23H957WITUKq0KAC7dFNXBgLDcs6+vVJ44s05" + 
 			"ea4mqZV+p3Tc5xd3zxVm11VW+GlFbu2kuKdctOnj7vqrnqafrX4NILbSq7W4lx5v6qFC1IoaVZWKCuGVH0lqIJeBUh1cONfRI3UKwVpjnWmFAsoxQJKsYDm2LUvxQJKsYBSLKA51uhSLKAUCy" + 
 			"jFAppjtS3FAkqxgFIsoDlWFUcKUIoFlGIBnWJtKI0UojkW0RyLaI51pZFClGIBpVhAc6wtjRSiFAsoxQKaY01ppBClWEApFtAcW5dGClGKBZRiGb27LFIl5PijRJDTjtRi97t6f6OEGj8dqjf" + 
 			"bvk3d292vy3J9pVbBTEtzLr9PceBqHcK0RNmXx+PLITanlyEtuMxYVi24PvRdvyDPB7i8CS5q/V9tnE5tjA6egTlUCAaegam/pGN86U6wPjPcDikdUX0rZ+rWee38fg3rM4cKbuGwVJ+pb9Iw" + 
@@ -84,18 +84,80 @@ public class EaapsIntegrationTest extends DaoTestFixtures {
 			"BmIAowMDAwMDAwODY3IDAwMDAwIG4gCjAwMDAwMDExOTQgMDAwMDAgbiAKMDAwMDAwMDAxNSAwMDAwMCBuIAowMDAwMDAxNzAyIDAwMDAwIG4gCjAwMDAwMDA3MDEgMDAwMDAgbiAKMDAwMDA" + 
 			"wMTc2NSAwMDAwMCBuIAowMDAwMDAxODEwIDAwMDAwIG4gCnRyYWlsZXIKPDwvUm9vdCA2IDAgUi9JRCBbPDkyMThlYWZhYmZkOWM0ZjcyNmY2YjlkNDZmZDI1NmZkPjw4ODc3YzNkN2RjZDIz" + 
 			"ODAxMTU5NmMxZDJlZDQ2YjgyZj5dL0luZm8gNyAwIFIvU2l6ZSA4Pj4Kc3RhcnR4cmVmCjE5MzIKJSVFT0YK";
+		
+	static final String TIMESTAMP_STRING = ConversionUtils.toDateString(new Date(), "yyyyMMddHHmmss");
 	
-	private static final String HASH = "f5950749dc36f9db4dc10fa024c86b498df592f9472775f718c9024f084339c7";
-	
-	private static final String HL7 = 
-			"MSH|^~\\&|SENDING APP||||20130408170018.445-0400||ORU^R01|2501|01|2.2|1\r" + 
+	static final String JUST_PDF_NTE1 = 
+			"MSH|^~\\&|SENDING APP||||" + TIMESTAMP_STRING + ".001-0400||ORU^R01|2501|01|2.2|1\r" + 
 			"PID||" + HASH + "\r" + 
-			"OBR||||SERVICE ID: EAAPS\r" + 
-			"NTE|1|eaaps_" + HASH + "_20130408170040.pdf|" + PDF;
+			"OBR||||SERVICE ID: EAAPS||||||||||||" + PROVIDER_ID + "\r" + 
+			"NTE|1|eaaps_" + HASH + "_" + System.currentTimeMillis() + ".pdf|" + PDF + "\r" +
+			"NTE|2|\r";
+	
+	static final String JUST_CHART_NOTE_NTE2 = 
+			"MSH|^~\\&|SENDING APP||||" + TIMESTAMP_STRING + ".002-0400||ORU^R01|2501|01|2.2|1\r" + 
+			"PID||" + HASH + "\r" + 
+			"OBR||||SERVICE ID: EAAPS||||||||||||" + PROVIDER_ID + "\r" + 
+			"NTE|1||\r" +
+			"NTE|2||CHART NOTE ONLY - " + HASH + " - " + TIMESTAMP_STRING + "\r";
+	
+	static final String JUST_MRP_NTE3 = 
+			"MSH|^~\\&|SENDING APP||||" + TIMESTAMP_STRING + ".003-0400||ORU^R01|2501|01|2.2|1\r" + 
+			"PID||" + HASH + "\r" + 
+			"OBR||||SERVICE ID: EAAPS||||||||||||" + PROVIDER_ID + "\r" + 
+			"NTE|1||\r" +
+			"NTE|2||\r" +
+			"NTE|3||MRP ONLY " + HASH + " - " + TIMESTAMP_STRING + "\r";
+	
+	static final String PDF_AND_CHART_NOTE_NTE1AND2 = 
+			"MSH|^~\\&|SENDING APP||||" + TIMESTAMP_STRING + ".004-0400||ORU^R01|2501|01|2.2|1\r" + 
+			"PID||" + HASH + "\r" + 
+			"OBR||||SERVICE ID: EAAPS||||||||||||" + PROVIDER_ID + "\r" + 
+			"NTE|1|eaaps_" + HASH + "_" + System.currentTimeMillis() + ".pdf|" + PDF + "\r" +
+			"NTE|2||PDF AND CHART NOTE FOR " + HASH + "\r";
+	
+	static final String PDF_AND_MRP_NTE1AND3 = 
+			"MSH|^~\\&|SENDING APP||||" + TIMESTAMP_STRING + ".005-0400||ORU^R01|2501|01|2.2|1\r" + 
+			"PID||" + HASH + "\r" + 
+			"OBR||||SERVICE ID: EAAPS||||||||||||" + PROVIDER_ID + "\r" + 
+			"NTE|1|eaaps_" + HASH + "_" + System.currentTimeMillis() + ".pdf|" + PDF + "\r" +
+			"NTE|2||\r" +
+			"NTE|3||PDF AND MRP MESSAGE ONLY " + HASH + "\r";
+	
+	static final String CHART_NOTE_AND_MRP_NTE2AND3 = 
+			"MSH|^~\\&|SENDING APP||||" + TIMESTAMP_STRING + ".006-0400||ORU^R01|2501|01|2.2|1\r" + 
+			"PID||" + HASH + "\r" + 
+			"OBR||||SERVICE ID: EAAPS||||||||||||" + PROVIDER_ID + "\r" + 
+			"NTE|1||\r" +
+			"NTE|2||NOTE AND MRP " + HASH + "\r" +
+			"NTE|3||NOTE AND MRP " + HASH + "\r";
+	
+	static final String HL7 = 
+			"MSH|^~\\&|SENDING APP||||" + TIMESTAMP_STRING + ".007-0400||ORU^R01|2501|01|2.2|1\r" + 
+			"PID||" + HASH + "\r" + 
+			"OBR||||SERVICE ID: EAAPS||||||||||||" + PROVIDER_ID + "\r" + 
+			"NTE|1|eaaps_" + HASH + "_" + System.currentTimeMillis() + ".pdf|" + PDF + "\r" +
+			"NTE|2||Note comment for message with the AAP attachment " + HASH + "\r" +
+			"NTE|3||MRP message for message with the AAP attachment " + HASH + "\r";
 	
 	@BeforeClass
 	public static void init() throws Exception {
 		SchemaUtils.restoreAllTables();
+		AuthUtils.initLoginContext();
+	}
+	
+	@Test
+	public void testHash() {
+		Demographic demo = new Demographic();
+		demo.setFirstName("Joe");
+		demo.setLastName("Doe");
+		demo.setDateOfBirth("23");
+		demo.setMonthOfBirth("12");
+ 		demo.setYearOfBirth("1983");
+		
+		EaapsHash hash = new EaapsHash(demo, "Stonechurch");
+		assertEquals("JOEDOE19831223Stonechurch", hash.getKey());
+		assertEquals("6cf8b86a2f7e5d68e09cd1c116cb847282a1cdeb4746c0916b14ad493e157a79", hash.getHash());
 	}
 	
 	@Test
@@ -111,10 +173,13 @@ public class EaapsIntegrationTest extends DaoTestFixtures {
 		PublicKey publicOscarKey = SendingUtils.getPublicOscarKey(publicOscarKeyString); 
 		PrivateKey publicServiceKey = SendingUtils.getPublicServiceKey(publicServiceKeyString);
 		
-		byte[] bytes = HL7.getBytes(); 
-		int statusCode = SendingUtils.send(bytes, url, publicOscarKey, publicServiceKey, "eaaps");
-		logger.info("Completed EAAPS call with status " + statusCode);
-		assertTrue(statusCode == 200);
+		for(String messageText : new String[] {CHART_NOTE_AND_MRP_NTE2AND3, HL7, JUST_CHART_NOTE_NTE2, JUST_MRP_NTE3, JUST_PDF_NTE1, PDF_AND_CHART_NOTE_NTE1AND2, PDF_AND_MRP_NTE1AND3 }) {
+			byte[] bytes = messageText.getBytes(); 
+			int statusCode = SendingUtils.send(bytes, url, publicOscarKey, publicServiceKey, "eaaps");
+			logger.info("Completed EAAPS call with status " + statusCode);
+			assertEquals(200, statusCode);
+		}
+		
 	}
 
 }

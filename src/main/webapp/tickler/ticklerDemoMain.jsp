@@ -23,8 +23,8 @@
     Ontario, Canada
 
 --%>
-<%    
-  String user_no = (String) session.getAttribute("user");
+<%
+	String user_no = (String) session.getAttribute("user");
   int  nItems=0;
      String strLimit1="0";
     String strLimit2="5"; 
@@ -45,44 +45,44 @@ String updateParent;
 if( request.getParameter("updateParent") != null )
     updateParent = request.getParameter("updateParent");
 else
-    updateParent = "false";    
+    updateParent = "false";
 %>
-<%@ page import="java.util.*, java.sql.*,java.text.*, oscar.*, java.net.*"%>
+<%@ page import="java.util.*,java.text.*, oscar.*"%>
 <%@page import="org.oscarehr.util.SpringUtils" %>
 <%@page import="org.oscarehr.common.model.Appointment" %>
 <%@page import="org.oscarehr.common.dao.OscarAppointmentDao" %>
 <%@page import="org.oscarehr.common.model.Provider" %>
 <%@page import="org.oscarehr.PMmodule.dao.ProviderDao" %>
-<%@page import="org.caisi.dao.TicklerDAO" %>
-<%@page import="org.caisi.model.Tickler" %>
-<%@page import="org.caisi.model.TicklerComment"%>
 <%@page import="oscar.util.ConversionUtils" %>
 <%@page import="org.oscarehr.common.model.Demographic" %>
 <%@page import="org.oscarehr.common.dao.DemographicDao" %>
+<%@ page import="org.oscarehr.util.LoggedInInfo" %>
+<%@ page import="org.oscarehr.common.model.Tickler" %>
+<%@ page import="org.oscarehr.common.model.TicklerComment" %>
+<%@ page import="org.oscarehr.common.model.TicklerUpdate" %>
+<%@ page import="org.oscarehr.managers.TicklerManager" %>
 
 <%
+	TicklerManager ticklerManager = SpringUtils.getBean(TicklerManager.class);
 	ProviderDao providerDao = SpringUtils.getBean(ProviderDao.class);
 	OscarAppointmentDao appointmentDao = SpringUtils.getBean(OscarAppointmentDao.class);
-	TicklerDAO ticklerDao = (TicklerDAO)SpringUtils.getBean("ticklerDAOT");
 	DemographicDao demographicDao = SpringUtils.getBean(DemographicDao.class);
 %>
 
 
 <%
-String labReqVer = oscar.OscarProperties.getInstance().getProperty("onare_labreqver","07");
+	String labReqVer = oscar.OscarProperties.getInstance().getProperty("onare_labreqver","07");
 if(labReqVer.equals("")) {labReqVer="07";}
 %>
 
 <%
-GregorianCalendar now=new GregorianCalendar();
+	GregorianCalendar now=new GregorianCalendar();
   int curYear = now.get(Calendar.YEAR);
   int curMonth = (now.get(Calendar.MONTH)+1);
   int curDay = now.get(Calendar.DAY_OF_MONTH);
-  
-  
-  
-  %>
-<% //String providerview=request.getParameter("provider")==null?"":request.getParameter("provider");
+%>
+<%
+	//String providerview=request.getParameter("provider")==null?"":request.getParameter("provider");
   String ticklerview=request.getParameter("ticklerview")==null?"A":request.getParameter("ticklerview");
    String xml_vdate=request.getParameter("xml_vdate") == null?"":request.getParameter("xml_vdate");
    String xml_appointment_date = request.getParameter("xml_appointment_date")==null?"8888-12-31":request.getParameter("xml_appointment_date");
@@ -92,11 +92,77 @@ GregorianCalendar now=new GregorianCalendar();
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <html:html locale="true">
 <head>
- <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.js"></script>
-    <script>
-        jQuery.noConflict();
-    </script>   
-<script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+ <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+ <script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js"></script>
+ <script>
+jQuery.noConflict();
+</script>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/cupertino/jquery-ui-1.8.18.custom.css">
+
+<script>
+jQuery(document).ready(function() {
+	jQuery( "#note-form" ).dialog({
+		autoOpen: false,
+		height: 340,
+		width: 450,
+		modal: true,
+		
+		close: function() {
+			
+		}
+	});		
+		
+});
+
+function openNoteDialog(demographicNo, ticklerNo) {
+	jQuery("#tickler_note_demographicNo").val(demographicNo);
+	jQuery("#tickler_note_ticklerNo").val(ticklerNo);
+	
+	//is there an existing note?
+	jQuery.ajax({url:'../CaseManagementEntry.do',
+		data: { method: "ticklerGetNote", ticklerNo: jQuery('#tickler_note_ticklerNo').val()  },
+		async:false, 
+		dataType: 'json',
+		success:function(data) {
+			
+			jQuery("#tickler_note_noteId").val(data.noteId);
+			jQuery("#tickler_note").val(data.note);
+			jQuery("#tickler_note_revision").html(data.revision);
+			jQuery("#tickler_note_revision_url").attr('onclick','window.open(\'../CaseManagementEntry.do?method=notehistory&noteId='+data.noteId+'\');return false;');
+			jQuery("#tickler_note_editor").html(data.editor);
+			jQuery("#tickler_note_obsDate").html(data.obsDate);
+		},
+		error: function(jqXHR, textStatus, errorThrown ) {
+			alert(errorThrown);
+		}
+		});
+	
+	jQuery( "#note-form" ).dialog( "open" );
+}
+function closeNoteDialog() {
+	jQuery( "#note-form" ).dialog( "close" );
+}
+function saveNoteDialog() {
+	//alert('not yet implemented');
+	jQuery.ajax({url:'../CaseManagementEntry.do',
+		data: { method: "ticklerSaveNote", noteId: jQuery("#tickler_note_noteId").val(), value: jQuery('#tickler_note').val(), demographicNo: jQuery('#tickler_note_demographicNo').val(), ticklerNo: jQuery('#tickler_note_ticklerNo').val()  },
+		async:false, 
+		success:function(data) {
+		 // alert('ok');		  
+		},
+		error: function(jqXHR, textStatus, errorThrown ) {
+			alert(errorThrown);
+		}
+		});	
+	
+	jQuery( "#note-form" ).dialog( "close" );
+}
+
+
+
+</script>
+  
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/global.js"></script>
 <title><bean:message key="tickler.ticklerDemoMain.title" /></title>
 <script language="JavaScript">
 <!--
@@ -355,10 +421,7 @@ function generateRenalLabReq(demographicNo) {
 </style>
 <link rel="stylesheet" type="text/css" media="all" href="../share/css/extractedFromPages.css"  />
 <link rel="stylesheet" type="text/css" media="all" href="../share/css/print.css"  />
-<script src="<%=request.getContextPath() %>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
-<script>
-jQuery.noConflict();
-</script>
+
 </head>
 <oscar:customInterface section="ticklerMain"/>
 <body onload="setup();" bgcolor="#FFFFFF" text="#000000" leftmargin="0"
@@ -459,109 +522,114 @@ jQuery.noConflict();
 				<TD width="39%"><FONT FACE="verdana,arial,helvetica"
 					COLOR="#FFFFFF" SIZE="-2"><B><bean:message
 					key="tickler.ticklerMain.msgMessage" /></B></FONT></TD>
+				<td COLOR="#FFFFFF" SIZE="-2">&nbsp;</td>
 			</TR>
 			<%
-String vGrantdate = "1980-01-07 00:00:00.0";
-DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:ss:mm.SSS", request.getLocale()); 
- 
+				String vGrantdate = "1980-01-07 00:00:00.0";
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:ss:mm.SSS", request.getLocale()); 
+				 
 
-String dateBegin = xml_vdate;
-String dateEnd = xml_appointment_date;
-String provider = "";
-String taskAssignedTo = "";
+				String dateBegin = xml_vdate;
+				String dateEnd = xml_appointment_date;
+				String provider = "";
+				String taskAssignedTo = "";
 
-if (dateEnd.compareTo("") == 0) dateEnd = "8888-12-31";
-if (dateBegin.compareTo("") == 0) dateBegin="1900-01-01";
+				if (dateEnd.compareTo("") == 0) dateEnd = "8888-12-31";
+				if (dateBegin.compareTo("") == 0) dateBegin="1900-01-01";
 
-List<Tickler> ticklers = ticklerDao.search_tickler_bydemo(request.getParameter("demoview")==null?"": request.getParameter("demoview"),ticklerview,ConversionUtils.fromDateString(dateBegin),ConversionUtils.fromDateString(dateEnd));
-String rowColour = "lilac";
-for (Tickler t:ticklers) {
-    Demographic d = demographicDao.getDemographic(t.getDemographic_no());
-    Provider p = null;
-    Provider assignedP = null;
+				List<Tickler> ticklers = ticklerManager.search_tickler_bydemo(request.getParameter("demoview")==null?null: Integer.parseInt(request.getParameter("demoview")),ticklerview,ConversionUtils.fromDateString(dateBegin),ConversionUtils.fromDateString(dateEnd));
+				String rowColour = "lilac";
+				for (Tickler t:ticklers) {
+				    Demographic d = demographicDao.getDemographicById(t.getDemographicNo());
+				    Provider p = null;
+				    Provider assignedP = null;
 
-    if(d != null && d.getProviderNo().length()>0)
-            p = providerDao.getProvider(d.getProviderNo());
-    if(t.getTask_assigned_to().length()>0)
-            assignedP = providerDao.getProvider(t.getTask_assigned_to());
+				    if(d != null && d.getProviderNo().length()>0)
+				            p = providerDao.getProvider(d.getProviderNo());
+				    if(t.getTaskAssignedTo().length()>0)
+				            assignedP = providerDao.getProvider(t.getTaskAssignedTo());
 
-    nItems = nItems +1;     
-    if (p == null){
-      provider = "";
-    }
-    else{
-      provider = p.getFormattedName();
-    }
-    if (assignedP == null){
-      taskAssignedTo = "";
-    }
-    else{
-      taskAssignedTo = assignedP.getFormattedName();
-    }
+				    nItems = nItems +1;     
+				    if (p == null){
+				      provider = "";
+				    }
+				    else{
+				      provider = p.getFormattedName();
+				    }
+				    if (assignedP == null){
+				      taskAssignedTo = "";
+				    }
+				    else{
+				      taskAssignedTo = assignedP.getFormattedName();
+				    }
 
-    vGrantdate = t.getServiceDate() + " 00:00:00.0";
-    java.util.Date grantdate = dateFormat.parse(vGrantdate);
-    java.util.Date toDate = new java.util.Date();
-    long millisDifference = toDate.getTime() - grantdate.getTime();
+				    vGrantdate = t.getServiceDate() + " 00:00:00.0";
+				    java.util.Date grantdate = dateFormat.parse(vGrantdate);
+				    java.util.Date toDate = new java.util.Date();
+				    long millisDifference = toDate.getTime() - grantdate.getTime();
 
-    long ONE_DAY_IN_MS = (1000 * 60 * 60 * 24);                                                      
-    long daysDifference = millisDifference / (ONE_DAY_IN_MS);
+				    long ONE_DAY_IN_MS = (1000 * 60 * 60 * 24);                                                      
+				    long daysDifference = millisDifference / (ONE_DAY_IN_MS);
 
-    String numDaysUntilWarn = OscarProperties.getInstance().getProperty("tickler_warn_period");
-    long ticklerWarnDays = Long.parseLong(numDaysUntilWarn);
-    boolean ignoreWarning = (ticklerWarnDays < 0);
+				    String numDaysUntilWarn = OscarProperties.getInstance().getProperty("tickler_warn_period");
+				    long ticklerWarnDays = Long.parseLong(numDaysUntilWarn);
+				    boolean ignoreWarning = (ticklerWarnDays < 0);
 
 
-    //Set the colour of the table cell 
-    String warnColour = "";
-    if (!ignoreWarning && (daysDifference >= ticklerWarnDays)){
-       warnColour = "Red";
-    }
+				    //Set the colour of the table cell 
+				    String warnColour = "";
+				    if (!ignoreWarning && (daysDifference >= ticklerWarnDays)){
+				       warnColour = "Red";
+				    }
 
-    if (rowColour.equals("lilac")){
-       rowColour = "white";
-    }else {
-       rowColour = "lilac";
-    }
+				    if (rowColour.equals("lilac")){
+				       rowColour = "white";
+				    }else {
+				       rowColour = "lilac";
+				    }
 
-    String cellColour = rowColour + warnColour;                
-%>
+				    String cellColour = rowColour + warnColour;
+			%>
 
 			<tr>
 				<TD ROWSPAN="1" class="<%=cellColour%>"><input
 					type="checkbox" name="checkbox"
-					value="<%=t.getTickler_no()%>"></TD>
+					value="<%=t.getId()%>"></TD>
 				<TD ROWSPAN="1" class="<%=cellColour%>"><a
 					href=#
-					onClick="popupPage(600,800,'../demographic/demographiccontrol.jsp?demographic_no=<%=t.getDemographic_no()%>&displaymode=edit&dboperation=search_detail')"><%=d.getLastName()%>,<%=d.getFirstName()%></a></TD>
+					onClick="popupPage(600,800,'../demographic/demographiccontrol.jsp?demographic_no=<%=t.getDemographicNo()%>&displaymode=edit&dboperation=search_detail')"><%=d.getLastName()%>,<%=d.getFirstName()%></a></TD>
 				<TD ROWSPAN="1" class="<%=cellColour%>"><%=provider%></TD>
 				<TD ROWSPAN="1" class="<%=cellColour%>">
 				<%
-		java.util.Date service_date = t.getService_date();
-		SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd");
-		String service_date_str = dateFormat2.format(service_date);
-		out.print(service_date_str);
-	%>
+					java.util.Date service_date = t.getServiceDate();
+						SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd");
+						String service_date_str = dateFormat2.format(service_date);
+						out.print(service_date_str);
+				%>
 				</TD>
 				<TD ROWSPAN="1" class="<%=cellColour%>">
 				<%
-		service_date = t.getUpdate_date();
-		dateFormat2 = new SimpleDateFormat("yyyy-MM-dd");
-		service_date_str = dateFormat2.format(service_date);
-		out.print(service_date_str);
-	%>
+					service_date = t.getUpdateDate();
+						dateFormat2 = new SimpleDateFormat("yyyy-MM-dd");
+						service_date_str = dateFormat2.format(service_date);
+						out.print(service_date_str);
+				%>
 				</TD>
 				<TD ROWSPAN="1" class="<%=cellColour%>"><%=t.getPriority()%></TD>
 				<TD ROWSPAN="1" class="<%=cellColour%>"><%=taskAssignedTo%></TD>
 				<TD ROWSPAN="1" class="<%=cellColour%>"><%=String.valueOf(t.getStatus()).equals("A")?"Active":String.valueOf(t.getStatus()).equals("C")?"Completed":String.valueOf(t.getStatus()).equals("D")?"Deleted":String.valueOf(t.getStatus())%></TD>
 				<TD ROWSPAN="1" class="<%=cellColour%>"><%=t.getMessage()%></TD>
+				  <td ROWSPAN="1" class="<%=cellColour%>">
+                	<a href="javascript:void(0)" onClick="openNoteDialog('<%=t.getDemographicNo() %>','<%=t.getId() %>');return false;">
+                		<img border="0" src="<%=request.getContextPath()%>/images/notepad.gif"/>
+                	</a>
+                </td>
 			</tr>
         <%
-
-                boolean ticklerEditEnabled = Boolean.parseBoolean(OscarProperties.getInstance().getProperty("tickler_edit_enabled")); 
-                Set<TicklerComment> tcomments = t.getComments();
-                if (ticklerEditEnabled && !tcomments.isEmpty()) {
-                    for (TicklerComment tc : tcomments) {
+        	boolean ticklerEditEnabled = Boolean.parseBoolean(OscarProperties.getInstance().getProperty("tickler_edit_enabled")); 
+                        Set<TicklerComment> tcomments = t.getComments();
+                        if (ticklerEditEnabled && !tcomments.isEmpty()) {
+                            for (TicklerComment tc : tcomments) {
         %>
                         <tr>
                             <td width="3%" ROWSPAN="1" class="<%=cellColour%>"></td>
@@ -621,6 +689,40 @@ if (nItems == 0) {
 	</form>
 </table>
 
+
+<div id="note-form" title="Tickler Note">
+	<form>
+		
+			<table>
+				<tbody>
+					<textarea id="tickler_note" name="tickler_note" style="width:100%;height:80%"></textarea>		
+					<input type="hidden" name="tickler_note_demographicNo" id="tickler_note_demographicNo" value=""/>	
+					<input type="hidden" name="tickler_note_ticklerNo" id="tickler_note_ticklerNo" value=""/>	
+					<input type="hidden" name="tickler_note_noteId" id="tickler_note_noteId" value=""/>	
+				</tbody>
+			</table>
+			<br/>
+			<table>
+				<tr>
+					<td >
+						<a href="javascript:void()" onclick="saveNoteDialog();return false;">
+							<img src="<%=request.getContextPath()%>/oscarEncounter/graphics/note-save.png"/>
+						</a>
+						<a href="javascript:void()" onclick="closeNoteDialog();return false;">
+							<img src="<%=request.getContextPath()%>/oscarEncounter/graphics/system-log-out.png"/>
+						</a>
+					</td>
+					<td style="width:40%" nowrap="nowrap">
+					Date: <span id="tickler_note_obsDate"></span> rev <a id="tickler_note_revision_url" href="javascript:void(0)" onClick=""><span id="tickler_note_revision"></span></a><br/>
+					Editor: <span id="tickler_note_editor"></span>
+					</td>
+				</tr>
+			
+			</table>
+			
+	</form>	
+</div>
+
 <p class="yesprint">
 	<%=OscarProperties.getConfidentialityStatement()%>
 </p>
@@ -628,6 +730,8 @@ if (nItems == 0) {
 <p><font face="Arial, Helvetica, sans-serif" size="2"> </font></p>
 <p>&nbsp;</p>
 <%@ include file="../demographic/zfooterbackclose.jsp"%>
+
+
 
 </body>
 </html:html>

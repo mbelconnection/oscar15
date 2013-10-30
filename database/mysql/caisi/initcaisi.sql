@@ -44,9 +44,9 @@ CREATE TABLE `admission` (
 CREATE TABLE `agency` (
   `id` bigint(20) NOT NULL default '0',  
   `intake_quick` integer unsigned NOT NULL DEFAULT 1,
-  `intake_quick_state` char(2) NOT NULL DEFAULT 'HS',
+  `intake_quick_state` char(3) NOT NULL,
   `intake_indepth` integer unsigned DEFAULT 2,
-  `intake_indepth_state` CHAR(2) NOT NULL DEFAULT 'HS',
+  `intake_indepth_state` CHAR(3) NOT NULL,
   PRIMARY KEY  (`id`)
 );
 
@@ -480,6 +480,7 @@ CREATE TABLE `custom_filter` (
   `programId` varchar(10) default '',
   `name` varchar(255) NOT NULL default '',
   `shortcut` tinyint(1) default '0',
+  `message` varchar(255),
   PRIMARY KEY  (`id`)
 );
 
@@ -1976,6 +1977,7 @@ create table OcanStaffForm
         clientAge int,
         index(clientAge),
         lastName varchar(100),
+        lastNameAtBirth varchar(100),
         firstName varchar(100),
         addressLine1 varchar(100),
         addressLine2 varchar(100),
@@ -1987,6 +1989,7 @@ create table OcanStaffForm
         hcNumber varchar(100),
         hcVersion varchar(100),
         dateOfBirth varchar(100),
+        estimatedAge varchar(3),
         clientDateOfBirth varchar(10),
         reasonForAssessment varchar(100),
 	assessmentStatus varchar(40),

@@ -31,6 +31,8 @@ import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.sf.json.JSONArray;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -62,6 +64,7 @@ public class EForm extends EFormBase {
 	private int needValueInForm = 0;
 	private boolean setAP2nd = false;
 
+	private static final String EFORM_DEMOGRAPHIC = "eform_demographic";
 	private static final String VAR_NAME = "var_name";
 	private static final String VAR_VALUE = "var_value";
 	private static final String REF_FID = "fid";
@@ -97,7 +100,8 @@ public class EForm extends EFormBase {
 			this.formSubject = eFormData.getSubject();
 			this.formDate = eFormData.getFormDate().toString();
 			this.formHtml = eFormData.getFormData();
-			this.patientIndependent = eFormData.getPatientIndependent();
+			this.showLatestFormOnly = eFormData.isShowLatestFormOnly();
+			this.patientIndependent = eFormData.isPatientIndependent();
 			this.roleType = eFormData.getRoleType();
 		} 
 	    } else {
@@ -116,7 +120,8 @@ public class EForm extends EFormBase {
 		this.formDate = (String) loaded.get("formDate");
 		this.formFileName = (String) loaded.get("formFileName");
 		this.formCreator = (String) loaded.get("formCreator");
-		this.demographicNo = demographicNo;                
+		this.demographicNo = demographicNo;
+		this.showLatestFormOnly = (Boolean)loaded.get("showLatestFormOnly");
 		this.patientIndependent = (Boolean)loaded.get("patientIndependent");
 		this.roleType = (String) loaded.get("roleType");
 	}
@@ -245,27 +250,28 @@ public class EForm extends EFormBase {
 				log.debug("===============START CYCLE===========");
 				String fieldHeader = getFieldHeader(html, markerLoc);
 				String apName = EFormUtil.getAttribute(marker, fieldHeader); // gets varname from oscarDB=varname
-                                String apName0 = EFormUtil.removeQuotes(apName);
 				if (StringUtils.isBlank(apName)) {
 					if (!setAP2nd) saveFieldValue(html, markerLoc);
 					continue;
 				}
+				int apNameLen = apName.length();
+				apName = EFormUtil.removeQuotes(apName);
 
 				log.debug("AP ==== " + apName);
-				if (setAP2nd && !apName0.startsWith("e$")) continue; // ignore non-e$ oscarDB on 2nd run
+				if (setAP2nd && !apName.startsWith("e$")) continue; // ignore non-e$ oscarDB on 2nd run
 
 				int needing = needValueInForm;
 				String fieldType = getFieldType(fieldHeader); // textarea, text, hidden etc..
-				if ((fieldType==null || fieldType.equals("")) || (apName0==null || apName0.equals(""))) continue;
+				if ((fieldType==null || fieldType.equals("")) || (apName==null || apName.equals(""))) continue;
 
 				// sets up the pointer where to write the value
 				int pointer = markerLoc + EFormUtil.getAttributePos(marker,fieldHeader) + marker.length() + 1;
 				if (!fieldType.equals("textarea")) {
-					pointer += apName.length();
+					pointer += apNameLen;
 				}
 				EFormLoader.getInstance();
-				DatabaseAP curAP = EFormLoader.getAP(apName0);
-				if (curAP == null) curAP = getAPExtra(apName0, fieldHeader);
+				DatabaseAP curAP = EFormLoader.getAP(apName);
+				if (curAP == null) curAP = getAPExtra(apName, fieldHeader);
 				if (curAP == null) continue;
 				if (!setAP2nd) { // 1st run
 					html = putValuesFromAP(curAP, fieldType, pointer, html);
@@ -445,6 +451,10 @@ public class EForm extends EFormBase {
 			String eform_name = EFormUtil.removeQuotes(EFormUtil.getAttribute("eform$name", fieldHeader));
 			String var_value = EFormUtil.removeQuotes(EFormUtil.getAttribute("var$value", fieldHeader));
 			String ref = EFormUtil.removeQuotes(EFormUtil.getAttribute("ref$", fieldHeader, true));
+			
+			String eform_demographic = this.demographicNo;
+			if (this.patientIndependent) eform_demographic = "%";
+			
 			String ref_name = null, ref_value = null, ref_fid = fid;
 			if (!StringUtils.isBlank(ref) && ref.contains("=")) {
 				ref_name = ref.substring(4, ref.indexOf("="));
@@ -471,6 +481,7 @@ public class EForm extends EFormBase {
 			EFormLoader.getInstance();
 			curAP = EFormLoader.getAP("_eform_values_" + type);
 			if (curAP != null) {
+				setSqlParams(EFORM_DEMOGRAPHIC, eform_demographic);
 				setSqlParams(VAR_NAME, field);
 				setSqlParams(REF_VAR_NAME, ref_name);
 				setSqlParams(VAR_VALUE, var_value);
@@ -628,12 +639,19 @@ public class EForm extends EFormBase {
 			log.debug("SQL----" + sql);
 			ArrayList<String> names = DatabaseAP.parserGetNames(output); // a list of ${apName} --> apName
 			sql = DatabaseAP.parserClean(sql); // replaces all other ${apName} expressions with 'apName'
-			ArrayList<String> values = EFormUtil.getValues(names, sql);
-			if (values.size() != names.size()) {
-				output = "";
-			} else {
-				for (int i = 0; i < names.size(); i++) {
-					output = DatabaseAP.parserReplace( names.get(i), values.get(i), output);
+			
+			if (ap.isJsonOutput()) {
+				JSONArray values = EFormUtil.getJsonValues(names, sql);
+				output = values.toString(); //in case of JsonOutput, return the whole JSONArray and let the javascript deal with it
+			}
+			else {
+				ArrayList<String> values = EFormUtil.getValues(names, sql);
+				if (values.size() != names.size()) {
+					output = "";
+				} else {
+					for (int i = 0; i < names.size(); i++) {
+						output = DatabaseAP.parserReplace( names.get(i), values.get(i), output);
+					}
 				}
 			}
 		}
@@ -661,6 +679,7 @@ public class EForm extends EFormBase {
 		sql = DatabaseAP.parserReplace("provider", providerNo, sql);
 		sql = DatabaseAP.parserReplace("appt_no", appointment_no, sql);
 
+		sql = DatabaseAP.parserReplace(EFORM_DEMOGRAPHIC, getSqlParams(EFORM_DEMOGRAPHIC), sql);
 		sql = DatabaseAP.parserReplace(REF_FID, getSqlParams(REF_FID), sql);
 		sql = DatabaseAP.parserReplace(VAR_NAME, getSqlParams(VAR_NAME), sql);
 		sql = DatabaseAP.parserReplace(VAR_VALUE, getSqlParams(VAR_VALUE), sql);

@@ -30,6 +30,8 @@
 
 package org.oscarehr.common.model;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -46,6 +48,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.io.FileUtils;
+
 /**
  *
  * @author jackson
@@ -59,6 +63,7 @@ import javax.persistence.TemporalType;
     @NamedQuery(name = "Document.findByDocdesc", query = "SELECT d FROM Document d WHERE d.docdesc = :docdesc"),
     @NamedQuery(name = "Document.findByDocfilename", query = "SELECT d FROM Document d WHERE d.docfilename = :docfilename"),
     @NamedQuery(name = "Document.findByDoccreator", query = "SELECT d FROM Document d WHERE d.doccreator = :doccreator"),
+    @NamedQuery(name = "Document.findByContentdatetime", query = "SELECT d FROM Document d WHERE d.contentdatetime = :contentdatetime"),
     @NamedQuery(name = "Document.findByResponsible", query = "SELECT d FROM Document d WHERE d.responsible = :responsible"),
     @NamedQuery(name = "Document.findBySource", query = "SELECT d FROM Document d WHERE d.source = :source"),
     @NamedQuery(name = "Document.findByProgramId", query = "SELECT d FROM Document d WHERE d.programId = :programId"),
@@ -74,6 +79,8 @@ import javax.persistence.TemporalType;
 public class Document extends AbstractModel<Integer> implements Serializable {
     private static final long serialVersionUID = 1L;
    
+    public static final char STATUS_ACTIVE='A';
+    public static final char STATUS_DELETED='D';
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -118,6 +125,9 @@ public class Document extends AbstractModel<Integer> implements Serializable {
     @Basic(optional = false)
     @Column(name = "contenttype")
     private String contenttype;
+    @Column(name = "contentdatetime")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date contentdatetime;    
     @Basic(optional = false)
     @Column(name = "public1")
     private int public1;
@@ -206,7 +216,15 @@ public class Document extends AbstractModel<Integer> implements Serializable {
     public void setDoccreator(String doccreator) {
         this.doccreator = doccreator;
     }
+    
+    public Date getContentdatetime() {
+        return contentdatetime;
+    }
 
+    public void setContentdatetime(Date contentdatetime) {
+        this.contentdatetime = contentdatetime;
+    }
+    
     public String getResponsible() {
         return responsible;
     }
@@ -327,6 +345,17 @@ public class Document extends AbstractModel<Integer> implements Serializable {
     	this.sourceFacility = sourceFacility;
     }
 
-
-
+	/**
+	 * @returns a string representing the path of the file on disk, i.e. document_dir+'/'+filename
+	 */
+	public String getDocumentFileFullPath()
+	{
+		String docDir = oscar.OscarProperties.getInstance().getProperty("DOCUMENT_DIR");
+		return(docDir+'/'+docfilename);
+	}
+	
+	public byte[] getDocumentFileContentsAsBytes() throws IOException
+	{
+		return(FileUtils.readFileToByteArray(new File(getDocumentFileFullPath())));
+	}
 }

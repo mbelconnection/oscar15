@@ -388,6 +388,13 @@ if (request.getAttribute("printError") != null && (Boolean) request.getAttribute
                                                         }
                                                     }
                                                 }
+                                                if( multiID.length > 1 ) {
+                                                    if ( searchProviderNo != null ) { // null if we were called from e-chart
+                                                        %><a href="javascript:void(0);" onclick="popup(850, 950, '../lab/CA/ALL/labDisplay.jsp?segmentID=<%=segmentID%>&multiID=<%=multiLabId%>&providerNo=<%= providerNo %>&searchProviderNo=<%= searchProviderNo %>&all=true', 'labVersion');">All</a>&#160;<%
+                                                    }else{
+                                                        %><a href="javascript:void(0);" onclick="popup(850, 950, '../lab/CA/ALL/labDisplay.jsp?segmentID=<%=segmentID%>&multiID=<%=multiLabId%>&providerNo=<%= providerNo %>&all=true', 'labVersion');">All</a>&#160;<%
+                                                    }
+                                                }
                                                 %>
                                             </div>
                                         </td>
@@ -799,9 +806,11 @@ if (request.getAttribute("printError") != null && (Boolean) request.getAttribute
                                      boolean b2 = !obxName.equals(""), b3=handler.getObservationHeader(j, k).equals(headers.get(i));
                                     if (handler.getMsgType().equals("EPSILON")) {
                                     	b2=true; b3=true;
-                                    } else if(handler.getMsgType().equals("PFHT")) {
+                                    } else if(handler.getMsgType().equals("PFHT") || handler.getMsgType().equals("HHSEMR")) {
                                     	b2=true;
                                     }
+                                    
+                                    
                                     if ( !handler.getOBXResultStatus(j, k).equals("DNS") && b2 && b3){ // <<--  DNS only needed for MDS messages
                                         String obrName = handler.getOBRName(j);
                                         if(!obrFlag && !obrName.equals("") && !(obxName.contains(obrName) && obxCount < 2)){%>
@@ -823,7 +832,7 @@ if (request.getAttribute("printError") != null && (Boolean) request.getAttribute
 	                                    	   if (handler.getOBXIdentifier(j,k).equals(headers.get(i)) && !obxName.equals("")) { %>
 
 	                                        	<tr bgcolor="<%=(linenum % 2 == 1 ? highlight : "")%>" class="<%=lineClass%>">
-		                                            <td valign="top" align="left"><%= obrFlag ? "&nbsp; &nbsp; &nbsp;" : "&nbsp;" %><a href="javascript:popupStart('660','900','../lab/CA/ON/labValues.jsp?testName=<%=obxName%>&demo=<%=demographicID%>&labType=HL7&identifier=<%= handler.getOBXIdentifier(j, k) %>')"><%=obxName %></a></td>
+		                                            <td valign="top" align="left"><%= obrFlag ? "&nbsp; &nbsp; &nbsp;" : "&nbsp;" %><a href="javascript:popupStart('660','900','../lab/CA/ON/labValues.jsp?testName=<%=obxName%>&demo=<%=demographicID%>&labType=HL7&identifier='+encodeURIComponent('<%= handler.getOBXIdentifier(j, k)%>'))"><%=obxName %></a></td>
 		                                            <td align="right"><%= handler.getOBXResult( j, k) %></td>
 
 		                                            <td align="center">
@@ -842,7 +851,7 @@ if (request.getAttribute("printError") != null && (Boolean) request.getAttribute
                                         } else if (handler.getMsgType().equals("PFHT") || handler.getMsgType().equals("HHSEMR")) {
 	                                    	   if (!obxName.equals("")) { %>
 		                                    		<tr bgcolor="<%=(linenum % 2 == 1 ? highlight : "")%>" class="<%=lineClass%>">
-			                                            <td valign="top" align="left"><%= obrFlag ? "&nbsp; &nbsp; &nbsp;" : "&nbsp;" %><a href="javascript:popupStart('660','900','../lab/CA/ON/labValues.jsp?testName=<%=obxName%>&demo=<%=demographicID%>&labType=HL7&identifier=<%= handler.getOBXIdentifier(j, k) %>')"><%=obxName %></a></td>
+			                                            <td valign="top" align="left"><%= obrFlag ? "&nbsp; &nbsp; &nbsp;" : "&nbsp;" %><a href="javascript:popupStart('660','900','../lab/CA/ON/labValues.jsp?testName=<%=obxName%>&demo=<%=demographicID%>&labType=HL7&identifier='+encodeURIComponent('<%= handler.getOBXIdentifier(j, k)%>'))"><%=obxName %></a></td>
 			                                            <td align="right"><%= handler.getOBXResult( j, k) %></td>
 
 			                                            <td align="center">
@@ -872,7 +881,7 @@ if (request.getAttribute("printError") != null && (Boolean) request.getAttribute
 
                                       } else  if (!handler.getOBXResultStatus(j, k).equals("TDIS") && !handler.getMsgType().equals("EPSILON")) { %>
                                         <tr bgcolor="<%=(linenum % 2 == 1 ? highlight : "")%>" class="<%=lineClass%>">
-                                            <td valign="top" align="left"><%= obrFlag ? "&nbsp; &nbsp; &nbsp;" : "&nbsp;" %><a href="javascript:popupStart('660','900','../lab/CA/ON/labValues.jsp?testName=<%=obxName%>&demo=<%=demographicID%>&labType=HL7&identifier=<%= handler.getOBXIdentifier(j, k) %>')"><%=obxName %></a></td>
+                                            <td valign="top" align="left"><%= obrFlag ? "&nbsp; &nbsp; &nbsp;" : "&nbsp;" %><a href="javascript:popupStart('660','900','../lab/CA/ON/labValues.jsp?testName=<%=obxName%>&demo=<%=demographicID%>&labType=HL7&identifier='+encodeURIComponent('<%= handler.getOBXIdentifier(j, k)%>'))"><%=obxName %></a></td>
                                             <td align="right"><%= handler.getOBXResult( j, k) %></td>
                                             <td align="center">
                                                     <%= handler.getOBXAbnormalFlag(j, k)%>

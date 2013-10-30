@@ -27,6 +27,7 @@
 <c:set var="ctx" value="${pageContext.request.contextPath}"	scope="request" />
 
 Messenger.options = {
+		delay: 10,
 		extraClasses: 'messenger-fixed messenger-on-top messenger-on-left',
 		theme: 'future'
 };
@@ -65,13 +66,22 @@ function dismissHandler(notificationId) {
  * 
  * @param url URL of the notification popup
  * @param notificationId Id of the notification
+ * @param message Additional message information
  */
-function showMessenger(url, notificationId) {
+function showMessenger(url, notificationId, message) {
+	var messageContent = "";
+	// in case URL is specified - make sure it's clickable
+	if (url) {
+		messageContent = "<a style='color: white' href='" + url + "' target='_blank'>" + message + "</a>";
+	} else { // otherwise - just show the message provided
+		messageContent = message;
+	}
+
 	msg = Messenger().post({
 		id: url,
 		singleton: true,
 		type: 'info',
-		message: "<a style='color: white' href='" + url + "' target='_blank'>View eAAP recommendations</a>",
+		message: messageContent,
 		actions: {
 			snooze: {
 				label: 'Snooze',
@@ -100,12 +110,13 @@ function showMessenger(url, notificationId) {
  * 
  * @param url URL of the notification popup
  * @param notificationId Id of the notification 
+ * @param message additional message information to be displayed in the popup
  */
-function displayEaapsWindow(url, notificationId) {
+function displayEaapsWindow(url, notificationId, message) {
 	// make sure we give a chance for eChart to load
 	setTimeout(
 		function() {
-			showMessenger(url, notificationId);	
+			showMessenger(url, notificationId, message);	
 		}, 500
 	);
 }

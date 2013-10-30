@@ -27,6 +27,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -51,6 +54,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
+import net.sf.json.processors.JsDateJsonBeanProcessor;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -60,8 +65,6 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.caisi.dao.TicklerDAO;
-import org.caisi.model.Tickler;
 import org.oscarehr.PMmodule.caisi_integrator.CaisiIntegratorManager;
 import org.oscarehr.PMmodule.dao.ProgramProviderDAO;
 import org.oscarehr.PMmodule.dao.ProviderDao;
@@ -77,6 +80,7 @@ import org.oscarehr.casemgmt.common.EChartNoteEntry;
 import org.oscarehr.casemgmt.dao.CaseManagementIssueDAO;
 import org.oscarehr.casemgmt.dao.CaseManagementNoteDAO;
 import org.oscarehr.casemgmt.dao.CaseManagementNoteExtDAO;
+import org.oscarehr.casemgmt.dao.CaseManagementNoteLinkDAO;
 import org.oscarehr.casemgmt.dao.IssueDAO;
 import org.oscarehr.casemgmt.model.CaseManagementCPP;
 import org.oscarehr.casemgmt.model.CaseManagementIssue;
@@ -106,6 +110,7 @@ import org.oscarehr.common.model.DxAssociation;
 import org.oscarehr.common.model.PartialDate;
 import org.oscarehr.common.model.Provider;
 import org.oscarehr.common.model.ProviderDefaultProgram;
+import org.oscarehr.common.model.Tickler;
 import org.oscarehr.eyeform.dao.EyeFormDao;
 import org.oscarehr.eyeform.dao.EyeformFollowUpDao;
 import org.oscarehr.eyeform.dao.EyeformTestBookDao;
@@ -117,6 +122,8 @@ import org.oscarehr.eyeform.model.Macro;
 import org.oscarehr.eyeform.web.FollowUpAction;
 import org.oscarehr.eyeform.web.ProcedureBookAction;
 import org.oscarehr.eyeform.web.TestBookAction;
+import org.oscarehr.managers.TicklerManager;
+import org.oscarehr.util.EncounterUtil;
 import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SessionConstants;
@@ -146,8 +153,6 @@ import oscar.util.UtilDateUtilities;
 
 import com.lowagie.text.DocumentException;
 import com.quatro.model.security.Secrole;
-import java.io.PrintWriter;
-import java.lang.reflect.Array;
 
 /*
  * Updated by Eugene Petruhin on 12 and 13 jan 2009 while fixing #2482832 & #2494061
@@ -164,6 +169,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 	private AppointmentArchiveDao appointmentArchiveDao = (AppointmentArchiveDao)SpringUtils.getBean("appointmentArchiveDao");
 	private CasemgmtNoteLockDao casemgmtNoteLockDao = SpringUtils.getBean(CasemgmtNoteLockDao.class);
 	private NoteService noteService = SpringUtils.getBean(NoteService.class);
+	private TicklerManager ticklerManager = SpringUtils.getBean(TicklerManager.class);
 
 	public ActionForward unspecified(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		return edit(mapping, form, request, response);
@@ -547,7 +553,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 					casemgmtNoteLock.setLocked(true);
 				}
 				else if( note_id == 0 ){
-					logger.info("STATIC isNoteEdited CREATING LOCK NOTE ID 0");
+					logger.info("STATIC isNoteEdited CREATING LOCK NOTE ID 0 DEMO: " + demographicNo + " PROVIDER: " + providerNo);
 					casemgmtNoteLock = new CasemgmtNoteLock();
 					casemgmtNoteLock.setDemographicNo(demographicNo);
 					casemgmtNoteLock.setIpAddress(ipAddress);
@@ -559,7 +565,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 				}
 		}
 		else {
-			logger.info("STATIC isNoteEdited CREATING NEW LOCK");
+			logger.info("STATIC isNoteEdited CREATING NEW LOCK DEMO: " + demographicNo + " PROVIDER: " + providerNo);
 			casemgmtNoteLock = new CasemgmtNoteLock();
 			casemgmtNoteLock.setDemographicNo(demographicNo);
 			casemgmtNoteLock.setIpAddress(ipAddress);
@@ -581,8 +587,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 		String sessionId = request.getRequestedSessionId();
 		
 		logger.info("WEB isNoteEdited CALLED");
-		CasemgmtNoteLock casemgmtNoteLock = isNoteEdited(Long.parseLong(noteId), Integer.parseInt(demoNo), providerNo, ipAddress, sessionId);
-		request.getSession().setAttribute("casemgmtNoteLock"+demoNo, casemgmtNoteLock);
+		CasemgmtNoteLock casemgmtNoteLock = isNoteEdited(Long.parseLong(noteId), Integer.parseInt(demoNo), providerNo, ipAddress, sessionId);		
 		
 		String ret = "unlocked";
 		if( casemgmtNoteLock.isLocked() ) {
@@ -590,6 +595,9 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 		}
 		else if( casemgmtNoteLock.isLockedBySameUser() ) {
 			ret = "user";
+		}
+		else {
+			request.getSession().setAttribute("casemgmtNoteLock"+demoNo, casemgmtNoteLock);
 		}
 		
 		Map<String,String>jsonMap = new HashMap<String,String>();
@@ -602,9 +610,17 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 	//Change IP Address and Session Id of note lock
 	public ActionForward updateNoteLock(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
 		String demoNo = getDemographicNo(request);
+		String noteId = request.getParameter("noteId");
 		HttpSession session = request.getSession();
 		
-		CasemgmtNoteLock casemgmtNoteLock = (CasemgmtNoteLock)session.getAttribute("casemgmtNoteLock"+demoNo);
+		CasemgmtNoteLock casemgmtNoteLock = null;
+		if( noteId != null && !"null".equalsIgnoreCase(noteId)) {
+			casemgmtNoteLock = casemgmtNoteLockDao.findByNoteDemo(Integer.parseInt(demoNo), Long.parseLong(noteId));
+		}
+		else {
+			casemgmtNoteLock = (CasemgmtNoteLock)session.getAttribute("casemgmtNoteLock"+demoNo);
+		}
+		
 		casemgmtNoteLock.setIpAddress(request.getRemoteAddr());
 		casemgmtNoteLock.setSessionId(request.getRequestedSessionId());
 		logger.info("UPDATING LOCK SESSION " + casemgmtNoteLock.getSessionId() + " LOCK IP " + casemgmtNoteLock.getIpAddress());
@@ -789,6 +805,17 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 		return null;
 	}
 
+	/*
+	 * value (note)
+	 * appointmentNo
+	 * demographicNo
+	 * noteId
+	 * issueChange
+	 * archived
+	 * 
+	 * session form caseManagementEntryForm + demoNo
+	 * 
+	 */
 	public ActionForward issueNoteSave(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String strNote = request.getParameter("value");
 		String appointmentNo = request.getParameter("appointmentNo");
@@ -2082,7 +2109,7 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 		try {
 			CasemgmtNoteLock casemgmtNoteLockSession = (CasemgmtNoteLock)session.getAttribute("casemgmtNoteLock"+demoNo);
 			//If browser is exiting check to see if we should release lock.  It may be held by same user in another window so we check			
-			if( request.getRequestedSessionId().equals(casemgmtNoteLockSession.getSessionId()) ) {
+			if( request.getRequestedSessionId().equals(casemgmtNoteLockSession.getSessionId()) && casemgmtNoteLockSession.getNoteId() == Long.parseLong(noteId) ) {
 				releaseNoteLock(providerNo, Integer.parseInt(demoNo), Long.parseLong(noteId));
 				session.removeAttribute("casemgmtNoteLock"+demoNo);
 			}
@@ -2437,6 +2464,21 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 
 		String sessionFrmName = "caseManagementEntryForm" + demono;
 		CaseManagementEntryFormBean sessionFrm = (CaseManagementEntryFormBean) session.getAttribute(sessionFrmName);
+
+		if(sessionFrm!=null && cform!=null)	{
+			if(sessionFrm.getCaseNote()!=null)
+				sessionFrm.getCaseNote().setObservation_date(UtilDateUtilities.StringToDate(cform.getObservation_date(), "dd-MMM-yyyy H:mm"));
+			if(cform.getCaseNote()!=null && cform.getCaseNote().getEncounter_type()!=null)
+				sessionFrm.getCaseNote().setEncounter_type(cform.getCaseNote().getEncounter_type());
+			if(cform.getMinuteOfEncounterTime()!=null)
+				sessionFrm.getCaseNote().setMinuteOfEncounterTime(cform.getMinuteOfEncounterTime());
+			if(cform.getHourOfEncounterTime()!=null)
+				sessionFrm.getCaseNote().setHourOfEncounterTime(cform.getHourOfEncounterTime());
+			if(cform.getMinuteOfEncTransportationTime()!=null)
+				sessionFrm.getCaseNote().setMinuteOfEncTransportationTime(cform.getMinuteOfEncTransportationTime());
+			if(cform.getHourOfEncTransportationTime()!=null)
+				sessionFrm.getCaseNote().setHourOfEncTransportationTime(cform.getHourOfEncTransportationTime());
+		}
 
 		// add checked new issues to client's issue list
 		// client's old issues
@@ -3294,17 +3336,12 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 
 			// send tickler
 			if (macro.getTicklerRecipient() != null && macro.getTicklerRecipient().length() > 0) {
-				TicklerDAO ticklerDao = (TicklerDAO) SpringUtils.getBean("ticklerDAOT");
 				Tickler t = new Tickler();
 				t.setCreator(LoggedInInfo.loggedInInfo.get().loggedInProvider.getPractitionerNo());
-				t.setDemographic_no(cform.getDemographicNo());
+				t.setDemographicNo(Integer.parseInt(cform.getDemographicNo()));
 				t.setMessage(getMacroTicklerText(Integer.parseInt(cform.getAppointmentNo())));
-				t.setPriority("Normal");
-				t.setService_date(new Date());
-				t.setStatus('A');
-				t.setTask_assigned_to(macro.getTicklerRecipient());
-				t.setUpdate_date(new Date());
-				ticklerDao.saveTickler(t);
+				t.setTaskAssignedTo(macro.getTicklerRecipient());
+				ticklerManager.addTickler(t);
 			}
 
 			// billing
@@ -3727,5 +3764,168 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 		if (s1 == null) s1 = "";
 		if (s2 == null) s2 = "";
 		return s1.trim().equals(s2.trim());
+	}
+	
+	/*
+	 * 1) load existing note if possible
+	 * 1) update/save the note
+	 * 2) save/update link to the tickler (not sure yet)
+	 */
+	public ActionForward ticklerSaveNote(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+		String strNote = request.getParameter("value");
+		Date creationDate = new Date();
+		Provider loggedInProvider = LoggedInInfo.loggedInInfo.get().loggedInProvider;
+		String demographicNo = request.getParameter("demographicNo");
+		String ticklerNo = request.getParameter("ticklerNo");
+		String noteId = request.getParameter("noteId");
+		String revision = "1";
+		String history = strNote;
+		String uuid = null;
+		
+		if(noteId != null && noteId.length()>0 && !noteId.equals("0")) {
+			CaseManagementNote existingNote = this.caseManagementNoteDao.getNote(Long.valueOf(noteId));
+			
+			revision = String.valueOf(Integer.valueOf(existingNote.getRevision()).intValue() + 1);
+			history = strNote + "\n" + existingNote.getHistory();
+			uuid = existingNote.getUuid();
+		}
+		
+		CaseManagementNote cmn = new CaseManagementNote();
+		cmn.setAppointmentNo(0);
+		cmn.setArchived(false);
+		cmn.setCreate_date(creationDate);
+		cmn.setDemographic_no(demographicNo);
+		cmn.setEncounter_type(EncounterUtil.EncounterType.FACE_TO_FACE_WITH_CLIENT.getOldDbValue());
+		cmn.setNote(strNote);
+		cmn.setObservation_date(creationDate);
+		/*
+		String programIdStr = (String) request.getSession().getAttribute(SessionConstants.CURRENT_PROGRAM_ID);
+		if(programIdStr==null)
+			programIdStr = (String) request.getSession().getAttribute("case_program_id");
+		Integer programId = null;
+		if (programIdStr != null) programId = Integer.valueOf(programIdStr);
+		
+		cmn.setProgram_no(String.valueOf(programId));
+		*/
+		cmn.setProviderNo(loggedInProvider.getProviderNo());
+		cmn.setRevision(revision);
+		cmn.setSigned(true);
+		cmn.setSigning_provider_no(loggedInProvider.getProviderNo());
+		cmn.setUpdate_date(creationDate);
+		cmn.setHistory(history);
+		//just doing this because the other code does it.
+		cmn.setReporter_program_team("null");
+		cmn.setUuid(uuid);
+		
+		
+		String prog_no = new EctProgram(request.getSession()).getProgram(cmn.getProviderNo());
+		cmn.setProgram_no(prog_no);
+		
+		determineNoteRole(cmn,loggedInProvider.getProviderNo(),demographicNo);
+		
+		caseManagementMgr.saveNoteSimple(cmn);
+
+		log.info("note id is " + cmn.getId());
+		
+		
+		//save link, so we know what tickler this note is linked to
+		CaseManagementNoteLink link = new CaseManagementNoteLink();
+		link.setNoteId(cmn.getId());
+		link.setTableId(Long.parseLong(ticklerNo));
+		link.setTableName(CaseManagementNoteLink.TICKLER);
+		
+		CaseManagementNoteLinkDAO caseManagementNoteLinkDao = (CaseManagementNoteLinkDAO) SpringUtils.getBean("CaseManagementNoteLinkDAO");
+		caseManagementNoteLinkDao.save(link);
+		
+		
+		Issue issue = this.issueDao.findIssueByTypeAndCode("system", "TicklerNote");
+		if(issue == null) {
+			logger.warn("missing TicklerNote issue, please run all database updates");
+			return null;
+		}
+		//save issue..this will make it a "cpp looking" issue in the eChart
+		CaseManagementIssue cmi = new CaseManagementIssue();
+		cmi.setAcute(false);
+		cmi.setCertain(false);
+		cmi.setDemographic_no(demographicNo);
+		cmi.setIssue_id(issue.getId());
+		cmi.setMajor(false);
+		cmi.setProgram_id(Integer.parseInt(cmn.getProgram_no()));
+		cmi.setResolved(false);
+		cmi.setType(issue.getRole());
+		cmi.setUpdate_date(creationDate);
+		
+		caseManagementIssueDao.saveIssue(cmi);
+		
+		cmn.getIssues().add(cmi);
+		
+		caseManagementNoteDao.updateNote(cmn);
+		return null;
+	}
+	
+	public ActionForward ticklerGetNote(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String ticklerNo = request.getParameter("ticklerNo");
+		
+		CaseManagementNoteLinkDAO caseManagementNoteLinkDao = (CaseManagementNoteLinkDAO) SpringUtils.getBean("CaseManagementNoteLinkDAO");
+		CaseManagementNoteLink link = caseManagementNoteLinkDao.getLastLinkByTableId(CaseManagementNoteLink.TICKLER, Long.valueOf(ticklerNo));
+		
+		if(link != null) {
+			Long noteId = link.getNoteId();
+			
+			CaseManagementNote note = this.caseManagementNoteDao.getNote(noteId);
+			
+		
+			if(note != null) {
+				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                JsonConfig config = new JsonConfig();
+                config.registerJsonBeanProcessor(java.sql.Date.class, new JsDateJsonBeanProcessor());
+
+                Map<String,Serializable> hashMap = new HashMap<String,Serializable>();
+                hashMap.put("noteId",note.getId().toString());
+                hashMap.put("note", note.getNote());
+                hashMap.put("revision", note.getRevision());
+                hashMap.put("obsDate", formatter.format(note.getObservation_date()));
+                hashMap.put("editor", this.providerMgr.getProvider(note.getProviderNo()).getFormattedName());
+                JSONObject json = JSONObject.fromObject(hashMap, config);
+                response.getOutputStream().write(json.toString().getBytes());
+
+
+			}
+		}
+		
+		return null;
+	}
+	
+	private boolean determineNoteRole(CaseManagementNote note, String providerNo, String demographicNo) {
+		// Determines what program & role to assign the note to
+		ProgramProviderDAO programProviderDao = (ProgramProviderDAO) SpringUtils.getBean("programProviderDAO");
+		ProviderDefaultProgramDao defaultProgramDao = (ProviderDefaultProgramDao) SpringUtils.getBean("providerDefaultProgramDao");
+		boolean programSet = false;
+		
+		if(note.getProgram_no() != null && note.getProgram_no().length()>0 && !"null".equals(note.getProgram_no())) {
+			ProgramProvider pp = programProviderDao.getProgramProvider(note.getProviderNo(), Long.valueOf(note.getProgram_no()));
+			if(pp != null) {
+				note.setReporter_caisi_role(String.valueOf(pp.getRoleId()));
+				programSet=true;
+			}
+		}
+
+		if(!programSet) {
+			List<ProviderDefaultProgram> programs = defaultProgramDao.getProgramByProviderNo(providerNo);
+			HashMap<Program,List<Secrole>> rolesForDemo = NotePermissionsAction.getAllProviderAccessibleRolesForDemo(providerNo, demographicNo);
+			for (ProviderDefaultProgram pdp : programs) {
+				for (Program p : rolesForDemo.keySet()) {
+					if (pdp.getProgramId() == p.getId().intValue()) {
+						List<ProgramProvider> programProviderList = programProviderDao.getProgramProviderByProviderProgramId(providerNo, (long) pdp.getProgramId());
+	
+						note.setProgram_no("" + pdp.getProgramId());
+						note.setReporter_caisi_role("" + programProviderList.get(0).getRoleId());
+	
+						programSet = true;
+					}
+				}
+			}
+		}
+		return programSet;
 	}
 }

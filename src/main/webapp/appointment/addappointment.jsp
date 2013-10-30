@@ -83,6 +83,16 @@
 <%@ page import="org.oscarehr.common.model.Appointment" %>
 <%@ page import="org.oscarehr.common.dao.OscarAppointmentDao" %>
 <%@ page import="oscar.util.ConversionUtils" %>
+<%@ page import="org.apache.commons.lang.StringUtils" %>
+<%@ page import="org.oscarehr.PMmodule.model.Program" %>
+<%@ page import="org.oscarehr.PMmodule.model.ProgramProvider" %>
+<%@ page import="org.oscarehr.common.model.Facility" %>
+<%@ page import="org.oscarehr.PMmodule.service.ProviderManager" %>
+<%@ page import="org.oscarehr.PMmodule.service.ProgramManager" %>
+<%@ page import="org.oscarehr.util.LoggedInInfo"%>
+<%@ page import="org.oscarehr.managers.LookupListManager"%>
+<%@ page import="org.oscarehr.common.model.LookupList"%>
+<%@ page import="org.oscarehr.common.model.LookupListItem"%>
 
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
@@ -97,19 +107,33 @@
 	DemographicDao demographicDao = SpringUtils.getBean(DemographicDao.class);
 	EncounterFormDao encounterFormDao = SpringUtils.getBean(EncounterFormDao.class);
 	OscarAppointmentDao appointmentDao = SpringUtils.getBean(OscarAppointmentDao.class);
-%>
+	
+	ProviderManager providerManager = SpringUtils.getBean(ProviderManager.class);
+	ProgramManager programManager = SpringUtils.getBean(ProgramManager.class);
+	
+	String providerNo = LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo();
+	Facility facility = LoggedInInfo.loggedInInfo.get().currentFacility;
+	
+    List<Program> programs = programManager.getActiveProgramByFacility(providerNo, facility.getId());
 
-<%
-  int iPageSize=5;
+	LookupListManager lookupListManager = SpringUtils.getBean(LookupListManager.class);
+	LookupList reasonCodes = lookupListManager.findLookupListByName("reasonCode");
 
-  ApptData apptObj = ApptUtil.getAppointmentFromSession(request);
+    int iPageSize=5;
 
-  oscar.OscarProperties pros = oscar.OscarProperties.getInstance();
-  String strEditable = pros.getProperty("ENABLE_EDIT_APPT_STATUS");
-  Boolean isMobileOptimized = session.getAttribute("mobileOptimized") != null;
+    ApptData apptObj = ApptUtil.getAppointmentFromSession(request);
 
-  AppointmentStatusMgr apptStatusMgr = new AppointmentStatusMgrImpl();
-  List<AppointmentStatus> allStatus = apptStatusMgr.getAllActiveStatus();
+    oscar.OscarProperties pros = oscar.OscarProperties.getInstance();
+    String strEditable = pros.getProperty("ENABLE_EDIT_APPT_STATUS");
+    Boolean isMobileOptimized = session.getAttribute("mobileOptimized") != null;
+
+    AppointmentStatusMgr apptStatusMgr = new AppointmentStatusMgrImpl();
+    List<AppointmentStatus> allStatus = apptStatusMgr.getAllActiveStatus();
+    
+    String useProgramLocation = OscarProperties.getInstance().getProperty("useProgramLocation");
+    String moduleNames = OscarProperties.getInstance().getProperty("ModuleNames");
+    boolean caisiEnabled = moduleNames != null && org.apache.commons.lang.StringUtils.containsIgnoreCase(moduleNames, "Caisi");
+    boolean locationEnabled = caisiEnabled && (useProgramLocation != null && useProgramLocation.equals("true"));
 %>
 <%@page import="org.oscarehr.common.dao.SiteDao"%>
 <%@page import="org.oscarehr.common.model.Site"%>
@@ -138,6 +162,15 @@
    </script>
 <oscar:customInterface section="addappt"/>
 <script type="text/javascript">
+
+function onAdd() {
+    if (document.ADDAPPT.notes.value.length > 255) {
+      window.alert("<bean:message key="appointment.editappointment.msgNotesTooBig"/>");
+      return false;
+    }
+    return calculateEndTime() ;
+}
+
 
 <!--
 function setfocus() {
@@ -733,7 +766,7 @@ function pasteAppt(multipleSameDayGroupAppt) {
 <% } %>
 
 <FORM NAME="ADDAPPT" id="addappt" METHOD="post" ACTION="<%=request.getContextPath()%>/appointment/appointmentcontrol.jsp"
-	onsubmit="return(calculateEndTime())"><INPUT TYPE="hidden"
+	onsubmit="return(onAdd())"><INPUT TYPE="hidden"
 	NAME="displaymode" value="">
 	<input type="hidden" name="year" value="<%=request.getParameter("year") %>" >
     <input type="hidden" name="month" value="<%=request.getParameter("month") %>" >
@@ -871,7 +904,26 @@ function pasteAppt(multipleSameDayGroupAppt) {
         <li class="row deep">
             <div class="label"><bean:message key="Appointment.formReason" />:</div>
             <div class="input">
-                <textarea name="reason" tabindex="2" rows="2" wrap="virtual" cols="18"><%=bFirstDisp?"":request.getParameter("reason").equals("")?"":request.getParameter("reason")%></textarea>
+                <select name="reasonCode">
+				    <%
+				    if(reasonCodes != null) {
+				    	for(LookupListItem reasonCode : reasonCodes.getItems()) {
+				    %>
+				    <option value="<%=reasonCode.getId()%>"
+				    				<%=reasonCode.getValue().equals("Others")?"selected":""%>>
+				    	<%=StringEscapeUtils.escapeHtml(reasonCode.getValue())%>
+				    </option>
+				    <%
+				    	}
+				    } else {
+					%>
+						<option value="-1">Other</option>
+					<%
+					}
+					%>
+				</select>
+				</br>
+				<textarea id="reason" name="reason" tabindex="2" rows="2" wrap="virtual" cols="18"><%=bFirstDisp?"":request.getParameter("reason").equals("")?"":request.getParameter("reason")%></textarea>
             </div>
             <div class="space">&nbsp;</div>
             <div class="label"><bean:message key="Appointment.formNotes" />:</div>
@@ -896,15 +948,30 @@ function pasteAppt(multipleSameDayGroupAppt) {
             <div class="input">
 		<% // multisites start ==================
 		if (bMultisites) { %>
-		                <select tabindex="4" name="location" style="background-color: <%=colo%>" onchange='this.style.backgroundColor=this.options[this.selectedIndex].style.backgroundColor'>
-		                <% for (Site s:sites) { %>
-		                        <option value="<%=s.getName()%>" style="background-color: <%=s.getBgColor()%>" <%=s.getName().equals(loc)?"selected":"" %>><%=s.getName()%></option>
-		                <% } %>
-		                </select>
+	        <select tabindex="4" name="location" style="background-color: <%=colo%>" onchange='this.style.backgroundColor=this.options[this.selectedIndex].style.backgroundColor'>
+	        <% for (Site s:sites) { %>
+	                <option value="<%=s.getName()%>" style="background-color: <%=s.getBgColor()%>" <%=s.getName().equals(loc)?"selected":"" %>><%=s.getName()%></option>
+	        <% } %>
+	        </select>
 		<% } else {
 			// multisites end ==================
+			if (locationEnabled) {
 		%>
-		                <input type="TEXT" name="location" tabindex="4" value="<%=loc%>" width="25" height="20" border="0" hspace="2">
+			<select name="location" >
+                <%
+                String sessionLocation = StringUtils.defaultString((String) session.getAttribute("sessionLocation"));
+                if (programs != null && !programs.isEmpty()) {
+			       	for (Program program : programs) {
+			       	    String description = StringUtils.isBlank(program.getLocation()) ? program.getName() : program.getLocation();
+			   	%>
+			        <option value="<%=program.getId()%>" <%=program.getId().toString().equals(sessionLocation) ? "selected='selected'" : ""%>><%=StringEscapeUtils.escapeHtml(description)%></option>
+			    <%	}
+                }
+			  	%>
+            </select>
+        	<% } else { %>
+        	<input type="TEXT" name="location" tabindex="4" value="<%=loc%>" width="25" height="20" border="0" hspace="2">	
+        	<% } %>
 		<% } %>
             </div>
             <div class="space">&nbsp;</div>

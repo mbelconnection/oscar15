@@ -139,6 +139,10 @@ public class AddEditDocumentAction extends DispatchAction {
 
 		int numOfPage = 0;
 		String docdownload = oscar.OscarProperties.getInstance().getProperty("DOCUMENT_DIR");
+                if (!docdownload.endsWith(File.separator))
+                {
+                    docdownload += File.separator; 
+                }
 		String filePath = docdownload + fileName;
 
 		try {
@@ -169,6 +173,11 @@ public class AddEditDocumentAction extends DispatchAction {
 		}
 		writeLocalFile(docFile, fileName);
 		newDoc.setContentType(docFile.getContentType());
+                if (fileName.toLowerCase().endsWith(".pdf")) {
+                    newDoc.setContentType("application/pdf");
+                    int numberOfPages = countNumOfPages(fileName);
+                    newDoc.setNumberOfPages(numberOfPages);                        
+                }
 
 		EDocUtil.addDocumentSQL(newDoc);
 
@@ -250,7 +259,12 @@ public class AddEditDocumentAction extends DispatchAction {
 			// save local file
 			File file = writeLocalFile(docFile, fileName2);
 			newDoc.setContentType(docFile.getContentType());
-
+                        if (fileName2.toLowerCase().endsWith(".pdf")) {
+                            newDoc.setContentType("application/pdf");
+                            int numberOfPages = countNumOfPages(fileName2);
+                            newDoc.setNumberOfPages(numberOfPages);                        
+                        }
+		
 
 			// if the document was added in the context of a program
 			String programIdStr = (String) request.getSession().getAttribute(SessionConstants.CURRENT_PROGRAM_ID);
@@ -351,7 +365,13 @@ public class AddEditDocumentAction extends DispatchAction {
 				throw new Exception();
 			}
 			FormFile docFile = fm.getDocFile();
-			String fileName = docFile.getFileName();
+                        String fileName = ""; 
+                        
+                        if(oscar.OscarProperties.getInstance().getBooleanProperty("ALLOW_UPDATE_DOCUMENT_CONTENT", "true"))
+                        {
+                            fileName=docFile.getFileName();
+                        }
+                        
 			String reviewerId = filled(fm.getReviewerId()) ? fm.getReviewerId() : "";
 			String reviewDateTime = filled(fm.getReviewDateTime()) ? fm.getReviewDateTime() : "";
 
@@ -373,10 +393,15 @@ public class AddEditDocumentAction extends DispatchAction {
                         newDoc.setDocClass(fm.getDocClass());
                         newDoc.setDocSubClass(fm.getDocSubClass());
 			fileName = newDoc.getFileName();
-			if (docFile.getFileSize() != 0) {
+			if (docFile.getFileSize() != 0 && fileName.length()!=0) {
 				// save local file
 				writeLocalFile(docFile, fileName);
 				newDoc.setContentType(docFile.getContentType());
+                                if (fileName.toLowerCase().endsWith(".pdf")) {
+                                    newDoc.setContentType("application/pdf");
+                                    int numberOfPages = countNumOfPages(fileName);
+                                    newDoc.setNumberOfPages(numberOfPages);                        
+                                }
 				// ---
 			} else if (docFile.getFileName().length() != 0) {
 				errors.put("uploaderror", "dms.error.uploadError");

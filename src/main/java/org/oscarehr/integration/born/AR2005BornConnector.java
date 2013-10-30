@@ -46,10 +46,9 @@ public class AR2005BornConnector {
 
 	public void updateBorn() throws Exception {
 		File file = File.createTempFile("born", ".xml");		
-		BornFtpManager ftpManager = new BornFtpManager();
 		String path = file.getPath();
 		path = path.substring(0,path.lastIndexOf(File.separator));
-		ftpManager.uploadDataToRepository(path, file.getName());
+		BornFtpManager.uploadONAREnhancedDataToRepository(path, file.getName());
 	}
 
 }

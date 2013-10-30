@@ -237,7 +237,9 @@ function updateAjax() {
 						}
 					%>
 				</table>
-				<input type="submit" value="<bean:message key="eform.showmyform.btnsendtophr" />"> | 
+				<% if (isMyOscarAvailable) { %>
+					<input type="submit" value="<bean:message key="eform.showmyform.btnsendtophr" />"> |
+				<% } %> 
 				<button onclick="showHtml(); return false;">Save as PDF</button>
 			
 			</form>

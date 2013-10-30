@@ -43,6 +43,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.Action;
@@ -58,14 +59,18 @@ import org.oscarehr.casemgmt.service.CaseManagementManager;
 import org.oscarehr.common.dao.DemographicArchiveDao;
 import org.oscarehr.common.dao.DemographicContactDao;
 import org.oscarehr.common.dao.DemographicExtDao;
+import org.oscarehr.common.dao.Hl7TextMessageDao;
 import org.oscarehr.common.dao.OscarAppointmentDao;
 import org.oscarehr.common.dao.PartialDateDao;
 import org.oscarehr.common.model.Allergy;
 import org.oscarehr.common.model.Appointment;
 import org.oscarehr.common.model.DemographicArchive;
 import org.oscarehr.common.model.DemographicContact;
+import org.oscarehr.common.model.Hl7TextMessage;
 import org.oscarehr.common.model.PartialDate;
 import org.oscarehr.common.model.Provider;
+import org.oscarehr.exports.e2e.E2EVelocityTemplate;
+import org.oscarehr.exports.e2e.E2EPatientExport;
 import org.oscarehr.hospitalReportManager.dao.HRMDocumentCommentDao;
 import org.oscarehr.hospitalReportManager.dao.HRMDocumentDao;
 import org.oscarehr.hospitalReportManager.dao.HRMDocumentToDemographicDao;
@@ -86,6 +91,8 @@ import oscar.oscarDemographic.data.DemographicRelationship;
 import oscar.oscarEncounter.oscarMeasurements.data.ImportExportMeasurements;
 import oscar.oscarEncounter.oscarMeasurements.data.LabMeasurements;
 import oscar.oscarEncounter.oscarMeasurements.data.Measurements;
+import oscar.oscarLab.ca.all.parsers.Factory;
+import oscar.oscarLab.ca.all.parsers.MessageHandler;
 import oscar.oscarLab.ca.all.upload.ProviderLabRouting;
 import oscar.oscarPrevention.PreventionData;
 import oscar.oscarProvider.data.ProviderData;
@@ -129,6 +136,7 @@ public class DemographicExportAction4 extends Action {
 	private static final HRMDocumentDao hrmDocDao = (HRMDocumentDao) SpringUtils.getBean("HRMDocumentDao");
 	private static final HRMDocumentCommentDao hrmDocCommentDao = (HRMDocumentCommentDao) SpringUtils.getBean("HRMDocumentCommentDao");
 	private static final CaseManagementManager cmm = (CaseManagementManager) SpringUtils.getBean("caseManagementManager");
+	private static final Hl7TextMessageDao hl7TxtMsgDao = (Hl7TextMessageDao)SpringUtils.getBean("hl7TextMessageDao");
 	private static final DemographicExtDao demographicExtDao = (DemographicExtDao) SpringUtils.getBean("demographicExtDao");
 	private static final String PATIENTID = "Patient";
 	private static final String ALERT = "Alert";
@@ -202,7 +210,13 @@ public class DemographicExportAction4 extends Action {
 	String ffwd = "fail";
 	String tmpDir = oscarProperties.getProperty("TMP_DIR");
 	
-	int template = Integer.parseInt(templateOption);
+	int template = 0;
+	try {
+		template = Integer.parseInt(templateOption);
+	}
+	catch(Exception e ) {
+		MiscUtils.getLogger().error("Bad template Option");
+	}
 	
 	switch(template) {
 		case CMS4:
@@ -1021,18 +1035,68 @@ public class DemographicExportAction4 extends Action {
 					alr.setCategorySummaryLine(aSummary);
 				}
 			}
+			
 
-			if (exImmunizations) {
-				// IMMUNIZATIONS
-				ArrayList<Map<String,Object>> prevList = PreventionData.getPreventionData(Integer.valueOf(demoNo));
-				String imSummary;
-				for (int k =0 ; k < prevList.size(); k++){
+			// IMMUNIZATIONS & PASTHEALTH (Preventive tests)
+			ArrayList<Map<String,Object>> prevList = PreventionData.getPreventionData(Integer.valueOf(demoNo));
+			String phSummary, imSummary;
+			int cnt = 0;
+			
+			for (Map<String, Object> prevMap : prevList) {
+				HashMap<String,Object> extraData = new HashMap<String,Object>();
+				extraData.putAll(PreventionData.getPreventionById((String) prevMap.get("id")));
+
+				String prevType = (String)prevMap.get("type");
+				if (Util.isNonImmunizationPrevention(prevType)) {
+					if (exPastHealth) {
+						phSummary = null;
+						PastHealth pHealth = patientRec.addNewPastHealth();
+						pHealth.setPastHealthProblemDescriptionOrProcedures(prevType);
+						phSummary = Util.addSummary("Procedure", prevType);
+						
+						String preventionDate = (String) prevMap.get("prevention_date");
+						if (UtilDateUtilities.StringToDate(preventionDate)!=null) {
+							pHealth.addNewProcedureDate().setFullDate(Util.calDate(preventionDate));
+							phSummary = Util.addSummary(phSummary, "Date", preventionDate);
+						}
+						
+						String phNotes = null;
+						String refused = (String) prevMap.get("refused");
+						if (StringUtils.filled(refused)) {
+							if (refused.equals("1")) refused = "Refused";
+							if (refused.equals("2")) refused = "Ineligible";
+							phNotes = Util.addLine(phNotes, refused);
+						}
+						
+						String extra = (String)extraData.get("result");
+						if (StringUtils.filled(extra)) {
+							phNotes = Util.addLine(phNotes, "Result", extra);
+							phSummary = Util.addSummary(phSummary, "Result", extra);
+						}
+						extra = (String)extraData.get("reason");
+						if (StringUtils.filled(extra)) {
+							phNotes = Util.addLine(phNotes, "Reason", extra);
+							phSummary = Util.addSummary(phSummary, "Reason", extra);
+						}
+						extra = (String)extraData.get("comments");
+						if (StringUtils.filled(extra)) {
+							phNotes = Util.addLine(phNotes, "Comments", extra);
+							phSummary = Util.addSummary(phSummary, "Comments", extra);
+						}
+						extra = (String)extraData.get("neverReason");
+						if (StringUtils.filled(extra)) {
+							phNotes = Util.addLine(phNotes, "Never Remind Reason", extra);
+							phSummary = Util.addSummary(phSummary, "Never Remind Reason", extra);
+						}
+	
+						pHealth.setNotes(phNotes);
+						pHealth.setCategorySummaryLine(phSummary);
+					}
+				} else if (exImmunizations) {
 					imSummary = null;
-					HashMap<String,Object> a = new HashMap<String,Object>();
-					a.putAll(prevList.get(k));
+					cnt++;
 					Immunizations immu = patientRec.addNewImmunizations();
-					HashMap<String,Object> extraData = new HashMap<String,Object>();
-					extraData.putAll(PreventionData.getPreventionById((String) a.get("id")));
+
 					if (StringUtils.filled((String)extraData.get("manufacture"))) immu.setManufacturer((String)extraData.get("manufacture"));
 					if (StringUtils.filled((String)extraData.get("lot"))) immu.setLotNumber((String)extraData.get("lot"));
 					if (StringUtils.filled((String)extraData.get("route"))) immu.setRoute((String)extraData.get("route"));
@@ -1040,17 +1104,17 @@ public class DemographicExportAction4 extends Action {
 					if (StringUtils.filled((String)extraData.get("dose"))) immu.setDose((String)extraData.get("dose"));
 					if (StringUtils.filled((String)extraData.get("comments"))) immu.setNotes((String)extraData.get("comments"));
 
-					String prevType = Util.getImmunizationType((String)a.get("type"));
+					prevType = Util.getImmunizationType(prevType);
 					if (cdsDt.ImmunizationType.Enum.forString(prevType)!=null) {
 						immu.setImmunizationType(cdsDt.ImmunizationType.Enum.forString(prevType));
 					} else {
-						exportError.add("Error! No matching type for Immunization "+a.get("type")+" for Patient "+demoNo+" ("+(k+1)+")");
+						exportError.add("Error! No matching type for Immunization "+prevMap.get("type")+" for Patient "+demoNo+" ("+(cnt)+")");
 					}
 
 					if (StringUtils.filled((String)extraData.get("name"))) immu.setImmunizationName((String)extraData.get("name"));
 					else
 					{
-						exportError.add("Error! No Name for Immunization "+prevType+" for Patient "+demoNo+" ("+(k+1)+")");
+						exportError.add("Error! No Name for Immunization "+prevType+" for Patient "+demoNo+" ("+(cnt)+")");
 						if (StringUtils.filled(prevType)) {
 							immu.setImmunizationName(prevType);
 							imSummary = Util.addSummary("Immunization Name",prevType);
@@ -1059,16 +1123,16 @@ public class DemographicExportAction4 extends Action {
 					}
 					addOneEntry(IMMUNIZATION);
 
-					String refused = (String) a.get("refused");
+					String refused = (String) prevMap.get("refused");
 					if (StringUtils.empty(refused)) {
 						immu.addNewRefusedFlag();
-						exportError.add("Error! No Refused Flag for Patient "+demoNo+" ("+(k+1)+")");
+						exportError.add("Error! No Refused Flag for Patient "+demoNo+" ("+(cnt)+")");
 					} else {
 						immu.addNewRefusedFlag().setBoolean(Util.convert10toboolean(refused));
 						imSummary = Util.addSummary(imSummary, "Refused Flag", Util.convert10toboolean(refused)?"Y":"N");
 					}
 
-					String preventionDate = (String) a.get("prevention_date");
+					String preventionDate = (String) prevMap.get("prevention_date");
 					if (UtilDateUtilities.StringToDate(preventionDate)!=null) {
 						immu.addNewDate().setFullDate(Util.calDate(preventionDate));
 						imSummary = Util.addSummary(imSummary, "Date", preventionDate);
@@ -1082,7 +1146,7 @@ public class DemographicExportAction4 extends Action {
 					imSummary = Util.addSummary(imSummary, "Notes", immu.getNotes());
 
 					if (StringUtils.empty(imSummary)) {
-						exportError.add("Error! No Category Summary Line (Immunization) for Patient "+demoNo+" ("+(k+1)+")");
+						exportError.add("Error! No Category Summary Line (Immunization) for Patient "+demoNo+" ("+(cnt)+")");
 					}
 					immu.setCategorySummaryLine(StringUtils.noNull(imSummary));
 				}
@@ -1327,118 +1391,44 @@ public class DemographicExportAction4 extends Action {
 			if (exLaboratoryResults) {
 				// LABORATORY RESULTS
 				List<LabMeasurements> labMeaList = ImportExportMeasurements.getLabMeasurements(demoNo);
-				String annotation = null;
 				for (LabMeasurements labMea : labMeaList) {
 					LaboratoryResults labResults = patientRec.addNewLaboratoryResults();
-
-					//lab test code, test name, test name reported by lab
-					if (StringUtils.filled(labMea.getExtVal("identifier"))) labResults.setLabTestCode(labMea.getExtVal("identifier"));
-					if (StringUtils.filled(labMea.getExtVal("name_internal"))) labResults.setTestName(labMea.getExtVal("name_internal"));
-					if (StringUtils.filled(labMea.getExtVal("name"))) labResults.setTestNameReportedByLab(labMea.getExtVal("name"));
-
-					//laboratory name
-					labResults.setLaboratoryName(StringUtils.noNull(labMea.getExtVal("labname")));
-					addOneEntry(LABS);
-					if (StringUtils.empty(labResults.getLaboratoryName())) {
-						exportError.add("Error! No Laboratory Name for Lab Test "+labResults.getLabTestCode()+" for Patient "+demoNo);
-					}
-
-					// lab collection datetime
-					cdsDt.DateTimeFullOrPartial collDate = labResults.addNewCollectionDateTime();
-					String sDateTime = labMea.getExtVal("datetime");
-					if (StringUtils.filled(sDateTime)) {
-						collDate.setFullDateTime(Util.calDate(sDateTime));
-					} else {
-						exportError.add("Error! No Collection Datetime for Lab Test "+labResults.getLabTestCode()+" for Patient "+demoNo);
-						collDate.setFullDate(Util.calDate("0001-01-01"));
-					}
-
-					//lab normal/abnormal flag
-					labResults.setResultNormalAbnormalFlag(cdsDt.ResultNormalAbnormalFlag.U);
-					String abnormalFlag = StringUtils.noNull(labMea.getExtVal("abnormal"));
-					if (abnormalFlag.equals("A") || abnormalFlag.equals("L")) labResults.setResultNormalAbnormalFlag(cdsDt.ResultNormalAbnormalFlag.Y);
-					if (abnormalFlag.equals("N")) labResults.setResultNormalAbnormalFlag(cdsDt.ResultNormalAbnormalFlag.N);
-
-					//lab unit of measure
-					String measureData = StringUtils.noNull(labMea.getMeasure().getDataField());
-					if (StringUtils.filled(measureData)) {
-						LaboratoryResults.Result result = labResults.addNewResult();
-						if (measureData.length()>120) {
-							measureData = measureData.substring(0, 120);
-							exportError.add("Error! Result text length > 120 - truncated; Lab Test "+labResults.getLabTestCode()+" for Patient "+demoNo);
-						}
-						result.setValue(measureData);
-						measureData = labMea.getExtVal("unit");
-						if (StringUtils.filled(measureData)) result.setUnitOfMeasure(measureData);
-					}
-
-					//lab accession number
-					String accessionNo = StringUtils.noNull(labMea.getExtVal("accession"));
-					if (StringUtils.filled(accessionNo)) {
-						labResults.setAccessionNumber(accessionNo);
-					}
-
-					//notes from lab
-					String labComments = StringUtils.noNull(labMea.getExtVal("comments"));
-					if (StringUtils.filled(labComments)) {
-						labResults.setNotesFromLab(Util.replaceTags(labComments));
-					}
-
-					//lab reference range
-					String range = StringUtils.noNull(labMea.getExtVal("range"));
-					String min = StringUtils.noNull(labMea.getExtVal("minimum"));
-					String max = StringUtils.noNull(labMea.getExtVal("maximum"));
-					LaboratoryResults.ReferenceRange refRange = labResults.addNewReferenceRange();
-					if (StringUtils.filled(range)) refRange.setReferenceRangeText(range);
-					else {
-						if (StringUtils.filled(min)) refRange.setLowLimit(min);
-						if (StringUtils.filled(max)) refRange.setHighLimit(max);
-					}
-
-					//lab requisition datetime
+					exportLabResult(labMea, labResults, demoNo);
 					
-					String reqDate = labMea.getExtVal("request_datetime");
-					if (StringUtils.filled(reqDate)) labResults.addNewLabRequisitionDateTime().setFullDateTime(Util.calDate(reqDate));
-
-					//OLIS test result status
-					String olis_status = labMea.getExtVal("olis_status");
-					if (StringUtils.filled(olis_status)) labResults.setOLISTestResultStatus(olis_status);
-
-					Integer labTable = CaseManagementNoteLink.LABTEST;
 					String lab_no = labMea.getExtVal("lab_no");
-					if (StringUtils.empty(lab_no)) {
-						lab_no = labMea.getExtVal("lab_ppid");
-						labTable = CaseManagementNoteLink.LABTEST2;
-					}
 					if (StringUtils.filled(lab_no)) {
-
-						//lab annotation
-						String other_id = StringUtils.noNull(labMea.getExtVal("other_id"));
-						annotation = getNonDumpNote(labTable, Long.valueOf(lab_no), other_id);
-						if (StringUtils.filled(annotation)) labResults.setPhysiciansNotes(annotation);
-
-//					  String info = labRoutingInfo.get("comment"); <--for whole report, may refer to >1 lab results
-
-
-						//lab reviewer
-						HashMap<String,Object> labRoutingInfo = new HashMap<String,Object>();
-						if (labTable.equals(CaseManagementNoteLink.LABTEST))
-							labRoutingInfo.putAll(ProviderLabRouting.getInfo(lab_no, "HL7"));
-						else
-							labRoutingInfo.putAll(ProviderLabRouting.getInfo(lab_no, "CML"));
-
-						String timestamp = (String)labRoutingInfo.get("timestamp");
-						if (UtilDateUtilities.StringToDate(timestamp,"yyyy-MM-dd HH:mm:ss")!=null) {
-							LaboratoryResults.ResultReviewer reviewer = labResults.addNewResultReviewer();
-							reviewer.addNewDateTimeResultReviewed().setFullDateTime(Util.calDate(timestamp));
-
-							//reviewer name
-							cdsDt.PersonNameSimple reviewerName = reviewer.addNewName();
-							String lab_provider_no = (String)labRoutingInfo.get("provider_no");
-							if (!"0".equals(lab_provider_no)) {
-								ProviderData pvd = new ProviderData(lab_provider_no);
-								Util.writeNameSimple(reviewerName, pvd.getFirst_name(), pvd.getLast_name());
-								if (StringUtils.noNull(pvd.getOhip_no()).length()<=6) reviewer.setOHIPPhysicianId(pvd.getOhip_no());
+						Hl7TextMessage hl7TextMessage = hl7TxtMsgDao.find(Integer.valueOf(lab_no));
+						String hl7Body = new String(Base64.decodeBase64(hl7TextMessage.getBase64EncodedeMessage()));
+						MessageHandler h = Factory.getHandler(hl7TextMessage.getType(), hl7Body);
+						for (int i=0; i<h.getOBRCount(); i++) {
+							for (int j=0; j<h.getOBXCount(i); j++) {
+								if (StringUtils.filled(h.getOBXResult(i, j))) continue; //skip entries with result
+								
+								String commentAsResult = null;
+								for (int k=0; k<h.getOBXCommentCount(i, j); k++) {
+									commentAsResult = Util.addLine(commentAsResult, h.getOBXComment(i, j, k));
+								}
+								
+								if (StringUtils.filled(commentAsResult)) {
+									HashMap<String,String> labMeaValues = new HashMap<String,String>();
+									
+									labMeaValues.put("identifier", h.getOBXIdentifier(i, j));
+									labMeaValues.put("name", h.getOBXName(i, j));
+									labMeaValues.put("labname", h.getPatientLocation());
+									labMeaValues.put("datetime", h.getTimeStamp(i, j));
+									labMeaValues.put("abnormal", h.getOBXAbnormalFlag(i, j));
+									labMeaValues.put("measureData", commentAsResult);
+									labMeaValues.put("unit", h.getOBXUnits(i, j));
+									labMeaValues.put("accession", h.getAccessionNum());
+									labMeaValues.put("range", h.getOBXReferenceRange(i, j));
+									labMeaValues.put("request_datetime", h.getRequestDate(i));
+									labMeaValues.put("olis_status", h.getOBXResultStatus(i, j));
+									labMeaValues.put("lab_no", lab_no);
+									labMeaValues.put("other_id", i+"-"+j);
+									
+									LaboratoryResults labResults2 = patientRec.addNewLaboratoryResults();
+									exportLabResult(labMeaValues, labResults2, demoNo);
+								}
 							}
 						}
 					}
@@ -2004,20 +1994,20 @@ public class DemographicExportAction4 extends Action {
 				logger.debug("Error! Cannot write to TMP_DIR - Check oscar.properties or dir permissions.");
 			} else {
 				ArrayList<File> files = new ArrayList<File>();
-				exportError = new ArrayList<String>();
+				StringBuilder exportLog = new StringBuilder();
 				for (String demoNo : list) {
 					if (StringUtils.empty(demoNo)) {
-						exportError.add("Error! No Demographic Number");
+						String msg = "Error! No Demographic Number";
+						logger.error(msg);
+						exportLog.append(msg);
 						continue;
 					}
-					
-					// Create Patient
-					PatientExport patient = new PatientExport(demoNo);
-					
-					// Create Template View
+
+					// Select Template
 					E2EVelocityTemplate t = new E2EVelocityTemplate();
-					
-					// Call Template Export & add to ArrayList
+
+					// Create and select patient data
+					E2EPatientExport patient = new E2EPatientExport();
 					patient.setExMedications(exMedicationsAndTreatments);
 					patient.setExAllergiesAndAdverseReactions(exAllergiesAndAdverseReactions);
 					patient.setExImmunizations(exImmunizations);
@@ -2027,15 +2017,34 @@ public class DemographicExportAction4 extends Action {
 					patient.setExPersonalHistory(exPersonalHistory);
 					patient.setExFamilyHistory(exFamilyHistory);
 					patient.setExAlertsAndSpecialNeeds(exAlertsAndSpecialNeeds);
-					String output = t.export(patient);
-					
+
+					// Load patient data and merge to template
+					String output = "";
+					boolean loadStatus = patient.loadPatient(demoNo);
+					if(loadStatus && patient.isActive()) {
+						output = t.export(patient);
+						exportLog.append(t.getExportLog());
+					} else if(loadStatus && !patient.isActive()) {
+						String msg = "Patient ".concat(demoNo).concat(" not active - skipping");
+						logger.info(msg);
+						t.addExportLogEntry(msg);
+						exportLog.append(t.getExportLog());
+						continue;
+					} else {
+						String msg = "Failed to load patient ".concat(demoNo);
+						logger.error(msg);
+						t.addExportLogEntry(msg);
+						exportLog.append(t.getExportLog());
+						continue;
+					}
+
 					//export file to temp directory
 					try{
 						File directory = new File(tmpDir);
 						if(!directory.exists()){
 							throw new Exception("Temporary Export Directory does not exist!");
 						}
-		
+
 						//Standard format for xml exported file : PatientFN_PatientLN_PatientUniqueID_DOB (DOB: ddmmyyyy)
 						String expFile = patient.getDemographic().getFirstName()+"_"+patient.getDemographic().getLastName();
 						expFile += "_"+demoNo;
@@ -2044,27 +2053,53 @@ public class DemographicExportAction4 extends Action {
 					}catch(Exception e){
 						logger.error("Error", e);
 					}
+					BufferedWriter out = null;
 					try {
-						BufferedWriter out = new BufferedWriter(new FileWriter(files.get(files.size()-1)));
+						out = new BufferedWriter(new FileWriter(files.get(files.size()-1)));
 						out.write(output);
-						out.close();
-					} catch (IOException ex) {logger.error("Error", ex);
-						throw new Exception("Cannot write .xml file(s) to export directory.\n Please check directory permissions.");
+					} catch (IOException e) {
+						logger.error("Error", e);
+						throw new Exception("Cannot write .xml file(s) to export directory.\nPlease check directory permissions.");
+					} finally {
+						try {
+							out.close();
+						} catch(Exception e) {
+							//ignore
+						}
 					}
 				}
-		
-				//create ReadMe.txt & ExportEvent.log
-				//files.add(makeReadMe(files));
-				//files.add(makeExportLog(files.get(0).getParentFile()));
-		
-				//zip all export files
+
+				// Create Export Log
+				try {
+					File exportLogFile = new File(files.get(0).getParentFile(), "ExportEvent.log");
+					BufferedWriter out = new BufferedWriter(new FileWriter(exportLogFile));
+					String pidRange = "Patient ID Range: ".concat(getIDInExportFilename(files.get(0).getName()));
+					pidRange = pidRange.concat("-").concat(getIDInExportFilename(files.get(files.size()-1).getName()));
+
+					out.write(pidRange.concat(System.getProperty("line.separator")));
+					out.write(System.getProperty("line.separator"));
+					if(exportLog.toString().length() == 0) {
+						out.write("Export contains no errors".concat(System.getProperty("line.separator")));
+					} else {
+						out.write(exportLog.toString());
+					}
+					out.close();
+
+					files.add(exportLogFile);
+				} catch (IOException e) {
+					logger.error("Error", e);
+					throw new Exception("Cannot write .xml file(s) to export directory.\nPlease check directory permissions.");
+				}
+
+				// Zip all export files
 				String zipName = files.get(0).getName().replace(".xml", ".zip");
 				if (setName!=null) zipName = "export_"+setName.replace(" ","")+"_"+UtilDateUtilities.getToday("yyyyMMddHHmmss")+".zip";
 				//	if (setName!=null) zipName = "export_"+setName.replace(" ","")+"_"+UtilDateUtilities.getToday("yyyyMMddHHmmss")+".pgp";
 				if (!Util.zipFiles(files, zipName, tmpDir)) {
 					logger.debug("Error! Failed to zip export files");
 				}
-		
+
+				// Apply PGP if installed
 				if (pgpReady.equals("Yes")) {
 					//PGP encrypt zip file
 					PGPEncrypt pgp = new PGPEncrypt();
@@ -2080,9 +2115,8 @@ public class DemographicExportAction4 extends Action {
 					Util.downloadFile(zipName, tmpDir, response);
 					ffwd = "success";
 				}
-		
-		
-				//Remove zip & export files from temp dir
+
+				// Remove zip & export files from temp dir
 				Util.cleanFile(zipName, tmpDir);
 				Util.cleanFiles(files);
 			}
@@ -2489,6 +2523,145 @@ public class DemographicExportAction4 extends Action {
 		return extensionTooLong;
 	}
 
+	private void exportLabResult(LabMeasurements labMea, LaboratoryResults labResults, String demoNo) {
+		HashMap<String,String> labMeaValues = new HashMap<String,String>();
+		
+		labMeaValues.put("identifier", labMea.getExtVal("identifier"));
+		labMeaValues.put("name_internal", labMea.getExtVal("name_internal"));
+		labMeaValues.put("name", labMea.getExtVal("name"));
+		labMeaValues.put("labname", labMea.getExtVal("labname"));
+		labMeaValues.put("datetime", labMea.getExtVal("datetime"));
+		labMeaValues.put("abnormal", labMea.getExtVal("abnormal"));
+		labMeaValues.put("measureData", labMea.getMeasure().getDataField());
+		labMeaValues.put("unit", labMea.getExtVal("unit"));
+		labMeaValues.put("accession", labMea.getExtVal("accession"));
+		labMeaValues.put("comments", labMea.getExtVal("comments"));
+		labMeaValues.put("range", labMea.getExtVal("range"));
+		labMeaValues.put("minimum", labMea.getExtVal("minimum"));
+		labMeaValues.put("maximum", labMea.getExtVal("maximum"));
+		labMeaValues.put("request_datetime", labMea.getExtVal("request_datetime"));
+		labMeaValues.put("olis_status", labMea.getExtVal("olis_status"));
+		labMeaValues.put("lab_no", labMea.getExtVal("lab_no"));
+		labMeaValues.put("other_id", labMea.getExtVal("other_id"));
+		
+		exportLabResult(labMeaValues, labResults, demoNo);
+	}
+	
+	private void exportLabResult(HashMap<String,String> labMea, LaboratoryResults labResults, String demoNo) {
+
+		//lab test code, test name, test name reported by lab
+		if (StringUtils.filled(labMea.get("identifier"))) labResults.setLabTestCode(labMea.get("identifier"));
+		if (StringUtils.filled(labMea.get("name_internal"))) labResults.setTestName(labMea.get("name_internal"));
+		if (StringUtils.filled(labMea.get("name"))) labResults.setTestNameReportedByLab(labMea.get("name"));
+
+		//laboratory name
+		labResults.setLaboratoryName(StringUtils.noNull(labMea.get("labname")));
+		addOneEntry(LABS);
+		if (StringUtils.empty(labResults.getLaboratoryName())) {
+			exportError.add("Error! No Laboratory Name for Lab Test "+labResults.getLabTestCode()+" for Patient "+demoNo);
+		}
+
+		// lab collection datetime
+		cdsDt.DateTimeFullOrPartial collDate = labResults.addNewCollectionDateTime();
+		String sDateTime = labMea.get("datetime");
+		if (StringUtils.filled(sDateTime)) {
+			collDate.setFullDateTime(Util.calDate(sDateTime));
+		} else {
+			exportError.add("Error! No Collection Datetime for Lab Test "+labResults.getLabTestCode()+" for Patient "+demoNo);
+			collDate.setFullDate(Util.calDate("0001-01-01"));
+		}
+
+		//lab normal/abnormal flag
+		labResults.setResultNormalAbnormalFlag(cdsDt.ResultNormalAbnormalFlag.U);
+		String abnormalFlag = StringUtils.noNull(labMea.get("abnormal"));
+		if (abnormalFlag.equals("A") || abnormalFlag.equals("L")) labResults.setResultNormalAbnormalFlag(cdsDt.ResultNormalAbnormalFlag.Y);
+		if (abnormalFlag.equals("N")) labResults.setResultNormalAbnormalFlag(cdsDt.ResultNormalAbnormalFlag.N);
+
+		//lab unit of measure
+		String measureData = StringUtils.noNull(labMea.get("measureData"));
+		if (StringUtils.filled(measureData)) {
+			LaboratoryResults.Result result = labResults.addNewResult();
+			if (measureData.length()>120) {
+				measureData = measureData.substring(0, 120);
+				exportError.add("Error! Result text length > 120 - truncated; Lab Test "+labResults.getLabTestCode()+" for Patient "+demoNo);
+			}
+			result.setValue(measureData);
+			measureData = labMea.get("unit");
+			if (StringUtils.filled(measureData)) result.setUnitOfMeasure(measureData);
+		}
+
+		//lab accession number
+		String accessionNo = StringUtils.noNull(labMea.get("accession"));
+		if (StringUtils.filled(accessionNo)) {
+			labResults.setAccessionNumber(accessionNo);
+		}
+
+		//notes from lab
+		String labComments = StringUtils.noNull(labMea.get("comments"));
+		if (StringUtils.filled(labComments)) {
+			labResults.setNotesFromLab(Util.replaceTags(labComments));
+		}
+
+		//lab reference range
+		String range = StringUtils.noNull(labMea.get("range"));
+		String min = StringUtils.noNull(labMea.get("minimum"));
+		String max = StringUtils.noNull(labMea.get("maximum"));
+		LaboratoryResults.ReferenceRange refRange = labResults.addNewReferenceRange();
+		if (StringUtils.filled(range)) refRange.setReferenceRangeText(range);
+		else {
+			if (StringUtils.filled(min)) refRange.setLowLimit(min);
+			if (StringUtils.filled(max)) refRange.setHighLimit(max);
+		}
+
+		//lab requisition datetime
+		
+		String reqDate = labMea.get("request_datetime");
+		if (StringUtils.filled(reqDate)) labResults.addNewLabRequisitionDateTime().setFullDateTime(Util.calDate(reqDate));
+
+		//OLIS test result status
+		String olis_status = labMea.get("olis_status");
+		if (StringUtils.filled(olis_status)) labResults.setOLISTestResultStatus(olis_status);
+
+		Integer labTable = CaseManagementNoteLink.LABTEST;
+		String lab_no = labMea.get("lab_no");
+		if (StringUtils.empty(lab_no)) {
+			lab_no = labMea.get("lab_ppid");
+			labTable = CaseManagementNoteLink.LABTEST2;
+		}
+		if (StringUtils.filled(lab_no)) {
+
+			//lab annotation
+			String other_id = StringUtils.noNull(labMea.get("other_id"));
+			String annotation = getNonDumpNote(labTable, Long.valueOf(lab_no), other_id);
+			if (StringUtils.filled(annotation)) labResults.setPhysiciansNotes(annotation);
+
+//		  String info = labRoutingInfo.get("comment"); <--for whole report, may refer to >1 lab results
+
+
+			//lab reviewer
+			HashMap<String,Object> labRoutingInfo = new HashMap<String,Object>();
+			if (labTable.equals(CaseManagementNoteLink.LABTEST))
+				labRoutingInfo.putAll(ProviderLabRouting.getInfo(lab_no, "HL7"));
+			else
+				labRoutingInfo.putAll(ProviderLabRouting.getInfo(lab_no, "CML"));
+
+			String timestamp = labRoutingInfo.get("timestamp").toString();
+			if (UtilDateUtilities.StringToDate(timestamp,"yyyy-MM-dd HH:mm:ss")!=null) {
+				LaboratoryResults.ResultReviewer reviewer = labResults.addNewResultReviewer();
+				reviewer.addNewDateTimeResultReviewed().setFullDateTime(Util.calDate(timestamp));
+
+				//reviewer name
+				cdsDt.PersonNameSimple reviewerName = reviewer.addNewName();
+				String lab_provider_no = (String)labRoutingInfo.get("provider_no");
+				if (!"0".equals(lab_provider_no)) {
+					ProviderData pvd = new ProviderData(lab_provider_no);
+					Util.writeNameSimple(reviewerName, pvd.getFirst_name(), pvd.getLast_name());
+					if (StringUtils.noNull(pvd.getOhip_no()).length()<=6) reviewer.setOHIPPhysicianId(pvd.getOhip_no());
+				}
+			}
+		}
+	}
+	
 	private Float getDosageValue(String dosage) {
 		String[] dosageBreak = getDosageMultiple1st(dosage).split(" ");
 

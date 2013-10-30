@@ -33,7 +33,7 @@ String userlastname = (String) session.getAttribute("userlastname");
 
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
-
+<%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %>
 <%@ page
 	import="java.util.*, java.io.*, java.sql.*, oscar.*, oscar.util.*, java.net.*,oscar.MyDateFormat, oscar.dms.*, oscar.dms.data.*, oscar.oscarProvider.data.ProviderData, org.oscarehr.util.SpringUtils, org.oscarehr.common.dao.CtlDocClassDao"%><%
 String editDocumentNo = "";
@@ -80,6 +80,7 @@ if (request.getAttribute("completedForm") != null) {
     formdata.setSourceFacility(currentDoc.getSourceFacility());
     formdata.setReviewerId(currentDoc.getReviewerId());
     formdata.setReviewDateTime(currentDoc.getReviewDateTime());
+    formdata.setContentDateTime(UtilDateUtilities.DateToString(currentDoc.getContentDateTime(),EDocUtil.CONTENT_DATETIME_FORMAT));
     lastUpdate = currentDoc.getDateTimeStamp();
     fileName = currentDoc.getFileName();
 }
@@ -279,6 +280,10 @@ for (String reportClass : reportClasses) {
 			<td>Date Added/Updated:</td>
 			<td><%=lastUpdate%></td>
 		</tr>
+                <tr>
+			<td><bean:message key="dms.addDocument.formContentAddedUpdated"/>:</td>
+			<td><%=formdata.getContentDateTime()%></td>
+		</tr>
 		<tr>
 			<td>Source Author:</td>
 			<td><input type="text" name="source" size="15" value="<%=formdata.getSource()%>"/></td>
@@ -294,18 +299,31 @@ for (String reportClass : reportClasses) {
 				<%=formdata.getDocPublic() + " "%> value="checked"></td>
 		</tr>
 		<%}%>
-		<tr>
+                <tr>
 			<td>File Name:</td>
 			<td>
 			<div style="width: 300px; overflow: hidden; text-overflow: ellipsis;"><%=fileName%></div>
 		</tr>
 		<tr>
-			    <td>File: <font class="comment">(blank to keep file)</font></td>
-			<td><input type="file" name="docFile" size="20"
-				<% if (docerrors.containsKey("uploaderror")) {%> class="warning"
-				<%}%>></td>
-		</tr>
-		<tr>
+                <% boolean updatableContent=false; %>
+                <oscar:oscarPropertiesCheck property="ALLOW_UPDATE_DOCUMENT_CONTENT" value="true" defaultVal="false">
+                    <% updatableContent=true; %>
+                </oscar:oscarPropertiesCheck>
+                    
+                        <td><div style="<%=updatableContent==true?"":"visibility: hidden"%>">
+                                File: <font class="comment">(blank to keep file)</font>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="<%=updatableContent==true?"":"visibility: hidden"%>">
+                                <input type="file" name="docFile" size="20"
+                                   <% if (docerrors.containsKey("uploaderror")) {%> class="warning"
+                                   <%}%>>
+                            </div>        
+                        </td>
+                    
+                </tr>
+                <tr>
 		    <td colspan=2>
 			<% if (formdata.getReviewerId()!=null && !formdata.getReviewerId().equals("")) { %>
 			Reviewed: &nbsp; <%=EDocUtil.getProviderName(formdata.getReviewerId())%>

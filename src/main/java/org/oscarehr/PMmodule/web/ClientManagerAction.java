@@ -55,6 +55,7 @@ import org.apache.struts.action.DynaActionForm;
 import org.apache.struts.actions.DispatchAction;
 import org.oscarehr.PMmodule.caisi_integrator.CaisiIntegratorManager;
 import org.oscarehr.PMmodule.caisi_integrator.IntegratorFallBackManager;
+import org.oscarehr.PMmodule.dao.ProgramDao;
 import org.oscarehr.PMmodule.dao.ProviderDao;
 import org.oscarehr.PMmodule.dao.VacancyDao;
 import org.oscarehr.PMmodule.dao.VacancyTemplateDao;
@@ -64,8 +65,6 @@ import org.oscarehr.PMmodule.exception.AlreadyQueuedException;
 import org.oscarehr.PMmodule.exception.ClientAlreadyRestrictedException;
 import org.oscarehr.PMmodule.exception.ProgramFullException;
 import org.oscarehr.PMmodule.exception.ServiceRestrictionException;
-import org.oscarehr.PMmodule.model.Bed;
-import org.oscarehr.PMmodule.model.BedDemographic;
 import org.oscarehr.PMmodule.model.ClientReferral;
 import org.oscarehr.PMmodule.model.HealthSafety;
 import org.oscarehr.PMmodule.model.Intake;
@@ -73,22 +72,15 @@ import org.oscarehr.PMmodule.model.Program;
 import org.oscarehr.PMmodule.model.ProgramClientRestriction;
 import org.oscarehr.PMmodule.model.ProgramProvider;
 import org.oscarehr.PMmodule.model.ProgramQueue;
-import org.oscarehr.PMmodule.model.Room;
-import org.oscarehr.PMmodule.model.RoomDemographic;
 import org.oscarehr.PMmodule.model.Vacancy;
 import org.oscarehr.PMmodule.service.AdmissionManager;
-import org.oscarehr.PMmodule.service.BedDemographicManager;
-import org.oscarehr.PMmodule.service.BedManager;
 import org.oscarehr.PMmodule.service.ClientManager;
 import org.oscarehr.PMmodule.service.ClientRestrictionManager;
 import org.oscarehr.PMmodule.service.GenericIntakeManager;
 import org.oscarehr.PMmodule.service.HealthSafetyManager;
-import org.oscarehr.PMmodule.service.LogManager;
 import org.oscarehr.PMmodule.service.ProgramManager;
 import org.oscarehr.PMmodule.service.ProgramQueueManager;
 import org.oscarehr.PMmodule.service.ProviderManager;
-import org.oscarehr.PMmodule.service.RoomDemographicManager;
-import org.oscarehr.PMmodule.service.RoomManager;
 import org.oscarehr.PMmodule.service.SurveyManager;
 import org.oscarehr.PMmodule.web.formbean.ClientManagerFormBean;
 import org.oscarehr.PMmodule.web.formbean.ErConsentFormBean;
@@ -112,6 +104,8 @@ import org.oscarehr.common.dao.OcanStaffFormDao;
 import org.oscarehr.common.dao.OscarLogDao;
 import org.oscarehr.common.dao.RemoteReferralDao;
 import org.oscarehr.common.model.Admission;
+import org.oscarehr.common.model.Bed;
+import org.oscarehr.common.model.BedDemographic;
 import org.oscarehr.common.model.CaisiFormInstance;
 import org.oscarehr.common.model.CdsClientForm;
 import org.oscarehr.common.model.Demographic;
@@ -122,12 +116,19 @@ import org.oscarehr.common.model.OcanStaffForm;
 import org.oscarehr.common.model.OscarLog;
 import org.oscarehr.common.model.Provider;
 import org.oscarehr.common.model.RemoteReferral;
+import org.oscarehr.common.model.Room;
+import org.oscarehr.common.model.RoomDemographic;
+import org.oscarehr.managers.BedDemographicManager;
+import org.oscarehr.managers.BedManager;
+import org.oscarehr.managers.RoomDemographicManager;
+import org.oscarehr.managers.RoomManager;
 import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 import org.oscarehr.util.WebUtils;
 import org.springframework.beans.factory.annotation.Required;
 
+import oscar.log.LogAction;
 import oscar.oscarDemographic.data.DemographicRelationship;
 
 import com.quatro.service.LookupManager;
@@ -143,10 +144,9 @@ public class ClientManagerAction extends DispatchAction {
 	private CaseManagementManager caseManagementManager;
 	private AdmissionManager admissionManager;
 	private GenericIntakeManager genericIntakeManager;
-	private BedDemographicManager bedDemographicManager;
-	private BedManager bedManager;
+	private BedDemographicManager bedDemographicManager = SpringUtils.getBean(BedDemographicManager.class);
+	private BedManager bedManager = SpringUtils.getBean(BedManager.class);
 	private ClientManager clientManager;
-	private LogManager logManager;
 	private ProgramManager programManager;
 	private ProviderManager providerManager;
 	private ProgramQueueManager programQueueManager;
@@ -154,14 +154,15 @@ public class ClientManagerAction extends DispatchAction {
 	private CdsClientFormDao cdsClientFormDao;
 	private static AdmissionDao admissionDao = (AdmissionDao) SpringUtils.getBean("admissionDao");
 	private static ProviderDao providerDao = (ProviderDao) SpringUtils.getBean("providerDao");
+	private static ProgramDao programDao = (ProgramDao) SpringUtils.getBean("programDao");
 	private OcanStaffFormDao ocanStaffFormDao = (OcanStaffFormDao) SpringUtils.getBean("ocanStaffFormDao");
 	private RemoteReferralDao remoteReferralDao = (RemoteReferralDao) SpringUtils.getBean("remoteReferralDao");
     private VacancyDao vacancyDao = (VacancyDao) SpringUtils.getBean(VacancyDao.class);
     private VacancyTemplateDao vacancyTemplateDao = (VacancyTemplateDao) SpringUtils.getBean(VacancyTemplateDao.class);
 	private MatchingManager matchingManager = new MatchingManager();
 	
-	private RoomDemographicManager roomDemographicManager = (RoomDemographicManager) SpringUtils.getBean("roomDemographicManager");
-	private RoomManager roomManager = (RoomManager) SpringUtils.getBean("roomManager");
+	private RoomDemographicManager roomDemographicManager = SpringUtils.getBean(RoomDemographicManager.class);
+	private RoomManager roomManager = SpringUtils.getBean(RoomManager.class);
 	
 
 	public void setIntegratorConsentDao(IntegratorConsentDao integratorConsentDao) {
@@ -205,7 +206,7 @@ public class ClientManagerAction extends DispatchAction {
 			saveMessages(request, messages);
 		}
 
-		logManager.log("write", "admit", demographicNo, request);
+		LogAction.log("write", "admit", demographicNo, request);
 
 		setEditAttributes(form, request, demographicNo);
 		return mapping.findForward("edit");
@@ -252,11 +253,12 @@ public class ClientManagerAction extends DispatchAction {
 		Program p = (Program) clientForm.get("program");
 		String id = request.getParameter("id");
 		List<Integer> dependents = clientManager.getDependentsList(new Integer(id));
-
+		String formattedDischargeDate = request.getParameter("dischargeDate");
+		Date  dischargeDate = oscar.util.DateUtils.toDate(formattedDischargeDate);
 		boolean success = true;
 
 		try {
-			admissionManager.processDischarge(p.getId(), new Integer(id), admission.getDischargeNotes(), admission.getRadioDischargeReason(), dependents, false, false);
+			admissionManager.processDischarge(p.getId(), new Integer(id), admission.getDischargeNotes(), admission.getRadioDischargeReason(), dischargeDate, dependents, false, false);
 		} catch (AdmissionException e) {
 			ActionMessages messages = new ActionMessages();
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.failure", e.getMessage()));
@@ -268,12 +270,13 @@ public class ClientManagerAction extends DispatchAction {
 			ActionMessages messages = new ActionMessages();
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.success"));
 			saveMessages(request, messages);
-			logManager.log("write", "discharge", id, request);
+			LogAction.log("write", "discharge", id, request);
 		}
 
 		setEditAttributes(form, request, id);
 		admission.setDischargeNotes("");
 		admission.setRadioDischargeReason("");
+		admission.setDischargeDate(new Date());
 		return mapping.findForward("edit");
 	}
 
@@ -288,8 +291,8 @@ public class ClientManagerAction extends DispatchAction {
 		ActionMessages messages = new ActionMessages();
 
 		try {
-			admissionManager.processDischargeToCommunity(program.getId(), new Integer(clientId), LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo(), admission.getDischargeNotes(), admission.getRadioDischargeReason(), dependents);
-			logManager.log("write", "discharge", clientId, request);
+			admissionManager.processDischargeToCommunity(program.getId(), new Integer(clientId), LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo(), admission.getDischargeNotes(), admission.getRadioDischargeReason(), dependents, null);
+			LogAction.log("write", "discharge", clientId, request);
 
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.success"));
 			saveMessages(request, messages);
@@ -362,7 +365,7 @@ public class ClientManagerAction extends DispatchAction {
 
 		setEditAttributes(form, request, id);
 
-		logManager.log("read", "pmm client record", id, request);
+		LogAction.log("read", "pmm client record", id, request);
 
 		String roles = (String) request.getSession().getAttribute("userrole");
 
@@ -540,7 +543,7 @@ public class ClientManagerAction extends DispatchAction {
 			saveMessages(request, messages);
 		}
 
-		logManager.log("write", "referral", String.valueOf(referral.getClientId()), request);
+		LogAction.log("write", "referral", String.valueOf(referral.getClientId()), request);
 	}
 
 	public ActionForward refer_select_program(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
@@ -675,7 +678,7 @@ public class ClientManagerAction extends DispatchAction {
 		}
 
 		setEditAttributes(form, request, id);
-		logManager.log("write", "service_restriction", id, request);
+		LogAction.log("write", "service_restriction", id, request);
 
 		return mapping.findForward("edit");
 	}
@@ -748,7 +751,7 @@ public class ClientManagerAction extends DispatchAction {
 		clientForm.set("program", new Program());
 		clientForm.set("referral", new ClientReferral());
 		setEditAttributes(form, request, "" + referral.getClientId());
-		logManager.log("write", "referral", "" + referral.getClientId(), request);
+		LogAction.log("write", "referral", "" + referral.getClientId(), request);
 
 		return mapping.findForward("edit");
 	}
@@ -1443,6 +1446,7 @@ public class ClientManagerAction extends DispatchAction {
 		return false;
 	}
 
+	/*
     private Program getMatchVacancy(Program p){
 
         List<VacancyDisplayBO> vacancyDisplayBOs = matchingManager.listNoOfVacanciesForWaitListProgram();
@@ -1467,6 +1471,7 @@ public class ClientManagerAction extends DispatchAction {
         }
         return program;
     }
+    */
 
 	private void setEditAttributes(ActionForm form, HttpServletRequest request, String demographicNo) {
 		DynaActionForm clientForm = (DynaActionForm) form;
@@ -1568,10 +1573,19 @@ public class ClientManagerAction extends DispatchAction {
 			} else {
 				request.setAttribute("coreOcanStaffForm", null);
 			}
-
+			
+			//CBI form and OCAN forms are stored in same table OcanStaffForm.
+			OcanStaffForm cbiForm = ocanStaffFormDao.findLatestByFacilityClient(facilityId, Integer.valueOf(demographicNo), "CBI");
+			if (cbiForm != null) {
+				if (cbiForm.getAssessmentStatus() != null && cbiForm.getAssessmentStatus().equals("In Progress")) {
+					request.setAttribute("cbiForm", cbiForm);
+				}
+			} else {
+				request.setAttribute("cbiForm", null);
+			}
+			
 			// CDS
-			CdsClientForm cdsClientForm = cdsClientFormDao.findLatestByFacilityClient(facilityId, Integer.valueOf(demographicNo));
-			request.setAttribute("cdsClientForm", cdsClientForm);
+			populateCdsData(request, Integer.parseInt(demographicNo), facilityId);
 		}
 
 		/* history */
@@ -2087,10 +2101,6 @@ public class ClientManagerAction extends DispatchAction {
 		this.clientManager = mgr;
 	}
 
-	public void setLogManager(LogManager mgr) {
-		this.logManager = mgr;
-	}
-
 	public void setProgramManager(ProgramManager mgr) {
 		this.programManager = mgr;
 	}
@@ -2105,5 +2115,26 @@ public class ClientManagerAction extends DispatchAction {
 
 	public void setRoomManager(RoomManager roomManager) {
 		this.roomManager = roomManager;
+	}
+	
+	private void populateCdsData(HttpServletRequest request, Integer demographicNo, Integer facilityId) {
+		List<Admission> admissions = admissionDao.getAdmissions(demographicNo);
+
+		ArrayList<CdsClientForm> allLatestCdsForms = new ArrayList<CdsClientForm>();
+
+		for (Admission admission : admissions) {
+			CdsClientForm cdsClientForm = cdsClientFormDao.findLatestByFacilityAdmissionId(facilityId, admission.getId().intValue(), null);
+			if (cdsClientForm != null) allLatestCdsForms.add(cdsClientForm);
+		}
+
+		request.setAttribute("allLatestCdsForms", allLatestCdsForms);
+	}
+
+	public static String getCdsProgramDisplayString(CdsClientForm cdsClientForm) {
+		Admission admission = admissionDao.getAdmission(cdsClientForm.getAdmissionId());
+		Program program = programDao.getProgram(admission.getProgramId());
+
+		String displayString = program.getName() + " : " + DateFormatUtils.ISO_DATE_FORMAT.format(admission.getAdmissionDate());
+		return (StringEscapeUtils.escapeHtml(displayString));
 	}
 }

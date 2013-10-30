@@ -25,13 +25,20 @@
 --%>
 
 
- <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
- <%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %>
- <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
- <%@ page import="oscar.oscarEncounter.data.*, oscar.oscarProvider.data.*, oscar.util.UtilDateUtilities" %>
- <%@ page import="org.oscarehr.util.MiscUtils"%>
- <%@ page import="java.net.URLEncoder"%>
- <%@ page import="org.oscarehr.PMmodule.caisi_integrator.CaisiIntegratorManager, org.oscarehr.util.LoggedInInfo, org.oscarehr.common.model.Facility" %>
+<%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
+<%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page import="oscar.oscarEncounter.data.*, oscar.oscarProvider.data.*, oscar.util.UtilDateUtilities" %>
+<%@ page import="org.oscarehr.util.MiscUtils"%>
+<%@ page import="java.net.URLEncoder"%>
+<%@ page import="org.oscarehr.PMmodule.caisi_integrator.CaisiIntegratorManager, org.oscarehr.util.LoggedInInfo, org.oscarehr.common.model.Facility" %>
+<%@ page import="org.oscarehr.common.dao.DemographicExtDao" %>
+<%@ page import="org.oscarehr.common.model.DemographicExt" %>
+<%@ page import="org.oscarehr.util.SpringUtils" %>
+<%@ page import="org.apache.commons.lang.StringUtils"%>
+<%@ page import="oscar.OscarProperties" %>
+ 
+<%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar"%>
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security" %>
 <%
     oscar.oscarEncounter.pageUtil.EctSessionBean bean = null;
@@ -49,6 +56,13 @@
     String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
     ProviderColourUpdater colourUpdater = new ProviderColourUpdater(user);
     userColour = colourUpdater.getColour();
+    
+	String privateConsentEnabledProperty = OscarProperties.getInstance().getProperty("privateConsentEnabled");
+	boolean privateConsentEnabled = privateConsentEnabledProperty != null && privateConsentEnabledProperty.equals("true");
+	DemographicExtDao demographicExtDao = SpringUtils.getBean(DemographicExtDao.class);
+    DemographicExt infoExt = demographicExtDao.getDemographicExt(Integer.parseInt(demoNo), "informedConsent");
+    boolean showPopup = infoExt == null || StringUtils.isBlank(infoExt.getValue());
+    
     //we calculate inverse of provider colour for text
     int base = 16;
     if( userColour.length() == 0 )
@@ -58,7 +72,7 @@
     int inv = ~num;                                                 //get inverse
     inverseUserColour = Integer.toHexString(inv).substring(2);    //strip 2 leading digits as html colour codes are 24bits
 
-    if(bean.familyDoctorNo.equals("")) {
+    if(bean.familyDoctorNo == null || bean.familyDoctorNo.equals("")) {
         famDocName = "";
         famDocSurname = "";
         famDocColour = "";
@@ -80,10 +94,19 @@
 
     java.util.Locale vLocale =(java.util.Locale)session.getAttribute(org.apache.struts.Globals.LOCALE_KEY);
     %>
-
+<script type="text/javascript">
+var privateConsentEnabled = <%=privateConsentEnabled%>;
+var newEctHeader_showPopup = <%=showPopup%>;
+if(privateConsentEnabled && newEctHeader_showPopup) {
+	alert("Please ensure that Informed Consent has been obtained!");
+}
+</script>
     <c:set var="ctx" value="${pageContext.request.contextPath}" scope="request"/>
     
 <div style="float:left; width: 100%; padding-left:2px; text-align:left; font-size: 12px; color:<%=inverseUserColour%>; background-color:<%=userColour%>" id="encounterHeader">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td>
     <security:oscarSec roleName="<%=roleName$%>" objectName="_newCasemgmt.doctorName" rights="r">
     <span style="border-bottom: medium solid <%=famDocColour%>"><bean:message key="oscarEncounter.Index.msgMRP"/>&nbsp;&nbsp;
     <%=famDocName.toUpperCase()%> <%=famDocSurname.toUpperCase()%>  </span>
@@ -144,6 +167,15 @@
 	    	<%}%>
 	  <%}%>    
    </span>
+</td>
+<td align=right>
+	<span class="HelpAboutLogout">
+	<oscar:help keywords="&Title=Chart+Interface&portal_type%3Alist=Document" key="app.top1" style="font-size:10px;font-style:normal;"/>&nbsp;|
+	<a style="font-size:10px;font-style:normal;" href="<%=request.getContextPath()%>/oscarEncounter/About.jsp" target="_new"><bean:message key="global.about" /></a>
+	</span>
+</td>
+</tr>
+</table>
 </div>
 
 <%!

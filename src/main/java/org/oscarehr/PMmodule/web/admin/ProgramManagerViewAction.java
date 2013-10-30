@@ -42,8 +42,6 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.apache.struts.actions.DispatchAction;
-import org.caisi.dao.TicklerDAO;
-import org.caisi.model.Tickler;
 import org.oscarehr.PMmodule.caisi_integrator.CaisiIntegratorManager;
 import org.oscarehr.PMmodule.dao.ClientReferralDAO;
 import org.oscarehr.PMmodule.dao.VacancyDao;
@@ -51,23 +49,16 @@ import org.oscarehr.PMmodule.exception.AdmissionException;
 import org.oscarehr.PMmodule.exception.BedReservedException;
 import org.oscarehr.PMmodule.exception.ProgramFullException;
 import org.oscarehr.PMmodule.exception.ServiceRestrictionException;
-import org.oscarehr.PMmodule.model.Bed;
-import org.oscarehr.PMmodule.model.BedDemographic;
 import org.oscarehr.PMmodule.model.ClientReferral;
 import org.oscarehr.PMmodule.model.Program;
 import org.oscarehr.PMmodule.model.ProgramQueue;
 import org.oscarehr.PMmodule.model.ProgramTeam;
-import org.oscarehr.PMmodule.model.RoomDemographic;
 import org.oscarehr.PMmodule.model.Vacancy;
 import org.oscarehr.PMmodule.service.AdmissionManager;
-import org.oscarehr.PMmodule.service.BedDemographicManager;
-import org.oscarehr.PMmodule.service.BedManager;
 import org.oscarehr.PMmodule.service.ClientManager;
 import org.oscarehr.PMmodule.service.ClientRestrictionManager;
-import org.oscarehr.PMmodule.service.LogManager;
 import org.oscarehr.PMmodule.service.ProgramManager;
 import org.oscarehr.PMmodule.service.ProgramQueueManager;
-import org.oscarehr.PMmodule.service.RoomDemographicManager;
 import org.oscarehr.PMmodule.service.VacancyTemplateManager;
 import org.oscarehr.PMmodule.web.formbean.ProgramManagerViewFormBean;
 import org.oscarehr.caisi_integrator.ws.ReferralWs;
@@ -75,13 +66,23 @@ import org.oscarehr.casemgmt.service.CaseManagementManager;
 import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.dao.FacilityDao;
 import org.oscarehr.common.model.Admission;
+import org.oscarehr.common.model.Bed;
+import org.oscarehr.common.model.BedDemographic;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.Facility;
 import org.oscarehr.common.model.JointAdmission;
+import org.oscarehr.common.model.RoomDemographic;
+import org.oscarehr.common.model.Tickler;
+import org.oscarehr.managers.BedDemographicManager;
+import org.oscarehr.managers.BedManager;
+import org.oscarehr.managers.RoomDemographicManager;
+import org.oscarehr.managers.TicklerManager;
 import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 import org.springframework.beans.factory.annotation.Required;
+
+import oscar.log.LogAction;
 
 public class ProgramManagerViewAction extends DispatchAction {
 
@@ -94,11 +95,11 @@ public class ProgramManagerViewAction extends DispatchAction {
 	private BedDemographicManager bedDemographicManager;
 	private BedManager bedManager;
 	private ClientManager clientManager;
-	private LogManager logManager;
 	private ProgramManager programManager;
 	private ProgramManagerAction programManagerAction;
 	private ProgramQueueManager programQueueManager;	
 	private DemographicDao demographicDao = SpringUtils.getBean(DemographicDao.class);
+	private TicklerManager ticklerManager = SpringUtils.getBean(TicklerManager.class);
 	
 	public void setFacilityDao(FacilityDao facilityDao) {
 		this.facilityDao = facilityDao;
@@ -314,7 +315,7 @@ public class ProgramManagerViewAction extends DispatchAction {
             request.setAttribute("client_statuses", programManager.getProgramClientStatuses(new Integer(programId)));
         }
 
-        logManager.log("view", "program", programId, request);
+        LogAction.log("view", "program", programId, request);
 
         request.setAttribute("id", programId);
 
@@ -364,10 +365,12 @@ public class ProgramManagerViewAction extends DispatchAction {
 		Program fullProgram = programManager.getProgram(String.valueOf(programId));
 		String dischargeNotes = request.getParameter("admission.dischargeNotes");
 		String admissionNotes = request.getParameter("admission.admissionNotes");
+		String formattedAdmissionDate = request.getParameter("admissionDate");
+		Date admissionDate = oscar.util.DateUtils.toDate(formattedAdmissionDate);
 		List<Integer> dependents = clientManager.getDependentsList(new Integer(clientId));
 
 		try {
-			admissionManager.processAdmission(Integer.valueOf(clientId), LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo(), fullProgram, dischargeNotes, admissionNotes, queue.isTemporaryAdmission(), dependents);
+			admissionManager.processAdmission(Integer.valueOf(clientId), LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo(), fullProgram, dischargeNotes, admissionNotes, queue.isTemporaryAdmission(), dependents, admissionDate);
 			
 			//change vacancy status to filled after one patient is admitted to associated program in that vacancy.
 	    	Vacancy vacancy = VacancyTemplateManager.getVacancyByName(queue.getVacancyName());
@@ -410,7 +413,7 @@ public class ProgramManagerViewAction extends DispatchAction {
 			return mapping.findForward("service_restriction_error");
 		}
 
-		logManager.log("view", "admit to program", clientId, request);
+		LogAction.log("view", "admit to program", clientId, request);
 
 		return view(mapping, form, request, response);
 	}
@@ -451,9 +454,9 @@ public class ProgramManagerViewAction extends DispatchAction {
 			throw new RuntimeException(e);
 		}
 
-		logManager.log("view", "override service restriction", clientId, request);
+		LogAction.log("view", "override service restriction", clientId, request);
 
-		logManager.log("view", "admit to program", clientId, request);
+		LogAction.log("view", "admit to program", clientId, request);
 
 		return view(mapping, form, request, response);
 	}
@@ -472,7 +475,7 @@ public class ProgramManagerViewAction extends DispatchAction {
 		messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("program.saved", programName));
 		saveMessages(request, messages);
 
-		logManager.log("write", "edit program - assign client to team", "", request);
+		LogAction.log("write", "edit program - assign client to team", "", request);
 		return view(mapping, form, request, response);
 	}
 
@@ -490,7 +493,7 @@ public class ProgramManagerViewAction extends DispatchAction {
 		messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("program.saved", programName));
 		saveMessages(request, messages);
 
-		logManager.log("write", "edit program - assign client to status", "", request);
+		LogAction.log("write", "edit program - assign client to status", "", request);
 		return view(mapping, form, request, response);
 	}
 
@@ -597,17 +600,14 @@ public class ProgramManagerViewAction extends DispatchAction {
 		Demographic d = demographicDao.getDemographic(clientId);
 		Tickler t = new Tickler();
 		t.setCreator(LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo());
-		t.setDemographic_no(clientId);
+		t.setDemographicNo(Integer.parseInt(clientId));
 		t.setMessage("Client=["+d.getFormattedName()+"] rejected from vacancy=["+vacancy.getName()+"]");
-		t.setPriority("Normal");
-		t.setProgram_id(vacancy.getWlProgramId());
-		t.setService_date(new Date());
-		t.setStatus('A');
-		t.setTask_assigned_to(facility.getAssignRejectedVacancyApplicant());
-		t.setUpdate_date(new Date());
+		t.setProgramId(vacancy.getWlProgramId());
+		t.setServiceDate(new Date());
+		t.setTaskAssignedTo(facility.getAssignRejectedVacancyApplicant());
+		t.setUpdateDate(new Date());
 		
-		TicklerDAO dao = (TicklerDAO)SpringUtils.getBean("ticklerDAOT");
-		dao.saveTickler(t);
+		ticklerManager.addTickler(t);
 	}
 
 	public ActionForward reject_from_queue(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
@@ -748,7 +748,7 @@ public class ProgramManagerViewAction extends DispatchAction {
 								if (communityProgramId > 0) {
 									try {
 										// discharge to community program
-										admissionManager.processDischargeToCommunity(communityProgramId, bedDemographic.getId().getDemographicNo(), LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo(), "bed reservation ended - manually discharged", "0");
+										admissionManager.processDischargeToCommunity(communityProgramId, bedDemographic.getId().getDemographicNo(), LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo(), "bed reservation ended - manually discharged", "0", null);
 									} catch (AdmissionException e) {
 
 										messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.failure", e.getMessage()));
@@ -768,7 +768,7 @@ public class ProgramManagerViewAction extends DispatchAction {
 							if (communityProgramId > 0) {
 								try {
 									// discharge to community program
-									admissionManager.processDischargeToCommunity(communityProgramId, bedDemographic.getId().getDemographicNo(), LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo(), "bed reservation ended - manually discharged", "0");
+									admissionManager.processDischargeToCommunity(communityProgramId, bedDemographic.getId().getDemographicNo(), LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo(), "bed reservation ended - manually discharged", "0", null);
 								} catch (AdmissionException e) {
 
 									messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.failure", e.getMessage()));
@@ -987,10 +987,6 @@ public class ProgramManagerViewAction extends DispatchAction {
 
 	public void setClientManager(ClientManager mgr) {
 		this.clientManager = mgr;
-	}
-
-	public void setLogManager(LogManager mgr) {
-		this.logManager = mgr;
 	}
 
 	public void setProgramManager(ProgramManager mgr) {

@@ -25,11 +25,13 @@ package org.oscarehr.research.eaaps;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.GregorianCalendar;
 
 import org.oscarehr.common.model.Demographic;
 
 import oscar.OscarProperties;
 import oscar.util.Appender;
+import oscar.util.ConversionUtils;
 
 /**
  * Hashing function for generating a one way hash that can identify the patient based on the
@@ -49,10 +51,19 @@ public class EaapsHash {
 		if (clinic == null) {
 			clinic = OscarProperties.getInstance().getProperty("eaaps.clinic", "");
 		}
-		
+
 		Appender appender = new Appender("");
-		appender.append(d.getFirstName());
-		appender.append(d.getLastName());
+		if (d.getFirstName() != null) {
+			appender.append(d.getFirstName().toUpperCase());
+		}
+		if (d.getLastName() != null) {
+			appender.append(d.getLastName().toUpperCase());
+		}
+		
+		GregorianCalendar calendar = d.getBirthDay();
+		if (calendar != null) {
+			appender.append(ConversionUtils.toDateString(calendar.getTime(), "yyyyMMdd"));
+		}
 		appender.append(clinic);
 
 		MessageDigest digest;
@@ -76,6 +87,7 @@ public class EaapsHash {
 
 		setKey(key);
 		setHash(buf.toString());
+		
 		// setHash(new String(Base64.encodeBase64(bytes)));
 	}
 

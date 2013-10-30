@@ -316,9 +316,11 @@ function popup1(height, width, url, windowName){
 				<oscar:nameage demographicNo="<%=moduleid%>"/> &nbsp; <oscar:phrverification demographicNo="<%=moduleid%>"><bean:message key="phr.verification.link"/></oscar:phrverification>
 				</td>
 				<td>&nbsp;</td>
-				<td style="text-align: right;"><oscar:help keywords="2.6.1" key="app.top1" /> | <a
-					href="javascript: popupStart(300, 400, 'About.jsp')"><bean:message key="global.about"/></a> | <a
-					href="javascript: popupStart(300, 400, 'License.jsp')"><bean:message key="global.license"/></a>
+				<td style="text-align: right;">
+				<span class="HelpAboutLogout">
+					<oscar:help keywords="&Title=eDocuments&portal_type%3Alist=Document" key="app.top1" style="color:white; font-size:10px;font-style:normal;"/>&nbsp;|
+        				<a style="color:white; font-size:10px;font-style:normal;" href="<%=request.getContextPath()%>/oscarEncounter/About.jsp" target="_new"><bean:message key="global.about" /></a>
+				</span>
 				</td>
 			</tr>
 		</table>
@@ -438,11 +440,13 @@ function popup1(height, width, url, windowName){
                     //content type (take everything following '/')
                     int slash = 0;
                     String contentType = "";
-                    if ((slash = curdoc.getContentType().indexOf('/')) != -1) {
+                    if( curdoc.getContentType() == null ) {
+                		contentType = "N/A";
+                    }else if ((slash = curdoc.getContentType().indexOf('/')) != -1) {
                         contentType = curdoc.getContentType().substring(slash+1);
                     } else {
-			contentType = curdoc.getContentType();
-		    }
+						contentType = curdoc.getContentType();
+		    		}
                     String dStatus = "";
                     if ((curdoc.getStatus() + "").compareTo("H") == 0)
                         dStatus="html";
@@ -467,7 +471,7 @@ function popup1(height, width, url, windowName){
 					%>	<a <%=curdoc.getStatus() == 'D' ? "style='text-decoration:line-through'" : ""%>
 						href="<%=url%>" target="_blank"> <%=curdoc.getDescription()%></a></td>
 					<td><%=contentType%></td>
-					<td><%=curdoc.getType()%></td>
+					<td><%=curdoc.getType()==null ? "N/A" : curdoc.getType()%></td>
 					<td><%=curdoc.getCreatorName()%></td>
 					<td><%=curdoc.getResponsibleName()%></td>
 					<td><%=curdoc.getObservationDate()%></td>
@@ -535,9 +539,9 @@ function popup1(height, width, url, windowName){
 
 	                              String tickler_url;
 		                          if( org.oscarehr.common.IsPropertiesOn.isTicklerPlusEnable() ) {
-		                          	tickler_url = request.getContextPath()+"/Tickler.do?method=edit&tickler.demographic_webName="+moduleName+"&tickler.demographic_no="+moduleid;
+		                          	tickler_url = request.getContextPath()+"/Tickler.do?method=edit&tickler.demographic_webName="+moduleName+"&tickler.demographicNo="+moduleid;
 		                          } else {
-		                          	tickler_url = request.getContextPath()+"/tickler/ForwardDemographicTickler.do?docType=DOC&docId="+curdoc.getDocId()+"&demographic_no="+moduleid;
+		                          	tickler_url = request.getContextPath()+"/tickler/ForwardDemographicTickler.do?docType=DOC&docId="+curdoc.getDocId()+"&demographicNo="+moduleid;
 		                          }
 
 		                          %>

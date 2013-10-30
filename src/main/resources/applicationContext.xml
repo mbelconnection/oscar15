@@ -39,14 +39,10 @@
 	<bean id="clientReferralDAO" class="org.oscarehr.PMmodule.dao.ClientReferralDAO" autowire="byName" />
 	<bean id="agencyDao" class="org.oscarehr.PMmodule.dao.AgencyDao" autowire="byName" />
 	<!-- bean id="admissionDao" class="org.oscarehr.common.dao.AdmissionDao" autowire="byName" /-->
-	<bean id="bedDemographicDao" class="org.oscarehr.PMmodule.dao.BedDemographicDao" autowire="byName" />
-	<bean id="roomDemographicDao" class="org.oscarehr.PMmodule.dao.RoomDemographicDao" autowire="byName" />
 	<bean id="providerDao" class="org.oscarehr.PMmodule.dao.ProviderDao" autowire="byName" />
-	<bean id="bedDAO" class="org.oscarehr.PMmodule.dao.BedDAO" autowire="byName" />
 	<bean id="streetHealthDao" class="org.oscarehr.PMmodule.dao.StreetHealthDao" autowire="byName" />
 	<bean id="otherIdDao" class="org.oscarehr.common.dao.OtherIdDAO" autowire="byName" />
 
-	<bean id="roomDAO" class="org.oscarehr.PMmodule.dao.RoomDAO" autowire="byName" />
 	<bean id="CaseManagementIssueDAO" class="org.oscarehr.casemgmt.dao.CaseManagementIssueDAO" autowire="byName" />
 	<bean id="caseManagementIssueDAO" class="org.oscarehr.casemgmt.dao.CaseManagementIssueDAO" autowire="byName" />
 	<bean id="CaseManagementNoteDAO" class="org.oscarehr.casemgmt.dao.CaseManagementNoteDAO" autowire="byName" />
@@ -62,7 +58,6 @@
 	<bean id="secroleDao" class="com.quatro.dao.security.SecroleDao" autowire="byName"/>
 	<bean id="RoleProgramAccessDAO" class="org.oscarehr.casemgmt.dao.RoleProgramAccessDAO" autowire="byName" />
 	<bean id="clientImageDAO" class="org.oscarehr.casemgmt.dao.ClientImageDAO" autowire="byName" />
-	<bean id="ticklerDAO" class="org.oscarehr.casemgmt.dao.TicklerDAO" autowire="byName" />
 	<bean id="programProviderDAO" class="org.oscarehr.PMmodule.dao.ProgramProviderDAO" autowire="byName" />
 	<bean id="programFunctionalUserDAO" class="org.oscarehr.PMmodule.dao.ProgramFunctionalUserDAO" autowire="byName" />
 	<bean id="programAccessDAO" class="org.oscarehr.PMmodule.dao.ProgramAccessDAO" autowire="byName" />
@@ -73,8 +68,6 @@
 	<bean id="demographicDao" class="org.oscarehr.common.dao.DemographicDao" autowire="byName" />
 	<bean id="secUserRoleDao" class="org.oscarehr.PMmodule.dao.SecUserRoleDao" autowire="byName" />
 	<bean id="programSignatureDao" class="org.oscarehr.PMmodule.dao.ProgramSignatureDao" autowire="byName" />
-	<bean id="ticklerDAOT" class="org.caisi.dao.TicklerDAO" autowire="byName" />
-	<bean id="customFilterDAOT" class="org.caisi.dao.CustomFilterDAO" autowire="byName" />
 	<bean id="programClientRestrictionDAO" class="org.oscarehr.PMmodule.dao.ProgramClientRestrictionDAO" autowire="byName" />
 	<bean id="UserPropertyDAO" class="org.oscarehr.common.dao.UserPropertyDAO" autowire="byName" />
 	<bean id="clinicDAO" class="org.oscarehr.common.dao.ClinicDAO" autowire="byName" />
@@ -93,7 +86,6 @@
 	<bean id="rourke2009Dao" class="oscar.form.dao.Rourke2009DAO" autowire="byName" />
 	<bean id="ocanSubmissionLogDao" class="org.oscarehr.PMmodule.dao.OcanSubmissionLogDao" autowire="byName" />
 
-    <bean id="logDAO" class="org.oscarehr.PMmodule.dao.LogDAO" autowire="byName" />
 	<bean id="lookupDao" class="com.quatro.dao.LookupDao" autowire="byName" />
 	<bean id="documentDao" class="org.oscarehr.document.dao.DocumentMergeDemographicDAO" autowire="byName" />
 	<bean id="userAccessDao" class="com.quatro.dao.security.UserAccessDao" autowire="byName" />
@@ -155,6 +147,9 @@
 				<value>classpath:oscar/oscarEncounter/oscarMeasurements/flowsheets/omdDiabetesFlowsheet.xml</value>
 				<value>classpath:oscar/oscarEncounter/oscarMeasurements/flowsheets/diabetesQueensFlowsheet.xml</value>
 				<value>classpath:oscar/oscarEncounter/oscarMeasurements/flowsheets/ckdFlowsheet.xml</value>
+				<value>classpath:oscar/oscarEncounter/oscarMeasurements/flowsheets/painAssistant.xml</value>
+				<value>classpath:oscar/oscarEncounter/oscarMeasurements/flowsheets/periodicHealthVisit.xml</value>
+				
 			</list>
 		</property>
 	</bean>
@@ -166,18 +161,8 @@
 
 	<!-- Manager classes -->
 	<bean id="programQueueManager" class="org.oscarehr.PMmodule.service.ProgramQueueManager" autowire="byName" />
-	<bean id="admissionManager" class="org.oscarehr.PMmodule.service.AdmissionManager" autowire="byName" />
-	<bean id="bedDemographicManager" class="org.oscarehr.PMmodule.service.impl.BedDemographicManagerImpl">
-		<property name="bedDemographicDao" ref="bedDemographicDao" />
-		<property name="providerDAO" ref="providerDao" />
-		<property name="bedDAO" ref="bedDAO" />
-		<property name="demographicDao" ref="demographicDao" />
-		<property name="roomDAO" ref="roomDAO" />
-		<property name="programDAO" ref="programDao" />
-	</bean>
-	<bean id="roomDemographicManager" class="org.oscarehr.PMmodule.service.impl.RoomDemographicManagerImpl" autowire="byName" />
-	<bean id="roomManager" class="org.oscarehr.PMmodule.service.RoomManager" autowire="byName" />
-	<bean id="bedManager" class="org.oscarehr.PMmodule.service.BedManager" autowire="byName" />
+	<bean id="admissionManager" class="org.oscarehr.PMmodule.service.AdmissionManager" autowire="byType" />
+	
 	<bean id="caseManagementManager" class="org.oscarehr.casemgmt.service.CaseManagementManager" autowire="byName">
 		<property name="caseManagementNoteDAO" ref="CaseManagementNoteDAO" />
 		<property name="caseManagementNoteExtDAO" ref="CaseManagementNoteExtDAO" />
@@ -200,9 +185,7 @@
 		<property name="eChartDao" ref="eChartDao"/>
 		<property name="encounterWindowDao" ref="encounterWindowDao"/>
 	</bean>
-	<bean id="ticklerManager" class="org.oscarehr.casemgmt.service.TicklerManager" autowire="byName">
 
-	</bean>
 	<bean id="ClientImageManager" class="org.oscarehr.casemgmt.service.ClientImageManager" autowire="byName" />
 	<bean id="programManager" class="org.oscarehr.PMmodule.service.ProgramManager" autowire="byName">
 		<property name="enabled" value="${pmm.refer.temporaryAdmission.enabled}" />
@@ -220,15 +203,7 @@
 		<property name="demographicDao" ref="demographicDao" />
 	</bean>
 
-	<!-- TicklerPlus managers -->
-	<bean id="ticklerManagerT" class="org.caisi.service.TicklerManager">
-		<property name="ticklerDAO" ref="ticklerDAOT" />
-		<property name="customFilterDAO" ref="customFilterDAOT" />
-		<property name="programManager" ref="programManager" />
-		<property name="caseManagementManager" ref="caseManagementManager" />
-		<property name="programAccessDAO" ref="programAccessDAO" />
-		<property name="programProviderDAO" ref="programProviderDAO" />
-	</bean>
+	
  	<bean id="demographicManagerT" class="org.caisi.service.DemographicManagerTickler">
 		<property name="demographicDao" ref="demographicDao" />
 	</bean>

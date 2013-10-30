@@ -69,7 +69,6 @@
 
 			String user_no = (String) session.getAttribute("user");
 			String providerview = request.getParameter("providerview") == null ? "" : request.getParameter("providerview");
-			providerview = providerview.equals("1") ? user_no : providerview;
 			String asstProvider_no = "", color = "", premiumFlag = "", service_form = "";
 			String sql = null;
 			ResultSet rs = null;
@@ -388,8 +387,8 @@
 				
 				propT = new Properties();
 				propT.setProperty("serviceCode", b.getServiceCode() );
-				propT.setProperty("serviceDesc", b.getDescription());
-				propT.setProperty("serviceDisp", b.getValue());
+				propT.setProperty("serviceDesc", b.getDescription() == null ? "N/A" : b.getDescription());
+				propT.setProperty("serviceDisp", noNull(b.getValue()));
 				propT.setProperty("servicePercentage", noNull(b.getPercentage()));
 				propT.setProperty("serviceType", c.getServiceType());
                 propT.setProperty("serviceTypeName", c.getServiceGroupName());
@@ -1549,7 +1548,7 @@ function changeSite(sel) {
           %> <!--input type="text" name="xml_vdate" id="xml_vdate" value="<%--=request.getParameter("xml_vdate")!=null? request.getParameter("xml_vdate"):visitdate--%>" size='10' maxlength='10' -->
 											<input type="text" name="xml_vdate" id="xml_vdate"
 											value="<%=request.getParameter("xml_vdate")!=null? request.getParameter("xml_vdate"):admDate%>"
-											size='10' maxlength='10'> <img
+											size='10' maxlength='10' readonly> <img
 											src="../../../images/cal.gif" id="xml_vdate_cal" />
 										</td>
 										<td colspan="2"><a href="#"

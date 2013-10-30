@@ -169,11 +169,11 @@ String curUser_no = (String) session.getAttribute("user");
                             Integer number_of_rows_per_page=pageSize;
                             Integer totalNoPages=pageCount;
                             Integer total_row_index=labdocs.size()-1;
-                            if (total_row_index < 0) {
+                            if (total_row_index < 0 || totalNoPages == null || totalNoPages.intValue() == (pageNum+1)) {
                                 	%> <input type="hidden" name="NoMoreItems" value="true" /> <%
                             		if (isListView) { %>
 		                                <tr>
-		                                    <td id="NoMoreItems" colspan="9" align="center">
+		                                    <tdcolspan="9" align="center">
 		                                        <i>	<% if (pageNum == 1) { %>
 		                                        	<bean:message key="oscarMDS.index.msgNoReports"/>
 		                                        	<% } else { %>
@@ -213,9 +213,16 @@ String curUser_no = (String) session.getAttribute("user");
                                 }
 
 								String labRead = "";
+								
                                 if(result.isHRM() && !oscarLogDao.hasRead(curUser_no,"hrm",segmentID)){
                                 	labRead = "*";
-                                }else if(!result.isHRM() &&!oscarLogDao.hasRead(curUser_no,"lab",segmentID)){
+                                }
+                                
+                                if( !result.isHRM() && result.isDocument() && !oscarLogDao.hasRead(curUser_no,"document",segmentID) ) {                                    
+                                    labRead = "*";
+                                }
+                                
+                                if(!result.isHRM() && !result.isDocument() && !oscarLogDao.hasRead(curUser_no,"lab",segmentID)){
                                 	labRead = "*";
                                 }
 
@@ -329,8 +336,30 @@ String curUser_no = (String) session.getAttribute("user");
 	                                    	<%
                                     	}
                                     }
-                                    else if (result.isDocument()){ %>
-                                    <a href="javascript:parent.reportWindow('<%=request.getContextPath()%>/dms/showDocument.jsp?inWindow=true&segmentID=<%=segmentID%>&providerNo=<%=providerNo%>&searchProviderNo=<%=searchProviderNo%>&status=<%=status%>&demoName=<%=URLEncoder.encode(result.getPatientName(), "UTF-8")%>',screen.availHeight,screen.availWidth)"><%=StringEscapeUtils.escapeHtml(result.getPatientName())%></a>
+                                    else if (result.isDocument()){ 
+                                	String patientName = result.getPatientName();
+                                    	StringBuilder url = new StringBuilder(request.getContextPath());                                    	
+                                    	url.append("/dms/showDocument.jsp?inWindow=true&segmentID=");
+                                    	url.append(segmentID);
+                                    	url.append("&providerNo=");
+                                    	url.append(providerNo);
+                                    	url.append("&searchProviderNo=");
+                                    	url.append(searchProviderNo);
+                                    	url.append("&status=");
+                                    	url.append(status);
+                                    	url.append("&demoName=");
+                                    	
+                                    	//the browser html parser does not understand javascript so we need to account for the opening
+                                    	//and closing quotes used in the onclick event handler                                    	
+                                    	patientName = StringEscapeUtils.escapeHtml(patientName);
+                                    	
+                                    	//now that the html parser will pass the correct characters to the javascript engine we need to 
+                                    	//escape chars for javascript that are not transformed by the html escape.
+                                    	url.append(StringEscapeUtils.escapeJavaScript(patientName));                                    	                                    	                                    	
+                                    %>                                    
+                                    
+                                    <a href="javascript:void(0);" onclick="reportWindow('<%=url.toString()%>',screen.availHeight, screen.availWidth); return false;" ><%=labRead + StringEscapeUtils.escapeHtml(result.getPatientName())%></a>
+                                    
                                     <% }else if(result.isHRM()){
                                     	StringBuilder duplicateLabIds=new StringBuilder();
                                     	for (Integer duplicateLabId : result.getDuplicateLabIds())
@@ -339,7 +368,7 @@ String curUser_no = (String) session.getAttribute("user");
                                     		duplicateLabIds.append(duplicateLabId);
                                     	}
                                     %>
-                                    <a href="javascript:reportWindow('../hospitalReportManager/Display.do?id=<%=segmentID%>&segmentID=<%=segmentID%>&providerNo=<%=providerNo%>&searchProviderNo=<%=searchProviderNo%>&status=<%=status%>&demoName=<%=URLEncoder.encode(result.getPatientName(), "UTF-8")%>&duplicateLabIds=<%=duplicateLabIds.toString()%> ',850,1020)"><%=labRead%><%=result.getPatientName()%></a>
+                                    <a href="javascript:reportWindow('../hospitalReportManager/Display.do?id=<%=segmentID%>&segmentID=<%=segmentID%>&providerNo=<%=providerNo%>&searchProviderNo=<%=searchProviderNo%>&status=<%=status%>&demoName=<%=demoName%>&duplicateLabIds=<%=duplicateLabIds.toString()%> ',850,1020)"><%=labRead%><%=result.getPatientName()%></a>
                                     <% }else {%>
                                     <a href="javascript:parent.reportWindow('<%=request.getContextPath()%>/lab/CA/BC/labDisplay.jsp?segmentID=<%=segmentID%>&providerNo=<%=providerNo%>&searchProviderNo=<%=searchProviderNo%>&status=<%=status%>')"><%=labRead%><%=StringEscapeUtils.escapeJavaScript(result.getPatientName())%></a>
                                     <% }%>

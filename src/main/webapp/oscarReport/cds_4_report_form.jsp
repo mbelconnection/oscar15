@@ -22,6 +22,8 @@
     Toronto, Ontario, Canada
 
 --%>
+<%@page import="org.oscarehr.PMmodule.model.Program"%>
+<%@page import="org.oscarehr.PMmodule.service.ProgramManager"%>
 <%@page import="org.oscarehr.common.model.Provider"%>
 <%@page import="org.oscarehr.managers.ProviderManager2"%>
 <%@page import="org.oscarehr.common.dao.FunctionalCentreDao"%>
@@ -33,116 +35,130 @@
 <%@page import="java.text.DateFormatSymbols"%>
 <%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 
+<%@ include file="/taglibs.jsp"%>
+<c:set var="ctx" value="${pageContext.request.contextPath}"
+	scope="request" />
+
 <%
 	FunctionalCentreDao functionalCentreDao = (FunctionalCentreDao) SpringUtils.getBean("functionalCentreDao");
 	ProviderManager2 providerManager = (ProviderManager2) SpringUtils.getBean("providerManager2");
+    ProgramManager programManager = (ProgramManager) SpringUtils.getBean("programManager");
 
 	LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
 	List<FunctionalCentre> functionalCentres=functionalCentreDao.findInUseByFacility(loggedInInfo.currentFacility.getId());
 %>
 
-<%@include file="/layouts/caisi_html_top.jspf"%>
+<div class="page-header">
+	<h4>CDS Reports</h4>
+</div>
 
-<h1>CDS Reports</h1>
-				
-<script type="text/javascript">
-	function validate(form)
-	{
-		var fields = form.elements;
+<form class="well form-horizontal" action="cds_4_report_results.jsp"
+	id="cdsForm">
+	<fieldset>
 
-		if (fields.functionalCentreId.value==null||fields.functionalCentreId.value=="")
-		{
-			alert('Please select a functional centre.');
-			return(false);
-		}
-	}
-</script>
+		<!-- Form Name -->
+		<legend>CDS-MH 4.05</legend>
 
-<form method="post" action="cds_4_report_results.jsp" onsubmit="return(validate(this))">
-	<table class="borderedTableAndCells">
-		<tr>
-			<td colspan="2">CDS-MH 4.05</td>
-		</tr>
-		<tr>
-			<td>Functional Centre to report on</td>
-			<td>
-				<select name="functionalCentreId">
+		<div class="control-group">
+			<label class="control-label">Functional Centre</label>
+			<div class="controls">
+				<select id="functionalCentreId" name="functionalCentreId" class="input-large">
 					<%
 						for (FunctionalCentre functionalCentre : functionalCentres)
 						{
 							%>
-								<option value="<%=functionalCentre.getAccountId()%>"><%=functionalCentre.getAccountId()+", "+functionalCentre.getDescription()%></option>
+							<option value="<%=functionalCentre.getAccountId()%>"><%=functionalCentre.getAccountId()+", "+functionalCentre.getDescription()%></option>
 							<%
 						}
 					%>
 				</select>
-			</td>
-		</tr>
-		<tr>
-			<td>Date Range Start</td>
-			<td>
-				<select name="startYear">
-				<%
-					GregorianCalendar cal=new GregorianCalendar();
-					int year=cal.get(GregorianCalendar.YEAR);
-					for (int i=0; i<10; i++)
-					{
-						%>
-							<option value="<%=year-i%>"><%=year-i%></option>
-						<%
-					}
-				%>
-				</select>
-				-
-				<select name="startMonth">
-				<%
-					DateFormatSymbols dateFormatSymbols=DateFormatSymbols.getInstance();
-					String[] months=dateFormatSymbols.getShortMonths();
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">Date Start</label>
+			<div class="controls">
+				<input type="text" name="startDate" id="startDate" />
+				<script type="text/javascript">
+					jQuery('#startDate').datepicker({ dateFormat: 'yy-mm-dd' });
 					
-					for (int i=1; i<13; i++)
+					var d=new Date();
+					var month=d.getMonth();
+					if (month>0)
 					{
-						%>
-							<option value="<%=i%>" title="<%=months[i-1]%>"><%=i%></option>
-						<%
+						d.setMonth(month-1);
 					}
-				%>
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td>Date Range End (inclusive)</td>
-			<td>
-				<select name="endYear">
-				<%
-					for (int i=0; i<10; i++)
+					else
 					{
-						%>
-							<option value="<%=year-i%>"><%=year-i%></option>
-						<%
+						d.setMonth(11);
+						d.setYear(d.getYear()-1);
 					}
-				%>
-				</select>
-				-
-				<select name="endMonth">
-				<%
-					for (int i=1; i<13; i++)
+					
+					jQuery('#startDate').datepicker("setDate", d);
+					jQuery('#startDate').attr("readonly", true);
+				</script>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">Date End (inclusive)</label>
+			<div class="controls">
+				<input type="text" name="endDate" id="endDate" />
+				<script type="text/javascript">
+					jQuery('#endDate').datepicker({ dateFormat: 'yy-mm-dd' });					
+					jQuery('#endDate').datepicker("setDate", new Date());
+					jQuery('#endDate').attr("readonly", true);
+				</script>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">Filter By</label>
+			<div class="controls">
+				<select id="filterCriteriaSelection" onchange="showFilterCriteria()">
+					<option value="">None</option>
+					<option value="PROVIDER">Provider</option>
+					<option value="PROGRAM">Program</option>
+				</select>				
+				<script type="text/javascript">
+					function showFilterCriteria()
 					{
-						%>
-							<option value="<%=i%>" title="<%=months[i-1]%>"><%=i%></option>
-						<%
+						var selection=jQuery('#filterCriteriaSelection').val();
+						
+						if (selection == "PROVIDER")
+						{
+							jQuery('#providerText').show();
+							jQuery('#providerOptions').show();
+							jQuery('#programText').hide();
+							jQuery('#programOptions').hide();
+						}
+						else if (selection == "PROGRAM")
+						{
+							jQuery('#providerText').hide();
+							jQuery('#providerOptions').hide();
+							jQuery('#programText').show();
+							jQuery('#programOptions').show();							
+						}
+						else
+						{
+							jQuery('#providerText').hide();
+							jQuery('#providerOptions').hide();
+							jQuery('#programText').hide();
+							jQuery('#programOptions').hide();
+						}
 					}
-				%>
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				Providers to include
-				<div style="font-size:smaller">
-					(leave blank to report on all providers, multi select is allowed)
-				</div>
-			<td>
-				<select multiple="multiple" name="providerIds">
+					
+					$(document).ready(function(){
+						showFilterCriteria();
+					});
+				</script>
+			</div>
+		</div>
+		<div id="providerOptions" class="control-group">
+			<label class="control-label">Providers to include
+				<small>
+					(multi select is allowed)
+				</small>
+			</label>
+			<div class="controls">
+				<select name="providerIds" class="input-medium" multiple="multiple">
 					<%
 						// null for both active and inactive because the report might be for a provider who's just left in the current reporting period.
 						List<Provider> providers=providerManager.getProviders(null);
@@ -158,14 +174,51 @@
 						}
 					%>
 				</select>
-			</td>
-		</tr>
-		<tr>
-			<td></td>
-			<td><input type="submit" value="Download Report" /></td>
-		</tr>
-	</table>	
+			</div>
+		</div>
+
+		<div id="programOptions" class="control-group">
+			<label class="control-label">Programs to include
+				<small>
+					(multi select is allowed)
+				</small>
+			</label>
+			<div class="controls">
+				<select name="programIds" class="input-medium" multiple="multiple">
+					<%
+						List<Program> programs=programManager.getPrograms(loggedInInfo.currentFacility.getId());
+					
+						for (Program program : programs)
+						{
+							%>
+								<option value="<%=program.getId()%>"><%=StringEscapeUtils.escapeHtml(program.getName()+" ("+program.getType()+")")%></option>
+							<%
+						}
+					%>
+				</select>
+			</div>
+		</div>
+
+		<div class="control-group">
+			<div class="controls">
+				<button type="submit" class="btn btn-primary">View Report</button>
+			</div>
+		</div>
+
+	</fieldset>
 </form>
 
+<div id="cds-results"></div>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#cdsForm').validate({
+			rules : {
+				functionalCentreId : {
+					required : true
+				}
+			}
+		});
+	});
 
-<%@include file="/layouts/caisi_html_bottom.jspf"%>
+	registerFormSubmit('cdsForm', 'cds-results');
+</script>

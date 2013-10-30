@@ -201,7 +201,7 @@ public class AddEFormAction extends Action {
 				sameform = curForm.getFormHtml().equals(prevForm.getFormHtml());
 			}			
 		}
-		if (!sameform) {
+		if (!sameform) { //save eform data
 			EFormDataDao eFormDataDao=(EFormDataDao)SpringUtils.getBean("EFormDataDao");
 			EFormData eFormData=toEFormData(curForm);
 			eFormDataDao.persist(eFormData);
@@ -275,7 +275,8 @@ public class AddEFormAction extends Action {
 		eFormData.setFormTime(eFormData.getFormDate());
 		eFormData.setProviderNo(eForm.getProviderNo());
 		eFormData.setFormData(eForm.getFormHtml());
-		eFormData.setPatientIndependent(eForm.getPatientIndependent());
+		eFormData.setShowLatestFormOnly(eForm.isShowLatestFormOnly());
+		eFormData.setPatientIndependent(eForm.isPatientIndependent());
 		eFormData.setRoleType(eForm.getRoleType());
 
 		return(eFormData);

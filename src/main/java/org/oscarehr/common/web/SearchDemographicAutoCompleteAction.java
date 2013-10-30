@@ -26,7 +26,7 @@
 package org.oscarehr.common.web;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,6 +42,7 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.model.Demographic;
+import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 import org.oscarehr.util.AppointmentUtil;
 
@@ -69,22 +70,34 @@ public class SearchDemographicAutoCompleteAction extends Action {
            searchStr = request.getParameter("name");
         }
         
+        if(searchStr == null){
+        	searchStr = request.getParameter("term");
+        }
+        
+        boolean activeOnly = false;
+        activeOnly = request.getParameter("activeOnly") != null && request.getParameter("activeOnly").equalsIgnoreCase("true");
+        boolean jqueryJSON = request.getParameter("jqueryJSON") != null && request.getParameter("jqueryJSON").equalsIgnoreCase("true");
         RxProviderData rx = new RxProviderData();
         
+
         List<Demographic> list = null;
 
         if (searchStr.length() == 8 && searchStr.matches("([0-9]*)")) {
             list = demographicDao.searchDemographicByDOB(searchStr.substring(0,4)+"-"+searchStr.substring(4,6)+"-"+searchStr.substring(6,8), 100, 0);
-        } else {
-            list = demographicDao.searchDemographic(searchStr);
+        } 
+        else if( activeOnly ) {
+        	list = demographicDao.searchDemographicActive(searchStr);
+        }
+        else {
+        	list = demographicDao.searchDemographic(searchStr);
         }
         
-        List secondList= new ArrayList();
+        List<HashMap<String, String>> secondList= new ArrayList<HashMap<String,String>>();
         for(Demographic demo :list){
-            Hashtable h = new Hashtable();
+            HashMap<String,String> h = new HashMap<String,String>();
              h.put("fomattedDob",demo.getFormattedDob());
              h.put("formattedName",demo.getFormattedName());
-             h.put("demographicNo",demo.getDemographicNo());
+             h.put("demographicNo",String.valueOf(demo.getDemographicNo()));
              h.put("status",demo.getPatientStatus());
              
 
@@ -128,13 +141,40 @@ public class SearchDemographicAutoCompleteAction extends Action {
              secondList.add(h);
         }
 
-        Hashtable d = new Hashtable();
+        HashMap<String,List<HashMap<String, String>>> d = new HashMap<String,List<HashMap<String, String>>>();
         d.put("results",secondList);
         response.setContentType("text/x-json");
-        JSONObject jsonArray = (JSONObject) JSONSerializer.toJSON( d );
-        jsonArray.write(response.getWriter());
+        if( jqueryJSON ) {
+        	response.getWriter().print(formatJSON(secondList));
+        	response.getWriter().flush();
+        }
+        else {
+        	JSONObject jsonArray = (JSONObject) JSONSerializer.toJSON( d );
+        	jsonArray.write(response.getWriter());        	
+        }
         return null;
 
+    }
+    
+    private String formatJSON(List<HashMap<String, String>>info) {
+    	StringBuilder json = new StringBuilder("[");
+    	
+    	HashMap<String, String>record;
+    	int size = info.size();
+    	for( int idx = 0; idx < size; ++idx) {
+    		record = info.get(idx);
+    		json.append("{\"label\":\"" + record.get("formattedName") + " " + record.get("fomattedDob") + " (" + record.get("status") + ")\",\"value\":\"" + record.get("demographicNo") + "\"");
+    		json.append(",\"providerNo\":\"" + record.get("providerNo") + "\",\"provider\":\"" + record.get("providerName") + "\",\"nextAppt\":\"" + record.get("nextAppointment")+"\",");
+    		json.append("\"formattedName\":\"" + record.get("formattedName") + "\"}");
+    		
+    		if( idx < size-1) {
+    			json.append(",");
+    		}
+    	}    	
+    		json.append("]");
+
+    	MiscUtils.getLogger().info(json.toString());
+    	return json.toString();
     }
 
 }

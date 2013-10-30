@@ -59,8 +59,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.caisi.dao.TicklerDAO;
-import org.caisi.model.Tickler;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -98,6 +96,8 @@ import org.oscarehr.common.model.Measurement;
 import org.oscarehr.common.model.Prevention;
 import org.oscarehr.common.model.Provider;
 import org.oscarehr.common.model.Security;
+import org.oscarehr.common.model.Tickler;
+import org.oscarehr.managers.TicklerManager;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 
@@ -680,13 +680,14 @@ public class OntarioMDSpec4DataTest extends DaoTestFixtures {
 
 		ProgramDao programDao = (ProgramDao) SpringUtils.getBean("programDao");
 		PreventionDao preventionDao = (PreventionDao) SpringUtils.getBean("preventionDao");
-		TicklerDAO ticklerDao = (TicklerDAO) SpringUtils.getBean("ticklerDAOT");
 		MeasurementDao measurementsDao = SpringUtils.getBean(MeasurementDao.class);
 		SecurityDao securityDao = (SecurityDao) SpringUtils.getBean("securityDao");
 		SecUserRoleDao secuserroleDao = (SecUserRoleDao) SpringUtils.getBean("secUserRoleDao");
 		AllergyDao allergyDao = (AllergyDao) SpringUtils.getBean("allergyDao");
 		DocumentDao documentDao = (DocumentDao) SpringUtils.getBean("documentDao");
 		CtlDocumentDao ctlDocumentDao = (CtlDocumentDao) SpringUtils.getBean("ctlDocumentDao");
+		TicklerManager ticklerManager = SpringUtils.getBean(TicklerManager.class);
+		
 
 		oscarProgramID = programDao.getProgramIdByProgramName("OSCAR");
 
@@ -860,31 +861,31 @@ public class OntarioMDSpec4DataTest extends DaoTestFixtures {
 		Date dateExpiredate = null;
 		Integer BExpireset = 0;
 		//DRW
-		securityDao.persist(new Security("drw", "-51-282443-97-5-9410489-60-1021-45-127-12435464-32", drw.getProviderNo(),"1117",BRemotelockset, BLocallockset,  dateExpiredate,  BExpireset));
+		securityDao.persist(new Security("drw", "-51-282443-97-5-9410489-60-1021-45-127-12435464-32", drw.getProviderNo(),"1117",BRemotelockset, BLocallockset,  dateExpiredate,  BExpireset, Boolean.FALSE));
 		secuserroleDao.save(getSecUserRole(drw.getProviderNo(),"doctor",true));
 		//DRL
-		securityDao.persist(new Security("drl", "-51-282443-97-5-9410489-60-1021-45-127-12435464-32", drl.getProviderNo(),"1117",BRemotelockset, BLocallockset,  dateExpiredate,  BExpireset));
+		securityDao.persist(new Security("drl", "-51-282443-97-5-9410489-60-1021-45-127-12435464-32", drl.getProviderNo(),"1117",BRemotelockset, BLocallockset,  dateExpiredate,  BExpireset, Boolean.FALSE));
 		secuserroleDao.save(getSecUserRole(drl.getProviderNo(),"doctor",true));
 		//DRK
-		securityDao.persist(new Security("drk", "-51-282443-97-5-9410489-60-1021-45-127-12435464-32", drk.getProviderNo(),"1117",BRemotelockset, BLocallockset,  dateExpiredate,  BExpireset));
+		securityDao.persist(new Security("drk", "-51-282443-97-5-9410489-60-1021-45-127-12435464-32", drk.getProviderNo(),"1117",BRemotelockset, BLocallockset,  dateExpiredate,  BExpireset, Boolean.FALSE));
 		secuserroleDao.save(getSecUserRole(drk.getProviderNo(),"doctor",true));
 		//DRT
-		securityDao.persist(new Security("drt", "-51-282443-97-5-9410489-60-1021-45-127-12435464-32", drt.getProviderNo(),"1117",BRemotelockset, BLocallockset,  dateExpiredate,  BExpireset));
+		securityDao.persist(new Security("drt", "-51-282443-97-5-9410489-60-1021-45-127-12435464-32", drt.getProviderNo(),"1117",BRemotelockset, BLocallockset,  dateExpiredate,  BExpireset, Boolean.FALSE));
 		secuserroleDao.save(getSecUserRole(drt.getProviderNo(),"doctor",true));
 		//DRS
-		securityDao.persist(new Security("drs", "-51-282443-97-5-9410489-60-1021-45-127-12435464-32", drs.getProviderNo(),"1117",BRemotelockset, BLocallockset,  dateExpiredate,  BExpireset));
+		securityDao.persist(new Security("drs", "-51-282443-97-5-9410489-60-1021-45-127-12435464-32", drs.getProviderNo(),"1117",BRemotelockset, BLocallockset,  dateExpiredate,  BExpireset, Boolean.FALSE));
 		secuserroleDao.save(getSecUserRole(drs.getProviderNo(),"doctor",true));
 		//jc
-		securityDao.persist(new Security("jc", "-51-282443-97-5-9410489-60-1021-45-127-12435464-32", jc.getProviderNo(),"1117",BRemotelockset, BLocallockset,  dateExpiredate,  BExpireset));
+		securityDao.persist(new Security("jc", "-51-282443-97-5-9410489-60-1021-45-127-12435464-32", jc.getProviderNo(),"1117",BRemotelockset, BLocallockset,  dateExpiredate,  BExpireset, Boolean.FALSE));
 		secuserroleDao.save(getSecUserRole(jc.getProviderNo(),"doctor",true));
 		//nn
-		securityDao.persist(new Security("nn", "-51-282443-97-5-9410489-60-1021-45-127-12435464-32", nn.getProviderNo(),"1117",BRemotelockset, BLocallockset,  dateExpiredate,  BExpireset));
+		securityDao.persist(new Security("nn", "-51-282443-97-5-9410489-60-1021-45-127-12435464-32", nn.getProviderNo(),"1117",BRemotelockset, BLocallockset,  dateExpiredate,  BExpireset, Boolean.FALSE));
 		secuserroleDao.save(getSecUserRole(nn.getProviderNo(),"doctor",true));
 		//ss
-		securityDao.persist(new Security("ss", "-51-282443-97-5-9410489-60-1021-45-127-12435464-32", ss.getProviderNo(),"1117",BRemotelockset, BLocallockset,  dateExpiredate,  BExpireset));
+		securityDao.persist(new Security("ss", "-51-282443-97-5-9410489-60-1021-45-127-12435464-32", ss.getProviderNo(),"1117",BRemotelockset, BLocallockset,  dateExpiredate,  BExpireset, Boolean.FALSE));
 		secuserroleDao.save(getSecUserRole(ss.getProviderNo(),"receptionist",true));
 		//lg
-		securityDao.persist(new Security("lg", "-51-282443-97-5-9410489-60-1021-45-127-12435464-32", lg.getProviderNo(),"1117",BRemotelockset, BLocallockset,  dateExpiredate,  BExpireset));
+		securityDao.persist(new Security("lg", "-51-282443-97-5-9410489-60-1021-45-127-12435464-32", lg.getProviderNo(),"1117",BRemotelockset, BLocallockset,  dateExpiredate,  BExpireset, Boolean.FALSE));
 		secuserroleDao.save(getSecUserRole(lg.getProviderNo(),"receptionist",true));
 
 		MiscUtils.getLogger().info("Adding Providers");
@@ -1211,15 +1212,14 @@ public class OntarioMDSpec4DataTest extends DaoTestFixtures {
 
         //Overdue Preventive Care: Overdue for annual physical
         Tickler tickler = new Tickler();
-        tickler.setDemographic_no(""+juneElder.getDemographicNo());
+        tickler.setDemographicNo(juneElder.getDemographicNo());
         tickler.setCreator(drw.getProviderNo());
         tickler.setAssignee(drw);
         tickler.setMessage("Needs Annual Physical");
-        tickler.setProgram_id(oscarProgramID);
-        tickler.setStatus('A');
-        tickler.setService_date(lastWeek);
-        tickler.setUpdate_date(lastWeek);
-        ticklerDao.saveTickler(tickler);
+        tickler.setProgramId(oscarProgramID);
+        tickler.setServiceDate(lastWeek);
+        tickler.setUpdateDate(lastWeek);
+        ticklerManager.addTickler(tickler);
 
         //TODO:  Overdue Referral: Geriatrician
 

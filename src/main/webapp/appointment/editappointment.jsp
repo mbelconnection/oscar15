@@ -24,6 +24,7 @@
 
 --%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@page import="org.oscarehr.common.dao.ProviderDataDao"%>
 <%@page import="oscar.appt.status.service.impl.AppointmentStatusMgrImpl"%>
 <%
   String curProvider_no = request.getParameter("provider_no");
@@ -53,9 +54,21 @@
 <%@ page import="org.oscarehr.common.model.EncounterForm" %>
 <%@ page import="org.oscarehr.common.dao.EncounterFormDao" %>
 <%@page import="org.oscarehr.common.model.ProviderPreference"%>
+<%@page import="org.oscarehr.common.model.ProviderData"%>
 <%@page import="org.oscarehr.util.SessionConstants"%>
 <%@page import="org.oscarehr.common.model.Appointment" %>
 <%@page import="org.oscarehr.common.dao.OscarAppointmentDao" %>
+<%@ page import="org.apache.commons.lang.StringUtils" %>
+<%@ page import="org.oscarehr.PMmodule.model.Program" %>
+<%@ page import="org.oscarehr.PMmodule.model.ProgramProvider" %>
+<%@ page import="org.oscarehr.common.model.Facility" %>
+<%@ page import="org.oscarehr.PMmodule.service.ProviderManager" %>
+<%@ page import="org.oscarehr.PMmodule.service.ProgramManager" %>
+<%@ page import="org.oscarehr.util.LoggedInInfo"%>
+<%@ page import="org.oscarehr.managers.LookupListManager"%>
+<%@ page import="org.oscarehr.common.model.LookupList"%>
+<%@ page import="org.oscarehr.common.model.LookupListItem"%>
+<%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
 
 <%
 	DemographicCustDao demographicCustDao = (DemographicCustDao)SpringUtils.getBean("demographicCustDao");
@@ -63,20 +76,34 @@
     ProviderPreference providerPreference=(ProviderPreference)session.getAttribute(SessionConstants.LOGGED_IN_PROVIDER_PREFERENCE);
     DemographicDao demographicDao = (DemographicDao)SpringUtils.getBean("demographicDao");
     OscarAppointmentDao appointmentDao = SpringUtils.getBean(OscarAppointmentDao.class);
+    ProviderDataDao providerDao = SpringUtils.getBean(ProviderDataDao.class);
     SiteDao siteDao = SpringUtils.getBean(SiteDao.class);
-%>
-<%
-  ApptData apptObj = ApptUtil.getAppointmentFromSession(request);
+	
+    ProviderManager providerManager = SpringUtils.getBean(ProviderManager.class);
+	ProgramManager programManager = SpringUtils.getBean(ProgramManager.class);
+	
+	String providerNo = LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo();
+	Facility facility = LoggedInInfo.loggedInInfo.get().currentFacility;
+	
+    List<Program> programs = programManager.getActiveProgramByFacility(providerNo, facility.getId());
 
-  oscar.OscarProperties pros = oscar.OscarProperties.getInstance();
-  String strEditable = pros.getProperty("ENABLE_EDIT_APPT_STATUS");
+    LookupListManager lookupListManager = SpringUtils.getBean(LookupListManager.class);
+    LookupList reasonCodes = lookupListManager.findLookupListByName("reasonCode");
 
-  AppointmentStatusMgr apptStatusMgr =  new AppointmentStatusMgrImpl();
-  List allStatus = apptStatusMgr.getAllActiveStatus();
+    ApptData apptObj = ApptUtil.getAppointmentFromSession(request);
 
-  Boolean isMobileOptimized = session.getAttribute("mobileOptimized") != null;
+    oscar.OscarProperties pros = oscar.OscarProperties.getInstance();
+    String strEditable = pros.getProperty("ENABLE_EDIT_APPT_STATUS");
 
- 
+    AppointmentStatusMgr apptStatusMgr =  new AppointmentStatusMgrImpl();
+    List allStatus = apptStatusMgr.getAllActiveStatus();
+
+    Boolean isMobileOptimized = session.getAttribute("mobileOptimized") != null;
+    
+    String useProgramLocation = OscarProperties.getInstance().getProperty("useProgramLocation");
+    String moduleNames = OscarProperties.getInstance().getProperty("ModuleNames");
+    boolean caisiEnabled = moduleNames != null && org.apache.commons.lang.StringUtils.containsIgnoreCase(moduleNames, "Caisi");
+    boolean locationEnabled = caisiEnabled && (useProgramLocation != null && useProgramLocation.equals("true"));
 %>
 <%@page import="org.oscarehr.common.dao.SiteDao"%>
 <%@page import="org.oscarehr.common.model.Site"%><html:html locale="true">
@@ -168,6 +195,10 @@ function onSub() {
     }
   }
   if( saveTemp==2 ) {
+    if (document.EDITAPPT.notes.value.length > 255) {
+      window.alert("<bean:message key="appointment.editappointment.msgNotesTooBig"/>");
+      return false;
+    }
     return calculateEndTime() ;
   } else
       return true;
@@ -652,7 +683,24 @@ function setType(typeSel,reasonSel,locSel,durSel,notesSel,resSel) {
         <li class="row weak">
             <div class="label"><bean:message key="Appointment.formReason" />:</div>
             <div class="input">
-				<textarea name="reason" tabindex="2" rows="2" wrap="virtual"
+				<select name="reasonCode">
+					<%
+					Integer apptReasonCode = bFirstDisp ? (appt.getReasonCode() == null ? 0 : appt.getReasonCode()) : Integer.parseInt(request.getParameter("reasonCode"));
+					if(reasonCodes != null) {
+						for(LookupListItem reasonCode : reasonCodes.getItems()) {
+					%>
+						<option value="<%=reasonCode.getId()%>" <%=apptReasonCode.equals(reasonCode.getId()) ? "selected=\"selected\"" : "" %>><%=StringEscapeUtils.escapeHtml(reasonCode.getValue())%></option>
+					<%
+					 	}
+					} else {
+					%>
+						<option value="-1">Other</option>
+					<%
+					}
+					%>
+				</select>
+ 				</br>
+				<textarea id="reason" name="reason" tabindex="2" rows="2" wrap="virtual"
 					cols="18"><%=bFirstDisp?appt.getReason():request.getParameter("reason")%></textarea>
             </div>
             <div class="space">&nbsp;</div>
@@ -701,10 +749,23 @@ if (bMultisites) { %>
 <% } else {
 	isSiteSelected = true;
 	// multisites end ==================
-%>
-            <INPUT TYPE="TEXT" NAME="location" tabindex="4"
-					VALUE="<%=bFirstDisp?appt.getLocation():request.getParameter("location")%>"
-					WIDTH="25">
+	if (locationEnabled) {
+%>           					
+		<select name="location" >
+               <%
+               String location = bFirstDisp?(appt.getLocation()):request.getParameter("location");
+               if (programs != null && !programs.isEmpty()) {
+		       	for (Program program : programs) {
+		       	    String description = StringUtils.isBlank(program.getLocation()) ? program.getName() : program.getLocation();
+		   	%>
+		        <option value="<%=program.getId()%>" <%=(program.getId().toString().equals(location) ? "selected='selected'" : "") %>><%=StringEscapeUtils.escapeHtml(description)%></option>
+		    <%	}
+               }
+		  	%>
+           </select>
+	<% } else { %>
+		<INPUT TYPE="TEXT" NAME="location" tabindex="4" VALUE="<%=bFirstDisp?appt.getLocation():request.getParameter("location")%>" WIDTH="25">
+	<% } %>           
 <% } %>
             </div>
             <div class="space">&nbsp;</div>
@@ -717,9 +778,9 @@ if (bMultisites) { %>
             </div>
         </li>
         <li class="weak row">
-            <div class="label"><bean:message key="Appointment.formLastCreator" />:</div>
+            <div class="label">Creator:</div>
             <div class="input">
-<% String lastCreatorNo = bFirstDisp?(appt.getCreator()):request.getParameter("user_id"); %>
+            <% String lastCreatorNo = bFirstDisp?(appt.getCreator()):request.getParameter("user_id"); %>
                 <INPUT TYPE="TEXT" NAME="user_id" VALUE="<%=lastCreatorNo%>" readonly WIDTH="25">
             </div>
             <div class="space">&nbsp;</div>
@@ -751,6 +812,31 @@ if (bMultisites) { %>
                 <INPUT TYPE="hidden" NAME="appointment_no" VALUE="<%=appointment_no%>">
             </div>
         </li>
+        <%  lastCreatorNo = request.getParameter("user_id");
+	if( bFirstDisp ) {
+		if( appt.getLastUpdateUser() != null ) {
+	    
+	    	ProviderData provider = providerDao.findByProviderNo(appt.getLastUpdateUser());
+	    	if( provider != null ) {
+			lastCreatorNo = provider.getLastName() + ", " + provider.getFirstName();
+	    	}
+		}
+		else {
+		    lastCreatorNo = appt.getCreator();
+		}
+	}
+%>  
+      <li class="row weak">
+      		<div class="label">&nbsp;</div>
+            <div class="input">&nbsp;</div>
+            <div class="space">&nbsp;</div>
+            <div class="label">Last Editor:</div>
+            <div class="input">
+                <INPUT TYPE="TEXT" readonly
+					VALUE="<%=lastCreatorNo%>" WIDTH="25">
+            </div>           
+        </li>
+          
         <li class="row weak">
             <div class="label">Create Date:</div>
             <div class="input">

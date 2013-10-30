@@ -23,13 +23,19 @@
  */
 package org.oscarehr.research.eaaps;
 
+import java.io.Serializable;
+import java.util.Date;
+
+import oscar.util.ConversionUtils;
 import net.sf.json.JSONObject;
 
 /**
  * Encapsulates response of the EAAPS web service.
  */
-public class EaapsPatientData {
+public class EaapsPatientData implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+    
 	private JSONObject json;
 
 	public EaapsPatientData() {
@@ -47,43 +53,82 @@ public class EaapsPatientData {
 		this.json = json;
 	}
 
-	private JSONObject getStatus() {
+	public JSONObject getStatus() {
+		if (!getJson().has("status")) {
+			return null;
+		}
 		return getJson().getJSONObject("status");
 	}
-	
+
+	private boolean getBoolean(String statusFieldName) {
+		if (getStatus() == null || !getStatus().has(statusFieldName)) {
+			return false;
+		}
+		
+		String fieldValue = getStatus().getString(statusFieldName);
+		if (fieldValue == null || "0".equals(fieldValue) || "-1".equals(fieldValue)) {
+			return false;
+		}
+		return true;
+	}
+
 	public boolean isEligibleForStudy() {
-		return getStatus().getBoolean("eligibleForStudy");
+		return getBoolean("eligibleForStudy");
 	}
 
 	public boolean isQuestionnaireStarted() {
-		return getStatus().getBoolean("questionnaireStarted");
+		return getBoolean("questionnaireStarted");
 	}
 
 	public boolean isQuestionnaireCompleted() {
-		return getStatus().getBoolean("questionnaireCompleted");
+		return getBoolean("questionnaireCompleted");
 	}
 
 	public boolean isMedsConfirmed() {
-		return getStatus().getBoolean("medsConfirmed");
+		return getBoolean("medsConfirmed");
 	}
 
 	public boolean isRecommendationsAvailable() {
-		return getStatus().getBoolean("recommendationsAvailable");
+		return getBoolean("recommendationsAvailable");
 	}
 
-	public boolean isRecommendationsConfirmed() {
-		return getStatus().getBoolean("recommendationsConfirmed");
+	public boolean isRecommendationsReviewStarted() {
+		return getBoolean("recommendationsReviewStarted");
+	}
+	
+	public boolean isRecommendationsReviewCompleted() {
+		return getBoolean("recommendationsReviewCompleted");
+	}
+	
+	public Date getUpdatedTimestamp() {
+		if (getStatus() == null || !getStatus().has("updatedTimestamp")) {
+			return null;
+		}
+		String updatedTimestampString = getStatus().getString("updatedTimestamp");
+		return ConversionUtils.fromDateString(updatedTimestampString);
 	}
 
 	public boolean isAapAvailable() {
-		return getStatus().getBoolean("aapAvailable");
+		return getBoolean("aapAvailable");
 	}
 
-	public boolean isAapConfirmed() {
-		return getStatus().getBoolean("aapConfirmed");
+	public boolean isAapReviewCompleted() {
+		return getBoolean("aapReviewCompleted");
+	}
+	
+	public String getWidgetMessage() {
+		return getStatus().getString("widgetMessage");
+	}
+	
+	public boolean isAapReviewStarted() {
+		return getBoolean("aapReviewStarted");
 	}
 
 	public String getUrl() {
+		if (getStatus() == null || !getStatus().has("url")) {
+			return null;
+		}
+		
 		String result = getStatus().getString("url");
 		if ("null".equals(result)) {
 			return null;
@@ -92,7 +137,33 @@ public class EaapsPatientData {
 	}
 
 	public String getMessage() {
-		return getStatus().getString("message");
+		return getStatus().getString("shortMessage");
 	}
+
+	/**
+	 * Replaces the response URL with the specified value. Previous URL value is
+	 * kept as "previousUrl" JSON field. 
+	 * 
+	 * @param url
+	 * 		URL to replace the existing URL with.
+	 */
+	public void replaceUrl(String url) {
+		String previousUrl = getUrl();
+		getStatus().put("url", url);
+		getStatus().put("previousUrl", previousUrl);
+	}
+
+	/**
+	 * Checks if the external URL (the one that should be referred to) is provided.
+	 * 
+	 * @return
+	 * 		Returns true if the URL is provided and false otherwise
+	 */
+	public boolean isUrlProvided() {
+		if (getUrl() == null || getUrl().isEmpty()) {
+			return false;
+		}
+		return true;
+    }
 
 }

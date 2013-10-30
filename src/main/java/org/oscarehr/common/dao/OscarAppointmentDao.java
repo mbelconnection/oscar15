@@ -23,6 +23,7 @@
 
 package org.oscarehr.common.dao;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -74,9 +75,25 @@ public class OscarAppointmentDao extends AbstractDao<Appointment> {
 		query.setFirstResult(offset);
 		query.setMaxResults(limit);
 		
-		List<Appointment> rs = query.getResultList();
-
-		return rs;
+		List<Appointment> result = query.getResultList();
+		
+		return result;
+	}
+	
+	public List<AppointmentArchive> getDeletedAppointmentHistory(Integer demographicNo, Integer offset, Integer limit) {
+		
+		List<Object> result = new ArrayList<Object>();
+			
+		String sql2 = "select a from AppointmentArchive a where a.demographicNo=? order by a.appointmentDate DESC, a.startTime DESC, id desc";
+		Query query2 = entityManager.createQuery(sql2);
+		query2.setParameter(1, demographicNo);
+		query2.setFirstResult(offset);
+		query2.setMaxResults(limit);
+		
+		List<AppointmentArchive> results = query2.getResultList();
+		
+		
+		return results;
 	}
 
 	public List<Appointment> getAppointmentHistory(Integer demographicNo) {
@@ -574,5 +591,66 @@ public class OscarAppointmentDao extends AbstractDao<Appointment> {
 		query.setParameter("to", to);
 		return query.getResultList();
     }
+
+	/**
+	 * Get billed appointment history. 
+	 * Used if using the Clinicaid billing integration.
+	 */
+	public List<Appointment> findPatientBilledAppointmentsByProviderAndAppointmentDate(
+			String providerNo, 
+			Date startAppointmentDate, 
+			Date endAppointmentDate ) 
+	{
+		String queryString = "FROM Appointment WHERE " +
+			"providerNo = ? AND " +
+			"appointmentDate >= ? AND " +
+			"appointmentDate <= ? AND " +
+			"status = 'B' AND " + 
+			"demographicNo <> 0 " + 
+			"ORDER BY appointmentDate DESC, startTime DESC ";
+
+		Query q = entityManager.createQuery(queryString);
+		q.setParameter(1, providerNo);
+		q.setParameter(2, startAppointmentDate);
+		q.setParameter(3, endAppointmentDate);
+		
+		@SuppressWarnings("unchecked")
+		List<Appointment> results = q.getResultList();
+		
+		return results;
+	}
+	
     
+	/**
+	 * Get unbilled appointment history. 
+	 * Used if using the Clinicaid billing integration.
+	 */
+	public List<Appointment> findPatientUnbilledAppointmentsByProviderAndAppointmentDate(
+			String providerNo, 
+			Date startAppointmentDate, 
+			Date endAppointmentDate ) 
+	{
+
+		String queryString = "FROM Appointment WHERE " +
+			"providerNo = ? AND " +
+			"appointmentDate >= ? AND " +
+			"appointmentDate <= ? AND " + 
+			"status NOT LIKE 'B%' AND " + 
+			"status NOT LIKE 'C%' AND " + 
+			"status NOT LIKE 'N%' AND " + 
+			"status NOT LIKE 'T%' AND " +
+			"status NOT LIKE 't%' AND " + 
+			"demographicNo != 0 " + 
+			"ORDER BY appointmentDate DESC, startTime DESC";
+
+		Query q = entityManager.createQuery(queryString);
+		q.setParameter(1, providerNo);
+		q.setParameter(2, startAppointmentDate);
+		q.setParameter(3, endAppointmentDate);
+		
+		@SuppressWarnings("unchecked")
+		List<Appointment> results = q.getResultList();
+		
+		return results;
+	}
 }

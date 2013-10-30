@@ -24,7 +24,7 @@
 
 --%>
 <%@ page
-	import="java.sql.*, java.util.*, oscar.MyDateFormat, oscar.oscarDemographic.data.*, org.oscarehr.common.OtherIdManager, java.text.SimpleDateFormat, org.caisi.model.Tickler, org.caisi.service.TicklerManager,org.oscarehr.util.SpringUtils"
+	import="java.sql.*, java.util.*, oscar.MyDateFormat, oscar.oscarDemographic.data.*, org.oscarehr.common.OtherIdManager, java.text.SimpleDateFormat"
 	errorPage="errorpage.jsp"%>
 <%@ page import="org.oscarehr.common.dao.DemographicDao, org.oscarehr.common.model.Demographic,oscar.appt.AppointmentMailer, org.oscarehr.util.SpringUtils" %>
 <%@page import="org.oscarehr.common.dao.OscarAppointmentDao" %>
@@ -52,7 +52,7 @@ OscarAppointmentDao appointmentDao = (OscarAppointmentDao)SpringUtils.getBean("o
 WaitingListDao waitingListDao = SpringUtils.getBean(WaitingListDao.class);
 
 
-String[] param = new String[19];
+String[] param = new String[20];
 param[0]=request.getParameter("provider_no");
 param[1]=request.getParameter("appointment_date");
 param[2]=MyDateFormat.getTimeXX_XX_XX(request.getParameter("start_time"));
@@ -85,7 +85,7 @@ param[14]=request.getParameter("creator");
 param[15]=request.getParameter("remarks");
 param[17]=(String)request.getSession().getAttribute("programId_oscarView");
 param[18]=(request.getParameter("urgency")!=null)?request.getParameter("urgency"):"";
-
+param[19]=request.getParameter("reasonCode");
 
 	Appointment a = new Appointment();
 	a.setProviderNo(request.getParameter("provider_no"));
@@ -104,6 +104,7 @@ param[18]=(request.getParameter("urgency")!=null)?request.getParameter("urgency"
 	a.setCreateDateTime(new java.util.Date());
 	a.setCreator(request.getParameter("creator"));
 	a.setRemarks(request.getParameter("remarks"));
+	a.setReasonCode(Integer.parseInt(request.getParameter("reasonCode")));
 	//the keyword(name) must match the demographic_no if it has been changed
     demo = null;
 if (request.getParameter("demographic_no") != null && !(request.getParameter("demographic_no").equals(""))) {

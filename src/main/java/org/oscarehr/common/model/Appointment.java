@@ -109,6 +109,16 @@ public class Appointment extends AbstractModel<Integer> implements Serializable 
 	@Enumerated(EnumType.STRING)
 	private BookingSource bookingSource;
 	
+	private Integer reasonCode;
+
+	public Integer getReasonCode() {
+		return reasonCode;
+	}
+
+	public void setReasonCode(Integer reasonCode) {
+		this.reasonCode = reasonCode;
+	}
+
 	public String getProviderNo() {
 		return providerNo;
 	}
@@ -307,6 +317,10 @@ public class Appointment extends AbstractModel<Integer> implements Serializable 
 	@Override
 	public Integer getId() {
 		return id;
+	}
+	
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	@PreUpdate

@@ -25,6 +25,7 @@
 package oscar.oscarRx.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -386,8 +387,11 @@ public class RxPrescriptionData {
 		DrugDao dao = SpringUtils.getBean(DrugDao.class);
 
 		boolean myOscarEnabled = OscarProperties.getInstance().isPropertyActive("MY_OSCAR");
+		List<Drug> drugList = dao.findByDemographicId(demographicNo);
+		
+		Collections.sort(drugList, new Drug.ComparatorIdDesc());
 
-		for (Drug drug : dao.findByDemographicId(demographicNo)) {
+		for (Drug drug : drugList) {
 
 			boolean isCustomName = true;
 
@@ -402,7 +406,7 @@ public class RxPrescriptionData {
 			}
 
 			if (isCustomName) {
-				logger.info("ADDING PRESCRIPTION");
+				logger.info("ADDING PRESCRIPTION " + drug.getId());
 				Prescription p = toPrescription(drug, demographicNo);
 
 				if (myOscarEnabled) {
@@ -836,9 +840,7 @@ public class RxPrescriptionData {
 		}
 
 		public void setArchived(String tf) {
-			if (!tf.equals("0")) {
-				this.archived = true;
-			}
+			this.archived = Boolean.parseBoolean(tf);
 		}
 
 		//////////////////////////////
@@ -1498,21 +1500,15 @@ public class RxPrescriptionData {
 			Drug drug = dao.findByEverything(this.getProviderNo(), this.getDemographicNo(), this.getRxDate(), this.getEndDate(), this.getWrittenDate(), this.getBrandName(), this.getGCN_SEQNO(), this.getCustomName(), this.getTakeMin(), this.getTakeMax(), this.getFrequencyCode(), this.getDuration(), this.getDurationUnit(), this.getQuantity(), this.getUnitName(), this.getRepeat(), this.getLastRefillDate(), this.getNosubs(), this.getPrn(), escapedSpecial, this.getOutsideProviderName(),
 			        this.getOutsideProviderOhip(), this.getCustomInstr(), this.getLongTerm(), this.isCustomNote(), this.getPastMed(), this.getPatientCompliance(), this.getSpecialInstruction(), this.getComment(), this.getStartDateUnknown());
 
-			// if it doesn't already exist add it.
-			if (drug == null) {
-				drug = new Drug();
+			
+			drug = new Drug();
 
-				int position = this.getNextPosition();
-				this.position = position;
-				syncDrug(drug, ConversionUtils.fromIntString(scriptId));
-				dao.persist(drug);
-				drugId = drug.getId();
-			} else { // update the database
-				syncDrug(drug, ConversionUtils.fromIntString(scriptId));
-
-				dao.merge(drug);
-			}
-
+			int position = this.getNextPosition();
+			this.position = position;
+			syncDrug(drug, ConversionUtils.fromIntString(scriptId));
+			dao.persist(drug);
+			drugId = drug.getId();
+			
 			return true;
 		}
 

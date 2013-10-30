@@ -7,3 +7,6 @@ FacilityService
 ProgramService
 AllergyService
 PreventionService
+MeasurementService
+DocumentService
+PrescriptionService

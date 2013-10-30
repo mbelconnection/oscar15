@@ -24,8 +24,10 @@
  */
 --%>
 
+<% String errorMessage = request.getParameter("errorMessage"); %>
+
 <form name="servicetypeform" method="post">
-<table width="90%" border="0" height="285">
+<table width="92%" border="0" height="285">
 	<tr>
 		<td width="5%">&nbsp;</td>
 		<td width="30%" valign="top">
@@ -33,10 +35,12 @@
 			<tr>
 				<th colspan="2" class="white"><bean:message
 					key="billing.manageBillingform_add.msgAdd" /></th>
-			</tr>
+			</tr>			
 			<tr>
-				<td width="50%" class="white"><bean:message
-					key="billing.manageBillingform_add.formServiceID" /> :</td>
+				<td width="50%" class="white">			
+				<font color="red">
+				<bean:message
+					key="billing.manageBillingform_add.formServiceID" /> : </font></td>
 				<td width="50%" class="white"><input type="text" name="typeid"
 					maxlength="3"></td>
 			</tr>
@@ -93,6 +97,22 @@
 					onClick="valid(this.form)"></td>
 				<td class="white">&nbsp;</td>
 			</tr>
+			
+			<% 			
+			 if (errorMessage != null && errorMessage.length() > 0) {
+			%>
+				<tr>
+				    <td class="white">&nbsp;</td>
+					<td width="50%" class="white">			
+					<font color="red" size="2"> <%= errorMessage %>
+					</font></td>
+					
+				</tr>				
+			</tr>
+				
+			<% }
+			%>
+			
 		</table>
 		</td>
 
@@ -108,31 +128,32 @@
 			</tr>
 
 			<% 
-	
-	List<CtlBillingService> cbss1 = ctlBillingServiceDao.findByServiceTypeId("%");
-	
+		
+	List<Object[]> uniqueServiceTypeList =  ctlBillingServiceDao.getUniqueServiceTypes();		
+			
 	int rCount = 0;
 	boolean bodd=false;
 
-	if(cbss1==null) {
+	if(uniqueServiceTypeList == null) {
 		out.println("failed!!!"); 
 	} else {
-		for (CtlBillingService cbs:cbss1) {
-%>
+	    for(Object[] service : uniqueServiceTypeList)
+	    {
+	      
+	    	%>
 
-			<tr>
-				<td width="30%" valign="top" class="black"><a href=#
-					onClick='manageType("<%=cbs.getServiceType()%>","<%=cbs.getServiceTypeName()%>");return false;'
-					title="Manage Billing Form"><%=cbs.getServiceType()%></a> <!--		<a href=# onClick='onUnbilled("dbManageBillingform_delete.jsp?servicetype=<%=cbs.getServiceType()%>");return false;' title="Delete Billing Form"><%=cbs.getServiceType()%></a> -->
-				</td>
-				<td class="black"><a href=#
-					onClick='manageType("<%=cbs.getServiceType()%>","<%=cbs.getServiceTypeName()%>");return false;'
-					title="Manage Billing Form"><%=cbs.getServiceTypeName()%></a>
-				<!--		<a href=# onClick='onUnbilled("dbManageBillingform_delete.jsp?servicetype=<%=cbs.getServiceType()%>");return false;' title="Delete Billing Form"><%=cbs.getServiceTypeName()%></a> -->
-				</td>
-			</tr>
-			<%
-	}
+	    				<tr>
+	    					<td width="30%" valign="top" class="black"><a href=#
+	    						onClick='manageType("<%=service[0]%>","<%=service[1]%>");return false;'
+	    						title="Manage Billing Form"><%=service[0]%></a> 
+	    					</td>
+	    					<td class="black"><a href=#
+	    						onClick='manageType("<%=service[0]%>","<%=service[1]%>");return false;'
+	    						title="Manage Billing Form"><%=service[1]%></a>
+	    					</td>
+	    				</tr>
+	    				<%
+	   }
 }
 %>
 

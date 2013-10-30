@@ -13,6 +13,16 @@
 		<param-value>classpath:applicationContext*.xml</param-value>
 	</context-param>
 
+
+    <filter>
+            <filter-name>WebServiceSessionInvalidatingFilter</filter-name>
+            <filter-class>org.oscarehr.ws.WebServiceSessionInvalidatingFilter</filter-class>
+    </filter>
+    <filter-mapping>
+            <filter-name>WebServiceSessionInvalidatingFilter</filter-name>
+            <url-pattern>/ws/*</url-pattern>
+    </filter-mapping>
+ 
 	<filter>
 		<filter-name>ProblemCheckFilter</filter-name>
 		<filter-class>org.oscarehr.util.ProblemCheckFilter</filter-class>
@@ -233,6 +243,11 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet>
+		<servlet-name>pdfCreatorEform</servlet-name>
+		<servlet-class>oscar.eform.util.EFormPDFServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
 		<servlet-name>reportDownload</servlet-name>
 		<servlet-class>oscar.oscarReport.pageUtil.RptDownloadCSVServlet</servlet-class>
 		<load-on-startup>0</load-on-startup>
@@ -393,6 +408,10 @@
 	<servlet-mapping>
 		<servlet-name>pdfCustomedCreator</servlet-name>
 		<url-pattern>/form/createcustomedpdf</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>pdfCreatorEform</servlet-name>
+		<url-pattern>/eform/createpdf</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>reportDownload</servlet-name>

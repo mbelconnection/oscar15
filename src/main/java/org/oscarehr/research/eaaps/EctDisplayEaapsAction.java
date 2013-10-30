@@ -24,12 +24,14 @@
 package org.oscarehr.research.eaaps;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -55,6 +57,8 @@ import oscar.oscarEncounter.pageUtil.NavBarDisplayDAO;
 public class EctDisplayEaapsAction extends EctDisplayAction {
 
 	private static final String EAAPS = "eaaps";
+	
+	private static final String EAAPS_ERROR_MESSAGE = "Patient not found in eAAPS database";
 
 	private static Logger logger = Logger.getLogger(EctDisplayEaapsAction.class);
 	
@@ -90,78 +94,123 @@ public class EctDisplayEaapsAction extends EctDisplayAction {
 		Demographic demographic = demographicDao.getDemographic(bean.getDemographicNo());
 		if (demographic == null) {
 			logger.warn("Unable to find Demographic " + bean.getDemographicNo());
-			return false;
+			return true;
 		}
 		
 		EaapsHash hash = new EaapsHash(demographic);
 		StudyData studyData = studyDataDao.findSingleByContent(hash.getHash());
 		if (studyData == null) {
-			logger.debug("Demographic " + demographic + " is not entered for a study");
-			return false;
+			if (logger.isDebugEnabled()) {
+				logger.debug("Demographic " + demographic + " is not entered for a study");
+			}
+			return true;
 		}
 		
-		Dao.setLeftHeading("eAAP");
+		Dao.setLeftHeading("eAAPS");
 		Dao.setHeadingColour("FF6600"); // orange
-		Dao.setMenuHeader("Menu Header");
-		Dao.setRightURL(getEaapsUrl(request.getContextPath() + "/eaaps/eaaps.jsp"));  
+		Dao.setMenuHeader("Menu Header");  
         Dao.setRightHeadingID("eaaps");
 		
-		EaapsPatientData patientData; 
+		EaapsPatientData patientData;
 		try {
 			EaapsServiceClient client = new EaapsServiceClient();
 	        patientData = client.getPatient(hash.getHash());
         } catch (Exception e) {
-        	logger.error("Unable to retrieve patient data", e);
-        	
-        	request.getSession().removeAttribute("eaapsInfo");
-        	
-        	Dao.addItem(newItem("Web Service Error"));
+        	logger.debug("Unable to retrieve patient data", e);
+        	request.getSession().removeAttribute("eaapsInfo");        	
+        	Dao.addItem(newItem(EAAPS_ERROR_MESSAGE));
         	return true;
         }
 		
-		request.getSession().setAttribute("eaapsInfo", patientData);
-		
+		configureMostResponsiblePhysicianFlag(patientData, demographic);
+		request.getSession().setAttribute("eaapsInfo", patientData);		
 		if (logger.isDebugEnabled()) {
 			logger.debug("Loaded patient data: " + patientData);
 		}
 		
-		if (!patientData.isEligibleForStudy()) {
-			Dao.addItem(newItem("Not eligible", getEaapsUrl(request.getContextPath() + "/eaaps/eaaps.jsp"), null));
-			return true;
+		// ensure that notification is displayed for page load, if necessary  
+		boolean isNotificationRequired = isNotificationRequired(hash.getHash(), patientData);
+		if (isNotificationRequired) {
+			String linkUrl = patientData.isUrlProvided() ? patientData.getUrl() : "";
+			String js = "<script language=\"javascript\">displayEaapsWindow(\"" +  linkUrl + "\", \"" + hash.getHash() + "\", \"" + StringEscapeUtils.escapeJavaScript(patientData.getMessage()) + "\" );</script>";
+			Dao.setJavaScript(js);
 		}
 		
-		// messages.getMessage(request.getLocale(), "oscarEncounter.LeftNavBar.Myoscar")
-        
-		if (patientData.isAapConfirmed()) {
-			Dao.addItem(newItem("eAAP is confirmed", getEaapsUrl(request.getContextPath() + "/eaaps/eaaps.jsp"), "red"));
-			return true;			
+		String eaapsUrl = null;
+		if (patientData.isUrlProvided()) {
+			eaapsUrl = getEaapsUrl(patientData.getUrl(), true);
 		}
 		
-		if (patientData.isRecommendationsAvailable()) {
-			boolean isNotificationRequired = isNotificationRequired(hash.getHash());
-			if (isNotificationRequired) {
-				String js = "<script language=\"javascript\">displayEaapsWindow(\"" +  patientData.getUrl() + "\", \"" + hash.getHash() + "\");</script>";
-				Dao.setJavaScript(js);
-			}
-			Dao.addItem(newItem("Recommendations are available", getEaapsUrl(patientData.getUrl(), true), null));
+		String widgetMessage = patientData.getWidgetMessage();
+		if (widgetMessage == null || widgetMessage.isEmpty()) {
+			widgetMessage = EAAPS_ERROR_MESSAGE;
 		}
-		
-		NavBarDisplayDAO.Item item;
-		if (patientData.isAapAvailable()) {
-			item = newItem("eAAP is available", getEaapsUrl(patientData.getUrl(), true));
-		} else {
-			item = newItem("eAAP is <b>not</b> available", getEaapsUrl(request.getContextPath() + "/eaaps/eaaps.jsp"), "red");
-		}
-		Dao.addItem(item);
+		Dao.addItem(newItem(widgetMessage, eaapsUrl, null));
 		
 		return true;
 	}
 
-	private boolean isNotificationRequired(String hash) {
+	/**
+	 * Signal if the MRP is currently looking at the record. 
+	 * 
+	 * @param patientData
+	 * 		Patient data loaded from the web service
+	 * @param demo
+	 * 		Demographic being loaded
+	 */
+	private void configureMostResponsiblePhysicianFlag(EaapsPatientData patientData, Demographic demo) {
+		String urlString = patientData.getUrl();		
+		if (urlString == null || urlString.trim().isEmpty()) {
+			logger.debug("URL is not provided - exiting without replacing");
+			return;
+		}
+		
+	    String loggedInProviderNo = getProviderNo();
+	    String mrpProviderNo = demo.getProviderNo();
+	    boolean isMrpPhysicianLookingAtTheRecord = loggedInProviderNo.equals(mrpProviderNo);
+	    
+	    StringBuilder buf = new StringBuilder(urlString);
+	    
+	    if (urlString.contains("?")) {
+	    	buf.append("&");
+	    } else {
+	    	buf.append("?");
+	    }
+	    buf.append("isMrp=").append(isMrpPhysicianLookingAtTheRecord);
+	    buf.append("&pNo=").append(loggedInProviderNo);
+	    patientData.replaceUrl(buf.toString());
+    }
+
+	private boolean isNotificationRequired(String hash, EaapsPatientData patientData) {
 		String providerNo = getProviderNo();
 		String resourceId = hash;
-		List<UserDSMessagePrefs> pref = userDsMessagePrefsDao.findMessages(providerNo, EAAPS, resourceId, false);
-	    return pref.isEmpty();
+		List<UserDSMessagePrefs> prefs = userDsMessagePrefsDao.findMessages(providerNo, EAAPS, resourceId, false);
+	    // no pref's saved means that this notification hasn't been dismissed yet by this user 
+		if (prefs.isEmpty()) {
+	    	return true;
+	    }
+	    
+		// in case no updated timestamp is available - assume no notification is required
+		Date statusChangeTimestamp = patientData.getUpdatedTimestamp();
+		if (statusChangeTimestamp == null) {
+			return false;
+		}
+		
+		// in case status changed after resource was updated - still display the notification
+		// this takes care of the case when status changed on the eAAPs side, but notification 
+		// has been dismissed
+		for(UserDSMessagePrefs pref : prefs) {
+			if (pref.getResourceUpdatedDate() == null ) {
+				continue;
+			}
+			
+			if (pref.getResourceUpdatedDate().before(statusChangeTimestamp)) {
+				return true;
+			}
+		}
+	
+		// for all other cases, say that notification has been dismissed
+		return false;
     }
 
 	private String getProviderNo() {
@@ -188,17 +237,20 @@ public class EctDisplayEaapsAction extends EctDisplayAction {
 	private NavBarDisplayDAO.Item newItem(String title, String url, String color) {
 		NavBarDisplayDAO.Item item = NavBarDisplayDAO.Item();
 	    item.setTitle(title);
-	    item.setURL(url);
 	    if (color != null) {
 	    	item.setColour(color);
 	    }
-	    item.setURLJavaScript(true);	    
+	    
+	    if (url != null) {
+	    	item.setURL(url);
+	    } else {
+	    	// for all null urls, make sure we don't allow clicking them
+	    	item.setURL("return false;");
+	    }
+	    item.setURLJavaScript(true);
+	    
 	    return item;
     }
-	
-	private String getEaapsUrl(String url) {
-		return getEaapsUrl(url, false);
-	}
 	
 	private String getEaapsUrl(String url, boolean isNarrow) {
 		int width = isNarrow ? 400 : 1000;

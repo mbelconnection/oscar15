@@ -58,10 +58,16 @@ function searchOutOfDomain() {
 	onsubmit="return checkTypeIn()">
 <div class="searchBox">
 <div class="RowTop header">
-    <div class="title">
-        <bean:message key="demographic.search.msgSearchPatient" />
-    </div>
-</div>
+	<div class="title">
+		<bean:message key="demographic.search.msgSearchPatient" />
+	</div>
+	<div class="createNew">
+		<span class="HelpAboutLogout" style="font-size:12px; font-style:normal;">
+			<oscar:help keywords="&Title=Patient+Search&portal_type%3Alist=Document" key="app.top1" style="color:black; font-size:10px;font-style:normal;"/> |
+        		<a style="color:black; font-size:10px;font-style:normal;" href="<%=request.getContextPath()%>/oscarEncounter/About.jsp" target="_new"><bean:message key="global.about" /></a>
+		</span> 
+	</div>
+</div> 
 <ul>
     <li>
         <div class="label">
@@ -118,6 +124,7 @@ function searchOutOfDomain() {
 				<INPUT TYPE="button" onclick="searchAll();"
 					TITLE="<bean:message key="demographic.zdemographicfulltitlesearch.tooltips.searchAll"/>"
 					VALUE="<bean:message key="demographic.search.All"/>">
+				<input type="checkbox" name="includeIntegratedResults" value="true"/>Include Integrator
 					<security:oscarSec roleName="<%=roleName%>" objectName="_search.outofdomain" rights="r">  
 				<INPUT TYPE="button" onclick="searchOutOfDomain();"
 					TITLE="<bean:message key="demographic.zdemographicfulltitlesearch.tooltips.searchOutOfDomain"/>"

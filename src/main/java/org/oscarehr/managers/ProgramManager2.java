@@ -43,11 +43,24 @@ public class ProgramManager2 {
 	@Autowired
 	private ProgramProviderDAO programProviderDAO;
 
+	public Program getProgram(Integer programId) {
+		Program result = programDao.getProgram(programId);
+
+		//--- log action ---
+		LogAction.addLogSynchronous("ProgramManager2.getPrograms" , "id:"+result.getId());
+
+		return (result);
+	}
+
+
 	public List<Program> getAllPrograms() {
 		List<Program> results = programDao.findAll();
 
 		//--- log action ---
-		LogAction.addLogSynchronous("ProgramManager2.getAllPrograms" , null);
+		if (results.size()>0) {
+			String resultIds=Program.getIdsAsStringList(results);
+			LogAction.addLogSynchronous("ProgramManager2.getAllPrograms", "ids returned=" + resultIds);
+		}
 
 		return (results);
 	}
@@ -56,7 +69,10 @@ public class ProgramManager2 {
 		List<ProgramProvider> results = programProviderDAO.getAllProgramProviders();
 
 		//--- log action ---
-		LogAction.addLogSynchronous("ProgramManager2.getAllProgramProviders", null);
+		if (results.size()>0) {
+			String resultIds=ProgramProvider.getIdsAsStringList(results);
+			LogAction.addLogSynchronous("ProgramManager2.getAllProgramProviders", "ids returned=" + resultIds);
+		}
 
 		return (results);
 	}

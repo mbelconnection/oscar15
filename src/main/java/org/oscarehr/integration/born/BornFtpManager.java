@@ -25,23 +25,21 @@
 
 package org.oscarehr.integration.born;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-
 import org.apache.commons.net.ftp.FTPFile;
+import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.ftp.session.DefaultFtpsSessionFactory;
+import org.springframework.integration.sftp.session.DefaultSftpSessionFactory;
 
 import oscar.OscarProperties;
 
 public class BornFtpManager {
 
-	public BornFtpManager() {
-
-	}
-
-	public void uploadDataToRepository(String path, String filename) throws Exception {
+	public static void uploadONAREnhancedDataToRepository(String path, String filename) throws Exception {
 		String remotePath = OscarProperties.getInstance().getProperty("born_ftps_remote_dir","");
 		DefaultFtpsSessionFactory ftpFactory = (DefaultFtpsSessionFactory)SpringUtils.getBean("ftpClientFactory");		
 		Session<FTPFile> session = null;		
@@ -54,6 +52,28 @@ public class BornFtpManager {
 			if(session!=null && session.isOpen())
 				session.close();
 		}
+	}
+	
+	public static boolean upload18MEWBVDataToRepository(byte[] xmlFile, String filename) {
+		String remotePath = OscarProperties.getInstance().getProperty("born18m_sftp_remote_dir","");
+		DefaultSftpSessionFactory ftpFactory = (DefaultSftpSessionFactory)SpringUtils.getBean("ftpClientFactoryBORN18M");		
+		Session session = null;
+		
+		boolean success = false;
+		try {
+			session = ftpFactory.getSession();
+			if(session.isOpen()) {
+				session.write(new ByteArrayInputStream(xmlFile), remotePath + File.separator + filename);
+				success = true;
+			}
+		}
+		catch (Exception e) {
+			MiscUtils.getLogger().warn("Failed uploading to repository",e);
+        }
+		finally {
+			if (session!=null && session.isOpen()) session.close();
+		}
+		return success;
 	}
 }
 

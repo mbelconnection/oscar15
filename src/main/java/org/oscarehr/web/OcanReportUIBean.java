@@ -254,15 +254,15 @@ public class OcanReportUIBean implements CallbackHandler {
 		return forms;
 	}
 
-	public static List<OcanSubmissionLog> getAllSubmissions() {
+	public static List<OcanSubmissionLog> getAllOcanSubmissions() {
 		LoggedInInfo loggedInInfo = LoggedInInfo.loggedInInfo.get();
-		List<OcanSubmissionLog> logs = logDao.findAll();
+		List<OcanSubmissionLog> logs = logDao.findAllByType(OcanStaffForm.FORM_TYPE_OCAN);
 		for(OcanSubmissionLog log:logs) {
 			List<OcanStaffForm> recs = ocanStaffFormDao.findBySubmissionId(loggedInInfo.currentFacility.getId(),log.getId());
 			log.getRecords().addAll(recs);
 		}
 		return logs;
-	}
+	}	
 
 	public static OcanSubmissionLog getOcanSubmissionLog(String submissionId) {
 		LoggedInInfo loggedInInfo = LoggedInInfo.loggedInInfo.get();
@@ -271,7 +271,7 @@ public class OcanReportUIBean implements CallbackHandler {
 		log.getRecords().addAll(recs);
 		return log;
 	}
-
+	
 	public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
         WSPasswordCallback pc = (WSPasswordCallback) callbacks[0];
         // set the password for our message - need a better way to do this.
@@ -400,7 +400,7 @@ public class OcanReportUIBean implements CallbackHandler {
 
 		TransmissionHeaderType th = new TransmissionHeaderType();
 		th.setApplication(application);
-		th.setAssessmentType("OCAN");
+		th.setAssessmentType(OcanStaffForm.FORM_TYPE_OCAN);
 		th.setExportTimestamp(cal);
 		th.setOrganization(org);
 		th.setSubmissionId("1");
@@ -496,6 +496,7 @@ public class OcanReportUIBean implements CallbackHandler {
 		//create the log entry and get the submission id
 		OcanSubmissionLog log = new OcanSubmissionLog();
 		log.setSubmitDateTime(new Date());
+		log.setSubmissionType(OcanStaffForm.FORM_TYPE_OCAN);
 		logDao.persist(log);
 
 		if(log.getId() == null) {
@@ -2072,7 +2073,7 @@ public class OcanReportUIBean implements CallbackHandler {
 		int hour = cal.get(GregorianCalendar.HOUR_OF_DAY);
 		int min = cal.get(GregorianCalendar.MINUTE);
 
-		return "OCAN" +  year + ( (month<10)?("0"+month):(month) )+ ((date<10)?("0"+date):(date)) + ((hour<10)?("0"+hour):(hour))+ ((min<10)?("0"+min):(min))+LoggedInInfo.loggedInInfo.get().currentFacility.getOcanServiceOrgNumber() +  ( (increment<10)?(".00"+increment):(increment) ) + ".xml";
+		return OcanStaffForm.FORM_TYPE_OCAN +  year + ( (month<10)?("0"+month):(month) )+ ((date<10)?("0"+date):(date)) + ((hour<10)?("0"+hour):(hour))+ ((min<10)?("0"+min):(min))+LoggedInInfo.loggedInInfo.get().currentFacility.getOcanServiceOrgNumber() +  ( (increment<10)?(".00"+increment):(increment) ) + ".xml";
 	}
 
 	private static Date getStartDate(int year, int month) {

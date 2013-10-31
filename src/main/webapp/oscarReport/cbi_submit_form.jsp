@@ -33,31 +33,50 @@
 <%@page import="java.text.DateFormatSymbols"%>
 <%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@page import="org.oscarehr.web.*"%>
+<%@page import="oscar.util.CBIUtil"%>
 
 <%@include file="/layouts/caisi_html_top.jspf"%>
 
 <%
-	List<OcanSubmissionLog> submissions = OcanReportUIBean.getAllOcanSubmissions();
-	List<OcanStaffForm> unsentForms = OcanReportUIBean.getAllUnsubmittedOcanForms();
-	
-	java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm");
-	java.text.SimpleDateFormat formatter2 = new java.text.SimpleDateFormat("yyyy-MM-dd");
+	java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd");
+	CBIUtil cbiUtil = new CBIUtil();
+	List<OcanStaffForm> unsentForms = cbiUtil.getUnsubmittedCbiForms();	
 	
 %>
 
-<h1>OCAN IAR Report - v2.0.6</h1>
+<h1>CBI Manual Submission</h1>
 
 <script src="<%=request.getContextPath()%>/js/jquery-1.3.2.min.js"></script>
 <script>
-	function submitIAR() {
-		document.getElementById("ocanForm").action="ocan_report_export_iar.jsp";
-	}
+$(function () {
+
+    $("#checkAll").bind("click", function () {
+        $("[name = cbiFormIdsSelected]:checkbox").attr("checked", this.checked);
+	
+    });
+
+
+    $("[name = cbiFormIdsSelected]:checkbox").bind("click", function () {
+        var $chk = $("[name = cbiFormIdsSelected]:checkbox");	
+        $("#checkAll").attr("checked", $chk.length == $chk.filter(":checked").length);
+		  if($(this).attr("checked"))
+   		  {
+			$(this).attr("checked",true);
+		  }
+		  else
+		  {
+		    $(this).attr("checked",false);
+		  }
+			
+		
+    })
+});
 
 	function popup(url) {
 		var vheight=500;
 		var vwidth=600;
 		var windowprops = "height="+vheight+",width="+vwidth+",location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=yes,screenX=50,screenY=50,top=0,left=0";
-		var popup=window.open(url, "ocan_iar", windowprops);
+		var popup=window.open(url, "cbi_submit", windowprops);
 		if (popup != null) {
 			if (popup.opener == null) {
 				popup.opener = self;
@@ -71,8 +90,8 @@
 		$("#subPending").val("Please Wait");
 		$("#SubPending").attr('disabled','true');
 				
-	    jQuery.ajax({url:ctx+"/OcanIarSubmit.do?method=submit",dataType:"html",success: function(data) {
-               location.href=ctx+'/oscarReport/ocan_iar.jsp';
+	    jQuery.ajax({url:ctx+"/CbiSubmit.do?method=submit",dataType:"html",success: function(data) {
+               location.href=ctx+'/oscarReport/cbi_submit_form.jsp';
 		},error: function() {
 			alert('An error occurred');
 			$("#subPending").val("Submit Pending Records");
@@ -83,66 +102,35 @@
 
 	}
 
-
-	function submitManual() {
-		var ctx = '<%=request.getContextPath()%>';
-
-		document.getElementById('ocanForm').action='ocan_report_export_iar_manual.jsp';
-		document.getElementById('ocanForm').submit();
-		
-	}
 </script>
 				
-<form method="post" id="ocanForm" action="ocan_report_export_iar.jsp">
-	<table class="borderedTableAndCells">
-		<tr>
-			<td colspan="4" align="center">IAR Submissions</td>
-		</tr>
-		<tr>
-			<td>Submission Id</td>
-			<td>Submission Date</td>
-			<td># of Records</td>			
-			<td>Result</td>
-		</tr>
-		<%for(OcanSubmissionLog submission:submissions) { %>
-			<tr>
-				<td><a href="#" onclick="popup('ocan_iar_detail.jsp?submissionId=<%=submission.getId()%>');return false;"><%=submission.getId()%></a></td>
-				<td><%=formatter.format(submission.getSubmitDateTime())%></td>
-				<td>
-					<%=submission.getRecords().size() %>
-				</td>				
-				<td><%=submission.getResult()%></td>
-			</tr>
-		<% } %>		
-	</table>	
-	
-	<br/><br/>
+<form method="post" id="cbiForm" action="cbi_submit_action.jsp">
 	
 	<table class="borderedTableAndCells">
 		<tr>
-			<td colspan="5" align="center">Pending OCAN Forms</td>
+			<td colspan="5" align="center">Pending CBI Forms</td>
 		</tr>
 		<tr>
+			<td></td>
 			<td>Form Id</td>
-			<td>Date Started</td>
-			<td>Date Completed</td>
+			<td>Date Created</td>			
 			<td>Client</td>
 			<td>Provider</td>			
 		</tr>
 		<%for(OcanStaffForm form:unsentForms) { %>
 			<tr>
+				<td><input type="checkbox" name="cbiFormIdsSelected" id="cbiFormIdsSelected" value="<%=form.getId()%>"></td>
 				<td><%=form.getId()%></td>
-				<td><%=formatter2.format(form.getStartDate()) %></td>
-				<td><%=formatter2.format(form.getCompletionDate()) %></td>
+				<td><%=formatter.format(form.getCreated())%></td>				
 				<td><%=form.getClientId() %></td>
 				<td><%=form.getProviderName()%></td>
 			</tr>
 		<%} %>
+		<tr><td> <input type="checkbox" name="checkAll" id="checkAll" />All</td>
 	</table>	
 	<br/>
-	<input type="button" value="Submit Pending Records" id="subPending" onclick="submitPending();return false;"/>
-	&nbsp;&nbsp;
-	<input type="button" value="Generate Manual File" id="subManual" onclick="submitManual();return false;"/>
+	<input type="submit" value="Submit Pending Records" id="subPending" />
+
 </form>
 
 

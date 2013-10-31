@@ -34,6 +34,7 @@ import javax.persistence.Id;
 import javax.persistence.PreRemove;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 /**
  * This entity represents every time a provider fills out or updates a OCAN form.
@@ -55,6 +56,8 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 	
 	private String ocanFormVersion=null;
 	private String ocanType=null;
+	public static final String FORM_TYPE_OCAN="OCAN";
+	public static final String FORM_TYPE_CBI="CBI";
 	
 	private String providerNo = null;
 	private String clientFormProviderNo = null;
@@ -94,7 +97,6 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 	private Date clientStartDate;
 	private Date clientCompletionDate;
 	
-
 	private String reasonForAssessment;
 	
 	private String providerName;
@@ -108,6 +110,9 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 	private Date admissionDate;
 	private Date serviceInitDate;
 	private Date dischargeDate;
+	
+	@Transient
+	private String phoneExt;
 	
 	public OcanStaffForm() {
 		province = "ON";
@@ -429,36 +434,8 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 		if(d==null) {return "";}
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		return formatter.format(d);
-	}
-	
-	public String getFormattedReferralDate() {
-		Date d = getReferralDate();
-		if(d==null) {return "";}
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		return formatter.format(d);
-	}
-	
-	public String getFormattedAdmissionDate() {
-		Date d = getAdmissionDate();
-		if(d==null) {return "";}
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		return formatter.format(d);
-	}
-	
-	public String getFormattedServiceInitDate() {
-		Date d = getServiceInitDate();
-		if(d==null) {return "";}
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		return formatter.format(d);
-	}
-	
-	public String getFormattedDischargeDate() {
-		Date d = getDischargeDate();
-		if(d==null) {return "";}
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		return formatter.format(d);
-	}
-	
+	}	
+		
 	public String getReasonForAssessment() {
 		return reasonForAssessment;
 	}
@@ -541,6 +518,14 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 
 	public void setDischargeDate(Date dischargeDate) {
     	this.dischargeDate = dischargeDate;
+    }
+
+	public String getPhoneExt() {
+    	return phoneExt;
+    }
+
+	public void setPhoneExt(String phoneExt) {
+    	this.phoneExt = phoneExt;
     }	
 	
 	

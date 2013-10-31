@@ -29,6 +29,7 @@ import java.util.TimerTask;
 
 import org.apache.log4j.Logger;
 import org.oscarehr.common.model.OcanStaffForm;
+import org.oscarehr.util.DbConnectionFilter;
 
 public class CBIFormDataSubmissionJob  extends TimerTask
 {
@@ -38,11 +39,13 @@ public class CBIFormDataSubmissionJob  extends TimerTask
 	@Override
 	public void run()
 	{
-		logger.info("### cbi form data submission job started ###");
-
-		doJob();
-
-		logger.info("### cbi form data submission job finished ###");
+		logger.debug("CBI form data submission job starts now");
+		try {
+			doJob();
+		} finally {
+			DbConnectionFilter.releaseAllThreadDbResources();
+		}
+		logger.debug("CBI form data submission job finished");
 	}
 
 	public void doJob()
@@ -51,7 +54,7 @@ public class CBIFormDataSubmissionJob  extends TimerTask
 		
 		List<OcanStaffForm> cbiFormList = cbiUtil.getUnsubmittedCbiForms();
 		//Only submit the latest cbi form for each admission_id
-		logger.info("## found <"+(cbiFormList!=null?cbiFormList.size():"0")+"> CBI forms to be submitted to CBI");
+		logger.info("Found <"+(cbiFormList!=null?cbiFormList.size():"0")+"> CBI forms to be submitted to CBI");
 
 		if (cbiFormList != null)
 		{
@@ -69,24 +72,18 @@ public class CBIFormDataSubmissionJob  extends TimerTask
 			if(cbiForm!=null) {
 				//Maybe will use this method again. It depends on if the form should be signed or not.
 				//Bboolean isSubmitted = cbiUtil.isFormDataAlreadySubmitted(cbiForm);
-				if(cbiForm.getSubmissionId()==0)  //mean it's not submitted				
-				{
-					logger.info("## cbi form data not submitted. The ocan staff form id is : <"+(cbiForm!=null?cbiForm.getId():"null")+">");
+				logger.info("cbi form data not submitted. The ocan staff form id is : <"+(cbiForm!=null?cbiForm.getId():"null")+">");
 					
-					try
-					{
-						cbiUtil.submitCBIData(cbiForm);
-						logger.info("## cbi form data submitted successfully. The ocan staff form id is : <"+(cbiForm!=null?cbiForm.getId():"null")+">");
-					}
-					catch (Exception e)
-					{
-						logger.error("## Error in submission thread. The ocan staff form id is : <"+(cbiForm!=null?cbiForm.getId():"null")+">", e);
-					}
-				}
-				else
+				try
 				{
-					logger.info("## cbi form data already submitted. Skip it. The ocan staff form id is : <"+(cbiForm!=null?cbiForm.getId():"null")+">");
+					cbiUtil.submitCBIData(cbiForm);
+					logger.debug("cbi form data submitted successfully. The ocan staff form id is : <"+(cbiForm!=null?cbiForm.getId():"null")+">");
 				}
+				catch (Exception e)
+				{
+					logger.error("Error in submission thread. The ocan staff form id is : <"+(cbiForm!=null?cbiForm.getId():"null")+">", e);
+				}
+				
 			}
 		}
 		catch (Exception e)

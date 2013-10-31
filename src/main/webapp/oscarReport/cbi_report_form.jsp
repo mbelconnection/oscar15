@@ -59,12 +59,13 @@ List<FunctionalCentre> functionalCentres=functionalCentreDao.findInUseByFacility
 	function validate(form)
 	{
 		var fields = form.elements;
-
+	    return true; //don't have to select a functional centre for now. 
 		if (fields.functionalCentreId.value==null||fields.functionalCentreId.value=="")
 		{
 			alert('Please select a functional centre.');
 			return(false);
 		}
+	
 	}
 </script>
 

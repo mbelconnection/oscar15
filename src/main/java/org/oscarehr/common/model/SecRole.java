@@ -32,9 +32,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+
 @Entity
 @Table(name = "secRole")
-public class SecRole extends AbstractModel<Integer> implements Serializable {
+public class SecRole extends AbstractModel<Integer> implements Serializable, Comparable<SecRole> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,5 +65,9 @@ public class SecRole extends AbstractModel<Integer> implements Serializable {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
+	
+	public int compareTo(SecRole o) {
+	    return(name.compareTo(o.name));
+    }
+	
 }

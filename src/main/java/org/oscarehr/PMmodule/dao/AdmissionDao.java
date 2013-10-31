@@ -187,8 +187,8 @@ public class AdmissionDao extends HibernateDaoSupport {
        if (demographicNo == null || demographicNo <= 0) {
            throw new IllegalArgumentException();
        }
-
-       String queryStr = "FROM Admission a WHERE a.programType!='community' and a.ClientId=? and a.ProgramId in " +
+       
+       String queryStr = "FROM Admission a WHERE (a.programType='Bed' or a.programType='Service') and a.ClientId=? and a.ProgramId in " +
           "(select s.id from Program s where s.facilityId=? or s.facilityId is null) ORDER BY a.AdmissionDate DESC";
        @SuppressWarnings("unchecked")
        List<Admission> rs = getHibernateTemplate().find(queryStr, new Object[] { demographicNo, facilityId });

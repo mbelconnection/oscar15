@@ -39,12 +39,14 @@ import org.oscarehr.PMmodule.dao.ProgramDao;
 import org.oscarehr.PMmodule.model.Admission;
 import org.oscarehr.PMmodule.model.ClientReferral;
 import org.oscarehr.common.dao.DemographicDao;
+import org.oscarehr.common.dao.DemographicExtDao;
 import org.oscarehr.common.dao.OcanClientFormDao;
 import org.oscarehr.common.dao.OcanConnexOptionDao;
 import org.oscarehr.common.dao.OcanFormOptionDao;
 import org.oscarehr.common.dao.OcanStaffFormDao;
 import org.oscarehr.common.dao.OcanStaffFormDataDao;
 import org.oscarehr.common.model.Demographic;
+import org.oscarehr.common.model.DemographicExt;
 import org.oscarehr.common.model.OcanClientForm;
 import org.oscarehr.common.model.OcanConnexOption;
 import org.oscarehr.common.model.OcanFormOption;
@@ -62,6 +64,7 @@ public class OcanForm {
 	
 	private static AdmissionDao admissionDao = (AdmissionDao) SpringUtils.getBean("admissionDao");
 	private static DemographicDao demographicDao = (DemographicDao) SpringUtils.getBean("demographicDao");
+	private static DemographicExtDao demographicExtDao = (DemographicExtDao) SpringUtils.getBean("demographicExtDao");
 	private static OcanFormOptionDao ocanFormOptionDao = (OcanFormOptionDao) SpringUtils.getBean("ocanFormOptionDao");
 	private static OcanStaffFormDao ocanStaffFormDao = (OcanStaffFormDao) SpringUtils.getBean("ocanStaffFormDao");
 	private static OcanStaffFormDataDao ocanStaffFormDataDao = (OcanStaffFormDataDao) SpringUtils.getBean("ocanStaffFormDataDao");	
@@ -121,6 +124,25 @@ public class OcanForm {
 		return(ocanStaffForm);
 	}
 	
+	public static OcanStaffForm getCbiForm(Integer ocanStaffFormId, Integer clientId, int prepopulationLevel,String ocanType, Integer programId) {
+		//The demographic data should be populated each time when create or edit cbi form
+		OcanStaffForm cbiForm = null;
+		if(prepopulationLevel == OcanForm.PRE_POPULATION_LEVEL_DEMOGRAPHIC) {
+			cbiForm = getCbiInitForm(clientId, prepopulationLevel, ocanType, programId);
+			
+			OcanStaffForm ocanStaffForm = ocanStaffFormDao.findOcanStaffFormById(ocanStaffFormId);
+			cbiForm.setId(ocanStaffFormId);
+			cbiForm.setAddressLine2(ocanStaffForm.getAddressLine2());
+			cbiForm.setLastNameAtBirth(ocanStaffForm.getLastNameAtBirth());
+			cbiForm.setServiceInitDate(ocanStaffForm.getServiceInitDate());
+			
+		} else {
+			cbiForm = getOcanStaffForm(ocanStaffFormId);
+		}
+		
+		return cbiForm;
+	}
+	
 	public static OcanStaffForm getCbiInitForm(Integer clientId, int prepopulationLevel,String ocanType, Integer programId)
 	{		
 		OcanStaffForm ocanStaffForm=new OcanStaffForm();
@@ -156,17 +178,27 @@ public class OcanForm {
 				Demographic demographic=demographicDao.getDemographicById(clientId);		
 				ocanStaffForm.setLastName(demographic.getLastName());
 				ocanStaffForm.setFirstName(demographic.getFirstName());	
-				ocanStaffForm.setAddressLine1(demographic.getAddress());
-				ocanStaffForm.setCity(demographic.getCity());
-				ocanStaffForm.setProvince(demographic.getProvince());
-				ocanStaffForm.setPostalCode(demographic.getPostal());
-				ocanStaffForm.setPhoneNumber(demographic.getPhone());
-				ocanStaffForm.setEmail(demographic.getEmail());
-				ocanStaffForm.setHcNumber(demographic.getHin());
-				ocanStaffForm.setHcVersion(demographic.getVer());
+				ocanStaffForm.setAddressLine1(demographic.getAddress()==null?"":demographic.getAddress());
+				ocanStaffForm.setCity(demographic.getCity()==null?"":demographic.getCity());
+				ocanStaffForm.setProvince(demographic.getProvince()==null?"":demographic.getProvince());
+				ocanStaffForm.setPostalCode(demographic.getPostal()==null?"":demographic.getPostal());
+				ocanStaffForm.setPhoneNumber(demographic.getPhone()==null?"":demographic.getPhone());
+				ocanStaffForm.setEmail(demographic.getEmail()==null?"":demographic.getEmail());
+				ocanStaffForm.setHcNumber(demographic.getHin()==null?"":demographic.getHin());
+				ocanStaffForm.setHcVersion(demographic.getVer()==null?"":demographic.getVer());
 				ocanStaffForm.setDateOfBirth(demographic.getFormattedDob());
-				ocanStaffForm.setClientDateOfBirth(demographic.getFormattedDob());
-				ocanStaffForm.setGender(convertGender(demographic.getSex()));						             
+				ocanStaffForm.setClientDateOfBirth(demographic.getFormattedDob()==null?"":demographic.getFormattedDob());
+				ocanStaffForm.setGender(convertGender(demographic.getSex()==null?"":demographic.getSex()));
+				
+				DemographicExt de = demographicExtDao.getDemographicExt(demographic.getDemographicNo(), "hPhoneExt");
+				if(de!=null) {
+					if(de.getValue()==null || de.getValue().equals("null"))
+						ocanStaffForm.setPhoneExt("");
+					else
+						ocanStaffForm.setPhoneExt(de.getValue());
+				} else {
+					ocanStaffForm.setPhoneExt("");
+				}
 		}
 		
 		return(ocanStaffForm);
@@ -290,6 +322,33 @@ public class OcanForm {
 		if(value.equals("")) {value =defaultValue;}
 		if(required) {className="{validate: {required:true}}";}
 		return "<input type=\"text\" value=\"" + value + "\" id=\""+question+"\" name=\""+question+"\" onfocus=\"this.blur()\" readonly=\"readonly\" class=\""+className+"\"/> <img title=\"Calendar\" id=\"cal_"+question+"\" src=\"../../images/cal.gif\" alt=\"Calendar\" border=\"0\"><script type=\"text/javascript\">Calendar.setup({inputField:'"+question+"',ifFormat :'%Y-%m-%d',button :'cal_"+question+"',align :'cr',singleClick :true,firstDay :1});</script><img src=\"../../images/icon_clear.gif\" border=\"0\"/ onclick=\"clearDate('"+question+"');\">";
+	}	
+	
+	public static String renderAsEstimatedAge(Integer ocanStaffFormId, String question, boolean required, String dob, int prepopulationLevel)
+	{
+		List<OcanStaffFormData> existingAnswers=getStaffAnswers(ocanStaffFormId, question, prepopulationLevel);
+		String value="", className="";
+		if(existingAnswers.size()>0) {value = existingAnswers.get(0).getAnswer();}
+		if(value.equals("")) {			
+			Calendar rightNow = Calendar.getInstance();
+			int year = rightNow.get(Calendar.YEAR);
+			int month = rightNow.get(Calendar.MONTH)+1;
+			int date = rightNow.get(Calendar.DATE);
+			String[] split_dob=dob.split("-");
+			int year_dob=Integer.parseInt(split_dob[0]);
+			int month_dob = Integer.parseInt(split_dob[1]);
+			int date_dob = Integer.parseInt(split_dob[2]);
+			int age = year - year_dob;			
+			if(month < month_dob) {
+				age--;
+			} else if(month==month_dob){
+				if(date < date_dob)
+					age--;
+			}
+			value = String.valueOf(age);
+		}
+		if(required) {className="{validate: {required:true}}";}
+		return "<input type=\"text\" value=\"" + value + "\" id=\""+question+"\" name=\""+question+"\" onfocus=\"this.blur()\" readonly=\"readonly\" class=\""+className+"\"/> ";
 	}	
 	
 	public static List<Admission> getAdmissions(Integer clientId) {
@@ -537,7 +596,7 @@ public class OcanForm {
 	/**
 	 * This method is meant to return a bunch of html <option> tags for each list element.
 	 */
-	public static String renderAsSelectOptions(Integer ocanStaffFormId, String question, List<OcanFormOption> options, String defaultValue, int prepopulationLevel, boolean clientForm)
+	public static String renderAsSelectOptions(Integer ocanStaffFormId, String question, List<OcanFormOption> options, String defaultValue, int prepopulationLevel, boolean readonly)
 	{
 		List<OcanStaffFormData> existingAnswers=getStaffAnswers(ocanStaffFormId, question, prepopulationLevel);
 		boolean useDefaultValue=false;
@@ -545,6 +604,8 @@ public class OcanForm {
 			useDefaultValue=true;
 		}
 		StringBuilder sb=new StringBuilder();
+		
+		
 		sb.append("<option value=\"\">Select an answer</option>");
 		for (OcanFormOption option : options)
 		{
@@ -664,6 +725,28 @@ public class OcanForm {
 		StringBuilder sb=new StringBuilder();
 
 		sb.append("<input type=\"text\" name=\""+question+"\" id=\""+question+"\" size=\"" + size + "\" maxlength=\"" + size +"\" value=\""+value+"\"/>");
+		
+		return(sb.toString());
+	}
+	
+	public static String renderAsTextFieldReadOnly(Integer ocanStaffFormId, String question, int size, int prepopulationLevel, boolean readonly, String defaultValue)
+	{
+		List<OcanStaffFormData> existingAnswers=getStaffAnswers(ocanStaffFormId, question, prepopulationLevel);		
+		
+		String value = "";
+		if(existingAnswers.size()>0) {
+			value = existingAnswers.get(0).getAnswer();
+		}
+		if(value==null || "".equals(value)) {
+			//fill with default data from demographic, e.g. name, DOB, gender, HIN, hin version, phone, address
+			value=defaultValue;
+		}
+		
+		StringBuilder sb=new StringBuilder();
+		if(readonly) 
+			sb.append("<input type=\"text\" name=\""+question+"\" id=\""+question+ "\" readonly=\"readonly\" " +   "\" size=\"" + size + "\" maxlength=\"" + size +"\" value=\""+value+"\"/>");
+		else 
+			sb.append("<input type=\"text\" name=\""+question+"\" id=\""+question+  "\" size=\"" + size + "\" maxlength=\"" + size +"\" value=\""+value+"\"/>");
 		
 		return(sb.toString());
 	}

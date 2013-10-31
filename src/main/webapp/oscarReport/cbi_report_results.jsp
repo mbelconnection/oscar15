@@ -143,12 +143,14 @@
 		if(submissionLogListFilteredByFunctionalCentre!=null) {
 			for(OcanSubmissionLog log : submissionLogListFilteredByFunctionalCentre) {
 				OcanStaffForm form = cbiUtil.getCBIFormDataBySubmissionId(log.getId());
-				Admission admission = admissionDao.getAdmission(form.getAdmissionId());	
-				if(admission!=null)	{
-					Program program = admission.getProgram();
-					if(program!=null) {
-						 if(program.getId()!=null && programIdsToReportOn.contains(program.getId())) {
-							 submissionLogList.add(log);
+				if(form!=null) {					
+					Admission admission = admissionDao.getAdmission(form.getAdmissionId());	
+					if(admission!=null)	{
+						Program program = admission.getProgram();
+						if(program!=null) {
+							 if(program.getId()!=null && programIdsToReportOn.contains(program.getId())) {
+								 submissionLogList.add(log);
+							}
 						}
 					}
 				}

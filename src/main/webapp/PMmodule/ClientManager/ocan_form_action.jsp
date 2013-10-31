@@ -35,6 +35,8 @@
 <%@page import="java.util.List"%>
 <%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page import="org.apache.commons.lang.ArrayUtils"%>
+<%@page import="org.oscarehr.util.MiscUtils"%>
+
 <%
 	@SuppressWarnings("unchecked")
 	HashMap<String,String[]> parameters=new HashMap(request.getParameterMap());
@@ -93,7 +95,7 @@
 	String consent = parameters.get("consent")!=null ? parameters.get("consent")[0] : "";
 	
 	OcanStaffForm ocanStaffForm=OcanFormAction.createOcanStaffForm(ocanStaffFormId, clientId, signed);
-	
+	ocanStaffForm.setSigned(signed);
 	int prepopulate = 0;
 	prepopulate = Integer.parseInt(request.getParameter("prepopulate")==null?"0":request.getParameter("prepopulate"));
 	
@@ -127,6 +129,7 @@
 	String admissionDate = request.getParameter("admissionDate")==null?"":request.getParameter("admissionDate");
 	String serviceInitDate = request.getParameter("serviceInitDate")==null?"":request.getParameter("serviceInitDate");
 	String dischargeDate = request.getParameter("dischargeDate")==null?"":request.getParameter("dischargeDate");
+	String submissionId = request.getParameter("submissionId")==null?"":request.getParameter("submissionId");
 	try {
 		if(!StringUtils.isBlank(referralDate))
 			ocanStaffForm.setReferralDate(formatter.parse(referralDate));
@@ -136,7 +139,14 @@
 			ocanStaffForm.setServiceInitDate(formatter.parse(serviceInitDate));
 		if(!StringUtils.isBlank(dischargeDate))
 			ocanStaffForm.setDischargeDate(formatter.parse(dischargeDate));
-	}catch(java.text.ParseException e){}
+		else
+			ocanStaffForm.setDischargeDate(null);
+		
+		if(!StringUtils.isBlank(submissionId))
+			ocanStaffForm.setSubmissionId(Integer.parseInt(submissionId));
+	}catch(java.text.ParseException e){
+		MiscUtils.getLogger().error("Unexpected error on ocan form page.", e);
+	}
 	
 	
 	//Once ocan assessment was completed, it can not be changed to other status.

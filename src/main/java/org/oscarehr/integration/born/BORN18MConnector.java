@@ -59,13 +59,13 @@ public class BORN18MConnector {
 	
 	private final BornTransmissionLogDao logDao = SpringUtils.getBean(BornTransmissionLogDao.class);
 	private final DemographicDao demographicDao = SpringUtils.getBean(DemographicDao.class);
-	private final EFormDao eformDao = SpringUtils.getBean(EFormDao.class);
-	private final EFormDataDao eformDataDao = SpringUtils.getBean(EFormDataDao.class);
-	private final EFormValueDao eformValueDao = SpringUtils.getBean(EFormValueDao.class);
+	private final EFormDao eformDao = (EFormDao)SpringUtils.getBean("EFormDao");
+	private final EFormDataDao eformDataDao = (EFormDataDao)SpringUtils.getBean("EFormDataDao");
+	private final EFormValueDao eformValueDao = (EFormValueDao)SpringUtils.getBean("EFormValueDao");
 	private final Logger logger = MiscUtils.getLogger();
 	
 	private final OscarProperties oscarProperties = OscarProperties.getInstance();
-	private final String filenameStart = "BORN_" + oscarProperties.getProperty("born18m_orgcode", "") + "_18MWB_" + oscarProperties.getProperty("born18m_env", "T");
+	private final String filenameStart = "BORN_" + oscarProperties.getProperty("born18m_orgcode", "") + "_18MEWBV_" + oscarProperties.getProperty("born18m_env", "T");
 	private final boolean ignoreReport18m = oscarProperties.isPropertyActive("born18m_ignore_report18m");
 
 	private Integer demographicNo;

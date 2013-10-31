@@ -555,7 +555,7 @@
 		<dependency>
 			<groupId>ca.bornontario</groupId>
 			<artifactId>x18MEWBV</artifactId>
-			<version>1.6.2</version>
+			<version>1.6.3</version>
 		</dependency>
 
 		 <dependency>
@@ -710,11 +710,11 @@
 		</dependency>
 
 
-		<dependency>
-			<groupId>com.jcraft</groupId>
-			<artifactId>jsch</artifactId>
-			<version>0.1.29</version>
-		</dependency>
+                <dependency>
+                        <groupId>com.jcraft</groupId>
+                        <artifactId>jsch</artifactId>
+                        <version>0.1.49</version>
+                </dependency>
 
 		<!-- OLIS -->
 		<dependency>

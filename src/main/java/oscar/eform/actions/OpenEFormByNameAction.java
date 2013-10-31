@@ -45,7 +45,7 @@ public class OpenEFormByNameAction extends Action {
 		String demographic_no = request.getParameter("demographic_no");
 		Integer fid = null;
 		
-		EFormDao eformDao = SpringUtils.getBean(EFormDao.class);
+		EFormDao eformDao = (EFormDao)SpringUtils.getBean("EFormDao");
 		EForm eform = eformDao.findByName(eform_name);
 		
 		if (eform!=null) fid = eform.getId();

@@ -102,6 +102,8 @@ boolean ajax = "true".equals(request.getParameter("ajax"));
 <script type="text/javascript" >
 	jQuery.noConflict();
 	
+	jQuery(window).on("scroll",handleScroll());
+	
 	function renderCalendar(id,inputFieldId){
     	Calendar.setup({ inputField : inputFieldId, ifFormat : "%Y-%m-%d", showsTime :false, button : id });
         
@@ -129,7 +131,7 @@ boolean ajax = "true".equals(request.getParameter("ajax"));
 	var endDate = "<%= endDate %>";
 	var request = null;
 	var canLoad = true;
-	var isListView = false;
+	var isListView = true;
 	var loadingDocs = false;
 	var currentBold = false;
 	var oldestDate = null;
@@ -290,7 +292,7 @@ boolean ajax = "true".equals(request.getParameter("ajax"));
 		var view = document.getElementById("readerSwitcher");
 		var active, passive;
 		if (isListView) {
-			pageSize = 40;
+			pageSize = 20;
 			active = view;
 			passive = list;
 		}

@@ -1552,6 +1552,7 @@ function  popupStart(vheight,vwidth,varpage,windowname) {
 	var popup=window.open(varpage, windowname, windowprops);
 }
 
+var processedDocs = 0;
 function updateDocumentAndNext(eleId){//save doc info
 	var url="../dms/ManageDocument.do",data=$(eleId).serialize(true);
 	new Ajax.Request(url,
@@ -1573,7 +1574,12 @@ function updateDocumentAndNext(eleId){//save doc info
 						$("msgBtn_"+num).onclick = function() { popup(700,960,'/oscar/oscarMessenger/SendDemoMessage.do?demographic_no='+patientId,'msg'); };
 						//Hide document						
 						Effect.BlindUp('labdoc_'+num);
-
+						++processedDocs;
+						if( processedDocs >= pageSize && canLoad) {
+							processedDocs = 0;
+							changePage(1);
+						}
+												
 						var success= updateGlobalDataAndSideNav(num,patientId);
 						if(success){
 						

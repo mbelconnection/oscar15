@@ -122,6 +122,23 @@ if(demographicLink != null){
 	  display: none;
     }
 }
+
+#confidentiality-footer{display:none;}
+
+@media print {
+    #confidentiality-footer{
+    position: fixed;
+    bottom: 0;
+    display: block;
+    }
+}
+
+@page {
+    size: letter portrait;
+    margin: 1.2in 1.2in 1.2in 1.2in;
+    @top-left { content: element(confidentiality-footer); }
+}
+
 </style>
 
 <script type="text/javascript">
@@ -315,6 +332,7 @@ function revokeSignOffHrm(reportId) {
 	
 	<% } %>
 	
+	<div id="confidentiality-footer">
 	<%
 	String confidentialityStatement = (String) request.getAttribute("confidentialityStatement");
 	if (confidentialityStatement != null && confidentialityStatement.trim().length() > 0) {
@@ -322,6 +340,8 @@ function revokeSignOffHrm(reportId) {
 	<hr />
 	<em><strong>Provider Confidentiality Statement</strong><br /><%=confidentialityStatement %></em>
 	<% } %>
+   </div>
+	
 </div>
 
 <div id="infoBox">
@@ -405,7 +425,7 @@ function revokeSignOffHrm(reportId) {
 				} %><br />
 				<%
 				if (subClassListFromDb != null && subClassListFromDb.size() > 0) { %>
-				<i>Stored in Database</i><br />
+				<i>Description</i><br />
 					<div id="subclassstatus<%=hrmReportId %>"></div>
 					<% for (HRMDocumentSubClass subClass : subClassListFromDb) { %>
 						<abbr title="Type: <%=subClass.getSubClass() %>; Date of Observation: <%=subClass.getSubClassDateTime().toString() %>">(<%=subClass.getSubClassMnemonic() %>) <%=subClass.getSubClassDescription() %></abbr>
@@ -415,17 +435,32 @@ function revokeSignOffHrm(reportId) {
 			</td>
 		</tr>
 		<% } else { %>
-		<tr>
-			<th>Subclass</th>
-			<td>
-				<%
-				String[] subClassFromReport = hrmReport.getFirstReportSubClass().split("\\^");
-				if (subClassFromReport.length == 2) {
+			<tr>
+				<th>Subclass</th>
+				<td>
+					<%
+					String[] subClassFromReport = hrmReport.getFirstReportSubClass().split("\\^");
+					if (subClassFromReport.length == 2) {
+					%>
+					<abbr title="Subclass: <%=subClassFromReport[0] %>"><%=subClassFromReport[1] %></abbr>
+					<% } %>
+				</td>
+			</tr>
+		
+			<% if (hrmReport.getFirstReportClass().equalsIgnoreCase("Medical Records Report")) {
+				List<HRMDocumentSubClass> subClassListFromDb = (List<HRMDocumentSubClass>) request.getAttribute("subClassList");
+				if (subClassListFromDb != null && subClassListFromDb.size() > 0) {			
 				%>
-				<abbr title="Subclass: <%=subClassFromReport[0] %>"><%=subClassFromReport[1] %></abbr>
-				<% } %>
-			</td>
-		</tr>
+				<tr>
+				<th>Description</th>
+				    <td>
+						<% for (HRMDocumentSubClass subClass : subClassListFromDb) { %>
+						<abbr title="description"> <%=subClass.getSubClassDescription() %></abbr>						
+					    <% } %>
+					</td>
+				</tr>
+			<% }
+			  } %>
 		<% } %>
 		<tr>
 			<th>Categorization</th>

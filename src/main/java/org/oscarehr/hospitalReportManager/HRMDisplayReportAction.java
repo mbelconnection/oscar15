@@ -80,6 +80,12 @@ public class HRMDisplayReportAction extends DispatchAction {
                             request.setAttribute("providerLinkList", providerLinkList);
 
                             List<HRMDocumentSubClass> subClassList = hrmDocumentSubClassDao.getSubClassesByDocumentId(document.getId());
+                            
+                            //Check the HRMSubClass for the corresponding descriptions, change the description
+                            HRMUtil hRMUtil = new HRMUtil();
+                            
+                            hRMUtil.findCorrespondingHRMSubClassDescriptions(subClassList, document.getReportType(), report.getSendingFacilityId() , report.getFirstReportSubClass());
+                           
                             request.setAttribute("subClassList", subClassList);
 
                             String loggedInProviderNo = LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo();
@@ -106,7 +112,7 @@ public class HRMDisplayReportAction extends DispatchAction {
                             
                             HRMCategory category = null;
                             if (hrmDocumentSubClass != null) {
-                                category = hrmCategoryDao.findBySubClassNameMnemonic(hrmDocumentSubClass.getSubClass()+':'+hrmDocumentSubClass.getSubClassMnemonic());
+                                category = hrmCategoryDao.findBySubClassNameMnemonic(hrmDocumentSubClass.getSendingFacilityId(),hrmDocumentSubClass.getSubClass()+':'+hrmDocumentSubClass.getSubClassMnemonic());
                             }
                             else
                             {
@@ -151,7 +157,7 @@ public class HRMDisplayReportAction extends DispatchAction {
 		
 		return mapping.findForward("display");
 	}
-	
+		
 	
 	public static HRMDocumentToProvider getHRMDocumentFromCurrentProvider(Integer hrmDocumentId)
 	{

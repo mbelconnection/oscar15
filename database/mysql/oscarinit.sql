@@ -8799,6 +8799,7 @@ CREATE TABLE `HRMCategory` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `categoryName` varchar(255) NOT NULL,
   subClassNameMnemonic varchar(255),
+  `sendingFacilityId` varchar(50),
   PRIMARY KEY (`id`)
 );
 
@@ -8828,6 +8829,7 @@ CREATE TABLE `HRMDocumentSubClass` (
   `subClassDescription` varchar(255) ,
   `subClassDateTime` date ,
   `isActive` tinyint(4) NOT NULL ,
+  `sendingFacilityId` varchar(50),
   PRIMARY KEY (`id`)
 ) ;
 
@@ -8855,7 +8857,7 @@ CREATE TABLE `HRMSubClass` (
   `subClassName` varchar(255) ,
   `subClassMnemonic` varchar(255) ,
   `subClassDescription` varchar(255) ,
-  `sendingFacilityId` varchar(50) NOT NULL,
+  `sendingFacilityId` varchar(50),
   `hrmCategoryId` int(11) ,
   PRIMARY KEY (`id`)
 );

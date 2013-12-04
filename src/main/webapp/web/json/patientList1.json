@@ -1,0 +1,54 @@
+{
+"template": "partials/patientList1.html",
+
+"patients":[
+{"demographicNo": "1",
+	"name": "Schrader, Hank",
+	"status": "P",
+	"startTime": "8:45",
+	"reason": "Medical Exam"
+},
+{"demographicNo": "2",
+	"name": "Saul Goodman",
+	"status": "H",
+	"startTime": "9:30",
+	"reason": "Counselling"
+},
+{"demographicNo": "3",
+	"name": "Fring, Gustavo",
+	"status": "t",
+	"startTime": "10:15",
+	"reason": "Check up"
+},
+{"demographicNo": "4",
+	"name": "White, Skyler",
+	"status": "t",
+	"startTime": "11:00",
+	"reason": "Prenatal"
+},
+{"demographicNo": "5",
+	"name": "White, Walter",
+	"status": "t",
+	"startTime": "12:00",
+	"reason": "Lung Cancer"
+},
+{"demographicNo": "6",
+	"name": "Pinkman, Jesse",
+	"status": "t",
+	"startTime": "13:00",
+	"reason": ""
+},
+{"demographicNo": "7",
+	"name": "Margolis, Jane",
+	"status": "t",
+	"startTime": "14:00",
+	"reason": "Addiction Counselling"
+},
+{"demographicNo": "8",
+	"name": "Gomez, Steven",
+	"status": "t",
+	"startTime": "15:00",
+	"reason": ""
+}
+]                	
+}

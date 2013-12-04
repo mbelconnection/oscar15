@@ -1232,4 +1232,27 @@ public class Demographic implements Serializable {
 		}
 		return sb.toString();
 	}
+	
+	/**
+	 * Get the birthdate as a Date.
+	 * @return the birthdate or null;
+	 */
+	public Date getDOB() {
+		 if (!oscar.util.StringUtils.filled(getYearOfBirth())) return null;
+         if (!oscar.util.StringUtils.filled(getMonthOfBirth())) return null;
+         if (!oscar.util.StringUtils.filled(getDateOfBirth()))  return null;
+
+        String year = getYearOfBirth();
+        String month = (getMonthOfBirth().length()==2)?getMonthOfBirth():"0"+getMonthOfBirth();
+        String day = (getDateOfBirth().length()==2)?getDateOfBirth():"0"+getDateOfBirth();
+        
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+ 
+        try {
+        	return df.parse(year+"-"+month+"-"+day);
+        }catch(ParseException e) {
+        	MiscUtils.getLogger().warn("getBirthDate() failed to parse " + year+"-"+month+"-"+day);
+        	return null;
+        }
+	}
 }

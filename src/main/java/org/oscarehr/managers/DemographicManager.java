@@ -113,6 +113,73 @@ public class DemographicManager {
 		return (results);
 	}
 	
+	/*
+	 * Format is LastName[,FirstName]
+	 */
+	public List<Demographic> searchDemographicByNames(String searchString, int startIndex, int itemsToReturn) {
+		
+		List<Demographic> results = demographicDao.searchDemographicByNamesString(searchString, startIndex, itemsToReturn);
+		
+		if(logger.isDebugEnabled()) {
+			logger.debug("searchDemographicByName, searchString="+searchString+", result.size="+results.size());
+		}
+		
+		//--- log action ---
+		for (Demographic demographic : results) {
+			LogAction.addLogSynchronous("DemographicManager.searchDemographicByName result", "demographicId=" + demographic.getDemographicNo());
+		}
+
+		return (results);
+	}
+	
+	/**
+	 * Format is addr:term
+	 * 
+	 * @param searchString
+	 * @param startIndex
+	 * @param itemsToReturn
+	 * @return
+	 */
+	public List<Demographic> searchDemographicByAddress(String searchString, int startIndex, int itemsToReturn) {
+		
+		List<Demographic> results = demographicDao.searchDemographicByAddressString(searchString, startIndex, itemsToReturn);
+		
+		if(logger.isDebugEnabled()) {
+			logger.debug("searchDemographicByAddress, searchString="+searchString+", result.size="+results.size());
+		}
+		
+		//--- log action ---
+		for (Demographic demographic : results) {
+			LogAction.addLogSynchronous("DemographicManager.searchDemographicByAddress result", "demographicId=" + demographic.getDemographicNo());
+		}
+
+		return (results);
+	}
+	
+	/**
+	 * Format is chartNo:term
+	 * 
+	 * @param searchString
+	 * @param startIndex
+	 * @param itemsToReturn
+	 * @return
+	 */
+	public List<Demographic> searchDemographicByChartNo(String searchString, int startIndex, int itemsToReturn) {
+		
+		List<Demographic> results = demographicDao.searchDemographicByChartNo(searchString, startIndex, itemsToReturn);
+		
+		if(logger.isDebugEnabled()) {
+			logger.debug("searchDemographicByChartNo, searchString="+searchString+", result.size="+results.size());
+		}
+		
+		//--- log action ---
+		for (Demographic demographic : results) {
+			LogAction.addLogSynchronous("DemographicManager.searchDemographicByChartNo result", "demographicId=" + demographic.getDemographicNo());
+		}
+
+		return (results);
+	}
+	
 	public List<DemographicExt> getDemographicExts(Integer id) {
 		
 		List<DemographicExt> result = null;

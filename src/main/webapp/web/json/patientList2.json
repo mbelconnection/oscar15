@@ -1,0 +1,20 @@
+{
+"template": "partials/patientList2.html",
+"patients":[
+{"demographicNo": "7",
+	"name": "Simpson, Homer"
+},
+{"demographicNo": "8",
+	"name": "Flanders, Ned"
+},
+{"demographicNo": "9",
+	"name": "Smithers, Waylan"
+},
+{"demographicNo": "10",
+	"name": "Simpson, Lisa"
+},
+{"demographicNo": "11",
+	"name": "Simpson, Marge"
+}
+]                	
+}

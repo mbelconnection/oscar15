@@ -1,0 +1,30 @@
+{
+"menuItems":
+[
+   		{"id":0,"label":"Inbox","extra":"18","url":"#/inbox"},
+   		{"id":1,"label":"Consultations","url":"#/consultations"},
+   		{"id":2,"label":"Billing","url":"#/billing"},
+   		{"id":3,"label":"Tickler","extra":"1","url":"#/tickler"},
+   		{"id":4,"label":"Schedule","extra":"2","url":"#/schedule"},
+   		{"id":5,"label":"K2A","url":"#/k2a"},
+   		{"id":6,"label":"Admin","url":"#/admin"}
+],
+
+"moreMenuItems":
+[
+		{"id":0,"label":"Reports","url":"#/report"},
+		{"id":1,"label":"Caseload","url":"#/caseload"},
+		{"id":2,"label":"Resources","url":"#/resources"},
+		{"id":3,"label":"Documents","url":"#/documents"}
+],
+
+"currentProgram": {"id":"10016", "name":"Family Practice"},
+"counts":{"oscarDemoMessages":"1", "oscarMessages":"2","myOscarMessages":"6"},
+"demographicSearchDropDownItems": [
+		{"label":"New Patient","url":"#/newpatient"},
+		{"label":"Advanced Search","url":"#/advsearch"},
+		{"label":"Merge Demographic","url":"#/merge"}
+	]
+}             
+             
+             

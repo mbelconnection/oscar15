@@ -2559,6 +2559,8 @@
 		<action path="/admin/GenerateTraceabilityReportAction" type="org.oscarehr.admin.traceability.GenerateTraceabilityReportAction">
         </action>
 
+	<action path="/web/PatientListModel" type="org.oscarehr.web.patientlist.PatientListModelAction" parameter="method">
+       </action>
 		
 	</action-mappings>
 	<controller processorClass="org.apache.struts.tiles.TilesRequestProcessor" maxFileSize="100M" />

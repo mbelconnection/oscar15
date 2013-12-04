@@ -1161,6 +1161,13 @@ java.util.Locale vLocale =(java.util.Locale)session.getAttribute(org.apache.stru
 <li id="admin2">
  <a href="javascript:void(0)" id="admin-panel" TITLE='Administration Panel' onclick="newWindow('<%=request.getContextPath()%>/administration/','admin')">Administration</a>
 </li>
+
+<!-- Completely TEMPORARY for Oscar14 UI development only -->
+<oscar:oscarPropertiesCheck property="cobalt" value="yes">
+<li id="admin2">
+ <a href="../web/index.jsp" id="admin-panel" TITLE='Experimental - OSCAR 14 proposed UI'>Cobalt</a>
+</li>
+</oscar:oscarPropertiesCheck>
   
   <!-- Added logout link for mobile version -->
   <li id="logoutMobile">

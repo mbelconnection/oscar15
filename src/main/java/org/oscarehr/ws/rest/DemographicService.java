@@ -23,22 +23,31 @@
  */
 package org.oscarehr.ws.rest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.managers.DemographicManager;
 import org.oscarehr.managers.WaitListManager;
 import org.oscarehr.ws.rest.conversion.DemographicConverter;
 import org.oscarehr.ws.rest.to.OscarSearchResponse;
+import org.oscarehr.ws.rest.to.model.DemographicSearchResultItem;
+import org.oscarehr.ws.rest.to.model.DemographicSearchResults;
 import org.oscarehr.ws.rest.to.model.DemographicTo1;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import oscar.util.StringUtils;
 
 
 /**
@@ -110,6 +119,55 @@ public class DemographicService extends AbstractServiceImpl {
 		DemographicTo1 result = demoConverter.getAsTransferObject(demo);
 		return result;
 	}
+	
+	/**
+	 * Search demographics - used by navigation of OSCAR webapp
+	 * 
+	 * Currently supports LastName[,FirstName] and address searches.
+	 * 
+	 * @param id
+	 * 		Id of the demographic to get data for 
+	 * @return
+	 * 		Returns data for the demographic provided 
+	 */
+	@GET
+	@Path("/search")
+	@Produces("application/json")
+	public DemographicSearchResults search(@QueryParam("query") String query) {		
+		
+		long start = System.currentTimeMillis();
+		List<Demographic> demo = new ArrayList<Demographic>();
+		
+		if(query.startsWith("addr:")) {
+			demo = demographicManager.searchDemographicByAddress(query, 0, 10);
+		} else if(query.startsWith("chartNo:")) {
+			demo = demographicManager.searchDemographicByChartNo(query, 0, 10);
+		} else {
+			demo = demographicManager.searchDemographicByNames(query, 0, 10);
+		}
+		if (demo == null) {
+			return null;
+		}
+		long execTime = System.currentTimeMillis() - start;
+		
+		DemographicSearchResults results = new DemographicSearchResults();
+		results.setTime(execTime);
+		for(Demographic d:demo) {
+			DemographicSearchResultItem item = new DemographicSearchResultItem();
+			item.setId(d.getDemographicNo());
+			item.setName(d.getFormattedName());
+			if(StringUtils.filled(d.getHin()))
+				item.setHin(d.getHin() + (StringUtils.filled(d.getVer()) ?" " + d.getVer():""));
+			if(d.getDOB() != null) {
+				item.setDob(d.getDOB());
+				item.setDobString(DateFormatUtils.ISO_DATE_FORMAT.format(d.getDOB()));
+			}
+			results.getItems().add(item);
+		}
+		
+		return results;
+	}
+	
 
 	/**
 	 * Saves demographic information. 

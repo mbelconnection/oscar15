@@ -1,0 +1,94 @@
+oscarApp.controller('PatientListCtrl', function ($scope,$http) {
+	$scope.tabItems = [
+	             	{"id":0,"label":"Appts.","url":"json/patientList1.json"},
+	             	{"id":1,"label":"CaseLoad","url":"json/patientList2.json"}
+	];
+	$scope.moreTabItems = [
+					{"id":0,"label":"My Residents"},
+					{"id":1,"label":"Customize"}
+	];
+	
+	 $scope.getAppointmentStyle = function(patient){ 
+		 if (patient.status === "H") {
+	        return "success";
+		 } else if (patient.status === "P") { 
+			return "danger";
+		 } else {
+			 
+	        return "default";
+		 }
+	 
+	 }
+
+//for filter box
+$scope.query='';
+
+
+$scope.isActive = function(temp){
+	if($scope.currenttab === null) {
+		return false;
+	}
+	return temp === $scope.currenttab.id;
+}
+
+$scope.isMoreActive = function(temp){
+	if($scope.currentmoretab=== null) {
+		return false;
+	}
+	return temp === $scope.currentmoretab.id;
+}
+
+$scope.changeMoreTab = function(temp){
+	var beforeChangeTab = $scope.currentmoretab;
+	console.log("changemoretab "+ temp);
+	$scope.currentmoretab = $scope.moreTabItems[temp];
+	console.log("url="+$scope.currentmoretab.url);
+	//I want the patient list to change, and the template to get loaded $scope.patients
+	$http({
+	    url: $scope.currentmoretab.url,
+	    dataType: 'json',
+	    method: 'GET',
+	    headers: {
+	        "Content-Type": "application/json"
+	    }
+	}).success(function(response){
+		$scope.template = response.template;
+	  	$scope.patients = response.patients;
+		$scope.currenttab=null;
+	}).error(function(error){
+	    $scope.error = error;
+	});	
+}
+
+$scope.changeTab = function(temp){
+	console.log("changetab "+ temp);
+	$scope.currenttab = $scope.tabItems[temp];
+	console.log("url="+$scope.currenttab.url);
+	//I want the patient list to change, and the template to get loaded $scope.patients
+	$http({
+	    url: $scope.currenttab.url,
+	    dataType: 'json',
+	    method: 'GET',
+	    headers: {
+	        "Content-Type": "application/json"
+	    }
+	}).success(function(response){
+		$scope.template = response.template;
+	  	$scope.patients = response.patients;
+	  	$scope.currentmoretab=null;
+	}).error(function(error){
+	    $scope.error = error;
+	});	
+}	 
+
+$scope.getMoreTabClass = function(id){ 
+	if($scope.currentmoretab != null && id == $scope.currentmoretab.id) {
+		return "more-tab-highlight";
+	}
+	return "";
+}
+
+$scope.changeTab(0);
+
+
+});

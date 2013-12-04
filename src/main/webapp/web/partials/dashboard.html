@@ -1,0 +1,210 @@
+<style>
+.flag-column {
+	width:10px
+}
+</style>
+
+<p class="lead">Welcome {{userFirstName}} <span class="pull-right">{{displayDate}}</span></p>
+<hr>
+
+<div class="row">
+<div class="col-md-9">
+
+
+<p class="lead">You have 1 active tickler assigned to you</p>
+
+<table class="table table-condensed  table-hover" >
+	<tr>
+		<th class="flag-column"></th>
+		<th>Demographic Name</th>
+		<th>Due</th>
+		<th>Message</th>
+	</tr>
+	
+	<tr>
+		<td><span class="glyphicon glyphicon-flag"></span></td>
+		<td>Agnes W. Fitch</td>
+		<td>Today</td>
+		<td>Please inquire if OBSP, document if yes, refer if no</td>
+	</tr>
+	<tfoot>
+    <tr>
+      <td colspan="6">
+		<!-- <span class="label label-success">See More Ticklers</span> -->
+      </td>
+    </tr>
+  </tfoot>
+	
+</table>
+
+
+
+
+<p class="lead">You have 2 new messages</p>
+
+
+<table class="table table-condensed  table-hover" >
+    <tr>
+    	<th class="flag-column"></th>
+        <th>From</th>
+        <th>Subject</th>
+        <th>Date</th>
+        <th>Patient</th>
+    </tr>
+               
+    <tr >
+   	 <td></td>
+         <td >Andrew Addison</td>
+        <td>
+        <a href="/oscar_sfhc/oscarMessenger/ViewMessage.do?messageID=555879&boxType=0">
+            Please follow up with pt. regarding treatment options.
+        </a>
+        </td>
+        <td>2013-10-10 14:54:03</td>
+        <td>Sophia Smith</td>
+    </tr>
+    
+    <tr >
+    	<td></td>
+         <td>Mia Montana</td>
+        <td>
+        <a href="/oscar_sfhc/oscarMessenger/ViewMessage.do?messageID=555560&boxType=0">
+            Patient had allergy like reaction to flu vaccine administered 2013-10-08.
+        </a>
+        </td>
+        <td>2013-10-09 16:13:59</td>
+        <td></td>
+    </tr>
+  
+    <tfoot>
+    <!-- 
+     <tr>
+      <td colspan="5"><span class="label label-success">See More Messages</span></td>
+     </tr>
+     -->
+    </tfoot>       
+</table>
+
+<p class="lead">You have 6 new messages from patients</p>
+
+
+<table class="table table-condensed  table-hover" >
+    <tr>
+    	<th class="flag-column"></th>
+    	<th>From</th>
+        <th>Subject</th>
+        <th>Date</th>
+      
+    </tr>
+               
+    <tr >
+		<td></td>
+         <td >Sophia Smith</td>
+        <td>
+        <a href="/oscar_sfhc/oscarMessenger/ViewMessage.do?messageID=555879&boxType=0">
+            Quality Breakfast - October 24
+        </a>
+        </td>
+        <td>2013-10-10 14:54:03</td>
+       
+    </tr>
+    
+    <tr >
+    	<td></td>
+         <td>Mary Jones</td>
+        <td>
+        <a href="/oscar_sfhc/oscarMessenger/ViewMessage.do?messageID=555560&boxType=0">
+            Summary report of Height/Weight/Glucose measurements for the week.
+        </a>
+        </td>
+        <td>2013-10-09 16:13:59</td>
+       
+    </tr>
+  
+    <tr >
+    <td></td>
+        <td>Jennifer Budk</td>
+        <td>
+        <a href="/oscar_sfhc/oscarMessenger/ViewMessage.do?messageID=555519&boxType=0">
+            Flu Vaccine has arrived,  please read attached message
+        </a>
+        </td>
+        <td>2013-10-09 15:39:45</td>
+       
+    </tr>
+    	
+        <tr >
+        <td></td>
+         <td>Sue Johnson</td>
+        <td>
+        <a href="/oscar_sfhc/oscarMessenger/ViewMessage.do?messageID=555560&boxType=0">
+            Some test data.
+        </a>
+        </td>
+        <td>2013-10-09 16:13:59</td>
+       
+    </tr>
+  
+    <tr >
+  	  <td></td>
+        <td>John Smith</td>
+        <td>
+        <a href="/oscar_sfhc/oscarMessenger/ViewMessage.do?messageID=555519&boxType=0">
+            Flu Vaccine has arrived,  please read attached message
+        </a>
+        </td>
+        <td>2013-10-09 15:39:45</td>
+       
+    </tr>
+    <tfoot>
+     <tr>
+      <td colspan="5"><span class="label label-success">See More Messages</span></td>
+     </tr>
+    </tfoot>       
+</table>
+
+
+
+<p class="lead">You have 10 reports which are not yet acknowledged</p>
+
+<table class="table table-condensed  table-hover" >
+    <tr>
+    	<th class="flag-column"></th>
+        
+ 	    <th>Patient</th>
+ 	    <th>Category</th>
+        <th>Subject</th>
+        <th>Date</th>
+        <th>Status</th>
+    </tr>
+               
+    <tr>
+    <td><span class="glyphicon glyphicon-flag"></span></td>
+    	
+         <td >Sophia Smith</td>
+        <td>Urinalysis</td>
+        <td>Subject</td>
+        <td>2013-10-10 14:54:03</td>
+       	<td>Final</td>
+    </tr>
+</table>
+
+</div>
+
+<div class="col-md-3">
+<p class="lead">K2A News</p>
+
+<blockquote class="pull-right">
+  <p>Interesting resource for exercise.</p>
+  <small>Colleen  <cite title="Source Title">5 thumbs up</cite></small>
+</blockquote>
+
+
+<blockquote class="pull-right">
+  <p>Following Health Canada's benefit-risk assessment, the manufacturer of 282 MEP (meprobamate-containing medicine) is informing the public of the market withdrawal of this drug, effective October 28th, 2013. Patients being treated with 282 MEP should be switched to an alternative treatment</p>
+  <small>David  <cite title="Source Title">2 thumbs up</cite></small>
+</blockquote>
+
+
+</div>
+</div>

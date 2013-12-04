@@ -1,0 +1,11 @@
+{
+"template": "partials/patientList2.html",
+"patients":[
+{"demographicNo": "20",
+	"name": "Smith, John"
+},
+{"demographicNo": "21",
+	"name": "Sanders, Colonel"
+}
+]                	
+}

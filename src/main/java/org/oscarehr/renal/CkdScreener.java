@@ -287,7 +287,7 @@ public class CkdScreener {
 	}
 	
 	private boolean hasBilledDxCode(Integer demographicNo, String codingSystem, String code) {
-		return billingDao.getBillingItemByDxCode(demographicNo, code).size()>0;
+		return billingDao.getBillingItemByDxCode(demographicNo, code)!=null?billingDao.getBillingItemByDxCode(demographicNo, code).size()>0:false;
 	}
 	
 	protected boolean checkBP(int demographicNo) {
@@ -323,6 +323,7 @@ public class CkdScreener {
 		boolean result=false;
 
 		for(Issue issue:issues) {
+			if(issue==null) continue;
 			List<CaseManagementNote> notes = caseManagementNoteDao.getCPPNotes(String.valueOf(demographicNo), issue.getId(), null);
 			for(CaseManagementNote note:notes) {
 				

@@ -1476,6 +1476,9 @@ CREATE TABLE billing_on_item (
   status char(1) default NULL,
   timestamp timestamp,
   PRIMARY KEY  (id),
+  KEY dx_idx (dx),
+  KEY dx1_idx (dx1),
+  KEY dx2_idx (dx2), 
   KEY ch1_id (ch1_id)
 ) ;
 

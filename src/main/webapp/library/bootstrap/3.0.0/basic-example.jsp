@@ -26,7 +26,7 @@
 --%>
 <html>
   <head>
-    <title>Bootstrap 101 Template</title>
+    <title>Bootstrap 101 Base Template</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
     <link href="<%=request.getContextPath() %>/library/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen">
@@ -38,7 +38,20 @@
     <![endif]-->
   </head>
   <body>
-    <h1>Hello, world!</h1>
+    
+
+    <div class="container">
+
+      <div class="starter-template">
+        <h1>Hello, world! <small><a href="index.jsp">view example list</a></small></h1>
+        <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
+
+
+      </div>
+
+    </div><!-- /.container -->
+
+
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="<%=request.getContextPath() %>/js/jquery-1.9.1.min.js"></script>

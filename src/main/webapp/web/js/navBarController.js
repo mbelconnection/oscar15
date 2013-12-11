@@ -12,11 +12,14 @@ oscarApp.controller('NavBarCtrl', function ($scope,$http,$location) {
 	    }
 
 	}).success(function(response){
+		$scope.userName = response.userName;
 	    $scope.menuItems = response.menuItems;
 	    $scope.moreMenuItems = response.moreMenuItems;
 	    $scope.currentProgram = response.currentProgram;
 	    $scope.counts = response.counts;
 	    $scope.demographicSearchDropDownItems = response.demographicSearchDropDownItems;
+	    $scope.programInfo = response.programInfo;
+	    $scope.userMenuItems = response.userMenuItems;
 	}).error(function(error){
 	    $scope.error = error;
 	});	

@@ -38,10 +38,12 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 <meta name="author" content="">
 <link rel="shortcut icon" href="../images/Oscar.ico">
 
-<title>OSCAR - <%=userName %></title>
+<title>OSCAR</title>
 
 <link href="../library/bootstrap/3.0.0/css/bootstrap.css" rel="stylesheet">
 <link href="../css/font-awesome.css" rel="stylesheet">
+
+<!-- we'll combine/minify later -->
 <link href="css/navbar-fixed-top.css" rel="stylesheet">
 <link href="css/navbar-demo-search.css" rel="stylesheet">
 <link href="css/patient-list.css" rel="stylesheet">
@@ -118,31 +120,32 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 					<a href="#" title="Scratchpad"><span class="glyphicon glyphicon-edit"></span></a>
 					&nbsp;&nbsp;
 					
-					<a href="#" title="OSCAR Mail"><span  class="glyphicon glyphicon-envelope"
-						title="OSCAR Mail"></span> </a>
-						<span title="Unread OSCAR messages">{{counts.oscarDemoMessages}}</span> |
-						 <span title="Unread MyOSCAR messages">{{counts.oscarMessages}}</span> |
-						  <span title="Overdue Ticklers">{{counts.myOscarMessages}}</span> 
+					<a href="#" title="OSCAR Mail">
+						<span  class="glyphicon glyphicon-envelope"></span> 
+					</a>
+						<span title="New OSCAR messages (demographic)">{{counts.oscarDemoMessages}}</span> |
+						 <span title="Total new OSCAR Messages">{{counts.oscarMessages}}</span> |
+						  <span title="New messages from patients">{{counts.myOscarMessages}}</span> 
 						&nbsp; &nbsp;
 						
 						<span class="glyphicon glyphicon-globe"></span>
 						<span class="dropdown">
 						<span class="dropdown-toggle" data-toggle="dropdown"><u>{{currentProgram.name}}</u></span>
 						<ul class="dropdown-menu" role="menu">
-				    	<li><a href="#">&#10004; Family Practice</a></li>
-				    	 <li><a href="#">&nbsp;Immunization Clinic</a></li>
-				   		 <li><a href="#">&nbsp;Walk-in</a></li>
-				   	
-				 	 </ul>
+							<li ng-repeat="item in programInfo">
+					    		<a href="#">
+					    			<span ng-if="item.current === 'true'">&#10004;</span>
+					    			<span ng-if="item.current === 'false'">&nbsp;&nbsp;</span>
+					    			{{item.name}}
+					    		</a>
+					    	</li>
+				 		 </ul>
 				 	 </span>
 						&nbsp;
 				<span class="glyphicon glyphicon-user"></span>	
-				<span class="dropdown-toggle" data-toggle="dropdown"><u><%=userName%></u></span>
+				<span class="dropdown-toggle" data-toggle="dropdown"><u>{{userName}}</u></span>
 					<ul class="dropdown-menu" role="menu">
-				    <li><a href="#">Your settings</a></li>
-				    <li><a href="#">Support</a></li>
-				    <li><a href="#">Help</a></li>
-				 
+					<li ng-repeat="item in userMenuItems"><a href="{{item.url}}">{{item.name}}</a></li>
 				  </ul>
 				  
 				<div class="btn-group pull-right" style="padding-left:10px">
@@ -229,6 +232,7 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 	<script src="../library/angular.min.js"></script>
 	<script src="../library/angular-route.min.js"></script>
 
+	<!-- we'll combine/minify later -->
 	<script src="js/app.js"></script>
 	<script src="js/dashboardController.js"></script>
 	<script src="js/inboxController.js"></script>
@@ -236,6 +240,11 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 	<script src="js/patientListController.js"></script>
 	<script src="js/providerViewController.js"></script>
 	<script src="js/reportController.js"></script>
+	<script src="js/scheduleController.js"></script>
+	<script src="js/patientDetailController.js"></script>
+	<script src="js/billingController.js"></script>
+	<script src="js/ticklerController.js"></script>
+	<script src="js/consultListController.js"></script>
 <script>
 
 $(document).ready(function(){

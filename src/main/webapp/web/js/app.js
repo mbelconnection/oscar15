@@ -10,9 +10,41 @@ oscarApp.config(['$routeProvider',
 		                    templateUrl: 'partials/inbox.html',
 		                    controller: 'InboxCtrl'
 	                    }).
+	                    when('/schedule', {
+		                    templateUrl: 'partials/schedule.jsp',
+		                    controller: 'ScheduleCtrl'
+	                    }).
+	                    when('/consults', {
+		                    templateUrl: 'partials/consultList.jsp',
+		                    controller: 'ConsultListCtrl'
+	                    }).
+	                    when('/billing', {
+		                    templateUrl: 'partials/billing.jsp',
+		                    controller: 'BillingCtrl'
+	                    }).
+	                    when('/ticklers', {
+		                    templateUrl: 'partials/ticklerList.jsp',
+		                    controller: 'TicklerListCtrl'
+	                    }).
+	                    when('/patient/:id', {
+		                    templateUrl: 'partials/patient/details.jsp',
+		                    controller: 'PatientDetailCtrl'
+	                    }).
 	                    when('/report', {
 		                    templateUrl: 'partials/report.html',
 		                    controller: 'ReportCtrl'
+	                    }).
+	                    when('/settings', {
+		                    templateUrl: 'partials/settings.jsp',
+		                    controller: 'SettingsCtrl'
+	                    }).
+	                    when('/support', {
+		                    templateUrl: 'partials/support.jsp',
+		                    controller: 'SupportCtrl'
+	                    }).
+	                    when('/help', {
+		                    templateUrl: 'partials/help.jsp',
+		                    controller: 'HelpCtrl'
 	                    }).
 	                    otherwise({
 	                    	redirectTo: '/dashboard'

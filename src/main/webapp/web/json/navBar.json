@@ -1,10 +1,12 @@
 {
+"userName" : "Oscardoc, Doctor",
+
 "menuItems":
 [
    		{"id":0,"label":"Inbox","extra":"18","url":"#/inbox"},
-   		{"id":1,"label":"Consultations","url":"#/consultations"},
+   		{"id":1,"label":"Consultations","url":"#/consults"},
    		{"id":2,"label":"Billing","url":"#/billing"},
-   		{"id":3,"label":"Tickler","extra":"1","url":"#/tickler"},
+   		{"id":3,"label":"Tickler","extra":"1","url":"#/ticklers"},
    		{"id":4,"label":"Schedule","extra":"2","url":"#/schedule"},
    		{"id":5,"label":"K2A","url":"#/k2a"},
    		{"id":6,"label":"Admin","url":"#/admin"}
@@ -24,7 +26,17 @@
 		{"label":"New Patient","url":"#/newpatient"},
 		{"label":"Advanced Search","url":"#/advsearch"},
 		{"label":"Merge Demographic","url":"#/merge"}
-	]
+],
+"programInfo": [
+	{"name":"Family Practice","current":"true"},
+	{"name":"Immunization Clinic","current":"false"},
+	{"name":"Walk-ins","current":"false"}
+],
+"userMenuItems": [
+	{"name":"Settings","url":"#/settings"},
+	{"name":"Support","url":"#/support"},
+	{"name":"Help","url":"#/help"}
+]
 }             
              
              

@@ -23,63 +23,6 @@
     Ontario, Canada
 
 --%>
-	<div class="page-header" style="margin-top: 0px; margin-bottom: 0px;">
-		<h1 style="margin-top: 0px;" ng-cloak>
-			<b>{{demographic.lastName}}, {{demographic.firstName}}</b> ({{demographic.title}})
-			
-			<small class="pull-right"> <i>Born:</i>
-				<b>{{demographic.dateOfBirth | date:'yyyy-MM-dd'}}</b> (<b>42y</b>) &nbsp;&nbsp; <i>Sex:</i> <b>{{demographic.sex}}</b>
-				<i> &nbsp;&nbsp; Hin:</i> <b>{{demographic.hin}}</b> 
-				<br/>
-				<span  class="text-right"><i>Next Appointment: <b>2012-01-01 10:00am</b></i></span>
-			</small>
-
-		</h1>
-	</div>
-	
-	<nav class="navbar navbar-default" role="navigation"
-		style="padding-top: 0px;">
-		<!-- Brand and toggle get grouped for better mobile display -->
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle" data-toggle="collapse"
-				data-target=".navbar-ex1-collapse">
-				<span class="sr-only">Toggle navigation</span> <span
-					class="icon-bar"></span> <span class="icon-bar"></span> <span
-					class="icon-bar"></span>
-			</button>
-			<a class="navbar-brand navbar-toggle pull-left" href="#">Select
-				Module</a>
-		</div>
-
-		<!-- Collect the nav links, forms, and other content for toggling -->
-		<div class="collapse navbar-collapse navbar-ex1-collapse"
-			style="padding-left: 0px;">
-			<ul class="nav navbar-nav" id="myTabs">
-	
-			<li ng-repeat="tab in recordtabs" ng-class="{'active': isActive(tab.id)}">
-			<a ng-click="changeTab(tab.id)" data-toggle="tab">{{tab.name}}</a>
-			</li>
-			<!-- 
-				<li><a href="#/ws/echart/{{demographicNo}}/master" data-toggle="tab">Master</a></li>
-				<li class="active"><a href="#home" data-toggle="tab">Summary</a></li>						
-				<li><a href="#/ws/echart/{{demographicNo}}/lab" >Labs</a></li>
-				 -->
-				 
-			<li class="dropdown"><a  class="dropdown-toggle"
-						data-toggle="dropdown">Apps<b class="caret"></b></a>
-						<ul class="dropdown-menu">
-							<li class="dropdown-header">Apps enabled for this patient</li>
-							<li><a href="#">EntryPoint Shared Care Plan</a></li>
-							<li><a href="#/tasklist">Clinical Connect Patient Launch</a></li>
-							<li class="divider"></li>
-							<li><a href="#">Apps Configuration </a></li>
-						</ul></li>	 
-			</ul>
-		</div>
-		<!-- /.navbar-collapse -->
-	</nav>
-	
-	
 
 
        <div class="col-lg-8">
@@ -136,17 +79,49 @@
   
   
 </div>
-
-
-
-
-       
         <fieldset>
-        	<legend>Demographic</legend>
-		  	<div class="form-group">
-    			<label for="birthday" class="col-xs-2 control-label">Name</label>
+        	<legend>
+        		Demographic
+        		<div class="btn-group pull-right">
+        			<button class="btn view-edit" rel="demographic">View/Edit</button>
+        		</div>
+        		<div class="btn-group pull-right demographic" style="display:none;">
+        			<button class="btn btn-primary save" rel="demographic">Save</button>&nbsp;
+        		</div>
+        	</legend>
+        	<div class="form-group demographic">
+        		<div class="col-xs-10 form-inline">
+		        	<label class="col-xs-1 control-label">Title</label>
+		        	<div class="form-group col-xs-2">
+		        		Mr.
+		            </div>
+		            <label class="col-xs-1 control-label">Name</label>
+		            <div class="form-group">
+		                Yin
+		            </div>
+		            <div class="form-group">
+		                Hank
+		            </div>
+		        </div>
+		        <div class="col-xs-10 form-inline">
+		        	<label class="col-xs-1 control-label">Sex</label>
+		        	<div class="form-group col-xs-2">
+		        		Male
+		            </div>
+		            <label class="col-xs-1 control-label">DOB</label>
+		            <div class="form-group">
+		                January 01, 1970
+		            </div>
+		            <div class="form-group">
+		                Hank
+		            </div>
+		        </div>
+        	</div>
+        	
+		  	<div class="form-group demographic" style="display: none;">
 			    <div class="col-xs-10">
 			        <div class="form-inline">
+			        	<label class="col-xs-1 control-label">Title</label>
 			        	<div class="form-group col-xs-2">
 			        		<select class="form-control">
 							  <option>Mr.</option>
@@ -155,43 +130,81 @@
 							  <option>Master</option>  
 							</select>
 			            </div>
+			            <label class="col-xs-1 control-label">Name</label>
 			            <div class="form-group">
 			                <input type="text" class="form-control" placeholder="lastname"/>
 			            </div>
 			            <div class="form-group">
 			                <input type="text" class="form-control" placeholder="firstname"/>
 			            </div>
-			            <!-- div class="form-group">
-			                <input type="text" class="form-control" placeholder="suffix"/>
-			            </div  -->
 			        </div>
-			        
-			        
 			    </div>
-			    <br>
-			    <label for="birthday" class="col-xs-2 control-label">Sex</label>
 			    <div class="col-xs-10">
 			        <div class="form-inline">
+			        	<label for="birthday" class="col-xs-1 control-label">Sex</label>
 			        	<div class="form-group col-xs-2">
 			        		<select class="form-control">
-							  <option>M</option>
-							  <option>F</option>
-							  <option>U</option>  
+							  <option>Male</option>
+							  <option>Female</option>
+							  <option>Unknown</option>  
 							</select>
 			            </div>
-			            <label for="birthday" class="col-xs-2 control-label">DOB</label>
-			            <div class="form-group col-xs-2">
-			                <input type="text" class="form-control" placeholder="lastname"/>
+			            <label for="birthday" class="col-xs-1 control-label">DOB</label>
+			            <div class="form-group">
+			                <input type="text" class="form-control" placeholder="Year"/>
 			            </div>
-			            <div class="form-group col-xs-2">
-			                <input type="text" class="form-control" placeholder="firstname"/>
+			            <div class="form-group">
+			                <select class="form-control col-xs-2">
+								<option>1</option>
+								<option>2</option>
+								<option>3</option>
+								<option>4</option>  
+								<option>5</option>  
+								<option>6</option>  
+								<option>7</option>  
+								<option>8</option>  
+								<option>9</option>  
+								<option>10</option>  
+								<option>11</option>  
+								<option>12</option>  
+							</select>
 			            </div>
-			            <div class="form-group col-xs-2">
-			                <input type="text" class="form-control" placeholder="suffix"/>
+			            <div class="form-group">
+			                <select class="form-control col-xs-2">
+							  	<option>1</option>
+								<option>2</option>
+								<option>3</option>
+								<option>4</option>
+								<option>5</option>
+								<option>6</option>
+								<option>7</option>
+								<option>8</option>
+								<option>9</option>
+								<option>10</option>
+								<option>11</option>
+								<option>12</option>
+								<option>13</option>
+								<option>14</option>
+								<option>15</option>
+								<option>16</option>
+								<option>17</option>
+								<option>18</option>
+								<option>19</option>
+								<option>20</option>
+								<option>21</option>
+								<option>22</option>
+								<option>23</option>
+								<option>24</option>
+								<option>25</option>
+								<option>26</option>
+								<option>27</option>
+								<option>28</option>
+								<option>29</option>
+								<option>30</option>
+								<option>31</option>
+							</select>
 			            </div>
 			        </div>
-			        
-			        
 			    </div>
 			</div>	
 		</fieldset>
@@ -292,20 +305,16 @@
         			<h5>Ringo Starr<small>(Drummer)</small><span class="pull-right">905-555-1111</span></h5>
 				    <h5>Tyler Stufferson<small>(IP Lawyer)</small><span class="pull-right">905-555-2222</span></h5>
 	   		
-      </fieldset>  
-
-	  
-      
-      
-      	
-
-				  
-					
-					
-					
-  		
-        </div>
-        
-        
-       
-       
+      </fieldset>    		
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	$(".view-edit").click(function() {
+		$("."+$(this).attr("rel")).toggle();
+	});
+	
+	$(".save").click(function() {
+		$("."+$(this).attr("rel")).toggle();
+	});
+});
+</script>       

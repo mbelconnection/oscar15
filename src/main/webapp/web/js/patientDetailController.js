@@ -18,8 +18,8 @@ oscarApp.controller('PatientDetailCtrl', function ($scope,$http) {
 	
 	//HARD CODED FOR NOW
 	$scope.recordtabs =
-	    [ {id: 0, name: 'Detail', url: 'partials/master.jsp'}
-	    , {id: 1, name: 'Summary', url: 'partials/summary.html'}
+	    [ {id: 0, name: 'Detail', url: 'partials/patient/details.jsp'}
+	    , {id: 1, name: 'Summary', url: 'partials/patient/summary.jsp'}
 	    , {id: 4, name: 'Trackers', url: 'partials/tracker.jsp'}
 	    , {id: 9, name: 'MyOscar', url: 'partials/blank.jsp'}
 	   ];

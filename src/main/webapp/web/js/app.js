@@ -27,7 +27,7 @@ oscarApp.config(['$routeProvider',
 		                    controller: 'TicklerListCtrl'
 	                    }).
 	                    when('/patient/:id', {
-		                    templateUrl: 'partials/patient/details.jsp',
+		                    templateUrl: 'partials/patient/index.jsp',
 		                    controller: 'PatientDetailCtrl'
 	                    }).
 	                    when('/report', {

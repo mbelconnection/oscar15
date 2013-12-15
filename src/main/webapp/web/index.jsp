@@ -247,6 +247,7 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 	<script src="js/billingController.js"></script>
 	<script src="js/ticklerController.js"></script>
 	<script src="js/consultListController.js"></script>
+	<script src="js/adminController.js"></script>
 <script>
 
 $(document).ready(function(){

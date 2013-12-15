@@ -23,68 +23,26 @@
  */
 package org.oscarehr.ws.rest.to;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
-@XmlSeeAlso({ DemographicResponse.class,AppointmentResponse.class })
-public class AbstractSearchResponse<T> implements Serializable {
+import org.oscarehr.ws.rest.to.model.AppointmentTo1;
 
-	private static final long serialVersionUID = 1L;
+@XmlRootElement
+@XmlSeeAlso({AppointmentTo1.class})
+public class AppointmentResponse extends AbstractSearchResponse<AppointmentTo1> {
 
-	private int offset;
+    private static final long serialVersionUID = 1L;
 
-	private int limit;
-
-	private int total;
-
-	private Date timestamp = new Date();
-
-	private List<T> content = new ArrayList<T>();
-
-	@XmlAnyElement(lax = true)
-	public List<T> getContent() {
-		return content;
-	}
-
-	public void setContent(List<T> content) {
-		this.content = content;
-	}
-
-	public int getOffset() {
-		return offset;
-	}
-
-	public void setOffset(int offset) {
-		this.offset = offset;
-	}
-
-	public int getLimit() {
-		return limit;
-	}
-
-	public void setLimit(int limit) {
-		this.limit = limit;
-	}
-
-	public Date getTimestamp() {
-		return timestamp;
-	}
-
-	public void setTimestamp(Date timestamp) {
-		this.timestamp = timestamp;
-	}
-
-	public int getTotal() {
-		return total;
-	}
-
-	public void setTotal(int total) {
-		this.total = total;
-	}
+	@Override
+	@XmlElement(name="appointment", type = AppointmentTo1.class)
+	@XmlElementWrapper(name="content")
+    public List<AppointmentTo1> getContent() {
+	    return super.getContent();
+    }
 
 }

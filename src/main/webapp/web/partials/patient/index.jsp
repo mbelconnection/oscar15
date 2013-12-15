@@ -25,13 +25,13 @@
 --%>
 	<div class="page-header" style="margin-top: 0px; margin-bottom: 0px;">
 		<h1 style="margin-top: 0px;" ng-cloak>
-			<b>{{demographic.lastName}}, {{demographic.firstName}}</b> ({{demographic.title}})
+			<b>{{demographic.lastName}}, {{demographic.firstName}}</b> <span ng-if="demographic.title.length>0">({{demographic.title}})</span>
 			
 			<small class="pull-right"> <i>Born:</i>
-				<b>{{demographic.dateOfBirth | date:'yyyy-MM-dd'}}</b> (<b>42y</b>) &nbsp;&nbsp; <i>Sex:</i> <b>{{demographic.sex}}</b>
-				<i> &nbsp;&nbsp; Hin:</i> <b>{{demographic.hin}}</b> 
+				<b>{{demographic.dateOfBirth | date:'yyyy-MM-dd'}}</b> (<b>{{getAge(demographic.dateOfBirth)}}</b>) &nbsp;&nbsp; <i>Sex:</i> <b>{{demographic.sex}}</b>
+				<i> &nbsp;&nbsp; Hin:</i> <b>{{demographic.hin}} <span ng-if="demographic.ver.length>0">&nbsp;{{demographic.ver}}</span></b> 
 				<br/>
-				<span  class="text-right"><i>Next Appointment: <b>2012-01-01 10:00am</b></i></span>
+				<span  class="text-right" ng-if="nextAppointmentDay.length>0"><i>Next Appointment: <b>{{nextAppointmentDay | date:'yyyy-MM-dd'}} {{nextAppointmentTime | date:'hh:mm a'}}</b></i></span>
 			</small>
 
 		</h1>
@@ -51,20 +51,14 @@
 				Module</a>
 		</div>
 
-		<!-- Collect the nav links, forms, and other content for toggling -->
 		<div class="collapse navbar-collapse navbar-ex1-collapse"
 			style="padding-left: 0px;">
 			<ul class="nav navbar-nav" id="myTabs">
 	
 			<li ng-repeat="tab in recordtabs" ng-class="{'active': isActive(tab.id)}">
-			<a ng-click="changeTab(tab.id)" data-toggle="tab">{{tab.name}}</a>
+			<a  ng-click="changeTab(tab.id)" data-toggle="tab">{{tab.name}}</a>
 			</li>
-			<!-- 
-				<li><a href="#/ws/echart/{{demographicNo}}/master" data-toggle="tab">Master</a></li>
-				<li class="active"><a href="#home" data-toggle="tab">Summary</a></li>						
-				<li><a href="#/ws/echart/{{demographicNo}}/lab" >Labs</a></li>
-				 -->
-				 
+			
 			<li class="dropdown"><a  class="dropdown-toggle"
 						data-toggle="dropdown">Apps<b class="caret"></b></a>
 						<ul class="dropdown-menu">

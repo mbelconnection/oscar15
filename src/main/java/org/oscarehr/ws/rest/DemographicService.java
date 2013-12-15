@@ -120,6 +120,28 @@ public class DemographicService extends AbstractServiceImpl {
 		return result;
 	}
 	
+	
+	/* * Gets detailed demographic data as JSON.
+	 * 
+	 * @param id
+	 * 		Id of the demographic to get data for 
+	 * @return
+	 * 		Returns data for the demographic provided 
+	 */
+	
+	@GET
+	@Path("/detail/{dataId}")
+	@Produces("application/json")
+	public DemographicTo1 getDemographicDataJson(@PathParam("dataId") Integer id) {		
+		Demographic demo = demographicManager.getDemographic(id);
+		if (demo == null) {
+			return null;
+		}
+		
+		DemographicTo1 result = demoConverter.getAsTransferObject(demo);
+		return result;
+	}
+	
 	/**
 	 * Search demographics - used by navigation of OSCAR webapp
 	 * 

@@ -25,6 +25,7 @@ package org.oscarehr.common.dao;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +42,8 @@ import org.oscarehr.common.model.Facility;
 import org.oscarehr.util.MiscUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
+
+import oscar.util.DateUtils;
 
 @Repository
 @SuppressWarnings("unchecked")
@@ -78,6 +81,38 @@ public class OscarAppointmentDao extends AbstractDao<Appointment> {
 		List<Appointment> result = query.getResultList();
 		
 		return result;
+	}
+	
+	public List<Appointment> getAppointmentHistoryAfter(Integer demographicNo, Date startDateInclusive, Integer offset, Integer limit) {
+		String sql = "select a from Appointment a where a.demographicNo=? and a.appointmentDate >= ? order by a.appointmentDate ASC, a.startTime ASC";
+		Query query = entityManager.createQuery(sql);
+		query.setParameter(1, demographicNo);
+		query.setParameter(2,startDateInclusive);
+		query.setFirstResult(offset);
+		query.setMaxResults(limit);
+		
+		List<Appointment> results = query.getResultList();
+		
+		List<Appointment> filteredResults= new ArrayList<Appointment>();
+		for(Appointment result:results) {
+			if(DateUtils.isToday(result.getAppointmentDate())) {
+				Calendar apptTimeCal = Calendar.getInstance();
+				apptTimeCal.setTime(result.getStartTime());
+				
+				Calendar apptCal = Calendar.getInstance();
+				apptCal.set(Calendar.HOUR_OF_DAY, apptTimeCal.get(Calendar.HOUR_OF_DAY));
+				apptCal.set(Calendar.MINUTE, apptTimeCal.get(Calendar.MINUTE));
+				
+				if(apptCal.after(startDateInclusive)) {
+					filteredResults.add(result);
+				}
+			} else {
+				filteredResults.add(result);
+			}
+	
+		}
+		
+		return filteredResults;
 	}
 	
 	public List<AppointmentArchive> getDeletedAppointmentHistory(Integer demographicNo, Integer offset, Integer limit) {

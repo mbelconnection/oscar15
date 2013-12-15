@@ -1,6 +1,7 @@
 oscarApp.controller('PatientListCtrl', function ($scope,$http) {
 	$scope.tabItems = [
-	             	{"id":0,"label":"Appts.","url":"json/patientList1.json"},
+	             	{"id":0,"label":"Appts.","url":"../ws/rs/schedule/999998/day/today"},
+	             	//{"id":0,"label":"Appts.","url":"json/patientList1.json"},
 	             	{"id":1,"label":"CaseLoad","url":"json/patientList2.json"}
 	];
 	$scope.moreTabItems = [
@@ -40,9 +41,7 @@ $scope.isMoreActive = function(temp){
 
 $scope.changeMoreTab = function(temp){
 	var beforeChangeTab = $scope.currentmoretab;
-	console.log("changemoretab "+ temp);
 	$scope.currentmoretab = $scope.moreTabItems[temp];
-	console.log("url="+$scope.currentmoretab.url);
 	//I want the patient list to change, and the template to get loaded $scope.patients
 	$http({
 	    url: $scope.currentmoretab.url,
@@ -61,9 +60,7 @@ $scope.changeMoreTab = function(temp){
 }
 
 $scope.changeTab = function(temp){
-	console.log("changetab "+ temp);
 	$scope.currenttab = $scope.tabItems[temp];
-	console.log("url="+$scope.currenttab.url);
 	//I want the patient list to change, and the template to get loaded $scope.patients
 	$http({
 	    url: $scope.currenttab.url,

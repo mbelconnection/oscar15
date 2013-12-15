@@ -21,70 +21,49 @@
  * Hamilton
  * Ontario, Canada
  */
-package org.oscarehr.ws.rest.to;
+package org.oscarehr.web;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
-@XmlSeeAlso({ DemographicResponse.class,AppointmentResponse.class })
-public class AbstractSearchResponse<T> implements Serializable {
-
-	private static final long serialVersionUID = 1L;
-
-	private int offset;
-
-	private int limit;
-
-	private int total;
-
-	private Date timestamp = new Date();
-
-	private List<T> content = new ArrayList<T>();
-
-	@XmlAnyElement(lax = true)
-	public List<T> getContent() {
-		return content;
+@XmlRootElement()
+@XmlType(name = "", propOrder = {"template", "patients" })
+public class PatientListApptBean implements Serializable{
+	
+	private String template = "partials/patientList1.html";
+	
+	private List<PatientListApptItemBean> patients = new ArrayList<PatientListApptItemBean>(); 
+	
+	
+	
+	public String getTemplate() {
+		return template;
 	}
 
-	public void setContent(List<T> content) {
-		this.content = content;
+
+
+	public void setTemplate(String template) {
+		this.template = template;
 	}
 
-	public int getOffset() {
-		return offset;
+
+
+	public List<PatientListApptItemBean> getPatients() {
+		return patients;
 	}
 
-	public void setOffset(int offset) {
-		this.offset = offset;
+
+
+	public void setPatients(List<PatientListApptItemBean> patients) {
+		this.patients = patients;
 	}
 
-	public int getLimit() {
-		return limit;
-	}
 
-	public void setLimit(int limit) {
-		this.limit = limit;
-	}
 
-	public Date getTimestamp() {
-		return timestamp;
-	}
 
-	public void setTimestamp(Date timestamp) {
-		this.timestamp = timestamp;
-	}
-
-	public int getTotal() {
-		return total;
-	}
-
-	public void setTotal(int total) {
-		this.total = total;
-	}
-
+	
 }

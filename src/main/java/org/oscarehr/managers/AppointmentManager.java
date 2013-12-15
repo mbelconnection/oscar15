@@ -24,6 +24,7 @@
 package org.oscarehr.managers;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.oscarehr.common.dao.OscarAppointmentDao;
@@ -39,6 +40,20 @@ public class AppointmentManager {
 
 	@Autowired
 	private OscarAppointmentDao appointmentDao;
+	
+	public List<Appointment> getAppointmentHistoryAfter(Integer demographicNo, Date startDateInclusive, Integer offset, Integer limit) {
+		StringBuilder ids = new StringBuilder();
+		
+		List<Appointment> result = appointmentDao.getAppointmentHistoryAfter(demographicNo,startDateInclusive, offset, limit);
+		
+		
+		//--- log action ---
+		if (result.size()>0) {
+		
+			LogAction.addLogSynchronous("AppointmentManager.getAppointmentHistoryAfter", "ids returned=" + ids);
+		}
+		return result;
+	}
 	
 	public List<Object> getAppointmentHistoryWithoutDeleted(Integer demographicNo, Integer offset, Integer limit) {
 		List<Object> result = new ArrayList<Object>();

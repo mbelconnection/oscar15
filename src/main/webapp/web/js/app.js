@@ -1,4 +1,14 @@
-var oscarApp = angular.module('oscarProviderViewModule', ['ngRoute']);
+
+//var patientDetailServices = angular.module('patientDetailServices', ['ngResource']);
+/*     
+patientDetailServices.factory('PatientDetail', ['$resource', function($resource){
+	return $resource('../ws/rs/demographics/detail/:demographicNo', {}, {
+		query: {method:'GET', params:{demographicNo:'phones'}, isArray:true}
+	});
+}]);
+  */  
+    
+var oscarApp = angular.module('oscarProviderViewModule', ['ngRoute','ngResource']);
 
 oscarApp.config(['$routeProvider',
                     function($routeProvider) {
@@ -26,9 +36,9 @@ oscarApp.config(['$routeProvider',
 		                    templateUrl: 'partials/ticklerList.jsp',
 		                    controller: 'TicklerListCtrl'
 	                    }).
-	                    when('/patient/:id', {
+	                    when('/patient/:demographicNo', {
 		                    templateUrl: 'partials/patient/index.jsp',
-		                    controller: 'PatientDetailCtrl'
+		                    controller: 'PatientCtrl'
 	                    }).
 	                    when('/report', {
 		                    templateUrl: 'partials/report.html',

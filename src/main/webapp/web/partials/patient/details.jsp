@@ -169,19 +169,19 @@
 			<div class="col-xs-5">
 				<div>
 					<label class="col-xs-3 control-label">Address</label>
-					<div class="form-group">{{demographic.address}}</div>
+					<div class="form-group">{{demographic.address.address}}</div>
 				</div>
 				<div>
 					<label class="col-xs-3 control-label">City</label>
-					<div class="form-group">{{demographic.city}}</div>
+					<div class="form-group">{{demographic.address.city}}</div>
 				</div>
 				<div>
 					<label class="col-xs-3 control-label">Province</label>
-					<div class="form-group">{{demographic.province}}</div>
+					<div class="form-group">{{demographic.address.province}}</div>
 				</div>
 				<div>
-					<label class="col-xs-3 control-label">Postcode</label>
-					<div class="form-group">{{demographic.postcode}}</div>
+					<label class="col-xs-3 control-label">Postal Code</label>
+					<div class="form-group">{{demographic.address.postal}}</div>
 				</div>
 				<div>
 					<label class="col-xs-3 control-label">Email</label>

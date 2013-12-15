@@ -231,7 +231,8 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 	<script src="../library/typeahead.js/typeahead.min.js"></script>
 	<script src="../library/angular.min.js"></script>
 	<script src="../library/angular-route.min.js"></script>
-
+ 	<script src="../library/angular-resource.min.js"></script>
+ 
 	<!-- we'll combine/minify later -->
 	<script src="js/app.js"></script>
 	<script src="js/dashboardController.js"></script>
@@ -241,7 +242,8 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 	<script src="js/providerViewController.js"></script>
 	<script src="js/reportController.js"></script>
 	<script src="js/scheduleController.js"></script>
-	<script src="js/patientDetailController.js"></script>
+	<script src="js/patientController.js"></script>
+	 <script src="js/patientDetailController.js"></script>
 	<script src="js/billingController.js"></script>
 	<script src="js/ticklerController.js"></script>
 	<script src="js/consultListController.js"></script>

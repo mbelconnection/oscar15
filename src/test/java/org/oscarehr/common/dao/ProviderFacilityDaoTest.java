@@ -32,7 +32,7 @@ import org.oscarehr.common.model.ProviderFacility;
 import org.oscarehr.common.model.ProviderFacilityPK;
 import org.oscarehr.util.SpringUtils;
 
-public class ProviderFacilityDaoTest {
+public class ProviderFacilityDaoTest extends DaoTestFixtures {
 
 	private ProviderFacilityDao dao = SpringUtils.getBean(ProviderFacilityDao.class);
 

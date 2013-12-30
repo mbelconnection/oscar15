@@ -23,4 +23,27 @@
     Ontario, Canada
 
 --%>
-{{title}}
+<!doctype html>
+<head>
+
+	<link rel="stylesheet" href="css/app.css">
+	<link rel="stylesheet" href="lib/scheduler/scheduler.css">
+
+	
+</head>
+<body ng-controller="MainSchedulerCtrl">
+	<div data="events" dhx-scheduler style="height:600px; width:100%;">
+		<div class="dhx_cal_prev_button">&nbsp;</div>
+		<div class="dhx_cal_next_button">&nbsp;</div>
+		<div class="dhx_cal_today_button"></div>
+		<div class="dhx_cal_date"></div>
+		<div class="dhx_cal_tab" name="day_tab" style="right:204px;"></div>
+		<div class="dhx_cal_tab" name="week_tab" style="right:140px;"></div>
+		<div class="dhx_cal_tab" name="month_tab" style="right:76px;"></div>    
+
+		<div dhx-template="event_bar_text">
+			<strong>#{{event.id}}</strong>: {{event.text | uppercase}}
+		</div>
+	<div>
+</body>
+</html>

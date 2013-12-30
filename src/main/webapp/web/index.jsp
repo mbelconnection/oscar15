@@ -244,7 +244,7 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 	<script src="js/reportController.js"></script>
 	<script src="js/scheduleController.js"></script>
 	<script src="js/patientController.js"></script>
-	 <script src="js/patientDetailController.js"></script>
+	<script src="js/patientDetailController.js"></script>
 	<script src="js/billingController.js"></script>
 	<script src="js/ticklerController.js"></script>
 	<script src="js/consultListController.js"></script>
@@ -252,6 +252,10 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 	<script src="js/settingsController.js"></script>
 	<script src="js/supportController.js"></script>
 	<script src="js/helpController.js"></script>
+	<script src="lib/scheduler/scheduler_lib.js"></script>
+	<script src="js_up/app_up.js"></script>
+	<script src="js_up/app.scheduler.js"></script>
+
 <script>
 
 $(document).ready(function(){

@@ -69,11 +69,11 @@ oscarApp.config(['$routeProvider',
 
 
 
-
 //for dev - just to keep the cache clear
 oscarApp.run(function($rootScope, $templateCache) {
 	$rootScope.$on('$viewContentLoaded', function() {
 		$templateCache.removeAll();
+		console.log("onclick of tab");
 	});
 });
 

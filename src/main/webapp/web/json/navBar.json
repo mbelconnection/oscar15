@@ -3,7 +3,7 @@
 
 "menuItems":
 [
-   		{"id":0,"label":"Inbox","extra":"18","url":"#/inbox"},
+   		{"id":0,"label":"Inbox","extra":"1","url":"#/inbox"},
    		{"id":1,"label":"Consultations","url":"#/consults"},
    		{"id":2,"label":"Billing","url":"#/billing"},
    		{"id":3,"label":"Tickler","extra":"1","url":"#/ticklers"},
@@ -21,6 +21,7 @@
 ],
 
 "currentProgram": {"id":"10016", "name":"Family Practice"},
+
 "counts":{"oscarDemoMessages":"1", "oscarMessages":"2","myOscarMessages":"6"},
 "demographicSearchDropDownItems": [
 		{"label":"New Patient","url":"#/newpatient"},

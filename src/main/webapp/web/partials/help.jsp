@@ -23,4 +23,6 @@
     Ontario, Canada
 
 --%>
-help
+<h2 class="text-center">OSCAR Help</h2>
+<p></p>
+<p><a href="http://www.oscarmanual.org" target="manual">http://www.oscarmanual.org</a></p>

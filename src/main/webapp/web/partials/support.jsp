@@ -23,4 +23,16 @@
     Ontario, Canada
 
 --%>
-support
+<h2 class="text-center">OSCAR Support</h2>
+<p></p>
+<p>Please submit your problem in the form below, and you will be contacted shortly.</p>
+<p><strong>Helpline #: 1-800-111-1111</strong></p>
+
+<form role="form">
+  <div class="form-group">
+    <label for="exampleInputEmail1">Describe the problem you are having</label>
+    <textarea class="form-control" id="problem" rows="15"></textarea>
+  </div>
+  
+  <button type="submit" class="btn btn-default">Submit</button>
+</form>

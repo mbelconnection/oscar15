@@ -72,16 +72,25 @@ oscarApp.config(['$routeProvider',
 
 //for dev - just to keep the cache clear
 oscarApp.run(function($rootScope, $templateCache) {
-	   $rootScope.$on('$viewContentLoaded', function() {
-	      $templateCache.removeAll();
-	   });
+	$rootScope.$on('$viewContentLoaded', function() {
+		$templateCache.removeAll();
 	});
+});
 
 
 oscarApp.run( function($rootScope, $location) {
+	// register listener to watch route changes
+	$rootScope.$on( "$routeChangeStart", function(event, next, current) {
+	console.log(JSON.stringify(next, null, 4));
+	});  
+});
 
-   // register listener to watch route changes
-   $rootScope.$on( "$routeChangeStart", function(event, next, current) {
-	   console.log(JSON.stringify(next, null, 4));
-   });
+//reset the left nav back
+oscarApp.run( function($rootScope, $location) {
+	$rootScope.$on( "$routeChangeStart", function(event, next, current) {
+		$("#left_pane").addClass("col-md-2");
+		$("#left_pane").show();
+		$("#right_pane").removeClass("col-md-12");
+		$("#right_pane").addClass("col-md-10");
+	});  
 });

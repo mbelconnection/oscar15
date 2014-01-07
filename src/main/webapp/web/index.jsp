@@ -132,11 +132,11 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 						<span class="dropdown">
 						<span class="dropdown-toggle" data-toggle="dropdown"><u>{{currentProgram.name}}</u></span>
 						<ul class="dropdown-menu" role="menu">
-							<li ng-repeat="item in programInfo">
-					    		<a href="#">
+                                                       <li ng-repeat="item in programInfo">
+                                                       <a href="#">
 					    			<span ng-if="item.current === 'true'">&#10004;</span>
 					    			<span ng-if="item.current === 'false'">&nbsp;&nbsp;</span>
-					    			{{item.name}}
+								{{item.name}}
 					    		</a>
 					    	</li>
 				 		 </ul>
@@ -166,9 +166,10 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 	 
 	 <!-- Start patient List template -->
 
+ 
 	<span ng-controller="PatientListCtrl">
 	<div class="container-fluid">
-		<div class="col-md-2">
+		<div id="left_pane" class="col-md-2">
 			<ul class="nav nav-tabs">			
 				<li ng-repeat="item in tabItems" ng-class="{'active': isActive(item.id)}">
 					<a ng-click="changeTab(item.id)" data-toggle="tab">{{item.label}}</a>
@@ -217,7 +218,7 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 	
 	<!-- End patient List template -->
 		
-	<div class="col-md-10" ng-view ng-cloak></div>
+	<div id="right_pane" class="col-md-10" ng-view ng-cloak></div>
 	
 	<!-- just for debugging -->
 	<p class="text-warning" id="myinfo"></p>
@@ -248,6 +249,9 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 	<script src="js/ticklerController.js"></script>
 	<script src="js/consultListController.js"></script>
 	<script src="js/adminController.js"></script>
+	<script src="js/settingsController.js"></script>
+	<script src="js/supportController.js"></script>
+	<script src="js/helpController.js"></script>
 <script>
 
 $(document).ready(function(){
@@ -268,16 +272,16 @@ $(document).ready(function(){
 	        filter: function (parsedResponse) {
 	        	var maxResults = 10;
 	            retval = [];
-	            if(parsedResponse.demographicSearchResults.items instanceof Array) {
-	            	for (var i = 0;  i < parsedResponse.demographicSearchResults.items.length;  i++) {
+	            if(parsedResponse.items instanceof Array) {
+	            	for (var i = 0;  i < parsedResponse.items.length;  i++) {
 	            		if(i > maxResults) {
-	            			reval.push({'more':'true','numResults':parsedResponse.demographicSearchResults.items.length});
+	            			reval.push({'more':'true','numResults':parsedResponse.items.length});
 	            		} else {
-	            			retval.push(parsedResponse.demographicSearchResults.items[i]);
+	            			retval.push(parsedResponse.items[i]);
 	            		}
 	                 }
 	            } else {
-	            	retval.push(parsedResponse.demographicSearchResults.items);
+	            	retval.push(parsedResponse.items);
 	            }
 	            return retval;
 	        }

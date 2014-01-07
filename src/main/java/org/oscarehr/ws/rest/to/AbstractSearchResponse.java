@@ -31,7 +31,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
-@XmlSeeAlso({ DemographicResponse.class,AppointmentResponse.class })
+@XmlSeeAlso({ DemographicResponse.class,AppointmentResponse.class,ProgramDomainResponse.class})
 public class AbstractSearchResponse<T> implements Serializable {
 
 	private static final long serialVersionUID = 1L;

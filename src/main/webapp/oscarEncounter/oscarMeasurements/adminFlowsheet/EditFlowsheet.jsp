@@ -29,27 +29,34 @@
 <%@ page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@ page import="org.springframework.web.context.WebApplicationContext"%>
 <%@ page import="org.oscarehr.common.dao.*,org.oscarehr.common.model.FlowSheetCustomization"%>
-
 <%@ page import="oscar.oscarEncounter.oscarMeasurements.MeasurementTemplateFlowSheetConfig"%>
 <%@ page import="oscar.oscarEncounter.oscarMeasurements.FlowSheetItem"%>
 
+<%@page import="org.oscarehr.util.SpringUtils" %>
+<%@page import="org.oscarehr.common.model.Demographic" %>
 
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/oscar-tag.tld" prefix="oscar" %>
 <%@ taglib uri="/WEB-INF/rewrite-tag.tld" prefix="rewrite" %>
-
+<%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
 
 <%
     long startTimeToGetP = System.currentTimeMillis();
     String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
-
-
+    
+    String module="";
+    String htQueryString = "";
+    if(request.getParameter("htracker")!=null){
+    	module="htracker";
+    	htQueryString="&"+module;	
+    }
+    
     String temp = "";
-    if (request.getParameter("flowsheet") != null) {
-        temp = request.getParameter("flowsheet");
+    if(request.getParameter("flowsheet") != null){
+    	temp = request.getParameter("flowsheet");
     }else{
-	temp = "tracker";
+		temp = "tracker";
     }
 
     String flowsheet = temp;
@@ -77,6 +84,8 @@
     XMLOutputter outp = new XMLOutputter();
     outp.setFormat(Format.getPrettyFormat());
 
+    DemographicDao demographicDao = SpringUtils.getBean(DemographicDao.class); 
+    Demographic demo = demographicDao.getDemographic(demographic);
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -85,7 +94,7 @@
 <title>Edit Flowsheet</title><!--I18n-->
 
 <link href="<%=request.getContextPath() %>/css/bootstrap.css" rel="stylesheet">
-<link href="<%=request.getContextPath() %>/css/bootstrap-responsive.css" rel="stylesheet">
+
 
 <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
 <!--[if lt IE 9]>
@@ -145,8 +154,6 @@ right:15px;
 
 #about-oscar:hover{cursor: hand; cursor: pointer;}
 
-
-
 .select-measurement{
 font-size:16px;
 width:250px;
@@ -159,10 +166,7 @@ width:100px !important;
 .rule-text{
 width:100px !important;
 }
-
-
 </style>
-
 
 <style type="text/css" media="print">
 .DoNotPrint {
@@ -187,27 +191,44 @@ width:100px !important;
 <div class="container-fluid main-container">
 <div class="row-fluid">
 
-<%if (request.getParameter("ht") != null && request.getParameter("demographic")!=null) {%> 
-<a href="../HealthTrackerPage.jspf?demographic_no=<%=demographic%>&template=<%=flowsheet%>" class="back" title="go back to <%=flowsheet%>"><< Health Tracker</a> <br/>
-<%}%>
+<%if (demographic!=null) {
+	if(request.getParameter("htracker")!=null){%> 
+	<a href="../HealthTrackerPage.jspf?demographic_no=<%=demographic%>&template=<%=flowsheet%>" class="back" title="go back to <%=flowsheet%>"><< Health Tracker</a> <br/>
+	<%}else{%>
+	<a href="../TemplateFlowSheet.jsp?demographic_no=<%=demographic%>&template=<%=flowsheet%>" class="back" title="go back to <%=flowsheet%>"><< Flowsheets</a> <br/>
+	<%
+	}
+}%>
 
 <h3 style="display:inline;">Edit Flowsheet: <span style="font-weight:normal"><%=flowsheet.toUpperCase()%></span> </h3>
 
 		  <span class="mode-toggle">
 		            <% if (demographic!=null) { %>
-		             Individual Patient 
+		             <i>for</i> Patient <%=demo.getLastName()%>, <%=demo.getFirstName()%>
 
 					<security:oscarSec roleName="<%=roleName$%>" objectName="_flowsheet" rights="x">
 						| <a href="EditFlowsheet.jsp?flowsheet=<%=flowsheet%>">All Patients</a> 
 					</security:oscarSec>
 
 		            <%}else{%>
-		                All Patients
+		               <i>for</i> All Patients
 		            <%}%>
 		  </span>
 </div>
 
+	<%if (demographic!=null) { %>
+		<div class="alert alert-info">
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+			Any changes made to this flowsheet will be applied to this patient, for you only.
+		</div>
+	 <%}else{%>
+		<div class="alert">
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+			Any changes made to this flowsheet will be applied to all of <u>your</u> patients.
+		</div>
+	 <%}%>
 	<div class="row-fluid">
+
 		<div class="span8">
 
 		<!-- Flowsheet Measurement List -->
@@ -236,8 +257,12 @@ width:100px !important;
 		               %>
 		                <tr>
 		         		<td>
-		         		<a href="UpdateFlowsheet.jsp?flowsheet=<%=temp%>&measurement=<%=mstring%><%=demographicStr%>" title="Edit" class="action-icon"><i class="icon-pencil"></i></a>
-		                <a href="FlowSheetCustomAction.do?method=delete&flowsheet=<%=temp%>&measurement=<%=mstring%><%=demographicStr%>" title="Delete" class="action-icon"><i class="icon-trash"></i></a>
+		         		<%if(mFlowsheet.getFlowSheetItem(mstring).getPreventionType()!=null){ %>
+		         		<i class="icon-pencil action-icon"  rel="popover" data-container="body"  data-toggle="popover" data-placement="right" data-content="unable to edit a prevention item" data-trigger="hover" title=""></i>
+		                <%}else{%>
+		                <a href="UpdateFlowsheet.jsp?flowsheet=<%=temp%>&measurement=<%=mstring%><%=demographicStr%><%=htQueryString%>" title="Edit" class="action-icon"><i class="icon-pencil"></i></a>
+		                <%}%>
+		                <a href="FlowSheetCustomAction.do?method=delete&flowsheet=<%=temp%>&measurement=<%=mstring%><%=demographicStr%><%=htQueryString%>" title="Delete" class="action-icon"><i class="icon-trash"></i></a>
 		                </td>
 		                <td><%=counter%></td>
 		                <td><%=mstring%></td>
@@ -292,7 +317,7 @@ width:100px !important;
 	             //do nothing   
 	            }
 		    %>
-		       <tr><td><a href="FlowSheetCustomAction.do?method=archiveMod&id=<%=cust.getId()%>&flowsheet=<%=flowsheet%><%=demographicStr%>" class="action-icon"><i class="icon-trash"></i></a> </td> 
+		       <tr><td><a href="FlowSheetCustomAction.do?method=archiveMod&id=<%=cust.getId()%>&flowsheet=<%=flowsheet%><%=demographicStr%><%=htQueryString%>" class="action-icon"><i class="icon-trash"></i></a> </td> 
 		       
 		       <td><%=cust.getAction()%></td>
 		       
@@ -356,7 +381,9 @@ width:100px !important;
 <div class="modal-body">
 <!-- Add measurement type -->
 <div>
-		       
+		    <%if(request.getParameter("htracker")!=null){ %>
+		    <input type="hidden" name="htracker" value="<%=module%>">
+		    <%}%>   
             <input type="hidden" name="flowsheet" value="<%=temp%>"/>
             <input type="hidden" name="method" value="save"/>
             <%if (demographic !=null){%>
@@ -456,15 +483,17 @@ width:100px !important;
             <%=outp.outputString(va)%>
         </textarea><!-- flowsheet xml output END-->
 
-
-<script src="<%=request.getContextPath() %>/js/jquery-1.9.1.js"></script> 
+<script src="<%=request.getContextPath() %>/js/jquery-1.9.1.min.js"></script> 
 <script src="<%=request.getContextPath() %>/js/bootstrap.min.js"></script>	
 <script type="text/javascript" src="<%=request.getContextPath() %>/js/jquery.dataTables.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath() %>/js/DT_bootstrap.js"></script> 
-
 <script src="<%=request.getContextPath() %>/js/jquery.validate.js"></script>
 
 <script>
+$(function (){ 
+	$("[rel=popover]").popover({});  
+}); 
+
 $(document).ready(function () {
 
 <%if(request.getParameter("add")!=null){%>

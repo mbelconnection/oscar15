@@ -168,7 +168,6 @@ maybe use jquery/ajax to post this data instead of submitting a form to send ALL
 <meta name="viewport" content="width=device-width, user-scalable=false;">
 
 <link href="<%=request.getContextPath() %>/css/bootstrap.css" rel="stylesheet">
-<link href="<%=request.getContextPath() %>/css/bootstrap-responsive.css" rel="stylesheet">
 <link href="<%=request.getContextPath() %>/css/datepicker.css" rel="stylesheet">
 
 <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -425,7 +424,7 @@ div.headPrevention a:visited { color:black; }
 
 <div class="module-block DoNotPrint">
 <%if (!printView){%>
-	<%if (request.getParameter("ht") != null) {%> 
+	<%if (request.getParameter("htracker") != null) {%> 
 	<a href="HealthTrackerPage.jspf?demographic_no=<%=demographic_no%>&template=<%=temp%>" title="go back to <%=temp%>"><< <%=flowSheet%></a> <br/>
 	<%}else{%>
 	<a href="TemplateFlowSheet.jsp?demographic_no=<%=demographic_no%>&template=<%=temp%>" title="go back to <%=temp%>"><< <%=flowSheet%></a> <br/>

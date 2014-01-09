@@ -60,6 +60,14 @@ if(demographic == null || demographic.isEmpty()) {
 	custList = flowSheetCustomizationDao.getFlowSheetCustomizations( flowsheet,(String) session.getAttribute("user"),Integer.parseInt(demographic));
 }
 
+String module="";
+String htQueryString = "";
+if(request.getParameter("htracker")!=null){
+	module="htracker";
+	htQueryString="&"+module;
+}
+
+
 MeasurementFlowSheet mFlowsheet = templateConfig.getFlowSheet(flowsheet,custList);
 long end = System.currentTimeMillis() ;
 long diff = end - start;
@@ -77,7 +85,7 @@ FlowSheetItem fsi =mFlowsheet.getFlowSheetItem(measurement);
 <title>Update Flowsheet <%=flowsheet%>  <oscar:nameage demographicNo="<%=demographic%>"/></title><!--I18n-->
 
 <link href="<%=request.getContextPath() %>/css/bootstrap.css" rel="stylesheet">
-<link href="<%=request.getContextPath() %>/css/bootstrap-responsive.css" rel="stylesheet">
+
 
 <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
 <!--[if lt IE 9]>
@@ -141,6 +149,10 @@ display:inline-block;
 
 <form action="FlowSheetCustomAction.do">
 
+		    <%if(request.getParameter("htracker")!=null){ %>
+		    <input type="hidden" name="htracker" value="<%=module%>">
+		    <%}%> 
+			
             <input type="hidden" name="method" value="update"/>
             <input type="hidden" name="flowsheet" value="<%=flowsheet%>"/>
             <input type="hidden" name="measurement" value="<%=measurement%>"/>
@@ -407,7 +419,7 @@ display:inline-block;
 				<%if(request.getParameter("demographic")==null){ %>
 				<a href="EditFlowsheet.jsp?flowsheet=<%=flowsheet%>" class="btn">Cancel</a>
 				<%}else{ %>
-                <a href="EditFlowsheet.jsp?flowsheet=<%=flowsheet%>&demographic=<%=demographic%>" class="btn">Cancel</a> 
+                <a href="EditFlowsheet.jsp?flowsheet=<%=flowsheet%>&demographic=<%=demographic%><%=htQueryString%>" class="btn">Cancel</a> 
                 <%} %>
                 <input type="submit" class="btn btn-primary" value="Update" />
                 </div>

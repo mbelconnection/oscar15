@@ -559,7 +559,12 @@
 	</global-forwards>
 
 	<action-mappings>
-
+        <!-- Consultations -->
+        <action path="/consults/Consultations"
+                type="org.oscarehr.consultations.ConsultationAction"
+                scope="request">
+        </action>
+        
         <!-- Notification Mappings -->
         <action path="/notification/create"
                 type="org.oscarehr.common.web.ProviderNotificationAction"

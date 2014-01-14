@@ -1,4 +1,3 @@
-<!doctype html>
 <%--
 
     Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved.
@@ -24,23 +23,11 @@
     Ontario, Canada
 
 --%>
+
 <%@ include file="/taglibs.jsp"%>
-<html lang="en">
 
-<head>
-<tiles:get name="title" />
-<tiles:get name="header" />
+<tiles:insert definition="nonPatientContext" >
+	<tiles:put name="title" value="<title>OSCAR - Consultation List</title>" type="String" />
+	<tiles:put name="content" value="/consults/Consultations/consultList.jspf" />
+</tiles:insert>
 
-<div class="container-fluid" id="main-wrapper" style="margin-top:70px;">
-
-	<div class="row-fluid">
-		
-	<tiles:get name="content" /><!--secondary layout-->
-
-	</div><!--row-fluid-->
-</div><!--container-fluid-->
-
-<tiles:get name="footer" />
-
-</body>
-</html>

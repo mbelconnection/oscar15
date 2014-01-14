@@ -48,6 +48,11 @@ import org.apache.commons.lang.StringUtils;
 public class ConsultationRequest extends AbstractModel<Integer> implements Serializable {
 
 	private static final String ACTIVE_MARKER = "1";
+	
+	public static final int URGENCY_NON_URGENT = 2;
+	public static final int URGENCY_URGENT = 1;
+	public static final int URGENCY_SEMI_URGENT = 5;
+	public static final int URGENCY_RETURN = 3;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -35,12 +35,11 @@
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/css/bootstrap-responsive.css">
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/css/font-awesome.min.css">
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/datepicker.css">
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/library/datatables/dataTables.bootstrap.css">
 
+<script type="text/javascript" src="<%=request.getContextPath() %>/library/bootstrap/3.0.0/js/bootstrap.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.dataTables.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/DT_bootstrap.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/bootstrap-datepicker.js"></script>
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/library/datatables/dataTables.bootstrap.js">
 
 <style>
 	.datepicker {z-index: 9999;}
@@ -51,7 +50,7 @@
 	#search-options{margin-left: 20px;}
 </style>
 
-<div id="consult-list">
+<div class="well" id="consult-list">
 	<h4 style="display: inline">Consultation List</h4> | 
 	<a href="javascript:popupOscarConsultationConfig(700,960,'<%=request.getContextPath()%>/oscarEncounter/oscarConsultationRequest/config/ShowAllServices.jsp')" class="consultButtonsActive">
     	<bean:message key="consultationList.editSpecialists"/>
@@ -84,8 +83,8 @@ else {
 	consultUtil.estTeams();
 }
 %>
-<div id="teamDiv" class="team">
-	<label><bean:message key="consultationList.selectTeam" />:</label>
+<div id="teamDiv" class="hidden team">
+	<bean:message key="consultationList.selectTeam" />:
 	<select id="team" name="team">                                
 		<option value=""><bean:message key="oscarEncounter.oscarConsultationRequest.ViewConsultationRequests.formViewAll"/></option>                                
 	    <%                              
@@ -168,7 +167,8 @@ $(document).ready(function () {
 		"bProcessing": true,
         "bServerSide": true,
         "sAjaxSource": "<%=basePath%>/consults/Consultations.do",
-		"aLengthMenu": [ 10, 25, 50, 100 ],
+		/*"aLengthMenu": [ 10, 25, 50, 100 ],*/
+		"aLengthMenu": [ 1, 2, 3, 4 ],
 		"bFilter": true,
         "aoColumns": [
 			{ "sTitle": "", "bSortable": false, "mData": "urgency", "sClass": "center", "mRender": function(data, type, row) {
@@ -231,9 +231,12 @@ $(document).ready(function () {
 		}
 	});
 	$("#consultList_length").before($("#teamDiv").removeClass("hidden"));
-	var options = $('<button class="btn" id="search-options">options <span class="caret"></span></button>');
+	var options = $('<a href="#" class="btn" id="search-options">options <span class="caret"></span></a>');
 	options.appendTo('div.dataTables_filter label');	
 	$("#search-options").click(function() {
+		$('#searchModal').modal('show');	
+	});
+	$("#search-options").click(function(){
 		$('#searchModal').modal('show');	
 	});
 	$('#date-start').datepicker({
@@ -242,14 +245,14 @@ $(document).ready(function () {
 	$('#date-end').datepicker({
 		format: "yyyy-mm-dd"
 	});
-	$("#team").on("change", function() {
+	$("#team").live("change", function() {
 		dataTable._fnAjaxUpdate();
 	});
-	$("#search").on("click", function() {
+	$("#search").live("click", function() {
 		withOption = true;
 		dataTable._fnAjaxUpdate();
 	});
-	$("#reset").on("click", function() {
+	$("#reset").live("click", function() {
 		$("#startDate").val("");
 		$("#endDate").val("");
 		$("#status option:first-child").attr("selected", "selected");
@@ -275,4 +278,3 @@ function popupOscarConsultationConfig(vheight,vwidth,varpage) { //open a new pop
   	}
 }
 </script>
-

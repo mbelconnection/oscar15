@@ -559,11 +559,26 @@
 	</global-forwards>
 
 	<action-mappings>
-        <!-- Consultations -->
-        <action path="/consults/Consultations"
-                type="org.oscarehr.consultations.ConsultationAction"
-                scope="request">
-        </action>
+      <!-- Consultations -->
+      <action path="/consults/Consultations"
+              type="org.oscarehr.consultations.ConsultationAction"
+              scope="request">
+      </action>
+
+			<!-- Tickler List -->  
+      <action path="/tickler2/Ticklers" 
+      	  		type="org.oscarehr.ticklers.web.TicklerAction" 
+        			scope="request">  
+      </action> 
+
+			<!-- Tickler Main -->  
+			<action path="/tickler2/TicklerMain" 
+					type="org.oscarehr.ticklers.web.TicklerMainAction" 
+					parameter="method" 
+					scope="request" 
+					validate="false"> 
+			</action> 
+
         
         <!-- Notification Mappings -->
         <action path="/notification/create"

@@ -30,17 +30,17 @@
 <%@ page import="oscar.oscarEncounter.oscarConsultationRequest.pageUtil.EctConsultationFormRequestUtil"%>
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
 
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/library/bootstrap/3.0.0/css/bootstrap.css">
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/DT_bootstrap.css">
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/css/bootstrap-responsive.css">
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/library/bootstrap/3.0.0/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/library/bootstrap/3.0.0/assets/css/DT_bootstrap.css">
+
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/css/font-awesome.min.css">
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/datepicker.css">
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/library/datatables/dataTables.bootstrap.css">
+
 
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.dataTables.js"></script>
-<script type="text/javascript" src="<%=request.getContextPath()%>/js/DT_bootstrap.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/library/bootstrap/3.0.0/assets/js/DT_bootstrap.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/bootstrap-datepicker.js"></script>
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/library/datatables/dataTables.bootstrap.js">
+
 
 <style>
 	.datepicker {z-index: 9999;}
@@ -230,8 +230,14 @@ $(document).ready(function () {
 			aoData.push( { "name": "status", "value": status } );
 		}
 	});
+
+	//The patch Boot3/Datatables patch - insert after you initialise dataTable
+	$('div.dataTables_filter label select').addClass('form-control');
+	$('div.dataTables_filter label input').addClass('form-control').css({"width" : "200px","margin-right" : "0px"});
+	//The patch Boot3/Datatables patch -end
+	
 	$("#consultList_length").before($("#teamDiv").removeClass("hidden"));
-	var options = $('<button class="btn" id="search-options">options <span class="caret"></span></button>');
+	var options = $('<button class="btn btn-default" id="search-options" style="margin-left:0px">options <span class="caret"></span></button>');
 	options.appendTo('div.dataTables_filter label');	
 	$("#search-options").click(function() {
 		$('#searchModal').modal('show');	

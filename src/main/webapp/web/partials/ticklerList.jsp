@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (c) 2013-2015. Department of Family Medicine, McMaster University. All Rights Reserved.
+    Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved.
     This software is published under the GPL GNU General Public License.
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -45,17 +45,16 @@
 
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
 
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/library/bootstrap/3.0.0/css/bootstrap.css">
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/DT_bootstrap.css">
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/css/bootstrap-responsive.css">
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/library/bootstrap/3.0.0/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/library/bootstrap/3.0.0/assets/css/DT_bootstrap.css">
+
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/css/font-awesome.min.css">
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/datepicker.css">
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/library/datatables/dataTables.bootstrap.css">
+
 
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.dataTables.js"></script>
-<script type="text/javascript" src="<%=request.getContextPath()%>/js/DT_bootstrap.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/library/bootstrap/3.0.0/assets/js/DT_bootstrap.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/bootstrap-datepicker.js"></script>
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/library/datatables/dataTables.bootstrap.js">
 
 <%
 	String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
@@ -434,7 +433,7 @@ if(labReqVer.equals("")) {labReqVer="07";}
 $(document).ready(function () {
 	var withOption = false;
 	var startDate, endDate, ticklerStatusId, mrpIds, providerIds, siteIds, assignedToIds;
-	
+
 	var dataTable= $('#ticklerList').dataTable({
 		"bProcessing": true,
         "bServerSide": true,           
@@ -534,7 +533,14 @@ $(document).ready(function () {
 			aoData.push( { "name": "withOption", "value": withOption } );
 		}
 	});
-	var options = $('<a href="#" class="btn" id="search-options">options <span class="caret"></span></a>');
+
+	//The patch Boot3/Datatables patch - insert after you initialise dataTable
+	$('div.dataTables_filter label select').addClass('form-control');
+	$('div.dataTables_filter label input').addClass('form-control').css({"width" : "200px","margin-right" : "0px"});
+	//The patch Boot3/Datatables patch -end
+	
+	
+	var options = $('<a href="#" class="btn btn-default" id="search-options" style="margin-left:0px">options <span class="caret"></span></a>');
 	options.appendTo('div.dataTables_filter label');	
 	$("#search-options").click(function() {
 		$('#searchModal').modal('show');	
@@ -694,4 +700,6 @@ function saveNoteDialog() {
 	
 	$("#note-form").modal('hide');
 }
+
+
 </script>

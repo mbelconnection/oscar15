@@ -59,9 +59,6 @@ oscarApp.config(['$routeProvider',
 	                    when('/admin', {
 		                    templateUrl: 'partials/admin.jsp',
 		                    controller: 'AdminCtrl'
-	                    }).
-	                    otherwise({
-	                    	redirectTo: '/dashboard'
 	                    });
                     }
 ]);

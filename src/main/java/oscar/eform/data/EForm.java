@@ -432,7 +432,7 @@ public class EForm extends EFormBase {
 		Pattern p = Pattern.compile("\\b[a-z]\\$[^ \\$#]+#[^\n]+");
 		Matcher m = p.matcher(apName);
 		if (!m.matches()) return null;
-
+		
 		String module = apName.substring(0, apName.indexOf("$"));
 		String type = apName.substring(apName.indexOf("$") + 1, apName.indexOf("#"));
 		String field = apName.substring(apName.indexOf("#") + 1, apName.length());
@@ -472,13 +472,21 @@ public class EForm extends EFormBase {
 					return null;
 				}
 			}
-			if (type.equalsIgnoreCase("count") && var_value == null) type = "countname";
+			
+			if (type.equalsIgnoreCase("count") && var_value == null) {
+				type = "countname";
+			}
+			else if ((type.equalsIgnoreCase("first") || type.equalsIgnoreCase("last")) && field.equals("*")) {
+				type += "_all_json";
+			}
 			if (!ref_name.equals("")) {
 				type += "_ref";
 				if (ref_value == null) type += "name";
 			}
+			
 			EFormLoader.getInstance();
 			curAP = EFormLoader.getAP("_eform_values_" + type);
+			
 			if (curAP != null) {
 				setSqlParams(EFORM_DEMOGRAPHIC, eform_demographic);
 				setSqlParams(VAR_NAME, field);
@@ -666,9 +674,9 @@ public class EForm extends EFormBase {
 				pointer = nextSpot(html, valueLoc);
 				html = html.insert(pointer, " selected");
 			}
-		} else {
-			String quote = output.contains("\"") ? "'" : "\"";
-			html.insert(pointer, " value="+quote+output+quote);
+		} else { //type=input
+			output = output.replace("\"", "&quot;");
+			html.insert(pointer, " value=\""+output+"\"");
 		}
 		return (html);
 	}

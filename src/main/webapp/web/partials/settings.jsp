@@ -133,11 +133,11 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 
 
 
-<div class="container">
+<!-- <div class="container">-->
 
 	<div class="row">
 
-        <div class="col-md-4">
+        <div class="col-lg-3">
             
 <!--//--------------------------------------------------->
 
@@ -153,7 +153,7 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 
 				<!-- #Billing -->
 				<div class="accordion-heading well-sm">
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#adminNav" href="#collapseBilling">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#adminNav" data-target="#collapseBilling">
 				Billing
 				<span class="glyphicon glyphicon-chevron-right pull-right"></span> 
 				</a>
@@ -161,12 +161,12 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 				<div id="collapseBilling" class="accordion-body collapse">
 				<div class="accordion-inner">
 					<ul>					
-						<li><a href='#' class="xlink" rel='<%=request.getContextPath() %>/provider/providerDefaultDxCode.jsp?provider_no=<%=request.getParameter("provider_no") %>'>Edit Default Billing Diagnostic Code</a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel='<%=request.getContextPath() %>/provider/providerDefaultDxCode.jsp?provider_no=<%=request.getParameter("provider_no") %>'>Edit Default Billing Diagnostic Code</a></li>
 					
 					
 						<security:oscarSec roleName="<%=roleName$%>" objectName="_billing" rights="r">
 						<li>
-						<a href='#'><bean:message key="provider.btnBillPreference"/></a>
+						<a href="javascript:void(0);"><bean:message key="provider.btnBillPreference"/></a>
 						</li>
 						</security:oscarSec>
 					</ul>
@@ -177,7 +177,7 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 
 				<!-- #Consultations -->
 				<div class="accordion-heading well-sm">
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#adminNav" href="#collapseConsultations">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#adminNav" data-target="#collapseConsultations">
 				Consultations
 				<span class="glyphicon glyphicon-chevron-right pull-right"></span> 
 				</a>
@@ -186,11 +186,11 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 				<div class="accordion-inner">
 					<ul>					
 
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewConsultationRequestCuffOffDate"><bean:message key="provider.btnSetConsultationCutoffTimePeriod"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewConsultationRequestCuffOffDate"><bean:message key="provider.btnSetConsultationCutoffTimePeriod"/></a></li>
 
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewConsultationRequestTeamWarning"><bean:message key="provider.btnSetConsultationTeam"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewConsultationRequestTeamWarning"><bean:message key="provider.btnSetConsultationTeam"/></a></li>
 
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewConsultPasteFmt"><bean:message key="provider.btnSetConsultPasteFmt"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewConsultPasteFmt"><bean:message key="provider.btnSetConsultPasteFmt"/></a></li>
 
 					</ul>
 				</div>
@@ -201,7 +201,7 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 
 				<!-- #Documents -->
 				<div class="accordion-heading well-sm">
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#adminNav" href="#collapseDocuments">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#adminNav" data-target="#collapseDocuments">
 				Documents
 				<span class="glyphicon glyphicon-chevron-right pull-right"></span> 
 				</a>
@@ -209,10 +209,10 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 				<div id="collapseDocuments" class="accordion-body collapse">
 				<div class="accordion-inner">
 					<ul>					
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewEDocBrowserInDocumentReport"><bean:message key="provider.btnSetEDocBrowserInDocumentReport"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewEDocBrowserInDocumentReport"><bean:message key="provider.btnSetEDocBrowserInDocumentReport"/></a></li>
 					
 					
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/admin/displayDocumentDescriptionTemplate.jsp"><bean:message key="provider.btnSetDocumentDescriptionTemplate"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/admin/displayDocumentDescriptionTemplate.jsp"><bean:message key="provider.btnSetDocumentDescriptionTemplate"/></a></li>
 					</ul>
 				</div>
 				</div><!-- #Documents -->
@@ -220,7 +220,7 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 
 				<!-- #eForms -->
 				<div class="accordion-heading well-sm">
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#adminNav" href="#collapseeForms">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#adminNav" data-target="#collapseeForms">
 				eForms
 				<span class="glyphicon glyphicon-chevron-right pull-right"></span> 
 				</a>
@@ -228,7 +228,7 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 				<div id="collapseeForms" class="accordion-body collapse">
 				<div class="accordion-inner">
 					<ul>					
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewFavouriteEformGroup"><bean:message key="provider.btnSetEformGroup"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewFavouriteEformGroup"><bean:message key="provider.btnSetEformGroup"/></a></li>
 
 					</ul>
 				</div>
@@ -238,7 +238,7 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 
 				<!-- #Encounter -->
 				<div class="accordion-heading well-sm">
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#adminNav" href="#collapseEncounter">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#adminNav" data-target="#collapseEncounter">
 				Encounter
 				<span class="glyphicon glyphicon-chevron-right pull-right"></span> 
 				</a>
@@ -246,17 +246,17 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 				<div id="collapseEncounter" class="accordion-body collapse">
 				<div class="accordion-inner">
 					<ul>					
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/provider/providerColourPicker.jsp"><bean:message key="provider.btnEditColour"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/provider/providerColourPicker.jsp"><bean:message key="provider.btnEditColour"/></a></li>
 					
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewCppSingleLine"><bean:message key="provider.btnSetCppSingleLine"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewCppSingleLine"><bean:message key="provider.btnSetCppSingleLine"/></a></li>
 
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=view&provider_no=<%=providerNo%>"><bean:message key="provider.btnEditStaleDate"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=view&provider_no=<%=providerNo%>"><bean:message key="provider.btnEditStaleDate"/></a></li>
 
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/provider/../provider/CppPreferences.do"><bean:message key="provider.cppPrefs" /></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/provider/../provider/CppPreferences.do"><bean:message key="provider.cppPrefs" /></a></li>
 
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewEncounterWindowSize"><bean:message key="provider.btnEditDefaultEncounterWindowSize"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewEncounterWindowSize"><bean:message key="provider.btnEditDefaultEncounterWindowSize"/></a></li>
 
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewQuickChartSize"><bean:message key="provider.btnEditDefaultQuickChartSize"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewQuickChartSize"><bean:message key="provider.btnEditDefaultQuickChartSize"/></a></li>
 
 					</ul>
 				</div>
@@ -267,7 +267,7 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 
 				<!-- #Inbox-->
 				<div class="accordion-heading well-sm">
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#adminNav" href="#collapseInbox">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#adminNav" data-target="#collapseInbox">
 				Inbox
 				<span class="glyphicon glyphicon-chevron-right pull-right"></span> 
 				</a>
@@ -275,7 +275,7 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 				<div id="collapseInbox" class="accordion-body collapse">
 				<div class="accordion-inner">
 					<ul>					
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewCommentLab"><bean:message key="provider.btnDisableAckCommentLab"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewCommentLab"><bean:message key="provider.btnDisableAckCommentLab"/></a></li>
 					
 					</ul>
 				</div>
@@ -283,7 +283,7 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 
 				<!-- #Integration -->
 				<div class="accordion-heading well-sm">
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#adminNav" href="#collapseIntegration">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#adminNav" data-target="#collapseIntegration">
 				Integration
 				<span class="glyphicon glyphicon-chevron-right pull-right"></span> 
 				</a>
@@ -291,10 +291,10 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 				<div id="collapseIntegration" class="accordion-body collapse">
 				<div class="accordion-inner">
 					<ul>					
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/provider/../provider/OlisPreferences.do"><bean:message key="provider.olisPrefs" /></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/provider/../provider/OlisPreferences.do"><bean:message key="provider.olisPrefs" /></a></li>
 					
 					
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/provider/clients.jsp"><bean:message key="provider.btnEditClients"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/provider/clients.jsp"><bean:message key="provider.btnEditClients"/></a></li>
 					</ul>
 				</div>
 				</div><!-- #Integration-->
@@ -303,7 +303,7 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 
 				<!-- #Master Demographic -->
 				<div class="accordion-heading well-sm">
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#adminNav" href="#collapseMasterDemographic">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#adminNav" data-target="#collapseMasterDemographic">
 				Master Demographic
 				<span class="glyphicon glyphicon-chevron-right pull-right"></span> 
 				</a>
@@ -311,12 +311,12 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 				<div id="collapseMasterDemographic" class="accordion-body collapse">
 				<div class="accordion-inner">
 					<ul>					
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewDefaultSex"><bean:message key="provider.btnSetDefaultSex" /></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewDefaultSex"><bean:message key="provider.btnSetDefaultSex" /></a></li>
 					
 					
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewHCType"><bean:message key="provider.btnSetHCType" /></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewHCType"><bean:message key="provider.btnSetHCType" /></a></li>
 
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewEDocBrowserInMasterFile"><bean:message key="provider.btnSetEDocBrowserInMasterFile"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewEDocBrowserInMasterFile"><bean:message key="provider.btnSetEDocBrowserInMasterFile"/></a></li>
 					</ul>
 				</div>
 				</div><!-- #Master Demographic -->
@@ -326,7 +326,7 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 
 				<!-- #Profile -->
 				<div class="accordion-heading well-sm">
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#adminNav" href="#collapseProfile">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#adminNav" data-target="#collapseProfile">
 				Profile
 				<span class="glyphicon glyphicon-chevron-right pull-right"></span> 
 				</a>
@@ -334,21 +334,21 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 				<div id="collapseProfile" class="accordion-body collapse">
 				<div class="accordion-inner">
 					<ul>					
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/provider/providerchangepassword.jsp"><bean:message key="provider.btnChangePassword"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/provider/providerchangepassword.jsp"><bean:message key="provider.btnChangePassword"/></a></li>
 					
 					
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/provider/providerAddress.jsp"><bean:message key="provider.btnEditAddress"/></a></li>
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/provider/providerPhone.jsp"><bean:message key="provider.btnEditPhoneNumber"/></a></li>
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/provider/providerFax.jsp"><bean:message key="provider.btnEditFaxNumber"/></a></li>
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewMyDrugrefId"><bean:message key="provider.btnSetmyDrugrefID"/></a></li>
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewWorkLoadManagement"><bean:message key="provider.btnSetWorkLoadManagement"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/provider/providerAddress.jsp"><bean:message key="provider.btnEditAddress"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/provider/providerPhone.jsp"><bean:message key="provider.btnEditPhoneNumber"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/provider/providerFax.jsp"><bean:message key="provider.btnEditFaxNumber"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewMyDrugrefId"><bean:message key="provider.btnSetmyDrugrefID"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewWorkLoadManagement"><bean:message key="provider.btnSetWorkLoadManagement"/></a></li>
 					</ul>
 				</div>
 				</div><!-- #Profile -->
 
 				<!-- #Rx -->
 				<div class="accordion-heading well-sm">
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#adminNav" href="#collapseRx">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#adminNav" data-target="#collapseRx">
 				Rx
 				<span class="glyphicon glyphicon-chevron-right pull-right"></span> 
 				</a>
@@ -360,15 +360,15 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 					
 						<li><a href="#"><bean:message key="provider.providerpreference.rxInteractionWarningLevel" /></a></li>
 					
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/provider/providerSignature.jsp"><bean:message key="provider.btnEditSignature"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/provider/providerSignature.jsp"><bean:message key="provider.btnEditSignature"/></a></li>
 					
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewRxPageSize"><bean:message key="provider.btnSetRxPageSize"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewRxPageSize"><bean:message key="provider.btnSetRxPageSize"/></a></li>
 					
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewUseRx3"><bean:message key="provider.btnSetRx3"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewUseRx3"><bean:message key="provider.btnSetRx3"/></a></li>
 					
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewDefaultQuantity"><bean:message key="provider.SetDefaultPrescriptionQuantity"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewDefaultQuantity"><bean:message key="provider.SetDefaultPrescriptionQuantity"/></a></li>
 					
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewShowPatientDOB"><bean:message key="provider.btnSetShowPatientDOB"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewShowPatientDOB"><bean:message key="provider.btnSetShowPatientDOB"/></a></li>
 					</ul>
 				</div>
 				</div><!-- #Rx -->
@@ -377,7 +377,7 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 
 				<!-- #Schedule -->
 				<div class="accordion-heading well-sm">
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#adminNav" href="#collapseSchedule">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#adminNav" data-target="#collapseSchedule">
 				Schedule
 				<span class="glyphicon glyphicon-chevron-right pull-right"></span> 
 				</a>
@@ -388,7 +388,7 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 						<li>1</li>
 					
 					
-						<li><a href='#' class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewPatientNameLength"><bean:message key="provider.btnEditSetPatientNameLength"/></a></li>
+						<li><a href="javascript:void(0);" class="xlink" rel="<%=request.getContextPath() %>/setProviderStaleDate.do?method=viewPatientNameLength"><bean:message key="provider.btnEditSetPatientNameLength"/></a></li>
 					</ul>
 				</div>
 				</div><!-- #Schedule -->
@@ -403,14 +403,13 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.065);
 
 <!--//-------------------------------------------------->
         </div>
-        <div class="col-md-8"  id="dynamic-content">
-            Body content
+        <div class="col-lg-8"  id="dynamic-content">
+            
+            
         </div>
 
-
-
 	</div><!--row-->
-</div><!-- /.container -->
+<!-- </div><!-- /.container -->
 
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

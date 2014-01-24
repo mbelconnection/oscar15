@@ -49,7 +49,8 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 <link href="css/patient-list.css" rel="stylesheet">
 
 <style>
-
+/*styles temporary, when design complete styles will be moved to css above*/
+.hand-hover{cursor: pointer; cursor: hand;}
 </style>
 
 </head>
@@ -130,7 +131,7 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 						
 						<span class="glyphicon glyphicon-globe"></span>
 						<span class="dropdown">
-						<span class="dropdown-toggle" data-toggle="dropdown"><u>{{currentProgram.name}}</u></span>
+						<span class="dropdown-toggle hand-hover" data-toggle="dropdown"><u>{{currentProgram.name}}</u></span>
 						<ul class="dropdown-menu" role="menu">
                                                        <li ng-repeat="item in programInfo">
                                                        <a href="#">
@@ -143,7 +144,7 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 				 	 </span>
 						&nbsp;
 				<span class="glyphicon glyphicon-user"></span>	
-				<span class="dropdown-toggle" data-toggle="dropdown"><u>{{userName}}</u></span>
+				<span class="dropdown-toggle hand-hover" data-toggle="dropdown"><u>{{userName}}</u></span>
 					<ul class="dropdown-menu" role="menu">
 					<li ng-repeat="item in userMenuItems"><a href="{{item.url}}">{{item.name}}</a></li>
 				  </ul>
@@ -172,13 +173,12 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 		<div id="left_pane" class="col-md-2">
 			<ul class="nav nav-tabs">			
 				<li ng-repeat="item in tabItems" ng-class="{'active': isActive(item.id)}">
-					<a ng-click="changeTab(item.id)" data-toggle="tab">{{item.label}}</a>
+					<a href="javascript:void(0);" ng-click="changeTab(item.id)" data-toggle="tab">{{item.label}}</a>
 				</li>
-				<li class="dropdown"><a href="#" class="dropdown-toggle"
-						data-toggle="dropdown">More<b class="caret"></b></a>
+				<li class="dropdown"><a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">More<b class="caret"></b></a>
 						<ul class="dropdown-menu">
 							<li ng-repeat="item in moreTabItems">
-							<a href="#" ng-class="getMoreTabClass(item.id)" ng-click="changeMoreTab(item.id)">{{item.label}}<span ng-if="item.extra.length>0" class="badge">{{item.extra}}</span></a></li>
+							<a href="javascript:void(0);" ng-class="getMoreTabClass(item.id)" ng-click="changeMoreTab(item.id)">{{item.label}}<span ng-if="item.extra.length>0" class="badge">{{item.extra}}</span></a></li>
 						</ul>
 				</li>
 			</ul>

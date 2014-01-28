@@ -32,10 +32,8 @@
 
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/library/bootstrap/3.0.0/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/library/bootstrap/3.0.0/assets/css/DT_bootstrap.css">
-
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/css/font-awesome.min.css">
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/datepicker.css">
-
 
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.dataTables.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/library/bootstrap/3.0.0/assets/js/DT_bootstrap.js"></script>
@@ -49,14 +47,16 @@
 	.hidden {display: none;}
 	.team {display: inline-block !important; vertical-align: top; margin-right: 20px;}
 	#search-options{margin-left: 20px;}
+	.center {text-align: center;}
 </style>
 
 <div id="consult-list">
 	<h4 style="display: inline">Consultation List</h4> | 
 	<a href="javascript:popupOscarConsultationConfig(700,960,'<%=request.getContextPath()%>/oscarEncounter/oscarConsultationRequest/config/ShowAllServices.jsp')" class="consultButtonsActive">
     	<bean:message key="consultationList.editSpecialists"/>
-    </a>
-	<br /> <br />
+    </a>&nbsp;
+    <button id="newConsult" class="btn"><i class="icon-plus"></i>&nbsp;<bean:message key="consultationList.btn.newConsult"/></button>
+	<br /><br />
 <%
 	String curProvider_no = (String) session.getAttribute("user");
 	String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
@@ -163,7 +163,6 @@ else {
 $(document).ready(function () {
 	var withOption = false;
 	var startDate, endDate, dateType, complete, team, status;
-	
 	var dataTable= $('#consultList').dataTable({
 		"bProcessing": true,
         "bServerSide": true,
@@ -175,17 +174,17 @@ $(document).ready(function () {
 				var urgencyId = parseInt(data);
 				switch(urgencyId) {
 				case 1:
-					return '<img class="icon-exclamation-sign" title=\'<bean:message key="consultationList.urgency.urgent" />\' />';
+					return '<i class="icon-exclamation-sign"></i>';
 				case 5:
-					return '<img class="icon-warning-sign" title=\'<bean:message key="consultationList.urgency.semi-urgent" />\' />';
+					return '<i class="icon-warning-sign"></i>';
 				case 2:
 				case 3:
 					return '';
 				}
 			} },
-			{"sTitle":"<bean:message key='consultationList.header.action' />","mData":null, "bSortable":false,"bSearchable":false,"mRender":function(data, type, row) {
-				return "<a href='#' onClick='preview(" + row.id + ")'><img class='icon-edit' title='<bean:message key="consultationList.editConsultation" />' border='0'/></a>&nbsp;&nbsp;" +
-				"<a href='#' onClick='popupOscarConsultationConfig(700,960,\"<%=request.getContextPath()%>/oscarEncounter/oscarConsultationRequest/ConsultationFormRequest.jsp?de=" + row.demographicNo + "&teamVar=&appNo=\")'><img class='icon-plus' title='<bean:message key="consultationList.addConsultation" />' border='0'/></a>";
+			{"sTitle":"<bean:message key='consultationList.header.action' />","mData":null, "sClass": "center", "bSortable":false,"bSearchable":false,"mRender":function(data, type, row) {
+				// return "<a href='#' onClick='preview(" + row.id + ")'><i class='icon-edit'></i></a>";
+				return "<a href='javascript:editConsult(" + row.id + ")' rel='" + row.id + "'><i class='icon-edit'></i></a>";
 			}, "sClass": "center" },
            	{ "sTitle": "<bean:message key='consultationList.header.patient' />", "mData": "patient", "sClass": "center" },
  			{ "sTitle": "<bean:message key='consultationList.header.service' />", "mData": "serviceDesc", "sClass": "center" },
@@ -262,7 +261,15 @@ $(document).ready(function () {
 		$("#complete").removeAttr("checked");
 		$("#referralDate").prop("checked", true);
 	});
+	
+	$("#newConsult").on("click", function() {
+		popupOscarConsultationConfig('2000','1280', '<%=request.getContextPath()%>/web/partials/consult/consultRequestForm.jsp');
+	});	
 });
+
+function editConsult(id) {
+	popupOscarConsultationConfig('2000','1280', '<%=request.getContextPath()%>/web/partials/consult/consultRequestForm.jsp?requestId=' + id);
+}
 
 function preview(id) {
 	var url = '<%=basePath%>/oscarEncounter/ViewRequest.do?requestId='+id;

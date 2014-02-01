@@ -1,7 +1,7 @@
 		<link rel="stylesheet"  type="text/css" href="css_up/calendar.css" />
 		
 <!-- pop up script links -->
-		<link rel="stylesheet" href="css_up/jquery-ui.css">
+		
 		<link rel="stylesheet" type="text/css" media="all" href="css_up/jsDatePick_ltr.min.css" />
 		
 <link href="css_up/style.css" rel="stylesheet" type="text/css" media="all" />
@@ -236,12 +236,12 @@ function showTabData(id1,id2,id3,id4){
 	$(".tabs li a").css('background-color', '#FFF');
 	$(id_a).css('background-color', '#3B9C9C');
 	if(id1 == 'weekdivid'){
-		sch.init('week');
+		sch.init('week',"from weekdivid");
 		document.getElementById('daydiv').style.display = "block";
 		document.getElementById(id2).style.display = "none";
 		document.getElementById(id3).style.display = "none";
 	}else if(id1 == 'daydiv'){
-		sch.init('day');
+		sch.init('day',"from daydiv");
 		document.getElementById(id1).style.display = "block";
 		document.getElementById(id2).style.display = "none";
 		document.getElementById(id3).style.display = "none";
@@ -272,19 +272,29 @@ $.widget( "custom.catcomplete", $.ui.autocomplete, {
 
 $(function() {
     var data = [
-      { label: "Dr.Tony", category: "individual" },
-      { label: "Dr.Tom", category: "individual" },
-      { label: "Dr.Jackson", category: "individual" },
-      { label: "Dr.Kate", category: "individual" },
-      { label: "Dr.Smith", category: "individual" },
-      { label: "groupA", category: "group" },
-      { label: "groupB", category: "group" },
-      { label: "groupC", category: "group" }
+      { label: "Dr.Oscardoc", category: "individual",id:"1" },
+      { label: "Dr.Doe", category: "individual",id:"2" },
+	  { label: "Dr.Hilts", category: "individual",id:"3" },
+	  { label: "Dr.Yarwick", category: "individual",id:"4" },
+	  { label: "Dr.Michelle Dietician", category: "individual",id:"5" },
+	  { label: "Dr.Alison Smith", category: "individual",id:"6" },
+      { label: "Dr.Rand Paul", category: "individual",id:"7" },
+      { label: "Dr.Michelle Terry", category: "individual",id:"8" },
+      { label: "Dr.Smith", category: "individual",id:"9" },
+      { label: "groupA", category: "group" ,id:"group1" },
+      { label: "groupB", category: "group" ,id:"group2" },
+      { label: "groupC", category: "group",id:"group3"  }
     ];
  
     $( "#docava" ).catcomplete({
       delay: 0,
-      source: data
+      source: data,
+	  select: function( event, ui ) {
+	  var doc_dt = $("#inputField").val();
+		//sch.getUpdateDoc(doc_dt,ui.item.id);
+		sch.ajaxMethod("js_up/intial_data.js",Schedular.prototype.setInitData,{"doc_dt":doc_dt,"doc_id":ui.item.id});
+		setTimeout('Schedular.prototype.init(\''+globalView.view+'\',\'from docava\')',1000);
+	  }
     });
   });
   
@@ -429,7 +439,7 @@ $(function() {
 			$("#toPopup").fadeIn(0500); // fadein popup div
 			$("#backgroundPopup").css("opacity", "0.7"); // css opacity, supports IE7, IE8
 			$("#backgroundPopup").fadeIn(0001);
-			sch.ajaxMethod("js_up/demo_ajax_json.js",loadFieldData);
+			sch.ajaxMethod("js_up/demo_ajax_json.js",loadFieldData,{});
 			popupStatus = 1; // and set value to 1
 		}
 	}
@@ -527,9 +537,10 @@ function isEmpty(obj) {
 		sch.load(document.getElementById("inputField").value);
 	}
 function page_init(){
-$("#testcode").load("partials/addAppointment.jsp");
-//$("#testcode").load("partials/addAppt.jsp");
+//$("#testcode").load("partials/addAppointment.jsp");
+
 $("#nextAvailAppt").load("partials/nextAvailAppt.jsp");
+$("#testcode").load("partials/addAppt.jsp");
 $("#findExisting").load("partials/findExisting.jsp");
 }
 

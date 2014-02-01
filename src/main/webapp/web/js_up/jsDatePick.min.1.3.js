@@ -153,7 +153,7 @@ JsDatePick.prototype.resizeCalendar = function () {
 JsDatePick.prototype.closeCalendar = function () {
     this.JsDatePickBox.style.display = "none";
     document.onclick = function () {}
-	sch.load(); /* Added by Bhaskar */
+	setTimeout('sch.load()',100); /* Added by Bhaskar */
 		//if(this.oConfiguration.target=="appDate" && this.JsDatePickBox.style.display=="none"){
 	//showRecData1('showRecurrence','changeButton','showRecurrenceLbl');
 	//}

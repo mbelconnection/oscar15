@@ -1,33 +1,40 @@
 {
-   "20-Jan-2014":{
+   "28-Jan-2014":{
       "providersDB":[
          {
             "name":"Dr. Doe",
-            "id":"2"
+            "id":"2",
+			"group":"group1"
          },
          {
             "name":"Dr. Hilts",
-            "id":"3"
+            "id":"3",
+			"group":"group1"
          },
          {
             "name":"Dr. Yarwick",
-            "id":"4"
+            "id":"4",
+			"group":"group1"
          },
          {
-            "name":"Michelle Dietician",
-            "id":"5"
+            "name":"Dr. Michelle Dietician",
+            "id":"5",
+			"group":"group1"
          },
          {
-            "name":"Alison Smith",
-            "id":"6"
+            "name":"Dr. Alison Smith",
+            "id":"6",
+			"group":"group1"
          },
          {
-            "name":"Rand Paul",
-            "id":"7"
+            "name":"Dr. Rand Paul",
+            "id":"7",
+			"group":"group1"
          },
          {
             "name":"Michelle Terry",
-            "id":"8"
+            "id":"8",
+			"group":"group1"
          }
       ],
       "eventsDB":[
@@ -55,38 +62,45 @@
          }
       ]
    },
-   "21-Jan-2014":{
+   "29-Jan-2014":{
       "providersDB":[
          {
             "name":"Dr. Oscardoc",
             "id":"1",
+			"group":"group1",
             "flipdata":{
 
             }
          },
          {
             "name":"Dr. Hilts",
-            "id":"3"
+            "id":"3",
+			"group":"group1"
          },
          {
             "name":"Dr. Yarwick",
-            "id":"4"
+            "id":"4",
+			"group":"group1"
          },
          {
             "name":"Michelle Dietician",
-            "id":"5"
+            "id":"5",
+			"group":"group1"
          },
          {
             "name":"Alison Smith",
-            "id":"6"
+            "id":"6",
+			"group":"group1"
          },
          {
             "name":"Rand Paul",
-            "id":"7"
+            "id":"7",
+			"group":"group1"
          },
          {
             "name":"Michelle Terry",
-            "id":"8"
+            "id":"8",
+			"group":"group1"
          }
       ],
       "eventsDB":[
@@ -125,42 +139,50 @@
          }
       ]
    },
-   "22-Jan-2014":{
+   "30-Jan-2014":{
       "providersDB":[
          {
-            "name":"Dr. Oscardoc",
+            "name":"Dr.Oscardoc",
             "id":"1",
             "flipdata":{
 
-            }
+            },
+			"group":"group1"
          },
          {
-            "name":"Dr. Doe",
-            "id":"2"
+            "name":"Dr.Doe",
+            "id":"2",
+			"group":"group1"
          },
          {
-            "name":"Dr. Hilts",
-            "id":"3"
+            "name":"Dr.Hilts",
+            "id":"3",
+			"group":"group1"
          },
          {
-            "name":"Dr. Yarwick",
-            "id":"4"
+            "name":"Dr.Yarwick",
+            "id":"4",
+			"group":"group1"
          },
          {
-            "name":"Michelle Dietician",
-            "id":"5"
+            "name":"Dr.Michelle Dietician",
+            "id":"5",
+			"group":"group1"
          },
          {
-            "name":"Alison Smith",
-            "id":"6"
+            "name":"Dr.Alison Smith",
+            "id":"6",
+			"group":"group1"
          },
          {
-            "name":"Rand Paul",
-            "id":"7"
+            "name":"Dr.Rand Paul",
+            "id":"7",
+			"group":"group1"
          },
          {
-            "name":"Michelle Terry",
-            "id":"8"
+            "name":"Dr.Michelle Terry",
+            "id":"8",
+			"group":"group1"
          }
       ],
       "eventsDB":[
@@ -199,42 +221,50 @@
          }
       ]
    },
-   "23-Jan-2014":{
+   "31-Jan-2014":{
       "providersDB":[
          {
             "name":"Dr. Oscardoc",
             "id":"1",
             "flipdata":{
 
-            }
+            },
+			"group":"group1"
          },
          {
             "name":"Dr. Doe",
-            "id":"2"
+            "id":"2",
+			"group":"group1"
          },
          {
             "name":"Dr. Hilts",
-            "id":"3"
+            "id":"3",
+			"group":"group1"
          },
          {
             "name":"Dr. Yarwick",
-            "id":"4"
+            "id":"4",
+			"group":"group1"
          },
          {
             "name":"Michelle Dietician",
-            "id":"5"
+            "id":"5",
+			"group":"group1"
          },
          {
             "name":"Alison Smith",
-            "id":"6"
+            "id":"6",
+			"group":"group1"
          },
          {
             "name":"Rand Paul",
-            "id":"7"
+            "id":"7",
+			"group":"group1"
          },
          {
             "name":"Michelle Terry",
-            "id":"8"
+            "id":"8",
+			"group":"group1"
          }
       ],
       "eventsDB":[
@@ -262,42 +292,50 @@
          }
       ]
    },
-   "24-Jan-2014":{
+   "1-Feb-2014":{
       "providersDB":[
          {
             "name":"Dr. Oscardoc",
             "id":"1",
             "flipdata":{
 
-            }
+            },
+			"group":"group1"
          },
          {
             "name":"Dr. Doe",
-            "id":"2"
+            "id":"2",
+			"group":"group1"
          },
          {
             "name":"Dr. Hilts",
-            "id":"3"
+            "id":"3",
+			"group":"group1"
          },
          {
             "name":"Dr. Yarwick",
-            "id":"4"
+            "id":"4",
+			"group":"group1"
          },
          {
             "name":"Michelle Dietician",
-            "id":"5"
+            "id":"5",
+			"group":"group1"
          },
          {
             "name":"Alison Smith",
-            "id":"6"
+            "id":"6",
+			"group":"group1"
          },
          {
             "name":"Rand Paul",
-            "id":"7"
+            "id":"7",
+			"group":"group1"
          },
          {
             "name":"Michelle Terry",
-            "id":"8"
+            "id":"8",
+			"group":"group1"
          }
       ],
       "eventsDB":[
@@ -325,42 +363,50 @@
          }
       ]
    },
-   "25-Jan-2014":{
+   "2-Feb-2014":{
       "providersDB":[
          {
             "name":"Dr. Oscardoc",
             "id":"1",
             "flipdata":{
 
-            }
+            },
+			"group":"group1"
          },
          {
             "name":"Dr. Doe",
-            "id":"2"
+            "id":"2",
+			"group":"group1"
          },
          {
             "name":"Dr. Hilts",
-            "id":"3"
+            "id":"3",
+			"group":"group1"
          },
          {
             "name":"Dr. Yarwick",
-            "id":"4"
+            "id":"4",
+			"group":"group1"
          },
          {
             "name":"Michelle Dietician",
-            "id":"5"
+            "id":"5",
+			"group":"group1"
          },
          {
             "name":"Alison Smith",
-            "id":"6"
+            "id":"6",
+			"group":"group1"
          },
          {
             "name":"Rand Paul",
-            "id":"7"
+            "id":"7",
+			"group":"group1"
          },
          {
             "name":"Michelle Terry",
-            "id":"8"
+            "id":"8",
+			"group":"group1"
          }
       ],
       "eventsDB":[]

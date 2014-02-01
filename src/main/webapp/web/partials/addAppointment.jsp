@@ -79,28 +79,31 @@ $.widget( "custom.catcomplete", $.ui.autocomplete, {
 
   $(function() {
     var data = [
-      { label: "anders", category: "" },
-      { label: "andreas", category: "" },
-      { label: "anders andersson", category: "" },
-      { label: "andreas andersson", category: "" },
-      { label: "andreas johnson", category: "" }
+      { label: "anders", category: "", id:"name_1"},
+      { label: "andy", category: "", id:"name_2" },
+      { label: "anders andersson", category: "", id:"name_3" },
+      { label: "andreas andersson", category: "", id:"name_4" },
+      { label: "andreas johnson", category: "", id:"name_5" }
     ];
  
     $( "#search" ).catcomplete({
       delay: 0,
-      source: data
+      source: data,
+	  select: function( event, ui ) {		
+		alert(ui.item.id);
+	  }
     });
   });
 function setDate2(id){
-	var s = new JsDatePick({
-		useMode:2,
-		disablePreDays:true,
-		target:id,
-		dateFormat:"%d-%M-%Y"
+			var s = new JsDatePick({
+				useMode:2,
+				disablePreDays:true,
+				target:id,
+				dateFormat:"%d-%M-%Y"
 
-	});
-	todayDate(id);
-}
+			});
+			todayDate(id);
+		}
 function getWeekDay(){
 var currDay = document.getElementById("appDate").value;
 var currDayArr = currDay.split("-");

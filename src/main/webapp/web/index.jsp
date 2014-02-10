@@ -40,7 +40,6 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 
 <title>OSCAR</title>
 
-
 <link href="../library/bootstrap/3.0.0/css/bootstrap.css" rel="stylesheet">
 <link href="../css/font-awesome.css" rel="stylesheet">
 
@@ -228,7 +227,6 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
     ================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
 	<script src="../js/jquery-1.9.1.min.js"></script>
-	<script src="js_up/jquery-ui.js"></script>
 	<script src="../library/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 	<script src="../library/hogan-2.0.0.js"></script>
 	<script src="../library/typeahead.js/typeahead.min.js"></script>
@@ -257,6 +255,7 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 	<script src="lib/scheduler/scheduler_lib.js"></script>
 	<script src="js_up/app_up.js"></script>
 	<script src="js_up/app.scheduler.js"></script>
+
 <script>
 
 $(document).ready(function(){

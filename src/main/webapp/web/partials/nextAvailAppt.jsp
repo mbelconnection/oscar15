@@ -38,11 +38,11 @@
 		var days = {"sunday":"Sunday", "monday":"Monday", "tuesday":"Tuesday", "wednesday":"Wednesday", "thursday":"Thursday", "friday":"Friday", "saturday":"Saturday"};
 		
 		var searchData= [
-			{"date":"2013-Dec-9", "time":"11:00", "provider":[{"docName":"Oscardoc. Dr.","docID":"1"},{"docName":"Yarwich. Dr.","docID":"2"}]},
-			{"date":"2013-Dec-13", "time":"15:00", "provider":[{"docName":"Oscardoc. Dr.","docID":"1"},{"docName":"Yarwich. Dr.","docID":"2"}]},
-			{"date":"2013-Dec-20", "time":"12:00", "provider":[{"docName":"Oscardoc. Dr.","docID":"1"},{"docName":"Yarwich. Dr.","docID":"2"}]},
-			{"date":"2013-Dec-24", "time":"17:00", "provider":[{"docName":"Oscardoc. Dr.","docID":"1"},{"docName":"Yarwich. Dr.","docID":"2"}]},
-			{"date":"2013-Dec-4", "time":"14:00", "provider":[{"docName":"Oscardoc. Dr.","docID":"1"},{"docName":"Yarwich. Dr.","docID":"2"}]}
+			{"date":"1-Feb-2014", "time":"11:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
+			{"date":"31-Jan-2014", "time":"15:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
+			{"date":"2-Feb-2014", "time":"12:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
+			{"date":"31-Jan-2014", "time":"17:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
+			{"date":"30-Jan-2014", "time":"14:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]}
 		];
 
 		
@@ -59,7 +59,7 @@
 		
 		/*General functions*/
 		naa_fn = {
-			 validateForm: function() {				
+			 validateForm: function() {
 				return true;
 			 },
 			 setValNote: function(msg){
@@ -70,21 +70,23 @@
 				var _days = naa_json_fn.getDays();
 				$.each(_days, function(key, val){
 					$("#dayOfWeek").append(new Option(val, key));
-				});				
+				});
 			 },
 			 
 			 search: function(){
 				var _data = naa_json_fn.getSearchData();
 				$("#naa_users tr:gt(0)").remove();
-				$.each(_data, function(){						
+				$.each(_data, function(){
+						var me = this;
+						var myObject = JSON.stringify(me);
 						$("#naa_users tbody").append("<tr>" +
-                                "<td>" + this.date+ "</td>" +
-                                "<td>" + this.time + "</td>" +
-                                "<td>" + naa_fn.appendProviders(this.provider) + "</td>" +
-								"<td> <div class='naa_roundbox' style='cursor:pointer;'> Schedule appt.</div> </td>" +
+                                "<td>" + me.date+ "</td>" +
+                                "<td>" + me.time + "</td>" +
+                                "<td>" + naa_fn.appendProviders(me.provider) + "</td>" +
+								"<td> <div class='naa_roundbox' style='cursor:pointer;' onclick='naa_fn.gotoAddAppointment("+myObject+")'> Schedule appt.</div> </td>" +
                                 "</tr>");
 					
-				});	
+				});
 			 },
 			 
 			 appendProviders: function(providerData){
@@ -94,8 +96,39 @@
 						_docs = this.docName;
 					else
 						_docs += "; "+this.docName;
-				});	
+				});
 				return _docs;
+			 },
+			 gotoAddAppointment: function(myObject){
+			 nextAailObject = myObject;
+			 if(myObject.date==$("#inputField").val()){
+			 $( "#dialog-edit" ).dialog({
+				resizable: false,
+				height:120,
+				buttons: {
+				"Edit": function(){
+				 $("#next_app_form").dialog("close");
+					 sch.clearForm("#add_appt_form");
+					 $("#add_appt_form").dialog("open");
+					 $( this ).dialog( "close" );
+				},
+				"Cancel": function() {
+					 $( this ).dialog( "close" );
+				}
+				}
+				});
+			 //$("#inputField").val("23-Jan-2014");
+			 }else{
+			  $( "#dialog-delete" ).dialog({
+				resizable: false,
+				height:120,
+				buttons: {
+				Cancel: function() {
+				$( this ).dialog( "close" );
+				}
+				}
+				});
+			 }
 			 }
 		}
 		naa_fn.loadDayOfWeek();
@@ -103,20 +136,23 @@
 
 		/*Element event bindings*/
 		$("#create-user").button().click(function () {
-               $("#next_app_form").dialog("open");
-         });		 
+				sch.clearForm("#next_app_form");
+				$("#next_app_form").dialog("open");
+         }); 
 
 		 $("#naa_cancel").button().click(function () {
+		 
+			sch.clearForm("#next_app_form");
 			$("#next_app_form").dialog("close");
             return false;
          });
 
 		 $("#naa_search").button().click(function () {
-			$("#naa_search").text("Search again");			
+			$("#naa_search").text("Search again");
 			$("#naa_search").attr("style","font-size:12px !important;font-family:verdana, sans-serif; padding: 3px 8px 5px 8px;");
 			naa_fn.search();
             return false;
-         });		
+         });
 
 		 $(":radio.na_pro").on("click",function(){
 			if($(this).val() == "multi"){
@@ -136,7 +172,7 @@
 				$("#naa_appt_format").attr("disabled",false);
 				$("#naa_dura_format").attr("disabled",true);
 				$("#naa_dura_format").val("");
-			}else{				
+			}else{
 				$("#naa_dura_format").attr("disabled",false);
 				$("#naa_appt_format").attr("disabled",true);
 				$("#naa_appt_format").val("");
@@ -165,16 +201,16 @@
 		//$("#next_app_form").dialog("open");
 		
 		//auto complete widget init	
-		$.widget( "custom.catcomplete", $.ui.autocomplete, {	
+		$.widget( "custom.catcomplete", $.ui.autocomplete, {
 			_renderMenu: function( ul, items ) {
-			var that = this,
+			var me = this,
 			currentCategory = "";
 			$.each( items, function( index, item ) {
 				  if ( item.category != currentCategory ) {
 					ul.append( "<li class='ui-autocomplete-category'>" + item.category + "</li>" );
 					currentCategory = item.category;
 				  }
-				  that._renderItemData( ul, item );
+				  me._renderItemData( ul, item );
 			  });
 			}
 		  });
@@ -245,6 +281,10 @@
 			border:1px solid #AAAAAA;
 			min-height:150px;
         }
+		
+		.appt_round {           
+			border-bottom-right-radius: 4px;border-bottom-left-radius: 4px;border-top-right-radius: 4px;border-top-left-radius: 4px;border:1px solid #AAAAAA;
+        }
 
 
 		.na_table{
@@ -263,7 +303,7 @@
             margin-left: 10px;
 			margin-top: 5px;
             border-collapse: collapse;
-            width: 100%;			
+            width: 100%;
         }
         div#naa_users-contain table td,
         div#naa_users-contain table th {
@@ -318,7 +358,7 @@
 		}
 		
 		.ui-widget-content {
-			background: url("js_up/images/ui-bg_flat_75_ffffff_40x100.png") repeat-x scroll 50% 50% #FFFFFF;
+			background: url("images/ui-bg_flat_75_ffffff_40x100.png") repeat-x scroll 50% 50% #FFFFFF;
 			border: 1px solid #AAAAAA;
 			color: #222222;
 			font-size:11px;
@@ -340,6 +380,7 @@
 			 background-image: -ms-linear-gradient(top, #a5b8da, #7089b3);
 			 background-image: -o-linear-gradient(top, #a5b8da, #7089b3);
 			 background-image: linear-gradient(to bottom, #a5b8da, #7089b3);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#a5b8da, endColorstr=#7089b3);
+			 cursor:pointer !important;
 		}
 
 		.naa_button_grd:hover{
@@ -349,6 +390,7 @@
 			 background-image: -moz-linear-gradient(top, #819bcb, #536f9d);
 			 background-image: -ms-linear-gradient(top, #819bcb, #536f9d);
 			 background-image: -o-linear-gradient(top, #819bcb, #536f9d);
+			 cursor:pointer !important;
 			 background-image: linear-gradient(to bottom, #819bcb, #536f9d);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#819bcb, endColorstr=#536f9d);
 		}
 
@@ -361,47 +403,47 @@
 <!-- Next available appt dailog box start-->
 <div id="next_app_form" title="Create new user" class="na_form" style="padding:0px;width:100%">
 	<p class="naa_mainheading">Search for next available appointment</p>
-	<form class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">	
+	<form class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
 		<table class="na_table" width="97%" border="0" style="margin-left:10px;margin-right:10px">
-			<tr>	
+			<tr>
 				<td colspan="2" class="naa_subheading">APPOINTMENT DETAILS</td>
 			</tr>
-			<tr>	
+			<tr>
 				<td width="20%">Provider(s)</td>
 				<td width="80%" >&nbsp;<input type="radio" name="naa_provider" class="na_pro" value="single" checked style="margin-bottom: -3px;"/>&nbsp;Single provider appt.&nbsp;
 				<input id="naa_s_provider" class="na_form_inputtext"/>
 				</td>
 			</tr>
-			<tr>	
+			<tr>
 				<td></td>
 				<td>&nbsp;<input type="radio" name="naa_provider" class="na_pro" value="multi" style="margin-bottom: -3px;"/>&nbsp;Multi provider appt.&nbsp;&nbsp;&nbsp;&nbsp;<input id="naa_m_provider" class="na_form_inputtext" disabled/></td>
 			</tr>
-			<tr>	
-				<td height="5" colspan="2"></td>				
+			<tr>
+				<td height="5" colspan="2"></td>
 			</tr>
-			<tr>	
+			<tr>
 				<td>Format</td>
 				<td>&nbsp;<input type="radio" name="naa_format" class="na_format" value="appt" style="margin-bottom: -3px;" checked/>&nbsp;By appt. type&nbsp;&nbsp;&nbsp;<input id="naa_appt_format" class="na_form_inputtext"/></td>
 			</tr>
-			<tr>	
+			<tr>
 				<td></td>
 				<td>&nbsp;<input type="radio" name="naa_format" class="na_format" value="duration" style="margin-bottom: -3px;"/>&nbsp;By duration&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id="naa_dura_format" class="na_form_inputtext" disabled/></td>
 			</tr>
-			<tr>	
-				<td height="5" colspan="2"></td>				
+			<tr>
+				<td height="5" colspan="2"></td>
 			</tr>
-			<tr>	
+			<tr>
 				<td>Day of week</td>
 				<td>&nbsp;<select class="na_form_select" id="dayOfWeek">
-						<option value="">Any</option>						
+						<option value="">Any</option>
 					</select>
 				</td>
 			</tr>
-			<tr>	
+			<tr>
 				<td>Time of day</td>
 				<td>&nbsp;<input type="text" name="name" id="name" class="na_form_inputtext"></td>
 			</tr>
-			<tr>	
+			<tr>
 				<td># of results</td>
 				<td>&nbsp;<select class="na_form_select" id="results">
 						<option>5</option>
@@ -410,20 +452,20 @@
 					</select>
 				</td>
 			</tr>
-			<tr>	
+			<tr>
 				<td colspan="2" class="naa_valNote">
 				</td>
-			</tr>			
-			<tr>
-				<td colspan="2" style="text-align:right;" class="na_form_button">					
-					<button id="naa_cancel" class="naa_button_grd">Cancel</button>					
-					<button id="naa_search" class="naa_button_grd">Search</button>
-				</td>	
 			</tr>
-			<tr>	
+			<tr>
+				<td colspan="2" style="text-align:right;" class="na_form_button">
+					<button id="naa_cancel" class="naa_button_grd">Cancel</button>
+					<button id="naa_search" class="naa_button_grd">Search</button>
+				</td>
+			</tr>
+			<tr>
 				<td colspan="2" class="naa_subheading">APPOINTMENT SEARCH RESULTS</td>
 			</tr>
-			<tr>	
+			<tr>
 				<td colspan="2" style="text-align:center;"> 
 					<fieldset style="" class="na_form_fieldset">
 					<div id="naa_users-contain" class="ui-widget" style="padding:0px;margin:0px;">
@@ -436,7 +478,7 @@
 								<th></th>
 							</tr>
 						</thead>
-						<tbody>						
+						<tbody>
 
 						</tbody>
 					</table>
@@ -452,5 +494,11 @@
 		<label for="password">Password</label>
 		<input type="password" name="password" id="password" value="" class="na_form_inputtext">-->
 	</form>
+</div>
+<div style="padding: 0px; display: none;" title="Edit" id="dialog-edit">
+<b>Sure! you want to edit.</b>
+</div>
+<div style="padding: 0px; display: none;" title="Warning" id="dialog-delete">
+<b>You can not delete the previous day appointment.</b>
 </div>
 <!--  Next available appt dailog box end -->

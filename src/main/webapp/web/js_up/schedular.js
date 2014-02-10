@@ -1,6 +1,6 @@
 var globalObj=new Object();
 var globalView=new Object();
-
+var nextAailObject = new Object();
 var weekDB = [
 	{name: "Monday", id: "1"},
 	{name: "Tuesday", id: "2"},
@@ -86,12 +86,11 @@ Schedular.prototype.getEventsList = function(){
 return Schedular.config.eventsList;
 }
 Schedular.prototype.load = function(date){
-console.log("in load");
-	Schedular.prototype.ajaxMethod("js_up/intial_data.js",Schedular.prototype.setInitData);
+	Schedular.prototype.ajaxMethod("js_up/intial_data.js",Schedular.prototype.setInitData,{});
 	setTimeout('Schedular.prototype.init(\'day\',\'from load\')',1000);
 }
 Schedular.prototype.init = function(view,from){
-console.log(view+"<<>>"+from);
+//console.log(view+"<<>>"+from);
 	globalView.view =view;
 	this.persons = Schedular.config.providersList;
 	if(view == 'week')
@@ -245,17 +244,12 @@ Schedular.prototype.zoom = function(id){
 	this.init('day',"from zoom");
 }
 
-Schedular.prototype.addEvent = function(obj){	
-	$( "#apptDelete" ).button("disable");
-	$( "#apptSave" ).button("enable");
+Schedular.prototype.addEvent = function(obj){
+	add_appt_appt_id = '';
+	nextAailObject = new Object(); /* Added by Bhaskar for reset the data from next Appointment */
+	add_app_fn.loadPatientDtls('');
+	$("#add_appt_form").dialog("open");
 	globalObj = obj;
-	loading(); // loading
-	setTimeout(function(){ // then show popup, deley in .5 second
-		loadPopup(); // function show popup
-	}, 500); // .5 second
-	$( "#toPopup" ).draggable();
-	var $tabs = $( "#tabsSch" ).tabs();
-	//this.saveEvent(obj);
 
 }
 Schedular.prototype.editEvent = function(){	
@@ -275,22 +269,29 @@ Schedular.prototype.saveEvent = function(obj,appObj){
 	obj.offHeight = (obj.id != "" && document.getElementById(obj.id).offsetHeight!=null)?document.getElementById(obj.id).offsetHeight:100;
 	obj.offWidth = (obj.id != "" && document.getElementById(obj.id).offsetWidth!=null)?document.getElementById(obj.id).offsetWidth:100;
 	obj.patient_name = appObj.patient_name;
-	obj.reason = appObj.reason;
+	obj.reason = appObj.appt_reason_text;
 	obj.duration = appObj.duration;
-	obj.hr = document.getElementById(obj.id).getAttribute('hour');
+	obj.hr = appObj['time'];
 	obj.min = document.getElementById(obj.id).getAttribute('min');
 	obj.pos = document.getElementById(obj.id).getAttribute('position');
-	obj.notes = appObj.notes;
-	obj.appoint_status = appObj.appoint_status;
+	obj.notes = appObj.appt_notes;
+	obj.appoint_status = appObj.appt_status;
 	obj.go_to = appObj.go_to;
-	obj.is_critical = "Y";
-	document.getElementById("events").innerHTML = this.getEventDiv(obj,"save");
+	obj.is_critical = appObj.is_critical;
+	obj.appt_id = appObj.appt_id;
+	document.getElementById("events").innerHTML = this.getEventDiv(obj, "save");
 }
 Schedular.prototype.deleteEvent = function(obj){
 	$( "#apptSave" ).button("disable");
 	$( "#apptDelete" ).button("enable");
 	document.getElementById("events").innerHTML = this.getEventDiv(obj,"delete");
 }
+Schedular.prototype.editAppt = function(apptId){
+	/*set variable value in addAppt.jsp*/
+	add_appt_appt_id = apptId;
+	$("#add_appt_form").dialog("open");	
+}
+
 var cnt = 0;
 Schedular.prototype.getEventDiv = function(obj,act){
 	var html = '';
@@ -324,7 +325,7 @@ Schedular.prototype.getEventDiv = function(obj,act){
 		html += '<td class="evtpop_td_ltline '+stylecls+'" style="width:15px !important;text-align:center;"><div class="alertbox">!</div></td>';
 		colspan++;
 	}
-	html += '<td class="evtpop_td_ltline" style="color:#C35817;">'+obj.patient_name+'</td>';
+	html += '<td class="evtpop_td_ltline" style="color:#C35817;cursor:pointer;" apptid="'+obj.appt_id+'" onclick="sch.editAppt(this.apptid)">'+obj.patient_name+'</td>';
 	if(obj.go_to != null){
 		html += '<td class="evtpop_td_ltline '+stylecls+'" style="width:15px !important;text-align:center;" id="'+obj.id+'_echart">'+obj.go_to+'</td>';
 		colspan++;
@@ -348,6 +349,8 @@ Schedular.prototype.getEventDiv = function(obj,act){
 	return document.getElementById("events").innerHTML + html;
 }
 Schedular.prototype.formatText = function(text, length){
+	if(text == null)
+		return "";
 	if(text.length > length)
 		return text.substring(0,length)+"...";
 	else
@@ -426,25 +429,59 @@ Schedular.prototype.disablePopup1 = function() {
 			popupStatus = 0;  // and set value to 0
 		}
 	}
-Schedular.prototype.setInitData = function(result){
-		  //console.log(">>>");
+Schedular.prototype.setInitData = function(params){
+		  var result = params.data;
+		  var variables = params.vars;
 		  var toDat = document.getElementById("inputField").value;
 		  Schedular.config.eventsList=[];
 		  Schedular.config.providersList=[];
+		  if(isEmpty(params.vars)){
 		 $.each(result, function(i, obj){
 		   if(i==toDat){
-		  Schedular.config.eventsList = obj.eventsDB;
-		  Schedular.config.providersList = obj.providersDB;
-		  return;
-		  }
+			  Schedular.config.eventsList = obj.eventsDB;
+			  Schedular.config.providersList = obj.providersDB;
+			  return false;
+			}
 		  });
+		  }else{
+		  //console.log(i==params.vars.doc_dt);
+		  //Schedular.config.eventsList=[];
+		  //Schedular.config.providersList=[];
+		  $.each(result, function(j, obj){
+		   if(j == params.vars.doc_dt){
+			  Schedular.config.eventsList = obj.eventsDB;
+			  Schedular.config.providersList = obj.providersDB;
+			  return false;
+			}
+		  });
+		  }
 }
-Schedular.prototype.ajaxMethod = function(url,callbackFunc) {
-//console.log(url);
-$.getJSON(url,callbackFunc);
+Schedular.prototype.ajaxMethod = function(url, ORSCFuncName, variables){
+		$.getJSON(url,function(result){
+			var res=result;
+			eval(ORSCFuncName)({data:res, vars:variables}); 
+		});
 }
 Schedular.prototype.showTab = function(id){
 	document.getElementById(id).click();
 }
+ Schedular.prototype.clearForm = function (formId) {
+
+    $(formId+' :input').each(function() {
+      var type = this.type;
+      var tag = this.tagName.toLowerCase(); // normalize case
+
+      if (type == 'text' || type == 'password' || tag == 'textarea'){
+        this.value = "";
+      }else if (type == 'checkbox' || type == 'radio'){
+        this.checked = false;
+      }else if (tag == 'select'){
+        this.selectedIndex = 0;
+		}
+
+		add_app_fn.loadPatientDtls('');
+		$("#naa_search").text("Search");
+    });
+ }
 			
 

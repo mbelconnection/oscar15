@@ -54,8 +54,13 @@ var month;
 		myday.setDate(myday.getDate()-parseFloat(1));
 	}
 
-
-	var day = myday.getDate();        
+	/*Modified by Bhaskar for date differences between calender and system dates */
+	var day = "";
+	if(myday.getDate()<10)
+	day = "0"+myday.getDate();
+	else
+	day = myday.getDate();
+	/* ends here */
 	var month = myday.getMonth();        
 	var year = myday.getYear();        
 	if(year<=200)        {                

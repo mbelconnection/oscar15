@@ -54,7 +54,7 @@ h4{
 margin:0;
 }
 .ui-widget-content {
-    background: url("js_up/img/ui-bg_flat_75_ffffff_40x100.png") repeat-x scroll 50% 50% #FFFFFF;
+    background: url("img/ui-bg_flat_75_ffffff_40x100.png") repeat-x scroll 50% 50% #FFFFFF;
     border: 0px solid #AAAAAA;
     color: #222222;
     height: 90%;
@@ -217,7 +217,8 @@ input, button, select, textarea {
 }
 </style>
 		<script>
-		function setDate(){
+		/*function setDate(){
+		alert("in 221");
 			new JsDatePick({
 				useMode:2,
 				target:"inputField",
@@ -226,7 +227,7 @@ input, button, select, textarea {
 
 			});
 			todayDate();
-		}
+		}*/
 //function page_init(){
 //	jQuery("#testcode").load("addAppointment.html");
 //}
@@ -344,6 +345,9 @@ $(function() {
 					</table>
 				</td>
 				<td style='border-left:1px solid #cecece;padding-left:5px;' class='gen_font'>
+					Group:&nbsp;<button id="manageGroup">&nbsp;Select&nbsp;</button>
+				</td>
+				<td style='border-left:1px solid #cecece;padding-left:5px;' class='gen_font'>
 					<input id="docava">
 				</td>
 				
@@ -385,6 +389,16 @@ $(function() {
 		<div id="findExisting">        
 		</div>
 		<!--  Find existing dailog box end -->
+		<div id="manageGroupHTML"></div>
+		<div style="padding: 0px; display: none;" title="Information" id="dialog-info">
+		<b>Sure! you want to ?.</b>
+		</div>
+		<div style="padding: 0px; display: none;" title="Edit appointment" id="dialog-edit">
+		<b>Sure! you want to edit.</b>
+		</div>
+		<div style="padding: 0px; display: none;" title="Delete appointment" id="dialog-delete">
+		<b>Sure! you want to delete.</b>
+		</div>
 	
 <script>
 function syncScrollBars(){
@@ -518,20 +532,24 @@ function isEmpty(obj) {
 	
 	function todayDate(id){
 		
-		var date = new Date();        
-		var day = date.getDate();        
+		var date = new Date();
+		var day = "";
+		if(date.getDate()<10)
+		day = "0"+date.getDate();/*Modified by Bhaskar for date differences between calender and system dates */
+		else
+		day = date.getDate();
 		var month = date.getMonth();
-		var year = date.getYear();        
+		var year = date.getYear();
 		if(year<=200)        {                
-			year += 1900;        
+			year += 1900;
 		}        
 		var days = new Array('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat');
-		months = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');        
-		days_in_month = new Array(31,28,31,30,31,30,31,31,30,31,30,31);        
+		months = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+		days_in_month = new Array(31,28,31,30,31,30,31,31,30,31,30,31);
 		if(year%4 == 0 && year!=1900)        {                
-			days_in_month[1]=29;        
+			days_in_month[1]=29;
 		}        
-		total = days_in_month[month];        
+		total = days_in_month[month];
 		var date_today = day+"-"+months[month]+"-"+year;
 		document.getElementById(id).value = date_today;
 		sch.load(document.getElementById("inputField").value);
@@ -542,6 +560,7 @@ function page_init(){
 $("#nextAvailAppt").load("partials/nextAvailAppt.jsp");
 $("#testcode").load("partials/addAppt.jsp");
 $("#findExisting").load("partials/findExisting.jsp");
+$("#manageGroupHTML").load("partials/groupManage.jsp");
 }
 
 var sch = new Schedular();

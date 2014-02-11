@@ -153,7 +153,12 @@ JsDatePick.prototype.resizeCalendar = function () {
 JsDatePick.prototype.closeCalendar = function () {
     this.JsDatePickBox.style.display = "none";
     document.onclick = function () {}
-	setTimeout('sch.load()',100); /* Added by Bhaskar */
+	//console.log(document.getElementById("inputField").value+"<<666>>"+isEmpty(document.getElementById("add_appt_date").value));
+	if(isEmpty(document.getElementById("add_appt_date").value)){
+	setTimeout('sch.load(document.getElementById("inputField").value)',100); /* Added by Bhaskar */
+	}else{
+	setTimeout('sch.load(document.getElementById("add_appt_date").value)',100); /* Added by Bhaskar */
+	}
 		//if(this.oConfiguration.target=="appDate" && this.JsDatePickBox.style.display=="none"){
 	//showRecData1('showRecurrence','changeButton','showRecurrenceLbl');
 	//}
@@ -257,10 +262,12 @@ JsDatePick.prototype.makeCalendar = function () {
                 l.appendChild(n);
                 n.setAttribute("globalNumber", this.globalNumber);
                 n.onclick = function () {
-                    JsDatePick.getCalInstanceById(this.getAttribute("globalNumber")).showCalendar()
+                    JsDatePick.getCalInstanceById(this.getAttribute("globalNumber")).showCalendar();
+					//console.log("innn 262");
                 };
                 n.onfocus = function () {
-                    JsDatePick.getCalInstanceById(this.getAttribute("globalNumber")).showCalendar()
+                    JsDatePick.getCalInstanceById(this.getAttribute("globalNumber")).showCalendar();
+					//console.log("innn 267");
                 };
                 l.style.position = "relative";
                 this.initialZIndex++;

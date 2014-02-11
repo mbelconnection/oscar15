@@ -38,9 +38,9 @@
 		var days = {"sunday":"Sunday", "monday":"Monday", "tuesday":"Tuesday", "wednesday":"Wednesday", "thursday":"Thursday", "friday":"Friday", "saturday":"Saturday"};
 		
 		var searchData= [
-			{"date":"1-Feb-2014", "time":"11:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
+			{"date":"01-Feb-2014", "time":"11:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
 			{"date":"31-Jan-2014", "time":"15:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
-			{"date":"2-Feb-2014", "time":"12:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
+			{"date":"02-Feb-2014", "time":"12:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
 			{"date":"31-Jan-2014", "time":"17:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
 			{"date":"30-Jan-2014", "time":"14:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]}
 		];
@@ -101,34 +101,23 @@
 			 },
 			 gotoAddAppointment: function(myObject){
 			 nextAailObject = myObject;
-			 if(myObject.date==$("#inputField").val()){
+			 //if(myObject.date==$("#inputField").val()){
 			 $( "#dialog-edit" ).dialog({
 				resizable: false,
 				height:120,
 				buttons: {
-				"Edit": function(){
-				 $("#next_app_form").dialog("close");
-					 sch.clearForm("#add_appt_form");
-					 $("#add_appt_form").dialog("open");
-					 $( this ).dialog( "close" );
-				},
-				"Cancel": function() {
-					 $( this ).dialog( "close" );
-				}
-				}
+					"Edit": function(){
+						 $("#next_app_form").dialog("close");
+						 $( this ).dialog( "close" );
+						 sch.clearForm("#add_appt_form");
+						 $("#add_appt_form").dialog("open");
+						 
+						},
+					"Cancel": function() {
+						 $( this ).dialog( "close" );
+						}
+					}
 				});
-			 //$("#inputField").val("23-Jan-2014");
-			 }else{
-			  $( "#dialog-delete" ).dialog({
-				resizable: false,
-				height:120,
-				buttons: {
-				Cancel: function() {
-				$( this ).dialog( "close" );
-				}
-				}
-				});
-			 }
 			 }
 		}
 		naa_fn.loadDayOfWeek();
@@ -494,11 +483,5 @@
 		<label for="password">Password</label>
 		<input type="password" name="password" id="password" value="" class="na_form_inputtext">-->
 	</form>
-</div>
-<div style="padding: 0px; display: none;" title="Edit" id="dialog-edit">
-<b>Sure! you want to edit.</b>
-</div>
-<div style="padding: 0px; display: none;" title="Warning" id="dialog-delete">
-<b>You can not delete the previous day appointment.</b>
 </div>
 <!--  Next available appt dailog box end -->

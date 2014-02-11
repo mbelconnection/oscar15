@@ -58,6 +58,7 @@ oscarApp.controller('NavBarCtrl', function ($scope,$http,$location) {
 		console.log("changetab "+ temp);
 		$scope.currenttab = $scope.menuItems[temp];
 		$scope.currentmoretab=null;
+		$(".ui-dialog-content").dialog("close"); /* Added by Schedular team */
 		//$location.path($scope.currenttab.url);
 	}	 
 

@@ -21,10 +21,10 @@
 		];
 		
 		var fex_sea_data= [
-			{"name":"Chan. John", "dob":"2013-Dec-9", "hin":"1234-334-345-GI", "appts":[{"date":"2014-Mar-10","time":"11:00","provider":"Oscardoc, Dr.", "pid":"1"}, {"date":"2012-May-07","time":"12:00","provider":"Oscardoc, Dr.", "pid":"1"}, {"date":"2012-Feb-25","time":"14:00","provider":"Oscardoc, Dr.", "pid":"1"}]},
-			{"name":"Chan. John", "dob":"1986-Dec-13", "hin":"1111-444-987-GX", "appts":[{"date":"2014-Mar-10","time":"11:00","provider":"Yarwick, Dr.", "pid":"1"}, {"date":"2012-May-07","time":"12:00","provider":"Yarwick, Dr.", "pid":"1"}, {"date":"2012-Feb-25","time":"14:00","provider":"Yarwick, Dr.", "pid":"1"}]},
-			{"name":"Chan. John", "dob":"1982-Oct-2", "hin":"1234-999-321", "appts":[{"date":"2014-Mar-10","time":"11:00","provider":"Oscardoc, Dr.", "pid":"1"}, {"date":"2012-May-07","time":"12:00","provider":"Chow, Dr.", "pid":"1"}, {"date":"2012-Feb-25","time":"14:00","provider":"Chow, Dr.", "pid":"1"}]},
-			{"name":"Chan. John", "dob":"1976-Mar-11", "hin":"1234-334-345-GI", "appts":[{"date":"2014-Mar-10","time":"11:00","provider":"Davidson, Dr.", "pid":"1"}, {"date":"2012-May-07","time":"12:00","provider":"Davidson, Dr.", "pid":"1"}, {"date":"2012-Feb-25","time":"14:00","provider":"Davidson, Dr.", "pid":"1"}]}
+			{"name":"Chan. John", "dob":"2013-Dec-9", "hin":"1234-334-345-GI", "appts":[{"date":"2014-Mar-10","time":"11:00","provider":"Dr.Oscardoc", "pid":"1"}, {"date":"2012-May-07","time":"12:00","provider":"Dr.Oscardoc", "pid":"1"}, {"date":"2012-Feb-25","time":"14:00","provider":"Dr.Oscardoc", "pid":"1"}]},
+			{"name":"Chan. John", "dob":"1986-Dec-13", "hin":"1111-444-987-GX", "appts":[{"date":"2014-Mar-10","time":"11:00","provider":"Dr.Yarwick", "pid":"1"}, {"date":"2012-May-07","time":"12:00","provider":"Dr.Yarwick", "pid":"1"}, {"date":"2012-Feb-25","time":"14:00","provider":"Dr.Yarwick", "pid":"1"}]},
+			{"name":"Chan. John", "dob":"1982-Oct-2", "hin":"1234-999-321", "appts":[{"date":"2014-Mar-10","time":"11:00","provider":"Dr.Oscardoc", "pid":"1"}, {"date":"2012-May-07","time":"12:00","provider":"Dr.Chow", "pid":"1"}, {"date":"2012-Feb-25","time":"14:00","provider":"Dr.Chow", "pid":"1"}]},
+			{"name":"Chan. John", "dob":"1976-Mar-11", "hin":"1234-334-345-GI", "appts":[{"date":"2014-Mar-10","time":"11:00","provider":"Dr.Davidson", "pid":"1"}, {"date":"2012-May-07","time":"12:00","provider":"Dr.Davidson", "pid":"1"}, {"date":"2012-Feb-25","time":"14:00","provider":"Dr.Davidson", "pid":"1"}]}
 			
 		];
 				
@@ -37,24 +37,26 @@
 		};
 		
 		/*General functions*/
-		fex_fn = {		 
+		fex_fn = { 
 			 
 			 loadSearchDtls: function(patientName){
 				var _data = fex_json_fn.getSearchData(patientName);
 				$("#fex_users tr:gt(0)").remove();
 				var _html = "";
-				$.each(_data, function(){		
-						_html += "<tr> <td rowspan='3'>" + this.name + "<br>" + this.dob + "<br>" + this.hin + "</td>";						
+				$.each(_data, function(){
+					var me = this;
+					var findObject = JSON.stringify(me);
+						_html += "<tr> <td rowspan='3'>" + this.name + "<br>" + this.dob + "<br>" + this.hin + "</td>";
 						
 						var len = this.appts.length;
 						var clickFn = function(id){
 							alert('aaa');
 						}
-						$.each(this.appts, function(i){	
+						$.each(this.appts, function(i){
 							_html += "<td>" + this.date + "</td>";
 							_html += "<td>" + this.time + "</td>";
 							_html += "<td>" + this.provider + "</td>";
-							_html += "<td> <div class='fex_roundbox_edit' style='cursor:pointer;' pid='"+this.pid+"' date='"+this.date+"' time='"+this.time+"'> Edit</div> </td>";
+							_html += "<td> <div class='fex_roundbox_edit' style='cursor:pointer;' onclick='fex_fn.gotoAddAppointment("+findObject+")'> Edit</div> </td>";
 						
 							if(i != (len-1))
 								_html += "</tr><tr>";
@@ -62,14 +64,30 @@
 								_html += "</tr>";
 						});
 					
-				});	
-				$("#fex_users tbody").append(_html);
-				
-				$(".fex_roundbox_edit").click(function(){
-					alert($(this).attr('date'))
 				});
+				$("#fex_users tbody").append(_html);
 			 },
-			 
+			 gotoAddAppointment: function(findObject){
+			 findAvailObject = findObject;
+					console.log(findObject);
+			 //if(myObject.date==$("#inputField").val()){
+			 $( "#dialog-edit" ).dialog({
+				resizable: false,
+				height:120,
+				buttons: {
+					"Edit": function(){
+						 $("#fex_app_form").dialog("close");
+						 $( this ).dialog( "close" );
+						 sch.clearForm("#add_appt_form");
+						 $("#add_appt_form").dialog("open");
+						 
+						},
+					"Cancel": function() {
+						 $( this ).dialog( "close" );
+						}
+					}
+				});
+			 }
 			 
 		}
 			
@@ -80,7 +98,7 @@
 		 //$("#fex_find").button().click(function () {
            //    $("#fex_app_form").dialog("open");
 		//	   fex_fn.loadSearchDtls();
-         //});		
+         //});
 
 		/*Element event bindings end*/
 	
@@ -113,7 +131,7 @@
 		
 	
 		/* auto complete widget is already loaded in nextAvailAppt.jsp script */
-		$.widget( "custom.catcomplete", $.ui.autocomplete, {	
+		$.widget( "custom.catcomplete", $.ui.autocomplete, {
 			_renderMenu: function( ul, items ) {
 			var that = this,
 			currentCategory = "";
@@ -131,7 +149,7 @@
 		$( "#fex_find_input" ).catcomplete({
 			  delay: 0,
 			  source: existing_p_data,
-			  select: function( event, ui ) {		
+			  select: function( event, ui ) {
 				//alert(ui.item.id);
 				$("#fex_app_form").dialog("open");
 				fex_fn.loadSearchDtls(ui.item.label);
@@ -219,7 +237,7 @@
             margin-left: 10px;
 			margin-top: 5px;
             border-collapse: collapse;
-            width: 100%;			
+            width: 100%;
         }
         div#fex_users-contain table td,
         div#fex_users-contain table th {
@@ -348,7 +366,7 @@
 								<th>View on schedule</th>
 							</tr>
 						</thead>
-						<tbody>						
+						<tbody>
 
 						</tbody>
 					</table>

@@ -86,7 +86,8 @@ Schedular.prototype.getEventsList = function(){
 return Schedular.config.eventsList;
 }
 Schedular.prototype.load = function(date){
-	Schedular.prototype.ajaxMethod("js_up/intial_data.js",Schedular.prototype.setInitData,{});
+	Schedular.prototype.ajaxMethod("js_up/intial_data.js",Schedular.prototype.setInitData,{"doc_dt":date});
+	document.getElementById("inputField").value = date;
 	setTimeout('Schedular.prototype.init(\'day\',\'from load\')',1000);
 }
 Schedular.prototype.init = function(view,from){
@@ -281,15 +282,67 @@ Schedular.prototype.saveEvent = function(obj,appObj){
 	obj.appt_id = appObj.appt_id;
 	document.getElementById("events").innerHTML = this.getEventDiv(obj, "save");
 }
-Schedular.prototype.deleteEvent = function(obj){
-	$( "#apptSave" ).button("disable");
-	$( "#apptDelete" ).button("enable");
-	document.getElementById("events").innerHTML = this.getEventDiv(obj,"delete");
+Schedular.prototype.deleteEvent = function(apptObject){
+	//document.getElementById("events").innerHTML = this.getEventDiv(obj,"delete");
+					var $back = $('div').find("#"+apptObject);
+					$back.remove();
 }
-Schedular.prototype.editAppt = function(apptId){
+Schedular.prototype.editAppt = function(apptObject){
 	/*set variable value in addAppt.jsp*/
-	add_appt_appt_id = apptId;
-	$("#add_appt_form").dialog("open");	
+	//add_appt_appt_id = apptId;
+	//console.log(apptObject);
+	var s = $('div').find("#"+apptObject).text();
+	var sObject = JSON.stringify(s);
+	//console.log(sObject);
+	$( "#dialog-info" ).dialog({
+				resizable: false,
+				height:120,
+				buttons: {
+				"Edit": function(){
+					$("#next_app_form").dialog("close");
+					$( "#dialog-edit" ).dialog({
+						resizable: false,
+						height:120,
+						buttons: {
+						"Edit": function() {
+							sch.clearForm("#add_appt_form");
+							$("#add_appt_form").dialog("open");
+							$( this ).dialog( "close" );
+							$("#dialog-info").dialog( "close" );
+						},
+						"Cancel": function() {
+							$( this ).dialog( "close" );
+						}
+						}
+						});
+					
+					
+					
+					
+				},
+				"Delete": function() {
+				$("#next_app_form").dialog("close");
+					$( "#dialog-delete" ).dialog({
+						resizable: false,
+						height:120,
+						buttons: {
+						"Delete": function() {
+							sch.clearForm("#add_appt_form");
+							sch.deleteEvent(apptObject);
+							$( this ).dialog( "close" );
+							$("#dialog-info").dialog( "close" );
+						},
+						"Cancel": function() {
+							$( this ).dialog( "close" );
+						}
+						}
+						});
+				},
+				"Cancel": function() {
+					$( this ).dialog( "close" );
+				}
+				}
+				});
 }
 
 var cnt = 0;
@@ -325,7 +378,8 @@ Schedular.prototype.getEventDiv = function(obj,act){
 		html += '<td class="evtpop_td_ltline '+stylecls+'" style="width:15px !important;text-align:center;"><div class="alertbox">!</div></td>';
 		colspan++;
 	}
-	html += '<td class="evtpop_td_ltline" style="color:#C35817;cursor:pointer;" apptid="'+obj.appt_id+'" onclick="sch.editAppt(this.apptid)">'+obj.patient_name+'</td>';
+	var j = hr+'_'+min;
+	html += "<td class=\"evtpop_td_ltline\" style=\"color:#C35817;cursor:pointer;\" apptid=\""+obj.appt_id+"\" onclick='sch.editAppt(\""+j+"\")'>"+obj.patient_name+"</td>";
 	if(obj.go_to != null){
 		html += '<td class="evtpop_td_ltline '+stylecls+'" style="width:15px !important;text-align:center;" id="'+obj.id+'_echart">'+obj.go_to+'</td>';
 		colspan++;
@@ -383,7 +437,7 @@ Schedular.prototype.loadDayEvents = function(events){
 		event.offHeight = document.getElementById(objId).offsetHeight;
 		event.offWidth = document.getElementById(objId).offsetWidth;
 		
-		document.getElementById("events").innerHTML = this.getEventDiv(event);
+		document.getElementById("events").innerHTML = this.getEventDiv(event,"first");
 
 	}
 	}
@@ -444,7 +498,6 @@ Schedular.prototype.setInitData = function(params){
 			}
 		  });
 		  }else{
-		  //console.log(i==params.vars.doc_dt);
 		  //Schedular.config.eventsList=[];
 		  //Schedular.config.providersList=[];
 		  $.each(result, function(j, obj){

@@ -2587,10 +2587,10 @@ create table OcanStaffForm
 	providerName varchar(100),
 	clientFormProviderName varchar(100),	
 	consent varchar(50),
-	referralDate date;
-	admissionDate date;
-	serviceInitDate date;
-	dischargeDate date;
+	referralDate date,
+	admissionDate date,
+	serviceInitDate date,
+	dischargeDate date,
 	index(startDate),
 	index(completionDate)
 );

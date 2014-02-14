@@ -1,6 +1,11 @@
 {
-   "28-Jan-2014":{
+   "14-Feb-2014":{
       "providersDB":[
+         {
+            "name":"Dr. Oscardoc",
+            "id":"1",
+			"group":"group1"
+         },
          {
             "name":"Dr. Doe",
             "id":"2",
@@ -908,7 +913,7 @@
             "notes":"Noted complications since last year"
          }]
    },
-   "12-Feb-2014":{
+   "13-Feb-2014":{
       "providersDB":[
          {
             "name":"Dr. Oscardoc",

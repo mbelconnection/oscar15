@@ -272,8 +272,11 @@ Schedular.prototype.saveEvent = function(obj,appObj){
 	obj.patient_name = appObj.patient_name;
 	obj.reason = appObj.appt_reason_text;
 	obj.duration = appObj.duration;
-	obj.hr = appObj['time'];
-	obj.min = document.getElementById(obj.id).getAttribute('min');
+	//obj.hr = appObj['time'];
+	//obj.hr = document.getElementById(obj.id).getAttribute('hour');// From Khadaree
+	//obj.min = document.getElementById(obj.id).getAttribute('min');
+	obj.hr = this._getHour(appObj['time']);
+	obj.min = this._getMin(appObj['time']);
 	obj.pos = document.getElementById(obj.id).getAttribute('position');
 	obj.notes = appObj.appt_notes;
 	obj.appoint_status = appObj.appt_status;
@@ -281,6 +284,10 @@ Schedular.prototype.saveEvent = function(obj,appObj){
 	obj.is_critical = appObj.is_critical;
 	obj.appt_id = appObj.appt_id;
 	document.getElementById("events").innerHTML = this.getEventDiv(obj, "save");
+	
+	
+	$('#'+obj.hr+'_'+obj.min).draggable().resizable();
+	
 }
 Schedular.prototype.deleteEvent = function(apptObject){
 	//document.getElementById("events").innerHTML = this.getEventDiv(obj,"delete");
@@ -289,7 +296,8 @@ Schedular.prototype.deleteEvent = function(apptObject){
 }
 Schedular.prototype.editAppt = function(apptObject){
 	/*set variable value in addAppt.jsp*/
-	//add_appt_appt_id = apptId;
+	add_appt_appt_id = apptObject;
+	globalObj.id =apptObject;
 	//console.log(apptObject);
 	var s = $('div').find("#"+apptObject).text();
 	var sObject = JSON.stringify(s);
@@ -300,25 +308,10 @@ Schedular.prototype.editAppt = function(apptObject){
 				buttons: {
 				"Edit": function(){
 					$("#next_app_form").dialog("close");
-					$( "#dialog-edit" ).dialog({
-						resizable: false,
-						height:120,
-						buttons: {
-						"Edit": function() {
-							sch.clearForm("#add_appt_form");
-							$("#add_appt_form").dialog("open");
-							$( this ).dialog( "close" );
-							$("#dialog-info").dialog( "close" );
-						},
-						"Cancel": function() {
-							$( this ).dialog( "close" );
-						}
-						}
-						});
-					
-					
-					
-					
+					sch.clearForm("#add_appt_form");
+					$("#add_appt_form").dialog("open");
+					$( this ).dialog( "close" );
+					$("#dialog-info").dialog( "close" );					
 				},
 				"Delete": function() {
 				$("#next_app_form").dialog("close");
@@ -370,7 +363,7 @@ Schedular.prototype.getEventDiv = function(obj,act){
 		var $back = $('div').find("#"+hr+'_'+min);
 		 $back.remove();
 	}else{
-	html += '<div class="eventpop" style="height:'+height+'px;position: absolute;top:'+top+'px;left:'+left+'px;width:170px;" id='+hr+'_'+min+'>';
+	html += '<div class="eventpop" style="height:'+height+'px;position: absolute;top:'+top+'px;left:'+left+'px;width:170px;" id='+obj.hr+'_'+obj.min+'>';
 	html += '<table class="eventtab" style="width:100%;border-collapse:collapse;padding:0px;" id="tab"  cellspacing="0" >';
 	html += '<tr class=""> <td class="gen_font '+stylecls+'" style="padding-left:5px;width:20px !important;"><div class="alertbox">'+obj.appoint_status+'</div></td>';
 	html += '<td class="evtpop_td_ltline '+stylecls+'" style="text-align:center;width:12px;"><input type="image" src="js_up/images/smallDownArrow.gif"/></td>';
@@ -378,7 +371,7 @@ Schedular.prototype.getEventDiv = function(obj,act){
 		html += '<td class="evtpop_td_ltline '+stylecls+'" style="width:15px !important;text-align:center;"><div class="alertbox">!</div></td>';
 		colspan++;
 	}
-	var j = hr+'_'+min;
+	var j = obj.hr+'_'+obj.min;
 	html += "<td class=\"evtpop_td_ltline\" style=\"color:#C35817;cursor:pointer;\" apptid=\""+obj.appt_id+"\" onclick='sch.editAppt(\""+j+"\")'>"+obj.patient_name+"</td>";
 	if(obj.go_to != null){
 		html += '<td class="evtpop_td_ltline '+stylecls+'" style="width:15px !important;text-align:center;" id="'+obj.id+'_echart">'+obj.go_to+'</td>';
@@ -463,6 +456,24 @@ Schedular.prototype.getMin = function(time){
 	var temp;
 	if (time != null){
 		temp = time.split(":");
+	}
+	return temp[1];
+}
+
+
+Schedular.prototype._getHour = function(time){
+	var temp;
+	if (time != null){
+		temp = time.split("_");
+	}
+	var result = this.round(temp[0]);
+	return result;
+}
+
+Schedular.prototype._getMin = function(time){
+	var temp;
+	if (time != null){
+		temp = time.split("_");
 	}
 	return temp[1];
 }

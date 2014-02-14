@@ -20,7 +20,7 @@
 		];
 		
 		var add_appt_sample_appt_data = {"patientId":"4", "patientName":"Leo", "provType":"M", "provId":"4,5", "provName":"Dr. Hilt, Dr. Oscardoc"
-			, "date":"28-Jan-2014", "time":"10", "duration":"30", "isrecurrence":"Y", "recurrence_date":"28-Jan-2014", "appttype":"billing"
+			, "date":"14-Feb-2014", "time":"10", "duration":"30", "isrecurrence":"Y", "recurrence_date":"28-Jan-2014", "appttype":"billing"
 			, "apptstatus":"DP", "isCritical":"Y", "apptresources":"Room 3", "apptreason":"BT", "apptreasondtls":"Physical Examination"
 			, "apptnotes":"Noted complications since last year", "crtdby":"Eddie Collins", "crtddate":"12-Oct-2013", "lastedited":"n/a"
 			, "patientinfo":{"dob":"10-Oct-1985", "sex":"F", "hin":"xxx-xxx-xxx", "address":"123 Sicamore Ave, Toronto, ON", "phone":"647-555-5595", "email":"jane.doe@gmail.com"}
@@ -108,7 +108,7 @@
 			},
 			chkDialogStatus: function(){
 				if(add_appt_appt_id.length == 0){
-					//add_app_fn.setApptDtls(add_appt_appt_id);
+					add_app_fn.setApptDtls(add_appt_appt_id);
 				}
 			},
 			setValNote: function(msg){
@@ -332,7 +332,6 @@
 				
 				formData['appt_id'] = add_appt_appt_id;
 				//console.log(globalObj);
-				//console.log(formData);
 				sch.saveEvent(globalObj,formData);
 				}
 				$("#add_appt_form").dialog("close");
@@ -340,7 +339,7 @@
 			/*when edit case*/
 			setApptDtls: function(apptId){
 				var _data = add_app_ajax_fn.getApptDtls(apptId);
-				$.each(add_appt_form_flds, function(key, val){	
+				$.each(add_appt_form_flds, function(key, val){
 					$("#"+key).val(_data[val]);
 				});
 				
@@ -512,7 +511,6 @@
 		});
 		/*binding functions end*/
 		add_app_fn.init();
-		add_app_fn.loadPatientDtls('');
 	});
 </script>
 

@@ -480,7 +480,7 @@ function getDraggedVal(){
 						<tr>
 							<td colspan="2">
 									<div style="overflow-y:auto;overflow-x:hidden;height:200px;">
-										<ul id="grp_man_leftPane" class="connectedSortable" >
+										<ul id="grp_man_leftPane" class="connectedSortable" style="min-height:150px;">
 										  
 										  <li class="ui-state-default grp_man_li_roundbox" val="proId2">Item2</li>
 										  <li class="ui-state-default grp_man_li_roundbox" val="proId3">Item3</li>

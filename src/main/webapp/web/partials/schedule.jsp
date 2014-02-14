@@ -327,13 +327,13 @@ $(function() {
 </script>
 		<table  width="100%" class="headertable" id="secNav">
 			<tr>
-				<td class='tabs_underline' style="padding:5px;width:160px;">
-					<div class="date_selector" >
+				<td class='tabs_underline' style="padding:5px;width:210px;">
+					<div class="date_selector" style="width:100%;">
 						<table class="eventtab" style="width:100%;border-collapse:collapse;padding:0px;" id="tab"  cellspacing="0" >
 							<tr class=""> 
-								<td class="date_selector_td_left_right"><input type="image" src="js_up/images/arrow_left.png" onclick="dateChange('dec')"/></td>
-								<td class="date_selector_td_ltline date_selector_td_mid" style="text-align:center;" ><input type="text" size="12" id="inputField" readonly="readonly" class="input1" /></</td>
-								<td class="date_selector_td_ltline date_selector_td_left_right"><input type="image" src="js_up/images/arrow_right.png" onclick="dateChange('inc')"/></td>
+								<td class="date_selector_td_left_right" style="width:30px;"><input type="image" src="js_up/images/arrow_left.png" onclick="dateChange('dec')"/></td>
+								<td class="date_selector_td_ltline date_selector_td_mid" style="text-align:center;width:150px;" ><input type="text" size="12" id="inputField" readonly="readonly" class="input1" style="width:145px;"/></</td>
+								<td class="date_selector_td_ltline date_selector_td_left_right" style="width:30px;padding-top:5px;"><input type="image" src="js_up/images/arrow_right.png" onclick="dateChange('inc')"/></td>
 							</tr>
 						</table>
 					</div>
@@ -346,19 +346,21 @@ $(function() {
 						<li><a style='width:60px;' id='monthdivid' onclick="showTabData('monthdiv','flipview','daydiv','monthdivid')" id='mondivid'>Month</a></li>
 					</ul>
 				</td>
-				<td>
+				<td style='border-left:1px solid #cecece;padding-left:5px;'>
 					<table>
 						<tr>
-							<td style='border-left:1px solid #cecece;padding-left:5px;width:80px;' class='gen_font'>
-								Appointments:
+							<td style='padding-left:5px;width:80px;font-size:14px;color:#C7C5C5;' class='gen_font'>
+								&nbsp;&nbsp;Appointments:&nbsp;&nbsp;&nbsp;&nbsp;
 							</td>
-							<td style='font-size:12px;'>
-								<button id="create-user">&nbsp;+Next available&nbsp;</button>
+							<td style='font-size:12px;'>								
+								<button type="button" id="create-user" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Search next available appointment" style="height:25px;width:150px;padding:0px;padding-left:5px;color:#C7C5C5;"> &nbsp;Next available&nbsp; </button>
 							</td>
 							<td style='width:110px;'>
 								<table>
 									<tr>
-										<td style="padding-left:5px;"><input id="fex_find_input" class="fex_form_autocomp"/></td>										
+										<td style="padding-left:15px;">											
+											<input type="text" class="form-control" placeholder="Find existing " style="height:25px;width:150px;border-radius:4px;font-size:14px;padding:0px;padding-left:5px;" id="fex_find_input">
+										</td>										
 										<td>
 											<!-- add appointment dialog box includes here -->
 											<div id="testcode"></div>
@@ -369,11 +371,11 @@ $(function() {
 						</tr>
 					</table>
 				</td>
-				<td style='border-left:1px solid #cecece;padding-left:5px;' class='gen_font'>
-					Group:&nbsp;<button id="manageGroup">&nbsp;Select&nbsp;</button>
+				<td style='border-left:1px solid #cecece;padding-left:5px;text-align:center;' class='gen_font'>
+					<button type="button" id="manageGroup" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Search next available appointment" style="height:25px;width:150px;padding:0px;padding-left:5px;color:#C7C5C5;"> &nbsp;Manage group&nbsp; </button>
 				</td>
-				<td style='border-left:1px solid #cecece;padding-left:5px;' class='gen_font'>
-					<input id="docava">
+				<td style='border-left:1px solid #cecece;padding-left:5px;text-align:center;' >
+					<input type="text" class="form-control" placeholder="Select team/individual" style="height:25px;width:170px;border-radius:4px;font-size:14px;padding:0px;padding-left:5px;" id="docava">
 				</td>
 				
 			</tr>

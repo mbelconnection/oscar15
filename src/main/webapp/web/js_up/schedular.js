@@ -79,6 +79,9 @@ Schedular.config = {
 Schedular.prototype.setProviders = function(providers){
 	Schedular.config.providersList = providers;
 }
+Schedular.prototype.setEvents = function(events){
+	Schedular.config.eventsList = events;
+}
 Schedular.prototype.setEventsList = function(eventsList){
 Schedular.config.eventsList = eventsList;
 }
@@ -127,6 +130,16 @@ Schedular.prototype.getProvider = function(providerID){
 		}
 	}
 	alert('Provider not found.');
+}
+Schedular.prototype.getEvents = function(providerID){
+var arrEvents  =[];
+	for(var i=0; i<Schedular.config.eventsList.length; i++){
+		if(Schedular.config.eventsList[i].doc_id == providerID){
+			arrEvents.push(Schedular.config.eventsList[i]);
+		}
+	}
+	return (arrEvents);
+	//console.log('Events not found.');
 }
 
 Schedular.prototype.setView = function(view){	
@@ -188,11 +201,11 @@ Schedular.prototype.getXHeader = function(){
 	var _XHeader = '';
 	_XHeader += '<tr>';
 	if(this.persons.length == 1)
-		_XHeader += '<th style="text-align:center;display: inline-block;" ><div style="float:left;width:80%;text-align:center;" id="'+this.persons[0].id+'">'+this.persons[0].name+'</div></th>';
+		_XHeader += '<th style="text-align:center;display: inline-block;" ><div style="float:left;width:80%;text-align:center;" id="'+this.persons[0].id+'">'+this.persons[0].name+'</div><div class="zoomIn" onclick="sch.zoom()">Zoomout</div></th>';
 	else
 		for(var i=0; i<this.persons.length; i++){
 			if(this.view == 'day')
-				_XHeader += '<th style="text-align:center;display: inline-block;" ><div style="float:left;width:80%;text-align:center;" >'+this.persons[i].name+'</div><div style="float:right;text-decoration:underline;cursor:pointer;width:18%;text-align:center;" id="'+this.persons[i].id+'" onclick="sch.zoom(this.id)">Zoom</div></th>';
+				_XHeader += '<th style="text-align:center;display: inline-block;" ><div style="float:left;width:80%;text-align:center;" >'+this.persons[i].name+'</div><div class="zoomIn" id="'+this.persons[i].id+'" onclick="sch.zoom(this.id)">Zoom</div></th>';
 			else
 				_XHeader += '<th style="text-align:center;display: inline-block;" ><div style="float:left;width:170px;text-align:center;" >'+this.persons[i].name+'</div></th>';
 		}
@@ -221,7 +234,7 @@ Schedular.prototype.getXScale = function(){
 		temp_min = _smin;
 		_smin += Schedular.config.increment; 
 		for(var i=0; i<this.persons.length; i++){
-			_XScale += '<td style="height:25px !important;width:220px !important;" class="'+style+'" position="'+i+'" ondblclick="sch.addEvent(this)" hour="'+_shour+'" min="'+temp_min+'" time="'+time+'" name="'+this.persons[i].name+'" pid="'+this.persons[i].id+'" id="'+this.persons[i].id+'_'+time+'"><div /></td>';
+			_XScale += '<td style="height:25px !important;width:220px !important;" class="'+style+'" position="'+i+'" ondblclick="sch.addEvent(this)" hour="'+_shour+'" min="'+temp_min+'" time="'+time+'" name="'+this.persons[i].name+'" pid="'+this.persons[i].id+'" id="'+this.persons[i].id+'_'+time+'"><div style="border: 1px solid #CECECE;border-bottom: 0px;width:20px;height: 100%;">C1</div></td>';
 		}
 		
 		_XScale += '</tr>';
@@ -239,10 +252,18 @@ Schedular.prototype.round = function(time){
 
 Schedular.prototype.zoom = function(id){
 	var providers = [];
+	if(!isEmpty(id)){
+	//console.log(id+">>in 1");
 	var provider = this.getProvider(id);
+	var events = this.getEvents(id)
 	providers.push(provider);
 	this.setProviders(providers);
+	this.setEvents(events);
 	this.init('day',"from zoom");
+	}else{
+	this.load(document.getElementById("inputField").value);
+	}
+	
 }
 
 Schedular.prototype.addEvent = function(obj){
@@ -349,13 +370,13 @@ Schedular.prototype.getEventDiv = function(obj,act){
 
 	hr = hr - Schedular.config.start_time;
 	var top = hr * (offHeight *4);
-	var top_add = ((min/15) * offHeight) + 2;	
+	var top_add = ((min/15) * offHeight) + 2;
 	top += top_add;
 	var stylecls = '';
 	
 	if(duration/15 > 1)
 		stylecls = 'evtpop_td_btm_line';
-	var left = obj.offWidth * pos + 5;
+	var left = obj.offWidth * pos + 22;
 
 	var height = ((duration/15) * 20) + ((duration/15 -1) * 7)
 	var colspan = 4;
@@ -363,7 +384,7 @@ Schedular.prototype.getEventDiv = function(obj,act){
 		var $back = $('div').find("#"+hr+'_'+min);
 		 $back.remove();
 	}else{
-	html += '<div class="eventpop" style="height:'+height+'px;position: absolute;top:'+top+'px;left:'+left+'px;width:170px;" id='+obj.hr+'_'+obj.min+'>';
+	html += '<div class="eventpop" style="height:'+height+'px;position: absolute;top:'+top+'px;left:'+left+'px;width:135px;" id='+obj.hr+'_'+obj.min+'>';
 	html += '<table class="eventtab" style="width:100%;border-collapse:collapse;padding:0px;" id="tab"  cellspacing="0" >';
 	html += '<tr class=""> <td class="gen_font '+stylecls+'" style="padding-left:5px;width:20px !important;"><div class="alertbox">'+obj.appoint_status+'</div></td>';
 	html += '<td class="evtpop_td_ltline '+stylecls+'" style="text-align:center;width:12px;"><input type="image" src="js_up/images/smallDownArrow.gif"/></td>';
@@ -434,7 +455,7 @@ Schedular.prototype.loadDayEvents = function(events){
 
 	}
 	}
-	/*lert(obj.hr);
+	/*alert(obj.hr);
 	alert(obj.min);
 	alert(obj.pos);
 	alert(obj.duration);

@@ -273,7 +273,7 @@ padding:50px 8px 0;
 	font-size:12px;height:20px;width:30px;text-align:center;
 }
 .date_selector_td_ltline{
-	font-size:12px;height:20px;border-left: #cecece 1px solid;padding-left:0px;padding-right:0px;
+	font-size:12px;height:24px;border-left: #cecece 1px solid;padding-left:0px;padding-right:0px;
 }
 .date_selector_td_left_right{
 	width:18px;
@@ -286,7 +286,7 @@ padding:50px 8px 0;
 
 .date_selector{
 	width:145px;
-	height:20px;
+	height:25px;
 	border:1px solid #cecece;
 	padding:0px;
 	-moz-border-radius:10px;
@@ -353,4 +353,7 @@ padding:50px 8px 0;
 	border-radius:3px;	
 	font-family:calibri;
 	font-weight:bold;
+}
+.zoomIn{
+float:right;text-decoration:underline;cursor:pointer;width:18%;text-align:right;
 }

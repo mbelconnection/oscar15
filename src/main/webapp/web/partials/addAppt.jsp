@@ -45,7 +45,7 @@
 		];
 		
 		var add_appt_sample_appt_data = {"patientId":"4", "patientName":"Leo", "provType":"M", "provId":"4,5", "provName":"Dr. Hilt, Dr. Oscardoc"
-			, "date":"14-Feb-2014", "time":"10", "duration":"30", "isrecurrence":"Y", "recurrence_date":"28-Jan-2014", "appttype":"billing"
+			, "date":"16-Feb-2014", "time":"10", "duration":"30", "isrecurrence":"Y", "recurrence_date":"28-Jan-2014", "appttype":"billing"
 			, "apptstatus":"DP", "isCritical":"Y", "apptresources":"Room 3", "apptreason":"BT", "apptreasondtls":"Physical Examination"
 			, "apptnotes":"Noted complications since last year", "crtdby":"Eddie Collins", "crtddate":"12-Oct-2013", "lastedited":"n/a"
 			, "patientinfo":{"dob":"10-Oct-1985", "sex":"F", "hin":"xxx-xxx-xxx", "address":"123 Sicamore Ave, Toronto, ON", "phone":"647-555-5595", "email":"jane.doe@gmail.com"}
@@ -133,7 +133,7 @@
 			},
 			chkDialogStatus: function(){
 				if(add_appt_appt_id.length == 0){
-					add_app_fn.setApptDtls(add_appt_appt_id);
+					//add_app_fn.setApptDtls(add_appt_appt_id);
 				}
 			},
 			setValNote: function(msg){
@@ -443,7 +443,7 @@
 			}  
 		/**bind auto complete functionality*/
 		/*bind patient name*/
-		$( "#add_appt_pat_name" ).catcomplete({
+		/*$( "#add_appt_pat_name" ).catcomplete({
 		  delay: 0,
 		  source: add_app_ajax_fn.getPatientsData(),
 		  select: function( event, ui ) {
@@ -451,7 +451,7 @@
 			add_appt_fld_pat_id = ui.item.id;
 			add_app_fn.loadPatientDtls(ui.item.id);
 		  }
-		});
+		});*/
 		
 		/*bind provider name*/
 		$( "#add_appt_s_provider" )
@@ -536,6 +536,63 @@
 		});
 		/*binding functions end*/
 		add_app_fn.init();
+		add_app_fn.loadPatientDtls('');
+		
+		
+		
+		var projects = [
+			{
+				id:"1",
+				patName:"Doe, Jane",
+				dob:"01-Oct-1987",
+				hin:"1234-567-999-NN"				
+			},
+			{
+				id:"2",
+				patName:"Donaghy, Jane",
+				dob:"17-Nov-1973",
+				hin:"5987-783-001"				
+			},
+			{
+				id:"3",
+				patName:"Donahue, Jane",
+				dob:"20-Apr-1992",
+				hin:"3232-877-123-GX"				
+			}
+		];
+		
+		 $( "#add_appt_pat_name" ).autocomplete({
+			minLength: 0,
+			source: function(request, response) {				
+				var term = request.term;
+				//console.log(term);
+				var matches = $.grep(projects, function(item, index) {
+					var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
+					return matcher.test(item.patName || item.hin || item);
+				});
+				response(matches);
+			},
+			focus: function( event, ui ) {
+				//$( "#add_appt_pat_name" ).val( ui.item.label );
+				return false;
+			},
+			select: function( event, ui ) {
+				$( "#add_appt_pat_name" ).val( ui.item.patName );
+				$( "#add_appt_pat_name_sel_id" ).val( ui.item.id );		
+				add_appt_fld_pat_id = ui.item.id;
+				add_app_fn.loadPatientDtls(ui.item.id);				
+				return false;
+			}
+		})
+		.data( "ui-autocomplete" )._renderItem = function( ul, item ) {			
+			return $( "<li>" )
+			.append( "<a><b>" + item.patName + "</b><br>" + item.dob + "<br>" + item.hin + "</a>" )
+			.appendTo( ul );
+		};
+		
+	
+		
+		
 	});
 </script>
 
@@ -602,15 +659,21 @@
 								<table>
 									<tr>
 										<td><img src="js_up/img/1.png" style="width:30px;height:30px;"></img></td>
-										<td class="naa_mainheading">BASIC DETAILS(required)</td>
+										<td class="naa_mainheading">BASIC DETAILS(required)
+											<input type="hidden" id="add_appt_pat_name_sel_id">										
+										</td>
 									</tr>
 								</table>
 							</td>
 						</tr>
 						<tr>
 							<td width="20%">Patient name</td>
-							<td width="80%" >&nbsp;<input id="add_appt_pat_name" class="na_form_inputtext"/>
-								New patient
+							<td width="80%" >
+								<table>
+									<tr><td><input id="add_appt_pat_name" class="form-control na_form_inputtext" style="height:25px;"/></td>
+										<td style="padding-left:10px;">New patient</td>
+										</tr>
+									</table>
 							</td>
 						</tr>
 						<tr>
@@ -623,13 +686,30 @@
 						</tr>
 						<tr>
 							<td width="20%">Provider(s)</td>
-							<td width="80%" >&nbsp;<input type="radio" name="add_appt_provider" class="add_appt_radio_pro" value="single" checked style="margin-bottom: -3px;"/>&nbsp;Single provider appt.&nbsp;
-							<input id="add_appt_s_provider" class="na_form_inputtext"/>
+							<td width="80%" >
+								<table>
+									<tr>
+										<td>&nbsp;<input type="radio" name="add_appt_provider" class="add_appt_radio_pro" value="single" checked style="margin-bottom: -3px;"/>&nbsp;Single provider appt.&nbsp;&nbsp;
+										</td>
+										<td><input id="add_appt_s_provider" class="form-control na_form_inputtext" style="height:25px;"/>
+										</td>
+									</tr>
+								</table>						
 							</td>
 						</tr>
 						<tr>
 							<td></td>
-							<td>&nbsp;<input type="radio" name="add_appt_provider" class="add_appt_radio_pro" value="multi" style="margin-bottom: -3px;"/>&nbsp;Multi provider appt.&nbsp;&nbsp;&nbsp;&nbsp;<input id="add_appt_m_provider" class="na_form_inputtext" disabled/></td>
+							<td>
+								<table>
+									<tr>
+										<td>&nbsp;<input type="radio" name="add_appt_provider" class="add_appt_radio_pro" value="multi" style="margin-bottom: -3px;"/>&nbsp;Multi provider appt.&nbsp;&nbsp;&nbsp;&nbsp;
+										</td>
+										<td>
+											<input id="add_appt_m_provider" class="form-control na_form_inputtext" disabled  style="height:25px;"/>
+										</td>
+									</tr>
+								</table>
+							</td>
 						</tr>
 						<tr>
 							<td height="5" colspan="2"></td>
@@ -637,8 +717,12 @@
 						<tr>
 							<td width="20%">Date</td>
 							<td width="80%" >
-								&nbsp;<input id="add_appt_date" class="na_form_inputtext" readonly style="width:90px;cursor:pointer;"/>
-								<span id="add_appt_but_recur" class="appt_roundbox" style="padding:2px;cursor:pointer">&nbsp;Add recurrence&nbsp;</span>
+								<table>
+									<tr>
+										<td>&nbsp;<input id="add_appt_date" class="form-control na_form_inputtext" readonly style="width:90px;cursor:pointer;height:25px;"/></td>
+										<td style="padding-top:10px;padding-left:10px;"><span id="add_appt_but_recur" class="appt_roundbox" style="padding:2px;cursor:pointer;height:25px;">&nbsp;Add recurrence&nbsp;</span></td>
+									</tr>
+								</table>
 							</td>
 						</tr>
 						<tr style="display:none" id="add_appt_row_recur">	
@@ -652,8 +736,17 @@
 						</tr>
 						<tr>
 							<td width="20%">Time</td>
-							<td width="80%" >&nbsp;<select class="na_form_select" id="add_appt_time" style="width:100px;"/>
-							<span style="padding-left:5em;">Duration</span> &nbsp;<select class="na_form_select" id="add_appt_duration" style="width:100px;"/>
+							<td width="80%" >
+								<table>
+									<tr>
+										<td><select class="form-control na_form_select" id="add_appt_time" style="width:100px;padding:0px;"/>
+										</td>
+										<td><span style="padding-left:5em;">Duration</span>
+										</td>										
+										<td style="padding-left:10px;"><select class="form-control na_form_select" id="add_appt_duration" style="width:100px;padding:0px;"/>
+										</td>
+									</tr>
+								</table>
 							</td>
 						</tr>
 						<tr>	
@@ -737,9 +830,9 @@
 						</tr>
 					</table>
 				</td>
-				<td width="45%" style="border-left: 1px solid #AAAAAA;padding-left:5px;">
+				<td width="45%" style="border-left: 1px solid #AAAAAA;padding-left:5px;display: table-cell; vertical-align: top;">
 					<!-- more details -->
-					<table>
+					<table style="width:100%">
 						<tr>
 							<td colspan="2">
 								<table>
@@ -753,44 +846,65 @@
 						<tr>
 							<td>Appt.type</td>
 							<td>
-								&nbsp;<select class="na_form_select" id="add_appt_type">
-										<option value="">Select</option>
-								</select>
-								<span style="padding-left:15px;">Critical appt.</span>&nbsp;<input type="checkbox" id="add_appt_critical" class="na_pro" value="" style="margin-bottom: -5px;margin-left:5px;"/>
+								<table>
+									<tr>
+										<td>
+											<select class="form-control na_form_select" id="add_appt_type" style="padding:0px;">
+													<option value="">Select</option>
+											</select>
+										</td>
+										<td>
+											<span style="padding-left:15px;">Critical appt.</span>
+										</td>
+										<td>
+											<input type="checkbox" id="add_appt_critical" class="na_pro" value="" style="margin-bottom: -5px;margin-left:5px;"/>
+										</td>
+									</tr>
+								</table>								
 							</td>
 						</tr>
-						<tr>
-							<td>Appt.status</td>
+						<tr >
+							<td style="height:35px;">Appt.status</td>
 							<td>
-								&nbsp;<select class="na_form_select" id="add_appt_status">																									
+								<select class="na_form_select form-control" id="add_appt_status" style="padding:0px;">																									
 								</select>
 							</td>
 						</tr>
 						<tr>
 							<td>Location</td>
 							<td>
-								&nbsp;<input id="add_appt_location" class="na_form_inputtext"/>
-								<span style="padding-left:15px;">Resources.</span>&nbsp;<input id="add_appt_resources" class="na_form_inputtext" style="width:60px;"/>
+								<table>
+									<tr>
+										<td>
+											<input id="add_appt_location" class="form-control na_form_inputtext" style="height:25px;"/>
+										</td>
+										<td>
+											<span style="padding-left:15px;">Resources.</span>
+										</td>
+										<td>
+											<input id="add_appt_resources" class="form-control na_form_inputtext" style="width:60px;height:25px;"/>
+										</td>
+									</tr>
+								</table>							
 							</td>
 						</tr>
 						<tr>
-							<td>Reason</td>
+							<td style="height:35px;">Reason</td>
 							<td>
-								&nbsp;<select class="na_form_select" id="add_appt_reason">								
+								<select class="form-control na_form_select" id="add_appt_reason" style="padding:0px;">								
 										<option value="">Select</option>
 									</select>
 							</td>
 						</tr>
 						<tr>
-							<td>Reason details</td>
+							<td style="height:35px;">Reason details</td>
 							<td>
-								&nbsp;<textarea id="add_appt_reason_dtls" rows="3" cols="15" class="na_form_inputtext"/>				
+								<textarea id="add_appt_reason_dtls" rows="3" cols="15" class="form-control na_form_inputtext"/>				
 							</td>
 						</tr>
 						<tr>
-							<td>Notes</td>
-							<td>
-								&nbsp;<textarea id="add_appt_notes" rows="3" cols="15" class="na_form_inputtext"/>
+							<td style="height:35px;">Notes</td>
+							<td style="padding-top:5px;"><textarea id="add_appt_notes" rows="3" cols="15" class="form-control na_form_inputtext"/>
 							</td>
 						</tr>
 						<tr>
@@ -840,13 +954,34 @@
 						</tr>
 						<tr>
 							<td width="20%">Provider(s)</td>
-							<td width="80%" >&nbsp;<input type="radio" name="blk_appt_provider" class="na_pro" value="single" checked style="margin-bottom: -3px;"/>&nbsp;Single provider appt.&nbsp;
-							<input id="naa_s_provider" class="na_form_inputtext"/>
+							<td width="80%" style="padding-left:5px">
+								<table >
+									<tr>
+										<td>
+											<input type="radio" name="blk_appt_provider" class="na_pro" value="single" checked style="margin-bottom: -3px;"/>&nbsp;Single provider appt.&nbsp;
+										</td>
+										<td>
+											<input id="naa_s_provider" class="form-control na_form_inputtext" style="height:25px;"/>
+										</td>
+									</tr>
+								</table>
 							</td>
 						</tr>
 						<tr>
 							<td></td>
-							<td>&nbsp;<input type="radio" name="blk_appt_provider" class="na_pro" value="multi" style="margin-bottom: -3px;"/>&nbsp;Multi provider appt.&nbsp;&nbsp;&nbsp;&nbsp;<input id="naa_m_provider" class="na_form_inputtext" disabled/></td>
+							<td style="padding-left:5px">
+								<table>
+									<tr>
+										<td>
+											<input type="radio" name="blk_appt_provider" class="na_pro" value="multi" style="margin-bottom: -3px;"/>&nbsp;Multi provider appt.
+										</td>
+										<td style="padding-left:13px;">
+											<input id="naa_m_provider" class="form-control na_form_inputtext" disabled style="height:25px;"/>
+										</td>
+									</tr>
+								</table>
+							
+							</td>
 						</tr>
 						<tr>
 							<td></td>
@@ -857,26 +992,47 @@
 						</tr>
 						<tr>
 							<td width="20%">Date</td>
-							<td width="80%" >&nbsp;<input id="blk_appt_date" class="na_form_inputtext"/>
-							Add recurrence
+							<td width="80%" style="padding-left:5px">
+								<table>
+									<tr>
+										<td>
+											<input id="blk_appt_date" class="form-control na_form_inputtext" style="height:25px"/>
+										</td>
+										<td>
+											Add recurrence
+										</td>
+									</tr>
+								</table>
 							</td>
 						</tr>
 						<tr>
 							<td width="20%">Time</td>
-							<td width="80%" >&nbsp;<input id="blk_appt_time" class="na_form_inputtext" style="width:80px;"/>
-							<span style="padding-left:5em;">Duration</span> &nbsp;<input id="blk_appt_duration" class="na_form_inputtext" style="width:80px;"/>
+							<td width="80%" style="padding-left:5px">
+								<table>
+									<tr>
+										<td>
+											<input id="blk_appt_time" class="form-control na_form_inputtext" style="width:80px;height:25px"/>
+										</td>
+										<td>
+											<span style="padding-left:5em;">Duration</span>
+										</td>
+										<td>
+											<input id="blk_appt_duration" class="form-control na_form_inputtext" style="width:80px;height:25px"/>
+										</td>
+									</tr>
+								</table>
 							</td>
 						</tr>
 						<tr>
 							<td width="20%"></td>
-							<td width="80%" >
+							<td width="80%" style="padding-left:5px">
 								Ends at 1:00 PM
 							</td>
 						</tr>
 						<tr>
 							<td width="20%"></td>
-							<td width="80%" >
-								<input type="checkbox" name="blk_appt_allday" class="na_pro" value="" style="margin-bottom: -5px;margin-left:5px;"/>&nbsp;<span style="padding-left:2px;">All Day</span>
+							<td width="80%" style="padding-left:5px">
+								<input type="checkbox" name="blk_appt_allday" class="na_pro" value="" style="margin-bottom: -5px;margin-left:5px;"/><span style="padding-left:2px;">All Day</span>
 							</td>
 						</tr>
 						<tr>
@@ -900,13 +1056,13 @@
 						<tr>
 							<td>Reason</td>
 							<td>
-								&nbsp;<input id="blk_appt_reason" class="na_form_inputtext"/>
+								<input id="blk_appt_reason" class="form-control na_form_inputtext" style="height:25px"/>
 							</td>
 						</tr>		
 						<tr>
 							<td>Notes</td>
 							<td>
-								&nbsp;<textarea name="blk_appt_notes" rows="3" cols="15" class="na_form_inputtext"/>
+								<textarea name="blk_appt_notes" rows="3" cols="15" class="form-control na_form_inputtext"/>
 							</td>
 						</tr>
 						<tr>

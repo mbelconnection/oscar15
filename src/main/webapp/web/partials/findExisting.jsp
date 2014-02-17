@@ -173,6 +173,7 @@
 		//configure auto complete functionality to elements
 		$( "#fex_find_input" ).catcomplete({
 			  delay: 0,
+			  class:"form-control",
 			  source: existing_p_data,
 			  select: function( event, ui ) {
 				//alert(ui.item.id);

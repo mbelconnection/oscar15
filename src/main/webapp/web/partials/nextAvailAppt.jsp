@@ -204,7 +204,7 @@
 		/* Dialog init*/
 		 $("#next_app_form").dialog({
                 autoOpen: false,
-                height: 500,
+                height: 520,
                 width: 620,
                 modal: true
                 
@@ -424,42 +424,84 @@
 			</tr>
 			<tr>
 				<td width="20%">Provider(s)</td>
-				<td width="80%" >&nbsp;<input type="radio" name="naa_provider" class="na_pro" value="single" checked style="margin-bottom: -3px;"/>&nbsp;Single provider appt.&nbsp;
-				<input id="naa_s_provider" class="na_form_inputtext"/>
+				<td width="80%" >
+					<table>
+						<tr>
+							<td>
+								<input type="radio" name="naa_provider" class="na_pro" value="single" checked style="margin-bottom: -3px;"/>&nbsp;Single provider appt.
+							</td>
+							<td style="padding-left:5px;">
+								<input id="naa_s_provider" class="form-control na_form_inputtext" style="height:25px;"/>
+							</td>
+						</tr>
+					</table>
 				</td>
 			</tr>
 			<tr>
 				<td></td>
-				<td>&nbsp;<input type="radio" name="naa_provider" class="na_pro" value="multi" style="margin-bottom: -3px;"/>&nbsp;Multi provider appt.&nbsp;&nbsp;&nbsp;&nbsp;<input id="naa_m_provider" class="na_form_inputtext" disabled/></td>
+				<td>
+					<table>
+						<tr>
+							<td>	
+								<input type="radio" name="naa_provider" class="na_pro" value="multi" style="margin-bottom: -3px;"/>&nbsp;Multi provider appt.
+							</td>
+							<td style="padding-left:5px;">
+								<input id="naa_m_provider" class="form-control na_form_inputtext" disabled style="height:25px;"/>
+							</td>
+						</tr>
+					</table>
+				</td>
 			</tr>
 			<tr>
 				<td height="5" colspan="2"></td>
 			</tr>
 			<tr>
 				<td>Format</td>
-				<td>&nbsp;<input type="radio" name="naa_format" class="na_format" value="appt" style="margin-bottom: -3px;" checked/>&nbsp;By appt. type&nbsp;&nbsp;&nbsp;<input id="naa_appt_format" class="na_form_inputtext"/></td>
+				<td>
+					<table>
+						<tr>
+							<td>
+								<input type="radio" name="naa_format" class="na_format" value="appt" style="margin-bottom: -3px;" checked/>&nbsp;By appt. type
+							</td>
+							<td style="padding-left:5px;">
+								<input id="naa_appt_format" class="form-control na_form_inputtext" style="height:25px;"/>
+							</td>
+						</tr>
+					</table>
+				</td>
 			</tr>
 			<tr>
 				<td></td>
-				<td>&nbsp;<input type="radio" name="naa_format" class="na_format" value="duration" style="margin-bottom: -3px;"/>&nbsp;By duration&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id="naa_dura_format" class="na_form_inputtext" disabled/></td>
+				<td>
+					<table>
+						<tr>
+							<td>
+								<input type="radio" name="naa_format" class="na_format" value="duration" style="margin-bottom: -3px;"/>&nbsp;By duration
+							</td>
+							<td style="padding-left:5px;">
+								<input id="naa_dura_format" class="form-control na_form_inputtext" disabled style="height:25px;"/>
+							</td>
+						</tr>
+					</table>					
+				</td>
 			</tr>
 			<tr>
 				<td height="5" colspan="2"></td>
 			</tr>
 			<tr>
 				<td>Day of week</td>
-				<td>&nbsp;<select class="na_form_select" id="dayOfWeek">
+				<td><select class="form-control na_form_select" id="dayOfWeek" style="padding:0px;">
 						<option value="">Any</option>
 					</select>
 				</td>
 			</tr>
 			<tr>
-				<td>Time of day</td>
-				<td>&nbsp;<input type="text" name="name" id="name" class="na_form_inputtext"></td>
+				<td >Time of day</td>
+				<td style="padding-top:5px;"><input type="text" name="name" id="name" class="form-control na_form_inputtext" style="height:25px;"></td>
 			</tr>
 			<tr>
 				<td># of results</td>
-				<td>&nbsp;<select class="na_form_select" id="results">
+				<td style="padding-top:5px;"><select class="form-control na_form_select" id="results"  style="padding:0px;">
 						<option>5</option>
 						<option>10</option>
 						<option>15</option>

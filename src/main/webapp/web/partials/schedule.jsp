@@ -426,7 +426,7 @@ $(function() {
 		<div style="padding: 0px; display: none;" title="Delete appointment" id="dialog-delete">
 		<b>Sure! you want to delete.</b>
 		</div>
-	
+<div style="display:none;width:1px,height:1px;">
 <script>
 function syncScrollBars(){
 	$("#persondata").scroll(function () { 
@@ -525,6 +525,14 @@ $(function() {
       });
     //});
 	}
+	
+function showLoading(){
+	$("#loadingDiv").dialog("open");
+}
+
+function hideLoading(){
+	$("#loadingDiv").dialog("close");
+}
 // Speed up calls to hasOwnProperty
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 
@@ -595,3 +603,4 @@ sch.showTab('daydivid');
 setDate();
 page_init();
 </script>
+</div>

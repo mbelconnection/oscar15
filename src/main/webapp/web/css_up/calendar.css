@@ -31,7 +31,7 @@ padding:50px 8px 0;
 	border: #cecece 1px solid;	
 	font-size:19px;
 }.cal_today {
-	background-color: #fff3a1 !important;	
+	background-color: #fff3a1 !important;
 }.cal_days_bef_aft {
     color: #bbb; !important;
 	height:20px !important;
@@ -172,13 +172,13 @@ padding:50px 8px 0;
 
 .scrolldiv {
     overflow:scroll;
-	width:900px;
+	width:1200px;
 	overflow-y:hidden;
 }
 
 .scrolldiv2{
     overflow:scroll;
-	height:460px;
+	height:100%;/* modified by Bhaskar */
 	overflow-x:hidden;
 }
 

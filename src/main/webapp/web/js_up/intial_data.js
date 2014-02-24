@@ -1,5 +1,73 @@
 {
-   "14-Feb-2014":{
+	"19-Feb-2014":{
+	      "providersDB":[
+	         {
+	            "name":"Dr. Oscardoc",
+	            "id":"1",
+				"group":"group1"
+	         },
+	         {
+	            "name":"Dr. Doe",
+	            "id":"2",
+				"group":"group1"
+	         },
+	         {
+	            "name":"Dr. Hilts",
+	            "id":"3",
+				"group":"group1"
+	         },
+	         {
+	            "name":"Dr. Yarwick",
+	            "id":"4",
+				"group":"group1"
+	         },
+	         {
+	            "name":"Dr. Michelle Dietician",
+	            "id":"5",
+				"group":"group1"
+	         },
+	         {
+	            "name":"Dr. Alison Smith",
+	            "id":"6",
+				"group":"group1"
+	         },
+	         {
+	            "name":"Dr. Rand Paul",
+	            "id":"7",
+				"group":"group1"
+	         },
+	         {
+	            "name":"Michelle Terry",
+	            "id":"8",
+				"group":"group1"
+	         }
+	      ],
+	      "eventsDB":[
+	         {
+	            "doc_id":"1",
+	            "patient_name":"Anderson",
+	            "from_time":"9:00",
+	            "duration":"30",
+	            "appoint_status":"CX",
+	            "is_critical":"N",
+	            "go_to":"E",
+	            "reason":"Physical Examination.required check up. need to check the alignmen.",
+	            "notes":"Noted complications since last year"
+	         },
+	         {
+	            "doc_id":"3",
+	            "patient_name":"Leo",
+	            "from_time":"10:00",
+	            "duration":"75",
+	            "appoint_status":"CX",
+	            "is_critical":"N",
+	            "go_to":null,
+	            "reason":"Physical Examination",
+	            "notes":"Noted complications since last year"
+	         }
+	      ]
+},
+"20-Feb-2014":{
       "providersDB":[
          {
             "name":"Dr. Oscardoc",
@@ -67,7 +135,7 @@
          }
       ]
    },
-   "15-Feb-2014":{
+   "21-Feb-2014":{
       "providersDB":[
          {
             "name":"Dr. Oscardoc",
@@ -144,7 +212,7 @@
          }
       ]
    },
-   "16-Feb-2014":{
+   "22-Feb-2014":{
       "providersDB":[
          {
             "name":"Dr.Oscardoc",
@@ -236,7 +304,7 @@
          }
       ]
    },
-   "31-Jan-2014":{
+   "23-Feb-2014":{
       "providersDB":[
          {
             "name":"Dr. Oscardoc",
@@ -307,7 +375,7 @@
          }
       ]
    },
-   "01-Feb-2014":{
+   "24-Feb-2014":{
       "providersDB":[
          {
             "name":"Dr. Oscardoc",
@@ -378,7 +446,7 @@
          }
       ]
    },
-   "02-Feb-2014":{
+   "25-Feb-2014":{
       "providersDB":[
          {
             "name":"Dr. Oscardoc",
@@ -426,7 +494,7 @@
       ],
       "eventsDB":[]
    },
-   "03-Feb-2014":{
+   "26-Feb-2014":{
       "providersDB":[
          {
             "name":"Dr. Oscardoc",
@@ -474,7 +542,7 @@
       ],
       "eventsDB":[]
    },
-   "04-Feb-2014":{
+   "27-Feb-2014":{
       "providersDB":[
          {
             "name":"Dr. Oscardoc",
@@ -522,7 +590,7 @@
       ],
       "eventsDB":[]
    },
-   "05-Feb-2014":{
+   "28-Feb-2014":{
       "providersDB":[
          {
             "name":"Dr. Oscardoc",
@@ -570,7 +638,7 @@
       ],
       "eventsDB":[]
    },
-   "06-Feb-2014":{
+   "01-Mar-2014":{
       "providersDB":[
          {
             "name":"Dr. Oscardoc",
@@ -618,7 +686,7 @@
       ],
       "eventsDB":[]
    },
-   "07-Feb-2014":{
+   "02-Mar-2014":{
       "providersDB":[
          {
             "name":"Dr. Oscardoc",
@@ -666,7 +734,7 @@
       ],
       "eventsDB":[]
    },
-   "08-Feb-2014":{
+   "03-Mar-2014":{
       "providersDB":[
          {
             "name":"Dr. Oscardoc",
@@ -714,7 +782,7 @@
       ],
       "eventsDB":[]
    },
-   "09-Feb-2014":{
+   "04-Mar-2014":{
       "providersDB":[
          {
             "name":"Dr. Oscardoc",
@@ -785,7 +853,7 @@
          }
       ]
    },
-   "10-Feb-2014":{
+   "05-Mar-2014":{
       "providersDB":[
          {
             "name":"Dr. Oscardoc",
@@ -854,7 +922,7 @@
             "notes":"Noted complications since last year"
          }]
    },
-   "11-Feb-2014":{
+   "06-Mar-2014":{
       "providersDB":[
          {
             "name":"Dr. Oscardoc",
@@ -923,7 +991,7 @@
             "notes":"Noted complications since last year"
          }]
    },
-   "13-Feb-2014":{
+   "07-Mar-2014":{
       "providersDB":[
          {
             "name":"Dr. Oscardoc",

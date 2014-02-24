@@ -103,7 +103,7 @@ Schedular.prototype.init = function(view,from){
 	this.setView(view);
 	/*Load calendar in month view*/
 	calendar();
-	var scrollWid = document.getElementById('secNav').offsetWidth - 80;
+	var scrollWid = document.getElementById('secNav').offsetWidth - 60;
 	//alert(scrollWid)
 	var data = this.getYScale();
 	var headData = '<div id="clock" style="float:left"><table class="xscale" style="float: left;cellpadding:0;cellpadding:0;padding-bottom:0px !important;border-bottom: 0px !important;" ><tr><td ><input type="image" src="js_up/images/clock_small.gif"/></td></tr></table>';
@@ -124,25 +124,42 @@ Schedular.prototype.init = function(view,from){
 }
 
 Schedular.prototype.getProvider = function(providerID){
-	for(var i=0; i<Schedular.config.providersList.length; i++){
-		if(Schedular.config.providersList[i].id == providerID){
-			return Schedular.config.providersList[i];
-		}
+var foo = [];
+var bar =[];
+for(var i=0; i<Schedular.config.providersList.length; i++){
+		bar.push(Schedular.config.providersList[i].id);
 	}
+var i = 0;
+jQuery.grep(providerID, function(el) {
+    if (jQuery.inArray(el.id, bar) == -1){
+    }else{
+     foo.push(el);
+    }
+    i++;
+
+});
+return foo;
+	//for(var i=0; i<Schedular.config.providersList.length; i++){
+	//	if(Schedular.config.providersList[i].id == providerID[i].id){
+	//		return Schedular.config.providersList[i];
+	//	}
+	//}
 	alert('Provider not found.');
 }
 Schedular.prototype.getEvents = function(providerID){
 var arrEvents  =[];
 	for(var i=0; i<Schedular.config.eventsList.length; i++){
-		if(Schedular.config.eventsList[i].doc_id == providerID){
+	for(var j=0; j<providerID.length; j++){
+		if(Schedular.config.eventsList[i].doc_id == providerID[j].id){
 			arrEvents.push(Schedular.config.eventsList[i]);
 		}
+	}
 	}
 	return (arrEvents);
 	//console.log('Events not found.');
 }
 
-Schedular.prototype.setView = function(view){	
+Schedular.prototype.setView = function(view){
 	//this.clearAllViews();
 	//document.getElementById(Schedular.views[view]).style.display = "block";
 }
@@ -159,7 +176,7 @@ Schedular.prototype.getYScale = function(){
 	var time = '';
 	_YScale += '<table class="xscale" style="float: left;">';
 	//_YScale += '<tr><td><input type="image" src="images/clock_small.GIF"/></td></tr>';
-	while(_shour < Schedular.config.end_time){				
+	while(_shour < Schedular.config.end_time){
 		if(_smin >= 60){
 			_shour++;
 			_smin -= 60;
@@ -180,7 +197,7 @@ Schedular.prototype.getYScale = function(){
 
 Schedular.prototype.getXData = function(){
 	var wid = this.persons.length * 220;
-	if(wid < 900)
+	if(wid < 1400)
 		wid = '100%';
 	var Xdata = '';
 		Xdata +='<div style="position: relative;"><table class="Yscale" style="float: left;" width="'+wid+'px" id="persondatatab">';
@@ -192,7 +209,7 @@ Schedular.prototype.getXData = function(){
 
 Schedular.prototype.getPersonTabWidth = function(){
 	var wid = this.persons.length * 220;
-	if(wid < 900)
+	if(wid < 1400)
 		wid = '100%';
 	return wid;
 }
@@ -201,7 +218,7 @@ Schedular.prototype.getXHeader = function(){
 	var _XHeader = '';
 	_XHeader += '<tr>';
 	if(this.persons.length == 1)
-		_XHeader += '<th style="text-align:center;display: inline-block;" ><div style="float:left;width:80%;text-align:center;" id="'+this.persons[0].id+'">'+this.persons[0].name+'</div><div class="zoomIn" onclick="sch.zoom()">Zoomout</div></th>';
+		_XHeader += '<th style="text-align:center;display: inline-block;" ><div style="float:left;width:80%;text-align:center;" id="'+this.persons[0].id+'">'+this.persons[0].name+'</div><div class="zoomIn" onclick="sch.zoom()">Zoom out</div></th>';
 	else
 		for(var i=0; i<this.persons.length; i++){
 			if(this.view == 'day')
@@ -218,14 +235,14 @@ Schedular.prototype.getXScale = function(){
 	var _shour = Schedular.config.start_time, _smin = 0, temp_min=0;;
 	var style = 'withline';
 	while(_shour < Schedular.config.end_time){
-		
+
 		if(_smin >= 60){
 			style = 'withline';
 			_shour++;
 			_smin -= 60;
 			if(_shour == Schedular.config.end_time)
 				break;
-		}		
+		}
 		
 		
 
@@ -251,13 +268,13 @@ Schedular.prototype.round = function(time){
 }
 
 Schedular.prototype.zoom = function(id){
-	var providers = [];
+	//var providers = [];
 	if(!isEmpty(id)){
 	//console.log(id+">>in 1");
 	var provider = this.getProvider(id);
 	var events = this.getEvents(id)
-	providers.push(provider);
-	this.setProviders(providers);
+	//providers.push(provider);
+	this.setProviders(provider);
 	this.setEvents(events);
 	this.init('day',"from zoom");
 	}else{
@@ -274,7 +291,7 @@ Schedular.prototype.addEvent = function(obj){
 	globalObj = obj;
 
 }
-Schedular.prototype.editEvent = function(){	
+Schedular.prototype.editEvent = function(){
 	//for(key in obj)
 	loading(); // loading
 	setTimeout(function(){ // then show popup, deley in .5 second
@@ -312,8 +329,8 @@ Schedular.prototype.saveEvent = function(obj,appObj){
 }
 Schedular.prototype.deleteEvent = function(apptObject){
 	//document.getElementById("events").innerHTML = this.getEventDiv(obj,"delete");
-					var $back = $('div').find("#"+apptObject);
-					$back.remove();
+	var $back = $('div').find("#"+apptObject);
+	$back.remove();
 }
 Schedular.prototype.editAppt = function(apptObject){
 	/*set variable value in addAppt.jsp*/
@@ -332,7 +349,7 @@ Schedular.prototype.editAppt = function(apptObject){
 					sch.clearForm("#add_appt_form");
 					$("#add_appt_form").dialog("open");
 					$( this ).dialog( "close" );
-					$("#dialog-info").dialog( "close" );					
+					$("#dialog-info").dialog( "close" );
 				},
 				"Delete": function() {
 				$("#next_app_form").dialog("close");
@@ -434,7 +451,7 @@ Schedular.prototype.getPosition = function(doc_id){
 	}
 }
 
-Schedular.prototype.loadDayEvents = function(events){	
+Schedular.prototype.loadDayEvents = function(events){
 	var obj = [];
 	//console.log(events);
 	if(events.length>0){
@@ -461,7 +478,7 @@ Schedular.prototype.loadDayEvents = function(events){
 	alert(obj.duration);
 	alert(obj.offHeight);
 	alert(obj.offWidth);*/
-
+Schedular.prototype.timerTab();
 }
 
 Schedular.prototype.getHour = function(time){
@@ -534,8 +551,17 @@ Schedular.prototype.setInitData = function(params){
 		  //Schedular.config.providersList=[];
 		  $.each(result, function(j, obj){
 		   if(j == params.vars.doc_dt){
-			  Schedular.config.eventsList = obj.eventsDB;
-			  Schedular.config.providersList = obj.providersDB;
+		   	Schedular.config.eventsList = obj.eventsDB;
+			Schedular.config.providersList = obj.providersDB;
+		   if(!isEmpty(params.vars.doc_list)){
+		   var providers =[];
+
+		   var provider = Schedular.prototype.getProvider(params.vars.doc_list);
+			var events = Schedular.prototype.getEvents(params.vars.doc_list)
+			//providers.push(provider);
+			Schedular.prototype.setProviders(provider);
+			Schedular.prototype.setEvents(events);
+			}
 			  return false;
 			}
 		  });
@@ -549,6 +575,77 @@ Schedular.prototype.ajaxMethod = function(url, ORSCFuncName, variables){
 }
 Schedular.prototype.showTab = function(id){
 	document.getElementById(id).click();
+}
+Schedular.prototype.timerTab = function(){
+var timer="";
+var    incrementTime = 1000*60*5, // Timer speed in milliseconds
+        currentTime = 0, // Current time in hundredths of a second
+        updateTimer = function() {
+            currentTime += incrementTime / 10;
+			Schedular.prototype.timerDisable();
+        },
+		init = function() {
+			Schedular.prototype.timerDisable();
+            timer = $.timer(updateTimer, incrementTime, true);
+        };
+	//timer = $.timer(function() {
+	//Schedular.prototype.timerDisable();
+	//},'900000', true);
+	$(init);
+}
+Schedular.prototype.timerDisable = function(){
+//alert("in timer");
+	var min15 =['00','15','30','45'];
+	var today=new Date();
+	var h=today.getHours();
+	var m=today.getMinutes();
+	var sec=today.getSeconds();
+	if(h<10){
+		h="0"+h;
+	}else{
+		h = h;
+	}
+	var x = (m/15);
+	//console.log(h+":"+min15[Math.floor(x)]+":"+sec+">>>x:"+Math.floor(x));
+	var s = $("td .noline,.withline");
+	//console.log(s);
+	for(i in s){
+		if(s[i].id != undefined){
+			var s0 = i>0?s[i-1].id.split("_"):"08:00";
+			var s1 = s[i].id.split("_");
+			//console.log($("#"+s[i].id).id); 1_08:00,2_09:45
+			//console.log(s0[1]==h+":"+min15[Math.floor(x)]);
+			//console.log(s1[1]==h+":"+min15[Math.floor(x)]);
+			if((s0[1]==h+":"+min15[Math.floor(x)]) &&!(s1[1]==h+":"+min15[Math.floor(x)])){
+				
+				return;
+			}else{
+				$(s[i])
+				.removeAttr( "ondblclick")
+				.css("border-bottom", "")
+				.css("background", "#BDBDBD")
+				.fadeTo(250, 0.25);
+
+				var s3 = s1[1].split(":");
+
+				$("#"+s3[0]+"_"+s3[1])
+				.removeAttr( "ondblclick")
+				.removeAttr( "onclick")
+				.fadeTo(250, 0.25);
+				
+				$("#"+s3[0]+"_"+s3[1]+" .evtpop_td_ltline")
+				.removeAttr( "ondblclick")
+				.removeAttr( "onclick")
+				if(!(s0[1]==h+":"+min15[Math.floor(x)]) &&(s1[1]==h+":"+min15[Math.floor(x)])){
+					$(s[i])
+					.css("border-bottom", "3px solid green");
+					}else if((s0[1]==h+":"+min15[Math.floor(x)]) &&(s1[1]==h+":"+min15[Math.floor(x)])){
+					$(s[i])
+					.css("border-bottom", "3px solid green");
+					}
+			}
+		}
+	}
 }
  Schedular.prototype.clearForm = function (formId) {
 
@@ -568,5 +665,4 @@ Schedular.prototype.showTab = function(id){
 		$("#naa_search").text("Search");
     });
  }
-			
 

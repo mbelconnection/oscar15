@@ -62,14 +62,40 @@
 		
 		var days = {"sunday":"Sunday", "monday":"Monday", "tuesday":"Tuesday", "wednesday":"Wednesday", "thursday":"Thursday", "friday":"Friday", "saturday":"Saturday"};
 		
+		var naa_json_appType = {"echart":"E-Chart", "intake":"Intake form", "billing":"Billing", "rx":"RX"};
+		
 		var searchData= [
 			{"date":"01-Feb-2014", "time":"11:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
 			{"date":"31-Jan-2014", "time":"15:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
 			{"date":"02-Feb-2014", "time":"12:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
 			{"date":"31-Jan-2014", "time":"17:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
+			{"date":"30-Jan-2014", "time":"14:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
+			
+			{"date":"30-Jan-2014", "time":"14:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
+			{"date":"30-Jan-2014", "time":"14:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
+			{"date":"30-Jan-2014", "time":"14:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
+			{"date":"30-Jan-2014", "time":"14:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
+			{"date":"30-Jan-2014", "time":"14:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
+			{"date":"30-Jan-2014", "time":"14:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
+			{"date":"30-Jan-2014", "time":"14:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
+			{"date":"30-Jan-2014", "time":"14:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
+			{"date":"30-Jan-2014", "time":"14:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
 			{"date":"30-Jan-2014", "time":"14:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]}
 		];
-
+		
+		var naa_json_docs = [
+		  { label: "Dr. Oscardoc", category: "", id:"1" },
+		  { label: "Dr. Doe", category: "", id:"2"  },
+		  { label: "Dr. Hilts", category: "", id:"3"  },
+		  { label: "Dr. Yarwick", category: "", id:"4"  },
+		  { label: "Dr. Michelle Dietician", category: "", id:"5"  },
+		  { label: "Dr. Alison Smith", category: "", id:"6"  },
+		  { label: "Dr. Rand Paul", category: "", id:"7"  }
+		];
+		
+		var naa_json_time = {"8_00":"08:00", "8_15":"08:15", "8_30":"08:30", "8_45":"08:45", "9_00":"09:00", "9_15":"09:15", "9_30":"09:30", "9_45":"09:45", "10_00":"10:00", "10_15":"10:15", "10_30":"10:30", "10_45":"10:45", "11_00":"11:00", "11_15":"11:15", "11_30":"11:30", "11_45":"11:45", "12_00":"12:00", "12_15":"12:15", "12_30":"12:30", "12_45":"12:45", "13_00":"13:00", "13_15":"13:15", "13_30":"13:30", "13_45":"13:45", "14_00":"14:00", "14_15":"14:15", "14_30":"14:30", "14_45":"14:45", "15_00":"15:00", "15_15":"15:15", "15_30":"15:30", "15_45":"15:45", "16_00":"16:00", "16_15":"16:15", "16_30":"16:30", "16_45":"16:45", "17_00":"17:00", "17_15":"17:15", "17_30":"17:30", "17_45":"17:45", "18_00":"18:00", "18_15":"18:15", "18_30":"18:30", "18_45":"18:45", "19_00":"19:00", "19_15":"19:15", "19_30":"19:30", "19_45":"19:45", "20_00":"20:00", "20_15":"20:15", "20_30":"20:30", "20_45":"20:45", "21_00":"21:00", "21_15":"21:15", "21_30":"21:30", "21_45":"21:45", "22_00":"22:00", "22_15":"22:15", "22_30":"22:30", "22_45":"22:45"};
+		var naa_prov_id = "";
+		var naa_prov_type = "";
 		
 		/*JSON data end*/
 		
@@ -79,6 +105,13 @@
 			},
 			getSearchData: function(){
 				return searchData;
+			},
+			getDocsData: function(){				
+				return naa_json_docs;
+			},getAttptStatus: function(){
+				return naa_json_appType;
+			},getTimeSlot: function(){
+				return naa_json_time;
 			}
 		};
 		
@@ -96,12 +129,26 @@
 				$.each(_days, function(key, val){
 					$("#dayOfWeek").append(new Option(val, key));
 				});
+			 },			 
+			 loadTimeSlot: function(){
+				var _data = naa_json_fn.getTimeSlot();
+				$.each(_data, function(key, val){
+					$("#naa_time_of_day").append(new Option(val, key));
+				});				
+			 },			 
+			 loadApptType: function(){
+				var _days = naa_json_fn.getAttptStatus();
+				$.each(_days, function(key, val){
+					$("#naa_appt_format").append(new Option(val, key));
+				});
 			 },
 			 
 			 search: function(){
 				var _data = naa_json_fn.getSearchData();
 				$("#naa_users tr:gt(0)").remove();
-				$.each(_data, function(){
+				$.each(_data, function(i,val){
+						if(i>($('#results').val() - 1))
+							return false;
 						var me = this;
 						var myObject = JSON.stringify(me);
 						$("#naa_users tbody").append("<tr>" +
@@ -141,11 +188,13 @@
 					"Cancel": function() {
 						 $( this ).dialog( "close" );
 						}
-					}
+					}				
 				});
 			 }
 		}
 		naa_fn.loadDayOfWeek();
+		naa_fn.loadApptType();
+		naa_fn.loadTimeSlot();
 		/* General functions end*/ 
 
 		/*Element event bindings*/
@@ -154,8 +203,8 @@
 				$("#next_app_form").dialog("open");
          }); 
 
-		 $("#naa_cancel").button().click(function () {
-		 
+		 $("#naa_cancel").button().click(function () {			
+			$('#naa_form')[0].reset();			
 			sch.clearForm("#next_app_form");
 			$("#next_app_form").dialog("close");
             return false;
@@ -164,6 +213,15 @@
 		 $("#naa_search").button().click(function () {
 			$("#naa_search").text("Search again");
 			$("#naa_search").attr("style","font-size:12px !important;font-family:verdana, sans-serif; padding: 3px 8px 5px 8px;");
+			var formData = {};			
+			formData['prov_type'] = naa_prov_type;
+			formData['id'] = naa_prov_id;
+			formData['appt_type'] = $('#naa_appt_format').val();
+			formData['appt_dur'] = $('#naa_dura_format').val();
+			formData['day'] = $('#dayOfWeek').val();
+			formData['time'] = $('#naa_time_of_day').val();
+			formData['no_results'] = $('#results').val();
+			console.log(formData);
 			naa_fn.search();
             return false;
          });
@@ -204,9 +262,13 @@
 		/* Dialog init*/
 		 $("#next_app_form").dialog({
                 autoOpen: false,
-                height: 520,
+                height: 550,
                 width: 620,
-                modal: true
+                modal: true,
+				open:function(){
+					$('#naa_provider_0').prop('checked', true);
+					$('#naa_format_0').prop('checked', true);
+				}
                 
             });
 
@@ -215,22 +277,22 @@
 		//$("#next_app_form").dialog("open");
 		
 		//auto complete widget init	
-		$.widget( "custom.catcomplete", $.ui.autocomplete, {
-			_renderMenu: function( ul, items ) {
-			var me = this,
+		$.widget( "custom.mycatcomplete", $.ui.autocomplete, {
+		_renderMenu: function( ul, items ) {
+		  var that = this,
 			currentCategory = "";
-			$.each( items, function( index, item ) {
-				  if ( item.category != currentCategory ) {
-					ul.append( "<li class='ui-autocomplete-category'>" + item.category + "</li>" );
-					currentCategory = item.category;
-				  }
-				  me._renderItemData( ul, item );
-			  });
+		  $.each( items, function( index, item ) {
+			if ( item.category != currentCategory ) {
+			  ul.append( "<li class='ui-autocomplete-category'>" + item.category + "</li>" );
+			  currentCategory = item.category;
 			}
+			that._renderItemData( ul, item );
 		  });
+		}
+	  });
 
 		//configure auto complete functionality to elements
-		$( "#naa_s_provider" ).catcomplete({
+		/*$( "#naa_s_provider" ).catcomplete({
 			  delay: 0,
 			  source: data,
 			  select: function( event, ui ) {		
@@ -244,8 +306,72 @@
 			  select: function( event, ui ) {		
 				alert(ui.item.id);
 			  }
+		});*/
+		
+		/*bind provider name*/
+		$( "#naa_s_provider" )
+		.mycatcomplete({
+		  delay: 0,
+		  source: function( request, response ) {
+			// delegate back to autocomplete, but extract the last term
+			var data = naa_json_fn.getDocsData();			
+			response( data );			
+		  },		  
+		  select: function( event, ui ) {		
+			naa_prov_type = "S";
+			naa_prov_id  = ui.item.id;
+		  },    
+		  _search: function(event, ui) {
+			return false;
+		  }
+
 		});
 		
+		
+		$( "#naa_m_provider" )
+		.bind( "keydown", function( event ) {
+			if ( event.keyCode === $.ui.keyCode.TAB &&
+			$( this ).data( "ui-autocomplete" ).menu.active ) {
+			event.preventDefault();
+			}
+		})
+		 .autocomplete({
+			minLength: 0,
+			source: function( request, response ) {
+			// delegate back to autocomplete, but extract the last term
+				var data = naa_json_fn.getDocsData();			
+				response( data );
+			},
+			focus: function() {
+			// prevent value inserted on focus
+			return false;
+			},
+			select: function( event, ui ) {
+				console.log(ui.item.id);
+				var terms = split( this.value );
+				// remove the current input
+				terms.pop();
+				// add the selected item
+				terms.push( ui.item.value );
+				// add placeholder to get the comma-and-space at the end
+				terms.push( "" );
+				this.value = terms.join( ", " );
+				naa_prov_type = "M";
+				//add_appt_fld_prv_id += ui.item.id+",";
+				naa_prov_id += ui.item.id+",";
+				//console.log(add_appt_fld_prv_id);
+				return false;
+			}
+		});
+			
+		function split( val ) {
+			return val.split( /,\s*/ );
+		}
+		function extractLast( term ) {
+			return split( term ).pop();
+		}  		
+		
+			
 	});//end of document ready function
 
 
@@ -417,7 +543,7 @@
 <!-- Next available appt dailog box start-->
 <div id="next_app_form" title="Create new user" class="na_form" style="padding:0px;width:100%">
 	<p class="naa_mainheading">Search for next available appointment</p>
-	<form class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+	<form class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix" id="naa_form">
 		<table class="na_table" width="97%" border="0" style="margin-left:10px;margin-right:10px">
 			<tr>
 				<td colspan="2" class="naa_subheading">APPOINTMENT DETAILS</td>
@@ -428,7 +554,7 @@
 					<table>
 						<tr>
 							<td>
-								<input type="radio" name="naa_provider" class="na_pro" value="single" checked style="margin-bottom: -3px;"/>&nbsp;Single provider appt.
+								<input type="radio" checked="checked" id="naa_provider_0" name="naa_provider" class="na_pro" value="single" style="margin-bottom: -3px;"/>&nbsp;Single provider appt.
 							</td>
 							<td style="padding-left:5px;">
 								<input id="naa_s_provider" class="form-control na_form_inputtext" style="height:25px;"/>
@@ -445,7 +571,7 @@
 							<td>	
 								<input type="radio" name="naa_provider" class="na_pro" value="multi" style="margin-bottom: -3px;"/>&nbsp;Multi provider appt.
 							</td>
-							<td style="padding-left:5px;">
+							<td style="padding-left:14px;">
 								<input id="naa_m_provider" class="form-control na_form_inputtext" disabled style="height:25px;"/>
 							</td>
 						</tr>
@@ -461,10 +587,13 @@
 					<table>
 						<tr>
 							<td>
-								<input type="radio" name="naa_format" class="na_format" value="appt" style="margin-bottom: -3px;" checked/>&nbsp;By appt. type
+								<input type="radio" id="naa_format_0" name="naa_format" checked class="na_format" value="appt" style="margin-bottom: -3px;" checked/>&nbsp;By appt. type
 							</td>
 							<td style="padding-left:5px;">
-								<input id="naa_appt_format" class="form-control na_form_inputtext" style="height:25px;"/>
+								
+								<select class="form-control na_form_select" id="naa_appt_format" style="padding:0px;width:150px;">
+									<option value="">Any</option>
+								</select>
 							</td>
 						</tr>
 					</table>
@@ -478,8 +607,15 @@
 							<td>
 								<input type="radio" name="naa_format" class="na_format" value="duration" style="margin-bottom: -3px;"/>&nbsp;By duration
 							</td>
-							<td style="padding-left:5px;">
-								<input id="naa_dura_format" class="form-control na_form_inputtext" disabled style="height:25px;"/>
+							<td style="padding-left:16px;">								
+								<select class="form-control na_form_select" disabled id="naa_dura_format" style="padding:0px;width:150px;">
+									<option value="">Any</option>
+									<option value="15">15 min</option>
+									<option value="30">30 min</option>
+									<option value="45">45 min</option>
+									<option value="60">60 min</option>
+									<option value="75">75 min</option>
+								</select>
 							</td>
 						</tr>
 					</table>					
@@ -497,7 +633,11 @@
 			</tr>
 			<tr>
 				<td >Time of day</td>
-				<td style="padding-top:5px;"><input type="text" name="name" id="name" class="form-control na_form_inputtext" style="height:25px;"></td>
+				<td style="padding-top:5px;">
+					<select class="form-control na_form_select" id="naa_time_of_day" style="padding:0px;">
+						<option value="">Any</option>
+					</select>					
+				</td>
 			</tr>
 			<tr>
 				<td># of results</td>
@@ -516,6 +656,7 @@
 				<td colspan="2" style="text-align:right;" class="na_form_button">
 					<button id="naa_cancel" class="naa_button_grd">Cancel</button>
 					<button id="naa_search" class="naa_button_grd">Search</button>
+					<button type="reset" value="Reset" style="display:none">Reset</button>
 				</td>
 			</tr>
 			<tr>
@@ -523,23 +664,25 @@
 			</tr>
 			<tr>
 				<td colspan="2" style="text-align:center;"> 
+					<div style="overflow-y:auto;overflow-x:hidden;height:200px;">
 					<fieldset style="" class="na_form_fieldset">
 					<div id="naa_users-contain" class="ui-widget" style="padding:0px;margin:0px;">
-					<table id="naa_users" class="ui-widget ui-widget-content">
-						<thead>
-							<tr class="ui-widget-header ">
-								<th>Date</th>
-								<th>Time</th>
-								<th>Provider(s)</th>
-								<th></th>
-							</tr>
-						</thead>
-						<tbody>
+						<table id="naa_users" class="ui-widget ui-widget-content">
+							<thead>
+								<tr class="ui-widget-header ">
+									<th>Date</th>
+									<th>Time</th>
+									<th>Provider(s)</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
 
-						</tbody>
-					</table>
+							</tbody>
+						</table>
+						</div>
+						</fieldset>
 					</div>
-					</fieldset>
 				</td>
 			</tr>
 		</table>

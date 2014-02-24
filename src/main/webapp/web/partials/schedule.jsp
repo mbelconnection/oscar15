@@ -298,18 +298,18 @@ $.widget( "custom.catcomplete", $.ui.autocomplete, {
 
 $(function() {
     var data = [
-      { label: "Dr.Oscardoc", category: "individual",id:"1" },
-      { label: "Dr.Doe", category: "individual",id:"2" },
-	  { label: "Dr.Hilts", category: "individual",id:"3" },
-	  { label: "Dr.Yarwick", category: "individual",id:"4" },
-	  { label: "Dr.Michelle Dietician", category: "individual",id:"5" },
-	  { label: "Dr.Alison Smith", category: "individual",id:"6" },
-      { label: "Dr.Rand Paul", category: "individual",id:"7" },
-      { label: "Dr.Michelle Terry", category: "individual",id:"8" },
-      { label: "Dr.Smith", category: "individual",id:"9" },
-      { label: "groupA", category: "group" ,id:"group1" },
-      { label: "groupB", category: "group" ,id:"group2" },
-      { label: "groupC", category: "group",id:"group3"  }
+      { label: "Dr. Oscardoc", category: "Individual",id:"1",list:[{"name":"Dr. Oscardoc","id":"1"}] },
+      { label: "Dr. Doe", category: "Individual",id:"2",list:[{"name":"Dr. Doe","id":"2"}] },
+	  { label: "Dr. Hilts", category: "Individual",id:"3",list:[{"name":"Dr. Hilts","id":"3"}] },
+	  { label: "Dr. Yarwick", category: "Individual",id:"4",list:[{"name":"Dr. Yarwick","id":"4"}] },
+	  { label: "Dr. Michelle Dietician", category: "Individual",id:"5",list:[{"name":"Dr. Michelle Dietician","id":"5"}] },
+	  { label: "Dr. Alison Smith", category: "Individual",id:"6",list:[{"name":"Dr. Alison Smith","id":"6"}] },
+      { label: "Dr.Rand Paul", category: "Individual",id:"7",list:[{"name":"Dr. Rand Paul","id":"7"}] },
+      { label: "Dr. Michelle Terry", category: "Individual",id:"8",list:[{"name":"Dr. Michelle Terry","id":"8"}] },
+      { label: "Dr.Smith", category: "Individual",id:"9",list:[{"name":"Dr. Oscardoc","id":"1"}] },
+      { label: "Group A", category: "Group", id:"group1",list:[{"name":"Dr. Oscardoc","id":"1"},{"name":"Dr. Doe","id":"2"},{"name":"Dr. Hilts","id":"3"}] },
+      { label: "Group B", category: "Group", id:"group2",list:[{"name":"Dr. Oscardoc","id":"1"}] },
+      { label: "Group C", category: "Group", id:"group3",list:[{"name":"Dr. Oscardoc","id":"1"},{"name":"Dr. Doe","id":"2"},{"name":"Dr. Hilts","id":"3"},{"name":"Dr. Yarwick","id":"4"},{"name":"Dr. Michelle Dietician","id":"5"},{"name":"Dr. Alison Smith","id":"6"}] }
     ];
  
     $( "#docava" ).catcomplete({
@@ -318,7 +318,7 @@ $(function() {
 	  select: function( event, ui ) {
 	  var doc_dt = $("#inputField").val();
 		//sch.getUpdateDoc(doc_dt,ui.item.id);
-		sch.ajaxMethod("js_up/intial_data.js",Schedular.prototype.setInitData,{"doc_dt":doc_dt,"doc_id":ui.item.id});
+		sch.ajaxMethod("js_up/intial_data.js",Schedular.prototype.setInitData,{"doc_dt":doc_dt,"doc_list":ui.item.list});
 		setTimeout('Schedular.prototype.init(\''+globalView.view+'\',\'from docava\')',1000);
 	  }
     });
@@ -337,9 +337,9 @@ $(function() {
 							</tr>
 						</table>
 					</div>
-				</td>			
+				</td>
 				<td class='tabs_underline' style='vertical-align:bottom;width:300px;'>
-					<ul class='tabs' style='width:300px !important;'>				
+					<ul class='tabs' style='width:300px !important;'>
 						<li style='margin-left:5px;'><a style='width:50px;' id='daydivid' onclick="showTabData('daydiv','flipview','monthdiv','daydivid')">Day</a></li>
 						<li><a style='width:80px;' id='flipdivid' onclick="showTabData('flipview','daydiv','monthdiv','flipdivid');">Flip Days</a></li>
 						<li><a style='width:50px;' id='weekdivid' onclick="showTabData('weekdivid','flipview','monthdiv','weekdivid')" id='weekdivid'>Week</a></li>
@@ -352,15 +352,15 @@ $(function() {
 							<td style='padding-left:5px;width:80px;font-size:14px;color:#C7C5C5;' class='gen_font'>
 								&nbsp;&nbsp;Appointments:&nbsp;&nbsp;&nbsp;&nbsp;
 							</td>
-							<td style='font-size:12px;'>								
+							<td style='font-size:12px;'>
 								<button type="button" id="create-user" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Search next available appointment" style="height:25px;width:150px;padding:0px;padding-left:5px;color:#C7C5C5;"> &nbsp;Next available&nbsp; </button>
 							</td>
 							<td style='width:110px;'>
 								<table>
 									<tr>
-										<td style="padding-left:15px;">											
+										<td style="padding-left:15px;">
 											<input type="text" class="form-control" placeholder="Find existing " style="height:25px;width:150px;border-radius:4px;font-size:14px;padding:0px;padding-left:5px;" id="fex_find_input">
-										</td>										
+										</td>
 										<td>
 											<!-- add appointment dialog box includes here -->
 											<div id="testcode"></div>
@@ -379,7 +379,7 @@ $(function() {
 				</td>
 				
 			</tr>
-		</table>	
+		</table>
 
 		
 		
@@ -395,7 +395,7 @@ $(function() {
 		<!-- Flip days view-->
 		<div id='tab2' style='padding-top:5px;font-family:calibri;'>
 			<div id='flipview' style='display:none;'></div>
-		</div>	
+		</div>
 		<!-- Month view-->
 		<div id='monthdiv' style='padding-top:5px;display:none;'>
 			<div id='header'></div>

@@ -379,7 +379,7 @@ function getDraggedVal(){
 		}
 		
 		.ui-widget-content {
-			background: url("images/ui-bg_flat_75_ffffff_40x100.png") repeat-x scroll 50% 50% #FFFFFF;
+			background: url("js_up/images/ui-bg_flat_75_ffffff_40x100.png") repeat-x scroll 50% 50% #FFFFFF;
 			border: 1px solid #AAAAAA;
 			color: #222222;
 			font-size:11px;

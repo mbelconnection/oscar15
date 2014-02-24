@@ -229,6 +229,8 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 	<!-- Placed at the end of the document so the pages load faster -->
 	<script src="../js/jquery-1.9.1.min.js"></script>
 	<script src="../js/jquery-ui.js"></script>
+	<script language="javascript" type="text/javascript" src="js_up/jquery.plugin.js"></script>
+	<script type="text/javascript" src="js_up/jquery.timer.js"></script>
 	<script src="../library/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 	<script src="../library/hogan-2.0.0.js"></script>
 	<script src="../library/typeahead.js/typeahead.min.js"></script>

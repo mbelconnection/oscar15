@@ -96,7 +96,7 @@ function onsub() {
      alert("<bean:message key="global.msgInputKeyword"/>");
      return false;
   }
-  if(!(document.searchprovider.provider_no.value=="-new-" || document.searchprovider.provider_no.value.match(/^\d+$/))){
+  if(!(document.searchprovider.provider_no.value=="-new-" || document.searchprovider.provider_no.value.match(/^[1-9]\d*$/))){
   		alert("Provider No. must be a number.");
   		return false;
   }
@@ -388,15 +388,7 @@ for (int i=0; i<sites.size(); i++) {
 </form>
 
 <p></p>
-<hr width="100%" color="orange">
-<table border="0" cellspacing="0" cellpadding="0" width="100%">
-	<tr>
-		<td><a href="admin.jsp"> <img src="../images/leftarrow.gif"
-			border="0" width="25" height="20" align="absmiddle"><bean:message
-			key="global.btnBack" /></a></td>
-		<!--  td align="right"><a href="../logout.jsp"><bean:message key="global.btnLogout"/><img src="../images/rightarrow.gif"  border="0" width="25" height="20" align="absmiddle"></a></td -->
-	</tr>
-</table>
+
 
 </center>
 </body>

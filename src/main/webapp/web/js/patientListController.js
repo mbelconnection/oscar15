@@ -1,9 +1,11 @@
 oscarApp.controller('PatientListCtrl', function ($scope,$http) {
+	
 	$scope.tabItems = [
-	             	{"id":0,"label":"Appts.","url":"../ws/rs/schedule/999998/day/today"},
-	             	//{"id":0,"label":"Appts.","url":"json/patientList1.json"},
+	             	//{"id":0,"label":"Appts.","url":"../ws/rs/schedule/999998/day/today"},
+	             	{"id":0,"label":"Appts.","url":"json/patientList1.json"},
 	             	{"id":1,"label":"CaseLoad","url":"json/patientList2.json"}
 	];
+	
 	$scope.moreTabItems = [
 					{"id":0,"label":"My Residents"},
 					{"id":1,"label":"Customize"}
@@ -86,6 +88,18 @@ $scope.getMoreTabClass = function(id){
 }
 
 $scope.changeTab(0);
+
+
+	$scope.currentPage = 0;
+	$scope.pageSize = 8;
+	$scope.data = [];
+	$scope.numberOfPages=function(){
+	    return Math.ceil($scope.patients.length/$scope.pageSize);                
+	}
+	for (var i=0; i<45; i++) {
+	    $scope.data.push("Item "+i);
+	}
+
 
 
 });

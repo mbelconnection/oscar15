@@ -26,8 +26,8 @@
 <%
 //Initialize some variables
 String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProvider.getFormattedName();
-
 %>
+
 <!DOCTYPE html>
 <!-- ng* attributes are references into AngularJS framework -->
 <html lang="en" ng-app="oscarProviderViewModule">
@@ -166,12 +166,11 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 	<!-- nav bar is done here -->
 
 	 
-	 <!-- Start patient List template -->
-
- 
+	 <!-- Start patient List template --> 
 	<span ng-controller="PatientListCtrl">
 	<div class="container-fluid">
 		<div id="left_pane" class="col-md-2">
+		
 			<ul class="nav nav-tabs">			
 				<li ng-repeat="item in tabItems" ng-class="{'active': isActive(item.id)}">
 					<a href="javascript:void(0);" ng-click="changeTab(item.id)" data-toggle="tab">{{item.label}}</a>
@@ -184,35 +183,39 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 				</li>
 			</ul>
 			<div class="list-group"  ng-cloak>
+			<!-- 
 			<button type="button" class="btn btn-default">
  				 <span class="glyphicon glyphicon-arrow-left"></span> 
 			</button>
 			<button type="button" class="btn btn-default">
  				 <span class="glyphicon glyphicon-eject"></span> 
 			</button>
+			-->
 			
-			<span class="pull-right">
-			<button type="button" class="btn btn-default">
+			<!-- <span class="pull-right">-->
+			
+			<!-- refreshing content simply by reloading tab -->
+			<button type="button" class="btn btn-default" ng-click="changeTab(currenttab.id)"> 
  				 <span class="glyphicon glyphicon-refresh"></span> 
 			</button>
 			
-			<button type="button" class="btn btn-default">
+			<button type="button" class="btn btn-default" ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
  				 <span class="glyphicon glyphicon-circle-arrow-up"></span> 
  		 
 			</button>
 			
-			<button type="button" class="btn btn-default">
+			<button type="button" class="btn btn-default" ng-disabled="currentPage == pageSize -1"  ng-click="currentPage=currentPage+1">
  				 <span class="glyphicon glyphicon-circle-arrow-down"></span> 
 			</button>
 			
-			</span>
+			<!-- </span>-->
 				<form class="form-search" role="search">
 					<span class="form-group" class="twitter-typeahead">
 						<input type="text"  class="form-control" placeholder="Filter" ng-model="query"/>
 					</span>
 				</form>
 		<div ng-include="template"></div>
-		
+		<span class="pull-right">{{currentPage+1}}/{{numberOfPages()}}</span>
 		</div>
 		</div>
 	</span>

@@ -55,7 +55,7 @@
 	<a href="javascript:popupOscarConsultationConfig(700,960,'<%=request.getContextPath()%>/oscarEncounter/oscarConsultationRequest/config/ShowAllServices.jsp')" class="consultButtonsActive">
     	<bean:message key="consultationList.editSpecialists"/>
     </a>&nbsp;
-    <button id="newConsult" class="btn"><i class="icon-plus"></i>&nbsp;<bean:message key="consultationList.btn.newConsult"/></button>
+    <!-- <button id="newConsult" class="btn"><i class="icon-plus"></i>&nbsp;<bean:message key="consultationList.btn.newConsult"/></button> -->
 	<br /><br />
 <%
 	String curProvider_no = (String) session.getAttribute("user");
@@ -288,4 +288,3 @@ function popupOscarConsultationConfig(vheight,vwidth,varpage) { //open a new pop
   	}
 }
 </script>
-

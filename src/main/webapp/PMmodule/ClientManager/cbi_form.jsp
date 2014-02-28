@@ -132,8 +132,8 @@ function checkDates() {
 		dischargeDate = "";
 	}
 	
-	if(!compareDates(admissionDate, serviceInitDate)) {
-		alert("The Service Initiation Date should be earlier or equal to the Admission Date..");
+	if(compareDates(admissionDate, serviceInitDate)) {
+		alert("The Service Initiation Date should be later or equal to the Admission Date..");
 		return false;
 	} 
 	if(dischargeDate != "") {
@@ -214,16 +214,16 @@ function checkAdmission() {
 		alert("The CBI form was already created for this functional centre.");
 		return false;
 	}
-	
+	return true;
 }
 
 
 function submitCbiForm() {
 	//Homeless people may not have HIN. 
 	//if ( !checkHin() ) return false;
-	
-	if(!checkAdmission()) return false;
 	if(!checkDates()) return false;
+	if(!checkAdmission()) return false;
+	
 	
 	return true;
 }
@@ -522,7 +522,8 @@ function submitCbiForm() {
 		<tr>
 			<td class="genericTableHeader">Estimated Age</td>
 			<td class="genericTableData">				
-				<%=OcanForm.renderAsEstimatedAge(ocanStaffForm.getId(), "estimatedAge",false,ocanStaffForm.getDateOfBirth(),prepopulationLevel)%>
+				
+				<input type="text" name="estimatedAge" id="estimatedAge" readonly="readonly" value="<%=ocanStaffForm.getEstimatedAge()%>" size="3" maxlength="3"/>
 			</td>
 		</tr>
 		<tr>

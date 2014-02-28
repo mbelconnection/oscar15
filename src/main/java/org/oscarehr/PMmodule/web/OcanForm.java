@@ -199,6 +199,25 @@ public class OcanForm {
 				} else {
 					ocanStaffForm.setPhoneExt("");
 				}
+				
+				Calendar rightNow = Calendar.getInstance();
+				int year = rightNow.get(Calendar.YEAR);
+				int month = rightNow.get(Calendar.MONTH)+1;
+				int date = rightNow.get(Calendar.DATE);
+				if(demographic.getFormattedDob()!=null) {
+					String[] split_dob=demographic.getFormattedDob().split("-");
+					int year_dob=Integer.parseInt(split_dob[0]);
+					int month_dob = Integer.parseInt(split_dob[1]);
+					int date_dob = Integer.parseInt(split_dob[2]);
+					int age = year - year_dob;			
+					if(month < month_dob) {
+						age--;
+					} else if(month==month_dob){
+						if(date < date_dob)
+							age--;
+					}
+					ocanStaffForm.setEstimatedAge(String.valueOf(age));
+				}
 		}
 		
 		return(ocanStaffForm);

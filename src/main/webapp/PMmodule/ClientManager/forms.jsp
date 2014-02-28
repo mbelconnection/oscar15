@@ -391,6 +391,7 @@ New User Created Form:&nbsp;
 <table class="simple" cellspacing="2" cellpadding="3">
 	<thead>
 		<tr>
+			<th>Form ID</th>
 			<th>Date</th>
 			<th>Provider</th>
 			<th>Signed</th>
@@ -405,6 +406,7 @@ New User Created Form:&nbsp;
 				OcanStaffForm cbiForm=(OcanStaffForm)request.getAttribute("form");
 				String admissionString=ClientManagerAction.getEscapedAdmissionSelectionDisplay(cbiForm.getAdmissionId());
 			%>
+			<td><%=cbiForm.getId()%></td>
 			<td><%=ClientManagerAction.getEscapedDateDisplay(cbiForm.getCreated())%></td>
 			<td><%=ClientManagerAction.getEscapedProviderDisplay(cbiForm.getProviderNo())%></td>
 			<td><%=cbiForm.isSigned()?"signed":"unsigned"%></td>
@@ -414,7 +416,7 @@ New User Created Form:&nbsp;
 			String cbiFormUrl="ClientManager/cbi_form.jsp?view=history&ocanType=CBI&demographicId="+currentDemographic.getDemographicNo()+ "&ocanStaffFormId="+cbiForm.getId();
 			
 			%>
-			<td><a href="<%=cbiFormUrl%>">View CBI data</a> </td>
+			<td><a href="<%=cbiFormUrl%>">View CBI Data</a> </td>
 		</tr>
 	</c:forEach>
 </table>

@@ -150,7 +150,7 @@
 		
 		var tabTitle = $( "#tab_title" ),
 		tabContent = $( "#tab_content" ),
-		tabTemplate = "<li><a href='#{href}'>#{label}</a> </li>",
+		tabTemplate = "<li><a href='#{href}'>&#35;{label}</a> </li>",
 		tabCounter = 2;
 
 		/*general function*/

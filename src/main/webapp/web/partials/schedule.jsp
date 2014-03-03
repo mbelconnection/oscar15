@@ -417,14 +417,41 @@ $(function() {
 		</div>
 		<!--  Find existing dailog box end -->
 		<div id="manageGroupHTML"></div>
-		<div style="padding: 0px; display: none;" title="Information" id="dialog-info">
-		<b>Sure! you want to ?.</b>
+		<div style="padding: 0px; display: none;" title="Information" id="dialog-info">		
+			<table style="width:100%">
+				<tr>
+					<td style="width:40px;padding-left:10px;"><img src="js_up/images/info_alert.jpg" style="width:30px;height:30px;"></img></td>
+					<td height="70px" style="padding-left:5px;">
+						<b>Sure! you want to?</b>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2" style="text-align:right;border-top: 1px solid #AAAAAA; padding-top:10px;"> 
+						<button id="sch_info_but_edit" class="naa_button_grd" style="width:80px;cursor:pointer;">Edit</button>&nbsp;&nbsp;
+						<button id="sch_info_but_delete" class="naa_button_grd" style="width:80px;cursor:pointer;">Delete</button>&nbsp;&nbsp;
+						<button id="sch_info_but_cancel" class="naa_button_grd" style="width:80px;cursor:pointer;">Cancel</button>&nbsp;&nbsp;
+					</td>
+				</tr>
+			</table>
 		</div>
 		<div style="padding: 0px; display: none;" title="Edit appointment" id="dialog-edit">
 		<b>Sure! you want to edit.</b>
 		</div>
 		<div style="padding: 0px; display: none;" title="Delete appointment" id="dialog-delete">
-		<b>Sure! you want to delete.</b>
+			<table style="width:100%">
+				<tr>
+					<td style="width:40px;padding-left:10px;"><img src="js_up/images/Delete.png" style="width:30px;height:30px;"></img></td>
+					<td height="70px" style="padding-left:5px;">
+						<b>Sure! you want to delete?</b>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2" style="text-align:right;border-top: 1px solid #AAAAAA; padding-top:10px;"> 						
+						<button id="sch_del_but_delete" class="naa_button_grd" style="width:80px;cursor:pointer;">Delete</button>&nbsp;&nbsp;
+						<button id="sch_del_but_cancel" class="naa_button_grd" style="width:80px;cursor:pointer;">Cancel</button>&nbsp;&nbsp;
+					</td>
+				</tr>
+			</table>
 		</div>
 <div style="display:none;width:1px,height:1px;">
 <script>

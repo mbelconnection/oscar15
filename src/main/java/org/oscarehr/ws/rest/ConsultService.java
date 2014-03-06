@@ -78,15 +78,16 @@ public class ConsultService extends AbstractServiceImpl {
 	@Path("/detail/{requestId}")
 	@Produces("application/json")
 	public ConsultationRequestTo getConsultationRequest(@PathParam("requestId") Integer requestId) {
-		ConsultationRequest consult = consultDao.find(requestId);
 		ConsultationRequestTo consultationRequest = new ConsultationRequestTo();
-		try {
-			BeanUtils.copyProperties(consultationRequest, consult);
-		} catch (Exception e) {
-			logger.warn(e.toString());
+		if (requestId > 0) {
+			ConsultationRequest consult = consultDao.find(requestId);
+			try {
+				BeanUtils.copyProperties(consultationRequest, consult);
+			} catch (Exception e) {
+				logger.warn(e.toString());
+			}
+			consultationRequest.setSpecialtyId("1"); // TODO: to be implemented
 		}
-		consultationRequest.setSpecialtyId("1"); // to be implemented
-		
 		consultationRequest.getLetterheads().addAll(this.listLetterheads());
 		consultationRequest.getServices().addAll(this.listServices());
 		return consultationRequest;

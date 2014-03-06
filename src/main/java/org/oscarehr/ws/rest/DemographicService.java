@@ -36,6 +36,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
 import org.apache.commons.lang.time.DateFormatUtils;
+import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.managers.DemographicManager;
 import org.oscarehr.managers.WaitListManager;
@@ -43,6 +44,7 @@ import org.oscarehr.ws.rest.conversion.DemographicConverter;
 import org.oscarehr.ws.rest.to.OscarSearchResponse;
 import org.oscarehr.ws.rest.to.model.DemographicSearchResultItem;
 import org.oscarehr.ws.rest.to.model.DemographicSearchResults;
+import org.oscarehr.ws.rest.to.model.DemographicSearchTo;
 import org.oscarehr.ws.rest.to.model.DemographicTo1;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -56,11 +58,10 @@ import oscar.util.StringUtils;
 @Path("/demographics")
 @Component("demographicService")
 public class DemographicService extends AbstractServiceImpl {
-	
-	
 	@Autowired
 	private DemographicManager demographicManager;
-	
+	@Autowired
+	private DemographicDao demographicDao;
 	@Autowired
 	private WaitListManager waitingListManager;
 	
@@ -190,6 +191,20 @@ public class DemographicService extends AbstractServiceImpl {
 		return results;
 	}
 	
+	@GET
+	@Path("/list/{providerNo}")
+	@Produces("application/json")
+	public DemographicSearchTo list(@PathParam("providerNo") String providerNo) {		
+		DemographicSearchTo result = new DemographicSearchTo();
+		for(Demographic demographic: demographicDao.getActiveDemographics(0, -1)) {
+			DemographicTo1 to = new DemographicTo1();
+			to.setDemographicNo(demographic.getDemographicNo());
+			to.setFirstName(demographic.getFirstName());
+			to.setLastName(demographic.getLastName());
+			result.getDemographics().add(to);
+		}
+		return result;
+	}
 
 	/**
 	 * Saves demographic information. 

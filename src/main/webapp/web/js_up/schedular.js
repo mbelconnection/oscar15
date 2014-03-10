@@ -1,6 +1,7 @@
 var globalObj=new Object();
 var globalView=new Object();
 var nextAailObject = new Object();
+var add_appt_pat_cnt_names = "";
 var weekDB = [
 	{name: "Monday", id: "1"},
 	{name: "Tuesday", id: "2"},
@@ -11,9 +12,17 @@ var weekDB = [
 	{name: "Sunday", id: "7"}
 ];
 
+
+
+var appt_goto_data = [{"scode":"E", "desc":"E-chart"},
+				{"scode":"I", "desc":"Intake form"},
+				{"scode":"B", "desc":"Billing"},
+				{"scode":"R", "desc":"Rx"}];
+
+				
 /*flip days view start*/
 var flipdays = [
-	{date: "Monday,Nov11", flipdata: ["-","-","-","-","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","L1","L1","L1","L1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","-","-","-","-"]},
+	{date: "Monday,Nov11", flipdata: ["-","-","C2","-","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","L1","L1","L1","L1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","-","-","-","-"]},
 	{date: "Thuseday,Nov12", flipdata: ["-","-","-","-","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","L1","L1","L1","L1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","-","-","-","-"]},
 	{date: "Wednesday,Nov13", flipdata: ["-","-","-","-","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","L1","L1","L1","L1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","-","-","-","-"]},
 	{date: "Thursday,Nov14", flipdata: ["-","-","-","-","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","L1","L1","L1","L1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","-","-","-","-"]},
@@ -32,8 +41,8 @@ var flipdays = [
 	{date: "Wednesday,Nov27", flipdata: ["-","-","-","-","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","L1","L1","L1","L1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","-","-","-","-"]},
 	{date: "Thursday,Nov28", flipdata: ["-","-","-","-","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","L1","L1","L1","L1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","-","-","-","-"]},
 	{date: "Friday,Nov29", flipdata: [" "," "," "," ","G2","G2","G2","G2","","","","","","","","","","","",""," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "]},
-	{date: "Saturday,Nov30", flipdata: [" "," "," "," "," "," "," "," ","","","","","","","","","","","",""," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "]},
-	{date: "Sunday,Dec01", flipdata: [" "," "," "," "," "," "," "," ","","","","","","","","","","","",""," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "]},
+	{date: "Saturday,Nov30", flipdata: ["-","G2","G1"," "," "," "," "," ","","","","","","","","","","","",""," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "]},
+	{date: "Sunday,Dec01", flipdata: ["-","C1","G2"," "," "," "," "," ","","","","","","","","","","","",""," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "]},
 	{date: "Monday,Dec02", flipdata: ["-","-","-","-","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","L1","L1","L1","L1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","-","-","-","-"]},
 	{date: "Thuseday,Dec03", flipdata: ["-","-","-","-","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","L1","L1","L1","L1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","-","-","-","-"]},
 	{date: "Wednesday,Dec04", flipdata: ["-","-","-","-","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","C1","L1","L1","L1","L1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","P1","-","-","-","-"]},
@@ -42,6 +51,66 @@ var flipdays = [
 	{date: "Saturday,Dec07", flipdata: [" "," "," "," "," "," "," "," ","","","","","","","","","","","",""," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "]},
 	{date: "Sunday,Dec08", flipdata: [" "," "," "," "," "," "," "," ","","","","","","","","","","","",""," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "]}
 ];
+
+var appt_status_data = [{"scode":"TD", "desc":"To do", "color":"red"},
+				{"scode":"DP", "desc":"Daysheet printed", "color":"blue"},
+				{"scode":"HR", "desc":"Here", "color":"green"},
+				{"scode":"EM", "desc":"Empty room", "color":"#848484"},
+				{"scode":"NS", "desc":"No show", "color":"#6633CC"},
+				{"scode":"CX", "desc":"Cancelled", "color":"#660033"},
+				{"scode":"NP", "desc":"Ready for NP", "color":"#FF0066"},
+				{"scode":"FT", "desc":"Fast track", "color":"#66CC00"}];
+
+var mulPatDtls = {
+	"0":{
+			patName: "Abbey",
+			apptSta: "HR",
+			apptStaColor: "green",
+			apptGoto: "B",
+			apptRea:"Physical Examination.required",
+			apptNote:"Noted complications since last year"
+		},
+	"1":{
+			patName: "Adem",
+			apptSta: "TD",
+			apptStaColor: "red",
+			apptGoto: "E",
+			apptRea:"General checkup",
+			apptNote:"n/a"
+		},
+	"2":{
+			patName: "Doe, Jane",
+			apptSta: "FT",
+			apptStaColor: "#66CC00",
+			apptGoto: "I",
+			apptRea:"Annual check-up",
+			apptNote:"Noted complications since last year"
+		},
+	"3":{
+			patName: "Donaghy, Jane",
+			apptSta: "NP",
+			apptStaColor: "#FF0066",
+			apptGoto: "R",
+			apptRea:"Physical Examination.required",
+			apptNote:"n/a"
+		},
+	"4":{
+			patName: "Donahue, Jane",
+			apptSta: "NS",
+			apptStaColor: "#6633CC",
+			apptGoto: "E",
+			apptRea:"Half yearly check-up",
+			apptNote:"Noted complications since last year"
+		},
+	"5":{
+			patName: "Smith",
+			apptSta: "EM",
+			apptStaColor: "#848484",
+			apptGoto: "B",
+			apptRea:"General checkup",
+			apptNote:"Full activity evaluation"
+		}
+}
 
 function showdata(){
 	var finalData = '<table class="xscale" style="border-right:1px solid #cecece !important;"><tr><td style="text-align:center;"><input type="image" src="js_up/images/icon_help_small.png"/>&nbsp;<input type="image" src="js_up/images/clock_small.gif"/></td>';
@@ -89,6 +158,7 @@ Schedular.prototype.getEventsList = function(){
 return Schedular.config.eventsList;
 }
 Schedular.prototype.load = function(date){
+	this.getApptStatusHTML();
 	Schedular.prototype.ajaxMethod("js_up/intial_data.js",Schedular.prototype.setInitData,{"doc_dt":date});
 	document.getElementById("inputField").value = date;
 	setTimeout('Schedular.prototype.init(\'day\',\'from load\')',1000);
@@ -113,7 +183,7 @@ Schedular.prototype.init = function(view,from){
 
 	var scaleData = "<div style='display: inline-block;overflow-y:scroll;height:500px;' class='scrolldiv2'><div id='abc' style='float:left'>"+data+"</div>"+"<div id='persondata' style='float:left;overflow-x:hidden;width:"+scrollWid+"px;' class='scrolldiv'>"+this.getXData()+"</div></div>";
 	scaleData += "<div id='persondatadummy' class='scrolldiv' style='width:"+scrollWid+"px;height:20px;margin-left:30px;overflow-x:scroll;'><table  style='table-layout:fixed;' id='xdummytab'><tr><td id='xdummytabtd'>ask fhasdl kfhas klh lkhas dflaksdhf asdfkalsdhf asdhfjka hsdfkljshad fjkasdl hfaksdj fhaksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfklsdfsdfsdf haksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfklsdfsdfsdfhaksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfklsdfsdfsdf haksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfklsdfsdfsdf</td></tr></table></div>";
-	document.getElementById('providerdiv').innerHTML = scaleData;	 
+	document.getElementById('providerdiv').innerHTML = scaleData; 
 
 	document.getElementById('xdummytab').width = document.getElementById('testidd').offsetWidth;
 
@@ -122,6 +192,25 @@ Schedular.prototype.init = function(view,from){
 	//setTimeout('Schedular.prototype.loadDayEvents(Schedular.config.eventsList)',1000);
 	Schedular.prototype.loadDayEvents(Schedular.config.eventsList);
 }
+Schedular.prototype.getProvider_z = function(providerID){
+	for(var i=0; i<Schedular.config.providersList.length; i++){
+		if(Schedular.config.providersList[i].id == providerID){
+			return Schedular.config.providersList[i];
+		}
+	}
+	alert('Provider not found.');
+}
+Schedular.prototype.getEvents_z = function(providerID){
+var arrEvents  =[];
+	for(var i=0; i<Schedular.config.eventsList.length; i++){
+		if(Schedular.config.eventsList[i].doc_id == providerID){
+			arrEvents.push(Schedular.config.eventsList[i]);
+		}
+	}
+	return (arrEvents);
+	//console.log('Events not found.');
+}
+
 
 Schedular.prototype.getProvider = function(providerID){
 var foo = [];
@@ -249,9 +338,9 @@ Schedular.prototype.getXScale = function(){
 		_XScale += '<tr>';
 		time = this.round(_shour) + ":" + this.round(_smin);
 		temp_min = _smin;
-		_smin += Schedular.config.increment; 
+		_smin += Schedular.config.increment;
 		for(var i=0; i<this.persons.length; i++){
-			_XScale += '<td style="height:25px !important;width:300px !important;" class="'+style+'" position="'+i+'" ondblclick="sch.addEvent(this)" hour="'+_shour+'" min="'+temp_min+'" time="'+time+'" name="'+this.persons[i].name+'" pid="'+this.persons[i].id+'" id="'+this.persons[i].id+'_'+time+'"><div style="border: 1px solid #CECECE;border-bottom: 0px;width:20px;height: 100%;">C1</div></td>';
+			_XScale += "<td style=\"height:25px !important;width:300px !important;\" class=\""+style+"\" position=\""+i+"\" ondblclick='sch.addEvent(this)' hour=\""+_shour+"\" min=\""+temp_min+"\" time=\""+time+"\" name=\""+this.persons[i].name+"\" pid=\""+this.persons[i].id+"\" id=\""+this.persons[i].id+"_"+time+"\"><div style=\"border: 1px solid #CECECE;border-bottom: 0px;width:20px;height: 100%;\">C1</div></td>";
 		}
 		
 		_XScale += '</tr>';
@@ -268,14 +357,13 @@ Schedular.prototype.round = function(time){
 }
 
 Schedular.prototype.zoom = function(id){
-	//var providers = [];
+	var providers = [];
 	if(!isEmpty(id)){
-	//console.log(id+">>in 1");
-	var provider = this.getProvider(id);
-	var events = this.getEvents(id)
-	//providers.push(provider);
-	this.setProviders(provider);
-	this.setEvents(events);
+	var provider = this.getProvider_z(id);
+	var events_z = this.getEvents_z(id)
+	providers.push(provider);
+	this.setProviders(providers);
+	this.setEvents(events_z);
 	this.init('day',"from zoom");
 	}else{
 	this.load(document.getElementById("inputField").value);
@@ -286,9 +374,10 @@ Schedular.prototype.zoom = function(id){
 Schedular.prototype.addEvent = function(obj){
 	add_appt_appt_id = '';
 	nextAailObject = new Object(); /* Added by Bhaskar for reset the data from next Appointment */
+	globalObj = obj;
 	add_app_fn.loadPatientDtls('');
 	$("#add_appt_form").dialog("open");
-	globalObj = obj;
+	
 
 }
 Schedular.prototype.editEvent = function(){
@@ -321,6 +410,7 @@ Schedular.prototype.saveEvent = function(obj,appObj){
 	obj.go_to = appObj.go_to;
 	obj.is_critical = appObj.is_critical;
 	obj.appt_id = appObj.appt_id;
+	obj.pat_sel_index = appObj.pat_sel_index;
 	document.getElementById("events").innerHTML = this.getEventDiv(obj, "save");
 	
 	
@@ -336,7 +426,6 @@ Schedular.prototype.editAppt = function(apptObject){
 	/*set variable value in addAppt.jsp*/
 	add_appt_appt_id = apptObject;
 	globalObj.id =apptObject;
-	//console.log(apptObject);
 	var s = $('div').find("#"+apptObject).text();
 	var sObject = JSON.stringify(s);
 	//console.log(sObject);
@@ -364,28 +453,28 @@ Schedular.prototype.editAppt = function(apptObject){
 			$("#next_app_form").dialog("close");
 			sch.clearForm("#add_appt_form");
 			$("#add_appt_form").dialog("open");
-			$("#dialog-info").dialog( "close" );			
+			$("#dialog-info").dialog( "close" );
 	});
 	
 	$("#sch_info_but_delete").on("click",function(){
 			$("#dialog-info").dialog( "close" );
 			$("#next_app_form").dialog("close");
-			$("#dialog-delete").dialog("open");						
-	});	
+			$("#dialog-delete").dialog("open");
+	});
 	
 	$("#sch_del_but_delete").on("click",function(){
 			sch.clearForm("#add_appt_form");
 			sch.deleteEvent(apptObject);
 			$("#dialog-delete").dialog( "close" );
-			$("#dialog-info").dialog( "close" );			
+			$("#dialog-info").dialog( "close" );
 	});
 	
 	$("#sch_info_but_cancel").on("click",function(){
-			$("#dialog-info").dialog( "close" );		
+			$("#dialog-info").dialog( "close" );
 	});
 	
 	$("#sch_del_but_cancel").on("click",function(){
-			$("#dialog-delete").dialog( "close" );		
+			$("#dialog-delete").dialog( "close" );
 	});
 	
 	/*$( "#dialog-info" ).dialog({
@@ -444,43 +533,143 @@ Schedular.prototype.getEventDiv = function(obj,act){
 	var left = obj.offWidth * pos + 22;
 
 	var height = ((duration/15) * 20) + ((duration/15 -1) * 7)
+	if(duration == 15)
+		height = 22;
 	var colspan = 4;
 	if(act=="delete"){
 		var $back = $('div').find("#"+hr+'_'+min);
 		 $back.remove();
 	}else{
-	html += '<div class="eventpop" style="height:'+height+'px;position: absolute;top:'+top+'px;left:'+left+'px;width:135px;" id='+obj.hr+'_'+obj.min+'>';
+	
+	if(obj.stauscolor == null)
+		obj.stauscolor = "#5E5A80";
+
+	html += '<div class="eventpop" style="height:'+height+'px;position: absolute;top:'+top+'px;left:'+left+'px;width:250px;" id='+obj.hr+'_'+obj.min+'>';
 	html += '<table class="eventtab" style="width:100%;border-collapse:collapse;padding:0px;" id="tab"  cellspacing="0" >';
-	html += '<tr class=""> <td class="gen_font '+stylecls+'" style="padding-left:5px;width:20px !important;"><div class="alertbox">'+obj.appoint_status+'</div></td>';
-	html += '<td class="evtpop_td_ltline '+stylecls+'" style="text-align:center;width:12px;"><input type="image" src="js_up/images/smallDownArrow.gif"/></td>';
+	html += '<tr class=""> <td class="gen_font '+stylecls+'" style="padding-left:5px;width:20px !important;" id="appt_sta_'+obj.appt_id+'"><div class="alertbox" style="background:'+obj.stauscolor+';">'+obj.appoint_status+'</div></td>';
+	//html += '<td class="evtpop_td_ltline '+stylecls+'" style="text-align:center;width:12px;"><input type="image" src="js_up/images/smallDownArrow.gif"/></td>';
+	console.log(add_appt_pat_cnt_names);
+	var pat_names_array = add_appt_pat_cnt_names.split("$");
+	var sw =[];
+	sw = jQuery.grep(pat_names_array, function(n, i){
+		return (n !== "" && n != null);
+	});
+	html += '<td class=" evtpop_td_ltline '+stylecls+'" style="width:10px !important;text-align:center;"><div class="dropdown btn-group" > <a class="btn dropdown-toggle" data-toggle="dropdown" style="height:20px;padding:0px;padding-left:6px;padding-right:6px;padding-top:0px;padding-bottom:0px;">   <span class="caret" style="padding:0px;"></span>    </a>    <ul class="dropdown-menu">        '+sch.getApptStatusHTML("appt_sta_"+obj.appt_id)+'    </ul></div></td>';
 	if(obj.is_critical == "Y"){
-		html += '<td class="evtpop_td_ltline '+stylecls+'" style="width:15px !important;text-align:center;"><div class="alertbox">!</div></td>';
+		html += '<td class="evtpop_td_ltline '+stylecls+'" style="width:15px !important;text-align:center;"><div class="alertbox" style="background:#5E5A80;padding:0px;height:16px;">!</div></td>';
 		colspan++;
+	}
+	if((obj.no_of_pat != null && obj.no_of_pat > 1) || sw.length>1){
+		html += '<td class=" evtpop_td_ltline '+stylecls+'" style="width:50px !important;text-align:center;padding-top:2px;"><div style="display: inline-block;cursor:pointer;" onclick="sch.repeatMulPat(this);" apptid="'+obj.appt_id+'" index="0" totpat="'+(obj.no_of_pat != null ? obj.no_of_pat :sw.length)+'"><input type="image" style="" src="js_up/images/multi_p.png"><span style="position: relative; top: -5px;">'+(obj.no_of_pat != null ? obj.no_of_pat :sw.length)+'</span> <input type="image" style="width:12px;height:12px;" src="js_up/images/round_arrow.png"></div></td>';
 	}
 	var j = obj.hr+'_'+obj.min;
-	html += "<td class=\"evtpop_td_ltline\" style=\"color:#C35817;cursor:pointer;\" apptid=\""+obj.appt_id+"\" onclick='sch.editAppt(\""+j+"\")'>"+obj.patient_name+"</td>";
+	html += "<td class=\"evtpop_td_pat_name evtpop_td_ltline\" style=\"color:#C35817;cursor:pointer;\" id='pat_name"+obj.appt_id+"' apptid=\""+obj.appt_id+"\" onclick='sch.editAppt(\""+j+"\")' >"+obj.patient_name+"</td>";
 	if(obj.go_to != null){
-		html += '<td class="evtpop_td_ltline '+stylecls+'" style="width:15px !important;text-align:center;" id="'+obj.id+'_echart">'+obj.go_to+'</td>';
+		html += '<td class="evtpop_td_ltline '+stylecls+'" style="width:15px !important;text-align:center;" id="appt_goto_'+obj.appt_id+'">'+obj.go_to+'</td>';
 		colspan++;
 	}
-	html += '<td class=" evtpop_td_ltline '+stylecls+'" style="width:15px !important;text-align:center;"><input type="image" src="js_up/images/smallDownArrow.gif"/></td>';
+	html += '<td class="evtpop_td_ltline '+stylecls+'" style="width:15px !important;text-align:center;"><div class="dropdown btn-group" > <a class="btn dropdown-toggle" data-toggle="dropdown" style="height:20px;padding:0px;padding-left:6px;padding-right:6px;padding-top:0px;padding-bottom:0px;">   <span class="caret" style="padding:0px;"></span>    </a>    <ul class="dropdown-menu">        '+sch.getApptGotoHTML('appt_goto_'+obj.appt_id)+'    </ul></div></td>';
 	html += '</tr>';
-	if(duration > 15){
-		html += "<tr>";
-		html += "<td colspan='"+colspan+"' class='gen_font2'><span class='gen_font3'>Reason:</span> "+this.formatText(obj.reason, 40)+"</td>";
-		html += "</tr>";
-	}
-	if(duration > 30){
-		html += "<tr>";
-		html += "<td colspan='"+colspan+"' class='gen_font2'><span class='gen_font3'>Notes:</span> "+this.formatText(obj.notes, 40)+"</td>";
-		html += "</tr>";
-	}
+	var reasonDis = "none";
+	var notesDis = "none";
+	if(duration > 15)
+		reasonDis = "table-row";	
+	if(duration > 30)
+		notesDis = "table-row";
+		
+	html += "<tr style='display:"+reasonDis+"'>";
+	html += "<td colspan='"+colspan+"' class='gen_font2' id='appt_rea"+obj.appt_id+"'><span class='gen_font3'>Reason:</span> "+this.formatText(obj.reason, 40)+"</td>";
+	html += "</tr>";
+	
+	html += "<tr style='display:"+notesDis+"'>";
+	html += "<td colspan='"+colspan+"' class='gen_font2' id='appt_note"+obj.appt_id+"'><span class='gen_font3'>Notes:</span> "+this.formatText(obj.notes, 40)+"</td>";
+	html += "</tr>";
+	
 	html += '</table>';
 	html += '</div>';
 	
 	}
+	add_appt_pat_cnt_names="";
 	return document.getElementById("events").innerHTML + html;
 }
+
+Schedular.prototype.repeatMulPat = function(obj){
+	var apptId = $(obj).attr('apptid');
+	var index = $(obj).attr('index');
+	var totpat = $(obj).attr('totpat');
+	console.log(index+" - "+totpat);
+	if(index == (totpat-1)){
+		index = 0;
+	}else{
+		index = ++index;
+		}
+	$(obj).attr('index', index);
+	//console.log();
+	//add_appt_pat_cnt_names="";
+	//add_app_fn.validateForm(index);
+	sch.setMulPatDtls(apptId, index);
+	
+	
+	
+	console.log(apptId+" - "+index+" - "+add_appt_pat_cnt_names);
+}
+
+Schedular.prototype.setMulPatDtls = function(apptId, index){
+	var _data = sch.getMulPatApptDtls(apptId, index);
+	$("#pat_name"+apptId).html(this.formatText(_data["patName"], 10));
+	sch.setApptStatus(_data["apptSta"], _data["apptStaColor"], "appt_sta_"+apptId);
+	sch.setApptGoto(_data["apptGoto"], "appt_goto_"+apptId);
+	
+	$("#appt_rea"+apptId).html("<span class='gen_font3'>Reason:</span>&nbsp;"+ this.formatText(_data["apptRea"], 40));
+	$("#appt_note"+apptId).html("<span class='gen_font3'>Notes:</span>&nbsp;"+ this.formatText(_data["apptNote"], 40));
+}
+
+Schedular.prototype.getMulPatApptDtls = function(apptId, index){
+	//ajax code to save the apptstatus dtls
+	return mulPatDtls[index];
+}
+
+Schedular.prototype.getApptStatusHTML = function(divID){
+	
+	var _html = "";
+	$.each(appt_status_data, function(a, row){
+		//console.log(row.scode);
+		_html += "<li><a style='text-align:left;width:150px;' onclick='sch.setApptStatus(\""+row.scode+"\", \""+row.color+"\", \""+divID+"\")' code='"+row.scode+"' color='"+row.color+"'><span class='alertbox' style='background:"+row.color+";padding:1px;height:16px;width:40px !important;font-size:12px;'>"+row.scode+"</span>&nbsp;"+row.desc+"</a></li>";
+		
+	});
+	return _html;
+}
+
+Schedular.prototype.setApptStatus = function(code, color, divID){
+	sch.saveApptStatus(code);
+	$("#"+divID).html('<div class="alertbox" style="background:'+color+';padding:0px;">'+code+'</div>');
+}
+
+Schedular.prototype.saveApptStatus = function(code){
+	//ajax code to save the apptstatus dtls
+}
+
+Schedular.prototype.getApptGotoHTML = function(divID){
+	
+	var _html = "";
+	$.each(appt_goto_data, function(a, row){
+		
+		_html += "<li><a style='text-align:left;width:150px;' onclick='sch.setApptGoto(\""+row.scode+"\", \""+divID+"\")'>"+row.desc+"</a></li>";
+		
+	});
+	return _html;
+}
+
+Schedular.prototype.setApptGoto = function(code, divID){
+	sch.saveApptStatus(code);
+	$("#"+divID).html(code);
+}
+
+Schedular.prototype.saveApptGoto = function(code){
+	//ajax code to save the apptstatus dtls
+}
+
+
 Schedular.prototype.formatText = function(text, length){
 	if(text == null)
 		return "";
@@ -508,10 +697,11 @@ Schedular.prototype.loadDayEvents = function(events){
 		var event = events[i];
 		var fromtime = event["from_time"];
 		var docId = event["doc_id"];
-		event.hr = this.getHour(fromtime);	
+		event.hr = this.getHour(fromtime);
 		event.min = this.getMin(fromtime);
 		event.pos = this.getPosition(docId);
-		event.duration = events[i]["duration"];
+		event.duration = events[i]["duration"]; 
+		event.appt_id = events[i]["appt_id"]; 
 		var objId = docId + "_" + event.hr+":"+event.min;
 		event.offHeight = document.getElementById(objId).offsetHeight;
 		event.offWidth = document.getElementById(objId).offsetWidth;
@@ -636,17 +826,18 @@ var    incrementTime = 1000*60*5, // Timer speed in milliseconds
             currentTime += incrementTime / 10;
 			Schedular.prototype.timerDisable();
         },
-		init = function() {
+		init1 = function() {
 			Schedular.prototype.timerDisable();
             timer = $.timer(updateTimer, incrementTime, true);
         };
 	//timer = $.timer(function() {
 	//Schedular.prototype.timerDisable();
 	//},'900000', true);
-	$(init);
+	$(init1);
 }
 Schedular.prototype.timerDisable = function(){
 //alert("in timer");
+
 	var min15 =['00','15','30','45'];
 	var today=new Date();
 	var h=today.getHours();
@@ -717,4 +908,44 @@ Schedular.prototype.timerDisable = function(){
 		$("#naa_search").text("Search");
     });
  }
+Schedular.prototype.valid_date = function (dt) {
+var date = new Date();
+		var day = "";
+		if(date.getDate()<10)
+		day = "0"+date.getDate();/*Modified by Bhaskar for date differences between calender and system dates */
+		else
+		day = date.getDate();
+		var month = date.getMonth();
+		var year = date.getYear();
+		if(year<=200)        {                
+			year += 1900;
+		}        
+		var days = new Array('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat');
+		months = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+		days_in_month = new Array(31,28,31,30,31,30,31,31,30,31,30,31);
+		if(year%4 == 0 && year!=1900)        {                
+			days_in_month[1]=29;
+		}        
+		total = days_in_month[month];
+		var date_today = day+"-"+months[month]+"-"+year;
+		var dt_arr = dt.split("-");
+		if(dt_arr[2] >= year){
+			if(months.indexOf(dt_arr[1]) >= month ){
+				if(dt_arr[0] > day ){
+				return true;
+				}else{
+				alert("Cannot edit the selected appointment. Selected appointment date must be greater than current date.");
+				return false;
+				}
+			}else{
+			alert("Cannot edit the selected appointment. Selected appointment date must be greater than current date.");
+			return false;
+			}
+		}else{
+		alert("Cannot edit the selected appointment. Selected appointment date must be greater than current date.");
+		return false;
+		}
+ }
+ 
+
 

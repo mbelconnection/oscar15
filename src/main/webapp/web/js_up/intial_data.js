@@ -1,5 +1,5 @@
 {
-	"19-Feb-2014":{
+	"02-Mar-2014":{
 	      "providersDB":[
 	         {
 	            "name":"Dr. Oscardoc",
@@ -639,54 +639,6 @@
       "eventsDB":[]
    },
    "01-Mar-2014":{
-      "providersDB":[
-         {
-            "name":"Dr. Oscardoc",
-            "id":"1",
-            "flipdata":{
-
-            },
-			"group":"group1"
-         },
-         {
-            "name":"Dr. Doe",
-            "id":"2",
-			"group":"group1"
-         },
-         {
-            "name":"Dr. Hilts",
-            "id":"3",
-			"group":"group1"
-         },
-         {
-            "name":"Dr. Yarwick",
-            "id":"4",
-			"group":"group1"
-         },
-         {
-            "name":"Michelle Dietician",
-            "id":"5",
-			"group":"group1"
-         },
-         {
-            "name":"Alison Smith",
-            "id":"6",
-			"group":"group1"
-         },
-         {
-            "name":"Rand Paul",
-            "id":"7",
-			"group":"group1"
-         },
-         {
-            "name":"Michelle Terry",
-            "id":"8",
-			"group":"group1"
-         }
-      ],
-      "eventsDB":[]
-   },
-   "02-Mar-2014":{
       "providersDB":[
          {
             "name":"Dr. Oscardoc",

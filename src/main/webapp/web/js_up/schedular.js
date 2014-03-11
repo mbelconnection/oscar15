@@ -103,16 +103,16 @@ Schedular.prototype.init = function(view,from){
 	this.setView(view);
 	/*Load calendar in month view*/
 	calendar();
-	var scrollWid = document.getElementById('secNav').offsetWidth - 60;
+	var scrollWid = document.getElementById('secNav').offsetWidth - 80;
 	//alert(scrollWid)
 	var data = this.getYScale();
 	var headData = '<div id="clock" style="float:left"><table class="xscale" style="float: left;cellpadding:0;cellpadding:0;padding-bottom:0px !important;border-bottom: 0px !important;" ><tr><td ><input type="image" src="js_up/images/clock_small.gif"/></td></tr></table>';
-	headData += '<div id="names" class="scrolldiv" style="width:'+scrollWid+'px;float:left;overflow-x:hidden;"><table id="testidd" class="Yscale" width="'+this.getPersonTabWidth()+'px" style="float: left;cellpadding:0;cellpadding:0;padding-bottom:0px !important;border-bottom: 0px !important;" >'+this.getXHeader()+'</table></div>';
+	headData += '<div id="names" class="scrolldiv" style="width:'+scrollWid+'px;float:left;overflow-x:hidden;"><table id="testidd" class="Yscale" width="'+this.getPersonTabWidth()+'px" style="table-layout:fixed;float: left;cellpadding:0;cellpadding:0;padding-bottom:0px !important;border-bottom: 0px !important;" >'+this.getXHeader()+'</table></div>';
 
 	document.getElementById('head').innerHTML = headData;
 
-	var scaleData = "<div style='display: inline-block;' class='scrolldiv2'><div id='abc' style='float:left'>"+data+"</div>"+"<div id='persondata' style='float:left;overflow-x:hidden;width:"+scrollWid+"px;' class='scrolldiv'>"+this.getXData()+"</div></div>";
-	scaleData += "<div id='persondatadummy' class='scrolldiv' style='width:"+scrollWid+"px;height:20px;margin-left:30px;'><table  style='table-layout:auto;' id='xdummytab' width='2000px'><tr><td><div >ask fhasdl kfhas klh lkhas dflaksdhf asdfkalsdhf asdhfjka hsdfkljshad fjkasdl hfaksdj fhaksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfkl</div></td></tr></table></div>";
+	var scaleData = "<div style='display: inline-block;overflow-y:scroll;height:500px;' class='scrolldiv2'><div id='abc' style='float:left'>"+data+"</div>"+"<div id='persondata' style='float:left;overflow-x:hidden;width:"+scrollWid+"px;' class='scrolldiv'>"+this.getXData()+"</div></div>";
+	scaleData += "<div id='persondatadummy' class='scrolldiv' style='width:"+scrollWid+"px;height:20px;margin-left:30px;overflow-x:scroll;'><table  style='table-layout:fixed;' id='xdummytab'><tr><td id='xdummytabtd'>ask fhasdl kfhas klh lkhas dflaksdhf asdfkalsdhf asdhfjka hsdfkljshad fjkasdl hfaksdj fhaksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfklsdfsdfsdf haksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfklsdfsdfsdfhaksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfklsdfsdfsdf haksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfklsdfsdfsdf</td></tr></table></div>";
 	document.getElementById('providerdiv').innerHTML = scaleData;	 
 
 	document.getElementById('xdummytab').width = document.getElementById('testidd').offsetWidth;
@@ -196,11 +196,11 @@ Schedular.prototype.getYScale = function(){
 }
 
 Schedular.prototype.getXData = function(){
-	var wid = this.persons.length * 220;
-	if(wid < 1400)
-		wid = '100%';
+	var wid = this.persons.length * 300;
+	//if(wid < 1400)
+		//wid = '100%';
 	var Xdata = '';
-		Xdata +='<div style="position: relative;"><table class="Yscale" style="float: left;" width="'+wid+'px" id="persondatatab">';
+		Xdata +='<div style="position: relative;"><table class="Yscale" style="table-layout: fixed;float: left;" width="'+wid+'px" id="persondatatab">';
 	//Xdata += this.getXHeader() + this.getXScale();
 	Xdata += this.getXScale();
 	Xdata += '</table><div id="events" style="position:absolute"></div></div>';
@@ -208,9 +208,9 @@ Schedular.prototype.getXData = function(){
 }
 
 Schedular.prototype.getPersonTabWidth = function(){
-	var wid = this.persons.length * 220;
-	if(wid < 1400)
-		wid = '100%';
+	var wid = this.persons.length * 300;
+	//if(wid < 1400)
+		//wid = '100%';
 	return wid;
 }
 
@@ -218,13 +218,13 @@ Schedular.prototype.getXHeader = function(){
 	var _XHeader = '';
 	_XHeader += '<tr>';
 	if(this.persons.length == 1)
-		_XHeader += '<th style="text-align:center;display: inline-block;" ><div style="float:left;width:80%;text-align:center;" id="'+this.persons[0].id+'">'+this.persons[0].name+'</div><div class="zoomIn" onclick="sch.zoom()">Zoom out</div></th>';
+		_XHeader += '<th style="width:300px !important;text-align:center;display: inline-block;" ><div style="float:left;width:80%;text-align:center;" id="'+this.persons[0].id+'">'+this.persons[0].name+'</div><div class="zoomIn" onclick="sch.zoom()">Zoom out</div></th>';
 	else
 		for(var i=0; i<this.persons.length; i++){
 			if(this.view == 'day')
-				_XHeader += '<th style="text-align:center;display: inline-block;" ><div style="float:left;width:80%;text-align:center;" >'+this.persons[i].name+'</div><div class="zoomIn" id="'+this.persons[i].id+'" onclick="sch.zoom(this.id)">Zoom</div></th>';
+				_XHeader += '<th style="width:300px !important;text-align:center;display: inline-block;" ><div style="float:left;width:80%;text-align:center;" >'+this.persons[i].name+'</div><div class="zoomIn" id="'+this.persons[i].id+'" onclick="sch.zoom(this.id)">Zoom</div></th>';
 			else
-				_XHeader += '<th style="text-align:center;display: inline-block;" ><div style="float:left;width:170px;text-align:center;" >'+this.persons[i].name+'</div></th>';
+				_XHeader += '<th style="width:300px !important;text-align:center;display: inline-block;" ><div style="float:left;width:170px;text-align:center;" >'+this.persons[i].name+'</div></th>';
 		}
 	_XHeader += '</tr>';
 	return _XHeader;
@@ -251,7 +251,7 @@ Schedular.prototype.getXScale = function(){
 		temp_min = _smin;
 		_smin += Schedular.config.increment; 
 		for(var i=0; i<this.persons.length; i++){
-			_XScale += '<td style="height:25px !important;width:220px !important;" class="'+style+'" position="'+i+'" ondblclick="sch.addEvent(this)" hour="'+_shour+'" min="'+temp_min+'" time="'+time+'" name="'+this.persons[i].name+'" pid="'+this.persons[i].id+'" id="'+this.persons[i].id+'_'+time+'"><div style="border: 1px solid #CECECE;border-bottom: 0px;width:20px;height: 100%;">C1</div></td>';
+			_XScale += '<td style="height:25px !important;width:300px !important;" class="'+style+'" position="'+i+'" ondblclick="sch.addEvent(this)" hour="'+_shour+'" min="'+temp_min+'" time="'+time+'" name="'+this.persons[i].name+'" pid="'+this.persons[i].id+'" id="'+this.persons[i].id+'_'+time+'"><div style="border: 1px solid #CECECE;border-bottom: 0px;width:20px;height: 100%;">C1</div></td>';
 		}
 		
 		_XScale += '</tr>';
@@ -340,7 +340,55 @@ Schedular.prototype.editAppt = function(apptObject){
 	var s = $('div').find("#"+apptObject).text();
 	var sObject = JSON.stringify(s);
 	//console.log(sObject);
-	$( "#dialog-info" ).dialog({
+	
+	$("#dialog-info").dialog({
+			minHeight: 150,
+			height: 150,
+			resizable: false,
+			width: 300,
+			modal: true
+			});
+	
+	$("#dialog-delete").dialog({
+			autoOpen: false,
+			resizable: false,
+			minHeight: 120,
+			height: 120,
+			width: 300,
+			modal: true
+			});
+			
+	$(".ui-dialog-titlebar").hide();
+	
+	$("#sch_info_but_edit").on("click",function(){
+			$("#next_app_form").dialog("close");
+			sch.clearForm("#add_appt_form");
+			$("#add_appt_form").dialog("open");
+			$("#dialog-info").dialog( "close" );			
+	});
+	
+	$("#sch_info_but_delete").on("click",function(){
+			$("#dialog-info").dialog( "close" );
+			$("#next_app_form").dialog("close");
+			$("#dialog-delete").dialog("open");						
+	});	
+	
+	$("#sch_del_but_delete").on("click",function(){
+			sch.clearForm("#add_appt_form");
+			sch.deleteEvent(apptObject);
+			$("#dialog-delete").dialog( "close" );
+			$("#dialog-info").dialog( "close" );			
+	});
+	
+	$("#sch_info_but_cancel").on("click",function(){
+			$("#dialog-info").dialog( "close" );		
+	});
+	
+	$("#sch_del_but_cancel").on("click",function(){
+			$("#dialog-delete").dialog( "close" );		
+	});
+	
+	/*$( "#dialog-info" ).dialog({
 				resizable: false,
 				height:120,
 				buttons: {
@@ -373,7 +421,7 @@ Schedular.prototype.editAppt = function(apptObject){
 					$( this ).dialog( "close" );
 				}
 				}
-				});
+				});*/
 }
 
 var cnt = 0;
@@ -566,6 +614,10 @@ Schedular.prototype.setInitData = function(params){
 			}
 		  });
 		  }
+		 setTimeout(function(){
+			//alert('jerer'+document.getElementById('testidd').offsetWidth);
+			document.getElementById('xdummytabtd').width = document.getElementById('testidd').offsetWidth+"px";
+		  }, 5000) 
 }
 Schedular.prototype.ajaxMethod = function(url, ORSCFuncName, variables){
 		$.getJSON(url,function(result){

@@ -1,28 +1,3 @@
-<%--
-
-    Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved.
-    This software is published under the GPL GNU General Public License.
-    This program is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License
-    as published by the Free Software Foundation; either version 2
-    of the License, or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-
-    This software was written for the
-    Department of Family Medicine
-    McMaster University
-    Hamilton
-    Ontario, Canada
-
---%>
 <script>
 	
 	$(function() {
@@ -58,7 +33,7 @@
 		
 		
 		/*dropdown values*/
-		var add_appt_json_appType = {"echart":"E-Chart", "intake":"Intake form", "billing":"Billing", "rx":"RX"};
+		var add_appt_json_appType = {"E":"E-Chart", "I":"Intake form", "B":"Billing", "R":"RX"};
 		var add_appt_json_appStatus = {"TD":"TD - To do", "DP":"DP - Daysheet printed", "HR":"HR - Here", "EM":"EM - Empty room", "NS":"NS - No show", "CX":"CX - Cancelled", "NP":"NP - Ready for NP", "FT":"FT - Fast tack"};
 		var add_appt_json_time = {"8_00":"08:00", "8_15":"08:15", "8_30":"08:30", "8_45":"08:45", "9_00":"09:00", "9_15":"09:15", "9_30":"09:30", "9_45":"09:45", "10_00":"10:00", "10_15":"10:15", "10_30":"10:30", "10_45":"10:45", "11_00":"11:00", "11_15":"11:15", "11_30":"11:30", "11_45":"11:45", "12_00":"12:00", "12_15":"12:15", "12_30":"12:30", "12_45":"12:45", "13_00":"13:00", "13_15":"13:15", "13_30":"13:30", "13_45":"13:45", "14_00":"14:00", "14_15":"14:15", "14_30":"14:30", "14_45":"14:45", "15_00":"15:00", "15_15":"15:15", "15_30":"15:30", "15_45":"15:45", "16_00":"16:00", "16_15":"16:15", "16_30":"16:30", "16_45":"16:45", "17_00":"17:00", "17_15":"17:15", "17_30":"17:30", "17_45":"17:45", "18_00":"18:00", "18_15":"18:15", "18_30":"18:30", "18_45":"18:45", "19_00":"19:00", "19_15":"19:15", "19_30":"19:30", "19_45":"19:45", "20_00":"20:00", "20_15":"20:15", "20_30":"20:30", "20_45":"20:45", "21_00":"21:00", "21_15":"21:15", "21_30":"21:30", "21_45":"21:45", "22_00":"22:00", "22_15":"22:15", "22_30":"22:30", "22_45":"22:45"};
 		var add_appt_json_duration = {"15":"15 min", "30":"30 min", "45":"45 min", "60":"60 min"};
@@ -129,7 +104,7 @@
 				else if(patientID == 3)
 					return add_appt_json_patientApptInfo3;
 				else
-					return add_appt_json_patientApptInfo1;				
+					return add_appt_json_patientApptInfo1;
 			},getTimeSlot: function(){
 				return add_appt_json_time;
 			},getDurationSlot: function(){
@@ -322,9 +297,9 @@
 				}else{
 					$("#add_appt_row_recur").hide();
 					$("#add_appt_but_recur").html("&nbsp;Add recurrence&nbsp;");
-				}				
+				}
 			},
-			validateForm: function(){	
+			validateForm: function(pat_sel_index){
 				if($("#add_appt_pat_name").val() ==""){
 					add_app_fn.setValNote("Select patient.");
 					return;
@@ -354,10 +329,10 @@
 				}
 				
 				add_app_fn.hideValNote();
-				add_app_fn.captureFormData();
+				add_app_fn.captureFormData(pat_sel_index);
 					
 			},
-			captureFormData: function(){
+			captureFormData: function(pat_sel_index){
 				var formData = {};
 				/*Basic details
 				*
@@ -369,7 +344,7 @@
 				formData['id'] = s1[i];
 				formData['p_id'] = s1[i].split("_")[0];
 				formData['patient_id'] 		= add_appt_fld_pat_id ;
-				formData['patient_name']	= $("#add_appt_pat_name").val();
+				//formData['patient_name']	= $("#add_appt_pat_name0").val();
 				formData['provider_type'] 	= add_appt_fld_prv_type;
 				formData['provider_id'] 	= add_appt_fld_prv_id ;
 				formData['date'] 			= $("#add_appt_date").val();
@@ -381,7 +356,7 @@
 				formData['recurrence_day'] 	= add_app_fn.getWeekDay();
 				formData['recurrence_date'] = $("#add_appt_date").val();
 				/*More details*/
-				formData['appt_type'] = $("#add_appt_type").val();
+				formData['go_to'] = $("#add_appt_type").val();
 				formData['is_critical'] = "N";
 				if($("#add_appt_critical").is(':checked'))
 					formData['is_critical'] = "Y";
@@ -401,7 +376,7 @@
 				formData['id'] = globalObj.id;
 				formData['p_id'] = globalObj.pid;
 				formData['patient_id'] 		= add_appt_fld_pat_id ;
-				formData['patient_name']	= $("#add_appt_pat_name0").val();
+				//formData['patient_name']	= $("#add_appt_pat_name0").val();
 				formData['provider_type'] 	= add_appt_fld_prv_type;
 				formData['provider_id'] 	= add_appt_fld_prv_id ;
 				formData['date'] 			= $("#add_appt_date").val();
@@ -413,7 +388,7 @@
 				formData['recurrence_day'] 	= add_app_fn.getWeekDay();
 				formData['recurrence_date'] = $("#add_appt_date").val();
 				/*More details*/
-				formData['appt_type'] = $("#add_appt_type").val();
+				formData['go_to'] = $("#add_appt_type").val();
 				formData['is_critical'] = "N";
 				if($("#add_appt_critical").is(':checked'))
 					formData['is_critical'] = "Y";
@@ -427,7 +402,16 @@
 				var add_appt_appt_id = add_app_ajax_fn.saveFormData(formData);
 				
 				formData['appt_id'] = add_appt_appt_id;
-				//console.log(globalObj);
+				var sz =[];
+				for(var i=0; i<add_appt_pat_cnt; i++){
+				if($('#add_appt_pat_name'+i).val() != null && $('#add_appt_pat_name'+i).val() != ""){
+						/* add_appt_pat_cnt_names refering from the schedular.js */
+						add_appt_pat_cnt_names+=$('#add_appt_pat_name'+i).val()+"$"; 
+						}
+				}
+				sz = add_appt_pat_cnt_names.split("$");
+				formData['patient_name'] = sz[pat_sel_index];
+				formData['pat_sel_index'] = pat_sel_index;
 				sch.saveEvent(globalObj,formData);
 				}
 				$("#add_appt_form").dialog("close");
@@ -475,16 +459,16 @@
 								$("#"+fldid).popover('hide');
 							},4000);
 							
-							return false;	
+							return false;
 						}	
 						
 						
 						$( "#"+fldid ).val( ui.item.patName );
 						$( "#"+fldid ).attr("patId", ui.item.id );
 						if($( "#add_appt_pat_name_sel_id" ).val() == "")
-							$( "#add_appt_pat_name_sel_id" ).val( ui.item.id );		
+							$( "#add_appt_pat_name_sel_id" ).val( ui.item.id );
 						else
-							$( "#add_appt_pat_name_sel_id" ).val( $( "#add_appt_pat_name_sel_id" ).val() +","+ ui.item.id );		
+							$( "#add_appt_pat_name_sel_id" ).val( $( "#add_appt_pat_name_sel_id" ).val() +","+ ui.item.id );
 						
 						add_appt_fld_pat_id = ui.item.id;
 						add_app_fn.loadPatientDtls(ui.item.id);
@@ -516,7 +500,7 @@
 				}
 				
 				$("#add_appt_pat_tab tbody").append("<tr childid='add_appt_pat_name"+ add_appt_pat_cnt +"'>" +
-						"<td> <input id='add_appt_pat_name"+ add_appt_pat_cnt +"' class='form-control na_form_inputtext' style='height:25px;' placeholder='Type patient name...'  /> </td>" +							
+						"<td> <input id='add_appt_pat_name"+ add_appt_pat_cnt +"' class='form-control na_form_inputtext' style='height:25px;' placeholder='Type patient name...'  /> </td>" +
 						"<td style='padding-left:5px;'><div ip_id='add_appt_pat_name"+ add_appt_pat_cnt +"' onclick='add_app_fn.removePatFld(this)'><img src='js_up/img/close-x-cir.gif' style='cursor:pointer'></img></div></td>"+
 						"</tr>");
 				add_app_fn.bindAutoComp("add_appt_pat_name"+ add_appt_pat_cnt++);
@@ -524,7 +508,7 @@
 			removePatFld: function(a){
 				var rowCount = $('#add_appt_pat_tab tr').length;
 				if(rowCount > 1){
-					//console.log("patId "+$(a).attr('patId')) 					
+					//console.log("patId "+$(a).attr('patId'))
 					console.log(a);
 					$(a).closest('tr').remove();
 					add_app_fn.rearrangePatId();
@@ -543,9 +527,9 @@
 						else
 							ids += ','+ $('#add_appt_pat_name'+i).attr('patId');
 				}
-				$( "#add_appt_pat_name_sel_id" ).val( ids );					
+				$( "#add_appt_pat_name_sel_id" ).val( ids );
 			}
-		};		
+		};
 		
 		/*general functions end*/
 		
@@ -587,6 +571,13 @@
 				}
 				$("#add_appt_date").val(nextAailObject.date);
 				//console.log(nextAailObject);
+				}else{
+				var d = globalObj.id.split("_");
+				$("#add_appt_time select").text(d[1]);
+				$("select#add_appt_time option").filter(function() {
+				return $(this).text() == d[1]; 
+				}).prop('selected', true);
+				$("#add_appt_date").val($("#inputField").val());
 				}
 				add_app_fn.chkDialogStatus();
 			}
@@ -690,7 +681,7 @@
 		 });
 		 
 		 $("#appt_but_save").on("click",function(){
-				add_app_fn.validateForm();
+				add_app_fn.validateForm("0");
 		 }); 
 		 
 		 $("#add_appt_but_recur").on("click",function(){
@@ -844,7 +835,7 @@
 								<table id="add_appt_pat_tab">
 									<tr>
 										<td><input id="add_appt_pat_name0" class="form-control na_form_inputtext" style="height:25px;" placeholder='Type patient name...' rel='popover' data-placement='bottom' data-original-title='&lt;b&gt;Requests&lt;/b&gt;' data-content='My content goes here' /></td>									
-										<td style='padding-left:5px;'><div onclick='add_app_fn.removePatFld(this)'><img src='js_up/img/close-x-cir.gif' style='cursor:pointer'></img></div></td>
+										<td style='padding-left:5px;'><div onclick='add_app_fn.removePatFld(this)'><img src='js_up/img/close-x-cir.GIF' style='cursor:pointer'></img></div></td>
 									</tr>
 								</table>
 							</td>
@@ -894,13 +885,13 @@
 							<td width="80%" >
 								<table>
 									<tr>
-										<td>&nbsp;<input id="add_appt_date" class="form-control na_form_inputtext" readonly style="width:90px;cursor:pointer;height:25px;"/></td>
+										<td>&nbsp;<input id="add_appt_date" class="form-control na_form_inputtext" readonly style="width:110px;cursor:pointer;height:25px;"/></td>
 										<td style="padding-top:10px;padding-left:10px;"><span id="add_appt_but_recur" class="appt_roundbox" style="padding:2px;cursor:pointer;height:25px;">&nbsp;Add recurrence&nbsp;</span></td>
 									</tr>
 								</table>
 							</td>
 						</tr>
-						<tr style="display:none" id="add_appt_row_recur">	
+						<tr style="display:none" id="add_appt_row_recur">
 							<td width="20%">Recurrence</td>
 							<td width="80%" >
 								<span id="add_appt_text_recur" style="font-size:10px;"></span>

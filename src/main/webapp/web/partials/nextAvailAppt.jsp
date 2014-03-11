@@ -65,8 +65,8 @@
 		var naa_json_appType = {"echart":"E-Chart", "intake":"Intake form", "billing":"Billing", "rx":"RX"};
 		
 		var searchData= [
-			{"date":"01-Feb-2014", "time":"11:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
-			{"date":"31-Jan-2014", "time":"15:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
+			{"date":"09-Mar-2014", "time":"11:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
+			{"date":"10-Mar-2014", "time":"15:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
 			{"date":"02-Feb-2014", "time":"12:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
 			{"date":"31-Jan-2014", "time":"17:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
 			{"date":"30-Jan-2014", "time":"14:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
@@ -173,7 +173,8 @@
 			 },
 			 gotoAddAppointment: function(myObject){
 			 nextAailObject = myObject;
-			 //if(myObject.date==$("#inputField").val()){
+			 var sss = sch.valid_date(myObject.date);
+			 if(sss){
 			 $( "#dialog-edit" ).dialog({
 				resizable: false,
 				height:120,
@@ -190,6 +191,7 @@
 						}
 					}				
 				});
+			 }
 			 }
 		}
 		naa_fn.loadDayOfWeek();

@@ -25,9 +25,14 @@
 --%>
 <%@ include file="/taglibs.jsp"%>
 <%@ page import="java.util.Date"%>
+<%@ page import="java.util.List"%>
 <%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="org.apache.commons.lang.StringUtils"%>
+<%@ page import="org.oscarehr.util.LoggedInInfo"%>
+<%@ page import="org.oscarehr.util.DigitalSignatureUtils"%>
+<%@ page import="org.oscarehr.ui.servlet.ImageRenderingServlet"%>
 <%@ page import="oscar.oscarEncounter.oscarConsultationRequest.pageUtil.EctConsultationFormRequestUtil"%>
+
 <%@ page import="oscar.util.UtilDateUtilities"%>
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
 
@@ -109,6 +114,22 @@
 <body id="consultRequestForm" ng-controller="ConsultDetailCtrl as detailController">
 <%
 String date = UtilDateUtilities.getToday("yyyy-MM-dd");
+
+// Signature
+String signatureRequestId=DigitalSignatureUtils.generateSignatureRequestId(LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo());
+String imageUrl=request.getContextPath()+"/imageRenderingServlet?source="+ImageRenderingServlet.Source.signature_preview.name()+"&"+DigitalSignatureUtils.SIGNATURE_REQUEST_ID_KEY+"="+signatureRequestId;
+String storedImgUrl=request.getContextPath()+"/imageRenderingServlet?source="+ImageRenderingServlet.Source.signature_stored.name()+"&digitalSignatureId=";
+
+// User Agent
+String userAgent = request.getHeader("User-Agent");
+String browserType = "";
+if (userAgent != null) {
+	if (userAgent.toLowerCase().indexOf("ipad") > -1) {
+		browserType = "IPAD";
+	} else {
+		browserType = "ALL";
+	}
+}
 %>
 <div class="col-md-12">
 	<h1>Consultation Details</h1>
@@ -116,67 +137,63 @@ String date = UtilDateUtilities.getToday("yyyy-MM-dd");
 <form name="consultRequestForm" action="consultRequestAction.jsp" method="post">
 	<div id="left_pane" class="col-md-2">
 		<h3>Patient Details</h3>
-		<div class="patient">
-			<p>{{patient.lastName}}, {{patient.firstName}} ({{patient.title}})</p>
-			<p>DOB: {{patient.dob}} ({{patient.age}})</p> 		
-			<p>Sex: {{patient.sex}}</p> 
-			<p>HIN: {{patient.hin}}</p> 
+		<div class="demographic">
+			<p>{{demographic.lastName}}, {{demographic.firstName}} ({{demographic.title}})</p>
+			<p>DOB: {{demographic.dateOfBirth}} ({{demographic.age}})</p> 		
+			<p>Sex: {{demographic.sexDesc}}</p> 
+			<p>HIN: {{demographic.hin}} - {{demographic.ver}}</p> 
 			<p>Address:</p> 
 			<address>
-			{{patient.address}}<br/>
-			{{patient.city}}, {{patient.province}} {{patient.postcode}}<br>
-			{{patient.country}}
+			{{demographic.address.address}}<br/>
+			{{demographic.address.city}}, {{demographic.address.province}}, {{demographic.address.postal}}<br>
 			</address>
-			<p>Phone (C): {{patient.cellPhone}}</p>
-			<p>Phone (H): {{patient.homePhone}}</p>
-			<p>Phone (W): {{patient.workPhone}}</p>
-			<p>Email: {{patient.email}}</p>
+			<p>Phone (H): {{demographic.phone}}</p>
+			<p>Phone (W): {{demographic.alternativePhone}}</p>
+			<p>Email: {{demographic.email}}</p>
 		</div>
-		<div class="patient" style="display: none;">
+		<div class="demographic" style="display: none;">
 			<div class="form-group">
-				<input type="text" class="form-control" placeholder="Last Name" ng-model="patient.lastName" />
+				<input type="text" class="form-control" placeholder="Last Name" ng-model="demographic.lastName" />
 			</div>
 			<div class="form-group">
-				<input type="text" class="form-control" placeholder="First Name" ng-model="patient.firstName"/>
+				<input type="text" class="form-control" placeholder="First Name" ng-model="demographic.firstName"/>
 			</div>
 			<div class="form-group">
-				<select class="form-control" ng-model="patient.title" style="width: 45%; display: inline-block;">
-					<option ng-repeat="title in titles">{{title}}</option>
+				<select class="form-control" ng-model="demographic.title" style="width: 45%; display: inline-block;">
+					<option value="{{title.value}}" ng-repeat="title in titles">{{title.name}}</option>
 				</select>
-				<select class="form-control" ng-model="patient.sex" style="width: 45%; display:inline-block;">
-					<option ng-repeat="gender in genders">{{gender}}</option>
+				<select class="form-control" ng-model="demographic.sex" style="width: 45%; display:inline-block;">
+					<option value="{{gender.value}}" ng-repeat="gender in genders">{{gender.name}}</option>
 				</select>
 			</div>
 			<label class="control-label">DOB:</label>
-			<div class="form-group" id="dp-referralDate" data-date="<%=date%>" data-date-format="yyyy-mm-dd" title="Referral Date">
-				<input class="form-control" name="referralDate" id="referralDate" type="text" ng-model="patient.dob" placeholder="Enter Date" pattern="^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$">
+			<div class="form-group" id="dp-referralDate" data-date="{{demographic.dateOfBirth}}" data-date-format="yyyy-mm-dd" title="Referral Date">
+				<input class="form-control" name="referralDate" id="referralDate" type="text" ng-model="demographic.dateOfBirth" placeholder="Enter Date" pattern="^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$">
 			</div>
 			<label class="control-label">HIN:</label>
 			<div class="form-group">
-				<input type="text" class="form-control" placeholder="HIN" ng-model="patient.hin" />
+				<input type="text" class="form-control" placeholder="HIN" ng-model="demographic.hin" />
 			</div>
 			<label class="control-label">Address:</label>
 			<div class="form-group">
-				<input type="text" class="form-control" placeholder="Address" ng-model="patient.address" />
-				<input type="text" class="form-control" placeholder="City" ng-model="patient.city" />
-				<select class="form-control" ng-model="patient.province">
+				<input type="text" class="form-control" placeholder="Address" ng-model="demographic.address.address" />
+				<input type="text" class="form-control" placeholder="City" ng-model="demographic.address.city" />
+				<select class="form-control" ng-model="demographic.address.province">
 					<option value="{{province.value}}" ng-repeat="province in provinces">{{province.name}}</option>
 				</select>
-				<input type="text" class="form-control" placeholder="Country" ng-model="patient.country" />
-				<input type="text" class="form-control" placeholder="Postcode" ng-model="patient.postcode" />
+				<input type="text" class="form-control" placeholder="Postcode" ng-model="demographic.address.postal" />
 			</div>
 			<label class="control-label">Phone:</label>
 			<div class="form-group">
-				<input type="text" class="form-control" placeholder="Cell Phone" ng-model="patient.cellPhone" />
-				<input type="text" class="form-control" placeholder="Home Phone" ng-model="patient.homePhone" />
-				<input type="text" class="form-control" placeholder="Work Phone" ng-model="patient.workPhone" />
+				<input type="text" class="form-control" placeholder="Home Phone" ng-model="demographic.phone" />
+				<input type="text" class="form-control" placeholder="Work Phone" ng-model="demographic.alternativePhone" />
 			</div>
 			<label class="control-label">Email:</label>
 			<div class="form-group">
-				<input type="text" class="form-control" placeholder="Email" ng-model="patient.email" />
+				<input type="text" class="form-control" placeholder="Email" ng-model="demographic.email" />
 			</div>
 		</div>
-		<p><button type="button" class="btn btn-small toggle" rel="patient"><i class="icon-edit-sign"></i> Change</button></p>
+		<p><button type="button" class="btn btn-small toggle" rel="demographic"><i class="icon-edit-sign"></i> Change</button></p>
 		
 		
 		
@@ -194,60 +211,45 @@ String date = UtilDateUtilities.getToday("yyyy-MM-dd");
 		<div class="col-md-6"><!-- Letterhead -->
 			<div class="well">
 				<h4>Letterhead</h4>
-				<p class="head-lead muted" id="head-letterHeader" data-original="Please select a letterhead" data-success-msg="Letterhead">Please select a letterhead</p>
-				<div id="letterHeaderFind" class="landingOptions">
-				    <input class="input-xlarge edit-btn-large finder form-control col-md-4 inline" style="width: 70%;" id="letterHeader" name="letterheadName" rel="letterHeader" type="text" data-provide="typeahead" data-items="4" data-source='{{letterheaderSource}}' autocomplete="on" placeholder="Find Letterhead">&nbsp; 
-				    <button type="button" class="btn btn-primary modalShow">View List</button>
-				</div><!--letterHeaderFind-->
-	
-				<div id="letterHeaderSelected" class="landingOptions hide">
-				<!--I am for the selected letterhead option to display-->
-				</div><!--letterHeaderSelected-->	
-				<div class="changeControl change" id="letterHeaderChange">
-					<button type="button" class="btn btn-change" rel="letterHeader"><i class="icon-edit-sign icon-large"></i> Change</button>
-				</div><!--changeControl-->
+				<div>
+					<select name="letterhead" class="form-control" 
+							ng-model="consult.letterheadName" 
+							ng-options="letterhead.id as letterhead.name for letterhead in consult.letterheads"
+							ng-change="changeLetterhead()">
+					</select>
+				</div>
+				<p class="letterheadDetails">
+					<address>
+						<strong>Facility Name:</strong> {{consult.letterheadAddress}}<br/>
+						<strong>Phone:</strong> {{consult.letterheadPhone}} <br/>
+						<strong>Fax:</strong> {{consult.letterheadFax}}<br />
+					</address>
+				</p>
 			</div>
 		</div><!-- Letterhead End-->
 		<div class="col-md-6"><!-- Specialty -->
 			<div class="well">
 				<h4>Specialty</h4>
-				<p class="head-lead muted" id="head-specialist" data-original="Find a specialist to send this request" data-success-msg="Specialist">Find a specialist to send this request</p>
-				<div id="specialistFind" class="landingOptions">		
-					<div class="input-append" style="text-align:left">
-						<i class="icon-question-sign icon-large" rel="popover" data-html="true" data-content="Adding a specialty will help refine the specialist list to the right to make it quicker for you to find the specialist you are looking for." data-original-title="Why add a specialty?" data-trigger="hover"></i> 					
-						<select name="specialty" class="specialty form-control inline" style="width: 35%;">
-							<option value="{{specialty.value}}" ng-repeat="specialty in specialties">{{specialty.name}}</option>
-						</select>
-					    <input class="input-xlarge edit-btn-large finder form-control inline" style="width: 35%;" name="specialist" id="specialist" rel="specialist" type="text" data-provide="typeahead" data-items="4" 
-						data-source='{{specialtySource}}' autocomplete="off" placeholder="Find Specialist">&nbsp;
-					    <button class="btn btn-primary modalShow" type="button">View List</button>
-					</div>
-				</div><!--specialistSelect-->
-				<div id="specialistSelected" class="hide">
-					<div class="toDetails">				
-						<p>
-							Consultant: <span class="muted">{{consult.title}} {{consult.firstName}} {{consult.lastName}}</span>
-						</p>
-						<p>
-							Service: <span class="muted">Cardiology</span>
-						</p>
-					</div>				
-					<div class="toDetails">
-						Address:<br>
-						<span class="muted">
-						<address>
-							{{consult.address}}<br>
-							{{consult.city}} {{consult.province}} {{consult.postcode}}<br>
-							<abbr title='Phone'>Phone:</abbr>{{consult.phone}}<br>
-							<abbr title='Fax'>Fax:</abbr>{{consult.fax}}<br>
-						</address>
-						</span>
-					</div>				
-				</div><!--specialistSelected-->				
-				<div class="changeControl change" id="specialistChange">
-					<button type="button" class="btn btn-change" rel="specialist"><i class="icon-edit-sign icon-large"></i> Change</button>
-				</div><!--changeControl-->
-			</div>			
+				<div>
+					<select name="serviceId" class="form-control inline" style="width: 35%;" 
+							ng-model="consult.serviceId" 
+							ng-options="service.id as service.description for service in consult.services"
+							ng-change="changeService()">
+					</select>
+					<select name="specialtyId" ng-model="consult.specialtyId" class="form-control inline" style="width: 50%;"
+							ng-model="consult.specialtyId" 
+							ng-options="specialty.id as [specialty.firstName, specialty.lastName] for specialty in consult.specialties"
+							ng-change="changeSpecialty()">
+					</select>
+				</div>
+				<p class="specialtyDetails">
+					<address>
+						<strong>Facility Name:</strong> {{consult.specialtyAddress}}<br/>
+						<strong>Phone:</strong> {{consult.specialtyPhone}} <br/>
+						<strong>Fax:</strong> {{consult.specialtyFax}}<br />
+					</address>
+				</p>
+			</div>
 		</div>
 		<div class="clear"></div>
 		<div class="col-md-12"><!-- Referral -->
@@ -260,7 +262,7 @@ String date = UtilDateUtilities.getToday("yyyy-MM-dd");
 					</div>
 					<label class="control-label">Urgency:</label>
 					<div class="form-group">
-						<select name="urgency" class="form-control">
+						<select name="urgency" class="form-control" ng-model="consult.urgency">
 							<option value="{{urgency.value}}" ng-repeat="urgency in urgencies">{{urgency.name}}</option>
 						</select>
 					</div>
@@ -285,14 +287,13 @@ String date = UtilDateUtilities.getToday("yyyy-MM-dd");
 					</div>
 					<label class="control-label">Appointment Time:</label>
 					<div class="form-group">
-						<select name="hour" class="form-control" style="display: inline; width: 85px;">
-							<option value="{{hour}}" ng-repeat="hour in hours">{{hour}}</option>
-						</select>
-						<select name="minute" class="form-control" style="display: inline; width: 85px;">
-							<option value="{{minute}}" ng-repeat="minute in minutes">{{minute}}</option>
-						</select>
-						<select name="ampm" class="form-control" style="display: inline; width: 85px;">
-							<option value="{{ampm}}" ng-repeat="ampm in ampms">{{ampm}}</option>
+						<select name="hour" class="form-control" style="display: inline; width: 25%;" 
+								ng-model="consult.appointmentHour"
+								ng-options="hour as hour for hour in hours">
+						</select> : 
+						<select name="minute" class="form-control" style="display: inline; width:25%;" 
+								ng-model="consult.appointmentMinute"
+								ng-options="minute as minute for minute in minutes">
 						</select>
 					</div>
 					<label class="control-label">Last Follow-up Date:</label>
@@ -302,11 +303,11 @@ String date = UtilDateUtilities.getToday("yyyy-MM-dd");
 				</div>
 				<div class="col-md-8">
 					<div>
-						<label class="control-label"><input type="checkbox" name="willBook"/> Patient Will Book</label>
+						<label class="control-label"><input type="checkbox" name="willBook" ng-model="consult.patientWillBook"/> Patient Will Book</label>
 					</div>
 					<label class="control-label">Appointment Notes:</label>
 					<div class="form-group">
-						<textarea cols="80" rows="6" class="form-control"></textarea>
+						<textarea cols="80" rows="6" class="form-control" ng-model="consult.statusText"></textarea>
 					</div>
 				</div>
 				<div class="clear"></div>
@@ -316,10 +317,15 @@ String date = UtilDateUtilities.getToday("yyyy-MM-dd");
 						<option value="{{location.value}}" ng-repeat="location in locations">{{location.name}}</option>
 					</select>
 				</div>
+				<div class="col-md-12">
+					<label class="control-label"><h4>Reason for Consultation</h4></label>
+					<div class="form-group">
+						<textarea cols="120" rows="4" class="form-control" ng-model="consult.reasonForReferral"></textarea>
+					</div>
+				</div>
 				<div class="clear"></div>
 			</div>
-		</div><!-- Appointment End -->
-		
+		</div><!-- Appointment End -->	
 		<div id="clinical-note" class="col-md-12"><!-- Clinic Notes -->
 			<div>
 				<h4>Create Clinical Notes <i class="icon-question-sign icon-large" rel="popover" data-html="true" data-content="Clinical notes are so you can add a reason for consultation, include detailed data from the patients echart or simply create a custom note that you would like added to the conslultation." data-original-title="What is a Clinical Note?" data-trigger="hover"></i></h4>
@@ -331,7 +337,8 @@ String date = UtilDateUtilities.getToday("yyyy-MM-dd");
 					</div>
 					<div>
 						<label class="control-label"><span class="label badge">Step 2</span> Create Note:</label>
-						<textarea name="noteBody" class="form-control" placeholder="When creating a note use the Medical Summaries to the right to help you create the note with data from the patients chart."></textarea>
+						<textarea name="noteBody" class="form-control" placeholder="When creating a note use the Medical Summaries to the right to help you create the note with data from the patients chart."
+							ng-model="consult.clinicalInfo"></textarea>
 					</div>
 				</div>
 				<div class="col-md-6">
@@ -363,7 +370,8 @@ String date = UtilDateUtilities.getToday("yyyy-MM-dd");
 					</div>
 					<div>
 						<label class="control-label"><span class="label badge">Step 2</span> Create Note:</label>
-						<textarea name="noteBody" class="form-control" placeholder="When creating a note use the Medical Summaries to the right to help you create the note with data from the patients chart."></textarea>
+						<textarea name="noteBody" class="form-control" placeholder="When creating a note use the Medical Summaries to the right to help you create the note with data from the patients chart."
+							ng-model="consult.concurrentProblems"></textarea>
 					</div>
 				</div>
 				<div class="col-md-6">
@@ -383,6 +391,23 @@ String date = UtilDateUtilities.getToday("yyyy-MM-dd");
 				<div class="clear"></div>
 			</div>
 		</div>
+		<div class="col-md-12"><!-- Alergies / Current Medications -->
+			<div class="well">
+				<div class="col-md-6">
+					<h4>Allergies:</h4>
+					<div class="form-group">
+						<textarea cols="80" rows="4" class="form-control" ng-model="consult.allergies"></textarea>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<h4>Current Medications:</h4>
+					<div class="form-group">
+						<textarea cols="80" rows="4" class="form-control" ng-model="consult.currentMeds"></textarea>
+					</div>
+				</div>
+				<div class="clear"></div>
+			</div>
+		</div><!-- Alergies / Current Medications End -->			
 		<div class="clear"></div>
 	</div>
 	<div id="wrapper-action"><!-- Action Buttons -->
@@ -406,7 +431,7 @@ String date = UtilDateUtilities.getToday("yyyy-MM-dd");
 	</div>
 	<div class="modal-footer">
 		<button class="btn" data-dismiss="modal" aria-hidden="true">No, continue editing</button>
-		<button type="submit" class="btn btn-primary"  onclick="javascript:window.close();">Yes, save</button>
+		<button type="button" class="btn btn-primary" ng-click="save()">Yes, save</button>
 	</div>
 </div>
 <div id="deleteModal" class="modal fade dialog" style="display: none;" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -433,6 +458,22 @@ String date = UtilDateUtilities.getToday("yyyy-MM-dd");
 	<div class="modal-footer">
 		<button class="btn" data-dismiss="modal" aria-hidden="true">No, continue editing</button>
 		<button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true" onclick="javascript:window.close();">Yes, Exit</button>
+	</div>
+</div>
+<div id="letterheadModal" class="modal fade dialog" style="display: none;" tabindex="-1" role="dialog" aria-labelledby="cancelModalLabel" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+		<h3 id="cancelModalLabel">Letterhead List</h3>
+	</div>
+	<div class="modal-body">
+		<table>
+			<thead>
+				<th>Name</th><th>Address</th><th>Phone</th><th>Fax</th>
+			</thead>
+		</table>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true" onclick="javascript:window.close();">Close</button>
 	</div>
 </div>
 <div id="noteModal" class="modal fade dialog" style="display: none;" tabindex="-1" role="dialog" aria-labelledby="cancelModalLabel" aria-hidden="true">
@@ -472,33 +513,10 @@ $(function (){
 	    }
 	});
 	$('.typeahead').typeahead();
-	$('.change').hide(); // hide change button initially
 	$('.toggle').click(function() {
 		var $me = $(this);
 		var rel = $me.attr("rel");
 		$("." + rel).toggle();
-	});
-	$(".finder").change(function(){
-		var rel = $(this).attr("rel");
-		var id = $(this).attr("id");
-		$("#"+rel+"Find").hide();
-		$('#head-'+rel).html("<i class='icon-ok-sign'></i> " + $('#head-'+rel).attr('data-success-msg'));
-		if(rel=="letterHeader"){
-			//this is a static example but these address values should be dynamic-->
-			$("#letterHeaderSelected").html("<div class='fromName'><h1>" + $(this).val() + "</h1><p class='lead'>Consultation Request</p> </div> <div class='fromAddress'><address><strong>Facility Name</strong> <br> 26 Hamilton St. <br>Hamilton Ontario L0R 4K3 <br><abbr title='Phone'>P:</abbr> 555-555-5555 <br><abbr title='Fax'>F:</abbr> 555-555-5552<br></address></div>");
-			// $("#letterHeaderSelected").removeClass("hide");
-		}
-		$("#"+rel+"Selected").show();
-		$("#"+rel+"Change").show();
-		//$("#"+$(this).attr("rel")).addClass("alert-success"); <----don't add color yet until you know that there will be no indicators with colors
-	});
-	$(".btn-change").click(function(){
-		var rel = $(this).attr("rel");
-		$("#"+rel+"Find").toggle();
-		$("#"+rel+"Selected").toggle();
-		$("#"+rel+"Change").toggle();
-		$("#"+rel).val("");
-		$('#head-'+rel).html($('#head-'+rel).attr('data-original'));
 	});
 	$(".noteShow").click(function(){
 		$("#noteHideOut").toggle();

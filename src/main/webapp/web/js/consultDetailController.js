@@ -1,13 +1,7 @@
 oscarApp.controller('ConsultDetailCtrl', function ($scope,$http,$routeParams,$resource) {
 	// Datasource
-	$scope.letterheaderSource = ["McMaster Hospital","Wilson, John","Someother, Guy"];
-	$scope.specialtySource = ["McMaster Hospital","Wilson, John","Someother, Guy"];
-	$scope.locations = [{value: 1, name: 'Dr. James Dean - 1158 StreetName St., Hamilton Ontario L0R 4K3'},
-	                    {value: 2, name: 'Dr. James Dean - Hospital 50 StreetName St., Hamilton Ontario L8h 0X0'}]
-	// Dropdowns
-	$scope.specialties = [{value: 0, name: 'Specialty'}, {value: 1, name: 'Cardiology'}, {value: 2, name: 'Dermatology'}, {value: 3, name: 'Neurology'}, {value: 4, name: 'Radiology'}];
-	$scope.urgencies = [{value: 1, name: 'Urgent'}, {value: 2, name: 'Non-Urgent'}, {value: 3, name: 'Return'}, {value: 5, name: 'Semi-Urgent'}];
-	$scope.hours = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+	$scope.hours = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+	                12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
 	$scope.minutes = [00, 01, 02, 03, 04, 05, 06, 07, 08, 09, 
 	                  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
 	                  20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 
@@ -15,8 +9,20 @@ oscarApp.controller('ConsultDetailCtrl', function ($scope,$http,$routeParams,$re
 	                  40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 
 	                  50, 51, 52, 53, 54, 55, 56, 57, 58, 59];
 	$scope.ampms =  ['AM', 'PM'];
-	$scope.titles = ["Mr.", "Mrs.", "Ms.", "Dr."];
-	$scope.genders = ["Male", "Female", "Unknown"];
+	$scope.titles = [{value: "DR", name: "DR"},
+	                 {value: "MS", name: "MS"},
+	                 {value: "MISS", name: "MISS"},
+	                 {value: "MRS", name: "MRS"},
+	                 {value: "MR", name: "MR"},
+	                 {value: "MSSR", name: "MSSR"},
+	                 {value: "PROF", name: "PROF"},
+	                 {value: "REEVE", name: "REEVE"},
+	                 {value: "REV", name: "REV"},
+	                 {value: "RT_HON", name: "RT_HON"},
+	                 {value: "SEN", name: "SEN"},
+	                 {value: "SGT", name: "SGT"},
+	                 {value: "SR", name: "SR"}];	
+	$scope.genders = [{value: "M", name: "Male"}, {value: "F", name: "Female"}, {value: "U", name: "Unknown"}];
 	$scope.provinces = [{value: 'AB', name: 'AB-Alberta'}, 
 						{value: 'BC', name: 'BC-British Columbia'}, 
 						{value: 'MB', name: 'MB-Manitoba'}, 
@@ -87,17 +93,135 @@ oscarApp.controller('ConsultDetailCtrl', function ($scope,$http,$routeParams,$re
 						{value: 'US-WI', name: 'US-WI-Wisconsin'}, 
 						{value: 'US-WV', name: 'US-WV-West Virginia'}, 
 						{value: 'US-WY', name: 'US-WY-Wyoming'}];
-	$http({
-	    url: '../../json/consultDetail.json',
-	    dataType: 'json',
-	    method: 'GET',
-	    headers: {
-	        "Content-Type": "application/json"
-	    }
-	}).success(function(response) {
-		$scope.patient = response.patient;
-		$scope.consult = response.consult;
-	}).error(function(error){
-	    $scope.error = error;
-	});	
+	$scope.locations = [{value: 1, name: 'Dr. James Dean - 1158 StreetName St., Hamilton Ontario L0R 4K3'},
+	                    {value: 2, name: 'Dr. James Dean - Hospital 50 StreetName St., Hamilton Ontario L8h 0X0'}];
+	$scope.urgencies = [{value: 1, name: 'Urgent'}, {value: 2, name: 'Non-Urgent'}, {value: 3, name: 'Return'}, {value: 5, name: 'Semi-Urgent'}];
+	
+	var demographicNo;
+	var requestId = getQueryStrings()['requestId'];
+	
+	//set the demographic in scope for all the sub tabs
+	var consultDetailWS = $resource('../../../ws/rs/consult/detail/:requestId',{}, {});
+	var consult = consultDetailWS.get({requestId: requestId}, function(response) {
+		$scope.consult = response;
+		$scope.consult.appointmentDate = getDate($scope.consult.appointmentDate);
+		$scope.consult.specialties = new Array();
+		for (var i = 0; i < $scope.consult.services.length; i++) {
+			if ($scope.consult.services[i].id == $scope.consult.serviceId) {
+				$scope.consult.specialties.push($scope.consult.services[i].specialties);	
+			}
+		}
+		for (var i = 0; i < $scope.consult.specialties.length; i++) {
+			if ($scope.consult.specialties[i].id == $scope.consult.specialtyId) {
+				$scope.consult.specialtyAddress = $scope.consult.specialties[i].address;
+				$scope.consult.specialtyPhone = $scope.consult.specialties[i].phone;
+				$scope.consult.specialtyFax = $scope.consult.specialties[i].fax;
+			}
+		}
+		$scope.consult.appointmentHour = getHour($scope.consult.appointmentTime);
+		$scope.consult.appointmentMinute = getMinute($scope.consult.appointmentTime);
+		// Demographic		
+		demographicNo = response.demographicId;
+		var demographicWS = $resource('../../../ws/rs/demographics/detail/:demographicNo',{}, {});
+		var demographic = demographicWS.get({demographicNo: demographicNo}, function(response) {
+			$scope.demographic = response;
+			$scope.demographic.age = getAge($scope.demographic.dateOfBirth);
+			$scope.demographic.dateOfBirth = getDate($scope.demographic.dateOfBirth);
+		});
+	});
+	
+	$scope.save = function() {
+		consultWS.save({}, {demographicNo: demographicNo});
+	};
+	
+	$scope.changeLetterhead = function() {
+		var letterheadName = consult.letterheadName;
+		for (var i = 0; i < $scope.letterheads; i++) {
+			if ($scope.letterheads[i].letterheadName == letterheadName) {
+				$scope.consult.letterheadName = letterheadName;
+				$scope.consult.letterheadAddress = letter$scope.letterheads[i].letterheadAddress;
+				$scope.consult.letterheadPhone = letter$scope.letterheads[i].letterheadPhone;
+				$scope.consult.letterheadFax = letter$scope.letterheads[i].letterheadFax;
+			}
+		}
+	};
+	
+	$scope.changeService = function() {
+		var selected = consult.serviceId;
+		for (var i = 0; i < $scope.consult.services.length; i++) {
+			if ($scope.consult.services[i].id == selected) {
+				$scope.consult.specialties = new Array();
+				if ($scope.consult.services[i].specialties != null) {
+					$scope.consult.specialties.push($scope.consult.services[i].specialties);
+				}
+			}
+		}
+		$scope.consult.specialtyAddress = "";
+		$scope.consult.specialtyPhone = "";
+		$scope.consult.specialtyFax = "";
+	}
+	
+	$scope.changeSpecialty = function() {
+		var selected = consult.specialtyId;
+		for (var i = 0; i < $scope.consult.specialties.length; i++) {
+			if ($scope.consult.specialties[i].id == selected) {
+				$scope.consult.specialtyAddress = $scope.consult.specialties[i].address;
+				$scope.consult.specialtyPhone = $scope.consult.specialties[i].phone;
+				$scope.consult.specialtyFax = $scope.consult.specialties[i].fax;
+			}
+		}
+	}
 });
+
+function getAge(dateString) {
+	var age;
+	var today = new Date();
+	var birthDate = new Date(dateString);
+	age = today.getFullYear() - birthDate.getFullYear();
+	var m = today.getMonth() - birthDate.getMonth();
+	if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+		age--;
+	}
+	if(age < 2) {
+		m = m + (age*12);
+		return m + 'm';
+	} else {
+		return age + 'y';	
+	}
+}
+
+function getDate(dateString) {
+	var date = new Date(dateString);
+	return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+}
+
+function getHour(dateString) {
+	var date = new Date(dateString);
+	return date.getHours();
+}
+
+function getMinute(dateString) {
+	var date = new Date(dateString);
+	return date.getMinutes();
+}
+
+
+function getQueryStrings() {
+    //Holds key:value pairs
+    var queryStringColl = null;            
+    //Get querystring from url
+    var requestUrl = window.location.search.toString();
+    if (requestUrl != '') {
+        //window.location.search returns the part of the URL 
+        //that follows the ? symbol, including the ? symbol
+        requestUrl = requestUrl.substring(1);
+        queryStringColl = new Array();
+        //Get key:value pairs from querystring
+        var kvPairs = requestUrl.split('&');
+        for (var i = 0; i < kvPairs.length; i++) {
+            var kvPair = kvPairs[i].split('=');
+            queryStringColl[kvPair[0]] = kvPair[1];
+        }
+    }
+    return queryStringColl;
+}

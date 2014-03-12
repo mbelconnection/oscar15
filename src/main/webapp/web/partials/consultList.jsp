@@ -39,7 +39,6 @@
 <script type="text/javascript" src="<%=request.getContextPath()%>/library/bootstrap/3.0.0/assets/js/DT_bootstrap.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/bootstrap-datepicker.js"></script>
 
-
 <style>
 	.datepicker {z-index: 9999;}
 	.date-input {width: 80px;}
@@ -49,14 +48,6 @@
 	#search-options{margin-left: 20px;}
 	.center {text-align: center;}
 </style>
-
-<div id="consult-list">
-	<h4 style="display: inline">Consultation List</h4> | 
-	<a href="javascript:popupOscarConsultationConfig(700,960,'<%=request.getContextPath()%>/oscarEncounter/oscarConsultationRequest/config/ShowAllServices.jsp')" class="consultButtonsActive">
-    	<bean:message key="consultationList.editSpecialists"/>
-    </a>&nbsp;
-    <!-- <button id="newConsult" class="btn"><i class="icon-plus"></i>&nbsp;<bean:message key="consultationList.btn.newConsult"/></button> -->
-	<br /><br />
 <%
 	String curProvider_no = (String) session.getAttribute("user");
 	String roleName$ = (String)session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
@@ -84,6 +75,16 @@ else {
 	consultUtil.estTeams();
 }
 %>
+<div id="consult-list" data-ng-init="init(<%=curProvider_no%>)">
+	<h4 style="display: inline">Consultation List</h4> | 
+	<a href="javascript:popupOscarConsultationConfig(700,960,'<%=request.getContextPath()%>/oscarEncounter/oscarConsultationRequest/config/ShowAllServices.jsp')" class="consultButtonsActive">
+    	<bean:message key="consultationList.editSpecialists"/>
+    </a>&nbsp;
+    <select id="demographicNo" class="form-control" style="display: inline; width: 200px;" ng-model="demographicNo">
+    	<option value="{{demographic.demographicNo}}" ng-repeat="demographic in demographics">{{demographic.firstName}}, {{demographic.lastName}}</option>
+	</select>&nbsp;
+	<button id="newConsult" class="btn"><i class="icon-plus"></i>&nbsp;<bean:message key="consultationList.btn.newConsult"/></button>
+	<br /><br />
 <div id="teamDiv" class="team">
 	<label><bean:message key="consultationList.selectTeam" />:</label>
 	<select id="team" name="team">                                
@@ -263,12 +264,21 @@ $(document).ready(function () {
 	});
 	
 	$("#newConsult").on("click", function() {
-		popupOscarConsultationConfig('2000','1280', '<%=request.getContextPath()%>/web/partials/consult/consultRequestForm.jsp');
+		var demographicNo = $("#demographicNo").val();
+		if (demographicNo == '?') {
+			alert("Please select a patient first");
+		} else {
+			newConsult(demographicNo);	
+		}
 	});	
 });
 
-function editConsult(id) {
-	popupOscarConsultationConfig('2000','1280', '<%=request.getContextPath()%>/web/partials/consult/consultRequestForm.jsp?requestId=' + id);
+function editConsult(requestId) {
+	popupOscarConsultationConfig('2000','1280', '<%=request.getContextPath()%>/web/partials/consult/consultRequestForm.jsp?requestId=' + requestId);
+}
+
+function newConsult(demographicNo) {
+	popupOscarConsultationConfig('2000','1280', '<%=request.getContextPath()%>/web/partials/consult/consultRequestForm.jsp?demographicNo=' + demographicNo);
 }
 
 function preview(id) {

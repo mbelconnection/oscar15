@@ -120,7 +120,7 @@ public class ClientManager {
             queue.setReferralId(referral.getId());
             queue.setTemporaryAdmission(referral.isTemporaryAdmission());
             queue.setPresentProblems(referral.getPresentProblems());
-
+            
             queueManager.saveProgramQueue(queue);
         }
     }

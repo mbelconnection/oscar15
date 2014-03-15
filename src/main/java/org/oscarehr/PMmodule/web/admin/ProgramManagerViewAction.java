@@ -590,8 +590,8 @@ public class ProgramManagerViewAction extends BaseAction {
 	public ActionForward select_client_for_admit(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
 		String programId = request.getParameter("id");
 		String clientId = request.getParameter("clientId");
-		String queueId = request.getParameter("queueId");
-
+		String queueId = request.getParameter("queueId");		
+		
 		Program program = programManager.getProgram(String.valueOf(programId));
 		ProgramQueue queue = programQueueManager.getProgramQueue(queueId);
 
@@ -615,7 +615,9 @@ public class ProgramManagerViewAction extends BaseAction {
 			}
 		}
 		request.setAttribute("do_admit", Boolean.TRUE);
-
+		Date referralDate = queue.getReferralDate();
+		String referralDateString = oscar.util.DateUtils.getDate(referralDate,"yyyy-MM-dd");		
+		request.setAttribute("referralDate",referralDateString);
 		return view(mapping, form, request, response);
 	}
 

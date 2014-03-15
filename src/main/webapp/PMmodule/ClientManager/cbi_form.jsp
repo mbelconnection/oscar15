@@ -132,12 +132,12 @@ function checkDates() {
 		dischargeDate = "";
 	}
 	
-	if(compareDates(admissionDate, serviceInitDate)) {
-		alert("The Service Initiation Date should be later or equal to the Admission Date..");
+	if(!compareDates(serviceInitDate, admissionDate)) {
+		alert("The Service Initiation Date should be later or equal to the Admission Date.");
 		return false;
 	} 
 	if(dischargeDate != "") {
-		if(compareDates(admissionDate, dischargeDate)) {
+		if(!compareDates(dischargeDate, admissionDate)) {
 				alert("The Admission Date should be earlier or equal to the Discharge Date.");
 				return false;
 		} 
@@ -196,9 +196,9 @@ function compareDates(date1, date2) {
 		
 		if (sDateString[0]>aDateString[0]) {		  
 		  	return false;
-		} else if(sDateString[1] > aDateString[1]) {
+		} else if(sDateString[0]==aDateString[0] && sDateString[1] > aDateString[1]) {
 			return false;
-		} else if(sDateString[2] > aDateString[2]) {
+		} else if(sDateString[0]==aDateString[0] && sDateString[1] ==aDateString[1] && sDateString[2] > aDateString[2]) {
 			return false;
 		} else {
 			return true;

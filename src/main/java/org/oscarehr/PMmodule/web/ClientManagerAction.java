@@ -278,30 +278,45 @@ public class ClientManagerAction extends BaseAction {
 		Program program = (Program) clientForm.get("program");
 		String clientId = request.getParameter("id");
 		List<Long> dependents = clientManager.getDependentsList(new Long(clientId));
-
+		
+		String formattedDischargeDate = request.getParameter("dischargeDate");
+		Date  dischargeDate = oscar.util.DateUtils.toDate(formattedDischargeDate);
+		
 		ActionMessages messages = new ActionMessages();
 
-		try {
-			admissionManager.processDischargeToCommunity(program.getId(), new Integer(clientId), getProviderNo(request), admission.getDischargeNotes(), admission.getRadioDischargeReason(), dependents, null);
+		try {							
+			admissionManager.processDischargeToCommunity(program.getId(), new Integer(clientId), getProviderNo(request), admission.getDischargeNotes(), admission.getRadioDischargeReason(), dependents, dischargeDate);
 			logManager.log("write", "discharge", clientId, request);
-
+	
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.success"));
 			saveMessages(request, messages);
+				
+			
 		} catch (AdmissionException e) {
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.failure", e.getMessage()));
 			saveMessages(request, messages);
 		}
-
+		
 		setEditAttributes(form, request, clientId);
 		admission.setDischargeNotes("");
 		admission.setRadioDischargeReason("");
-
+		
 		return mapping.findForward("edit");
 	}
 
 	public ActionForward discharge_community_select_program(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
 		String id = request.getParameter("id");
-
+		
+		DynaActionForm clientForm = (DynaActionForm) form;
+		
+		//get current bed program		
+		Admission currentBedAdmission = admissionDao.getCurrentBedProgramAdmission(programDao, Integer.valueOf(id));
+		if(currentBedAdmission!=null) {
+			Date admissionDate = currentBedAdmission.getAdmissionDate();
+			String admissionDateString = oscar.util.DateUtils.getDate(admissionDate,"yyyy-MM-dd");				
+			request.setAttribute("admissionDate",admissionDateString);
+		}
+	
 		setEditAttributes(form, request, id);
 
 		request.setAttribute("do_discharge", new Boolean(true));
@@ -317,10 +332,19 @@ public class ClientManagerAction extends BaseAction {
 	public ActionForward discharge_select_program(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
 		String id = request.getParameter("id");
 		DynaActionForm clientForm = (DynaActionForm) form;
+		
 		Program program = (Program) clientForm.get("program");
 		request.setAttribute("programId", String.valueOf(program.getId()));
+		
+		Admission admission = (Admission) clientForm.get("admission");
+		Long am_id = admission.getId();
+		Admission am = admissionDao.getAdmission(am_id);
+		Date admissionDate = am.getAdmissionDate();
+		String admissionDateString = oscar.util.DateUtils.getDate(admissionDate,"yyyy-MM-dd");				
+		request.setAttribute("admissionDate",admissionDateString);
+		
 		setEditAttributes(form, request, id);
-
+		
 		request.setAttribute("do_discharge", new Boolean(true));
 
 		return mapping.findForward("edit");
@@ -396,7 +420,10 @@ public class ClientManagerAction extends BaseAction {
 	public ActionForward refer(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
 		DynaActionForm clientForm = (DynaActionForm) form;
 		ClientReferral referral = (ClientReferral) clientForm.get("referral");
-
+		
+		String formattedReferralDate = request.getParameter("referralDate");
+		Date referralDate = oscar.util.DateUtils.toDate(formattedReferralDate);		
+		
 		int clientId = Integer.parseInt(request.getParameter("id"));
 		LoggedInInfo loggedInInfo = LoggedInInfo.loggedInInfo.get();
 
@@ -410,7 +437,7 @@ public class ClientManagerAction extends BaseAction {
 
 			referral.setFacilityId(loggedInInfo.currentFacility.getId());
 
-			referral.setReferralDate(new Date());
+			referral.setReferralDate(referralDate);
 			referral.setProgramType(p.getType());
 
 			referToLocalAgencyProgram(request, clientForm, referral, p);

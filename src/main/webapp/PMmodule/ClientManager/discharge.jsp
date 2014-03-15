@@ -26,8 +26,9 @@
 <%@ include file="/taglibs.jsp"%>
 
 <script>
-	function select_program(id) {
+	function select_program(id,admissionId) {
 		document.clientManagerForm.elements['program.id'].value = id;
+		document.clientManagerForm.elements['admission.id'].value = admissionId;
 		document.clientManagerForm.method.value = 'discharge_select_program';
 		document.clientManagerForm.submit();
 	}
@@ -35,13 +36,28 @@
 	function select_program_community() {
 		var communityCtl = document.getElementById('community_id');
 		var id = communityCtl.options[communityCtl.selectedIndex].value;
-		document.clientManagerForm.elements['program.id'].value = id;
+		document.clientManagerForm.elements['program.id'].value = id;		
 		document.clientManagerForm.method.value = 'discharge_community_select_program';
 		document.clientManagerForm.submit();
 	}
 	
 	function do_discharge() {
-		
+		var dischargeDate = document.getElementById('dischargeDate').value; 
+	      <%
+	      	String admissionDateString=(String)request.getAttribute("admissionDate");
+	      %>
+	      	var adDate = "<%=admissionDateString%>";
+	    	
+	    	if(!dischargeDate || typeof dischargeDate == 'undefined') {
+	    		alert("Please choose discharge date");
+	    		return false;
+	    	}    	
+	    	
+	    	if(!compareDates(dischargeDate,adDate)) {
+	    		alert("The discharge date should be later or equal to the admission Date.");
+	    		return false;
+	    	} 
+	    	
 		<c:if test="${empty requestScope.community_discharge}">						
 			document.clientManagerForm.method.value = 'discharge';
 		</c:if>
@@ -64,9 +80,74 @@
 			document.clientManagerForm.submit();
 		</c:if>					
 	}
+	
+	//false: date2 > date1
+	//true: date2 <= date1
+	function compareDates(date1, date2) {	
+		
+		var aDateString = date1.split('-') ;	
+		
+		if(aDateString[1]=='01') aDateString[1]=1;
+		if(aDateString[1]=='02') aDateString[1]=2;
+		if(aDateString[1]=='03') aDateString[1]=3;
+		if(aDateString[1]=='04') aDateString[1]=4;
+		if(aDateString[1]=='05') aDateString[1]=5;
+		if(aDateString[1]=='06') aDateString[1]=6;
+		if(aDateString[1]=='07') aDateString[1]=7;
+		if(aDateString[1]=='08') aDateString[1]=8;
+		if(aDateString[1]=='09') aDateString[1]=9;
+		
+		if(aDateString[2]=='01') aDateString[2]=1;
+		if(aDateString[2]=='02') aDateString[2]=2;
+		if(aDateString[2]=='03') aDateString[2]=3;
+		if(aDateString[2]=='04') aDateString[2]=4;
+		if(aDateString[2]=='05') aDateString[2]=5;
+		if(aDateString[2]=='06') aDateString[2]=6;
+		if(aDateString[2]=='07') aDateString[2]=7;
+		if(aDateString[2]=='08') aDateString[2]=8;
+		if(aDateString[2]=='09') aDateString[2]=9;	
+		
+		var sDateString ;
+		if(date2 && typeof date2 != 'undefined') {
+			sDateString = date2.split('-') ; 
+			if(sDateString[1]=='01') sDateString[1]=1;
+			if(sDateString[1]=='02') sDateString[1]=2;
+			if(sDateString[1]=='03') sDateString[1]=3;
+			if(sDateString[1]=='04') sDateString[1]=4;
+			if(sDateString[1]=='05') sDateString[1]=5;
+			if(sDateString[1]=='06') sDateString[1]=6;
+			if(sDateString[1]=='07') sDateString[1]=7;
+			if(sDateString[1]=='08') sDateString[1]=8;
+			if(sDateString[1]=='09') sDateString[1]=9;
+			
+			if(sDateString[2]=='01') sDateString[2]=1;
+			if(sDateString[2]=='02') sDateString[2]=2;
+			if(sDateString[2]=='03') sDateString[2]=3;
+			if(sDateString[2]=='04') sDateString[2]=4;
+			if(sDateString[2]=='05') sDateString[2]=5;
+			if(sDateString[2]=='06') sDateString[2]=6;
+			if(sDateString[2]=='07') sDateString[2]=7;
+			if(sDateString[2]=='08') sDateString[2]=8;
+			if(sDateString[2]=='09') sDateString[2]=9;		
+			
+			if (sDateString[0]>aDateString[0]) {		  
+			  	return false;
+			} else if(sDateString[0]==aDateString[0] && sDateString[1] > aDateString[1]) {
+				return false;
+			} else if(sDateString[0]==aDateString[0] && sDateString[1] ==aDateString[1] && sDateString[2] > aDateString[2]) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+		return true;
+	}
+
+	
 </script>
 
 <html:hidden property="program.id" />
+<html:hidden property="admission.id"/>
 
 <p>This page is for discharging clients from:
 <ol>
@@ -136,7 +217,7 @@ Community Program:&nbsp;
 	<caisi:isModuleLoad moduleName="TORONTO_RFQ" reverse="true">
 		<display:column sortable="false">
 			<input type="button" value="Discharge"
-				onclick="select_program('<c:out value="${admission.programId}"/>')" />
+				onclick="select_program('<c:out value="${admission.programId}"/>', '<c:out value="${admission.id}"/>')" />
 		</display:column>
 	</caisi:isModuleLoad>
 
@@ -144,7 +225,7 @@ Community Program:&nbsp;
 		<c:if test="${sessionScope.performDischargeService=='true'}">
 			<display:column sortable="false">
 				<input type="button" value="Discharge"
-					onclick="select_program('<c:out value="${admission.programId}"/>')" />
+					onclick="select_program('<c:out value="${admission.programId}"/>', '<c:out value="${admission.id}"/>')" />
 			</display:column>
 		</c:if>
 	</caisi:isModuleLoad>
@@ -175,7 +256,7 @@ Community Program:&nbsp;
 
 	<display:column sortable="false">
 		<input type="button" value="Discharge"
-			onclick="select_program('<c:out value="${admission.programId}"/>')" />
+			onclick="select_program('<c:out value="${admission.programId}"/>', '<c:out value="${admission.id}"/>')" />
 	</display:column>
 	<display:column sortable="true" title="Program Name">
 		<c:out value="${admission.programName}" />
@@ -223,7 +304,7 @@ Community Program:&nbsp;
 		
 		<tr class="b">
 			<td colspan="2"><input type="button" value="Process Discharge"
-				onclick="do_discharge();" /> <input type="button" value="Cancel"
+				onclick="return do_discharge();" /> <input type="button" value="Cancel"
 				onclick="document.clientManagerForm.submit()" /></td>
 		</tr>
 	</table>

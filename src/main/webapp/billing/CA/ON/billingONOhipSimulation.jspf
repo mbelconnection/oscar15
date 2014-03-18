@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <%--
 
     Copyright (c) 2006-. OSCARservice, OpenSoft System. All Rights Reserved.
@@ -43,7 +42,6 @@
 
 
 <% 
-if(session.getAttribute("user") == null) response.sendRedirect("../../../logout.jsp");
 String user_no = (String) session.getAttribute("user");
 %>
 
@@ -250,17 +248,9 @@ if(request.getParameter("submit")!=null && request.getParameter("submit").equals
 }
 %>
 
-<html>
-<head>
-<title><bean:message key="admin.admin.btnSimulationOHIPDiskette" /></title>
 
-<script type="text/javascript" src="<%=request.getContextPath() %>/js/jquery-1.9.1.min.js"></script>
-<script src="<%=request.getContextPath() %>/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="<%=request.getContextPath() %>/js/bootstrap-datepicker.js"></script>
 
-<link href="<%=request.getContextPath() %>/css/bootstrap.min.css" rel="stylesheet">
-<link href="<%=request.getContextPath() %>/css/datepicker.css" rel="stylesheet" type="text/css">
-<link rel="stylesheet" href="<%=request.getContextPath() %>/css/font-awesome.min.css">
+
 
 <script type="text/javascript" language="JavaScript">
 <!--
@@ -295,8 +285,11 @@ function checkData() {
 <div class="container-fluid">
 <h3><bean:message key="admin.admin.btnSimulationOHIPDiskette" /></h3>
 
-<form name="serviceform" method="post" action="billingONOhipSimulation.jsp" onSubmit="return checkData();">
+<form name="serviceform" id="serviceform" action="<%=request.getContextPath() %>/billing/CA/ON/billingONOhipSimulation.jspf">
 <div class="row well well-small">
+
+<input type="hidden" name="submit" value="Create Report">
+
 Bill Center:
 	<input type="hidden" name="billcenter" value="<%=billCenter%>">
 	<%=healthOffice%>
@@ -364,7 +357,7 @@ Select Provider<br>
 	</div>
 
 
-	<div class="span2">	
+	<div class="span2" >	
 	To:<br>
 	<div class="input-append">
 		<input type="text" name="xml_appointment_date" id="xml_appointment_date" value="<%=xml_appointment_date%>"  style="width:90px" autocomplete="off" />
@@ -373,10 +366,10 @@ Select Provider<br>
 	</div>
 	
 <% if (!bMultisites) { %>
-	<div class="span2"><br><input type="checkbox" name="summaryView" id="summaryView" <%= summaryView ? "checked" : "" %> />Summary View</div>
+	<div class="span2" style="min-width:140px"><br><input type="checkbox" name="summaryView" id="summaryView" <%= summaryView ? "checked" : "" %> />Summary View</div>
 <% } %>
 
-	<div class="span2">
+	<div class="span2" >
 	<br>
 	<button class="btn btn-primary " type="submit" name="submit" value="Create Report">Create Report</button>
 	</div>
@@ -405,6 +398,9 @@ Select Provider<br>
 <%=request.getAttribute("html") == null?"":request.getAttribute("html")%>
 
 <script type="text/javascript">
+
+registerFormSubmit('serviceform', 'dynamic-content');
+
 var startDate = $("#xml_vdate").datepicker({
 	format : "yyyy-mm-dd"
 });
@@ -424,7 +420,13 @@ function popupPage(vheight,vwidth,varpage) {
     }
   }
 }
+
+
+$(".xlink").click(function(e) {
+	var source = $(this).attr('rel');
+
+	$("#dynamic-content").html('<iframe id="myFrame" name="myFrame" frameborder="0" width="950" height="1000" src="'+source+'">');
+});
+
 </script>
 
-</body>
-</html>

@@ -185,7 +185,7 @@ $(document).ready(function () {
 			} },
 			{"sTitle":"<bean:message key='consultationList.header.action' />","mData":null, "sClass": "center", "bSortable":false,"bSearchable":false,"mRender":function(data, type, row) {
 				// return "<a href='#' onClick='preview(" + row.id + ")'><i class='icon-edit'></i></a>";
-				return "<a href='javascript:editConsult(" + row.id + ")' rel='" + row.id + "'><i class='icon-edit'></i></a>";
+				return "<a href='javascript:editConsult(" + row.id + ", " + row.demographicNo + ")' rel='" + row.id + "'><i class='icon-edit'></i></a>";
 			}, "sClass": "center" },
            	{ "sTitle": "<bean:message key='consultationList.header.patient' />", "mData": "patient", "sClass": "center" },
  			{ "sTitle": "<bean:message key='consultationList.header.service' />", "mData": "serviceDesc", "sClass": "center" },
@@ -265,7 +265,7 @@ $(document).ready(function () {
 	
 	$("#newConsult").on("click", function() {
 		var demographicNo = $("#demographicNo").val();
-		if (demographicNo == '?') {
+		if (demographicNo == null || demographicNo.indexOf("?") >= 0) {
 			alert("Please select a patient first");
 		} else {
 			newConsult(demographicNo);	
@@ -273,12 +273,12 @@ $(document).ready(function () {
 	});	
 });
 
-function editConsult(requestId) {
-	popupOscarConsultationConfig('2000','1280', '<%=request.getContextPath()%>/web/partials/consult/consultRequestForm.jsp?requestId=' + requestId);
+function editConsult(requestId, demographicNo) {
+	popupOscarConsultationConfig('2000','1280', '<%=request.getContextPath()%>/web/partials/consult/consultRequestForm.jsp?requestId=' + requestId + '&demographicNo=' + demographicNo + '&providerNo=' + <%=curProvider_no%>);
 }
 
 function newConsult(demographicNo) {
-	popupOscarConsultationConfig('2000','1280', '<%=request.getContextPath()%>/web/partials/consult/consultRequestForm.jsp?demographicNo=' + demographicNo);
+	popupOscarConsultationConfig('2000','1280', '<%=request.getContextPath()%>/web/partials/consult/consultRequestForm.jsp?demographicNo=' + demographicNo + '&providerNo=' + <%=curProvider_no%>);
 }
 
 function preview(id) {

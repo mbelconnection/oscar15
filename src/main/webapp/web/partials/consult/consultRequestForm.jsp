@@ -26,14 +26,24 @@
 <%@ include file="/taglibs.jsp"%>
 <%@ page import="java.util.Date"%>
 <%@ page import="java.util.List"%>
+<%@ page import="java.util.ArrayList"%>
+<%@ page import="java.util.Collections"%>
 <%@ page import="java.text.SimpleDateFormat"%>
-<%@ page import="org.apache.commons.lang.StringUtils"%>
+<%@ page import="oscar.util.StringUtils"%>
+<%@ page import="oscar.OscarProperties"%>
 <%@ page import="org.oscarehr.util.LoggedInInfo"%>
 <%@ page import="org.oscarehr.util.DigitalSignatureUtils"%>
 <%@ page import="org.oscarehr.ui.servlet.ImageRenderingServlet"%>
 <%@ page import="oscar.oscarEncounter.oscarConsultationRequest.pageUtil.EctConsultationFormRequestUtil"%>
-
+<%@ page import="org.oscarehr.casemgmt.service.CaseManagementManager"%>
+<%@ page import="org.springframework.web.context.WebApplicationContext"%>
+<%@ page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@ page import="oscar.util.UtilDateUtilities"%>
+<%@ page import="org.oscarehr.casemgmt.model.Issue"%>
+<%@ page import="org.oscarehr.casemgmt.model.CaseManagementNote"%>
+<%@ page import="org.oscarehr.common.model.UserProperty"%>
+<%@ page import="org.oscarehr.common.dao.UserPropertyDAO"%>
+
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
 
 <!DOCTYPE html>
@@ -107,14 +117,19 @@
 		opacity:1.0;
 		filter:alpha(opacity=100); /* For IE8 and earlier */
 	}
+	input.ng-invalid, select.ng-invalid, textarea.ng-invalid {
+		border: 1px solid red;
+	}
 </style>
 <noscript>Your browser either does not support JavaScript, or has it turned off.</noscript>
 </head>
 
 <body id="consultRequestForm" ng-controller="ConsultDetailCtrl as detailController">
 <%
+// String providerNo = (String) session.getAttribute("user");
+String providerNo = request.getParameter("providerNo");
+String demo = request.getParameter("demographicNo");
 String date = UtilDateUtilities.getToday("yyyy-MM-dd");
-
 // Signature
 String signatureRequestId=DigitalSignatureUtils.generateSignatureRequestId(LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo());
 String imageUrl=request.getContextPath()+"/imageRenderingServlet?source="+ImageRenderingServlet.Source.signature_preview.name()+"&"+DigitalSignatureUtils.SIGNATURE_REQUEST_ID_KEY+"="+signatureRequestId;
@@ -130,16 +145,33 @@ if (userAgent != null) {
 		browserType = "ALL";
 	}
 }
+
+ArrayList<String> users = (ArrayList<String>)session.getServletContext().getAttribute("CaseMgmtUsers");
+boolean useNewCmgmt = false;
+WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+CaseManagementManager cmgmtMgr = null;
+if (users != null && users.size() > 0 && (users.get(0).equalsIgnoreCase("all") || Collections.binarySearch(users, providerNo) >= 0))
+{
+	useNewCmgmt = true;
+	cmgmtMgr = (CaseManagementManager)ctx.getBean("caseManagementManager");
+}
+UserPropertyDAO userPropertyDAO = (UserPropertyDAO)ctx.getBean("UserPropertyDAO");
+UserProperty fmtProperty = userPropertyDAO.getProp(providerNo, UserProperty.CONSULTATION_REQ_PASTE_FMT);
+String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
+
 %>
 <div class="col-md-12">
 	<h1>Consultation Details</h1>
 </div>
 <form name="consultRequestForm" action="consultRequestAction.jsp" method="post">
+	<input type="hidden" ng-model="consult.id"/>
+	<input type="hidden" name="consult.providerNo" value="<%=providerNo %>" />
+	
 	<div id="left_pane" class="col-md-2">
 		<h3>Patient Details</h3>
 		<div class="demographic">
 			<p>{{demographic.lastName}}, {{demographic.firstName}} ({{demographic.title}})</p>
-			<p>DOB: {{demographic.dateOfBirth}} ({{demographic.age}})</p> 		
+			<p>DOB: {{demographic.dateOfBirth | date:'yyyy-MM-dd'}} ({{demographic.age}})</p> 		
 			<p>Sex: {{demographic.sexDesc}}</p> 
 			<p>HIN: {{demographic.hin}} - {{demographic.ver}}</p> 
 			<p>Address:</p> 
@@ -153,10 +185,10 @@ if (userAgent != null) {
 		</div>
 		<div class="demographic" style="display: none;">
 			<div class="form-group">
-				<input type="text" class="form-control" placeholder="Last Name" ng-model="demographic.lastName" />
+				<input type="text" class="form-control" placeholder="Last Name" ng-model="demographic.lastName" ng-required="true"/>
 			</div>
 			<div class="form-group">
-				<input type="text" class="form-control" placeholder="First Name" ng-model="demographic.firstName"/>
+				<input type="text" class="form-control" placeholder="First Name" ng-model="demographic.firstName" ng-required="true"/>
 			</div>
 			<div class="form-group">
 				<select class="form-control" ng-model="demographic.title" style="width: 45%; display: inline-block;">
@@ -167,8 +199,8 @@ if (userAgent != null) {
 				</select>
 			</div>
 			<label class="control-label">DOB:</label>
-			<div class="form-group" id="dp-referralDate" data-date="{{demographic.dateOfBirth}}" data-date-format="yyyy-mm-dd" title="Referral Date">
-				<input class="form-control" name="referralDate" id="referralDate" type="text" ng-model="demographic.dateOfBirth" placeholder="Enter Date" pattern="^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$">
+			<div class="form-group" id="dp-dateOfBirth" data-date="{{demographic.dateOfBirth | date:'yyyy-MM-dd'}}" data-date-format="yyyy-mm-dd" title="Date Of Birth">
+				<input class="form-control" type="text" ng-model="demographic.dateOfBirth" placeholder="Date Of Birth" pattern="^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$"  ng-required="true">
 			</div>
 			<label class="control-label">HIN:</label>
 			<div class="form-group">
@@ -193,9 +225,14 @@ if (userAgent != null) {
 				<input type="text" class="form-control" placeholder="Email" ng-model="demographic.email" />
 			</div>
 		</div>
-		<p><button type="button" class="btn btn-small toggle" rel="demographic"><i class="icon-edit-sign"></i> Change</button></p>
+		<p><button id="changeDemographic" type="button" class="btn btn-small toggle" rel="demographic"><i class="icon-edit-sign"></i> Change</button></p>
 		
-		
+		<label class="control-label">Consultation Status</label>
+		<div class="form-group">
+			<select class="form-control" ng-model="consult.status" ng-required="true">
+				<option value="{{status.value}}" ng-repeat="status in status">{{status.name}}</option>
+			</select>
+		</div>
 		
 		<div class="well well-small clinical-module" id="Master Record" rel="<%=request.getContextPath() %>/demographic/demographiccontrol.jsp?demographic_no=1&displaymode=edit">
 			Master Record
@@ -215,7 +252,8 @@ if (userAgent != null) {
 					<select name="letterhead" class="form-control" 
 							ng-model="consult.letterheadName" 
 							ng-options="letterhead.id as letterhead.name for letterhead in consult.letterheads"
-							ng-change="changeLetterhead()">
+							ng-change="changeLetterhead()"
+							ng-required="true">
 					</select>
 				</div>
 				<p class="letterheadDetails">
@@ -234,12 +272,14 @@ if (userAgent != null) {
 					<select name="serviceId" class="form-control inline" style="width: 35%;" 
 							ng-model="consult.serviceId" 
 							ng-options="service.id as service.description for service in consult.services"
-							ng-change="changeService()">
+							ng-change="changeService()"
+							ng-required="true">
 					</select>
 					<select name="specialtyId" ng-model="consult.specialtyId" class="form-control inline" style="width: 50%;"
 							ng-model="consult.specialtyId" 
 							ng-options="specialty.id as [specialty.firstName, specialty.lastName] for specialty in consult.specialties"
-							ng-change="changeSpecialty()">
+							ng-change="changeSpecialty()"
+						 	ng-required="true">
 					</select>
 				</div>
 				<p class="specialtyDetails">
@@ -257,12 +297,12 @@ if (userAgent != null) {
 				<h4>Referral Details</h4>
 				<div class="col-md-4">
 					<label class="control-label">Referral Date:</label>
-					<div class="form-group" id="dp-referralDate" data-date="<%=date%>" data-date-format="yyyy-mm-dd" title="Referral Date">
-						<input style="display: inline-block;" class="form-control" name="referralDate" id="referralDate" type="text" value="<%=date%>" placeholder="Enter Date" pattern="^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$">
+					<div class="form-group" id="dp-referralDate" data-date="{{consult.referralDate | date:'yyyy-MM-dd'}}" data-date-format="yyyy-mm-dd" title="Referral Date">
+						<input style="display: inline-block;" class="form-control" ng-model="consult.referralDate" type="text" placeholder="Referral Date" pattern="^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$">
 					</div>
 					<label class="control-label">Urgency:</label>
 					<div class="form-group">
-						<select name="urgency" class="form-control" ng-model="consult.urgency">
+						<select name="urgency" class="form-control" ng-model="consult.urgency" ng-required="true">
 							<option value="{{urgency.value}}" ng-repeat="urgency in urgencies">{{urgency.name}}</option>
 						</select>
 					</div>
@@ -276,38 +316,40 @@ if (userAgent != null) {
 				<div class="clear"></div>
 			</div>
 		</div><!-- Referral End -->
-		
+
 		<div class="col-md-12"><!-- Appointment -->
-			<div class="well">
+			<div class="well" id="appointmentDetail">
 				<h4>Appointment Details</h4>
 				<div class="col-md-4">
 					<label class="control-label">Appointment Date:</label>
-					<div class="form-group" id="dp-appointmentDate" data-date="<%=date%>" data-date-format="yyyy-mm-dd" title="Appointment Date">
-						<input style="display: inline-block;" class="form-control" name="appointmentDate" id="appointmentDate" type="text" value="<%=date%>" placeholder="Enter Date" pattern="^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$">
+					<div class="form-group" id="dp-appointmentDate" data-date="{{consult.appointmentDate | date:'yyyy-MM-dd'}}" data-date-format="yyyy-mm-dd" title="Appointment Date">
+						<input style="display: inline-block;" class="form-control" ng-model="consult.appointmentDate" type="text" placeholder="Appointment Date" pattern="^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$">
 					</div>
 					<label class="control-label">Appointment Time:</label>
 					<div class="form-group">
-						<select name="hour" class="form-control" style="display: inline; width: 25%;" 
+						<select class="form-control" style="display: inline; width: 25%;" 
 								ng-model="consult.appointmentHour"
-								ng-options="hour as hour for hour in hours">
+								ng-options="hour as hour for hour in hours"
+								ng-required="true">
 						</select> : 
-						<select name="minute" class="form-control" style="display: inline; width:25%;" 
+						<select class="form-control" style="display: inline; width:25%;" 
 								ng-model="consult.appointmentMinute"
-								ng-options="minute as minute for minute in minutes">
+								ng-options="minute as minute for minute in minutes"
+							 	ng-required="true">
 						</select>
 					</div>
 					<label class="control-label">Last Follow-up Date:</label>
-					<div class="form-group" id="dp-lastFollowupDate" data-date="<%=date%>" data-date-format="yyyy-mm-dd" title="Last Follow-up Date">
-						<input style="display: inline-block;" class="form-control" name="lastFollowupDate" id="lastFollowupDate" type="text" value="<%=date%>" placeholder="Enter Date" pattern="^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$">
+					<div class="form-group" id="dp-lastFollowupDate" data-date="{{consult.followUpDate | date:'yyyy-MM-dd'}}" data-date-format="yyyy-mm-dd" title="Last Follow-up Date">
+						<input style="display: inline-block;" class="form-control" ng-model="consult.followUpDate" type="text" placeholder="Follow Up Date" pattern="^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$">
 					</div>
 				</div>
 				<div class="col-md-8">
 					<div>
-						<label class="control-label"><input type="checkbox" name="willBook" ng-model="consult.patientWillBook"/> Patient Will Book</label>
+						<label class="control-label"><input type="checkbox" id="willBook" ng-model="consult.patientWillBook"/> Patient Will Book</label>
 					</div>
 					<label class="control-label">Appointment Notes:</label>
 					<div class="form-group">
-						<textarea cols="80" rows="6" class="form-control" ng-model="consult.statusText"></textarea>
+						<textarea cols="80" rows="6" class="form-control" ng-model="consult.statusText" ng-required="true"></textarea>
 					</div>
 				</div>
 				<div class="clear"></div>
@@ -326,10 +368,11 @@ if (userAgent != null) {
 				<div class="clear"></div>
 			</div>
 		</div><!-- Appointment End -->	
-		<div id="clinical-note" class="col-md-12"><!-- Clinic Notes -->
+		
+		<div id="clinical-note" class="col-md-6"><!-- Clinic Notes -->
 			<div>
 				<h4>Create Clinical Notes <i class="icon-question-sign icon-large" rel="popover" data-html="true" data-content="Clinical notes are so you can add a reason for consultation, include detailed data from the patients echart or simply create a custom note that you would like added to the conslultation." data-original-title="What is a Clinical Note?" data-trigger="hover"></i></h4>
-				<div class="col-md-6 well">
+				<div class="well">
 					<div>
 						<label class="control-label"><span class="label badge">Step 1</span> Add a Title:</label>
 						<input type="text" name="noteTitle" class="form-control" data-provide="typeahead" data-items="6" 
@@ -337,32 +380,30 @@ if (userAgent != null) {
 					</div>
 					<div>
 						<label class="control-label"><span class="label badge">Step 2</span> Create Note:</label>
-						<textarea name="noteBody" class="form-control" placeholder="When creating a note use the Medical Summaries to the right to help you create the note with data from the patients chart."
+						<textarea id="clinicalInfo" cols="80" rows="6" class="form-control" placeholder="When creating a note use the Medical Summaries below to help you create the note with data from the patients chart."
 							ng-model="consult.clinicalInfo"></textarea>
 					</div>
 				</div>
-				<div class="col-md-6">
+				<div>
 					<p>Medical Summary: <small>add chart data to note</small></p>
 					<p>				
-						<button type="button" class="btn btn-tags one" id="one">Family History</button>&nbsp;
-						<button type="button" class="btn btn-tags two" id="two">Medical History</button>&nbsp;
-						<button type="button" class="btn btn-tags three" id="three">Ongoing Concerns</button>
+						<button type="button" class="btn btn-tags btn-success" onclick="importFromEnct('FamilyHistory','clinicalInfo');">Family History</button>&nbsp;
+						<button type="button" class="btn btn-tags btn-success" onclick="importFromEnct('MedicalHistory','clinicalInfo');">Medical History</button>&nbsp;
+						<button type="button" class="btn btn-tags btn-success" onclick="importFromEnct('ongoingConcerns','clinicalInfo');">Ongoing Concerns</button>
 					</p>
 					<p>
-						<button type="button" class="btn btn-tags four" id="four">Other Meds</button>&nbsp;
-						<button type="button" class="btn btn-tags five" id="five">Reminders</button>&nbsp;
-						<button type="button" class="btn btn-tags six" id="six">item 6</button>&nbsp;
-						<button type="button" class="btn btn-tags seven" id="seven">item 7</button>&nbsp;
-					</p>
+						<button type="button" class="btn btn-tags btn-success" onclick="importFromEnct('OtherMeds','clinicalInfo');">Other Meds</button>&nbsp;
+						<button type="button" class="btn btn-tags btn-success" onclick="importFromEnct('Reminders','clinicalInfo');">Reminders</button>
+					</p>					
 				</div>
 				<div class="clear"></div>
 			</div>
 		</div>
 		
-		<div id="concurrent-problem" class="col-md-12"><!-- Concurrent Problem -->
+		<div id="concurrent-problem" class="col-md-6"><!-- Concurrent Problem -->
 			<div>
 				<h4>Significant Concurrent Problems: <i class="icon-question-sign icon-large" rel="popover" data-html="true" data-content="Clinical notes are so you can add a reason for consultation, include detailed data from the patients echart or simply create a custom note that you would like added to the conslultation." data-original-title="What is a Clinical Note?" data-trigger="hover"></i></h4>
-				<div class="col-md-6 well">
+				<div class="well">
 					<div>
 						<label class="control-label"><span class="label badge">Step 1</span> Add a Title:</label>
 						<input type="text" name="noteTitle" class="form-control" data-provide="typeahead" data-items="6" 
@@ -370,27 +411,26 @@ if (userAgent != null) {
 					</div>
 					<div>
 						<label class="control-label"><span class="label badge">Step 2</span> Create Note:</label>
-						<textarea name="noteBody" class="form-control" placeholder="When creating a note use the Medical Summaries to the right to help you create the note with data from the patients chart."
+						<textarea id="concurrentProblems" cols="80" rows="6" class="form-control" placeholder="When creating a note use the Medical Summaries below to help you create the note with data from the patients chart."
 							ng-model="consult.concurrentProblems"></textarea>
 					</div>
 				</div>
-				<div class="col-md-6">
+				<div>
 					<p>Medical Summary: <small>add chart data to note</small></p>
 					<p>				
-						<button type="button" class="btn btn-tags one" id="one">Family History</button>&nbsp;
-						<button type="button" class="btn btn-tags two" id="two">Medical History</button>&nbsp;
-						<button type="button" class="btn btn-tags three" id="three">Ongoing Concerns</button>
+						<button type="button" class="btn btn-tags btn-success" onclick="importFromEnct('FamilyHistory','concurrentProblems');">Family History</button>&nbsp;
+						<button type="button" class="btn btn-tags btn-success" onclick="importFromEnct('MedicalHistory','concurrentProblems');">Medical History</button>&nbsp;
+						<button type="button" class="btn btn-tags btn-success" onclick="importFromEnct('ongoingConcerns','concurrentProblems');">Ongoing Concerns</button>
 					</p>
 					<p>
-						<button type="button" class="btn btn-tags four" id="four">Other Meds</button>&nbsp;
-						<button type="button" class="btn btn-tags five" id="five">Reminders</button>&nbsp;
-						<button type="button" class="btn btn-tags six" id="six">Item 6</button>&nbsp;
-						<button type="button" class="btn btn-tags seven" id="seven">Item 7</button>&nbsp;
-					</p>
+						<button type="button" class="btn btn-tags btn-success" onclick="importFromEnct('OtherMeds','concurrentProblems');">Other Meds</button>&nbsp;
+						<button type="button" class="btn btn-tags btn-success" onclick="importFromEnct('Reminders','concurrentProblems');">Reminders</button>
+					</p>						
 				</div>
 				<div class="clear"></div>
 			</div>
 		</div>
+		<div class="clear"></div>
 		<div class="col-md-12"><!-- Alergies / Current Medications -->
 			<div class="well">
 				<div class="col-md-6">
@@ -431,7 +471,7 @@ if (userAgent != null) {
 	</div>
 	<div class="modal-footer">
 		<button class="btn" data-dismiss="modal" aria-hidden="true">No, continue editing</button>
-		<button type="button" class="btn btn-primary" ng-click="save()">Yes, save</button>
+		<button type="button" class="btn btn-primary" ng-click="saveConsult(consultRequestForm,saveModal)">Yes, save</button>
 	</div>
 </div>
 <div id="deleteModal" class="modal fade dialog" style="display: none;" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -444,7 +484,7 @@ if (userAgent != null) {
 	</div>
 	<div class="modal-footer">
 		<button class="btn" data-dismiss="modal" aria-hidden="true">No, continue editing</button>
-		<button type="button" class="btn btn-danger" data-dismiss="modal" aria-hidden="true" onclick="javascript:window.close();">Yes, Delete</button>
+		<button class="btn btn-danger" data-dismiss="modal" aria-hidden="true" ng-click="remove()">Yes, Delete</button>
 	</div>
 </div>
 <div id="cancelModal" class="modal fade dialog" style="display: none;" tabindex="-1" role="dialog" aria-labelledby="cancelModalLabel" aria-hidden="true">
@@ -499,7 +539,9 @@ if (userAgent != null) {
 <script type="text/javascript">
 $(function (){
 	$("[rel=popover]").popover({});  
-	$('[id^=dp-]').datepicker();
+	$('[id^=dp-]').datepicker({
+		format: 'yyyy-mm-dd'
+	});
 	$('.clinical-module').click(function(event) {
 	    event.preventDefault();
 	    window.open($(this).attr("rel"), $(this).attr("id"), "width=1100,height=800,scrollbars=yes");
@@ -521,8 +563,8 @@ $(function (){
 	$(".noteShow").click(function(){
 		$("#noteHideOut").toggle();
 	});
-	$(".btn-tags").click(function(){
-		$('#noteModal').modal('toggle');
+	$(".btn-tags1").click(function(){
+		// $('#noteModal').modal('toggle');
 		var id = $(this).attr("id");
 		if ($(this).hasClass('btn-success active')) {
 			$(this).removeClass('btn-success active');
@@ -533,6 +575,8 @@ $(function (){
 	$(".checkNote").change(validate).keyup(validate);
 	$(".action").click(function() {
 		$("#" + $(this).attr("rel")).modal("toggle");
+	});
+	$("#changeDemographic").click(function() {
 	});
 });
 
@@ -545,7 +589,118 @@ function validate() {
         $('.'+ id+"-label").removeClass('label-success');
     } 
 }
-</script>
 
+function importFromEnct(reqInfo,txtArea) {
+    var info = "";
+    switch(reqInfo) {
+        case "MedicalHistory":
+            <%String value = "";
+				if (demo != null) {
+					if (useNewCmgmt) {
+						value = listNotes(cmgmtMgr, "MedHistory", providerNo, demo);
+					} else {
+						oscar.oscarDemographic.data.EctInformation EctInfo = new oscar.oscarDemographic.data.EctInformation(demo);
+						value = EctInfo.getMedicalHistory();
+					}
+					if (pasteFmt == null || pasteFmt.equalsIgnoreCase("single")) {
+						value = StringUtils.lineBreaks(value);
+					}
+					value = org.apache.commons.lang.StringEscapeUtils.escapeJavaScript(value);
+					out.println("info = '" + value + "'");
+				}%>
+             break;
+          case "ongoingConcerns":
+             <%if (demo != null) {
+					if (useNewCmgmt) {
+						value = listNotes(cmgmtMgr, "Concerns", providerNo, demo);
+					} else {
+						oscar.oscarDemographic.data.EctInformation EctInfo = new oscar.oscarDemographic.data.EctInformation(demo);
+						value = EctInfo.getOngoingConcerns();
+					}
+					if (pasteFmt == null || pasteFmt.equalsIgnoreCase("single")) {
+						value = StringUtils.lineBreaks(value);
+					}
+					value = org.apache.commons.lang.StringEscapeUtils.escapeJavaScript(value);
+					out.println("info = '" + value + "'");
+				}%>
+             break;
+           case "FamilyHistory":
+              <%if (demo != null) {
+					if (OscarProperties.getInstance().getBooleanProperty("caisi", "on")) {
+						oscar.oscarDemographic.data.EctInformation EctInfo = new oscar.oscarDemographic.data.EctInformation(demo);
+						value = EctInfo.getFamilyHistory();
+					} else {
+						if (useNewCmgmt) {
+							value = listNotes(cmgmtMgr, "FamHistory", providerNo, demo);
+						} else {
+							oscar.oscarDemographic.data.EctInformation EctInfo = new oscar.oscarDemographic.data.EctInformation(demo);
+							value = EctInfo.getFamilyHistory();
+						}
+					}
+					if (pasteFmt == null || pasteFmt.equalsIgnoreCase("single")) {
+						value = StringUtils.lineBreaks(value);
+					}
+					value = org.apache.commons.lang.StringEscapeUtils.escapeJavaScript(value);
+					out.println("info = '" + value + "'");
+				}%>
+              break;
+            case "OtherMeds":
+              <%if (demo != null) {
+					if (OscarProperties.getInstance().getBooleanProperty("caisi", "on")) {
+						value = "";
+					} else {
+						if (useNewCmgmt) {
+							value = listNotes(cmgmtMgr, "OMeds", providerNo, demo);
+						} else {
+							//family history was used as bucket for Other Meds in old encounter
+							oscar.oscarDemographic.data.EctInformation EctInfo = new oscar.oscarDemographic.data.EctInformation(demo);
+							value = EctInfo.getFamilyHistory();
+						}
+					}
+					if (pasteFmt == null || pasteFmt.equalsIgnoreCase("single")) {
+						value = StringUtils.lineBreaks(value);
+					}
+					value = org.apache.commons.lang.StringEscapeUtils.escapeJavaScript(value);
+					out.println("info = '" + value + "'");
+				}%>
+                break;
+            case "Reminders":
+              <%if (demo != null) {
+					if (useNewCmgmt) {
+						value = listNotes(cmgmtMgr, "Reminders", providerNo, demo);
+					} else {
+						oscar.oscarDemographic.data.EctInformation EctInfo = new oscar.oscarDemographic.data.EctInformation(demo);
+						value = EctInfo.getReminders();
+					}
+					if (pasteFmt == null || pasteFmt.equalsIgnoreCase("single")) {
+						value = StringUtils.lineBreaks(value);
+					}
+					value = org.apache.commons.lang.StringEscapeUtils.escapeJavaScript(value);
+					out.println("info = '" + value + "'");
+					//}
+				}%>
+	} //end switch
+	var content = $("#" + txtArea).val();
+	$("#" + txtArea).val(content + "\n------" + reqInfo + "------\n" + info);
+	$("#" + txtArea).trigger("input");
+}
+</script>
 </body>
 </html>
+<%!protected String listNotes(CaseManagementManager cmgmtMgr, String code, String providerNo, String demoNo) {
+	// filter the notes by the checked issues
+	List<Issue> issues = cmgmtMgr.getIssueInfoByCode(providerNo, code);
+	String[] issueIds = new String[issues.size()];
+	int idx = 0;
+	for (Issue issue : issues) {
+		issueIds[idx] = String.valueOf(issue.getId());
+	}
+	// need to apply issue filter
+	List<CaseManagementNote> notes = cmgmtMgr.getNotes(demoNo, issueIds);
+	StringBuilder noteStr = new StringBuilder();
+	for (CaseManagementNote n : notes) {
+		if (!n.isLocked()) noteStr.append(n.getNote() + "\n");
+	}
+	return noteStr.toString();
+}%>
+	

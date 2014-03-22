@@ -23,6 +23,8 @@
  */
 package org.oscarehr.ws.rest.conversion;
 
+import java.util.Date;
+
 import org.apache.log4j.Logger;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.DemographicExt;
@@ -108,6 +110,33 @@ public class DemographicConverter extends AbstractConverter<Demographic, Demogra
 		return d;
 	}
 
+	/**
+	 * Converts TO, excluding provider and extras.
+	 */
+	public Demographic getAsDomainObject(DemographicTo1 t, Demographic d) throws ConversionException {
+		d.setFirstName(t.getFirstName());
+		d.setLastName(t.getLastName());
+		d.setTitle(t.getTitle());
+		d.setSex(t.getSex());
+		d.setSexDesc(t.getSexDesc());
+		Date dateOfBirth = t.getDateOfBirth();
+		d.setDateOfBirth(ConversionUtils.toDateString(dateOfBirth, ConversionUtils.DATE_PATTERN_DAY));
+		d.setMonthOfBirth(ConversionUtils.toDateString(dateOfBirth, ConversionUtils.DATE_PATTERN_MONTH));
+		d.setYearOfBirth(ConversionUtils.toDateString(dateOfBirth, ConversionUtils.DATE_PATTERN_YEAR));
+		d.setHin(t.getHin());
+		d.setAddress(t.getAddress().getAddress());
+		d.setCity(t.getAddress().getCity());
+		d.setProvince(t.getAddress().getProvince());
+		d.setPostal(t.getAddress().getPostal());
+		d.setPhone(t.getPhone());
+		d.setPhone2(t.getAlternativePhone());
+		d.setEmail(t.getEmail());
+		d.setLastUpdateUser(t.getLastUpdateUser());
+		d.setLastUpdateDate(t.getLastUpdateDate());
+		return d;
+	}
+
+	
 	@Override
 	public DemographicTo1 getAsTransferObject(Demographic d) throws ConversionException {
 		DemographicTo1 t = new DemographicTo1();

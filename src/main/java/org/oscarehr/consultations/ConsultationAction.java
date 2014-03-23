@@ -141,8 +141,9 @@ public class ConsultationAction extends Action {
 			data.setSpecialistName(specialistName);
 		}
 		data.setDemographicNo(consult.getDemographicId().toString());
-		data.setReferralDate(DateFormatUtils.format(consult.getReferralDate(),"yyyy-MM-dd HH:mm"));
-		
+		if (consult.getReferralDate() != null) {
+			data.setReferralDate(DateFormatUtils.format(consult.getReferralDate(),"yyyy-MM-dd HH:mm"));
+		}
 		data.setId(consult.getId().toString());
 		
 		Date apptDate = consult.getAppointmentDate();

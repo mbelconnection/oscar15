@@ -21,36 +21,32 @@
  * Hamilton
  * Ontario, Canada
  */
-package org.oscarehr.ws.rest.conversion;
+package org.oscarehr.ws.rest.to;
 
-import org.apache.log4j.Logger;
-import org.oscarehr.common.model.ConsultationRequest;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.oscarehr.ws.rest.to.model.ConsultationRequestTo;
-import org.springframework.beans.BeanUtils;
 
-public class ConsultationConverter extends AbstractConverter<ConsultationRequest, ConsultationRequestTo> {
+@XmlRootElement
+public class ConsultationRequestResponse extends AbstractSearchResponse<ConsultationRequestTo> {
+	private static final long serialVersionUID = 427520414798944630L;
+	private boolean result;
+	private String message;
 
-	private static Logger logger = Logger.getLogger(ConsultationConverter.class);
-
-	/**
-	 * Converts TO, excluding provider and extras.
-	 */
-	@Override
-	public ConsultationRequest getAsDomainObject(ConsultationRequestTo t) throws ConversionException {
-		ConsultationRequest c = new ConsultationRequest();
-		BeanUtils.copyProperties(t, c);
-		return c;
+	public boolean isResult() {
+		return result;
 	}
 
-	@Override
-	public ConsultationRequestTo getAsTransferObject(ConsultationRequest c) throws ConversionException {
-		ConsultationRequestTo t = new ConsultationRequestTo();
-		BeanUtils.copyProperties(c, t);
-		return t;
+	public void setResult(boolean result) {
+		this.result = result;
 	}
-	
-	public ConsultationRequest getAsDomainObject(ConsultationRequestTo t, ConsultationRequest r) throws ConversionException {
-		BeanUtils.copyProperties(t, r);
-		return r;
+
+	public String getMessage() {
+		return message;
 	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
 }

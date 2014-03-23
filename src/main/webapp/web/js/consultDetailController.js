@@ -96,15 +96,20 @@ oscarApp.controller('ConsultDetailCtrl', function ($scope,$http,$routeParams,$re
 	$scope.locations = [{value: 1, name: 'Dr. James Dean - 1158 StreetName St., Hamilton Ontario L0R 4K3'},
 	                    {value: 2, name: 'Dr. James Dean - Hospital 50 StreetName St., Hamilton Ontario L8h 0X0'}];
 	$scope.urgencies = [{value: 1, name: 'Urgent'}, {value: 2, name: 'Non-Urgent'}, {value: 3, name: 'Return'}, {value: 5, name: 'Semi-Urgent'}];
+	$scope.status=[{value: 1, name: 'Nothing'}, {value: 2, name: 'Pending Specialist Callback'}, {value: 3, name: 'Pending Patient Callback'}, {value: 4, name: 'Completed'}];
 	
 	var requestId = getQueryStrings()['requestId'];
 	var demographicNo = getQueryStrings()['demographicNo'];
-	if (demographicNo == null) {
+	var providerNo = getQueryStrings()['providerNo'];
+	
+	if (requestId != null) {
 		//set the demographic in scope for all the sub tabs
 		var consultDetailWS = $resource('../../../ws/rs/consult/detail/:requestId',{}, {});
 		var consult = consultDetailWS.get({requestId: requestId}, function(response) {
 			$scope.consult = response;
 			$scope.consult.appointmentDate = getDate($scope.consult.appointmentDate);
+			$scope.consult.referralDate = getDate($scope.consult.referralDate);
+			$scope.consult.followUpDate = getDate($scope.consult.followUpDate);
 			$scope.consult.specialties = new Array();
 			for (var i = 0; i < $scope.consult.services.length; i++) {
 				if ($scope.consult.services[i].id == $scope.consult.serviceId) {
@@ -120,6 +125,8 @@ oscarApp.controller('ConsultDetailCtrl', function ($scope,$http,$routeParams,$re
 			}
 			$scope.consult.appointmentHour = getHour($scope.consult.appointmentTime);
 			$scope.consult.appointmentMinute = getMinute($scope.consult.appointmentTime);
+			$scope.consult.providerNo = providerNo;
+			
 			// Demographic		
 			demographicNo = response.demographicId;
 			var demographicWS = $resource('../../../ws/rs/demographics/detail/:demographicNo',{}, {});
@@ -141,6 +148,7 @@ oscarApp.controller('ConsultDetailCtrl', function ($scope,$http,$routeParams,$re
 		var consult = consultDetailWS.get({requestId: -1}, function(response) {
 			$scope.consult = response;
 			$scope.consult.appointmentDate = getDate(new Date());
+			$scope.consult.providerNo = providerNo;
 			$scope.consult.specialties = new Array();
 			for (var i = 0; i < $scope.consult.services.length; i++) {
 				if ($scope.consult.services[i].id == $scope.consult.serviceId) {
@@ -157,8 +165,38 @@ oscarApp.controller('ConsultDetailCtrl', function ($scope,$http,$routeParams,$re
 		});
 	}
 	
-	$scope.save = function() {
-		consultWS.save({}, {demographicNo: demographicNo});
+	$scope.saveConsult = function(form,dialog) {
+		if (!form.$valid) {
+			alert("Please correct the invalid field(s).");
+			return false;
+		}
+		var consultWS = $resource('../../../ws/rs/consult',{consultationRequestTo: "@consult"}, {});
+		$scope.consult.demographic = $scope.demographic;
+		$scope.consult.demographicId = $scope.demographic.demographicNo;
+		$scope.consult.appointmentTime = new Date("1970", "01", "01", $scope.consult.appointmentHour, $scope.consult.appointmentMinute, "00");
+		consultWS.save({}, {consultationRequestTo: $scope.consult}, function(response) {
+			var result = response.result;
+			if (result) {
+				alert("Save consultation successfully!");
+				window.opener.location.reload(false);
+				window.close();
+			} else {
+				alert(response.message);
+			}
+		});
+	};
+	
+	$scope.remove = function() {
+		var consultDetailWS = $resource('../../../ws/rs/consult/delete/:requestId',{}, {});
+		consultDetailWS.remove({requestId: $scope.consult.id}, function(response) {
+			var result = response.result;
+			if (result) {
+				alert("Delete consultation successfully!");
+				window.close();
+			} else {
+				alert(response.message);
+			}
+		});
 	};
 	
 	$scope.changeLetterhead = function() {
@@ -219,7 +257,9 @@ function getAge(dateString) {
 
 function getDate(dateString) {
 	var date = new Date(dateString);
-	return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+	var month = date.getMonth() + 1;
+	var day = date.getDate();
+	return date.getFullYear() + "-" + (month < 10 ? "0" + month : month) + "-" + (day < 10 ? "0" + day : day);
 }
 
 function getHour(dateString) {

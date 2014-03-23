@@ -27,21 +27,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
 import org.oscarehr.PMmodule.dao.ProgramDao;
 import org.oscarehr.PMmodule.model.Program;
 import org.oscarehr.common.dao.ConsultationRequestDao;
 import org.oscarehr.common.dao.ConsultationServiceDao;
+import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.model.ConsultationRequest;
+import org.oscarehr.common.model.ConsultationRequestStatus;
 import org.oscarehr.common.model.ConsultationServices;
+import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.ProfessionalSpecialist;
+import org.oscarehr.ws.rest.conversion.ConsultationConverter;
+import org.oscarehr.ws.rest.conversion.DemographicConverter;
+import org.oscarehr.ws.rest.to.ConsultationRequestResponse;
 import org.oscarehr.ws.rest.to.model.ConsultationRequestTo;
 import org.oscarehr.ws.rest.to.model.ConsultationServiceTo;
 import org.oscarehr.ws.rest.to.model.LetterheadTo;
@@ -67,12 +73,8 @@ public class ConsultService extends AbstractServiceImpl {
 	private ProgramDao programDao;
 	@Autowired
 	private ConsultationServiceDao consultationServiceDao;
-
-	@POST
-	@Consumes("application/json")
-	public void saveConsult() {
-		// Save consult
-	}
+	@Autowired
+	private DemographicDao demographicDao;
 
 	@GET
 	@Path("/detail/{requestId}")
@@ -80,13 +82,9 @@ public class ConsultService extends AbstractServiceImpl {
 	public ConsultationRequestTo getConsultationRequest(@PathParam("requestId") Integer requestId) {
 		ConsultationRequestTo consultationRequest = new ConsultationRequestTo();
 		if (requestId > 0) {
-			ConsultationRequest consult = consultDao.find(requestId);
-			try {
-				BeanUtils.copyProperties(consultationRequest, consult);
-			} catch (Exception e) {
-				logger.warn(e.toString());
-			}
-			consultationRequest.setSpecialtyId("1"); // TODO: to be implemented
+			ConsultationConverter converter = new ConsultationConverter();
+			consultationRequest = converter.getAsTransferObject(consultDao.find(requestId));
+			// consultationRequest.setSpecialtyId("1"); // TODO: to be implemented
 		}
 		consultationRequest.getLetterheads().addAll(this.listLetterheads());
 		consultationRequest.getServices().addAll(this.listServices());
@@ -130,7 +128,7 @@ public class ConsultService extends AbstractServiceImpl {
 		}
 		return list;
 	}
-	
+
 	private List<ConsultationServiceTo> listServices() {
 		List<ConsultationServiceTo> list = new ArrayList<ConsultationServiceTo>();
 		for (ConsultationServices service : this.consultationServiceDao.findAll()) {
@@ -154,5 +152,49 @@ public class ConsultService extends AbstractServiceImpl {
 			list.add(serviceTo);
 		}
 		return list;
+	}
+
+	@POST
+	@Consumes("application/json")
+	@Produces("application/json")
+	public ConsultationRequestResponse saveConsult(ConsultationRequestTo to) {
+		ConsultationRequestResponse response = new ConsultationRequestResponse();
+		// Save demographic
+		DemographicConverter demoConverter = new DemographicConverter();
+		Demographic demographic = this.demographicDao.getDemographicById(to.getDemographic().getDemographicNo());
+		demoConverter.getAsDomainObject(to.getDemographic(), demographic);
+		this.demographicDao.save(demographic);
+
+		// Save consult
+		Integer id = to.getId();
+		ConsultationConverter consultConverter = new ConsultationConverter();
+		ConsultationRequest consult = null;
+		if (id != null) {
+			consult = this.consultDao.find(id);
+			consultConverter.getAsDomainObject(to, consult);
+		} else {
+			consult = consultConverter.getAsDomainObject(to);
+		}
+		this.consultDao.saveEntity(consult);
+		response.setResult(true);
+		return response;
+	}
+
+	@DELETE
+	@Path("/delete/{requestId}")
+	@Produces("application/json")
+	public ConsultationRequestResponse deleteConsult(@PathParam("requestId") Integer requestId) {
+		ConsultationRequestResponse response = new ConsultationRequestResponse();
+		ConsultationRequest consult = this.consultDao.find(requestId);
+		if (consult == null) {
+			response.setResult(false);
+			response.setMessage("Unable to find consultation request with ID " + requestId);
+			throw new IllegalArgumentException("Unable to find consultation request with ID " + requestId);
+		}
+		consult.setStatus(ConsultationRequestStatus.Deleted.getStringValue());
+		consult.setStatusText(ConsultationRequestStatus.Deleted.getText());
+		this.consultDao.saveEntity(consult);
+		response.setResult(true);
+		return response;
 	}
 }

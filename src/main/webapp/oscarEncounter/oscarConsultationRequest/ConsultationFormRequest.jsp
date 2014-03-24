@@ -319,9 +319,7 @@ function disableDateFields(){
 
 function setDisabledDateFields(form, disabled)
 {
-	form.appointmentYear.disabled = disabled;
-	form.appointmentMonth.disabled = disabled;
-	form.appointmentDay.disabled = disabled;
+	form.appointmentDate.disabled = disabled;
 	form.appointmentHour.disabled = disabled;
 	form.appointmentMinute.disabled = disabled;
 	form.appointmentPm.disabled = disabled;
@@ -514,11 +512,29 @@ function initSpec() {
 }
 
 /////////////////////////////////////////////////////////////////////
-function initService(ser){
+function initService(ser,name,spec,specname,phone,fax,address){
 	var i = 0;
 	var isSel = 0;
 	var strSer = new String(ser);
-
+	var strNa = new String(name);
+    var strSpec = new String(spec);
+    var strSpecNa = new String(specname);
+    var strPhone = new String(phone);
+    var strFax = new String(fax);
+    var strAddress = new String(address);
+    
+    var isSerDel=1;//flagging service if deleted: 1=deleted 0=active
+    
+    $H(servicesName).each(function(pair){
+          if( pair.value == strSer ) {
+            isSerDel = 0;
+          }
+    });
+    
+        if (isSerDel==1 && strSer != "null") {
+        K(strSer,strNa);
+        D(strSer,strSpec,strPhone,strSpecNa,strFax,strAddress);
+	}
         $H(servicesName).each(function(pair){
               var opt = new Option( pair.key, pair.value );
               if( pair.value == strSer ) {
@@ -1965,7 +1981,7 @@ if (defaultSiteId!=0) aburl2+="&site="+defaultSiteId;
 				<script type="text/javascript">
 
 	        initMaster();
-        	initService('<%=consultUtil.service%>');
+        	initService('<%=consultUtil.service%>','<%=((consultUtil.service==null)?"":StringEscapeUtils.escapeJavaScript(consultUtil.getServiceName(consultUtil.service.toString())))%>','<%=consultUtil.specialist%>','<%=((consultUtil.specialist==null)?"":StringEscapeUtils.escapeJavaScript(consultUtil.getSpecailistsName(consultUtil.specialist.toString())))%>','<%=StringEscapeUtils.escapeJavaScript(consultUtil.specPhone)%>','<%=StringEscapeUtils.escapeJavaScript(consultUtil.specFax)%>','<%=StringEscapeUtils.escapeJavaScript(consultUtil.specAddr)%>');
                 initSpec();
             document.EctConsultationFormRequestForm.phone.value = ("");
         	document.EctConsultationFormRequestForm.fax.value = ("");

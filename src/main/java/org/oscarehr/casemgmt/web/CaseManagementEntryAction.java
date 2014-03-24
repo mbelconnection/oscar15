@@ -614,8 +614,16 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 					Appointment appointment = appointmentDao.find(ConversionUtils.fromIntString(appointmentNo));
 					if (appointment != null) {
 						ApptStatusData statusData = new ApptStatusData();
-						appointment.setStatus(statusData.signStatus());
-						appointmentDao.merge(appointment);
+						statusData.setApptStatus(appointment.getStatus());
+						
+						//log and skip update when statusData.signStatus() returns "" - Ronnie Cheng
+						if (statusData.signStatus().equals("")) {
+							logger.info("Skip signStatus appointment : appointmentNo ["+appointment.getId()+"] status ["+appointment.getStatus()+"]");
+						}
+						else {
+							appointment.setStatus(statusData.signStatus());
+							appointmentDao.merge(appointment);
+						}
 					}
 				} catch (Exception e) {
 					logger.error("Couldn't parse appointmentNo: " + appointmentNo, e);
@@ -1290,7 +1298,14 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 					appointmentArchiveDao.archiveAppointment(appointment);
 					appointment.setStatus(apptStatus);
 					appointment.setLastUpdateUser(providerNo);
-					appointmentDao.merge(appointment);
+					
+					//log and skip update when statusData.verifyStatus() returns "" - Ronnie Cheng
+					if (apptStatus.equals("")) {
+						logger.info("Skip verifyStatus appointment : appointmentNo ["+sessionBean.appointmentNo+"] status ["+sessionBean.status+"]");
+					}
+					else {
+						appointmentDao.merge(appointment);
+					}
 				}
 			}
 
@@ -1309,6 +1324,11 @@ public class CaseManagementEntryAction extends BaseCaseManagementEntryAction {
 					appointmentArchiveDao.archiveAppointment(appointment);
 					appointment.setStatus(apptStatus);
 					appointment.setLastUpdateUser(providerNo);
+					
+					//log and skip update when statusData.signStatus() returns "" - Ronnie Cheng
+					if (apptStatus.equals("")) {
+						logger.info("Skip signStatus appointment : appointmentNo ["+sessionBean.appointmentNo+"] status ["+sessionBean.status+"]");
+					}
 					appointmentDao.merge(appointment);
 				}
 			}

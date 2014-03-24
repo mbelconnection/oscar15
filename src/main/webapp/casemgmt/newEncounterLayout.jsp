@@ -667,8 +667,9 @@ window.onbeforeunload = onClosing;
     		
 
 </script>
+<<<<<<< HEAD
 </head>
-<body id="body" style="margin: 0px;">
+<body id="body" style="margin: 0px;" onunload="onClosing()">
 
 	<%--
 	<caisi:isModuleLoad moduleName="eaaps.enabled">

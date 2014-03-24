@@ -47,6 +47,10 @@ String patientFirstName    = (String) request.getAttribute("patientFirstName");
 String patientLastName     = (String) request.getAttribute("patientLastName");
 String patientHealthNumber = (String) request.getAttribute("patientHealthNumber");
 
+String startDate = org.apache.commons.lang.StringUtils.trimToEmpty(request.getParameter("startDate"));
+String endDate = org.apache.commons.lang.StringUtils.trimToEmpty(request.getParameter("endDate"));
+
+
 boolean ajax = "true".equals(request.getParameter("ajax"));
 /*
 String view = (String)request.getAttribute("view");
@@ -93,7 +97,7 @@ Integer totalNumDocs=(Integer)request.getAttribute("totalNumDocs");
 
 
 <script type="text/javascript" src="<%= request.getContextPath() %>/share/javascript/prototype.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/share/javascript/jquery/jquery-1.4.2.js"></script>
+<script type="text/javascript" src="<%= request.getContextPath() %>/js/jquery-1.7.1.min.js"></script>
 
 <script type="text/javascript">
 	$.noConflict();
@@ -132,6 +136,8 @@ Integer totalNumDocs=(Integer)request.getAttribute("totalNumDocs");
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/oscarMDS/encounterStyles.css">
 
 <script type="text/javascript" >
+	jQuery(window).on("scroll",handleScroll());
+	
 	function split(id) {
 		var loc = "<%= request.getContextPath()%>/oscarMDS/Split.jsp?document=" + id;
 		popupStart(1100, 1100, loc, "Splitter");
@@ -157,6 +163,9 @@ Integer totalNumDocs=(Integer)request.getAttribute("totalNumDocs");
 	var currentBold = false;
 	var oldestDate = null;
 
+	var startDate = "<%=startDate%>";
+	var endDate="<%=endDate%>";
+	
 	window.changePage = function (p) {
 		if (p == "Next") { page++; }
 		else if (p == "Previous") { page--; }
@@ -249,7 +258,7 @@ Integer totalNumDocs=(Integer)request.getAttribute("totalNumDocs");
 	function getQuery() {
 		var query = "method=prepareForContentPage";
 		query +="&searchProviderNo="+searchProviderNo+"&providerNo="+providerNo+"&status="+searchStatus+"&page="+page
-			   +"&pageSize="+pageSize+"&isListView="+(isListView?"true":"false");
+			   +"&pageSize="+pageSize+"&isListView="+(isListView?"true":"false")+"&startDate="+startDate+"&endDate="+endDate;
 		switch (selected_category) {
 		case CATEGORY_ALL:
 			query  += "&view=all";
@@ -310,7 +319,7 @@ Integer totalNumDocs=(Integer)request.getAttribute("totalNumDocs");
 		var view = document.getElementById("readerSwitcher");
 		var active, passive;
 		if (isListView) {
-			pageSize = 40;
+			pageSize = 20;
 			active = view;
 			passive = list;
 		}

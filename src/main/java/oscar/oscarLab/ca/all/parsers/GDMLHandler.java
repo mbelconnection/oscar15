@@ -94,7 +94,6 @@ public class GDMLHandler implements MessageHandler {
         headers = new ArrayList<String>();
         obrSegMap = new LinkedHashMap<OBR,ArrayList<OBX>>();
         obrSegKeySet = new ArrayList<OBR>();
-
         for (int i=0; i < labs.size(); i++){
             msg = (ORU_R01) p.parse(( labs.get(i)).replaceAll("\n", "\r\n"));
             int obrCount = msg.getRESPONSE().getORDER_OBSERVATIONReps();
@@ -123,7 +122,19 @@ public class GDMLHandler implements MessageHandler {
                     headers.add(header);
                 }
 
+            }		
             }
+        //Add OBR of the parsed lab
+        msg = (ORU_R01) p.parse(hl7Body.replaceAll( "\n", "\r\n" ));
+        int obrCount = msg.getRESPONSE().getORDER_OBSERVATIONReps();
+        for (int j=0; j < obrCount; j++){
+        	// ADD OBR SEGMENTS
+        	OBR obrSeg = msg.getRESPONSE().getORDER_OBSERVATION(j).getOBR();
+        	// ADD THE HEADER TO THE HEADERS ARRAYLIST 
+        	String header = getString(obrSeg.getUniversalServiceIdentifier().getAlternateIdentifier().getValue());
+        	if (!headers.contains(header)){
+        		headers.add(header);
+        		}
         }
     }
 
@@ -236,7 +247,7 @@ public class GDMLHandler implements MessageHandler {
             if (subIdent != null)
                 ident = ident+"&"+subIdent;
 
-            logger.info("returning obx identifier: "+ident);
+            logger.debug("returning obx identifier: "+ident);
             return(ident);
         }catch(Exception e){
             logger.error("error returning obx identifier", e);

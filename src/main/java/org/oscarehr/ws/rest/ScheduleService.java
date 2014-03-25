@@ -25,6 +25,8 @@ package org.oscarehr.ws.rest;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -42,6 +44,10 @@ import org.oscarehr.web.PatientListApptBean;
 import org.oscarehr.web.PatientListApptItemBean;
 import org.oscarehr.ws.rest.conversion.AppointmentConverter;
 import org.oscarehr.ws.rest.to.AppointmentResponse;
+import org.oscarehr.ws.rest.to.model.EventsTo1;
+import org.oscarehr.ws.rest.to.model.ProviderAndEventSearchResponse;
+import org.oscarehr.ws.rest.to.model.ProviderAndEventSearchResults;
+import org.oscarehr.ws.rest.to.model.ProvidersTo1;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -100,5 +106,73 @@ public class ScheduleService extends AbstractServiceImpl {
 		result.getContent().addAll(apptConverter.getAllAsTransferObjects(appointmentManager.getAppointmentHistoryAfter(Integer.parseInt(demographicNo), new Date(), 0, Integer.MAX_VALUE))); 
 		
 		return result;
+	}
+	
+	@GET
+	@Path("/{providerNo}/list")
+	@Produces("application/json")
+	public ProviderAndEventSearchResponse getProvidersAndEvents(@PathParam("providerNo") String providerNo) {
+		ProviderAndEventSearchResponse response = new ProviderAndEventSearchResponse();
+		ProviderAndEventSearchResults results = null;
+		try {
+			List<ProviderAndEventSearchResults> rstLst = new ArrayList<ProviderAndEventSearchResults>();
+			for (int i = 1; i <= 2; i++) {
+				results = new ProviderAndEventSearchResults();
+				ProvidersTo1 providers = new ProvidersTo1();
+				List<ProvidersTo1> provLst = new ArrayList<ProvidersTo1>();
+				providers.setGroup("group1");
+				providers.setId("1");
+				providers.setName("Dr. Oscardoc");
+				provLst.add(providers);
+				providers = new ProvidersTo1();
+				providers.setGroup("group2");
+				providers.setId("2");
+				providers.setName("Dr. Jones");
+				provLst.add(providers);
+				results.setProviders(provLst);
+				
+				EventsTo1 events =  new EventsTo1();
+				events.setAppointStatus("DP");
+				events.setApptId("10");
+				events.setDocId("1");
+				events.setDuration("30");
+				events.setFromTime("9:00");
+				events.setGoTo("E");
+				events.setIsCritical("Y");
+				events.setNoOfPat("5");
+				events.setNotes("Noted complications since last year");
+				events.setPatientName("John");
+				events.setReason("Blood Test Results");
+				List<EventsTo1> evnLst = new ArrayList<EventsTo1>();
+				evnLst.add(events);
+				events =  new EventsTo1();
+				events.setAppointStatus("DP");
+				events.setApptId("20");
+				events.setDocId("2");
+				events.setDuration("30");
+				events.setFromTime("9:00");
+				events.setGoTo("E");
+				events.setIsCritical("Y");
+				events.setNoOfPat("5");
+				events.setNotes("Noted complications since last year");
+				events.setPatientName("John C");
+				events.setReason("Physical Examination.");
+				evnLst.add(events);
+				results.setEvents(evnLst);
+				Calendar c = Calendar.getInstance();
+				if (i%2 == 0) {
+				c.set(2014, 2, 25);
+				} else {
+					c.set(2014, 2, 24);
+				}
+				results.setDay(new SimpleDateFormat("dd-MMM-yyyy").format(c.getTime()));
+				rstLst.add(results);
+			}
+			response.setResponse(rstLst);
+			
+		}catch(Exception e) {
+			throw new RuntimeException("");
+		}
+		return response;
 	}
 }

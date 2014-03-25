@@ -30,6 +30,14 @@
 		<link rel="stylesheet" type="text/css" media="all" href="css_up/jsDatePick_ltr.min.css" />
 		
 <link href="css_up/style.css" rel="stylesheet" type="text/css" media="all" />
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/library/bootstrap/3.0.0/assets/js/DT_bootstrap.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/bootstrap-datepicker.js"></script>
+
+ <div id="consult-list" data-ng-init="init(1236)">
+  <select id="demographicNo" class="form-control" style="display: inline; width: 200px;" ng-model="demographicNo">
+    	<option value="{{demographic.day}}" ng-repeat="demographic in demographics">{{demographic.day}}</option>
+	</select>&nbsp;
 <style>
 .tabs_underline{
 	border-bottom: #cecece 1px solid;
@@ -298,7 +306,7 @@ $.widget( "custom.catcomplete", $.ui.autocomplete, {
 
 $(function() {
     var data = [
-      { label: "Dr. Oscardoc", category: "Individual",id:"1",list:[{"name":"Dr. Oscardoc","id":"1"}] },
+      { label: "Dr. aOscardoc", category: "Individual",id:"1",list:[{"name":"Dr. Oscardoc","id":"1"}] },
       { label: "Dr. Doe", category: "Individual",id:"2",list:[{"name":"Dr. Doe","id":"2"}] },
 	  { label: "Dr. Hilts", category: "Individual",id:"3",list:[{"name":"Dr. Hilts","id":"3"}] },
 	  { label: "Dr. Yarwick", category: "Individual",id:"4",list:[{"name":"Dr. Yarwick","id":"4"}] },
@@ -318,13 +326,14 @@ $(function() {
 	  select: function( event, ui ) {
 	  var doc_dt = $("#inputField").val();
 		//sch.getUpdateDoc(doc_dt,ui.item.id);
-		sch.ajaxMethod("js_up/intial_data.js",Schedular.prototype.setInitData,{"doc_dt":doc_dt,"doc_list":ui.item.list});
+		sch.ajaxMethod('../ws/rs/schedule/:providerNo/list', Schedular.prototype.setInitData,{"doc_dt":doc_dt,"doc_list":ui.item.list});
 		setTimeout('Schedular.prototype.init(\''+globalView.view+'\',\'from docava\')',1000);
 	  }
     });
   });
   
 </script>
+
 		<table  width="100%" class="headertable" id="secNav">
 			<tr>
 				<td class='tabs_underline' style="padding:5px;width:210px;">
@@ -417,7 +426,7 @@ $(function() {
 		</div>
 		<!--  Find existing dailog box end -->
 		<div id="manageGroupHTML"></div>
-		<div style="padding: 0px; display: none;" title="Information" id="dialog-info">		
+		<div style="padding: 0px; display: none;" title="Information" id="dialog-info">
 			<table style="width:100%">
 				<tr>
 					<td style="width:40px;padding-left:10px;"><img src="js_up/images/info_alert.jpg" style="width:30px;height:30px;"></img></td>
@@ -620,7 +629,7 @@ function page_init(){
 //$("#testcode").load("partials/addAppointment.jsp");
 
 $("#nextAvailAppt").load("partials/nextAvailAppt.jsp");
-$("#testcode").load("partials/addAppt.jspf");
+$("#testcode").load("partials/addAppt.jsp");
 $("#findExisting").load("partials/findExisting.jsp");
 $("#manageGroupHTML").load("partials/groupManage.jsp");
 }
@@ -630,4 +639,5 @@ sch.showTab('daydivid');
 setDate();
 page_init();
 </script>
+
 </div>

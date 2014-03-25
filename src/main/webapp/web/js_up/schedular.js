@@ -159,7 +159,7 @@ return Schedular.config.eventsList;
 }
 Schedular.prototype.load = function(date){
 	this.getApptStatusHTML();
-	Schedular.prototype.ajaxMethod("js_up/intial_data.js",Schedular.prototype.setInitData,{"doc_dt":date});
+	Schedular.prototype.ajaxMethod("../ws/rs/schedule/123/list",Schedular.prototype.setInitData,{"doc_dt":date});
 	document.getElementById("inputField").value = date;
 	setTimeout('Schedular.prototype.init(\'day\',\'from load\')',1000);
 }
@@ -183,7 +183,7 @@ Schedular.prototype.init = function(view,from){
 
 	var scaleData = "<div style='display: inline-block;overflow-y:scroll;height:500px;' class='scrolldiv2'><div id='abc' style='float:left'>"+data+"</div>"+"<div id='persondata' style='float:left;overflow-x:hidden;width:"+scrollWid+"px;' class='scrolldiv'>"+this.getXData()+"</div></div>";
 	scaleData += "<div id='persondatadummy' class='scrolldiv' style='width:"+scrollWid+"px;height:20px;margin-left:30px;overflow-x:scroll;'><table  style='table-layout:fixed;' id='xdummytab'><tr><td id='xdummytabtd'>ask fhasdl kfhas klh lkhas dflaksdhf asdfkalsdhf asdhfjka hsdfkljshad fjkasdl hfaksdj fhaksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfklsdfsdfsdf haksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfklsdfsdfsdfhaksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfklsdfsdfsdf haksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfklsdfsdfsdf</td></tr></table></div>";
-	document.getElementById('providerdiv').innerHTML = scaleData; 
+	document.getElementById('providerdiv').innerHTML = scaleData;	 
 
 	document.getElementById('xdummytab').width = document.getElementById('testidd').offsetWidth;
 
@@ -338,7 +338,7 @@ Schedular.prototype.getXScale = function(){
 		_XScale += '<tr>';
 		time = this.round(_shour) + ":" + this.round(_smin);
 		temp_min = _smin;
-		_smin += Schedular.config.increment;
+		_smin += Schedular.config.increment; 
 		for(var i=0; i<this.persons.length; i++){
 			_XScale += "<td style=\"height:25px !important;width:300px !important;\" class=\""+style+"\" position=\""+i+"\" ondblclick='sch.addEvent(this)' hour=\""+_shour+"\" min=\""+temp_min+"\" time=\""+time+"\" name=\""+this.persons[i].name+"\" pid=\""+this.persons[i].id+"\" id=\""+this.persons[i].id+"_"+time+"\"><div style=\"border: 1px solid #CECECE;border-bottom: 0px;width:20px;height: 100%;\">C1</div></td>";
 		}
@@ -393,7 +393,7 @@ Schedular.prototype.editEvent = function(){
 }
 
 Schedular.prototype.saveEvent = function(obj,appObj){
-
+	console.log("eneter every time");
 	obj.offHeight = (obj.id != "" && document.getElementById(obj.id).offsetHeight!=null)?document.getElementById(obj.id).offsetHeight:100;
 	obj.offWidth = (obj.id != "" && document.getElementById(obj.id).offsetWidth!=null)?document.getElementById(obj.id).offsetWidth:100;
 	obj.patient_name = appObj.patient_name;
@@ -411,12 +411,40 @@ Schedular.prototype.saveEvent = function(obj,appObj){
 	obj.is_critical = appObj.is_critical;
 	obj.appt_id = appObj.appt_id;
 	obj.pat_sel_index = appObj.pat_sel_index;
+	obj.no_of_pat = appObj.no_of_pat;
+	console.log(obj);
 	document.getElementById("events").innerHTML = this.getEventDiv(obj, "save");
 	
 	
 	$('#'+obj.hr+'_'+obj.min).draggable().resizable();
 	
 }
+
+Schedular.prototype.saveBlockEvent = function(obj,appObj){
+
+	obj.offHeight = (obj.id != "" && document.getElementById(obj.id).offsetHeight!=null)?document.getElementById(obj.id).offsetHeight:100;
+	obj.offWidth = (obj.id != "" && document.getElementById(obj.id).offsetWidth!=null)?document.getElementById(obj.id).offsetWidth:100;
+	
+	obj.reason = appObj.appt_reason;
+	obj.duration = appObj.duration;
+	//obj.hr = appObj['time'];
+	//obj.hr = document.getElementById(obj.id).getAttribute('hour');// From Khadaree
+	//obj.min = document.getElementById(obj.id).getAttribute('min');
+	obj.hr = this._getHour(appObj['time']);
+	obj.min = this._getMin(appObj['time']);
+	obj.pos = document.getElementById(obj.id).getAttribute('position');
+	obj.notes = appObj.appt_notes;
+	
+	obj.appt_id = appObj.appt_id;
+	document.getElementById("events").innerHTML = this.getBlockEventDiv(obj, "save");
+	
+	
+	$('#'+obj.hr+'_'+obj.min).draggable().resizable();
+	
+}
+
+
+
 Schedular.prototype.deleteEvent = function(apptObject){
 	//document.getElementById("events").innerHTML = this.getEventDiv(obj,"delete");
 	var $back = $('div').find("#"+apptObject);
@@ -548,19 +576,14 @@ Schedular.prototype.getEventDiv = function(obj,act){
 	html += '<table class="eventtab" style="width:100%;border-collapse:collapse;padding:0px;" id="tab"  cellspacing="0" >';
 	html += '<tr class=""> <td class="gen_font '+stylecls+'" style="padding-left:5px;width:20px !important;" id="appt_sta_'+obj.appt_id+'"><div class="alertbox" style="background:'+obj.stauscolor+';">'+obj.appoint_status+'</div></td>';
 	//html += '<td class="evtpop_td_ltline '+stylecls+'" style="text-align:center;width:12px;"><input type="image" src="js_up/images/smallDownArrow.gif"/></td>';
-	console.log(add_appt_pat_cnt_names);
-	var pat_names_array = add_appt_pat_cnt_names.split("$");
-	var sw =[];
-	sw = jQuery.grep(pat_names_array, function(n, i){
-		return (n !== "" && n != null);
-	});
+	//console.log(add_appt_pat_cnt_names);
 	html += '<td class=" evtpop_td_ltline '+stylecls+'" style="width:10px !important;text-align:center;"><div class="dropdown btn-group" > <a class="btn dropdown-toggle" data-toggle="dropdown" style="height:20px;padding:0px;padding-left:6px;padding-right:6px;padding-top:0px;padding-bottom:0px;">   <span class="caret" style="padding:0px;"></span>    </a>    <ul class="dropdown-menu">        '+sch.getApptStatusHTML("appt_sta_"+obj.appt_id)+'    </ul></div></td>';
 	if(obj.is_critical == "Y"){
 		html += '<td class="evtpop_td_ltline '+stylecls+'" style="width:15px !important;text-align:center;"><div class="alertbox" style="background:#5E5A80;padding:0px;height:16px;">!</div></td>';
 		colspan++;
 	}
-	if((obj.no_of_pat != null && obj.no_of_pat > 1) || sw.length>1){
-		html += '<td class=" evtpop_td_ltline '+stylecls+'" style="width:50px !important;text-align:center;padding-top:2px;"><div style="display: inline-block;cursor:pointer;" onclick="sch.repeatMulPat(this);" apptid="'+obj.appt_id+'" index="0" totpat="'+(obj.no_of_pat != null ? obj.no_of_pat :sw.length)+'"><input type="image" style="" src="js_up/images/multi_p.png"><span style="position: relative; top: -5px;">'+(obj.no_of_pat != null ? obj.no_of_pat :sw.length)+'</span> <input type="image" style="width:12px;height:12px;" src="js_up/images/round_arrow.png"></div></td>';
+	if(obj.no_of_pat != null && obj.no_of_pat > 1){
+		html += '<td class=" evtpop_td_ltline '+stylecls+'" style="width:50px !important;text-align:center;padding-top:2px;"><div style="display: inline-block;cursor:pointer;" onclick="sch.repeatMulPat(this);" apptid="'+obj.appt_id+'" index="0" totpat="'+(obj.no_of_pat)+'"><input type="image" style="" src="js_up/images/multi_p.png"><span style="position: relative; top: -5px;">'+(obj.no_of_pat)+'</span> <input type="image" style="width:12px;height:12px;" src="js_up/images/round_arrow.png"></div></td>';
 	}
 	var j = obj.hr+'_'+obj.min;
 	html += "<td class=\"evtpop_td_pat_name evtpop_td_ltline\" style=\"color:#C35817;cursor:pointer;\" id='pat_name"+obj.appt_id+"' apptid=\""+obj.appt_id+"\" onclick='sch.editAppt(\""+j+"\")' >"+obj.patient_name+"</td>";
@@ -590,6 +613,7 @@ Schedular.prototype.getEventDiv = function(obj,act){
 	
 	}
 	add_appt_pat_cnt_names="";
+	console.log(obj);
 	return document.getElementById("events").innerHTML + html;
 }
 
@@ -597,7 +621,7 @@ Schedular.prototype.repeatMulPat = function(obj){
 	var apptId = $(obj).attr('apptid');
 	var index = $(obj).attr('index');
 	var totpat = $(obj).attr('totpat');
-	console.log(index+" - "+totpat);
+	//console.log(index+" - "+totpat);
 	if(index == (totpat-1)){
 		index = 0;
 	}else{
@@ -611,7 +635,7 @@ Schedular.prototype.repeatMulPat = function(obj){
 	
 	
 	
-	console.log(apptId+" - "+index+" - "+add_appt_pat_cnt_names);
+	//console.log(apptId+" - "+index+" - "+add_appt_pat_cnt_names);
 }
 
 Schedular.prototype.setMulPatDtls = function(apptId, index){
@@ -716,7 +740,7 @@ Schedular.prototype.loadDayEvents = function(events){
 	alert(obj.duration);
 	alert(obj.offHeight);
 	alert(obj.offWidth);*/
-Schedular.prototype.timerTab();
+//Schedular.prototype.timerTab();
 }
 
 Schedular.prototype.getHour = function(time){
@@ -771,27 +795,28 @@ Schedular.prototype.disablePopup1 = function() {
 		}
 	}
 Schedular.prototype.setInitData = function(params){
-		  var result = params.data;
+		  var result = params.data['providerData'];
 		  var variables = params.vars;
 		  var toDat = document.getElementById("inputField").value;
 		  Schedular.config.eventsList=[];
 		  Schedular.config.providersList=[];
 		  if(isEmpty(params.vars)){
 		 $.each(result, function(i, obj){
-		   if(i==toDat){
-			  Schedular.config.eventsList = obj.eventsDB;
-			  Schedular.config.providersList = obj.providersDB;
+			
+		   if(obj['day'] == toDat){
+			  Schedular.config.eventsList = obj['eventsDB'];
+			  Schedular.config.providersList = obj['providersDB'];
 			  return false;
 			}
 		  });
 		  }else{
-		  //Schedular.config.eventsList=[];
+		 //Schedular.config.eventsList=[];
 		  //Schedular.config.providersList=[];
 		  $.each(result, function(j, obj){
-		   if(j == params.vars.doc_dt){
-		   	Schedular.config.eventsList = obj.eventsDB;
-			Schedular.config.providersList = obj.providersDB;
-		   if(!isEmpty(params.vars.doc_list)){
+		  if(obj['day'] == params.vars.doc_dt){
+		   	Schedular.config.eventsList = obj['eventsDB'];
+			Schedular.config.providersList = obj['providersDB'];
+		  if(!isEmpty(params.vars.doc_list)){
 		   var providers =[];
 
 		   var provider = Schedular.prototype.getProvider(params.vars.doc_list);
@@ -802,7 +827,7 @@ Schedular.prototype.setInitData = function(params){
 			}
 			  return false;
 			}
-		  });
+		 });
 		  }
 		 setTimeout(function(){
 			//alert('jerer'+document.getElementById('testidd').offsetWidth);
@@ -931,18 +956,18 @@ var date = new Date();
 		var dt_arr = dt.split("-");
 		if(dt_arr[2] >= year){
 			if(months.indexOf(dt_arr[1]) >= month ){
-				if(dt_arr[0] > day ){
+				if(dt_arr[0] >= day ){
 				return true;
 				}else{
-				alert("Cannot edit the selected appointment. Selected appointment date must be greater than current date.");
+				alert("Date must be greater than or equal to current date!");
 				return false;
 				}
 			}else{
-			alert("Cannot edit the selected appointment. Selected appointment date must be greater than current date.");
+			alert("Date must be greater than or equal to current date!");
 			return false;
 			}
 		}else{
-		alert("Cannot edit the selected appointment. Selected appointment date must be greater than current date.");
+		alert("Date must be greater than or equal to current date!");
 		return false;
 		}
  }

@@ -13,7 +13,7 @@ var oscarApp = angular.module('oscarProviderViewModule', ['ngRoute','ngResource'
 oscarApp.config(['$routeProvider',
                     function($routeProvider) {
                     	$routeProvider.when('/dashboard', {
-		                    templateUrl: 'partials/dashboard.html',
+		                    templateUrl: 'partials/dashboard.jsp',
 		                    controller: 'DashboardCtrl'
 		                }).
 	                    when('/inbox', {

@@ -21,26 +21,22 @@
  * Hamilton
  * Ontario, Canada
  */
-package org.oscarehr.common.dao;
+package org.oscarehr.ws.rest.to;
 
-import javax.persistence.Query;
 
-import org.oscarehr.common.model.LookupListItem;
-import org.springframework.stereotype.Repository;
+//import org.oscarehr.ws.rest.to.model.Patients;
 
-@Repository
-public class LookupListItemDao extends AbstractDao<LookupListItem> {
+/*@XmlRootElement
+@XmlSeeAlso({Patients.class})*/
+public class PatientsResponse  {
 
-	public LookupListItemDao() {
-		super(LookupListItem.class);
-	}
-	
-	public LookupListItem findNameById(int id) {
-		Query q = entityManager.createQuery("select l from LookupListItem l where l.id=?");
-		q.setParameter(1,id);
-		
-		LookupListItem ll = this.getSingleResultOrNull(q);
-		
-		return ll;
-	}
+ /*   private static final long serialVersionUID = 1L;
+
+	@Override
+	@XmlElement(name="patient", type = Patients.class)
+	@XmlElementWrapper(name="content")
+    public List<Patients> getContent() {
+	    return super.getContent();
+    }*/
+
 }

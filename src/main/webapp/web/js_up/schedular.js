@@ -1,8 +1,20 @@
 var globalObj = new Object();
-var globalApptId = new Object();
+var globalApptId = "";
+var globalEventType = "";
 var globalView = new Object();
 var nextAailObject = new Object();
+var globalPatName = new Object();
+var providerListObj = new Object();
 var add_appt_pat_cnt_names = "";
+var globalGroup = "Group A"; /* To set the group name default in manage layout */
+var globalProviderId = "103";
+var countForlabeltext = 0;
+var hideWeekEnds = false;
+var flipWeekendHide = false;
+
+var globalDayViewDate;
+
+var flipColorCodes;
 var weekDB = [ {
 	name : "Monday",
 	id : "1"
@@ -25,6 +37,22 @@ var weekDB = [ {
 	name : "Sunday",
 	id : "7"
 } ];
+var weekDB_hideWeekEnds = [ {
+	name : "Monday",
+	id : "1"
+}, {
+	name : "Tuesday",
+	id : "2"
+}, {
+	name : "Wednesday",
+	id : "3"
+}, {
+	name : "Thursday",
+	id : "4"
+}, {
+	name : "Friday",
+	id : "5"
+} ];
 
 var appt_goto_data = $.ajax({
 	url : "../ws/rs/patient/type/list/1",
@@ -42,221 +70,6 @@ var appt_goto_data = $.ajax({
 }).responseText;
 var jObj = JSON.parse(appt_goto_data);
 appt_goto_data = jObj.appointmentTypes;
-
-/* flip days view start */
-var flipdays = [
-		{
-			date : "Monday,Nov11",
-			flipdata : [ "-", "-", "C2", "-", "C1", "C1", "C1", "C1", "C1",
-					"C1", "C1", "C1", "C1", "C1", "C1", "C1", "L1", "L1", "L1",
-					"L1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1",
-					"P1", "P1", "P1", "P1", "P1", "P1", "P1", "-", "-", "-",
-					"-" ]
-		},
-		{
-			date : "Thuseday,Nov12",
-			flipdata : [ "-", "-", "-", "-", "C1", "C1", "C1", "C1", "C1",
-					"C1", "C1", "C1", "C1", "C1", "C1", "C1", "L1", "L1", "L1",
-					"L1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1",
-					"P1", "P1", "P1", "P1", "P1", "P1", "P1", "-", "-", "-",
-					"-" ]
-		},
-		{
-			date : "Wednesday,Nov13",
-			flipdata : [ "-", "-", "-", "-", "C1", "C1", "C1", "C1", "C1",
-					"C1", "C1", "C1", "C1", "C1", "C1", "C1", "L1", "L1", "L1",
-					"L1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1",
-					"P1", "P1", "P1", "P1", "P1", "P1", "P1", "-", "-", "-",
-					"-" ]
-		},
-		{
-			date : "Thursday,Nov14",
-			flipdata : [ "-", "-", "-", "-", "C1", "C1", "C1", "C1", "C1",
-					"C1", "C1", "C1", "C1", "C1", "C1", "C1", "L1", "L1", "L1",
-					"L1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1",
-					"P1", "P1", "P1", "P1", "P1", "P1", "P1", "-", "-", "-",
-					"-" ]
-		},
-		{
-			date : "Friday,Nov15",
-			flipdata : [ " ", " ", " ", " ", "G2", "G2", "G2", "G2", "", "",
-					"", "", "", "", "", "", "", "", "", "", " ", " ", " ", " ",
-					" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
-					" ", " ", " ", " " ]
-		},
-		{
-			date : "Saturday,Nov16",
-			flipdata : [ " ", " ", " ", " ", " ", " ", " ", " ", "", "", "",
-					"", "", "", "", "", "", "", "", "", " ", " ", " ", " ",
-					" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
-					" ", " ", " ", " " ]
-		},
-		{
-			date : "Sunday,Nov17",
-			flipdata : [ " ", " ", " ", " ", " ", " ", " ", " ", "", "", "",
-					"", "", "", "", "", "", "", "", "", " ", " ", " ", " ",
-					" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
-					" ", " ", " ", " " ]
-		},
-		{
-			date : "Monday,Nov18",
-			flipdata : [ "-", "-", "-", "-", "C1", "C1", "C1", "C1", "C1",
-					"C1", "C1", "C1", "C1", "C1", "C1", "C1", "L1", "L1", "L1",
-					"L1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1",
-					"P1", "P1", "P1", "P1", "P1", "P1", "P1", "-", "-", "-",
-					"-" ]
-		},
-		{
-			date : "Thuseday,Nov19",
-			flipdata : [ "-", "-", "-", "-", "C1", "C1", "C1", "C1", "C1",
-					"C1", "C1", "C1", "C1", "C1", "C1", "C1", "L1", "L1", "L1",
-					"L1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1",
-					"P1", "P1", "P1", "P1", "P1", "P1", "P1", "-", "-", "-",
-					"-" ]
-		},
-		{
-			date : "Wednesday,Nov20",
-			flipdata : [ "-", "-", "-", "-", "C1", "C1", "C1", "C1", "C1",
-					"C1", "C1", "C1", "C1", "C1", "C1", "C1", "L1", "L1", "L1",
-					"L1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1",
-					"P1", "P1", "P1", "P1", "P1", "P1", "P1", "-", "-", "-",
-					"-" ]
-		},
-		{
-			date : "Thursday,Nov21",
-			flipdata : [ "-", "-", "-", "-", "C1", "C1", "C1", "C1", "C1",
-					"C1", "C1", "C1", "C1", "C1", "C1", "C1", "L1", "L1", "L1",
-					"L1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1",
-					"P1", "P1", "P1", "P1", "P1", "P1", "P1", "-", "-", "-",
-					"-" ]
-		},
-		{
-			date : "Friday,Nov22",
-			flipdata : [ " ", " ", " ", " ", "G2", "G2", "G2", "G2", "", "",
-					"", "", "", "", "", "", "", "", "", "", " ", " ", " ", " ",
-					" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
-					" ", " ", " ", " " ]
-		},
-		{
-			date : "Saturday,Nov23",
-			flipdata : [ " ", " ", " ", " ", " ", " ", " ", " ", "", "", "",
-					"", "", "", "", "", "", "", "", "", " ", " ", " ", " ",
-					" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
-					" ", " ", " ", " " ]
-		},
-		{
-			date : "Sunday,Nov24",
-			flipdata : [ " ", " ", " ", " ", " ", " ", " ", " ", "", "", "",
-					"", "", "", "", "", "", "", "", "", " ", " ", " ", " ",
-					" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
-					" ", " ", " ", " " ]
-		},
-		{
-			date : "Monday,Nov25",
-			flipdata : [ "-", "-", "-", "-", "C1", "C1", "C1", "C1", "C1",
-					"C1", "C1", "C1", "C1", "C1", "C1", "C1", "L1", "L1", "L1",
-					"L1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1",
-					"P1", "P1", "P1", "P1", "P1", "P1", "P1", "-", "-", "-",
-					"-" ]
-		},
-		{
-			date : "Thuseday,Nov26",
-			flipdata : [ "-", "-", "-", "-", "C1", "C1", "C1", "C1", "C1",
-					"C1", "C1", "C1", "C1", "C1", "C1", "C1", "L1", "L1", "L1",
-					"L1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1",
-					"P1", "P1", "P1", "P1", "P1", "P1", "P1", "-", "-", "-",
-					"-" ]
-		},
-		{
-			date : "Wednesday,Nov27",
-			flipdata : [ "-", "-", "-", "-", "C1", "C1", "C1", "C1", "C1",
-					"C1", "C1", "C1", "C1", "C1", "C1", "C1", "L1", "L1", "L1",
-					"L1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1",
-					"P1", "P1", "P1", "P1", "P1", "P1", "P1", "-", "-", "-",
-					"-" ]
-		},
-		{
-			date : "Thursday,Nov28",
-			flipdata : [ "-", "-", "-", "-", "C1", "C1", "C1", "C1", "C1",
-					"C1", "C1", "C1", "C1", "C1", "C1", "C1", "L1", "L1", "L1",
-					"L1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1",
-					"P1", "P1", "P1", "P1", "P1", "P1", "P1", "-", "-", "-",
-					"-" ]
-		},
-		{
-			date : "Friday,Nov29",
-			flipdata : [ " ", " ", " ", " ", "G2", "G2", "G2", "G2", "", "",
-					"", "", "", "", "", "", "", "", "", "", " ", " ", " ", " ",
-					" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
-					" ", " ", " ", " " ]
-		},
-		{
-			date : "Saturday,Nov30",
-			flipdata : [ "-", "G2", "G1", " ", " ", " ", " ", " ", "", "", "",
-					"", "", "", "", "", "", "", "", "", " ", " ", " ", " ",
-					" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
-					" ", " ", " ", " " ]
-		},
-		{
-			date : "Sunday,Dec01",
-			flipdata : [ "-", "C1", "G2", " ", " ", " ", " ", " ", "", "", "",
-					"", "", "", "", "", "", "", "", "", " ", " ", " ", " ",
-					" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
-					" ", " ", " ", " " ]
-		},
-		{
-			date : "Monday,Dec02",
-			flipdata : [ "-", "-", "-", "-", "C1", "C1", "C1", "C1", "C1",
-					"C1", "C1", "C1", "C1", "C1", "C1", "C1", "L1", "L1", "L1",
-					"L1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1",
-					"P1", "P1", "P1", "P1", "P1", "P1", "P1", "-", "-", "-",
-					"-" ]
-		},
-		{
-			date : "Thuseday,Dec03",
-			flipdata : [ "-", "-", "-", "-", "C1", "C1", "C1", "C1", "C1",
-					"C1", "C1", "C1", "C1", "C1", "C1", "C1", "L1", "L1", "L1",
-					"L1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1",
-					"P1", "P1", "P1", "P1", "P1", "P1", "P1", "-", "-", "-",
-					"-" ]
-		},
-		{
-			date : "Wednesday,Dec04",
-			flipdata : [ "-", "-", "-", "-", "C1", "C1", "C1", "C1", "C1",
-					"C1", "C1", "C1", "C1", "C1", "C1", "C1", "L1", "L1", "L1",
-					"L1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1",
-					"P1", "P1", "P1", "P1", "P1", "P1", "P1", "-", "-", "-",
-					"-" ]
-		},
-		{
-			date : "Thursday,Dec05",
-			flipdata : [ "-", "-", "-", "-", "C1", "C1", "C1", "C1", "C1",
-					"C1", "C1", "C1", "C1", "C1", "C1", "C1", "L1", "L1", "L1",
-					"L1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1",
-					"P1", "P1", "P1", "P1", "P1", "P1", "P1", "-", "-", "-",
-					"-" ]
-		},
-		{
-			date : "Friday,Dec06",
-			flipdata : [ " ", " ", " ", " ", "G2", "G2", "G2", "G2", "", "",
-					"", "", "", "", "", "", "", "", "", "", " ", " ", " ", " ",
-					" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
-					" ", " ", " ", " " ]
-		},
-		{
-			date : "Saturday,Dec07",
-			flipdata : [ " ", " ", " ", " ", " ", " ", " ", " ", "", "", "",
-					"", "", "", "", "", "", "", "", "", " ", " ", " ", " ",
-					" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
-					" ", " ", " ", " " ]
-		},
-		{
-			date : "Sunday,Dec08",
-			flipdata : [ " ", " ", " ", " ", " ", " ", " ", " ", "", "", "",
-					"", "", "", "", "", "", "", "", "", " ", " ", " ", " ",
-					" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
-					" ", " ", " ", " " ]
-		} ];
 
 var appt_status_data = $.ajax({
 	url : "../ws/rs/patient/status/list/1",
@@ -326,21 +139,34 @@ var mulPatDtls = {
 	}
 }
 
-function showdata() {
-	var finalData = '<table class="xscale" style="border-right:1px solid #cecece !important;"><tr><td style="text-align:center;"><input type="image" src="js_up/images/icon_help_small.png"/>&nbsp;<input type="image" src="js_up/images/clock_small.gif"/></td>';
+function setGlobalDayDate(){
+	var date = $("#inputField").val();
+	var temp = date.split('-');
+	if(temp.length == 3){
+		globalDayViewDate = $("#inputField").val();
+		console.log("date set");
+	}
+}
+
+
+function showdata(provId) {
+	//console.log(provId);
+	var dates = getStartEndDates();
+	//console.log(dates);
+	var finalData = '<table class="xscale" style="border-right:1px solid #cecece !important;font-family:cambria;color:#084B8A;"><tr "><td style="text-align:center;"><img src="js_up/images/icon_help_small.png">&nbsp;'+sch.getViewDropDown()+'</td>';
 
 	var j = 8;
 	for (var i = 0; i < 10; i++) {
-		finalData += '<td style="text-align:center;">' + parseFloat(j + i)
-				+ '.00</td>' + '<td style="text-align:center;">'
+		finalData += '<td style="text-align:center;color:#424242;">' + parseFloat(j + i)
+				+ '.00</td>' + '<td style="text-align:center;color:#BDBDBD;">'
 				+ parseFloat(j + i) + '.15</td>'
-				+ '<td style="text-align:center;">' + parseFloat(j + i)
-				+ '.30</td>' + '<td style="text-align:center;">'
+				+ '<td style="text-align:center;color:#BDBDBD;">' + parseFloat(j + i)
+				+ '.30</td>' + '<td style="text-align:center;color:#BDBDBD;">'
 				+ parseFloat(j + i) + '.45</td>';
 	}
 	finalData = finalData + '</tr>';
 
-	for (var a = 0; a < this.flipdays.length; a++) {
+	/*for (var a = 0; a < this.flipdays.length; a++) {
 		finalData += '<tr><td >' + this.flipdays[a].date + '</td>';
 
 		for (var b = 0; b < this.flipdays[a].flipdata.length; b++) {
@@ -348,8 +174,249 @@ function showdata() {
 					+ this.flipdays[a].flipdata[b] + '</td>'
 		}
 		finalData += '</tr>'
+	}*/
+	if(flipColorCodes == null)
+		flipColorCodes = getFlipColorCodes();
+	
+	getFlipColor('');
+	if(provId == 0){
+		if(flipWeekendHide)
+			finalData += loadBlankFlipData_hide(dates[0], dates[1]);
+		else
+			finalData += loadBlankFlipData(dates[0], dates[1]);
+	}else{
+		var _data = getFlipData(provId, dates[0], dates[1]);
+		if(flipWeekendHide)
+			finalData += loadFlipData_hide(_data, dates[0], dates[1]);
+		else
+			finalData += loadFlipData(_data, dates[0], dates[1]);
 	}
+	flipWeekendHide = false;
 	document.getElementById('flipview').innerHTML = finalData;
+}
+function loadFlipData(_data, startDate, endDate){
+	var finalData = "";
+	var currDayArr = startDate.split('-');
+	var days = getDiffInDays(startDate, endDate) +1;
+	var myday = new Date(parseFloat(currDayArr[2]),parseFloat(getMonthIndex(startDate)),parseFloat(currDayArr[0]));
+	var index = 32;
+	for (var a = 0; a < days; a++) {
+			finalData += '<tr><td style="text-align:right;">' + getFlipDateFormat(myday) + '</td>';
+			var formattedDate = getDateFormat(myday);
+			var dayData = _data[formattedDate];
+			
+			//console.log(formattedDate);
+			//console.log(dayData);
+			if(dayData != null){
+				var dayFlipData = dayData.split('');
+				for (var b = 0; b < 40; b++) {
+					finalData += '<td style="text-align:center;background-color:'+ getFlipColor(dayFlipData[index + b]) +';">' + dayFlipData[index + b]  + '</td>'
+				}
+			}else{
+				for (var b = 0; b < 40; b++) {
+					finalData += '<td style="text-align:center;">&nbsp;</td>'
+				}
+			}
+			finalData += '</tr>';
+		myday.setDate(myday.getDate()+parseFloat(1));
+		
+	}
+	return finalData;
+}
+function loadFlipData_hide(_data, startDate, endDate){
+	var finalData = "";
+	var currDayArr = startDate.split('-');
+	var days = getDiffInDays(startDate, endDate) +1;
+	var myday = new Date(parseFloat(currDayArr[2]),parseFloat(getMonthIndex(startDate)),parseFloat(currDayArr[0]));
+	var index = 32;
+	for (var a = 0; a < days; a++) {
+		//console.log((myday.getDay()== 0 || myday.getDay()== 6));
+		if(myday.getDay()== 0 || myday.getDay()== 6){
+		
+		}else{
+			finalData += '<tr><td style="text-align:right;">' + getFlipDateFormat(myday) + '</td>';
+			var formattedDate = getDateFormat(myday);
+			var dayData = _data[formattedDate];
+			
+			//console.log(formattedDate);
+			//console.log(dayData);
+			if(dayData != null){
+				var dayFlipData = dayData.split('');
+				for (var b = 0; b < 40; b++) {
+					finalData += '<td style="text-align:center;background-color:'+ getFlipColor(dayFlipData[index + b]) +';">' + dayFlipData[index + b]  + '</td>'
+				}
+			}else{
+				for (var b = 0; b < 40; b++) {
+					finalData += '<td style="text-align:center;">&nbsp;</td>'
+				}
+			}
+			finalData += '</tr>';
+		}
+		myday.setDate(myday.getDate()+parseFloat(1));
+		
+	}
+	return finalData;
+}
+
+function loadBlankFlipData(startDate, endDate){
+	var finalData = "";
+	var currDayArr = startDate.split('-');
+	var days = getDiffInDays(startDate, endDate) +1;
+	var myday = new Date(parseFloat(currDayArr[2]),parseFloat(getMonthIndex(startDate)),parseFloat(currDayArr[0]));
+	for (var a = 0; a < days; a++) {
+			finalData += '<tr><td style="text-align:right;">' + getFlipDateFormat(myday) + '</td>';
+			for (var b = 0; b < 40; b++) {
+				finalData += '<td style="text-align:center;">&nbsp;</td>'
+			}
+			finalData += '</tr>';
+		myday.setDate(myday.getDate()+parseFloat(1));
+	}
+	return finalData;
+}
+function loadBlankFlipData_hide(startDate, endDate){
+	var finalData = "";
+	var currDayArr = startDate.split('-');
+	var days = getDiffInDays(startDate, endDate) +1;
+	var myday = new Date(parseFloat(currDayArr[2]),parseFloat(getMonthIndex(startDate)),parseFloat(currDayArr[0]));
+	for (var a = 0; a < days; a++) {
+		if(myday.getDay()== 0 || myday.getDay()== 6){
+		
+		}else {
+			finalData += '<tr><td style="text-align:right;">' + getFlipDateFormat(myday) + '</td>';
+			for (var b = 0; b < 40; b++) {
+				finalData += '<td style="text-align:center;">&nbsp;</td>'
+			}
+			finalData += '</tr>';
+		}
+		myday.setDate(myday.getDate()+parseFloat(1));
+	}
+	return finalData;
+}
+
+function getFlipColor(flipCode){
+	console.log(flipColorCodes)
+	//flipColorCodes;
+	var color="";
+	var row;
+	for(i=0; i<flipColorCodes.length; i++){
+		row = flipColorCodes[i];
+		if(flipCode == row.code){
+			color = row.color;
+			break;
+		}
+	}
+	return color;
+}
+
+function getFlipDateFormat(dateObj){
+	var months = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+	var days = new Array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
+	//console.log(days[dateObj.getDay()]);
+	return days[dateObj.getDay()] + ",&nbsp;" + months[dateObj.getMonth()] + "&nbsp;" + dateObj.getDate()+"&nbsp;";
+}
+
+function getDateFormat(dateObj){
+	var months = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+	return dateObj.getDate() + "-" + months[dateObj.getMonth()] + "-" + dateObj.getFullYear();
+}
+
+function getDiffInDays(startDate, endDate){
+	var stDateDtls = startDate.split('-');
+	var endDateDtls = endDate.split('-');
+	var date1 = new Date(parseFloat(stDateDtls[2]),parseFloat(getMonthIndex(startDate)),parseFloat(stDateDtls[0]));
+	var date2 = new Date(parseFloat(endDateDtls[2]),parseFloat(getMonthIndex(endDate)),parseFloat(endDateDtls[0]));
+	var timeDiff = Math.abs(date2.getTime() - date1.getTime());
+	var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+	return diffDays;
+}
+function getStartEndDates(){
+	var months = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'); 
+	var date = document.getElementById("inputField").value;
+	var stDate = date.split('to')[0];
+	var date_opts = stDate.trim().split('-');
+	var dates = new Array();
+	dates[0] =  date_opts[0] + "-" +months[getMonthIndex(date)] + "-20" + date_opts[2];
+	//var nextMonth = getMonthIndex(date) + 1;
+	//console.log(date_opts);
+	var year = "20" + date_opts[2];
+	var date2 = new Date(parseFloat(year), parseFloat(getMonthIndex("-"+date_opts[1])),parseFloat(date_opts[0]));
+	date2.setMonth(date2.getMonth() + 1);
+	dates[1] = date2.getDate() + "-" +months[date2.getMonth()] + "-" + date2.getFullYear();
+	//console.log(dates);
+	return dates;
+}
+
+function getMonthIndex(date){
+	var month;
+	var currDayArr = date.split('-');
+	if(currDayArr[1] == "Jan" || currDayArr[1] == "JAN" || currDayArr[1] == "January" || currDayArr[1] == "JANUARY"){
+		month = 0;
+	}else if(currDayArr[1] == "Feb" || currDayArr[1] == "FEB" || currDayArr[1] == "February" || currDayArr[1] == "FEBRUARY"){
+		month = 1;
+	}else if(currDayArr[1] == "Mar" || currDayArr[1] == "MAR" || currDayArr[1] == "March" || currDayArr[1] == "MARCH"){
+		month=2;
+	}else if(currDayArr[1] == "Apr" || currDayArr[1] == "APR" || currDayArr[1] == "April" || currDayArr[1] == "APRIL"){
+		month=3;
+	}else if(currDayArr[1] == "May" || currDayArr[1] == "MAY" || currDayArr[1] == "May" || currDayArr[1] == "MAY"){
+		month=4;
+	}else if(currDayArr[1] == "Jun" || currDayArr[1] == "JUN" || currDayArr[1] == "June" || currDayArr[1] == "JUNE"){
+		month=5;
+	}else if(currDayArr[1] == "Jul" || currDayArr[1] == "JUL" || currDayArr[1] == "July" || currDayArr[1] == "JULY"){
+		month=6;
+	}else if(currDayArr[1] == "Aug" || currDayArr[1] == "AUG" || currDayArr[1] == "August" || currDayArr[1] == "AUGUST"){
+		month=7;
+	}else if(currDayArr[1] == "Sep" || currDayArr[1] == "SEP" || currDayArr[1] == "September" || currDayArr[1] == "SEPTEMBER"){
+		month=8;
+	}else if(currDayArr[1] == "Oct" || currDayArr[1] == "OCT" || currDayArr[1] == "October" || currDayArr[1] == "OCTOBER"){
+		month=9;
+	}else if(currDayArr[1] == "Nov" || currDayArr[1] == "NOV" || currDayArr[1] == "November" || currDayArr[1] == "NOVEMBER"){
+		month=10;
+	}else if(currDayArr[1] == "Dec" || currDayArr[1] == "DEC" || currDayArr[1] == "December" || currDayArr[1] == "DECEMBER"){
+		month=11;
+	}
+	return month;
+}
+
+function getFlipData(provId, startDate, endDate){
+		var data = $.ajax({
+			url : "../ws/rs/appointment/"+startDate+"/"+endDate+"/"+provId+"/fetchFlipView",
+			type : "get",
+			//contentType : 'application/json',
+			dataType: "json" ,
+			global: false,
+			async:false,
+			success : function(result) {
+			},
+			error : function(jqxhr) {
+				var msg = JSON.parse(jqxhr.responseText);
+				alert(msg['message']);
+
+			}
+		}).responseText;
+		var jObj = JSON.parse(data);
+		return jObj;
+	
+}
+
+function getFlipColorCodes(){
+	var data = $.ajax({
+		url : "../ws/rs/patient/scheduleTempCode/get",
+		type : "get",
+		//contentType : 'application/json',
+		dataType: "json" ,
+		global: false,
+		async:false,
+		success : function(result) {
+		},
+		error : function(jqxhr) {
+			var msg = JSON.parse(jqxhr.responseText);
+			alert(msg['message']);
+
+		}
+	}).responseText;
+	var jObj = JSON.parse(data);
+	return jObj;
+
 }
 /* flip days view end */
 
@@ -389,12 +456,31 @@ Schedular.prototype.setWeekDayList = function(weekDayList) {
 Schedular.prototype.load = function(date) {
 	// load appointment status
 	this.getApptStatusHTML();
-	Schedular.prototype.ajaxMethod("../ws/rs/schedule/" + date + "/list1",
-			Schedular.prototype.setInitData, {
-				"doc_dt" : date
-			});
+	if(globalView.view==null){
+		globalView.view="day"
+	}else{
+		globalView.view = globalView.view;
+	}
+	if(globalView.view=="day"){
+		Schedular.prototype.ajaxMethod("../ws/rs/schedule/" + date + "/list1",
+				Schedular.prototype.setInitData, {
+					"doc_dt" : date
+				});
+		
+	}else {
+		var sq = sch.weekForCurrentDate(date);
+		/* Need to modify the 103 to dynamic value */
+		var temp  = $("#weekDropId").val();
+		var temp1 = temp!=null? temp.split("_"):"103_Group".split("_");
+		Schedular.prototype.ajaxMethod("../ws/rs/schedule/"+sq+ "/"+temp1[0]+"/list",
+				Schedular.prototype.setInitData, {
+					"doc_dt" : date
+				});
+	}
+
+	
 	document.getElementById("inputField").value = date;
-	setTimeout('Schedular.prototype.init(\'day\',\'from load\')', 1000);
+	setTimeout('sch.init(\''+globalView.view+'\',\'from load\')', 1000);
 }
 Schedular.prototype.dayLoad = function(date,providerNo) {
 	// load appointment status
@@ -435,29 +521,49 @@ Schedular.prototype.weekLoad = function(week,providerNo) {
 Schedular.prototype.callDayWeekMonth = function(view,selVal){
 	var selDate = document.getElementById("inputField").value;
 	if(view =="day"){
+		globalView.view="day";
 		sch.dayLoad(selDate,selVal);
 	}else if(view =="week"){
-		var sq = sch.weekForCurrentDay(selDate);
+		globalView.view="week";
+		var sq = sch.weekForCurrentDate(selDate);
 		sch.weekLoad(sq,selVal);	
 	}else{
-		alert("for month view");
+		//alert("for month view");
+		setMonthDates("");
+		calendar();
 	}
 	
 }
 Schedular.prototype.init = function(view, from) {
 	 //console.log(view+"<<>>"+from);
+    $(document).ready(function() {
+        setTimeout(function(){
+		$(".noline").tooltip({
+        placement : 'top',
+        container:'.noline'
+		});
+		$(".withline").tooltip({
+			placement : 'top',
+			container:'.withline'
+		});
+	},1000);
+    });
 	globalView.view = view;
 	this.persons = Schedular.config.providersList;
-	if (view == 'week')
-		this.persons = weekDB;
+	if (view == 'week' && hideWeekEnds){
+		this.persons = weekDB_hideWeekEnds;
+		hideWeekEnds = false;
+	}else if(view == 'week'){
+		this.persons = weekDB
+	}
 	this.view = view;
 	this.setView(view);
 	/* Load calendar in month view */
-	calendar();
-	var scrollWid = document.getElementById('secNav').offsetWidth - 80;
+	//calendar();
+	var scrollWid = document.getElementById('secNav').offsetWidth - 60;
 	// alert(scrollWid)
 	var data = this.getYScale();
-	var headData = '<div id="clock" style="float:left"><table class="xscale" style="float: left;cellpadding:0;cellpadding:0;padding-bottom:0px !important;border-bottom: 0px !important;" ><tr><td ><input type="image" src="js_up/images/clock_small.gif"/></td></tr></table>';
+	var headData = '<div id="clock" style="float:left"><table class="xscale" style="float: left;cellpadding:0;cellpadding:0;padding-bottom:0px !important;border-bottom: 0px !important;" ><tr><td >'+sch.getViewDropDown()+'</td></tr></table>';
 	headData += '<div id="names" class="scrolldiv" style="width:'
 			+ scrollWid
 			+ 'px;float:left;overflow-x:hidden;"><table id="testidd" class="Yscale" width="'
@@ -466,28 +572,68 @@ Schedular.prototype.init = function(view, from) {
 			+ this.getXHeader() + '</table></div>';
 
 	document.getElementById('head').innerHTML = headData;
-
 	var scaleData = "<div style='display: inline-block;overflow-y:scroll;height:500px;' class='scrolldiv2'><div id='abc' style='float:left'>"
 			+ data
 			+ "</div>"
-			+ "<div id='persondata' style='float:left;overflow-x:hidden;width:"
+			+ "<div id='persondata' style='overflow-x:hidden;float:left;width:"
 			+ scrollWid
 			+ "px;' class='scrolldiv'>"
 			+ this.getXData()
 			+ "</div></div>";
 	scaleData += "<div id='persondatadummy' class='scrolldiv' style='width:"
 			+ scrollWid
-			+ "px;height:20px;margin-left:30px;overflow-x:scroll;'><table  style='table-layout:fixed;' id='xdummytab'><tr><td id='xdummytabtd'>ask fhasdl kfhas klh lkhas dflaksdhf asdfkalsdhf asdhfjka hsdfkljshad fjkasdl hfaksdj fhaksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfklsdfsdfsdf haksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfklsdfsdfsdfhaksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfklsdfsdfsdf haksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfklsdfsdfsdf</td></tr></table></div>";
+			+ "px;height:20px;margin-left:30px;float:left;'><table  style='table-layout:fixed;' id='xdummytab'><tr><td id='xdummytabtd'>ask fhasdl kfhas klh lkhas dflaksdhf asdfkalsdhf asdhfjka hsdfkljshad fjkasdl hfaksdj fhaksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfkl</td></tr></table></div>";
 	document.getElementById('providerdiv').innerHTML = scaleData;
-
-	document.getElementById('xdummytab').width = document
-			.getElementById('testidd').offsetWidth;
+	document.getElementById('xdummytab').style.width = document.getElementById('testidd').offsetWidth+"px";
 
 	syncScrollBars();
 	// $( "div.first" ).slideUp( 300 ).delay( 800 ).fadeIn( 400 );
 	// setTimeout('Schedular.prototype.loadDayEvents(Schedular.config.eventsList)',1000);
 	Schedular.prototype.loadDayEvents(Schedular.config.eventsList);
 }
+
+Schedular.prototype.getViewDropDown = function(){
+//	console.log(globalView.view);
+	var finalData = "";
+	if(globalView.view=="day"){
+		finalData += '<div class="dropdown btn-group" id="menuOptions"> ';
+		finalData += '	<a class="btn dropdown-toggle" data-toggle="dropdown" style="height:20px;padding:0px;padding-left:6px;padding-right:6px;padding-top:0px;padding-bottom:0px;">';   
+		finalData += '<span class="glyphicon glyphicon-list" style="padding:0px;"></span><span class="caret" style="padding:0px;"></span>  ';  
+		finalData += '</a> ';   
+		finalData += '<ul class="dropdown-menu">';
+		finalData += '<li style="padding-left: 20px;color:#848484;">Group view options:</li>';
+		finalData += '<li><a style="text-align:left;" id="showAllId" onclick="sch.showAll();"><span style="font-size: 20px;" >Show All</span><br><span style="color:#848484;">Show all providers in selected group</span></a></li>';
+		finalData += '<li><a style="text-align:left;" id="showScheduledId" onclick="sch.showScheduled();"><span style="font-size: 20px;" >Show Scheduled</span><br><span style="color:#848484;">Show all providers in selected group with scheduled appts.</span></a></li>';
+		finalData += '<li onclick="sch.openManageGroup();"><a style="text-align:left;"><span style="font-size: 20px;">Manage Layout</span><br><span style="color:#848484;">Re-order and fi lter provider columns</span></a></li></ul></div>';
+		finalData += '<input style="display:none" id="clock_img" type="image" src="js_up/images/clock_small.gif"/>';
+	}else if(globalView.view=="week"){
+		finalData += '<div class="dropdown btn-group" id="menuOptions"> ';
+		finalData += '	<a class="btn dropdown-toggle" data-toggle="dropdown" style="height:20px;padding:0px;padding-left:6px;padding-right:6px;padding-top:0px;padding-bottom:0px;">';   
+		finalData += '<span class="glyphicon glyphicon-list" style="padding:0px;"></span><span class="caret" style="padding:0px;"></span>  ';  
+		finalData += '</a> ';   
+		finalData += '<ul class="dropdown-menu">';
+		finalData += '<li onclick="sch.hideWeekends();"><a style="text-align:left;"><span style="font-size: 20px;">Hide Weekends</span><br><span style="color:#848484;">Hide week ends from the week view</span></a></li>';
+		finalData += '<li onclick="sch.showWeekends();"><a style="text-align:left;"><span style="font-size: 20px;">Show Weekends</span><br><span style="color:#848484;">Show week ends from the week view</span></a></li></ul></div>';
+		finalData += '<input style="display:none" id="clock_img" type="image" src="js_up/images/clock_small.gif"/>';
+	}else if(globalView.view=="flip"){
+		finalData += '<div class="dropdown btn-group" id="menuOptions"> ';
+		finalData += '	<a class="btn dropdown-toggle" data-toggle="dropdown" style="height:20px;padding:0px;padding-left:6px;padding-right:6px;padding-top:0px;padding-bottom:0px;">';   
+		finalData += '<span class="glyphicon glyphicon-list" style="padding:0px;"></span><span class="caret" style="padding:0px;"></span>  ';  
+		finalData += '</a> ';   
+		finalData += '<ul class="dropdown-menu">';
+		finalData += '<li onclick="sch.flipHideWeekends();"><a style="text-align:left;"><span style="font-size: 20px;">Hide Weekends</span><br><span style="color:#848484;">Hide week ends from the flip view</span></a></li>';
+		finalData += '<li onclick="sch.flipShowWeekends();"><a style="text-align:left;"><span style="font-size: 20px;">Show Weekends</span><br><span style="color:#848484;">Show week ends from the flip view</span></a></li></ul></div>';
+		finalData += '<input style="display:none" id="clock_img" type="image" src="js_up/images/clock_small.gif"/>';
+	}
+	
+	return finalData;
+	
+}
+
+Schedular.prototype.openManageGroup = function(){
+	$("#manageGroupForm").dialog("open");
+}
+
 Schedular.prototype.getProvider_z = function(providerID) {
 	for (var i = 0; i < Schedular.config.providersList.length; i++) {
 		if (Schedular.config.providersList[i].id == providerID) {
@@ -499,7 +645,7 @@ Schedular.prototype.getProvider_z = function(providerID) {
 Schedular.prototype.getEvents_z = function(providerID) {
 	var arrEvents = [];
 	for (var i = 0; i < Schedular.config.eventsList.length; i++) {
-		if (Schedular.config.eventsList[i].doc_id == providerID) {
+		if (Schedular.config.eventsList[i].docId == providerID) {
 			arrEvents.push(Schedular.config.eventsList[i]);
 		}
 	}
@@ -534,7 +680,7 @@ Schedular.prototype.getEvents = function(providerID) {
 	var arrEvents = [];
 	for (var i = 0; i < Schedular.config.eventsList.length; i++) {
 		for (var j = 0; j < providerID.length; j++) {
-			if (Schedular.config.eventsList[i].doc_id == providerID[j].id) {
+			if (Schedular.config.eventsList[i].docId == providerID[j].id) {
 				arrEvents.push(Schedular.config.eventsList[i]);
 			}
 		}
@@ -581,8 +727,8 @@ Schedular.prototype.getYScale = function() {
 
 Schedular.prototype.getXData = function() {
 	var wid = this.persons.length * 300;
-	// if(wid < 1400)
-	// wid = '100%';
+	if(wid < 1400) // Modified by Bhaskar
+		wid = '100%';
 	var Xdata = '';
 	Xdata += '<div style="position: relative;"><table class="Yscale" style="table-layout: fixed;float: left;" width="'
 			+ wid + 'px" id="persondatatab">';
@@ -594,24 +740,20 @@ Schedular.prototype.getXData = function() {
 
 Schedular.prototype.getPersonTabWidth = function() {
 	var wid = this.persons.length * 300;
-	// if(wid < 1400)
-	// wid = '100%';
+	if(wid < 1400)// Modified by Bhaskar
+		wid = '100%';
 	return wid;
 }
 
 Schedular.prototype.getXHeader = function() {
 	var _XHeader = '';
 	_XHeader += '<tr>';
-	if (this.persons.length == 1)
-		_XHeader += '<th style="width:300px !important;text-align:center;display: inline-block;" ><div style="float:left;width:80%;text-align:center;" id="'
-				+ this.persons[0].id
-				+ '">'
-				+ this.persons[0].name
-				+ '</div><div class="zoomIn" onclick="sch.zoom()">Zoom out</div></th>';
+	if(this.persons.length == 1)
+		_XHeader += '<th style="width:100% !important;text-align:center;display: inline-block;" ><div style="float:left;width:80%;text-align:center;" id="'+this.persons[0].id+'">'+this.persons[0].name+'</div>'+ sch.getZoomLinkView("","zoom out")+'</th>';
 	else
 		for (var i = 0; i < this.persons.length; i++) {
 			if (this.view == 'day')
-				_XHeader += '<th style="width:300px !important;text-align:center;display: inline-block;" ><div style="float:left;width:60%;text-align:center;" >'+this.persons[i].name+'</div>'+ sch.getLinkView(this.persons[i].id)+'</th>';// +'<div class="zoomIn" id="'+this.persons[i].id+'" onclick="sch.zoom(this.id)">Zoom</div></th>';
+				_XHeader += '<th style="width:300px !important;text-align:center;display: inline-block;" ><div style="float:left;width:64%;text-align:center;" >'+this.persons[i].name+'</div>'+ sch.getZoomLinkView(this.persons[i].id,"ZOOM")+'</th>';// +'<div class="zoomIn" id="'+this.persons[i].id+'" onclick="sch.zoom(this.id)">Zoom</div></th>';
 			else
 				_XHeader += '<th style="width:300px !important;text-align:center;display: inline-block;" ><div style="float:left;width:170px;text-align:center;" >'
 						+ this.persons[i].name + '</div></th>';
@@ -622,18 +764,25 @@ Schedular.prototype.getXHeader = function() {
 
 Schedular.prototype.getLinkView = function(provId){
 	var _html = "";
-	_html += '<div class="btn-group btn-group-lg" style="width:25%;float:right;">';
-	_html += '<button type="button" data-toggle="tooltip" title="Zoom view" onclick="sch.zoom(\''+provId+'\')" class="btn btn-default" style="height:22px;font-size:14px;padding-top:1px;padding-left:7px;padding-right:7px;">Z</button>';
-	_html += '<button type="button" data-toggle="tooltip" title="Flip Days view" onclick="showTabData(\'flipview\',\'daydiv\',\'monthdiv\',\'flipdivid\')" class="btn btn-default" style="height:22px;font-size:14px;padding-top:1px;padding-left:7px;padding-right:7px;">F</button>';
-	_html += '<button type="button" data-toggle="tooltip" title="Week view" onclick="showTabData(\'weekdivid\',\'flipview\',\'monthdiv\',\'weekdivid\')" class="btn btn-default" style="height:22px;font-size:14px;padding-top:1px;padding-left:7px;padding-right:7px;">W</button>';
+	_html += '<div class="btn-group btn-group-lg" style="width:19%;float:right;">';
+	_html += '<button type="button" data-toggle="tooltip" title="Zoom view"onclick="sch.zoom(\''+provId+'\')" class="btn btn-default" style="height:22px;font-size:14px;padding-top:1px;padding-left:7px;padding-right:7px;">Z</button>';
+	_html += '<button type="button" data-toggle="tooltip" title="Flip Days view" class="btn btn-default" style="height:22px;font-size:14px;padding-top:1px;padding-left:7px;padding-right:7px;">F</button>';
+	_html += '<button type="button" data-toggle="tooltip" title="Week view"class="btn btn-default" style="height:22px;font-size:14px;padding-top:1px;padding-left:7px;padding-right:7px;">W</button>';
+	_html += '</div>';
+	return _html;
+}
+
+Schedular.prototype.getZoomLinkView = function(provId,zText){
+	var _html = "";
+	_html += '<div class="btn-group btn-group-lg" style="width:19%;float:right;margin-right: 2px;">';
+	_html += '<button type="button" data-toggle="tooltip" title="Zoom view"onclick="sch.zoom(\''+provId+'\')" class="btn btn-default" style="height:22px;font-size:14px;padding-top:1px;padding-left:7px;padding-right:7px;float:right;">'+zText+'</button>';
 	_html += '</div>';
 	return _html;
 }
 
 Schedular.prototype.getXScale = function() {
 	var _XScale = '';
-	var _shour = Schedular.config.start_time, _smin = 0, temp_min = 0;
-	;
+	var _shour = Schedular.config.start_time, _smin = 0, temp_min=0;
 	var style = 'withline';
 	while (_shour < Schedular.config.end_time) {
 
@@ -650,7 +799,7 @@ Schedular.prototype.getXScale = function() {
 		temp_min = _smin;
 		_smin += Schedular.config.increment;
 		for (var i = 0; i < this.persons.length; i++) {
-			_XScale += "<td style=\"height:25px !important;width:300px !important;\" class=\""
+			_XScale += "<td style=\"height:25px !important;width:300px !important;cursor: default;padding:0px;margin:0px;\"  data-original-title= "+time+" class=\"" 
 					+ style
 					+ "\" position=\""
 					+ i
@@ -668,13 +817,29 @@ Schedular.prototype.getXScale = function() {
 					+ this.persons[i].id
 					+ "_"
 					+ time
-					+ "\"><div style=\"border: 1px solid #CECECE;border-bottom: 0px;width:20px;height: 100%;\">C1</div></td>";
+					+ "\">";
+			if(this.persons[i].flipData != null){
+				_XScale += "<div style=\"border: 1px solid grey;font-size:18px;padding-left:2px;border-bottom: 0px;width:20px;height: 100%;\">"+sch.getFlipData( this.persons[i].flipData, _shour, _smin)+"</div>";
+			}
+							
+			 	_XScale += "</td>";
 		}
 
 		_XScale += '</tr>';
 		style = 'noline';
 	}
 	return _XScale;
+}
+
+Schedular.prototype.getFlipData = function(data, hour, min) {
+	if(data == null)
+		return "&nbsp;";
+	var flipdata = data.split('');
+	var index = (hour * 4) - 1;
+	if(min > 0)
+		index += (min/15);
+	var output = flipdata[index];
+	return output.replace('_','-');
 }
 
 Schedular.prototype.round = function(time) {
@@ -693,6 +858,7 @@ Schedular.prototype.zoom = function(id) {
 		this.setProviders(providers);
 		this.setEvents(events_z);
 		this.init('day', "from zoom");
+	$(".Yscale").css("width","100%");
 	} else {
 		this.load(document.getElementById("inputField").value);
 	}
@@ -723,13 +889,16 @@ Schedular.prototype.editEvent = function() {
 }
 
 Schedular.prototype.saveEvent = function(obj, appObj, saveData) {
+	console.log(obj);
 	obj.offHeight = (obj.id != "" && document.getElementById(obj.id).offsetHeight != null) ? document
 			.getElementById(obj.id).offsetHeight
 			: 100;
 	obj.offWidth = (obj.id != "" && document.getElementById(obj.id).offsetWidth != null) ? document
 			.getElementById(obj.id).offsetWidth
 			: 100;
-	obj.patientName = appObj.patientName;
+	console.log( appObj.patientName);
+	obj.patientName = appObj.patientName.split('^')[0];
+	obj.patientId = appObj.patientId;
 	obj.reason = appObj.apptReasonText;
 	obj.duration = appObj.apptDuration;
 	obj.hr = this._getHour(appObj.apptTime);
@@ -737,6 +906,7 @@ Schedular.prototype.saveEvent = function(obj, appObj, saveData) {
 	var id = appObj.provId + "_" + this._getHour(appObj.apptTime) + ":"
 			+ this._getMin(appObj.apptTime);
 	obj.pos = document.getElementById(id).getAttribute('position');
+	obj.providerName = appObj.providerName;
 	obj.notes = appObj.apptNotes;
 	obj.appointStatus = appObj.apptStatus;
 	obj.goTo = appObj.goTo;
@@ -776,8 +946,7 @@ Schedular.prototype.saveBlockEvent = function(obj, appObj) {
 }
 
 Schedular.prototype.deleteEvent = function(globalApptId, apptObject) {
-	$
-	.ajax({
+	$.ajax({
 		url : "../ws/rs/appointment/"
 				+ globalApptId
 				+ "/delete",
@@ -794,72 +963,105 @@ Schedular.prototype.deleteEvent = function(globalApptId, apptObject) {
 	var $back = $('div').find("#" + apptObject);
 	$back.remove();
 }
-Schedular.prototype.editAppt = function(apptObject) {
-	globalApptId =  apptObject.split(":")[0];
-	apptObject = apptObject.split(":")[1];
+Schedular.prototype.createPopup = function(tdId,reason,notes, room){
+	reason = reason.replace(/_/g," ");
+	notes = notes.replace(/_/g," ");
+	//console.log(tdId+"<<>>"+reason+"<<>>"+notes);
+	tdId = tdId.replace(/,/g,'_');
+	//$('.eventpop').tooltip({placement: 'top', title: "<div id=\"event_tt\" style=\"text-align:left;white-space:normal;\">Reason:"+reason+"</div><div style=\"text-align:left;white-space:normal;\">Notes: "+notes+"</div>",	html: true});
+	$('.evtpop_td_pat_name').tooltip({placement: 'top', title: "<div id=\"event_tt\" style=\"text-align:left;width:150px;white-space:normal;\">Reason:"+this.formatText(reason, 18)+"</div><div style=\"text-align:left;white-space:normal;\">Notes: "+this.formatText(notes, 25)+"</div>",	html: true});
+	//$('.evtpop_td_ltline').tooltip({placement: 'top', title: "<div style=\"text-align:left;\">Reason: "+reason+"</div><div style=\"text-align:left;\">Notes: "+notes+"</div>",	html: true});
+	//$('#2_10:45').tooltip({placement: 'top', title: "<div style=\"text-align:left;\">Reason: "+reason+"</div><div style=\"text-align:left;\">Notes: "+notes+"</div>",	html: true});
+	$('.evtpop_td_pat_name')
+	//.tooltip('hide')
+	.attr('data-original-title', "<div id=\"event_tt\" style=\"text-align:left;width:150px;white-space:normal;\">Reason:"+this.formatText(reason, 18)+"</div><div style=\"text-align:left;white-space:normal;\">Notes: "+this.formatText(notes, 25)+"</div><div style=\"text-align:left;white-space:normal;\">Room: "+this.formatText(room.replace(/_/g,' '), 25)+"</div></div>")
+    //.tooltip('fixTitle')
+    //.tooltip('show');
+}
+Schedular.prototype.clearGlobalId = function(modelID) {
+	$('#'+modelID).modal('hide');
+	globalApptId = "";
+}
+Schedular.prototype.editAppt = function(apptObject, tdObj) {
+	
+	//console.log(apptObject+"<<>>"+tdObj)
+	//console.log($("#"+apptObject).attr("curapptid"));
+	//globalApptId =  apptObject.split(":")[0];
+	globalApptId = $("#"+apptObject).attr("curapptid");
+	globalEventType = $("#pat_name"+globalApptId).attr("eventType");
+	//apptObject = "appt_" + apptObject.split(":")[0];
 	add_appt_appt_id = apptObject;
 	globalObj.id = apptObject;
 	var s = $('div').find("#" + apptObject).text();
 	var sObject = JSON.stringify(s);
 	// console.log(sObject);
 
-	$("#dialog-info").dialog({
-		minHeight : 150,
-		height : 150,
-		resizable : false,
-		width : 300,
-		modal : true
-	});
-
-	$("#dialog-delete").dialog({
-		autoOpen : false,
-		resizable : false,
-		minHeight : 120,
-		height : 120,
-		width : 300,
-		modal : true
-	});
-
+//	$("#dialog-info").dialog({
+//		minHeight : 150,
+//		height : 150,
+//		resizable : false,
+//		width : 300,
+//		modal : true
+//	});
+	//$('#dialog-info').modal();
+	$('#dialog-edit').modal();
+	
+	
 	$(".ui-dialog-titlebar").hide();
 
 	$("#sch_info_but_edit").on("click", function() {
 		$("#next_app_form").dialog("close");
-		sch.clearForm("#add_appt_form");
+		//$('#myModal').modal();
+		$('#dialog-edit').modal();
+		$(".ui-dialog-titlebar").show();
+		$(".ui-dialog-titlebar-close").hide();
+		$('#dialog-info').modal('hide');
+	});
+	$("#sch_info_but_edit1").on("click", function() {
+		$('#dialog-edit').modal('hide');
 		$("#add_appt_form").dialog("open");
-		$("#dialog-info").dialog("close");
+		
 	});
 
 	$("#sch_info_but_delete").on("click", function() {
-		$("#dialog-info").dialog("close");
+		$('#dialog-info').modal('hide');
 		$("#next_app_form").dialog("close");
-		$("#dialog-delete").dialog("open");
+		$("#dialog-delete").modal();
 	});
 
 	$("#sch_del_but_delete").on("click", function() {
 		sch.clearForm("#add_appt_form");
 		sch.deleteEvent(globalApptId, apptObject);
-		$("#dialog-delete").dialog("close");
-		$("#dialog-info").dialog("close");
+		dateChange("");
+		$("#add_appt_form").dialog("close");
+		$("#dialog-delete").modal('hide');
+		$('#dialog-info').modal('hide');
 	});
 
 	$("#sch_info_but_cancel").on("click", function() {
-		$("#dialog-info").dialog("close");
+		$('#dialog-info').modal('hide');
+	});
+	$("#sch_info_but_cancel1").on("click", function() {
+		$('#dialog-edit').modal('hide');
+	});
+	$("#sch_del_but_cancel").on("click", function() {
+		$("#dialog-delete").modal('hide');
 	});
 
-	$("#sch_del_but_cancel").on("click", function() {
-		$("#dialog-delete").dialog("close");
-	});
 
 }
 
 var cnt = 0;
 Schedular.prototype.getEventDiv = function(obj, act) {
+	var apptType = ["", "E", "I", "B", "R"];
 	var html = '';
 	var duration = obj.duration;
 	var hr = obj.hr;
 	var min = obj.min;
 	var pos = obj.pos;
 	var offHeight = obj.offHeight;
+	
+	obj.noOfPat = obj.patientId!=null?obj.patientId.split(',').length:0;
 
 	hr = hr - Schedular.config.start_time;
 	var top = hr * (offHeight * 4);
@@ -882,78 +1084,134 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 
 		if (obj.stauscolor == null)
 			obj.stauscolor = "#5E5A80";
-
+		var zoomWidth = "";
+		if( Schedular.config.providersLis !=null && Schedular.config.providersList.length==1 && globalView.view=="day")
+			zoomWidth ="1300px ! important;"
+			else
+				zoomWidth = "250px;";
 		html += '<div class="eventpop" style="height:' + height
 				+ 'px;position: absolute;top:' + top + 'px;left:' + left
-				+ 'px;width:250px;" id=' + obj.hr + '_' + obj.min + '>';
+				//+ 'px;width:250px;" id=' + obj.hr + '_' + obj.min + '>';
+				+ 'px;width:'+zoomWidth+'" id=appt_' + obj.apptId + '>';
 		html += '<table class="eventtab" style="width:100%;border-collapse:collapse;padding:0px;" id="tab"  cellspacing="0" >';
-		html += '<tr class=""> <td class="gen_font '
-				+ stylecls
-				+ '" style="padding-left:5px;width:20px !important;" id="appt_sta_'
-				+ obj.apptId + '"><div class="alertbox" style="background:'
-				+ obj.stauscolor + ';">' + obj.appointStatus + '</div></td>';
-		html += '<td class=" evtpop_td_ltline '
-				+ stylecls
-				+ '" style="width:10px !important;text-align:center;"><div class="dropdown btn-group" > <a class="btn dropdown-toggle" data-toggle="dropdown" style="height:20px;padding:0px;padding-left:6px;padding-right:6px;padding-top:0px;padding-bottom:0px;">   <span class="caret" style="padding:0px;"></span>    </a>    <ul class="dropdown-menu">        '
-				+ sch.getApptStatusHTML("appt_sta_" + obj.apptId)
-				+ '    </ul></div></td>';
-		if (obj.isCritical == "Y") {
-			html += '<td class="evtpop_td_ltline '
-					+ stylecls
-					+ '" style="width:15px !important;text-align:center;"><div class="alertbox" style="background:#5E5A80;padding:0px;height:16px;">!</div></td>';
-			colspan++;
-		}
-		if (obj.noOfPat != null && obj.noOfPat > 1) {
-			html += '<td class=" evtpop_td_ltline '
-					+ stylecls
-					+ '" style="width:50px !important;text-align:center;padding-top:2px;"><div style="display: inline-block;cursor:pointer;" onclick="sch.repeatMulPat(this);" apptid="'
-					+ obj.apptId
-					+ '" index="0" totpat="'
-					+ (obj.noOfPat)
-					+ '"><input type="image" style="" src="js_up/images/multi_p.png"><span style="position: relative; top: -5px;">'
-					+ (obj.noOfPat)
-					+ '</span> <input type="image" style="width:12px;height:12px;" src="js_up/images/round_arrow.png"></div></td>';
-		}
-		var j = obj.apptId + ':' + obj.hr + '_' + obj.min;
-		html += "<td class=\"evtpop_td_pat_name evtpop_td_ltline\" style=\"color:#3366FF;cursor:pointer;\" id='pat_name"
-				+ obj.apptId
-				+ "' apptid=\""
-				+ obj.apptId
-				+ "\" onclick='sch.editAppt(\""
-				+ j
-				+ "\")' >"
-				+ obj.patientName + "</td>";
-		if (obj.goTo != null) {
-			html += '<td class="evtpop_td_ltline '
-					+ stylecls
-					+ '" style="width:15px !important;text-align:center;" id="appt_goto_'
-					+ obj.apptId + '">' + obj.goTo + '</td>';
-			colspan++;
-		}
-		html += '<td class="evtpop_td_ltline '
-				+ stylecls
-				+ '" style="width:15px !important;text-align:center;"><div class="dropdown btn-group" > <a class="btn dropdown-toggle" data-toggle="dropdown" style="height:20px;padding:0px;padding-left:6px;padding-right:6px;padding-top:0px;padding-bottom:0px;">   <span class="caret" style="padding:0px;"></span>    </a>    <ul class="dropdown-menu">        '
-				+ sch.getApptGotoHTML('appt_goto_' + obj.apptId)
-				+ '    </ul></div></td>';
-		html += '</tr>';
+		
 		var reasonDis = "none";
 		var notesDis = "none";
 		if (duration > 15)
 			reasonDis = "table-row";
 		if (duration > 30)
 			notesDis = "table-row";
+		var overPopup = "";
+		if(obj.duration==15){
+			var rs = obj.reason!=null?(obj.reason).replace(/ /g,"_"):"";
+			var nt = obj.notes!=null?(obj.notes).replace(/ /g,"_"):"";
+			var room = obj.roomId!=null?(obj.roomId).replace(/ /g,"_"):"";
+			overPopup="onmouseover=sch.createPopup(\"pat_name"+obj.apptId+"\",\""+rs+"\",\""+nt+"\",\""+room+"\")";
+		}else{
+			overPopup ="";
+		}
+		
+		/*if it is add appointment*/
+		if(obj.patientName != null && obj.patientName.length > 0){
+			html += '<tr class=""> <td class="gen_font '
+					+ stylecls
+					+ '" style="padding-left:5px;width:20px !important;" id="appt_sta_'
+					+ obj.apptId.replace(/,/g,'_') + '" curapptid="'+obj.apptId.split(',')[0]+'"><div class="alertbox" style="background:'
+					+ obj.stauscolor + ';">' + obj.appointStatus + '</div></td>';
+			html += '<td class=" evtpop_td_ltline '
+					+ stylecls
+					+ '" style="width:10px !important;text-align:center;"><div class="dropdown btn-group" > <a class="btn dropdown-toggle" data-toggle="dropdown" style="height:20px;padding:0px;padding-left:6px;padding-right:6px;padding-top:0px;padding-bottom:0px;">   <span class="caret" style="padding:0px;"></span>    </a>    <ul class="dropdown-menu">        '
+					+ sch.getApptStatusHTML("appt_sta_" + obj.apptId.replace(/,/g,'_'))
+					+ '    </ul></div></td>';
+			var patNameLength = 25;
+			var criticalDisplay = "none";
+			if (obj.isCritical == "Y") {
+				patNameLength = 18;
+				criticalDisplay = "table-cell";
+			}
+			html += '<td class="evtpop_td_ltline '
+				+ stylecls
+				+ '" style="width:15px !important;text-align:center;display:'+criticalDisplay+'" id="appt_critical_'
+				+ obj.apptId.replace(/,/g,'_') + '" ><div class="alertbox" style="background:#5E5A80;padding:0px;height:16px;">!</div></td>';
+			colspan++;
+		
+			if(obj.isCritical == "Y" && obj.noOfPat != null && obj.noOfPat > 1)
+				patNameLength = 10;
+				
+			if (obj.noOfPat != null && obj.noOfPat > 1) {
+				html += '<td class=" evtpop_td_ltline '
+						+ stylecls
+						+ '" style="width:50px !important;text-align:center;padding-top:2px;"><div style="display: inline-block;cursor:pointer;" onclick="sch.repeatMulPat(this);" apptid="'
+						+ obj.apptId
+						+ '" index="0" totpat="'
+						+ (obj.noOfPat)
+						+ '"><input type="image" style="" src="js_up/images/multi_p.png"><span style="position: relative; top: -5px;">'
+						+ (obj.noOfPat)
+						+ '</span> <input type="image" style="width:12px;height:12px;" src="js_up/images/round_arrow.png"></div></td>';
+			}
+			var j = obj.apptId + ':' + obj.hr + '_' + obj.min;
 
-		html += "<tr style='display:" + reasonDis + "'>";
-		html += "<td colspan='" + colspan + "' class='gen_font2' id='appt_rea"
-				+ obj.apptId + "'><span class='gen_font3'>Reason:</span> "
-				+ this.formatText(obj.reason, 40) + "</td>";
-		html += "</tr>";
-
-		html += "<tr style='display:" + notesDis + "'>";
-		html += "<td colspan='" + colspan + "' class='gen_font2' id='appt_note"
-				+ obj.apptId + "'><span class='gen_font3'>Notes:</span> "
-				+ this.formatText(obj.notes, 40) + "</td>";
-		html += "</tr>";
+			html += "<td class=\"evtpop_td_pat_name evtpop_td_ltline\" style=\"color:#3366FF;cursor:pointer;\" eventType='appointment' curapptid='"+obj.apptId.split(',')[0]+"' id='pat_name"
+					+ obj.apptId.replace(/,/g,'_')
+					+ "' apptid=\""
+					+ obj.apptId
+					+ "\" onclick='sch.editAppt(this.id,\""+ obj.id +"\")'"+overPopup+" >"
+					+ this.formatText(obj.patientName, patNameLength) + "</td>";
+			var tempToTo = apptType[obj.goTo];
+			if(tempToTo == null || tempToTo == undefined)
+				tempToTo = obj.goTo;
+			
+			var goToDisplay = "table-cell";
+			if(obj.goTo == null)
+				goToDisplay = "none";
+			
+			html += '<td class="evtpop_td_ltline '
+					+ stylecls
+					+ '" style="width:15px !important;text-align:center;display:'+goToDisplay+'" curapptid="'+obj.apptId.split(',')[0]+'" id="appt_goto_'
+					+ obj.apptId.replace(/,/g,'_') + '">' + tempToTo + '</td>';
+			colspan++;
+				
+			html += '<td class="evtpop_td_ltline '
+					+ stylecls
+					+ '" style="width:15px !important;text-align:center;"><div class="dropdown btn-group" > <a class="btn dropdown-toggle" data-toggle="dropdown" style="height:20px;padding:0px;padding-left:6px;padding-right:6px;padding-top:0px;padding-bottom:0px;">   <span class="caret" style="padding:0px;"></span>    </a>    <ul class="dropdown-menu">        '
+					+ sch.getApptGotoHTML('appt_goto_' + obj.apptId.replace(/,/g,'_'), obj.providerName, obj.startDate, obj.hr, obj.min)
+					+ '    </ul></div></td>';
+			html += '</tr>';
+		
+			
+	
+			html += "<tr style='display:" + reasonDis + "'>";
+			html += "<td colspan='" + colspan + "' class='gen_font2' id='appt_rea"
+					+ obj.apptId + "'><span class='gen_font3'>Reason:</span> "
+					+ this.formatText(obj.reason, 40) + "</td>";
+			html += "</tr>";
+	
+			html += "<tr style='display:" + notesDis + "'>";
+			html += "<td colspan='" + colspan + "' class='gen_font2' id='appt_note"
+					+ obj.apptId + "'><span class='gen_font3'>Notes:</span> "
+					+ this.formatText(obj.notes, 40) + "</td>";
+			html += "</tr>";
+		}else{/* block time*/
+			html += "<tr>";
+			/*html += "<td class='gen_font2' id='appt_rea"
+					+ obj.apptId + "'><span class='gen_font3'>"+ this.formatText(obj.reason, 40) +":</span> "
+					+ obj.providerName + "</td>";*/
+			var j = obj.apptId + ':' + obj.hr + '_' + obj.min;
+			html += "<td class=\"evtpop_td_pat_name evtpop_td_ltline\" style=\"color:#3366FF;cursor:pointer;\" eventType='blocktime' id='pat_name"
+				+ obj.apptId
+				+ "' apptid=\""
+				+ obj.apptId
+				+ "\" onclick='sch.editAppt(\"" + j + "\",\""+ obj.id +"\")'"+overPopup+" >"+ this.formatText(obj.reason, 40) +": &nbsp; "
+				+ obj.providerName + "</td>";
+			
+			html += "</tr>";
+	
+			html += "<tr style='display:" + reasonDis + "'>";
+			html += "<td colspan='" + colspan + "' class='gen_font2' id='appt_note"
+					+ obj.apptId + "'><span class='gen_font3'>Description:</span> "
+					+ this.formatText(obj.notes, 40) + "</td>";
+			html += "</tr>";
+		}
 
 		html += '</table>';
 		html += '</div>';
@@ -982,24 +1240,54 @@ Schedular.prototype.repeatMulPat = function(obj) {
 	// console.log(apptId+" - "+index+" - "+add_appt_pat_cnt_names);
 }
 
-Schedular.prototype.setMulPatDtls = function(apptId, index) {
-	var _data = sch.getMulPatApptDtls(apptId, index);
-	$("#pat_name" + apptId).html(this.formatText(_data["patName"], 10));
-	sch.setApptStatus(_data["apptSta"], _data["apptStaColor"], "appt_sta_"
-			+ apptId);
-	sch.setApptGoto(_data["apptGoto"], "appt_goto_" + apptId);
+Schedular.prototype.setMulPatDtls = function(apptId, index) {	
+	var currentApptId = apptId.split(',')[index];
+	var _data = sch.getMulPatApptDtls(currentApptId);
+	apptId = apptId.replace(/,/g,'_');
+	$("#pat_name" + apptId).html(this.formatText(_data["patientName"], 10));
+	console.log("#pat_name" + apptId);
+	//sch.setApptStatus(_data["apptSta"], _data["appointStatus"], "appt_sta_"+ apptId);
+	$("#appt_sta_" + apptId).attr("curapptid", currentApptId);
+	$("#appt_sta_" + apptId).html('<div class="alertbox" style="background:#5E5A80;padding:0px;">' + _data["apptStatus"] + '</div>');
+	//sch.setApptGoto(_data["apptGoto"], "appt_goto_" + apptId);
+	var apptType = ["", "E", "I", "B", "R"];
+	console.log(currentApptId);
+	$("#appt_goto_" + apptId).attr("curapptid", currentApptId);
+	$("#pat_name" + apptId).attr("curapptid", currentApptId);
+	if(_data["goTo"] != null){		
+		$("#appt_goto_" + apptId).html( apptType[_data["goTo"]]);
+		document.getElementById("appt_goto_" + apptId).style.display = "table-cell";
+	}else{
+		document.getElementById("appt_goto_" + apptId).style.display = "none";
+	}
+	
+	if(_data["isCritical"] == "Y"){		
+		document.getElementById("appt_critical_" + apptId).style.display = "table-cell";
+	}else{
+		document.getElementById("appt_critical_" + apptId).style.display = "none";
+	}
 
-	$("#appt_rea" + apptId).html(
-			"<span class='gen_font3'>Reason:</span>&nbsp;"
-					+ this.formatText(_data["apptRea"], 40));
-	$("#appt_note" + apptId).html(
-			"<span class='gen_font3'>Notes:</span>&nbsp;"
-					+ this.formatText(_data["apptNote"], 40));
+	$("#appt_rea" + apptId).html("<span class='gen_font3'>Reason:</span>&nbsp;"	+ this.formatText(_data["apptRea"], 40));
+	$("#appt_note" + apptId).html("<span class='gen_font3'>Notes:</span>&nbsp;"	+ this.formatText(_data["apptNotes"], 40));
 }
 
-Schedular.prototype.getMulPatApptDtls = function(apptId, index) {
-	// ajax code to save the apptstatus dtls
-	return mulPatDtls[index];
+Schedular.prototype.getMulPatApptDtls = function(apptId) {
+	var appt_data =	$.ajax({
+		url : "../ws/rs/patient/"+apptId+"/viewEdit",
+		type : "get",
+		contentType : 'application/json',
+		Accept: 'application/json',					
+		async:false,
+		success : function(result) {
+			//appt_data = result.appointments;
+		},
+		error : function(jqxhr) {
+			var msg = JSON.parse(jqxhr.responseText);
+			alert(msg['message']);
+		}
+	}).responseText;
+	var jObj = JSON.parse(appt_data);
+	return jObj.appointments;
 }
 
 Schedular.prototype.getApptStatusHTML = function(divID) {
@@ -1031,17 +1319,57 @@ Schedular.prototype.getApptStatusHTML = function(divID) {
 }
 
 Schedular.prototype.setApptStatus = function(code, color, divID) {
-	sch.saveApptStatus(code);
+	var curApptId = $("#" + divID).attr("curapptid");
+	//console.log(divID.split('_')[2]);
+	var apptID = '';
+	if(divID != null)
+		apptID = divID.split('_')[2];
+	sch.saveApptStatus(curApptId, code);
 	$("#" + divID).html(
 			'<div class="alertbox" style="background:' + color
 					+ ';padding:0px;">' + code + '</div>');
 }
 
-Schedular.prototype.saveApptStatus = function(code) {
-	// ajax code to save the apptstatus dtls
-}
+Schedular.prototype.saveApptStatus = function(apptID, code) {
+	$.ajax({
+		url : "../ws/rs/appointment/"+ apptID +"/"+code+"/saveStatus",
+		type : "get",
+		//contentType : 'application/json',
+		dataType: "json" ,
+		global: false,
+		async:false,
+		success : function(result) {
+			//alert('done');
+		},
+		error : function(jqxhr) {
+			var msg = JSON.parse(jqxhr.responseText);
+			alert(msg['message']);
 
-Schedular.prototype.getApptGotoHTML = function(divID) {
+		}
+	});
+}
+var printLable_date;
+var printLable_time;
+var printLable_provName;
+Schedular.prototype.printLables = function(provName, date, hour, min) {
+	var AM_PM = " am";
+	if(hour > 12){
+		hour -= 12;
+		AM_PM = " pm";
+	}
+	var time = hour+":"+min+ AM_PM;
+	printLable_date = date;
+	printLable_time = time;
+	printLable_provName = provName;
+	
+	var w = 550;
+	var h = 300;
+	var left = (screen.width/2)-(w/2);
+	var top = (screen.height/2)-(h/2) - 100;
+	window.open("./partials/printLabels.jsp", "_blank", 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left, "window")
+	
+}
+Schedular.prototype.getApptGotoHTML = function(divID, provName, date, hour, min) {
 
 	var _html = "";
 	$
@@ -1056,16 +1384,39 @@ Schedular.prototype.getApptGotoHTML = function(divID) {
 								+ row.name + "</a></li>";
 
 					});
+	_html += "<li><a style='text-align:left;width:150px;' onclick='sch.printLables(\""+provName+"\", \""+date+"\", \""+hour+"\", \""+min+"\")'>Print lables</a></li>";
 	return _html;
 }
 
 Schedular.prototype.setApptGoto = function(code, divID) {
-	sch.saveApptStatus(code);
-	$("#" + divID).html(code);
+	//var apptType = ["", "E", "I", "B", "R"];
+	var apptID = '';
+	var curApptId = $("#" + divID).attr("curapptid");
+	if(divID != null)
+		apptID = divID.split('_')[2];
+	sch.saveApptGoto(curApptId, code);
+	document.getElementById(divID).style.display = "table-cell";
+	//console.log(apptType[code]);
+	$("#" + divID).html( code);
 }
 
-Schedular.prototype.saveApptGoto = function(code) {
-	// ajax code to save the apptstatus dtls
+Schedular.prototype.saveApptGoto = function(apptID, code) {
+	$.ajax({
+		url : "../ws/rs/appointment/"+ apptID +"/"+code+"/saveType",
+		type : "get",
+		//contentType : 'application/json',
+		dataType: "json" ,
+		global: false,
+		async:false,
+		success : function(result) {
+			//alert('done');
+		},
+		error : function(jqxhr) {
+			var msg = JSON.parse(jqxhr.responseText);
+			alert(msg['message']);
+
+		}
+	});
 }
 
 Schedular.prototype.formatText = function(text, length) {
@@ -1099,6 +1450,8 @@ Schedular.prototype.loadDayEvents = function(events) {
 				event.pos = this.getPosition(docId);
 				event.duration = events[i]["duration"];
 				event.apptId = events[i]["apptId"];
+				event.providerName = events[i]["providerName"];
+				event.startDate = events[i]["apptStartDate"];
 				event.noOfPat = events[i]["noOfPat"];
 				var objId = docId + "_" + event.hr + ":" + event.min;
 				event.offHeight = document.getElementById(objId)==null?25:document.getElementById(objId).offsetHeight;
@@ -1108,7 +1461,7 @@ Schedular.prototype.loadDayEvents = function(events) {
 			}else{		
 				var fromtime = event["fromTime"];
 				var docId = Schedular.config.weekDayList.indexOf(event["apptStartDate"]);
-				event.docId = docId;
+				event.docId = docId+1;
 				event.hr = this.getHour(fromtime);
 				event.min = this.getMin(fromtime);
 				event.pos = docId;
@@ -1124,6 +1477,12 @@ Schedular.prototype.loadDayEvents = function(events) {
 		}
 	}
 	setTimeout('Schedular.prototype.timerTab()', 100);
+	if(globalView.view=="week"){
+		$(".Yscale th").addClass("weekColor");
+	}else{
+		$(".Yscale th").removeClass("weekColor");
+	}
+	
 }
 
 Schedular.prototype.getHour = function(time) {
@@ -1183,6 +1542,11 @@ Schedular.prototype.setInitData = function(params) {
 	var result = params.data['response'];
 	var result_dt = (params.data['response'])['day'];
 	var result_dts = (params.data['response'])['days'];
+	if(result_dts != null && result_dts.length>0){
+		
+		weekDB= sch.setWeekDB(result_dts);
+		weekDB_hideWeekEnds = sch.setHideWeekDB(result_dts);
+	}
 	var variables = params.vars;
 	var toDat = document.getElementById("inputField").value;
 	Schedular.config.eventsList = [];
@@ -1192,7 +1556,7 @@ Schedular.prototype.setInitData = function(params) {
 				Schedular.config.eventsList = (params.data['response'])['events'];
 				Schedular.config.providersList = (params.data['response'])['providers'];
 				Schedular.config.weekDayList = [];
-				return false;
+				//return false;
 			}
 	} else {
 			if (result_dt == params.vars.doc_dt && result_dt != null) {
@@ -1206,7 +1570,7 @@ Schedular.prototype.setInitData = function(params) {
 					Schedular.prototype.setProviders(provider);
 					Schedular.prototype.setEvents(events);
 				}
-				return false;
+				//return false;
 			}else if(result_dts!=null){
 				Schedular.config.eventsList = (params.data['response'])['events'];
 				Schedular.config.providersList = (params.data['response'])['providers'];
@@ -1214,11 +1578,13 @@ Schedular.prototype.setInitData = function(params) {
 			}
 	}
 	setTimeout(function() {
-		// alert('jerer'+document.getElementById('testidd').offsetWidth);
-		document.getElementById('xdummytabtd').width = document
-				.getElementById('testidd').offsetWidth
-				+ "px";
-	}, 5000)
+		document.getElementById('xdummytabtd').style.width = document.getElementById('testidd').offsetWidth+ "px";
+	}, 4000);
+	if(Schedular.config.providersList==null||(Schedular.config.providersList!=null && Schedular.config.providersList.length==1)){
+		
+	}else{
+		providerListObj.providersList = Schedular.config.providersList; 
+	}
 }
 Schedular.prototype.ajaxMethod = function(url, ORSCFuncName, variables) {
 	$.getJSON(url, function(result) {
@@ -1243,10 +1609,6 @@ Schedular.prototype.timerTab = function() {
 		Schedular.prototype.timerDisable();
 		timer = $.timer(updateTimer, incrementTime, true);
 	};
-	// timer = $.timer(function() {
-	// Schedular.prototype.timerDisable();
-	// },'900000', true);
-	//console.log("at 1178");
 	init1();
 }
 Schedular.prototype.timerDisable = function() {
@@ -1310,7 +1672,7 @@ Schedular.prototype.clearForm = function(formId) {
 			this.selectedIndex = 0;
 		}
 
-		add_app_fn.loadPatientDtls('');
+		//add_app_fn.loadPatientDtls('');
 		$("#naa_search").text("Search");
 	});
 }
@@ -1380,6 +1742,17 @@ Schedular.prototype.weekForCurrentDay = function (dt) {
 	var s_end  =  Schedular.prototype.weekDay(sunday);
 	return (s_start+","+s_end);
 }
+Schedular.prototype.weekForCurrentDate = function (dt) {
+	var sz = dt.split(" to ");
+	return sch.getFullDateFormat(sz[0]) +","+ sch.getFullDateFormat(sz[1]);
+}
+
+Schedular.prototype.getFullDateFormat = function(dt){
+	var dtOpts = dt.split('-');
+	return dtOpts[0] +"-"+ dtOpts[1] +"-20"+ dtOpts[2];
+} 
+
+
 Schedular.prototype.weekDay = function (date){
 	var day = "";
 	if(date.getDate()<10)
@@ -1400,4 +1773,138 @@ Schedular.prototype.weekDay = function (date){
 	total = days_in_month[month];
 	var date_today = day+"-"+months[month]+"-"+year;
 	return date_today;
+}
+
+Schedular.prototype.weekForCurrentDay_Offset = function (dt) {
+	//console.log(dt);
+	var sz = dt.split("-");
+	var months = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+	var a = months.indexOf(sz[1]);
+	//a= a+1;
+	if(a<10){
+		a = "0"+a
+	}else{
+		a = a
+	}
+	//console.log(sz[2]+"-"+a+"-"+sz[0]);
+	//var current = new Date(Date.UTC(year, month, day, hour, minute, second));     // get current date
+	var current = new Date(Date.UTC(sz[0],sz[1],sz[2],5,0,0));     // get current date
+	//console.log(current);
+	var s = Schedular.prototype.weekDay(current);
+
+	return s;
+}
+Schedular.prototype.showAll = function () {
+	if(globalView.view=="day"){
+	var _data = new Object
+	_data.data = sch.showAllPrvidersData("fetchGroupAppointments");
+	console.log(_data.data);
+	Schedular.prototype.setInitData(_data);
+	setTimeout('sch.init(\''+globalView.view+'\',\'from Show All\')', 1000);
+	}
+
+}
+Schedular.prototype.showScheduled = function () {
+	if(globalView.view=="day"){
+		var _data = new Object
+		_data.data = sch.showAllPrvidersData("fetchGroupHavingEvents");
+		console.log(_data.data);
+		Schedular.prototype.setInitData(_data);
+		setTimeout('sch.init(\''+globalView.view+'\',\'from Show selected\')', 1000);
+		}
+
+}
+Schedular.prototype.showAllPrvidersData = function (urlParam) {
+	var dt = $("#inputField").val();
+	var gr = $("#docava").val();
+	var selGroup  = gr.split("_")[0];
+		console.log(selGroup);
+		var data1 = $.ajax({
+			url : "../ws/rs/providerService/"+dt+"/"+selGroup+"/"+urlParam,
+			type : "get",
+			async: false,
+			contentType : 'application/json',
+			success : function(result) {
+			},
+			error : function(jqxhr) {
+				var msg = JSON.parse(jqxhr.responseText);
+				alert(msg['message']);
+
+			}
+		}).responseText;
+		var jObj = JSON.parse(data1);
+		return jObj;
+}
+Schedular.prototype.hideWeekends = function () {
+	hideWeekEnds = true;
+	if(globalView.view=="week")
+	sch.init("week","from hide week ends");
+	setTimeout(function() {
+		document.getElementById('xdummytabtd').style.width = document.getElementById('testidd').offsetWidth+ "px";
+	}, 2000);
+	
+}
+Schedular.prototype.showWeekends = function () {
+	hideWeekEnds = false;
+	if(globalView.view=="week")
+	sch.init("week","from show week ends");
+	setTimeout(function() {
+		document.getElementById('xdummytabtd').style.width = document.getElementById('testidd').offsetWidth+ "px";
+	}, 2000);
+	
+}
+Schedular.prototype.flipHideWeekends = function () {
+	flipWeekendHide = true;
+	showdata(globalProviderId);
+}
+Schedular.prototype.flipShowWeekends = function () {
+	flipWeekendHide = false;
+	showdata(globalProviderId);
+	
+}
+Schedular.prototype.setWeekDB = function (result_dts) {
+	var tempWeekDB ="";
+	tempWeekDB = [{
+		name : "Monday, "+(result_dts[0].split("-"))[1]+" "+(result_dts[0].split("-"))[0],
+		id : "1"
+	}, {
+		name : "Tuesday, "+(result_dts[1].split("-"))[1]+" "+(result_dts[1].split("-"))[0],
+		id : "2"
+	}, {
+		name : "Wednesday, "+(result_dts[2].split("-"))[1]+" "+(result_dts[2].split("-"))[0],
+		id : "3"
+	}, {
+		name : "Thursday, "+(result_dts[3].split("-"))[1]+" "+(result_dts[3].split("-"))[0],
+		id : "4"
+	}, {
+		name : "Friday, "+(result_dts[4].split("-"))[1]+" "+(result_dts[4].split("-"))[0],
+		id : "5"
+	}, {
+		name : "Saturday, "+(result_dts[5].split("-"))[1]+" "+(result_dts[5].split("-"))[0],
+		id : "6"
+	}, {
+		name : "Sunday, "+(result_dts[6].split("-"))[1]+" "+(result_dts[6].split("-"))[0],
+		id : "7"
+	} ];
+	return tempWeekDB;
+}
+Schedular.prototype.setHideWeekDB = function (result_dts) {
+	var tempWeekDB ="";
+	tempWeekDB = [{
+		name : "Monday, "+(result_dts[0].split("-"))[1]+" "+(result_dts[0].split("-"))[0],
+		id : "1"
+	}, {
+		name : "Tuesday, "+(result_dts[1].split("-"))[1]+" "+(result_dts[1].split("-"))[0],
+		id : "2"
+	}, {
+		name : "Wednesday, "+(result_dts[2].split("-"))[1]+" "+(result_dts[2].split("-"))[0],
+		id : "3"
+	}, {
+		name : "Thursday, "+(result_dts[3].split("-"))[1]+" "+(result_dts[3].split("-"))[0],
+		id : "4"
+	}, {
+		name : "Friday, "+(result_dts[4].split("-"))[1]+" "+(result_dts[4].split("-"))[0],
+		id : "5"
+	}];
+	return tempWeekDB;
 }

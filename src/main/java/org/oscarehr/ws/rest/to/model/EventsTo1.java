@@ -51,7 +51,49 @@ public class EventsTo1 implements Serializable {
 	private String notes;
 	private String apptStartDate;
 	private String apptType;
+	private String providerName;
+	private String programId;
+	private String patientId;
+	private String multiApptId;
+	private String recurrenceId;
+	private String roomId;
 	
+	/**
+	 * @return the patientId
+	 */
+	public String getPatientId() {
+		return patientId;
+	}
+	/**
+	 * @param patientId the patientId to set
+	 */
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+	/**
+	 * @return the programId
+	 */
+	public String getProgramId() {
+		return programId;
+	}
+	/**
+	 * @param programId the programId to set
+	 */
+	public void setProgramId(String programId) {
+		this.programId = programId;
+	}
+	/**
+	 * @return the providerName
+	 */
+	public String getProviderName() {
+		return providerName;
+	}
+	/**
+	 * @param providerName the providerName to set
+	 */
+	public void setProviderName(String providerName) {
+		this.providerName = providerName;
+	}
 	public String getApptType() {
 		return apptType;
 	}
@@ -140,6 +182,42 @@ public class EventsTo1 implements Serializable {
 	}
 	public void setNotes(String notes) {
 		this.notes = notes;
+	}
+	/**
+	 * @return the multiApptId
+	 */
+	public String getMultiApptId() {
+		return multiApptId;
+	}
+	/**
+	 * @param multiApptId the multiApptId to set
+	 */
+	public void setMultiApptId(String multiApptId) {
+		this.multiApptId = multiApptId;
+	}
+	/**
+	 * @return the recurrenceId
+	 */
+	public String getRecurrenceId() {
+		return recurrenceId;
+	}
+	/**
+	 * @param recurrenceId the recurrenceId to set
+	 */
+	public void setRecurrenceId(String recurrenceId) {
+		this.recurrenceId = recurrenceId;
+	}
+	/**
+	 * @return the roomId
+	 */
+	public String getRoomId() {
+		return roomId;
+	}
+	/**
+	 * @param roomId the roomId to set
+	 */
+	public void setRoomId(String roomId) {
+		this.roomId = roomId;
 	}
 	
 	

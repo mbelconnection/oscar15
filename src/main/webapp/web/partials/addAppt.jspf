@@ -3,6 +3,8 @@
 
 <script>
 	var apptData = "";
+	var add_appt_savePrint = 0;
+	var add_app_edit_no_of_pats = '';
 	
 	var add_appt_data = "UND";
 
@@ -32,31 +34,31 @@
 		var add_appt_json_docs = [ {
 			label : "Dr. Oscardoc",
 			category : "",
-			id : "1"
+			id : "1234"
 		}, {
 			label : "Dr. Doe",
 			category : "",
-			id : "2"
+			id : "1235"
 		}, {
 			label : "Dr. Hilts",
 			category : "",
-			id : "3"
+			id : "1236"
 		}, {
 			label : "Dr. Yarwick",
 			category : "",
-			id : "4"
+			id : "1237"
 		}, {
 			label : "Dr. Michelle Dietician",
 			category : "",
-			id : "5"
+			id : "1238"
 		}, {
 			label : "Dr. Alison Smith",
 			category : "",
-			id : "6"
+			id : "1239"
 		}, {
 			label : "Dr. Rand Paul",
 			category : "",
-			id : "7"
+			id : "1240"
 		} ];
 
 		var add_appt_sample_appt_data = {
@@ -306,16 +308,27 @@
 
 		var add_appt_form_flds = {
 			"add_appt_pat_name" : "patientName",
-			"add_appt_date" : "date",
-			"add_appt_time" : "time",
-			"add_appt_duration" : "duration",
-			"add_appt_type" : "appttype",
-			"add_appt_status" : "appt_status",
-			"add_appt_resources" : "apptresources",
-			"add_appt_reason" : "apptreason",
-			"add_appt_reason_dtls" : "apptreasondtls",
-			"add_appt_notes" : "apptnotes"
+			"add_appt_date" : "apptStartDate",
+			"add_appt_time" : "apptTime",
+			"add_appt_duration" : "apptDuration",
+			"add_appt_type" : "apptType",
+			"add_appt_status" : "apptStatus",
+			"add_appt_resources" : "apptResources",
+			"add_appt_reason" : "appReason",
+			"add_appt_reason_dtls" : "apptReasonDtls",
+			"add_appt_notes" : "apptNotes",
+			"add_appt_location":"location",
+			"add_appt_room" : "roomId"
 		};
+		
+		var block_time_form_flds = {
+				"add_appt_block_s_provider" : "providerName",
+				"blk_appt_date" : "apptStartDate",
+				"blk_appt_time" : "apptTime",
+				"blk_appt_duration" : "apptDuration",
+				"blk_appt_reason" : "appReason",
+				"blk_appt_notes" : "apptNotes"				
+			};
 
 		var add_appt_months = {
 			"Jan" : "0",
@@ -336,9 +349,14 @@
 		var add_appt_fld_prv_id = "";
 		var add_appt_appt_id = "";
 		var add_appt_fld_pat_id = "";
+		var add_appt_edit_appt_id = "";
+		var add_appt_copy_pat_name = "";
+		var add_appt_copy_pat_id = "";
+		var add_appt_added_pat_id = "";
 		var multiProv="";
 
 		var add_appt_pat_cnt = 1;
+		var add_appt_prov_cnt = 1;
 		var popoverTime = null;
 
 		var add_appt_pat_dtls_cnt = 1;
@@ -358,15 +376,62 @@
 			getAppStatus : function() {
 				return add_appt_json_appStatus;
 			},
+			loadPatients : function() {
+				var pat_dtls = $.ajax({
+					url : "../ws/rs/patient/patlist",
+					type : "get",
+					//contentType : 'application/json',
+					dataType: "json" ,
+					global: false,
+					async:false,
+					success : function(result) {
+					},
+					error : function(jqxhr) {
+						var msg = JSON.parse(jqxhr.responseText);
+						alert(msg['message']);
+
+					}
+				}).responseText;
+				var jObj = JSON.parse(pat_dtls);
+				projects = jObj.demographics;
+			},
+			loadProviders : function() {
+				var pat_dtls = $.ajax({
+					url : "../ws/rs/providerService/aaa/list",
+					type : "get",
+					//contentType : 'application/json',
+					dataType: "json" ,
+					global: false,
+					async:false,
+					success : function(result) {
+					},
+					error : function(jqxhr) {
+						var msg = JSON.parse(jqxhr.responseText);
+						alert(msg['message']);
+
+					}
+				}).responseText;
+				var jObj = JSON.parse(pat_dtls);
+				add_appt_providers_list = jObj.providers;
+			},
 			getPatientInfo : function(patientID) {
-				if (patientID == 1)
-					return add_appt_json_patientInfo1;
-				else if (patientID == 2)
-					return add_appt_json_patientInfo2;
-				else if (patientID == 3)
-					return add_appt_json_patientInfo3;
-				else
-					return add_appt_json_patientInfo1;
+				var pat_dtls = $.ajax({
+					url : "../ws/rs/demographics/" +patientID+ "/patientTotalDetails",
+					type : "get",
+					//contentType : 'application/json',
+					dataType: "json" ,
+					global: false,
+					async:false,
+					success : function(result) {
+					},
+					error : function(jqxhr) {
+						var msg = JSON.parse(jqxhr.responseText);
+						alert(msg['message']);
+
+					}
+				}).responseText;
+				var jObj = JSON.parse(pat_dtls);
+				return jObj;
 			},
 			getPatientApptInfo : function(patientID) {
 				if (patientID == 1)
@@ -399,7 +464,8 @@
 						$("#result").html('Submitted successfully');
 					},
 					error : function(jqxhr) {
-						var msg = JSON.parse(jqxhr.responseText);
+						console.log(jqxhr);
+						var msg = JSON.parse(jqxhr);
 						alert(msg['message']);
 						$("#result").html('There is error while submit');
 
@@ -407,8 +473,42 @@
 				});
 				return add_appt_data;
 			},
+			updateApptDtls : function(formData) {
+				$.ajax({
+					url : "../ws/rs/appointment/saveEdit",
+					type : "post",
+					data : apptData,
+					async: false,
+					contentType : 'application/json',
+					success : function(result) {
+						add_appt_data = result.appointments;
+						//$("#result").html('Submitted successfully');
+					},
+					error : function(jqxhr) {
+						var msg = JSON.parse(jqxhr.responseText);
+						//alert(msg['message']);
+						$("#result").html('There is error while submit');
+					}
+				});
+				return add_appt_data;
+			},
 			getApptDtls : function(apptId) {
-				return add_appt_sample_appt_data;
+				var appt_data =	$.ajax({
+					url : "../ws/rs/patient/"+apptId+"/viewEdit",
+					type : "get",
+					contentType : 'application/json',
+					Accept: 'application/json',					
+					async:false,
+					success : function(result) {
+						//appt_data = result.appointments;
+					},
+					error : function(jqxhr) {
+						var msg = JSON.parse(jqxhr.responseText);
+						alert(msg['message']);
+					}
+				}).responseText;
+				var jObj = JSON.parse(appt_data);
+				return jObj.appointments;
 			},
 			getDurationSlot1 : function() {
 				return add_appt_json_duration1;
@@ -429,18 +529,21 @@
 				$("#tabs").tabs("option", "active", 0);
 				add_app_fn.loadApptType();
 				add_app_fn.loadApptStatus();
+				add_app_fn.loadRoom();
 				add_app_fn.loadTimeSlot();
 				add_app_fn.loadDurationSlot();
 				add_app_fn.loadApptReason();
+				add_app_fn.loadBlkTimeReason();
 				add_app_fn.loadTimeSlot1();
 				add_app_fn.loadDurationSlot1();
 				//add_app_fn.setValNote("hello");
-
+				
+				//add_app_ajax_fn.loadPatients();
+				
 				$("#innertab").tabs();
 				$("#innertab").tabs("option", "active", 0);
 			},
 			addTab : function(fldId, patId, patName) {
-
 				if (add_appt_pat_dtls_cnt == 1)
 					$('#dummytab').remove();
 				//$('#myTabContent').append('<div class="tab-pane in active" id="new_tab_id"><p> Loading content ...</p></div>');
@@ -448,16 +551,12 @@
 				if (innerTab.attr('data-toggle') == "tab")
 					$('#myTab a[id="pat_tab_' + fldId + '"]').html(patName);
 				else
-					$('#myTab')
-							.append(
-									'<li><a data-target="#patient_dtls" data-toggle="tab" style="cursor:pointer;" id="pat_tab_'+fldId+'" patid="'+ patId +'"> '
-											+ patName + ' </a></li>');
+					$('#myTab').append('<li><a data-target="#patient_dtls" data-toggle="tab" style="cursor:pointer;" id="pat_tab_'+fldId+'" patid="'+ patId +'"> '+patName+' </a></li>');
 				//$('#myTab a:last').tab('show');
 				$('#myTab a[id="pat_tab_' + fldId + '"]').tab('show');
 
 				$('#myTab a[id="pat_tab_' + fldId + '"]').bind('click',
 						function(e) {
-							console.log(e.target);
 							var patId = $(e.target).attr('patid');
 							add_app_fn.loadPatientDtls(patId);
 							//e.target(window.alert("hello"))
@@ -467,16 +566,127 @@
 
 			},
 			chkDialogStatus : function() {
-				if (add_appt_appt_id.length == 0) {
-					//add_app_fn.setApptDtls(add_appt_appt_id);
+				add_app_fn.clearForm("#add_appt_form");
+				if (globalApptId.length != 0) {	
+					if(globalEventType == "blocktime"){						
+						/* set view*/						
+						add_app_fn.setDialogView("edit", globalEventType);			
+						/*show tab*/
+						$('#yourtabs a:last').tab('show');
+						add_app_fn.setApptDtls(globalApptId, globalEventType);
+					}else{
+						
+						/* set view*/
+						add_app_fn.setDialogView("edit", globalEventType);
+						/*show tab*/
+						$('#yourtabs a:first').tab('show');
+						
+						add_app_fn.setApptDtls(globalApptId, globalEventType);
+					}
+				}else{
+					/* set view*/
+					add_app_fn.setDialogView("add");
+					if(nextAailObject.name != null && nextAailObject.name.trim().length > 0){
+						$("#add_appt_prov_name0").val(nextAailObject.name);						
+						$("#add_appt_prov_name_sel_id").val(nextAailObject.id);
+						var _data = nextAailObject.startTime.split(':');
+						$("#add_appt_time").val(parseInt( _data[0])+"_"+_data[1]);
+						nextAailObject = new Object();						
+					}
 				}
 			},
+			setDialogView: function(viewType, eventType){
+				if("edit" == viewType){
+					/*Buttons display*/
+					document.getElementById("add_appt_edit_buttons").style.display = "block";
+					document.getElementById("add_appt_add_buttons").style.display = "none";
+					
+					document.getElementById("block_edit_buttons").style.display = "block";
+					document.getElementById("block_add_buttons").style.display = "none";
+					
+					document.getElementById("lbl_appt_tab").innerHTML = "Edit appointment";
+					document.getElementById("lbl_blk_time_tab").innerHTML = "Edit blocked time";
+					
+					
+					if(eventType == "blocktime"){
+						document.getElementById("lbl_appointment").style.display = "none";
+						document.getElementById("lbl_blocktime").style.display = "block";
+					}else{
+						document.getElementById("lbl_blocktime").style.display = "none";
+						document.getElementById("lbl_appointment").style.display = "block";
+					}
+					document.getElementById("lbl_crtdDtls").style.display = "block";
+					
+					document.getElementById("add_appt_add_prov_but").style.display = "none";
+					document.getElementById("add_appt_but_recur").style.display = "none";					
+					document.getElementById("add_appt_pat_name0").disabled = true;
+					
+					document.getElementById("add_appt_prov_name0").disabled = true;
+					document.getElementById("add_appt_time").disabled = true;
+					document.getElementById("add_appt_duration").disabled = true;
+					
+				}else{
+					/*Buttons display*/
+					document.getElementById("add_appt_edit_buttons").style.display = "none";
+					document.getElementById("add_appt_add_buttons").style.display = "block";
+					
+					document.getElementById("block_edit_buttons").style.display = "none";
+					document.getElementById("block_add_buttons").style.display = "block";
+					
+					document.getElementById("lbl_appt_tab").innerHTML = "Add appointment";
+					document.getElementById("lbl_blk_time_tab").innerHTML = "Block time";
+					document.getElementById("lbl_blocktime").style.display = "block";
+					document.getElementById("lbl_appointment").style.display = "block";
+					document.getElementById("lbl_crtdDtls").style.display = "none";
+					
+					if(add_appt_copy_pat_id.trim() != "")
+						document.getElementById("appt_but_paste").style.display = "block";
+					else
+						document.getElementById("appt_but_paste").style.display = "none";
+					
+					document.getElementById("add_appt_add_prov_but").style.display = "block";
+					document.getElementById("add_appt_but_recur").style.display = "block";
+					
+					document.getElementById("add_appt_prov_name0").disabled = false;
+					document.getElementById("add_appt_time").disabled = false;
+					document.getElementById("add_appt_duration").disabled = false;
+						
+				}
+					
+			},
+			saveNPrint: function(){
+				add_appt_savePrint = 1;
+				add_app_fn.validateForm('0');				
+			},
+			printData: function(provId, patId){
+				//alert('printing');
+				var w = 800;
+				var h = 500;
+				var left = (screen.width/2)-(w/2);
+				var top = (screen.height/2)-(h/2) - 100;
+				//var url = "../oscarRx/choosePatient.do?providerNo="+provId.split(',')[0]+"&demographicNo="+patId.split(',')[0];
+				var url = "../demographic/demographiclabelprintsetting.jsp?demographic_no="+patId.split(',')[0];
+				window.open(url, "_blank", 'toolbar=no, location=no, directories=no, status=yes, menubar=no, scrollbars=yes, resizable=yes, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left, "window")
+			},
+			openAddPatient: function(){
+				var w = 550;
+				var h = 300;
+				var left = (screen.width/2)-(w/2);
+				var top = (screen.height/2)-(h/2) - 100;
+				var url = "../demographic/demographicaddarecordhtm.jsp?fromAppt=1&originalPage=null&search_mode=search_name&keyword=&notes=&appointment_date=2014-06-08&year=2014&month=06&day=08&start_time=09:15&end_time=09:29&duration=15&bFirstDisp=false&provider_no=1240&notes=&reason=&location=&resources=&type=&style=null&billing=null&status=TD&createdatetime=2014-6-8 0:21:0&creator=oscardoc, doctor&remarks=";
+				window.open(url, "_blank", 'toolbar=no, location=no, directories=no, status=yes, menubar=no, scrollbars=yes, resizable=yes, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left, "window")
+			},
 			setValNote : function(msg) {
-				$("#add_appt_valNote").show();
-				$("#add_appt_valNote").html(msg);
+				//$("#add_appt_valNote_id").show();
+				//console.log("insiddeee"+document.getElementById("add_appt_valNote_id").style.display);
+				document.getElementById("add_appt_valNote_id").style.display = "block";
+				//$("#add_appt_valNote_id").html(msg);
+				console.log(msg);
+				document.getElementById("add_appt_valNote_id").innerHTML = "<b>" + msg + "</b>";
 			},
 			hideValNote : function(msg) {
-				$("#add_appt_valNote").hide();
+				//$("#add_appt_valNote_id").hide();
+				document.getElementById("add_appt_valNote_id").style.display = "none";
 			},
 			showTab : function(tab) {
 				$("#tabs").tabs("option", "active", 2);
@@ -489,7 +699,6 @@
 			loadOptsType : function(_data, fldId) {
 				$("#" + fldId).empty();
 				$.each(_data, function(key, val) {
-
 					$("#" + fldId).append(new Option(val.name, val.id));
 				});
 			},
@@ -499,14 +708,12 @@
 					type : "get",
 					contentType : 'application/json',
 					success : function(result) {
-						add_app_fn.loadOptsType(result.appointmentTypes,
-								"add_appt_type");
+						add_app_fn.loadOptsType(result.appointmentTypes, "add_appt_type");
 					},
 					error : function(jqxhr) {
 						var msg = JSON.parse(jqxhr.responseText);
 						alert(msg['message']);
 						$("#result").html('There is error while submit');
-
 					}
 				});
 			},
@@ -527,6 +734,28 @@
 					}
 				});
 			},
+			loadRoom : function() {
+				var data = $.ajax({
+					url : "../ws/rs/appointment/roomDetails/get",
+					type : "get",
+					dataType : 'application/json',
+					global: false,
+					async:false,
+					success : function(result) {
+					},
+					error : function(jqxhr) {
+
+					}
+				}).responseText;
+				
+				var jObj = JSON.parse(data);
+				$("#add_appt_room").empty();
+				$.each(jObj, function(key, val) {
+					console.log(val);
+					$("#add_appt_room").append(new Option(val.name, val.id));
+				});
+				console.log(data);
+			},
 			loadTimeSlot : function() {
 				var _data = add_app_ajax_fn.getTimeSlot();
 				add_app_fn.loadOpts(_data, "add_appt_time");
@@ -542,6 +771,60 @@
 			loadDurationSlot1 : function() {
 				var _data = add_app_ajax_fn.getDurationSlot1();
 				add_app_fn.loadOpts(_data, "blk_appt_duration");
+			},
+			cancelAppt: function(){
+				$.ajax({
+					url : "../ws/rs/appointment/"+ globalApptId +"/CX/saveStatus",
+					type : "get",
+					//contentType : 'application/json',
+					dataType: "json" ,
+					global: false,
+					async:false,
+					success : function(result) {
+						//alert('done');
+					},
+					error : function(jqxhr) {
+						var msg = JSON.parse(jqxhr.responseText);
+						alert(msg['message']);
+
+					}
+				});
+				
+				globalApptId = "";
+				add_app_fn.clearForm("#add_appt_form");
+				$("#add_appt_form").dialog("close");
+			},
+			deleteAppt: function(){
+				$("#dialog-delete").modal();
+				//sch.deleteEvent(globalApptId, "appt_"+globalApptId);
+				//$("#add_appt_form").dialog("close");
+			},
+			copyPatDtls: function(){
+				add_appt_copy_pat_id = $("#add_appt_pat_name_sel_id").val();
+				add_appt_copy_pat_name = $("#add_appt_pat_name0").val();
+				$("#add_appt_form").dialog("close");
+			},
+			cutPatDtls: function(){
+				add_appt_copy_pat_id = $("#add_appt_pat_name_sel_id").val();
+				add_appt_copy_pat_name = $("#add_appt_pat_name0").val();
+				sch.deleteEvent(globalApptId, "appt_"+globalApptId);
+				$("#add_appt_form").dialog("close");
+			},
+			pastePatDtls: function(){
+				if(add_appt_copy_pat_id.trim() != ''){
+					var cnt = 0;
+					var obj;
+					while(true){
+						obj = $("#add_appt_pat_name"+cnt);
+						if(obj != null)
+							break;
+						cnt++;
+					}
+					obj.val(add_appt_copy_pat_name);
+					$("#add_appt_pat_name_sel_id").val(add_appt_copy_pat_id);
+					add_app_fn.loadPatientDtls(add_appt_copy_pat_id);
+					add_app_fn.addTab("#add_appt_pat_name"+cnt, add_appt_copy_pat_id, add_appt_copy_pat_name);
+				}
 			},
 			loadApptReason : function() {
 				$.ajax({
@@ -560,15 +843,30 @@
 					}
 				});
 			},
+			loadBlkTimeReason : function() {
+				$.ajax({
+					url : "../ws/rs/patient/blockreason/get",
+					type : "get",
+					contentType : 'application/json',
+					success : function(result) {
+						add_app_fn.loadOptsType(result.appointmentReason,
+								"blk_appt_reason");
+					},
+					error : function(jqxhr) {
+						var msg = JSON.parse(jqxhr.responseText);
+						alert(msg['message']);
+						$("#result").html('There is error while submit');
+
+					}
+				});
+			},
 			loadPatientDtls : function(patientID) {
 				var _data_pat_info = "";
 				var _data_pat_appt_info = "";
 				if (!isEmpty(patientID)) {
 					_data_pat_info = add_app_ajax_fn.getPatientInfo(patientID);
-					add_app_fn.loadPatientInfo(_data_pat_info);
-					_data_pat_appt_info = add_app_ajax_fn
-							.getPatientApptInfo(patientID);
-					add_app_fn.loadPatientApptInfo(_data_pat_appt_info);
+					add_app_fn.loadPatientInfo(_data_pat_info.demographic);
+					add_app_fn.loadPatientApptInfo(_data_pat_info.appointmentsHistory);
 				} else {
 					add_app_fn.loadPatientInfo(_data_pat_appt_info);
 					add_app_fn.loadPatientApptInfo(_data_pat_info);
@@ -580,39 +878,59 @@
 						$("#" + key).html(_data[val]);
 					});
 
+					var _address = _data.address.address;
 					var add = '';
-					if (_data['address'].length > 20)
-						add = '<span data-toggle="tooltip" data-placement="bottom" title="'+_data['address']+'">'
-								+ _data['address'].substring(0, 20)
-								+ '...</span>';
+					if (_address.length > 20)
+						add = '<span data-toggle="tooltip" data-placement="bottom" title="'+_address+'">' + _address.substring(0, 20) + '...</span>';
 					else
-						add = '<span>' + _data['address'] + '</span>';
+						add = '<span>' + _address + '</span>';
 					$("#appt_add").html(add);
 
 				} else {
 					$.each(add_appt_patientFlds, function(key, val) {
 						$("#" + key).html("");
 					});
+					$("#appt_add").html("");
 				}
 			},
-			loadPatientApptInfo : function(_data) {
+			loadPatientApptInfo: function(_data){
 				$("#add_appt_overview tr:gt(1)").remove();
-				if (!isEmpty(_data)) {
-					$.each(_data, function() {
-						$("#add_appt_overview tbody").append(
-								"<tr>" + "<td>" + this.date + "</td>" + "<td>"
-										+ this.provider + "</td>" + "<td>"
-										+ this.starttime + "</td>" + "</tr>");
+				var count = 1;
+				if(!isEmpty(_data)){					
+					$.each(_data, function(){
+						if(count <= 4)
+							$("#add_appt_overview tbody").append("<tr>" +
+									"<td>" + this.appointmentDate+ "</td>" +
+									"<td>" + this.name + "</td>" +
+									"<td>" + this.startTime + "</td>" +
+									"</tr>");
+						count++;
 					});
-				} else {
-					for (i = 0; i < 4; i++) {
-						$("#add_appt_overview tbody").append(
-								"<tr>" + "<td>&nbsp;&nbsp;&nbsp;</td>"
-										+ "<td>&nbsp;&nbsp;&nbsp;</td>"
-										+ "<td>&nbsp;&nbsp;&nbsp;</td>"
-										+ "</tr>");
+					
+					while(count <= 4){
+						$("#add_appt_overview tbody").append("<tr>" +
+								"<td>&nbsp;</td>" +
+								"<td></td>" +
+								"<td></td>" +
+								"</tr>");
+						count++;
 					}
+					
+				}else{
+				for(i=0;i<4;i++){
+					$("#add_appt_overview tbody").append("<tr>" +
+							"<td>&nbsp;&nbsp;&nbsp;</td>" +
+							"<td>&nbsp;&nbsp;&nbsp;</td>" +
+							"<td>&nbsp;&nbsp;&nbsp;</td>" +
+							"</tr>");
 				}
+				}
+			},
+			getDay: function(){
+				return $("#add_appt_date").val().split('-')[0]
+			},
+			getDayMonth: function(_date){
+				return $("#add_appt_date").val().split('-')[0] + "-" + $("#add_appt_date").val().split('-')[1];
 			},
 			getWeekDay : function() {
 				var currDay = $("#add_appt_date").val();
@@ -648,42 +966,62 @@
 					add_app_fn.hideValNote();
 				}
 				if ($("#add_appt_row_recur").css("display") == "none") {
+					$("#add_appt_rec_enddate").val(add_app_fn.getRecEndDate());
 					$("#add_appt_row_recur").show();
-					$("#add_appt_but_recur").html(
-							"&nbsp;Remove recurrence&nbsp;");
-					$("#add_appt_text_recur").html(
-							"&nbsp;Occures every " + add_app_fn.getWeekDay()
-									+ ", effective " + selected_date);
+					$("#add_appt_but_recur").html("&nbsp;Remove recurrence&nbsp;");
+					if("D" == $("#add_appt_rec_freq").val())
+						$("#add_appt_text_recur").html("&nbsp;Occures every day, effective " + selected_date +" till "+ $("#add_appt_rec_enddate").val());
+					else if("W" == $("#add_appt_rec_freq").val())
+						$("#add_appt_text_recur").html("&nbsp;Occures every " + add_app_fn.getWeekDay()	+ ", effective " + selected_date+" till "+ $("#add_appt_rec_enddate").val());
+					else if("M" == $("#add_appt_rec_freq").val())
+						$("#add_appt_text_recur").html("&nbsp;Occures every " + add_app_fn.getDay()	+ ", effective " + selected_date+" till "+ $("#add_appt_rec_enddate").val());
+					else if("Y" == $("#add_appt_rec_freq").val())
+						$("#add_appt_text_recur").html("&nbsp;Occures every " + add_app_fn.getDayMonth()	+ ", effective " + selected_date+" till "+ $("#add_appt_rec_enddate").val());
 				} else {
 					$("#add_appt_row_recur").hide();
 					$("#add_appt_but_recur").html("&nbsp;Add recurrence&nbsp;");
 				}
 			},
+			getRecEndDate: function(){
+				var months = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+				var _selectedDateOpts = (document.getElementById("add_appt_date").value).split("-");
+				var date = new Date(parseFloat(_selectedDateOpts[2]), parseFloat(getMonthIndex($("#add_appt_date").val())), parseFloat(_selectedDateOpts[0]));
+				date.setDate(date.getDate() + 30);
+				return date.getDate() +"-"+ months[date.getMonth()] +"-"+date.getFullYear();
+			},
+			setRecText: function(){
+								
+				if("D" == $("#add_appt_rec_freq").val())
+					$("#add_appt_text_recur").html("&nbsp;Occures every day, effective " + $("#add_appt_date").val() +" till "+ $("#add_appt_rec_enddate").val());
+				else if("W" == $("#add_appt_rec_freq").val())
+					$("#add_appt_text_recur").html("&nbsp;Occures every " + add_app_fn.getWeekDay()	+ ", effective " + $("#add_appt_date").val()+" till "+ $("#add_appt_rec_enddate").val());
+				else if("M" == $("#add_appt_rec_freq").val())
+					$("#add_appt_text_recur").html("&nbsp;Occures every " + add_app_fn.getDay()	+ ", effective " + $("#add_appt_date").val()+" till "+ $("#add_appt_rec_enddate").val());
+				else if("Y" == $("#add_appt_rec_freq").val())
+					$("#add_appt_text_recur").html("&nbsp;Occures every " + add_app_fn.getDayMonth()	+ ", effective " + $("#add_appt_date").val()+" till "+ $("#add_appt_rec_enddate").val());
+			},
 			validateForm : function(pat_sel_index) {
-				if ($("#add_appt_pat_name").val() == "") {
-					alert("Select patient.");
+				if ($("#add_appt_pat_name_sel_id").val() == "") {
+					add_app_fn.setValNote("Select patient.");
+					return;
+				}else if ($("#add_appt_prov_name_sel_id").val() == "") {
+					add_app_fn.setValNote("Select provider.");
 					return;
 				}
-				//alert("test1"+$("#add_appt_s_provider").val());
-
-				//if($('input:radio[name="add_appt_provider"].checked').val() == "single"){
-				if ($("#add_appt_s_provider").val() == "" && $("#add_appt_m_provider").val() == "") {
-					alert("Select provider.");
+				
+				if($("#add_appt_date").val() ==""){
+					add_app_fn.setValNote("Select date.");
+					return;
+				}else if($("#add_appt_time").val() ==""){
+					add_app_fn.setValNote("Select time.");
+					return;
+				}else if($("#add_appt_duration").val() ==""){
+					add_app_fn.setValNote("Select duration.");
 					return;
 				}
-				if ($("#add_appt_date").val() == "") {
-					alert("Select date.");
-					return;
-				} else if ($("#add_appt_time").val() == "") {
-					alert("Select time.");
-					return;
-				} else if ($("#add_appt_duration").val() == "") {
-					alert("Select duration.");
-					return;
-				}
-
+				
 				add_app_fn.hideValNote();
-				add_app_fn.captureFormData(pat_sel_index);
+				add_app_fn.captureFormData();
 
 			},
 
@@ -725,11 +1063,9 @@
 				var s1 = nextAailObject.provider != undefined ? nextAailObject.provider.pid_m
 						.split(",")
 						: undefined;
-				console.log(s1);
 				formData['noOfPatient'] = add_appt_pat_cnt;
 				if (s1 != undefined) {
 					for (var i = 0; i < s1.length - 1; i++) {
-						console.log(i);
 						globalObj.id = s1[i];
 						formData['id'] = s1[i];
 						formData['p_id'] = s1[i].split("_")[0];
@@ -764,8 +1100,8 @@
 						formData['location'] = $("#add_appt_location").val();
 						/*save data into database*/
 						apptData = JSON.stringify(formData);
-						var add_appt_data = add_app_ajax_fn.saveFormData(JSON
-								.stringify(formData));
+						//var add_appt_data = add_app_ajax_fn.saveFormData(JSON.stringify(formData));
+						var add_appt_data;
 						if (undefined == add_appt_data) {
 							formData['apptStatus'] = "TD";
 							formData['goTo'] = "E";
@@ -777,12 +1113,12 @@
 					}
 				} else {
 					/* From Double click */
-					formData['id'] = globalObj.id;
+					formData['id'] = globalApptId;
 					formData['p_id'] = globalObj.pid;
-					formData['patientId'] = add_appt_fld_pat_id;
-					formData['patientName'] = $("#add_appt_pat_name").val();
-					formData['providerType'] = add_appt_fld_prv_type;
-					formData['provId'] = add_appt_fld_prv_id;
+					formData['patientId'] = $("#add_appt_pat_name_sel_id").val();
+					formData['patientName'] = add_app_fn.getPatientNames();
+					//formData['providerType'] = add_appt_fld_prv_type;
+					formData['provId'] = $("#add_appt_prov_name_sel_id").val();;
 					formData['apptStartDate'] = $("#add_appt_date").val();
 					formData['apptTime'] = $("#add_appt_time").val();
 					formData['apptDuration'] = $("#add_appt_duration").val();
@@ -799,6 +1135,7 @@
 					formData['apptStatus'] = $("#add_appt_status").val();
 					formData['apptType'] = $("#add_appt_type").val();
 					formData['apptResources'] = $("#add_appt_resources").val();
+					formData['roomId'] = $("#add_appt_room").val();
 					formData['appReason'] = $("#add_appt_reason").val();
 					formData['apptReasonText'] = $(
 							"#add_appt_reason option:selected").text();
@@ -806,9 +1143,44 @@
 							.val();
 					formData['apptNotes'] = $("#add_appt_notes").val();
 					formData['location'] = $("#add_appt_location").val();
+					formData['multiApptId'] = $("#add_appt_prog_id").val();
+					formData['recurrenceId'] = $("#add_appt_rec_id").val();
+					
+					if($("#add_appt_row_recur").css("display") == "none"){
+						formData['frequency'] = "";
+						formData['startDate'] = "";
+						formData['endDate'] = "";
+					}else{
+						formData['isRecUpdate'] = "Y";
+						formData['frequency'] = $("#add_appt_rec_freq").val();
+						formData['startDate'] = $("#add_appt_date").val();
+						formData['endDate'] = $("#add_appt_rec_enddate").val();
+					}
+					//console.log(formData);
 					/*save data into database*/
-					apptData = JSON.stringify(formData);
-					var add_appt_data = add_app_ajax_fn.saveFormData(JSON.stringify(formData));
+										
+					var add_appt_data = "";
+					if(globalApptId != null && globalApptId.length > 0){
+						formData['patientId'] = add_appt_added_pat_id;
+						var newPatIds = add_app_fn.getNewPatientIds(add_appt_added_pat_id, $("#add_appt_pat_name_sel_id").val());		
+						var pats = formData['patientName'];
+						formData['patientName'] = pats.split('^')[0];
+						formData['newPatNames'] = add_app_fn.getNewPatNames(pats);
+						formData['newPatients'] = newPatIds;
+						apptData = JSON.stringify(formData);
+						add_appt_data = add_app_ajax_fn.updateApptDtls(JSON.stringify(formData));
+						dateChange("");
+					}else{
+						apptData = JSON.stringify(formData);
+						add_appt_data = add_app_ajax_fn.saveFormData(JSON.stringify(formData));		
+						if(add_appt_savePrint == 1){
+							add_appt_savePrint = 0;
+							add_app_fn.printData(formData['provId'], formData['patientId']);
+						}
+						dateChange("");
+					}
+					/*refresh scheduler*/
+					
 					// Remove the below if block, when delay function is implemented.
 					if ("UND" == add_appt_data) {
 						formData['noOfPatient'] = "";
@@ -818,10 +1190,60 @@
 						formData['noOfPatient'] = add_appt_data.noOfPatient;
 					}
 					formData['apptId'] = add_appt_data.id;
-					sch.saveEvent(globalObj, formData, add_appt_data);
+					//if(globalApptId != null && globalApptId.length > 0)
+						//angular.element($("#PatientListCtrl")).scope().changeTab(4);
+					//if(!(globalApptId != null && globalApptId.length > 0))
+						//sch.saveEvent(globalObj, formData, add_appt_data);
+						
+					
+					
+					
+					/*Incase of update */
+					if(globalApptId != null && globalApptId.length > 0)
+						globalApptId = "";
 				}
 				add_app_fn.clearForm("#add_appt_form");
 				$("#add_appt_form").dialog("close");
+			},
+			
+			getNewPatNames: function(data){
+				var str = data.split('^');
+				var result = "";
+				for(i=1; i<str.length; i++){
+						if(result == "")
+							result = str[i];
+						else
+							result += "^"+str[i];
+				}
+				return result;
+			},
+			
+			getNewPatientIds: function(oldId, allIds){
+				var str = allIds.split(',');
+				var result = "";
+				for(i=0; i<str.length; i++){
+					if(str[i] != oldId){
+						if(result == "")
+							result = str[i];
+						else
+							result += ","+str[i];
+					}
+				}
+				return result;
+			},
+			
+			getPatientNames: function(){
+				var data = "";
+				for(var i=0; i<=add_appt_pat_cnt; i++){
+					console.log(i);
+					if($("#add_appt_pat_name"+i).val() != undefined &&  $("#add_appt_pat_name"+i).val().trim() != ""){
+						if(data == "")
+							data = $("#add_appt_pat_name"+i).val();
+						else
+							data += "^"+$("#add_appt_pat_name"+i).val();	
+					}
+				}
+				return data;
 			},
 
 			captureBlockFormData : function() {
@@ -851,134 +1273,266 @@
 						/*save data into database*/
 						var add_appt_appt_id = add_app_ajax_fn
 								.saveFormData(formData);
-						formData['appt_id'] = add_appt_appt_id;
+						formData['apptId'] = add_appt_appt_id;
 						sch.saveEvent(globalObj, formData);
 					}
 				} else {
 					/* From Double click */
 
-					formData['id'] = globalObj.id;
-					formData['p_id'] = globalObj.pid;
-					formData['provider_type'] = add_appt_fld_prv_type;
-					formData['provider_id'] = add_appt_fld_prv_id;
-					formData['date'] = $("#blk_appt_date").val();
-					formData['time'] = $("#blk_appt_time").val();
-					formData['duration'] = $("#blk_appt_duration").val();
-					formData['appt_reason'] = $("#blk_appt_reason").val();
-					formData['appt_notes'] = $("#blk_appt_notes").val();
+					formData['id'] = globalApptId;
+					//formData['p_id'] = globalObj.pid;
+					formData['providerType'] = $("#add_block_prov_type").val();
+					formData['provId'] = $("#add_block_prov_id").val();
+					formData['apptStartDate'] = $("#blk_appt_date").val();
+					formData['apptTime'] = $("#blk_appt_time").val();
+					formData['apptDuration'] = $("#blk_appt_duration").val();
+					formData['appReason'] = $("#blk_appt_reason").val();
+					formData['apptNotes'] = $("#blk_appt_notes").val();
+					formData['patientId'] = "";
+					formData['patientName'] = "";
+					formData['noOfPatient'] = "1";
+					
 					/*save data into database*/
 
-					alert($("#blk_appt_reason").val());
-					alert($("#blk_appt_notes").val());
-					alert($("#blk_appt_date").val());
-					var add_appt_appt_id = add_app_ajax_fn
-							.saveFormData(formData);
-alert(add_appt_appt_id);
-					formData['appt_id'] = add_appt_appt_id;
+					apptData = JSON.stringify(formData);
+					var add_appt_data;  
+					console.log(globalApptId);
+					if(globalApptId != null && globalApptId.length > 0){
+						add_appt_data = add_app_ajax_fn.updateApptDtls(JSON.stringify(formData));
+						dateChange("");
+						add_app_fn.clearForm("#add_appt_form");
+						$("#add_appt_form").dialog("close");
+						return;
+					}else{						
+						add_appt_data = add_app_ajax_fn.saveFormData(JSON.stringify(formData));
+					}
+					//alert('success');
+					console.log(add_appt_data);
+					formData['apptId'] = add_appt_data.id;
+					formData['apptReasonText'] = $("#blk_appt_reason option:selected").text();
+					formData['providerName'] = $("#add_appt_block_s_provider").val();;
 					//console.log(globalObj);
-					sch.saveBlockEvent(globalObj, formData);
+					sch.saveEvent(globalObj, formData, null);
+					//sch.saveBlockEvent(globalObj, formData);
 				}
 				add_app_fn.clearForm("#add_appt_form");
 				$("#add_appt_form").dialog("close");
 			},
 
 			/*when edit case*/
-			setApptDtls : function(apptId) {
+			setApptDtls : function(apptId, eventType) {
 				var _data = add_app_ajax_fn.getApptDtls(apptId);
-				$.each(add_appt_form_flds, function(key, val) {
-					$("#" + key).val(_data[val]);
-				});
-
-				var _data_pat_info = _data.patientinfo;
-				add_app_fn.loadPatientInfo(_data_pat_info);
-
-				var _data_pat_appt_info = _data.patapptinfo;
-				add_app_fn.loadPatientApptInfo(_data_pat_appt_info);
+				$("#add_appt_prog_id").val(_data['multiApptId']);
+				if(eventType == "blocktime"){
+					$.each(block_time_form_flds, function(key, val) {
+						$("#" + key).val(_data[val]);
+					});
+					
+					$("#add_block_prov_id").val(_data['provId']);
+					$("#add_block_prov_type").val("S");
+					
+				}else{
+					$.each(add_appt_form_flds, function(key, val) {
+						$("#" + key).val(_data[val]);
+					});
+					if(_data['isCritical'] == 'Y')
+						document.getElementById("add_appt_critical").checked=true;
+					else
+						document.getElementById("add_appt_critical").checked=false;
+					$("#add_appt_pat_name0").val(_data['patientName']);
+					$("#add_appt_prov_name0").val(_data['providerName']);
+					
+					$("#add_appt_pat_name_sel_id").val(_data['patientId']);
+					$("#add_appt_prov_name_sel_id").val(_data['provId']);
+					$("#add_appt_rec_id").val(_data['recurrenceId']);
+					add_app_fn.loadPatientDtls(_data['patientId']);
+					add_appt_added_pat_id = _data['patientId'];
+					add_app_fn.addTab("add_appt_pat_name0", _data['patientId'], _data['patientName']);
+					add_app_edit_no_of_pats = _data['noOfPatient'];
+					
+				}
+				/*set created details*/
+				$("#lbl_crtdby").html(_data['creator']+"<br>"+_data['createDateTime']);
+				if(_data['lastUpdateUser'] != null && _data['lastUpdateUser'] != "")
+						$("#lbl_editedby").html(_data['lastUpdateUser'] +"<br>"+ _data['updateDateTime']);	
+				else
+						$("#lbl_editedby").html("n/a");
+				
 			},
 			bindAutoComp : function(fldid) {
 				$("#" + fldid)
-						.autocomplete(
-								{
-									minLength : 0,
-									source : function(request, response) {
-										var term = request.term;
-										//console.log(term);
-										var matches = $
-												.grep(
-														projects,
-														function(item, index) {
-															var matcher = new RegExp(
-																	"^"
-																			+ $.ui.autocomplete
-																					.escapeRegex(term),
-																	"i");
-															return matcher
-																	.test(item.patName
-																			|| item.hin
-																			|| item);
-														});
-										response(matches);
-									},
-									focus : function(event, ui) {
-										//$( "#add_appt_pat_name" ).val( ui.item.label );
-										return false;
-									},
-									select : function(event, ui) {
-										if (add_app_fn
-												.isPatientExists(ui.item.id)) {
-											//add_app_fn.setValNote("Patient already added");
-											$("#" + fldid).val("");
-
-											$("#" + fldid)
-													.popover(
-															{
-																trigger : 'manual',
-																placement : 'bottom',
-																html : true,
-																content : '<span style="color:blue;">Patient already added.</span>'
-															});
-
-											$("#" + fldid).popover('show');
-											clearTimeout(popoverTime);
-											popoverTime = setTimeout(
-													function() {
-														$("#" + fldid).popover(
-																'hide');
-													}, 4000);
-
-											return false;
-										}
-
-										$("#" + fldid).val(ui.item.patName);
-										$("#" + fldid)
-												.attr("patId", ui.item.id);
-										if ($("#add_appt_pat_name_sel_id")
-												.val() == "")
-											$("#add_appt_pat_name_sel_id").val(
-													ui.item.id);
-										else
-											$("#add_appt_pat_name_sel_id")
-													.val(
-															$(
-																	"#add_appt_pat_name_sel_id")
-																	.val()
-																	+ ","
-																	+ ui.item.id);
-
-										add_appt_fld_pat_id = ui.item.id;
-										add_app_fn.loadPatientDtls(ui.item.id);
-										add_app_fn.addTab(fldid, ui.item.id,
-												ui.item.patName)
-										return false;
-									}
-								}).data("ui-autocomplete")._renderItem = function(
-						ul, item) {
-					return $("<li>")
-					.data( "ui-autocomplete-item", item )
-					.append("<a><b>" + item.patName + "</b><br>" + item.dob
-									+ "<br>" + item.hin + "</a>")
-					.appendTo(ul);
+				$( "#"+fldid ).autocomplete({
+					minLength: 0,
+					source: function(request, response) {				
+						var term = request.term;
+						//console.log(term);
+						if(projects == null)
+							add_app_ajax_fn.loadPatients();
+						var matches = $.grep(projects, function(item, index) {
+							var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
+							return matcher.test(item.label);
+						});
+						response(matches);
+					},
+					focus : function(event, ui) {
+						//$( "#add_appt_pat_name" ).val( ui.item.label );
+						return false;
+					},
+					select : function(event, ui) {
+						if(add_app_fn.isPatientExists(ui.item.id)){
+							//add_app_fn.setValNote("Patient already added");
+							$( "#"+fldid ).val("");
+							
+							$("#"+fldid).popover({trigger:'manual',placement:'bottom',html:true,content:'<span style="color:black;">Patient already added.</span>'
+							  });    
+							
+							$("#"+fldid).popover('show');
+							clearTimeout(popoverTime);
+							popoverTime = setTimeout(function(){
+								$("#"+fldid).popover('hide');
+							},4000);
+							
+							return false;	
+						}	
+						
+						
+						$( "#"+fldid ).val( ui.item.label );
+						$( "#"+fldid ).attr("patId", ui.item.id );
+						if($( "#add_appt_pat_name_sel_id" ).val() == "")
+							$( "#add_appt_pat_name_sel_id" ).val( ui.item.id );		
+						else
+							$( "#add_appt_pat_name_sel_id" ).val( $( "#add_appt_pat_name_sel_id" ).val() +","+ ui.item.id );		
+						
+						add_appt_fld_pat_id = ui.item.id;
+						add_app_fn.loadPatientDtls(ui.item.id);
+						add_app_fn.addTab(fldid, ui.item.id, ui.item.label)
+						return false;
+					}
+				})
+				.data( "ui-autocomplete" )._renderItem = function( ul, item ) {			
+					return $( "<li>" )
+					.append( "<a><span style='color:#848484;'>Name&nbsp;</span> " + item.label + "<br><span style='color:#848484;'>DOB&nbsp;</span>" + item.dob + "<br><span style='color:#848484;'>HIN&nbsp;</span>" + item.hin + "</a>" )
+					.appendTo( ul );
 				};
+			},
+			provBindAutoComp: function(fldid){	
+				
+				$( "#"+fldid ).catcomplete({
+					minLength: 0,
+					source: function( request, response ) {
+						// delegate back to autocomplete, but extract the last term
+						if(add_appt_providers_list == null)
+							add_app_ajax_fn.loadProviders();
+						//response( add_appt_providers_list );	
+						var term = request.term;
+						var matches = $.grep(add_appt_providers_list, function(item, index) {
+							var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
+							return matcher.test(item.label);
+						});
+						response(matches);
+					  },
+					focus: function( event, ui ) {
+						//$( "#add_appt_pat_name" ).val( ui.item.label );
+						return false;
+					},
+					select: function( event, ui ) {	
+						if(add_app_fn.isProviderExists(ui.item.id)){
+							//add_app_fn.setValNote("Patient already added");
+							$( "#"+fldid ).val("");
+							
+							$("#"+fldid).popover({trigger:'manual',placement:'bottom',html:true,content:'<span style="color:black;">Provider already added.</span>'
+							  });    
+							
+							$("#"+fldid).popover('show');
+							clearTimeout(popoverTime);
+							popoverTime = setTimeout(function(){
+								$("#"+fldid).popover('hide');
+							},4000);
+							
+							return false;	
+						}	
+						
+						
+						$( "#"+fldid ).val( ui.item.label );
+						$( "#"+fldid ).attr("provId", ui.item.id );
+						if($( "#add_appt_prov_name_sel_id" ).val() == "")
+							$( "#add_appt_prov_name_sel_id" ).val( ui.item.id );		
+						else
+							$( "#add_appt_prov_name_sel_id" ).val( $( "#add_appt_prov_name_sel_id" ).val() +","+ ui.item.id );		
+						
+						add_app_fn.chkDoubleBooking();
+						return false;
+					}
+				});
+				
+			},
+			chkDoubleBooking: function(){
+				var ids = $( "#add_appt_prov_name_sel_id" ).val();
+				var time = $( "#add_appt_time" ).val();
+				var duration = $( "#add_appt_duration" ).val();				
+				
+				var str = time.split("_");
+				var sthours = parseInt(str[0]);
+				if(sthours.length == 1)
+					sthours = "0"+sthours;
+				
+				var stTime = sthours+":"+str[1];
+				
+				
+				var hours = parseInt(str[0]);
+				var mins = parseInt(str[1]) + parseInt(duration);
+				if(mins >= 60){
+					hours += 1;
+					mins -= 60;
+				}
+				
+				if(hours.length ==1)
+					hours = "0"+hours;
+				
+				var endTime = hours+":"+mins;
+				
+				var _data = $.ajax({
+					url : "../ws/rs/appointment/"+$("#inputField").val()+"/"+ids+"/"+stTime+"/"+endTime+"/checkProvAvali",
+					type : "get",
+					//contentType : 'application/json',
+					dataType: "json" ,
+					global: false,
+					async:false,
+					success : function(result) {
+					},
+					error : function(jqxhr) {
+						var msg = JSON.parse(jqxhr.responseText);
+						alert(msg['message']);
+
+					}
+				}).responseText;
+				var jObj = JSON.parse(_data);
+				var isApptCreated = true;
+				$.each(jObj, function(index, item) {
+					console.log(index);
+					console.log(item);
+					if(item == 1){
+						$.each(add_appt_providers_list, function(provIndex, provItem) {
+							if(provItem.id == index){
+								add_app_fn.setValNote("Unable to create appointment for "+provItem.label);
+								isApptCreated = false;
+								return;
+							}
+						});
+						
+					}
+				});
+				if(isApptCreated)
+					add_app_fn.hideValNote("");
+				console.log(add_appt_providers_list);	
+			},
+			isProviderExists: function(id){
+				var _data = $( "#add_appt_prov_name_sel_id" ).val().split(',');
+				for(var i=0; i<_data.length; i++){
+					if(_data[i] == id)
+						return true;
+				}
+				return false;
 			},
 			isPatientExists : function(id) {
 				var _data = $("#add_appt_pat_name_sel_id").val().split(',');
@@ -986,60 +1540,127 @@ alert(add_appt_appt_id);
 					if (_data[i] == id)
 						return true;
 				}
+				
+				/*incase of edit*/
+				if(add_app_edit_no_of_pats != ''){
+					_data = add_app_edit_no_of_pats.split(',');
+					for (var i = 0; i < _data.length; i++) {
+						if (_data[i] == id)
+							return true;
+					}
+				}
+				
 				return false;
 			},
 			removePatID : function() {
 
 			},
-			addPatientFld : function() {
-				for (var i = 0; i < add_appt_pat_cnt; i++) {
-					if ($('#add_appt_pat_name' + i).val() != null
-							&& $('#add_appt_pat_name' + i).val() == "")
+			addPatientFld: function(){	
+				for(var i=0; i<add_appt_pat_cnt; i++){
+					if($('#add_appt_pat_name'+i).val() != null && $('#add_appt_pat_name'+i).val() == "")
 						return false;
 				}
-
-				$("#add_appt_pat_tab tbody")
-						.append(
-								"<tr childid='add_appt_pat_name"+ add_appt_pat_cnt +"'>"
-										+ "<td> <input id='add_appt_pat_name"+ add_appt_pat_cnt +"' class='form-control na_form_inputtext' style='height:25px;' placeholder='Enter 3 characters'  /> </td>"
-										+ "<td style='padding-left:5px;'><div ip_id='add_appt_pat_name"
-										+ add_appt_pat_cnt
-										+ "' onclick='add_app_fn.removePatFld(this)'><img src='js_up/img/close-x-cir.gif' style='cursor:pointer'></img></div></td>"
-										+ "</tr>");
-				add_app_fn.bindAutoComp("add_appt_pat_name"
-						+ add_appt_pat_cnt++);
-			},
-			removePatFld : function(a) {
+				
+				var temp = $( "#add_appt_pat_name_sel_id" ).val().split(',');
 				var rowCount = $('#add_appt_pat_tab tr').length;
-				if (rowCount > 1) {
-					//console.log("patId "+$(a).attr('patId'))
-					console.log(a);
-					$(a).closest('tr').remove();
-					add_app_fn.rearrangePatId();
-
-					var id = $(a).attr('ip_id');
-					$('#pat_tab_' + id).remove();
-					$('#myTab a:first').tab('show');
+				
+				if(temp[0] != "")
+					if(temp.length != rowCount){
+						return false;
+					}
+					
+				
+				$("#add_appt_pat_tab tbody").append("<tr childid='add_appt_pat_name"+ add_appt_pat_cnt +"'>" +
+						"<td> <div class='input-group' style='padding:2px;'> <input id='add_appt_pat_name"+ add_appt_pat_cnt +"' class='form-control na_form_inputtext' style='height:25px;width:220px !important;' placeholder='Type patient name...'  /><span class='input-group-addon' style='font-size:14px;padding:0 5px 3px 7px;'><span class='glyphicon glyphicon-search'></span></span></div> </td>" +							
+						"<td style='padding-left:5px;'><div ip_id='add_appt_pat_name"+ add_appt_pat_cnt +"' onclick='add_app_fn.removePatFld(this)'><img src='js_up/img/close-x-cir.gif' style='cursor:pointer'></img></div></td>"+
+						"</tr>");
+				add_app_fn.bindAutoComp("add_appt_pat_name"+ add_appt_pat_cnt++);
+			},
+			removePatFld: function(a){
+				var rowCount = $('#add_appt_pat_tab tr').length;
+				if(rowCount > 1){
+					var fld = $(a).attr('ip_id');
+					var dis = document.getElementById(fld).disabled
+					//console.log("patId "+$(a).attr('ip_id'));
+					if(!dis){
+						$(a).closest('tr').remove();
+						add_app_fn.rearrangePatId();
+						
+						var id = $(a).attr('ip_id');					
+						$('#pat_tab_'+id).remove();
+						$('#myTab a:first').tab('show');
+					}
 				}
 			},
-			rearrangePatId : function() {
+			resetPatFld: function(){/*Clears the patient and provider fields*/
+				$("#add_appt_pat_tab").find("tr").remove();
+				$("#add_appt_prov_tab").find("tr").remove();
+				
+				$("#add_appt_pat_name_sel_id").val("");
+				$("#add_appt_prov_name_sel_id").val("");
+				add_appt_pat_cnt = 0;
+				add_appt_prov_cnt = 0;
+				add_app_fn.addPatientFld();				
+				add_app_fn.addProviderFld();
+				
+				add_appt_pat_dtls_cnt = 1;
+				$('#myTab a').remove();				
+				//$('#myTab').append('<li class="active"><a data-target="#patient_dtls" data-toggle="tab" id="dummytab" style="cursor: pointer;">Patient 1 details</a></li>');
+			},
+			rearrangePatId: function(){
 				var ids = '';
-				for (var i = 0; i < add_appt_pat_cnt; i++) {
-					if ($('#add_appt_pat_name' + i).attr('patId') != null)
-						if (ids == '')
-							ids = $('#add_appt_pat_name' + i).attr('patId');
+				for(var i=0; i<add_appt_pat_cnt; i++){
+					if($('#add_appt_pat_name'+i).attr('patId') != null)
+						if(ids == '')
+							ids = $('#add_appt_pat_name'+i).attr('patId');
 						else
-							ids += ','
-									+ $('#add_appt_pat_name' + i).attr('patId');
+							ids += ','+ $('#add_appt_pat_name'+i).attr('patId');
 				}
-				$("#add_appt_pat_name_sel_id").val(ids);
+				$( "#add_appt_pat_name_sel_id" ).val( ids );					
+			},
+			addProviderFld: function(){	
+				for(var i=0; i<add_appt_prov_cnt; i++){
+					if($('#add_appt_prov_name'+i).val() != null && $('#add_appt_prov_name'+i).val() == "")
+						return false;
+				}		
+				
+				var temp = $( "#add_appt_prov_name_sel_id" ).val().split(',');
+				var rowCount = $('#add_appt_prov_tab tr').length;
+				
+				if(temp[0] != "")
+					if(temp.length != rowCount){
+						return false;
+					}					
+				
+				$("#add_appt_prov_tab tbody").append("<tr childid='add_appt_prov_name"+ add_appt_pat_cnt +"'>" +
+						"<td> <div class='input-group' style='padding:2px;'> <input id='add_appt_prov_name"+ add_appt_prov_cnt +"' class='form-control na_form_inputtext' style='height:25px;width:220px !important;' placeholder='Type provider name...'  /><span class='input-group-addon' style='font-size:14px;padding:0 5px 3px 7px;'><span class='glyphicon glyphicon-search'></span></span></div> </td>" +
+						"<td style='padding-left:5px;'><div ip_id='add_appt_prov_name"+ add_appt_prov_cnt +"' onclick='add_app_fn.removeProvFld(this)'><img src='js_up/img/close-x-cir.gif' style='cursor:pointer'></img></div></td>"+
+						"</tr>");
+				add_app_fn.provBindAutoComp("add_appt_prov_name"+ add_appt_prov_cnt++);
+			},
+			removeProvFld: function(a){
+				var rowCount = $('#add_appt_prov_tab tr').length;
+				if(rowCount > 1){
+					//console.log("patId "+$(a).attr('patId')) 					
+					$(a).closest('tr').remove();
+					add_app_fn.rearrangeProvId();
+				}
+			},
+			rearrangeProvId: function(){
+				var ids = '';
+				for(var i=0; i<add_appt_prov_cnt; i++){
+					if($('#add_appt_prov_name'+i).attr('provId') != null)
+						if(ids == '')
+							ids = $('#add_appt_prov_name'+i).attr('provId');
+						else
+							ids += ','+ $('#add_appt_prov_name'+i).attr('provId');
+				}
+				$( "#add_appt_prov_name_sel_id" ).val( ids );					
 			},
 			clearForm : function(formId) {
-				document.getElementById("add_appt_pat_name").value="";
-				$("#addApp_naa_users").remove();
-				$("#add_appt_overview").remove();
-				document.getElementById("add_appt_s_provider").value="";
-				document.getElementById("add_appt_m_provider").value="";
+				document.getElementById("add_appt_pat_name_sel_id").value="";
+				document.getElementById("add_appt_prov_name_sel_id").value="";
+				
 				document.getElementById("add_appt_location").value="";
 				document.getElementById("add_appt_resources").value="";
 				document.getElementById("add_appt_reason_dtls").value="";
@@ -1048,6 +1669,13 @@ alert(add_appt_appt_id);
 				document.getElementById("add_appt_status").selectedIndex="0";
 				document.getElementById("add_appt_reason").selectedIndex="0";
 				document.getElementById("add_appt_critical").checked=false;
+				
+				add_app_fn.loadPatientInfo(null);
+				add_app_fn.loadPatientApptInfo(null);
+				
+				add_app_fn.resetPatFld();
+				add_app_fn.hideValNote();
+				add_app_edit_no_of_pats = '';
 				
 			}
 		};
@@ -1059,13 +1687,26 @@ alert(add_appt_appt_id);
 				{
 					autoOpen : false,
 					minHeight : 475,
-					width : 950,
+					minWidth : 1050,
 					modal : true,
+					close: function(){
+						globalApptId = "";	
+						globalEventType = "";
+						add_app_edit_no_of_pats = '';
+					},
 					open : function() {
-						//add_app_fn.clearForm("#add_appt_form");
+						$('#add_appt_form').css('overflow', 'initial');
+						$(".ui-dialog-titlebar-close").hide();
+						$(".ui-dialog-titlebar").hide();
+						
 						if (!isEmpty(nextAailObject)) {
+							var date = new Date(nextAailObject.appointmentDate);
+							var newDate = $.datepicker.formatDate('dd-M-yy', date);
+							//console.log(sch.weekForCurrentDay_Offset(nextAailObject.appointmentDate));
+							//nextAailObject.date = newDate;
+							nextAailObject.date = sch.weekForCurrentDay_Offset(nextAailObject.appointmentDate);
 							sch.load(nextAailObject.date);
-							//console.log(nextAailObject);
+							//nextAailObject.date = newDate;
 							$("#add_appt_time select")
 									.text(nextAailObject.time);
 							$("select#add_appt_time option").filter(function() {
@@ -1073,8 +1714,7 @@ alert(add_appt_appt_id);
 							}).prop('selected', true);
 							var m_provider = "";
 							var m_pid = "";
-							if (nextAailObject.provider.length > 1) {
-								alert("1");
+							/*if (nextAailObject.provider.length > 1) {
 								$.each(nextAailObject.provider, function(key,
 										val) {
 									m_provider += val.docName + ",";
@@ -1092,10 +1732,10 @@ alert(add_appt_appt_id);
 										.filter('[value="multi"]').attr(
 												'checked', true);
 								//$('input[name=add_appt_provider]').prop("checked","checked");
-							} else {
-								m_provider = nextAailObject.provider.docName;
-								nextAailObject.provider.pid_s = val.docID;
-								$("#add_appt_s_provider").val(m_provider);
+							} else {*/
+								m_provider = nextAailObject.name;
+								//nextAailObject.provider.pid_s = "101";
+								$("#add_appt_prov_name0").val(m_provider);
 								$("#add_appt_m_provider")
 										.attr("disabled", true);
 								$("#add_appt_s_provider").attr("disabled",
@@ -1103,7 +1743,7 @@ alert(add_appt_appt_id);
 								$('input:radio[name="add_appt_provider"]')
 										.filter('[value="single"]').attr(
 												'checked', true);
-							}
+							//}
 							$("#add_appt_date").val(nextAailObject.date);
 							//console.log(nextAailObject);
 						} else {
@@ -1113,6 +1753,12 @@ alert(add_appt_appt_id);
 								return $(this).text() == d[1];
 							}).prop('selected', true);
 							$("#add_appt_date").val($("#inputField").val());
+							
+							/*block time details*/
+							$("#blk_appt_date").val($("#inputField").val());
+							$("select#blk_appt_time option").filter(function() {
+								return $(this).text() == d[1];
+							}).prop('selected', true);
 						}
 						add_app_fn.chkDialogStatus();
 					}
@@ -1147,7 +1793,7 @@ alert(add_appt_appt_id);
 							source : function(request, response) {
 								$
 										.ajax({
-											url : "../ws/rs/patient/"
+											url : "../ws/rs/patient/"	
 													+ document
 															.getElementById('add_appt_pat_name').value
 													+ "/list",
@@ -1358,7 +2004,9 @@ alert(add_appt_appt_id);
 		});
 
 		$("input:radio[name=blk_appt_provider]").on("click", function() {
-
+			
+			$("#add_block_prov_id").val("");
+			$("#add_block_prov_type").val("");
 			if ($(this).val() == "multi") {
 				$("#add_appt_block_s_provider").attr("disabled", true);
 				$("#add_appt_block_m_provider").attr("disabled", false);
@@ -1379,11 +2027,39 @@ alert(add_appt_appt_id);
 		$("#appt_but_cancel").on("click", function() {
 			add_app_fn.clearForm("#add_appt_form");
 			$("#add_appt_form").dialog("close");
-			//add_app_fn.addTab();
+			//add_app_fn.addsTab();
+			//$('#add_appt_pat_name0').popover('show');
+		});
+		
+		$("#appt_block_but_cancel").on("click", function() {
+			add_app_fn.clearForm("#add_appt_form");
+			$("#add_appt_form").dialog("close");			
+		});
+		
+		$("#appt_but_paste").on("click", function() {
+			add_app_fn.pastePatDtls();			
+		});
+		
+		
+		$("#appt_but_edit_cancel").on("click", function() {
+			add_app_fn.clearForm("#add_appt_form");
+			$("#add_appt_form").dialog("close");
+			globalApptId = "";
+			//add_app_fn.addsTab();
+			//$('#add_appt_pat_name0').popover('show');
+		});
+		
+		$("#block_but_edit_cancel").on("click", function() {
+			add_app_fn.clearForm("#add_appt_form");
+			$("#add_appt_form").dialog("close");
+			globalApptId = "";
+			
+			//add_app_fn.addsTab();
 			//$('#add_appt_pat_name0').popover('show');
 		});
 		
 		
+				
 		$("#appt_but_save").on("click", function() {
 			add_app_fn.validateForm("0");
 		});
@@ -1399,6 +2075,10 @@ alert(add_appt_appt_id);
 		$("#block_but_save").on("click", function() {
 			add_app_fn.validateBlockForm();
 		});
+		
+		$("#add_appt_add_prov_but").on("click",function(){
+			add_app_fn.addProviderFld();
+	 	});
 
 		/*bind input field to date object*/
 		new JsDatePick({
@@ -1408,6 +2088,16 @@ alert(add_appt_appt_id);
 			dateFormat : "%d-%M-%Y"
 
 		});
+		
+		new JsDatePick({
+			useMode : 2,
+			target : "add_appt_rec_enddate",
+			disablePreDays : true,
+			dateFormat : "%d-%M-%Y"
+
+		});
+		
+		
 
 		new JsDatePick({
 			useMode : 2,
@@ -1418,34 +2108,107 @@ alert(add_appt_appt_id);
 		});
 		/*binding functions end*/
 		add_app_fn.init();
-		add_app_fn.loadPatientDtls('');
+		//add_app_fn.loadPatientDtls('');
+	var projects;
+	var add_appt_providers_list;
+		
+	$( "#add_appt_block_s_provider" ).catcomplete({
+		minLength: 0,
+		source: function( request, response ) {
+			// delegate back to autocomplete, but extract the last term
+			if(add_appt_providers_list == null)
+					add_app_ajax_fn.loadProviders();
+			//response( add_appt_providers_list );	
+			var term = request.term;
+			var matches = $.grep(add_appt_providers_list, function(item, index) {
+				var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
+				return matcher.test(item.label);
+			});
+			response(matches);
+		  },
+		focus: function( event, ui ) {
+			//$( "#add_appt_pat_name" ).val( ui.item.label );
+			return false;
+		},
+		select: function( event, ui ) {	
+			//naa_prov_type = "S";
+			//naa_prov_id  = ui.item.id;
+			$("#add_block_prov_type").val("S");
+			$("#add_block_prov_id").val(ui.item.id);
+		}
+	});
 
-		var projects = [ {
-			id : "11",
-			patName : "Abbey",
-			dob : "01-Oct-1987",
-			hin : "1234-567-999-NN"
-		}, {
-			id : "12",
-			patName : "Adem",
-			dob : "01-Oct-1987",
-			hin : "1234-567-999-NN"
-		}, {
-			id : "1",
-			patName : "Doe, Jane",
-			dob : "01-Oct-1987",
-			hin : "1234-567-999-NN"
-		}, {
-			id : "2",
-			patName : "Donaghy, Jane",
-			dob : "17-Nov-1973",
-			hin : "5987-783-001"
-		}, {
-			id : "3",
-			patName : "Donahue, Jane",
-			dob : "20-Apr-1992",
-			hin : "3232-877-123-GX"
-		} ];
+/*$( "#naa_s_provider" )
+.mycatcomplete({
+delay: 0,
+minLength : 3,
+source: function( request, response ) {
+// delegate back to autocomplete, but extract the last term
+var data = naa_json_fn.getDocsData();			
+response( data );			
+},		  
+select: function( event, ui ) {
+naa_prov_type = "S";
+naa_prov_id  = ui.item.id;
+},    
+_search: function(event, ui) {
+return false;
+}
+
+});*/
+
+
+$( "#add_appt_block_m_provider" )
+.bind( "keydown", function( event ) {
+if ( event.keyCode === $.ui.keyCode.TAB &&
+$( this ).data( "ui-autocomplete" ).menu.active ) {
+event.preventDefault();
+}
+})
+.autocomplete({
+minLength: 0,
+source: function( request, response ) {
+	// delegate back to autocomplete, but extract the last term
+	if(add_appt_providers_list == null)
+			add_app_ajax_fn.loadProviders();
+	//response( add_appt_providers_list );	
+	var term = request.term;
+	term = term.split(';');
+	term = term[term.length -1].trim();
+	//console.log(term[term.length -1]);
+	var matches = $.grep(add_appt_providers_list, function(item, index) {
+		var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
+		return matcher.test(item.label);
+	});
+	response(matches);
+},
+focus: function() {
+// prevent value inserted on focus
+return false;
+},
+select: function( event, ui ) {
+	//console.log(ui.item.id);
+	var terms = split( this.value );
+	// remove the current input
+	terms.pop();
+	// add the selected item
+	terms.push( ui.item.value );
+	// add placeholder to get the comma-and-space at the end
+	terms.push( "" );
+	this.value = terms.join( "; " );
+	$("#add_block_prov_type").val("M")
+	//add_appt_fld_prv_id += ui.item.id+",";
+	var temp = $("#add_block_prov_id").val();
+	if(temp == "")
+		$("#add_block_prov_id").val(ui.item.id);
+	else
+		$("#add_block_prov_id").val(temp + "," + ui.item.id);
+	
+	
+	//console.log(add_appt_fld_prv_id);
+	return false;
+}
+});
 
 	});
 </script>
@@ -1479,9 +2242,16 @@ alert(add_appt_appt_id);
 	border-collapse: collapse;
 }
 
-.appt_tbl td,.appt_tbl table th {
+.appt_tbl td {
 	border: 1px solid #AAAAAA;
-	padding: 1.7em;
+	padding: 0.5em;
+	font-weight:normal;
+}
+
+.title_bold_font {
+	border: 1px solid #AAAAAA;
+	padding: 0.5em;
+	font-weight: bold;
 }
 
 .appt_roundbox {
@@ -1490,7 +2260,7 @@ alert(add_appt_appt_id);
 	border-top-right-radius: 4px;
 	border-top-left-radius: 4px;
 	border: 1px solid #AAAAAA;
-	min-height: 150px;
+	
 }
 
 .popover {
@@ -1503,26 +2273,42 @@ alert(add_appt_appt_id);
 .add_appt_close:hover{
 	 cursor:pointer !important;
 }
+
+.nav-tabs > li > a {
+    color:#6495ED;
+}
 </style>
 
 
 </head>
 <body>
+	
 	<div id="add_appt_form" class="fex_form"
 		style="padding: 0px; width: 100%">		
-		<div id="tabs" class="test">
-		<table border=0 width=100%">
-			<tr><td> 
-			<ul>
-				<li><a href="#tabs-1">Add Appointment</a></li>
-				<li><a href="#tabs-2">Block time</a></li>
-			</ul>
-			</td>
-			<td style="text-align: right; border-top: 1px solid #AAAAAA; padding-top: 0px;" valign="top"> <div class="add_appt_close" onClick='$("#add_appt_form").dialog("close");'><img src="js_up/images/close_icon.png" height=20 width=20></img></div></td>
-			</table>
-			<!-- Add appointment tab -->
-			<div id="tabs-1">
-				<table width="100%" border="0" style="border-collapse: collapse;">
+		
+			
+		
+		<ul class="nav nav-tabs" id="yourtabs">
+			<li id="lbl_appointment" class="active"><a data-target="#temp1" data-toggle="tab" id="" ><span style="cursor: pointer;font-size:18px;padding-left:30px;padding-right:30px;" id="lbl_appt_tab">Add appointment</span></a>
+			</li>
+			<li id="lbl_blocktime"><a data-target="#temp2" data-toggle="tab" id="" ><span style="cursor: pointer;font-size:18px;padding-left:30px;padding-right:30px;" id="lbl_blk_time_tab">Block time</span></a>
+			</li>
+			<li id="lbl_crtdDtls" style="display:none;"> 
+				<table style="color:#848484;">
+					<tr>
+						<td style="padding-left:10px;">CREATED</td>
+						<td style="padding-left:10px;" id="lbl_crtdby">Danial Creag test <br> 12-OCT-2013</td>
+						<td style="padding-left:30px;">LAST EDITED</td>
+						<td style="padding-left:10px;" id="lbl_editedby">Danial Creag test <br> 12-OCT-2013</td>
+					</tr>
+				</table>
+			</li>
+			
+			
+		</ul>
+			<div class="tab-content">
+					  <div class="tab-pane active" id="temp1" style="border: 1px solid #DDDDDD;border-top:0px;padding:5px;">
+					  		<table width="100%" border="0" style="border-collapse: collapse;">
 					<tr>
 						<td width="55%">
 							<!-- basic details -->
@@ -1531,10 +2317,12 @@ alert(add_appt_appt_id);
 									<td colspan="2">
 										<table>
 											<tr>
-												<td><img src="js_up/img/1.png"
-													style="width: 30px; height: 30px;"></img></td>
-												<td class="naa_mainheading">BASIC DETAILS(required) <input
-													type="hidden" id="add_appt_pat_name_sel_id">
+										<td><img src="js_up/img/1.png" style="width:30px;height:30px;"></img></td>
+										<td class="naa_mainheading"><span style="color:#848484;">BASIC DETAILS(required)</span>
+											<input type="hidden" id="add_appt_pat_name_sel_id">	
+											<input type="hidden" id="add_appt_prov_name_sel_id">
+											<input type="hidden" id="add_appt_prog_id">
+											<input type="hidden" id="add_appt_rec_id">										
 												</td>
 											</tr>
 										</table>
@@ -1543,37 +2331,35 @@ alert(add_appt_appt_id);
 								<tr>
 									<td width="20%">Patient name</td>
 									<td width="80%">
-										<table id="add_appt_pat_tab">
+										<table>
 											<tr>
-												<td><input id="add_appt_pat_name"
-													class="form-control na_form_inputtext"
-													style="height: 25px;" placeholder='Type patient name...'
-													rel='popover' data-placement='bottom'
-													data-original-title='&lt;b&gt;Requests&lt;/b&gt;'
-													data-content='My content goes here' /></td>
-												<td style='padding-left: 5px;'><div
-														onclick='add_app_fn.removePatFld(this)'>
-														<img src='js_up/img/close-x-cir.gif'
-															style='cursor: pointer'></img>
-													</div></td>
+												<td width="70%">
+													<table id="add_appt_pat_tab">
+														<tr>
+															<td>
+																<div class="input-group" style='padding:2px;'>
+																  <input id="add_appt_pat_name0" class="form-control na_form_inputtext" style="height:25px;width:220px !important;" placeholder='Type patient name...' rel='popover' data-placement='bottom' data-original-title='&lt;b&gt;Requests&lt;/b&gt;' data-content='My content goes here' />
+																  <span class="input-group-addon" style="font-size:14px;padding:0 5px 3px 7px;"><span class="glyphicon glyphicon-search"></span></span>
+																</div>
+																
+															</td>									
+															<td style='padding-left:5px;'><div ip_id="add_appt_pat_name0" onclick='add_app_fn.removePatFld(this)'><img src='js_up/img/close-x-cir.gif' style='cursor:pointer'></img></div></td>
+														</tr>
+													</table>
+												</td>
+												<td style="display: table-cell;  vertical-align: top;padding-top:3px;" width="30%">
+													<button type="button" id="" class="btn btn-default" onclick="add_app_fn.openAddPatient()" data-toggle="tooltip" data-placement="bottom" title="Click to add new patient" style="float:right;font-size:10px;color:black;height:20px;width:100px;padding:0px;padding-left:5px;"> &nbsp;+ New patient&nbsp; </button>&nbsp;
+												</td>
 											</tr>
-										</table>
+										</table>									
+										
 									</td>
 								</tr>
 								<tr>
 									<td width="20%"></td>
-									<td width="80%" height="20px;" style="color: red;">
-										<div style="display: none">
-											<input type="checkbox" id="add_appt_sendemail"
-												class="add_appt_ckbox" value=""
-												style="margin-bottom: -5px; margin-left: 5px;" placeholder="Enter 3 characters"/>&nbsp;Send
-											email reminder
-										</div>
-										<button type="button" id="add_appt_add_pat_but"
-											class="btn btn-default" data-toggle="tooltip"
-											data-placement="bottom" title="Click to add another patient"
-											style="font-size: 10px; color: black; height: 20px; width: 150px; padding: 0px; padding-left: 5px;">
-											&nbsp;+ Add another patient&nbsp;</button>
+							<td width="80%" style="color:red;">
+									<div style="display:none"><input type="checkbox" id="add_appt_sendemail" class="add_appt_ckbox" value="" style="margin-bottom: -5px;margin-left:5px;"/>&nbsp;Send email reminder</div>
+									<button type="button" id="add_appt_add_pat_but" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Click to add another patient" style="font-size:10px;color:black;height:20px;width:150px;padding:0px;padding-left:5px;"> &nbsp;+ Add another patient&nbsp; </button>
 									</td>
 								</tr>
 								<tr>
@@ -1582,35 +2368,23 @@ alert(add_appt_appt_id);
 								<tr>
 									<td width="20%">Provider(s)</td>
 									<td width="80%">
-										<table>
-											<tr>
-												<td>&nbsp;<input type="radio" name="add_appt_provider"
-													class="add_appt_radio_pro" value="single" checked
-													style="margin-bottom: -3px;" />&nbsp;Single provider
-													appt.&nbsp;&nbsp;
-												</td>
-												<td><input id="add_appt_s_provider"
-													class="form-control na_form_inputtext"
-													style="height: 25px;" placeholder="Enter 3 characters" /></td>
+								<table id="add_appt_prov_tab">
+									<tr>
+										<td>
+												<div class="input-group" style='padding:2px;'>
+												  <input id="add_appt_prov_name0" class="form-control na_form_inputtext" style="height:25px;width:220px !important;" placeholder='Type provider name...' rel='popover' data-placement='bottom' data-original-title='&lt;b&gt;Requests&lt;/b&gt;' data-content='My content goes here' />
+												  <span class="input-group-addon" style="font-size:14px;padding:0 5px 3px 7px;"><span class="glyphicon glyphicon-search"></span></span>
+												</div>
+										</td>									
+										<td style='padding-left:5px;'><div onclick='add_app_fn.removeProvFld(this)'><img src='js_up/img/close-x-cir.gif' style='cursor:pointer'></img></div></td>
 											</tr>
 										</table>
 									</td>
 								</tr>
 								<tr>
-									<td></td>
-									<td>
-										<table>
-											<tr>
-												<td>&nbsp;<input type="radio" name="add_appt_provider"
-													class="add_appt_radio_pro" value="multi"
-													style="margin-bottom: -3px;" />&nbsp;Multi provider
-													appt.&nbsp;&nbsp;&nbsp;&nbsp;
-												</td>
-												<td><input id="add_appt_m_provider" multiple="multiple"
-													class="form-control na_form_inputtext" disabled
-													style="height: 25px;" placeholder="Enter 3 characters"/></td>
-											</tr>
-										</table>
+							<td width="20%"></td>
+							<td width="80%" height="20px;" style="color:red;">
+									<button type="button" id="add_appt_add_prov_but" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Click to add another provider" style="font-size:10px;color:black;height:20px;width:150px;padding:0px;padding-left:5px;"> &nbsp;+ Add another provider&nbsp; </button>
 									</td>
 								</tr>
 								<tr>
@@ -1621,21 +2395,49 @@ alert(add_appt_appt_id);
 									<td width="80%">
 										<table>
 											<tr>
-												<td>&nbsp;<input id="add_appt_date"
-													class="form-control na_form_inputtext" readonly
-													style="width: 110px; cursor: pointer; height: 25px;" /></td>
-												<td style="padding-top: 10px; padding-left: 10px;"><span
-													id="add_appt_but_recur" class="appt_roundbox"
-													style="padding: 2px; cursor: pointer; height: 25px;">&nbsp;Add
-														recurrence&nbsp;</span></td>
+												<td>&nbsp;
+													
+													<div class="input-group" style='padding:2px;'>
+													  <input id="add_appt_date" class="form-control na_form_inputtext" readonly style="width: 170px !important;color:blue; cursor: pointer; height: 25px;"/>
+													  <span class="input-group-addon" style="font-size:16px;padding:0 5px 0 7px;" id="add_appt_date_cal"><span class="glyphicon glyphicon-calendar"></span></span>
+													</div>
+												</td>
+												<td style="padding-top: 12px; padding-left: 10px;">
+													<span id="add_appt_but_recur" class="appt_roundbox"	style="padding: 4px; cursor: pointer; height: 25px;"><span class="glyphicon glyphicon-repeat" style="font-size:14px;padding:0 5px 0 7px;"></span>&nbsp;Add recurrence&nbsp;</span>
+														
+													</td>
 											</tr>
 										</table>
 									</td>
 								</tr>
 								<tr style="display: none" id="add_appt_row_recur">
 									<td width="20%">Recurrence</td>
-									<td width="80%"><span id="add_appt_text_recur"
-										style="font-size: 10px;"></span></td>
+									<td width="80%" style="padding-top:5px;">
+										<table>
+											<tr>
+												<td>
+													<select class="form-control na_form_select"	id="add_appt_rec_freq" style="width: 100px; padding: 0px;color:blue;" onchange="add_app_fn.setRecText()">
+														<option value="D">Every day</option>
+														<option value="W">Every week</option>
+														<option value="M">Every month</option>
+														<option value="Y">Every year</option>
+													</select>
+												</td>
+												<td style="padding-left:35px;">
+													&nbsp;End date
+												</td>
+												<td style="padding-left:12px;">
+													<div class="input-group" style='padding:0px;'>
+													  <input id="add_appt_rec_enddate" class="form-control na_form_inputtext"  onchange="" readonly style="width: 120px !important;color:blue; cursor: pointer; height: 21px;"/>
+													  <span class="input-group-addon" style="font-size:12px;padding:0 4px 2px 6px;" id="add_appt_date_cal"><span class="glyphicon glyphicon-calendar"></span></span>
+													</div>
+												</td>
+											</tr>
+											<tr>
+												<td colspan="3"><span id="add_appt_text_recur" style="font-size: 10px;"></span></td>
+											</tr>
+										</table>
+									</td>
 								</tr>
 								<tr>
 									<td height="5" colspan="2"></td>
@@ -1645,12 +2447,12 @@ alert(add_appt_appt_id);
 									<td width="80%">
 										<table>
 											<tr>
-												<td><select class="form-control na_form_select"
-													id="add_appt_time" style="width: 100px; padding: 0px;" /></td>
+												<td><select class="form-control na_form_select" onchange="add_app_fn.chkDoubleBooking()"
+													id="add_appt_time" style="width: 100px; padding: 0px;color:blue;" /></td>
 												<td><span style="padding-left: 5em;">Duration</span></td>
-												<td style="padding-left: 10px;"><select
+												<td style="padding-left: 10px;"><select onchange="add_app_fn.chkDoubleBooking()"
 													class="form-control na_form_select" id="add_appt_duration"
-													style="width: 100px; padding: 0px;" /></td>
+													style="width: 100px; padding: 0px;color:blue;" /></td>
 											</tr>
 										</table>
 									</td>
@@ -1661,87 +2463,79 @@ alert(add_appt_appt_id);
 								<tr>
 									<td colspan="2" style="padding: 5px;">
 										<ul class="nav nav-tabs" id="myTab">
-											<li class="active"><a data-target="#patient_dtls"
-												data-toggle="tab" id="dummytab" style="cursor: pointer;">Patient
-													1 details</a></li>
+											
 
 										</ul>
 
-										<div class="tab-content" id="myTabContent">
-											<div class="tab-pane active" id="patient_dtls"
-												style="border: 1px solid #DDDDDD; border-top: 0px; padding: 5px;">
-												<table width="98%"
-													style="padding-top: 5px; padding-bottom: 5px;">
-													<tr>
-														<td width="45%">
-															<table id="addApp_naa_users" class="appt_tbl "
-																width="100%" style="">
-																<thead>
-																	<tr class="ui-widget-header">
-																		<th colspan="2" height="18px;"
-																			style="text-align: center;">PATIENT DEMOGRAPHICS</th>
-																	</tr>
-																</thead>
-																<tbody>
-																	<tr>
-																		<td width="65%">DOB:&nbsp;<span id="appt_dob"></span></td>
-																		<td width="35%">Sex:&nbsp;<span id="appt_sex"></span></td>
-																	</tr>
-																	<tr>
-																		<td colspan="2">HIN:&nbsp;<span id="appt_hin"></span></td>
-																	</tr>
-																	<tr>
-																		<td colspan="2">Address:&nbsp;<span id="appt_add"></span></td>
-																	</tr>
-																	<tr>
-																		<td colspan="2">Phone:&nbsp;<span id="appt_phone"></span></td>
-																	</tr>
-																	<tr>
-																		<td colspan="2">Email:&nbsp;<span id="appt_email"></span></td>
-																	</tr>
-
-																</tbody>
-															</table>
-
-														</td>
-														<td width="55%" style='padding-left: 2px;'>
-															<table id="add_appt_overview" class="appt_tbl"
-																width="100%">
-																<thead>
-																	<tr class="ui-widget-header" height="18px;">
-																		<th colspan="3" style="text-align: center;">APPOINTMENTS
-																			OVERVIEW</th>
-																	</tr>
-																	<tr>
-																		<td>Date</td>
-																		<td>Provider</td>
-																		<td>Start time</td>
-																	</tr>
-																</thead>
-																<tbody>
-																	<tr>
-																		<td>&nbsp;</td>
-																		<td></td>
-																		<td></td>
-																	</tr>
-																	<tr>
-																		<td>&nbsp;</td>
-																		<td></td>
-																		<td></td>
-																	</tr>
-																	<tr>
-																		<td>&nbsp;</td>
-																		<td></td>
-																		<td></td>
-																	</tr>
-																	<tr>
-																		<td>&nbsp;</td>
-																		<td></td>
-																		<td></td>
-																	</tr>
-																</tbody>
-															</table>
-														</td>
+								<div class="tab-content" id="myTabContent">
+								  <div class="tab-pane active" id="patient_dtls" style="border: 1px solid #DDDDDD;border-top:0px;padding:5px;">
+										<table width="98%" style="padding-top:5px;padding-bottom:5px;">
+											<tr>
+												<td width="45%">
+													<table id="addApp_naa_users" class="appt_tbl " width="100%" style="border-left: 1px solid #FFFFFF;">
+														<thead>
+															<tr>
+																<td colspan="2" height="18px;" style="text-align:center;border-top: 1px solid #FFFFFF; "><span style="color:#848484;font-weight:bold;">PATIENT DEMOGRAPHICS</span></td>
+															</tr>
+														</thead>
+														<tbody>
+															<tr>
+																<td width="65%"><b>DOB:</b>&nbsp;<span id="appt_dob"></span></td>
+																<td width="35%"><b>Sex:</b>&nbsp;<span id="appt_sex"></span></td>
+															</tr>
+															<tr>
+																<td colspan="2"><b>HIN:</b>&nbsp;<span id="appt_hin"></span></td>
+															</tr>
+															<tr>
+																<td colspan="2"><b>Address:</b>&nbsp;<span id="appt_add"></span></td>
+															</tr>
+															<tr>
+																<td colspan="2"><b>Phone:</b>&nbsp;<span id="appt_phone"></span></td>
+															</tr>
+															<tr>
+																<td colspan="2"><b>Email:</b>&nbsp;<span id="appt_email"></span></td>
+															</tr>
+															
+														</tbody>
+													</table>
+																						
+												</td>
+												<td width="55%" style='padding-left:0px;'>
+													<table id="add_appt_overview" class="appt_tbl" width="100%">
+														<thead>
+															<tr height="18px;">
+																<td colspan="3" style="text-align:center;border-top: 1px solid #FFFFFF; "><span style="color:#848484;font-weight:bold;">APPOINTMENTS OVERVIEW</span></td>
+															</tr>
+															<tr>
+																<td ><b>Date</b></td>
+																<td><b>Provider</b></td>
+																<td><b>Start time</b></td>
+															</tr>
+														</thead>
+														<tbody>
+															<tr>
+																<td>&nbsp;</td>
+																<td></td>
+																<td></td>
+															</tr>
+															<tr>
+																<td>&nbsp;</td>
+																<td></td>
+																<td></td>
+															</tr>
+															<tr>
+																<td>&nbsp;</td>
+																<td></td>
+																<td></td>
+															</tr>
+															<tr>
+																<td>&nbsp;</td>
+																<td></td>
+																<td></td>
+															</tr>
+														</tbody>
+													</table>
+												</td>
 													</tr>
 												</table>
 											</div>
@@ -1773,13 +2567,13 @@ alert(add_appt_appt_id);
 											<tr>
 												<td><img src="js_up/img/2.png"
 													style="width: 30px; height: 30px;"></img></td>
-												<td class="naa_mainheading">MORE DETAILS(optional)</td>
+												<td class="naa_mainheading"><span style="color:#848484;">MORE DETAILS(optional)</span></td>
 											</tr>
 										</table>
 									</td>
 								</tr>
 								<tr>
-									<td>Appt.type</td>
+									<td>Appt. type</td>
 									<td>
 										<table>
 											<tr>
@@ -1796,7 +2590,7 @@ alert(add_appt_appt_id);
 									</td>
 								</tr>
 								<tr>
-									<td style="height: 35px;">Appt.status</td>
+									<td style="height: 35px;">Appt. status</td>
 									<td><select class="na_form_select form-control"
 										id="add_appt_status" style="padding: 0px;">
 									</select></td>
@@ -1809,7 +2603,7 @@ alert(add_appt_appt_id);
 												<td><input id="add_appt_location"
 													class="form-control na_form_inputtext"
 													style="height: 25px;" /></td>
-												<td><span style="padding-left: 15px;">Resources.</span>
+												<td><span style="padding-left: 15px;">Resources </span>
 												</td>
 												<td><input id="add_appt_resources"
 													class="form-control na_form_inputtext"
@@ -1817,6 +2611,14 @@ alert(add_appt_appt_id);
 											</tr>
 										</table>
 									</td>
+								</tr>
+								<tr>
+									<td style="height: 35px;">Room</td>
+									<td><select class="form-control na_form_select"
+										id="add_appt_room" style="padding: 0px;">
+											<option value="17" selected>Others</option>
+											<option value="17" selected>abc</option>
+									</select></td>
 								</tr>
 								<tr>
 									<td style="height: 35px;">Reason</td>
@@ -1827,8 +2629,7 @@ alert(add_appt_appt_id);
 								</tr>
 								<tr>
 									<td style="height: 35px;">Reason details</td>
-									<td><textarea id="add_appt_reason_dtls" rows="3" cols="15"
-											class="form-control na_form_inputtext" /></td>
+									<td><textarea id="add_appt_reason_dtls" rows="3" cols="15" class="form-control na_form_inputtext" /></td>
 								</tr>
 								<tr>
 									<td style="height: 35px;">Notes</td>
@@ -1843,32 +2644,83 @@ alert(add_appt_appt_id);
 						</td>
 					</tr>
 					<tr>
-						<td colspan="2"
-							style="font-size: 15px; font-weight: bold; padding: 5px; background-color: #FFF0F5; display: none;"
-							id="add_appt_valNote"></td>
+						<td colspan="2"	><div class="alert alert-danger" id="add_appt_valNote_id" style="display:none">hi this is new msg</div></td>
 					</tr>
 					<tr>
 						<td colspan="2" height="5px;"></td>
 					</tr>
-					<tr>
-						<td colspan="2"
-							style="text-align: right; border-top: 1px solid #AAAAAA; padding-top: 10px;">
-							<button id="appt_but_cancel" class="naa_button_grd"
-								style="width: 80px; cursor: pointer;">Cancel</button>&nbsp;&nbsp;
-							<button id="appt_but_save" class="naa_button_grd"
-								style="width: 80px; cursor: pointer;">Save</button>
+					<tr >
+						<td  colspan="2" style="text-align:right;border-top: 1px solid #AAAAAA; "> 
+							<div id="add_appt_add_buttons" style="padding-top:10px;padding-bottom:60px;padding-right:60px;">
+								<div class="btn-group" style="padding-right:15px;">
+								  <button type="button" id="appt_but_paste" class="btn" style="background-color:lightgray;font-size:12px;">Paste</button>
+							  	</div>
+								<div class="btn-group" style="padding-right:15px;">
+								  <button type="button" id="appt_but_cancel" class="btn" style="background-color:lightgray;font-size:12px;">Cancel</button>
+							  	</div>
+							  	
+								<div class="btn-group">
+								  <button type="button" class="btn btn-primary" style="font-size:12px;" onclick="javascript:add_app_fn.validateForm('0')">Save</button>
+								  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" style="font-size:12px;">
+								    <span class="caret"></span>
+								    <span class="sr-only">Toggle Dropdown</span>
+								  </button>
+								  <ul class="dropdown-menu" role="menu" style="min-width:100px;padding:0px;">
+								    <li><a href="javascript:add_app_fn.saveNPrint()" >Save & Print</a></li>
+								  </ul>
+								</div>
+							</div>
 						</td>
 					</tr>
+					
+					<tr >
+					<td colspan="2" > 
+						<div id="add_appt_edit_buttons">
+						<table style="width:100%;">
+							<tr>
+								<td style="text-align:left;border-top: 1px solid #AAAAAA; padding-top:10px;padding-bottom:60px;width:50%">
+									<div class="btn-group">
+									  <button type="button" class="btn btn-danger" style="font-size:12px;" onclick="javascript:add_app_fn.cancelAppt()">Cancel appt.</button>
+									  <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" style="font-size:12px;">
+									    <span class="caret"></span>
+									    <span class="sr-only">Toggle Dropdown</span>
+									  </button>
+									  <ul class="dropdown-menu" role="menu" style="min-width:100px;padding:0px;">
+									    <li><a href="javascript:add_app_fn.deleteAppt()" >Delete appt.</a></li>
+									  </ul>
+									</div>
+									<div class="btn-group" style="padding-right:15px;padding-left:16px;">
+									  <button type="button" id="" class="btn" style="background-color:lightgray;font-size:12px;" onclick="javascript:add_app_fn.cutPatDtls()">Cut appt.</button>
+								  	</div>
+								  	<div class="btn-group" style="padding-right:15px;">
+									  <button type="button" id="" class="btn" style="background-color:lightgray;font-size:12px;" onclick="javascript:add_app_fn.copyPatDtls()">Copy appt.</button>
+								  	</div>
+									
+								</td>
+								<td style="text-align:right;border-top: 1px solid #AAAAAA; padding-top:10px;padding-bottom:60px;width:50%;">
+									
+									<div class="btn-group" style="padding-right:15px;">
+									  <button type="button" id="appt_but_edit_cancel" class="btn" style="background-color:lightgray;font-size:12px;">Cancel</button>
+								  	</div>
+								  									  	
+								  	<div class="btn-group" style="padding-right:15px;">
+									  <button type="button"  class="btn btn-primary" style="font-size:12px;" onclick="javascript:add_app_fn.validateForm('0')">Update</button>
+								  	</div>								  	
+								</td>
+							</tr>
+						</table>
+						</div>
+					</td>
+					</tr>
 				</table>
-			</div>
-
-
-
-
-
-			<!-- Block time tab -->
-			<div id="tabs-2">
-				<table width="100%" border="0" style="border-collapse: collapse;">
+					  </div>
+					  
+					  
+					  
+					  
+					  
+					   <div class="tab-pane" id="temp2" style="border: 1px solid #DDDDDD;border-top:0px;padding:5px;">
+				   				<table width="100%" border="0" style="border-collapse: collapse;">
 					<tr>
 						<td width="55%">
 							<!-- basic details -->
@@ -1879,13 +2731,16 @@ alert(add_appt_appt_id);
 											<tr>
 												<td><img src="js_up/img/1.png"
 													style="width: 30px; height: 30px;"></img></td>
-												<td class="naa_mainheading">BASIC DETAILS(required)</td>
+												<td class="naa_mainheading"><span style="color:#848484;">BASIC DETAILS(required)</span>
+													<input type="hidden" id="add_block_prov_id"> 
+													<input type="hidden" id="add_block_prov_type" value="S">	
+												</td>
 											</tr>
 										</table>
 									</td>
 								</tr>
 								<tr>
-									<td width="20%">Provider(s)</td>
+									<td width="20%" style="text-align: right; padding-right: 10px;">Provider(s)</td>
 									<td width="80%" style="padding-left: 5px">
 										<table>
 											<tr>
@@ -1908,7 +2763,7 @@ alert(add_appt_appt_id);
 												<td><input type="radio" name="blk_appt_provider"
 													class="na_pro" value="multi" style="margin-bottom: -3px;" />&nbsp;Multi
 													provider appt.</td>
-												<td style="padding-left: 13px;"><input
+												<td style="padding-left: 13px;padding-top:6px;"><input
 													id="add_appt_block_m_provider"
 													class="form-control na_form_inputtext" disabled
 													style="height: 25px;" /></td>
@@ -1927,36 +2782,41 @@ alert(add_appt_appt_id);
 									<td height="10" colspan="2"></td>
 								</tr>
 								<tr>
-									<td width="20%">Date</td>
-									<td width="80%" style="padding-left: 5px">
+									<td width="20%" style="text-align: right; padding-right: 10px;">Date</td>
+									<td width="80%">
 										<table>
 											<tr>
-												<td><input id="blk_appt_date"
-													class="form-control na_form_inputtext" readonly
-													style="width: 90px; cursor: pointer; height: 25px;" /></td>
-												<td style="padding-bottom: 9px; padding-left: 10px;"><span
-													id="add_appt_but_recur" class="appt_roundbox"
-													style="padding: 2px; cursor: pointer; height: 25px;">&nbsp;Add
-														recurrence&nbsp;</span></td>
+												<td>
+													
+													<div class="input-group" style='padding:2px;'>
+													  <input id="blk_appt_date" class="form-control na_form_inputtext" readonly style="width: 170px !important;color:blue; cursor: pointer; height: 25px;"/>
+													  <span class="input-group-addon" style="font-size:16px;padding:0 5px 0 7px;" id="add_appt_date_cal"><span class="glyphicon glyphicon-calendar"></span></span>
+													</div>
+												</td>
+												<td style="padding-bottom: 4px; padding-left: 10px;">
+													<span id="blk_appt_but_recur" class="appt_roundbox"	style="padding: 4px; cursor: pointer; height: 25px;"><span class="glyphicon glyphicon-repeat" style="font-size:14px;padding:0 5px 0 7px;"></span>&nbsp;Add recurrence&nbsp;</span>
+														
+													</td>
 											</tr>
 										</table>
 									</td>
 								</tr>
+								
 								<tr>
 									<td height="10" colspan="2"></td>
 								</tr>
 								<tr>
-									<td width="20%">Time</td>
+									<td width="20%" style="text-align: right; padding-right: 10px;padding-bottom:22px;">Time</td>
 									<td width="80%" style="padding-left: 5px">
 										<table>
 											<tr>
 												<td><select class="form-control na_form_select"
-													id="blk_appt_time" style="width: 100px; padding: 0px;"
+													id="blk_appt_time" style="width: 100px; padding: 0px;color:blue;"
 													onchange="updateTime()" /></td>
 												<td><span style="padding-left: 5em;">Duration</span></td>
 												<td style="padding-left: 10px;"><select
 													class="form-control na_form_select" id="blk_appt_duration"
-													style="width: 100px; padding: 0px;" onchange="updateTime()" />
+													style="width: 100px; padding: 0px;color:blue;" onchange="updateTime()" />
 
 												</td>
 											</tr>
@@ -1987,20 +2847,22 @@ alert(add_appt_appt_id);
 											<tr>
 												<td><img src="js_up/img/2.png"
 													style="width: 30px; height: 30px;"></img></td>
-												<td class="naa_mainheading">MORE DETAILS(optional)</td>
+												<td class="naa_mainheading"><span style="color:#848484;">MORE DETAILS(optional)</span></td>
 											</tr>
 										</table>
 									</td>
 								</tr>
 								<tr>
-									<td>Reason</td>
-									<td><input id="blk_appt_reason"
-										class="form-control na_form_inputtext" style="height: 25px" />
+									<td style="text-align: right; padding-right: 10px;">Reason</td>
+									<td>
+										<select class="form-control na_form_select" id="blk_appt_reason" 	style="width: 150px; padding: 0px;color:blue;" onchange="" >
+											
+										</select>
 									</td>
 								</tr>
 								<tr>
-									<td>Notes</td>
-									<td><textarea name="blk_appt_notes" id="blk_appt_notes"
+									<td style="text-align: right; padding-right: 10px;">Notes</td>
+									<td><textarea name="blk_appt_notes" id="blk_appt_notes" style="padding-top:6px;"
 											rows="3" cols="15" class="form-control na_form_inputtext"></textarea>
 									</td>
 								</tr>
@@ -2011,23 +2873,60 @@ alert(add_appt_appt_id);
 						</td>
 					</tr>
 					<tr>
-						<td colspan="2"
-							style="text-align: right; border-top: 1px solid #AAAAAA; padding-top: 10px;">
-							<button id="appt_but_cancel" class="naa_button_grd"
-								style="width: 80px; cursor: pointer;">Cancel</button>&nbsp;&nbsp;
-							<button id="block_but_save" class="naa_button_grd"
-								style="width: 80px; cursor: pointer;">Save</button>
+						<td colspan="2"	style="text-align: right; border-top: 1px solid #AAAAAA; padding-top: 10px;">
+							<div id="block_add_buttons" style="padding-top:10px;padding-bottom:60px;padding-right:60px;">
+								<div class="btn-group" style="padding-right:15px;">
+								  <button type="button" id="appt_block_but_cancel" class="btn" style="background-color:lightgray;font-size:12px;">Cancel</button>
+							  	</div>							  
+								<div class="btn-group">
+								  <button type="button" class="btn btn-primary" style="font-size:12px;" onclick="add_app_fn.captureBlockFormData();">Save</button>
+								  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" style="font-size:12px;">
+								    <span class="caret"></span>
+								    <span class="sr-only">Toggle Dropdown</span>
+								  </button>
+								  <ul class="dropdown-menu" role="menu" style="min-width:100px;padding:0px;">
+								    <li><a href="" >Save & Print</a></li>
+								  </ul>
+								</div>
+							</div>
+							<div id="block_edit_buttons">
+								<table style="width:100%; ">
+									<tr>
+										<td style="text-align:left;padding-top:10px;padding-bottom:60px;width:50%">									
+											<div class="btn-group" style="padding-right:15px;">
+											  <button type="button"  class="btn btn-danger" style="font-size:12px;" onclick="javascript:add_app_fn.deleteAppt()">Delete block.</button>
+										  	</div>
+											
+											
+										</td>
+										<td style="text-align:right; padding-top:10px;padding-bottom:60px;width:50%;">
+											
+											<div class="btn-group" style="padding-right:15px;">
+											  <button type="button" id="block_but_edit_cancel" class="btn" style="background-color:lightgray;font-size:12px;">Cancel</button>
+										  	</div>
+										  									  	
+										  	<div class="btn-group" style="padding-right:15px;">
+											  <button type="button"  class="btn btn-primary" style="font-size:12px;" onclick="add_app_fn.captureBlockFormData();">Update</button>
+										  	</div>								  	
+										</td>
+									</tr>
+								</table>
+						</div>
 						</td>
 					</tr>
 				</table>
+					  </div>
 			</div>
-		</div>
+		
+		
 	</div>
 </body>
 <script>
 	$(function() {
 		add_app_fn.bindAutoComp("add_appt_pat_name0");
 		$('#myTab a:last').tab('show');
+		
+		add_app_fn.provBindAutoComp("add_appt_prov_name0");
 
 	});
 

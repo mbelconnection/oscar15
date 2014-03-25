@@ -24,54 +24,53 @@
 package org.oscarehr.ws.rest.to.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-@XmlAccessorType(XmlAccessType.PROPERTY)
-public class DemographicTo implements Serializable {
+import javax.xml.bind.annotation.XmlRootElement;
 
-    private static final long serialVersionUID = 1L;
-    
-	private String id;
-	private String label;
-	private String hin;
-	private String dob;
-	/**
-	 * @return the hin
-	 */
-	public String getHin() {
-		return hin;
-	}
-	/**
-	 * @param hin the hin to set
-	 */
-	public void setHin(String hin) {
-		this.hin = hin;
-	}
-	/**
-	 * @return the dob
-	 */
-	public String getDob() {
-		return dob;
-	}
-	/**
-	 * @param dob the dob to set
-	 */
-	public void setDob(String dob) {
-		this.dob = dob;
-	}
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	public String getLabel() {
-		return label;
-	}
-	public void setLabel(String label) {
-		this.label = label;
-	}
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+@XmlRootElement
+@JsonIgnoreProperties(ignoreUnknown = true)
+@XmlAccessorType(XmlAccessType.PROPERTY)
+public class PatientSearchResults implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	
+	private List<DemographicTo1> demoGraphhics = new ArrayList<DemographicTo1>();
+
+	private List<ProvidersTo1> providers = new ArrayList<ProvidersTo1>();
+
+	/**
+	 * @return the demoGraphhics
+	 */
+	public List<DemographicTo1> getDemoGraphhics() {
+		return demoGraphhics;
+	}
+
+	/**
+	 * @param demoGraphhics the demoGraphhics to set
+	 */
+	public void setDemoGraphhics(List<DemographicTo1> demoGraphhics) {
+		this.demoGraphhics = demoGraphhics;
+	}
+
+	/**
+	 * @return the providers
+	 */
+	public List<ProvidersTo1> getProviders() {
+		return providers;
+	}
+
+	/**
+	 * @param providers the providers to set
+	 */
+	public void setProviders(List<ProvidersTo1> providers) {
+		this.providers = providers;
+	}
+
 	
 }

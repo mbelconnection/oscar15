@@ -26,16 +26,17 @@ package org.oscarehr.managers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.oscarehr.PMmodule.dao.ProviderDao;
+import org.oscarehr.common.dao.OscarAppointmentDao;
 import org.oscarehr.common.dao.PropertyDao;
 import org.oscarehr.common.model.Property;
 import org.oscarehr.common.model.Provider;
 import org.oscarehr.util.MiscUtils;
-import org.oscarehr.ws.rest.bo.ProviderBO;
 import org.oscarehr.ws.rest.exception.ProviderException;
-import org.oscarehr.ws.rest.to.model.ProviderTo;
+import org.oscarehr.ws.rest.exception.ScheduleException;
 import org.oscarehr.ws.rest.util.ErrorCodes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,7 +46,10 @@ import oscar.log.LogAction;
 @Service
 public class ProviderManager2 {
 	
-	private Logger logger = MiscUtils.getLogger();
+	private static Logger logger = MiscUtils.getLogger();
+	
+	@Autowired
+	private OscarAppointmentDao oscarAppointmentDao;
 	
 	@Autowired
 	private ProviderDao providerDao;
@@ -73,22 +77,6 @@ public class ProviderManager2 {
 		LogAction.addLogSynchronous("ProviderManager.getProvider, providerNo=" + providerNo, null);
 
 		return (result);
-	}
-
-	public List<ProviderTo> getProvidersforSearch(String nameLike) {
-		List<ProviderTo> providersTo = null;
-		try {
-			List<Provider> results = providerDao.getActiveProvideFirstNameLikeSearch(nameLike);
-			//--- log action ---
-			LogAction.addLogSynchronous("ProviderManager.getProviders" + results.size(), null);
-			// copy provider into provider transfer object
-			providersTo = new ArrayList<ProviderTo>();
-			//TODO:this won't work..due to my merge
-			providersTo = ProviderBO.copy(results, providersTo,"FN");
-		} catch (Exception e) {
-			return new ArrayList<ProviderTo>();
-		}
-		return providersTo;
 	}
 
 	public List<Provider> getActiveProviderFirstNameLikeSearch(String[] nameLike) throws ProviderException {
@@ -125,5 +113,27 @@ public class ProviderManager2 {
 		LogAction.addLogSynchronous("ProviderManager.getProviderProperties, providerNo=" + providerNo+", propertyName="+propertyName, null);
 		
 		return(results);
+	}
+	
+	public List getGroupAndIndividualForDropdown() throws ProviderException {
+		logger.debug("ScheduleService.getActivePatients() starts");
+		List<Map<String,String>> data = null;
+		List<Map<String,String>> groupData = null;
+		try {			
+			data = oscarAppointmentDao.getActiveProvidersForDropdown();
+			if(null == data)
+				data = new ArrayList<Map<String,String>>();
+			groupData = oscarAppointmentDao.getActiveGroupsForDropdown();
+			data.addAll(groupData);
+			if (null == data || data.isEmpty()) {
+				throw new ScheduleException(ErrorCodes.SCH_ERROR_001);
+			}
+		} catch (Exception e) {
+			logger.error("Error in ScheduleService.getProviderAndEvents()", e);
+			throw new ProviderException(ErrorCodes.SCH_ERROR_001);
+		}
+		
+		logger.debug("ScheduleService.getActivePatients() ends");
+		return data;
 	}
 }

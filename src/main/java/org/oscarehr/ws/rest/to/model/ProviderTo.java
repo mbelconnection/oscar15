@@ -25,30 +25,39 @@ package org.oscarehr.ws.rest.to.model;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlElement;
-
 public class ProviderTo implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
-	private String providerNo;
-	private String name;
+	private String id;
+	private String label;
+	private String category;
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getLabel() {
+		return label;
+	}
+	public void setLabel(String label) {
+		this.label = label;
+	}
+	/**
+	 * @return the category
+	 */
+	public String getCategory() {
+		return category;
+	}
+	/**
+	 * @param category the category to set
+	 */
+	public void setCategory(String category) {
+		this.category = category;
+	}
 	
-	@XmlElement(name="id", nillable=true)
-	public String getProviderNo() {
-		return providerNo;
-	}
-	public void setProviderNo(String providerNo) {
-		this.providerNo = providerNo;
-	}
 	
-	@XmlElement(name="label", nillable=true)
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
 
 	
 }

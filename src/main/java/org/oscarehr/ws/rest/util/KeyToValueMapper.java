@@ -65,7 +65,7 @@ public class KeyToValueMapper {
 			statusValues.put("CX", "C");
 			statusValues.put("BL", "B");
 		}
-		return statusValues.get(key);
+		return key;
 		
 	}
 	

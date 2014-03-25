@@ -37,7 +37,7 @@ public class ScheduleTemplate extends AbstractModel<ScheduleTemplatePrimaryKey> 
 	private ScheduleTemplatePrimaryKey id;
 	private String summary;
 	private String timecode;
-
+	
 	public ScheduleTemplatePrimaryKey getId() {
 		return id;
 	}

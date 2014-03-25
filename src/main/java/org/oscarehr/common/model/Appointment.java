@@ -106,6 +106,15 @@ public class Appointment extends AbstractModel<Integer> implements Serializable 
 	private String urgency;
 	private Integer creatorSecurityId;
 	
+	@Column(name = "roomid")
+	private String roomId;
+	
+	@Column(name = "multiapptid")
+	private Integer multiApptId;
+	
+	@Column(name = "recurrenceid")
+	private Integer recurrenceId;
+	
 	@Enumerated(EnumType.STRING)
 	private BookingSource bookingSource;
 	
@@ -347,6 +356,48 @@ public class Appointment extends AbstractModel<Integer> implements Serializable 
         	}     
         }       
     };
+
+	/**
+	 * @return the roomId
+	 */
+	public String getRoomId() {
+		return roomId;
+	}
+
+	/**
+	 * @param roomId the roomId to set
+	 */
+	public void setRoomId(String roomId) {
+		this.roomId = roomId;
+	}
+
+	/**
+	 * @return the multiApptId
+	 */
+	public Integer getMultiApptId() {
+		return multiApptId;
+	}
+
+	/**
+	 * @param multiApptId the multiApptId to set
+	 */
+	public void setMultiApptId(Integer multiApptId) {
+		this.multiApptId = multiApptId;
+	}
+
+	/**
+	 * @return the recurrenceId
+	 */
+	public Integer getRecurrenceId() {
+		return recurrenceId;
+	}
+
+	/**
+	 * @param recurrenceId the recurrenceId to set
+	 */
+	public void setRecurrenceId(Integer recurrenceId) {
+		this.recurrenceId = recurrenceId;
+	}
 
 
 }

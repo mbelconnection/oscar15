@@ -28,6 +28,7 @@ package org.oscarehr.common.dao;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
 import org.oscarehr.common.NativeSql;
@@ -109,5 +110,21 @@ public class ScheduleTemplateDao extends AbstractDao<ScheduleTemplate> {
 		query.setParameter("providerNo", providerNo);
 		return query.getResultList();
 	}
+	
+	
+	public String findByName(String name,String providerNo) {
+		Query query = entityManager.createQuery("SELECT s.timecode FROM ScheduleTemplate s  WHERE s.id.name=:name and (s.id.providerNo= :providerNo or s.id.providerNo='Public') ");
+		query.setParameter("name", name);
+		query.setParameter("providerNo", providerNo);
+
+	    String results = null;
+	    try {
+	    	results = (String) query.getSingleResult();
+	    }catch(NoResultException e) {
+	    	//ignore
+	    }
+		return results;
+	}
+
 
 }

@@ -24,8 +24,11 @@
 package org.oscarehr.ws.rest;
 
 import java.util.List;
+import java.util.Map;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -46,21 +49,29 @@ import org.oscarehr.PMmodule.dao.ProviderDao;
 import org.oscarehr.common.model.Provider;
 import org.oscarehr.managers.DemographicManager;
 import org.oscarehr.managers.ProviderManager2;
+import org.oscarehr.managers.ScheduleManager;
 import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.ws.rest.bo.ProviderBO;
+import org.oscarehr.ws.rest.exception.AppointmentException;
 import org.oscarehr.ws.rest.exception.ProviderException;
+import org.oscarehr.ws.rest.exception.ScheduleException;
 import org.oscarehr.ws.rest.to.model.OscarResponseTo;
+import org.oscarehr.ws.rest.to.model.ProviderAndEventSearchResponse;
+import org.oscarehr.ws.rest.to.model.ProviderAndEventSearchResults;
 import org.oscarehr.ws.rest.to.model.ProviderTo;
+import org.oscarehr.ws.rest.to.model.ProviderTo1;
 import org.oscarehr.ws.transfer_objects.ProviderTransfer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 
-@Path("/providerService/")
-@Produces("application/xml")
+@Path("/providerService")
+@Component("ProviderService")
 public class ProviderService {
 
-	private Logger log = MiscUtils.getLogger();
+	private static Logger log = MiscUtils.getLogger();
+
 	
 	@Autowired
 	ProviderDao providerDao;
@@ -70,6 +81,9 @@ public class ProviderService {
 	
 	@Autowired
 	private DemographicManager demographicManager;
+	
+	@Autowired
+	private ScheduleManager scheduleManager;
 	
 	protected SecurityContext getSecurityContext() {
 		Message m = PhaseInterceptorChain.getCurrentMessage();
@@ -144,7 +158,7 @@ public class ProviderService {
     }
     
 
-     @GET
+    @GET
    	@Path("/{nameLike}/list")
    	@Produces("application/json")
    	public Response getProviders(@PathParam("nameLike") String nameLike) {
@@ -175,4 +189,101 @@ public class ProviderService {
        	log.debug("ProviderService.getProviders() ends");
        	return Response.status(Status.OK).entity(response).build();
        }
+    
+    @GET
+	@Path("/getteam")
+	@Produces("application/json")
+	public Response getGroupAndIndividualForDropdown() {
+		log.debug("ScheduleService.getGroupAndIndividual() starts");
+		List rstLst = null;
+		ProviderAndEventSearchResponse response = new ProviderAndEventSearchResponse();
+		try {
+			rstLst = providerManager.getGroupAndIndividualForDropdown();			
+		} catch(ProviderException e) {
+			log.error("Error in ScheduleService.getProvidersAndEvents()", e);
+			return Response.status(Status.NOT_FOUND).entity(e.getBean()).build();
+		}
+		log.debug("ScheduleService.getGroupAndIndividual() ends");
+		return Response.status(Status.OK).entity(rstLst).build();
+	}
+    
+    
+    @GET
+   	@Path("/{groupName}/groupProvList")
+   	@Produces("application/json")
+   	public Response getGroupProviderList(@PathParam("groupName") String groupName) {
+   		log.debug("ProviderService.getGroupProviderList() starts");
+   		Map<String,List<ProviderTo1>> provList = null;
+   		
+   			try {
+	            provList = demographicManager.getGroupProviderDetails(groupName);
+            } catch (AppointmentException e) {
+            	log.error("Error in ProviderService.getGroupProviderList()", e);
+    			return Response.status(Status.NOT_FOUND).entity(e.getBean()).build();
+	         }
+   			
+   		
+   		log.debug("providerservice.getGroupProviderList() ends");
+   		return Response.status(Status.OK).entity(provList).build();
+   	}
+    
+    @POST
+   	@Path("/saveGroupProvList")
+   	@Consumes("application/json")
+    @Produces("application/json")
+   	public Response saveGroupProviderList(List<ProviderTo1> providerList) {
+   		log.debug("AppointmentService.getBlockTimeReason() starts");
+   		Map<String,List<ProviderTo1>> provList = null;
+   		ProviderAndEventSearchResponse response = new ProviderAndEventSearchResponse();
+   		ProviderAndEventSearchResults rstLst = null;
+   		boolean result;
+   		try {
+   			result = demographicManager.saveProviderDetails(providerList);
+   			rstLst = scheduleManager.getSelectedProviderAndEvents(providerList,null);
+   			response.setResponse(rstLst);
+   		}catch(AppointmentException e) {
+   			return Response.status(Status.NOT_FOUND).entity(e.getBean()).build();
+   		} catch (ScheduleException e) {
+   			return Response.status(Status.NOT_FOUND).entity(e.getBean()).build();
+        }
+   		log.debug("AppointmentService.getBlockTimeReason() ends");
+   		return Response.status(Status.OK).entity(response).build();
+   	}
+    
+    @GET
+	@Path("/{appDate}/{groupName}/fetchGroupAppointments")
+	@Produces("application/json")
+	public Response fetchGroupSchedules( @PathParam("appDate") String appDate, @PathParam("groupName") String groupName) {
+		ProviderAndEventSearchResults rstLst = null;
+		ProviderAndEventSearchResponse response = new ProviderAndEventSearchResponse();
+		try {
+			rstLst = scheduleManager.getTeamProviderAndEvents(groupName,appDate);
+			response.setResponse(rstLst);
+		} catch(ScheduleException e) {
+			log.error("Error in ScheduleService.getProvidersAndEvents()", e);
+			return Response.status(Status.NOT_FOUND).entity(e.getBean()).build();
+		}
+		log.debug("ScheduleService.getProvidersAndEvents() ends");
+		return Response.status(Status.OK).entity(response).build();
+	}
+    
+    
+    @GET
+	@Path("/{appDate}/{groupName}/fetchGroupHavingEvents")
+	@Produces("application/json")
+	public Response fetchGroupHavingSchedules( @PathParam("appDate") String appDate, @PathParam("groupName") String groupName) {
+		ProviderAndEventSearchResults rstLst = null;
+		ProviderAndEventSearchResponse response = new ProviderAndEventSearchResponse();
+		try {
+			rstLst = scheduleManager.getTeamProviderHavingEvents(groupName,appDate);
+			response.setResponse(rstLst);
+		} catch(ScheduleException e) {
+			log.error("Error in ScheduleService.getProvidersAndEvents()", e);
+			return Response.status(Status.NOT_FOUND).entity(e.getBean()).build();
+		}
+		log.debug("ScheduleService.getProvidersAndEvents() ends");
+		return Response.status(Status.OK).entity(response).build();
+	}
+
+    
 }

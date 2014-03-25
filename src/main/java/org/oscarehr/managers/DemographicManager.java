@@ -26,30 +26,47 @@ package org.oscarehr.managers;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.oscarehr.PMmodule.dao.ProviderDao;
 import org.oscarehr.common.Gender;
 import org.oscarehr.common.dao.DemographicArchiveDao;
 import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.dao.DemographicExtDao;
 import org.oscarehr.common.dao.DemographicMergedDao;
+import org.oscarehr.common.dao.MyGroupDao;
 import org.oscarehr.common.dao.PHRVerificationDao;
+import org.oscarehr.common.dao.ScheduleTemplateCodeDao;
+import org.oscarehr.common.model.Appointment;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.Demographic.PatientStatus;
 import org.oscarehr.common.model.DemographicExt;
 import org.oscarehr.common.model.DemographicMerged;
 import org.oscarehr.common.model.PHRVerification;
 import org.oscarehr.common.model.Provider;
+import org.oscarehr.common.model.ScheduleTemplateCode;
 import org.oscarehr.util.MiscUtils;
-import org.oscarehr.ws.rest.bo.DemographicBO;
-import org.oscarehr.ws.rest.to.model.DemographicTo;
+import org.oscarehr.ws.rest.bo.AppointmentBO;
+import org.oscarehr.ws.rest.conversion.DemographicConverter;
+import org.oscarehr.ws.rest.conversion.ProviderConverter;
+import org.oscarehr.ws.rest.exception.AppointmentException;
 import org.oscarehr.ws.rest.exception.PatientException;
+import org.oscarehr.ws.rest.to.model.AppointmentTo;
+import org.oscarehr.ws.rest.to.model.AppointmentTo1;
+import org.oscarehr.ws.rest.to.model.DemographicTo1;
+import org.oscarehr.ws.rest.to.model.ProviderTo1;
+import org.oscarehr.ws.rest.to.model.ScheduleTemplateCodeTo;
 import org.oscarehr.ws.rest.util.ErrorCodes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import oscar.log.LogAction;
+import oscar.util.ConversionUtils;
 
 /**
  * Will provide access to demographic data, as well as closely related data such as 
@@ -81,6 +98,14 @@ public class DemographicManager {
 	@Autowired
 	private PHRVerificationDao phrVerificationDao;
 	
+	@Autowired
+	private MyGroupDao myGroupDao;
+	
+	@Autowired
+	private ProviderDao providerDao;
+	
+	@Autowired
+	private ScheduleTemplateCodeDao tempCodeDao;
 
 	public Demographic getDemographic(Integer demographicId) {
 		Demographic result = demographicDao.getDemographicById(demographicId);
@@ -474,27 +499,11 @@ public class DemographicManager {
 		return(results);
 	}
 	
-	public List<DemographicTo> getDemographicsforSearch(String nameLike) {
-		List<DemographicTo> demographicTo = null;
-		try {
-			List<Demographic> results = demographicDao.getActiveDemographisFirstNameSearch(nameLike);
-			//--- log action ---
-			LogAction.addLogSynchronous("DemographicManager.getDemographicsforSearch" + results.size(), null);
-			// copy provider into provider transfer object
-			demographicTo = new ArrayList<DemographicTo>();
-			demographicTo = DemographicBO.copy(results, demographicTo);
-		} catch (Exception e) {
-			return new ArrayList<DemographicTo>();
-		}
-		return demographicTo;
-	}
-
-
-	public List<Demographic> getActiveDemographisFirstNameSearch(String[] nameLike) throws PatientException {
+	public List<Demographic> getActiveDemographisFirstNameSearch() throws PatientException {
 		logger.debug("DemographicManager.getActiveDemographisFirstNameSearch() starts");
 		List<Demographic> demographics = null;
 		try {
-			demographics = demographicDao.getActiveDemographisFirstNameSearch(nameLike);
+			demographics = demographicDao.getActiveDemographisFirstNameSearch();
 		} catch (Exception e) {
 			logger.error("Error in DemographicManager.getActiveDemographisFirstNameSearch()", e);
 			throw new PatientException(ErrorCodes.PAT_ERROR_001);
@@ -503,16 +512,195 @@ public class DemographicManager {
 		return demographics;
 	}
 	
-	public List<Demographic> getActiveDemographisLastNameSearch(String[] nameLike) throws PatientException {
+	/*public List<Demographic> getActiveDemographisLastNameSearch() throws PatientException {
 		logger.debug("DemographicManager.getActiveDemographisLastNameSearch() starts");
 		List<Demographic> demographics = null;
 		try {
-			demographics = demographicDao.getActiveDemographisLastNameSearch(nameLike);
+			demographics = demographicDao.getActiveDemographisFirstNameSearch();
 		} catch (Exception e) {
 			logger.error("Error in DemographicManager.getActiveDemographisLastNameSearch()", e);
 			throw new PatientException(ErrorCodes.PAT_ERROR_001);
 		}
 		logger.debug("DemographicManager.getActiveDemographisLastNameSearch() ends");
 		return demographics;
+	}*/
+	
+	/**
+	 * Returns details of patient
+	 * 
+	 * @param                   demogrphicNo		
+	 * @return					DemographicTo1
+	 * @throws AppointmentException 
+	 */
+	
+	public DemographicTo1 getPatientDetails(String demographic_no) throws PatientException {
+		logger.debug("DemographicManager.getPatientDetails() starts");
+		DemographicTo1 demoTo = null;
+		DemographicConverter converter = new DemographicConverter();
+		try {
+			Demographic demo = demographicDao.getDemographic(demographic_no);
+		
+			demoTo = converter.getAsTransferObject(demo);
+		} catch (Exception e) {
+			logger.error("Error in DemographicManager.getPatientDetails()", e);
+			throw new PatientException(ErrorCodes.APPT_ERROR_005);
+		}
+		logger.debug("DemographicManager.getPatientDetails() ends");
+		return demoTo;
 	}
+	
+	
+	/**
+	 * Returns details of patient
+	 * 
+	 * @param                   demogrphicNo		
+	 * @return					DemographicTo1
+	 * @throws AppointmentException 
+	 */
+	
+	public Set fetchPatientsHistory(String demographic_no) throws PatientException {
+		logger.debug("DemographicManager.getPatientDetails() starts");
+		Set<AppointmentTo1> archivedClients = new java.util.LinkedHashSet<AppointmentTo1>();
+		AppointmentTo demoTo = null;
+		DemographicConverter converter = new DemographicConverter();
+		try {
+			Set<Appointment> archivedClients1 = demographicDao.fetchPreviousAppointments(Integer.parseInt(demographic_no));
+		
+			archivedClients = converter.getAsTransferSetObject(archivedClients1);
+		} catch (Exception e) {
+			logger.error("Error in DemographicManager.getPatientDetails()", e);
+			throw new PatientException(ErrorCodes.APPT_ERROR_005);
+		}
+		logger.debug("DemographicManager.getPatientDetails() ends");
+		return archivedClients;
+	}
+	
+	
+	/**
+	 * returns boolean after successful update
+	 * 
+	 * @param providerNo		the provider number
+	 * @return					void
+	 * @throws AppointmentException 
+	 */
+	
+	public Set<AppointmentTo1> nextAvalibleAppt(AppointmentTo apptTo) throws AppointmentException {
+		logger.debug("AppointmentManager.nextAvalibleAppt() starts");
+		Set<AppointmentTo1> archivedClients = new java.util.LinkedHashSet<AppointmentTo1>();
+		DemographicConverter converter = new DemographicConverter();
+		try {
+			Set<Appointment> archivedClients1 = demographicDao.fetchNextAvali(apptTo.getProvId(),apptTo.getApptDuration(),apptTo.getApptType(),Integer.parseInt(apptTo.getDayOfWeek()),apptTo.getStartTime(),apptTo.getEndTime(),Integer.parseInt(apptTo.getResultCount()));
+			
+			archivedClients = converter.getAsTransferSetObject(archivedClients1);
+		} catch (Exception e) {
+			logger.error("Error in AppointmentManager.nextAvalibleAppt()", e);
+			throw new AppointmentException(ErrorCodes.APPT_ERROR_005);
+		}
+		logger.debug("AppointmentManager.nextAvalibleAppt() ends");
+		return archivedClients;
+	}
+	
+	
+	/**
+	 * returns boolean after successful update
+	 * 
+	 * @param providerNo		the provider number
+	 * @return					void
+	 * @throws AppointmentException 
+	 */
+	
+	public Map<String,List<ProviderTo1>> getGroupProviderDetails(String groupName) throws AppointmentException {
+		logger.debug("demographicManager.nextAvalibleAppt() starts");
+		
+		List<ProviderTo1> converterActiveProvider = new ArrayList<ProviderTo1>();
+		List<ProviderTo1> converterInActiveProvider = new ArrayList<ProviderTo1>();
+		Map <String,List<ProviderTo1>> hm = new HashMap<String,List<ProviderTo1>>();
+		ProviderTo1 providerTo = new ProviderTo1();
+		ProviderConverter converter = new ProviderConverter();
+		try {
+			List<Provider> archivedClients1 = myGroupDao.search_groupprovider(groupName);
+			for (Iterator<Provider> i = archivedClients1.iterator(); i.hasNext();) {
+	            Provider provider = (Provider) i.next();
+	            providerTo = new ProviderTo1();
+	            providerTo = converter.getAsTransferObject(provider);
+	            
+	            if(!providerTo.isEnabled()){
+	            	converterInActiveProvider.add(providerTo);
+	            }else if(providerTo.isEnabled()){
+	            	converterActiveProvider.add(providerTo);
+	            }
+            }
+			
+			hm.put("active", converterActiveProvider);
+			hm.put("inActive", converterInActiveProvider);
+			
+		} catch (Exception e) {
+			logger.error("Error in demographicManager.nextAvalibleAppt()", e);
+			throw new AppointmentException(ErrorCodes.APPT_ERROR_005);
+		}
+		logger.debug("demographicManager.nextAvalibleAppt() ends");
+		return hm;
+	}
+	
+	
+	public boolean saveProviderDetails(List<ProviderTo1> providerList) throws AppointmentException {
+		logger.debug("demographicManager.saveProviderDetails() starts");
+		
+		boolean result = false;
+		Provider provider = new Provider();
+		ProviderConverter converter = new ProviderConverter();
+		String providerIds = "";
+		try {
+			
+			for (Iterator iterator = providerList.iterator(); iterator.hasNext();) {
+	            ProviderTo1 providerTo1 = (ProviderTo1) iterator.next();
+	            if(!"".equals(providerIds)){
+	            providerIds = providerIds+","+providerTo1.getProviderNo();
+	            }else{
+	            	providerIds = providerTo1.getProviderNo();
+	            }
+            }
+			
+			List<Provider> providerList1 = providerDao.getProvidersByIds(providerIds);
+			
+			for (Iterator i = providerList.iterator(); i.hasNext();) {
+	            ProviderTo1 providerTo1 = (ProviderTo1) i.next();
+
+	            for (Iterator iterator = providerList1.iterator(); iterator.hasNext();) {
+	                Provider provider2 = (Provider) iterator.next();
+	                
+	                if(providerTo1.getProviderNo().equals(provider2.getProviderNo())){
+	                	provider2.setStatus(ConversionUtils.toBoolString(providerTo1.isEnabled()));
+	                	 providerDao.updateProvider(provider2);
+	                	 break;
+	                }
+                }
+
+	           
+	            result = true;
+            }
+			
+		} catch (Exception e) {
+			logger.error("Error in demographicManager.saveProviderDetails()", e);
+			throw new AppointmentException(ErrorCodes.APPT_ERROR_005);
+		}
+		logger.debug("demographicManager.saveProviderDetails() ends");
+		return result;
+	}
+	
+	
+	public List<ScheduleTemplateCodeTo> fetchScheduleTempCode(){
+		
+		List<ScheduleTemplateCodeTo> scheduleTempList = new ArrayList<ScheduleTemplateCodeTo>();
+		
+		List<ScheduleTemplateCode> tempCodeList = tempCodeDao.findAll();
+		
+		scheduleTempList = AppointmentBO.getAsTransferSetObject(tempCodeList);
+		
+		
+		return scheduleTempList;
+		
+	}
+
+
 }

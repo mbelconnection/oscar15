@@ -28,13 +28,9 @@
 	$(function(){
 		/*JSON data*/
 		var existing_p_data = [
-		  { label: "Team A", category: "Group",id:"1" },
-		  { label: "Team B", category: "Group",id:"1" },
-		  { label: "Team C", category: "Group",id:"1" },
-		  { label: "Team D", category: "Group",id:"1" },
 		  { label: "Andrighetti, Jason", category: "Individual",id:"1" },
-		  { label: "Cybela, Alfred", category: "Individual",id:"1" },
-		  { label: "Dallas, Korben", category: "Individual",id:"1" },
+		  { label: "Cybela, Alfred", category: "Individual",id:"2" },
+		  { label: "Dallas, Korben", category: "Individual",id:"2" },
 		  { label: "Dietician, Michelle", category: "Individual",id:"1" },
 		  { label: "Doe, Dr.", category: "Individual",id:"1" },
 		  { label: "Hilts, Dr.", category: "Individual",id:"1" },
@@ -53,35 +49,72 @@
 			{"name":"Name: Chan. John", "dob":"DOB: 1976-Mar-11", "hin":"HIN: 1234-334-345-GI", "appts":[{"date":"2014-Mar-10","time":"11:00","provider":"Dr.Davidson", "pid":"1"}, {"date":"2012-May-07","time":"12:00","provider":"Dr.Davidson", "pid":"1"}, {"date":"2012-Feb-25","time":"14:00","provider":"Dr.Davidson", "pid":"1"}]}
 			
 		];
-				
+		var fex_pat_list;		
 		/*JSON data end*/
 		
 		fex_json_fn = {
-			getSearchData: function(patientName){
-				return fex_sea_data;
-			}
+				getSearchData: function(demoGraphicNo){
+				var fex_sea_data="";
+				$.ajax({
+					url : "../ws/rs/demographics/"+demoGraphicNo+"/patientTotalDetails",
+					type : "get",
+					dataType:'json',				
+					async:false,
+					success : function(result) {
+						fex_sea_data = result;
+					},
+					error : function(jqxhr) {
+						var msg = JSON.parse(jqxhr.responseText);
+						alert(msg['message']);
+					}
+				});
+				//return appt_data;
+			return fex_sea_data;
+			},
+			loadPatients : function() {
+				var pat_dtls = $.ajax({
+					url : "../ws/rs/patient/patlist",
+					type : "get",
+					//contentType : 'application/json',
+					dataType: "json" ,
+					global: false,
+					async:false,
+					success : function(result) {
+					},
+					error : function(jqxhr) {
+						var msg = JSON.parse(jqxhr.responseText);
+						alert(msg['message']);
+
+					}
+				}).responseText;
+				var jObj = JSON.parse(pat_dtls);
+				fex_pat_list = jObj.demographics;
+			},
+				/*getSearchData: function(patientName){
+					return fex_sea_data;
+				}*/
 		};
 		
 		/*General functions*/
 		fex_fn = {
 			 
 			 loadSearchDtls: function(patientName){
-				var _data = fex_json_fn.getSearchData(patientName);
+				 var _data = fex_json_fn.getSearchData(patientName);
 				$("#fex_users tr:gt(0)").remove();
 				var _html = "";
-				$.each(_data, function(){
+				//$.each(_data, function(){
 					var me = this;
-					var findObject = JSON.stringify(me);
-						_html += "<tr border='10'> <td rowspan='3'>" + this.name + "<br>" + this.dob + "<br>" + this.hin + "<div class='fex_viewFullHistory_link' style='cursor:pointer;' onclick='fex_fn.viewApptFullHistory("+findObject+")'><u>View Full appt. History</u></div></td>";
+					var findObject = JSON.stringify(_data);
+						_html += "<tr border='10'> <td rowspan='5'>" + (_data['demographic']).lastName+" "+_data['demographic'].firstName + "<br>" +  _data['demographic'].dob + "<br>" +  _data['demographic'].hin + "<div class='fex_viewFullHistory_link' style='cursor:pointer;' onclick='fex_fn.viewApptFullHistory("+findObject+")'><u>View Full appt. History</u></div></td>";
 						
-						var len = this.appts.length;
+						var len = _data['appointmentsHistory'].length;
 						var clickFn = function(id){
 							alert('aaa');
 						}
-						$.each(this.appts, function(i){
-							_html += "<td>" + this.date + "</td>";
-							_html += "<td>" + this.time + "</td>";
-							_html += "<td>" + this.provider + "</td>";
+						$.each(_data['appointmentsHistory'], function(i){
+							_html += "<td>" + this['appointmentDate'] + "</td>";
+							_html += "<td>" + this['startTime'] + "</td>";
+							_html += "<td>" + this['name'] + "</td>";
 							_html += "<td> <div class='fex_roundbox_edit' style='cursor:pointer;' onclick='fex_fn.gotoAddAppointment("+findObject+")'> Edit</div> </td>";
 						
 							if(i != (len-1))
@@ -90,7 +123,7 @@
 								_html += "</tr>";
 						});
 					
-				});
+				//});
 				$("#fex_users tbody").append(_html);
 			 },
 			 gotoAddAppointment: function(findObject){
@@ -116,9 +149,13 @@
 			 },
 			 viewApptFullHistory: function(findObject){
 				 findAvailObject = findObject;
-						console.log(findObject);
-				 //if(myObject.date==$("#inputField").val()){
-				 $( "#view-full-appt-history" ).dialog({
+				
+				var url ="http://localhost:8080/oscar/demographic/demographiccontrol.jsp?demographic_no=5&last_name="+findObject['demographic'].lastName+"&first_name="+findObject['demographic'].firstName+"&orderby=appttime&displaymode=appt_history&dboperation=appt_history&limit1=0&limit2=25"
+				//console.log(url);
+						//if(myObject.date==$("#inputField").val()){
+				 var myWindow = window.open(url, "", "width=800, height=300, top:20");
+				
+				/* $( "#view-full-appt-history" ).dialog({
 					resizable: false,
 					height:120,
 					width:520,
@@ -127,7 +164,7 @@
 							 $( this ).dialog( "close" );
 							}
 						}
-					});
+					});*/
 				 }
 			 
 		}
@@ -165,7 +202,6 @@
 						$(this).dialog("close");
 				  }
 				}}
-                
             });
 		$(".ui-dialog-titlebar").hide();
 		//Open dailog
@@ -188,17 +224,96 @@
 		  });
 		  
 		//configure auto complete functionality to elements
-		$( "#fex_find_input" ).catcomplete({
+		/*$( "#fex_find_input" ).autocomplete({
 			  delay: 0,
+			  minLength:0,
 			  class:"form-control",
 			  source: existing_p_data,
 			  select: function( event, ui ) {
 				//alert(ui.item.id);
 				$("#fex_app_form").dialog("open");
-				fex_fn.loadSearchDtls(ui.item.label);
+				fex_fn.loadSearchDtls(ui.item.id);
 			  }
+		});*/
+		
+		$( "#fex_find_input" ).autocomplete({
+			minLength: 0,
+			source: function(request, response) {				
+				var term = request.term;
+				//console.log(term);
+				if(fex_pat_list == null)
+					fex_json_fn.loadPatients();
+				var matches = $.grep(fex_pat_list, function(item, index) {
+					var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
+					return matcher.test(item.label);
+				});
+				response(matches);
+			},
+			focus : function(event, ui) {
+				//$( "#add_appt_pat_name" ).val( ui.item.label );
+				return false;
+			},
+			select : function(event, ui) {
+				$("#fex_app_form").dialog("open");
+				fex_fn.loadSearchDtls(ui.item.id);
+			}
+		})
+		.data( "ui-autocomplete" )._renderItem = function( ul, item ) {			
+			return $( "<li>" )
+			.append( "<a><span style='color:#848484;'>Name&nbsp;</span> " + item.label + "<br><span style='color:#848484;'>DOB&nbsp;</span>" + item.dob + "<br><span style='color:#848484;'>HIN&nbsp;</span>" + item.hin + "</a>" )
+			.appendTo( ul );
+		};
+		/*if(fex_pat_list == null)
+			fex_json_fn.loadPatients();
+		var x =new Array();
+		for(var i=0;i<fex_pat_list.length;i++){
+			x.push(fex_pat_list[i].label);
+		}
+		console.log(x);*/
+		//{placement: 'top', title: "<div style=\"text-align:left;\">Reason: "+reason+"</div><div style=\"text-align:left;\">Notes: "+notes+"</div>",	html: true}
+		//$('#fex_find_input').typeahead({data:fex_pat_list})
+		//$('#fex_find_input').betterAutocomplete('init', x, {}, {});
+		/*$( "#fex_find_input" ).typeahead({
+		    source: function ( query, process ) {
+
+		        //the "process" argument is a callback, expecting an array of values (strings) to display
+
+		        //get the data to populate the typeahead (plus some) 
+		        //from your api, wherever that may be
+		        $.get('../ws/rs/patient/patlist', { q: query }, function ( data ) {
+
+		            //reset these containers
+		            users = {};
+		            userLabels = [];
+
+		            //for each item returned, if the display name is already included 
+		            //(e.g. multiple "John Smith" records) then add a unique value to the end
+		            //so that the user can tell them apart. Using underscore.js for a functional approach.  
+		            _.each( data, function( item, ix, list ){
+		                if ( _.contains( users, item.label ) ){
+		                    item.label = item.label + ' #' + item.value;
+		                }
+
+		                //add the label to the display array
+		                userLabels.push( item.label );
+
+		                //also store a mapping to get from label back to ID
+		                users[ item.label ] = item.value;
+		            });
+
+		            //return the display array
+		            process( userLabels );
+		        });
+		    }
+		    , updater: function (item) {
+		        //save the id value into the hidden field   
+		        $( "#userId" ).val( users[ item ] );
+
+		        //return the string you want to go into the textbox (e.g. name)
+		        return item;
+		    }
 		});
-	
+		*/
 		
 		
 	});//end of document ready function
@@ -397,7 +512,7 @@
 		}
 		
 		.fex_viewFullHistory_link{
-			width:200px;
+			width:130px;
 			height:20px;
 			border:0px solid #cecece;
 			padding:0px;

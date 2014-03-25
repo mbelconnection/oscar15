@@ -38,6 +38,7 @@ public class ScheduleTemplatePrimaryKey implements Serializable {
 	
 	@Column(name="provider_no")
     private String providerNo;
+	@Column(name="name")
 	private String name;
 
    public ScheduleTemplatePrimaryKey() {

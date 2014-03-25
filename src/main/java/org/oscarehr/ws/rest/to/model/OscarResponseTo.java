@@ -25,6 +25,7 @@ package org.oscarehr.ws.rest.to.model;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -46,6 +47,26 @@ public class OscarResponseTo implements Serializable {
 	private AppointmentTo appointments;
 	
 	private List<AppointmentReasonTo> appointmentReason;
+	
+	private DemographicTo1 demographic;
+	
+	public DemographicTo1 getDemographic() {
+		return demographic;
+	}
+
+	public void setDemographic(DemographicTo1 demographic) {
+		this.demographic = demographic;
+	}
+
+	public Set<AppointmentTo1> getAppointmentsHistory() {
+		return appointmentsHistory;
+	}
+
+	public void setAppointmentsHistory(Set<AppointmentTo1> appointmentsHistory) {
+		this.appointmentsHistory = appointmentsHistory;
+	}
+
+	private Set<AppointmentTo1> appointmentsHistory;
 	
 	public List<AppointmentReasonTo> getAppointmentReason() {
 		return appointmentReason;

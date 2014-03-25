@@ -24,18 +24,28 @@
 
 package org.oscarehr.ws.rest.bo;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.oscarehr.PMmodule.dao.ProviderDao;
+import org.oscarehr.common.dao.LookupListItemDao;
+import org.oscarehr.common.dao.RoomDao;
+import org.oscarehr.common.dao.ScheduleTemplateDao;
 import org.oscarehr.common.model.Appointment;
 import org.oscarehr.common.model.AppointmentStatus;
 import org.oscarehr.common.model.AppointmentType;
+import org.oscarehr.common.model.ApptRecurrence;
 import org.oscarehr.common.model.LookupListItem;
+import org.oscarehr.common.model.Room;
+import org.oscarehr.common.model.ScheduleDate;
+import org.oscarehr.common.model.ScheduleTemplateCode;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.ws.rest.exception.AppointmentException;
 import org.oscarehr.ws.rest.to.model.AppointmentReasonTo;
@@ -43,6 +53,8 @@ import org.oscarehr.ws.rest.to.model.AppointmentStatusTo;
 import org.oscarehr.ws.rest.to.model.AppointmentTo;
 import org.oscarehr.ws.rest.to.model.AppointmentTypeTo;
 import org.oscarehr.ws.rest.to.model.EventsTo1;
+import org.oscarehr.ws.rest.to.model.RoomTo;
+import org.oscarehr.ws.rest.to.model.ScheduleTemplateCodeTo;
 import org.oscarehr.ws.rest.util.DateUtils;
 import org.oscarehr.ws.rest.util.ErrorCodes;
 import org.oscarehr.ws.rest.util.KeyToValueMapper;
@@ -50,6 +62,7 @@ import org.oscarehr.ws.rest.util.KeyToValueMapper;
 import oscar.util.StringUtils;
 
 public class AppointmentBO {
+
 	
 	private static Logger log = MiscUtils.getLogger();
 	
@@ -92,6 +105,13 @@ public class AppointmentBO {
 		appointment.setUpdateDateTime(new Date());
 		appointment.setUrgency(appointmentTo.getIsCritical());
 		appointment.setLocation(appointmentTo.getLocation());
+		appointment.setMultiApptId(Integer.parseInt(appointmentTo.getMultiApptId()));
+		if(appointmentTo.getRecurrenceId()!=null){
+			appointment.setRecurrenceId(Integer.parseInt(appointmentTo.getRecurrenceId()));
+		}else{
+			appointment.setRecurrenceId(Integer.parseInt("0"));
+		}
+		appointment.setRoomId(appointmentTo.getRoomId());
 		log.debug("AppointmentBO.createAppointmentCriteria() ends");
 		return appointment;
 	}
@@ -151,6 +171,69 @@ public class AppointmentBO {
 	 * @param dest		destination data
 	 * @return			events list
 	 */
+	public static List<EventsTo1> copyEvents(List<Appointment> src, List<EventsTo1> dest,LookupListItemDao reasonDao,ProviderDao proviDao,RoomDao roomDao) throws Exception {
+		log.debug("AppointmentBo.copyEvents() starts");
+		List<EventsTo1> evnLst = null;
+		if (null != src && !src.isEmpty()) {
+			evnLst = new ArrayList<EventsTo1>(src.size());
+			Calendar cal = Calendar.getInstance();
+			Calendar cal1 = Calendar.getInstance();
+			for (Appointment appt : src) {
+				EventsTo1 events =  new EventsTo1();
+				if(appt.getDemographicNo() == 0){
+					events.setAppointStatus("");				
+					events.setApptType("");
+				}else{
+					events.setAppointStatus(KeyToValueMapper.getStatusValue(appt.getStatus()));					
+					events.setApptType(KeyToValueMapper.getTypeValue(appt.getType()));
+				}				
+				events.setApptId(String.valueOf(appt.getId()));
+				events.setDocId(appt.getProviderNo());
+				events.setProviderName(proviDao.getProviderNameLastFirst(appt.getProviderNo()));
+				cal.setTime(appt.getStartTime());
+				String apptTime = (cal.get(Calendar.HOUR_OF_DAY) <= 9 ? "0" + cal.get(Calendar.HOUR_OF_DAY)
+							: cal.get(Calendar.HOUR_OF_DAY))  + ":"
+							+(cal.get(Calendar.MINUTE) <= 9 ? "0" + cal.get(Calendar.MINUTE) : cal.get(Calendar.MINUTE));
+				events.setFromTime(apptTime.toString());
+				cal1.setTime(appt.getEndTime());
+				long duration = ((cal1.getTime().getTime() - cal.getTime().getTime()) / 1000) / 60;
+				events.setDuration(String.valueOf(duration));
+				events.setGoTo(KeyToValueMapper.getTypeValue(appt.getType()));
+				events.setIsCritical(appt.getUrgency());
+				events.setNoOfPat("");
+				events.setNotes(appt.getNotes());
+				events.setPatientName(appt.getName());
+				events.setProgramId(String.valueOf(appt.getProgramId()));
+				events.setMultiApptId(String.valueOf(appt.getMultiApptId()));
+				events.setRecurrenceId(String.valueOf(appt.getRecurrenceId()));
+				events.setRoomId(appt.getRoomId());
+				events.setPatientId(String.valueOf(appt.getDemographicNo()));
+				//if(appt.getDemographicNo() == 0){
+					LookupListItem l = reasonDao.findNameById(appt.getReasonCode());
+					events.setReason(l.getValue());
+				/*}else{
+					events.setReason(getReason(appt.getReasonCode()!=null?appt.getReasonCode().toString():""));
+				}*/
+					if(appt.getRoomId()!=null && !"".equals(appt.getRoomId())){
+						Room room = roomDao.getRoom(Integer.parseInt(appt.getRoomId()));
+						events.setRoomId(room.getName());
+					}
+				events.setApptStartDate(DateUtils.convertDateToString(appt.getAppointmentDate()));
+				
+				evnLst.add(events);
+			}
+		}
+		log.debug("AppointmentBo.copyEvents() ends");
+		return evnLst;
+	}
+	
+	/**
+	 * Returns events list.
+	 * 
+	 * @param scr		source data
+	 * @param dest		destination data
+	 * @return			events list
+	 */
 	public static List<EventsTo1> copyEvents(List<Appointment> src, List<EventsTo1> dest) throws Exception {
 		log.debug("AppointmentBo.copyEvents() starts");
 		List<EventsTo1> evnLst = null;
@@ -160,8 +243,13 @@ public class AppointmentBO {
 			Calendar cal1 = Calendar.getInstance();
 			for (Appointment appt : src) {
 				EventsTo1 events =  new EventsTo1();
-				events.setAppointStatus(KeyToValueMapper.getStatusValue(appt.getStatus()));
-				events.setApptType(KeyToValueMapper.getTypeValue(appt.getType()));
+				if(appt.getDemographicNo() == 0){
+					events.setAppointStatus("");				
+					events.setApptType("");
+				}else{
+					events.setAppointStatus(KeyToValueMapper.getStatusValue(appt.getStatus()));					
+					events.setApptType(KeyToValueMapper.getTypeValue(appt.getType()));
+				}				
 				events.setApptId(String.valueOf(appt.getId()));
 				events.setDocId(appt.getProviderNo());
 				cal.setTime(appt.getStartTime());
@@ -177,7 +265,14 @@ public class AppointmentBO {
 				events.setNoOfPat("");
 				events.setNotes(appt.getNotes());
 				events.setPatientName(appt.getName());
-				events.setReason(getReason(appt.getReasonCode().toString()));
+				//events.s;
+				
+				//if(appt.getDemographicNo() == 0){
+				//	LookupListItem l = reasonDao.findNameById(appt.getReasonCode());
+					//events.setReason(l.getValue());
+				///}else{
+				//	events.setReason(getReason(appt.getReasonCode()!=null?appt.getReasonCode().toString():""));
+				//}
 				events.setApptStartDate(DateUtils.convertDateToString(appt.getAppointmentDate()));
 				evnLst.add(events);
 			}
@@ -185,6 +280,69 @@ public class AppointmentBO {
 		log.debug("AppointmentBo.copyEvents() ends");
 		return evnLst;
 	}
+	
+	
+	/**
+	 * Returns events list.
+	 * 
+	 * @param scr		source data
+	 * @param dest		destination data
+	 * @return			events list
+	 */
+	public static List<EventsTo1> copyEvents(List<Appointment> src, List<EventsTo1> dest,ProviderDao proviDao,LookupListItemDao reasonDao) throws Exception {
+		log.debug("AppointmentBo.copyEvents() starts");
+		List<EventsTo1> evnLst = null;
+		if (null != src && !src.isEmpty()) {
+			evnLst = new ArrayList<EventsTo1>(src.size());
+			Calendar cal = Calendar.getInstance();
+			Calendar cal1 = Calendar.getInstance();
+			for (Appointment appt : src) {
+				EventsTo1 events =  new EventsTo1();
+				if(appt.getDemographicNo() == 0){
+					events.setAppointStatus("");				
+					events.setApptType("");
+				}else{
+					events.setAppointStatus(KeyToValueMapper.getStatusValue(appt.getStatus()));					
+					events.setApptType(KeyToValueMapper.getTypeValue(appt.getType()));
+				}				
+				events.setApptId(String.valueOf(appt.getId()));
+				events.setDocId(appt.getProviderNo());
+				cal.setTime(appt.getStartTime());
+				String apptTime = (cal.get(Calendar.HOUR_OF_DAY) <= 9 ? "0" + cal.get(Calendar.HOUR_OF_DAY)
+							: cal.get(Calendar.HOUR_OF_DAY))  + ":"
+							+(cal.get(Calendar.MINUTE) <= 9 ? "0" + cal.get(Calendar.MINUTE) : cal.get(Calendar.MINUTE));
+				events.setFromTime(apptTime.toString());
+				cal1.setTime(appt.getEndTime());
+				long duration = ((cal1.getTime().getTime() - cal.getTime().getTime()) / 1000) / 60;
+				events.setDuration(String.valueOf(duration));
+				events.setGoTo(KeyToValueMapper.getTypeValue(appt.getType()));
+				events.setIsCritical(appt.getUrgency());
+				events.setNoOfPat("");
+				events.setNotes(appt.getNotes());
+				events.setPatientName(appt.getName());
+				events.setProviderName(proviDao.getProviderNameLastFirst(appt.getProviderNo()));
+				if(appt.getDemographicNo() == 0){
+					LookupListItem l = reasonDao.findNameById(appt.getReasonCode());
+					events.setReason(l.getValue());
+				}else{
+					events.setReason(getReason(appt.getReasonCode()!=null?appt.getReasonCode().toString():""));
+				}
+				//events.s;
+				
+				//if(appt.getDemographicNo() == 0){
+				//	LookupListItem l = reasonDao.findNameById(appt.getReasonCode());
+					//events.setReason(l.getValue());
+				///}else{
+				//	events.setReason(getReason(appt.getReasonCode()!=null?appt.getReasonCode().toString():""));
+				//}
+				events.setApptStartDate(DateUtils.convertDateToString(appt.getAppointmentDate()));
+				evnLst.add(events);
+			}
+		}
+		log.debug("AppointmentBo.copyEvents() ends");
+		return evnLst;
+	}
+	
 	
 	/**
 	 * Returns appointment Type
@@ -263,5 +421,119 @@ public class AppointmentBO {
 	public static String getReason(String key) {
 		return reasonMap.get(key);
 	}
+	
+	public static AppointmentTo setSelectedAppointment(List<Appointment> result){
+		AppointmentTo appointmentTo=new AppointmentTo();
+		for (Iterator<Appointment> i = result.iterator(); i.hasNext();) {
+	        Appointment appointment = (Appointment) i.next();
+	        try {
+	            appointmentTo.setApptStartDate(DateUtils.convertDateToString(appointment.getAppointmentDate()));
+           
+			appointmentTo.setApptEndDate(DateUtils.convertDateToString(appointment.getAppointmentDate()));
+			appointmentTo.setPatientName(appointment.getName());
+			appointmentTo.setApptNotes(appointment.getNotes());
+			appointmentTo.setProvId(appointment.getProviderNo());
+			appointmentTo.setAppReason(""+appointment.getReasonCode());
+			appointmentTo.setApptReasonDtls(appointment.getReason());
+			appointmentTo.setApptResources(appointment.getResources());
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(appointment.getStartTime());
+			String min = ""+cal.get(Calendar.MINUTE);
+			if(min.equals("0"))
+				min = "00";
+			String apptTime =  cal.get(Calendar.HOUR_OF_DAY) + "_" + min;
+			appointmentTo.setApptTime(apptTime.toString());
+			Calendar cal1 = Calendar.getInstance();
+			cal1.setTime(appointment.getEndTime());
+			long duration = ((cal1.getTime().getTime() - cal.getTime().getTime()) / 1000) / 60;
+			appointmentTo.setApptDuration(String.valueOf(duration));
+			appointmentTo.setApptStatus(KeyToValueMapper.getStatusValue(appointment.getStatus()));
+			appointmentTo.setGoTo(KeyToValueMapper.getTypeValue(appointment.getType()));
+			appointmentTo.setIsCritical(appointment.getUrgency());
+			appointmentTo.setId(String.valueOf(appointment.getId()));
+			appointmentTo.setPatientId(String.valueOf(appointment.getDemographicNo()));
+			appointmentTo.setLocation(appointment.getLocation());
+			appointmentTo.setNoOfPatient("");
+			appointmentTo.setApptType(appointment.getType());
+			appointmentTo.setCreator(appointment.getCreator());
+			appointmentTo.setLastUpdateUser(appointment.getLastUpdateUser());
+			appointmentTo.setCreateDateTime(DateUtils.convertDateToString(appointment.getCreateDateTime()));
+			appointmentTo.setUpdateDateTime(DateUtils.convertDateToString(appointment.getUpdateDateTime()));
+			
+			appointmentTo.setProgramId(String.valueOf(appointment.getProgramId()));
+			appointmentTo.setMultiApptId(String.valueOf(appointment.getMultiApptId()));
+			appointmentTo.setRecurrenceId(String.valueOf(appointment.getRecurrenceId()));
+			appointmentTo.setRoomId(appointment.getRoomId());
+			
+	        } catch (Exception e) {
+            }
+        }
+		return appointmentTo;
+	}
+	
+	public static HashMap<String,String> setFlipData(List<ScheduleDate> result,ScheduleTemplateDao scheduleTempDao){
+		
+		HashMap<String,String> flipData = new HashMap<String, String>();
+		for (Iterator<ScheduleDate> i = result.iterator(); i.hasNext();) {
+			ScheduleDate scheduleDate = (ScheduleDate) i.next();
+	        try {
+	        	
+	        	String timeCode =  scheduleTempDao.findByName(scheduleDate.getHour().trim(),scheduleDate.getProviderNo());
+	        	
+	        	flipData.put(DateUtils.convertDateToString(scheduleDate.getDate()), timeCode);
+	        
+	        } catch (ParseException e) {
+            }
+        }
+		return flipData;
+	}
 
+	public static List<ScheduleTemplateCodeTo> getAsTransferSetObject(List<ScheduleTemplateCode> archivedClients){
+		List<ScheduleTemplateCodeTo> returnResult = new java.util.ArrayList<ScheduleTemplateCodeTo>();
+		ScheduleTemplateCodeTo appTo = new ScheduleTemplateCodeTo(); 
+		for (Iterator<ScheduleTemplateCode> i = archivedClients.iterator(); i.hasNext();) {
+			ScheduleTemplateCode tempCode = (ScheduleTemplateCode) i.next();
+	        appTo = new ScheduleTemplateCodeTo();
+	        appTo.setBookinglimit(String.valueOf(tempCode.getBookinglimit()));
+	        appTo.setCode(String.valueOf(tempCode.getCode()));
+	        appTo.setColor(tempCode.getColor());
+	        appTo.setConfirm(tempCode.getConfirm());
+	        appTo.setDescription(tempCode.getDescription());
+	        appTo.setDuration(tempCode.getDuration());
+	        appTo.setId(String.valueOf(tempCode.getId()));
+	        
+	        returnResult.add(appTo);
+        }
+		return returnResult;
+	}
+	
+	public static ApptRecurrence convertToRecObject(AppointmentTo apptTo){
+		ApptRecurrence rec = new ApptRecurrence();
+			
+			try {
+				rec.setFrequency(apptTo.getFrequency());
+	            rec.setStartDate(DateUtils.formatDate(apptTo.getStartDate()));
+	            rec.setEndDate(DateUtils.formatDate(apptTo.getEndDate()));
+            } catch (ParseException e) {
+	           
+            }
+		return rec;
+	}
+
+	public static RoomTo convertRoomObject(Room room){
+		RoomTo roomTo = new RoomTo();
+		roomTo.setId(String.valueOf(room.getId()));
+		roomTo.setRoomTypeId(String.valueOf(room.getRoomTypeId()));
+		if(room.getProgramId()!=null){
+			roomTo.setProgramId(String.valueOf(room.getProgramId()));
+		}
+		roomTo.setName(room.getName());
+		roomTo.setFloor(room.getFloor());
+		roomTo.setFacilityId(String.valueOf(room.getFacilityId()));
+		roomTo.setAssignedBed(String.valueOf(roomTo.getAssignedBed()));
+		if(room.getOccupancy()!=null){
+			roomTo.setOccupancy(String.valueOf(room.getOccupancy()));
+		}
+		return roomTo;
+	}
 }

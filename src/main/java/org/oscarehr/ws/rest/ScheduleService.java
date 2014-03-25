@@ -47,7 +47,7 @@ import org.oscarehr.managers.ScheduleManager;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.web.PatientListApptBean;
 import org.oscarehr.web.PatientListApptItemBean;
-import org.oscarehr.ws.rest.bo.AppointmentBO;
+
 import org.oscarehr.ws.rest.bo.ProviderBO;
 import org.oscarehr.ws.rest.bo.ScheduleBO;
 import org.oscarehr.ws.rest.conversion.AppointmentConverter;
@@ -238,7 +238,7 @@ public class ScheduleService extends AbstractServiceImpl {
 						throw new ScheduleException(ErrorCodes.SCH_ERROR_001);
 					}
 				}
-				 events = AppointmentBO.copyEvents(appointments, null);
+				 events = scheduleManager.convertEventsForWeek(appointments);
 				
 				rstLst = ScheduleBO.setProvidersAndEventsForWeek(week.split(",")[0], week.split(",")[1], providersTo1, events);
 				

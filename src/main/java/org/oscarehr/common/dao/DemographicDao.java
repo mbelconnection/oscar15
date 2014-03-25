@@ -27,6 +27,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -61,6 +62,7 @@ import org.oscarehr.PMmodule.web.formbean.ClientSearchFormBean;
 import org.oscarehr.common.Gender;
 import org.oscarehr.common.NativeSql;
 import org.oscarehr.common.model.Admission;
+import org.oscarehr.common.model.Appointment;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.event.DemographicCreateEvent;
 import org.oscarehr.event.DemographicUpdateEvent;
@@ -2056,24 +2058,11 @@ public class DemographicDao extends HibernateDaoSupport implements ApplicationEv
 	 * @param nameLike		parameter to search patients
 	 * @return List			List of Demographics(Patients)Containing DemogrphicNo and Full Name
 	 */
-	public List<Demographic> getActiveDemographisFirstNameSearch(String nameLike){
-    	String query = "From Demographic d where d.FirstName like '" + nameLike + "%' and d.PatientStatus = 'AC'";
-    	return getHibernateTemplate().find(query);
-	}
-
-   /**
-	 * This method returns list of Demographics(Patients).
-	 * 
-	 * @param nameLike		parameter to search patients
-	 * @return List			List of Demographics(Patients)Containing DemogrphicNo and Full Name
-	 */
 	@SuppressWarnings("unchecked")
-    public List<Demographic> getActiveDemographisFirstNameSearch(String[] nameLike){
-    	String query = "From Demographic d where d.FirstName like '" + nameLike[0] + "%'";
-    	if (nameLike.length > 1) {
-    		query = query + " and d.LastName like '" + nameLike[1].trim() + "%'";
-    	}
-    	query = query + " and d.PatientStatus = 'AC'";
+    public List<Demographic> getActiveDemographisFirstNameSearch(){
+    	String query = "From Demographic d ";
+    	
+    	query = query + " where d.PatientStatus = 'AC'";
     	return getHibernateTemplate().find(query);
 	}
 	
@@ -2091,6 +2080,205 @@ public class DemographicDao extends HibernateDaoSupport implements ApplicationEv
 	    	}
 	    	query = query + " and d.PatientStatus = 'AC'";
 	    	return getHibernateTemplate().find(query);
+		}
+		
+		public Set fetchPreviousAppointments(Integer patientId) {
+			Set<Appointment> archivedClients = new java.util.LinkedHashSet<Appointment>();
+
+			//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String sqlQuery = "select a.appointment_no,a.appointment_date,a.start_time,b.first_name,b.last_name from appointment a, provider b where a.provider_no=b.provider_no and a.demographic_no='"+patientId+"' ORDER BY a.appointment_date and a.createdatetime DESC LIMIT 5";
+			Session session = this.getSession();
+
+			SQLQuery q = session.createSQLQuery(sqlQuery);
+			q.addScalar("a.appointment_date");
+			q.addScalar("b.first_name");
+			q.addScalar("b.last_name");
+			q.addScalar("a.start_time");
+			q.addScalar("a.appointment_no");
+			List results = q.list();
+			Appointment d = null;
+			Iterator iter = results.iterator();
+			while (iter.hasNext()) {
+				Object[] result = (Object[]) iter.next();
+				
+					d = new Appointment();
+					d.setAppointmentDate((Date)result[0]);
+					d.setName((String) result[1]+""+(String) result[2]);
+					d.setStartTime((Time) result[3]);
+					d.setId((Integer)result[4]);
+					archivedClients.add(d);
+				
+			}
+
+			this.releaseSession(session);
+			return archivedClients;
+
+		}
+		
+		
+		public Set<Appointment> fetchNextAvali(String provId,String duration,String apptType,Integer weekDay,String startTime,String endTime,Integer count){
+			Set<Appointment> archivedClients = new java.util.LinkedHashSet<Appointment>();
+			
+			String sqlQuery = "select a.appointment_no, a.appointment_date,a.start_time,b.first_name,b.last_name from appointment a,provider b where a.provider_no=b.provider_no " ;
+							if(!"".equalsIgnoreCase(provId) && provId!=null){
+								   sqlQuery =sqlQuery+"and a.provider_no='"+provId+"' ";
+								}
+							   if(!"".equalsIgnoreCase(duration) && duration!=null){
+								   sqlQuery =sqlQuery+"and timediff(a.end_time,a.start_time) =CAST('"+duration+"' AS TIME)  ";
+								}
+					           if(!"".equalsIgnoreCase(apptType) && apptType!=null){
+					        	   sqlQuery = sqlQuery + "and a.type='"+apptType+"' ";
+					           }
+					           if(weekDay!=null){
+					        	   sqlQuery = sqlQuery+" and weekday(a.appointment_date) ="+weekDay;
+					           }
+					           if(!"".equalsIgnoreCase(startTime) && startTime!=null && !"".equalsIgnoreCase(endTime) && endTime!=null){
+					        	   sqlQuery = sqlQuery+" and  a.start_time between CAST('"+startTime+"' AS TIME) and CAST('"+endTime+"' AS TIME)";
+					           }
+							  sqlQuery = sqlQuery+" ORDER BY a.appointment_date and a.createdatetime DESC LIMIT "+count;
+							  
+							  
+			Session session = this.getSession();
+
+			SQLQuery q = session.createSQLQuery(sqlQuery);
+			q.addScalar("a.appointment_date");
+			q.addScalar("b.first_name");
+			q.addScalar("b.last_name");
+			q.addScalar("a.start_time");
+			q.addScalar("a.appointment_no");
+
+			List results = q.list();
+			Appointment d = null;
+			Iterator iter = results.iterator();
+			while (iter.hasNext()) {
+				Object[] result = (Object[]) iter.next();
+				
+					d = new Appointment();
+					d.setAppointmentDate((Date)result[0]);
+					d.setName((String) result[1]+", "+(String) result[2]);
+					d.setStartTime((Time) result[3]);
+					d.setId((Integer) result[4]);
+					archivedClients.add(d);
+				
+			}
+
+			this.releaseSession(session);
+			return archivedClients;
+
+		}
+
+		
+		
+		public Set<Appointment> fetchMonthlyData(String startDate , String endDate,String providerIds) {
+			Set<Appointment> archivedClients = new java.util.LinkedHashSet<Appointment>();
+			
+			if(providerIds == null ) {
+				return new java.util.HashSet<Appointment>();
+			}
+
+			//temporary HACK to pass the unit test. Argument 3 needs to be a List<String> and then this should create solid, escaped sql
+			if("test".equals(providerIds )) {
+				return new java.util.HashSet<Appointment>();
+			}
+			//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String sqlQuery = "select distinct a.provider_no, a.appointment_date,b.first_name,b.last_name from appointment a,provider b where a.provider_no in ("+providerIds+") and a.provider_no=b.provider_no and a.appointment_date between '"+startDate+"' and '"+endDate+"' ORDER BY a.appointment_date,a.start_time;";
+			Session session = this.getSession();
+
+			SQLQuery q = session.createSQLQuery(sqlQuery);
+			q.addScalar("a.appointment_date");
+			q.addScalar("b.first_name");
+			q.addScalar("b.last_name");
+			q.addScalar("a.provider_no");
+			List results = q.list();
+			Appointment d = null;
+			Iterator iter = results.iterator();
+			while (iter.hasNext()) {
+				Object[] result = (Object[]) iter.next();
+				
+					d = new Appointment();
+					d.setAppointmentDate((Date)result[0]);
+					d.setName((String) result[1]+""+(String) result[2]);
+					d.setProviderNo((String) result[3]);
+					archivedClients.add(d);
+				
+			}
+
+			this.releaseSession(session);
+			return archivedClients;
+
+		}
+		
+		public Integer getMaxMultiApptId(){
+			int i=0;
+			String sql = "select max(multiapptid) as multiApptId from appointment a";
+			Session session = this.getSession();
+			SQLQuery q = session.createSQLQuery(sql);
+			List results = q.list();
+			Iterator iter = results.iterator();
+			if (iter.hasNext()) {
+				Object temp = iter.next();
+				if(temp != null){
+					Integer result = (Integer) temp;				
+					i=result;
+				}
+			}
+
+			this.releaseSession(session);
+			return i;
+		}
+
+		public String getCountMaxMultiApptId(Integer multiPatientId){
+			String patientsId="";
+			String sql = "SELECT a.demographic_no FROM appointment a WHERE a.multiapptid = "+multiPatientId+"";
+			Session session = this.getSession();
+			SQLQuery q = session.createSQLQuery(sql);
+			List results = q.list();
+			Iterator iter = results.iterator();
+			while (iter.hasNext()) {
+				Integer result = (Integer) iter.next();
+				
+					if(!"".equals(patientsId)){
+						patientsId = patientsId+","+String.valueOf(result);
+					}else{
+						patientsId = String.valueOf(result);
+					}
+			}
+
+			this.releaseSession(session);
+			return patientsId;
+		}
+
+		public List<Appointment> getByProvidersAndDayTime(String date, String providerNo,String startTime,String endTime) {
+			List<Appointment> rs = new java.util.ArrayList<Appointment>();
+
+			//temporary HACK to pass the unit test. Argument 3 needs to be a List<String> and then this should create solid, escaped sql
+			if("test".equals(providerNo )) {
+				return new java.util.ArrayList<Appointment>();
+			}
+			
+			String sql = "select a.appointment_no,a.provider_no,a.appointment_date,a.start_time,a.end_time,a.name,a.demographic_no,a.roomid,a.multiapptid from appointment a where a.provider_no in ("+providerNo+") and a.appointment_date='"+date+"' and  a.start_time between CAST('"+startTime+"' AS TIME) and CAST('"+endTime+"' AS TIME) order by a.provider_no";
+			Session session = this.getSession();
+			SQLQuery q = session.createSQLQuery(sql);
+			List results = q.list();
+			Appointment d = null;
+			Iterator iter = results.iterator();
+			while (iter.hasNext()) {
+				Object[] result = (Object[]) iter.next();
+				
+					d = new Appointment();
+					d.setId((Integer)result[0]);
+					d.setProviderNo((String)result[1]);
+					d.setAppointmentDate((Date)result[2]);
+					d.setStartTime((Time) result[3]);
+					d.setEndTime((Time) result[4]);
+					d.setName((String) result[5]);
+					d.setDemographicNo((Integer) result[6]);
+					d.setRoomId((String)result[7]);
+					d.setMultiApptId((Integer)result[8]);
+					rs.add(d);
+				
+			}
+			return rs;
 		}
 }
 

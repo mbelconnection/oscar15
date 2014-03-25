@@ -43,13 +43,16 @@ public class PatientBO {
 			DemographicTo demographicTo = null;
 			for (Demographic demographic : src) {
 				demographicTo = new DemographicTo();
-				demographicTo.setDemographicNo(demographic.getDemographicNo().toString());
+				demographicTo.setId(demographic.getDemographicNo().toString());
 				if ("FN".equals(searchType)) {
-					demographicTo.setName(demographic.getFirstName() + ", " + demographic.getLastName());
+					demographicTo.setLabel(demographic.getFirstName() + ", " + demographic.getLastName());
 				} else {
-					demographicTo.setName(demographic.getLastName() + ", " + demographic.getFirstName());
+					demographicTo.setLabel(demographic.getLastName() + ", " + demographic.getFirstName());
 				}
+				demographicTo.setHin(demographic.getHin());
+				demographicTo.setDob(demographic.getDateOfBirth()+"-"+demographic.getMonthOfBirth()+"-"+demographic.getYearOfBirth());
 				dest.add(demographicTo);
+				
 			}
 		}
 		log.debug("PatientBO.copy() ends");

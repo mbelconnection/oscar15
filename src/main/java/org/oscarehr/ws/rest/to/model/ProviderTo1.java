@@ -54,6 +54,22 @@ public class ProviderTo1 implements Serializable {
 	private String title;
 	private String lastUpdateUser;
 	private Date lastUpdateDate;
+	private String flipData;
+	/**
+	 * @return the flipData
+	 */
+	public String getFlipData() {
+		return flipData;
+	}
+
+	/**
+	 * @param flipData the flipData to set
+	 */
+	public void setFlipData(String flipData) {
+		this.flipData = flipData;
+	}
+
+	
 
 	public String getProviderNo() {
 		return providerNo;

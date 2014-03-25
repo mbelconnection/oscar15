@@ -140,7 +140,7 @@ padding:50px 8px 0;
 
 .Yscale th {
     border: 1px solid black;
-    background-color: #F5F5DC;
+    background-color: #FFFFFF;
     text - align: center;
     width: 220px !important;
     height: 25px;
@@ -327,7 +327,7 @@ padding:50px 8px 0;
 }
 
 .gen_font3{
-	color:#1569C7;
+	color:#000000;
 	font-weight:bold;
 }
 
@@ -356,4 +356,10 @@ padding:50px 8px 0;
 }
 .zoomIn{
 float:right;text-decoration:underline;cursor:pointer;width:18%;text-align:right;
+}
+.nav > li > a{
+	/*font-family: calibri;*/
+	display: block;
+    /*padding: 15px;*/
+    position: relative;
 }

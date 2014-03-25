@@ -98,10 +98,15 @@ oscarApp.controller('NavBarCtrl', function ($scope,$http,$location) {
 	}
 
 	$scope.changeTab = function(temp){
+		
 		console.log("changetab "+ temp);
 		$scope.currenttab = $scope.menuItems[temp];
 		$scope.currentmoretab=null;
-		$(".ui-dialog-content").dialog("close"); /* Added by Schedular team */
+		$(".ui-dialog-content").dialog("close"); /* Added by Schedular Team */
+		$("#add_appt_form").dialog("close");
+		  $("#fex_app_form").dialog("close");
+		  $("#next_app_form").dialog("close");
+		  $("#manageGroupForm").dialog("close");
 		//$location.path($scope.currenttab.url);
 	}	 
 

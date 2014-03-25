@@ -123,7 +123,7 @@ public class ProviderDao extends HibernateDaoSupport {
 	public List<Provider> getProviders() {
 		
 		List<Provider> rs = getHibernateTemplate().find(
-				"FROM  Provider p where p.ProviderType != 'system' ORDER BY p.LastName");
+				"FROM  Provider p where p.ProviderType != 'system' and p.Status='1' ORDER BY p.LastName");
 
 		if (log.isDebugEnabled()) {
 			log.debug("getProviders: # of results=" + rs.size());
@@ -436,6 +436,10 @@ public class ProviderDao extends HibernateDaoSupport {
     public void updateProvider( Provider provider) {
         this.getHibernateTemplate().update(provider);
     }
+    
+    public void updateProviderStatus( Provider provider,String status) {
+        this.getHibernateTemplate().update(status, provider);
+    }
 
     public void saveProvider( Provider provider) {
         this.getHibernateTemplate().save(provider);
@@ -568,23 +572,9 @@ public class ProviderDao extends HibernateDaoSupport {
 		 * @param nameLike		parameter to search provider
 		 * @return List			List of providers
 		 */
-		public List<Provider> getActiveProvideFirstNameLikeSearch(String nameLike){
-	    	String query = "From Provider p where p.FirstName like '" + nameLike + "%' and p.Status='1'";
-	    	return getHibernateTemplate().find(query);
-		}
-
-/**
-		 * This method returns list of providers.
-		 * 
-		 * @param nameLike		parameter to search provider
-		 * @return List			List of providers
-		 */
 		public List<Provider> getActiveProviderFirstNameLikeSearch(String[] nameLike) {
-			String query = "From Provider p where p.FirstName like '" + nameLike[0] + "%'";
-	    	if (nameLike.length > 1) {
-	    		query = query + " and p.LastName like '" + nameLike[1].trim() + "%'";
-	    	}
-	    	query = query + " and p.Status='1' and p.ProviderType != 'system'";
+			String query = "From Provider p ";
+	    	query = query + " where p.Status='1' and p.ProviderType != 'system'";
 	    	return  getHibernateTemplate().find(query);
 		}
 		
@@ -612,6 +602,16 @@ public class ProviderDao extends HibernateDaoSupport {
 			List<Provider> rs = getHibernateTemplate().find(sql);
 			return rs;
 		}
+		
+		
+		public List<Provider> getProvidersByIds(String providers) {
+			String sql = "FROM Provider p WHERE p.ProviderNo IN ("+providers +")";
+			List<Provider> rs = getHibernateTemplate().find(sql);
+			return rs;
+		}
+		
+		
+		
 		
 }
 

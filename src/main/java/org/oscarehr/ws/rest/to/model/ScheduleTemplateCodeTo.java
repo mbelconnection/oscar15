@@ -24,37 +24,65 @@
 package org.oscarehr.ws.rest.to.model;
 
 import java.io.Serializable;
-import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+public class ScheduleTemplateCodeTo implements Serializable{
 
-@XmlRootElement
-public class ProvidersTo implements Serializable {
-
+	/**
+	 * 
+	 */
     private static final long serialVersionUID = 1L;
     
-	private List<ProviderTo> providers;
-//	private List<DemographicTo> demographics;
-
-	@XmlElement(name="", nillable=true)
-	public List<ProviderTo> getProviders() {
-		return providers;
+    private String id;
+	private String code;
+	private String description;
+	private String duration;
+	private String color;
+	private String confirm;
+	private String bookinglimit;
+	
+	public String getId() {
+		return id;
 	}
-
-	public void setProviders(List<ProviderTo> providers) {
-		this.providers = providers;
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public String getDuration() {
+		return duration;
+	}
+	public void setDuration(String duration) {
+		this.duration = duration;
+	}
+	public String getColor() {
+		return color;
+	}
+	public void setColor(String color) {
+		this.color = color;
+	}
+	public String getConfirm() {
+		return confirm;
+	}
+	public void setConfirm(String confirm) {
+		this.confirm = confirm;
+	}
+	public String getBookinglimit() {
+		return bookinglimit;
+	}
+	public void setBookinglimit(String bookinglimit) {
+		this.bookinglimit = bookinglimit;
 	}
 	
-//	@XmlElement(name="patients", nillable=true)
-//	public List<DemographicTo> getDemographics() {
-//		return demographics;
-//	}
-//
-//	public void setDemographics(List<DemographicTo> demographics) {
-//		this.demographics = demographics;
-//	}
-//	
 
-	
 }
+

@@ -42,6 +42,7 @@ import org.oscarehr.common.model.AppointmentArchive;
 import org.oscarehr.common.model.AppointmentStatus;
 import org.oscarehr.common.model.AppointmentType;
 import org.oscarehr.common.model.Facility;
+import org.oscarehr.common.model.Provider;
 import org.oscarehr.util.MiscUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
@@ -779,53 +780,270 @@ public class OscarAppointmentDao extends AbstractDao<Appointment> {
 	/**
 	 * Returns list of appointment details for a provider
 	 * 
+	 * TODO: Pass in Date objects not Strings!!!
+	 * 
 	 * @param providerNo		the provider number
 	 * @return					appointment list
 	 */
-	public List<Appointment> getAppointmentsForWeek(Date startDate, Date endDate, String providerNo) {
-		
+	public List<Appointment> getAppointmentsForWeek(String startDate, String endDate, String providerNo) {
+		Date loStartDate = null, loEndDate = null;
+		try {
+			loStartDate = org.oscarehr.ws.rest.util.DateUtils.formatDate(startDate);
+			loEndDate = org.oscarehr.ws.rest.util.DateUtils.formatDate(endDate);
+		}catch(Exception e) {
+			return new ArrayList<Appointment>();
+		}
 		String sql = "From Appointment a where a.appointmentDate between :startDate and :endDate and a.providerNo = :providerNo order by a.appointmentDate";
 		Query query = entityManager.createQuery(sql);
-		query.setParameter("startDate", startDate);
-		query.setParameter("endDate", endDate);
+		query.setParameter("startDate", loStartDate);
+		query.setParameter("endDate", loEndDate);
 		query.setParameter("providerNo", providerNo);
 		return query.getResultList();
 	}
 
-	public List<Appointment> getAppointmentsForWeekTotal(Date startDate, Date endDate) {
+	public List<Appointment> getAppointmentsForWeekTotal(String startDate, String endDate)  {
+		Date loStartDate = null, loEndDate = null;
+		try {
+			loStartDate = org.oscarehr.ws.rest.util.DateUtils.formatDate(startDate);
+			loEndDate = org.oscarehr.ws.rest.util.DateUtils.formatDate(endDate);
+		}catch(Exception e) {
+			return new ArrayList<Appointment>();
+		}
 		String sql = "From Appointment a where a.appointmentDate between :startDate and :endDate order by a.appointmentDate";
 		Query query = entityManager.createQuery(sql);
-		query.setParameter("startDate", startDate);
-		query.setParameter("endDate", endDate);
+		query.setParameter("startDate", loStartDate);
+		query.setParameter("endDate", loEndDate);
 		log.debug("OscarAppointmentDao.getAppointmentsForWeekTotal()"+query.getResultList());
 		return query.getResultList();
     }
 		
-		public List<Appointment> getGroupDayEvents(String group, Date day) {
+		public List<Appointment> getGroupDayEvents(String group, String day) {
+			Date loStartDate = null;
+			try {
+				loStartDate = org.oscarehr.ws.rest.util.DateUtils.formatDate(day);	
+			}catch(Exception e) {
+				return new ArrayList<Appointment>();
+			}
+			
+	
+			//Date loEndDate = org.oscarehr.ws.rest.util.DateUtils.formatDate(endDate);
 			String sql = "From Appointment a where a.providerNo IN (SELECT p.ProviderNo FROM Provider p where p.Team = :group) and a.appointmentDate= :date";
 			Query query = entityManager.createQuery(sql);
 			query.setParameter("group", group);
-			query.setParameter("date", day);
+			query.setParameter("date", loStartDate);
 			//List<Appointment> data = query.getResultList();
 			return query.getResultList();
 		}
 		
-		public List<Appointment> getGroupWeekEvents(Date startDate, Date endDate,String group) {
+		public List<Appointment> getGroupWeekEvents(String stday, String endday,String group) {
+			Date loStartDate = null, loEndDate = null;
+			try {
+				loStartDate = org.oscarehr.ws.rest.util.DateUtils.formatDate(stday);
+				loEndDate = org.oscarehr.ws.rest.util.DateUtils.formatDate(endday);
+			}catch(Exception e) {
+				return new ArrayList<Appointment>();
+			}
 			String sql = "From Appointment a where a.providerNo IN (SELECT p.ProviderNo FROM Provider p where p.Team = :group) and a.appointmentDate between :startDate and :endDate order by a.appointmentDate";
 			Query query = entityManager.createQuery(sql);
 			query.setParameter("group", group);
-			query.setParameter("startDate", startDate);
-			query.setParameter("endDate", endDate);
+			query.setParameter("startDate", loStartDate);
+			query.setParameter("endDate", loEndDate);
 			List<Appointment> data = query.getResultList();
 			return data;
 		}
 		
-		public List<Appointment> getGroupMonthEvents(Date startDate, String group) {
+		public List<Appointment> getGroupMonthEvents(String stday, String group) {
+			Date loStartDate = null;
+			try {
+				loStartDate = org.oscarehr.ws.rest.util.DateUtils.formatDate(stday);
+			}catch(Exception e) {
+				return new ArrayList<Appointment>();
+			}
 			String sql = "From Appointment a where a.providerNo IN (SELECT p.ProviderNo FROM Provider p where p.Team = :group) and month(a.appointmentDate) = month(:stdate) order by a.appointmentDate";
 			Query query = entityManager.createQuery(sql);
 			query.setParameter("group", group);
-			query.setParameter("stdate", startDate);
+			query.setParameter("stdate", loStartDate);
 			List<Appointment> data = query.getResultList();
 			return data;
 		}
+		
+		/**
+		 * Edit the data
+		 * 
+		 * @param                   Appointment Object
+		 * @return					void
+		 */
+		
+		/*
+		
+		public void editAppointment(Appointment appt) {
+			SessionFactory factory = null;
+			Session session = factory.openSession();
+		      Transaction tx = null;
+		      try{
+		         tx = session.beginTransaction();
+		         session.update(appt); 
+		         tx.commit();
+		      }catch (HibernateException e) {
+		         if (tx!=null) tx.rollback();
+		      }finally {
+		         session.close(); 
+		      }
+		}*/
+		
+		public void editAppointment(Appointment appt) {
+			  //Appointment appt = this.find(apptNo);
+			  entityManager.merge(appt);
+		}
+		
+		/**
+		 * Returns list of appointment details for a provider
+		 * 
+		 * @param providerNo		the provider number
+		 * @return					appointment list
+		 */
+		
+		public List<Appointment> getSelectedAppointment(Integer appointmentNo) {
+			List<Appointment> rs = new java.util.ArrayList<Appointment>();
+			try{
+			String sql = "SELECT a FROM Appointment a WHERE a.id = " + appointmentNo + " ORDER BY a.id";
+			Query query = entityManager.createQuery(sql);		
+			 rs = query.getResultList();
+			}catch(Exception e){
+			}
+			return rs;
+		}
+
+		public List<Appointment> getExistAppointments(Integer demographicNo) {
+			String sql = "From Appointment a, Demographic d where a.demographicNo = :demographicNo";
+			Query query = entityManager.createQuery(sql);
+			query.setParameter("demographicNo", demographicNo);
+			List<Appointment> data = query.getResultList();
+
+			return data;
+        }
+		
+		public boolean updateAppointmentStatus(Integer apptId,String apptStatus){
+			boolean success=false;
+			try{
+				String sql = "update Appointment a set a.status = '"+apptStatus+"' WHERE a.id = " + apptId ;
+				Query query = entityManager.createQuery(sql);		
+				 int i =  query.executeUpdate();
+				 success = true;
+				}catch(Exception e){
+					success = false;
+				}
+				return success;
+			}
+			
+			public boolean updateAppointmentType(Integer apptId,String type){
+				boolean success=false;
+				try{
+					String sql = "update Appointment a set a.type = '"+type+"' WHERE a.id = " + apptId ;
+					Query query = entityManager.createQuery(sql);		
+					 int i =  query.executeUpdate();
+					 success = true;
+					}catch(Exception e){
+						success = false;
+					}
+					return success;
+			}
+			
+			public boolean updateAppointmentCriticality(Integer apptId,String urgency){
+				boolean success=false;
+				try{
+					String sql = "update Appointment a set a.urgency = '"+urgency+"' WHERE a.id = " + apptId ;
+					Query query = entityManager.createQuery(sql);		
+					 int i =  query.executeUpdate();
+					 success = true;
+					}catch(Exception e){
+						success = false;
+					}
+					return success;
+					
+			}
+
+
+			public List<Map<String,String>> getActiveProvidersForDropdown() {
+				List<Map<String,String>> result = null;
+				try{
+					String sql = "SELECT p.ProviderNo,CONCAT(CONCAT(p.FirstName, ', '), p.LastName) FROM Provider p where p.Status='1' and p.ProviderType != 'system' ";
+					Query query = entityManager.createQuery(sql);
+					List<Object[]> rows = query.getResultList();
+					
+					result = getOptions(rows, "Individual");
+				}catch(Exception e){
+					
+				}
+				return result;
+			}
+			
+			public List getActiveGroupsForDropdown() {
+				List<Map<String,String>> result = null;
+				try{
+					String sql = "SELECT DISTINCT g.id.myGroupNo,g.id.myGroupNo FROM MyGroup g";
+					Query query = entityManager.createQuery(sql);
+					List<Object[]> rows = query.getResultList();
+					
+					result = getOptions(rows, "Group");
+				}catch(Exception e){
+					
+				}
+				return result;
+			}
+			
+			private List<Map<String,String>> getOptions(List<Object[]> rows, String category){
+				List<Map<String,String>> data = new ArrayList<Map<String,String>>();
+				Map<String,String> result = null;
+				for (Object[] row : rows) {
+					result = new HashMap<String,String>();
+				    result.put("id", String.valueOf(row[0]));
+				    result.put("label", String.valueOf(row[1]));
+				    result.put("category", category);
+				    data.add(result);
+				}
+				return data;
+			}
+			
+			
+			public List<Appointment> getByProvidersAndDay(Date date, String providerNo) {
+				String sql = "SELECT a FROM Appointment a WHERE a.providerNo IN ('"+providerNo+"') and a.appointmentDate = ? order by a.startTime";
+				Query query = entityManager.createQuery(sql);
+				
+				query.setParameter(1, date);
+				
+				List<Appointment> rs = query.getResultList();
+
+				return rs;
+			}
+			//TODO: FIX..this may be wrong now that I added quotes. A List<String> should be the input
+			public List<Provider> getProvidersByAppointments(String providers,Date apptDate) {
+				String sql = "select distinct b from Appointment a,Provider b where a.providerNo = b.ProviderNo and a.providerNo in ('"+providers+"')  and a.appointmentDate=?";
+				
+				
+				Query query = entityManager.createQuery(sql);
+				
+				query.setParameter(1, apptDate);
+				
+				List<Provider> rs = query.getResultList();
+
+				return rs;
+			}
+			
+			public List<Appointment> getSelectedRecAppointment(Integer recId,Date startDate,Date endDate) {
+				List<Appointment> rs = new java.util.ArrayList<Appointment>();
+				try{
+				String sql = "SELECT a FROM Appointment a WHERE a.recurrenceId = " + recId + " and a.appointmentDate >=? and a.appointmentDate <= ?";
+				Query query = entityManager.createQuery(sql);
+				query.setParameter(1, startDate);
+				query.setParameter(2, endDate);
+			
+				 rs = query.getResultList();
+				}catch(Exception e){
+				}
+				return rs;
+			}
+
+
+			
 }

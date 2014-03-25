@@ -25,53 +25,65 @@ package org.oscarehr.ws.rest.to.model;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-@XmlAccessorType(XmlAccessType.PROPERTY)
-public class DemographicTo implements Serializable {
+public class ApptRecurrenceTo implements Serializable {
 
+	/**
+	 * 
+	 */
     private static final long serialVersionUID = 1L;
     
-	private String id;
-	private String label;
-	private String hin;
-	private String dob;
+    private String recId;
+    private String frequency;
+    private String startDate;
+    private String endDate;
+    
 	/**
-	 * @return the hin
+	 * @return the recId
 	 */
-	public String getHin() {
-		return hin;
-	}
-	/**
-	 * @param hin the hin to set
-	 */
-	public void setHin(String hin) {
-		this.hin = hin;
+	public String getRecId() {
+		return recId;
 	}
 	/**
-	 * @return the dob
+	 * @param recId the recId to set
 	 */
-	public String getDob() {
-		return dob;
+	public void setRecId(String recId) {
+		this.recId = recId;
 	}
 	/**
-	 * @param dob the dob to set
+	 * @return the frequency
 	 */
-	public void setDob(String dob) {
-		this.dob = dob;
+	public String getFrequency() {
+		return frequency;
 	}
-	public String getId() {
-		return id;
+	/**
+	 * @param frequency the frequency to set
+	 */
+	public void setFrequency(String frequency) {
+		this.frequency = frequency;
 	}
-	public void setId(String id) {
-		this.id = id;
+	/**
+	 * @return the startDate
+	 */
+	public String getStartDate() {
+		return startDate;
 	}
-	public String getLabel() {
-		return label;
+	/**
+	 * @param startDate the startDate to set
+	 */
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
 	}
-	public void setLabel(String label) {
-		this.label = label;
+	/**
+	 * @return the endDate
+	 */
+	public String getEndDate() {
+		return endDate;
 	}
-	
-	
+	/**
+	 * @param endDate the endDate to set
+	 */
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
+
 }

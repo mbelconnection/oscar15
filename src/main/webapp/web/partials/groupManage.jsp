@@ -60,10 +60,45 @@
 		
 		grp_mng_json_fn = {
 			getData: function(){
-				return data;
+				//console.log(globalGroup);
+				var data1 = $.ajax({
+					url : "../ws/rs/providerService/"+globalGroup+"/groupProvList",
+					type : "get",
+					//contentType : 'application/json',
+					dataType: "json" ,
+					global: false,
+					async:false,
+					success : function(result) {
+					},
+					error : function(jqxhr) {
+						var msg = JSON.parse(jqxhr.responseText);
+						alert(msg['message']);
+
+					}
+				}).responseText;
+				var jObj = JSON.parse(data1);
+				return jObj;
 			},
 			getSearchData: function(){
 				return searchData;
+			},
+			getProvidersData : function(providersArray){
+				var data1 = $.ajax({
+					url : "../ws/rs/providerService/saveGroupProvList",
+					type : "post",
+					data : JSON.stringify(providersArray),
+					async: false,
+					contentType : 'application/json',
+					success : function(result) {
+					},
+					error : function(jqxhr) {
+						var msg = JSON.parse(jqxhr.responseText);
+						alert(msg['message']);
+
+					}
+				}).responseText;
+				var jObj = JSON.parse(data1);
+				return jObj;
 			}
 		};
 		
@@ -82,28 +117,44 @@
 					$("#dayOfWeek").append(new Option(val, key));
 				});
 			 },
-			 
+			 /*Refered from the Schdule.jsp getGroupIndi() as well to load the 
+			 	details whenever a change in the group value*/
 			 loadPage: function(){
-				var _data = grp_mng_json_fn.getData();
+				 /* To change the title for Manage group layout */
+				 $("#groupTitle").html("Manage schedule layout: "+globalGroup);
+				
+				 /*To set the globalGroup value to docava select drop Starts here*/
+					var tempGroup = globalGroup+"_Group";
+					
+					$("#docava option").filter(function() {
+					       return $(this).attr('value') == tempGroup;
+					   }).attr('selected', true);
+					
+					$("#docava").select2().on('select', tempGroup);
+				 	$("#placeText").show();
+					$("#placeText").html("Group : ");
+				 //getGroupIndi("docava");
+				 /*ends here */
+				 var _data = grp_mng_json_fn.getData();
+				//console.log(_data);
+				var showData = _data.active;
+				//if(showData.length>0)
 				$("#grp_man_leftPane li").remove();
-				var showData = _data.show;
 				$.each(showData, function(){
 					$("#grp_man_leftPane").append(grp_mng_fn.getLI(this));
 					
 				});
-
+				var hideData = _data.inActive;
+				//if(hideData.length>0)
 				$("#grp_man_rightPane li").remove();
-				var hideData = _data.hide;
 				$.each(hideData, function(){
 					$("#grp_man_rightPane").append(grp_mng_fn.getLI(this));
 					
 				});
-				
-				
 			 },
 			 getLI: function(data){
-				var htmlData = '<li class="ui-state-default grp_man_li_roundbox" val="'+data.provId+'" style="padding:0;padding-left:5px;width:250px;">';
-				htmlData += '<table class="grp_man_li_table"><tr><td width="70%">'+data.provName+'</td><td style="border-left: 1px solid #AAAAAA;padding-left:5px;">'+data.role+'</td></tr></table></li>';
+				var htmlData = '<li class="ui-state-default grp_man_li_roundbox" val="'+data.providerNo+'" style="padding:0 5px;width:250px;">';
+				htmlData += '<table class="grp_man_li_table"><tr><td width="70%" calss="dummy"><img src="js_up/images/arrow.png"/>'+data.firstName+'</td><td style="border-left: 1px solid #AAAAAA;padding-left:5px;">'+data.providerType+'</td></tr></table></li>';
 				return htmlData;
 			 },
 			 
@@ -116,8 +167,14 @@
 						_docs += "; "+this.docName;
 				});
 				return _docs;
-			 }
-		}
+			 },
+			 loadProviders: function(providersArray){
+					var _data = new Object
+					_data.data = grp_mng_json_fn.getProvidersData(providersArray);
+					Schedular.prototype.setInitData(_data);
+					setTimeout('sch.init(\''+globalView.view+'\',\'from groupMangae\')', 1000);
+				}
+		},
 		
 		
 		/* General functions end*/ 
@@ -133,11 +190,27 @@
          });
 		 
 		 $("#grp_mng_but_save").button().click(function () {
-			var s = $("#grp_man_leftPane li");
-			//console.log($("#sortable1 li").length);
+			var providerNoArr = new Array();
 			$('#grp_man_leftPane li').each(function(){
-			   console.log($(this).attr('val')); // This is your rel value
+			   var temp = new Object();
+			   temp.providerNo = $(this).attr('val');
+			   temp.enabled = true;
+			   providerNoArr.push(temp);
 			});
+			var providerNoArr1 = new Array();
+			$('#grp_man_rightPane li').each(function(){
+				   var temp = new Object();
+				   temp.providerNo = $(this).attr('val');
+				   temp.enabled = false;
+				   providerNoArr.push(temp);
+				});
+			if($('#grp_man_leftPane li').length>0){
+				grp_mng_fn.loadProviders(providerNoArr);
+				$("#manageGroupForm").dialog("close");
+			}else{
+				alert("At least one provider to be in Day view");
+			}
+			
             return false;
          });
 
@@ -227,14 +300,17 @@
 			  }
 		});
 		/*drag and drop functionality*/
-		$( "#grp_man_leftPane, #grp_man_rightPane" ).sortable({
-			connectWith: ".connectedSortable",
+		$( "ul.droptrue" ).sortable({
+			connectWith: "ul",
+			revert: true,
 			receive: function(event, ui) {
-				$(ui.item).css('border', '1px solid #AAAAAA');
-				$(ui.item).css('box-shadow', '0 0px 0px #AAAAAA');
+				if($('#grp_man_leftPane li').length==0){
+					alert("At least one provider in Day view");
+					$( "ul.droptrue" ).sortable( "cancel" );
+				}
+					
 			}
 		}).disableSelection();
-		
 		grp_mng_fn.loadPage();
 		
 	});//end of document ready function
@@ -272,12 +348,19 @@ function getDraggedVal(){
 </script>
 <style>
 	
-	.na_form{
-		font-family:Verdana,Arial,sans-serif;
-		font-size:0.6em;
-	}
-
-	
+		.na_form{
+			font-family:Verdana,Arial,sans-serif;
+			font-size:0.6em;
+		}
+		table {
+		    max-width: 100%;
+		}
+		.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+	    background: none repeat-x scroll 50% 50% #FFFFFF;
+	    border: 1px solid #D3D3D3;
+	    color: #555555;
+	    font-weight: normal;
+		}
         .na_form_inputtext {
             margin-bottom: 2px;
             width: 150px;
@@ -419,7 +502,16 @@ function getDraggedVal(){
 		
 		#grp_man_leftPane, #grp_man_rightPane { list-style-type: none; margin: 0; padding: 0 0 2.5em; float: left; margin-right: 10px; }
 		#grp_man_leftPane li, #grp_man_rightPane li { margin: 0 5px 5px 5px; padding: 5px; font-size: 1.2em; width: 120px; }
-
+		
+#grp_man_leftPane, #grp_man_rightPane {
+    /*background: none repeat scroll 0 0 #EFEFEF;*/
+    float: left;
+    list-style-type: none;
+    margin: 0 10px 0 0;
+    padding: 5px;
+    width: 100%;
+    height:100%;
+}
 		.grp_man_li_roundbox{           
 			border-bottom-right-radius: 4px;
 			border-bottom-left-radius: 4px;
@@ -456,7 +548,7 @@ function getDraggedVal(){
 	<table width="100%" border="0" style="border-collapse:collapse;">
 		<tr>
 				<td colspan="2" style="height:50px;"> 
-					<p class="naa_mainheading">Manage schedule layout: Team A</p>
+					<p style="color:#6E6E6E;font-size:16px;font-weight:bold;" id="groupTitle" >Manage schedule layout: Group A</p>
 				</td>
 				<td colspan="2" style="height:50px;" align="right" valign="top"> 
 					<div class="grp_man_close" onClick='$("#manageGroupForm").dialog("close");'><img src="js_up/images/close_icon.png" height=20 width=20></img></div>
@@ -473,29 +565,22 @@ function getDraggedVal(){
 					<table width="100%">
 						<tr>
 							<td colspan="2">
-								<table>
+								<table> 
 									<t>
-										<td class="naa_subheading">DISPLAY IN DAY VIEW</td>
+										<td style="color:#848484;">DISPLAY IN DAY VIEW</td>
 										<td>&nbsp;</td>
 									</tr>
 								</table>
 							</td>
 						</tr>
 						<tr>
-							<td style='color:blue;padding-left:10px;width:65%'>Provider</td>
-							<td style='color:blue;'>Role</td>
+							<td style='padding-left:10px;width:65%' class="naa_mainheading">Provider</td>
+							<td class="naa_mainheading">Role</td>
 						</tr>
 						<tr>
 							<td colspan="2">
 									<div style="overflow-y:auto;overflow-x:hidden;height:200px;">
-										<ul id="grp_man_leftPane" class="connectedSortable" style="min-height:150px;">
-										  
-										  <li class="ui-state-default grp_man_li_roundbox" val="proId2">Item2</li>
-										  <li class="ui-state-default grp_man_li_roundbox" val="proId3">Item3</li>
-										  <li class="ui-state-default grp_man_li_roundbox" val="proId4">Item4</li>
-										  <li class="ui-state-default grp_man_li_roundbox" val="proId5">Item5</li>  
-										  
-										  
+										<ul id="grp_man_leftPane" class="droptrue" style="min-height:150px;" >
 										</ul>
 									</div>
 							</td>
@@ -509,25 +594,20 @@ function getDraggedVal(){
 							<td colspan="2">
 								<table>
 									<tr>
-										<td class="naa_subheading">HIDE FROM DAY VIEW</td>
+										<td class="naa_subheading" style="color:#848484;">HIDE FROM DAY VIEW</td>
 										<td>&nbsp;</td>
 									</tr>
 								</table>
 							</td>
 						</tr>
 						<tr>
-							<td style='color:blue;color:blue;padding-left:10px;width:70%'>Provider</td>
-							<td style='color:blue;'>Role</td>
+							<td style='padding-left:10px;width:70%' class="naa_mainheading">Provider</td>
+							<td class="naa_mainheading">Role</td>
 						</tr>
 						<tr>
 							<td colspan="2">
 								<div style="overflow-y:auto;overflow-x:hidden;height:200px;">
-									<ul id="grp_man_rightPane" class="connectedSortable">
-									  <li class="ui-state-highlight grp_man_li_roundbox" val="proId6">Item 1</li>
-									  <li class="ui-state-highlight grp_man_li_roundbox" val="proId7">Item 2</li>
-									  <li class="ui-state-highlight grp_man_li_roundbox" val="proId8">Item 3</li>
-									  <li class="ui-state-highlight grp_man_li_roundbox" val="proId9">Item 4</li>
-									  <li class="ui-state-highlight grp_man_li_roundbox" val="proId0">Item 5</li>
+									<ul id="grp_man_rightPane" class="droptrue">
 									</ul>
 								</div>
 							</td>
@@ -546,9 +626,14 @@ function getDraggedVal(){
 				</td>
 			</tr>
 			<tr>
-				<td colspan="2" style="text-align:right;border-top: 1px solid #AAAAAA; padding-top:10px;padding-right:10px;"> 
-					<button id="grp_mng_but_cancel" class="naa_button_grd" style="width:80px;cursor:pointer;">Cancel</button>&nbsp;&nbsp;
-					<button id="grp_mng_but_save" class="naa_button_grd" style="width:80px;cursor:pointer;">Save</button>
+				<td colspan="2" style="text-align:right;border-top: 1px solid #AAAAAA; padding-top:10px;padding-right:10px;"> 					
+					<div class="btn-group" style="padding-right:15px;">
+					  	<button type="button" id="grp_mng_but_cancel" class="btn" style="background-color:lightgray;font-size:12px;">Cancel</button>
+				  	</div>	 
+				  				  	
+				  	<div class="btn-group" style="padding-right:15px;">
+					  <button type="button"  id="grp_mng_but_save" class="btn btn-primary" style="font-size:12px;" >Save</button>
+				  	</div>	
 				</td>
 			</tr>
 		</table>

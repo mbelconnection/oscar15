@@ -93,6 +93,9 @@ CREATE TABLE appointment (
   urgency varchar(30),
   creatorSecurityId int,
   bookingSource varchar(32),
+  roomid varchar(50) DEFAULT NULL,
+  multiapptid int default 0,
+  recurrenceid int DEFAULT 0,
   PRIMARY KEY  (appointment_no),
   KEY appointment_date (appointment_date,start_time,demographic_no),
   KEY demographic_no (demographic_no),
@@ -8836,7 +8839,10 @@ CREATE TABLE appointmentArchive (
   remarks varchar(50),
   urgency varchar(30),
   creatorSecurityId int,
-  bookingSource varchar(32)
+  bookingSource varchar(32),
+  roomid varchar(50) DEFAULT NULL,
+  multiapptid int default 0,
+  recurrenceid int DEFAULT 0
 );
 
 create table ProviderPreferenceAppointmentScreenForm(providerNo varchar(6) not null, appointmentScreenForm varchar(128) not null);
@@ -11411,5 +11417,14 @@ create table PreventionsLotNrs(
   lotNr text NOT NULL,
   deleted boolean NOT NULL, 
   lastUpdateDate datetime NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+
+CREATE TABLE  `appt_recurrence` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `frequency` varchar(50) DEFAULT NULL,
+  `startdate` datetime DEFAULT NULL,
+  `enddate` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 );

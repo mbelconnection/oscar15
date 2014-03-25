@@ -4,7 +4,7 @@
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version. 
+ * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,31 +21,33 @@
  * Hamilton
  * Ontario, Canada
  */
+package org.oscarehr.ws.rest.to.model;
 
-package org.oscarehr.ws.rest.bo;
+import java.io.Serializable;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
-import org.oscarehr.common.model.Demographic;
-import org.oscarehr.ws.rest.to.model.DemographicTo;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
-public class DemographicBO {
+@XmlRootElement
+@JsonIgnoreProperties(ignoreUnknown = true)
+@XmlAccessorType(XmlAccessType.PROPERTY)
+public class PatientSearchResponse implements Serializable {
 
-	public static List<DemographicTo> copy(List<Demographic> src, List<DemographicTo> dest) {
+	private static final long serialVersionUID = 1L;
+	
+	private PatientSearchResults response = new PatientSearchResults();
 
-		if (null != src && !src.isEmpty()) {
-			dest = new ArrayList<DemographicTo>(src.size());
-			DemographicTo demographicTo = null;
-			for (Demographic demographic : src) {
-				demographicTo = new DemographicTo();
-				demographicTo.setDemographicNo(demographic.getDemographicNo().toString());
-				demographicTo.setName(demographic.getFirstName() + " " + demographic.getLastName());
-				dest.add(demographicTo);
-			}
-		}
-
-		return dest;
+	public PatientSearchResults getResponse() {
+		return response;
 	}
 
+	public void setResponse(PatientSearchResults response) {
+		this.response = response;
+	}
+
+
+	
 }

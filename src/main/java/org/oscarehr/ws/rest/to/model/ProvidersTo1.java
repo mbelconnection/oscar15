@@ -40,6 +40,19 @@ public class ProvidersTo1 implements Serializable {
     
 	private String name;
 	private String id;
+	private String flipData;
+	/**
+	 * @return the flipData
+	 */
+	public String getFlipData() {
+		return flipData;
+	}
+	/**
+	 * @param flipData the flipData to set
+	 */
+	public void setFlipData(String flipData) {
+		this.flipData = flipData;
+	}
 	public String getName() {
 		return name;
 	}

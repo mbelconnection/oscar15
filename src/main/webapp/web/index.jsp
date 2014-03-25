@@ -48,6 +48,7 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 <link href="css/navbar-fixed-top.css" rel="stylesheet">
 <link href="css/navbar-demo-search.css" rel="stylesheet">
 <link href="css/patient-list.css" rel="stylesheet">
+<link href="css_up/select2.css" rel="stylesheet"/>
 
 <style>
 /*styles temporary, when design complete styles will be moved to css above*/
@@ -247,6 +248,7 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 	<script language="javascript" type="text/javascript" src="js_up/jquery.plugin.js"></script>
 	<script type="text/javascript" src="js_up/jquery.timer.js"></script>
 	<script src="../library/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js_up/jquery.better-autocomplete.js"></script>
 	<script src="../library/hogan-2.0.0.js"></script>
 	<script src="../library/typeahead.js/typeahead.min.js"></script>
 	<script src="../library/angular.min.js"></script>
@@ -282,6 +284,7 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 	<script type="text/javascript" src="js_up/schedular.js"></script>
 	<script type="text/javascript" src="js_up/jsDatePick.min.1.3.js"></script>
 	<script type="text/javascript" src="js_up/script.js"></script>
+	<script type="text/javascript" src="js_up/select2.js"></script>
 	<!-- Added for Scheduler starts ends here -->
 	
 	<script type="text/javascript" src="../share/javascript/Oscar.js"></script>

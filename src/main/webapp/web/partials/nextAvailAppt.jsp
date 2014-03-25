@@ -60,7 +60,7 @@
 		  { label: "andreas johnson", category: "People" }
 		];
 		
-		var days = {"sunday":"Sunday", "monday":"Monday", "tuesday":"Tuesday", "wednesday":"Wednesday", "thursday":"Thursday", "friday":"Friday", "saturday":"Saturday"};
+		var days = {"0":"Sunday", "1":"Monday", "2":"Tuesday", "3":"Wednesday", "4":"Thursday", "5":"Friday", "6":"Saturday"};
 		
 		var naa_json_appType = {"echart":"E-Chart", "intake":"Intake form", "billing":"Billing", "rx":"RX"};
 		
@@ -96,6 +96,7 @@
 		var naa_json_time = {"8_00":"08:00", "8_15":"08:15", "8_30":"08:30", "8_45":"08:45", "9_00":"09:00", "9_15":"09:15", "9_30":"09:30", "9_45":"09:45", "10_00":"10:00", "10_15":"10:15", "10_30":"10:30", "10_45":"10:45", "11_00":"11:00", "11_15":"11:15", "11_30":"11:30", "11_45":"11:45", "12_00":"12:00", "12_15":"12:15", "12_30":"12:30", "12_45":"12:45", "13_00":"13:00", "13_15":"13:15", "13_30":"13:30", "13_45":"13:45", "14_00":"14:00", "14_15":"14:15", "14_30":"14:30", "14_45":"14:45", "15_00":"15:00", "15_15":"15:15", "15_30":"15:30", "15_45":"15:45", "16_00":"16:00", "16_15":"16:15", "16_30":"16:30", "16_45":"16:45", "17_00":"17:00", "17_15":"17:15", "17_30":"17:30", "17_45":"17:45", "18_00":"18:00", "18_15":"18:15", "18_30":"18:30", "18_45":"18:45", "19_00":"19:00", "19_15":"19:15", "19_30":"19:30", "19_45":"19:45", "20_00":"20:00", "20_15":"20:15", "20_30":"20:30", "20_45":"20:45", "21_00":"21:00", "21_15":"21:15", "21_30":"21:30", "21_45":"21:45", "22_00":"22:00", "22_15":"22:15", "22_30":"22:30", "22_45":"22:45"};
 		var naa_prov_id = "";
 		var naa_prov_type = "";
+		var naa_providers_list;
 		
 		/*JSON data end*/
 		
@@ -104,7 +105,35 @@
 				return days;
 			},
 			getSearchData: function(){
-				return searchData;
+				 var resultData;
+				var formData = {};			
+				formData['prov_type'] = naa_prov_type;
+				formData['provId'] = naa_prov_id;
+				formData['apptType'] = $('#naa_appt_format').val();
+				formData['apptDuration'] = $('#naa_dura_format').val();
+				formData['dayOfWeek'] = $('#dayOfWeek').val();
+				formData['startTime'] = $('#naa_time_of_day').val().replace(/_/g,":");
+				formData['endTime'] = $('#naa_time_of_day1').val().replace(/_/g,":");
+				formData['resultCount'] = $('#results').val();
+				//console.log(formData);
+				var apptData = JSON.stringify(formData);
+				$.ajax({
+					url : "../ws/rs/demographics/nextAvaAppt",
+					type : "post",
+					data : apptData,
+					async: false,
+					contentType : 'application/json',
+					success : function(result) {
+						resultData = result;
+					},
+					error : function(jqxhr) {
+						var msg = JSON.parse(jqxhr.responseText);
+						alert(msg['message']);
+
+					}
+				});
+				return resultData;
+				/*return searchData;*/
 			},
 			getDocsData: function(){
 				return naa_json_docs;
@@ -112,7 +141,26 @@
 				return naa_json_appType;
 			},getTimeSlot: function(){
 				return naa_json_time;
-			}
+			},
+			loadProviders : function() {
+				var pat_dtls = $.ajax({
+					url : "../ws/rs/providerService/aaa/list",
+					type : "get",
+					//contentType : 'application/json',
+					dataType: "json" ,
+					global: false,
+					async:false,
+					success : function(result) {
+					},
+					error : function(jqxhr) {
+						var msg = JSON.parse(jqxhr.responseText);
+						alert(msg['message']);
+
+					}
+				}).responseText;
+				var jObj = JSON.parse(pat_dtls);
+				naa_providers_list = jObj.providers;
+			},
 		};
 		
 		/*General functions*/
@@ -137,14 +185,35 @@
 					$("#naa_time_of_day1").append(new Option(val, key));
 				});				
 			 },	
+			 loadApptType : function() {
+					$.ajax({
+						url : "../ws/rs/patient/type/list/1",
+						type : "get",
+						contentType : 'application/json',
+						success : function(result) {
+							$("#naa_appt_format" ).empty();
+							$("#naa_appt_format").append(new Option("Any", ""));
+							//add_app_fn.loadOptsType(result.appointmentTypes, "naa_appt_format");
+							$.each(result.appointmentTypes, function(key, val) {
+								$("#naa_appt_format" ).append(new Option(val.name, val.id));
+							});
+							
+						},
+						error : function(jqxhr) {
+							var msg = JSON.parse(jqxhr.responseText);
+							alert(msg['message']);
+							$("#result").html('There is error while submit');
+						}
+					});
+				},
 			 
 			
-			 loadApptType: function(){
+			 /*loadApptType: function(){
 				var _days = naa_json_fn.getAttptStatus();
 				$.each(_days, function(key, val){
 					$("#naa_appt_format").append(new Option(val, key));
 				});
-			 },
+			 },*/
 			 
 			 search: function(){
 				var _data = naa_json_fn.getSearchData();
@@ -155,11 +224,13 @@
 						var me = this;
 						var myObject = JSON.stringify(me);
 						$("#naa_users tbody").append("<tr>" +
-                                "<td>" + me.date+ "</td>" +
-                                "<td>" + me.time + "</td>" +
-                                "<td>" + naa_fn.appendProviders(me.provider) + "</td>" +
+                                "<td>" + me.appointmentDate+ "</td>" +
+                                "<td>" + me.startTime + "</td>" +
+                                //"<td>" + naa_fn.appendProviders(me.name) + "</td>" +
+                                "<td>" +me.name + "</td>" +
 								"<td> <div class='naa_roundbox' style='cursor:pointer;' onclick='naa_fn.gotoAddAppointment("+myObject+")'> Schedule appt.</div> </td>" +
-                                "</tr>");
+                                //"<td> <div class='naa_roundbox' style='cursor:pointer;' onclick='sch.editAppt(\""+nextAvailId+"\",\"\")'> Schedule appt.</div> </td>" +
+								"</tr>");
 					
 				});
 			 },
@@ -176,26 +247,35 @@
 			 },
 			 gotoAddAppointment: function(myObject){
 			 nextAailObject = myObject;
-			 var sss = sch.valid_date(myObject.date);
-			 //console.log(sss);
-			 if(sss){
-			 $( "#dialog-edit" ).dialog({
-				resizable: false,
-				height:120,
-				buttons: {
-					"Edit": function(){
-						 $("#next_app_form").dialog("close");
-						 $( this ).dialog( "close" );
-						 sch.clearForm("#add_appt_form");
-						 $("#add_appt_form").dialog("open");
-						 
-						},
-					"Cancel": function() {
-						 $( this ).dialog( "close" );
-						}
-					}
+			 //var validDate = sch.valid_date(myObject.date);
+			 //1490:08_30
+			 var sx = myObject.startTime.split(":");
+				$("#next_app_form").dialog("close");
+				$("#add_appt_form").dialog("open")
+				//setTimeout(' ',1000); /* Added by Schedular Team */
+			 //if(validDate){
+				 /* $("#dialog-edit").dialog({
+					autoOpen : false,
+					resizable : true,
+					minHeight : 150,
+					height : 150,
+					width : 300,
+					modal : true,
+					title: 'Edit Appointment'
 				});
-			}
+			 $("#dialog-edit").dialog("open");
+			$(".ui-dialog-titlebar").show();
+			$(".ui-dialog-titlebar-close").hide();
+			
+			$("#sch_info_but_edit1").on("click", function() {
+				$("#dialog-edit").dialog("close");
+				$("#add_appt_form").dialog("open");
+				
+			});
+			
+			$("#sch_info_but_cancel1").on("click", function() {
+				$("#dialog-edit").dialog("close");
+			}); */
 			 }
 		}
 		naa_fn.loadDayOfWeek();
@@ -316,7 +396,31 @@
 		});*/
 		
 		/*bind provider name*/
-		$( "#naa_s_provider" )
+		$( "#naa_s_provider" ).catcomplete({
+					minLength: 0,
+					source: function( request, response ) {
+						// delegate back to autocomplete, but extract the last term
+						if(naa_providers_list == null)
+							naa_json_fn.loadProviders();
+						//response( add_appt_providers_list );	
+						var term = request.term;
+						var matches = $.grep(naa_providers_list, function(item, index) {
+							var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
+							return matcher.test(item.label);
+						});
+						response(matches);
+					  },
+					focus: function( event, ui ) {
+						//$( "#add_appt_pat_name" ).val( ui.item.label );
+						return false;
+					},
+					select: function( event, ui ) {	
+						naa_prov_type = "S";
+						naa_prov_id  = ui.item.id;
+					}
+				});
+		
+		/*$( "#naa_s_provider" )
 		.mycatcomplete({
 		  delay: 0,
 		  minLength : 3,
@@ -333,7 +437,7 @@
 			return false;
 		  }
 
-		});
+		});*/
 		
 		
 		$( "#naa_m_provider" )
@@ -344,11 +448,21 @@
 			}
 		})
 		 .autocomplete({
-			minLength: 3,
+			minLength: 0,
 			source: function( request, response ) {
-			// delegate back to autocomplete, but extract the last term
-				var data = naa_json_fn.getDocsData();			
-				response( data );
+				// delegate back to autocomplete, but extract the last term
+				if(naa_providers_list == null)
+					naa_json_fn.loadProviders();
+				//response( add_appt_providers_list );	
+				var term = request.term;
+				term = term.split(';');
+				term = term[term.length -1].trim();
+				//console.log(term[term.length -1]);
+				var matches = $.grep(naa_providers_list, function(item, index) {
+					var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
+					return matcher.test(item.label);
+				});
+				response(matches);
 			},
 			focus: function() {
 			// prevent value inserted on focus
@@ -363,7 +477,7 @@
 				terms.push( ui.item.value );
 				// add placeholder to get the comma-and-space at the end
 				terms.push( "" );
-				this.value = terms.join( ", " );
+				this.value = terms.join( "; " );
 				naa_prov_type = "M";
 				//add_appt_fld_prv_id += ui.item.id+",";
 				naa_prov_id += ui.item.id+",";

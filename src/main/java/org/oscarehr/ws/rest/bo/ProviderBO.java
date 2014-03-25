@@ -24,17 +24,22 @@
 
 package org.oscarehr.ws.rest.bo;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.oscarehr.common.dao.ScheduleDateDao;
+import org.oscarehr.common.dao.ScheduleTemplateDao;
 import org.oscarehr.common.model.Provider;
+import org.oscarehr.common.model.ScheduleDate;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.ws.rest.to.model.EventsTo1;
 import org.oscarehr.ws.rest.to.model.ProviderTo;
 import org.oscarehr.ws.rest.to.model.ProvidersTo1;
+import org.oscarehr.ws.rest.util.DateUtils;
 
 public class ProviderBO {
 	
@@ -54,16 +59,13 @@ public class ProviderBO {
 			ProviderTo providerTo = null;
 			for (Provider provider : src) {
 				providerTo = new ProviderTo();
-				providerTo.setProviderNo(provider.getProviderNo());
-				//MARC: I can't fix this...the bean changed since you used it.
-				//looks like it should jusr be a BeanUtils thing, if necessary at all.
-				/*
+				providerTo.setId(provider.getProviderNo());
 				if ("FN".equals(searchType)) {
 					providerTo.setLabel(provider.getFirstName() + ", " + provider.getLastName());
 				} else {
 					providerTo.setLabel(provider.getLastName() + ", " + provider.getFirstName());
 				}
-				*/
+				providerTo.setCategory("");
 				dest.add(providerTo);
 			}
 		}
@@ -78,8 +80,9 @@ public class ProviderBO {
 	 * @param dest		destination
 	 * @return			bean
 	 */
-	public static List<ProvidersTo1> copyProviders(List<Provider> src, List<ProvidersTo1> dest) {
+	public static List<ProvidersTo1> copyProviders(List<Provider> src, List<ProvidersTo1> dest,ScheduleDateDao scheduleDao,ScheduleTemplateDao scheduleTempDao,String sDate) {
 		log.debug("ProviderBO.copyProviders() starts");
+		ScheduleDate itemsLst=null;
 		if (null != src && !src.isEmpty()) {
 			dest = new ArrayList<ProvidersTo1>(src.size());
 			ProvidersTo1 providerTo1 = null;
@@ -88,6 +91,45 @@ public class ProviderBO {
 				providerTo1.setId(provider.getProviderNo());
 				providerTo1.setName((null == provider.getTitle() ? "" : provider.getTitle()) + provider.getFirstName() + " " + provider.getLastName());
 				providerTo1.setGroup(provider.getTeam());
+				
+				itemsLst = new ScheduleDate();
+				try {
+	                itemsLst = scheduleDao.findByProviderNoAndDate(provider.getProviderNo(), DateUtils.formatDate(sDate));
+                } catch (ParseException e) {
+	                // TODO Auto-generated catch block
+                	log.error("copyProviders " + e);
+                }
+				if(itemsLst!=null){
+					String template =  scheduleTempDao.findByName(itemsLst.getHour().trim(),itemsLst.getProviderNo());
+					providerTo1.setFlipData(template);
+				}
+				dest.add(providerTo1);
+			}
+		}
+		log.debug("ProviderBO.copyProviders() ends");
+		return dest;
+	}
+	
+	
+	/**
+	 * Copies data from source bean to destination bean.
+	 * 
+	 * @param src		source
+	 * @param dest		destination
+	 * @return			bean
+	 */
+	public static List<ProvidersTo1> copyProviders(List<Provider> src, List<ProvidersTo1> dest) {
+		log.debug("ProviderBO.copyProviders() starts");
+		
+		if (null != src && !src.isEmpty()) {
+			dest = new ArrayList<ProvidersTo1>(src.size());
+			ProvidersTo1 providerTo1 = null;
+			for (Provider provider : src) {
+				providerTo1 = new ProvidersTo1();
+				providerTo1.setId(provider.getProviderNo());
+				providerTo1.setName((null == provider.getTitle() ? "" : provider.getTitle()) + provider.getFirstName() + " " + provider.getLastName());
+				providerTo1.setGroup(provider.getTeam());
+				
 				dest.add(providerTo1);
 			}
 		}

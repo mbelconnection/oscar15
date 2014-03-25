@@ -58,6 +58,22 @@ public class DemographicTo1 implements Serializable {
 	private String ver;
 
 	private Date dateOfBirth;
+	
+	private String dob;
+
+	/**
+	 * @return the dob
+	 */
+	public String getDob() {
+		return dob;
+	}
+
+	/**
+	 * @param dob the dob to set
+	 */
+	public void setDob(String dob) {
+		this.dob = dob;
+	}
 
 	private String sex;
 

@@ -25,16 +25,23 @@
 
 package org.oscarehr.managers;
 
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.oscarehr.PMmodule.dao.ProviderDao;
 import org.oscarehr.common.dao.AppointmentTypeDao;
+import org.oscarehr.common.dao.LookupListItemDao;
 import org.oscarehr.common.dao.OscarAppointmentDao;
+import org.oscarehr.common.dao.RoomDao;
 import org.oscarehr.common.dao.ScheduleDateDao;
 import org.oscarehr.common.dao.ScheduleHolidayDao;
 import org.oscarehr.common.dao.ScheduleTemplateCodeDao;
@@ -54,9 +61,12 @@ import org.oscarehr.util.MiscUtils;
 import org.oscarehr.ws.rest.bo.AppointmentBO;
 import org.oscarehr.ws.rest.bo.ProviderBO;
 import org.oscarehr.ws.rest.bo.ScheduleBO;
+import org.oscarehr.ws.rest.conversion.ProviderConverter;
+import org.oscarehr.ws.rest.exception.AppointmentException;
 import org.oscarehr.ws.rest.exception.ScheduleException;
 import org.oscarehr.ws.rest.to.model.EventsTo1;
 import org.oscarehr.ws.rest.to.model.ProviderAndEventSearchResults;
+import org.oscarehr.ws.rest.to.model.ProviderTo1;
 import org.oscarehr.ws.rest.to.model.ProvidersTo1;
 import org.oscarehr.ws.rest.util.ErrorCodes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,6 +102,15 @@ public class ScheduleManager {
 	
 	@Autowired
 	private ProviderDao providerDao;
+	
+	@Autowired
+	private LookupListItemDao reasonDao;
+	
+	@Autowired
+	private DemographicManager demoManager;
+	
+	@Autowired
+	private RoomDao roomDao;
 
 	/*Right now the date object passed is converted to a local time.  
 	*
@@ -256,6 +275,7 @@ public class ScheduleManager {
 		List<EventsTo1> events = null;
 		List<Appointment> appointments = null;
 		ProviderAndEventSearchResults rstLst = new ProviderAndEventSearchResults();
+		List <EventsTo1> totalEvents = new java.util.ArrayList<EventsTo1>();
 		try {
 			appointments = oscarAppointmentDao.getAppointmentsByAppointmentDate(apptDay);
 			logger.debug("ScheduleManager.getProviderAndEvents()"+appointments);
@@ -270,21 +290,44 @@ public class ScheduleManager {
 				//} else {
 					List<Provider> providerLst = providerDao.getProviders();
 					if (null != providerLst && !providerLst.isEmpty()) {
-						providersTo1 = ProviderBO.copyProviders(providerLst, providersTo1);
+						providersTo1 = ProviderBO.copyProviders(providerLst, providersTo1,scheduleDateDao,scheduleTemplateDao,apptDay);
 						rstLst = ScheduleBO.setProvidersAndEvents(providersTo1, events, apptDay);
 						return rstLst;
 					}
 				}
 			//}
-			events = AppointmentBO.copyEvents(appointments, events);
+			events = AppointmentBO.copyEvents(appointments, events,reasonDao,providerDao,roomDao);
+			
+			Map<String,EventsTo1> eventMap = new HashMap<String,EventsTo1>();
+			for (Iterator k = events.iterator(); k.hasNext();) {
+	            EventsTo1 event = (EventsTo1) k.next();
+	            
+	           if(eventMap.get(event.getMultiApptId())!=null){
+	        	   EventsTo1 event1 = eventMap.get(event.getMultiApptId());
+	        	   String patientId = event1.getPatientId()+","+event.getPatientId();
+	        	   event1.setPatientId(patientId);
+	        	   String appointment = event1.getApptId()+","+event.getApptId();
+	        	   event1.setApptId(appointment);
+	        	   
+	        	   eventMap.put(event.getMultiApptId(),event1);
+	        	   
+	           }else{
+	            eventMap.put(event.getMultiApptId(),event);
+	           }
+            }
+			
+			 totalEvents = new java.util.ArrayList<EventsTo1>(eventMap.values());
 		} catch (Exception e) {
 			logger.error("Error in ScheduleService.getProviderAndEvents()", e);
 			throw new ScheduleException(ErrorCodes.SCH_ERROR_002);
 		}
 		try {
 			//Object []provider = ProviderBO.getUniqueProviders(events);
+			
+			//ScheduleDateDao scheduleDao,ScheduleTemplateDao scheduleTempDao,String sDate
+			
 			providers = providerDao.getProviders();
-			providersTo1 = ProviderBO.copyProviders(providers, providersTo1);
+			providersTo1 = ProviderBO.copyProviders(providers, providersTo1,scheduleDateDao,scheduleTemplateDao,apptDay);
 			if (null == providersTo1 || providersTo1.isEmpty()) {
 				throw new ScheduleException(ErrorCodes.SCH_ERROR_001);
 			}
@@ -293,7 +336,7 @@ public class ScheduleManager {
 			throw new ScheduleException(ErrorCodes.SCH_ERROR_001);
 		}
 		
-		rstLst = ScheduleBO.setProvidersAndEvents(providersTo1, events, apptDay);
+		rstLst = ScheduleBO.setProvidersAndEvents(providersTo1, totalEvents, apptDay);
 		logger.debug("ScheduleService.getProviderAndEvents() ends");
 		return rstLst;
 	}
@@ -360,7 +403,7 @@ public class ScheduleManager {
 		List<Appointment> appointments = null;
 		ProviderAndEventSearchResults rstLst = new ProviderAndEventSearchResults();
 		try {
-			appointments = oscarAppointmentDao.getGroupDayEvents(group, org.oscarehr.ws.rest.util.DateUtils.formatDate(apptDay));			
+			appointments = oscarAppointmentDao.getGroupDayEvents(group, apptDay);			
 			events = AppointmentBO.copyEvents(appointments, events);
 		} catch (Exception e) {
 			logger.error("Error in ScheduleService.getProviderAndEvents()", e);
@@ -391,7 +434,7 @@ public class ScheduleManager {
 		List<Appointment> appointments = null;
 		ProviderAndEventSearchResults rstLst = new ProviderAndEventSearchResults();
 		try {
-			appointments = oscarAppointmentDao.getGroupWeekEvents(org.oscarehr.ws.rest.util.DateUtils.formatDate(stdate), org.oscarehr.ws.rest.util.DateUtils.formatDate(enddate), group);			
+			appointments = oscarAppointmentDao.getGroupWeekEvents(stdate, enddate, group);			
 			events = AppointmentBO.copyEvents(appointments, events);
 			providers = providerDao.getGroupProviders(group);
 			providersTo1 = ProviderBO.copyProviders(providers, providersTo1);
@@ -418,7 +461,7 @@ public class ScheduleManager {
 		ProviderAndEventSearchResults rstLst = new ProviderAndEventSearchResults();
 		
 		try {
-			appointments = oscarAppointmentDao.getGroupMonthEvents(org.oscarehr.ws.rest.util.DateUtils.formatDate(day), group);			
+			appointments = oscarAppointmentDao.getGroupMonthEvents(day, group);			
 			events = AppointmentBO.copyEvents(appointments, events);
 			providers = providerDao.getGroupProviders(group);
 			providersTo1 = ProviderBO.copyProviders(providers, providersTo1);
@@ -446,11 +489,11 @@ public class ScheduleManager {
 		List<Appointment> appointments = null;
 		try {
 			if(null != provider && (Integer.parseInt(provider)>0 )){
-				appointments = oscarAppointmentDao.getAppointmentsForWeek(org.oscarehr.ws.rest.util.DateUtils.formatDate(startDay), org.oscarehr.ws.rest.util.DateUtils.formatDate(endDay), provider);
+				appointments = oscarAppointmentDao.getAppointmentsForWeek(startDay, endDay, provider);
 				//appointments = oscarAppointmentDao.getAppointmentsForWeekTotal(startDay, endDay);
 				
 			}else{
-				appointments = oscarAppointmentDao.getAppointmentsForWeekTotal(org.oscarehr.ws.rest.util.DateUtils.formatDate(startDay), org.oscarehr.ws.rest.util.DateUtils.formatDate(endDay));
+				appointments = oscarAppointmentDao.getAppointmentsForWeekTotal(startDay, endDay);
 				//appointments = oscarAppointmentDao.getAppointmentsForWeek(startDay, endDay, "103");
 			}
 			
@@ -462,5 +505,186 @@ public class ScheduleManager {
 		logger.debug("ScheduleManager.getEventsForWeek()"+appointments);
 		return appointments;
 	}
+	
+	
+	/**
+	 * Returns events list.
+	 * 
+	 * @return						events list
+	 * @throws ScheduleException	when error occurs
+	 */
+	public List<EventsTo1> convertEventsForWeek(List<Appointment> appointments) throws ScheduleException {
+		logger.debug("ScheduleService.getEventsForWeek() starts");
+		List<EventsTo1> events = null;
+		try {
+			events = AppointmentBO.copyEvents(appointments, null,providerDao,reasonDao);
+			
+		} catch (Exception e) {
+			logger.error("Error in ScheduleService.getEventsForWeek()", e);
+			throw new ScheduleException(ErrorCodes.SCH_ERROR_002);
+		}
+		logger.debug("ScheduleService.getEventsForWeek() ends");
+		logger.debug("ScheduleManager.getEventsForWeek()"+events);
+		return events;
+	}
+	
+	
+	public ProviderAndEventSearchResults getSelectedProviderAndEvents(List<ProviderTo1> providerIds,String apptDate) throws ScheduleException {
+		logger.debug("ScheduleService.getProviderAndEvents() starts");
+		List<Provider> providers = null;
+		List<ProvidersTo1> providersTo1 = null;
+		List<EventsTo1> events = null;
+		List<Appointment> appointments = null;
+		ProviderAndEventSearchResults rstLst = new ProviderAndEventSearchResults();
+		List <EventsTo1> totalEvents = new java.util.ArrayList<EventsTo1>();
+		String provider="";
+		try {
+			
+			if(apptDate== null){
+				try {
+		            apptDate = org.oscarehr.ws.rest.util.DateUtils.convertDateToString(new Date());
+	            } catch (ParseException e) {
+		            // TODO Auto-generated catch block
+	            	logger.error("Error in ScheduleService.getSelectedProviderAndEvents()", e);
+	            }
+			}
+			
+			for (Iterator<ProviderTo1> j = providerIds.iterator(); j.hasNext();) {
+	            ProviderTo1 prov1 = (ProviderTo1) j.next();
+	            
+	            if(prov1.isEnabled()){
+	            	if(!"".equals(provider)){
+	            		provider = provider+","+prov1.getProviderNo();
+	            	}else {
+	            		provider = prov1.getProviderNo();
+	            	}
+	            }
+	            
+            }
+			
+			appointments = oscarAppointmentDao.getByProvidersAndDay(org.oscarehr.ws.rest.util.DateUtils.formatDate(apptDate), provider);
+			logger.debug("ScheduleManager.getProviderAndEvents()"+appointments);
+			if (null == appointments || appointments.isEmpty()) {
+				Calendar cal = Calendar.getInstance();
+				cal.set(Calendar.HOUR, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, 0);
+				//if (org.oscarehr.ws.rest.util.DateUtils.formatDate(apptDay).compareTo(cal.getTime()) < 0) {
+					//throw new ScheduleException(ErrorCodes.SCH_ERROR_002);
+				//} else {
+					List<Provider> providerLst = providerDao.getProvidersByIds(provider);
+					if (null != providerLst && !providerLst.isEmpty()) {
+						providersTo1 = ProviderBO.copyProviders(providerLst, providersTo1,scheduleDateDao,scheduleTemplateDao,apptDate);
+						rstLst = ScheduleBO.setProvidersAndEvents(providersTo1, events, apptDate);
+						return rstLst;
+					}
+				}
+			//}
+			events = AppointmentBO.copyEvents(appointments, events,reasonDao,providerDao,roomDao);
+			
+			Map<String,EventsTo1> eventMap = new HashMap<String,EventsTo1>();
+			for (Iterator k = events.iterator(); k.hasNext();) {
+	            EventsTo1 event = (EventsTo1) k.next();
+	            
+	           if(eventMap.get(event.getProgramId())!=null){
+	        	   EventsTo1 event1 = eventMap.get(event.getProgramId());
+	        	   String patientId = event1.getPatientId()+","+event.getPatientId();
+	        	   event1.setPatientId(patientId);
+	        	   String appointment = event1.getApptId()+","+event.getApptId();
+	        	   event1.setApptId(appointment);
+	        	   
+	        	   eventMap.put(event.getProgramId(),event1);
+	        	   
+	           }else{
+	            eventMap.put(event.getProgramId(),event);
+	           }
+            }
+			
+			 totalEvents = new java.util.ArrayList<EventsTo1>(eventMap.values());
+		} catch (Exception e) {
+			logger.error("Error in ScheduleService.getProviderAndEvents()", e);
+			throw new ScheduleException(ErrorCodes.SCH_ERROR_002);
+		}
+		try {
+			
+			List<Provider> providerLst = providerDao.getProvidersByIds(provider);
+			providersTo1 = ProviderBO.copyProviders(providerLst, providersTo1,scheduleDateDao,scheduleTemplateDao,apptDate);
+			if (null == providersTo1 || providersTo1.isEmpty()) {
+				throw new ScheduleException(ErrorCodes.SCH_ERROR_001);
+			}
+		} catch (Exception e) {
+			logger.error("Error in ScheduleService.getProviderAndEvents()", e);
+			throw new ScheduleException(ErrorCodes.SCH_ERROR_001);
+		}
+		
+		
+	        rstLst = ScheduleBO.setProvidersAndEvents(providersTo1, totalEvents, apptDate);
+        
+		logger.debug("ScheduleService.getProviderAndEvents() ends");
+		return rstLst;
+	}
+
+	public ProviderAndEventSearchResults getTeamProviderAndEvents(String groupName,String appDate) throws ScheduleException{
+		ProviderAndEventSearchResults rstLst = new ProviderAndEventSearchResults();
+		
+		try {
+	        Map<String,List<ProviderTo1>> totList = demoManager.getGroupProviderDetails(groupName);
+	        List<ProviderTo1> activeList = totList.get("active");
+	        rstLst = getSelectedProviderAndEvents(activeList,appDate);
+        } catch (AppointmentException e) {
+        	logger.error("Error in ScheduleService.getTeamProviderAndEvents()", e);
+			throw new ScheduleException(ErrorCodes.SCH_ERROR_001);
+        } catch (ScheduleException e) {
+        	logger.error("Error in ScheduleService.getTeamProviderAndEvents()", e);
+			throw new ScheduleException(ErrorCodes.SCH_ERROR_001);
+        }
+		
+		return rstLst;
+	}
+	
+	public ProviderAndEventSearchResults getTeamProviderHavingEvents(String groupName,String appDate) throws ScheduleException{
+		ProviderAndEventSearchResults rstLst = new ProviderAndEventSearchResults();
+		
+		try {
+	        Map<String,List<ProviderTo1>> totList = demoManager.getGroupProviderDetails(groupName);
+	        List<ProviderTo1> activeList = totList.get("active");
+	        String provider="";
+	        List<ProviderTo1> converterActiveProvider = new ArrayList<ProviderTo1>();
+	        ProviderTo1 providerTo = new ProviderTo1();
+			ProviderConverter converter = new ProviderConverter();
+	        for (Iterator<ProviderTo1> j = activeList.iterator(); j.hasNext();) {
+	            ProviderTo1 prov1 = (ProviderTo1) j.next();           
+	            	if(!"".equals(provider)){
+	            		provider = provider+","+prov1.getProviderNo();
+	            	}else {
+	            		provider = prov1.getProviderNo();
+	            	}
+            }
+	        
+	        List<Provider> providerList = oscarAppointmentDao.getProvidersByAppointments(provider,org.oscarehr.ws.rest.util.DateUtils.formatDate(appDate));
+	        
+	        for (Iterator i = providerList.iterator(); i.hasNext();) {
+	            Provider provider1 = (Provider) i.next();
+	            providerTo = new ProviderTo1();
+	            providerTo = converter.getAsTransferObject(provider1); 
+	           	converterActiveProvider.add(providerTo);   
+            }
+	        
+	        rstLst = getSelectedProviderAndEvents(converterActiveProvider,appDate);
+        } catch (AppointmentException e) {
+        	logger.error("Error in ScheduleService.getTeamProviderHavingEvents()", e);
+			throw new ScheduleException(ErrorCodes.SCH_ERROR_001);
+        } catch (ScheduleException e) {
+        	logger.error("Error in ScheduleService.getTeamProviderHavingEvents()", e);
+			throw new ScheduleException(ErrorCodes.SCH_ERROR_001);
+        } catch (ParseException e) {
+        	logger.error("Error in ScheduleService.getTeamProviderHavingEvents()", e);
+			throw new ScheduleException(ErrorCodes.SCH_ERROR_001);
+        }
+		
+		return rstLst;
+	}
+
 
 }

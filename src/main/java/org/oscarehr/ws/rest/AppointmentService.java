@@ -23,8 +23,15 @@
  */
 package org.oscarehr.ws.rest;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -37,7 +44,11 @@ import org.oscarehr.managers.AppointmentManager;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.ws.rest.exception.AppointmentException;
 import org.oscarehr.ws.rest.to.model.AppointmentTo;
+import org.oscarehr.ws.rest.to.model.AppointmentTo1;
 import org.oscarehr.ws.rest.to.model.OscarResponseTo;
+import org.oscarehr.ws.rest.to.model.PatientSearchResponse;
+import org.oscarehr.ws.rest.to.model.PatientSearchResults;
+import org.oscarehr.ws.rest.to.model.RoomTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -81,5 +92,149 @@ public class AppointmentService extends AbstractServiceImpl {
 		log.debug("AppointmentService.deleteAppointment() ends");
 		return Response.status(Status.OK).build();
 	}
+
+	@POST
+	@Path("/saveEdit")
+	@Consumes("application/json")
+	public Response saveEditAppointments(AppointmentTo appointmentTo) {
+		log.debug("AppointmentService.addAppointments() starts");	
+		boolean success=false;
+		try {
+			appointmentManager.saveUpdatedAppointment(appointmentTo, getCurrentProvider().getLastName() + ", " + getCurrentProvider().getFirstName());
+			success=true;
+		}catch(AppointmentException e) {
+			return Response.status(Status.NOT_FOUND).entity(e.getBean()).build();
+		}
+		log.debug("AppointmentService.addAppointments() ends");
+		return Response.status(Status.OK).entity(success).build();
+	}
 	
+	@POST
+	@Path("/{demographicNo}/findExist")
+	@Produces("application/json")
+	public Response findExistAppointments(@PathParam("demographicNo") String demographicNo) {
+		log.debug("AppointmentService.findExistAppointments() starts");
+		PatientSearchResults psLst = null;
+		//List<Appointment> result = null;
+		PatientSearchResponse response = new PatientSearchResponse();
+		
+		psLst = appointmentManager.getExistAppointments(demographicNo);
+		response.setResponse(psLst);
+		 
+		log.debug("ScheduleService.getProvidersAndEvents() ends");
+		return Response.status(Status.OK).entity(response).build();
+	}
+	
+	@GET
+	@Path("/{id}/{status}/saveStatus")
+	@Produces("application/json")
+	public Response saveAppointmentStatus(@PathParam("id") String id, @PathParam("status") String status) {
+		log.debug("AppointmentService.saveAppointmentStatus() starts");	
+
+		boolean result= false;
+		
+		try {
+				result= appointmentManager.saveUpdatedAppointmentStatus(id.trim(), status);
+			
+		}catch(AppointmentException e) {
+			return Response.status(Status.NOT_FOUND).entity(e.getBean()).build();
+		}
+		log.debug("AppointmentService.editAppointments() ends");
+		return Response.status(Status.OK).entity(result).build();
+	}
+	
+	@GET
+	@Path("/{id}/{type}/saveType")
+	@Produces("application/json")
+	public Response saveAppointmentType(@PathParam("id") String id, @PathParam("type") String type) {
+		log.debug("AppointmentService.saveAppointmentType() starts");	
+
+		boolean result= false;
+		try {
+				result= appointmentManager.saveUpdatedAppointmentType(id.trim(), type);
+			
+		}catch(AppointmentException e) {
+			return Response.status(Status.NOT_FOUND).entity(e.getBean()).build();
+		}
+		log.debug("AppointmentService.saveAppointmentType() ends");
+		return Response.status(Status.OK).entity(result).build();
+	}
+	
+	@GET
+	@Path("/{id}/{urgency}/saveCritical")
+	@Produces("application/json")
+	public Response saveAppointmentCriticality(@PathParam("id") String id, @PathParam("urgency") String urgency) {
+		log.debug("AppointmentService.saveAppointmentCriticality() starts");	
+		boolean result= false;
+		try {
+				result= appointmentManager.saveUpdatedAppointmentCritical(id.trim(), urgency);
+			
+		}catch(AppointmentException e) {
+			return Response.status(Status.NOT_FOUND).entity(e.getBean()).build();
+		}
+		log.debug("AppointmentService.saveAppointmentCriticality() ends");
+		return Response.status(Status.OK).entity(result).build();
+	}
+	
+	@GET
+	@Path("/{startDate}/{endDate}/{providersData}/fetchMonthly")
+	@Produces("application/json")
+	public Response fetchMonthlyData(@PathParam("startDate") String startDate, @PathParam("endDate") String endDate, @PathParam("providersData") String providersData) {
+		log.debug("AppointmentService.saveAppointmentCriticality() starts");	
+		
+		OscarResponseTo response = new OscarResponseTo();
+		Map<String,Set<AppointmentTo1>> returnResult = new java.util.HashMap<String,Set<AppointmentTo1>>();
+		try {
+			returnResult= appointmentManager.fetchMonthlyData(startDate, endDate,providersData);
+			
+		}catch(AppointmentException e) {
+			return Response.status(Status.NOT_FOUND).entity(e.getBean()).build();
+		}
+		log.debug("AppointmentService.saveAppointmentCriticality() ends");
+		return Response.status(Status.OK).entity(returnResult).build();
+	}
+	
+	@GET
+	@Path("/{startDate}/{endDate}/{providerId}/fetchFlipView")
+	@Produces("application/json")
+	public Response fetchFlipView(@PathParam("startDate") String startDate, @PathParam("endDate") String endDate, @PathParam("providerId") String providerId) {
+		log.debug("AppointmentService.fetchFlipView() starts");	
+		
+		OscarResponseTo response = new OscarResponseTo();
+		java.util.HashMap<String,String> returnResult = new java.util.HashMap<String,String>();
+		try {
+			returnResult= appointmentManager.getFlipDetails(providerId, startDate, endDate);
+			
+		}catch(AppointmentException e) {
+			return Response.status(Status.NOT_FOUND).entity(e.getBean()).build();
+		}
+		log.debug("AppointmentService.fetchFlipView() ends");
+		return Response.status(Status.OK).entity(returnResult).build();
+	}
+	
+	
+	@GET
+	@Path("/roomDetails/get")
+	@Produces("application/json")
+	public Response getRoomDetails() {
+		List<RoomTo> roomList = new ArrayList<RoomTo>();
+		
+			roomList = appointmentManager.getRoomDetails();
+			
+	
+		log.debug("AppoimentService.getRoomDetails() ends");
+		return Response.status(Status.OK).entity(roomList).build();
+	}
+	
+	@GET
+	@Path("/{appDate}/{providerId}/{startTime}/{endTime}/checkProvAvali")
+	@Produces("application/json")
+	public Response checkProviderAvaliablity( @PathParam("appDate") String appDate, @PathParam("providerId") String providerId,@PathParam("startTime") String startTime, @PathParam("endTime") String endTime) {
+		Map<String,Integer> rstLst = new HashMap<String,Integer>();
+		
+			rstLst = appointmentManager.checkAppointmentDetails(providerId, appDate, startTime, endTime);
+		
+		log.debug("Appointmentservice.checkProviderAvaliablity() ends");
+		return Response.status(Status.OK).entity(rstLst).build();
+	}
 }

@@ -44,10 +44,12 @@ import org.oscarehr.ws.rest.exception.AppointmentException;
 import org.oscarehr.ws.rest.exception.PatientException;
 import org.oscarehr.ws.rest.to.model.AppointmentReasonTo;
 import org.oscarehr.ws.rest.to.model.AppointmentStatusTo;
+import org.oscarehr.ws.rest.to.model.AppointmentTo;
 import org.oscarehr.ws.rest.to.model.AppointmentTypeTo;
 import org.oscarehr.ws.rest.to.model.DemographicTo;
 import org.oscarehr.ws.rest.to.model.DemographicsTo;
 import org.oscarehr.ws.rest.to.model.OscarResponseTo;
+import org.oscarehr.ws.rest.to.model.ScheduleTemplateCodeTo;
 import org.oscarehr.ws.rest.util.ErrorCodes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -73,31 +75,27 @@ public class PatientService {
 	}
 	
 	@GET
-	@Path("/{nameLike}/list")
+	@Path("/patlist")
 	@Produces("application/json")
-	public Response getPatients(@PathParam("nameLike") String nameLike) {
-		log.debug("PatientService.getPatients() starts");
-		List<Demographic> demographics = null;
-		List<DemographicTo> demographicLst = null;
-		DemographicsTo demographicsTo = null;
-		try {
-			String[] names = nameLike.split(",");
-			demographics = demographicManager.getActiveDemographisFirstNameSearch(names);
-			if (null == demographics || demographics.isEmpty()) {
-    			demographics = demographicManager.getActiveDemographisLastNameSearch(names);
-    			demographicLst = PatientBO.copy(demographics, demographicLst, "LN");
-    		} else {
-    			demographicLst = PatientBO.copy(demographics, demographicLst, "FN");
-    		}
+	public Response getDemographicsAndEvents() throws Exception {
+    	List<Demographic> demographics = null;
+    	List<DemographicTo> demographicLst = null;
+    	DemographicsTo demographicsTo = null;
+    	try {
+    		//String[] names = nameLike.split(",");
+    		demographics = demographicManager.getActiveDemographisFirstNameSearch();
+    		if (null == demographics || demographics.isEmpty()) {
+				throw new PatientException(ErrorCodes.PAT_ERROR_001);
+			}
+    		demographicLst = PatientBO.copy(demographics, demographicLst, "FN");
+    		
     		demographicsTo = new DemographicsTo();
     		demographicsTo.setDemographics(demographicLst);
-		} catch(PatientException e) {
-    		log.error("Error in PatientService.getPatients()", e);
+    	} catch(PatientException e) {
 			return Response.status(Status.NOT_FOUND).entity(e.getBean()).build();
 		}
-    	log.debug("PatientService.getPatients() ends");
     	return Response.status(Status.OK).entity(demographicsTo).build();
-    }
+    	}
 	
 	@GET
 	@Path("/type/list/{id}")
@@ -154,5 +152,55 @@ public class PatientService {
 		}
 		log.debug("AppointmentService.getAppointmentReaons() ends");
 		return Response.status(Status.OK).entity(response).build();
+	}
+	
+	@GET
+	@Path("/{id}/viewEdit")
+	@Produces("application/json")
+	public Response editAppointments(@PathParam("id") String id) {
+		log.debug("AppointmentService.editAppointments() starts");	
+		AppointmentTo apptTo = null;
+		OscarResponseTo response = new OscarResponseTo();
+		try {
+			apptTo = appointmentManager.getSelectedAppointment(id);
+			response.setAppointments(apptTo);
+		}catch(AppointmentException e) {
+			return Response.status(Status.NOT_FOUND).entity(e.getBean()).build();
+		}
+		log.debug("AppointmentService.editAppointments() ends");
+		return Response.status(Status.OK).entity(response).build();
+	}
+	
+	@GET
+	@Path("/blockreason/get")
+	@Produces("application/json")
+	public Response getBlockTimeReason() {
+		log.debug("AppointmentService.getBlockTimeReason() starts");
+		List<AppointmentReasonTo> reasonsLst = null;
+		OscarResponseTo response = null;
+		try {
+			reasonsLst = AppointmentBO.copyReasons(appointmentManager.getBlockTimeReason());
+			if (null == reasonsLst || reasonsLst.isEmpty()) {
+				throw new AppointmentException(ErrorCodes.APPT_ERROR_005);
+			}
+			response = new OscarResponseTo();
+			response.setAppointmentReason(reasonsLst);
+		}catch(AppointmentException e) {
+			return Response.status(Status.NOT_FOUND).entity(e.getBean()).build();
+		}
+		log.debug("AppointmentService.getBlockTimeReason() ends");
+		return Response.status(Status.OK).entity(response).build();
+	}
+	
+	@GET
+	@Path("/scheduleTempCode/get")
+	@Produces("application/json")
+	public Response fetchScheduleTempCode() {
+		//logger.debug("AppointmentService.editAppointments() starts");	
+		List<ScheduleTemplateCodeTo> tempCode = new java.util.ArrayList<ScheduleTemplateCodeTo>();
+		
+		tempCode = demographicManager.fetchScheduleTempCode();
+		
+		return Response.status(Status.OK).entity(tempCode).build();
 	}
 }

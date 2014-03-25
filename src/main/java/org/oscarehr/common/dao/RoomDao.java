@@ -292,5 +292,24 @@ public class RoomDao extends AbstractDao<Room>{
 		// set start date to today
 		// save previous and new programrooms
 	}
+	
+	/**
+	 * Get rooms
+	 *
+	 * @param active
+	 *            filter
+	 * @return list of rooms
+	 */
+    @SuppressWarnings("unchecked")
+    public List<Room> getActiveRooms() {
+    	Query query = entityManager.createQuery("select r from Room r where r.active = 1");
+		
+		
+		List<Room> rooms = query.getResultList();
+		
+		
+				return rooms;
+		
+	}
 
 }

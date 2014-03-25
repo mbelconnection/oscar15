@@ -24,12 +24,13 @@
 package org.oscarehr.ws.rest.to.model;
 
 import java.io.Serializable;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 @XmlRootElement(name="appointments")
 @JsonIgnoreProperties(ignoreUnknown = true)

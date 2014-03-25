@@ -54,6 +54,8 @@ public class ProviderConverter extends AbstractConverter<Provider, ProviderTo1> 
 		d.setProviderType(t.getProviderActivity());
 		if (t.getSex() != null) {
 			d.setSex(t.getSex().name());
+		}else{
+			d.setSex("M");
 		}
 		d.setOhipNo(t.getOhipNo());
 		d.setSpecialty(t.getSpecialty());
@@ -69,6 +71,7 @@ public class ProviderConverter extends AbstractConverter<Provider, ProviderTo1> 
 		d.setTitle(t.getTitle());
 		d.setLastUpdateUser(t.getLastUpdateUser());
 		d.setLastUpdateDate(t.getLastUpdateDate());
+		d.setProviderType(t.getProviderType());
 
 		return d;
 	}
@@ -99,8 +102,7 @@ public class ProviderConverter extends AbstractConverter<Provider, ProviderTo1> 
 		t.setDob(d.getDob());
 		t.setHsoNo(d.getHsoNo());
 		t.setProviderActivity(d.getProviderActivity());
-		t.setFirstName(d.getFirstName());
-		t.setLastName(d.getLastName());
+		t.setFirstName(d.getFirstName()+","+d.getLastName());
 		t.setRmaNo(d.getRmaNo());
 		t.setSignedConfidentiality(d.getSignedConfidentiality());
 		t.setPractitionerNo(d.getPractitionerNo());
@@ -108,6 +110,7 @@ public class ProviderConverter extends AbstractConverter<Provider, ProviderTo1> 
 		t.setTitle(d.getTitle());
 		t.setLastUpdateUser(d.getLastUpdateUser());
 		t.setLastUpdateDate(d.getLastUpdateDate());
+		t.setProviderType(d.getProviderType());
 		return t;
 	}
 

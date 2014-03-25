@@ -23,14 +23,19 @@
  */
 package org.oscarehr.ws.rest.conversion;
 
+import java.text.ParseException;
 import java.util.Date;
-import org.apache.commons.beanutils.BeanUtils;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
-import org.oscarehr.common.model.CountryCode;
+import org.oscarehr.common.model.Appointment;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.DemographicExt;
-import org.oscarehr.ws.rest.to.model.CountryCodeTo;
+import org.oscarehr.ws.rest.to.model.AppointmentTo1;
 import org.oscarehr.ws.rest.to.model.DemographicTo1;
+import org.oscarehr.ws.rest.util.DateUtils;
 
 import oscar.util.ConversionUtils;
 
@@ -155,6 +160,7 @@ public class DemographicConverter extends AbstractConverter<Demographic, Demogra
 		t.getAddress().setProvince(d.getProvince());
 		t.setVer(d.getVer());
 		t.setSex(d.getSex());
+		t.setDob(d.getBirthDayAsString());
 		try {
 			t.setDateOfBirth(d.getBirthDay().getTime());
 		} catch (Exception e ) {
@@ -209,13 +215,50 @@ public class DemographicConverter extends AbstractConverter<Demographic, Demogra
 		return t;
 	}
 	
-	public CountryCodeTo getCountryCodeAsTransferObject(CountryCode c) throws ConversionException {
-		CountryCodeTo t  = new CountryCodeTo();
-		try {
-	        BeanUtils.copyProperties(t, c);
-        } catch (Exception e) {
-	        throw new ConversionException(e);
+	public Set getAsTransferSetObject(Set<Appointment> archivedClients){
+		Set<AppointmentTo1> returnResult = new java.util.LinkedHashSet<AppointmentTo1>();
+		AppointmentTo1 appTo = new AppointmentTo1(); 
+		for (Iterator i = archivedClients.iterator(); i.hasNext();) {
+	        Appointment appointment = (Appointment) i.next();
+	        appTo = new AppointmentTo1();
+	        appTo.setAppointmentDate(appointment.getAppointmentDate());
+	        appTo.setName(appointment.getName());
+	        appTo.setStartTime(appointment.getStartTime());
+	        appTo.setId(appointment.getId());
+	        returnResult.add(appTo);
         }
-		return t;
+		return returnResult;
 	}
+	
+	
+	public Map<String,Set<AppointmentTo1>> getAsTransferMapMonthlyObject(Set<Appointment> archivedClients) throws ParseException{
+		Map<String,Set<AppointmentTo1>> returnResult = new java.util.HashMap<String,Set<AppointmentTo1>>();
+		Set<AppointmentTo1> returnResult1 = new java.util.LinkedHashSet<AppointmentTo1>();
+		AppointmentTo1 appTo = new AppointmentTo1(); 
+		String date = null;
+		for (Iterator i = archivedClients.iterator(); i.hasNext();) {
+	        Appointment appointment = (Appointment) i.next();
+	        
+	        appTo = new AppointmentTo1();
+	        appTo.setAppointmentDate(appointment.getAppointmentDate());
+	        appTo.setName(appointment.getName());
+	        appTo.setStartTime(appointment.getStartTime());
+	        appTo.setId(appointment.getId());
+	       
+	        date = DateUtils.convertDateToString(appointment.getAppointmentDate());
+	        if(returnResult.get(date)!=null){
+	        	Set<AppointmentTo1> updatedSet = returnResult.get(date);
+	        	updatedSet.add(appTo);
+	        	returnResult.put(date, updatedSet);
+	        }else{
+	        	
+	        	returnResult1 = new java.util.LinkedHashSet<AppointmentTo1>();
+	        	returnResult1.add(appTo);
+		        returnResult.put(date, returnResult1);
+	        }
+	        
+        }
+		return returnResult;
+	}
+
 }

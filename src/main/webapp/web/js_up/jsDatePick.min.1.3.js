@@ -150,7 +150,7 @@ JsDatePick.prototype.resizeCalendar = function () {
     this.rightWallStrechedElement.style.height = b + "px";
     return true
 };
-JsDatePick.prototype.closeCalendar = function () {
+JsDatePick.prototype.closeCalendar = function (targetId) {
     this.JsDatePickBox.style.display = "none";
     document.onclick = function () {}
 	var sel_dt = JSON.stringify(this.getSelectedDayFormatted());/* Added by Schedular Team */
@@ -159,9 +159,16 @@ JsDatePick.prototype.closeCalendar = function () {
 	}else{
 		globalView.view = globalView.view;
 	}
-	console.log(globalView.view);
-	setTimeout('sch.load('+sel_dt+')',100); /* Added by Schedular Team */
-
+	//alert('aaa');
+	if(globalView.view=="day" && targetId =="add_appt_date"){
+		setTimeout('sch.load('+sel_dt+')',100); /* Added by Schedular Team */
+		//globalDayViewDate = $("#inputField").val();
+		setGlobalDayDate();
+		add_app_fn.setRecText();
+	}else if(targetId == "add_appt_rec_enddate"){
+		add_app_fn.setRecText();
+	}
+	
 		//if(this.oConfiguration.target=="appDate" && this.JsDatePickBox.style.display=="none"){
 	//showRecData1('showRecurrence','changeButton','showRecurrenceLbl');
 	//}
@@ -175,7 +182,7 @@ JsDatePick.prototype.populateFieldWithSelectedDate = function () {
     this.lastPickedDateObject.day = this.selectedDayObject.day;
     this.lastPickedDateObject.month = this.selectedDayObject.month;
     this.lastPickedDateObject.year = this.selectedDayObject.year;
-    this.closeCalendar()
+    this.closeCalendar(this.oConfiguration.target)
 };
 JsDatePick.prototype.makeCalendar = function () {
     var j = document,

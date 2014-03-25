@@ -25,6 +25,7 @@ package org.oscarehr.ws.rest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -39,8 +40,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang.time.DateFormatUtils;
-import org.oscarehr.PMmodule.service.ClientManager;
-import org.oscarehr.PMmodule.web.formbean.ClientSearchFormBean;
 import org.oscarehr.common.dao.CountryCodeDao;
 import org.oscarehr.common.dao.DemographicCustDao;
 import org.oscarehr.common.dao.DemographicDao;
@@ -51,18 +50,21 @@ import org.oscarehr.common.model.DemographicCust;
 import org.oscarehr.common.model.DemographicExt;
 import org.oscarehr.managers.DemographicManager;
 import org.oscarehr.managers.WaitListManager;
-import org.oscarehr.util.SpringUtils;
 import org.oscarehr.ws.rest.bo.PatientBO;
 import org.oscarehr.ws.rest.conversion.DemographicConverter;
+import org.oscarehr.ws.rest.exception.AppointmentException;
 import org.oscarehr.ws.rest.exception.PatientException;
 import org.oscarehr.ws.rest.to.DemographicResponse;
 import org.oscarehr.ws.rest.to.OscarSearchResponse;
+import org.oscarehr.ws.rest.to.model.AppointmentTo;
+import org.oscarehr.ws.rest.to.model.AppointmentTo1;
 import org.oscarehr.ws.rest.to.model.DemographicSearchResultItem;
 import org.oscarehr.ws.rest.to.model.DemographicSearchResults;
 import org.oscarehr.ws.rest.to.model.DemographicSearchTo;
 import org.oscarehr.ws.rest.to.model.DemographicTo;
 import org.oscarehr.ws.rest.to.model.DemographicTo1;
 import org.oscarehr.ws.rest.to.model.DemographicsTo;
+import org.oscarehr.ws.rest.to.model.OscarResponseTo;
 import org.oscarehr.ws.rest.util.ErrorCodes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -136,7 +138,8 @@ public class DemographicService extends AbstractServiceImpl {
 		DemographicResponse result = new DemographicResponse();
 	    List<CountryCode> countryList = this.countryCodeDao.getAllCountryCodes();
 	    for (CountryCode c : countryList) {
-	    	result.getCountries().add(this.demoConverter.getCountryCodeAsTransferObject(c));
+	    	//TODO: marc - I broke this rebasing I guess.
+	    	//result.getCountries().add(this.demoConverter.getCountryCodeAsTransferObject(c));
 	    }
 		return result;
 	}
@@ -351,34 +354,6 @@ public class DemographicService extends AbstractServiceImpl {
 	    return result;
 	}
 	
-
-	@GET
-	@Path("/advancedSearch")
-	@Produces("application/json")
-	public DemographicSearchResults search(ClientSearchFormBean searchQuery) {		
-		DemographicSearchResults results = new DemographicSearchResults();
-		
-		ClientManager clientManager = SpringUtils.getBean(ClientManager.class);
-		
-		List<Demographic> demo = clientManager.search(searchQuery);
-		
-		for(Demographic d:demo) {
-			DemographicSearchResultItem item = new DemographicSearchResultItem();
-			item.setId(d.getDemographicNo());
-			item.setName(d.getFormattedName());
-			if(StringUtils.filled(d.getHin()))
-				item.setHin(d.getHin() + (StringUtils.filled(d.getVer()) ?" " + d.getVer():""));
-			if(d.getDOB() != null) {
-				item.setDob(d.getDOB());
-				item.setDobString(DateFormatUtils.ISO_DATE_FORMAT.format(d.getDOB()));
-			}
-			results.getItems().add(item);
-		}
-		
-		return results;
-	}
-
-
 	/**
 	 * To get Demograhic no and Name for search in Add Appointments. 
 	 * 
@@ -388,24 +363,20 @@ public class DemographicService extends AbstractServiceImpl {
 	 * 		Returns the List of Demographic objects containing DemographicNo and Full Name
 	 */	
 	@GET
-	@Path("/{nameLike}/list")
+	@Path("/patlist")
 	@Produces("application/json")
-	public Response getDemographicsAndEvents(@PathParam("nameLike") String nameLike)  {
+	public Response getDemographicsAndEvents()  {
     	List<Demographic> demographics = null;
     	List<DemographicTo> demographicLst = null;
     	DemographicsTo demographicsTo = null;
     	try {
-    		String[] names = nameLike.split(",");
-    		demographics = demographicManager.getActiveDemographisFirstNameSearch(names);
+    		//String[] names = nameLike.split(",");
+    		demographics = demographicManager.getActiveDemographisFirstNameSearch();
     		if (null == demographics || demographics.isEmpty()) {
-    			demographics = demographicManager.getActiveDemographisLastNameSearch(names);
-    			if (null == demographics || demographics.isEmpty()) {
-					throw new PatientException(ErrorCodes.PAT_ERROR_001);
-				}
-    			demographicLst = PatientBO.copy(demographics, demographicLst, "LN");
-    		} else {
-    			demographicLst = PatientBO.copy(demographics, demographicLst, "FN");
-    		}
+				throw new PatientException(ErrorCodes.PAT_ERROR_001);
+			}
+    		demographicLst = PatientBO.copy(demographics, demographicLst, "FN");
+    		
     		demographicsTo = new DemographicsTo();
     		demographicsTo.setDemographics(demographicLst);
     	} catch(PatientException e) {
@@ -413,5 +384,62 @@ public class DemographicService extends AbstractServiceImpl {
 		}
     	return Response.status(Status.OK).entity(demographicsTo).build();
     	}
+	
+	@GET
+	@Path("/{id}/patientTotalDetails")
+	@Produces("application/json")
+	public Response fetchPatientDetails(@PathParam("id") String id) {
+		//logger.debug("AppointmentService.editAppointments() starts");	
+		DemographicTo1 demoTo = null;
+		OscarResponseTo response = new OscarResponseTo();
+		Set<AppointmentTo1> archivedClients = new java.util.LinkedHashSet<AppointmentTo1>();
+		try {
+			demoTo = demographicManager.getPatientDetails(id);
+			archivedClients = demographicManager.fetchPatientsHistory(id);
+			response.setDemographic(demoTo);
+			response.setAppointmentsHistory(archivedClients);
+		}catch(PatientException e) {
+			return Response.status(Status.NOT_FOUND).entity(e.getBean()).build();
+		}
+		//log.debug("AppointmentService.editAppointments() ends");
+		return Response.status(Status.OK).entity(response).build();
+	}
+	
+	
+	@GET
+	@Path("/{id}/patientHistory")
+	@Produces("application/json")
+	public Response fetchPatientsHistory(@PathParam("id") String id) {
+		//logger.debug("AppointmentService.editAppointments() starts");	
+		Set<AppointmentTo1> archivedClients = new java.util.LinkedHashSet<AppointmentTo1>();
+		//OscarResponseTo response = new OscarResponseTo();
+		try {
+			archivedClients = demographicManager.fetchPatientsHistory(id);
+			//response.setAppointments(apptTo);
+		}catch(PatientException e) {
+			return Response.status(Status.NOT_FOUND).entity(e.getBean()).build();
+		}
+		//log.debug("AppointmentService.editAppointments() ends");
+		return Response.status(Status.OK).entity(archivedClients).build();
+	}
+	
+	@POST
+	@Path("/nextAvaAppt")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public Response nextAvailAppt(AppointmentTo appointmentTo) {
+			
+		Set<AppointmentTo1> archivedClients = new java.util.LinkedHashSet<AppointmentTo1>();
+		OscarResponseTo response = new OscarResponseTo();
+		try {
+			archivedClients = demographicManager.nextAvalibleAppt(appointmentTo);
+		
+		} catch (AppointmentException e) {
+			return Response.status(Status.NOT_FOUND).entity(e.getBean()).build();
+        }
+		
+		return Response.status(Status.OK).entity(archivedClients).build();
+	}
+
 
 }

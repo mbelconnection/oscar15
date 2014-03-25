@@ -60,7 +60,172 @@ public class AppointmentTo implements Serializable {
 	private String goTo;
 	private String apptReasonText;
 	private String location;
+	private String providerName;
+	private String apptType;
+	// for next avalibility
+	private String dayOfWeek;
 	
+	private String creator;
+	private String createDateTime;
+	private String updateDateTime;
+	private String lastUpdateUser;
+	
+	private String programId;
+	
+	private String multiApptId;
+	private String roomId;
+	private String recurrenceId;
+	
+	private String frequency;
+	private String startDate;
+	private String endDate;
+	private String isRecUpdate;
+	private String newPatients;
+	private String newPatNames;
+	/**
+	 * @return the programId
+	 */
+	public String getProgramId() {
+		return programId;
+	}
+
+	/**
+	 * @param programId the programId to set
+	 */
+	public void setProgramId(String programId) {
+		this.programId = programId;
+	}
+
+	/**
+	 * @return the creator
+	 */
+	public String getCreator() {
+		return creator;
+	}
+
+	/**
+	 * @param creator the creator to set
+	 */
+	public void setCreator(String creator) {
+		this.creator = creator;
+	}
+
+	/**
+	 * @return the createDateTime
+	 */
+	public String getCreateDateTime() {
+		return createDateTime;
+	}
+
+	/**
+	 * @param createDateTime the createDateTime to set
+	 */
+	public void setCreateDateTime(String createDateTime) {
+		this.createDateTime = createDateTime;
+	}
+
+	/**
+	 * @return the updateDateTime
+	 */
+	public String getUpdateDateTime() {
+		return updateDateTime;
+	}
+
+	/**
+	 * @param updateDateTime the updateDateTime to set
+	 */
+	public void setUpdateDateTime(String updateDateTime) {
+		this.updateDateTime = updateDateTime;
+	}
+
+	/**
+	 * @return the lastUpdateUser
+	 */
+	public String getLastUpdateUser() {
+		return lastUpdateUser;
+	}
+
+	/**
+	 * @param lastUpdateUser the lastUpdateUser to set
+	 */
+	public void setLastUpdateUser(String lastUpdateUser) {
+		this.lastUpdateUser = lastUpdateUser;
+	}
+
+	/**
+	 * @return the dayOfWeek
+	 */
+	public String getDayOfWeek() {
+		return dayOfWeek;
+	}
+
+	/**
+	 * @param dayOfWeek the dayOfWeek to set
+	 */
+	public void setDayOfWeek(String dayOfWeek) {
+		this.dayOfWeek = dayOfWeek;
+	}
+
+	/**
+	 * @return the startTime
+	 */
+	public String getStartTime() {
+		return startTime;
+	}
+
+	/**
+	 * @param startTime the startTime to set
+	 */
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+
+	/**
+	 * @return the endTime
+	 */
+	public String getEndTime() {
+		return endTime;
+	}
+
+	/**
+	 * @param endTime the endTime to set
+	 */
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
+	}
+
+	/**
+	 * @return the resultCount
+	 */
+	public String getResultCount() {
+		return resultCount;
+	}
+
+	/**
+	 * @param resultCount the resultCount to set
+	 */
+	public void setResultCount(String resultCount) {
+		this.resultCount = resultCount;
+	}
+
+	private String startTime;
+	private String endTime;
+	private String resultCount;
+	
+	/**
+	 * @return the apptType
+	 */
+	public String getApptType() {
+		return apptType;
+	}
+
+	/**
+	 * @param apptType the apptType to set
+	 */
+	public void setApptType(String apptType) {
+		this.apptType = apptType;
+	}
+
 	@XmlElement(name="add_appt_location", nillable=true)
 	public String getLocation() {
 		return location;
@@ -249,6 +414,142 @@ public class AppointmentTo implements Serializable {
 	public void setApptEndDate(String apptEndDate) {
 		this.apptEndDate = apptEndDate;
 	}
+
+	public String getProviderName() {
+		return providerName;
+	}
+
+	public void setProviderName(String providerName) {
+		this.providerName = providerName;
+	}
+
+	/**
+	 * @return the multiApptId
+	 */
+	public String getMultiApptId() {
+		return multiApptId;
+	}
+
+	/**
+	 * @param multiApptId the multiApptId to set
+	 */
+	public void setMultiApptId(String multiApptId) {
+		this.multiApptId = multiApptId;
+	}
+
+	/**
+	 * @return the roomId
+	 */
+	public String getRoomId() {
+		return roomId;
+	}
+
+	/**
+	 * @param roomId the roomId to set
+	 */
+	public void setRoomId(String roomId) {
+		this.roomId = roomId;
+	}
+
+	/**
+	 * @return the recurrenceId
+	 */
+	public String getRecurrenceId() {
+		return recurrenceId;
+	}
+
+	/**
+	 * @param recurrenceId the recurrenceId to set
+	 */
+	public void setRecurrenceId(String recurrenceId) {
+		this.recurrenceId = recurrenceId;
+	}
+
+	/**
+	 * @return the frequency
+	 */
+	public String getFrequency() {
+		return frequency;
+	}
+
+	/**
+	 * @param frequency the frequency to set
+	 */
+	public void setFrequency(String frequency) {
+		this.frequency = frequency;
+	}
+
+	/**
+	 * @return the startDate
+	 */
+	public String getStartDate() {
+		return startDate;
+	}
+
+	/**
+	 * @param startDate the startDate to set
+	 */
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
+
+	/**
+	 * @return the endDate
+	 */
+	public String getEndDate() {
+		return endDate;
+	}
+
+	/**
+	 * @param endDate the endDate to set
+	 */
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
+
+	/**
+	 * @return the isRecUpdate
+	 */
+	public String getIsRecUpdate() {
+		return isRecUpdate;
+	}
+
+	/**
+	 * @param isRecUpdate the isRecUpdate to set
+	 */
+	public void setIsRecUpdate(String isRecUpdate) {
+		this.isRecUpdate = isRecUpdate;
+	}
+
+	/**
+	 * @return the newPatients
+	 */
+	public String getNewPatients() {
+		return newPatients;
+	}
+
+	/**
+	 * @param newPatients the newPatients to set
+	 */
+	public void setNewPatients(String newPatients) {
+		this.newPatients = newPatients;
+	}
+
+	/**
+	 * @return the newPatNames
+	 */
+	public String getNewPatNames() {
+		return newPatNames;
+	}
+
+	/**
+	 * @param newPatNames the newPatNames to set
+	 */
+	public void setNewPatNames(String newPatNames) {
+		this.newPatNames = newPatNames;
+	}
+	
+	
 	
 	
 }

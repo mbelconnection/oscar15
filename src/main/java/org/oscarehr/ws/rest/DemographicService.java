@@ -26,6 +26,7 @@ package org.oscarehr.ws.rest;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -36,11 +37,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
 import org.apache.commons.lang.time.DateFormatUtils;
+import org.oscarehr.common.dao.CountryCodeDao;
 import org.oscarehr.common.dao.DemographicDao;
+import org.oscarehr.common.model.CountryCode;
 import org.oscarehr.common.model.Demographic;
+import org.oscarehr.common.model.DemographicExt;
 import org.oscarehr.managers.DemographicManager;
 import org.oscarehr.managers.WaitListManager;
 import org.oscarehr.ws.rest.conversion.DemographicConverter;
+import org.oscarehr.ws.rest.to.DemographicResponse;
 import org.oscarehr.ws.rest.to.OscarSearchResponse;
 import org.oscarehr.ws.rest.to.model.DemographicSearchResultItem;
 import org.oscarehr.ws.rest.to.model.DemographicSearchResults;
@@ -50,7 +55,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import oscar.util.StringUtils;
-
 
 /**
  * Defines a service contract for main operations on demographic. 
@@ -64,6 +68,8 @@ public class DemographicService extends AbstractServiceImpl {
 	private DemographicDao demographicDao;
 	@Autowired
 	private WaitListManager waitingListManager;
+	@Autowired
+	private CountryCodeDao countryCodeDao;
 	
 	private DemographicConverter demoConverter = new DemographicConverter();
 	
@@ -102,6 +108,23 @@ public class DemographicService extends AbstractServiceImpl {
 	}
 
 	/**
+	 * Get country codes
+	 * @return
+	 * 		Returns data of all country codes
+	 */
+	@GET
+	@Path("/countries")
+	@Produces("application/json")
+	public DemographicResponse getCountryCodes() {		
+		DemographicResponse result = new DemographicResponse();
+	    List<CountryCode> countryList = this.countryCodeDao.getAllCountryCodes();
+	    for (CountryCode c : countryList) {
+	    	result.getCountries().add(this.demoConverter.getCountryCodeAsTransferObject(c));
+	    }
+		return result;
+	}
+	
+	/**
 	 * Gets detailed demographic data.
 	 * 
 	 * @param id
@@ -138,7 +161,14 @@ public class DemographicService extends AbstractServiceImpl {
 		if (demo == null) {
 			return null;
 		}
-		
+		List<DemographicExt> extra = demographicManager.getDemographicExts(id);
+		if (extra.size() > 0) {
+			DemographicExt[] extraArray = new DemographicExt[extra.size()];
+			for (int i = 0; i < extra.size(); i++) {
+				extraArray[i] = extra.get(i);
+			}
+			demo.setExtras(extraArray);
+		}
 		DemographicTo1 result = demoConverter.getAsTransferObject(demo);
 		return result;
 	}
@@ -215,6 +245,7 @@ public class DemographicService extends AbstractServiceImpl {
 	 * 		Returns the saved demographic data
 	 */
 	@POST
+	@Consumes("application/json")
 	public DemographicTo1 createDemographicData(DemographicTo1 data) {
 		Demographic demographic = demoConverter.getAsDomainObject(data);
 		demographicManager.createDemographic(demographic);
@@ -230,10 +261,14 @@ public class DemographicService extends AbstractServiceImpl {
 	 * 		Returns the updated demographic data
 	 */
 	@PUT
-	public DemographicTo1 updateDemographicData(DemographicTo1 data) {
+	@Consumes("application/json")
+	@Produces("application/json")
+	public DemographicResponse updateDemographicData(DemographicTo1 data) {
+		DemographicResponse result = new DemographicResponse();
 		Demographic demographic = demoConverter.getAsDomainObject(data);
 	    demographicManager.updateDemographic(demographic);
-	    return demoConverter.getAsTransferObject(demographic);
+	    result.setResult(true);
+	    return result;
 	}
 
 	/**

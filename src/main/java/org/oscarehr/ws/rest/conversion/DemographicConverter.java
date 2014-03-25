@@ -24,10 +24,12 @@
 package org.oscarehr.ws.rest.conversion;
 
 import java.util.Date;
-
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
+import org.oscarehr.common.model.CountryCode;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.DemographicExt;
+import org.oscarehr.ws.rest.to.model.CountryCodeTo;
 import org.oscarehr.ws.rest.to.model.DemographicTo1;
 
 import oscar.util.ConversionUtils;
@@ -102,7 +104,7 @@ public class DemographicConverter extends AbstractConverter<Demographic, Demogra
 		for (int i = 0; i < t.getExtras().size(); i++) {
 			exts[i] = demoExtConverter.getAsDomainObject(t.getExtras().get(i));
 		}
-
+		d.setExtras(exts);
 		if (t.getProvider() != null) {
 			d.setProvider(providerConverter.getAsDomainObject(t.getProvider()));
 		}
@@ -206,5 +208,14 @@ public class DemographicConverter extends AbstractConverter<Demographic, Demogra
 
 		return t;
 	}
-
+	
+	public CountryCodeTo getCountryCodeAsTransferObject(CountryCode c) throws ConversionException {
+		CountryCodeTo t  = new CountryCodeTo();
+		try {
+	        BeanUtils.copyProperties(t, c);
+        } catch (Exception e) {
+	        throw new ConversionException(e);
+        }
+		return t;
+	}
 }

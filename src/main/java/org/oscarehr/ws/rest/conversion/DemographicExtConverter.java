@@ -45,10 +45,11 @@ public class DemographicExtConverter extends AbstractConverter<DemographicExt, D
 	@Override
 	public DemographicExtTo1 getAsTransferObject(DemographicExt d) throws ConversionException {
 		DemographicExtTo1 t = new DemographicExtTo1();
-		
+		t.setId(d.getId());
 		t.setDemographicNo(d.getDemographicNo());
 		t.setProviderNo(d.getProviderNo());
 		t.setKey(d.getKey());
+		t.setValue(d.getValue());
 		t.setDateCreated(d.getDateCreated());
 		t.setHidden(d.isHidden());
 		return t;

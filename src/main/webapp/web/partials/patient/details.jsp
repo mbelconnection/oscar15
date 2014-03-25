@@ -23,9 +23,9 @@
     Ontario, Canada
 
 --%>
-
-<div class="col-lg-8" ng-controller="PatientDetailCtrl as detailController">
-	<button type="button" class="btn btn-primary">Save</button>
+<form name="form-demo">
+<div class="col-lg-8">
+	<button type="button" class="btn btn-primary" ng-click="saveDemographic(form-demo)">Save</button>
 	<div class="btn-group">
 		<button type="button" class="btn btn-default">Print Label</button>
 		<div class="btn-group">
@@ -72,72 +72,142 @@
 			</div>
 		</legend>
 		<div class="form-group demographic">
-			<div class="col-xs-10 form-inline">
-				<label class="col-xs-1 control-label">Title</label>
-				<div class="form-group col-xs-2">{{demographic.title}}</div>
-				<label class="col-xs-2 control-label">Name</label>
-				<div class="form-group">{{demographic.lastName}}</div>
-				<div class="form-group">{{demographic.firstName}}</div>
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Last Name</label>
+					<div class="form-group col-xs-3">{{demographic.lastName}}</div>
+					<label class="col-xs-2 control-label">First Name</label>
+					<div class="form-group col-xs-3">{{demographic.firstName}}</div>
+				</div>
 			</div>
-			<div class="col-xs-10 form-inline">
-				<label class="col-xs-1 control-label">Sex</label>
-				<div class="form-group col-xs-2">{{demographic.sex}}</div>
-				<label class="col-xs-2 control-label">DOB</label>
-				<div class="form-group">{{demographic.dob}}</div>
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Title</label>
+					<div class="form-group col-xs-3">{{demographic.title}}</div>
+					<label class="col-xs-2 control-label">Sex</label>
+					<div class="form-group col-xs-3">{{demographic.sexDesc}}</div>
+					
+				</div>
 			</div>
-			<div class="col-xs-10 form-inline">
-				<label class="col-xs-1 control-label">Age</label>
-				<div class="form-group col-xs-2">{{demographic.age}}</div>
-				<label class="col-xs-2 control-label">Language</label>
-				<div class="form-group">{{demographic.language}}</div>
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Date of Birth</label>
+					<div class="form-group col-xs-3">{{demographic.dob}}</div>
+					<label class="col-xs-2 control-label">SIN</label>
+					<div class="form-group col-xs-3">{{demographic.sin}}</div>
+					
+				</div>
+			</div>
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Aboriginal</label>
+					<div class="form-group col-xs-3">{{demographic.aboriginal}}</div>
+					<label class="col-xs-2 control-label">Cytology</label>
+					<div class="form-group col-xs-3">{{demographic.cytology}}</div>
+				</div>
+			</div>
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Language</label>
+					<div class="form-group col-xs-3">{{demographic.language}}</div>
+					<label class="col-xs-2 control-label">Spoken</label>
+					<div class="form-group col-xs-3">{{demographic.spokenLanguage}}</div>
+				</div>
+			</div>			
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Newsletter</label>
+					<div class="form-group col-xs-3">{{demographic.newsletter}}</div>
+					<label class="col-xs-2 control-label">MyOscar UserName</label>
+					<div class="form-group col-xs-3">{{demographic.myOscarUserName}}</div>
+				</div>
 			</div>
 		</div>
 		<div class="form-group demographic" style="display: none;">
 			<div class="col-xs-10">
 				<div class="form-inline">
-					<label class="col-xs-1 control-label">Title</label>
-					<div class="form-group col-xs-2">
+					<label class="col-xs-2 control-label">Last Name</label>
+					<div class="form-group col-xs-3">
+						<input type="text" class="form-control" placeholder="lastname" ng-model="demographic.lastName"/>
+					</div>
+					<label class="col-xs-2 control-label">First Name</label>
+					<div class="form-group col-xs-3">
+						<input type="text" class="form-control" placeholder="firstname" ng-model="demographic.firstName"/>
+					</div>
+				</div>
+			</div>		
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Title</label>
+					<div class="form-group col-xs-3">
 						<select class="form-control" ng-model="demographic.title">
-							<option ng-repeat="title in detailController.titles">{{title}}</option>
+							<option value="title.value" ng-repeat="title in titles">{{title.name}}</option>
 						</select>
 					</div>
-					<label class="col-xs-2 control-label">Name</label>
-					<div class="form-group">
-						<input type="text" class="form-control" placeholder="lastname" ng-model="demographic.lastName" />
-					</div>
-					<div class="form-group">
-						<input type="text" class="form-control" placeholder="firstname" ng-model="demographic.firstName" />
-					</div>
-				</div>
-			</div>
-			<div class="col-xs-10">
-				<div class="form-inline">
-					<label for="birthday" class="col-xs-1 control-label">Sex</label>
-					<div class="form-group col-xs-2">
+					<label class="col-xs-2 control-label">Sex</label>
+					<div class="form-group col-xs-3">
 						<select class="form-control" ng-model="demographic.sex">
-							<option ng-repeat="sex in detailController.genders">{{sex}}</option>
+							<option value="{{sex.value}}" ng-repeat="sex in genders">{{sex.name}}</option>
 						</select>
 					</div>
-					<label for="birthday" class="col-xs-2 control-label">DOB</label>
-					<div class="form-group">
-						<input id="birthday" type="text" class="form-control" placeholder="Date of Birth" ng-model="demographic.dob" />
+				</div>
+			</div>			
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Date of Birth</label>
+					<div class="form-group col-xs-3">
+						<input id="dp-birthday" type="text" class="form-control" placeholder="Date of Birth" ng-model="demographic.dob" />
+					</div>
+					<label class="col-xs-2 control-label">SIN</label>
+					<div class="form-group col-xs-3">
+						<input type="text" class="form-control" placeholder="SIN" ng-model="demographic.sin" />
 					</div>
 				</div>
 			</div>
 			<div class="col-xs-10">
 				<div class="form-inline">
-					<label class="col-xs-1 control-label">Age</label>
-					<div class="form-group col-xs-2">
-						<input type="text" class="form-control" placeholder="Age" ng-model="demographic.age" />
-					</div>
 					<label class="col-xs-2 control-label">Language</label>
-					<div class="form-group">
-						<select class="form-control col-xs-4" ng-model="demographic.language">
-							<option ng-repeat="language in detailController.languages">{{language}}</option>
+					<div class="form-group col-xs-3">
+						<select class="form-control" ng-model="demographic.officialLanguage">
+							<option value="{{language.value}}" ng-repeat="language in languages">{{language.name}}</option>
+						</select>
+					</div>
+					<label class="col-xs-2 control-label">Spoken</label>
+					<div class="form-group col-xs-3">
+						<select class="form-control" ng-model="demographic.spokenLanguage">
+							<option value="{{spoken.value}}" ng-repeat="spoken in spokens">{{spoken.name}}</option>
 						</select>
 					</div>
 				</div>
 			</div>
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Aboriginal</label>
+					<div class="form-group col-xs-3">
+						<select class="form-control" ng-model="demographic.aboriginal">
+							<option value="{{aboriginal.value}}" ng-repeat="aboriginal in aboriginals">{{aboriginal.name}}</option>
+						</select>
+					</div>
+					<label class="col-xs-2 control-label">Cytology</label>
+					<div class="form-group col-xs-3">
+						<input type="text" class="form-control" placeholder="Cytology" ng-model="demographic.cytology" />
+					</div>
+				</div>
+			</div>			
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Newsletter</label>
+					<div class="form-group col-xs-3">
+						<select class="form-control" ng-model="demographic.newsletter">
+							<option value="{{newsletter.value}}" ng-repeat="newsletter in newsletters">{{newsletter.name}}</option>
+						</select>
+					</div>
+					<label class="col-xs-2 control-label">MyOscar UserName</label>
+					<div class="form-group col-xs-3">
+						<input type="text" class="form-control" placeholder="MyOscar UserName" ng-model="demographic.myOscarUserName" />
+					</div>
+				</div>
+			</div>	
 		</div>
 	</fieldset>
 	<fieldset>
@@ -148,116 +218,112 @@
 			</div>
 		</legend>
 		<div class="form-group contact">
-			<div class="col-xs-5">
-				<div>
-					<label class="col-xs-3 control-label">Phone(H)</label>
-					<div class="form-group">{{demographic.homePhone}}</div>
-				</div>
-				<div>
-					<label class="col-xs-3 control-label">Phone(W)</label>
-					<div class="form-group">{{demographic.workPhone}}</div>
-				</div>
-				<div>
-					<label class="col-xs-3 control-label">Phone(C)</label>
-					<div class="form-group">{{demographic.cellPhone}}</div>
-				</div>
-				<div>
-					<label class="col-xs-3 control-label">Comments</label>
-					<div class="form-group">{{demographic.phoneComment}}</div>
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Phone(H)</label>
+					<div class="form-group col-xs-3">{{demographic.phone}}</div>
+					<label class="col-xs-2 control-label">Address</label>
+					<div class="form-group col-xs-3">{{demographic.address.address}}</div>
 				</div>
 			</div>
-			<div class="col-xs-5">
-				<div>
-					<label class="col-xs-3 control-label">Address</label>
-					<div class="form-group">{{demographic.address.address}}</div>
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Phone(W)</label>
+					<div class="form-group col-xs-3">{{demographic.alternativePhone}}</div>
+					<label class="col-xs-2 control-label">City</label>
+					<div class="form-group col-xs-3">{{demographic.address.city}}</div>
 				</div>
-				<div>
-					<label class="col-xs-3 control-label">City</label>
-					<div class="form-group">{{demographic.address.city}}</div>
+			</div>
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Phone(C)</label>
+					<div class="form-group col-xs-3">{{demographic.cellPhone}}</div>
+					<label class="col-xs-2 control-label">Province</label>
+					<div class="form-group col-xs-3">{{demographic.address.province}}</div>
 				</div>
-				<div>
-					<label class="col-xs-3 control-label">Province</label>
-					<div class="form-group">{{demographic.address.province}}</div>
+			</div>
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Comments</label>
+					<div class="form-group col-xs-3">{{demographic.phoneComment}}</div>
+					<label class="col-xs-2 control-label">Postal Code</label>
+					<div class="form-group col-xs-3">{{demographic.address.postal}}</div>
 				</div>
-				<div>
-					<label class="col-xs-3 control-label">Postal Code</label>
-					<div class="form-group">{{demographic.address.postal}}</div>
-				</div>
-				<div>
-					<label class="col-xs-3 control-label">Email</label>
-					<div class="form-group">{{demographic.email}}</div>
-				</div>
-				<div>
-					<label class="col-xs-3 control-label">Newsletter</label>
-					<div class="form-group">{{demographic.newsletter}}</div>
+			</div>
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Email</label>
+					<div class="form-group col-xs-3">{{demographic.email}}</div>
+					<label class="col-xs-2 control-label">Country of Origin</label>
+					<div class="form-group col-xs-3">{{demographic.countryOfOrigin}}</div>
 				</div>
 			</div>
 		</div>
 		<div class="form-group contact" style="display: none;">
-			<div class="col-xs-5">
+			<div class="col-xs-10">
 				<div class="form-inline">
-					<label class="col-xs-3 control-label">Phone(H)</label>
-					<div class="form-group">
-						<input type="text" class="form-control" placeholder="Home Phone" ng-model="demographic.homePhone" />
+					<label class="col-xs-2 control-label">Phone(H)</label>
+					<div class="form-group col-xs-3">
+						<input type="text" class="form-control" placeholder="Home Phone" ng-model="demographic.phone" />
 					</div>
-				</div>
-				<div class="form-inline">
-					<label class="col-xs-3 control-label">Phone(W)</label>
-					<div class="form-group">
-						<input type="text" class="form-control" placeholder="Work Phone" ng-model="demographic.workPhone" />
-					</div>
-				</div>
-				<div class="form-inline">
-					<label class="col-xs-3 control-label">Phone(C)</label>
-					<div class="form-group">
-						<input type="text" class="form-control" placeholder="Cell Phone" ng-model="demographic.cellPhone" />
-					</div>
-				</div>
-				<div class="form-inline">
-					<label class="col-xs-3 control-label">Comments</label>
-					<div class="form-group">
-						<textarea class="form-control" placeholder="Phone Comments" rows="3" cols="17">{{demographic.phoneComment}}</textarea>
+					<label class="col-xs-2 control-label">Address</label>
+					<div class="form-group col-xs-3">
+						<input type="text" class="form-control" placeholder="Address" ng-model="demographic.address.address" />
 					</div>
 				</div>
 			</div>
-			<div class="col-xs-5">
+			<div class="col-xs-10">
 				<div class="form-inline">
-					<label class="col-xs-3 control-label">Address</label>
-					<div class="form-group">
-						<input type="text" class="form-control" placeholder="Address" ng-model="demographic.address" />
+					<label class="col-xs-2 control-label">Phone(W)</label>
+					<div class="form-group col-xs-3">
+						<input type="text" class="form-control" placeholder="Work Phone" ng-model="demographic.alternativePhone" />
 					</div>
-				</div>
-				<div class="form-inline">
-					<label class="col-xs-3 control-label">City</label>
-					<div class="form-group">
+					<label class="col-xs-2 control-label">City</label>
+					<div class="form-group col-xs-3">
 						<input type="text" class="form-control" placeholder="City" ng-model="demographic.city" />
 					</div>
 				</div>
+			</div>
+			<div class="col-xs-10">
 				<div class="form-inline">
-					<label class="col-xs-3 control-label">Province</label>
-					<div class="form-group">
-						<input type="text" class="form-control" placeholder="Province" ng-model="demographic.province" />
+					<label class="col-xs-2 control-label">Phone(C)</label>
+					<div class="form-group col-xs-3">
+						<input type="text" class="form-control" placeholder="Cell Phone" ng-model="demographic.cellPhone" />
 					</div>
-				</div>
-				<div class="form-inline">
-					<label class="col-xs-3 control-label">Postcode</label>
-					<div class="form-group">
-						<input type="text" class="form-control" placeholder="Postcode" ng-model="demographic.postcode" />
-					</div>
-				</div>
-				<div class="form-inline">
-					<label class="col-xs-3 control-label">Email</label>
-					<div class="form-group">
-						<input type="text" class="form-control" placeholder="Email" ng-model="demographic.email" />
-					</div>
-				</div>
-				<div class="form-inline">
-					<label class="col-xs-3 control-label">Newsletter</label>
-					<div class="form-group">
-						<input type="text" class="form-control" placeholder="Newsletter" ng-model="demographic.newsletter" />
+					<label class="col-xs-2 control-label">Province</label>
+					<div class="form-group col-xs-3">
+						<select class="form-control col-xs-4" ng-model="demographic.province">
+							<option value="{{province.value}}" ng-repeat="province in provinces">{{province.name}}</option>
+						</select>
 					</div>
 				</div>
 			</div>
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Comments</label>
+					<div class="form-group col-xs-3">
+						<input type="text" class="form-control" placeholder="Phone Comments" ng-model="demographic.phoneComment" />
+					</div>
+					<label class="col-xs-2 control-label">Postal Code</label>
+					<div class="form-group col-xs-3">
+						<input type="text" class="form-control" placeholder="Postcode" ng-model="demographic.postcode" />
+					</div>
+				</div>
+			</div>		
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Email</label>
+					<div class="form-group col-xs-3">
+						<input type="text" class="form-control" placeholder="Email" ng-model="demographic.email" />
+					</div>
+					<label class="col-xs-2 control-label">Country of Origin</label>
+					<div class="form-group col-xs-3">
+						<select class="form-control" ng-model="demographic.countryOfOrigin">
+							<option value="{{country.countryId}}" ng-repeat="country in countries">{{country.countryName}}</option>
+						</select>
+					</div>
+				</div>
+			</div>		
 		</div>
 	</fieldset>
 	<fieldset>
@@ -271,17 +337,17 @@
 			<div class="col-xs-10">
 				<div class="form-inline">
 					<label class="col-xs-2 control-label">Insurance#</label>
-					<div class="form-group col-xs-3">123 456 789</div>
+					<div class="form-group col-xs-3">{{demographic.hin}} - {{demographic.ver}}</div>
 					<label class="col-xs-2 control-label">HC Type</label>
-					<div class="form-group col-xs-3">OT</div>
+					<div class="form-group col-xs-3">{{demographic.hcType}}</div>
 				</div>
 			</div>
 			<div class="col-xs-10">
 				<div class="form-inline">
 					<label class="col-xs-2 control-label">EFF Date</label>
-					<div class="form-group col-xs-3">{{demographic.effDate}}</div>
+					<div class="form-group col-xs-3">{{demographic.effDate | date:'yyyy-MM-dd'}}</div>
 					<label class="col-xs-2 control-label">Renew Date</label>
-					<div class="form-group col-xs-3">{{demographic.renewDate}}</div>
+					<div class="form-group col-xs-3">{{demographic.hcRenewDate| date:'yyyy-MM-dd'}}</div>
 				</div>
 			</div>
 		</div>
@@ -290,11 +356,14 @@
 				<div class="form-inline">
 					<label class="col-xs-2 control-label">Insurance#</label>
 					<div class="form-group col-xs-3">
-						<input type="text" class="form-control" placeholder="Health Insurance#" value="123 456 789" />
+						<input type="text" class="form-control" placeholder="Health Insurance#" ng-model="demographic.hin" style="width: 73%;"/>
+						<input type="text" class="form-control" placeholder="Ver" ng-model="demographic.ver" style="width: 24%;"/>
 					</div>
 					<label class="col-xs-2 control-label">HC Type</label>
 					<div class="form-group col-xs-3">
-						<input type="text" class="form-control" placeholder="HC Type" value="OT" />
+						<select class="form-control col-xs-4" ng-model="demographic.hcType">
+							<option value="{{hcType.value}}" ng-repeat="hcType in provinces">{{hcType.name}}</option>
+						</select>
 					</div>
 				</div>
 			</div>
@@ -302,11 +371,11 @@
 				<div class="form-inline">
 					<label class="col-xs-2 control-label">EFF Date</label>
 					<div class="form-group col-xs-3">
-						<input id="effDate" type="text" class="form-control" placeholder="Effective Date" data-date-format="yyyy-mm-dd" ng-model="demographic.effDate" />
+						<input id="dp-effDate" type="text" class="form-control" placeholder="Effective Date" data-date-format="yyyy-mm-dd" ng-model="demographic.effDate" />
 					</div>
 					<label class="col-xs-2 control-label">Renew Date</label>
 					<div class="form-group col-xs-3">
-						<input id="renewDate" type="text" class="form-control" placeholder="Renew Date" data-date-format="yyyy-mm-dd" ng-model="demographic.renewDate" />
+						<input id="dp-renewDate" type="text" class="form-control" placeholder="Renew Date" data-date-format="yyyy-mm-dd" ng-model="demographic.hcRenewDate" />
 					</div>
 				</div>
 			</div>
@@ -323,37 +392,49 @@
 			<div class="col-xs-10">
 				<div class="form-inline">
 					<label class="col-xs-2 control-label">Doctor</label>
-					<div class="form-group col-xs-3">
-						{{demographic.doctor}}
-					</div>
+					<div class="form-group col-xs-3">{{demographic.doctor}}</div>
 					<label class="col-xs-2 control-label">Nurse</label>
-					<div class="form-group col-xs-3">
-						{{demographic.nurse}}
-					</div>
+					<div class="form-group col-xs-3">{{demographic.nurse}}</div>
 				</div>
 			</div>
 			<div class="col-xs-10">
 				<div class="form-inline">
 					<label class="col-xs-2 control-label">Midwife</label>
-					<div class="form-group col-xs-3">
-						{{demographic.midwife}}
-					</div>
+					<div class="form-group col-xs-3">{{demographic.midwife}}</div>
 					<label class="col-xs-2 control-label">Resident</label>
-					<div class="form-group col-xs-3">
-						{{demographic.resident}}
-					</div>
+					<div class="form-group col-xs-3">{{demographic.resident}}</div>
 				</div>
 			</div>
 			<div class="col-xs-10">
 				<div class="form-inline">
 					<label class="col-xs-2 control-label">Referral Doctor</label>
-					<div class="form-group col-xs-3">
-						{{demographic.referralDoctor}}
-					</div>
+					<div class="form-group col-xs-3">{{demographic.referralDoctor}}</div>
 					<label class="col-xs-2 control-label">Referral Doctor#</label>
-					<div class="form-group col-xs-3">
-						{{demographic.referralDoctorNo}}
-					</div>
+					<div class="form-group col-xs-3">{{demographic.referralDoctorNo}}</div>
+				</div>
+			</div>
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Roster Status:</label>
+					<div class="form-group col-xs-3">{{demographic.rosterStatus}}</div>
+					<label class="col-xs-2 control-label">Date Rostered:</label>
+					<div class="form-group col-xs-3">{{demographic.rosterDate  | date:'yyyy-MM-dd'}}</div>
+				</div>
+			</div>
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Patient Status:</label>
+					<div class="form-group col-xs-3">{{demographic.patientStatus}}</div>
+					<label class="col-xs-2 control-label">Chart No:</label>
+					<div class="form-group col-xs-3">{{demographic.chartNo}}</div>
+				</div>
+			</div>
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Date Joined</label>
+					<div class="form-group col-xs-3">{{demographic.dateJoined | date:'yyyy-MM-dd'}}</div>
+					<label class="col-xs-2 control-label">End Date</label>
+					<div class="form-group col-xs-3">{{demographic.endDate | date:'yyyy-MM-dd'}}</div>
 				</div>
 			</div>
 		</div>		
@@ -394,6 +475,46 @@
 					</div>
 				</div>
 			</div>
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Roster Status:</label>
+					<div class="form-group col-xs-3">
+						<select class="form-control" ng-model="demographic.rosterStatus">
+							<option value="{{status.value}}" ng-repeat="status in rosterStatus">{{status.name}}</option>
+						</select>
+					</div>
+					<label class="col-xs-2 control-label">Date Rostered:</label>
+					<div class="form-group col-xs-3">
+						<input id="effDate" type="text" class="form-control" placeholder="Rostered Date" data-date-format="yyyy-mm-dd" ng-model="demographic.rosterDate" />
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Patient Status:</label>
+					<div class="form-group col-xs-3">
+						<select class="form-control" ng-model="demographic.patientStatus">
+							<option value="{{status.value}}" ng-repeat="status in patientStatus">{{status.name}}</option>
+						</select>
+					</div>
+					<label class="col-xs-2 control-label">Chart No:</label>
+					<div class="form-group col-xs-3">
+						<input type="text" class="form-control" placeholder="Chart No." ng-model="demographic.chartNo" />
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-10">
+				<div class="form-inline">
+					<label class="col-xs-2 control-label">Date Joined</label>
+					<div class="form-group col-xs-3">
+						<input id="dp-dateJoined" type="text" class="form-control" placeholder="Date Joined" data-date-format="yyyy-mm-dd" ng-model="demographic.dateJoined" />
+					</div>
+					<label class="col-xs-2 control-label">End Date</label>
+					<div class="form-group col-xs-3">
+						<input id="dp-endDate" type="text" class="form-control" placeholder="Renew Date" data-date-format="yyyy-mm-dd" ng-model="demographic.endDate" />
+					</div>
+				</div>
+			</div>
 		</div>
 	</fieldset>
 </div>
@@ -425,10 +546,11 @@
 		</h5>
 	</fieldset>
 </div>
+</form>
 <link href="<%=request.getContextPath() %>/css/datepicker.css" rel="stylesheet" type="text/css">
 <script type="text/javascript" src="<%=request.getContextPath() %>/js/bootstrap-datepicker.js"></script>
 <script type="text/javascript">
-	var birthday = $("#birthday").datepicker({
+	var birthday = $("[id^=dp-]").datepicker({
 		format : "yyyy-mm-dd"
 	}).on("changeDate", function(event) {
 		birthday.hide();

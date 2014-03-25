@@ -1,8 +1,10 @@
-oscarApp.controller('PatientListCtrl', function ($scope,$http) {
+oscarApp.controller('PatientListCtrl', function ($scope,$http,$resource) {
 	
 	$scope.tabItems = [
 	             	{"id":0,"label":"Appts.","url":"../ws/rs/schedule/999998/day/today"},
 	             	//{"id":0,"label":"Appts.","url":"json/patientList1.json"},
+	             	// {"id":1,"label":"CaseLoad","url":"../ws/rs/schedule/999998/day/today"}
+	             	// {"id":0,"label":"Appts.","url":"json/patientList1.json"},
 	             	{"id":1,"label":"CaseLoad","url":"json/patientList2.json"}
 	];
 	
@@ -64,14 +66,8 @@ $scope.changeMoreTab = function(temp){
 $scope.changeTab = function(temp){
 	$scope.currenttab = $scope.tabItems[temp];
 	//I want the patient list to change, and the template to get loaded $scope.patients
-	$http({
-	    url: $scope.currenttab.url,
-	    dataType: 'json',
-	    method: 'GET',
-	    headers: {
-	        "Content-Type": "application/json"
-	    }
-	}).success(function(response){
+	var scheduleWS = $resource('../ws/rs/schedule/999998/day/today',{}, {});
+	var schedule = scheduleWS.get({}, function(response) {
 		$scope.template = response.template;
 	  	$scope.patients = response.patients;
 	  	$scope.currentmoretab=null;
@@ -90,15 +86,16 @@ $scope.getMoreTabClass = function(id){
 	return "";
 }
 
-$scope.changeTab(0);
-
-
+	$scope.changeTab(0);
 	$scope.currentPage = 0;
 	$scope.pageSize = 8;
 	$scope.data = [];
 	$scope.patients = 0;
 	
 	$scope.numberOfPages=function(){
+		if ($scope.patients == null) {
+			return 1;
+		}
 	    return Math.ceil($scope.patients.length/$scope.pageSize);                
 	}
 	

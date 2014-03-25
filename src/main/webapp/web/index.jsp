@@ -204,7 +204,7 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
  		 
 			</button>
 			
-			<button type="button" class="btn btn-default" ng-disabled="currentPage == pageSize -1"  ng-click="currentPage=currentPage+1">
+			<button type="button" class="btn btn-default" ng-disabled="currentPage == nPages-1"  ng-click="currentPage=currentPage+1">
  				 <span class="glyphicon glyphicon-circle-arrow-down"></span> 
 			</button>
 			

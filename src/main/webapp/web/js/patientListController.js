@@ -75,6 +75,9 @@ $scope.changeTab = function(temp){
 		$scope.template = response.template;
 	  	$scope.patients = response.patients;
 	  	$scope.currentmoretab=null;
+	  	
+	  	$scope.nPages=Math.ceil($scope.patients.length/$scope.pageSize);
+	  	
 	}).error(function(error){
 	    $scope.error = error;
 	});	
@@ -93,11 +96,14 @@ $scope.changeTab(0);
 	$scope.currentPage = 0;
 	$scope.pageSize = 8;
 	$scope.data = [];
+	$scope.patients = 0;
+	
 	$scope.numberOfPages=function(){
 	    return Math.ceil($scope.patients.length/$scope.pageSize);                
 	}
-	for (var i=0; i<45; i++) {
-	    $scope.data.push("Item "+i);
+	
+	for (var i=0; i<$scope.pageSize; i++) {
+		$scope.data.push("Item "+i);
 	}
 
 

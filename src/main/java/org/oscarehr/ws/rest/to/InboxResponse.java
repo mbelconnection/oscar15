@@ -21,42 +21,27 @@
  * Hamilton
  * Ontario, Canada
  */
-package org.oscarehr.managers;
+package org.oscarehr.ws.rest.to;
 
 import java.util.List;
 
-import org.oscarehr.common.dao.MessageListDao;
-import org.oscarehr.common.dao.MsgDemoMapDao;
-import org.oscarehr.common.model.MessageList;
-import org.oscarehr.util.LoggedInInfo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 
-import oscar.log.LogAction;
+import org.oscarehr.ws.rest.to.model.InboxTo1;
 
-@Service
-public class MessagingManager {
+@XmlRootElement
+@XmlSeeAlso({InboxTo1.class})
+public class InboxResponse extends AbstractSearchResponse<InboxTo1> {
 
-	//private static Logger logger=MiscUtils.getLogger();
+    private static final long serialVersionUID = 1L;
 
-	@Autowired
-	private MessageListDao messageListDao;
-	
-	@Autowired
-	private MsgDemoMapDao MsgDemoMapDao;
-	
-	
-	public List<MessageList> getMyInboxMessages(int offset, int limit) {
-		String providerNo = LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo();
-		
-		List<MessageList> msgs = messageListDao.findMessageRangeByProviderNo(providerNo, offset, limit);
-		
-		 
-		for(MessageList msg:msgs) {
-	        	LogAction.addLogSynchronous("MessagingManager.getMyInboxMessages", "msglistid="+msg.getId());
-		}
-		 
-		return msgs;
-	}
-
+	@Override
+	@XmlElement(name="inbox", type = InboxTo1.class)
+	@XmlElementWrapper(name="content")
+    public List<InboxTo1> getContent() {
+	    return super.getContent();
+    }
 }

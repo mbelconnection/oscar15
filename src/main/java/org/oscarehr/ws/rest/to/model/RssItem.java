@@ -21,42 +21,55 @@
  * Hamilton
  * Ontario, Canada
  */
-package org.oscarehr.managers;
+package org.oscarehr.ws.rest.to.model;
 
-import java.util.List;
+import java.io.Serializable;
+import java.util.Date;
 
-import org.oscarehr.common.dao.MessageListDao;
-import org.oscarehr.common.dao.MsgDemoMapDao;
-import org.oscarehr.common.model.MessageList;
-import org.oscarehr.util.LoggedInInfo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import javax.xml.bind.annotation.XmlRootElement;
 
-import oscar.log.LogAction;
+@XmlRootElement(name="item")
+public class RssItem implements Serializable {
 
-@Service
-public class MessagingManager {
-
-	//private static Logger logger=MiscUtils.getLogger();
-
-	@Autowired
-	private MessageListDao messageListDao;
+	private static final long serialVersionUID = 1L;
 	
-	@Autowired
-	private MsgDemoMapDao MsgDemoMapDao;
+	private String title;
+	private String author;
+	private String link;
+	private Date publishedDate;
+	private String description;
 	
 	
-	public List<MessageList> getMyInboxMessages(int offset, int limit) {
-		String providerNo = LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo();
-		
-		List<MessageList> msgs = messageListDao.findMessageRangeByProviderNo(providerNo, offset, limit);
-		
-		 
-		for(MessageList msg:msgs) {
-	        	LogAction.addLogSynchronous("MessagingManager.getMyInboxMessages", "msglistid="+msg.getId());
-		}
-		 
-		return msgs;
+	public String getTitle() {
+		return title;
 	}
-
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public String getAuthor() {
+		return author;
+	}
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+	public String getLink() {
+		return link;
+	}
+	public void setLink(String link) {
+		this.link = link;
+	}
+	public Date getPublishedDate() {
+		return publishedDate;
+	}
+	public void setPublishedDate(Date publishedDate) {
+		this.publishedDate = publishedDate;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
+	
 }

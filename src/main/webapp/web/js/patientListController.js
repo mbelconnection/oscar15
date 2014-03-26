@@ -66,8 +66,15 @@ $scope.changeMoreTab = function(temp){
 $scope.changeTab = function(temp){
 	$scope.currenttab = $scope.tabItems[temp];
 	//I want the patient list to change, and the template to get loaded $scope.patients
-	var scheduleWS = $resource('../ws/rs/schedule/999998/day/today',{}, {});
-	var schedule = scheduleWS.get({}, function(response) {
+	$http({
+	url: $scope.currenttab.url,	
+	dataType: 'json',		
+	method: 'GET',		
+	headers: {		
+	"Content-Type": "application/json"		
+	}		
+	}).success(function(response){
+
 		$scope.template = response.template;
 	  	$scope.patients = response.patients;
 	  	$scope.currentmoretab=null;

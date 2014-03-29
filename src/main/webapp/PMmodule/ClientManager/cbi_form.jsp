@@ -232,6 +232,24 @@ function submitCbiForm() {
 
 <style>
 .error {color:red;}
+
+.systemData
+{
+	background-color:rgb(254,254,184);
+}
+
+.userInputedData
+{
+	background-color:rgb(0,254,254);
+}
+
+.mandatoryData
+{
+	border-color:rgb(233,75,68);
+	border-width:2px;
+	border-style:solid;
+}
+
 </style>			
 <form id="cbi_form" name="cbi_form" action="ocan_form_action.jsp" method="post" onsubmit="return submitCbiForm(); ">	
 		
@@ -409,32 +427,32 @@ function submitCbiForm() {
 		<tr>
 			<td class="genericTableHeader">Referral Date</td>
 			<td class="genericTableData">			
-				<input id="referralDate" name="referralDate" onfocus="this.blur()" class="{validate: {required:true}}" type="text" readonly="readonly" value="<%=ocanStaffForm.getReferralDate()==null?"":DateFormatUtils.ISO_DATE_FORMAT.format(ocanStaffForm.getReferralDate())%>">		
+				<input id="referralDate" name="referralDate" onfocus="this.blur()" class="systemData {validate: {required:true}}" type="text" readonly="readonly" value="<%=ocanStaffForm.getReferralDate()==null?"":DateFormatUtils.ISO_DATE_FORMAT.format(ocanStaffForm.getReferralDate())%>">		
 			</td>
 			</td>			
 		</tr>
 		<tr>
 			<td class="genericTableHeader">Admission Date</td>
 			<td class="genericTableData">
-				<input id="admissionDate" name="admissionDate" onfocus="this.blur()" class="{validate: {required:true}}" type="text" readonly="readonly" value="<%=ocanStaffForm.getAdmissionDate()==null?"":DateFormatUtils.ISO_DATE_FORMAT.format(ocanStaffForm.getAdmissionDate())%>">	
+				<input id="admissionDate" name="admissionDate" onfocus="this.blur()" class="systemData {validate: {required:true}}" type="text" readonly="readonly" value="<%=ocanStaffForm.getAdmissionDate()==null?"":DateFormatUtils.ISO_DATE_FORMAT.format(ocanStaffForm.getAdmissionDate())%>">	
 			</td>			
 		</tr>
 		<tr>
 			<td class="genericTableHeader">Service Initiation Date</td>
 			<td class="genericTableData">
-				<input id="serviceInitDate" name="serviceInitDate" onfocus="this.blur()" class="{validate: {required:true}}" type="text" value="<%=ocanStaffForm.getServiceInitDate()==null?"":DateFormatUtils.ISO_DATE_FORMAT.format(ocanStaffForm.getServiceInitDate())%>"> <img title="Calendar" id="cal_serviceInitDate" src="../../images/cal.gif" alt="Calendar" border="0"><script type="text/javascript">Calendar.setup({inputField:'serviceInitDate',ifFormat :'%Y-%m-%d',button :'cal_serviceInitDate',align :'cr',singleClick :true,firstDay :1});</script><img src="../../images/icon_clear.gif" border="0" onclick="clearDate('serviceInitDate');">	
+				<input id="serviceInitDate" name="serviceInitDate" onfocus="this.blur()" class="userInputedData mandatoryData {validate: {required:true}}" type="text" value="<%=ocanStaffForm.getServiceInitDate()==null?"":DateFormatUtils.ISO_DATE_FORMAT.format(ocanStaffForm.getServiceInitDate())%>"> <img title="Calendar" id="cal_serviceInitDate" src="../../images/cal.gif" alt="Calendar" border="0"><script type="text/javascript">Calendar.setup({inputField:'serviceInitDate',ifFormat :'%Y-%m-%d',button :'cal_serviceInitDate',align :'cr',singleClick :true,firstDay :1});</script><img src="../../images/icon_clear.gif" border="0" onclick="clearDate('serviceInitDate');">	
 			</td>		
 		</tr>
 		<tr>
 			<td class="genericTableHeader">Discharge Date</td>
 			<td class="genericTableData">
-				<input id="dischargeDate" name="dischargeDate" onfocus="this.blur()" class="{validate: {required:false}}" type="text" readonly="readonly" value="<%=ocanStaffForm.getDischargeDate()==null?"":DateFormatUtils.ISO_DATE_FORMAT.format(ocanStaffForm.getDischargeDate())%>"> 
+				<input id="dischargeDate" name="dischargeDate" onfocus="this.blur()" class="systemData {validate: {required:false}}" type="text" readonly="readonly" value="<%=ocanStaffForm.getDischargeDate()==null?"":DateFormatUtils.ISO_DATE_FORMAT.format(ocanStaffForm.getDischargeDate())%>"> 
 			</td>			
 		</tr>
 		<tr>
 			<td class="genericTableHeader">Last Name at Birth</td>
 			<td class="genericTableData">
-				<input type="text" name="lastNameAtBirth" id="lastNameAtBirth" value="<%=ocanStaffForm.getLastNameAtBirth()%>" size="32" maxlength="32"/>
+				<input type="text" class="userInputedData" name="lastNameAtBirth" id="lastNameAtBirth" value="<%=ocanStaffForm.getLastNameAtBirth()%>" size="32" maxlength="32"/>
 			</td>			
 		</tr>
 		<tr>
@@ -446,7 +464,7 @@ function submitCbiForm() {
 		<tr>
 			<td class="genericTableHeader">Middle Name</td>
 			<td class="genericTableData">
-				<%=OcanForm.renderAsTextField(ocanStaffForm.getId(),"middle",32, prepopulationLevel)%>
+				<%=OcanForm.renderAsTextField(ocanStaffForm.getId(),"middle",32, prepopulationLevel, "userInputedData")%>
 			</td>			
 		</tr>
 		<tr>
@@ -458,7 +476,7 @@ function submitCbiForm() {
 		<tr>
 			<td class="genericTableHeader">Preferred Name</td>
 			<td class="genericTableData">
-				<%=OcanForm.renderAsTextField(ocanStaffForm.getId(),"preferred",32, prepopulationLevel)%>
+				<%=OcanForm.renderAsTextField(ocanStaffForm.getId(),"preferred",32, prepopulationLevel, "userInputedData")%>
 			</td>
 		</tr>			
 		<tr>
@@ -470,7 +488,7 @@ function submitCbiForm() {
 		<tr>
 			<td class="genericTableHeader">Address Line 2</td>
 			<td class="genericTableData">
-				<input type="text" name="addressLine2" id="addressLine2" value="<%=ocanStaffForm.getAddressLine2()%>" size="64" maxlength="64"/>
+				<input type="text" name="addressLine2" class="userInputedData" id="addressLine2" value="<%=ocanStaffForm.getAddressLine2()%>" size="64" maxlength="64"/>
 			</td>
 		</tr>						
 		<tr>
@@ -544,7 +562,7 @@ function submitCbiForm() {
 		<tr>
 			<td class="genericTableHeader">Service Recipient Location</td>
 			<td class="genericTableData">
-				<select name="service_recipient_location" class="{validate: {required:true}}">
+				<select name="service_recipient_location" class="userInputedData mandatoryData {validate: {required:true}}">
 					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "service_recipient_location", OcanForm.getOcanFormOptions("Recipient Location"),prepopulationLevel)%>
 				</select>					
 			</td>
@@ -552,7 +570,7 @@ function submitCbiForm() {
 		<tr>
 			<td class="genericTableHeader">LHIN Consumer Resides in</td>
 			<td class="genericTableData">
-				<select name="service_recipient_lhin" class="{validate: {required:true}}">
+				<select name="service_recipient_lhin" class="userInputedData mandatoryData {validate: {required:true}}">
 					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "service_recipient_lhin", OcanForm.getOcanFormOptions("LHIN code"),prepopulationLevel)%>
 				</select>					
 			</td>
@@ -568,7 +586,7 @@ function submitCbiForm() {
 		<tr>
 			<td class="genericTableHeader">Marital Status</td>
 			<td class="genericTableData">
-				<select name="marital_status">
+				<select name="marital_status" class="userInputedData">
 					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "marital_status", OcanForm.getOcanFormOptions("Marital Status"),prepopulationLevel)%>
 				</select>					
 			</td>

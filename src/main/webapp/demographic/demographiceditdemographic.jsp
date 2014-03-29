@@ -729,6 +729,11 @@ function checkRosterStatus(){
 	return true;
 }
 
+function showCbiReminder()
+{
+	alert('<bean:message key="demographic.demographiceditdemographic.updateCBIReminder"/>');
+}
+
 </script>
 
 <style type="text/css">
@@ -3016,9 +3021,11 @@ if(oscarVariables.getProperty("demographicExtJScript") != null) { out.println(os
 									type="hidden" name="displaymode" value="Update Record">
 								<!-- security code block --> <span id="updateButton"
 									style="display: none;"> <security:oscarSec
-									roleName="<%=roleName$%>" objectName="_demographic" rights="w">
-									<input type="submit"
-										value="<bean:message key="demographic.demographiceditdemographic.btnUpdate"/>">
+									roleName="<%=roleName$%>" objectName="_demographic" rights="w"> 
+									<%
+										boolean showCbiReminder=oscarProps.getBooleanProperty("CBI_REMIND_ON_UPDATE_DEMOGRAPHIC", "true");
+									%>
+									<input type="submit" <%=(showCbiReminder?"onclick='showCbiReminder()'":"")%> value="<bean:message key="demographic.demographiceditdemographic.btnUpdate"/>">
 								</security:oscarSec> </span> <!-- security code block --></td>
 								<td width="40%" align='right' valign="top"><span
 									id="swipeButton" style="display: none;"> <input

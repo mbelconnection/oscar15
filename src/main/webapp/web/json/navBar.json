@@ -1,5 +1,8 @@
 {
-"userName" : "Oscardoc, Doctor",
+"demographicSearchDropDownItems": [
+		{"id":0,"label":"New Patient","url":"#/newpatient"},
+		{"id":1,"label":"Advanced Search","url":"#/search"}
+],
 
 "menuItems":
 [
@@ -20,23 +23,10 @@
 		{"id":3,"label":"Documents","url":"#/documents"}
 ],
 
-"currentProgram": {"id":"10016", "name":"Family Practice"},
-
-"counts":{"oscarDemoMessages":"1", "oscarMessages":"2","myOscarMessages":"6"},
-"demographicSearchDropDownItems": [
-		{"label":"New Patient","url":"#/newpatient"},
-		{"label":"Advanced Search","url":"#/advsearch"},
-		{"label":"Merge Demographic","url":"#/merge"}
-],
-"programInfo": [
-	{"name":"Family Practice","current":"true"},
-	{"name":"Immunization Clinic","current":"false"},
-	{"name":"Walk-ins","current":"false"}
-],
 "userMenuItems": [
-	{"name":"Settings","url":"#/settings"},
-	{"name":"Support","url":"#/support"},
-	{"name":"Help","url":"#/help"}
+	{"id":0,"label":"Settings","url":"#/settings"},
+	{"id":1,"label":"Support","url":"#/support"},
+	{"id":2,"label":"Help","url":"#/help"}
 ]
 }             
              

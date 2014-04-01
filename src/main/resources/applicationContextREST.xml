@@ -122,6 +122,7 @@
 			<bean class="org.oscarehr.ws.rest.InboxService"  autowire="byName"/>
 			<bean class="org.oscarehr.ws.rest.ProviderService"  autowire="byName"/>
 			<bean class="org.oscarehr.ws.rest.RSSFeedService"  autowire="byName"/>
+			<bean class="org.oscarehr.ws.rest.PersonaService"  autowire="byName"/>
 		</jaxrs:serviceBeans>
 
 		<jaxrs:extensionMappings>

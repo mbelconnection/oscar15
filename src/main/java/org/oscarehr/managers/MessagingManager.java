@@ -28,6 +28,7 @@ import java.util.List;
 import org.oscarehr.common.dao.MessageListDao;
 import org.oscarehr.common.dao.MsgDemoMapDao;
 import org.oscarehr.common.model.MessageList;
+import org.oscarehr.common.model.MsgDemoMap;
 import org.oscarehr.util.LoggedInInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,7 @@ public class MessagingManager {
 	private MessageListDao messageListDao;
 	
 	@Autowired
-	private MsgDemoMapDao MsgDemoMapDao;
+	private MsgDemoMapDao msgDemoMapDao;
 	
 	
 	public List<MessageList> getMyInboxMessages(int offset, int limit) {
@@ -57,6 +58,26 @@ public class MessagingManager {
 		}
 		 
 		return msgs;
+	}
+	
+	public int getMyInboxMessageCount(boolean onlyWithPatientAttached) {
+		String providerNo = LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo();
+		
+		List<MessageList> msgs = messageListDao.findUnreadByProvider(providerNo);
+		
+		if(!onlyWithPatientAttached) {
+			return msgs.size();
+		}
+		
+		int total = 0;
+		for(MessageList msg:msgs) {
+			List<MsgDemoMap> demos = msgDemoMapDao.findByMessageId((int)msg.getMessage());
+			if(demos != null && demos.size()>0) {
+				total++;
+			}
+		}
+		
+		return total;
 	}
 
 }

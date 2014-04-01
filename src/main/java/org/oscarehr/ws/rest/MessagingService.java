@@ -61,4 +61,15 @@ public class MessagingService {
 		
 		return result;
 	}
+	
+	
+	@GET
+	@Path("/count")
+	public int getMyUnreadMessages(@QueryParam("demoAttachedOnly") boolean demoAttachedOnly) {
+		
+		int count = messagingManager.getMyInboxMessageCount(demoAttachedOnly);
+		
+		return count;
+	}
+	
 }

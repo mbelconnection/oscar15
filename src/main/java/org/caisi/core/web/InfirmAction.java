@@ -53,10 +53,24 @@ import oscar.OscarProperties;
 public class InfirmAction extends DispatchAction
 {
 	private static final Logger logger = MiscUtils.getLogger();
-	private InfirmBedProgramManager bpm = (InfirmBedProgramManager) SpringUtils.getBean("infirmBedProgramManager");
+	private static InfirmBedProgramManager bpm = (InfirmBedProgramManager) SpringUtils.getBean("infirmBedProgramManager");
 	private ProgramManager pm = (ProgramManager) SpringUtils.getBean("programManager");
 	private AdmissionManager mgr = (AdmissionManager) SpringUtils.getBean("admissionManager");
 	
+	
+	public static void updateCurrentProgram(String programId) {
+		if(programId == null) {
+			return;
+		}
+		try {
+			Integer.parseInt(programId);
+		}catch(NumberFormatException e) {
+			logger.error("error parsing programId to set a users default program",e);
+		}
+		logger.info("updating the current program to " + programId);
+		
+		bpm.setDefaultProgramId(LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo(), Integer.parseInt(programId));
+	}
 
 	public ActionForward showProgram(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response)
@@ -108,6 +122,7 @@ public class InfirmAction extends DispatchAction
 		}
 		
 		se.setAttribute(SessionConstants.CURRENT_PROGRAM_ID,String.valueOf(programId));
+		org.caisi.core.web.InfirmAction.updateCurrentProgram(String.valueOf(programId));
 
 		if(programId != 0) {
 			se.setAttribute("case_program_id",String.valueOf(programId));

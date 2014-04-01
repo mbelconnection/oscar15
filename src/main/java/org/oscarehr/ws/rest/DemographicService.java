@@ -37,6 +37,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
 import org.apache.commons.lang.time.DateFormatUtils;
+import org.oscarehr.PMmodule.service.ClientManager;
+import org.oscarehr.PMmodule.web.formbean.ClientSearchFormBean;
 import org.oscarehr.common.dao.CountryCodeDao;
 import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.model.CountryCode;
@@ -44,6 +46,7 @@ import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.DemographicExt;
 import org.oscarehr.managers.DemographicManager;
 import org.oscarehr.managers.WaitListManager;
+import org.oscarehr.util.SpringUtils;
 import org.oscarehr.ws.rest.conversion.DemographicConverter;
 import org.oscarehr.ws.rest.to.DemographicResponse;
 import org.oscarehr.ws.rest.to.OscarSearchResponse;
@@ -290,6 +293,32 @@ public class DemographicService extends AbstractServiceImpl {
     	
 		demographicManager.deleteDemographic(demo);
 	    return result;
+	}
+	
+	@GET
+	@Path("/advancedSearch")
+	@Produces("application/json")
+	public DemographicSearchResults search(ClientSearchFormBean searchQuery) {		
+		DemographicSearchResults results = new DemographicSearchResults();
+		
+		ClientManager clientManager = SpringUtils.getBean(ClientManager.class);
+		
+		List<Demographic> demo = clientManager.search(searchQuery);
+		
+		for(Demographic d:demo) {
+			DemographicSearchResultItem item = new DemographicSearchResultItem();
+			item.setId(d.getDemographicNo());
+			item.setName(d.getFormattedName());
+			if(StringUtils.filled(d.getHin()))
+				item.setHin(d.getHin() + (StringUtils.filled(d.getVer()) ?" " + d.getVer():""));
+			if(d.getDOB() != null) {
+				item.setDob(d.getDOB());
+				item.setDobString(DateFormatUtils.ISO_DATE_FORMAT.format(d.getDOB()));
+			}
+			results.getItems().add(item);
+		}
+		
+		return results;
 	}
 
 }

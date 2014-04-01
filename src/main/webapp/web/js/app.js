@@ -60,6 +60,18 @@ oscarApp.config(['$routeProvider',
 		                    templateUrl: 'partials/admin.jsp',
 		                    controller: 'AdminCtrl'
 	                    }).
+	                    when('/search', {
+		                    templateUrl: 'partials/patientSearch.jsp',
+		                    controller: 'PatientSearchCtrl'
+	                    }).
+	                    when('/searchResults', {
+		                    templateUrl: 'partials/patientSearchResults.jsp',
+		                    controller: 'PatientSearchCtrl'
+	                    }).
+	                    when('/messenger', {
+		                    templateUrl: 'partials/messenger.jsp',
+		                    controller: 'MessengerCtrl'
+	                    }).
 	                    otherwise({
 	                    	redirectTo: '/dashboard'
 	                    });

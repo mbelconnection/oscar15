@@ -23,63 +23,67 @@
  */
 package org.oscarehr.ws.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 
-import org.oscarehr.PMmodule.model.Program;
 import org.oscarehr.PMmodule.model.ProgramProvider;
-import org.oscarehr.PMmodule.service.ProgramManager;
 import org.oscarehr.common.model.Provider;
+import org.oscarehr.managers.MessagingManager;
 import org.oscarehr.managers.ProgramManager2;
 import org.oscarehr.util.LoggedInInfo;
-import org.oscarehr.ws.rest.to.ProgramDomainResponse;
-import org.oscarehr.ws.rest.to.model.ProgramTo1;
+import org.oscarehr.ws.rest.conversion.ProgramProviderConverter;
+import org.oscarehr.ws.rest.to.NavbarResponse;
+import org.oscarehr.ws.rest.to.model.ProgramProviderTo1;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Path("/program")
-@Component("programService")
-public class ProgramService extends AbstractServiceImpl {
-	
-	@Autowired
-	private ProgramManager programManager;
+@Path("/persona")
+public class PersonaService {
+
 	
 	@Autowired
 	private ProgramManager2 programManager2;
 	
+	@Autowired
+	private MessagingManager messsagingManager;
+	
 	
 	@GET
-	@Path("/programDomain/{providerNo}")
+	@Path("/navbar")
 	@Produces("application/json")
-	public ProgramDomainResponse getProgramDomain(@PathParam("providerNo") String providerNo) {
-		ProgramDomainResponse response = new ProgramDomainResponse();
-				
-		List<ProgramProvider> ppList = programManager.getProgramProvidersByProvider(providerNo);
+	public NavbarResponse getMyNavbar() {
+		Provider provider = LoggedInInfo.loggedInInfo.get().loggedInProvider;
+		
+		NavbarResponse result = new NavbarResponse();
+		
+		List<ProgramProvider> ppList = programManager2.getProgramDomain(provider.getProviderNo());
+		ProgramProviderConverter ppConverter = new ProgramProviderConverter();
+		List<ProgramProviderTo1> programDomain = new ArrayList<ProgramProviderTo1>();
+		
+		
 		for(ProgramProvider pp:ppList) {
-			Program p = pp.getProgram();
-			ProgramTo1 item = new ProgramTo1();
-			item.setId(p.getId());
-			item.setName(p.getName());
-			response.getContent().add(item);
+			programDomain.add(ppConverter.getAsTransferObject(pp));
 		}
 		
+		result.setProgramDomain(programDomain);
 		
-		response.setCurrentProgramId(ppList.get(0).getId().intValue());
 		
-		return response;
+		ProgramProvider pp = programManager2.getCurrentProgramInDomain(provider.getProviderNo());
+		if(pp != null) {
+			ProgramProviderTo1 ppTo = ppConverter.getAsTransferObject(pp);
+			result.setCurrentProgram(ppTo);
+		}
+		
+		int messageCount = messsagingManager.getMyInboxMessageCount(false);
+		int ptMessageCount = messsagingManager.getMyInboxMessageCount(true);
+		
+		result.setUnreadMessagesCount(messageCount);
+		result.setUnreadPatientMessagesCount(ptMessageCount);
+		
+		return result;
+	}
 
-	}
-	
-	@GET
-	@Path("/setDefaultProgramInDomain")
-	public void setDefaultProgram(@QueryParam("programId") Integer programId) {
-		Provider p = LoggedInInfo.loggedInInfo.get().loggedInProvider;
-		programManager2.setCurrentProgramInDomain(p.getProviderNo(), programId);
-	}
-	
 }

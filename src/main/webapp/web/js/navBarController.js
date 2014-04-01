@@ -12,17 +12,67 @@ oscarApp.controller('NavBarCtrl', function ($scope,$http,$location) {
 	    }
 
 	}).success(function(response){
-		$scope.userName = response.userName;
-	    $scope.menuItems = response.menuItems;
+		$scope.demographicSearchDropDownItems = response.demographicSearchDropDownItems;
+		$scope.menuItems = response.menuItems;
 	    $scope.moreMenuItems = response.moreMenuItems;
-	    $scope.currentProgram = response.currentProgram;
-	    $scope.counts = response.counts;
-	    $scope.demographicSearchDropDownItems = response.demographicSearchDropDownItems;
-	    $scope.programInfo = response.programInfo;
 	    $scope.userMenuItems = response.userMenuItems;
 	}).error(function(error){
 	    $scope.error = error;
 	});	
+	
+	//from service
+	$http({
+	    url: '../ws/rs/persona/navbar',
+	    dataType: 'json',
+	    method: 'GET',
+	    headers: {
+	        "Content-Type": "application/json"
+	    }
+
+	}).success(function(response){
+		$scope.currentProgram = response.currentProgram.program;
+		if (response.programDomain.program instanceof Array) {
+			$scope.programDomain = response.programDomain.program;
+		} else {
+			var arr = new Array();
+			arr[0] = response.programDomain.program;
+			$scope.programDomain = arr;
+		}
+		$scope.unreadMessagesCount = response.unreadMessagesCount;
+		$scope.unreadPatientMessagesCount = response.unreadPatientMessagesCount;
+		
+	}).error(function(error){
+	    $scope.error = error;
+	});	
+	
+	
+	//reload the navbar at any time..not sure why i can't call this form the controller.
+	$scope.getNavbar = function () {
+		$http({
+		    url: '../ws/rs/persona/navbar',
+		    dataType: 'json',
+		    method: 'GET',
+		    headers: {
+		        "Content-Type": "application/json"
+		    }
+
+		}).success(function(response){
+			$scope.currentProgram = response.currentProgram.program;
+			if (response.programDomain.program instanceof Array) {
+				$scope.programDomain = response.programDomain.program;
+			} else {
+				var arr = new Array();
+				arr[0] = response.programDomain.program;
+				$scope.programDomain = arr;
+			}
+			$scope.unreadMessagesCount = response.unreadMessagesCount;
+			$scope.unreadPatientMessagesCount = response.unreadPatientMessagesCount;
+		}).error(function(error){
+		    $scope.error = error;
+		});	
+	}
+	
+	
 	
 	//to help ng-clicks on buttons
 	$scope.go = function ( path ) {
@@ -72,7 +122,36 @@ oscarApp.controller('NavBarCtrl', function ($scope,$http,$location) {
 	$scope.goHome = function() {
 		$scope.currenttab = null;
 		$scope.currentmoretab = null;
-		$location.path('#/inbox').replace();
+		$window.location.href="index.jsp#/dashboard";
+		$window.location.reload();
 	}
+	
+	$scope.goToPatientSearch = function() {
+		$scope.currenttab = null;
+		$scope.currentmoretab = null;
+		$window.location.href="index.jsp#/search";
+		$window.location.reload();
+	}
+	
+	$scope.changeProgram = function(temp){
+		console.log("changeprogram "+ temp);
+		
+		$http({
+		    url: '../ws/rs/program/setDefaultProgramInDomain?programId='+temp,
+		    dataType: 'json',
+		    method: 'GET',
+		    headers: {
+		        "Content-Type": "application/json"
+		    }
+
+		}).success(function(response){
+			$scope.getNavbar();
+		}).error(function(error){
+		    $scope.error = error;
+		});	
+		
+		//TODO: need an action called or something to update the session variable on the old oscar side
+		
+	}	 
 	
 });

@@ -68,27 +68,36 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 						class="icon-bar"></span>
 				</button>
 				
+				<!-- link back to 'classic' view -->
 				<a href="../provider/providercontrol.jsp"><img src="../images/Logo.png" height="40px" title="OSCAR" border="0" style="padding-top:10px"/></a>
 			</div>
 			<div class="navbar-collapse collapse">
+			
+				<!-- demographic quick search, see jquery at bottom of file -->
 			      <form class="navbar-form navbar-left form-search" role="search">
 					
 				  <div class="input-group">
 
 				    <input id="demographicQuickSearch" class="form-control" type="text" placeholder="Search Patients" autocomplete="off">
+				    
 				    <div class="input-group-btn" id="btn_search_group">
-				      <button type="button" class="btn btn-default" tabindex="-1"><span class="glyphicon glyphicon-search" id="nav_search"></span></button>
+				   	  <!--  home button -->
+				      <button type="button" class="btn btn-default" tabindex="-1" ng-click="goToPatientSearch()">
+						<span class="glyphicon glyphicon-search" id="nav_search"></span>
+					  </button>
 
+					  <!-- drop down -->
 				      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" tabindex="-1">
-					<span class="caret"></span>
+						<span class="caret"></span>
 				      </button>
-
 				      <ul class="dropdown-menu pull-right" role="menu">
-					<li ng-repeat="item in demographicSearchDropDownItems"><a href="#">{{item.label}}</a></li>
+						<li ng-repeat="item in demographicSearchDropDownItems"><a href="{{item.url}}">{{item.label}}</a></li>
 				      </ul>
-					<button type="button" class="btn btn-default" ng-click="goHome()">
+				      
+				      <!-- home button -->
+					  <button type="button" class="btn btn-default" ng-click="goHome()">
 						<span class="glyphicon glyphicon-home"></span>
-					</button>
+					  </button>
 
 				    </div>
 
@@ -119,35 +128,38 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 				
 				
 				<div class="navbar-text pull-right" style="line-height:20px">
-					<a href="#" title="Scratchpad"><span class="glyphicon glyphicon-edit"></span></a>
+					<a href="javascript: function myFunction() {return false; }" onClick="popup(700,1024,'../scratch/index.jsp','scratch')" title="Scratchpad"><span class="glyphicon glyphicon-edit"></span></a>
 					&nbsp;&nbsp;
 					
-					<a href="#" title="OSCAR Mail">
+					<a href="#/messenger" title="OSCAR Mail">
 						<span  class="glyphicon glyphicon-envelope"></span> 
 					</a>
-						<span title="New OSCAR messages (demographic)">{{counts.oscarDemoMessages}}</span> |
-						 <span title="Total new OSCAR Messages">{{counts.oscarMessages}}</span> |
-						  <span title="New messages from patients">{{counts.myOscarMessages}}</span> 
-						&nbsp; &nbsp;
 						
-						<span class="glyphicon glyphicon-globe"></span>
-						<span class="dropdown">
-						<span class="dropdown-toggle hand-hover" data-toggle="dropdown"><u>{{currentProgram.name}}</u></span>
-						<ul class="dropdown-menu" role="menu">
-                                                       <li ng-repeat="item in programInfo">
-                                                       <a href="#">
-					    			<span ng-if="item.current === 'true'">&#10004;</span>
-					    			<span ng-if="item.current === 'false'">&nbsp;&nbsp;</span>
-								{{item.name}}
-					    		</a>
-					    	</li>
-				 		 </ul>
-				 	 </span>
-						&nbsp;
-				<span class="glyphicon glyphicon-user"></span>	
-				<span class="dropdown-toggle hand-hover" data-toggle="dropdown"><u>{{userName}}</u></span>
+					<span title="New OSCAR messages (demographic)">{{unreadMessagesCount}}</span> |
+					<span title="Total new OSCAR Messages">{{unreadMessagesCount}}</span> |
+					<span title="New messages from patients">-</span> 
+					
+					&nbsp; &nbsp;
+						
+					<span class="glyphicon glyphicon-globe"></span>
+					<span class="dropdown">
+					<span class="dropdown-toggle hand-hover" data-toggle="dropdown"><u>{{currentProgram.name}}</u></span>
 					<ul class="dropdown-menu" role="menu">
-					<li ng-repeat="item in userMenuItems"><a href="{{item.url}}">{{item.name}}</a></li>
+                    	<li ng-repeat="item in programDomain">
+                        	<a href="#" ng-click="changeProgram(item.program.id)">
+					    		<span ng-if="item.program.id === currentProgram.id">&#10004;</span>
+					    		<span ng-if="item.program.id != currentProgram.id">&nbsp;&nbsp;</span>
+								{{item.program.name}}
+					    	</a>
+					    </li>
+				 	</ul>
+				 	
+				 	</span>
+					&nbsp;
+				<span class="glyphicon glyphicon-user"></span>	
+				<span class="dropdown-toggle hand-hover" data-toggle="dropdown"><u><%=userName %></u></span>
+					<ul class="dropdown-menu" role="menu">
+					<li ng-repeat="item in userMenuItems"><a href="{{item.url}}">{{item.label}}</a></li>
 				  </ul>
 				  
 				<div class="btn-group pull-right" style="padding-left:10px">
@@ -259,6 +271,9 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 	<script src="js/settingsController.js"></script>
 	<script src="js/supportController.js"></script>
 	<script src="js/helpController.js"></script>
+	<script src="js/patientSearchController.js"></script>
+	<script src="js/messengerController.js"></script>
+	
 		<!-- Added for Scheduler starts here -->
 	<!-- <script type="text/javascript" src="js_up/jquery-1.9.1.js"></script>
 	<script type="text/javascript" src="js_up/jquery-ui.js"></script>
@@ -268,6 +283,8 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 	<script type="text/javascript" src="js_up/jsDatePick.min.1.3.js"></script>
 	<script type="text/javascript" src="js_up/script.js"></script>
 	<!-- Added for Scheduler starts ends here -->
+	
+	<script type="text/javascript" src="../share/javascript/Oscar.js"></script>
 
 <script>
 
@@ -314,7 +331,8 @@ $(document).ready(function(){
 		       	engine: Hogan
 		}).on('typeahead:selected', function (obj, datum) {
 		    console.log('chose demographic ' + datum.id);
-		    $("#myinfo").html("You chose " + datum.name + " with demographic id " + datum.id);
+		    window.location.href='#/patient/'+datum.id;
+		 //   $("#myinfo").html("You chose " + datum.name + " with demographic id " + datum.id);
 	});
 	
 });

@@ -418,7 +418,8 @@ $(function() {
 			</div> -->
 		</div>
 		<!-- Next available appt dailog box start-->
-		<div id="nextAvailAppt">        
+		<div id="nextAvailAppt">  
+		      
 		</div>
 		<!--  Next available appt dailog box end -->
 		<!-- find existing dialog start-->

@@ -78,6 +78,7 @@ import oscar.util.SqlUtils;
 
 /**
  */
+@SuppressWarnings("deprecation")
 public class DemographicDao extends HibernateDaoSupport implements ApplicationEventPublisherAware {
 
 	private static final int MAX_SELECT_SIZE = 500;
@@ -2048,4 +2049,16 @@ public class DemographicDao extends HibernateDaoSupport implements ApplicationEv
     	if (i>=10) return(String.valueOf(i));
     	else return("0"+i);
     }
+    
+    /**
+	 * This method returns list of Demographics(Patients).
+	 * 
+	 * @param nameLike		parameter to search patients
+	 * @return List			List of Demographics(Patients)Containing DemogrphicNo and Full Name
+	 */
+	public List<Demographic> getActiveDemographisFirstNameSearch(String nameLike){
+    	String query = "From Demographic d where d.FirstName like '" + nameLike + "%' and d.PatientStatus = 'AC'";
+    	return getHibernateTemplate().find(query);
+	}
 }
+

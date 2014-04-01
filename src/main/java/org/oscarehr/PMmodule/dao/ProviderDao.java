@@ -48,7 +48,7 @@ import oscar.OscarProperties;
 
 import com.quatro.model.security.SecProvider;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "deprecation" })
 public class ProviderDao extends HibernateDaoSupport {
 	
 	public static final String PR_TYPE_DOCTOR = "doctor";
@@ -551,4 +551,16 @@ public class ProviderDao extends HibernateDaoSupport {
 			List<Object[]> providerList = getHibernateTemplate().find("select distinct p.ProviderNo, p.ProviderType from Provider p ORDER BY p.LastName");
 			return providerList;
         }
+		
+		/**
+		 * This method returns list of providers.
+		 * 
+		 * @param nameLike		parameter to search provider
+		 * @return List			List of providers
+		 */
+		public List<Provider> getActiveProvideFirstNameLikeSearch(String nameLike){
+	    	String query = "From Provider p where p.FirstName like '" + nameLike + "%' and p.Status='1'";
+	    	return getHibernateTemplate().find(query);
+		}
 }
+

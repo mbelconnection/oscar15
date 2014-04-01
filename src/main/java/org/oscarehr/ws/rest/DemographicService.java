@@ -53,7 +53,9 @@ import org.oscarehr.ws.rest.to.OscarSearchResponse;
 import org.oscarehr.ws.rest.to.model.DemographicSearchResultItem;
 import org.oscarehr.ws.rest.to.model.DemographicSearchResults;
 import org.oscarehr.ws.rest.to.model.DemographicSearchTo;
+import org.oscarehr.ws.rest.to.model.DemographicTo;
 import org.oscarehr.ws.rest.to.model.DemographicTo1;
+import org.oscarehr.ws.rest.to.model.DemographicsTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -295,6 +297,7 @@ public class DemographicService extends AbstractServiceImpl {
 	    return result;
 	}
 	
+
 	@GET
 	@Path("/advancedSearch")
 	@Produces("application/json")
@@ -320,5 +323,23 @@ public class DemographicService extends AbstractServiceImpl {
 		
 		return results;
 	}
+
+	/**
+	 * To get Demograhic no and Name for search in Add Appointments. 
+	 * 
+	 * @param nameLike
+	 * 		first three characters of First Name entered in the search Patients text box
+	 * @return
+	 * 		Returns the List of Demographic objects containing DemographicNo and Full Name
+	 */	
+	@GET
+	@Path("/{nameLike}/list")
+	@Produces("application/json")
+	public DemographicsTo getDemographicsAndEvents(@PathParam("nameLike") String nameLike) {
+    	List<DemographicTo> demographicLst = demographicManager.getDemographicsforSearch(nameLike);
+    	DemographicsTo demographics = new DemographicsTo();
+    	demographics.setDemographics(demographicLst);
+    	return demographics;
+    	}
 
 }

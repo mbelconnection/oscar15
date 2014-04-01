@@ -24,12 +24,15 @@
 
 package org.oscarehr.managers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.oscarehr.PMmodule.dao.ProviderDao;
 import org.oscarehr.common.dao.PropertyDao;
 import org.oscarehr.common.model.Property;
 import org.oscarehr.common.model.Provider;
+import org.oscarehr.ws.rest.bo.ProviderBO;
+import org.oscarehr.ws.rest.to.model.ProviderTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -64,7 +67,22 @@ public class ProviderManager2 {
 
 		return (result);
 	}
-	
+
+	public List<ProviderTo> getProvidersforSearch(String nameLike) {
+		List<ProviderTo> providersTo = null;
+		try {
+			List<Provider> results = providerDao.getActiveProvideFirstNameLikeSearch(nameLike);
+			//--- log action ---
+			LogAction.addLogSynchronous("ProviderManager.getProviders" + results.size(), null);
+			// copy provider into provider transfer object
+			providersTo = new ArrayList<ProviderTo>();
+			providersTo = ProviderBO.copy(results, providersTo);
+		} catch (Exception e) {
+			return new ArrayList<ProviderTo>();
+		}
+		return providersTo;
+	}
+
 	public List<Property> getProviderProperties(String providerNo, String propertyName)
 	{
 		List<Property> results=propertyDao.findByNameAndProvider(propertyName, providerNo);

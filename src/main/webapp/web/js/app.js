@@ -45,7 +45,7 @@ oscarApp.config(['$routeProvider',
 		                    controller: 'ReportCtrl'
 	                    }).
 	                    when('/settings', {
-		                    templateUrl: 'partials/settings.jsp',
+		                    templateUrl: 'partials/settings-classic.jsp',
 		                    controller: 'SettingsCtrl'
 	                    }).
 	                    when('/support', {

@@ -2055,6 +2055,81 @@ public ActionForward viewEDocBrowserInDocumentReport(ActionMapping actionmapping
 
          return actionmapping.findForward("genDisplayDocumentAs");
     }
+    
+    
+
+    public ActionForward viewCobalt(ActionMapping actionmapping, ActionForm actionform, HttpServletRequest request, HttpServletResponse response) {
+		DynaActionForm frm = (DynaActionForm)actionform;
+		String provider = (String) request.getSession().getAttribute("user");
+		UserProperty prop = this.userPropertyDAO.getProp(provider, UserProperty.COBALT);
+
+		String propValue="";
+		if (prop == null){
+			prop = new UserProperty();
+		}else{
+			propValue=prop.getValue();
+		}
+
+		boolean checked;
+		if(propValue.equalsIgnoreCase("yes"))
+			checked=true;
+		else
+			checked=false;
+
+		prop.setChecked(checked);
+		request.setAttribute("cobaltProperty", prop);
+		request.setAttribute("providertitle","provider.cobalt.title"); //=Select if you want to use Rx3
+		request.setAttribute("providermsgPrefs","provider.cobalt.msgPrefs"); //=Preferences
+		request.setAttribute("providermsgProvider","provider.cobalt.msgProfileView"); //=Use Rx3
+		request.setAttribute("providermsgEdit","provider.cobalt.msgEdit"); //=Do you want to use Rx3?
+		request.setAttribute("providerbtnSubmit","provider.cobalt.btnSubmit"); //=Save
+		request.setAttribute("providermsgSuccess","provider.cobalt.msgSuccess"); //=Rx3 Selection saved
+		request.setAttribute("method","saveCobalt");
+
+		frm.set("cobaltProperty", prop);
+
+		return actionmapping.findForward("genCobalt");
+    }
+    
+
+    public ActionForward saveCobalt(ActionMapping actionmapping, ActionForm actionform, HttpServletRequest request, HttpServletResponse response) {
+    	String provider=(String) request.getSession().getAttribute("user");
+
+    	DynaActionForm frm=(DynaActionForm)actionform;
+    	UserProperty Uprop=(UserProperty)frm.get("cobaltProperty");
+
+		boolean checked=false;
+		if(Uprop!=null)
+			checked = Uprop.isChecked();
+		UserProperty prop=this.userPropertyDAO.getProp(provider, UserProperty.COBALT);
+		if(prop==null){
+			prop=new UserProperty();
+			prop.setName(UserProperty.COBALT);
+			prop.setProviderNo(provider);
+		}
+		String propValue="no";
+		if(checked)
+			propValue="yes";
+
+		prop.setValue(propValue);
+		this.userPropertyDAO.saveProp(prop);
+
+		request.setAttribute("status", "success");
+		request.setAttribute("cobaltProperty",prop);
+		request.setAttribute("providertitle","provider.cobalt.title");
+		request.setAttribute("providermsgPrefs","provider.cobalt.msgPrefs");
+		request.setAttribute("providermsgProvider","provider.cobalt.msgProfileView");
+		request.setAttribute("providermsgEdit","provider.cobalt.msgEdit");
+		request.setAttribute("providerbtnSubmit","provider.cobalt.btnSubmit");
+		if(checked)
+			request.setAttribute("providermsgSuccess","provider.cobalt.msgSuccess_selected");
+		else
+			request.setAttribute("providermsgSuccess","provider.cobalt.msgSuccess_unselected");
+		request.setAttribute("method","saveCobalt");
+
+		return actionmapping.findForward("genCobalt");
+    }
+    
     /**
      * Creates a new instance of ProviderPropertyAction
      */

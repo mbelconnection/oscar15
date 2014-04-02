@@ -28,6 +28,9 @@ String strLimit2="5";
 if(request.getParameter("limit1")!=null) strLimit1 = request.getParameter("limit1");
 if(request.getParameter("limit2")!=null) strLimit2 = request.getParameter("limit2");
 String providerview = request.getParameter("providerview")==null?"all":request.getParameter("providerview") ;
+if("me".equals(providerview)) {
+	  providerview = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo();
+}
 %>
 
 <%@ page import="java.util.*, java.sql.*, oscar.*, java.net.*" errorPage="errorpage.jsp"%>

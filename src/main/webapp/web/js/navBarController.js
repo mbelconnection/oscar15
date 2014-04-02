@@ -2,25 +2,6 @@
 
 oscarApp.controller('NavBarCtrl', function ($scope,$http,$location) {
 	
-	//load static models from web to inject 
-	$http({
-	    url: 'json/navBar.json',
-	    dataType: 'json',
-	    method: 'GET',
-	    headers: {
-	        "Content-Type": "application/json"
-	    }
-
-	}).success(function(response){
-		$scope.demographicSearchDropDownItems = response.demographicSearchDropDownItems;
-		$scope.menuItems = response.menuItems;
-	    $scope.moreMenuItems = response.moreMenuItems;
-	    $scope.userMenuItems = response.userMenuItems;
-	}).error(function(error){
-	    $scope.error = error;
-	});	
-	
-	//from service
 	$http({
 	    url: '../ws/rs/persona/navbar',
 	    dataType: 'json',
@@ -41,6 +22,12 @@ oscarApp.controller('NavBarCtrl', function ($scope,$http,$location) {
 		$scope.unreadMessagesCount = response.unreadMessagesCount;
 		$scope.unreadPatientMessagesCount = response.unreadPatientMessagesCount;
 		
+		
+		$scope.demographicSearchDropDownItems = response.menus.patientSearchMenu.items;
+		$scope.menuItems = response.menus.menu.items;
+		$scope.moreMenuItems = response.menus.moreMenu.items;
+		$scope.userMenuItems = response.menus.userMenu.items;
+
 	}).error(function(error){
 	    $scope.error = error;
 	});	
@@ -67,6 +54,12 @@ oscarApp.controller('NavBarCtrl', function ($scope,$http,$location) {
 			}
 			$scope.unreadMessagesCount = response.unreadMessagesCount;
 			$scope.unreadPatientMessagesCount = response.unreadPatientMessagesCount;
+			
+			
+			$scope.demographicSearchDropDownItems = response.menus.patientSearchMenu.items;
+			$scope.menuItems = response.menus.menu.items;
+			$scope.moreMenuItems = response.menus.moreMenu.items;
+			$scope.userMenuItems = response.menus.userMenu.items;
 		}).error(function(error){
 		    $scope.error = error;
 		});	
@@ -134,7 +127,6 @@ oscarApp.controller('NavBarCtrl', function ($scope,$http,$location) {
 	}
 	
 	$scope.changeProgram = function(temp){
-		console.log("changeprogram "+ temp);
 		
 		$http({
 		    url: '../ws/rs/program/setDefaultProgramInDomain?programId='+temp,
@@ -150,7 +142,7 @@ oscarApp.controller('NavBarCtrl', function ($scope,$http,$location) {
 		    $scope.error = error;
 		});	
 		
-		//TODO: need an action called or something to update the session variable on the old oscar side
+		//TODO: need an action called or something to update the session variable on the class oscar ui
 		
 	}	 
 	

@@ -37,6 +37,8 @@ import org.oscarehr.managers.ProgramManager2;
 import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.ws.rest.conversion.ProgramProviderConverter;
 import org.oscarehr.ws.rest.to.NavbarResponse;
+import org.oscarehr.ws.rest.to.model.MenuTo1;
+import org.oscarehr.ws.rest.to.model.NavBarMenuTo1;
 import org.oscarehr.ws.rest.to.model.ProgramProviderTo1;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -59,17 +61,15 @@ public class PersonaService {
 		
 		NavbarResponse result = new NavbarResponse();
 		
+		/* program domain, current program */
 		List<ProgramProvider> ppList = programManager2.getProgramDomain(provider.getProviderNo());
 		ProgramProviderConverter ppConverter = new ProgramProviderConverter();
 		List<ProgramProviderTo1> programDomain = new ArrayList<ProgramProviderTo1>();
 		
-		
 		for(ProgramProvider pp:ppList) {
 			programDomain.add(ppConverter.getAsTransferObject(pp));
 		}
-		
 		result.setProgramDomain(programDomain);
-		
 		
 		ProgramProvider pp = programManager2.getCurrentProgramInDomain(provider.getProviderNo());
 		if(pp != null) {
@@ -77,11 +77,46 @@ public class PersonaService {
 			result.setCurrentProgram(ppTo);
 		}
 		
+		/* counts */
 		int messageCount = messsagingManager.getMyInboxMessageCount(false);
 		int ptMessageCount = messsagingManager.getMyInboxMessageCount(true);
-		
 		result.setUnreadMessagesCount(messageCount);
 		result.setUnreadPatientMessagesCount(ptMessageCount);
+		
+		
+		/* this is manual right now. Need to have this generated from some kind
+		 * of user data
+		 */
+		NavBarMenuTo1 navBarMenu = new NavBarMenuTo1();
+		
+		MenuTo1 patientSearchMenu = new MenuTo1().add(0,"New Patient",null,"#/newpatient")
+				.add(1,"Advanced Search",null,"#/search");
+		navBarMenu.setPatientSearchMenu(patientSearchMenu);
+		
+		MenuTo1 menu = new MenuTo1()
+				.add(0,"Inbox",null,"#/inbox")
+				.add(1,"Consultations",null,"#/consults")
+				.add(2,"Billing",null,"#/billing")
+				.add(3,"Tickler",null,"#/ticklers")
+				.add(4,"Schedule",null,"#/schedule")
+				//.add(0,"K2A",null,"#/k2a")
+				.add(5,"Admin",null,"#/admin");
+		navBarMenu.setMenu(menu);
+		
+		MenuTo1 moreMenu = new MenuTo1()
+		.add(0,"Reports",null,"#/report")
+		.add(1,"Caseload",null,"#/caseload")
+		.add(2,"Resources",null,"#/resources")
+		.add(3,"Documents",null,"#/documents");
+		navBarMenu.setMoreMenu(moreMenu);
+		
+		MenuTo1 userMenu = new MenuTo1()
+		.add(0,"Settings",null,"#/settings")
+		.add(1,"Support",null,"#/support")
+		.add(2,"Help",null,"#/help");
+		navBarMenu.setUserMenu(userMenu);
+		
+		result.setMenus(navBarMenu);
 		
 		return result;
 	}

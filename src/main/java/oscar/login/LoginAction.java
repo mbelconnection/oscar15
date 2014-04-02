@@ -407,6 +407,13 @@ public final class LoginAction extends DispatchAction {
                 request.getSession().setAttribute("proceedURL", proceedURL);               
                 return mapping.findForward("LoginTest");
             }
+            
+            //are they using the new UI?
+            UserPropertyDAO propDao =(UserPropertyDAO)SpringUtils.getBean("UserPropertyDAO");
+    		UserProperty prop = propDao.getProp(provider.getProviderNo(), UserProperty.COBALT);
+            if(prop != null && prop.getValue() != null && prop.getValue().equals("yes")) {
+            	where="cobalt";
+            }
         }
         // expired password
         else if (strAuth != null && strAuth.length == 1 && strAuth[0].equals("expired")) {
@@ -440,6 +447,7 @@ public final class LoginAction extends DispatchAction {
             	json.write(response.getWriter());
             	return null;
             }
+
             
             return mapping.findForward(where);
         }

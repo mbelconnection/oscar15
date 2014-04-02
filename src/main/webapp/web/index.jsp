@@ -69,7 +69,7 @@ String userName = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProv
 				</button>
 				
 				<!-- link back to 'classic' view -->
-				<a href="../provider/providercontrol.jsp"><img src="../images/Logo.png" height="40px" title="OSCAR" border="0" style="padding-top:10px"/></a>
+				<a href="../provider/providercontrol.jsp"><img src="../images/Logo.png" height="40px" title="Go to OSCAR Classic UI" border="0" style="padding-top:10px"/></a>
 			</div>
 			<div class="navbar-collapse collapse">
 			

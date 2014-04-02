@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
+import org.oscarehr.ws.rest.to.model.NavBarMenuTo1;
 import org.oscarehr.ws.rest.to.model.ProgramProviderTo1;
 import org.oscarehr.ws.rest.to.model.ProgramTo1;
 
@@ -47,6 +48,8 @@ public class NavbarResponse implements Serializable {
 	private int unreadMessagesCount;
 	
 	private int unreadPatientMessagesCount;
+	
+	private NavBarMenuTo1 menus;
 	
 
 	public ProgramProviderTo1 getCurrentProgram() {
@@ -81,6 +84,14 @@ public class NavbarResponse implements Serializable {
 
 	public void setUnreadPatientMessagesCount(int unreadPatientMessagesCount) {
 		this.unreadPatientMessagesCount = unreadPatientMessagesCount;
+	}
+
+	public NavBarMenuTo1 getMenus() {
+		return menus;
+	}
+
+	public void setMenus(NavBarMenuTo1 menus) {
+		this.menus = menus;
 	}
 
 	

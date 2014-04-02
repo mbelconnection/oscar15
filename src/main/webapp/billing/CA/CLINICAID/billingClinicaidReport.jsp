@@ -27,6 +27,9 @@
 	String user_no = (String) session.getAttribute("user");
 	String providerview = request.getParameter("providerview") == null ? 
 		"all":request.getParameter("providerview") ;
+	  if("me".equals(providerview)) {
+		  providerview = org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo();
+	  }
 %>
 
 <%@ page import="java.util.*, oscar.login.*, oscar.*, java.net.*" errorPage="errorpage.jsp"%>

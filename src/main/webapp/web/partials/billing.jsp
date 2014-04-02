@@ -23,4 +23,20 @@
     Ontario, Canada
 
 --%>
-billing
+<%
+String prov= (oscar.OscarProperties.getInstance().getProperty("billregion","")).trim().toUpperCase();
+%>
+<script>
+function newWindow(url) {
+    newwindow=window.open(url,'name','height=700,width=1000');
+    if (window.focus) {newwindow.focus()}
+    return false;
+}
+
+
+newWindow('<%=request.getContextPath()%>/billing/CA/<%=prov%>/billingReportCenter.jsp?displaymode=billreport','billing');
+</script>
+<p class="info">Billing Panel is popped-out..ensure you do not have a popup blocker running.</p>
+
+<p><a href="#/dashboard">Go to your dashboard</a></p>
+

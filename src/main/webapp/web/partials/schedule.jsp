@@ -629,7 +629,7 @@ function page_init(){
 //$("#testcode").load("partials/addAppointment.jsp");
 
 $("#nextAvailAppt").load("partials/nextAvailAppt.jsp");
-$("#testcode").load("partials/addAppt.jsp");
+$("#testcode").load("partials/addAppt.jspf");
 $("#findExisting").load("partials/findExisting.jsp");
 $("#manageGroupHTML").load("partials/groupManage.jsp");
 }

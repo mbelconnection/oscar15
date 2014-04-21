@@ -41,6 +41,15 @@ public class SpecialtyTo implements Serializable {
 	private String webSite;
 	private String email;
 	private String specialtyType;
+	private String annotation;
+	
+	public String getAnnotation() {
+    	return annotation;
+    }
+
+	public void setAnnotation(String annotation) {
+    	this.annotation = annotation;
+    }
 
 	public String getId() {
 		return id;

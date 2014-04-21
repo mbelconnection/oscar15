@@ -58,7 +58,7 @@ public class ConsultationRequestTo implements Serializable {
 	private String letterheadAddress;
 	private String letterheadPhone;
 	private String letterheadFax;
-	private String specialtyId; // to be implemented
+	private Integer specId;
 
 	private List<LetterheadTo> letterheads = new ArrayList<LetterheadTo>();
 	private List<ConsultationServiceTo> services = new ArrayList<ConsultationServiceTo>();
@@ -73,12 +73,12 @@ public class ConsultationRequestTo implements Serializable {
 		this.demographic = demographic;
 	}
 
-	public String getSpecialtyId() {
-		return specialtyId;
+	public Integer getSpecId() {
+		return specId;
 	}
 
-	public void setSpecialtyId(String specialtyId) {
-		this.specialtyId = specialtyId;
+	public void setSpecId(Integer specId) {
+		this.specId = specId;
 	}
 
 	public List<ConsultationServiceTo> getServices() {

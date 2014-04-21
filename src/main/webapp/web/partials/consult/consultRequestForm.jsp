@@ -81,7 +81,7 @@
 	.right {float: right;}
 	.dialog {width: 60%; height: 50%; background-color: white; margin: 0 auto; overflow-y: none;}
 	.btn-large {padding: 11px 19px; font-size: 17.5px;}
-	
+	body {padding-bottom: 50px;}
 	#wrapper-action {
 	    background-color: #FFFFFF;
 	    border: 1px solid #FFFFFF;
@@ -199,9 +199,7 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 				</select>
 			</div>
 			<label class="control-label">DOB:</label>
-			<div class="form-group" id="dp-dateOfBirth" data-date="{{demographic.dateOfBirth | date:'yyyy-MM-dd'}}" data-date-format="yyyy-mm-dd" title="Date Of Birth">
-				<input class="form-control" type="text" ng-model="demographic.dateOfBirth" placeholder="Date Of Birth" pattern="^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$"  ng-required="true">
-			</div>
+			<input id="dp-dateOfBirth" type="text" class="form-control" ng-model="demographic.dateOfBirth" data-date-format="yyyy-mm-dd" pattern="^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$" placeholder="Date Of Birth" ng-required="true"/>
 			<label class="control-label">HIN:</label>
 			<div class="form-group">
 				<input type="text" class="form-control" placeholder="HIN" ng-model="demographic.hin" />
@@ -275,8 +273,8 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 							ng-change="changeService()"
 							ng-required="true">
 					</select>
-					<select name="specialtyId" ng-model="consult.specialtyId" class="form-control inline" style="width: 50%;"
-							ng-model="consult.specialtyId" 
+					<select name="specialtyId" class="form-control inline" style="width: 50%;"
+							ng-model="consult.specId" 
 							ng-options="specialty.id as [specialty.firstName, specialty.lastName] for specialty in consult.specialties"
 							ng-change="changeSpecialty()"
 						 	ng-required="true">
@@ -297,9 +295,7 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 				<h4>Referral Details</h4>
 				<div class="col-md-4">
 					<label class="control-label">Referral Date:</label>
-					<div class="form-group" id="dp-referralDate" data-date="{{consult.referralDate | date:'yyyy-MM-dd'}}" data-date-format="yyyy-mm-dd" title="Referral Date">
-						<input style="display: inline-block;" class="form-control" ng-model="consult.referralDate" type="text" placeholder="Referral Date" pattern="^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$">
-					</div>
+					<input id="dp-referralDate" type="text" class="form-control" ng-model="consult.referralDate" data-date-format="yyyy-mm-dd" placeholder="Referral Date" pattern="^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$" ng-required="true"/>
 					<label class="control-label">Urgency:</label>
 					<div class="form-group">
 						<select name="urgency" class="form-control" ng-model="consult.urgency" ng-required="true">
@@ -310,7 +306,7 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 				<div class="col-md-8">
 					<label class="control-label">Referrer Instructions:</label>
 					<div class="form-group">
-						<textarea cols="80" rows="4" class="form-control"></textarea>
+						<textarea cols="80" rows="4" class="form-control" readOnly>{{consult.specialtyAnnotation}}</textarea>
 					</div>
 				</div>
 				<div class="clear"></div>
@@ -322,9 +318,7 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 				<h4>Appointment Details</h4>
 				<div class="col-md-4">
 					<label class="control-label">Appointment Date:</label>
-					<div class="form-group" id="dp-appointmentDate" data-date="{{consult.appointmentDate | date:'yyyy-MM-dd'}}" data-date-format="yyyy-mm-dd" title="Appointment Date">
-						<input style="display: inline-block;" class="form-control" ng-model="consult.appointmentDate" type="text" placeholder="Appointment Date" pattern="^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$">
-					</div>
+					<input id="dp-appointmentDate" type="text" class="form-control" ng-model="consult.appointmentDate" data-date-format="yyyy-mm-dd" placeholder="Appointment Date" pattern="^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$" ng-required="true"/>
 					<label class="control-label">Appointment Time:</label>
 					<div class="form-group">
 						<select class="form-control" style="display: inline; width: 25%;" 
@@ -339,9 +333,7 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 						</select>
 					</div>
 					<label class="control-label">Last Follow-up Date:</label>
-					<div class="form-group" id="dp-lastFollowupDate" data-date="{{consult.followUpDate | date:'yyyy-MM-dd'}}" data-date-format="yyyy-mm-dd" title="Last Follow-up Date">
-						<input style="display: inline-block;" class="form-control" ng-model="consult.followUpDate" type="text" placeholder="Follow Up Date" pattern="^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$">
-					</div>
+					<td><input id="dp-followUpDate" type="text" class="form-control" ng-model="consult.followUpDate" data-date-format="yyyy-mm-dd" placeholder="Follow Up Date"/></td>
 				</div>
 				<div class="col-md-8">
 					<div>
@@ -353,12 +345,6 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 					</div>
 				</div>
 				<div class="clear"></div>
-				<div class="col-md-12">
-					<label class="control-label">Appointment Location <small>(if different from specialist address)</small></label>
-					<select name="location" class="form-control">
-						<option value="{{location.value}}" ng-repeat="location in locations">{{location.name}}</option>
-					</select>
-				</div>
 				<div class="col-md-12">
 					<label class="control-label"><h4>Reason for Consultation</h4></label>
 					<div class="form-group">
@@ -374,12 +360,6 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 				<h4>Create Clinical Notes <i class="icon-question-sign icon-large" rel="popover" data-html="true" data-content="Clinical notes are so you can add a reason for consultation, include detailed data from the patients echart or simply create a custom note that you would like added to the conslultation." data-original-title="What is a Clinical Note?" data-trigger="hover"></i></h4>
 				<div class="well">
 					<div>
-						<label class="control-label"><span class="label badge">Step 1</span> Add a Title:</label>
-						<input type="text" name="noteTitle" class="form-control" data-provide="typeahead" data-items="6" 
-						data-source='["Reason for Consultation","Pertinent clinical information","Significant concurrent problems","Current Medications","Allergies"]' autocomplete="off" placeholder="Title">
-					</div>
-					<div>
-						<label class="control-label"><span class="label badge">Step 2</span> Create Note:</label>
 						<textarea id="clinicalInfo" cols="80" rows="6" class="form-control" placeholder="When creating a note use the Medical Summaries below to help you create the note with data from the patients chart."
 							ng-model="consult.clinicalInfo"></textarea>
 					</div>
@@ -405,12 +385,6 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 				<h4>Significant Concurrent Problems: <i class="icon-question-sign icon-large" rel="popover" data-html="true" data-content="Clinical notes are so you can add a reason for consultation, include detailed data from the patients echart or simply create a custom note that you would like added to the conslultation." data-original-title="What is a Clinical Note?" data-trigger="hover"></i></h4>
 				<div class="well">
 					<div>
-						<label class="control-label"><span class="label badge">Step 1</span> Add a Title:</label>
-						<input type="text" name="noteTitle" class="form-control" data-provide="typeahead" data-items="6" 
-						data-source='["Reason for Consultation","Pertinent clinical information","Significant concurrent problems","Current Medications","Allergies"]' autocomplete="off" placeholder="Title">
-					</div>
-					<div>
-						<label class="control-label"><span class="label badge">Step 2</span> Create Note:</label>
 						<textarea id="concurrentProblems" cols="80" rows="6" class="form-control" placeholder="When creating a note use the Medical Summaries below to help you create the note with data from the patients chart."
 							ng-model="consult.concurrentProblems"></textarea>
 					</div>
@@ -431,25 +405,21 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 			</div>
 		</div>
 		<div class="clear"></div>
-		<div class="col-md-12"><!-- Alergies / Current Medications -->
+		<div class="col-md-6"><!-- Alergies / Current Medications -->
+			<h4>Allergies:</h4>
 			<div class="well">
-				<div class="col-md-6">
-					<h4>Allergies:</h4>
-					<div class="form-group">
-						<textarea cols="80" rows="4" class="form-control" ng-model="consult.allergies"></textarea>
-					</div>
-				</div>
-				<div class="col-md-6">
-					<h4>Current Medications:</h4>
-					<div class="form-group">
-						<textarea cols="80" rows="4" class="form-control" ng-model="consult.currentMeds"></textarea>
-					</div>
-				</div>
-				<div class="clear"></div>
+				<textarea cols="80" rows="4" class="form-control" ng-model="consult.allergies"></textarea>
 			</div>
-		</div><!-- Alergies / Current Medications End -->			
+		</div><!-- Alergies End -->	
+		<div class="col-md-6">
+			<h4>Current Medications:</h4>
+			<div class="well">
+				<textarea cols="80" rows="4" class="form-control" ng-model="consult.currentMeds"></textarea>
+			</div>
+		</div><!-- Current Medications End -->	
 		<div class="clear"></div>
 	</div>
+	<div class="clear"></div>
 	<div id="wrapper-action"><!-- Action Buttons -->
 		<button type="button" class="btn btn-large btn-primary action" rel="saveModal">Save</button>&nbsp;
 		<button type="button" class="btn btn-large btn-danger action" rel="deleteModal">Delete</button>&nbsp; 
@@ -541,7 +511,10 @@ $(function (){
 	$("[rel=popover]").popover({});  
 	$('[id^=dp-]').datepicker({
 		format: 'yyyy-mm-dd'
+	}).on("changeDate", function(event) {
+		$(this).trigger("change");
 	});
+	
 	$('.clinical-module').click(function(event) {
 	    event.preventDefault();
 	    window.open($(this).attr("rel"), $(this).attr("id"), "width=1100,height=800,scrollbars=yes");

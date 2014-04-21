@@ -71,6 +71,7 @@ public class ConsultationDao extends AbstractDao<ConsultationRequest> {
 		if (StringUtils.isNotBlank(consultationQuery.getStatus())) {
 			sql.append("and cr.status = '" + consultationQuery.getStatus() + "' ");
 		}
+		sql.append("and cr.status != 10 "); // Eliminate deleted consults
 		if (StringUtils.isNotBlank(consultationQuery.getTeam())) {
 			sql.append("and cr.sendTo = '" + consultationQuery.getTeam() + "' ");
 		}

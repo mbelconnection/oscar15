@@ -40,6 +40,7 @@ import org.oscarehr.PMmodule.model.Program;
 import org.oscarehr.common.dao.ConsultationRequestDao;
 import org.oscarehr.common.dao.ConsultationServiceDao;
 import org.oscarehr.common.dao.DemographicDao;
+import org.oscarehr.common.dao.ProfessionalSpecialistDao;
 import org.oscarehr.common.model.ConsultationRequest;
 import org.oscarehr.common.model.ConsultationRequestStatus;
 import org.oscarehr.common.model.ConsultationServices;
@@ -75,6 +76,8 @@ public class ConsultService extends AbstractServiceImpl {
 	private ConsultationServiceDao consultationServiceDao;
 	@Autowired
 	private DemographicDao demographicDao;
+	@Autowired
+	private ProfessionalSpecialistDao professionalSpecialistDao;
 
 	@GET
 	@Path("/detail/{requestId}")
@@ -84,7 +87,6 @@ public class ConsultService extends AbstractServiceImpl {
 		if (requestId > 0) {
 			ConsultationConverter converter = new ConsultationConverter();
 			consultationRequest = converter.getAsTransferObject(consultDao.find(requestId));
-			// consultationRequest.setSpecialtyId("1"); // TODO: to be implemented
 		}
 		consultationRequest.getLetterheads().addAll(this.listLetterheads());
 		consultationRequest.getServices().addAll(this.listServices());
@@ -147,6 +149,7 @@ public class ConsultService extends AbstractServiceImpl {
 				specialistTo.setPhone(specialist.getPhoneNumber());
 				specialistTo.setWebSite(specialist.getWebSite());
 				specialistTo.setSpecialtyType(specialist.getSpecialtyType());
+				specialistTo.setAnnotation(specialist.getAnnotation());
 				serviceTo.getSpecialties().add(specialistTo);
 			}
 			list.add(serviceTo);
@@ -174,8 +177,13 @@ public class ConsultService extends AbstractServiceImpl {
 			consultConverter.getAsDomainObject(to, consult);
 		} else {
 			consult = consultConverter.getAsDomainObject(to);
+			consult.setProfessionalSpecialist(null);
+			this.consultDao.saveEntity(consult);
 		}
+		ProfessionalSpecialist professionalSpecialist = professionalSpecialistDao.find(to.getSpecId());
+		consult.setProfessionalSpecialist(professionalSpecialist);
 		this.consultDao.saveEntity(consult);
+		
 		response.setResult(true);
 		return response;
 	}

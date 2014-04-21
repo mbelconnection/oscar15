@@ -25,6 +25,7 @@ package org.oscarehr.ws.rest.conversion;
 
 import org.apache.log4j.Logger;
 import org.oscarehr.common.model.ConsultationRequest;
+import org.oscarehr.common.model.ProfessionalSpecialist;
 import org.oscarehr.ws.rest.to.model.ConsultationRequestTo;
 import org.springframework.beans.BeanUtils;
 
@@ -39,6 +40,9 @@ public class ConsultationConverter extends AbstractConverter<ConsultationRequest
 	public ConsultationRequest getAsDomainObject(ConsultationRequestTo t) throws ConversionException {
 		ConsultationRequest c = new ConsultationRequest();
 		BeanUtils.copyProperties(t, c);
+		ProfessionalSpecialist professionalSpecialist = new ProfessionalSpecialist();
+		professionalSpecialist.setId(t.getSpecId());
+		c.setProfessionalSpecialist(professionalSpecialist);
 		return c;
 	}
 
@@ -46,11 +50,15 @@ public class ConsultationConverter extends AbstractConverter<ConsultationRequest
 	public ConsultationRequestTo getAsTransferObject(ConsultationRequest c) throws ConversionException {
 		ConsultationRequestTo t = new ConsultationRequestTo();
 		BeanUtils.copyProperties(c, t);
+		t.setSpecId(c.getSpecialistId());
 		return t;
 	}
 	
 	public ConsultationRequest getAsDomainObject(ConsultationRequestTo t, ConsultationRequest r) throws ConversionException {
 		BeanUtils.copyProperties(t, r);
+		ProfessionalSpecialist professionalSpecialist = new ProfessionalSpecialist();
+		professionalSpecialist.setId(t.getSpecId());
+		r.setProfessionalSpecialist(professionalSpecialist);
 		return r;
 	}
 }

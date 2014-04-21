@@ -131,6 +131,118 @@ public class DemographicTo1 implements Serializable {
 
 	private String newsletter;
 
+	private String alert;
+
+	private String notes;
+
+	// Extra
+	private String cellPhone;
+	private String homeExt;
+	private String workExt;
+	private String aboriginal;
+	private String phoneComment;
+	private String cytology;
+	private String ethnicity;
+	private String area;
+	private String status;
+	private String firstNation;
+
+	public String getEthnicity() {
+		return ethnicity;
+	}
+
+	public void setEthnicity(String ethnicity) {
+		this.ethnicity = ethnicity;
+	}
+
+	public String getArea() {
+		return area;
+	}
+
+	public void setArea(String area) {
+		this.area = area;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getFirstNation() {
+		return firstNation;
+	}
+
+	public void setFirstNation(String firstNation) {
+		this.firstNation = firstNation;
+	}
+
+	public String getCytology() {
+		return cytology;
+	}
+
+	public void setCytology(String cytology) {
+		this.cytology = cytology;
+	}
+
+	public String getHomeExt() {
+		return homeExt;
+	}
+
+	public void setHomeExt(String homeExt) {
+		this.homeExt = homeExt;
+	}
+
+	public String getWorkExt() {
+		return workExt;
+	}
+
+	public void setWorkExt(String workExt) {
+		this.workExt = workExt;
+	}
+
+	public String getAboriginal() {
+		return aboriginal;
+	}
+
+	public void setAboriginal(String aboriginal) {
+		this.aboriginal = aboriginal;
+	}
+
+	public String getPhoneComment() {
+		return phoneComment;
+	}
+
+	public void setPhoneComment(String phoneComment) {
+		this.phoneComment = phoneComment;
+	}
+
+	public String getCellPhone() {
+		return cellPhone;
+	}
+
+	public void setCellPhone(String cellPhone) {
+		this.cellPhone = cellPhone;
+	}
+
+	public String getAlert() {
+		return alert;
+	}
+
+	public void setAlert(String alert) {
+		this.alert = alert;
+	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
 	public Integer getDemographicNo() {
 		return demographicNo;
 	}

@@ -6,6 +6,9 @@ oscarApp.controller('PatientCtrl', function ($scope,$http,$routeParams,$resource
 	                     {value: 'No', name: 'No'}, 
 	                     {value: 'Paper', name: 'Paper'}, 
 	                     {value: 'Electronic', name: 'Electronic'}];
+	$scope.aboriginals= [{value: 'Unknown', name: 'Unknown'}, 
+	                     {value: 'No', name: 'No'}, 
+	                     {value: 'Yes', name: 'Yes'}];
 	$scope.titles = [{value: "DR", name: "DR"},
 	                 {value: "MS", name: "MS"},
 	                 {value: "MISS", name: "MISS"},
@@ -98,6 +101,33 @@ oscarApp.controller('PatientCtrl', function ($scope,$http,$routeParams,$resource
 	                       {value: 'DE', name: 'Deceased'}, 
 	                       {value: 'MO', name: 'Moved'},
 	                       {value: 'FI', name: 'Fired'}];
+	$scope.ethnicities = [{value: '-1', name: 'Not Set'}, 
+	                      {value: '1', name: 'Status On-reserve'}, 
+	                      {value: '2', name: 'Status Off-reserve'}, 
+	                      {value: '3', name: 'Non-status on-reserve'},
+	                      {value: '4', name: 'Non-status off-reserve'},
+	                      {value: '5', name: 'Metis'}, 
+	                      {value: '6', name: 'Inuit'}, 
+	                      {value: '7', name: 'Asian'}, 
+	                      {value: '8', name: 'Caucasian'},
+	                      {value: '9', name: 'Hispanic'},
+	                      {value: '10', name: 'Black'},
+	                      {value: '11', name: 'Other'}];	
+	$scope.areas = [{value:'-1', name:'Not Set'},
+					{value:'1' , name:'CHA1'},
+					{value:'2' , name:'CHA2'},
+					{value:'3' , name:'CHA3'},
+					{value:'4' , name:'CHA4'},
+					{value:'5' , name:'CHA5'},
+					{value:'6' , name:'CHA6'},
+					{value:'7' , name:'Richmond'},
+					{value:'8' , name:'North or West Vancouver'},
+					{value:'9' , name:'Surrey'},
+					{value:'10', name:'On-Reserve'},
+					{value:'14', name:'Off-Reserve'},
+					{value:'11', name:'Homeless'},
+					{value:'12', name:'Out of Country Residents'},
+					{value:'13', name:'Other'}];
 	
 	$scope.demographicNo = $routeParams.demographicNo;
 	
@@ -110,6 +140,15 @@ oscarApp.controller('PatientCtrl', function ($scope,$http,$routeParams,$resource
 	var demographic = $resource('../ws/rs/demographics/detail/:demographicNo',{}, {});
 	var patient = demographic.get({demographicNo: $scope.demographicNo},function() {
 		$scope.demographic=patient;	
+		$scope.demographic.dateOfBirth = getDate($scope.demographic.dateOfBirth);
+		$scope.demographic.effDate = getDate($scope.demographic.effDate);
+		$scope.demographic.hcRenewDate = getDate($scope.demographic.hcRenewDate);
+		$scope.demographic.rosterDate = getDate($scope.demographic.rosterDate);
+		$scope.demographic.dateJoined = getDate($scope.demographic.dateJoined);
+		$scope.demographic.endDate = getDate($scope.demographic.endDate);
+		$scope.demographic.referralDoctor = getReferralDoctor($scope.demographic.familyDoctor);
+		$scope.demographic.referralDoctorNo = getReferralDoctorNo($scope.demographic.familyDoctor);
+		$scope.demographic.notes = getNotes($scope.demographic.notes);
 	});
 	
 	var nextAppts = $resource('../ws/rs/schedule/nextAppointments/:demographicNo',{}, {});
@@ -117,7 +156,6 @@ oscarApp.controller('PatientCtrl', function ($scope,$http,$routeParams,$resource
 		if(x.content !== undefined && x.content.appointment !== undefined) {
 			$scope.nextAppointmentDay = x.content.appointment[0].appointmentDate;
 			$scope.nextAppointmentTime = x.content.appointment[0].startTime;
-			//console.log(JSON.stringify(x.content.appointment[0]));
 		}
 	});
 	
@@ -175,3 +213,30 @@ oscarApp.controller('PatientCtrl', function ($scope,$http,$routeParams,$resource
 	
 });
 
+function getDate(dateString) {
+	if (dateString == null) {
+		return '';
+	}
+	var date = new Date(dateString);
+	var month = date.getMonth() + 1;
+	var day = date.getDate();
+	return date.getFullYear() + "-" + (month < 10 ? "0" + month : month) + "-" + (day < 10 ? "0" + day : day);
+}
+
+function getReferralDoctorNo(familyDoctor) {
+	var begin = "<rdohip>".length;
+	var end = familyDoctor.indexOf("</rdohip>");
+	return familyDoctor.substr(begin, end - begin);
+}
+
+function getReferralDoctor(familyDoctor) {
+	var begin = familyDoctor.indexOf("<rd>") + "<rd>".length;
+	var end = familyDoctor.indexOf("</rd>");
+	return familyDoctor.substr(begin, end - begin);
+}
+
+function getNotes(notes) {
+	var begin = "<unotes>".length;
+	var end = notes.indexOf("</unotes>");
+	return notes.substr(begin, end - begin);
+}

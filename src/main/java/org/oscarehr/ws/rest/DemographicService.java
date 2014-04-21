@@ -40,9 +40,12 @@ import org.apache.commons.lang.time.DateFormatUtils;
 import org.oscarehr.PMmodule.service.ClientManager;
 import org.oscarehr.PMmodule.web.formbean.ClientSearchFormBean;
 import org.oscarehr.common.dao.CountryCodeDao;
+import org.oscarehr.common.dao.DemographicCustDao;
 import org.oscarehr.common.dao.DemographicDao;
+import org.oscarehr.common.dao.DemographicExtDao;
 import org.oscarehr.common.model.CountryCode;
 import org.oscarehr.common.model.Demographic;
+import org.oscarehr.common.model.DemographicCust;
 import org.oscarehr.common.model.DemographicExt;
 import org.oscarehr.managers.DemographicManager;
 import org.oscarehr.managers.WaitListManager;
@@ -72,9 +75,13 @@ public class DemographicService extends AbstractServiceImpl {
 	@Autowired
 	private DemographicDao demographicDao;
 	@Autowired
+	private DemographicExtDao demographicExtDao;
+	@Autowired
 	private WaitListManager waitingListManager;
 	@Autowired
 	private CountryCodeDao countryCodeDao;
+	@Autowired
+	private DemographicCustDao demographicCustDao;
 	
 	private DemographicConverter demoConverter = new DemographicConverter();
 	
@@ -175,7 +182,40 @@ public class DemographicService extends AbstractServiceImpl {
 			demo.setExtras(extraArray);
 		}
 		DemographicTo1 result = demoConverter.getAsTransferObject(demo);
+		
+		DemographicCust cust = demographicCustDao.find(id);
+		result.setAlert(cust.getAlert());
+		result.setNotes(cust.getNotes());
+		
+		result.setCellPhone(this.getExtValue(extra, "demo_cell"));
+		result.setHomeExt(this.getExtValue(extra, "hPhoneExt"));
+		result.setWorkExt(this.getExtValue(extra, "wPhoneExt"));
+		result.setAboriginal(this.getExtValue(extra, "aboriginal"));
+		result.setPhoneComment(this.getExtValue(extra, "phoneComment"));
+		result.setCytology(this.getExtValue(extra, "cytolNum"));
+		
+		result.setEthnicity(this.getExtValue(extra, "ethnicity"));
+		result.setArea(this.getExtValue(extra, "area"));
+		result.setStatus(this.getExtValue(extra, "statusNum"));
+		result.setFirstNation(this.getExtValue(extra, "fNationCom"));
+		/*
+		result.setCellPhone(this.getExtValue(extra, "given_consent"));
+		result.setCellPhone(this.getExtValue(extra, "rxInteractionWarningLevel"));
+		result.setCellPhone(this.getExtValue(extra, "primaryEMR"));
+		result.setCellPhone(this.getExtValue(extra, "usSigned"));
+		result.setCellPhone(this.getExtValue(extra, "privacyConsent"));
+		result.setCellPhone(this.getExtValue(extra, "informedConsent"));
+		*/
 		return result;
+	}
+	
+	private String getExtValue(List<DemographicExt> extra, String key) {
+		for (DemographicExt ext : extra) {
+			if (ext.getKey().equals(key)) {
+				return ext.getValue();
+			}
+		}
+		return "";
 	}
 	
 	/**
@@ -271,7 +311,16 @@ public class DemographicService extends AbstractServiceImpl {
 	public DemographicResponse updateDemographicData(DemographicTo1 data) {
 		DemographicResponse result = new DemographicResponse();
 		Demographic demographic = demoConverter.getAsDomainObject(data);
-	    demographicManager.updateDemographic(demographic);
+	    // demographicManager.updateDemographic(demographic);
+		demographicDao.save(demographic);
+	    
+	    DemographicCust cust = this.demographicCustDao.find(data.getDemographicNo());
+	    cust.setAlert(data.getAlert());
+	    cust.setNotes("<unotes>" + data.getNotes() + "</unotes>");
+	    this.demographicCustDao.saveEntity(cust);
+	    
+	    
+	    
 	    result.setResult(true);
 	    return result;
 	}

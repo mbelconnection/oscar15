@@ -5,7 +5,7 @@ oscarApp.controller('PatientDetailCtrl', function ($scope,$http,$routeParams,$re
 	
 	$scope.titles = ['Mr.','Mrs.'];
 	
-	$scope.genders = ['Male','Female','Transgender','Unknown'];
+	$scope.genders = [{value: "M", name: "Male"}, {value: "F", name: "Female"}, {value: "T", name: "Transgender"}, {value: "U", name: "Unknown"}];
 	
 	$scope.languages = ['English','French'];
 

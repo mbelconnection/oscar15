@@ -54,9 +54,7 @@
   boolean caisi = Boolean.valueOf(request.getParameter("caisi")).booleanValue(); //??? no 
   
 %>
-<caisi:isModuleLoad moduleName="caisi" reverse="false">
-<%caisi=true; %>
-</caisi:isModuleLoad>
+
 <%@ page import="java.util.*, java.sql.*,java.net.*, oscar.*"
 	errorPage="errorpage.jsp"%>
 <jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean"

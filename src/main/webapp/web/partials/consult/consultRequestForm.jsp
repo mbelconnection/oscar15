@@ -61,6 +61,7 @@
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.dataTables.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/library/bootstrap/3.0.0/assets/js/DT_bootstrap.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/bootstrap-datepicker.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/check_hin.js"></script>
 
 <script src="<%=request.getContextPath()%>/library/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 <script src="<%=request.getContextPath()%>/library/hogan-2.0.0.js"></script>
@@ -182,6 +183,7 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 			<p>Phone (H): {{demographic.phone}}</p>
 			<p>Phone (W): {{demographic.alternativePhone}}</p>
 			<p>Email: {{demographic.email}}</p>
+			<p>MRP: {{demographic.provider.firstName}}, {{demographic.provider.lastName}}</p>
 		</div>
 		<div class="demographic" style="display: none;">
 			<div class="form-group">
@@ -202,13 +204,17 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 			<input id="dp-dateOfBirth" type="text" class="form-control" ng-model="demographic.dateOfBirth" data-date-format="yyyy-mm-dd" pattern="^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$" placeholder="Date Of Birth" ng-required="true"/>
 			<label class="control-label">HIN:</label>
 			<div class="form-group">
-				<input type="text" class="form-control" placeholder="HIN" ng-model="demographic.hin" />
+				<input id="hin" type="text" class="form-control" placeholder="HIN" ng-model="demographic.hin" />
+			</div>
+			<label class="control-label">HIN Version:</label>
+			<div class="form-group">
+				<input id="ver" type="text" class="form-control" placeholder="Version" ng-model="demographic.ver" />
 			</div>
 			<label class="control-label">Address:</label>
 			<div class="form-group">
 				<input type="text" class="form-control" placeholder="Address" ng-model="demographic.address.address" />
 				<input type="text" class="form-control" placeholder="City" ng-model="demographic.address.city" />
-				<select class="form-control" ng-model="demographic.address.province">
+				<select id="province" class="form-control" ng-model="demographic.address.province">
 					<option value="{{province.value}}" ng-repeat="province in provinces">{{province.name}}</option>
 				</select>
 				<input type="text" class="form-control" placeholder="Postcode" ng-model="demographic.address.postal" />
@@ -221,6 +227,10 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 			<label class="control-label">Email:</label>
 			<div class="form-group">
 				<input type="text" class="form-control" placeholder="Email" ng-model="demographic.email" />
+			</div>
+			<label class="control-label">MRP:</label>
+			<div class="form-group">
+				MRP: {{demographic.provider.firstName}}, {{demographic.provider.lastName}}
 			</div>
 		</div>
 		<p><button id="changeDemographic" type="button" class="btn btn-small toggle" rel="demographic"><i class="icon-edit-sign"></i> Change</button></p>
@@ -298,6 +308,12 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 					<div class="form-group">
 						<select name="urgency" class="form-control" ng-model="consult.urgency" ng-required="true">
 							<option value="{{urgency.value}}" ng-repeat="urgency in urgencies" ng-selected="{{urgency.value == consult.urgency || urgency.value == '2'}}">{{urgency.name}}</option>
+						</select>
+					</div>
+					<label class="control-label">Send To:</label>
+					<div class="form-group">
+						<select name="urgency" class="form-control" ng-model="consult.sendTo" ng-required="true">
+							<option value="{{sendTo.value}}" ng-repeat="sendTo in consult.sendTos" ng-selected="{{sendTo.value == consult.sendTo || urgency.value == '-1'}}">{{sendTo.name}}</option>
 						</select>
 					</div>
 				</div>
@@ -436,8 +452,8 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 		<p><i class="icon-warning-sign icon-large"></i> Please confirm that you would like to save this Consultaion Request!</p>
 	</div>
 	<div class="modal-footer">
-		<button class="btn" data-dismiss="modal" aria-hidden="true">No, continue editing</button>
-		<button type="button" class="btn btn-primary" ng-click="saveConsult(consultRequestForm,saveModal)">Yes, save</button>
+		<button id="saveCancel" class="btn" data-dismiss="modal" aria-hidden="true">No, continue editing</button>
+		<button id="saveSubmit" type="button" class="btn btn-primary" ng-click="saveConsult(consultRequestForm,saveModal)">Yes, save</button>
 	</div>
 </div>
 <div id="deleteModal" class="modal fade dialog" style="display: none;" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">

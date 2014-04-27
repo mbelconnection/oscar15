@@ -130,6 +130,11 @@ oscarApp.controller('ConsultDetailCtrl', function ($scope,$http,$routeParams,$re
 				// Merge Pending Patient Callback and Pending Consultant Callback into Pending Callback
 				$scope.consult.status = '5';
 			}
+			$scope.consult.sendTos = new Array();
+			$scope.consult.sendTos.push({name:"--Select Team--", value:"-1"});
+			for (var i = 0; i < $scope.consult.teams.length; i++) {
+				$scope.consult.sendTos.push({name: $scope.consult.teams[i], value:$scope.consult.teams[i]});
+			}
 			
 			// Demographic		
 			demographicNo = response.demographicId;
@@ -138,16 +143,15 @@ oscarApp.controller('ConsultDetailCtrl', function ($scope,$http,$routeParams,$re
 				$scope.demographic = response;
 				$scope.demographic.age = getAge($scope.demographic.dateOfBirth);
 				$scope.demographic.dateOfBirth = getDate($scope.demographic.dateOfBirth);
+				
+				if ($scope.demographic.provider != null && $scope.demographic.provider.team != null) {
+					$scope.consult.sendTo = $scope.demographic.provider.team;
+				} else {
+					$scope.consult.sendTo = "-1";	
+				}
 			});
 		});
 	} else {
-		var demographicWS = $resource('../../../ws/rs/demographics/detail/:demographicNo',{}, {});
-		var demographic = demographicWS.get({demographicNo: demographicNo}, function(response) {
-			$scope.demographic = response;
-			$scope.demographic.age = getAge($scope.demographic.dateOfBirth);
-			$scope.demographic.dateOfBirth = getDate($scope.demographic.dateOfBirth);
-		});
-		
 		var consultDetailWS = $resource('../../../ws/rs/consult/detail/:requestId',{}, {});
 		var consult = consultDetailWS.get({requestId: -1}, function(response) {
 			$scope.consult = response;
@@ -165,13 +169,39 @@ oscarApp.controller('ConsultDetailCtrl', function ($scope,$http,$routeParams,$re
 					$scope.consult.specialtyFax = $scope.consult.specialties[i].fax;
 				}
 			}
+			$scope.consult.sendTos = new Array();
+			$scope.consult.sendTos.push({name:"--Select Team--", value:"-1"});
+			for (var i = 0; i < $scope.consult.teams.length; i++) {
+				$scope.consult.sendTos.push({name: $scope.consult.teams[i], value:$scope.consult.teams[i]});
+			}
+			var demographicWS = $resource('../../../ws/rs/demographics/detail/:demographicNo',{}, {});
+			var demographic = demographicWS.get({demographicNo: demographicNo}, function(response) {
+				$scope.demographic = response;
+				$scope.demographic.age = getAge($scope.demographic.dateOfBirth);
+				$scope.demographic.dateOfBirth = getDate($scope.demographic.dateOfBirth);
+				
+				if ($scope.demographic.provider != null && $scope.demographic.provider.team != null) {
+					$scope.consult.sendTo = $scope.demographic.provider.team;
+				} else {
+					$scope.consult.sendTo = "-1";	
+				}
+			});
 			$scope.consult.urgency = 2;
+			$scope.consult.status = 1;
 		});
 	}
-	
-	$scope.saveConsult = function(form,dialog) {
+		
+	$scope.saveConsult = function(form) {
+		var hin = $scope.demographic.hin;
+		var province = $scope.demographic.address.province;
+		if (!isValidHin(hin, province)) {
+			alert("Please input valid Health Insurance Number!");
+			$("#saveCancel").click();
+			return false;
+		}
 		if (!form.$valid) {
 			alert("Please correct the invalid field(s).");
+			$("#saveCancel").click();
 			return false;
 		}
 		var consultWS = $resource('../../../ws/rs/consult',{consultationRequestTo: "@consult"}, {});

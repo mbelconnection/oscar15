@@ -34,8 +34,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.oscarehr.PMmodule.dao.ProgramDao;
+import org.oscarehr.PMmodule.dao.ProviderDao;
 import org.oscarehr.PMmodule.model.Program;
 import org.oscarehr.common.dao.ConsultationRequestDao;
 import org.oscarehr.common.dao.ConsultationServiceDao;
@@ -78,7 +80,9 @@ public class ConsultService extends AbstractServiceImpl {
 	private DemographicDao demographicDao;
 	@Autowired
 	private ProfessionalSpecialistDao professionalSpecialistDao;
-
+	@Autowired
+	private ProviderDao providerDao;
+	
 	@GET
 	@Path("/detail/{requestId}")
 	@Produces("application/json")
@@ -90,6 +94,12 @@ public class ConsultService extends AbstractServiceImpl {
 		}
 		consultationRequest.getLetterheads().addAll(this.listLetterheads());
 		consultationRequest.getServices().addAll(this.listServices());
+		
+		for (String team : this.providerDao.getActiveTeams()) {
+			if (StringUtils.isNotBlank(team)) {
+				consultationRequest.getTeams().add(team);
+			}
+		}
 		return consultationRequest;
 	}
 

@@ -35,7 +35,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.oscarehr.PMmodule.dao.ProgramDao;
 import org.oscarehr.PMmodule.dao.ProviderDao;
 import org.oscarehr.PMmodule.model.Program;
@@ -50,16 +49,22 @@ import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.ProfessionalSpecialist;
 import org.oscarehr.ws.rest.conversion.ConsultationConverter;
 import org.oscarehr.ws.rest.conversion.DemographicConverter;
+import org.oscarehr.ws.rest.conversion.DocumentConverter;
 import org.oscarehr.ws.rest.to.ConsultationRequestResponse;
 import org.oscarehr.ws.rest.to.model.ConsultationRequestTo;
 import org.oscarehr.ws.rest.to.model.ConsultationServiceTo;
+import org.oscarehr.ws.rest.to.model.DocumentTo;
 import org.oscarehr.ws.rest.to.model.LetterheadTo;
 import org.oscarehr.ws.rest.to.model.SpecialtyTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import oscar.OscarProperties;
+import oscar.dms.EDoc;
+import oscar.dms.EDocUtil;
 import oscar.oscarClinic.ClinicData;
+import oscar.oscarEncounter.oscarConsultationRequest.pageUtil.ConsultationAttachDocs;
+import oscar.oscarEncounter.oscarConsultationRequest.pageUtil.ConsultationAttachLabs;
 import oscar.oscarRx.data.RxProviderData;
 import oscar.oscarRx.data.RxProviderData.Provider;
 
@@ -69,7 +74,6 @@ import oscar.oscarRx.data.RxProviderData.Provider;
 @Path("/consult")
 @Component("consultService")
 public class ConsultService extends AbstractServiceImpl {
-	private Logger logger = Logger.getLogger(this.getClass().getName());
 	@Autowired
 	private ConsultationRequestDao consultDao;
 	@Autowired
@@ -94,6 +98,8 @@ public class ConsultService extends AbstractServiceImpl {
 		}
 		consultationRequest.getLetterheads().addAll(this.listLetterheads());
 		consultationRequest.getServices().addAll(this.listServices());
+		consultationRequest.getAllAttachments().addAll(this.listAttachments(consultationRequest.getDemographicId().toString(), requestId.toString(), EDocUtil.UNATTACHED));
+		consultationRequest.getAttachments().addAll(this.listAttachments(consultationRequest.getDemographicId().toString(), requestId.toString(), EDocUtil.ATTACHED));
 		
 		for (String team : this.providerDao.getActiveTeams()) {
 			if (StringUtils.isNotBlank(team)) {
@@ -167,6 +173,16 @@ public class ConsultService extends AbstractServiceImpl {
 		return list;
 	}
 
+	private List<DocumentTo> listAttachments(String demographicNo, String requestId, boolean attached) {
+		List<DocumentTo> list = new ArrayList<DocumentTo>();
+		for (EDoc doc : EDocUtil.listDocs(demographicNo, requestId, attached)) {
+			DocumentConverter converter = new DocumentConverter();
+			DocumentTo to = converter.getAsTransferObject(doc);
+			list.add(to);
+		}
+		return list;
+	}
+
 	@POST
 	@Consumes("application/json")
 	@Produces("application/json")
@@ -197,7 +213,7 @@ public class ConsultService extends AbstractServiceImpl {
 			consult.setProfessionalSpecialist(null);
 		}
 		this.consultDao.saveEntity(consult);
-		
+
 		response.setResult(true);
 		return response;
 	}
@@ -216,6 +232,44 @@ public class ConsultService extends AbstractServiceImpl {
 		consult.setStatus(ConsultationRequestStatus.Deleted.getStringValue());
 		consult.setStatusText(ConsultationRequestStatus.Deleted.getText());
 		this.consultDao.saveEntity(consult);
+		response.setResult(true);
+		return response;
+	}
+	
+	@POST
+	@Path("/attachment")
+	@Consumes("application/json")
+	@Produces("application/json")
+	public ConsultationRequestResponse saveAttachment(ConsultationRequestTo to) {
+		ConsultationRequestResponse response = new ConsultationRequestResponse();
+		String requestId = to.getId().toString();
+        String demographicNo = to.getDemographicId().toString();
+        String providerNo = to.getProviderNo();
+        
+        if (!OscarProperties.getInstance().isPropertyActive("consultation_indivica_attachment_enabled")) {
+	        List<String> docs = new ArrayList<String>();
+	        for (DocumentTo docTo : to.getAttachments()) {
+	        	docs.add("D" + docTo.getDocId());
+	        }
+	        ConsultationAttachDocs Doc = new ConsultationAttachDocs(providerNo,demographicNo,requestId, docs.toArray(new String[docs.size()]));
+	        Doc.attach();
+	        ConsultationAttachLabs Lab = new ConsultationAttachLabs(providerNo,demographicNo,requestId, docs.toArray(new String[docs.size()]));
+	        Lab.attach();
+        } else { 
+            List<String> labs = new ArrayList<String>();
+            List<String> docs = new ArrayList<String>();
+            for (DocumentTo docTo : to.getAttachments()) {
+            	if (docTo.getType().equals("L")) {
+            		labs.add(docTo.getDocId());
+            	} else if (docTo.getType().equals("D")) {
+            		docs.add(docTo.getDocId());
+            	}
+	        }
+			ConsultationAttachDocs Doc = new ConsultationAttachDocs(providerNo, demographicNo, requestId, docs.toArray(new String[docs.size()]));
+			Doc.attach();
+			ConsultationAttachLabs Lab = new ConsultationAttachLabs(providerNo, demographicNo, requestId, labs.toArray(new String[docs.size()]));
+			Lab.attach();
+        }
 		response.setResult(true);
 		return response;
 	}

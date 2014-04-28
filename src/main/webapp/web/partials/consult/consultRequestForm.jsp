@@ -234,14 +234,13 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 			</div>
 		</div>
 		<p><button id="changeDemographic" type="button" class="btn btn-small toggle" rel="demographic"><i class="icon-edit-sign"></i> Change</button></p>
-		
 		<label class="control-label">Consultation Status</label>
 		<div class="form-group">
 			<select class="form-control" ng-model="consult.status" ng-required="true">
 				<option value="{{status.value}}" ng-repeat="status in statuses">{{status.name}}</option>
 			</select>
 		</div>
-		
+		<p><button type="button" class="btn btn-small btn-primary action" rel="attachmentModal"><i class="icon-edit-sign"></i>Attachments</button></p>
 		<div class="well well-small clinical-module" id="Master Record" rel="<%=request.getContextPath() %>/demographic/demographiccontrol.jsp?demographic_no=1&displaymode=edit">
 			Master Record
 		</div>	
@@ -498,25 +497,38 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 		<button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true" onclick="javascript:window.close();">Close</button>
 	</div>
 </div>
-<div id="noteModal" class="modal fade dialog" style="display: none;" tabindex="-1" role="dialog" aria-labelledby="cancelModalLabel" aria-hidden="true">
+<div id="attachmentModal" class="modal fade dialog" style="display: none;" tabindex="-1" role="dialog" aria-labelledby="cancelModalLabel" aria-hidden="true">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-		<h3 id="noteModalLabel">Title</h3>
+		<h3 id="noteModalLabel">Documents for {{demographic.lastName}}, {{demographic.firstName}}</h3>
 	</div>
 	<div class="modal-body">
-		<p>Display options from echart to select and add to note</p>
+		<div class="col-md-5">
+			<select name="detach" class="form-control" multiple="multiple" size="8">
+				<option value="{{attachment.attachmentNo}}" ng-repeat="attachment in consult.allAttachments" title="{{attachment.fileName}}">{{attachment.description}}</option>
+			</select>
+		</div>
+		<div class="col-md-1">
+			<p><button id="attach" class="btn">&gt;&gt;</button></p>
+			<p><button id="detach" class="btn">&lt;&lt;</button></p>
+		</div>
+		<div class="col-md-5">
+			<select name="attach" class="form-control" multiple="multiple" size="8">
+				<option value="{{attachment.attachmentNo}}" ng-repeat="attachment in consult.attachments" title="{{attachment.fileName}}">{{attachment.description}}</option>
+			</select>
+		</div>
+		<div class="clear"></div>
 	</div>
 	<div class="modal-footer">
 		<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-		<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Add</button>
+		<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true" ng-click="saveAttachment()">Save</button>
 	</div>
 </div>
-
-<script type="text/javascript" src="<%=request.getContextPath() %>/js/bootstrap.js"></script>
-<script type="text/javascript" src="<%=request.getContextPath() %>/js/bootstrap-datepicker.js"></script>
-<script type="text/javascript" src="<%=request.getContextPath() %>/js/jquery.validate.js"></script>
-<script type="text/javascript" src="<%=request.getContextPath() %>/js/jquery.dataTables.js"></script>
-<script type="text/javascript" src="<%=request.getContextPath() %>/js/DT_bootstrap.js"></script>   
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/bootstrap.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/bootstrap-datepicker.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.validate.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/DT_bootstrap.js"></script>   
 
 <script type="text/javascript">
 $(function (){
@@ -562,6 +574,14 @@ $(function (){
 		$("#" + $(this).attr("rel")).modal("toggle");
 	});
 	$("#changeDemographic").click(function() {
+	});
+	$("#attach").click(function() {
+		swap("detach", "attach");
+		$("select[name='attach']").trigger("change");
+	});
+	$("#detach").click(function() {
+		swap("attach", "detach");
+		$("select[name='attach']").trigger("change");
 	});
 });
 
@@ -668,6 +688,53 @@ function importFromEnct(reqInfo,txtArea) {
 	var content = $("#" + txtArea).val();
 	$("#" + txtArea).val(content + "\n------" + reqInfo + "------\n" + info);
 	$("#" + txtArea).trigger("input");
+}
+
+function swap(srcName, dstName) {	
+	var srcElement = document.getElementsByName(srcName); 
+	var src = srcElement[0];
+	var dstElement = document.getElementsByName(dstName); 
+	var dst = dstElement[0];
+	var opt;
+	//if nothing or dummy is being transfered do nothing
+	if (src.selectedIndex == -1 || src.options[0].value == "0") {
+		return;
+	}
+	//if dst has dummy clobber it with new options
+	if (dst.options[0].value == "0") {
+		dst.remove(0);
+	}
+	for ( var idx = src.options.length - 1; idx >= 0; --idx) {
+		if (src.options[idx].selected) {
+			opt = document.createElement("option");
+			try { //ie method of adding option
+				dst.add(opt);
+				dst.options[dst.options.length - 1].text = src.options[idx].text;
+				dst.options[dst.options.length - 1].value = src.options[idx].value;
+				dst.options[dst.options.length - 1].className = src.options[idx].className;
+				src.remove(idx);
+			} catch (e) { //firefox method of adding option
+				dst.add(src.options[idx], null);
+				dst.options[dst.options.length - 1].selected = false;
+			}
+		}
+
+	} //end for
+	if (src.options.length == 0) {
+		// setEmpty(src);
+	}
+}
+function setEmpty(selectbox) {
+	var emptyTxt = "<bean:message key="oscarEncounter.oscarConsultationRequest.AttachDocPopup.empty"/>";
+	var emptyVal = "0";
+	var op = document.createElement("option");
+	try {
+		selectbox.add(op);
+	} catch (e) {
+		selectbox.add(op, null);
+	}
+	selectbox.options[0].text = emptyTxt;
+	selectbox.options[0].value = emptyVal;
 }
 </script>
 </body>

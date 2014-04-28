@@ -62,9 +62,27 @@ public class ConsultationRequestTo implements Serializable {
 
 	private List<LetterheadTo> letterheads = new ArrayList<LetterheadTo>();
 	private List<ConsultationServiceTo> services = new ArrayList<ConsultationServiceTo>();
+	private List<DocumentTo> allAttachments = new ArrayList<DocumentTo>();
+	private List<DocumentTo> attachments = new ArrayList<DocumentTo>();
 	private List<String> teams = new ArrayList<String>();
 
 	private DemographicTo1 demographic;
+
+	public List<DocumentTo> getAllAttachments() {
+		return allAttachments;
+	}
+
+	public void setAllAttachments(List<DocumentTo> allAttachments) {
+		this.allAttachments = allAttachments;
+	}
+
+	public List<DocumentTo> getAttachments() {
+		return attachments;
+	}
+
+	public void setAttachments(List<DocumentTo> attachments) {
+		this.attachments = attachments;
+	}
 
 	public List<String> getTeams() {
 		return teams;

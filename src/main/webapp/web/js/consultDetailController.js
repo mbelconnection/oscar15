@@ -268,6 +268,18 @@ oscarApp.controller('ConsultDetailCtrl', function ($scope,$http,$routeParams,$re
 			}
 		}
 	}
+	
+	$scope.saveAttachment = function() {
+		var attachmentWS = $resource('../../../ws/rs/consult/attachment',{consultationRequestTo: "@consult"}, {});
+		attachmentWS.save({}, {consultationRequestTo: $scope.consult}, function(response) {
+			var result = response.result;
+			if (result) {
+				alert("Save attachment successfully!");
+			} else {
+				alert(response.message);
+			}
+		});
+	}
 });
 
 function getAge(dateString) {

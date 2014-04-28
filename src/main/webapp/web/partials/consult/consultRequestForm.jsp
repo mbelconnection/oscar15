@@ -83,7 +83,7 @@
 	.dialog {width: 60%; height: 50%; background-color: white; margin: 0 auto; overflow-y: none;}
 	.btn-large {padding: 11px 19px; font-size: 17.5px;}
 	body {padding-bottom: 50px;}
-	#wrapper-action {
+	.wrapper-action {
 	    background-color: #FFFFFF;
 	    border: 1px solid #FFFFFF;
 	    bottom: 0;
@@ -95,7 +95,7 @@
 	    width: 100%;
 	    z-index: 999;
 	}
-	#wrapper-action:hover{
+	.wrapper-action:hover{
 		background-color:#f5f5f5;
 		border: 1px solid #E3E3E3;
 		box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
@@ -122,6 +122,34 @@
 		border: 1px solid red;
 	}
 </style>
+<script type="text/javascript">
+function printPreview(id) {
+	var prtContent = document.getElementById(id);
+	var printWindow = window.open('', '', 'letf=0,top=0,width=1200,height=800,toolbar=0,scrollbars=0,status=0');
+	
+	printWindow.document.write('<head>');
+	printWindow.document.write('<title>Consult Request Form</title>');
+	printWindow.document.write('<meta name="viewport" content="width=device-width, user-scalable=false;">');
+	printWindow.document.write('<link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/library/bootstrap/3.0.0/css/bootstrap.min.css">');
+	
+	printWindow.document.write('<style>');
+	printWindow.document.write('.datepicker {z-index: 9999;}');
+	printWindow.document.write('.date-input {width: 80px;}');
+	printWindow.document.write('.clear {clear: both;}');
+	printWindow.document.write('.inline {display: inline;}');
+	printWindow.document.write('.right {float: right;}');
+	printWindow.document.write('.btn-large {padding: 11px 19px; font-size: 17.5px;}');
+	printWindow.document.write('</style>');
+	printWindow.document.write('</head>');
+	printWindow.document.write('<body>');
+	printWindow.document.write(prtContent.innerHTML);
+	printWindow.document.write('</body>');
+	printWindow.document.close();
+	printWindow.focus();
+	printWindow.print();
+	printWindow.close();
+}
+</script>
 <noscript>Your browser either does not support JavaScript, or has it turned off.</noscript>
 </head>
 
@@ -419,19 +447,20 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 		<div class="col-md-6"><!-- Alergies / Current Medications -->
 			<h4>Allergies:</h4>
 			<div class="well">
-				<textarea cols="80" rows="4" class="form-control" ng-model="consult.allergies"></textarea>
+				<textarea cols="80" rows="6" class="form-control" ng-model="consult.allergies"></textarea>
 			</div>
 		</div><!-- Alergies End -->	
 		<div class="col-md-6">
 			<h4>Current Medications:</h4>
 			<div class="well">
-				<textarea cols="80" rows="4" class="form-control" ng-model="consult.currentMeds"></textarea>
+				<textarea cols="80" rows="6" class="form-control" ng-model="consult.currentMeds"></textarea>
 			</div>
 		</div><!-- Current Medications End -->	
 		<div class="clear"></div>
 	</div>
 	<div class="clear"></div>
-	<div id="wrapper-action"><!-- Action Buttons -->
+	<div class="wrapper-action"><!-- Action Buttons -->
+		<button type="button" class="btn btn-large btn-warning action" rel="previewModal">Preview</button>&nbsp;
 		<button type="button" class="btn btn-large btn-primary action" rel="saveModal">Save</button>&nbsp;
 		<button type="button" class="btn btn-large btn-danger action" rel="deleteModal">Delete</button>&nbsp; 
 		<button type="button" class="btn btn-large action" rel="cancelModal">Cancel</button>
@@ -520,15 +549,181 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 		<div class="clear"></div>
 	</div>
 	<div class="modal-footer">
-		<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-		<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true" ng-click="saveAttachment()">Save</button>
+		<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+		<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true" ng-click="print()">Print</button>
+	</div>
+</div>
+<div id="previewModal" class="modal fade dialog" style="display: none; height: 100%; width: 100%;" tabindex="-1" role="dialog" aria-labelledby="cancelModalLabel" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+		<h3>Consultation for {{demographic.lastName}}, {{demographic.firstName}}</h3>
+	</div>
+	<div id="printArea" class="modal-body">
+		<div class="col-md-2">
+			<h3>Patient Details</h3>
+			<div class="demographic">
+				<p>{{demographic.lastName}}, {{demographic.firstName}} ({{demographic.title}})</p>
+				<p>DOB: {{demographic.dateOfBirth | date:'yyyy-MM-dd'}} ({{demographic.age}})</p> 		
+				<p>Sex: {{demographic.sexDesc}}</p> 
+				<p>HIN: {{demographic.hin}} - {{demographic.ver}}</p> 
+				<p>Address:</p> 
+				<address>
+				{{demographic.address.address}}<br/>
+				{{demographic.address.city}}, {{demographic.address.province}}, {{demographic.address.postal}}<br>
+				</address>
+				<p>Phone (H): {{demographic.phone}}</p>
+				<p>Phone (W): {{demographic.alternativePhone}}</p>
+				<p>Email: {{demographic.email}}</p>
+				<p>MRP: {{demographic.provider.firstName}}, {{demographic.provider.lastName}}</p>
+				<p>Status: {{consult.status}}</p>
+				<p>Attachment:</p>
+				<select class="form-control" multiple="multiple" disabled="true">
+					<option value="{{attachment.attachmentNo}}" ng-repeat="attachment in consult.attachments" title="{{attachment.fileName}}">{{attachment.description}}</option>
+				</select>
+			</select>
+			</div>
+		</div><!-- Left pane End -->
+		<div class="col-md-10"><!-- Right pane -->
+			<div class="col-md-6"><!-- Letterhead -->
+				<div class="well">
+					<h4>Letterhead</h4>
+					<p class="letterheadDetails">
+						<address>
+							<strong>Facility Name:</strong> {{consult.letterheadAddress}}<br/>
+							<strong>Phone:</strong> {{consult.letterheadPhone}} <br/>
+							<strong>Fax:</strong> {{consult.letterheadFax}}<br />
+						</address>
+					</p>
+				</div>
+			</div><!-- Letterhead End-->
+			<div class="col-md-6"><!-- Specialty -->
+				<div class="well">
+					<h4>Specialty</h4>
+					<p class="specialtyDetails">
+						<address>
+							<strong>Facility Name:</strong> {{consult.specialtyAddress}}<br/>
+							<strong>Phone:</strong> {{consult.specialtyPhone}} <br/>
+							<strong>Fax:</strong> {{consult.specialtyFax}}<br />
+						</address>
+					</p>
+				</div>
+			</div>
+			<div class="clear"></div>
+			<div class="col-md-12"><!-- Referral -->
+				<div class="well">
+					<h4>Referral Details</h4>
+					<div class="col-md-4">
+						<label class="control-label">Referral Date:</label>
+						<div class="form-group">
+							{{consult.referralDate}}
+						</div>
+						<label class="control-label">Urgency:</label>
+						<div class="form-group">
+							{{consult.urgency}}
+						</div>
+						<label class="control-label">Send To:</label>
+						<div class="form-group">
+							{{consult.sendTo}}
+						</div>
+					</div>
+					<div class="col-md-8">
+						<label class="control-label">Referrer Instructions:</label>
+						<div class="form-group">
+							<textarea cols="80" rows="4" class="form-control" readOnly>{{consult.specialtyAnnotation}}</textarea>
+						</div>
+					</div>
+					<div class="clear"></div>
+				</div>
+			</div><!-- Referral End -->
+	
+			<div class="col-md-12"><!-- Appointment -->
+				<div class="well" id="appointmentDetail">
+					<h4>Appointment Details</h4>
+					<div class="col-md-4">
+						<label class="control-label">Appointment Date:</label>
+						<div class="form-group">
+							{{consult.appointmentDate}}
+						</div>
+						<label class="control-label">Appointment Time:</label>
+						<div class="form-group">
+							{{consult.appointmentHour}} : {{consult.appointmentMinute}}
+						</div>
+						<label class="control-label">Last Follow-up Date:</label>
+						<div>
+							{{consult.followUpDate}}
+						</div>
+					</div>
+					<div class="col-md-8">
+						<div>
+							<label class="control-label"><input type="checkbox" ng-model="consult.patientWillBook" disabled="true"/> Patient Will Book</label>
+						</div>
+						<label class="control-label">Appointment Notes:</label>
+						<div class="form-group">
+							<textarea cols="80" rows="6" class="form-control" ng-model="consult.statusText" disabled="true"></textarea>
+						</div>
+					</div>
+					<div class="clear"></div>
+					<div class="col-md-12">
+						<label class="control-label"><h4>Reason for Consultation</h4></label>
+						<div class="form-group">
+							<textarea cols="120" rows="4" class="form-control" ng-model="consult.reasonForReferral" disabled="true"></textarea>
+						</div>
+					</div>
+					<div class="clear"></div>
+				</div>
+			</div><!-- Appointment End -->	
+			
+			<div id="clinical-note" class="col-md-6"><!-- Clinic Notes -->
+				<div>
+					<h4>Create Clinical Notes <i class="icon-question-sign icon-large" rel="popover" data-html="true" data-trigger="hover"></i></h4>
+					<div class="well">
+						<div>
+							<textarea id="clinicalInfo" cols="80" rows="6" class="form-control" ng-model="consult.clinicalInfo" disabled="true"></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div id="concurrent-problem" class="col-md-6"><!-- Concurrent Problem -->
+				<div>
+					<h4>Significant Concurrent Problems: <i class="icon-question-sign icon-large" rel="popover" data-html="true" data-trigger="hover"></i></h4>
+					<div class="well">
+						<div>
+							<textarea id="concurrentProblems" cols="80" rows="6" class="form-control" ng-model="consult.concurrentProblems" disabled="true"></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="clear"></div>
+			<div class="col-md-6"><!-- Alergies / Current Medications -->
+				<h4>Allergies:</h4>
+				<div class="well">
+					<textarea cols="80" rows="6" class="form-control" ng-model="consult.allergies" disabled="true"></textarea>
+				</div>
+			</div><!-- Alergies End -->
+			<div class="col-md-6">
+				<h4>Current Medications:</h4>
+				<div class="well">
+					<textarea cols="80" rows="6" class="form-control" ng-model="consult.currentMeds" disabled="true"></textarea>
+				</div>
+			</div><!-- Current Medications End -->
+			<div class="clear"></div>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="modal-footer wrapper-action">
+		<button class="btn btn-large btn-primary" data-dismiss="modal" aria-hidden="true" onClick="printPreview('printArea');">Print</button>
+		<button class="btn btn-large" data-dismiss="modal" aria-hidden="true">Cancel</button>
+		<div class="inline">
+			<span id="scrollToTop" class="DoNotPrint" title="scroll to top"><a href="#consultRequestForm" class="DoNotPrint right"><i class="icon-circle-arrow-up icon-3x"></i></a></span>
+		</div>		
 	</div>
 </div>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/bootstrap.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/bootstrap-datepicker.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.validate.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.dataTables.js"></script>
-<script type="text/javascript" src="<%=request.getContextPath()%>/js/DT_bootstrap.js"></script>   
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/DT_bootstrap.js"></script>
 
 <script type="text/javascript">
 $(function (){

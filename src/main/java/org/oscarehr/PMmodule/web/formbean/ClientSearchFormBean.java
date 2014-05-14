@@ -28,9 +28,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.apache.log4j.Logger;
 import org.oscarehr.util.MiscUtils;
 
+@XmlRootElement(name="searchBean")
 public class ClientSearchFormBean {
 	private static Logger log = MiscUtils.getLogger();
 

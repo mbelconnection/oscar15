@@ -39,7 +39,12 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.oscarehr.util.SpringUtils;
+import org.oscarehr.PMmodule.web.formbean.ClientSearchFormBean;
+import org.oscarehr.PMmodule.service.ClientManager;
+
 import org.apache.commons.lang.time.DateFormatUtils;
+import org.oscarehr.PMmodule.dao.ProviderDao;
 import org.oscarehr.common.dao.CountryCodeDao;
 import org.oscarehr.common.dao.DemographicCustDao;
 import org.oscarehr.common.dao.DemographicDao;
@@ -48,6 +53,7 @@ import org.oscarehr.common.model.CountryCode;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.DemographicCust;
 import org.oscarehr.common.model.DemographicExt;
+import org.oscarehr.common.model.Provider;
 import org.oscarehr.managers.DemographicManager;
 import org.oscarehr.managers.WaitListManager;
 import org.oscarehr.ws.rest.bo.PatientBO;
@@ -89,6 +95,8 @@ public class DemographicService extends AbstractServiceImpl {
 	private CountryCodeDao countryCodeDao;
 	@Autowired
 	private DemographicCustDao demographicCustDao;
+	@Autowired
+	private ProviderDao providerDao;
 	
 	private DemographicConverter demoConverter = new DemographicConverter();
 	
@@ -442,4 +450,42 @@ public class DemographicService extends AbstractServiceImpl {
 	}
 
 
+	@POST
+	@Path("/advancedSearch")
+	@Consumes("application/json")
+	@Produces("application/json")
+	public DemographicSearchResults search(ClientSearchFormBean searchQuery) {		
+		DemographicSearchResults results = new DemographicSearchResults();
+		
+		ClientManager clientManager = SpringUtils.getBean(ClientManager.class);
+		
+		List<Demographic> demo = clientManager.search(searchQuery);
+		
+		for(Demographic d:demo) {
+			DemographicSearchResultItem item = new DemographicSearchResultItem();
+			item.setId(d.getDemographicNo());
+			item.setName(d.getFormattedName());
+			if(StringUtils.filled(d.getHin()))
+				item.setHin(d.getHin() + (StringUtils.filled(d.getVer()) ?" " + d.getVer():""));
+			if(d.getDOB() != null) {
+				item.setDob(d.getDOB());
+				item.setDobString(DateFormatUtils.ISO_DATE_FORMAT.format(d.getDOB()));
+			}
+			item.setChartNo(d.getChartNo()!=null?d.getChartNo():"");
+			item.setRosterStatus(d.getRosterStatus()!=null?d.getRosterStatus():"");
+			item.setPatientStatus(d.getPatientStatus()!=null?d.getPatientStatus():"");
+			item.setMrp("");
+			if(d.getProviderNo() != null && d.getProviderNo().length()>0) {
+				Provider prov = providerDao.getProvider(d.getProviderNo());
+				if(prov != null) {
+					item.setMrp(prov.getFormattedName());
+				}
+			}
+			item.setGender(d.getSex());
+			item.setPhone(d.getPhone()==null||d.getPhone().equals("")?"&nbsp;":(d.getPhone().length()==10?(d.getPhone().substring(0,3)+"-"+d.getPhone().substring(3)):d.getPhone()));
+			results.getItems().add(item);
+		}
+		
+		return results;
+	}
 }

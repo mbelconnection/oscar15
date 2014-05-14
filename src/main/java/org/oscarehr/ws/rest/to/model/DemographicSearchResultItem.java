@@ -28,7 +28,7 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
+@XmlRootElement(name="searchResultItem")
 public class DemographicSearchResultItem implements Serializable {
 	
 	private Integer id;
@@ -36,6 +36,13 @@ public class DemographicSearchResultItem implements Serializable {
 	private String hin;
 	private Date dob;
 	private String dobString;
+	private String chartNo;
+	private String gender;
+	private String mrp;
+	private String rosterStatus;
+	private String patientStatus;
+	private String phone;
+	
 	
 	public Integer getId() {
 		return id;
@@ -66,6 +73,42 @@ public class DemographicSearchResultItem implements Serializable {
 	}
 	public void setDobString(String dobString) {
 		this.dobString = dobString;
+	}
+	public String getChartNo() {
+		return chartNo;
+	}
+	public void setChartNo(String chartNo) {
+		this.chartNo = chartNo;
+	}
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+	public String getMrp() {
+		return mrp;
+	}
+	public void setMrp(String mrp) {
+		this.mrp = mrp;
+	}
+	public String getRosterStatus() {
+		return rosterStatus;
+	}
+	public void setRosterStatus(String rosterStatus) {
+		this.rosterStatus = rosterStatus;
+	}
+	public String getPatientStatus() {
+		return patientStatus;
+	}
+	public void setPatientStatus(String patientStatus) {
+		this.patientStatus = patientStatus;
+	}
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 	
 	

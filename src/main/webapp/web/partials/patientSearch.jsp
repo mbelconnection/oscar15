@@ -31,41 +31,127 @@
 
 
 <div class="row">
-<div class="col-md-9">
 
+<div class="col-md-9" ng-controller="PatientSearchCtrl">
 
-<div class="col-md-5">
-<p class="lead">Search Patients</p>
 
 <div class="form-group">
 
-<form method="post" action="../PMmodule/ClientSearch2.do">
-    Last Name: <input name="criteria.lastName" type="text" class="form-control" placeholder="Last Name"/>
-    First Name:<input name="criteria.firstName" type="text" class="form-control" placeholder="First Name"/>
-    Date of Birth:<input name="criteria.dob" type="text" class="form-control" placeholder="Date of Birth"/>
-    HIN:<input type="text" class="form-control" size="10" placeholder="HIN"/>
-    Gender:
-    <select class="form-control" name="criteria.gender">
-    	<option value="">Any</option>
-    	<option value="M">Male</option>
-    	<option value="F">Female</option>
-    	<option value="T">Transgendered</option>
-    	<option value="U">Unknown</option>
-    </select>
-     Chart No:<input name="criteria.chartNo" type="text" class="form-control" placeholder="Chart no"/>
-     Demographic No:<input type="text" class="form-control" placeholder="Demographic No"/>
-     
-    Active:<input name="criteria.active" type="checkbox" class="form-control" name="active" />
-     
+<form name="myform">
+<input type="hidden" name="method" value="search"/>
+    
+<fieldset>
+    <legend>Search Patients</legend>
+    <div class='row'>
+        <div class='col-sm-4'>    
+            <div class='form-group'>
+                <input class="form-control" ng-model="formData.lastName" size="30" type="text"  placeholder="Last Name"/>
+            </div>
+        </div>
+        <div class='col-sm-4'>
+            <div class='form-group'>
+                <input class="form-control" ng-model="formData.firstName" size="30" type="text"  placeholder="First Name"/>
+            </div>
+        </div>
+        <div class='col-sm-4'>
+            <div class='form-group'>
+                 <input class="form-control" ng-model="formData.dob" size="30" type="text"  placeholder="Date of Birth"/>
+            </div>
+        </div>
+    </div>
+
+    <div class='row'>
+  	  <div class='col-sm-4'>
+            <div class='form-group'>
+                <input class="form-control" ng-model="formData.healthCardNumber" size="30" type="text"  placeholder="Health Card #"/>
+            </div>
+        </div>
+        <div class='col-sm-4'>    
+            <div class='form-group'>
+                    <select class="form-control"  ng-model="formData.gender" size="1">
+				    	<option value="">All Genders</option>
+				    	<option value="M">Male</option>
+				    	<option value="F">Female</option>
+				    	<option value="T">Transgendered</option>
+				    	<option value="U">Unknown</option>
+				    </select>
+            </div>
+        </div>
+        <div class='col-sm-4'>
+            <div class='form-group'>
+                <input class="form-control" ng-model="formData.chartNo" size="30" type="text"  placeholder="Chart No"/>
+            </div>
+        </div>
+    </div>    
+     <div class='row'>
+        <div class='col-sm-6'>    
+            <div class='form-group'>
+                <label for="user_firstname">Demographic No</label>
+                <input class="form-control" ng-model="formData.demographicNo" size="30" type="text"  placeholder="Demographic #"/>
+            </div>
+        </div>
+        <div class='col-sm-6'>
+            <div class='form-group'>
+                <label for="user_firstname">Active</label>
+                <select class="form-control"  ng-model="formData.active" size="1">
+				    	<option value="1">Yes</option>
+				    	<option value="0">No</option>
+				    	
+				    </select>
+            </div>
+        </div>
+    </div>    
+</fieldset>
+
+   
      <!-- soundex? bed program, search outside program domain, admission date from/to -->
-     <button class="btn">Search</button>
-     <button class="btn">Reset</button>
+     <button class="btn" ng-click="performSearch()">Search</button>
+     <button class="btn" ng-click="reset()">Reset</button>
 </form>
+</div>
+
+<table class="table" ng-show="searchResults">
+	<thead>
+		<tr>
+			<th>Demographic #</th>
+			<th>HIN</th>
+			<th>Chart #</th>
+			<th>Gender</th>
+			<th>Date of Birth</th>
+			<th>MRP</th>
+			<th>Roster Status</th>
+			<th>Patient Status</th>
+			<th>Phone #</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="item in searchResults">
+			<td>{{item.id}} - {{item.name}}</td>
+			<td>{{item.hin}}</td>
+			<td>{{item.chartNo}}</td>
+			<td>{{item.gender}}</td>
+			<td>{{item.dobString}}</td>
+			<td>{{item.mrp}}</td>
+			<td>{{item.rosterStatus}}</td>
+			<td>{{item.patientStatus}}</td>
+			<td>{{item.phone}}</td>
+		</tr>
+	</tbody>
+</table>
+
+<pre>
+	{{formData}}
+</pre>
+<br/>
+<pre>
+	{{searchResults}}
+</pre>
+
 
 </div>
-</div>
-<div class="col-md-4">
-</div>
+
+
+	
 
 <!-- 
 

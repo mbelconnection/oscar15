@@ -57,6 +57,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.oscarehr.PMmodule.model.ProgramProvider;
+import org.oscarehr.PMmodule.service.ProgramManager;
 import org.oscarehr.PMmodule.web.formbean.ClientListsReportFormBean;
 import org.oscarehr.PMmodule.web.formbean.ClientSearchFormBean;
 import org.oscarehr.common.Gender;
@@ -68,7 +69,9 @@ import org.oscarehr.event.DemographicCreateEvent;
 import org.oscarehr.event.DemographicUpdateEvent;
 import org.oscarehr.integration.hl7.generators.HL7A04Generator;
 import org.oscarehr.util.DbConnectionFilter;
+import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.util.MiscUtils;
+import org.oscarehr.util.SpringUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -1490,7 +1493,14 @@ public class DemographicDao extends HibernateDaoSupport implements ApplicationEv
 		if (!bean.isSearchOutsideDomain()) {
 			// program domain limited search
 			if (bean.getProgramDomain() == null) {
-				bean.setProgramDomain(new ArrayList<ProgramProvider>());
+				//attempt to look it up?
+				ProgramManager programManager = SpringUtils.getBean(ProgramManager.class);
+				List<ProgramProvider> ppList = programManager.getProgramProvidersByProvider(LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo());
+				if(ppList != null && !ppList.isEmpty()) {
+					bean.setProgramDomain(ppList);
+				} else {
+					bean.setProgramDomain(new ArrayList<ProgramProvider>());
+				}
 			}
 
 			DetachedCriteria subq = DetachedCriteria.forClass(Admission.class).setProjection(Property.forName("clientId"));

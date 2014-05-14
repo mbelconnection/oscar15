@@ -28,8 +28,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 
-@XmlRootElement
+@XmlRootElement(name="searchResults")
+@XmlSeeAlso(value=DemographicSearchResultItem.class)
 public class DemographicSearchResults implements Serializable {
 
 	private static final long serialVersionUID = 1L;

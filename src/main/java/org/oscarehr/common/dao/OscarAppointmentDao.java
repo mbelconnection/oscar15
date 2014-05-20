@@ -35,6 +35,7 @@ import java.util.Set;
 
 import javax.persistence.Query;
 
+import org.apache.log4j.Logger;
 import org.oscarehr.common.NativeSql;
 import org.oscarehr.common.model.Appointment;
 import org.oscarehr.common.model.AppointmentArchive;
@@ -48,7 +49,7 @@ import oscar.util.DateUtils;
 @Repository
 @SuppressWarnings("unchecked")
 public class OscarAppointmentDao extends AbstractDao<Appointment> {
-
+	private static Logger log = MiscUtils.getLogger();
 	public OscarAppointmentDao() {
 		super(Appointment.class);
 	}
@@ -687,5 +688,24 @@ public class OscarAppointmentDao extends AbstractDao<Appointment> {
 		List<Appointment> results = q.getResultList();
 		
 		return results;
+	}
+	
+
+	/**
+	 * This methods persists appointment information.
+	 * 
+	 * @param appt	the appointment object to be saved
+	 * @return apptId  the appointment id
+	 */
+	public Appointment saveAppointment(Appointment appt) {
+		Appointment appointment = null;
+		try {
+			//entityManager.getTransaction().begin();
+			appointment = saveEntity(appt);
+			//entityManager.getTransaction().commit();
+		} catch (Exception e) {
+			log.error("Error occured in AppointmentService.addAppointments " + e);
+		}
+		return appointment;
 	}
 }

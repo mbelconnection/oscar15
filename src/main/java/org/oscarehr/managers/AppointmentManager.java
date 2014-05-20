@@ -123,4 +123,17 @@ public class AppointmentManager {
 		}
 		return false;
 	}
-}
+	
+	public Appointment saveAppointment(Appointment appointment) {
+		
+		Appointment appt = appointmentDao.saveAppointment(appointment);
+		
+		//--- log action ---
+		if (appt != null) {
+		
+			LogAction.addLogSynchronous("AppointmentManager.saveAppointment", "id returned=" + appt.getId());
+		}
+		
+		return appt;
+		
+	}}

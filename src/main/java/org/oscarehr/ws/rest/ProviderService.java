@@ -44,6 +44,12 @@ import org.apache.cxf.security.SecurityContext;
 import org.oscarehr.PMmodule.dao.ProviderDao;
 import org.oscarehr.common.model.Provider;
 import org.oscarehr.util.LoggedInInfo;
+import org.oscarehr.managers.DemographicManager;
+import org.oscarehr.managers.ProviderManager2;
+import org.oscarehr.ws.rest.to.model.DemographicTo;
+import org.oscarehr.ws.rest.to.model.DemographicsTo;
+import org.oscarehr.ws.rest.to.model.ProviderTo;
+import org.oscarehr.ws.rest.to.model.ProvidersTo;
 import org.oscarehr.ws.transfer_objects.ProviderTransfer;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -54,6 +60,12 @@ public class ProviderService {
 
 	@Autowired
 	ProviderDao providerDao;
+	
+	@Autowired
+	ProviderManager2 providerManager;
+	
+	@Autowired
+	private DemographicManager demographicManager;
 	
 	protected SecurityContext getSecurityContext() {
 		Message m = PhaseInterceptorChain.getCurrentMessage();
@@ -126,4 +138,33 @@ public class ProviderService {
     public Response getBadRequest() {
         return Response.status(Status.BAD_REQUEST).build();
     }
+    
+
+    @GET
+	@Path("/{nameLike}/list")
+	@Produces("application/json")
+	public ProvidersTo getProvidersAndEvents(@PathParam("nameLike") String nameLike) {
+    	List<ProviderTo> providerLst = providerManager.getProvidersforSearch(nameLike);
+    	ProvidersTo providers = new ProvidersTo();
+    	providers.setProviders(providerLst);
+    	return providers;
+    }
+    
+    /**
+	 * To get Demograhic no and Name for search in Add Appointments. 
+	 * 
+	 * @param nameLike
+	 * 		first three characters of First Name entered in the search Patients text box
+	 * @return
+	 * 		Returns the List of Demographic objects containing DemographicNo and Full Name
+	 */	
+	@GET
+	@Path("/{nameLike}/listPatient")
+	@Produces("application/json")
+	public DemographicsTo getDemographicsAndEvents(@PathParam("nameLike") String nameLike) {
+    	List<DemographicTo> demographicLst = demographicManager.getDemographicsforSearch(nameLike);
+    	DemographicsTo demographics = new DemographicsTo();
+    	demographics.setDemographics(demographicLst);
+    	return demographics;
+    	}
 }

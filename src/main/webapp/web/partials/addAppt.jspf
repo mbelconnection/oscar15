@@ -1,4 +1,7 @@
 <script>
+
+
+var apptData="";
 	
 	$(function() {
 		/*JSON data*/
@@ -37,6 +40,7 @@
 		var add_appt_json_appStatus = {"TD":"TD - To do", "DP":"DP - Daysheet printed", "HR":"HR - Here", "EM":"EM - Empty room", "NS":"NS - No show", "CX":"CX - Cancelled", "NP":"NP - Ready for NP", "FT":"FT - Fast tack"};
 		var add_appt_json_time = {"8_00":"08:00", "8_15":"08:15", "8_30":"08:30", "8_45":"08:45", "9_00":"09:00", "9_15":"09:15", "9_30":"09:30", "9_45":"09:45", "10_00":"10:00", "10_15":"10:15", "10_30":"10:30", "10_45":"10:45", "11_00":"11:00", "11_15":"11:15", "11_30":"11:30", "11_45":"11:45", "12_00":"12:00", "12_15":"12:15", "12_30":"12:30", "12_45":"12:45", "13_00":"13:00", "13_15":"13:15", "13_30":"13:30", "13_45":"13:45", "14_00":"14:00", "14_15":"14:15", "14_30":"14:30", "14_45":"14:45", "15_00":"15:00", "15_15":"15:15", "15_30":"15:30", "15_45":"15:45", "16_00":"16:00", "16_15":"16:15", "16_30":"16:30", "16_45":"16:45", "17_00":"17:00", "17_15":"17:15", "17_30":"17:30", "17_45":"17:45", "18_00":"18:00", "18_15":"18:15", "18_30":"18:30", "18_45":"18:45", "19_00":"19:00", "19_15":"19:15", "19_30":"19:30", "19_45":"19:45", "20_00":"20:00", "20_15":"20:15", "20_30":"20:30", "20_45":"20:45", "21_00":"21:00", "21_15":"21:15", "21_30":"21:30", "21_45":"21:45", "22_00":"22:00", "22_15":"22:15", "22_30":"22:30", "22_45":"22:45"};
 		var add_appt_json_duration = {"15":"15 min", "30":"30 min", "45":"45 min", "60":"60 min"};
+		var add_appt_json_duration1 = {"15":"15 min", "30":"30 min", "45":"45 min", "60":"60 min","75":"75min","90":"90min","105":"105min","120":"120min","135":"135min","150":"150min","165":"165min","180":"180min"};
 		var add_appt_json_reason = {"PT":"Pregnancy test","BT":"Blood test", "UT":"Urine test"};
 				
 		/*form values*/
@@ -112,10 +116,40 @@
 			},getApptReason: function(){
 				return add_appt_json_reason;
 			},saveFormData: function(formData){
-				/*Ajax call to save form data and return appointment ID*/
-				return "APPT123";
+				// HttpRequest request = new HttpRequest(); // create a new XHR
+				// var url = "../ws/rs/appointment/123/add";
+				// request.open("POST", url, async: false);
+				 //String jsonData = '{"language":"dart"}'; // etc...
+				// var jsond = JSON.stringify(formData
+						//apptData = apptData.substring(1);
+						//apptData = apptData.substring(0, apptData.length - 1);
+						//alert(apptData);
+						apptData = '{"appointmentTo" :' + apptData + '}';
+						//apptData = "{" +"appointmentTo :" +  apptData + "}";
+						//alert(apptData);
+						var retVal;
+				 $.ajax({
+				        url: "../ws/rs/appointment/add",
+				        type: "post",
+				        data: apptData,
+				        contentType    : 'application/json',
+				        success: function(result){
+				            //alert("Appointment Created Successfully");
+				            $("#result").html('Submitted successfully');
+				            retVal = JSON.parse(result);
+				        },
+				        error:function(){
+				            alert("failure");
+				            $("#result").html('There is error while submit');
+				           
+				        }
+				    });
+				// request.send(JSON.stringify(formData)); // perform the async POST
+				 return retVal;
 			},getApptDtls: function(apptId){
 				return add_appt_sample_appt_data;
+			},getDurationSlot1: function(){
+				return add_appt_json_duration1;
 			}
 		};
 		/*Ajax calls end*/
@@ -125,7 +159,7 @@
 		
 		var tabTitle = $( "#tab_title" ),
 		tabContent = $( "#tab_content" ),
-		tabTemplate = "<li><a href='#{href}'>&#35;{label}</a> </li>",
+		tabTemplate = "<li><a href='#{href}'>#{label}</a> </li>",
 		tabCounter = 2;
 
 		/*general function*/
@@ -140,6 +174,8 @@
 				add_app_fn.loadTimeSlot();
 				add_app_fn.loadDurationSlot();
 				add_app_fn.loadApptReason();
+				add_app_fn.loadTimeSlot1();
+				add_app_fn.loadDurationSlot1();
 				//add_app_fn.setValNote("hello");
 				
 				
@@ -204,6 +240,14 @@
 			loadDurationSlot: function(){
 				var _data = add_app_ajax_fn.getDurationSlot();
 				add_app_fn.loadOpts(_data, "add_appt_duration");
+			},
+			loadTimeSlot1: function(){
+				var _data = add_app_ajax_fn.getTimeSlot();
+				add_app_fn.loadOpts(_data, "blk_appt_time");
+			},
+			loadDurationSlot1: function(){
+				var _data = add_app_ajax_fn.getDurationSlot1();
+				add_app_fn.loadOpts(_data, "blk_appt_duration");
 			},
 			loadApptReason: function(){
 				var _data = add_app_ajax_fn.getApptReason();
@@ -300,7 +344,7 @@
 				}
 			},
 			validateForm: function(pat_sel_index){
-				if($("#add_appt_pat_name").val() ==""){
+				if($("#add_appt_pat_name0").val() ==""){
 					add_app_fn.setValNote("Select patient.");
 					return;
 				}				
@@ -332,7 +376,120 @@
 				add_app_fn.captureFormData(pat_sel_index);
 					
 			},
+			
+			validateBlockForm: function(){	
+							
+				
+				if($('input[name=blk_appt_provider]:checked').val() == "single"){
+					if($("#add_appt_block_s_provider").val() ==""){
+						add_app_fn.setValNote("Select provider.");
+						return;
+					}
+				}else if($('input[name=blk_appt_provider]:checked').val() == "multi"){
+					if($("#add_appt_block_m_provider").val() ==""){
+						add_app_fn.setValNote("Select provider.");
+						return;
+					}
+				}
+				
+				if($("#blk_appt_date").val() ==""){
+					add_app_fn.setValNote("Select date.");
+					return;
+				}else if($("#blk_appt_time").val() ==""){
+					add_app_fn.setValNote("Select time.");
+					return;
+				}else if($("#blk_appt_duration").val() ==""){
+					add_app_fn.setValNote("Select duration.");
+					return;
+				}
+				
+				//add_app_fn.hideValNote();
+				add_app_fn.captureBlockFormData();
+					
+			},
+			
 			captureFormData: function(pat_sel_index){
+				var formData = {};
+				/*Basic details
+				*
+				*From Next avaliable screen*/
+				var s1 = nextAailObject.provider!= undefined ? nextAailObject.provider.pid_m.split(","): undefined;
+				console.log(s1);
+				formData['no_of_pat'] = add_appt_pat_cnt;
+				if(s1 != undefined){
+				for(var i=0;i<s1.length-1;i++){
+				console.log(i);
+				globalObj.id=s1[i];
+				formData['id'] = s1[i];
+				formData['p_id'] = s1[i].split("_")[0];
+				formData['patient_id'] 		= add_appt_fld_pat_id ;
+				formData['patient_name']	= $("#add_appt_pat_name").val();
+				formData['provider_type'] 	= add_appt_fld_prv_type;
+				formData['provider_id'] 	= add_appt_fld_prv_id ;
+				formData['date'] 			= $("#add_appt_date").val();
+				formData['time'] 			= $("#add_appt_time").val();
+				formData['duration'] 		= $("#add_appt_duration").val();
+				formData['send_mail'] 		= "N";
+				if($("#add_appt_sendemail").is(':checked'))
+					formData['send_mail'] = "Y";
+				formData['recurrence_day'] 	= add_app_fn.getWeekDay();
+				formData['recurrence_date'] = $("#add_appt_date").val();
+				/*More details*/
+				formData['go_to'] = $("#add_appt_type").val();
+				formData['is_critical'] = "N";
+				if($("#add_appt_critical").is(':checked'))
+					formData['is_critical'] = "Y";
+				formData['appt_status'] 	= $("#add_appt_status").val();
+				formData['appt_resources'] 	= $("#add_appt_resources").val();
+				formData['appt_reason'] 	= $("#add_appt_reason").val();
+				formData['appt_reason_text'] = $("#add_appt_reason option:selected").text();
+				formData['appt_reason_dtls'] = $("#add_appt_reason_dtls").val();
+				formData['appt_notes'] 		= $("#add_appt_notes").val();
+				/*save data into database*/
+				apptData = JSON.stringify(formData);
+				var add_appt_data = add_app_ajax_fn.saveFormData(JSON.stringify(formData));
+				//formData['appt_id'] = add_appt_appt_id;
+				//alert("test1");
+				sch.saveEvent(globalObj,formData,add_appt_data);
+				}
+				}else{
+				/* From Double click */
+				formData['id'] = globalObj.id;
+				formData['p_id'] = globalObj.pid;
+				formData['patient_id'] 		= add_appt_fld_pat_id ;
+				formData['patient_name']	= $("#add_appt_pat_name").val();
+				formData['provider_type'] 	= add_appt_fld_prv_type;
+				formData['provider_id'] 	= add_appt_fld_prv_id ;
+				formData['date'] 			= $("#add_appt_date").val();
+				formData['time'] 			= $("#add_appt_time").val();
+				formData['duration'] 		= $("#add_appt_duration").val();
+				formData['send_mail'] 		= "N";
+				if($("#add_appt_sendemail").is(':checked'))
+					formData['send_mail'] = "Y";
+				formData['recurrence_day'] 	= add_app_fn.getWeekDay();
+				formData['recurrence_date'] = $("#add_appt_date").val();
+				/*More details*/
+				formData['go_to'] = $("#add_appt_type").val();
+				formData['is_critical'] = "N";
+				if($("#add_appt_critical").is(':checked'))
+					formData['is_critical'] = "Y";
+				formData['appt_status'] 	= $("#add_appt_status").val();
+				formData['appt_resources'] 	= $("#add_appt_resources").val();
+				formData['appt_reason'] 	= $("#add_appt_reason").val();
+				formData['appt_reason_text'] = $("#add_appt_reason option:selected").text();
+				formData['appt_reason_dtls'] = $("#add_appt_reason_dtls").val();
+				formData['appt_notes'] 		= $("#add_appt_notes").val();
+				/*save data into database*/
+				apptData = JSON.stringify(formData);
+				var add_appt_data = add_app_ajax_fn.saveFormData(JSON.stringify(formData));
+			//	formData['appt_id'] = add_appt_appt_id
+				sch.saveEvent(globalObj,formData,add_appt_data);
+				}
+				$("#add_appt_form").dialog("close");
+			},
+			
+			
+			captureBlockFormData: function(){
 				var formData = {};
 				/*Basic details
 				*
@@ -343,29 +500,17 @@
 				globalObj.id=s1[i];
 				formData['id'] = s1[i];
 				formData['p_id'] = s1[i].split("_")[0];
-				formData['patient_id'] 		= add_appt_fld_pat_id ;
-				//formData['patient_name']	= $("#add_appt_pat_name0").val();
+				
 				formData['provider_type'] 	= add_appt_fld_prv_type;
 				formData['provider_id'] 	= add_appt_fld_prv_id ;
-				formData['date'] 			= $("#add_appt_date").val();
-				formData['time'] 			= $("#add_appt_time").val();
-				formData['duration'] 		= $("#add_appt_duration").val();
-				formData['send_mail'] 		= "N";
-				if($("#add_appt_sendemail").is(':checked'))
-					formData['send_mail'] = "Y";
+				formData['date'] 			= $("#blk_appt_date").val();
+				formData['time'] 			= $("#blk_appt_time").val();
+				formData['duration'] 		= $("#blk_appt_duration").val();
 				formData['recurrence_day'] 	= add_app_fn.getWeekDay();
 				formData['recurrence_date'] = $("#add_appt_date").val();
 				/*More details*/
-				formData['go_to'] = $("#add_appt_type").val();
-				formData['is_critical'] = "N";
-				if($("#add_appt_critical").is(':checked'))
-					formData['is_critical'] = "Y";
-				formData['appt_status'] 	= $("#add_appt_status").val();
-				formData['appt_resources'] 	= $("#add_appt_resources").val();
-				formData['appt_reason'] 	= $("#add_appt_reason").val();
-				formData['appt_reason_text'] = $("#add_appt_reason option:selected").text();
-				formData['appt_reason_dtls'] = $("#add_appt_reason_dtls").val();
-				formData['appt_notes'] 		= $("#add_appt_notes").val();
+				formData['appt_reason'] 	= $("#blk_appt_reason").val();
+				formData['appt_notes'] 		= $("#blk_appt_notes").val();
 				/*save data into database*/
 				var add_appt_appt_id = add_app_ajax_fn.saveFormData(formData);
 				formData['appt_id'] = add_appt_appt_id;
@@ -373,49 +518,34 @@
 				}
 				}else{
 				/* From Double click */
+
+				
 				formData['id'] = globalObj.id;
 				formData['p_id'] = globalObj.pid;
-				formData['patient_id'] 		= add_appt_fld_pat_id ;
-				//formData['patient_name']	= $("#add_appt_pat_name0").val();
+				alert(add_appt_fld_prv_id);
+				alert(add_appt_fld_prv_type);
 				formData['provider_type'] 	= add_appt_fld_prv_type;
 				formData['provider_id'] 	= add_appt_fld_prv_id ;
-				formData['date'] 			= $("#add_appt_date").val();
-				formData['time'] 			= $("#add_appt_time").val();
-				formData['duration'] 		= $("#add_appt_duration").val();
-				formData['send_mail'] 		= "N";
-				if($("#add_appt_sendemail").is(':checked'))
-					formData['send_mail'] = "Y";
-				formData['recurrence_day'] 	= add_app_fn.getWeekDay();
-				formData['recurrence_date'] = $("#add_appt_date").val();
-				/*More details*/
-				formData['go_to'] = $("#add_appt_type").val();
-				formData['is_critical'] = "N";
-				if($("#add_appt_critical").is(':checked'))
-					formData['is_critical'] = "Y";
-				formData['appt_status'] 	= $("#add_appt_status").val();
-				formData['appt_resources'] 	= $("#add_appt_resources").val();
-				formData['appt_reason'] 	= $("#add_appt_reason").val();
-				formData['appt_reason_text'] = $("#add_appt_reason option:selected").text();
-				formData['appt_reason_dtls'] = $("#add_appt_reason_dtls").val();
-				formData['appt_notes'] 		= $("#add_appt_notes").val();
+				formData['date'] 			= $("#blk_appt_date").val();
+				formData['time'] 			= $("#blk_appt_time").val();
+				formData['duration'] 		= $("#blk_appt_duration").val();
+				formData['appt_reason'] 	= $("#blk_appt_reason").val();
+				formData['appt_notes'] 		= $("#blk_appt_notes").val();
 				/*save data into database*/
+				
+				alert($("#blk_appt_reason").val());
+				alert($("#blk_appt_notes").val());
+				alert($("#blk_appt_date").val());
 				var add_appt_appt_id = add_app_ajax_fn.saveFormData(formData);
 				
 				formData['appt_id'] = add_appt_appt_id;
-				var sz =[];
-				for(var i=0; i<add_appt_pat_cnt; i++){
-				if($('#add_appt_pat_name'+i).val() != null && $('#add_appt_pat_name'+i).val() != ""){
-						/* add_appt_pat_cnt_names refering from the schedular.js */
-						add_appt_pat_cnt_names+=$('#add_appt_pat_name'+i).val()+"$"; 
-						}
-				}
-				sz = add_appt_pat_cnt_names.split("$");
-				formData['patient_name'] = sz[pat_sel_index];
-				formData['pat_sel_index'] = pat_sel_index;
-				sch.saveEvent(globalObj,formData);
+				//console.log(globalObj);
+				sch.saveBlockEvent(globalObj,formData);
 				}
 				$("#add_appt_form").dialog("close");
 			},
+			
+			
 			/*when edit case*/
 			setApptDtls: function(apptId){
 				var _data = add_app_ajax_fn.getApptDtls(apptId);
@@ -605,21 +735,71 @@
 			}  
 		/**bind auto complete functionality*/
 		/*bind patient name*/
-		/*$( "#add_appt_pat_name" ).catcomplete({
+		$( "#add_appt_pat_name" ).catcomplete({
 		  delay: 0,
-		  source: add_app_ajax_fn.getPatientsData(),
+		  minLength:3,
+		  source:function( request, response ) {
+			  $.ajax({ 
+			        url: "../ws/rs/providerService/"+document.getElementById('add_appt_pat_name').value+"/listPatient",
+			        type : "get",
+			       // data: apptData,
+			        contentType    : 'application/json',
+			        success: function (patientsData)
+		            {
+			        	//alert("success"+patientsData);
+			        	//if(data!=null)
+			        		//alert(patientsData.patients.length);
+			        	//alert(JSON.stringify(patientsData.patients))
+		               response(patientsData.patients);
+		            },
+			        error:function(){
+			        	//alert("fail");
+			            $("#result").html('There is error while submit');
+			           
+			        }
+			    }); 
+		  },
 		  select: function( event, ui ) {
 			//alert(ui.item.id);
 			add_appt_fld_pat_id = ui.item.id;
 			add_app_fn.loadPatientDtls(ui.item.id);
 		  }
-		});*/
+		});
 		
 		/*bind provider name*/
+		$( "#add_appt_block_s_provider" )
+		.catcomplete({
+		  delay: 0,
+		  minLength:3,
+		  source: add_app_ajax_fn.getDocsData(),
+		  select: function( event, ui ) {		
+			add_appt_fld_prv_type = "S";
+			add_appt_fld_prv_id  = ui.item.id;
+		  }
+		});
+		
 		$( "#add_appt_s_provider" )
 		.catcomplete({
 		  delay: 0,
-		  source: add_app_ajax_fn.getDocsData(),
+		  minLength:3,
+		  source:function( request, response ) {
+			  $.ajax({ 
+			        url: "../ws/rs/providerService/"+document.getElementById('add_appt_s_provider').value+"/list",
+			        type: "get",
+			        data: apptData,
+			        contentType    : 'application/json',
+			        success: function (data)
+		            {
+			        	//alert("success"+data.providers);
+		                response(data.providers);
+		            },
+			        error:function(){
+			        	//alert("fail");
+			            $("#result").html('There is error while submit');
+			           
+			        }
+			    }); 
+		  },
 		  select: function( event, ui ) {		
 			add_appt_fld_prv_type = "S";
 			add_appt_fld_prv_id  = ui.item.id;
@@ -628,6 +808,14 @@
 		
 		
 		$( "#add_appt_m_provider" )
+		.bind( "keydown", function( event ) {
+			if ( event.keyCode === $.ui.keyCode.TAB &&
+			$( this ).data( "ui-autocomplete" ).menu.active ) {
+			event.preventDefault();
+			}
+		})
+		
+		$( "#add_appt_block_m_provider" )
 		.bind( "keydown", function( event ) {
 			if ( event.keyCode === $.ui.keyCode.TAB &&
 			$( this ).data( "ui-autocomplete" ).menu.active ) {
@@ -673,7 +861,27 @@
 			}
 
 		 });
-		 
+		
+		
+		$("input:radio[name=blk_appt_provider]").on("click",function(){
+	
+			if($(this).val() == "multi"){
+				$("#add_appt_block_s_provider").attr("disabled",true);
+				$("#add_appt_block_m_provider").attr("disabled",false);
+				$("#add_appt_block_s_provider").val("");
+			}else if($(this).val() == "total"){
+				$("#add_appt_block_s_provider").attr("disabled",true);
+				$("#add_appt_block_m_provider").attr("disabled",true);
+				$("#add_appt_block_s_provider").val("");
+				$("#add_appt_block_m_provider").val("");
+			}else{
+				$("#add_appt_block_m_provider").attr("disabled",true);
+				$("#add_appt_block_s_provider").attr("disabled",false);
+				$("#add_appt_block_m_provider").val("");	
+			}
+
+		 });
+		
 		 $("#appt_but_cancel").on("click",function(){
 				$("#add_appt_form").dialog("close");
 				//add_app_fn.addTab();
@@ -692,12 +900,23 @@
 				add_app_fn.addPatientFld();
 		 });
 		 
-		 
+		 $("#block_but_save").on("click",function(){
+				add_app_fn.validateBlockForm();
+		 });
+
 		 
 		/*bind input field to date object*/	
 		new JsDatePick({
 			useMode:2,
 			target:"add_appt_date",
+			disablePreDays:true,
+			dateFormat:"%d-%M-%Y"
+
+		});
+		
+		new JsDatePick({
+			useMode:2,
+			target:"blk_appt_date",
 			disablePreDays:true,
 			dateFormat:"%d-%M-%Y"
 
@@ -834,7 +1053,7 @@
 							<td width="80%" >
 								<table id="add_appt_pat_tab">
 									<tr>
-										<td><input id="add_appt_pat_name0" class="form-control na_form_inputtext" style="height:25px;" placeholder='Type patient name...' rel='popover' data-placement='bottom' data-original-title='&lt;b&gt;Requests&lt;/b&gt;' data-content='My content goes here' /></td>									
+										<td><input id="add_appt_pat_name" class="form-control na_form_inputtext" style="height:25px;" placeholder='Type patient name...' rel='popover' data-placement='bottom' data-original-title='&lt;b&gt;Requests&lt;/b&gt;' data-content='My content goes here' /></td>									
 										<td style='padding-left:5px;'><div onclick='add_app_fn.removePatFld(this)'><img src='js_up/img/close-x-cir.GIF' style='cursor:pointer'></img></div></td>
 									</tr>
 								</table>
@@ -1146,7 +1365,7 @@
 											<input type="radio" name="blk_appt_provider" class="na_pro" value="single" checked style="margin-bottom: -3px;"/>&nbsp;Single provider appt.&nbsp;
 										</td>
 										<td>
-											<input id="naa_s_provider" class="form-control na_form_inputtext" style="height:25px;"/>
+											<input id="add_appt_block_s_provider" class="form-control na_form_inputtext" style="height:25px;"/>
 										</td>
 									</tr>
 								</table>
@@ -1161,7 +1380,7 @@
 											<input type="radio" name="blk_appt_provider" class="na_pro" value="multi" style="margin-bottom: -3px;"/>&nbsp;Multi provider appt.
 										</td>
 										<td style="padding-left:13px;">
-											<input id="naa_m_provider" class="form-control na_form_inputtext" disabled style="height:25px;"/>
+											<input id="add_appt_block_m_provider" class="form-control na_form_inputtext" disabled style="height:25px;"/>
 										</td>
 									</tr>
 								</table>
@@ -1170,10 +1389,10 @@
 						</tr>
 						<tr>
 							<td></td>
-							<td>&nbsp;<input type="radio" name="blk_appt_provider" class="na_pro" value="multi" style="margin-bottom: -3px;"/>&nbsp;Entire team block
+							<td>&nbsp;<input type="radio" name="blk_appt_provider" class="na_pro" value="total" style="margin-bottom: -3px;"/>&nbsp;Entire team block
 						</tr>
 						<tr>
-							<td height="5" colspan="2"></td>
+							<td height="10" colspan="2"></td>
 						</tr>
 						<tr>
 							<td width="20%">Date</td>
@@ -1181,14 +1400,15 @@
 								<table>
 									<tr>
 										<td>
-											<input id="blk_appt_date" class="form-control na_form_inputtext" style="height:25px"/>
+											<input id="blk_appt_date" class="form-control na_form_inputtext" readonly style="width:90px;cursor:pointer;height:25px;"/>
 										</td>
-										<td>
-											Add recurrence
-										</td>
+										<td style="padding-bottom:9px;padding-left:10px;"><span id="add_appt_but_recur" class="appt_roundbox" style="padding:2px;cursor:pointer;height:25px;">&nbsp;Add recurrence&nbsp;</span></td>
 									</tr>
 								</table>
 							</td>
+						</tr>
+						<tr>
+							<td height="10" colspan="2"></td>
 						</tr>
 						<tr>
 							<td width="20%">Time</td>
@@ -1196,30 +1416,25 @@
 								<table>
 									<tr>
 										<td>
-											<input id="blk_appt_time" class="form-control na_form_inputtext" style="width:80px;height:25px"/>
+											<select class="form-control na_form_select" id="blk_appt_time" style="width:100px;padding:0px;" onchange="updateTime()"/>
 										</td>
 										<td>
 											<span style="padding-left:5em;">Duration</span>
 										</td>
-										<td>
-											<input id="blk_appt_duration" class="form-control na_form_inputtext" style="width:80px;height:25px"/>
+										<td style="padding-left:10px;">
+											<select class="form-control na_form_select" id="blk_appt_duration" style="width:100px;padding:0px;" onchange="updateTime()"/>
+											
 										</td>
+									</tr>
+									<tr>
+										<td><input type="checkbox" name="blk_appt_allday" class="na_pro" value="" style="margin-bottom: -5px;margin-left:5px;"/><span style="padding-left:2px;">All Day</span></td>
+										<td></td>
+										<td>Ends at <span id="finalTime">08:15</span></td>
 									</tr>
 								</table>
 							</td>
 						</tr>
-						<tr>
-							<td width="20%"></td>
-							<td width="80%" style="padding-left:5px">
-								Ends at 1:00 PM
-							</td>
-						</tr>
-						<tr>
-							<td width="20%"></td>
-							<td width="80%" style="padding-left:5px">
-								<input type="checkbox" name="blk_appt_allday" class="na_pro" value="" style="margin-bottom: -5px;margin-left:5px;"/><span style="padding-left:2px;">All Day</span>
-							</td>
-						</tr>
+						
 						<tr>
 							<td colspan="2" height="120px;"></td>
 						</tr>
@@ -1247,7 +1462,7 @@
 						<tr>
 							<td>Notes</td>
 							<td>
-								<textarea name="blk_appt_notes" rows="3" cols="15" class="form-control na_form_inputtext"/>
+								<textarea name="blk_appt_notes" id="blk_appt_notes" rows="3" cols="15" class="form-control na_form_inputtext"></textarea>
 							</td>
 						</tr>
 						<tr>
@@ -1257,7 +1472,10 @@
 				</td>
 			</tr>
 			<tr>
-				<td colspan="2" style="text-align:right;border-top: 1px solid #AAAAAA;"> hello</td>
+				<td colspan="2" style="text-align:right;border-top: 1px solid #AAAAAA; padding-top:10px;"> 
+					<button id="appt_but_cancel" class="naa_button_grd" style="width:80px;cursor:pointer;">Cancel</button>&nbsp;&nbsp;
+					<button id="block_but_save" class="naa_button_grd" style="width:80px;cursor:pointer;">Save</button>
+				</td>
 			</tr>
 		</table>        
     </div>    
@@ -1274,6 +1492,30 @@ $(function(){
 
 function showPatTab(id){
 	$('#myTab li:eq('+id+') a').tab('show');
+}
+
+function updateTime(){
+	var time =  document.getElementById("blk_appt_time").value;
+	var time1 = time.split("_");
+	var finalTime = (parseFloat(time1[0])*60)+(parseFloat(time1[1]))+parseFloat(document.getElementById("blk_appt_duration").value);
+	var t1 = (finalTime/60);
+	
+	var quoi = t1.toString().split(".")
+
+	var firVal;
+	if(quoi[0].length<=1){
+		firVal = "0"+quoi[0];
+	}else{
+		firVal = quoi[0];
+	}
+	
+	var secVal = finalTime%60;
+
+	if(secVal.toString().length<=1){
+		secVal = "0"+secVal.toString();
+	}
+	
+	document.getElementById("finalTime").innerHTML = firVal +":"+ secVal;
 }
 
 /*$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {

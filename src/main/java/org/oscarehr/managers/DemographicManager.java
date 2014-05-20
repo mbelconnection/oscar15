@@ -24,6 +24,7 @@
 
 package org.oscarehr.managers;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -41,6 +42,8 @@ import org.oscarehr.common.model.DemographicMerged;
 import org.oscarehr.common.model.PHRVerification;
 import org.oscarehr.common.model.Provider;
 import org.oscarehr.util.MiscUtils;
+import org.oscarehr.ws.rest.bo.DemographicBO;
+import org.oscarehr.ws.rest.to.model.DemographicTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -467,5 +470,20 @@ public class DemographicManager {
     	}
 		
 		return(results);
+	}
+	
+	public List<DemographicTo> getDemographicsforSearch(String nameLike) {
+		List<DemographicTo> demographicTo = null;
+		try {
+			List<Demographic> results = demographicDao.getActiveDemographisFirstNameSearch(nameLike);
+			//--- log action ---
+			LogAction.addLogSynchronous("DemographicManager.getDemographicsforSearch" + results.size(), null);
+			// copy provider into provider transfer object
+			demographicTo = new ArrayList<DemographicTo>();
+			demographicTo = DemographicBO.copy(results, demographicTo);
+		} catch (Exception e) {
+			return new ArrayList<DemographicTo>();
+		}
+		return demographicTo;
 	}
 }

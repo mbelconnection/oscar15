@@ -392,8 +392,9 @@ Schedular.prototype.editEvent = function(){
 
 }
 
-Schedular.prototype.saveEvent = function(obj,appObj){
+Schedular.prototype.saveEvent = function(obj,appObj,saveData){
 	console.log("eneter every time");
+	//alert(appObj.patient_name);
 	obj.offHeight = (obj.id != "" && document.getElementById(obj.id).offsetHeight!=null)?document.getElementById(obj.id).offsetHeight:100;
 	obj.offWidth = (obj.id != "" && document.getElementById(obj.id).offsetWidth!=null)?document.getElementById(obj.id).offsetWidth:100;
 	obj.patient_name = appObj.patient_name;
@@ -402,9 +403,10 @@ Schedular.prototype.saveEvent = function(obj,appObj){
 	//obj.hr = appObj['time'];
 	//obj.hr = document.getElementById(obj.id).getAttribute('hour');// From Khadaree
 	//obj.min = document.getElementById(obj.id).getAttribute('min');
-	obj.hr = this._getHour(appObj['time']);
-	obj.min = this._getMin(appObj['time']);
-	obj.pos = document.getElementById(obj.id).getAttribute('position');
+	obj.hr = this._getHour(appObj.time);
+	obj.min = this._getMin(appObj.time);
+	var id = appObj.provider_id+"_"+this._getHour(appObj.time)+":"+this._getMin(appObj.time);
+	obj.pos = document.getElementById(id).getAttribute('position');
 	obj.notes = appObj.appt_notes;
 	obj.appoint_status = appObj.appt_status;
 	obj.go_to = appObj.go_to;

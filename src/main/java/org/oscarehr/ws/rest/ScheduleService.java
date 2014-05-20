@@ -159,13 +159,15 @@ public class ScheduleService extends AbstractServiceImpl {
 				events.setReason("Physical Examination.");
 				evnLst.add(events);
 				results.setEvents(evnLst);
-				Calendar c = Calendar.getInstance();
-				if (i%2 == 0) {
-				c.set(2014, 2, 25);
-				} else {
-					c.set(2014, 2, 24);
-				}
+				Calendar c = null;
+				if (i%2==0) {
+				c = Calendar.getInstance();
+				c.set(Calendar.DAY_OF_MONTH, c.get(Calendar.DAY_OF_MONTH) - 1);
 				results.setDay(new SimpleDateFormat("dd-MMM-yyyy").format(c.getTime()));
+				} else {
+				c = Calendar.getInstance();
+				results.setDay(new SimpleDateFormat("dd-MMM-yyyy").format(c.getTime()));
+				}
 				rstLst.add(results);
 			}
 			response.setResponse(rstLst);

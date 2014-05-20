@@ -25,8 +25,15 @@ package org.oscarehr.ws.rest.to.model;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+@XmlRootElement
+@JsonIgnoreProperties(ignoreUnknown = true)
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class EventsTo1 implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -42,8 +49,22 @@ public class EventsTo1 implements Serializable {
 	private String goTo;
 	private String reason;
 	private String notes;
+	private String apptStartDate;
+	private String apptType;
 	
-	@XmlElement(name="appt_id")
+	public String getApptType() {
+		return apptType;
+	}
+	public void setApptType(String apptType) {
+		this.apptType = apptType;
+	}
+	public String getApptStartDate() {
+		return apptStartDate;
+	}
+	public void setApptStartDate(String apptStartDate) {
+		this.apptStartDate = apptStartDate;
+	}
+	
 	public String getApptId() {
 		return apptId;
 	}
@@ -51,7 +72,6 @@ public class EventsTo1 implements Serializable {
 		this.apptId = apptId;
 	}
 	
-	@XmlElement(name="doc_id")
 	public String getDocId() {
 		return docId;
 	}
@@ -59,7 +79,6 @@ public class EventsTo1 implements Serializable {
 		this.docId = docId;
 	}
 	
-	@XmlElement(name="patient_name")
 	public String getPatientName() {
 		return patientName;
 	}
@@ -67,7 +86,6 @@ public class EventsTo1 implements Serializable {
 		this.patientName = patientName;
 	}
 	
-	@XmlElement(name="from_time")
 	public String getFromTime() {
 		return fromTime;
 	}
@@ -75,7 +93,6 @@ public class EventsTo1 implements Serializable {
 		this.fromTime = fromTime;
 	}
 	
-	@XmlElement(name="duration")
 	public String getDuration() {
 		return duration;
 	}
@@ -83,7 +100,6 @@ public class EventsTo1 implements Serializable {
 		this.duration = duration;
 	}
 	
-	@XmlElement(name="appoint_status")
 	public String getAppointStatus() {
 		return appointStatus;
 	}
@@ -91,7 +107,6 @@ public class EventsTo1 implements Serializable {
 		this.appointStatus = appointStatus;
 	}
 	
-	@XmlElement(name="is_critical")
 	public String getIsCritical() {
 		return isCritical;
 	}
@@ -99,7 +114,6 @@ public class EventsTo1 implements Serializable {
 		this.isCritical = isCritical;
 	}
 	
-	@XmlElement(name="no_of_pat")
 	public String getNoOfPat() {
 		return noOfPat;
 	}
@@ -107,7 +121,6 @@ public class EventsTo1 implements Serializable {
 		this.noOfPat = noOfPat;
 	}
 	
-	@XmlElement(name="go_to")
 	public String getGoTo() {
 		return goTo;
 	}
@@ -115,7 +128,6 @@ public class EventsTo1 implements Serializable {
 		this.goTo = goTo;
 	}
 	
-	@XmlElement(name="reason")
 	public String getReason() {
 		return reason;
 	}
@@ -123,7 +135,6 @@ public class EventsTo1 implements Serializable {
 		this.reason = reason;
 	}
 	
-	@XmlElement(name="notes")
 	public String getNotes() {
 		return notes;
 	}

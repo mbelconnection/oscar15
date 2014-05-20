@@ -182,6 +182,7 @@
                                 "</tr>");
                             $(this).dialog("close");*/
 		/* Dialog init*/
+		//$("#manageGroupHTML").show();
 		 $("#manageGroupForm").dialog({
                 autoOpen: false,
                 height: 370,
@@ -234,9 +235,11 @@
 			}
 		}).disableSelection();
 		
+		grp_mng_fn.loadPage();
+		
 	});//end of document ready function
 
-grp_mng_fn.loadPage();
+
 
 function getDraggedVal(){
   var s = $("#sortable1 li");
@@ -441,7 +444,9 @@ function getDraggedVal(){
 			border-collapse:collapse;height:20px;width:100%
 		}
 
-     
+		.grp_man_close:hover{
+			 cursor:pointer !important;
+		}     
        
 </style>
 
@@ -452,6 +457,9 @@ function getDraggedVal(){
 		<tr>
 				<td colspan="2" style="height:50px;"> 
 					<p class="naa_mainheading">Manage schedule layout: Team A</p>
+				</td>
+				<td colspan="2" style="height:50px;" align="right" valign="top"> 
+					<div class="grp_man_close" onClick='$("#manageGroupForm").dialog("close");'><img src="js_up/images/close_icon.png" height=20 width=20></img></div>
 				</td>
 			</tr>
 			<tr>

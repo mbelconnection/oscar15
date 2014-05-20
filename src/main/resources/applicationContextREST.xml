@@ -103,7 +103,10 @@
 		
 		<jaxrs:providers>
 			<ref bean="jaxb"/>
+<!--
 			<ref bean="jsonProvider"/>
+-->
+			<ref bean="jacksonProvider"/>
 		</jaxrs:providers>
 
 		<jaxrs:features>
@@ -125,6 +128,7 @@
 			<bean class="org.oscarehr.ws.rest.PersonaService"  autowire="byName"/>
 			<bean class="org.oscarehr.ws.rest.AppointmentService"  autowire="byName"/>
 			<bean class="org.oscarehr.ws.rest.ProviderService"  autowire="byName"/>
+			<bean class="org.oscarehr.ws.rest.PatientService"  autowire="byName"/>
 		</jaxrs:serviceBeans>
 
 		<jaxrs:extensionMappings>
@@ -138,6 +142,9 @@
 		<property name="serializeAsArray" value="true" />
 		<property name="arrayKeys" value="patients,programs"/>
 		<property name="dropCollectionWrapperElement" value="true" />
+	</bean>
+	
+	<bean id="jacksonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider">
 		</bean>
  
 </beans>

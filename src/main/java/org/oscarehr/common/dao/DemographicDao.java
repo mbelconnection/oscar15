@@ -2060,5 +2060,37 @@ public class DemographicDao extends HibernateDaoSupport implements ApplicationEv
     	String query = "From Demographic d where d.FirstName like '" + nameLike + "%' and d.PatientStatus = 'AC'";
     	return getHibernateTemplate().find(query);
 	}
+
+   /**
+	 * This method returns list of Demographics(Patients).
+	 * 
+	 * @param nameLike		parameter to search patients
+	 * @return List			List of Demographics(Patients)Containing DemogrphicNo and Full Name
+	 */
+	@SuppressWarnings("unchecked")
+    public List<Demographic> getActiveDemographisFirstNameSearch(String[] nameLike){
+    	String query = "From Demographic d where d.FirstName like '" + nameLike[0] + "%'";
+    	if (nameLike.length > 1) {
+    		query = query + " and d.LastName like '" + nameLike[1].trim() + "%'";
+    	}
+    	query = query + " and d.PatientStatus = 'AC'";
+    	return getHibernateTemplate().find(query);
+	}
+	
+	 /**
+		 * This method returns list of Demographics(Patients).
+		 * 
+		 * @param nameLike		parameter to search patients
+		 * @return List			List of Demographics(Patients)Containing DemogrphicNo and Full Name
+		 */
+		@SuppressWarnings("unchecked")
+	    public List<Demographic> getActiveDemographisLastNameSearch(String[] nameLike){
+			String query = "From Demographic d where d.LastName like '" + nameLike[0] + "%'";
+			if (nameLike.length > 1) {
+	    		query = query + " and d.FirstName like '" + nameLike[1].trim() + "%'";
+	    	}
+	    	query = query + " and d.PatientStatus = 'AC'";
+	    	return getHibernateTemplate().find(query);
+		}
 }
 

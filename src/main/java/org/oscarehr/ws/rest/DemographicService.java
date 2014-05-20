@@ -35,6 +35,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.oscarehr.PMmodule.service.ClientManager;
@@ -47,7 +49,9 @@ import org.oscarehr.common.model.DemographicExt;
 import org.oscarehr.managers.DemographicManager;
 import org.oscarehr.managers.WaitListManager;
 import org.oscarehr.util.SpringUtils;
+import org.oscarehr.ws.rest.bo.PatientBO;
 import org.oscarehr.ws.rest.conversion.DemographicConverter;
+import org.oscarehr.ws.rest.exception.PatientException;
 import org.oscarehr.ws.rest.to.DemographicResponse;
 import org.oscarehr.ws.rest.to.OscarSearchResponse;
 import org.oscarehr.ws.rest.to.model.DemographicSearchResultItem;
@@ -56,6 +60,7 @@ import org.oscarehr.ws.rest.to.model.DemographicSearchTo;
 import org.oscarehr.ws.rest.to.model.DemographicTo;
 import org.oscarehr.ws.rest.to.model.DemographicTo1;
 import org.oscarehr.ws.rest.to.model.DemographicsTo;
+import org.oscarehr.ws.rest.util.ErrorCodes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -324,6 +329,7 @@ public class DemographicService extends AbstractServiceImpl {
 		return results;
 	}
 
+
 	/**
 	 * To get Demograhic no and Name for search in Add Appointments. 
 	 * 
@@ -335,11 +341,28 @@ public class DemographicService extends AbstractServiceImpl {
 	@GET
 	@Path("/{nameLike}/list")
 	@Produces("application/json")
-	public DemographicsTo getDemographicsAndEvents(@PathParam("nameLike") String nameLike) {
-    	List<DemographicTo> demographicLst = demographicManager.getDemographicsforSearch(nameLike);
-    	DemographicsTo demographics = new DemographicsTo();
-    	demographics.setDemographics(demographicLst);
-    	return demographics;
+	public Response getDemographicsAndEvents(@PathParam("nameLike") String nameLike)  {
+    	List<Demographic> demographics = null;
+    	List<DemographicTo> demographicLst = null;
+    	DemographicsTo demographicsTo = null;
+    	try {
+    		String[] names = nameLike.split(",");
+    		demographics = demographicManager.getActiveDemographisFirstNameSearch(names);
+    		if (null == demographics || demographics.isEmpty()) {
+    			demographics = demographicManager.getActiveDemographisLastNameSearch(names);
+    			if (null == demographics || demographics.isEmpty()) {
+					throw new PatientException(ErrorCodes.PAT_ERROR_001);
+				}
+    			demographicLst = PatientBO.copy(demographics, demographicLst, "LN");
+    		} else {
+    			demographicLst = PatientBO.copy(demographics, demographicLst, "FN");
+    		}
+    		demographicsTo = new DemographicsTo();
+    		demographicsTo.setDemographics(demographicLst);
+    	} catch(PatientException e) {
+			return Response.status(Status.NOT_FOUND).entity(e.getBean()).build();
+		}
+    	return Response.status(Status.OK).entity(demographicsTo).build();
     	}
 
 }

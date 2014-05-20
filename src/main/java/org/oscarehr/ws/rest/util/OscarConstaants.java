@@ -21,33 +21,10 @@
  * Hamilton
  * Ontario, Canada
  */
-package org.oscarehr.ws.rest.to.model;
 
-import java.io.Serializable;
+package org.oscarehr.ws.rest.util;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+public class OscarConstaants {
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
-@XmlRootElement
-@JsonIgnoreProperties(ignoreUnknown = true)
-@XmlAccessorType(XmlAccessType.PROPERTY)
-public class ProviderAndEventSearchResponse implements Serializable {
-
-	private static final long serialVersionUID = 1L;
-	
-	private ProviderAndEventSearchResults response = new ProviderAndEventSearchResults();
-
-	public ProviderAndEventSearchResults getResponse() {
-		return response;
-	}
-
-	public void setResponse(ProviderAndEventSearchResults response) {
-		this.response = response;
-	}
-
-
-	
+	public static final String STRING_UNDERSCORE = "_";
 }

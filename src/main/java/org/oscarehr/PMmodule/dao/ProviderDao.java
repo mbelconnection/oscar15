@@ -123,7 +123,7 @@ public class ProviderDao extends HibernateDaoSupport {
 	public List<Provider> getProviders() {
 		
 		List<Provider> rs = getHibernateTemplate().find(
-				"FROM  Provider p ORDER BY p.LastName");
+				"FROM  Provider p where p.ProviderType != 'system' ORDER BY p.LastName");
 
 		if (log.isDebugEnabled()) {
 			log.debug("getProviders: # of results=" + rs.size());
@@ -133,10 +133,20 @@ public class ProviderDao extends HibernateDaoSupport {
 	
 	public List<Provider> getProviders(String[] providers) {
 		List<Provider> rs = getHibernateTemplate().find(
-				"FROM Provider p WHERE p.providerNumber IN (?)", (Object[]) providers);
+				"FROM Provider p WHERE p.ProviderNo IN (?)", (Object[]) providers);
 		return rs;
 	}
 
+	public List<Provider> getGroupProviders(String group) {
+		
+		List<Provider> rs = getHibernateTemplate().find(
+				"FROM  Provider p where p.Team='"+group+"'");
+
+		if (log.isDebugEnabled()) {
+			log.debug("getProviders: # of results=" + rs.size());
+		}
+		return rs;
+	}
 
     public List<Provider> getProviderFromFirstLastName(String firstname,String lastname){
             firstname=firstname.trim();
@@ -562,5 +572,46 @@ public class ProviderDao extends HibernateDaoSupport {
 	    	String query = "From Provider p where p.FirstName like '" + nameLike + "%' and p.Status='1'";
 	    	return getHibernateTemplate().find(query);
 		}
+
+/**
+		 * This method returns list of providers.
+		 * 
+		 * @param nameLike		parameter to search provider
+		 * @return List			List of providers
+		 */
+		public List<Provider> getActiveProviderFirstNameLikeSearch(String[] nameLike) {
+			String query = "From Provider p where p.FirstName like '" + nameLike[0] + "%'";
+	    	if (nameLike.length > 1) {
+	    		query = query + " and p.LastName like '" + nameLike[1].trim() + "%'";
+	    	}
+	    	query = query + " and p.Status='1' and p.ProviderType != 'system'";
+	    	return  getHibernateTemplate().find(query);
+		}
+		
+		/**
+		 * This method returns list of providers.
+		 * 
+		 * @param nameLike		parameter to search provider
+		 * @return List			List of providers
+		 */
+		public List<Provider> getActiveProviderLastNameLikeSearch(String[] nameLike){
+			String query = "From Provider p where p.LastName like '" + nameLike[0] + "%'";
+			if (nameLike.length > 1) {
+	    		query = query + " and p.FirstName like '" + nameLike[1].trim() + "%'";
+	    	}
+	    	query = query + " and p.Status='1' and p.ProviderType != 'system'";
+	    	return getHibernateTemplate().find(query);
+		}
+		
+		public List<Provider> getProviders(Object[] providers) {
+			String sql = "FROM Provider p WHERE p.ProviderNo IN (";
+			for (Object obj : providers) {
+				sql = sql + "'" + obj.toString() + "'" + ",";
+			}
+			sql = sql.substring(0, sql.length() - 1) + ")";
+			List<Provider> rs = getHibernateTemplate().find(sql);
+			return rs;
+		}
+		
 }
 

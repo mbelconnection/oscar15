@@ -153,8 +153,14 @@ JsDatePick.prototype.resizeCalendar = function () {
 JsDatePick.prototype.closeCalendar = function () {
     this.JsDatePickBox.style.display = "none";
     document.onclick = function () {}
-	var sel_dt = JSON.stringify(this.getSelectedDayFormatted());/* Added by Bhaskar */
-	setTimeout('sch.load('+sel_dt+')',100); /* Added by Bhaskar */
+	var sel_dt = JSON.stringify(this.getSelectedDayFormatted());/* Added by Schedular Team */
+	if(globalView.view==null){
+		globalView.view="day"
+	}else{
+		globalView.view = globalView.view;
+	}
+	console.log(globalView.view);
+	setTimeout('sch.load('+sel_dt+')',100); /* Added by Schedular Team */
 
 		//if(this.oConfiguration.target=="appDate" && this.JsDatePickBox.style.display=="none"){
 	//showRecData1('showRecurrence','changeButton','showRecurrenceLbl');

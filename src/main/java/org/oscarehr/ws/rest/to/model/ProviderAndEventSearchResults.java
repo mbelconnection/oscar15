@@ -27,15 +27,19 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 @XmlRootElement
+@JsonIgnoreProperties(ignoreUnknown = true)
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class ProviderAndEventSearchResults implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	@XmlElement(name="day")
 	public String getDay() {
 		return day;
 	}
@@ -49,17 +53,33 @@ public class ProviderAndEventSearchResults implements Serializable {
 	private List<EventsTo1> events = new ArrayList<EventsTo1>();
 
 	private List<ProvidersTo1> providers = new ArrayList<ProvidersTo1>();
+	
+	private List<String> days;
 
-	@XmlElement(name="eventsDB")
+	public List<String> getDays() {
+		return days;
+	}
+
+	public void setDays(List<String> days) {
+		this.days = days;
+	}
+
 	public  List<EventsTo1> getEvents() {
 		return events;
 	}
 
 	public void setEvents( List<EventsTo1> events) {
-		this.events = events;
+		if (null == events || events.isEmpty()) {
+			EventsTo1 event = new EventsTo1();
+			event.setAppointStatus("");
+			List<EventsTo1> evntLst = new ArrayList<EventsTo1>();
+			evntLst.add(event);
+			this.events = evntLst;
+		} else {
+			this.events = events;
+		}
 	}
 
-	@XmlElement(name="providersDB")
 	public  List<ProvidersTo1> getProviders() {
 		return providers;
 	}

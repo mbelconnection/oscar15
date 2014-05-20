@@ -65,9 +65,9 @@
 		var naa_json_appType = {"echart":"E-Chart", "intake":"Intake form", "billing":"Billing", "rx":"RX"};
 		
 		var searchData= [
-			{"date":"09-Mar-2014", "time":"11:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
+			{"date":"01-Feb-2014", "time":"11:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
 			{"date":"10-Mar-2014", "time":"15:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
-			{"date":"02-Feb-2014", "time":"12:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
+			{"date":"09-Mar-2014", "time":"12:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
 			{"date":"31-Jan-2014", "time":"17:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
 			{"date":"30-Jan-2014", "time":"14:00", "provider":[{"docName":"Dr. Oscardoc","docID":"1"},{"docName":"Dr. Yarwich","docID":"4"}]},
 			
@@ -106,7 +106,7 @@
 			getSearchData: function(){
 				return searchData;
 			},
-			getDocsData: function(){				
+			getDocsData: function(){
 				return naa_json_docs;
 			},getAttptStatus: function(){
 				return naa_json_appType;
@@ -134,8 +134,11 @@
 				var _data = naa_json_fn.getTimeSlot();
 				$.each(_data, function(key, val){
 					$("#naa_time_of_day").append(new Option(val, key));
+					$("#naa_time_of_day1").append(new Option(val, key));
 				});				
-			 },			 
+			 },	
+			 
+			
 			 loadApptType: function(){
 				var _days = naa_json_fn.getAttptStatus();
 				$.each(_days, function(key, val){
@@ -174,6 +177,7 @@
 			 gotoAddAppointment: function(myObject){
 			 nextAailObject = myObject;
 			 var sss = sch.valid_date(myObject.date);
+			 //console.log(sss);
 			 if(sss){
 			 $( "#dialog-edit" ).dialog({
 				resizable: false,
@@ -189,14 +193,15 @@
 					"Cancel": function() {
 						 $( this ).dialog( "close" );
 						}
-					}				
+					}
 				});
-			 }
+			}
 			 }
 		}
 		naa_fn.loadDayOfWeek();
 		naa_fn.loadApptType();
 		naa_fn.loadTimeSlot();
+		
 		/* General functions end*/ 
 
 		/*Element event bindings*/
@@ -205,15 +210,15 @@
 				$("#next_app_form").dialog("open");
          }); 
 
-		 $("#naa_cancel").button().click(function () {			
+		 $("#naa_cancel").button().click(function () {
 			$('#naa_form')[0].reset();			
 			sch.clearForm("#next_app_form");
 			$("#next_app_form").dialog("close");
             return false;
          });
-
+		
 		 $("#naa_search").button().click(function () {
-			$("#naa_search").text("Search again");
+			$("#naa_search").text("Search Again");
 			$("#naa_search").attr("style","font-size:12px !important;font-family:verdana, sans-serif; padding: 3px 8px 5px 8px;");
 			var formData = {};			
 			formData['prov_type'] = naa_prov_type;
@@ -223,7 +228,7 @@
 			formData['day'] = $('#dayOfWeek').val();
 			formData['time'] = $('#naa_time_of_day').val();
 			formData['no_results'] = $('#results').val();
-			console.log(formData);
+			//console.log(formData);
 			naa_fn.search();
             return false;
          });
@@ -297,7 +302,7 @@
 		/*$( "#naa_s_provider" ).catcomplete({
 			  delay: 0,
 			  source: data,
-			  select: function( event, ui ) {		
+			  select: function( event, ui ) {
 				alert(ui.item.id);
 			  }
 		});
@@ -305,7 +310,7 @@
 		$( "#naa_m_provider" ).catcomplete({
 			  delay: 0,
 			  source: data,
-			  select: function( event, ui ) {		
+			  select: function( event, ui ) {
 				alert(ui.item.id);
 			  }
 		});*/
@@ -314,12 +319,13 @@
 		$( "#naa_s_provider" )
 		.mycatcomplete({
 		  delay: 0,
+		  minLength : 3,
 		  source: function( request, response ) {
 			// delegate back to autocomplete, but extract the last term
 			var data = naa_json_fn.getDocsData();			
 			response( data );			
 		  },		  
-		  select: function( event, ui ) {		
+		  select: function( event, ui ) {
 			naa_prov_type = "S";
 			naa_prov_id  = ui.item.id;
 		  },    
@@ -338,7 +344,7 @@
 			}
 		})
 		 .autocomplete({
-			minLength: 0,
+			minLength: 3,
 			source: function( request, response ) {
 			// delegate back to autocomplete, but extract the last term
 				var data = naa_json_fn.getDocsData();			
@@ -349,7 +355,7 @@
 			return false;
 			},
 			select: function( event, ui ) {
-				console.log(ui.item.id);
+				//console.log(ui.item.id);
 				var terms = split( this.value );
 				// remove the current input
 				terms.pop();
@@ -461,12 +467,8 @@
 			font-size:0.8em;
 		}
 
-		.naa_mainheading{
-			margin-left:10px;
-			padding:5px;
-			font-size:14px;
-			font-weight:600;
-			color:#6495ED;
+		.naa_mainheading12{
+			margin-left:10px;padding:5px;font-size:14px;font-weight:300;color:#000000;
 		}
 
 		.naa_subheading{
@@ -500,7 +502,7 @@
 		}
 		
 		.ui-widget-content {
-			background: url("images/ui-bg_flat_75_ffffff_40x100.png") repeat-x scroll 50% 50% #FFFFFF;
+			background: url("js_up/images/ui-bg_flat_75_ffffff_40x100.png") repeat-x scroll 50% 50% #FFFFFF;
 			border: 1px solid #AAAAAA;
 			color: #222222;
 			font-size:11px;
@@ -524,6 +526,16 @@
 			 background-image: linear-gradient(to bottom, #a5b8da, #7089b3);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#a5b8da, endColorstr=#7089b3);
 			 cursor:pointer !important;
 		}
+		
+		.sch_button_cancel{
+			 border:1px solid #C7C5C5;-webkit-box-shadow: #C7C5C5 4px 4px 4px  ;-moz-box-shadow: #C7C5C5 4px 4px 4px ; box-shadow: #C7C5C5 4px 4px 4px  ; -webkit-border-radius: 3px; -moz-border-radius: 3px;border-radius: 3px;font-size:12px !important;font-family:verdana, sans-serif; padding: 5px 8px 5px 8px; text-decoration:none; display:inline-block;text-shadow: -1px -1px 0 rgba(0,0,0,0.3); color: #000000;
+			 background-color: #C7C5C5; background-image: -webkit-gradient(linear, left top, left bottom, from(#C7C5C5), to(#C7C5C5));
+			 background-image: -webkit-linear-gradient(top, #C7C5C5, #C7C5C5);
+			 background-image: -moz-linear-gradient(top, #C7C5C5, #C7C5C5);
+			 background-image: -ms-linear-gradient(top, #C7C5C5, #C7C5C5);
+			 background-image: -o-linear-gradient(top, #C7C5C5, #C7C5C5);
+			 background-image: linear-gradient(to bottom, #C7C5C5, #C7C5C5);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#C7C5C5, endColorstr=#7089b3);
+		}
 
 		.naa_button_grd:hover{
 			 border:1px solid #5d7fbc;
@@ -535,20 +547,25 @@
 			 cursor:pointer !important;
 			 background-image: linear-gradient(to bottom, #819bcb, #536f9d);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#819bcb, endColorstr=#536f9d);
 		}
-
-
-
-     
+		
+		.naa_close:hover{
+			 cursor:pointer !important;
+		}
        
 </style>
 
 <!-- Next available appt dailog box start-->
 <div id="next_app_form" title="Create new user" class="na_form" style="padding:0px;width:100%">
-	<p class="naa_mainheading">Search for next available appointment</p>
+	<table border="0" width="100%">
+		<tr>
+			<td><p style='margin-left:10px;padding:5px;font-size:18px;font-weight:300;color:#000000;'>Search for next available appointment</p></td>
+			<td valign="middle" align="right"><div class="naa_close" onClick='$("#next_app_form").dialog("close");'><img src="js_up/images/close_icon.png" height=20 width=20></img></div></td>
+		</tr>
+	</table>
 	<form class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix" id="naa_form">
 		<table class="na_table" width="97%" border="0" style="margin-left:10px;margin-right:10px">
 			<tr>
-				<td colspan="2" class="naa_subheading">APPOINTMENT DETAILS</td>
+				<td colspan="2" style="color:#808080;">APPOINTMENT DETAILS</td>
 			</tr>
 			<tr>
 				<td width="20%">Provider(s)</td>
@@ -559,7 +576,7 @@
 								<input type="radio" checked="checked" id="naa_provider_0" name="naa_provider" class="na_pro" value="single" style="margin-bottom: -3px;"/>&nbsp;Single provider appt.
 							</td>
 							<td style="padding-left:5px;">
-								<input id="naa_s_provider" class="form-control na_form_inputtext" style="height:25px;"/>
+								<input id="naa_s_provider" class="form-control na_form_inputtext" style="height:25px;" placeholder="Any"/>
 							</td>
 						</tr>
 					</table>
@@ -574,7 +591,7 @@
 								<input type="radio" name="naa_provider" class="na_pro" value="multi" style="margin-bottom: -3px;"/>&nbsp;Multi provider appt.
 							</td>
 							<td style="padding-left:14px;">
-								<input id="naa_m_provider" class="form-control na_form_inputtext" disabled style="height:25px;"/>
+								<input id="naa_m_provider" class="form-control na_form_inputtext" disabled style="height:25px;" placeholder="Specify providers"/>
 							</td>
 						</tr>
 					</table>
@@ -611,7 +628,7 @@
 							</td>
 							<td style="padding-left:16px;">								
 								<select class="form-control na_form_select" disabled id="naa_dura_format" style="padding:0px;width:150px;">
-									<option value="">Any</option>
+									<option value="">--min</option>
 									<option value="15">15 min</option>
 									<option value="30">30 min</option>
 									<option value="45">45 min</option>
@@ -635,10 +652,16 @@
 			</tr>
 			<tr>
 				<td >Time of day</td>
-				<td style="padding-top:5px;">
-					<select class="form-control na_form_select" id="naa_time_of_day" style="padding:0px;">
-						<option value="">Any</option>
-					</select>					
+				<td style="padding-top:5px;"><table><tr><td>
+					<select class="form-control na_form_select" id="naa_time_of_day" style="padding:0px;width:100px;">						
+					<option value="">Any</option>
+					</select>
+				</td><td>&nbsp;&nbsp;to&nbsp;&nbsp;	</td>
+				<td>
+					<select class="form-control na_form_select" id="naa_time_of_day1" style="padding:0px;width:100px;">						
+					<option value="">Any</option>
+					</select>
+				</td></tr></table>	
 				</td>
 			</tr>
 			<tr>
@@ -656,13 +679,13 @@
 			</tr>
 			<tr>
 				<td colspan="2" style="text-align:right;" class="na_form_button">
-					<button id="naa_cancel" class="naa_button_grd">Cancel</button>
+					<button id="naa_cancel" class="sch_button_cancel" style="background-color: #080808 !important;">Cancel</button>
 					<button id="naa_search" class="naa_button_grd">Search</button>
 					<button type="reset" value="Reset" style="display:none">Reset</button>
 				</td>
 			</tr>
 			<tr>
-				<td colspan="2" class="naa_subheading">APPOINTMENT SEARCH RESULTS</td>
+				<td colspan="2" style="color:#808080;">APPOINTMENT SEARCH RESULTS</td>
 			</tr>
 			<tr>
 				<td colspan="2" style="text-align:center;"> 

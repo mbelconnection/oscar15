@@ -34,20 +34,41 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown = true)
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class ProviderAndEventSearchResponse implements Serializable {
-
+public class AppointmentStatusTo implements Serializable {
+	
 	private static final long serialVersionUID = 1L;
 	
-	private ProviderAndEventSearchResults response = new ProviderAndEventSearchResults();
-
-	public ProviderAndEventSearchResults getResponse() {
-		return response;
+	private String id;
+	private String name;
+	public String getId() {
+		return id;
 	}
-
-	public void setResponse(ProviderAndEventSearchResults response) {
-		this.response = response;
+	public void setId(String id) {
+		this.id = id;
 	}
-
-
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	private String color;
+	private String icon;
+	
+	public String getColor() {
+		return color;
+	}
+	public void setColor(String color) {
+		this.color = color;
+	}
+	
+	public String getIcon() {
+		return icon;
+	}
+	public void setIcon(String icon) {
+		this.icon = icon;
+	}
 	
 }
+
+

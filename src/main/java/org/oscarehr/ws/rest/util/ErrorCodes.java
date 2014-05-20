@@ -1,3 +1,4 @@
+
 /**
  * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved.
  * This software is published under the GPL GNU General Public License.
@@ -21,33 +22,18 @@
  * Hamilton
  * Ontario, Canada
  */
-package org.oscarehr.ws.rest.to.model;
+package org.oscarehr.ws.rest.util;
 
-import java.io.Serializable;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
-@XmlRootElement
-@JsonIgnoreProperties(ignoreUnknown = true)
-@XmlAccessorType(XmlAccessType.PROPERTY)
-public class ProviderAndEventSearchResponse implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+public class ErrorCodes {
 	
-	private ProviderAndEventSearchResults response = new ProviderAndEventSearchResults();
+	public static final String APPT_ERROR_001 = "APPT_ERROR_001";
+	public static final String APPT_ERROR_002 = "APPT_ERROR_002";
+	public static final String APPT_ERROR_003 = "APPT_ERROR_003";
+	public static final String APPT_ERROR_004 = "APPT_ERROR_004";
+	public static final String APPT_ERROR_005 = "APPT_ERROR_005";
+	public static final String SCH_ERROR_001 = "SCH_ERROR_001";
+	public static final String SCH_ERROR_002 = "SCH_ERROR_002";
+	public static final String PRV_ERROR_001 = "PRV_ERROR_001";
+	public static final String PAT_ERROR_001 = "PAT_ERROR_001";
 
-	public ProviderAndEventSearchResults getResponse() {
-		return response;
-	}
-
-	public void setResponse(ProviderAndEventSearchResults response) {
-		this.response = response;
-	}
-
-
-	
 }

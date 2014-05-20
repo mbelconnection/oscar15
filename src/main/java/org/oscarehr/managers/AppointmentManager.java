@@ -27,9 +27,22 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.oscarehr.common.dao.LookupListDao;
 import org.oscarehr.common.dao.OscarAppointmentDao;
 import org.oscarehr.common.model.Appointment;
 import org.oscarehr.common.model.AppointmentArchive;
+import org.oscarehr.common.model.AppointmentStatus;
+import org.oscarehr.common.model.AppointmentType;
+import org.oscarehr.common.model.LookupList;
+import org.oscarehr.common.model.LookupListItem;
+import org.oscarehr.util.MiscUtils;
+import org.oscarehr.ws.rest.bo.AppointmentBO;
+import org.oscarehr.ws.rest.exception.AppointmentException;
+import org.oscarehr.ws.rest.to.model.AppointmentStatusTo;
+import org.oscarehr.ws.rest.to.model.AppointmentTo;
+import org.oscarehr.ws.rest.to.model.AppointmentTypeTo;
+import org.oscarehr.ws.rest.util.ErrorCodes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,9 +50,14 @@ import oscar.log.LogAction;
 
 @Service
 public class AppointmentManager {
+	
+	private static Logger log = MiscUtils.getLogger();
 
 	@Autowired
 	private OscarAppointmentDao appointmentDao;
+	
+	@Autowired
+	private LookupListDao lookupListDao;
 	
 	public List<Appointment> getAppointmentHistoryAfter(Integer demographicNo, Date startDateInclusive, Integer offset, Integer limit) {
 		StringBuilder ids = new StringBuilder();
@@ -124,16 +142,109 @@ public class AppointmentManager {
 		return false;
 	}
 	
-	public Appointment saveAppointment(Appointment appointment) {
-		
-		Appointment appt = appointmentDao.saveAppointment(appointment);
-		
-		//--- log action ---
-		if (appt != null) {
-		
-			LogAction.addLogSynchronous("AppointmentManager.saveAppointment", "id returned=" + appt.getId());
+	/**
+	 * Returns appointment for display.
+	 * 
+	 * @param appointmentTo				appointment data
+	 * @return							appointment data
+	 * @throws AppointmentException		in cases of error
+	 */
+	public AppointmentTo saveAppointment(AppointmentTo appointmentTo, String user) throws AppointmentException {
+		log.debug("AppointmentManager.saveApppointment() starts");
+		AppointmentTo apptTo = null;
+		try {
+			AppointmentBO.validate(appointmentTo);
+			Appointment appointment = AppointmentBO.createAppointmentCriteria(appointmentTo, user);
+			Appointment appt = appointmentDao.saveAppointment(appointment);
+			apptTo = AppointmentBO.setAppointmentData(appt);
+		} catch (Exception e) {
+			log.error("Error in AppointmentManager.saveApppointment()", e);
+			if (e instanceof AppointmentException) {
+				throw new AppointmentException(((AppointmentException)e).getBean().getMessage(), e);
+			}
+			throw new AppointmentException(ErrorCodes.APPT_ERROR_001);
 		}
-		
-		return appt;
-		
-	}}
+		log.debug("AppointmentManager.saveApppointment() ends");
+		return apptTo;
+	}
+	
+	/**
+	 * Returns appointment types.
+	 * 
+	 * @throws AppointmentException	when error occurs
+	 */
+	public List<AppointmentTypeTo> getAppointmentType() throws AppointmentException {
+		log.debug("AppointmentManager.getAppointmentType() starts");
+		List<AppointmentTypeTo> apptTypeTo = null;
+		try {
+			List<AppointmentType> apptType = appointmentDao.getAppointmentType();
+			if (null == apptType || apptType.isEmpty()) {
+				throw new AppointmentException(ErrorCodes.APPT_ERROR_002);
+			}
+			apptTypeTo = AppointmentBO.copyAppointmentTypes(apptType, apptTypeTo);
+		} catch (Exception e) {
+			log.error("Error in AppointmentManager.getAppointmentType()", e);
+			throw new AppointmentException(ErrorCodes.APPT_ERROR_002);
+		}
+		log.debug("AppointmentManager.getAppointmentType() ends");
+		return apptTypeTo;
+	}
+	
+	/**
+	 * Returns appointment status.
+	 * 
+	 * @throws AppointmentException	when error occurs
+	 */
+	public List<AppointmentStatusTo> getAppointmentStatus() throws AppointmentException {
+		log.debug("AppointmentManager.getAppointmentStatus() starts");
+		List<AppointmentStatusTo> apptStatusTo = null;
+		try {
+			List<AppointmentStatus> apptStatus = appointmentDao.getAppointmentStatus();
+			if (null == apptStatus || apptStatus.isEmpty()) {
+				throw new AppointmentException(ErrorCodes.APPT_ERROR_003);
+			}
+			apptStatusTo = AppointmentBO.copyAppointmentStatus(apptStatus, apptStatusTo);
+		} catch (Exception e) {
+			log.error("Error in AppointmentManager.getAppointmentStatus()", e);
+			throw new AppointmentException(ErrorCodes.APPT_ERROR_003);
+		}
+		log.debug("AppointmentManager.getAppointmentStatus() ends");
+		return apptStatusTo;
+	}
+	
+	/**
+	 * delete appointment.
+	 * 
+	 * @throws AppointmentException	when error occurs
+	 */
+	public void deleteAppointment(int apptNo) throws AppointmentException {
+		log.debug("AppointmentManager.deleteAppointment() starts");
+		try {
+			appointmentDao.deleteAppointment(apptNo);
+		} catch (Exception e) {
+			log.error("Error in AppointmentManager.deleteAppointment()", e);
+			throw new AppointmentException(ErrorCodes.APPT_ERROR_004);
+		}
+		log.debug("AppointmentManager.deleteAppointment() ends");
+	}
+	
+	/**
+	 * Returns reason codes.
+	 * 
+	 * @return				list of return codes
+	 * @throws exception
+	 */
+	public List<LookupListItem> getAppointmentReason() throws AppointmentException {
+		log.debug("AppointmentManager.getAppointmentReason() starts");
+		List<LookupListItem> itemsLst = null;
+		try {
+			LookupList list = lookupListDao.findByName("reasonCode");
+			itemsLst = list.getItems();
+		} catch (Exception e) {
+			log.error("Error in AppointmentManager.getAppointmentReason()", e);
+			throw new AppointmentException(ErrorCodes.APPT_ERROR_005);
+		}
+		log.debug("AppointmentManager.getAppointmentReason() ends");
+		return itemsLst;
+	}
+}

@@ -27,12 +27,16 @@ package org.oscarehr.managers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.oscarehr.PMmodule.dao.ProviderDao;
 import org.oscarehr.common.dao.PropertyDao;
 import org.oscarehr.common.model.Property;
 import org.oscarehr.common.model.Provider;
+import org.oscarehr.util.MiscUtils;
 import org.oscarehr.ws.rest.bo.ProviderBO;
+import org.oscarehr.ws.rest.exception.ProviderException;
 import org.oscarehr.ws.rest.to.model.ProviderTo;
+import org.oscarehr.ws.rest.util.ErrorCodes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +44,9 @@ import oscar.log.LogAction;
 
 @Service
 public class ProviderManager2 {
+	
+	private Logger logger = MiscUtils.getLogger();
+	
 	@Autowired
 	private ProviderDao providerDao;
 
@@ -76,11 +83,38 @@ public class ProviderManager2 {
 			LogAction.addLogSynchronous("ProviderManager.getProviders" + results.size(), null);
 			// copy provider into provider transfer object
 			providersTo = new ArrayList<ProviderTo>();
-			providersTo = ProviderBO.copy(results, providersTo);
+			//TODO:this won't work..due to my merge
+			providersTo = ProviderBO.copy(results, providersTo,"FN");
 		} catch (Exception e) {
 			return new ArrayList<ProviderTo>();
 		}
 		return providersTo;
+	}
+
+	public List<Provider> getActiveProviderFirstNameLikeSearch(String[] nameLike) throws ProviderException {
+		logger.debug("ProviderManager2.getActiveProviderFirstNameLikeSearch() starts"); 
+		List<Provider> results = null;
+		try {
+			results = providerDao.getActiveProviderFirstNameLikeSearch(nameLike);
+		} catch (Exception e) {
+			logger.error("Error in ProviderManager2.getActiveProviderFirstNameLikeSearch()", e);
+			throw new ProviderException(ErrorCodes.PRV_ERROR_001);
+		}
+		logger.debug("ProviderManager2.getActiveProviderFirstNameLikeSearch() ends"); 
+		return results;
+	}
+	
+	public List<Provider> getActiveProviderLastNameLikeSearch(String[] nameLike) throws ProviderException {
+		logger.debug("ProviderManager2.getActiveProviderLastNameLikeSearch() starts"); 
+		List<Provider> results = null;
+		try {
+			results = providerDao.getActiveProviderLastNameLikeSearch(nameLike);
+		} catch (Exception e) {
+			logger.error("Error in ProviderManager2.getActiveProviderLastNameLikeSearch()", e);
+			throw new ProviderException(ErrorCodes.PRV_ERROR_001);
+		}
+		logger.debug("ProviderManager2.getActiveProviderLastNameLikeSearch() ends"); 
+		return results;
 	}
 
 	public List<Property> getProviderProperties(String providerNo, String propertyName)

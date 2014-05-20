@@ -23,7 +23,14 @@
     Ontario, Canada
 
 --%>
-		<link rel="stylesheet"  type="text/css" href="css_up/calendar.css" />
+<link rel="stylesheet"  type="text/css" href="css_up/calendar.css" />
+ <style>
+ .searchIcon {
+    background:#FFFFFF url(js_up/images/search-icon.png) no-repeat 4px 4px;
+    padding:4px 4px 4px 22px;
+    height:18px;
+}
+ </style>
 		
 <!-- pop up script links -->
 		
@@ -33,6 +40,9 @@
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.dataTables.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/library/bootstrap/3.0.0/assets/js/DT_bootstrap.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/bootstrap-datepicker.js"></script>
+<!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.min.js"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/themes/base/jquery-ui.css">-->
 
  <div id="consult-list" data-ng-init="init(1236)">
   <select id="demographicNo" class="form-control" style="display: inline; width: 200px;" ng-model="demographicNo">
@@ -87,7 +97,7 @@ h4{
 margin:0;
 }
 .ui-widget-content {
-    background: url("img/ui-bg_flat_75_ffffff_40x100.png") repeat-x scroll 50% 50% #FFFFFF;
+    background: url("js_up/images/ui-bg_flat_75_ffffff_40x100.png") repeat-x scroll 50% 50% #FFFFFF;
     border: 0px solid #AAAAAA;
     color: #222222;
     height: 90%;
@@ -219,7 +229,7 @@ div#popup_content {
     border-top-left-radius: 4px;
 }
 .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
-    background: url("images/ui-bg_glass_75_e6e6e6_1x400.png") repeat-x scroll 50% 50% #E6E6E6;
+    background: url("js_up/images/ui-bg_glass_75_e6e6e6_1x400.png") repeat-x scroll 50% 50% #E6E6E6;
     border: 1px solid #D3D3D3;
     color: #555555;
     font-weight: normal;
@@ -243,39 +253,28 @@ div#popup_content {
     vertical-align: middle;
 }
 button, input, select[multiple], textarea {
- background-image: url("images/ui-bg_glass_75_e6e6e6_1x400.png") repeat-x scroll 50% 50% #E6E6E6;
+ background-image: url("js_up/images/ui-bg_glass_75_e6e6e6_1x400.png") repeat-x scroll 50% 50% #E6E6E6;
 }
 input, button, select, textarea {
 
 }
 </style>
-		<script>
-		/*function setDate(){
-		alert("in 221");
-			new JsDatePick({
-				useMode:2,
-				target:"inputField",
-				disablePreDays:true,
-				dateFormat:"%d-%M-%Y"
+<script>
 
-			});
-			todayDate();
-		}*/
-//function page_init(){
-//	jQuery("#testcode").load("addAppointment.html");
-//}
 
 function showTabData(id1,id2,id3,id4){
 	var id_a ="#"+id4;
 	$(".tabs li a").css('background-color', '#FFF');
 	$(id_a).css('background-color', '#3B9C9C');
+	var dt = document.getElementById("inputField").value;
 	if(id1 == 'weekdivid'){
-		sch.init('week',"from weekdivid");
+		var sq = sch.weekForCurrentDay(dt);
+		sch.weekLoad(sq,"0");
 		document.getElementById('daydiv').style.display = "block";
 		document.getElementById(id2).style.display = "none";
 		document.getElementById(id3).style.display = "none";
 	}else if(id1 == 'daydiv'){
-		sch.init('day',"from daydiv");
+		setDate();
 		document.getElementById(id1).style.display = "block";
 		document.getElementById(id2).style.display = "none";
 		document.getElementById(id3).style.display = "none";
@@ -306,18 +305,12 @@ $.widget( "custom.catcomplete", $.ui.autocomplete, {
 
 $(function() {
     var data = [
-      { label: "Dr. aOscardoc", category: "Individual",id:"1",list:[{"name":"Dr. Oscardoc","id":"1"}] },
-      { label: "Dr. Doe", category: "Individual",id:"2",list:[{"name":"Dr. Doe","id":"2"}] },
-	  { label: "Dr. Hilts", category: "Individual",id:"3",list:[{"name":"Dr. Hilts","id":"3"}] },
-	  { label: "Dr. Yarwick", category: "Individual",id:"4",list:[{"name":"Dr. Yarwick","id":"4"}] },
-	  { label: "Dr. Michelle Dietician", category: "Individual",id:"5",list:[{"name":"Dr. Michelle Dietician","id":"5"}] },
-	  { label: "Dr. Alison Smith", category: "Individual",id:"6",list:[{"name":"Dr. Alison Smith","id":"6"}] },
-      { label: "Dr.Rand Paul", category: "Individual",id:"7",list:[{"name":"Dr. Rand Paul","id":"7"}] },
-      { label: "Dr. Michelle Terry", category: "Individual",id:"8",list:[{"name":"Dr. Michelle Terry","id":"8"}] },
-      { label: "Dr.Smith", category: "Individual",id:"9",list:[{"name":"Dr. Oscardoc","id":"1"}] },
-      { label: "Group A", category: "Group", id:"group1",list:[{"name":"Dr. Oscardoc","id":"1"},{"name":"Dr. Doe","id":"2"},{"name":"Dr. Hilts","id":"3"}] },
-      { label: "Group B", category: "Group", id:"group2",list:[{"name":"Dr. Oscardoc","id":"1"}] },
-      { label: "Group C", category: "Group", id:"group3",list:[{"name":"Dr. Oscardoc","id":"1"},{"name":"Dr. Doe","id":"2"},{"name":"Dr. Hilts","id":"3"},{"name":"Dr. Yarwick","id":"4"},{"name":"Dr. Michelle Dietician","id":"5"},{"name":"Dr. Alison Smith","id":"6"}] }
+      { label: "Doe, Nicolus", category: "Individual",id:"101"},
+	  { label: "Doe, Willy", category: "Individual",id:"102"},
+	  { label: "Yarwick, Nicolus", category: "Individual",id:"103"},
+      { label: "Group A", category: "Group", id:"group1"},
+      { label: "Group B", category: "Group", id:"group2"},
+      { label: "Group C", category: "Group", id:"group3"}
     ];
  
     $( "#docava" ).catcomplete({
@@ -326,12 +319,12 @@ $(function() {
 	  select: function( event, ui ) {
 	  var doc_dt = $("#inputField").val();
 		//sch.getUpdateDoc(doc_dt,ui.item.id);
-		sch.ajaxMethod('../ws/rs/schedule/:providerNo/list', Schedular.prototype.setInitData,{"doc_dt":doc_dt,"doc_list":ui.item.list});
-		setTimeout('Schedular.prototype.init(\''+globalView.view+'\',\'from docava\')',1000);
+		//sch.ajaxMethod('../ws/rs/schedule/:providerNo/list', Schedular.prototype.setInitData,{"doc_dt":doc_dt,"doc_list":ui.item.list});
+		setTimeout('sch.callDayWeekMonth(\''+globalView.view+'\',\''+ui.item.id+'\')',1000);
 	  }
     });
   });
-  
+
 </script>
 
 		<table  width="100%" class="headertable" id="secNav">
@@ -344,6 +337,10 @@ $(function() {
 								<td class="date_selector_td_ltline date_selector_td_mid" style="text-align:center;width:150px;" ><input type="text" size="12" id="inputField" readonly="readonly" class="input1" style="width:145px;"/></</td>
 								<td class="date_selector_td_ltline date_selector_td_left_right" style="width:30px;padding-top:5px;"><input type="image" src="js_up/images/arrow_right.png" onclick="dateChange('inc')"/></td>
 							</tr>
+							<!-- <tr class=""> 
+								 <div class="week-picker"></div><br /><br />
+    							<label>Week :</label> <span id="startDate"></span> - <span id="endDate"></span>
+							</tr>-->
 						</table>
 					</div>
 				</td>
@@ -362,13 +359,13 @@ $(function() {
 								&nbsp;&nbsp;Appointments:&nbsp;&nbsp;&nbsp;&nbsp;
 							</td>
 							<td style='font-size:12px;'>
-								<button type="button" id="create-user" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Search next available appointment" style="height:25px;width:150px;padding:0px;padding-left:5px;color:#C7C5C5;"> &nbsp;Next available&nbsp; </button>
+								<button type="button" id="create-user" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Search next available appointment" style="height:25px;width:150px;padding:0px;padding-left:5px;color:#C7C5C5;"> &nbsp;+ Next available&nbsp; </button>
 							</td>
 							<td style='width:110px;'>
 								<table>
 									<tr>
 										<td style="padding-left:15px;">
-											<input type="text" class="form-control" placeholder="Find existing " style="height:25px;width:150px;border-radius:4px;font-size:14px;padding:0px;padding-left:5px;" id="fex_find_input">
+											<input type="text" class="searchIcon" placeholder="Find existing" style="height:25px;width:150px;border-radius:4px;font-size:14px;padding:0px;padding-left:20px;" id="fex_find_input" class="insertImg">
 										</td>
 										<td>
 											<!-- add appointment dialog box includes here -->
@@ -418,15 +415,14 @@ $(function() {
 			</div> -->
 		</div>
 		<!-- Next available appt dailog box start-->
-		<div id="nextAvailAppt">  
-		      
+		<div id="nextAvailAppt" style="display:none;">        
 		</div>
 		<!--  Next available appt dailog box end -->
 		<!-- find existing dialog start-->
-		<div id="findExisting">        
+		<div id="findExisting" style="display:none;">        
 		</div>
 		<!--  Find existing dailog box end -->
-		<div id="manageGroupHTML"></div>
+		<div id="manageGroupHTML" style="display:none;"></div>
 		<div style="padding: 0px; display: none;" title="Information" id="dialog-info">
 			<table style="width:100%">
 				<tr>
@@ -454,6 +450,7 @@ $(function() {
 					<td height="70px" style="padding-left:5px;">
 						<b>Sure! you want to delete?</b>
 					</td>
+					<td style="text-align: right; padding-top: 0px;" valign="top"> <div class="add_appt_close" onClick='$("#dialog-delete").dialog("close");'><img src="js_up/images/close_icon.png" height=20 width=20></img></div></td>
 				</tr>
 				<tr>
 					<td colspan="2" style="text-align:right;border-top: 1px solid #AAAAAA; padding-top:10px;"> 						
@@ -484,6 +481,8 @@ function syncScrollBars(){
 			$("#names").scrollLeft($("#persondatadummy").scrollLeft());
 		});
 }
+
+
 
 var sch = new Schedular();
 
@@ -637,7 +636,7 @@ $("#manageGroupHTML").load("partials/groupManage.jsp");
 
 var sch = new Schedular();
 sch.showTab('daydivid');
-setDate();
+//setDate(); Modified By Schedular Team (moved to showTabData() line no:264 )
 page_init();
 </script>
 

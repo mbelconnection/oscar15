@@ -62,8 +62,17 @@ public class ConsultationRequestTo implements Serializable {
 
 	private List<LetterheadTo> letterheads = new ArrayList<LetterheadTo>();
 	private List<ConsultationServiceTo> services = new ArrayList<ConsultationServiceTo>();
+	private List<String> teams = new ArrayList<String>();
 
 	private DemographicTo1 demographic;
+
+	public List<String> getTeams() {
+		return teams;
+	}
+
+	public void setTeams(List<String> teams) {
+		this.teams = teams;
+	}
 
 	public DemographicTo1 getDemographic() {
 		return demographic;

@@ -180,8 +180,12 @@ public class ConsultService extends AbstractServiceImpl {
 			consult.setProfessionalSpecialist(null);
 			this.consultDao.saveEntity(consult);
 		}
-		ProfessionalSpecialist professionalSpecialist = professionalSpecialistDao.find(to.getSpecId());
-		consult.setProfessionalSpecialist(professionalSpecialist);
+		if (to.getSpecId() != null) {
+			ProfessionalSpecialist professionalSpecialist = professionalSpecialistDao.find(to.getSpecId());
+			consult.setProfessionalSpecialist(professionalSpecialist);
+		} else {
+			consult.setProfessionalSpecialist(null);
+		}
 		this.consultDao.saveEntity(consult);
 		
 		response.setResult(true);

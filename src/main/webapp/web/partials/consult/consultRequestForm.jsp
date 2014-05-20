@@ -228,7 +228,7 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 		<label class="control-label">Consultation Status</label>
 		<div class="form-group">
 			<select class="form-control" ng-model="consult.status" ng-required="true">
-				<option value="{{status.value}}" ng-repeat="status in status">{{status.name}}</option>
+				<option value="{{status.value}}" ng-repeat="status in statuses">{{status.name}}</option>
 			</select>
 		</div>
 		
@@ -250,8 +250,7 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 					<select name="letterhead" class="form-control" 
 							ng-model="consult.letterheadName" 
 							ng-options="letterhead.id as letterhead.name for letterhead in consult.letterheads"
-							ng-change="changeLetterhead()"
-							ng-required="true">
+							ng-change="changeLetterhead()">
 					</select>
 				</div>
 				<p class="letterheadDetails">
@@ -276,8 +275,7 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 					<select name="specialtyId" class="form-control inline" style="width: 50%;"
 							ng-model="consult.specId" 
 							ng-options="specialty.id as [specialty.firstName, specialty.lastName] for specialty in consult.specialties"
-							ng-change="changeSpecialty()"
-						 	ng-required="true">
+							ng-change="changeSpecialty()">
 					</select>
 				</div>
 				<p class="specialtyDetails">
@@ -295,11 +293,11 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 				<h4>Referral Details</h4>
 				<div class="col-md-4">
 					<label class="control-label">Referral Date:</label>
-					<input id="dp-referralDate" type="text" class="form-control" ng-model="consult.referralDate" data-date-format="yyyy-mm-dd" placeholder="Referral Date" pattern="^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$" ng-required="true"/>
+					<input id="dp-referralDate" type="text" class="form-control" ng-model="consult.referralDate" data-date-format="yyyy-mm-dd" placeholder="Referral Date" pattern="^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$"/>
 					<label class="control-label">Urgency:</label>
 					<div class="form-group">
 						<select name="urgency" class="form-control" ng-model="consult.urgency" ng-required="true">
-							<option value="{{urgency.value}}" ng-repeat="urgency in urgencies">{{urgency.name}}</option>
+							<option value="{{urgency.value}}" ng-repeat="urgency in urgencies" ng-selected="{{urgency.value == consult.urgency || urgency.value == '2'}}">{{urgency.name}}</option>
 						</select>
 					</div>
 				</div>
@@ -318,18 +316,16 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 				<h4>Appointment Details</h4>
 				<div class="col-md-4">
 					<label class="control-label">Appointment Date:</label>
-					<input id="dp-appointmentDate" type="text" class="form-control" ng-model="consult.appointmentDate" data-date-format="yyyy-mm-dd" placeholder="Appointment Date" pattern="^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$" ng-required="true"/>
+					<input id="dp-appointmentDate" type="text" class="form-control" ng-model="consult.appointmentDate" data-date-format="yyyy-mm-dd" placeholder="Appointment Date" pattern="^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$"/>
 					<label class="control-label">Appointment Time:</label>
 					<div class="form-group">
 						<select class="form-control" style="display: inline; width: 25%;" 
 								ng-model="consult.appointmentHour"
-								ng-options="hour as hour for hour in hours"
-								ng-required="true">
+								ng-options="hour as hour for hour in hours">
 						</select> : 
 						<select class="form-control" style="display: inline; width:25%;" 
 								ng-model="consult.appointmentMinute"
-								ng-options="minute as minute for minute in minutes"
-							 	ng-required="true">
+								ng-options="minute as minute for minute in minutes">
 						</select>
 					</div>
 					<label class="control-label">Last Follow-up Date:</label>
@@ -341,7 +337,7 @@ String pasteFmt = fmtProperty != null?fmtProperty.getValue():null;
 					</div>
 					<label class="control-label">Appointment Notes:</label>
 					<div class="form-group">
-						<textarea cols="80" rows="6" class="form-control" ng-model="consult.statusText" ng-required="true"></textarea>
+						<textarea cols="80" rows="6" class="form-control" ng-model="consult.statusText"></textarea>
 					</div>
 				</div>
 				<div class="clear"></div>

@@ -140,8 +140,12 @@ else {
 				<option value="1"><bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.msgNoth" /></option>
 				<option value="2"><bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.msgSpecCall" /></option>
 				<option value="3"><bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.msgPatCall" /></option>
-				<option value="6"><bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.msgPreliminary" /></option>
 				<option value="4"><bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.msgCompleted" /></option>
+				<option value="5"><bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.msgPending" /></option>
+				<option value="6"><bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.msgPreliminary" /></option>
+				<option value="7"><bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.msgCancelled" /></option>
+				<option value="8"><bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.msgAppBooked" /></option>
+				<option value="10"><bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.msgDeleted" /></option>
 			</select>
 		</div>
 		<p>
@@ -188,30 +192,27 @@ $(document).ready(function () {
 				return "<a href='javascript:editConsult(" + row.id + ", " + row.demographicNo + ")' rel='" + row.id + "'><i class='icon-edit'></i></a>";
 			}, "sClass": "center" },
            	{ "sTitle": "<bean:message key='consultationList.header.patient' />", "mData": "patient", "sClass": "center" },
+ 			{ "sTitle": "<bean:message key='consultationList.header.consultant' />", "mData": "specialistName",  "sClass": "center" },
  			{ "sTitle": "<bean:message key='consultationList.header.service' />", "mData": "serviceDesc", "sClass": "center" },
- 		    { "sTitle": "<bean:message key='consultationList.header.consultant' />", "mData": "specialistName",  "sClass": "center" },
-		    { "sTitle": "<bean:message key='consultationList.header.team' />", "mData": "sendTo", "sClass": "center" },
-		    { "sTitle": "<bean:message key='consultationList.header.status' />" , "mData": "status", "sClass": "center","mRender": function(data, type, row) {
-		    	var statusId = parseInt(data);
-		    	switch(statusId) {
-		    	case 1:
-		    		return '<bean:message key="consultationList.status.nothing" />';
-		    	case 2:
-		    		return '<bean:message key="consultationList.status.specialistCallback" />';
-		    	case 3:
-		    		return '<bean:message key="consultationList.status.patientCallback" />';
-		    	case 4:
-		    		return '<bean:message key="consultationList.status.completed" />';
-		    	case 6:
-		    		return '<bean:message key="consultationList.status.preliminary" />';
-		    	}
-		    } },
-		 	{ "sTitle": "<bean:message key='consultationList.header.mrp' />", "mData": "providerName", "sClass": "center" },
+ 			{ "sTitle": "<bean:message key='consultationList.header.urgency' />", "mData": "urgency", "sClass": "center", "mRender": function(data, type, row) {
+				var urgencyId = parseInt(data);
+				switch(urgencyId) {
+				case 1:
+					return '<span style="color:red;"><bean:message key="consultationList.urgency.urgent" /></span>';
+				case 2:
+					return '<bean:message key="consultationList.urgency.non-urgent" />';
+				case 3:
+					return '<bean:message key="consultationList.urgency.return" />';
+				case 5:
+					return '<bean:message key="consultationList.urgency.semi-urgent" />';
+				}
+			} },
+			{ "sTitle": "<bean:message key='consultationList.header.mrp' />", "mData": "providerName", "sClass": "center" },
+			{ "sTitle": "<bean:message key='consultationList.header.team' />", "mData": "sendTo", "sClass": "center" },
 			{ "sTitle": "<bean:message key='consultationList.header.appointmentDate' />", "mData": "appointmentDate", "sClass": "center", "mRender": function(data, type, row) {
 		    	return data.replace("T", "");
 		    } },
-		    { "sTitle": "<bean:message key='consultationList.header.followup' />", "mData": "followUpDate", "sClass": "center" },
-		    { "sTitle": "<bean:message key='consultationList.header.referralDate' />", "mData": "referralDate", "sClass": "center" }
+		    { "sTitle": "<bean:message key='consultationList.header.followup' />", "mData": "followUpDate", "sClass": "center" }
 		],
 		"fnServerParams": function ( aoData ) {
 			startDate = $("#startDate").val();

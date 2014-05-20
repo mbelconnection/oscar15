@@ -94,7 +94,8 @@ oscarApp.controller('ConsultDetailCtrl', function ($scope,$http,$routeParams,$re
 						{value: 'US-WV', name: 'US-WV-West Virginia'}, 
 						{value: 'US-WY', name: 'US-WY-Wyoming'}];
 	$scope.urgencies = [{value: 1, name: 'Urgent'}, {value: 2, name: 'Non-Urgent'}, {value: 3, name: 'Return'}, {value: 5, name: 'Semi-Urgent'}];
-	$scope.status=[{value: 1, name: 'Nothing'}, {value: 2, name: 'Pending Specialist Callback'}, {value: 3, name: 'Pending Patient Callback'}, {value: 4, name: 'Completed'}];
+	$scope.statuses=[{value: 1, name: 'Not Complete'}, {value: 5, name: 'Pending Callback'}, {value: 6, name: 'Preliminary Pending Specialist'}, {value: 4, name: 'Completed'},
+	                 {value: 7, name: 'Cancelled'}, {value: 8, name: 'Appointment Booked'}, {value: 10, name: 'Deleted'}];
 	
 	var requestId = getQueryStrings()['requestId'];
 	var demographicNo = getQueryStrings()['demographicNo'];
@@ -110,7 +111,7 @@ oscarApp.controller('ConsultDetailCtrl', function ($scope,$http,$routeParams,$re
 			$scope.consult.followUpDate = getDate($scope.consult.followUpDate);
 			$scope.consult.specialties = new Array();
 			for (var i = 0; i < $scope.consult.services.length; i++) {
-				if ($scope.consult.services[i].id == $scope.consult.serviceId) {
+				if ($scope.consult.services[i].id == $scope.consult.serviceId && $scope.consult.services[i].specialties != null) {
 					$scope.consult.specialties = $scope.consult.services[i].specialties;	
 				}
 			}
@@ -125,7 +126,11 @@ oscarApp.controller('ConsultDetailCtrl', function ($scope,$http,$routeParams,$re
 			$scope.consult.appointmentHour = getHour($scope.consult.appointmentTime);
 			$scope.consult.appointmentMinute = getMinute($scope.consult.appointmentTime);
 			$scope.consult.providerNo = providerNo;
-						
+			if ($scope.consult.status == '2' || $scope.consult.status == '3') {
+				// Merge Pending Patient Callback and Pending Consultant Callback into Pending Callback
+				$scope.consult.status = '5';
+			}
+			
 			// Demographic		
 			demographicNo = response.demographicId;
 			var demographicWS = $resource('../../../ws/rs/demographics/detail/:demographicNo',{}, {});
@@ -149,7 +154,7 @@ oscarApp.controller('ConsultDetailCtrl', function ($scope,$http,$routeParams,$re
 			$scope.consult.providerNo = providerNo;
 			$scope.consult.specialties = new Array();
 			for (var i = 0; i < $scope.consult.services.length; i++) {
-				if ($scope.consult.services[i].id == $scope.consult.serviceId) {
+				if ($scope.consult.services[i].id == $scope.consult.serviceId && $scope.consult.services[i].specialties != null) {
 					$scope.consult.specialties = $scope.consult.services[i].specialties;	
 				}
 			}
@@ -160,6 +165,7 @@ oscarApp.controller('ConsultDetailCtrl', function ($scope,$http,$routeParams,$re
 					$scope.consult.specialtyFax = $scope.consult.specialties[i].fax;
 				}
 			}
+			$scope.consult.urgency = 2;
 		});
 	}
 	

@@ -24,6 +24,7 @@
 package org.oscarehr.ws.rest.to.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -34,20 +35,60 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown = true)
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class ProviderAndEventSearchResponse implements Serializable {
+public class OscarResponseTo implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
+    
+	private List<ProviderTo> providers;
 	
-	private ProviderAndEventSearchResults response = new ProviderAndEventSearchResults();
-
-	public ProviderAndEventSearchResults getResponse() {
-		return response;
+	private List<AppointmentStatusTo> appointmentStatus;
+	
+	private AppointmentTo appointments;
+	
+	private List<AppointmentReasonTo> appointmentReason;
+	
+	public List<AppointmentReasonTo> getAppointmentReason() {
+		return appointmentReason;
 	}
 
-	public void setResponse(ProviderAndEventSearchResults response) {
-		this.response = response;
+	public void setAppointmentReason(List<AppointmentReasonTo> appointmentReason) {
+		this.appointmentReason = appointmentReason;
 	}
 
+	public AppointmentTo getAppointments() {
+		return appointments;
+	}
+
+	public void setAppointments(AppointmentTo appointments) {
+		this.appointments = appointments;
+	}
+
+	public List<AppointmentStatusTo> getAppointmentStatus() {
+		return appointmentStatus;
+	}
+
+	public void setAppointmentStatus(List<AppointmentStatusTo> appointmentStatus) {
+		this.appointmentStatus = appointmentStatus;
+	}
+
+	private List<AppointmentTypeTo> appointmentTypes;
+
+	public List<AppointmentTypeTo> getAppointmentTypes() {
+		return appointmentTypes;
+	}
+
+	public void setAppointmentTypes(List<AppointmentTypeTo> appointmentTypes) {
+		this.appointmentTypes = appointmentTypes;
+	}
+
+	public List<ProviderTo> getProviders() {
+		return providers;
+	}
+
+	public void setProviders(List<ProviderTo> providers) {
+		this.providers = providers;
+	}
+	
 
 	
 }

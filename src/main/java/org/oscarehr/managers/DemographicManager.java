@@ -44,6 +44,8 @@ import org.oscarehr.common.model.Provider;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.ws.rest.bo.DemographicBO;
 import org.oscarehr.ws.rest.to.model.DemographicTo;
+import org.oscarehr.ws.rest.exception.PatientException;
+import org.oscarehr.ws.rest.util.ErrorCodes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -485,5 +487,32 @@ public class DemographicManager {
 			return new ArrayList<DemographicTo>();
 		}
 		return demographicTo;
+	}
+
+
+	public List<Demographic> getActiveDemographisFirstNameSearch(String[] nameLike) throws PatientException {
+		logger.debug("DemographicManager.getActiveDemographisFirstNameSearch() starts");
+		List<Demographic> demographics = null;
+		try {
+			demographics = demographicDao.getActiveDemographisFirstNameSearch(nameLike);
+		} catch (Exception e) {
+			logger.error("Error in DemographicManager.getActiveDemographisFirstNameSearch()", e);
+			throw new PatientException(ErrorCodes.PAT_ERROR_001);
+		}
+		logger.debug("DemographicManager.getActiveDemographisFirstNameSearch() ends");
+		return demographics;
+	}
+	
+	public List<Demographic> getActiveDemographisLastNameSearch(String[] nameLike) throws PatientException {
+		logger.debug("DemographicManager.getActiveDemographisLastNameSearch() starts");
+		List<Demographic> demographics = null;
+		try {
+			demographics = demographicDao.getActiveDemographisLastNameSearch(nameLike);
+		} catch (Exception e) {
+			logger.error("Error in DemographicManager.getActiveDemographisLastNameSearch()", e);
+			throw new PatientException(ErrorCodes.PAT_ERROR_001);
+		}
+		logger.debug("DemographicManager.getActiveDemographisLastNameSearch() ends");
+		return demographics;
 	}
 }

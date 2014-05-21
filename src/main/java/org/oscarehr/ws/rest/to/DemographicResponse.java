@@ -26,12 +26,16 @@ package org.oscarehr.ws.rest.to;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 
 import org.oscarehr.ws.rest.to.model.CountryCodeTo;
 import org.oscarehr.ws.rest.to.model.DemographicTo1;
 
 @XmlRootElement
+@XmlSeeAlso({DemographicTo1.class})
 public class DemographicResponse extends AbstractSearchResponse<DemographicTo1> {
 
 	private static final long serialVersionUID = -435299509291737745L;
@@ -62,5 +66,12 @@ public class DemographicResponse extends AbstractSearchResponse<DemographicTo1> 
 	public void setCountries(List<CountryCodeTo> countries) {
 		this.countries = countries;
 	}
+
+	@Override
+	@XmlElement(name="demographic", type = DemographicTo1.class)
+	@XmlElementWrapper(name="content")
+    public List<DemographicTo1> getContent() {
+	    return super.getContent();
+    }
 
 }

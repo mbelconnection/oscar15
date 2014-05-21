@@ -25,6 +25,15 @@ package org.oscarehr.ws.rest.to.model;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+@XmlRootElement
+@JsonIgnoreProperties(ignoreUnknown = true)
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class ProvidersTo1 implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -23,6 +23,7 @@
     Ontario, Canada
 
 --%>
+<!-- Used File -->
 <script>
 	$(function(){
 		/*JSON data*/
@@ -46,10 +47,10 @@
 		];
 		
 		var fex_sea_data= [
-			{"name":"Chan. John", "dob":"2013-Dec-9", "hin":"1234-334-345-GI", "appts":[{"date":"2014-Mar-10","time":"11:00","provider":"Dr.Oscardoc", "pid":"1"}, {"date":"2012-May-07","time":"12:00","provider":"Dr.Oscardoc", "pid":"1"}, {"date":"2012-Feb-25","time":"14:00","provider":"Dr.Oscardoc", "pid":"1"}]},
-			{"name":"Chan. John", "dob":"1986-Dec-13", "hin":"1111-444-987-GX", "appts":[{"date":"2014-Mar-10","time":"11:00","provider":"Dr.Yarwick", "pid":"1"}, {"date":"2012-May-07","time":"12:00","provider":"Dr.Yarwick", "pid":"1"}, {"date":"2012-Feb-25","time":"14:00","provider":"Dr.Yarwick", "pid":"1"}]},
-			{"name":"Chan. John", "dob":"1982-Oct-2", "hin":"1234-999-321", "appts":[{"date":"2014-Mar-10","time":"11:00","provider":"Dr.Oscardoc", "pid":"1"}, {"date":"2012-May-07","time":"12:00","provider":"Dr.Chow", "pid":"1"}, {"date":"2012-Feb-25","time":"14:00","provider":"Dr.Chow", "pid":"1"}]},
-			{"name":"Chan. John", "dob":"1976-Mar-11", "hin":"1234-334-345-GI", "appts":[{"date":"2014-Mar-10","time":"11:00","provider":"Dr.Davidson", "pid":"1"}, {"date":"2012-May-07","time":"12:00","provider":"Dr.Davidson", "pid":"1"}, {"date":"2012-Feb-25","time":"14:00","provider":"Dr.Davidson", "pid":"1"}]}
+			{"name":"Name: Chan. John", "dob":"DOB: 2010-Jun-25", "hin":"HIN: 1234-334-345-GI", "appts":[{"date":"2014-Mar-10","time":"11:00","provider":"Dr.Oscardoc", "pid":"1"}, {"date":"2012-May-07","time":"12:00","provider":"Dr.Oscardoc", "pid":"1"}, {"date":"2012-Feb-25","time":"14:00","provider":"Dr.Oscardoc", "pid":"1"}]},
+			{"name":"Name: Chan. John", "dob":"DOB: 1986-Dec-13", "hin":"HIN: 1111-444-987-GX", "appts":[{"date":"2014-Mar-10","time":"11:00","provider":"Dr.Yarwick", "pid":"1"}, {"date":"2012-May-07","time":"12:00","provider":"Dr.Yarwick", "pid":"1"}, {"date":"2012-Feb-25","time":"14:00","provider":"Dr.Yarwick", "pid":"1"}]},
+			{"name":"Name: Chan. John", "dob":"DOB: 1982-Oct-2", "hin":"HIN: 1234-999-321", "appts":[{"date":"2014-Mar-10","time":"11:00","provider":"Dr.Oscardoc", "pid":"1"}, {"date":"2012-May-07","time":"12:00","provider":"Dr.Chow", "pid":"1"}, {"date":"2012-Feb-25","time":"14:00","provider":"Dr.Chow", "pid":"1"}]},
+			{"name":"Name: Chan. John", "dob":"DOB: 1976-Mar-11", "hin":"HIN: 1234-334-345-GI", "appts":[{"date":"2014-Mar-10","time":"11:00","provider":"Dr.Davidson", "pid":"1"}, {"date":"2012-May-07","time":"12:00","provider":"Dr.Davidson", "pid":"1"}, {"date":"2012-Feb-25","time":"14:00","provider":"Dr.Davidson", "pid":"1"}]}
 			
 		];
 				
@@ -62,7 +63,7 @@
 		};
 		
 		/*General functions*/
-		fex_fn = { 
+		fex_fn = {
 			 
 			 loadSearchDtls: function(patientName){
 				var _data = fex_json_fn.getSearchData(patientName);
@@ -71,7 +72,7 @@
 				$.each(_data, function(){
 					var me = this;
 					var findObject = JSON.stringify(me);
-						_html += "<tr> <td rowspan='3'>" + this.name + "<br>" + this.dob + "<br>" + this.hin + "</td>";
+						_html += "<tr border='10'> <td rowspan='3'>" + this.name + "<br>" + this.dob + "<br>" + this.hin + "<div class='fex_viewFullHistory_link' style='cursor:pointer;' onclick='fex_fn.viewApptFullHistory("+findObject+")'><u>View Full appt. History</u></div></td>";
 						
 						var len = this.appts.length;
 						var clickFn = function(id){
@@ -112,9 +113,26 @@
 						}
 					}
 				});
-			 }
+			 },
+			 viewApptFullHistory: function(findObject){
+				 findAvailObject = findObject;
+						console.log(findObject);
+				 //if(myObject.date==$("#inputField").val()){
+				 $( "#view-full-appt-history" ).dialog({
+					resizable: false,
+					height:120,
+					width:520,
+					buttons: {
+						"Cancel": function() {
+							 $( this ).dialog( "close" );
+							}
+						}
+					});
+				 }
 			 
 		}
+			 
+		
 			
 		
 		/* General functions end*/ 
@@ -136,20 +154,19 @@
 		/* Dialog init*/
 		 $("#fex_app_form").dialog({
                 autoOpen: false,
-                height: 500,
+                height: 520,
                 width: 640,
                 modal: true,
 				buttons:{
 				"send":{
 				  text:'Cancel',
-				  class:'sch_button_grd',
+				  class:'sch_button_cancel',
 				  click: function(){
 						$(this).dialog("close");
 				  }
 				}}
                 
             });
-
 		$(".ui-dialog-titlebar").hide();
 		//Open dailog
 		//$("#fex_app_form").dialog("open");
@@ -187,13 +204,8 @@
 	});//end of document ready function
 
 
-	
-
-
-  
-
-
 </script>
+
 <style>
 	
 	.fex_form{
@@ -248,12 +260,12 @@
 
 
 		.fex_table{
-			border:1;
+			border:0;
 			border-collapse:collapse;
 			cellPadding:0px;
-			cellSpacing:0px;
+			cellSpacing:0px;			
 		}
-
+		.fex_table tr {border:1;border-top:thin solid; border-color:black; height: 24px}
 		div#fex_users-contain {
             width: 550px;
             margin: 50px;
@@ -265,13 +277,23 @@
             border-collapse: collapse;
             width: 100%;
         }
-        div#fex_users-contain table td,
+
         div#fex_users-contain table th {
-            border: 1px solid #eee;
+            border: 0px solid #eee;
             padding: .3em 10px;
             text-align: left;
         }
 
+
+        div#fex_users-contain table tr {
+            border: 2px solid black;
+        }
+        
+        div#fex_users-contain table td {
+        	border: 0px;
+            padding: .3em 10px;
+            text-align: left;
+        }
 		.ui-button-text {
 			display: block;
 			line-height: normal;
@@ -284,7 +306,7 @@
 			padding:5px;
 			font-size:14px;
 			font-weight:600;
-			color:#6495ED;
+			color:#0C090A;
 		}
 
 		.fex_subheading{
@@ -331,7 +353,7 @@
 		}
 		
 		.ui-widget-content {
-			background: url("images/ui-bg_flat_75_ffffff_40x100.png") repeat-x scroll 50% 50% #FFFFFF;
+			background: url("js_up/images/ui-bg_flat_75_ffffff_40x100.png") repeat-x scroll 50% 50% #FFFFFF;
 			border: 1px solid #AAAAAA;
 			color: #222222;
 			font-size:11px;
@@ -354,6 +376,16 @@
 			 background-image: linear-gradient(to bottom, #a5b8da, #7089b3);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#a5b8da, endColorstr=#7089b3);
 		}
 
+		.sch_button_cancel{
+			 border:1px solid #C7C5C5;-webkit-box-shadow: #C7C5C5 4px 4px 4px  ;-moz-box-shadow: #C7C5C5 4px 4px 4px ; box-shadow: #C7C5C5 4px 4px 4px  ; -webkit-border-radius: 3px; -moz-border-radius: 3px;border-radius: 3px;font-size:12px !important;font-family:verdana, sans-serif; padding: 5px 8px 5px 8px; text-decoration:none; display:inline-block;text-shadow: -1px -1px 0 rgba(0,0,0,0.3); color: #000000;
+			 background-color: #C7C5C5; background-image: -webkit-gradient(linear, left top, left bottom, from(#C7C5C5), to(#C7C5C5));
+			 background-image: -webkit-linear-gradient(top, #C7C5C5, #C7C5C5);
+			 background-image: -moz-linear-gradient(top, #C7C5C5, #C7C5C5);
+			 background-image: -ms-linear-gradient(top, #C7C5C5, #C7C5C5);
+			 background-image: -o-linear-gradient(top, #C7C5C5, #C7C5C5);
+			 background-image: linear-gradient(to bottom, #C7C5C5, #C7C5C5);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#C7C5C5, endColorstr=#7089b3);
+		}
+
 		.sch_button_grd:hover{
 			 border:1px solid #5d7fbc;
 			 background-color: #819bcb; background-image: -webkit-gradient(linear, left top, left bottom, from(#819bcb), to(#536f9d));
@@ -364,19 +396,38 @@
 			 background-image: linear-gradient(to bottom, #819bcb, #536f9d);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#819bcb, endColorstr=#536f9d);
 		}
 		
+		.fex_viewFullHistory_link{
+			width:200px;
+			height:20px;
+			border:0px solid #cecece;
+			padding:0px;
+			text-align:left;
+			-moz-border-radius:0px;
+			-webkit-border-radius:0px;
+			border-radius:0px;
+			font-family:calibri;
+			font-size:12px;
+		}
 
-
+.fex_close:hover{
+	 cursor:pointer !important;
+}
      
        
 </style>
 
 <!-- Next available appt dailog box start-->
 <div id="fex_app_form" class="fex_form" style="padding:0px;width:100%">
-	<p class="fex_mainheading">Find an existing appointment</p>
+	<table border="0" width="100%">
+		<tr>
+			<td><p class="fex_mainheading" style='font-name:Arial;font-size:16px;color:#0C090A;'>Find an existing appointment</p></td>
+			<td align="right" valign="top"><div class="fex_close" onClick='$("#fex_app_form").dialog("close");'><img src="js_up/images/close_icon.png" height=20 width=20 ></img></div></td>
+		</tr>
+	</table>	
 	<form class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">	
 		<table class="fex_table" width="97%" border="0" style="margin-left:10px;margin-right:10px" align="center">			
-			<tr>	
-				<td colspan="2" class="fex_subheading">APPOINTMENT SEARCH RESULTS</td>
+			<tr>
+				<td colspan="2" style='padding-left:5px;width:80px;font-size:12px;color:#C7C5C5;'><b>APPOINTMENT SEARCH RESULTS<b></b></td>
 			</tr>
 			<tr>	
 				<td colspan="2" style="text-align:center;"> 
@@ -408,5 +459,9 @@
 		<label for="password">Password</label>
 		<input type="password" name="password" id="password" value="" class="na_form_inputtext">-->
 	</form>
+	
 </div>
+		<div style="padding: 0px; display: none;" title="View Full appointment Details" id="view-full-appt-history">
+		<b>Add Appointment History Here...</b>
+		</div>
 <!--  Next available appt dailog box end -->

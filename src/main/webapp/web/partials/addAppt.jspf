@@ -1,170 +1,428 @@
+<%@page import="com.itextpdf.text.log.SysoLogger"%>
+<% String isEditable = (String) session.getAttribute("isClicked"); %>
+
 <script>
-
-
-var apptData="";
+	var apptData = "";
 	
+	var add_appt_data = "UND";
+
 	$(function() {
 		/*JSON data*/
-		var add_appt_json_patients = [
-		  { label: "anders", category: "", id:"1" },
-		  { label: "andreas", category: "", id:"2"  },
-		  { label: "anders andersson", category: "", id:"3"  },
-		  { label: "andreas andersson", category: "", id:"4"  },
-		  { label: "andreas johnson", category: "", id:"5"  }
-		];
-		var add_appt_json_docs = [
-		  { label: "Dr. Oscardoc", category: "", id:"1" },
-		  { label: "Dr. Doe", category: "", id:"2"  },
-		  { label: "Dr. Hilts", category: "", id:"3"  },
-		  { label: "Dr. Yarwick", category: "", id:"4"  },
-		  { label: "Dr. Michelle Dietician", category: "", id:"5"  },
-		  { label: "Dr. Alison Smith", category: "", id:"6"  },
-		  { label: "Dr. Rand Paul", category: "", id:"7"  }
-		];
-		
-		var add_appt_sample_appt_data = {"patientId":"4", "patientName":"Leo", "provType":"M", "provId":"4,5", "provName":"Dr. Hilt, Dr. Oscardoc"
-			, "date":"16-Feb-2014", "time":"10", "duration":"30", "isrecurrence":"Y", "recurrence_date":"28-Jan-2014", "appttype":"billing"
-			, "apptstatus":"DP", "isCritical":"Y", "apptresources":"Room 3", "apptreason":"BT", "apptreasondtls":"Physical Examination"
-			, "apptnotes":"Noted complications since last year", "crtdby":"Eddie Collins", "crtddate":"12-Oct-2013", "lastedited":"n/a"
-			, "patientinfo":{"dob":"10-Oct-1985", "sex":"F", "hin":"xxx-xxx-xxx", "address":"123 Sicamore Ave, Toronto, ON", "phone":"647-555-5595", "email":"jane.doe@gmail.com"}
-			, "patapptinfo":[ {"date":"16-Apr-2011", "provider":"Thompson, Dr.", "starttime":"11:15 AM"},
-								{"date":"7-May-2010", "provider":"Thompson, Dr.", "starttime":"07:45 AM"},
-								{"date":"21-Jan-2010", "provider":"Thompson, Dr.", "starttime":"10:00 AM"},
-								{"date":"10-Jun-2008", "provider":"Yarwick, Dr.", "starttime":"11:15 AM"}]
-			};
-		
-		
-		
+		var add_appt_json_patients = [ {
+			label : "anders",
+			category : "",
+			id : "1"
+		}, {
+			label : "andreas",
+			category : "",
+			id : "2"
+		}, {
+			label : "anders andersson",
+			category : "",
+			id : "3"
+		}, {
+			label : "andreas andersson",
+			category : "",
+			id : "4"
+		}, {
+			label : "andreas johnson",
+			category : "",
+			id : "5"
+		} ];
+		var add_appt_json_docs = [ {
+			label : "Dr. Oscardoc",
+			category : "",
+			id : "1"
+		}, {
+			label : "Dr. Doe",
+			category : "",
+			id : "2"
+		}, {
+			label : "Dr. Hilts",
+			category : "",
+			id : "3"
+		}, {
+			label : "Dr. Yarwick",
+			category : "",
+			id : "4"
+		}, {
+			label : "Dr. Michelle Dietician",
+			category : "",
+			id : "5"
+		}, {
+			label : "Dr. Alison Smith",
+			category : "",
+			id : "6"
+		}, {
+			label : "Dr. Rand Paul",
+			category : "",
+			id : "7"
+		} ];
+
+		var add_appt_sample_appt_data = {
+			"patientId" : "4",
+			"patientName" : "Leo",
+			"provType" : "M",
+			"provId" : "4,5",
+			"provName" : "Dr. Hilt, Dr. Oscardoc",
+			"date" : "16-Feb-2014",
+			"time" : "10",
+			"duration" : "30",
+			"isrecurrence" : "Y",
+			"recurrence_date" : "28-Jan-2014",
+			"appttype" : "billing",
+			"apptstatus" : "DP",
+			"isCritical" : "Y",
+			"apptresources" : "Room 3",
+			"apptreason" : "BT",
+			"apptreasondtls" : "Physical Examination",
+			"apptnotes" : "Noted complications since last year",
+			"crtdby" : "Eddie Collins",
+			"crtddate" : "12-Oct-2013",
+			"lastedited" : "n/a",
+			"patientinfo" : {
+				"dob" : "10-Oct-1985",
+				"sex" : "F",
+				"hin" : "xxx-xxx-xxx",
+				"address" : "123 Sicamore Ave, Toronto, ON",
+				"phone" : "647-555-5595",
+				"email" : "jane.doe@gmail.com"
+			},
+			"patapptinfo" : [ {
+				"date" : "16-Apr-2011",
+				"provider" : "Thompson, Dr.",
+				"starttime" : "11:15 AM"
+			}, {
+				"date" : "7-May-2010",
+				"provider" : "Thompson, Dr.",
+				"starttime" : "07:45 AM"
+			}, {
+				"date" : "21-Jan-2010",
+				"provider" : "Thompson, Dr.",
+				"starttime" : "10:00 AM"
+			}, {
+				"date" : "10-Jun-2008",
+				"provider" : "Yarwick, Dr.",
+				"starttime" : "11:15 AM"
+			} ]
+		};
+
 		/*dropdown values*/
-		var add_appt_json_appType = {"E":"E-Chart", "I":"Intake form", "B":"Billing", "R":"RX"};
-		var add_appt_json_appStatus = {"TD":"TD - To do", "DP":"DP - Daysheet printed", "HR":"HR - Here", "EM":"EM - Empty room", "NS":"NS - No show", "CX":"CX - Cancelled", "NP":"NP - Ready for NP", "FT":"FT - Fast tack"};
-		var add_appt_json_time = {"8_00":"08:00", "8_15":"08:15", "8_30":"08:30", "8_45":"08:45", "9_00":"09:00", "9_15":"09:15", "9_30":"09:30", "9_45":"09:45", "10_00":"10:00", "10_15":"10:15", "10_30":"10:30", "10_45":"10:45", "11_00":"11:00", "11_15":"11:15", "11_30":"11:30", "11_45":"11:45", "12_00":"12:00", "12_15":"12:15", "12_30":"12:30", "12_45":"12:45", "13_00":"13:00", "13_15":"13:15", "13_30":"13:30", "13_45":"13:45", "14_00":"14:00", "14_15":"14:15", "14_30":"14:30", "14_45":"14:45", "15_00":"15:00", "15_15":"15:15", "15_30":"15:30", "15_45":"15:45", "16_00":"16:00", "16_15":"16:15", "16_30":"16:30", "16_45":"16:45", "17_00":"17:00", "17_15":"17:15", "17_30":"17:30", "17_45":"17:45", "18_00":"18:00", "18_15":"18:15", "18_30":"18:30", "18_45":"18:45", "19_00":"19:00", "19_15":"19:15", "19_30":"19:30", "19_45":"19:45", "20_00":"20:00", "20_15":"20:15", "20_30":"20:30", "20_45":"20:45", "21_00":"21:00", "21_15":"21:15", "21_30":"21:30", "21_45":"21:45", "22_00":"22:00", "22_15":"22:15", "22_30":"22:30", "22_45":"22:45"};
-		var add_appt_json_duration = {"15":"15 min", "30":"30 min", "45":"45 min", "60":"60 min"};
-		var add_appt_json_duration1 = {"15":"15 min", "30":"30 min", "45":"45 min", "60":"60 min","75":"75min","90":"90min","105":"105min","120":"120min","135":"135min","150":"150min","165":"165min","180":"180min"};
-		var add_appt_json_reason = {"PT":"Pregnancy test","BT":"Blood test", "UT":"Urine test"};
-				
+		var add_appt_json_appType = {
+			"E" : "E-Chart",
+			"I" : "Intake form",
+			"B" : "Billing",
+			"R" : "RX"
+		};
+		var add_appt_json_appStatus = {
+			"TD" : "To do",
+			"DP" : "Daysheet printed",
+			"HR" : "Here",
+			"EM" : "Empty room",
+			"NS" : "No show",
+			"CX" : "Cancelled",
+			"PK" : "Picked",
+			"BL" : "Billed",
+			"C1" : "Customized 1",
+			"C2" : "Customized 2",
+			"C3" : "Customized 3",
+			"C4" : "Customized41",
+			"C5" : "Customized 5"
+		};
+		var add_appt_json_time = {
+			"8_00" : "08:00",
+			"8_15" : "08:15",
+			"8_30" : "08:30",
+			"8_45" : "08:45",
+			"9_00" : "09:00",
+			"9_15" : "09:15",
+			"9_30" : "09:30",
+			"9_45" : "09:45",
+			"10_00" : "10:00",
+			"10_15" : "10:15",
+			"10_30" : "10:30",
+			"10_45" : "10:45",
+			"11_00" : "11:00",
+			"11_15" : "11:15",
+			"11_30" : "11:30",
+			"11_45" : "11:45",
+			"12_00" : "12:00",
+			"12_15" : "12:15",
+			"12_30" : "12:30",
+			"12_45" : "12:45",
+			"13_00" : "13:00",
+			"13_15" : "13:15",
+			"13_30" : "13:30",
+			"13_45" : "13:45",
+			"14_00" : "14:00",
+			"14_15" : "14:15",
+			"14_30" : "14:30",
+			"14_45" : "14:45",
+			"15_00" : "15:00",
+			"15_15" : "15:15",
+			"15_30" : "15:30",
+			"15_45" : "15:45",
+			"16_00" : "16:00",
+			"16_15" : "16:15",
+			"16_30" : "16:30",
+			"16_45" : "16:45",
+			"17_00" : "17:00",
+			"17_15" : "17:15",
+			"17_30" : "17:30",
+			"17_45" : "17:45",
+			"18_00" : "18:00",
+			"18_15" : "18:15",
+			"18_30" : "18:30",
+			"18_45" : "18:45",
+			"19_00" : "19:00",
+			"19_15" : "19:15",
+			"19_30" : "19:30",
+			"19_45" : "19:45",
+			"20_00" : "20:00",
+			"20_15" : "20:15",
+			"20_30" : "20:30",
+			"20_45" : "20:45",
+			"21_00" : "21:00",
+			"21_15" : "21:15",
+			"21_30" : "21:30",
+			"21_45" : "21:45",
+			"22_00" : "22:00",
+			"22_15" : "22:15",
+			"22_30" : "22:30",
+			"22_45" : "22:45"
+		};
+		var add_appt_json_duration = {
+			"15" : "15 min",
+			"30" : "30 min",
+			"45" : "45 min",
+			"60" : "60 min"
+		};
+		var add_appt_json_duration1 = {
+			"15" : "15 min",
+			"30" : "30 min",
+			"45" : "45 min",
+			"60" : "60 min",
+			"75" : "75min",
+			"90" : "90min",
+			"105" : "105min",
+			"120" : "120min",
+			"135" : "135min",
+			"150" : "150min",
+			"165" : "165min",
+			"180" : "180min"
+		};
+		var add_appt_json_reason = {
+			"1" : "Pregnancy test",
+			"2" : "Blood test",
+			"3" : "Urine test"
+		};
+
 		/*form values*/
-		var add_appt_json_patientInfo1 = {"dob":"10-Oct-1991", "sex":"F", "hin":"111-222-333", "address":"123 Sicamore Ave, Toronto, ON", "phone":"647-333-444", "email":"jane.doe@gmail.com"};
-		var add_appt_json_patientApptInfo1 = [ {"date":"16-Apr-2011", "provider":"Dr. Yarwick", "starttime":"11:15"},
-								{"date":"7-May-2010", "provider":"Dr. Oscardoc", "starttime":"07:45"},
-								{"date":"21-Jan-2010", "provider":"Dr. Thompson", "starttime":"10:00"},
-								{"date":"10-Jun-2008", "provider":"Dr. Yarwick", "starttime":"11:15"}];
-								
-		var add_appt_json_patientInfo2 = {"dob":"10-Oct-1985", "sex":"M", "hin":"111-444-555", "address":"123 Sicamore Ave, Toronto, ON", "phone":"647-111-4444", "email":"jane.donaghy@gmail.com"};
-		var add_appt_json_patientApptInfo2 = [ {"date":"16-Apr-2011", "provider":"Dr. Thompson", "starttime":"11:15"},
-								{"date":"10-Feb-2012", "provider":"Dr. Oscardoc", "starttime":"07:45"},
-								{"date":"15-May-2011", "provider":"Dr. Thompson", "starttime":"10:00"},
-								{"date":"21-Jul-2008", "provider":"Dr. Oscardoc", "starttime":"11:15"}];
-								
-		var add_appt_json_patientInfo3 = {"dob":"10-Oct-1985", "sex":"M", "hin":"666-333-222", "address":"123 Sicamore Ave, Toronto, ON", "phone":"647-333-666", "email":"jane.donahue@gmail.com"};
-		var add_appt_json_patientApptInfo3 = [ {"date":"16-Apr-2011", "provider":"Dr. Yarwick", "starttime":"11:15"},
-								{"date":"17-May-2010", "provider":"Dr. Yarwick", "starttime":"07:45"},
-								{"date":"21-Mar-2010", "provider":"Dr. Thompson", "starttime":"10:00"},
-								{"date":"10-Dec-2008", "provider":"Dr. Oscardoc", "starttime":"11:15"}];
-		
-		var add_appt_patientFlds = {"appt_dob":"dob", "appt_sex":"sex", "appt_hin":"hin",  "appt_phone":"phone", "appt_email":"email"};
-		
-		var add_appt_form_flds = {"add_appt_pat_name":"patientName", "add_appt_date":"date", "add_appt_time":"time", "add_appt_duration":"duration", "add_appt_type":"appttype"
-			, "add_appt_status":"appt_status", "add_appt_resources":"apptresources", "add_appt_reason":"apptreason", "add_appt_reason_dtls":"apptreasondtls"
-			, "add_appt_notes":"apptnotes"};
-		
-		var add_appt_months = {"Jan":"0", "Feb":"1", "Mar":"2", "Apr":"3", "May":"4", "Jun":"5", "Jul":"6", "Aug":"7", "Sep":"8", "Oct":"9", "Nov":"10", "Dec":"11"};
-		
+		var add_appt_json_patientInfo1 = {
+			"dob" : "10-Oct-1991",
+			"sex" : "F",
+			"hin" : "111-222-333",
+			"address" : "123 Sicamore Ave, Toronto, ON",
+			"phone" : "647-333-444",
+			"email" : "jane.doe@gmail.com"
+		};
+		var add_appt_json_patientApptInfo1 = [ {
+			"date" : "16-Apr-2011",
+			"provider" : "Dr. Yarwick",
+			"starttime" : "11:15"
+		}, {
+			"date" : "7-May-2010",
+			"provider" : "Dr. Oscardoc",
+			"starttime" : "07:45"
+		}, {
+			"date" : "21-Jan-2010",
+			"provider" : "Dr. Thompson",
+			"starttime" : "10:00"
+		}, {
+			"date" : "10-Jun-2008",
+			"provider" : "Dr. Yarwick",
+			"starttime" : "11:15"
+		} ];
+
+		var add_appt_json_patientInfo2 = {
+			"dob" : "10-Oct-1985",
+			"sex" : "M",
+			"hin" : "111-444-555",
+			"address" : "123 Sicamore Ave, Toronto, ON",
+			"phone" : "647-111-4444",
+			"email" : "jane.donaghy@gmail.com"
+		};
+		var add_appt_json_patientApptInfo2 = [ {
+			"date" : "16-Apr-2011",
+			"provider" : "Dr. Thompson",
+			"starttime" : "11:15"
+		}, {
+			"date" : "10-Feb-2012",
+			"provider" : "Dr. Oscardoc",
+			"starttime" : "07:45"
+		}, {
+			"date" : "15-May-2011",
+			"provider" : "Dr. Thompson",
+			"starttime" : "10:00"
+		}, {
+			"date" : "21-Jul-2008",
+			"provider" : "Dr. Oscardoc",
+			"starttime" : "11:15"
+		} ];
+
+		var add_appt_json_patientInfo3 = {
+			"dob" : "10-Oct-1985",
+			"sex" : "M",
+			"hin" : "666-333-222",
+			"address" : "123 Sicamore Ave, Toronto, ON",
+			"phone" : "647-333-666",
+			"email" : "jane.donahue@gmail.com"
+		};
+		var add_appt_json_patientApptInfo3 = [ {
+			"date" : "16-Apr-2011",
+			"provider" : "Dr. Yarwick",
+			"starttime" : "11:15"
+		}, {
+			"date" : "17-May-2010",
+			"provider" : "Dr. Yarwick",
+			"starttime" : "07:45"
+		}, {
+			"date" : "21-Mar-2010",
+			"provider" : "Dr. Thompson",
+			"starttime" : "10:00"
+		}, {
+			"date" : "10-Dec-2008",
+			"provider" : "Dr. Oscardoc",
+			"starttime" : "11:15"
+		} ];
+
+		var add_appt_patientFlds = {
+			"appt_dob" : "dob",
+			"appt_sex" : "sex",
+			"appt_hin" : "hin",
+			"appt_phone" : "phone",
+			"appt_email" : "email"
+		};
+
+		var add_appt_form_flds = {
+			"add_appt_pat_name" : "patientName",
+			"add_appt_date" : "date",
+			"add_appt_time" : "time",
+			"add_appt_duration" : "duration",
+			"add_appt_type" : "appttype",
+			"add_appt_status" : "appt_status",
+			"add_appt_resources" : "apptresources",
+			"add_appt_reason" : "apptreason",
+			"add_appt_reason_dtls" : "apptreasondtls",
+			"add_appt_notes" : "apptnotes"
+		};
+
+		var add_appt_months = {
+			"Jan" : "0",
+			"Feb" : "1",
+			"Mar" : "2",
+			"Apr" : "3",
+			"May" : "4",
+			"Jun" : "5",
+			"Jul" : "6",
+			"Aug" : "7",
+			"Sep" : "8",
+			"Oct" : "9",
+			"Nov" : "10",
+			"Dec" : "11"
+		};
+
 		var add_appt_fld_prv_type = "";
 		var add_appt_fld_prv_id = "";
 		var add_appt_appt_id = "";
-		var add_appt_fld_pat_id ="";
-		
+		var add_appt_fld_pat_id = "";
+		var multiProv="";
+
 		var add_appt_pat_cnt = 1;
 		var popoverTime = null;
-		
+
 		var add_appt_pat_dtls_cnt = 1;
 		/*JSON data end*/
-		
-		/*Ajax calls*/		
+
+		/*Ajax calls*/
 		add_app_ajax_fn = {
-			getPatientsData: function(){
+			getPatientsData : function() {
 				return add_appt_json_patients;
-			},getDocsData: function(){
+			},
+			getDocsData : function() {
 				return add_appt_json_docs;
-			},getAppType: function(){
+			},
+			getAppType : function() {
 				return add_appt_json_appType;
-			},getAppStatus: function(){
+			},
+			getAppStatus : function() {
 				return add_appt_json_appStatus;
-			},getPatientInfo: function(patientID){
-				if(patientID == 1)
+			},
+			getPatientInfo : function(patientID) {
+				if (patientID == 1)
 					return add_appt_json_patientInfo1;
-				else if(patientID == 2)
+				else if (patientID == 2)
 					return add_appt_json_patientInfo2;
-				else if(patientID == 3)
+				else if (patientID == 3)
 					return add_appt_json_patientInfo3;
 				else
 					return add_appt_json_patientInfo1;
-			},getPatientApptInfo: function(patientID){
-				if(patientID == 1)
+			},
+			getPatientApptInfo : function(patientID) {
+				if (patientID == 1)
 					return add_appt_json_patientApptInfo1;
-				else if(patientID == 2)
+				else if (patientID == 2)
 					return add_appt_json_patientApptInfo2;
-				else if(patientID == 3)
+				else if (patientID == 3)
 					return add_appt_json_patientApptInfo3;
 				else
 					return add_appt_json_patientApptInfo1;
-			},getTimeSlot: function(){
+			},
+			getTimeSlot : function() {
 				return add_appt_json_time;
-			},getDurationSlot: function(){
+			},
+			getDurationSlot : function() {
 				return add_appt_json_duration;
-			},getApptReason: function(){
+			},
+			getApptReason : function() {
 				return add_appt_json_reason;
-			},saveFormData: function(formData){
-				// HttpRequest request = new HttpRequest(); // create a new XHR
-				// var url = "../ws/rs/appointment/123/add";
-				// request.open("POST", url, async: false);
-				 //String jsonData = '{"language":"dart"}'; // etc...
-				// var jsond = JSON.stringify(formData
-						//apptData = apptData.substring(1);
-						//apptData = apptData.substring(0, apptData.length - 1);
-						//alert(apptData);
-						apptData = '{"appointmentTo" :' + apptData + '}';
-						//apptData = "{" +"appointmentTo :" +  apptData + "}";
-						//alert(apptData);
-						var retVal;
-				 $.ajax({
-				        url: "../ws/rs/appointment/add",
-				        type: "post",
-				        data: apptData,
-				        contentType    : 'application/json',
-				        success: function(result){
-				            //alert("Appointment Created Successfully");
-				            $("#result").html('Submitted successfully');
-				            retVal = JSON.parse(result);
-				        },
-				        error:function(){
-				            alert("failure");
-				            $("#result").html('There is error while submit');
-				           
-				        }
-				    });
-				// request.send(JSON.stringify(formData)); // perform the async POST
-				 return retVal;
-			},getApptDtls: function(apptId){
+			},
+			saveFormData : function(formData) {
+				$.ajax({
+					url : "../ws/rs/appointment/add",
+					type : "post",
+					data : apptData,
+					async: false,
+					contentType : 'application/json',
+					success : function(result) {
+						add_appt_data = result.appointments;
+						$("#result").html('Submitted successfully');
+					},
+					error : function(jqxhr) {
+						var msg = JSON.parse(jqxhr.responseText);
+						alert(msg['message']);
+						$("#result").html('There is error while submit');
+
+					}
+				});
+				return add_appt_data;
+			},
+			getApptDtls : function(apptId) {
 				return add_appt_sample_appt_data;
-			},getDurationSlot1: function(){
+			},
+			getDurationSlot1 : function() {
 				return add_appt_json_duration1;
 			}
 		};
 		/*Ajax calls end*/
-		
-		
+
 		var currentTab = 0;
-		
-		var tabTitle = $( "#tab_title" ),
-		tabContent = $( "#tab_content" ),
-		tabTemplate = "<li><a href='#{href}'>#{label}</a> </li>",
-		tabCounter = 2;
+
+		var tabTitle = $("#tab_title"), tabContent = $("#tab_content"), tabTemplate = "<li><a href='#{href}'>#{label}</a> </li>", tabCounter = 2;
 
 		/*general function*/
 		add_app_fn = {
-			init: function(){
+			init : function() {
 				/*init tabs*/
 				$("#tabs").tabs();
 				//$("#add_appt_form").dialog("open");
@@ -177,794 +435,1018 @@ var apptData="";
 				add_app_fn.loadTimeSlot1();
 				add_app_fn.loadDurationSlot1();
 				//add_app_fn.setValNote("hello");
-				
-				
+
 				$("#innertab").tabs();
 				$("#innertab").tabs("option", "active", 0);
 			},
-			addTab: function(fldId, patId, patName) {
-				
-				if(add_appt_pat_dtls_cnt == 1)
+			addTab : function(fldId, patId, patName) {
+
+				if (add_appt_pat_dtls_cnt == 1)
 					$('#dummytab').remove();
 				//$('#myTabContent').append('<div class="tab-pane in active" id="new_tab_id"><p> Loading content ...</p></div>');
-				var innerTab = $('#pat_tab_'+fldId);
-				if(innerTab.attr('data-toggle') == "tab")
-					$('#myTab a[id="pat_tab_'+fldId+'"]').html(patName);
+				var innerTab = $('#pat_tab_' + fldId);
+				if (innerTab.attr('data-toggle') == "tab")
+					$('#myTab a[id="pat_tab_' + fldId + '"]').html(patName);
 				else
-					$('#myTab').append('<li><a data-target="#patient_dtls" data-toggle="tab" style="cursor:pointer;" id="pat_tab_'+fldId+'" patid="'+ patId +'"> '+patName+' </a></li>');
+					$('#myTab')
+							.append(
+									'<li><a data-target="#patient_dtls" data-toggle="tab" style="cursor:pointer;" id="pat_tab_'+fldId+'" patid="'+ patId +'"> '
+											+ patName + ' </a></li>');
 				//$('#myTab a:last').tab('show');
-				$('#myTab a[id="pat_tab_'+fldId+'"]').tab('show');
-				
-				$('#myTab a[id="pat_tab_'+fldId+'"]').bind('click', function (e) {
-					console.log(e.target);
-					var patId = $(e.target).attr('patid');
-					add_app_fn.loadPatientDtls(patId);
-					//e.target(window.alert("hello"))
-				});
-				
+				$('#myTab a[id="pat_tab_' + fldId + '"]').tab('show');
+
+				$('#myTab a[id="pat_tab_' + fldId + '"]').bind('click',
+						function(e) {
+							console.log(e.target);
+							var patId = $(e.target).attr('patid');
+							add_app_fn.loadPatientDtls(patId);
+							//e.target(window.alert("hello"))
+						});
+
 				add_appt_pat_dtls_cnt++;
-	
+
 			},
-			chkDialogStatus: function(){
-				if(add_appt_appt_id.length == 0){
+			chkDialogStatus : function() {
+				if (add_appt_appt_id.length == 0) {
 					//add_app_fn.setApptDtls(add_appt_appt_id);
 				}
 			},
-			setValNote: function(msg){
+			setValNote : function(msg) {
 				$("#add_appt_valNote").show();
 				$("#add_appt_valNote").html(msg);
 			},
-			hideValNote: function(msg){
+			hideValNote : function(msg) {
 				$("#add_appt_valNote").hide();
 			},
-			showTab: function(tab){
+			showTab : function(tab) {
 				$("#tabs").tabs("option", "active", 2);
 			},
-			loadOpts: function(_data, fldId){
-				$.each(_data, function(key, val){
-					$("#"+fldId).append(new Option(val, key));
+			loadOpts : function(_data, fldId) {
+				$.each(_data, function(key, val) {
+					$("#" + fldId).append(new Option(val, key));
 				});
 			},
-			loadApptType: function(){
-				var _data = add_app_ajax_fn.getAppType();
-				add_app_fn.loadOpts(_data, "add_appt_type");
+			loadOptsType : function(_data, fldId) {
+				$("#" + fldId).empty();
+				$.each(_data, function(key, val) {
+
+					$("#" + fldId).append(new Option(val.name, val.id));
+				});
 			},
-			loadApptStatus: function(){
-				var _data = add_app_ajax_fn.getAppStatus();
-				add_app_fn.loadOpts(_data, "add_appt_status");
+			loadApptType : function() {
+				$.ajax({
+					url : "../ws/rs/patient/type/list/1",
+					type : "get",
+					contentType : 'application/json',
+					success : function(result) {
+						add_app_fn.loadOptsType(result.appointmentTypes,
+								"add_appt_type");
+					},
+					error : function(jqxhr) {
+						var msg = JSON.parse(jqxhr.responseText);
+						alert(msg['message']);
+						$("#result").html('There is error while submit');
+
+					}
+				});
 			},
-			loadTimeSlot: function(){
+			loadApptStatus : function() {
+				$.ajax({
+					url : "../ws/rs/patient/status/list/1",
+					type : "get",
+					contentType : 'application/json',
+					success : function(result) {
+						add_app_fn.loadOptsType(result.appointmentStatus,
+								"add_appt_status");
+					},
+					error : function(jqxhr) {
+						var msg = JSON.parse(jqxhr.responseText);
+						alert(msg['message']);
+						$("#result").html('There is error while submit');
+
+					}
+				});
+			},
+			loadTimeSlot : function() {
 				var _data = add_app_ajax_fn.getTimeSlot();
 				add_app_fn.loadOpts(_data, "add_appt_time");
 			},
-			loadDurationSlot: function(){
+			loadDurationSlot : function() {
 				var _data = add_app_ajax_fn.getDurationSlot();
 				add_app_fn.loadOpts(_data, "add_appt_duration");
 			},
-			loadTimeSlot1: function(){
+			loadTimeSlot1 : function() {
 				var _data = add_app_ajax_fn.getTimeSlot();
 				add_app_fn.loadOpts(_data, "blk_appt_time");
 			},
-			loadDurationSlot1: function(){
+			loadDurationSlot1 : function() {
 				var _data = add_app_ajax_fn.getDurationSlot1();
 				add_app_fn.loadOpts(_data, "blk_appt_duration");
 			},
-			loadApptReason: function(){
-				var _data = add_app_ajax_fn.getApptReason();
-				add_app_fn.loadOpts(_data, "add_appt_reason");
+			loadApptReason : function() {
+				$.ajax({
+					url : "../ws/rs/patient/reason/get",
+					type : "get",
+					contentType : 'application/json',
+					success : function(result) {
+						add_app_fn.loadOptsType(result.appointmentReason,
+								"add_appt_reason");
+					},
+					error : function(jqxhr) {
+						var msg = JSON.parse(jqxhr.responseText);
+						alert(msg['message']);
+						$("#result").html('There is error while submit');
+
+					}
+				});
 			},
-			loadPatientDtls: function(patientID){
+			loadPatientDtls : function(patientID) {
 				var _data_pat_info = "";
 				var _data_pat_appt_info = "";
-				if(!isEmpty(patientID)){
+				if (!isEmpty(patientID)) {
 					_data_pat_info = add_app_ajax_fn.getPatientInfo(patientID);
 					add_app_fn.loadPatientInfo(_data_pat_info);
-					_data_pat_appt_info = add_app_ajax_fn.getPatientApptInfo(patientID);
+					_data_pat_appt_info = add_app_ajax_fn
+							.getPatientApptInfo(patientID);
 					add_app_fn.loadPatientApptInfo(_data_pat_appt_info);
-				}else{
+				} else {
 					add_app_fn.loadPatientInfo(_data_pat_appt_info);
 					add_app_fn.loadPatientApptInfo(_data_pat_info);
 				}
 			},
-			loadPatientInfo: function(_data){
-				if(!isEmpty(_data)){
-					$.each(add_appt_patientFlds, function(key, val){
-						$("#"+key).html(_data[val]);
+			loadPatientInfo : function(_data) {
+				if (!isEmpty(_data)) {
+					$.each(add_appt_patientFlds, function(key, val) {
+						$("#" + key).html(_data[val]);
 					});
-					
+
 					var add = '';
-					if(_data['address'].length > 20)
-						add = '<span data-toggle="tooltip" data-placement="bottom" title="'+_data['address']+'">'+_data['address'].substring(0,20)+'...</span>';
+					if (_data['address'].length > 20)
+						add = '<span data-toggle="tooltip" data-placement="bottom" title="'+_data['address']+'">'
+								+ _data['address'].substring(0, 20)
+								+ '...</span>';
 					else
-						add = '<span>'+_data['address']+'</span>';
+						add = '<span>' + _data['address'] + '</span>';
 					$("#appt_add").html(add);
-					
-				}else{
-				$.each(add_appt_patientFlds, function(key, val){
-						$("#"+key).html("");
+
+				} else {
+					$.each(add_appt_patientFlds, function(key, val) {
+						$("#" + key).html("");
 					});
 				}
 			},
-			loadPatientApptInfo: function(_data){
+			loadPatientApptInfo : function(_data) {
 				$("#add_appt_overview tr:gt(1)").remove();
-				if(!isEmpty(_data)){
-				$.each(_data, function(){
-					$("#add_appt_overview tbody").append("<tr>" +
-							"<td>" + this.date+ "</td>" +
-							"<td>" + this.provider + "</td>" +
-							"<td>" + this.starttime + "</td>" +
-							"</tr>");
-				});
-				}else{
-				for(i=0;i<4;i++){
-					$("#add_appt_overview tbody").append("<tr>" +
-							"<td>&nbsp;&nbsp;&nbsp;</td>" +
-							"<td>&nbsp;&nbsp;&nbsp;</td>" +
-							"<td>&nbsp;&nbsp;&nbsp;</td>" +
-							"</tr>");
-				}
+				if (!isEmpty(_data)) {
+					$.each(_data, function() {
+						$("#add_appt_overview tbody").append(
+								"<tr>" + "<td>" + this.date + "</td>" + "<td>"
+										+ this.provider + "</td>" + "<td>"
+										+ this.starttime + "</td>" + "</tr>");
+					});
+				} else {
+					for (i = 0; i < 4; i++) {
+						$("#add_appt_overview tbody").append(
+								"<tr>" + "<td>&nbsp;&nbsp;&nbsp;</td>"
+										+ "<td>&nbsp;&nbsp;&nbsp;</td>"
+										+ "<td>&nbsp;&nbsp;&nbsp;</td>"
+										+ "</tr>");
+					}
 				}
 			},
-			getWeekDay: function(){
+			getWeekDay : function() {
 				var currDay = $("#add_appt_date").val();
 				var currDayArr = currDay.split("-");
 				var month = add_appt_months[currDayArr[1]];
 
-				var myday = new Date(currDayArr[2],month,currDayArr[0]);
+				var myday = new Date(currDayArr[2], month, currDayArr[0]);
 
-				var day = myday.getDate();        
-				var month = myday.getMonth();        
-				var year = myday.getYear();        
-				if(year<=200)        {                
-					year += 1900;        
-				}        
-				var days = new Array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
-				months = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');        
-				days_in_month = new Array(31,28,31,30,31,30,31,31,30,31,30,31);        
-				if(year%4 == 0 && year!=1900)        {                
-					days_in_month[1]=29;        
-				}        
+				var day = myday.getDate();
+				var month = myday.getMonth();
+				var year = myday.getYear();
+				if (year <= 200) {
+					year += 1900;
+				}
+				var days = new Array('Sunday', 'Monday', 'Tuesday',
+						'Wednesday', 'Thursday', 'Friday', 'Saturday');
+				months = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+						'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+				days_in_month = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30,
+						31, 30, 31);
+				if (year % 4 == 0 && year != 1900) {
+					days_in_month[1] = 29;
+				}
 				return days[myday.getDay()];
 			},
-			showRecurrence: function(){
+			showRecurrence : function() {
 				var selected_date = $("#add_appt_date").val();
-				if(selected_date == ""){
+				if (selected_date == "") {
 					add_app_fn.setValNote("Select date.");
-					return false;;
-				}else{
+					return false;
+					;
+				} else {
 					add_app_fn.hideValNote();
 				}
-				if($("#add_appt_row_recur").css("display") == "none"){
+				if ($("#add_appt_row_recur").css("display") == "none") {
 					$("#add_appt_row_recur").show();
-					$("#add_appt_but_recur").html("&nbsp;Remove recurrence&nbsp;");
-					$("#add_appt_text_recur").html("&nbsp;Occures every "+ add_app_fn.getWeekDay() +", effective "+selected_date);
-				}else{
+					$("#add_appt_but_recur").html(
+							"&nbsp;Remove recurrence&nbsp;");
+					$("#add_appt_text_recur").html(
+							"&nbsp;Occures every " + add_app_fn.getWeekDay()
+									+ ", effective " + selected_date);
+				} else {
 					$("#add_appt_row_recur").hide();
 					$("#add_appt_but_recur").html("&nbsp;Add recurrence&nbsp;");
 				}
 			},
-			validateForm: function(pat_sel_index){
-				if($("#add_appt_pat_name0").val() ==""){
-					add_app_fn.setValNote("Select patient.");
-					return;
-				}				
-				
-				if($('input[name=add_appt_provider]:checked').val() == "single"){
-					if($("#add_appt_s_provider").val() ==""){
-						add_app_fn.setValNote("Select provider.");
-						return;
-					}
-				}else{
-					if($("#add_appt_m_provider").val() ==""){
-						add_app_fn.setValNote("Select provider.");
-						return;
-					}
-				}
-				
-				if($("#add_appt_date").val() ==""){
-					add_app_fn.setValNote("Select date.");
-					return;
-				}else if($("#add_appt_time").val() ==""){
-					add_app_fn.setValNote("Select time.");
-					return;
-				}else if($("#add_appt_duration").val() ==""){
-					add_app_fn.setValNote("Select duration.");
+			validateForm : function(pat_sel_index) {
+				if ($("#add_appt_pat_name").val() == "") {
+					alert("Select patient.");
 					return;
 				}
-				
+				//alert("test1"+$("#add_appt_s_provider").val());
+
+				//if($('input:radio[name="add_appt_provider"].checked').val() == "single"){
+				if ($("#add_appt_s_provider").val() == "" && $("#add_appt_m_provider").val() == "") {
+					alert("Select provider.");
+					return;
+				}
+				if ($("#add_appt_date").val() == "") {
+					alert("Select date.");
+					return;
+				} else if ($("#add_appt_time").val() == "") {
+					alert("Select time.");
+					return;
+				} else if ($("#add_appt_duration").val() == "") {
+					alert("Select duration.");
+					return;
+				}
+
 				add_app_fn.hideValNote();
 				add_app_fn.captureFormData(pat_sel_index);
-					
+
 			},
-			
-			validateBlockForm: function(){	
-							
-				
-				if($('input[name=blk_appt_provider]:checked').val() == "single"){
-					if($("#add_appt_block_s_provider").val() ==""){
+
+			validateBlockForm : function() {
+
+				if ($('input[name=blk_appt_provider]:checked').val() == "single") {
+					if ($("#add_appt_block_s_provider").val() == "") {
 						add_app_fn.setValNote("Select provider.");
 						return;
 					}
-				}else if($('input[name=blk_appt_provider]:checked').val() == "multi"){
-					if($("#add_appt_block_m_provider").val() ==""){
+				} else if ($('input[name=blk_appt_provider]:checked').val() == "multi") {
+					if ($("#add_appt_block_m_provider").val() == "") {
 						add_app_fn.setValNote("Select provider.");
 						return;
 					}
 				}
-				
-				if($("#blk_appt_date").val() ==""){
+
+				if ($("#blk_appt_date").val() == "") {
 					add_app_fn.setValNote("Select date.");
 					return;
-				}else if($("#blk_appt_time").val() ==""){
+				} else if ($("#blk_appt_time").val() == "") {
 					add_app_fn.setValNote("Select time.");
 					return;
-				}else if($("#blk_appt_duration").val() ==""){
+				} else if ($("#blk_appt_duration").val() == "") {
 					add_app_fn.setValNote("Select duration.");
 					return;
 				}
-				
+
 				//add_app_fn.hideValNote();
 				add_app_fn.captureBlockFormData();
-					
-			},
-			
-			captureFormData: function(pat_sel_index){
-				var formData = {};
-				/*Basic details
-				*
-				*From Next avaliable screen*/
-				var s1 = nextAailObject.provider!= undefined ? nextAailObject.provider.pid_m.split(","): undefined;
-				console.log(s1);
-				formData['no_of_pat'] = add_appt_pat_cnt;
-				if(s1 != undefined){
-				for(var i=0;i<s1.length-1;i++){
-				console.log(i);
-				globalObj.id=s1[i];
-				formData['id'] = s1[i];
-				formData['p_id'] = s1[i].split("_")[0];
-				formData['patient_id'] 		= add_appt_fld_pat_id ;
-				formData['patient_name']	= $("#add_appt_pat_name").val();
-				formData['provider_type'] 	= add_appt_fld_prv_type;
-				formData['provider_id'] 	= add_appt_fld_prv_id ;
-				formData['date'] 			= $("#add_appt_date").val();
-				formData['time'] 			= $("#add_appt_time").val();
-				formData['duration'] 		= $("#add_appt_duration").val();
-				formData['send_mail'] 		= "N";
-				if($("#add_appt_sendemail").is(':checked'))
-					formData['send_mail'] = "Y";
-				formData['recurrence_day'] 	= add_app_fn.getWeekDay();
-				formData['recurrence_date'] = $("#add_appt_date").val();
-				/*More details*/
-				formData['go_to'] = $("#add_appt_type").val();
-				formData['is_critical'] = "N";
-				if($("#add_appt_critical").is(':checked'))
-					formData['is_critical'] = "Y";
-				formData['appt_status'] 	= $("#add_appt_status").val();
-				formData['appt_resources'] 	= $("#add_appt_resources").val();
-				formData['appt_reason'] 	= $("#add_appt_reason").val();
-				formData['appt_reason_text'] = $("#add_appt_reason option:selected").text();
-				formData['appt_reason_dtls'] = $("#add_appt_reason_dtls").val();
-				formData['appt_notes'] 		= $("#add_appt_notes").val();
-				/*save data into database*/
-				apptData = JSON.stringify(formData);
-				var add_appt_data = add_app_ajax_fn.saveFormData(JSON.stringify(formData));
-				//formData['appt_id'] = add_appt_appt_id;
-				//alert("test1");
-				sch.saveEvent(globalObj,formData,add_appt_data);
-				}
-				}else{
-				/* From Double click */
-				formData['id'] = globalObj.id;
-				formData['p_id'] = globalObj.pid;
-				formData['patient_id'] 		= add_appt_fld_pat_id ;
-				formData['patient_name']	= $("#add_appt_pat_name").val();
-				formData['provider_type'] 	= add_appt_fld_prv_type;
-				formData['provider_id'] 	= add_appt_fld_prv_id ;
-				formData['date'] 			= $("#add_appt_date").val();
-				formData['time'] 			= $("#add_appt_time").val();
-				formData['duration'] 		= $("#add_appt_duration").val();
-				formData['send_mail'] 		= "N";
-				if($("#add_appt_sendemail").is(':checked'))
-					formData['send_mail'] = "Y";
-				formData['recurrence_day'] 	= add_app_fn.getWeekDay();
-				formData['recurrence_date'] = $("#add_appt_date").val();
-				/*More details*/
-				formData['go_to'] = $("#add_appt_type").val();
-				formData['is_critical'] = "N";
-				if($("#add_appt_critical").is(':checked'))
-					formData['is_critical'] = "Y";
-				formData['appt_status'] 	= $("#add_appt_status").val();
-				formData['appt_resources'] 	= $("#add_appt_resources").val();
-				formData['appt_reason'] 	= $("#add_appt_reason").val();
-				formData['appt_reason_text'] = $("#add_appt_reason option:selected").text();
-				formData['appt_reason_dtls'] = $("#add_appt_reason_dtls").val();
-				formData['appt_notes'] 		= $("#add_appt_notes").val();
-				/*save data into database*/
-				apptData = JSON.stringify(formData);
-				var add_appt_data = add_app_ajax_fn.saveFormData(JSON.stringify(formData));
-			//	formData['appt_id'] = add_appt_appt_id
-				sch.saveEvent(globalObj,formData,add_appt_data);
-				}
-				$("#add_appt_form").dialog("close");
-			},
-			
-			
-			captureBlockFormData: function(){
-				var formData = {};
-				/*Basic details
-				*
-				*From Next avaliable screen*/
-				var s1 = nextAailObject.provider!= undefined ? nextAailObject.provider.pid_m.split(","): undefined;
-				if(s1 != undefined){
-				for(var i=0;i<s1.length-1;i++){
-				globalObj.id=s1[i];
-				formData['id'] = s1[i];
-				formData['p_id'] = s1[i].split("_")[0];
-				
-				formData['provider_type'] 	= add_appt_fld_prv_type;
-				formData['provider_id'] 	= add_appt_fld_prv_id ;
-				formData['date'] 			= $("#blk_appt_date").val();
-				formData['time'] 			= $("#blk_appt_time").val();
-				formData['duration'] 		= $("#blk_appt_duration").val();
-				formData['recurrence_day'] 	= add_app_fn.getWeekDay();
-				formData['recurrence_date'] = $("#add_appt_date").val();
-				/*More details*/
-				formData['appt_reason'] 	= $("#blk_appt_reason").val();
-				formData['appt_notes'] 		= $("#blk_appt_notes").val();
-				/*save data into database*/
-				var add_appt_appt_id = add_app_ajax_fn.saveFormData(formData);
-				formData['appt_id'] = add_appt_appt_id;
-				sch.saveEvent(globalObj,formData);
-				}
-				}else{
-				/* From Double click */
 
-				
-				formData['id'] = globalObj.id;
-				formData['p_id'] = globalObj.pid;
-				alert(add_appt_fld_prv_id);
-				alert(add_appt_fld_prv_type);
-				formData['provider_type'] 	= add_appt_fld_prv_type;
-				formData['provider_id'] 	= add_appt_fld_prv_id ;
-				formData['date'] 			= $("#blk_appt_date").val();
-				formData['time'] 			= $("#blk_appt_time").val();
-				formData['duration'] 		= $("#blk_appt_duration").val();
-				formData['appt_reason'] 	= $("#blk_appt_reason").val();
-				formData['appt_notes'] 		= $("#blk_appt_notes").val();
-				/*save data into database*/
-				
-				alert($("#blk_appt_reason").val());
-				alert($("#blk_appt_notes").val());
-				alert($("#blk_appt_date").val());
-				var add_appt_appt_id = add_app_ajax_fn.saveFormData(formData);
-				
-				formData['appt_id'] = add_appt_appt_id;
-				//console.log(globalObj);
-				sch.saveBlockEvent(globalObj,formData);
+			},
+
+			captureFormData : function(pat_sel_index) {
+				var formData = {};
+				/*Basic details
+				 *
+				 *From Next avaliable screen*/
+				var s1 = nextAailObject.provider != undefined ? nextAailObject.provider.pid_m
+						.split(",")
+						: undefined;
+				console.log(s1);
+				formData['noOfPatient'] = add_appt_pat_cnt;
+				if (s1 != undefined) {
+					for (var i = 0; i < s1.length - 1; i++) {
+						console.log(i);
+						globalObj.id = s1[i];
+						formData['id'] = s1[i];
+						formData['p_id'] = s1[i].split("_")[0];
+						formData['patientId'] = add_appt_fld_pat_id;
+						formData['patientName'] = $("#add_appt_pat_name").val();
+						formData['providerType'] = add_appt_fld_prv_type;
+						formData['provId'] = add_appt_fld_prv_id;
+						formData['apptStartDate'] = $("#add_appt_date").val();
+						formData['apptTime'] = $("#add_appt_time").val();
+						formData['apptDuration'] = $("#add_appt_duration")
+								.val();
+						formData['sendMail'] = "N";
+						if ($("#add_appt_sendemail").is(':checked'))
+							formData['sendMail'] = "Y";
+						formData['reoccranceDay'] = add_app_fn.getWeekDay();
+						formData['reoccuranceDate'] = $("#add_appt_date").val();
+						/*More details*/
+						formData['goTo'] = $("#add_appt_type").val();
+						formData['isCritical'] = "N";
+						if ($("#add_appt_critical").is(':checked'))
+							formData['isCritical'] = "Y";
+						formData['apptStatus'] = $("#add_appt_status").val();
+						formData['apptResources'] = $("#add_appt_resources")
+								.val();
+						formData['appReason'] = $("#add_appt_reason").val();
+						formData['apptType'] = $("#add_appt_type").val();
+						formData['apptReasonText'] = $(
+								"#add_appt_reason option:selected").text();
+						formData['apptReasonDtls'] = $("#add_appt_reason_dtls")
+								.val();
+						formData['apptNotes'] = $("#add_appt_notes").val();
+						formData['location'] = $("#add_appt_location").val();
+						/*save data into database*/
+						apptData = JSON.stringify(formData);
+						var add_appt_data = add_app_ajax_fn.saveFormData(JSON
+								.stringify(formData));
+						if (undefined == add_appt_data) {
+							formData['apptStatus'] = "TD";
+							formData['goTo'] = "E";
+						} else{
+							formData['apptStatus'] = add_appt_data.apptStatus;
+							formData['goTo'] = add_appt_data.goTo;
+						}
+						sch.saveEvent(globalObj, formData, add_appt_data);
+					}
+				} else {
+					/* From Double click */
+					formData['id'] = globalObj.id;
+					formData['p_id'] = globalObj.pid;
+					formData['patientId'] = add_appt_fld_pat_id;
+					formData['patientName'] = $("#add_appt_pat_name").val();
+					formData['providerType'] = add_appt_fld_prv_type;
+					formData['provId'] = add_appt_fld_prv_id;
+					formData['apptStartDate'] = $("#add_appt_date").val();
+					formData['apptTime'] = $("#add_appt_time").val();
+					formData['apptDuration'] = $("#add_appt_duration").val();
+					formData['sendMail'] = "N";
+					if ($("#add_appt_sendemail").is(':checked'))
+						formData['sendMail'] = "Y";
+					formData['reoccranceDay'] = add_app_fn.getWeekDay();
+					formData['reoccuranceDate'] = $("#add_appt_date").val();
+					/*More details*/
+					formData['goTo'] = $("#add_appt_type").val();
+					formData['isCritical'] = "N";
+					if ($("#add_appt_critical").is(':checked'))
+						formData['isCritical'] = "Y";
+					formData['apptStatus'] = $("#add_appt_status").val();
+					formData['apptType'] = $("#add_appt_type").val();
+					formData['apptResources'] = $("#add_appt_resources").val();
+					formData['appReason'] = $("#add_appt_reason").val();
+					formData['apptReasonText'] = $(
+							"#add_appt_reason option:selected").text();
+					formData['apptReasonDtls'] = $("#add_appt_reason_dtls")
+							.val();
+					formData['apptNotes'] = $("#add_appt_notes").val();
+					formData['location'] = $("#add_appt_location").val();
+					/*save data into database*/
+					apptData = JSON.stringify(formData);
+					var add_appt_data = add_app_ajax_fn.saveFormData(JSON.stringify(formData));
+					// Remove the below if block, when delay function is implemented.
+					if ("UND" == add_appt_data) {
+						formData['noOfPatient'] = "";
+					} else{
+						formData['apptStatus'] = add_appt_data.apptStatus;
+						formData['goTo'] = add_appt_data.goTo;
+						formData['noOfPatient'] = add_appt_data.noOfPatient;
+					}
+					formData['apptId'] = add_appt_data.id;
+					sch.saveEvent(globalObj, formData, add_appt_data);
 				}
+				add_app_fn.clearForm("#add_appt_form");
 				$("#add_appt_form").dialog("close");
 			},
-			
-			
+
+			captureBlockFormData : function() {
+				var formData = {};
+				/*Basic details
+				 *
+				 *From Next avaliable screen*/
+				var s1 = nextAailObject.provider != undefined ? nextAailObject.provider.pid_m
+						.split(",")
+						: undefined;
+				if (s1 != undefined) {
+					for (var i = 0; i < s1.length - 1; i++) {
+						globalObj.id = s1[i];
+						formData['id'] = s1[i];
+						formData['p_id'] = s1[i].split("_")[0];
+
+						formData['provider_type'] = add_appt_fld_prv_type;
+						formData['provider_id'] = add_appt_fld_prv_id;
+						formData['date'] = $("#blk_appt_date").val();
+						formData['time'] = $("#blk_appt_time").val();
+						formData['duration'] = $("#blk_appt_duration").val();
+						formData['recurrence_day'] = add_app_fn.getWeekDay();
+						formData['recurrence_date'] = $("#add_appt_date").val();
+						/*More details*/
+						formData['appt_reason'] = $("#blk_appt_reason").val();
+						formData['appt_notes'] = $("#blk_appt_notes").val();
+						/*save data into database*/
+						var add_appt_appt_id = add_app_ajax_fn
+								.saveFormData(formData);
+						formData['appt_id'] = add_appt_appt_id;
+						sch.saveEvent(globalObj, formData);
+					}
+				} else {
+					/* From Double click */
+
+					formData['id'] = globalObj.id;
+					formData['p_id'] = globalObj.pid;
+					formData['provider_type'] = add_appt_fld_prv_type;
+					formData['provider_id'] = add_appt_fld_prv_id;
+					formData['date'] = $("#blk_appt_date").val();
+					formData['time'] = $("#blk_appt_time").val();
+					formData['duration'] = $("#blk_appt_duration").val();
+					formData['appt_reason'] = $("#blk_appt_reason").val();
+					formData['appt_notes'] = $("#blk_appt_notes").val();
+					/*save data into database*/
+
+					alert($("#blk_appt_reason").val());
+					alert($("#blk_appt_notes").val());
+					alert($("#blk_appt_date").val());
+					var add_appt_appt_id = add_app_ajax_fn
+							.saveFormData(formData);
+alert(add_appt_appt_id);
+					formData['appt_id'] = add_appt_appt_id;
+					//console.log(globalObj);
+					sch.saveBlockEvent(globalObj, formData);
+				}
+				add_app_fn.clearForm("#add_appt_form");
+				$("#add_appt_form").dialog("close");
+			},
+
 			/*when edit case*/
-			setApptDtls: function(apptId){
+			setApptDtls : function(apptId) {
 				var _data = add_app_ajax_fn.getApptDtls(apptId);
-				$.each(add_appt_form_flds, function(key, val){
-					$("#"+key).val(_data[val]);
+				$.each(add_appt_form_flds, function(key, val) {
+					$("#" + key).val(_data[val]);
 				});
-				
+
 				var _data_pat_info = _data.patientinfo;
 				add_app_fn.loadPatientInfo(_data_pat_info);
-				
+
 				var _data_pat_appt_info = _data.patapptinfo;
 				add_app_fn.loadPatientApptInfo(_data_pat_appt_info);
 			},
-			bindAutoComp: function(fldid){				
-				$( "#"+fldid ).autocomplete({
-					minLength: 0,
-					source: function(request, response) {				
-						var term = request.term;
-						//console.log(term);
-						var matches = $.grep(projects, function(item, index) {
-							var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
-							return matcher.test(item.patName || item.hin || item);
-						});
-						response(matches);
-					},
-					focus: function( event, ui ) {
-						//$( "#add_appt_pat_name" ).val( ui.item.label );
-						return false;
-					},
-					select: function( event, ui ) {						
-						if(add_app_fn.isPatientExists(ui.item.id)){
-							//add_app_fn.setValNote("Patient already added");
-							$( "#"+fldid ).val("");
-							
-							$("#"+fldid).popover({trigger:'manual',placement:'bottom',html:true,content:'<span style="color:blue;">Patient already added.</span>'
-							  });    
-							
-							$("#"+fldid).popover('show');
-							clearTimeout(popoverTime);
-							popoverTime = setTimeout(function(){
-								$("#"+fldid).popover('hide');
-							},4000);
-							
-							return false;
-						}	
-						
-						
-						$( "#"+fldid ).val( ui.item.patName );
-						$( "#"+fldid ).attr("patId", ui.item.id );
-						if($( "#add_appt_pat_name_sel_id" ).val() == "")
-							$( "#add_appt_pat_name_sel_id" ).val( ui.item.id );
-						else
-							$( "#add_appt_pat_name_sel_id" ).val( $( "#add_appt_pat_name_sel_id" ).val() +","+ ui.item.id );
-						
-						add_appt_fld_pat_id = ui.item.id;
-						add_app_fn.loadPatientDtls(ui.item.id);
-						add_app_fn.addTab(fldid, ui.item.id, ui.item.patName)
-						return false;
-					}
-				})
-				.data( "ui-autocomplete" )._renderItem = function( ul, item ) {			
-					return $( "<li>" )
-					.append( "<a><b>" + item.patName + "</b><br>" + item.dob + "<br>" + item.hin + "</a>" )
-					.appendTo( ul );
+			bindAutoComp : function(fldid) {
+				$("#" + fldid)
+						.autocomplete(
+								{
+									minLength : 0,
+									source : function(request, response) {
+										var term = request.term;
+										//console.log(term);
+										var matches = $
+												.grep(
+														projects,
+														function(item, index) {
+															var matcher = new RegExp(
+																	"^"
+																			+ $.ui.autocomplete
+																					.escapeRegex(term),
+																	"i");
+															return matcher
+																	.test(item.patName
+																			|| item.hin
+																			|| item);
+														});
+										response(matches);
+									},
+									focus : function(event, ui) {
+										//$( "#add_appt_pat_name" ).val( ui.item.label );
+										return false;
+									},
+									select : function(event, ui) {
+										if (add_app_fn
+												.isPatientExists(ui.item.id)) {
+											//add_app_fn.setValNote("Patient already added");
+											$("#" + fldid).val("");
+
+											$("#" + fldid)
+													.popover(
+															{
+																trigger : 'manual',
+																placement : 'bottom',
+																html : true,
+																content : '<span style="color:blue;">Patient already added.</span>'
+															});
+
+											$("#" + fldid).popover('show');
+											clearTimeout(popoverTime);
+											popoverTime = setTimeout(
+													function() {
+														$("#" + fldid).popover(
+																'hide');
+													}, 4000);
+
+											return false;
+										}
+
+										$("#" + fldid).val(ui.item.patName);
+										$("#" + fldid)
+												.attr("patId", ui.item.id);
+										if ($("#add_appt_pat_name_sel_id")
+												.val() == "")
+											$("#add_appt_pat_name_sel_id").val(
+													ui.item.id);
+										else
+											$("#add_appt_pat_name_sel_id")
+													.val(
+															$(
+																	"#add_appt_pat_name_sel_id")
+																	.val()
+																	+ ","
+																	+ ui.item.id);
+
+										add_appt_fld_pat_id = ui.item.id;
+										add_app_fn.loadPatientDtls(ui.item.id);
+										add_app_fn.addTab(fldid, ui.item.id,
+												ui.item.patName)
+										return false;
+									}
+								}).data("ui-autocomplete")._renderItem = function(
+						ul, item) {
+					return $("<li>")
+					.data( "ui-autocomplete-item", item )
+					.append("<a><b>" + item.patName + "</b><br>" + item.dob
+									+ "<br>" + item.hin + "</a>")
+					.appendTo(ul);
 				};
 			},
-			isPatientExists: function(id){
-				var _data = $( "#add_appt_pat_name_sel_id" ).val().split(',');
-				for(var i=0; i<_data.length; i++){
-					if(_data[i] == id)
+			isPatientExists : function(id) {
+				var _data = $("#add_appt_pat_name_sel_id").val().split(',');
+				for (var i = 0; i < _data.length; i++) {
+					if (_data[i] == id)
 						return true;
 				}
 				return false;
 			},
-			removePatID: function(){
-				
+			removePatID : function() {
+
 			},
-			addPatientFld: function(){	
-				for(var i=0; i<add_appt_pat_cnt; i++){
-					if($('#add_appt_pat_name'+i).val() != null && $('#add_appt_pat_name'+i).val() == "")
+			addPatientFld : function() {
+				for (var i = 0; i < add_appt_pat_cnt; i++) {
+					if ($('#add_appt_pat_name' + i).val() != null
+							&& $('#add_appt_pat_name' + i).val() == "")
 						return false;
 				}
-				
-				$("#add_appt_pat_tab tbody").append("<tr childid='add_appt_pat_name"+ add_appt_pat_cnt +"'>" +
-						"<td> <input id='add_appt_pat_name"+ add_appt_pat_cnt +"' class='form-control na_form_inputtext' style='height:25px;' placeholder='Type patient name...'  /> </td>" +
-						"<td style='padding-left:5px;'><div ip_id='add_appt_pat_name"+ add_appt_pat_cnt +"' onclick='add_app_fn.removePatFld(this)'><img src='js_up/img/close-x-cir.gif' style='cursor:pointer'></img></div></td>"+
-						"</tr>");
-				add_app_fn.bindAutoComp("add_appt_pat_name"+ add_appt_pat_cnt++);
+
+				$("#add_appt_pat_tab tbody")
+						.append(
+								"<tr childid='add_appt_pat_name"+ add_appt_pat_cnt +"'>"
+										+ "<td> <input id='add_appt_pat_name"+ add_appt_pat_cnt +"' class='form-control na_form_inputtext' style='height:25px;' placeholder='Enter 3 characters'  /> </td>"
+										+ "<td style='padding-left:5px;'><div ip_id='add_appt_pat_name"
+										+ add_appt_pat_cnt
+										+ "' onclick='add_app_fn.removePatFld(this)'><img src='js_up/img/close-x-cir.gif' style='cursor:pointer'></img></div></td>"
+										+ "</tr>");
+				add_app_fn.bindAutoComp("add_appt_pat_name"
+						+ add_appt_pat_cnt++);
 			},
-			removePatFld: function(a){
+			removePatFld : function(a) {
 				var rowCount = $('#add_appt_pat_tab tr').length;
-				if(rowCount > 1){
+				if (rowCount > 1) {
 					//console.log("patId "+$(a).attr('patId'))
 					console.log(a);
 					$(a).closest('tr').remove();
 					add_app_fn.rearrangePatId();
-					
+
 					var id = $(a).attr('ip_id');
-					$('#pat_tab_'+id).remove();
+					$('#pat_tab_' + id).remove();
 					$('#myTab a:first').tab('show');
 				}
 			},
-			rearrangePatId: function(){
+			rearrangePatId : function() {
 				var ids = '';
-				for(var i=0; i<add_appt_pat_cnt; i++){
-					if($('#add_appt_pat_name'+i).attr('patId') != null)
-						if(ids == '')
-							ids = $('#add_appt_pat_name'+i).attr('patId');
+				for (var i = 0; i < add_appt_pat_cnt; i++) {
+					if ($('#add_appt_pat_name' + i).attr('patId') != null)
+						if (ids == '')
+							ids = $('#add_appt_pat_name' + i).attr('patId');
 						else
-							ids += ','+ $('#add_appt_pat_name'+i).attr('patId');
+							ids += ','
+									+ $('#add_appt_pat_name' + i).attr('patId');
 				}
-				$( "#add_appt_pat_name_sel_id" ).val( ids );
+				$("#add_appt_pat_name_sel_id").val(ids);
+			},
+			clearForm : function(formId) {
+				document.getElementById("add_appt_pat_name").value="";
+				$("#addApp_naa_users").remove();
+				$("#add_appt_overview").remove();
+				document.getElementById("add_appt_s_provider").value="";
+				document.getElementById("add_appt_m_provider").value="";
+				document.getElementById("add_appt_location").value="";
+				document.getElementById("add_appt_resources").value="";
+				document.getElementById("add_appt_reason_dtls").value="";
+				document.getElementById("add_appt_notes").value="";
+				document.getElementById("add_appt_type").selectedIndex="0";
+				document.getElementById("add_appt_status").selectedIndex="0";
+				document.getElementById("add_appt_reason").selectedIndex="0";
+				document.getElementById("add_appt_critical").checked=false;
+				
 			}
 		};
-		
+
 		/*general functions end*/
-		
+
 		/*init dialog box*/
-		$("#add_appt_form").dialog({
-			autoOpen: false,
-			minHeight: 475,
-			width: 950,
-			modal: true,
-			open: function() {
-				if(!isEmpty(nextAailObject)){
-				sch.load(nextAailObject.date);
-				//console.log(nextAailObject);
-				$("#add_appt_time select").text(nextAailObject.time);
-				$("select#add_appt_time option").filter(function() {
-				return $(this).text() == nextAailObject.time; 
-				}).prop('selected', true);
-				var m_provider = "";
-				var m_pid ="";
-				if(nextAailObject.provider.length>1){
-				$.each(nextAailObject.provider, function(key, val){
-				m_provider += val.docName+",";
-				m_pid +=val.docID+"_"+nextAailObject.time+",";
-				//nextAailObject.provider.pid_m +=val.docID+",";
+		$("#add_appt_form").dialog(
+				{
+					autoOpen : false,
+					minHeight : 475,
+					width : 950,
+					modal : true,
+					open : function() {
+						//add_app_fn.clearForm("#add_appt_form");
+						if (!isEmpty(nextAailObject)) {
+							sch.load(nextAailObject.date);
+							//console.log(nextAailObject);
+							$("#add_appt_time select")
+									.text(nextAailObject.time);
+							$("select#add_appt_time option").filter(function() {
+								return $(this).text() == nextAailObject.time;
+							}).prop('selected', true);
+							var m_provider = "";
+							var m_pid = "";
+							if (nextAailObject.provider.length > 1) {
+								alert("1");
+								$.each(nextAailObject.provider, function(key,
+										val) {
+									m_provider += val.docName + ",";
+									m_pid += val.docID + "_"
+											+ nextAailObject.time + ",";
+									//nextAailObject.provider.pid_m +=val.docID+",";
+								});
+								nextAailObject.provider.pid_m = m_pid;
+								$("#add_appt_m_provider").val(m_provider);
+								$("#add_appt_s_provider")
+										.attr("disabled", true);
+								$("#add_appt_m_provider").attr("disabled",
+										false);
+								$('input:radio[name="add_appt_provider"]')
+										.filter('[value="multi"]').attr(
+												'checked', true);
+								//$('input[name=add_appt_provider]').prop("checked","checked");
+							} else {
+								m_provider = nextAailObject.provider.docName;
+								nextAailObject.provider.pid_s = val.docID;
+								$("#add_appt_s_provider").val(m_provider);
+								$("#add_appt_m_provider")
+										.attr("disabled", true);
+								$("#add_appt_s_provider").attr("disabled",
+										false);
+								$('input:radio[name="add_appt_provider"]')
+										.filter('[value="single"]').attr(
+												'checked', true);
+							}
+							$("#add_appt_date").val(nextAailObject.date);
+							//console.log(nextAailObject);
+						} else {
+							var d = globalObj.id.split("_");
+							$("#add_appt_time select").text(d[1]);
+							$("select#add_appt_time option").filter(function() {
+								return $(this).text() == d[1];
+							}).prop('selected', true);
+							$("#add_appt_date").val($("#inputField").val());
+						}
+						add_app_fn.chkDialogStatus();
+					}
 				});
-				nextAailObject.provider.pid_m = m_pid;
-				$("#add_appt_m_provider").val(m_provider);
-				$("#add_appt_s_provider").attr("disabled",true);
-				$("#add_appt_m_provider").attr("disabled",false);
-				$('input:radio[name="add_appt_provider"]').filter('[value="multi"]').attr('checked', true);
-				//$('input[name=add_appt_provider]').prop("checked","checked");
-				}else{
-				m_provider = nextAailObject.provider.docName;
-				nextAailObject.provider.pid_s = val.docID;
-				$("#add_appt_s_provider").val(m_provider);
-				$("#add_appt_m_provider").attr("disabled",true);
-				$("#add_appt_s_provider").attr("disabled",false);
-				$('input:radio[name="add_appt_provider"]').filter('[value="single"]').attr('checked', true);
-				}
-				$("#add_appt_date").val(nextAailObject.date);
-				//console.log(nextAailObject);
-				}else{
-				var d = globalObj.id.split("_");
-				$("#add_appt_time select").text(d[1]);
-				$("select#add_appt_time option").filter(function() {
-				return $(this).text() == d[1]; 
-				}).prop('selected', true);
-				$("#add_appt_date").val($("#inputField").val());
-				}
-				add_app_fn.chkDialogStatus();
-			}
-		});
-		
+
 		/*auto complete supporting fn*/
-		$.widget( "custom.catcomplete", $.ui.autocomplete, {
-		_renderMenu: function( ul, items ) {
-		  var that = this,
-			currentCategory = "";
-		  $.each( items, function( index, item ) {
-			if ( item.category != currentCategory ) {
-			  ul.append( "<li class='ui-autocomplete-category'>" + item.category + "</li>" );
-			  currentCategory = item.category;
+		$.widget("custom.catcomplete", $.ui.autocomplete, {
+			_renderMenu : function(ul, items) {
+				var that = this, currentCategory = "";
+				$.each(items, function(index, item) {
+					if (item.category != currentCategory) {
+						ul.append("<li class='ui-autocomplete-category'>"
+								+ item.category + "</li>");
+						currentCategory = item.category;
+					}
+					that._renderItemData(ul, item);
+				});
 			}
-			that._renderItemData( ul, item );
-		  });
+		});
+		function split(val) {
+			return val.split(/,\s*/);
 		}
-	  });
-		 function split( val ) {
-			return val.split( /,\s*/ );
-			}
-			function extractLast( term ) {
-			return split( term ).pop();
-			}  
-		/**bind auto complete functionality*/
+		function extractLast(term) {
+			return split(term).pop();
+		}
 		/*bind patient name*/
-		$( "#add_appt_pat_name" ).catcomplete({
-		  delay: 0,
-		  minLength:3,
-		  source:function( request, response ) {
-			  $.ajax({ 
-			        url: "../ws/rs/providerService/"+document.getElementById('add_appt_pat_name').value+"/listPatient",
-			        type : "get",
-			       // data: apptData,
-			        contentType    : 'application/json',
-			        success: function (patientsData)
-		            {
-			        	//alert("success"+patientsData);
-			        	//if(data!=null)
-			        		//alert(patientsData.patients.length);
-			        	//alert(JSON.stringify(patientsData.patients))
-		               response(patientsData.patients);
-		            },
-			        error:function(){
-			        	//alert("fail");
-			            $("#result").html('There is error while submit');
-			           
-			        }
-			    }); 
-		  },
-		  select: function( event, ui ) {
-			//alert(ui.item.id);
-			add_appt_fld_pat_id = ui.item.id;
-			add_app_fn.loadPatientDtls(ui.item.id);
-		  }
-		});
+		$("#add_appt_pat_name")
+				.autocomplete(
+						{
+							delay : 0,
+							minLength : 3,
+							source : function(request, response) {
+								$
+										.ajax({
+											url : "../ws/rs/patient/"
+													+ document
+															.getElementById('add_appt_pat_name').value
+													+ "/list",
+											type : "get",
+											// data: apptData,
+											contentType : 'application/json',
+											success : function(patientsData) {
+												if(patientsData.demographics!= null){
+													response(patientsData.demographics);
+												}else{
+													alert("No Details found.");
+												}
+												
+											},
+											error : function(jqxhr) {
+												var msg = JSON
+														.parse(jqxhr.responseText);
+												alert(msg['message']);
+												return;
+											}
+										});
+							},
+							select : function(event, ui) {
+								//alert(ui.item.id);
+								add_appt_fld_pat_id = ui.item.id;
+								add_app_fn.loadPatientDtls(ui.item.id);
+							}
+						});
 		
-		/*bind provider name*/
-		$( "#add_appt_block_s_provider" )
-		.catcomplete({
-		  delay: 0,
-		  minLength:3,
-		  source: add_app_ajax_fn.getDocsData(),
-		  select: function( event, ui ) {		
-			add_appt_fld_prv_type = "S";
-			add_appt_fld_prv_id  = ui.item.id;
-		  }
-		});
+		$("#add_appt_block_s_provider")
+		.autocomplete(
+				{
+					delay : 0,
+					minLength : 3,
+					source : function(request, response) {
+						$
+								.ajax({
+									url : "../ws/rs/providerService/"
+											+ document
+													.getElementById('add_appt_block_s_provider').value
+											+ "/list",
+									type : "get",
+									contentType : 'application/json',
+									success : function(data) {
+										if(data.providers!= null){
+											response(data.providers);
+										}else{
+											alert("No Details found.");
+										}
+									},
+									error : function(jqxhr) {
+										var msg = JSON
+												.parse(jqxhr.responseText);
+										alert(msg['message']);
+									}
+								});
+					},
+					select : function(event, ui) {
+						add_appt_fld_prv_type = "S";
+						add_appt_fld_prv_id = ui.item.id;
+					}
+				});
+		add_appt_fld_prv_id="";
+
+		$("#add_appt_s_provider")
+				.autocomplete(
+						{
+							delay : 0,
+							minLength : 3,
+							source : function(request, response) {
+								$
+										.ajax({
+											url : "../ws/rs/providerService/"
+													+ document
+															.getElementById('add_appt_s_provider').value
+													+ "/list",
+											type : "get",
+											contentType : 'application/json',
+											success : function(data) {
+												if(data.providers!= null){
+													response(data.providers);
+												}else{
+													alert("No Details found.");
+												}
+											},
+											error : function(jqxhr) {
+												var msg = JSON
+														.parse(jqxhr.responseText);
+												alert(msg['message']);
+											}
+										});
+							},
+							select : function(event, ui) {
+								add_appt_fld_prv_type = "S";
+								add_appt_fld_prv_id = ui.item.id;
+							}
+						});
+		add_appt_fld_prv_id="";
+			 $( "#add_appt_m_provider" )
+			 .bind( "keydown", function( event ) {
+			 if ( event.keyCode === $.ui.keyCode.TAB &&
+			 $( this ).data( "ui-autocomplete" ).menu.active ) {
+			 event.preventDefault();
+			 }
+			 })
+				 .autocomplete(
+							{
+								delay : 1,
+								minLength : 1,
+								source : function(request, response) {
+									$
+											.ajax({
+												url : "../ws/rs/providerService/"
+														+ document
+																.getElementById('add_appt_m_provider').value
+														+ "/list",
+												type : "get",
+												contentType : 'application/json',
+												success : function(data) {
+													if(data.providers!= null){
+														response(data.providers);
+													}else{
+														alert("No Details found.");
+													}
+												},
+												error : function(jqxhr) {
+													var msg = JSON
+															.parse(jqxhr.responseText);
+													alert(msg['message']);
+												}
+											});
+								},
+			 focus: function() {
+			 return false;
+			 },
+			 select: function( event, ui ) {
+			 multiProv = multiProv + ui.item.value + "- ";
+			 this.value = multiProv;
+			 add_appt_fld_prv_type = "M";
+			 add_appt_fld_prv_id = add_appt_fld_prv_id + "," + ui.item.id;
+			 return false;
+			 }
+			 });
 		
-		$( "#add_appt_s_provider" )
-		.catcomplete({
-		  delay: 0,
-		  minLength:3,
-		  source:function( request, response ) {
-			  $.ajax({ 
-			        url: "../ws/rs/providerService/"+document.getElementById('add_appt_s_provider').value+"/list",
-			        type: "get",
-			        data: apptData,
-			        contentType    : 'application/json',
-			        success: function (data)
-		            {
-			        	//alert("success"+data.providers);
-		                response(data.providers);
-		            },
-			        error:function(){
-			        	//alert("fail");
-			            $("#result").html('There is error while submit');
-			           
-			        }
-			    }); 
-		  },
-		  select: function( event, ui ) {		
-			add_appt_fld_prv_type = "S";
-			add_appt_fld_prv_id  = ui.item.id;
-		  }
-		});
-		
-		
-		$( "#add_appt_m_provider" )
-		.bind( "keydown", function( event ) {
-			if ( event.keyCode === $.ui.keyCode.TAB &&
-			$( this ).data( "ui-autocomplete" ).menu.active ) {
-			event.preventDefault();
-			}
-		})
-		
-		$( "#add_appt_block_m_provider" )
-		.bind( "keydown", function( event ) {
-			if ( event.keyCode === $.ui.keyCode.TAB &&
-			$( this ).data( "ui-autocomplete" ).menu.active ) {
-			event.preventDefault();
-			}
-		})
-		 .autocomplete({
-			minLength: 0,
-			source: function( request, response ) {
-			// delegate back to autocomplete, but extract the last term
-			response( $.ui.autocomplete.filter(
-			add_appt_json_docs, extractLast( request.term ) ) );
-			},
-			focus: function() {
-			// prevent value inserted on focus
-			return false;
-			},
-			select: function( event, ui ) {
-			var terms = split( this.value );
-			// remove the current input
-			terms.pop();
-			// add the selected item
-			terms.push( ui.item.value );
-			// add placeholder to get the comma-and-space at the end
-			terms.push( "" );
-			this.value = terms.join( ", " );
-			add_appt_fld_prv_type = "M";
-			add_appt_fld_prv_id += ui.item.id+",";
-			//console.log(add_appt_fld_prv_id);
-			return false;
-			}
-			})
+			 multiProv="";
+			 add_appt_fld_prv_id=""
+			 
+				 $( "#add_appt_block_m_provider" )
+				 .bind( "keydown", function( event ) {
+				 if ( event.keyCode === $.ui.keyCode.TAB &&
+				 $( this ).data( "ui-autocomplete" ).menu.active ) {
+				 event.preventDefault();
+				 }
+				 })
+					 .autocomplete(
+								{
+									delay : 1,
+									minLength : 1,
+									source : function(request, response) {
+										$
+												.ajax({
+													url : "../ws/rs/providerService/"
+															+ document
+																	.getElementById('add_appt_block_m_provider').value
+															+ "/list",
+													type : "get",
+													contentType : 'application/json',
+													success : function(data) {
+														if(data.providers!= null){
+															response(data.providers);
+														}else{
+															alert("No Details found.");
+														}
+													},
+													error : function(jqxhr) {
+														var msg = JSON
+																.parse(jqxhr.responseText);
+														alert(msg['message']);
+													}
+												});
+									},
+				 focus: function() {
+				 return false;
+				 },
+				 select: function( event, ui ) {
+				 multiProv = multiProv + ui.item.value + "- ";
+				 this.value = multiProv;
+				 add_appt_fld_prv_type = "M";
+				 add_appt_fld_prv_id = add_appt_fld_prv_id + "," + ui.item.id;
+				 return false;
+				 }
+				 });
+			
+				 multiProv="";
+				 add_appt_fld_prv_id=""
 		/*bind raiod button event*/
-		$(":radio.add_appt_radio_pro").on("click",function(){
-			if($(this).val() == "multi"){
-				$("#add_appt_s_provider").attr("disabled",true);
-				$("#add_appt_m_provider").attr("disabled",false);
+		$(":radio.add_appt_radio_pro").on("click", function() {
+			if ($(this).val() == "multi") {
+				$("#add_appt_s_provider").attr("disabled", true);
+				$("#add_appt_m_provider").attr("disabled", false);
 				$("#add_appt_s_provider").val("");
-			}else{
-				$("#add_appt_m_provider").attr("disabled",true);
-				$("#add_appt_s_provider").attr("disabled",false);
+			} else {
+				$("#add_appt_m_provider").attr("disabled", true);
+				$("#add_appt_s_provider").attr("disabled", false);
 				$("#add_appt_m_provider").val("");
 			}
 
-		 });
-		
-		
-		$("input:radio[name=blk_appt_provider]").on("click",function(){
-	
-			if($(this).val() == "multi"){
-				$("#add_appt_block_s_provider").attr("disabled",true);
-				$("#add_appt_block_m_provider").attr("disabled",false);
+		});
+
+		$("input:radio[name=blk_appt_provider]").on("click", function() {
+
+			if ($(this).val() == "multi") {
+				$("#add_appt_block_s_provider").attr("disabled", true);
+				$("#add_appt_block_m_provider").attr("disabled", false);
 				$("#add_appt_block_s_provider").val("");
-			}else if($(this).val() == "total"){
-				$("#add_appt_block_s_provider").attr("disabled",true);
-				$("#add_appt_block_m_provider").attr("disabled",true);
+			} else if ($(this).val() == "total") {
+				$("#add_appt_block_s_provider").attr("disabled", true);
+				$("#add_appt_block_m_provider").attr("disabled", true);
 				$("#add_appt_block_s_provider").val("");
 				$("#add_appt_block_m_provider").val("");
-			}else{
-				$("#add_appt_block_m_provider").attr("disabled",true);
-				$("#add_appt_block_s_provider").attr("disabled",false);
-				$("#add_appt_block_m_provider").val("");	
+			} else {
+				$("#add_appt_block_m_provider").attr("disabled", true);
+				$("#add_appt_block_s_provider").attr("disabled", false);
+				$("#add_appt_block_m_provider").val("");
 			}
 
-		 });
-		
-		 $("#appt_but_cancel").on("click",function(){
-				$("#add_appt_form").dialog("close");
-				//add_app_fn.addTab();
-				//$('#add_appt_pat_name0').popover('show');
-		 });
-		 
-		 $("#appt_but_save").on("click",function(){
-				add_app_fn.validateForm("0");
-		 }); 
-		 
-		 $("#add_appt_but_recur").on("click",function(){
-				add_app_fn.showRecurrence();
-		 });
-		 
-		 $("#add_appt_add_pat_but").on("click",function(){
-				add_app_fn.addPatientFld();
-		 });
-		 
-		 $("#block_but_save").on("click",function(){
-				add_app_fn.validateBlockForm();
-		 });
+		});
 
-		 
-		/*bind input field to date object*/	
-		new JsDatePick({
-			useMode:2,
-			target:"add_appt_date",
-			disablePreDays:true,
-			dateFormat:"%d-%M-%Y"
-
+		$("#appt_but_cancel").on("click", function() {
+			add_app_fn.clearForm("#add_appt_form");
+			$("#add_appt_form").dialog("close");
+			//add_app_fn.addTab();
+			//$('#add_appt_pat_name0').popover('show');
 		});
 		
+		
+		$("#appt_but_save").on("click", function() {
+			add_app_fn.validateForm("0");
+		});
+
+		$("#add_appt_but_recur").on("click", function() {
+			add_app_fn.showRecurrence();
+		});
+
+		$("#add_appt_add_pat_but").on("click", function() {
+			add_app_fn.addPatientFld();
+		});
+
+		$("#block_but_save").on("click", function() {
+			add_app_fn.validateBlockForm();
+		});
+
+		/*bind input field to date object*/
 		new JsDatePick({
-			useMode:2,
-			target:"blk_appt_date",
-			disablePreDays:true,
-			dateFormat:"%d-%M-%Y"
+			useMode : 2,
+			target : "add_appt_date",
+			disablePreDays : true,
+			dateFormat : "%d-%M-%Y"
+
+		});
+
+		new JsDatePick({
+			useMode : 2,
+			target : "blk_appt_date",
+			disablePreDays : true,
+			dateFormat : "%d-%M-%Y"
 
 		});
 		/*binding functions end*/
 		add_app_fn.init();
 		add_app_fn.loadPatientDtls('');
-		
-		
-		
-		var projects = [
-			{
-				id:"11",
-				patName:"Abbey",
-				dob:"01-Oct-1987",
-				hin:"1234-567-999-NN"				
-			},
-			{
-				id:"12",
-				patName:"Adem",
-				dob:"01-Oct-1987",
-				hin:"1234-567-999-NN"				
-			},
-			{
-				id:"1",
-				patName:"Doe, Jane",
-				dob:"01-Oct-1987",
-				hin:"1234-567-999-NN"				
-			},
-			{
-				id:"2",
-				patName:"Donaghy, Jane",
-				dob:"17-Nov-1973",
-				hin:"5987-783-001"				
-			},
-			{
-				id:"3",
-				patName:"Donahue, Jane",
-				dob:"20-Apr-1992",
-				hin:"3232-877-123-GX"				
-			}
-		];
-		
-		 
-		
-	
-		
-		
+
+		var projects = [ {
+			id : "11",
+			patName : "Abbey",
+			dob : "01-Oct-1987",
+			hin : "1234-567-999-NN"
+		}, {
+			id : "12",
+			patName : "Adem",
+			dob : "01-Oct-1987",
+			hin : "1234-567-999-NN"
+		}, {
+			id : "1",
+			patName : "Doe, Jane",
+			dob : "01-Oct-1987",
+			hin : "1234-567-999-NN"
+		}, {
+			id : "2",
+			patName : "Donaghy, Jane",
+			dob : "17-Nov-1973",
+			hin : "5987-783-001"
+		}, {
+			id : "3",
+			patName : "Donahue, Jane",
+			dob : "20-Apr-1992",
+			hin : "3232-877-123-GX"
+		} ];
+
 	});
 </script>
 
@@ -972,558 +1454,616 @@ var apptData="";
 <title>jQuery UI Tabs - Default functionality</title>
 
 <style>
-	.ui-tabs .ui-tabs-nav li.ui-tabs-active {
-		margin-bottom: -1px;
-		padding-bottom: 1px;
-		background-color:#FFFFFF;
-	}
-	.ui-tabs .ui-tabs-nav li.ui-tabs-active .ui-tabs-anchor,
-	.ui-tabs .ui-tabs-nav li.ui-state-disabled .ui-tabs-anchor,
-	.ui-tabs .ui-tabs-nav li.ui-tabs-loading .ui-tabs-anchor {
-		cursor: text;
-	}
-	.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-active .ui-tabs-anchor {
-		cursor: pointer;
-	}
+.ui-tabs .ui-tabs-nav li.ui-tabs-active {
+	margin-bottom: -1px;
+	padding-bottom: 1px;
+	background-color: #FFFFFF;
+}
 
-	.test{
-		border: 0px!important;
-	}
-	.appt_tbl{
-		border: 1px solid #AAAAAA;
-		font-size:0.8em;
-		border-collapse:collapse;
-	}
-	.appt_tbl td,
-	.appt_tbl table th {
-		border: 1px solid #AAAAAA;
-		padding: .2em;
-	}
-	
-	.appt_roundbox {           
-		border-bottom-right-radius: 4px;
-		border-bottom-left-radius: 4px;
-		border-top-right-radius: 4px;
-		border-top-left-radius: 4px;
-		border:1px solid #AAAAAA;
-		min-height:150px;
-	}
-	
-	.popover{
-		
-		height:50px;
-		
-	}
-	
-	#container {
-    padding: 15px;
+.ui-tabs .ui-tabs-nav li.ui-tabs-active .ui-tabs-anchor,.ui-tabs .ui-tabs-nav li.ui-state-disabled .ui-tabs-anchor,.ui-tabs .ui-tabs-nav li.ui-tabs-loading .ui-tabs-anchor
+	{
+	cursor: text;
+}
+
+.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-active .ui-tabs-anchor {
+	cursor: pointer;
+}
+
+.test {
+	border: 0px !important;
+}
+
+.appt_tbl {
+	border: 1px solid #AAAAAA;
+	font-size: 0.8em;
+	border-collapse: collapse;
+}
+
+.appt_tbl td,.appt_tbl table th {
+	border: 1px solid #AAAAAA;
+	padding: 1.7em;
+}
+
+.appt_roundbox {
+	border-bottom-right-radius: 4px;
+	border-bottom-left-radius: 4px;
+	border-top-right-radius: 4px;
+	border-top-left-radius: 4px;
+	border: 1px solid #AAAAAA;
+	min-height: 150px;
+}
+
+.popover {
+	height: 50px;
+}
+
+#container {
+	padding: 15px;
+}
+.add_appt_close:hover{
+	 cursor:pointer !important;
 }
 </style>
 
 
 </head>
 <body>
-<div id="add_appt_form" class="fex_form" style="padding:0px;width:100%">
-<div id="tabs" class="test">
-    <ul>
-        <li><a href="#tabs-1">Add appointment</a></li>
-        <li><a href="#tabs-2">Block time</a></li>        
-    </ul>
-	<!-- Add appointment tab -->
-    <div id="tabs-1">
-        <table width="100%" border="0" style="border-collapse:collapse;">
-			<tr>
-				<td width="55%">
-					<!-- basic details -->
-					<table width="100%">
-						<tr>
-							<td colspan="2">
-								<table>
-									<tr>
-										<td><img src="js_up/img/1.png" style="width:30px;height:30px;"></img></td>
-										<td class="naa_mainheading">BASIC DETAILS(required)
-											<input type="hidden" id="add_appt_pat_name_sel_id">										
-										</td>
-									</tr>
-								</table>
-							</td>
-						</tr>
-						<tr>
-							<td width="20%">Patient name</td>
-							<td width="80%" >
-								<table id="add_appt_pat_tab">
-									<tr>
-										<td><input id="add_appt_pat_name" class="form-control na_form_inputtext" style="height:25px;" placeholder='Type patient name...' rel='popover' data-placement='bottom' data-original-title='&lt;b&gt;Requests&lt;/b&gt;' data-content='My content goes here' /></td>									
-										<td style='padding-left:5px;'><div onclick='add_app_fn.removePatFld(this)'><img src='js_up/img/close-x-cir.GIF' style='cursor:pointer'></img></div></td>
-									</tr>
-								</table>
-							</td>
-						</tr>
-						<tr>
-							<td width="20%"></td>
-							<td width="80%" height="20px;" style="color:red;">
-									<div style="display:none"><input type="checkbox" id="add_appt_sendemail" class="add_appt_ckbox" value="" style="margin-bottom: -5px;margin-left:5px;"/>&nbsp;Send email reminder</div>
-									<button type="button" id="add_appt_add_pat_but" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Click to add another patient" style="font-size:10px;color:black;height:20px;width:150px;padding:0px;padding-left:5px;"> &nbsp;+ Add another patient&nbsp; </button>
-							</td>
-						</tr>
-						<tr>
-							<td height="5" colspan="2"></td>
-						</tr>
-						<tr>
-							<td width="20%">Provider(s)</td>
-							<td width="80%" >
-								<table>
-									<tr>
-										<td>&nbsp;<input type="radio" name="add_appt_provider" class="add_appt_radio_pro" value="single" checked style="margin-bottom: -3px;"/>&nbsp;Single provider appt.&nbsp;&nbsp;
-										</td>
-										<td><input id="add_appt_s_provider" class="form-control na_form_inputtext" style="height:25px;"/>
-										</td>
-									</tr>
-								</table>						
-							</td>
-						</tr>
-						<tr>
-							<td></td>
-							<td>
-								<table>
-									<tr>
-										<td>&nbsp;<input type="radio" name="add_appt_provider" class="add_appt_radio_pro" value="multi" style="margin-bottom: -3px;"/>&nbsp;Multi provider appt.&nbsp;&nbsp;&nbsp;&nbsp;
-										</td>
-										<td>
-											<input id="add_appt_m_provider" class="form-control na_form_inputtext" disabled  style="height:25px;"/>
-										</td>
-									</tr>
-								</table>
-							</td>
-						</tr>
-						<tr>
-							<td height="5" colspan="2"></td>
-						</tr>
-						<tr>
-							<td width="20%">Date</td>
-							<td width="80%" >
-								<table>
-									<tr>
-										<td>&nbsp;<input id="add_appt_date" class="form-control na_form_inputtext" readonly style="width:110px;cursor:pointer;height:25px;"/></td>
-										<td style="padding-top:10px;padding-left:10px;"><span id="add_appt_but_recur" class="appt_roundbox" style="padding:2px;cursor:pointer;height:25px;">&nbsp;Add recurrence&nbsp;</span></td>
-									</tr>
-								</table>
-							</td>
-						</tr>
-						<tr style="display:none" id="add_appt_row_recur">
-							<td width="20%">Recurrence</td>
-							<td width="80%" >
-								<span id="add_appt_text_recur" style="font-size:10px;"></span>
-							</td>
-						</tr>
-						<tr>	
-							<td height="5" colspan="2"></td>
-						</tr>
-						<tr>
-							<td width="20%">Time</td>
-							<td width="80%" >
-								<table>
-									<tr>
-										<td><select class="form-control na_form_select" id="add_appt_time" style="width:100px;padding:0px;"/>
-										</td>
-										<td><span style="padding-left:5em;">Duration</span>
-										</td>										
-										<td style="padding-left:10px;"><select class="form-control na_form_select" id="add_appt_duration" style="width:100px;padding:0px;"/>
-										</td>
-									</tr>
-								</table>
-							</td>
-						</tr>
-						<tr>	
-							<td height="10" colspan="2"></td>
-						</tr>
-						<tr>
-							<td colspan="2" style="padding:5px;">
-								<ul class="nav nav-tabs" id="myTab">
-								  <li class="active"><a data-target="#patient_dtls" data-toggle="tab" id="dummytab" style="cursor:pointer;">Patient 1 details</a></li>				  
-								  							  
-								</ul>
-
-								<div class="tab-content" id="myTabContent">
-								  <div class="tab-pane active" id="patient_dtls" style="border: 1px solid #DDDDDD;border-top:0px;padding:5px;">
-										<table width="98%" style="padding-top:5px;padding-bottom:5px;">
+	<div id="add_appt_form" class="fex_form"
+		style="padding: 0px; width: 100%">		
+		<div id="tabs" class="test">
+		<table border=0 width=100%">
+			<tr><td> 
+			<ul>
+				<li><a href="#tabs-1">Add Appointment</a></li>
+				<li><a href="#tabs-2">Block time</a></li>
+			</ul>
+			</td>
+			<td style="text-align: right; border-top: 1px solid #AAAAAA; padding-top: 0px;" valign="top"> <div class="add_appt_close" onClick='$("#add_appt_form").dialog("close");'><img src="js_up/images/close_icon.png" height=20 width=20></img></div></td>
+			</table>
+			<!-- Add appointment tab -->
+			<div id="tabs-1">
+				<table width="100%" border="0" style="border-collapse: collapse;">
+					<tr>
+						<td width="55%">
+							<!-- basic details -->
+							<table width="100%">
+								<tr>
+									<td colspan="2">
+										<table>
 											<tr>
-												<td width="45%">
-													<table id="addApp_naa_users" class="appt_tbl " width="100%" style="">
-														<thead>
-															<tr class="ui-widget-header">
-																<th colspan="2" height="18px;" style="text-align:center;">PATIENT DEMOGRAPHICS</th>
-															</tr>
-														</thead>
-														<tbody>
-															<tr>
-																<td width="65%">DOB:&nbsp;<span id="appt_dob"></span></td>
-																<td width="35%">Sex:&nbsp;<span id="appt_sex"></span></td>
-															</tr>
-															<tr>
-																<td colspan="2">HIN:&nbsp;<span id="appt_hin"></span></td>
-															</tr>
-															<tr>
-																<td colspan="2">Address:&nbsp;<span id="appt_add"></span></td>
-															</tr>
-															<tr>
-																<td colspan="2">Phone:&nbsp;<span id="appt_phone"></span></td>
-															</tr>
-															<tr>
-																<td colspan="2">Email:&nbsp;<span id="appt_email"></span></td>
-															</tr>
-															
-														</tbody>
-													</table>
-																						
-												</td>
-												<td width="55%" style='padding-left:2px;'>
-													<table id="add_appt_overview" class="appt_tbl" width="100%">
-														<thead>
-															<tr class="ui-widget-header" height="18px;">
-																<th colspan="3" style="text-align:center;">APPOINTMENTS OVERVIEW</th>
-															</tr>
-															<tr>
-																<td>Date</td>
-																<td>Provider</td>
-																<td>Start time</td>
-															</tr>
-														</thead>
-														<tbody>
-															<tr>
-																<td>&nbsp;</td>
-																<td></td>
-																<td></td>
-															</tr>
-															<tr>
-																<td>&nbsp;</td>
-																<td></td>
-																<td></td>
-															</tr>
-															<tr>
-																<td>&nbsp;</td>
-																<td></td>
-																<td></td>
-															</tr>
-															<tr>
-																<td>&nbsp;</td>
-																<td></td>
-																<td></td>
-															</tr>
-														</tbody>
-													</table>
+												<td><img src="js_up/img/1.png"
+													style="width: 30px; height: 30px;"></img></td>
+												<td class="naa_mainheading">BASIC DETAILS(required) <input
+													type="hidden" id="add_appt_pat_name_sel_id">
 												</td>
 											</tr>
 										</table>
-								  </div>
-								  <div class="tab-pane" id="profile">Profile tab data</div>
-								  <div class="tab-pane" id="messages">Messages here</div>
-								  <div class="tab-pane" id="settings">Settings here</div>
-								</div>
+									</td>
+								</tr>
+								<tr>
+									<td width="20%">Patient name</td>
+									<td width="80%">
+										<table id="add_appt_pat_tab">
+											<tr>
+												<td><input id="add_appt_pat_name"
+													class="form-control na_form_inputtext"
+													style="height: 25px;" placeholder='Type patient name...'
+													rel='popover' data-placement='bottom'
+													data-original-title='&lt;b&gt;Requests&lt;/b&gt;'
+													data-content='My content goes here' /></td>
+												<td style='padding-left: 5px;'><div
+														onclick='add_app_fn.removePatFld(this)'>
+														<img src='js_up/img/close-x-cir.gif'
+															style='cursor: pointer'></img>
+													</div></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td width="20%"></td>
+									<td width="80%" height="20px;" style="color: red;">
+										<div style="display: none">
+											<input type="checkbox" id="add_appt_sendemail"
+												class="add_appt_ckbox" value=""
+												style="margin-bottom: -5px; margin-left: 5px;" placeholder="Enter 3 characters"/>&nbsp;Send
+											email reminder
+										</div>
+										<button type="button" id="add_appt_add_pat_but"
+											class="btn btn-default" data-toggle="tooltip"
+											data-placement="bottom" title="Click to add another patient"
+											style="font-size: 10px; color: black; height: 20px; width: 150px; padding: 0px; padding-left: 5px;">
+											&nbsp;+ Add another patient&nbsp;</button>
+									</td>
+								</tr>
+								<tr>
+									<td height="5" colspan="2"></td>
+								</tr>
+								<tr>
+									<td width="20%">Provider(s)</td>
+									<td width="80%">
+										<table>
+											<tr>
+												<td>&nbsp;<input type="radio" name="add_appt_provider"
+													class="add_appt_radio_pro" value="single" checked
+													style="margin-bottom: -3px;" />&nbsp;Single provider
+													appt.&nbsp;&nbsp;
+												</td>
+												<td><input id="add_appt_s_provider"
+													class="form-control na_form_inputtext"
+													style="height: 25px;" placeholder="Enter 3 characters" /></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td></td>
+									<td>
+										<table>
+											<tr>
+												<td>&nbsp;<input type="radio" name="add_appt_provider"
+													class="add_appt_radio_pro" value="multi"
+													style="margin-bottom: -3px;" />&nbsp;Multi provider
+													appt.&nbsp;&nbsp;&nbsp;&nbsp;
+												</td>
+												<td><input id="add_appt_m_provider" multiple="multiple"
+													class="form-control na_form_inputtext" disabled
+													style="height: 25px;" placeholder="Enter 3 characters"/></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td height="5" colspan="2"></td>
+								</tr>
+								<tr>
+									<td width="20%">Date</td>
+									<td width="80%">
+										<table>
+											<tr>
+												<td>&nbsp;<input id="add_appt_date"
+													class="form-control na_form_inputtext" readonly
+													style="width: 110px; cursor: pointer; height: 25px;" /></td>
+												<td style="padding-top: 10px; padding-left: 10px;"><span
+													id="add_appt_but_recur" class="appt_roundbox"
+													style="padding: 2px; cursor: pointer; height: 25px;">&nbsp;Add
+														recurrence&nbsp;</span></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr style="display: none" id="add_appt_row_recur">
+									<td width="20%">Recurrence</td>
+									<td width="80%"><span id="add_appt_text_recur"
+										style="font-size: 10px;"></span></td>
+								</tr>
+								<tr>
+									<td height="5" colspan="2"></td>
+								</tr>
+								<tr>
+									<td width="20%">Time</td>
+									<td width="80%">
+										<table>
+											<tr>
+												<td><select class="form-control na_form_select"
+													id="add_appt_time" style="width: 100px; padding: 0px;" /></td>
+												<td><span style="padding-left: 5em;">Duration</span></td>
+												<td style="padding-left: 10px;"><select
+													class="form-control na_form_select" id="add_appt_duration"
+													style="width: 100px; padding: 0px;" /></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td height="10" colspan="2"></td>
+								</tr>
+								<tr>
+									<td colspan="2" style="padding: 5px;">
+										<ul class="nav nav-tabs" id="myTab">
+											<li class="active"><a data-target="#patient_dtls"
+												data-toggle="tab" id="dummytab" style="cursor: pointer;">Patient
+													1 details</a></li>
 
-								
+										</ul>
 
-									
-									
-									
-									
-							</td>
-						</tr>
-						<tr>
-							<td colspan="2" height="10px;"></td>
-						</tr>
-					</table>
-				</td>
-				<td width="45%" style="border-left: 1px solid #AAAAAA;padding-left:5px;display: table-cell; vertical-align: top;">
-					<!-- more details -->
-					<table style="width:100%">
-						<tr>
-							<td colspan="2">
-								<table>
-									<tr>
-										<td><img src="js_up/img/2.png" style="width:30px;height:30px;"></img></td>
-										<td class="naa_mainheading">MORE DETAILS(optional)</td>
-									</tr>
-								</table>
-							</td>
-						</tr>
-						<tr>
-							<td>Appt.type</td>
-							<td>
-								<table>
-									<tr>
-										<td>
-											<select class="form-control na_form_select" id="add_appt_type" style="padding:0px;">
-													<option value="">Select</option>
-											</select>
-										</td>
-										<td>
-											<span style="padding-left:15px;">Critical appt.</span>
-										</td>
-										<td>
-											<input type="checkbox" id="add_appt_critical" class="na_pro" value="" style="margin-bottom: -5px;margin-left:5px;"/>
-										</td>
-									</tr>
-								</table>								
-							</td>
-						</tr>
-						<tr >
-							<td style="height:35px;">Appt.status</td>
-							<td>
-								<select class="na_form_select form-control" id="add_appt_status" style="padding:0px;">																									
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td>Location</td>
-							<td>
-								<table>
-									<tr>
-										<td>
-											<input id="add_appt_location" class="form-control na_form_inputtext" style="height:25px;"/>
-										</td>
-										<td>
-											<span style="padding-left:15px;">Resources.</span>
-										</td>
-										<td>
-											<input id="add_appt_resources" class="form-control na_form_inputtext" style="width:60px;height:25px;"/>
-										</td>
-									</tr>
-								</table>							
-							</td>
-						</tr>
-						<tr>
-							<td style="height:35px;">Reason</td>
-							<td>
-								<select class="form-control na_form_select" id="add_appt_reason" style="padding:0px;">								
-										<option value="">Select</option>
-									</select>
-							</td>
-						</tr>
-						<tr>
-							<td style="height:35px;">Reason details</td>
-							<td>
-								<textarea id="add_appt_reason_dtls" rows="3" cols="15" class="form-control na_form_inputtext"/>				
-							</td>
-						</tr>
-						<tr>
-							<td style="height:35px;">Notes</td>
-							<td style="padding-top:5px;"><textarea id="add_appt_notes" rows="3" cols="15" class="form-control na_form_inputtext"/>
-							</td>
-						</tr>
-						<tr>
-							<td height="45px;"></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2" style="font-size:15px;font-weight:bold;padding:5px;background-color:#FFF0F5;display:none;" id="add_appt_valNote">
-						
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2" height="5px;">
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2" style="text-align:right;border-top: 1px solid #AAAAAA; padding-top:10px;"> 
-					<button id="appt_but_cancel" class="naa_button_grd" style="width:80px;cursor:pointer;">Cancel</button>&nbsp;&nbsp;
-					<button id="appt_but_save" class="naa_button_grd" style="width:80px;cursor:pointer;">Save</button>
-				</td>
-			</tr>
-		</table>
-    </div>
-	
-	
-	
-	
-	
-	<!-- Block time tab -->
-    <div id="tabs-2">
-		<table width="100%" border="0" style="border-collapse:collapse;">
-			<tr>
-				<td width="55%">
-					<!-- basic details -->
-					<table>
-						<tr>
-							<td colspan="2">
-								<table>
-									<tr>
-										<td><img src="js_up/img/1.png" style="width:30px;height:30px;"></img></td>
-										<td class="naa_mainheading">BASIC DETAILS(required)</td>
-									</tr>
-								</table>
-							</td>
-						</tr>
-						<tr>
-							<td width="20%">Provider(s)</td>
-							<td width="80%" style="padding-left:5px">
-								<table >
-									<tr>
-										<td>
-											<input type="radio" name="blk_appt_provider" class="na_pro" value="single" checked style="margin-bottom: -3px;"/>&nbsp;Single provider appt.&nbsp;
-										</td>
-										<td>
-											<input id="add_appt_block_s_provider" class="form-control na_form_inputtext" style="height:25px;"/>
-										</td>
-									</tr>
-								</table>
-							</td>
-						</tr>
-						<tr>
-							<td></td>
-							<td style="padding-left:5px">
-								<table>
-									<tr>
-										<td>
-											<input type="radio" name="blk_appt_provider" class="na_pro" value="multi" style="margin-bottom: -3px;"/>&nbsp;Multi provider appt.
-										</td>
-										<td style="padding-left:13px;">
-											<input id="add_appt_block_m_provider" class="form-control na_form_inputtext" disabled style="height:25px;"/>
-										</td>
-									</tr>
-								</table>
-							
-							</td>
-						</tr>
-						<tr>
-							<td></td>
-							<td>&nbsp;<input type="radio" name="blk_appt_provider" class="na_pro" value="total" style="margin-bottom: -3px;"/>&nbsp;Entire team block
-						</tr>
-						<tr>
-							<td height="10" colspan="2"></td>
-						</tr>
-						<tr>
-							<td width="20%">Date</td>
-							<td width="80%" style="padding-left:5px">
-								<table>
-									<tr>
-										<td>
-											<input id="blk_appt_date" class="form-control na_form_inputtext" readonly style="width:90px;cursor:pointer;height:25px;"/>
-										</td>
-										<td style="padding-bottom:9px;padding-left:10px;"><span id="add_appt_but_recur" class="appt_roundbox" style="padding:2px;cursor:pointer;height:25px;">&nbsp;Add recurrence&nbsp;</span></td>
-									</tr>
-								</table>
-							</td>
-						</tr>
-						<tr>
-							<td height="10" colspan="2"></td>
-						</tr>
-						<tr>
-							<td width="20%">Time</td>
-							<td width="80%" style="padding-left:5px">
-								<table>
-									<tr>
-										<td>
-											<select class="form-control na_form_select" id="blk_appt_time" style="width:100px;padding:0px;" onchange="updateTime()"/>
-										</td>
-										<td>
-											<span style="padding-left:5em;">Duration</span>
-										</td>
-										<td style="padding-left:10px;">
-											<select class="form-control na_form_select" id="blk_appt_duration" style="width:100px;padding:0px;" onchange="updateTime()"/>
-											
-										</td>
-									</tr>
-									<tr>
-										<td><input type="checkbox" name="blk_appt_allday" class="na_pro" value="" style="margin-bottom: -5px;margin-left:5px;"/><span style="padding-left:2px;">All Day</span></td>
-										<td></td>
-										<td>Ends at <span id="finalTime">08:15</span></td>
-									</tr>
-								</table>
-							</td>
-						</tr>
-						
-						<tr>
-							<td colspan="2" height="120px;"></td>
-						</tr>
-					</table>
-				</td>
-				<td width="45%" style="border-left: 1px solid #AAAAAA;padding-left:5px;">
-					<!-- more details -->
-					<table>
-						<tr>
-							<td colspan="2">
-								<table>
-									<tr>
-										<td><img src="js_up/img/2.png" style="width:30px;height:30px;"></img></td>
-										<td class="naa_mainheading">MORE DETAILS(optional)</td>
-									</tr>
-								</table>
-							</td>
-						</tr>		
-						<tr>
-							<td>Reason</td>
-							<td>
-								<input id="blk_appt_reason" class="form-control na_form_inputtext" style="height:25px"/>
-							</td>
-						</tr>		
-						<tr>
-							<td>Notes</td>
-							<td>
-								<textarea name="blk_appt_notes" id="blk_appt_notes" rows="3" cols="15" class="form-control na_form_inputtext"></textarea>
-							</td>
-						</tr>
-						<tr>
-							<td height="177px"></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2" style="text-align:right;border-top: 1px solid #AAAAAA; padding-top:10px;"> 
-					<button id="appt_but_cancel" class="naa_button_grd" style="width:80px;cursor:pointer;">Cancel</button>&nbsp;&nbsp;
-					<button id="block_but_save" class="naa_button_grd" style="width:80px;cursor:pointer;">Save</button>
-				</td>
-			</tr>
-		</table>        
-    </div>    
-</div>
-</div>
+										<div class="tab-content" id="myTabContent">
+											<div class="tab-pane active" id="patient_dtls"
+												style="border: 1px solid #DDDDDD; border-top: 0px; padding: 5px;">
+												<table width="98%"
+													style="padding-top: 5px; padding-bottom: 5px;">
+													<tr>
+														<td width="45%">
+															<table id="addApp_naa_users" class="appt_tbl "
+																width="100%" style="">
+																<thead>
+																	<tr class="ui-widget-header">
+																		<th colspan="2" height="18px;"
+																			style="text-align: center;">PATIENT DEMOGRAPHICS</th>
+																	</tr>
+																</thead>
+																<tbody>
+																	<tr>
+																		<td width="65%">DOB:&nbsp;<span id="appt_dob"></span></td>
+																		<td width="35%">Sex:&nbsp;<span id="appt_sex"></span></td>
+																	</tr>
+																	<tr>
+																		<td colspan="2">HIN:&nbsp;<span id="appt_hin"></span></td>
+																	</tr>
+																	<tr>
+																		<td colspan="2">Address:&nbsp;<span id="appt_add"></span></td>
+																	</tr>
+																	<tr>
+																		<td colspan="2">Phone:&nbsp;<span id="appt_phone"></span></td>
+																	</tr>
+																	<tr>
+																		<td colspan="2">Email:&nbsp;<span id="appt_email"></span></td>
+																	</tr>
+
+																</tbody>
+															</table>
+
+														</td>
+														<td width="55%" style='padding-left: 2px;'>
+															<table id="add_appt_overview" class="appt_tbl"
+																width="100%">
+																<thead>
+																	<tr class="ui-widget-header" height="18px;">
+																		<th colspan="3" style="text-align: center;">APPOINTMENTS
+																			OVERVIEW</th>
+																	</tr>
+																	<tr>
+																		<td>Date</td>
+																		<td>Provider</td>
+																		<td>Start time</td>
+																	</tr>
+																</thead>
+																<tbody>
+																	<tr>
+																		<td>&nbsp;</td>
+																		<td></td>
+																		<td></td>
+																	</tr>
+																	<tr>
+																		<td>&nbsp;</td>
+																		<td></td>
+																		<td></td>
+																	</tr>
+																	<tr>
+																		<td>&nbsp;</td>
+																		<td></td>
+																		<td></td>
+																	</tr>
+																	<tr>
+																		<td>&nbsp;</td>
+																		<td></td>
+																		<td></td>
+																	</tr>
+																</tbody>
+															</table>
+														</td>
+													</tr>
+												</table>
+											</div>
+											<div class="tab-pane" id="profile">Profile tab data</div>
+											<div class="tab-pane" id="messages">Messages here</div>
+											<div class="tab-pane" id="settings">Settings here</div>
+										</div>
+
+
+
+
+
+
+
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2" height="10px;"></td>
+								</tr>
+							</table>
+						</td>
+						<td width="45%"
+							style="border-left: 1px solid #AAAAAA; padding-left: 5px; display: table-cell; vertical-align: top;">
+							<!-- more details -->
+							<table style="width: 100%">
+								<tr>
+									<td colspan="2">
+										<table>
+											<tr>
+												<td><img src="js_up/img/2.png"
+													style="width: 30px; height: 30px;"></img></td>
+												<td class="naa_mainheading">MORE DETAILS(optional)</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td>Appt.type</td>
+									<td>
+										<table>
+											<tr>
+												<td><select class="form-control na_form_select"
+													id="add_appt_type" style="padding: 0px;">
+												</select></td>
+												<td><span style="padding-left: 15px;">Critical
+														appt.</span></td>
+												<td><input type="checkbox" id="add_appt_critical"
+													class="na_pro" value=""
+													style="margin-bottom: -5px; margin-left: 5px;" /></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td style="height: 35px;">Appt.status</td>
+									<td><select class="na_form_select form-control"
+										id="add_appt_status" style="padding: 0px;">
+									</select></td>
+								</tr>
+								<tr>
+									<td>Location</td>
+									<td>
+										<table>
+											<tr>
+												<td><input id="add_appt_location"
+													class="form-control na_form_inputtext"
+													style="height: 25px;" /></td>
+												<td><span style="padding-left: 15px;">Resources.</span>
+												</td>
+												<td><input id="add_appt_resources"
+													class="form-control na_form_inputtext"
+													style="width: 60px; height: 25px;" /></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td style="height: 35px;">Reason</td>
+									<td><select class="form-control na_form_select"
+										id="add_appt_reason" style="padding: 0px;">
+											<option value="17" selected>Others</option>
+									</select></td>
+								</tr>
+								<tr>
+									<td style="height: 35px;">Reason details</td>
+									<td><textarea id="add_appt_reason_dtls" rows="3" cols="15"
+											class="form-control na_form_inputtext" /></td>
+								</tr>
+								<tr>
+									<td style="height: 35px;">Notes</td>
+									<td style="padding-top: 5px;"><textarea
+											id="add_appt_notes" rows="3" cols="15"
+											class="form-control na_form_inputtext" /></td>
+								</tr>
+								<tr>
+									<td height="45px;"></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2"
+							style="font-size: 15px; font-weight: bold; padding: 5px; background-color: #FFF0F5; display: none;"
+							id="add_appt_valNote"></td>
+					</tr>
+					<tr>
+						<td colspan="2" height="5px;"></td>
+					</tr>
+					<tr>
+						<td colspan="2"
+							style="text-align: right; border-top: 1px solid #AAAAAA; padding-top: 10px;">
+							<button id="appt_but_cancel" class="naa_button_grd"
+								style="width: 80px; cursor: pointer;">Cancel</button>&nbsp;&nbsp;
+							<button id="appt_but_save" class="naa_button_grd"
+								style="width: 80px; cursor: pointer;">Save</button>
+						</td>
+					</tr>
+				</table>
+			</div>
+
+
+
+
+
+			<!-- Block time tab -->
+			<div id="tabs-2">
+				<table width="100%" border="0" style="border-collapse: collapse;">
+					<tr>
+						<td width="55%">
+							<!-- basic details -->
+							<table>
+								<tr>
+									<td colspan="2">
+										<table>
+											<tr>
+												<td><img src="js_up/img/1.png"
+													style="width: 30px; height: 30px;"></img></td>
+												<td class="naa_mainheading">BASIC DETAILS(required)</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td width="20%">Provider(s)</td>
+									<td width="80%" style="padding-left: 5px">
+										<table>
+											<tr>
+												<td><input type="radio" name="blk_appt_provider"
+													class="na_pro" value="single" checked
+													style="margin-bottom: -3px;" />&nbsp;Single provider
+													appt.&nbsp;</td>
+												<td><input id="add_appt_block_s_provider"
+													class="form-control na_form_inputtext"
+													style="height: 25px;" /></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td></td>
+									<td style="padding-left: 5px">
+										<table>
+											<tr>
+												<td><input type="radio" name="blk_appt_provider"
+													class="na_pro" value="multi" style="margin-bottom: -3px;" />&nbsp;Multi
+													provider appt.</td>
+												<td style="padding-left: 13px;"><input
+													id="add_appt_block_m_provider"
+													class="form-control na_form_inputtext" disabled
+													style="height: 25px;" /></td>
+											</tr>
+										</table>
+
+									</td>
+								</tr>
+								<tr>
+									<td></td>
+									<td>&nbsp;<input type="radio" name="blk_appt_provider"
+										class="na_pro" value="total" style="margin-bottom: -3px;" />&nbsp;Entire
+										team block
+								</tr>
+								<tr>
+									<td height="10" colspan="2"></td>
+								</tr>
+								<tr>
+									<td width="20%">Date</td>
+									<td width="80%" style="padding-left: 5px">
+										<table>
+											<tr>
+												<td><input id="blk_appt_date"
+													class="form-control na_form_inputtext" readonly
+													style="width: 90px; cursor: pointer; height: 25px;" /></td>
+												<td style="padding-bottom: 9px; padding-left: 10px;"><span
+													id="add_appt_but_recur" class="appt_roundbox"
+													style="padding: 2px; cursor: pointer; height: 25px;">&nbsp;Add
+														recurrence&nbsp;</span></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td height="10" colspan="2"></td>
+								</tr>
+								<tr>
+									<td width="20%">Time</td>
+									<td width="80%" style="padding-left: 5px">
+										<table>
+											<tr>
+												<td><select class="form-control na_form_select"
+													id="blk_appt_time" style="width: 100px; padding: 0px;"
+													onchange="updateTime()" /></td>
+												<td><span style="padding-left: 5em;">Duration</span></td>
+												<td style="padding-left: 10px;"><select
+													class="form-control na_form_select" id="blk_appt_duration"
+													style="width: 100px; padding: 0px;" onchange="updateTime()" />
+
+												</td>
+											</tr>
+											<tr>
+												<td><input type="checkbox" name="blk_appt_allday"
+													class="na_pro" value=""
+													style="margin-bottom: -5px; margin-left: 5px;" /><span
+													style="padding-left: 2px;">All Day</span></td>
+												<td></td>
+												<td>Ends at <span id="finalTime">08:15</span></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+
+								<tr>
+									<td colspan="2" height="120px;"></td>
+								</tr>
+							</table>
+						</td>
+						<td width="45%"
+							style="border-left: 1px solid #AAAAAA; padding-left: 5px;">
+							<!-- more details -->
+							<table>
+								<tr>
+									<td colspan="2">
+										<table>
+											<tr>
+												<td><img src="js_up/img/2.png"
+													style="width: 30px; height: 30px;"></img></td>
+												<td class="naa_mainheading">MORE DETAILS(optional)</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td>Reason</td>
+									<td><input id="blk_appt_reason"
+										class="form-control na_form_inputtext" style="height: 25px" />
+									</td>
+								</tr>
+								<tr>
+									<td>Notes</td>
+									<td><textarea name="blk_appt_notes" id="blk_appt_notes"
+											rows="3" cols="15" class="form-control na_form_inputtext"></textarea>
+									</td>
+								</tr>
+								<tr>
+									<td height="177px"></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2"
+							style="text-align: right; border-top: 1px solid #AAAAAA; padding-top: 10px;">
+							<button id="appt_but_cancel" class="naa_button_grd"
+								style="width: 80px; cursor: pointer;">Cancel</button>&nbsp;&nbsp;
+							<button id="block_but_save" class="naa_button_grd"
+								style="width: 80px; cursor: pointer;">Save</button>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
 </body>
 <script>
-$(function(){
-	add_app_fn.bindAutoComp("add_appt_pat_name0");
-	$('#myTab a:last').tab('show');
-	
-	
-});
+	$(function() {
+		add_app_fn.bindAutoComp("add_appt_pat_name0");
+		$('#myTab a:last').tab('show');
 
-function showPatTab(id){
-	$('#myTab li:eq('+id+') a').tab('show');
-}
+	});
 
-function updateTime(){
-	var time =  document.getElementById("blk_appt_time").value;
-	var time1 = time.split("_");
-	var finalTime = (parseFloat(time1[0])*60)+(parseFloat(time1[1]))+parseFloat(document.getElementById("blk_appt_duration").value);
-	var t1 = (finalTime/60);
-	
-	var quoi = t1.toString().split(".")
-
-	var firVal;
-	if(quoi[0].length<=1){
-		firVal = "0"+quoi[0];
-	}else{
-		firVal = quoi[0];
+	function showPatTab(id) {
+		$('#myTab li:eq(' + id + ') a').tab('show');
 	}
-	
-	var secVal = finalTime%60;
 
-	if(secVal.toString().length<=1){
-		secVal = "0"+secVal.toString();
+	function updateTime() {
+		var time = document.getElementById("blk_appt_time").value;
+		var time1 = time.split("_");
+		var finalTime = (parseFloat(time1[0]) * 60)
+				+ (parseFloat(time1[1]))
+				+ parseFloat(document.getElementById("blk_appt_duration").value);
+		var t1 = (finalTime / 60);
+
+		var quoi = t1.toString().split(".")
+
+		var firVal;
+		if (quoi[0].length <= 1) {
+			firVal = "0" + quoi[0];
+		} else {
+			firVal = quoi[0];
+		}
+
+		var secVal = finalTime % 60;
+
+		if (secVal.toString().length <= 1) {
+			secVal = "0" + secVal.toString();
+		}
+
+		document.getElementById("finalTime").innerHTML = firVal + ":" + secVal;
 	}
-	
-	document.getElementById("finalTime").innerHTML = firVal +":"+ secVal;
-}
 
-/*$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-	console.log(e.target);
-	e.target // activated tab
-	e.relatedTarget // previous tab
-})*/
-
-
-
+	/*$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+	 console.log(e.target);
+	 e.target // activated tab
+	 e.relatedTarget // previous tab
+	 })*/
 </script>

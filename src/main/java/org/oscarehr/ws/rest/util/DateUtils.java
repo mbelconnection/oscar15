@@ -21,33 +21,40 @@
  * Hamilton
  * Ontario, Canada
  */
-package org.oscarehr.ws.rest.to.model;
 
-import java.io.Serializable;
+package org.oscarehr.ws.rest.util;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
-@XmlRootElement
-@JsonIgnoreProperties(ignoreUnknown = true)
-@XmlAccessorType(XmlAccessType.PROPERTY)
-public class ProviderAndEventSearchResponse implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+public class DateUtils {
 	
-	private ProviderAndEventSearchResults response = new ProviderAndEventSearchResults();
-
-	public ProviderAndEventSearchResults getResponse() {
-		return response;
+	public static String DATE_FORMAT_1 = "dd-MMM-yyyy";
+	
+	/**
+	 * Converts date from string to desired format.
+	 * 
+	 * @param fromDate			date to be converted
+	 * @return					converted date
+	 * @throws ParseException	when error occurs
+	 */
+	public static Date formatDate(String fromDate) throws ParseException {
+		SimpleDateFormat f = new SimpleDateFormat(DATE_FORMAT_1);
+		Date toDate = f.parse(fromDate);
+		return toDate;
+	}
+	
+	/**
+	 * Converts date from date to string in desired format.
+	 * 
+	 * @param date				date to be converted
+	 * @return					converted date
+	 * @throws ParseException	when error occurs
+	 */
+	public static String convertDateToString(Date date) throws ParseException {
+		SimpleDateFormat f = new SimpleDateFormat(DATE_FORMAT_1);
+		return f.format(date);
 	}
 
-	public void setResponse(ProviderAndEventSearchResults response) {
-		this.response = response;
-	}
-
-
-	
 }

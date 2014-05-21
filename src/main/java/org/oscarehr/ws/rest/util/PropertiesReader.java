@@ -1,3 +1,4 @@
+
 /**
  * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved.
  * This software is published under the GPL GNU General Public License.
@@ -21,33 +22,38 @@
  * Hamilton
  * Ontario, Canada
  */
-package org.oscarehr.ws.rest.to.model;
 
-import java.io.Serializable;
+package org.oscarehr.ws.rest.util;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
-@XmlRootElement
-@JsonIgnoreProperties(ignoreUnknown = true)
-@XmlAccessorType(XmlAccessType.PROPERTY)
-public class ProviderAndEventSearchResponse implements Serializable {
-
-	private static final long serialVersionUID = 1L;
-	
-	private ProviderAndEventSearchResults response = new ProviderAndEventSearchResults();
-
-	public ProviderAndEventSearchResults getResponse() {
-		return response;
-	}
-
-	public void setResponse(ProviderAndEventSearchResults response) {
-		this.response = response;
-	}
-
-
-	
+public class PropertiesReader {
+ 
+    private static final Properties properties;
+ 
+    static {
+        InputStream inputStream = PropertiesReader.class.getResourceAsStream("/message.properties");
+        properties = new Properties();
+        try {
+            properties.load(inputStream);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read properties file: message.properties", e);
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                	throw new RuntimeException("Unable to close: message.properties", e);
+                }
+            }
+        }
+    }
+ 
+    private PropertiesReader() {}
+ 
+    public static String getMessage(String key) {
+        return properties.getProperty(key);
+    }
 }

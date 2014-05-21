@@ -22,8 +22,8 @@ oscarApp.controller('ScheduleCtrl', function ($scope,$http,$resource) {
 	$("#right_pane").addClass("col-md-12");
 	
 	$scope.init = function(value) {
-		$scope.providerNo = value;
-		var demographicWS = $resource('../ws/rs/schedule/:providerNo/list',{}, {});
+		$scope.providerNo = document.getElementById("inputField").value; // Modified by Schedular Team
+		var demographicWS = $resource('../ws/rs/schedule/:providerNo/list1',{}, {});
 		var demographic = demographicWS.get({providerNo: $scope.providerNo}, function(response) {
 			$scope.demographics = response.providerData;
 		});

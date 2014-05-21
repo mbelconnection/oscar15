@@ -39,6 +39,8 @@ import org.apache.log4j.Logger;
 import org.oscarehr.common.NativeSql;
 import org.oscarehr.common.model.Appointment;
 import org.oscarehr.common.model.AppointmentArchive;
+import org.oscarehr.common.model.AppointmentStatus;
+import org.oscarehr.common.model.AppointmentType;
 import org.oscarehr.common.model.Facility;
 import org.oscarehr.util.MiscUtils;
 import org.springframework.beans.BeanUtils;
@@ -47,7 +49,7 @@ import org.springframework.stereotype.Repository;
 import oscar.util.DateUtils;
 
 @Repository
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "deprecation" })
 public class OscarAppointmentDao extends AbstractDao<Appointment> {
 	private static Logger log = MiscUtils.getLogger();
 	public OscarAppointmentDao() {
@@ -118,7 +120,8 @@ public class OscarAppointmentDao extends AbstractDao<Appointment> {
 	
 	public List<AppointmentArchive> getDeletedAppointmentHistory(Integer demographicNo, Integer offset, Integer limit) {
 		
-		List<Object> result = new ArrayList<Object>();
+		@SuppressWarnings("unused")
+        List<Object> result = new ArrayList<Object>();
 			
 		String sql2 = "select a from AppointmentArchive a where a.demographicNo=? order by a.appointmentDate DESC, a.startTime DESC, id desc";
 		Query query2 = entityManager.createQuery(sql2);
@@ -708,4 +711,121 @@ public class OscarAppointmentDao extends AbstractDao<Appointment> {
 		}
 		return appointment;
 	}
+	
+	/**
+	 * Returns list of appointment details for a provider
+	 * 
+	 * @param providerNo		the provider number
+	 * @return					appointment list
+	 */
+	public List<Appointment> getAppointmentsByAppointmentDate(String appointmentDate) {
+
+			String sql = "From Appointment a where date_format(a.appointmentDate, '%d-%b-%Y') = :date ";
+			Query query = entityManager.createQuery(sql);
+			query.setParameter("date", appointmentDate);
+			return query.getResultList();
+	}
+	
+	/**
+	 * Returns list of appointment details for a provider
+	 * 
+	 * @param providerNo		the provider number
+	 * @return					appointment list
+	 */
+	public List<Appointment> getAppointmentsByAppointmentDate(String appointmentDate, String providerNo) {
+
+			String sql = "From Appointment a where date_format(a.appointmentDate, '%d-%b-%Y') = :date and a.providerNo=:providerNo";
+			Query query = entityManager.createQuery(sql);
+			query.setParameter("date", appointmentDate);
+			query.setParameter("providerNo", providerNo);
+			return query.getResultList();
+	}
+	
+	/**
+	 * Returns list of appointment types
+	 * 
+	 * @return					appointment type list
+	 */
+	public List<AppointmentType> getAppointmentType() {
+		String sql = "From AppointmentType a";
+		Query query = entityManager.createQuery(sql);
+		return query.getResultList();
+	}
+	
+	/**
+	 * Returns list of appointment status
+	 * 
+	 * @return					appointment status list
+	 */
+	public List<AppointmentStatus> getAppointmentStatus() {
+		String sql = "From AppointmentStatus a";
+		Query query = entityManager.createQuery(sql);
+		return query.getResultList();
+	}
+	
+	/**
+	 * Deletes appointment
+	 * 
+	 * @param apptNo		appointment number
+	 */
+	public void deleteAppointment(int apptNo) {
+		Appointment appt = this.find(apptNo);
+		if(appt != null) {
+			log.debug("OscarAppointmentDao.deleteAppointment()"+appt);
+			entityManager.remove(appt);
+		}
+	}
+	
+	/**
+	 * Returns list of appointment details for a provider
+	 * 
+	 * @param providerNo		the provider number
+	 * @return					appointment list
+	 */
+	public List<Appointment> getAppointmentsForWeek(Date startDate, Date endDate, String providerNo) {
+		
+		String sql = "From Appointment a where a.appointmentDate between :startDate and :endDate and a.providerNo = :providerNo order by a.appointmentDate";
+		Query query = entityManager.createQuery(sql);
+		query.setParameter("startDate", startDate);
+		query.setParameter("endDate", endDate);
+		query.setParameter("providerNo", providerNo);
+		return query.getResultList();
+	}
+
+	public List<Appointment> getAppointmentsForWeekTotal(Date startDate, Date endDate) {
+		String sql = "From Appointment a where a.appointmentDate between :startDate and :endDate order by a.appointmentDate";
+		Query query = entityManager.createQuery(sql);
+		query.setParameter("startDate", startDate);
+		query.setParameter("endDate", endDate);
+		log.debug("OscarAppointmentDao.getAppointmentsForWeekTotal()"+query.getResultList());
+		return query.getResultList();
+    }
+		
+		public List<Appointment> getGroupDayEvents(String group, Date day) {
+			String sql = "From Appointment a where a.providerNo IN (SELECT p.ProviderNo FROM Provider p where p.Team = :group) and a.appointmentDate= :date";
+			Query query = entityManager.createQuery(sql);
+			query.setParameter("group", group);
+			query.setParameter("date", day);
+			//List<Appointment> data = query.getResultList();
+			return query.getResultList();
+		}
+		
+		public List<Appointment> getGroupWeekEvents(Date startDate, Date endDate,String group) {
+			String sql = "From Appointment a where a.providerNo IN (SELECT p.ProviderNo FROM Provider p where p.Team = :group) and a.appointmentDate between :startDate and :endDate order by a.appointmentDate";
+			Query query = entityManager.createQuery(sql);
+			query.setParameter("group", group);
+			query.setParameter("startDate", startDate);
+			query.setParameter("endDate", endDate);
+			List<Appointment> data = query.getResultList();
+			return data;
+		}
+		
+		public List<Appointment> getGroupMonthEvents(Date startDate, String group) {
+			String sql = "From Appointment a where a.providerNo IN (SELECT p.ProviderNo FROM Provider p where p.Team = :group) and month(a.appointmentDate) = month(:stdate) order by a.appointmentDate";
+			Query query = entityManager.createQuery(sql);
+			query.setParameter("group", group);
+			query.setParameter("stdate", startDate);
+			List<Appointment> data = query.getResultList();
+			return data;
+		}
 }

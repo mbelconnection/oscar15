@@ -25,9 +25,15 @@ package org.oscarehr.ws.rest.to.model;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 @XmlRootElement(name="appointmentTo")
+@XmlAccessorType(XmlAccessType.PROPERTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AppointmentTo implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
@@ -43,7 +49,7 @@ public class AppointmentTo implements Serializable {
 	private String apptStatus;
 	private String isCritical;
 	private String apptResources;
-	private String appRreason;
+	private String appReason;
 	private String apptReasonDtls;
 	private String apptNotes;
 	private String noOfPatient;
@@ -53,7 +59,17 @@ public class AppointmentTo implements Serializable {
 	private String reoccuranceDate;
 	private String goTo;
 	private String apptReasonText;
+	private String location;
 	
+	@XmlElement(name="add_appt_location", nillable=true)
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
 	@XmlElement(name="appt_reason_text", nillable=true)
 	public String getApptReasonText() {
 		return apptReasonText;
@@ -175,11 +191,11 @@ public class AppointmentTo implements Serializable {
 	}
 	
 	@XmlElement(name="appt_reason", nillable=true)
-	public String getAppRreason() {
-		return appRreason;
+	public String getAppReason() {
+		return appReason;
 	}
-	public void setAppRreason(String appRreason) {
-		this.appRreason = appRreason;
+	public void setAppReason(String appReason) {
+		this.appReason = appReason;
 	}
 	
 	@XmlElement(name="appt_reason_dtls", nillable=true)

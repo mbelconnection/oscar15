@@ -1,3 +1,4 @@
+
 /**
  * Copyright (c) 2001-2002. Department of Family Medicine, McMaster University. All Rights Reserved.
  * This software is published under the GPL GNU General Public License.
@@ -21,33 +22,27 @@
  * Hamilton
  * Ontario, Canada
  */
-package org.oscarehr.ws.rest.to.model;
+package org.oscarehr.ws.rest.exception;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
-@XmlRootElement
-@JsonIgnoreProperties(ignoreUnknown = true)
-@XmlAccessorType(XmlAccessType.PROPERTY)
-public class ProviderAndEventSearchResponse implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+@XmlRootElement(name="error")
+public class OscarExceptionBean implements Serializable {
 	
-	private ProviderAndEventSearchResults response = new ProviderAndEventSearchResults();
+    private static final long serialVersionUID = 1L;
+    
+	private String message;
 
-	public ProviderAndEventSearchResults getResponse() {
-		return response;
+	@XmlElement(name="message", nillable=true)
+	public String getMessage() {
+		return message;
 	}
 
-	public void setResponse(ProviderAndEventSearchResults response) {
-		this.response = response;
+	public void setMessage(String msg) {
+		this.message = msg;
 	}
 
-
-	
 }

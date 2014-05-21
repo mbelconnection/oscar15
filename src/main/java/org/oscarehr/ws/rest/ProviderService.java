@@ -41,15 +41,17 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.PhaseInterceptorChain;
 import org.apache.cxf.rs.security.oauth.data.OAuthContext;
 import org.apache.cxf.security.SecurityContext;
+import org.apache.log4j.Logger;
 import org.oscarehr.PMmodule.dao.ProviderDao;
 import org.oscarehr.common.model.Provider;
-import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.managers.DemographicManager;
 import org.oscarehr.managers.ProviderManager2;
-import org.oscarehr.ws.rest.to.model.DemographicTo;
-import org.oscarehr.ws.rest.to.model.DemographicsTo;
+import org.oscarehr.util.LoggedInInfo;
+import org.oscarehr.util.MiscUtils;
+import org.oscarehr.ws.rest.bo.ProviderBO;
+import org.oscarehr.ws.rest.exception.ProviderException;
+import org.oscarehr.ws.rest.to.model.OscarResponseTo;
 import org.oscarehr.ws.rest.to.model.ProviderTo;
-import org.oscarehr.ws.rest.to.model.ProvidersTo;
 import org.oscarehr.ws.transfer_objects.ProviderTransfer;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -58,6 +60,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Produces("application/xml")
 public class ProviderService {
 
+	private Logger log = MiscUtils.getLogger();
+	
 	@Autowired
 	ProviderDao providerDao;
 	
@@ -140,31 +144,35 @@ public class ProviderService {
     }
     
 
-    @GET
-	@Path("/{nameLike}/list")
-	@Produces("application/json")
-	public ProvidersTo getProvidersAndEvents(@PathParam("nameLike") String nameLike) {
-    	List<ProviderTo> providerLst = providerManager.getProvidersforSearch(nameLike);
-    	ProvidersTo providers = new ProvidersTo();
-    	providers.setProviders(providerLst);
-    	return providers;
-    }
-    
-    /**
-	 * To get Demograhic no and Name for search in Add Appointments. 
-	 * 
-	 * @param nameLike
-	 * 		first three characters of First Name entered in the search Patients text box
-	 * @return
-	 * 		Returns the List of Demographic objects containing DemographicNo and Full Name
-	 */	
-	@GET
-	@Path("/{nameLike}/listPatient")
-	@Produces("application/json")
-	public DemographicsTo getDemographicsAndEvents(@PathParam("nameLike") String nameLike) {
-    	List<DemographicTo> demographicLst = demographicManager.getDemographicsforSearch(nameLike);
-    	DemographicsTo demographics = new DemographicsTo();
-    	demographics.setDemographics(demographicLst);
-    	return demographics;
-    	}
+     @GET
+   	@Path("/{nameLike}/list")
+   	@Produces("application/json")
+   	public Response getProviders(@PathParam("nameLike") String nameLike) {
+       	log.debug("ProviderService.getProviders() starts");
+       	List<ProviderTo> providerLst = null;
+       	List<Provider> providers = null;
+       	OscarResponseTo response = null;
+       	try {
+       		String []multi = nameLike.split("- ");
+       		String[] names = multi[multi.length - 1].split(",");
+       		providers = providerManager.getActiveProviderFirstNameLikeSearch(names);
+       		if (null == providers || providers.isEmpty()) {
+       			providers = providerManager.getActiveProviderLastNameLikeSearch(names);
+       			/*Commented by Schedular Team
+       			 * if (null == providers || providers.isEmpty()) {
+   					throw new ProviderException(ErrorCodes.PRV_ERROR_001);
+   				}*/
+       			providerLst = ProviderBO.copy(providers, providerLst, "LN");
+       		} else {
+       			providerLst = ProviderBO.copy(providers, providerLst, "FN");
+       		}
+       		response = new OscarResponseTo();
+       		response.setProviders(providerLst);
+       	} catch(ProviderException e) {
+       		log.error("Error in ProviderService.getProviders()", e);
+   			return Response.status(Status.NOT_FOUND).entity(e.getBean()).build();
+   		}
+       	log.debug("ProviderService.getProviders() ends");
+       	return Response.status(Status.OK).entity(response).build();
+       }
 }

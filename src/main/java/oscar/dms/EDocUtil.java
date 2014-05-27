@@ -444,6 +444,7 @@ public final class EDocUtil extends SqlUtilBaseS {
 		ResultSet rs = getSQL(sql);
 		ArrayList<EDoc> resultDocs = new ArrayList<EDoc>();
 		try {
+		   if(rs!=null) {
 			while (rs.next()) {
 				EDoc currentdoc = new EDoc();
 				currentdoc.setModule(rsGetString(rs, "module"));
@@ -472,7 +473,8 @@ public final class EDocUtil extends SqlUtilBaseS {
 				currentdoc.setReviewDateTimeDate(rs.getTimestamp("reviewdatetime"));
 				resultDocs.add(currentdoc);
 			}
-			rs.close();
+		   rs.close();
+		   }
 		} catch (SQLException sqe) {
 			logger.error("Error", sqe);
 		}

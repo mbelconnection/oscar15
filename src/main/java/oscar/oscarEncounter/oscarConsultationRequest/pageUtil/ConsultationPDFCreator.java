@@ -270,31 +270,36 @@ public class ConsultationPDFCreator extends PdfPageEventHelper {
 		infoTable.addCell(setInfoCell(cell, getResource("msgService")));
 		infoTable.addCell(setDataCell(cell, reqFrm.getServiceName(reqFrm.service)));
 
+		boolean hasSpecialist = !((reqFrm.getSpecailistsName(reqFrm.specialist).equals("-1"))
+				|| (reqFrm.getSpecailistsName(reqFrm.specialist).equals(null))
+				|| (reqFrm.getSpecailistsName(reqFrm.specialist).equals("")));
+		
 		infoTable.addCell(setInfoCell(cell, getResource("msgConsultant")));
-		infoTable.addCell(setDataCell(cell, reqFrm.getSpecailistsName(reqFrm.specialist)));
-
-
-
-		infoTable.addCell(setInfoCell(cell, getResource("msgPhone")));
-		if ((reqFrm.getSpecailistsName(reqFrm.specialist).equals("-1"))||(reqFrm.getSpecailistsName(reqFrm.specialist).equals(null))||(reqFrm.getSpecailistsName(reqFrm.specialist).equals(""))) {
-			infoTable.addCell(setDataCell(cell, ""));
+		if (hasSpecialist) {
+			infoTable.addCell(setDataCell(cell, reqFrm.getSpecailistsName(reqFrm.specialist)));
 		} else {
-			infoTable.addCell(setDataCell(cell, reqFrm.specPhone));
+			infoTable.addCell(setDataCell(cell, ""));
 		}
 
+		infoTable.addCell(setInfoCell(cell, getResource("msgPhone")));
+		if (hasSpecialist) {
+			infoTable.addCell(setDataCell(cell, reqFrm.specPhone));
+		} else {
+			infoTable.addCell(setDataCell(cell, ""));
+		}
 
 		infoTable.addCell(setInfoCell(cell, getResource("msgFax")));
-		if ((reqFrm.getSpecailistsName(reqFrm.specialist).equals("-1"))||(reqFrm.getSpecailistsName(reqFrm.specialist).equals(null))||(reqFrm.getSpecailistsName(reqFrm.specialist).equals(""))) {
-			infoTable.addCell(setDataCell(cell, ""));
-		} else {
+		if (hasSpecialist) {
 			infoTable.addCell(setDataCell(cell, reqFrm.specFax));
+		} else {
+			infoTable.addCell(setDataCell(cell, ""));
 		}
 
 		infoTable.addCell(setInfoCell(cell, getResource("msgAddr")));
-		if ((reqFrm.getSpecailistsName(reqFrm.specialist).equals("-1"))||(reqFrm.getSpecailistsName(reqFrm.specialist).equals(null))||(reqFrm.getSpecailistsName(reqFrm.specialist).equals(""))) {
-			infoTable.addCell(setDataCell(cell, ""));
-		} else {
+		if (hasSpecialist) {
 			infoTable.addCell(setDataCell(cell, divy(reqFrm.specAddr)));
+		} else {
+			infoTable.addCell(setDataCell(cell, ""));
 		}
 
 		// The last cell in the table is extended to the maximum available height;
@@ -332,6 +337,9 @@ public class ConsultationPDFCreator extends PdfPageEventHelper {
 
 		infoTable.addCell(setInfoCell(cell, getResource("msgBirth")));
 		infoTable.addCell(setDataCell(cell, reqFrm.patientDOB + " (y/m/d)"));
+		
+		infoTable.addCell(setInfoCell(cell, getResource("msgSex")));
+		infoTable.addCell(setDataCell(cell, reqFrm.patientSex));
 
 		infoTable.addCell(setInfoCell(cell, getResource("msgCard")));
 		infoTable.addCell(setDataCell(cell, String.format("(%s) %s %s", reqFrm.patientHealthCardType,
@@ -342,7 +350,8 @@ public class ConsultationPDFCreator extends PdfPageEventHelper {
 			infoTable.addCell(setInfoCell(cell, getResource("msgappDate")));
 			infoTable.addCell(setDataCell(cell, reqFrm.pwb.equals("1") ? getResource("pwb") : reqFrm.appointmentDate));
 			infoTable.addCell(setInfoCell(cell, getResource("msgTime")));
-			infoTable.addCell(setDataCell(cell, String.format("%s:%s %s", reqFrm.appointmentHour,
+			infoTable.addCell(setDataCell(cell, String.format("%s%s%s %s", reqFrm.appointmentHour,
+					 !reqFrm.appointmentMinute.equals("") ? ":" : "",
 					 reqFrm.appointmentMinute,
 					 reqFrm.appointmentPm)));
 		}
@@ -406,18 +415,18 @@ public class ConsultationPDFCreator extends PdfPageEventHelper {
 
 		ProviderDao proDAO = (ProviderDao) SpringUtils.getBean("providerDao");
 		org.oscarehr.common.model.Provider pro = proDAO.getProvider(reqFrm.providerNo);
-		String billingNo = pro.getBillingNo();
+		String ohipNo = pro.getOhipNo();
 		
 		DemographicDao demoDAO = (DemographicDao) SpringUtils.getBean("demographicDao");
 		Demographic demo = demoDAO.getDemographic(reqFrm.demoNo);
 
-		String famDocBillingNo = "";
+		String famDocOhipNo = "";
 		if(demo.getProviderNo()!=null && !demo.getProviderNo().equals("")) {
 			pro = proDAO.getProvider(demo.getProviderNo());
-			famDocBillingNo = pro.getBillingNo();
+			famDocOhipNo = pro.getOhipNo();
 		}
-		infoTable.addCell(setFooterCell(cell, getResource("msgAssociated2"), reqFrm.getProviderName(reqFrm.providerNo) + ((getlen(billingNo) > 0) ? " (" + billingNo + ")" : "")));
-		infoTable.addCell(setFooterCell(cell, getResource("msgFamilyDoc2"), reqFrm.getFamilyDoctor() + ((getlen(famDocBillingNo) > 0) ? " (" + famDocBillingNo + ")" : "")));
+		infoTable.addCell(setFooterCell(cell, getResource("msgAssociated2"), reqFrm.getProviderName(reqFrm.providerNo) + ((getlen(ohipNo) > 0) ? " (" + ohipNo + ")" : "")));
+		infoTable.addCell(setFooterCell(cell, getResource("msgFamilyDoc2"), reqFrm.getFamilyDoctor() + ((getlen(famDocOhipNo) > 0) ? " (" + famDocOhipNo + ")" : "")));
 		if (getlen(reqFrm.signatureImg) > 0) {
 			addSignature(infoTable);
 		}

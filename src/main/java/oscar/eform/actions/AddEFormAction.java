@@ -202,6 +202,10 @@ public class AddEFormAction extends Action {
 			}			
 		}
 		if (!sameform) { //save eform data
+			String newFormName = curForm.getSaveAs();
+			newFormName = EFormUtil.putTemplateValues(paramNames, paramValues, newFormName);
+			if (!newFormName.trim().equals("")) curForm.setFormName(newFormName);
+			
 			EFormDataDao eFormDataDao=(EFormDataDao)SpringUtils.getBean("EFormDataDao");
 			EFormData eFormData=toEFormData(curForm);
 			eFormDataDao.persist(eFormData);

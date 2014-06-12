@@ -1073,7 +1073,7 @@ public class EFormUtil {
 		return m_return;
 	}
 
-	private static String putTemplateValues(ArrayList<String> paramNames, ArrayList<String> paramValues, String template) {
+	public static String putTemplateValues(ArrayList<String> paramNames, ArrayList<String> paramValues, String template) {
 		if (StringUtils.isBlank(template)) return template;
 
 		String tag = "$t{";

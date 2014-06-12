@@ -829,8 +829,8 @@
     	<ap-name>urine_tox_test_json</ap-name>
         <ap-sql>select type, dataField, comments, dateObserved, dateEntered from measurements
         		where demographicNo=${demographic}
-        		and (type="OPID" or type="MAMP" or type="BZD" or type="CANB" or type="Uetc")
-        		order by dateEntered;
+        		and (type="OPID" or type="MAMP" or type="BZD" or type="CANB" or type="Uetc" or type="Ucmt")
+        		order by dateObserved, dateEntered;
         </ap-sql>
         <ap-output>${type}, ${dataField}, ${comments}, ${dateObserved}, ${dateEntered}</ap-output>
         <ap-json-output>true</ap-json-output>
@@ -840,7 +840,7 @@
         <ap-sql>select type, dataField, comments, dateObserved, dateEntered from measurements
         		where demographicNo=${demographic}
         		and (type="RHU" or type="ORDU" or type="MDD" or type="GWS")
-        		order by dateEntered;
+        		order by dateObserved, dateEntered;
         </ap-sql>
         <ap-output>${type}, ${dataField}, ${comments}, ${dateObserved}, ${dateEntered}</ap-output>
         <ap-json-output>true</ap-json-output>

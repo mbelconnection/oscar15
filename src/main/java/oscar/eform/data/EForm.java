@@ -428,6 +428,32 @@ public class EForm extends EFormBase {
 		return text;
 	}
 
+	public String getSaveAs() {
+		// Get content between "<!-- <save_as>" & "</save_as> -->"
+		if (StringUtils.isBlank(formHtml)) return "";
+
+		String sTemplateBegin = "<save_as>";
+		String sTemplateEnd = "</save_as>";
+		String sCommentBegin = "<!--", sCommentEnd = "-->";
+		String text = "";
+
+		int templateBegin = -1, templateEnd = -1;
+		boolean searching = true;
+		while (searching) {
+			templateBegin = EFormUtil.findIgnoreCase(sTemplateBegin, formHtml, templateBegin + 1);
+			templateEnd = EFormUtil.findIgnoreCase(sTemplateEnd, formHtml, templateBegin);
+			int commentBegin = formHtml.lastIndexOf(sCommentBegin, templateBegin);
+			int commentEnd = formHtml.indexOf(sCommentEnd, commentBegin);
+			if (templateBegin == -1 || templateEnd == -1 || commentBegin == -1 || commentEnd == -1) {
+				searching = false;
+			} else if (commentEnd > templateEnd) {
+				text += formHtml.substring(templateBegin + sTemplateBegin.length(), templateEnd);
+			}
+
+		}
+		return text.trim();
+	}
+
 	// ----------------------------------private
         // -----------------------------------------
 	private DatabaseAP getAPExtra(String apName, String fieldHeader) {

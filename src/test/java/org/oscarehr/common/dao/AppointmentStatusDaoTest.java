@@ -139,7 +139,7 @@ public class AppointmentStatusDaoTest extends DaoTestFixtures {
 	@Test
 	public void testFindByStatus() throws Exception {
 		
-		String status1 = "alpha", status2 = "bravo", status3 = "charlie";
+		String status1 = "a", status2 = "b", status3 = "c";
 		
 		AppointmentStatus apptStatus1 = new AppointmentStatus();
 		EntityDataGenerator.generateTestDataForModelClass(apptStatus1);

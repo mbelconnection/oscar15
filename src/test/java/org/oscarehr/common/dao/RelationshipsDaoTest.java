@@ -168,7 +168,7 @@ public class RelationshipsDaoTest extends DaoTestFixtures {
 		int demographicNo2 = 202;
 		
 		String subDecisionMaker1 = "1";
-		String subDecisionMaker2 = "FALSE";
+		String subDecisionMaker2 = "4";
 		
 		Relationships relationships1 = new Relationships();
 		EntityDataGenerator.generateTestDataForModelClass(relationships1);

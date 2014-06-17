@@ -134,18 +134,21 @@ public class DemographicDaoTest extends DaoTestFixtures {
 		EntityDataGenerator.generateTestDataForModelClass(entity);
 		entity.setDemographicNo(null);
 		entity.setRosterStatus("AB");
+		entity.setMyOscarUserName("myoscarone");
 		dao.save(entity);
 
 		entity = new Demographic();
 		EntityDataGenerator.generateTestDataForModelClass(entity);
 		entity.setDemographicNo(null);
 		entity.setRosterStatus("AB");
+		entity.setMyOscarUserName("myoscartwo");
 		dao.save(entity);
 
 		entity = new Demographic();
 		EntityDataGenerator.generateTestDataForModelClass(entity);
 		entity.setDemographicNo(null);
 		entity.setRosterStatus("AC");
+		entity.setMyOscarUserName("myoscarthree");
 		dao.save(entity);
 
 		assertEquals(2, dao.getRosterStatuses().size());
@@ -283,6 +286,7 @@ public class DemographicDaoTest extends DaoTestFixtures {
 		entity.setBirthDay(new GregorianCalendar(1990, 1, 4));
 		entity.setPhone("5556667777");
 		entity.setPhone2("9998884444");
+		entity.setMyOscarUserName("btb");
 		dao.save(entity);
 
 		entity = new Demographic();
@@ -294,6 +298,7 @@ public class DemographicDaoTest extends DaoTestFixtures {
 		entity.setSex(Gender.M.name());
 		entity.setBirthDay(new GregorianCalendar(1980, 2, 5));
 		entity.setPhone("2224446666");
+		entity.setMyOscarUserName("barts");
 		dao.save(entity);
 
 		entity = new Demographic();
@@ -305,6 +310,7 @@ public class DemographicDaoTest extends DaoTestFixtures {
 		entity.setSex(Gender.F.name());
 		entity.setBirthDay(new GregorianCalendar(1970, 0, 9));
 		entity.setPhone2("6665553333");
+		entity.setMyOscarUserName("lisas");
 		dao.save(entity);
 
 		List<Demographic> results=dao.findByAttributes("777", null, null, null, null, null, null, null, null, null, 0, 99);

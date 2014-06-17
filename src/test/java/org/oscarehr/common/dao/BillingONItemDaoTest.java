@@ -105,7 +105,7 @@ public class BillingONItemDaoTest extends DaoTestFixtures {
 	public void testGetActiveBillingItemByCh1Id() throws Exception {
 		
 		int ch1Id1 = 101, ch1Id2 = 202;
-		String status1 = "D", status2 = "Active";
+		String status1 = "D", status2 = "A";
 		
 		BillingONItem bONI1 = new BillingONItem();
 		EntityDataGenerator.generateTestDataForModelClass(bONI1);
@@ -291,7 +291,7 @@ public class BillingONItemDaoTest extends DaoTestFixtures {
 	public void testFindByCh1IdAndStatusNotEqual() throws Exception {
 		
 		int ch1Id1 = 101, ch1Id2 = 202;
-		String status1 = "D", status2 = "Active";
+		String status1 = "D", status2 = "A";
 		
 		BillingONItem bONI1 = new BillingONItem();
 		EntityDataGenerator.generateTestDataForModelClass(bONI1);

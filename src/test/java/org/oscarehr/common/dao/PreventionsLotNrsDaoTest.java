@@ -58,7 +58,7 @@ public class PreventionsLotNrsDaoTest extends DaoTestFixtures {
 		EntityDataGenerator.generateTestDataForModelClass(p1);
 		p1.setLotNr(lotNr1);
 		p1.setPreventionType(prevention);
-		p1.setProviderNo("unit_tester");
+		p1.setProviderNo("999999");
 		p1.setCreationDate(new java.util.Date());
 		p1.setDeleted(false);
 		dao.persist(p1);
@@ -67,7 +67,7 @@ public class PreventionsLotNrsDaoTest extends DaoTestFixtures {
 		EntityDataGenerator.generateTestDataForModelClass(p2);
 		p2.setLotNr(lotNr2);
 		p2.setPreventionType(prevention);
-		p2.setProviderNo("unit_tester");
+		p2.setProviderNo("999999");
 		p2.setCreationDate(new java.util.Date());
 		p2.setDeleted(false);
 		dao.persist(p2);
@@ -109,7 +109,7 @@ public class PreventionsLotNrsDaoTest extends DaoTestFixtures {
 		EntityDataGenerator.generateTestDataForModelClass(p1);
 		p1.setLotNr(lotNr1);
 		p1.setPreventionType(prevention);
-		p1.setProviderNo("unit_tester");
+		p1.setProviderNo("999999");
 		p1.setCreationDate(new java.util.Date());
 		p1.setDeleted(false);
 		dao.persist(p1);
@@ -118,7 +118,7 @@ public class PreventionsLotNrsDaoTest extends DaoTestFixtures {
 		EntityDataGenerator.generateTestDataForModelClass(p2);
 		p2.setLotNr(lotNr2);
 		p2.setPreventionType(prevention);
-		p2.setProviderNo("unit_tester");
+		p2.setProviderNo("999999");
 		p2.setCreationDate(new java.util.Date());
 		p2.setDeleted(false);
 		dao.persist(p2);
@@ -127,7 +127,7 @@ public class PreventionsLotNrsDaoTest extends DaoTestFixtures {
 		EntityDataGenerator.generateTestDataForModelClass(p3);
 		p3.setLotNr(lotNr3);
 		p3.setPreventionType(prevention);
-		p3.setProviderNo("unit_tester");
+		p3.setProviderNo("999999");
 		p3.setCreationDate(new java.util.Date());
 		p3.setDeleted(true);
 		dao.persist(p3);
@@ -154,7 +154,7 @@ public class PreventionsLotNrsDaoTest extends DaoTestFixtures {
 		EntityDataGenerator.generateTestDataForModelClass(p1);
 		p1.setLotNr(lotNr1);
 		p1.setPreventionType(prevention);
-		p1.setProviderNo("unit_tester");
+		p1.setProviderNo("999999");
 		p1.setCreationDate(new java.util.Date());
 		p1.setDeleted(false);
 		dao.persist(p1);
@@ -163,7 +163,7 @@ public class PreventionsLotNrsDaoTest extends DaoTestFixtures {
 		EntityDataGenerator.generateTestDataForModelClass(p2);
 		p2.setLotNr(lotNr2);
 		p2.setPreventionType(prevention);
-		p2.setProviderNo("unit_tester");
+		p2.setProviderNo("999999");
 		p2.setCreationDate(new java.util.Date());
 		p2.setDeleted(false);
 		dao.persist(p2);
@@ -172,7 +172,7 @@ public class PreventionsLotNrsDaoTest extends DaoTestFixtures {
 		EntityDataGenerator.generateTestDataForModelClass(p3);
 		p3.setLotNr(lotNr3);
 		p3.setPreventionType(prevention);
-		p3.setProviderNo("unit_tester");
+		p3.setProviderNo("999999");
 		p3.setCreationDate(new java.util.Date());
 		p3.setDeleted(true);
 		dao.persist(p3);
@@ -209,7 +209,7 @@ public class PreventionsLotNrsDaoTest extends DaoTestFixtures {
 		EntityDataGenerator.generateTestDataForModelClass(p1);
 		p1.setLotNr(lotNr1);
 		p1.setPreventionType(prevention);
-		p1.setProviderNo("unit_tester");
+		p1.setProviderNo("999999");
 		p1.setCreationDate(new java.util.Date());
 		p1.setDeleted(false);
 		dao.persist(p1);
@@ -218,7 +218,7 @@ public class PreventionsLotNrsDaoTest extends DaoTestFixtures {
 		EntityDataGenerator.generateTestDataForModelClass(p2);
 		p2.setLotNr(lotNr2);
 		p2.setPreventionType(prevention);
-		p2.setProviderNo("unit_tester");
+		p2.setProviderNo("999999");
 		p2.setCreationDate(new java.util.Date());
 		p2.setDeleted(false);
 		dao.persist(p2);
@@ -227,7 +227,7 @@ public class PreventionsLotNrsDaoTest extends DaoTestFixtures {
 		EntityDataGenerator.generateTestDataForModelClass(p3);
 		p3.setLotNr(lotNr3);
 		p3.setPreventionType(prevention);
-		p3.setProviderNo("unit_tester");
+		p3.setProviderNo("999999");
 		p3.setCreationDate(new java.util.Date());
 		p3.setDeleted(true);
 		dao.persist(p3);

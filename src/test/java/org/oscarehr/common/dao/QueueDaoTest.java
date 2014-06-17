@@ -73,11 +73,11 @@ public class QueueDaoTest extends DaoTestFixtures {
 	public void testGetQueues() throws Exception {
 		
 		Queue queue1 = new Queue();
-		EntityDataGenerator.generateTestDataForModelClass(queue1);
+		queue1.setName("four");
 		dao.persist(queue1);
 		
 		Queue queue2 = new Queue();
-		EntityDataGenerator.generateTestDataForModelClass(queue2);
+		queue2.setName("five");
 		dao.persist(queue2);
 		
 		//Hashtable htQueue1=new Hashtable();
@@ -98,15 +98,15 @@ public class QueueDaoTest extends DaoTestFixtures {
 	public void testGetLastId() throws Exception {
 		
 		Queue queue1 = new Queue();
-		EntityDataGenerator.generateTestDataForModelClass(queue1);
+		queue1.setName("one");
 		dao.persist(queue1);
 		
 		Queue queue2 = new Queue();
-		EntityDataGenerator.generateTestDataForModelClass(queue2);
+		queue2.setName("two");
 		dao.persist(queue2);
 		
 		Queue queue3 = new Queue();
-		EntityDataGenerator.generateTestDataForModelClass(queue3);
+		queue3.setName("three");
 		dao.persist(queue3);
 		
 		int latestId = 0;

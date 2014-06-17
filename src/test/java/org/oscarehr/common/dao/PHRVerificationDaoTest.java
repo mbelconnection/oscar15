@@ -125,7 +125,6 @@ public class PHRVerificationDaoTest extends DaoTestFixtures {
 		int demographicNo2 = 200;
 		
 		String authenticationLevel1 = PHRVerification.VERIFICATION_METHOD_FAX;
-		String authenticationLevel2 = PHRVerification.VERIFICATION_METHOD_VIDEOPHONE;
 		
 		boolean isArchived = true;
 		boolean isNotArchived = false;
@@ -145,7 +144,8 @@ public class PHRVerificationDaoTest extends DaoTestFixtures {
 		phrVerification2.setArchived(isArchived);
 		Date createdDate2 = new Date(dfm.parse("20100701").getTime());
 		phrVerification2.setCreatedDate(createdDate2);
-		phrVerification2.setVerificationBy(authenticationLevel2);
+		phrVerification2.setVerificationBy("5555");
+		phrVerification2.setVerificationLevel(PHRVerification.VERIFICATION_METHOD_VIDEOPHONE);
 		dao.persist(phrVerification2);
 		
 		String expectedResult = "+1";

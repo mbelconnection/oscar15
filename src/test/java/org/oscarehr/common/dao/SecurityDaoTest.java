@@ -111,21 +111,25 @@ public class SecurityDaoTest extends DaoTestFixtures {
 		Security security1 = new Security();
 		EntityDataGenerator.generateTestDataForModelClass(security1);
 		security1.setProviderNo(providerNo1);
+		security1.setUserName(providerNo1);
 		dao.persist(security1);
 		
 		Security security2 = new Security();
 		EntityDataGenerator.generateTestDataForModelClass(security2);
 		security2.setProviderNo(providerNo2);
+		security2.setUserName(providerNo2);
 		dao.persist(security2);
 		
 		Security security3 = new Security();
 		EntityDataGenerator.generateTestDataForModelClass(security3);
 		security3.setProviderNo(providerNo3);
+		security3.setUserName(providerNo3);
 		dao.persist(security3);
 		
 		Security security4 = new Security();
 		EntityDataGenerator.generateTestDataForModelClass(security4);
 		security4.setProviderNo(providerNo1);
+		//security1.setUserName(providerNo);
 		dao.persist(security4);
 		
 		List<Security> expectedResult = new ArrayList<Security>(Arrays.asList(security1, security4));
@@ -159,21 +163,25 @@ public class SecurityDaoTest extends DaoTestFixtures {
 		Security security1 = new Security();
 		EntityDataGenerator.generateTestDataForModelClass(security1);
 		security1.setProviderNo(providerNo1);
+		security1.setUserName(providerNo1);
 		dao.persist(security1);
 		
 		Security security2 = new Security();
 		EntityDataGenerator.generateTestDataForModelClass(security2);
 		security2.setProviderNo(providerNo2);
+		security2.setUserName(providerNo2);
 		dao.persist(security2);
 		
 		Security security3 = new Security();
 		EntityDataGenerator.generateTestDataForModelClass(security3);
 		security3.setProviderNo(providerNo3);
+		security3.setUserName(providerNo3);
 		dao.persist(security3);
 		
 		Security security4 = new Security();
 		EntityDataGenerator.generateTestDataForModelClass(security4);
 		security4.setProviderNo(providerNo4);
+		security4.setUserName(providerNo4);
 		dao.persist(security4);
 		
 		List<Security> expectedResult = new ArrayList<Security>(Arrays.asList(security1, security3, security4));
@@ -286,28 +294,32 @@ public class SecurityDaoTest extends DaoTestFixtures {
 	public void testGetByProviderNo() throws Exception {
 		
 		String providerNo1 = "101";
-		String providerNo2 = "202";
+		String providerNo2 = "222";
 		String providerNo3 = "303";
 		String providerNo4 = "404";
 		
 		Security security1 = new Security();
 		EntityDataGenerator.generateTestDataForModelClass(security1);
 		security1.setProviderNo(providerNo1);
+		security1.setUserName(providerNo1);
 		dao.persist(security1);
 		
 		Security security2 = new Security();
 		EntityDataGenerator.generateTestDataForModelClass(security2);
 		security2.setProviderNo(providerNo2);
+		security2.setUserName(providerNo2);
 		dao.persist(security2);
 		
 		Security security3 = new Security();
 		EntityDataGenerator.generateTestDataForModelClass(security3);
 		security3.setProviderNo(providerNo3);
+		security3.setUserName(providerNo3);
 		dao.persist(security3);
 		
 		Security security4 = new Security();
 		EntityDataGenerator.generateTestDataForModelClass(security4);
 		security4.setProviderNo(providerNo4);
+		security4.setUserName(providerNo4);
 		dao.persist(security4);
 		
 		Security expectedResult = security3;

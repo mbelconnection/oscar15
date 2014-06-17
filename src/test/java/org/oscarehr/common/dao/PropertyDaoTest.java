@@ -41,6 +41,8 @@ import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 
 public class PropertyDaoTest extends DaoTestFixtures {
+	
+	private static Logger logger = MiscUtils.getLogger();
 
 	protected PropertyDao dao = SpringUtils.getBean(PropertyDao.class);
 
@@ -57,6 +59,7 @@ public class PropertyDaoTest extends DaoTestFixtures {
 		
 		Property property1 = new Property();
 		EntityDataGenerator.generateTestDataForModelClass(property1);
+	    logger.error("--"+ property1.getName() +"--"+ property1.getProviderNo() +"--"+ property1.getValue());
 		property1.setName(name1);
 		dao.persist(property1);
 		

@@ -421,7 +421,7 @@ public class BillingServiceDaoTest extends DaoTestFixtures {
 		// Valid input.
 		BillingService billingService1 = createBillingServiceWithDesc("service001", "ON", "20090101", "Service 1 description.");
 		// Valid input.
-		BillingService billingService2 = createBillingServiceWithDesc("some service", "ON", "20090101", "service001");
+		BillingService billingService2 = createBillingServiceWithDesc("some", "ON", "20090101", "service001");
 		// Date out of range.
 		BillingService billingService3 = createBillingServiceWithDesc("service001", "ON", "20100101", "service001");
 		// Non-matching region.
@@ -481,9 +481,9 @@ public class BillingServiceDaoTest extends DaoTestFixtures {
 		// Valid input.
 		BillingService billingService1 = createBillingServiceWithRegion("service001", "ON", "20070101");
 		// Valid input.
-		BillingService billingService2 = createBillingServiceWithRegion("service0012345", "ON", "20080101");
+		BillingService billingService2 = createBillingServiceWithRegion("service003", "ON", "20080101");
 		// Valid input.
-		BillingService billingService3 = createBillingServiceWithRegion("service001 test", "ON", "20090101");
+		BillingService billingService3 = createBillingServiceWithRegion("service001", "ON", "20090101");
 		// Latest valid input.
 		BillingService billingService4 = createBillingServiceWithRegion("service001", "ON", "20100101");
 		// Non-matching region.
@@ -510,9 +510,9 @@ public class BillingServiceDaoTest extends DaoTestFixtures {
 		// Valid input.
 		BillingService billingService1 = createBillingServiceWithRegion("service001", "ON", "20070101");
 		// Valid input.
-		BillingService billingService2 = createBillingServiceWithRegion("service0012345", "ON", "20080101");
+		BillingService billingService2 = createBillingServiceWithRegion("service002", "ON", "20080101");
 		// Valid input.
-		BillingService billingService3 = createBillingServiceWithRegion("service001 test", "ON", "20090101");
+		BillingService billingService3 = createBillingServiceWithRegion("service001", "ON", "20090101");
 		// Date out of range.
 		BillingService billingService4 = createBillingServiceWithRegion("service001", "ON", "20100101");
 		// Non-matching region.
@@ -611,7 +611,7 @@ public class BillingServiceDaoTest extends DaoTestFixtures {
 		String value = "value1";
 		int codeID = 1;
 		String date = "20091231";
-		BillingService billingService1 = createBillingService("Some service", date);
+		BillingService billingService1 = createBillingService("9999", date);
 		dao.persist(billingService1);
 		boolean pass = dao.editBillingCodeDesc(description, value, codeID);
 		assertTrue(pass);
@@ -626,7 +626,7 @@ public class BillingServiceDaoTest extends DaoTestFixtures {
 	public void testEditBillingCode() throws Exception {
 		String value = "value1";
 		int codeID = 1;
-		BillingService billingService1 = createBillingService("Some service", "20090101");
+		BillingService billingService1 = createBillingService("9999", "20090101");
 		dao.persist(billingService1);
 		boolean pass = dao.editBillingCode(value, codeID);
 		assertTrue(pass);

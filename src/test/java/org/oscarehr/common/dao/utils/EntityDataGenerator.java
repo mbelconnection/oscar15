@@ -69,10 +69,10 @@ public class EntityDataGenerator {
 	        }
 
 	        if(f[i].getType() == String.class) {
-	        	f[i].set(model, f[i].getName() + ((int)(Math.random()*10000)));
+	        	f[i].set(model, "1");
 	        }
 	        else if(f[i].getType() == int.class || f[i].getType() == Integer.class) {
-	        	f[i].set(model,(int)(Math.random()*10000));
+	        	f[i].set(model,1);
 	        }
 	        else if(f[i].getType() == long.class || f[i].getType() == Long.class) {
 	        	f[i].set(model,(long)(Math.random()*10000));

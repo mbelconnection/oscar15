@@ -59,7 +59,7 @@ public class BillingmasterDAOTest extends DaoTestFixtures {
 		master.setBillingNo(99999);
 		dao.save(master);
 
-		int count = dao.updateBillingUnitForBillingNumber("NIHRENASEIBE", 99999);
+		int count = dao.updateBillingUnitForBillingNumber("2", 99999);
 		assertTrue(count == 1);
 	}
 	

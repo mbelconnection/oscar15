@@ -28,5 +28,34 @@ oscarApp.controller('DetailsCtrl', function ($scope,$http,$location,$stateParams
 	
 	$scope.page = {};
 	$scope.page.demo = demo;
+
+	//show dob
+	var dob = demo.dateOfBirth;
+	dob = dob.substring(0, dob.indexOf("T"));
+	var dobpart = dob.split("-");
+	$scope.page.birthdayYear = dobpart[0];
+	$scope.page.birthdayMonth = dobpart[1];
+	$scope.page.birthdayDay = dobpart[2];
 	
+	//calculate age
+	var birthDate = new Date(dobpart[0], dobpart[1]-1, dobpart[2]);
+	var todayDate = new Date();
+	var diffInMonth = todayDate.getMonth() - birthDate.getMonth();
+	var diffInDay = todayDate.getDate() - birthDate.getDate();
+	
+	var age = todayDate.getFullYear() - birthDate.getFullYear();
+	if (diffInMonth<0 || (diffInMonth==0 && diffInDay<0)) {
+		age -= 1;
+	}
+	$scope.page.age = age;
+	
+	//upload photo
+	$scope.launchPhoto = function(){
+		var url = "https://localhost:8081/oscar/casemgmt/uploadimage.jsp?demographicNo="+demo.demographicNo;
+		window.open(url, "uploadWin", "width=500, height=300");
+	}
+	
+	$scope.save = function(){
+		demographicService.updateDemographic($scope.page.demo);
+	}
 });

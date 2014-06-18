@@ -140,6 +140,8 @@ public class DemographicService extends AbstractServiceImpl {
 	 * 		Returns the updated demographic data
 	 */
 	@PUT
+	@Produces("application/json")
+	@Consumes("application/json")
 	public DemographicTo1 updateDemographicData(DemographicTo1 data) {
 		Demographic demographic = demoConverter.getAsDomainObject(data);
 	    demographicManager.updateDemographic(demographic);

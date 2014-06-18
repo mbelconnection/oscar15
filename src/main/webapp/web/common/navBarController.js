@@ -23,7 +23,7 @@
     Ontario, Canada
 
 */
-oscarApp.controller('NavBarCtrl', function ($scope,$http,$location,$modal) {
+oscarApp.controller('NavBarCtrl', function ($scope,$http,$location,$modal,$state) {
 	
 	$http({
 	    url: '../ws/rs/persona/navbar',
@@ -87,7 +87,6 @@ oscarApp.controller('NavBarCtrl', function ($scope,$http,$location,$modal) {
 		    $scope.error = error;
 		});	
 	}
-	
 	
 	
 	//to help ng-clicks on buttons
@@ -175,7 +174,7 @@ oscarApp.controller('NavBarCtrl', function ($scope,$http,$location,$modal) {
 		//$('#myModal').modal({remote:'modaldemo.html',show:true});
 		
 		var modalInstance = $modal.open({
-		      templateUrl: 'modaldemo.html',
+		      templateUrl: 'modaldemo.jsp',
 		      controller: NewPatientCtrl,
 		      size: size
 		    });
@@ -185,8 +184,8 @@ oscarApp.controller('NavBarCtrl', function ($scope,$http,$location,$modal) {
 		      console.log(selectedItem.demographicNo);
 		      console.log('/#/patient/'+selectedItem.demographicNo);
 		      console.log($location.path());
-		      $location.path('/patient/'+selectedItem.demographicNo);
-		      console.log($location.path());
+		     
+		      $state.go('record.rx',{demographicNo:selectedItem.demographicNo});
 		    }, function () {
 		      console.log('Modal dismissed at: ' + new Date());
 		    });

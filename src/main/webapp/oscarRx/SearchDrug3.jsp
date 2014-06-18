@@ -1592,6 +1592,7 @@ function changeLt(drugId){
                                             <oscar:oscarPropertiesCheck property="MYDRUGREF_DS" value="yes">
                                               callReplacementWebService("GetmyDrugrefInfo.do?method=view&rand="+  Math.floor(Math.random()*10001),'interactionsRxMyD');
                                              </oscar:oscarPropertiesCheck>
+                                             pymChild.sendHeightToParent(); 
                                         }});
                             }});
     }
@@ -2217,6 +2218,10 @@ $("searchString").focus();
 <script language="javascript" src="../commons/scripts/sort_table/css.js"></script>
 <script language="javascript" src="../commons/scripts/sort_table/common.js"></script>
 <script language="javascript" src="../commons/scripts/sort_table/standardista-table-sorting.js"></script>
+<script src="<%=request.getContextPath() %>/library/pym.js"></script>
+<script>
+    var pymChild = new pym.Child({ polling: 500 });
+</script>
 
 </body>
 </html:html>

@@ -51,6 +51,10 @@ oscarApp.config(['$stateProvider', '$urlRouterProvider',function($stateProvider,
 	    	url: '^/record/:demographicNo/forms/:type/id/:id', 
             templateUrl: 'record/forms/forms.jsp',
             controller: 'FormCtrl'
+        }).state('record.rx', {
+	    	url: '^/record/:demographicNo/rx', 
+            templateUrl: 'record/rx/rx.jsp',
+            controller: 'RxCtrl'
         })
         
 	    

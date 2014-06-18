@@ -53,7 +53,7 @@ oscarApp.controller('RecordCtrl', function ($scope,$http,$location,$stateParams,
 	                 	 {id : 1,displayName : 'Summary'  ,path : 'record.summary'},
 	                 	 {id : 2,displayName : 'Forms'    ,path : 'record.forms'},
 	                 	 {id : 3,displayName : 'Labs/Docs',path : 'partials/eform.jsp'},
-	                 	 {id : 4,displayName : 'Rx'       ,path : 'partials/eform.jsp'}];
+	                 	 {id : 4,displayName : 'Rx'       ,path : 'record.rx'}];
 	
 	//var transitionP = $state.transitionTo($scope.recordtabs2[0].path,$stateParams,{location:'replace',notify:true});
 	//console.log("transition ",transitionP);	

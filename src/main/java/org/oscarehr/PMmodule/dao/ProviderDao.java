@@ -32,6 +32,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
+import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -74,27 +75,26 @@ public class ProviderDao extends HibernateDaoSupport {
 		return provider;
 	}
 
-	public String getProviderName(String providerNo) {
-		if (providerNo == null || providerNo.length() <= 0) {
-			throw new IllegalArgumentException();
-		}
+	public String getProviderName(String providerNo) {	
 
 		Provider provider = getProvider(providerNo);
 		String providerName = "";
 
-		if (provider != null && provider.getFirstName() != null) {
-			providerName = provider.getFirstName() + " ";
-		}
+		if (provider != null) {
+			if (provider.getFirstName() != null) {
+				providerName = provider.getFirstName() + " ";
+			}
+	
+			if (provider.getLastName() != null) {
+				providerName += provider.getLastName();
+			}
+	
+			if (log.isDebugEnabled()) {
+				log.debug("getProviderName: providerNo=" + providerNo + ",result=" + providerName);
+			}
 
-		if (provider != null && provider.getLastName() != null) {
-			providerName += provider.getLastName();
 		}
-
-		if (log.isDebugEnabled()) {
-			log.debug("getProviderName: providerNo=" + providerNo + ",result=" + providerName);
-		}
-
-		return providerName;
+			return providerName;
 	}
 
 	public List<Provider> getProviders() {
@@ -107,6 +107,13 @@ public class ProviderDao extends HibernateDaoSupport {
 		}
 		return rs;
 	}
+	
+	public List<Provider> getProviders(String[] providers) {
+		List<Provider> rs = getHibernateTemplate().find(
+				"FROM Provider p WHERE p.providerNumber IN (?)", (Object[]) providers);
+		return rs;
+	}
+
 
     public List<Provider> getProviderFromFirstLastName(String firstname,String lastname){
             firstname=firstname.trim();
@@ -123,6 +130,17 @@ public class ProviderDao extends HibernateDaoSupport {
     	firstname=firstname.trim();
     	lastname=lastname.trim();
     	String s="From Provider p where p.FirstName like ? and p.LastName like ?";
+    	ArrayList<Object> paramList=new ArrayList<Object>();
+    	paramList.add(firstname);
+    	paramList.add(lastname);
+    	Object params[]=paramList.toArray(new Object[paramList.size()]);
+    	return getHibernateTemplate().find(s,params);
+	}
+
+    public List<Provider> getActiveProviderLikeFirstLastName(String firstname,String lastname){
+    	firstname=firstname.trim();
+    	lastname=lastname.trim();
+    	String s="From Provider p where p.FirstName like ? and p.LastName like ? and p.Status='1'";
     	ArrayList<Object> paramList=new ArrayList<Object>();
     	paramList.add(firstname);
     	paramList.add(lastname);
@@ -187,7 +205,44 @@ public class ProviderDao extends HibernateDaoSupport {
 		}
 		return rs;
 	}
+	/*
+	* Retruns true if provide having following property
+	* type = doctor
+	* Provincial Billing# not null
+	* status = 1
+	*/
+	public boolean isPhysiciansBillable(String providerNo) {
+		@SuppressWarnings("unchecked")
+		Object params[]=new Object[] {providerNo};
+		List<Provider> rs = getHibernateTemplate().find(
+				"FROM  Provider p " + 
+					"WHERE p.Status='1' " + 
+					"AND p.ProviderType='doctor' " + 
+					"AND p.OhipNo != '' "+
+					"AND p.OhipNo IS NOT NULL " + 
+					"AND p.ProviderNo = ? ", params);
+		return rs != null && rs.size() == 1;
+	}
+	public List<Provider> getActiveProvidersByRole(String role) {
+		
+		List<Provider> rs = getHibernateTemplate().find(
+			"select p FROM Provider p, SecUserRole s where p.ProviderNo = s.ProviderNo and p.Status='1' and s.RoleName = ? order by p.LastName, p.FirstName", role);
 
+		if (log.isDebugEnabled()) {
+			log.debug("getActiveProvidersByRole: # of results=" + rs.size());
+		}
+		return rs;
+	}
+
+	public List<Provider> getDoctorsWithOhip(){
+		return getHibernateTemplate().find(
+				"FROM Provider p " + 
+					"WHERE p.ProviderType = 'doctor' " +
+					"AND p.Status = '1' " +
+					"AND p.OhipNo != ''" + 
+					"AND p.OhipNo IS NOT NULL " +
+				   	"ORDER BY p.LastName, p.FirstName");
+	}
 	@SuppressWarnings("unchecked")
     public List<Provider> getBillableProviders() {
 		List<Provider> rs = getHibernateTemplate().find("FROM Provider p where p.OhipNo != '' and p.Status = '1'");
@@ -243,8 +298,9 @@ public class ProviderDao extends HibernateDaoSupport {
 		}
 		c.addOrder(Order.asc("ProviderNo"));
 
-		@SuppressWarnings("unchecked")
-		List<Provider> results = c.list();
+		List<Provider> results = new ArrayList<Provider>();
+		
+			results = c.list();
 
 		if (log.isDebugEnabled()) {
 			log.debug("search: # of results=" + results.size());
@@ -252,6 +308,13 @@ public class ProviderDao extends HibernateDaoSupport {
 		return results;
 	}
 
+	public List<Provider> getProvidersByTypeWithNonEmptyOhipNo(String type) {
+		List<Provider> results = this.getHibernateTemplate().find(
+				"from Provider p where p.ProviderType = ? and p.OhipNo <> ''", type);
+		return results;
+	}
+
+	
 	public List<Provider> getProvidersByType(String type) {
 		@SuppressWarnings("unchecked")
 		List<Provider> results = this.getHibernateTemplate().find(
@@ -262,6 +325,13 @@ public class ProviderDao extends HibernateDaoSupport {
 					+ results.size());
 		}
 
+		return results;
+	}
+	
+	public List<Provider> getProvidersByTypePattern(String typePattern) {
+		
+		List<Provider> results = this.getHibernateTemplate().find(
+				"from Provider p where p.ProviderType like ?", typePattern);
 		return results;
 	}
 
@@ -309,22 +379,24 @@ public class ProviderDao extends HibernateDaoSupport {
 		}
 	}
 
-	public static void removeProviderFromFacility(String provider_no,
-			int facilityId) {
-		SqlUtils.update("delete from provider_facility where provider_no='"
-				+ provider_no + "' and facility_id=" + facilityId);
-	}
-
+	
 	public static List<Integer> getFacilityIds(String provider_no) {
 		return (SqlUtils
 				.selectIntList("select facility_id from provider_facility,Facility where Facility.id=provider_facility.facility_id and Facility.disabled=0 and provider_no='"
 						+ provider_no + '\''));
 	}
 
-	public static List<String> getProviderIds(int facilityId) {
-		return (SqlUtils
-				.selectStringList("select provider_no from provider_facility where facility_id="
-						+ facilityId));
+	
+	public List<String> getProviderIds(int facilityId) {
+		Session session = getSession();
+		try {
+			SQLQuery query = session.createSQLQuery("select provider_no from provider_facility where facility_id="+facilityId);
+			List<String> results = query.list();
+			return results;
+		}finally {
+			this.releaseSession(session);
+		}
+	
 	}
 
     public void updateProvider( Provider provider) {
@@ -357,11 +429,95 @@ public class ProviderDao extends HibernateDaoSupport {
 
 		return providerList;
 	}
-	
-	public List<String> getRecordsAddedAndUpdatedSinceTime(Date date) {
-		@SuppressWarnings("unchecked")
-		List<String> providers = getHibernateTemplate().find("select distinct p.ProviderNo From Provider p where p.lastUpdateDate > ? ",date);
+       
+        public List<Provider> getBillableProvidersOnTeam(Provider p) {                        
+            
+            List<Provider> providers = this.getHibernateTemplate().find("from Provider p where status='1' and ohip_no!='' and p.team=? order by last_name, first_name", p.getTeam());            
+            
+            return providers;
+        }
+        
+        public List<Provider> getBillableProvidersByOHIPNo(String ohipNo) {                        
+            if (ohipNo == null || ohipNo.length() <= 0) {
+		throw new IllegalArgumentException();
+            }
+
+            
+            List<Provider> providers = this.getHibernateTemplate().find("from Provider p where ohip_no like ? order by last_name, first_name", ohipNo);            
+            
+            if(providers.size()>1) {
+                logger.warn("Found more than 1 provider with ohipNo="+ohipNo);
+            }
+            if(providers.isEmpty())
+                return null;
+            else		
+                return providers;
+        }
+        
+        /**
+         * Gets all providers with non-empty OHIP number ordered by last,then first name
+         * 
+         * @return
+         * 		Returns the all found providers 
+         */
+        
+        public List<Provider> getProvidersWithNonEmptyOhip() {
+        	return getHibernateTemplate().find("FROM Provider WHERE ohip_no != '' order by last_name, first_name");
+        }
+        
+        public List<Provider> getCurrentTeamProviders(String providerNo) {
+        	String hql = "SELECT p FROM Provider p "
+    				+ "WHERE p.Status='1' and p.OhipNo != '' " 
+        			+  "AND (p.ProviderNo='"+providerNo+"' or team=(SELECT p2.Team FROM Provider p2 where p2.ProviderNo='"+providerNo+"')) "
+        			+ "ORDER BY p.LastName, p.FirstName";
+    		
+        	return this.getHibernateTemplate().find(hql);
+        }
+
+		public List<String> getActiveTeams() {	        
+			List<String> providerList = getHibernateTemplate().find("select distinct p.Team From Provider p where p.Status = '1' and p.Team != '' order by p.Team");
+			return providerList;
+        }
+
 		
-		return providers;
-	}
+        public List<Provider> getProviderByPatientId(Integer patientId) {
+	        String hql = "SELECT p FROM Provider p, Demographic d "
+	    				+ "WHERE d.ProviderNo = p.ProviderNo " 
+	        			+ "AND d.DemographicNo = ?";
+        	return this.getHibernateTemplate().find(hql, patientId);
+        }
+		
+		public List<Provider> getDoctorsWithNonEmptyCredentials() {
+			String sql = "FROM Provider p WHERE p.ProviderType = 'doctor' " +
+					"AND p.Status='1' " +
+					"AND p.OhipNo IS NOT NULL " +
+					"AND p.OhipNo != '' " +
+					"ORDER BY p.LastName, p.FirstName";
+			return getHibernateTemplate().find(sql);
+		}
+		
+		public List<Provider> getProvidersWithNonEmptyCredentials() {
+			String sql = "FROM Provider p WHERE p.Status='1' " +
+					"AND p.OhipNo IS NOT NULL " +
+					"AND p.OhipNo != '' " +
+					"ORDER BY p.LastName, p.FirstName";
+			return getHibernateTemplate().find(sql);
+		}
+
+		public List<String> getProvidersInTeam(String teamName) {
+			List<String> providerList = getHibernateTemplate().find("select distinct p.ProviderNo from Provider p  where p.Team = ?",new Object[]{teamName});			
+			return providerList;
+		}
+
+		public List<Object[]> getDistinctProviders() {
+			List<Object[]> providerList = getHibernateTemplate().find("select distinct p.ProviderNo, p.ProviderType from Provider p ORDER BY p.LastName");
+			return providerList;
+        }
+		
+		public List<String> getRecordsAddedAndUpdatedSinceTime(Date date) {
+			@SuppressWarnings("unchecked")
+			List<String> providers = getHibernateTemplate().find("select distinct p.ProviderNo From Provider p where p.lastUpdateDate > ? ",date);
+			
+			return providers;
+		}
 }

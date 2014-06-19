@@ -52,9 +52,24 @@ public class RxProviderData {
 		return results;
 	}
 	
-    public Provider getProvider(String providerNo) {
-        return convertProvider(providerDao.getProvider(providerNo));
-    }
+	/*
+	* Retruns All Providers having following property
+	* type = doctor
+	* Provincial Billing# not null
+	* status = 1
+	*/
+	public List<Provider> getActiveBillablePhysicians() {
+		List<org.oscarehr.common.model.Provider> providers = providerDao.getDoctorsWithOhip();
+		ArrayList<Provider> results = new ArrayList<Provider>();
+		for (org.oscarehr.common.model.Provider p : providers) {
+			results.add(convertProvider(p));
+		}
+		return results;
+	}
+	
+	public Provider getProvider(String providerNo) {
+        	return convertProvider(providerDao.getProvider(providerNo));
+	}
     
     public Provider convertProvider(org.oscarehr.common.model.Provider p) {
     	String surname=null, firstName=null,  clinicName=null, clinicAddress=null, clinicCity=null, clinicPostal=null, clinicPhone=null, clinicFax=null, clinicProvince=null, practitionerNo=null;

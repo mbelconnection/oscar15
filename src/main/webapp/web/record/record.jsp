@@ -80,18 +80,15 @@
 			    <input type="text" class="form-control" placeholder="Search">
 			</div>
     		
-    		
-    		<textarea class="form-control input-lg col-lg-4" rows="6">[22-Jan-2014:F/up Cholesterol]</textarea>
+    		<input type="hidden" ng-model="page.encounterNote.observ"/>
+    		<textarea class="form-control input-lg col-lg-4" rows="6" ng-model="page.encounterNote.note">[22-Jan-2014:F/up Cholesterol]</textarea>
 			<div class="pull-left"><input type="text" class="form-control" placeholder="Assign Issue"></div>
     		<div class="btn-group btn-group-sm pull-right">
     		
-			  <button type="button" class="btn btn-default">Save</button>
+			  <button type="button" class="btn btn-default" ng-click="saveNote()">Save</button>
 			  <button type="button" class="btn btn-default">Sign & Save</button>
 			  <button type="button" class="btn btn-default">Sign, Save & Bill</button>
 			</div>
     		
     	</div>
     </div>
-    
-    
-    

@@ -294,6 +294,8 @@ session.setAttribute("useIframeResizing", "true");  //Temporary Hack
 	<!-- we'll combine/minify later -->
 	<script src="common/demographicServices.js"></script>
 	<script src="common/formServices.js"></script>
+	<script src="common/noteServices.js"></script>
+	<script src="common/uxServices.js"></script>
 	<script src="app.js"></script>
 	<script src="dashboard/dashboardController.js"></script>
 	<script src="common/navBarController.js"></script>

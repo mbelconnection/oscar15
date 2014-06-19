@@ -185,7 +185,7 @@ oscarApp.controller('NavBarCtrl', function ($scope,$http,$location,$modal,$state
 		      console.log('/#/patient/'+selectedItem.demographicNo);
 		      console.log($location.path());
 		     
-		      $state.go('record.rx',{demographicNo:selectedItem.demographicNo});
+		      $state.go('record.details',{demographicNo:selectedItem.demographicNo});
 		    }, function () {
 		      console.log('Modal dismissed at: ' + new Date());
 		    });

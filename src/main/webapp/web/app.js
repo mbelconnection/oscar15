@@ -8,7 +8,7 @@ patientDetailServices.factory('PatientDetail', ['$resource', function($resource)
 }]);
   */  
     
-var oscarApp = angular.module('oscarProviderViewModule', ['ui.router','ngResource','ui.bootstrap','demographicServices','formServices']);
+var oscarApp = angular.module('oscarProviderViewModule', ['ui.router','ngResource','ui.bootstrap','demographicServices','formServices','uxServices','noteServices']);
 
 
 oscarApp.config(['$stateProvider', '$urlRouterProvider',function($stateProvider, $urlRouterProvider) {

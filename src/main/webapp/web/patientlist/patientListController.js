@@ -23,7 +23,7 @@
     Ontario, Canada
 
 */
-oscarApp.controller('PatientListCtrl', function ($scope,$http,$resource) {
+oscarApp.controller('PatientListCtrl', function ($scope,$http,$resource,$stateParams,$state) {
 	
 	$scope.tabItems = [
 	             	{"id":0,"label":"Appts.","url":"../ws/rs/schedule/999998/day/today"},
@@ -36,7 +36,10 @@ oscarApp.controller('PatientListCtrl', function ($scope,$http,$resource) {
 	];
 	
 	 $scope.getAppointmentStyle = function(patient){ 
-		 if (patient.status === "H") {
+		 
+		 if(patient.demographicNo == $stateParams.demographicNo){
+			 return "active";
+		 }else if (patient.status === "H") {
 	        return "success";
 		 } else if (patient.status === "P") { 
 			return "danger";

@@ -24,12 +24,14 @@
 
 */
 
-oscarApp.controller('RecordCtrl', function ($scope,$http,$location,$stateParams,demographicService,demo,$state) {
+oscarApp.controller('RecordCtrl', function ($scope,$http,$location,$stateParams,demographicService,demo,$state,noteService) {
 	
 	console.log("in patient Ctrl ",demo);
 	
 	$scope.demographicNo = $stateParams.demographicNo;
 	$scope.demographic= demo;
+	$scope.page = {}
+	$scope.page.encounterNote = {}
 
 	/*
 	$scope.recordtabs2 = [ 
@@ -73,6 +75,25 @@ oscarApp.controller('RecordCtrl', function ($scope,$http,$location,$stateParams,
 			return "active";
 		}
 	}
+	
+	$scope.saveNote = function(){
+		console.log($scope.page.encounterNote);
+		$scope.page.encounterNote.observationDate = '2014-06-13'; 
+		noteService.saveNote($stateParams.demographicNo,$scope.page.encounterNote).then(function(data) {
+			console.debug('whats the index',data);
+	    });
+	}
+	
+	
+	$scope.toggleNote = function() {
+		if ($scope.hideNote == true) {
+			$scope.hideNote = false;
+		} else {
+			$scope.hideNote = true;
+		}
+	}
+
+	$scope.hideNote = true;
 	
 	console.log('RecordCtrlEnd',$state);
 });

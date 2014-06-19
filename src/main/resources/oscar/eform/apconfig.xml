@@ -840,7 +840,7 @@
         <ap-sql>select type, dataField, comments, dateObserved, dateEntered from measurements
         		where demographicNo=${demographic}
         		and (type="RHU" or type="ORDU" or type="MDD" or type="GWS")
-        		order by dateObserved, dateEntered;
+        		order by dateEntered, dateObserved;
         </ap-sql>
         <ap-output>${type}, ${dataField}, ${comments}, ${dateObserved}, ${dateEntered}</ap-output>
         <ap-json-output>true</ap-json-output>

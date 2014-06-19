@@ -1710,7 +1710,7 @@ function popForm2(scriptId){
      function callReplacementWebService(url,id){
               var ran_number=Math.round(Math.random()*1000000);
               var params = "demographicNo=<%=demoNo%>&rand="+ran_number;  //hack to get around ie caching the page
-              var updater=new Ajax.Updater(id,url, {method:'get',parameters:params,evalScripts:true});
+              var updater=new Ajax.Updater(id,url, {method:'get',parameters:params,evalScripts:true, onComplete: function(){ pymChild.sendHeightToParent();  }});
          }
           //callReplacementWebService("InteractionDisplay.jsp",'interactionsRx');
           <oscar:oscarPropertiesCheck property="MYDRUGREF_DS" value="yes">

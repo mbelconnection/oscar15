@@ -37,6 +37,7 @@ public class DemographicExtConverter extends AbstractConverter<DemographicExt, D
 		d.setDemographicNo(t.getDemographicNo());
 		d.setProviderNo(t.getProviderNo());
 		d.setKey(t.getKey());
+		d.setValue(t.getValue());
 		d.setDateCreated(t.getDateCreated());
 		d.setHidden(t.isHidden());
 		return d;
@@ -49,6 +50,7 @@ public class DemographicExtConverter extends AbstractConverter<DemographicExt, D
 		t.setDemographicNo(d.getDemographicNo());
 		t.setProviderNo(d.getProviderNo());
 		t.setKey(d.getKey());
+		t.setValue(d.getValue());
 		t.setDateCreated(d.getDateCreated());
 		t.setHidden(d.isHidden());
 		return t;

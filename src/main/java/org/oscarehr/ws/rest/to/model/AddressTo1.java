@@ -32,19 +32,10 @@ public class AddressTo1 implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private String country;
 	private String province;
 	private String postal;
 	private String city;
 	private String address;
-
-	public String getCountry() {
-		return country;
-	}
-
-	public void setCountry(String country) {
-		this.country = country;
-	}
 
 	public String getProvince() {
 		return province;

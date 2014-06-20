@@ -49,6 +49,9 @@ oscarApp.controller('DetailsCtrl', function ($scope,$http,$location,$stateParams
 	}
 	$scope.page.age = age;
 	
+	//show vietnam province next to photo
+	$scope.page.province = vnprovince[demo.address.province];
+	
 	//upload photo
 	$scope.launchPhoto = function(){
 		var url = "https://localhost:8081/oscar/casemgmt/uploadimage.jsp?demographicNo="+demo.demographicNo;
@@ -56,6 +59,73 @@ oscarApp.controller('DetailsCtrl', function ($scope,$http,$location,$stateParams
 	}
 	
 	$scope.save = function(){
+		updateExtras();
 		demographicService.updateDemographic($scope.page.demo);
 	}
 });
+
+var vnprovince = [];
+vnprovince["VN.AG"] = "An Giang";
+vnprovince["VN.BV"] = "Bà Rịa-Vũng Tàu";
+vnprovince["VN.BG"] = "Bắc Giang";
+vnprovince["VN.BK"] = "Bắc Kạn";
+vnprovince["VN.BL"] = "Bạc Liêu";
+vnprovince["VN.BN"] = "Bắc Ninh";
+vnprovince["VN.BR"] = "Bến Tre";
+vnprovince["VN.BD"] = "Bình Định";
+vnprovince["VN.BI"] = "Bình Dương";
+vnprovince["VN.BP"] = "Bình Phước";
+vnprovince["VN.BU"] = "Bình Thuận";
+vnprovince["VN.CM"] = "Cà Mau";
+vnprovince["VN.CN"] = "Cần Thơ";
+vnprovince["VN.CB"] = "Cao Bằng";
+vnprovince["VN.DA"] = "Đà Nẵng";
+vnprovince["VN.DC"] = "Đắk Lắk";
+vnprovince["VN.DO"] = "Đắk Nông";
+vnprovince["VN.DB"] = "Điện Biên";
+vnprovince["VN.DN"] = "Đồng Nai";
+vnprovince["VN.DT"] = "Đồng Tháp";
+vnprovince["VN.GL"] = "Gia Lai";
+vnprovince["VN.HG"] = "Hà Giang";
+vnprovince["VN.HM"] = "Hà Nam";
+vnprovince["VN.HI"] = "Hà Nội";
+vnprovince["VN.HT"] = "Hà Tĩnh";
+vnprovince["VN.HD"] = "Hải Dương";
+vnprovince["VN.HP"] = "Hải Phòng";
+vnprovince["VN.HU"] = "Hậu Giang";
+vnprovince["VN.HC"] = "Hồ Chí Minh";
+vnprovince["VN.HO"] = "Hòa Bình";
+vnprovince["VN.HY"] = "Hưng Yên";
+vnprovince["VN.KH"] = "Khánh Hòa";
+vnprovince["VN.KG"] = "Kiên Giang";
+vnprovince["VN.KT"] = "Kon Tum";
+vnprovince["VN.LI"] = "Lai Châu";
+vnprovince["VN.LD"] = "Lâm Đồng";
+vnprovince["VN.LS"] = "Lạng Sơn";
+vnprovince["VN.LO"] = "Lào Cai";
+vnprovince["VN.LA"] = "Long An";
+vnprovince["VN.ND"] = "Nam Định";
+vnprovince["VN.NA"] = "Nghệ An";
+vnprovince["VN.NB"] = "Ninh Bình";
+vnprovince["VN.NT"] = "Ninh Thuận";
+vnprovince["VN.PT"] = "Phú Thọ";
+vnprovince["VN.PY"] = "Phú Yên";
+vnprovince["VN.QB"] = "Quảng Bình";
+vnprovince["VN.QM"] = "Quảng Nam ";
+vnprovince["VN.QG"] = "Quảng Ngãi";
+vnprovince["VN.QN"] = "Quảng Ninh";
+vnprovince["VN.QT"] = "Quảng Trị";
+vnprovince["VN.ST"] = "Sóc Trăng";
+vnprovince["VN.SL"] = "Sơn La";
+vnprovince["VN.TN"] = "Tây Ninh";
+vnprovince["VN.TB"] = "Thái Bình";
+vnprovince["VN.TY"] = "Thái Nguyên";
+vnprovince["VN.TH"] = "Thanh Hóa";
+vnprovince["VN.TT"] = "Thừa Thiên-Huế";
+vnprovince["VN.TG"] = "Tiền Giang";
+vnprovince["VN.TV"] = "Trà Vinh";
+vnprovince["VN.TQ"] = "Tuyên Quang";
+vnprovince["VN.VL"] = "Vĩnh Long";
+vnprovince["VN.VC"] = "Vĩnh Phúc";
+vnprovince["VN.YB"] = "Yên Bái";
+

@@ -176,7 +176,7 @@
 					</div>
 					<div class="col-xs-6">
 						<label>Province</label>
-						<select name="province" class="form-control">
+						<select name="province" class="form-control" ng-model="page.demo.address.province">
 							<option value="">--</option>
 							<option value="VN.AG">An Giang</option>
 							<option value="VN.BV">Bà Rịa-Vũng Tàu</option>
@@ -245,11 +245,11 @@
 					</div>
 					<div class="col-xs-6">
 						<label>Postal Code</label>
-						<input type="text" name="city" class="form-control" placeholder="City" ng-model="page.demo.address.postal"/>
+						<input type="text" name="postal" class="form-control" placeholder="Postal Code" ng-model="page.demo.address.postal"/>
 					</div>
 					<div class="col-xs-6">
 						<label>Country</label>
-						<select name="country" class="form-control" ng-model="page.demo.address.country">
+						<select name="country" class="form-control" ng-model="page.demo.countryOfOrigin">
 							<option value="CVNA">Vietnam</option>
 							<option value="LA">Laos</option>
 							<option value="TH">Thailand</option>
@@ -270,9 +270,8 @@
 				</div>
 				<div class="col-xs-6">
 					<label>Mobile Phone</label>
-					<input type="text" name="cell-phone" class="phone form-control" placeholder="Mobile Phone" ng-model="page.demo.alternativePhone"/>
+					<input type="text" name="work-phone" class="phone form-control" placeholder="Mobile Phone" ng-model="page.demo.alternativePhone"/>
 				</div>
-				
 				<div class="col-xs-6">
 					<label>Email</label>
 					<input type="text" name="email" class="form-control" placeholder="Email" ng-model="page.demo.email"/>
@@ -286,11 +285,11 @@
 
 <div class="col-lg-4">
 	<div class="clearfix">
-	<img class="pull-left" id="photo" src="<%=request.getContextPath() %>/imageRenderingServlet?source=local_client&clientId={{page.demo.demographicNo}}"/>
+	<img class="pull-left" id="photo" ng-click="launchPhoto()" src="<%=request.getContextPath() %>/imageRenderingServlet?source=local_client&clientId={{page.demo.demographicNo}}"/>
 	<address class="pull-left" style="margin-left:5px;">
   		<strong>{{page.demo.lastName}}, {{page.demo.firstName}}</strong><br>
   		{{page.demo.address.address}}<br>
-  		{{page.demo.address.city}}, {{page.demo.address.province}} {{page.demo.address.postal}}<br>
+  		{{page.demo.address.city}}, {{page.province}} {{page.demo.address.postal}}<br>
   		<abbr title="Phone">P:</abbr> {{page.demo.phone}}
 	</address>
 	<br  />

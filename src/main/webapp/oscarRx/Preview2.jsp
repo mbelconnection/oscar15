@@ -45,7 +45,7 @@
 <%@page import="org.oscarehr.common.model.*"%>
 <%@page import="org.oscarehr.util.LoggedInInfo"%>
 <%@page import="org.oscarehr.util.DigitalSignatureUtils"%>
-<%@page import="org.oscarehr.ui.servlet.ImageRenderingServlet"%>
+<%@page import="org.oscarehr.ui.servlet.ImageRenderingServlet,org.oscarehr.casemgmt.dao.ClientImageDAO"%>
 <!-- end -->
 <%
 	String scriptid=request.getParameter("scriptId");
@@ -53,6 +53,7 @@
 
 <%
 String rx_enhance = OscarProperties.getInstance().getProperty("rx_enhance");
+ClientImageDAO clientImageDAO = (ClientImageDAO) SpringUtils.getBean("clientImageDAO");
 %>	
 
 <%@page import="org.oscarehr.web.PrescriptionQrCodeUIBean"%><html:html locale="true">
@@ -392,8 +393,14 @@ if(prop!=null && prop.getValue().equalsIgnoreCase("yes")){
                                                             </b><br>
                                                                 <% if(props.getProperty("showRxChartNo", "").equalsIgnoreCase("true")) { %>
                                                             <bean:message key="oscar.oscarRx.chartNo" /><%=ptChartNo%><% } %></td>
-                                                            <td align=right valign=top><b> <%= oscar.oscarRx.util.RxUtil.DateToString(rxDate, "MMMM d, yyyy",request.getLocale()) %>
-                                                            </b></td>
+                                                            <td align=right valign=top><b> <%= oscar.oscarRx.util.RxUtil.DateToString(rxDate, "MMMM d, yyyy",request.getLocale()) %></b></br>
+                                                            <%
+                                                            org.oscarehr.casemgmt.model.ClientImage clientImage = clientImageDAO.getClientImage(patient.getDemographicNo());
+                                                            if(clientImage != null){
+                                                            %>
+                                                            <img src="<%=request.getContextPath() %>/imageRenderingServlet?source=local_client&clientId=<%= patient.getDemographicNo()%>"/>
+                                                            <%}%>
+                                                            </td>
                                                     </tr>
                                             </table>
                                             </td>

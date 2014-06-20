@@ -34,7 +34,7 @@ oscarApp.controller('FormCtrl', function ($scope,$http,$location,$stateParams,de
 	console.log("What is the state "+$state.params.type+" : "+angular.isUndefined($state.params.type)+" id "+$state.params.id,$state); // Use this to load the current form if the page is refreshed
 	
 	
-	$scope.page.formlists = [{id:0,label:'Existing'},{id:1,label:'Create New'}];  //Need to get this from the server.
+	$scope.page.formlists = [{id:0,label:'Completed'},{id:1,label:'Library'}];  //Need to get this from the server.
 	
 	$scope.page.formlists.forEach(function (item, index) {
 		console.log('What is the item ',item);

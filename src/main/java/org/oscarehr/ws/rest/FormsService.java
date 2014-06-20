@@ -23,6 +23,7 @@
  */
 package org.oscarehr.ws.rest;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -30,7 +31,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-
 import javax.ws.rs.QueryParam;
 
 import org.oscarehr.common.model.EForm;
@@ -62,7 +62,7 @@ public class FormsService extends AbstractServiceImpl {
 	@Produces("application/json")
 	public FormListTo1 getFormsForHeading(@PathParam("demographicNo") Integer demographicNo ,@QueryParam("heading") String heading){
 		FormListTo1 formListTo1 = new FormListTo1();
-		if(heading.equals("Existing")){
+		if(heading.equals("Completed")){
 			List<EFormData> completedEforms = formsManager.findByDemographicId(demographicNo);
 			
 			for(EFormData eformData: completedEforms){	
@@ -78,7 +78,7 @@ public class FormsService extends AbstractServiceImpl {
 			
 		}else{  // Only two options right now.  Need to change this anyways
 			List<EForm> eforms =  formsManager.findByStatus(true, null);  //This will have to change to accommodate forms too.
-			
+			Collections.sort(eforms, EForm.FORM_NAME_COMPARATOR);
 			for(EForm eform :eforms){
 				int formId = eform.getId();
 				String name = eform.getFormName();

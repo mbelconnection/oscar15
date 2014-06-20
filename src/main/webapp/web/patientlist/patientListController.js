@@ -26,8 +26,8 @@
 oscarApp.controller('PatientListCtrl', function ($scope,$http,$resource,$stateParams,$state) {
 	
 	$scope.tabItems = [
-	             	{"id":0,"label":"Appts.","url":"../ws/rs/schedule/999998/day/today"},
-	             	{"id":1,"label":"CaseLoad","url":"json/patientList2.json"}
+	             	{"id":0,"label":"Appts.","url":"../ws/rs/schedule/999998/day/today"}//,
+	             	//{"id":1,"label":"CaseLoad","url":"json/patientList2.json"}
 	];
 	
 	$scope.moreTabItems = [

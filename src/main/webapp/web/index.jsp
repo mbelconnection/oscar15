@@ -138,11 +138,17 @@ session.setAttribute("useIframeResizing", "true");  //Temporary Hack
 				</form>
 				
 				<ul class="nav navbar-nav">
+					<li ng-class="{'active': isActive(item.id)}">
+						<a ui-sref="clinicDashboard"  data-toggle="tab" >Clinic Info</a>
+					</li>
 					<li ng-repeat="item in menuItems"  ng-class="{'active': isActive(item.id)}">
+					
 						<a href="{{item.url}}" ng-click="changeTab(item.id)" data-toggle="tab" >{{item.label}}
 							<span ng-if="item.extra.length>0">({{item.extra}})</span>
 						</a>
 					</li>
+					
+					
 					
 					
 					<li class="dropdown"><a href="void()" class="dropdown-toggle"

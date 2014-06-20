@@ -55,6 +55,10 @@ oscarApp.config(['$stateProvider', '$urlRouterProvider',function($stateProvider,
 	    	url: '^/record/:demographicNo/rx', 
             templateUrl: 'record/rx/rx.jsp',
             controller: 'RxCtrl'
+        }).state('clinicDashboard',{
+        	url: '/clinicDashboard',
+        	templateUrl: 'clinicDashboard/Clinic-Dashboard.jsp',
+        	controller: function(){}
         })
         
 	    

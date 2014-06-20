@@ -24,10 +24,13 @@
 package org.oscarehr.ui.servlet;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.SocketException;
+import java.net.URL;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -190,12 +193,35 @@ public final class ImageRenderingServlet extends HttpServlet {
 			if (clientImage != null && "jpg".equalsIgnoreCase(clientImage.getImage_type())) {
 				renderImage(response, clientImage.getImage_data(), "jpeg");
 				return;
+			} else {
+				renderImage(response, getDefaultImage(request), "jpeg");
 			}
 		} catch (Exception e) {
 			logger.error("Unexpected error.", e);
 		}
 
 		response.sendError(HttpServletResponse.SC_NOT_FOUND);
+	}
+	
+	private static byte[] getDefaultImage(HttpServletRequest request) {
+        ByteArrayOutputStream bais = new ByteArrayOutputStream();
+        InputStream is = null;
+		try {
+			String url = request.getRequestURL().toString();
+			url = url.substring(0, url.indexOf(request.getRequestURI()));
+			url += request.getContextPath() + "/images/default_gray_img.jpg";
+			
+	        URL u = new URL(url);
+	        is = u.openStream();
+	        byte[] byteChunk = new byte[4096];
+	        int n;
+	        while ( (n = is.read(byteChunk)) > 0 ) {
+	        	bais.write(byteChunk, 0, n);
+        	}
+        } catch (Exception e) {
+        	logger.error("Unexpected error.", e);
+        }
+		return bais.toByteArray();
 	}
 
 	private void renderSignaturePreview(HttpServletRequest request, HttpServletResponse response) throws IOException {

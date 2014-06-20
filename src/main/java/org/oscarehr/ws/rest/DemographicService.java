@@ -23,6 +23,8 @@
  */
 package org.oscarehr.ws.rest;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -34,6 +36,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
 import org.oscarehr.common.model.Demographic;
+import org.oscarehr.common.model.DemographicExt;
 import org.oscarehr.managers.DemographicManager;
 import org.oscarehr.managers.WaitListManager;
 import org.oscarehr.ws.rest.conversion.DemographicConverter;
@@ -108,6 +111,15 @@ public class DemographicService extends AbstractServiceImpl {
 		Demographic demo = demographicManager.getDemographic(id);
 		if (demo == null) {
 			return null;
+		}
+		
+		List<DemographicExt> demoExts = demographicManager.getDemographicExts(id);
+		if (demoExts!=null && !demoExts.isEmpty()) {
+			DemographicExt[] demoExtArray = new DemographicExt[demoExts.size()];
+			for (int i=0; i<demoExts.size(); i++) {
+				demoExtArray[i] = demoExts.get(i);
+			}
+			demo.setExtras(demoExtArray);
 		}
 		
 		DemographicTo1 result = demoConverter.getAsTransferObject(demo);

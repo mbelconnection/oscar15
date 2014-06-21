@@ -39,14 +39,21 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.log4j.Logger;
 import org.oscarehr.common.model.Appointment;
+import org.oscarehr.common.model.Contact;
 import org.oscarehr.common.model.Demographic;
+import org.oscarehr.common.model.DemographicContact;
 import org.oscarehr.common.model.DemographicExt;
+import org.oscarehr.managers.ContactManager;
 import org.oscarehr.managers.DemographicManager;
 import org.oscarehr.managers.ScheduleManager;
 import org.oscarehr.managers.WaitListManager;
 import org.oscarehr.util.MiscUtils;
+import org.oscarehr.util.LoggedInInfo;
+import org.oscarehr.ws.rest.conversion.ContactConverter;
+import org.oscarehr.ws.rest.conversion.DemographicContactConverter;
 import org.oscarehr.ws.rest.conversion.DemographicConverter;
 import org.oscarehr.ws.rest.to.OscarSearchResponse;
+import org.oscarehr.ws.rest.to.model.DemographicContactAndContactTo1;
 import org.oscarehr.ws.rest.to.model.DemographicTo1;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -70,6 +77,9 @@ public class DemographicService extends AbstractServiceImpl {
 	private DemographicManager demographicManager;
 	
 	@Autowired
+	private ContactManager contactManager;
+	
+	@Autowired
 	private WaitListManager waitingListManager;
 	
 	@Autowired 
@@ -84,6 +94,8 @@ public class DemographicService extends AbstractServiceImpl {
 	private ScheduleManager scheduleManager;
 	
 	private DemographicConverter demoConverter = new DemographicConverter();
+	private DemographicContactConverter demoContactConverter = new DemographicContactConverter();
+	private ContactConverter contactConverter = new ContactConverter();
 	
 	/**
 	 * Finds all demographics.
@@ -138,14 +150,24 @@ public class DemographicService extends AbstractServiceImpl {
 		
 		List<DemographicExt> demoExts = demographicManager.getDemographicExts(id);
 		if (demoExts!=null && !demoExts.isEmpty()) {
-			DemographicExt[] demoExtArray = new DemographicExt[demoExts.size()];
-			for (int i=0; i<demoExts.size(); i++) {
-				demoExtArray[i] = demoExts.get(i);
-			}
+			DemographicExt[] demoExtArray = demoExts.toArray(new DemographicExt[demoExts.size()]);
 			demo.setExtras(demoExtArray);
 		}
-		
+
 		DemographicTo1 result = demoConverter.getAsTransferObject(demo);
+		
+		List<DemographicContact> demoContacts = demographicManager.getDemographicContacts(id);
+		if (demoContacts!=null) {
+			for (DemographicContact demoContact : demoContacts) {
+				Integer contactId = Integer.valueOf(demoContact.getContactId());
+				Contact contact = contactManager.getContact(contactId);
+				
+				DemographicContactAndContactTo1 demoContactAndContact = new DemographicContactAndContactTo1();
+				demoContactAndContact.setDemoContact(demoContactConverter.getAsTransferObject(demoContact));
+				demoContactAndContact.setContact(contactConverter.getAsTransferObject(contact));
+				result.getDemoContactAndContacts().add(demoContactAndContact);
+			}
+		}
 		return result;
 	}
 
@@ -219,8 +241,23 @@ public class DemographicService extends AbstractServiceImpl {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public DemographicTo1 updateDemographicData(DemographicTo1 data) {
+	    //create or update Contacts & link with DemographicContacts
+		for (DemographicContactAndContactTo1 demoContactAndContact : data.getDemoContactAndContacts()) {
+			Contact contact = contactConverter.getAsDomainObject(demoContactAndContact.getContact());
+	    	Integer contactId = contactManager.createUpdateContact(contact);
+	    	
+	    	DemographicContact demoContact = demoContactConverter.getAsDomainObject(demoContactAndContact.getDemoContact());
+	    	demoContact.setContactId(contactId.toString());
+	    	
+	    	LoggedInInfo loggedInInfo = LoggedInInfo.loggedInInfo.get();
+	    	demoContact.setFacilityId(loggedInInfo.currentFacility.getId());
+	    	demoContact.setCreator(loggedInInfo.loggedInProvider.getProviderNo());
+	    	
+	    	demographicManager.createUpdateDemographicContact(demoContact);
+		}
 		Demographic demographic = demoConverter.getAsDomainObject(data);
 	    demographicManager.updateDemographic(demographic);
+	    
 	    return demoConverter.getAsTransferObject(demographic);
 	}
 

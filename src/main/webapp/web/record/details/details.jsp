@@ -308,15 +308,60 @@
 	
 	<fieldset>
 		<legend>Contacts</legend>
-		<ul class="list-group">
-			<li class="list-group-item" ng-repeat="contact in page.contacts">{{contact.name}} <span class="pull-right">{{contact.relation}}</span></li>
-		</ul>
+		<div class="form-group" ng-repeat="dcc in page.demo.demoContactAndContacts">
+			<div>
+				<select ng-model="dcc.demoContact.role" class="form-control" style="width: 100px; display: inline-block;">
+					<option value="">Relation:</option>
+					<option value="Father">Father</option>
+					<option value="Mother">Mother</option>
+					<option value="Husband">Husband</option>
+					<option value="Wife">Wife</option>
+					<option value="Son">Son</option>
+					<option value="Daughter">Daughter</option>
+					<option value="Brother">Brother</option>
+					<option value="Sister">Sister</option>
+					<option value="Other">Other</option>
+				</select>
+				<input type="text" ng-model="dcc.contact.lastName" placeholder="Family Name" class="form-control" style="width: 100px; display: inline-block;"/>
+				<input type="text" ng-model="dcc.contact.firstName" placeholder="First Name" class="form-control" style="width: 100px; display: inline-block;"/>
+				<input type="text" ng-model="dcc.contact.residencePhone" placeholder="Phone" class="form-control" style="width: 120px; display: inline-block;"/>
+			</div>
+			<div>
+				<input type="text" ng-model="dcc.contact.address" placeholder="Address" class="form-control" style="width: 300px; display: inline-block;"/>
+				<input type="text" ng-model="dcc.contact.city" placeholder="City" class="form-control" style="width: 130px; display: inline-block;"/>
+			</div>
+		</div>
+		<div class="form-group">
+			<div>
+				<select ng-model="page.contact.role" class="form-control" style="width: 100px; display: inline-block;">
+					<option value="">Relation:</option>
+					<option value="Father">Father</option>
+					<option value="Mother">Mother</option>
+					<option value="Husband">Husband</option>
+					<option value="Wife">Wife</option>
+					<option value="Son">Son</option>
+					<option value="Daughter">Daughter</option>
+					<option value="Brother">Brother</option>
+					<option value="Sister">Sister</option>
+					<option value="Other">Other</option>
+				</select>
+				<input type="text" ng-model="page.contact.lastName" placeholder="Family Name" class="form-control" style="width: 100px; display: inline-block;"/>
+				<input type="text" ng-model="page.contact.firstName" placeholder="First Name" class="form-control" style="width: 100px; display: inline-block;"/>
+				<input type="text" ng-model="page.contact.residencePhone" placeholder="Phone" class="form-control" style="width: 120px; display: inline-block;"/>
+			</div>
+			<div>
+				<input type="text" ng-model="page.contact.address" placeholder="Address" class="form-control" style="width: 300px; display: inline-block;"/>
+				<input type="text" ng-model="page.contact.city" placeholder="City" class="form-control" style="width: 130px; display: inline-block;"/>
+			</div>
+		</div>
 	</fieldset>
 
+<!-- 
 	<fieldset>
 		<legend>Professional Contacts</legend>
 		<h5 ng-repeat="contact in page.professionalContacts">{{contact.name}}<small>({{contact.profession}})</small><span class="pull-right">{{contact.phone}}</span></h5>
 	</fieldset>
+ -->
 	</div>
 </div>
 

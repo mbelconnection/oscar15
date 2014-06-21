@@ -27,13 +27,12 @@ import org.apache.log4j.Logger;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.DemographicExt;
 import org.oscarehr.ws.rest.to.model.DemographicTo1;
-
 import oscar.util.ConversionUtils;
 
 public class DemographicConverter extends AbstractConverter<Demographic, DemographicTo1> {
 	
 	private static Logger logger = Logger.getLogger(DemographicConverter.class);
-
+	
 	private DemographicExtConverter demoExtConverter = new DemographicExtConverter();
 	private ProviderConverter providerConverter = new ProviderConverter();
 
@@ -100,6 +99,7 @@ public class DemographicConverter extends AbstractConverter<Demographic, Demogra
 		for (int i = 0; i < t.getExtras().size(); i++) {
 			exts[i] = demoExtConverter.getAsDomainObject(t.getExtras().get(i));
 		}
+		d.setExtras(exts);
 
 		if (t.getProvider() != null) {
 			d.setProvider(providerConverter.getAsDomainObject(t.getProvider()));

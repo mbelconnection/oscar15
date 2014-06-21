@@ -30,12 +30,14 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.oscarehr.common.Gender;
 import org.oscarehr.common.dao.DemographicArchiveDao;
+import org.oscarehr.common.dao.DemographicContactDao;
 import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.dao.DemographicExtDao;
 import org.oscarehr.common.dao.DemographicMergedDao;
 import org.oscarehr.common.dao.PHRVerificationDao;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.Demographic.PatientStatus;
+import org.oscarehr.common.model.DemographicContact;
 import org.oscarehr.common.model.DemographicExt;
 import org.oscarehr.common.model.DemographicMerged;
 import org.oscarehr.common.model.PHRVerification;
@@ -66,6 +68,8 @@ public class DemographicManager {
 	private DemographicDao demographicDao;
 	@Autowired
 	private DemographicExtDao demographicExtDao;
+	@Autowired
+	private DemographicContactDao demographicContactDao;
 	
 	@Autowired
 	private DemographicArchiveDao demographicArchiveDao;
@@ -140,6 +144,19 @@ public class DemographicManager {
 
 		return result;
 	}
+	
+	public List<DemographicContact> getDemographicContacts(Integer id) {
+		List<DemographicContact> result = null;
+		result = demographicContactDao.findActiveByDemographicNo(id);
+		
+		//--- log action ---
+		if (result != null) {
+			for(DemographicContact item:result) {
+				LogAction.addLogSynchronous("DemographicManager.getDemographicContacts", "id="+item.getId() + "(" + id.toString() +")");
+			}
+		}
+		return result;
+	}
 
 	public List<Demographic> getDemographicsByProvider(Provider provider) {
 		List<Demographic> result = demographicDao.getDemographicByProvider(provider.getProviderNo(), true);
@@ -183,7 +200,6 @@ public class DemographicManager {
 			throw new IllegalArgumentException("Birth date was specified for " + demographic.getFullName() 
 					+ ": " + demographic.getBirthDayAsString());
 		}
-		
 		demographicDao.save(demographic);
 		
 		// TODO What needs to be done with extras - delete first, then save?!?, or build another service? 
@@ -191,6 +207,14 @@ public class DemographicManager {
 			for(DemographicExt ext : demographic.getExtras()) {
 				LogAction.addLogSynchronous("DemographicManager.updateDemographic ext", "id=" + ext.getId() + "(" +  ext.toString() + ")");
 				updateExtension(ext);
+			}
+		}
+		
+		// TODO for mmt_demo only - assume 1 to 1 relationships between DemographicContacts and Contacts
+		if (demographic.getDemographicContacts() != null) {
+			for(DemographicContact demoContact : demographic.getDemographicContacts()) {
+				LogAction.addLogSynchronous("DemographicManager.updateDemographic demographicContact", "id=" + demoContact.getId());
+				createUpdateDemographicContact(demoContact);
 			}
 		}
 		
@@ -211,6 +235,13 @@ public class DemographicManager {
 		
 		//--- log action ---
 		LogAction.addLogSynchronous("DemographicManager.updateExtension", "id=" + ext.getId());
+	}
+	
+	public void createUpdateDemographicContact(DemographicContact demoContact) {
+		demographicContactDao.merge(demoContact);
+		
+		//--- log action ---
+		LogAction.addLogSynchronous("DemographicManager.createUpdateDemographicContact", "id=" + demoContact.getId());
 	}
 
 	public void deleteDemographic(Demographic demographic) {

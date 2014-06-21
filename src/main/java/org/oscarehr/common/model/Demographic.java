@@ -92,6 +92,7 @@ public class Demographic implements Serializable {
 	private String rosterTerminationReason;
 	private String links;
 	private DemographicExt[] extras;
+	private DemographicContact[] demographicContacts;
 
 	private String alias;
 	private String previousAddress;
@@ -955,6 +956,10 @@ public class Demographic implements Serializable {
 		return extras;
 	}
 
+	public DemographicContact[] getDemographicContacts() {
+		return demographicContacts;
+	}
+
 	public String getFormattedDob() {
 		Calendar cal = getBirthDay();
 		if (cal != null) return (DateFormatUtils.ISO_DATE_FORMAT.format(cal));
@@ -1019,6 +1024,10 @@ public class Demographic implements Serializable {
 
 	public void setExtras(DemographicExt[] extras) {
 		this.extras = extras;
+	}
+
+	public void setDemographicContacts(DemographicContact[] demographicContacts) {
+		this.demographicContacts = demographicContacts;
 	}
 
 	public void setLinks(String links) {

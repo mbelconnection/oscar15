@@ -28,6 +28,7 @@ oscarApp.controller('DetailsCtrl', function ($scope,$http,$location,$stateParams
 	
 	$scope.page = {};
 	$scope.page.demo = demo;
+	$scope.page.contact = {};
 
 	//show dob
 	var dob = demo.dateOfBirth;
@@ -59,8 +60,26 @@ oscarApp.controller('DetailsCtrl', function ($scope,$http,$location,$stateParams
 	}
 	
 	$scope.save = function(){
-		updateExtras();
-		demographicService.updateDemographic($scope.page.demo);
+		if ($scope.page.contact!=null && $scope.page.contact.role!=null) {
+			var dccList = demo.demoContactAndContacts;
+			var newDcc = {};
+			var newDemoContact = {};
+			var newContact = {};
+
+			newDcc.demoContact = newDemoContact;
+			newDcc.contact = newContact;
+			newDemoContact.role = $scope.page.contact.role;
+			newDemoContact.demographicNo = demo.demographicNo;
+
+			newContact.lastName = $scope.page.contact.lastName;
+			newContact.firstName = $scope.page.contact.firstName;
+			newContact.residencePhone = $scope.page.contact.residencePhone;
+			newContact.address = $scope.page.contact.address;
+			newContact.city = $scope.page.contact.city;
+			
+			dccList.push(newDcc);
+		}
+		demographicService.updateDemographic(demo);
 	}
 });
 

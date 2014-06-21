@@ -23,22 +23,41 @@
  */
 
 
-package org.oscarehr.common.service;
+package org.oscarehr.managers;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.oscarehr.common.dao.ContactDao;
 import org.oscarehr.common.dao.DemographicContactDao;
+import org.oscarehr.common.dao.DemographicExtDao;
 import org.oscarehr.common.model.Contact;
 import org.oscarehr.common.model.DemographicContact;
-import org.oscarehr.util.SpringUtils;
+import oscar.log.LogAction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ContactManager {
 
-	private ContactDao contactDao = (ContactDao)SpringUtils.getBean("contactDao");
-	private DemographicContactDao demographicContactDao = (DemographicContactDao)SpringUtils.getBean("demographicContactDao");
+	@Autowired
+	private DemographicExtDao demographicExtDao;
+	@Autowired
+	private ContactDao contactDao;
+	@Autowired
+	private DemographicContactDao demographicContactDao;
 
+	public Contact getContact(int contactId) {
+		Contact contact = contactDao.find(contactId);
+
+		//--- log action ---
+		if (contact != null) {
+			LogAction.addLogSynchronous("ContactManager.getContact", "contactId=" + contactId);
+		}
+
+		return (contact);
+	}
+	
 	public List<Contact> getContactsByDemographicNo(int demographicNo) {
 		List<Contact> contacts = new ArrayList<Contact>();
 		List<DemographicContact> dContacts = demographicContactDao.findByDemographicNo(demographicNo);
@@ -46,5 +65,22 @@ public class ContactManager {
 			contacts.add(contactDao.find(dContact.getContactId()));
 		}
 		return contacts;
+	}
+	
+	public Integer createUpdateContact(Contact contact) {
+		if (contact!=null) {
+			if (contact.getId()==null) {
+				contactDao.persist(contact);
+			} else {
+				contactDao.merge(contact);
+			}
+
+			//--- log action ---
+			if (contact.getId() != null) {
+				LogAction.addLogSynchronous("ContactManager.createUpdateContact", "contactId=" + contact.getId());
+			}
+			return contact.getId();
+		}
+		return null;
 	}
 }

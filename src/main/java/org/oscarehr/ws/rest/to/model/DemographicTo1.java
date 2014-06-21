@@ -94,6 +94,8 @@ public class DemographicTo1 implements Serializable {
 	private String links;
 
 	private List<DemographicExtTo1> extras = new ArrayList<DemographicExtTo1>();
+	
+	private List<DemographicContactAndContactTo1> demoContactAndContacts = new ArrayList<DemographicContactAndContactTo1>();
 
 	private String alias;
 
@@ -353,6 +355,14 @@ public class DemographicTo1 implements Serializable {
 
 	public void setExtras(List<DemographicExtTo1> extras) {
 		this.extras = extras;
+	}
+
+	public List<DemographicContactAndContactTo1> getDemoContactAndContacts() {
+		return this.demoContactAndContacts;
+	}
+
+	public void setDemoContactAndContacts(List<DemographicContactAndContactTo1> demoContactAndContacts) {
+		this.demoContactAndContacts = demoContactAndContacts;
 	}
 
 	public String getAlias() {

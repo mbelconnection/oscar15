@@ -93,7 +93,7 @@ oscarApp.controller('RecordCtrl', function ($scope,$http,$location,$stateParams,
 		}
 	}
 
-	$scope.hideNote = true;
+	$scope.hideNote = false;
 	
 	console.log('RecordCtrlEnd',$state);
 });

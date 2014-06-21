@@ -55,7 +55,7 @@ public final class ApptStatusData {
 	"oscar.appt.ApptStatusData.msgHere",
 	"oscar.appt.ApptStatusData.msgPicked",
     "oscar.appt.ApptStatusData.msgEmpty",
-	"oscar.appt.ApptStatusData.msgNoShow",
+	"oscar.appt.ApptStatusData.msgNoShow", 
 	"oscar.appt.ApptStatusData.msgCanceled",
 	"oscar.appt.ApptStatusData.msgBilled",
 	"oscar.appt.ApptStatusData.msgSignedTodo",
@@ -109,6 +109,28 @@ public final class ApptStatusData {
         else
             return getStr(aStatus, aBgColor);
     }
+
+	/**
+	 *  Pulls in the short letters which represent the appointment status.
+	 *  
+	 *	@Author Trimara Corp.
+	 *	@Return Short letters or null
+	 *
+	 **/
+	public String getShortLetters(){
+		return getStr("short_letters");
+	}
+
+	/**
+	 * Pulls in the colour for the short letters of the appointment.
+	 *
+	 * @Author Trimara Corp.
+	 * @Return An integer representing the hex code for the colour. Null if there is no colour.
+	 *
+	 **/
+	public String getShortLetterColour(){
+		return getStr("short_letter_colour");
+	}
 
     private String getStr(String[] str, String[] tar) {
         String rstr = null;
@@ -169,6 +191,8 @@ public final class ApptStatusData {
 		}
 		return temp;
 	}
+
+
 
     private String getStr(String kind) {
         String rstr = null;
@@ -241,6 +265,31 @@ public final class ApptStatusData {
                         return rstr;
                     }
                 }
+
+				// Trimara short letters kinds
+				// get the short letters, they're just a string
+				if (kind.equals("short_letters")) {
+                    if (strStatus.equals(rs.getString("status"))){
+                        rstr = rs.getString("short_letters");
+                        return rstr;
+                    }
+				}
+
+				// get the short letter colour.  It comes back as an int.
+				if (kind.equals("short_letter_colour")) {
+                    if (strStatus.equals(rs.getString("status"))){
+                        Integer colour = rs.getInt("short_letter_colour");
+					
+						// return null if it's null
+                        if(colour == null){
+							return null;
+						}
+
+						// convert it to a hex number and add a hex code in front
+						return "#" + Integer.toHexString(colour).toUpperCase();
+					
+                    }
+				}
             }
         } catch (SQLException e) {
              MiscUtils.getLogger().error("Error", e);

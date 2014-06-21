@@ -23,7 +23,7 @@
     Ontario, Canada
 
 */
-oscarApp.controller('NavBarCtrl', function ($scope,$http,$location,$modal,$state) {
+oscarApp.controller('NavBarCtrl', function ($scope,$http,$location,$modal,$state,$rootScope) {
 	
 	$http({
 	    url: '../ws/rs/persona/navbar',
@@ -184,7 +184,7 @@ oscarApp.controller('NavBarCtrl', function ($scope,$http,$location,$modal,$state
 		      console.log(selectedItem.demographicNo);
 		      console.log('/#/patient/'+selectedItem.demographicNo);
 		      console.log($location.path());
-		     
+		      $rootScope.$emit('patientListStale');
 		      $state.go('record.details',{demographicNo:selectedItem.demographicNo});
 		    }, function () {
 		      console.log('Modal dismissed at: ' + new Date());

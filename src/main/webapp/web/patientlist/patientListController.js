@@ -23,7 +23,7 @@
     Ontario, Canada
 
 */
-oscarApp.controller('PatientListCtrl', function ($scope,$http,$resource,$stateParams,$state) {
+oscarApp.controller('PatientListCtrl', function ($scope,$http,$resource,$stateParams,$state,$rootScope) {
 	
 	$scope.tabItems = [
 	             	{"id":0,"label":"Appts.","url":"../ws/rs/schedule/999998/day/today"}//,
@@ -50,6 +50,11 @@ oscarApp.controller('PatientListCtrl', function ($scope,$http,$resource,$statePa
 	 
 	 }
 
+	 $rootScope.$on('patientListStale', function(event) {
+		 $scope.changeTab($scope.currenttab.id);
+	 });
+	 
+	 
 //for filter box
 $scope.query='';
 

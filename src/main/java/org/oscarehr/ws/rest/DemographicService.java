@@ -23,6 +23,8 @@
  */
 package org.oscarehr.ws.rest;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -35,15 +37,24 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
+import org.apache.log4j.Logger;
+import org.oscarehr.common.model.Appointment;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.DemographicExt;
 import org.oscarehr.managers.DemographicManager;
+import org.oscarehr.managers.ScheduleManager;
 import org.oscarehr.managers.WaitListManager;
+import org.oscarehr.util.MiscUtils;
 import org.oscarehr.ws.rest.conversion.DemographicConverter;
 import org.oscarehr.ws.rest.to.OscarSearchResponse;
 import org.oscarehr.ws.rest.to.model.DemographicTo1;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.oscarehr.PMmodule.web.GenericIntakeEditAction;
+import org.oscarehr.PMmodule.service.ProgramManager;
+import org.oscarehr.PMmodule.service.AdmissionManager;
+
+import oscar.oscarEncounter.data.EctProgram;
 
 
 /**
@@ -53,12 +64,24 @@ import org.springframework.stereotype.Component;
 @Component("demographicService")
 public class DemographicService extends AbstractServiceImpl {
 	
+	private static Logger logger = MiscUtils.getLogger();
 	
 	@Autowired
 	private DemographicManager demographicManager;
 	
 	@Autowired
 	private WaitListManager waitingListManager;
+	
+	@Autowired 
+	private AdmissionManager admissionManager;
+	
+	@Autowired
+	private ProgramManager programManager;
+	//ProgramManager pm = SpringUtils.getBean(ProgramManager.class);
+		//AdmissionManager am = SpringUtils.getBean(AdmissionManager.class);
+	
+	@Autowired
+	private ScheduleManager scheduleManager;
 	
 	private DemographicConverter demoConverter = new DemographicConverter();
 	
@@ -140,6 +163,47 @@ public class DemographicService extends AbstractServiceImpl {
 	public DemographicTo1 createDemographicData(DemographicTo1 data) {
 		Demographic demographic = demoConverter.getAsDomainObject(data);
 		demographicManager.createDemographic(demographic);
+		
+		//need to admin them into the oscar program.
+		GenericIntakeEditAction gieat = new GenericIntakeEditAction();
+        gieat.setAdmissionManager(admissionManager);
+        gieat.setProgramManager(programManager);
+        String programId = new EctProgram(getLoggedInInfo().session).getProgram(getCurrentProvider().getProviderNo());
+        try{
+        	gieat.admitBedCommunityProgram(demographic.getDemographicNo(),org.oscarehr.util.LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo(),Integer.parseInt(programId),"","",null);
+        }catch(Exception e){
+        	logger.error("problem adding to program : "+programId,e);
+        }
+		
+        
+        
+        Date appointmentDate = new Date();
+        Appointment appointment = new Appointment();
+        appointment.setProviderNo("999998");
+        appointment.setAppointmentDate(appointmentDate);
+        appointment.setStartTime(appointmentDate);
+        appointment.setCreateDateTime(appointmentDate);
+        appointment.setUpdateDateTime(appointmentDate);
+        appointment.setName(demographic.getLastName()+", "+demographic.getFirstName());
+        appointment.setDemographicNo(demographic.getDemographicNo());
+        
+        appointment.setNotes("");
+        appointment.setLocation("");
+        appointment.setResources("");
+        appointment.setReason("");
+        appointment.setStatus("t");
+        
+
+		appointment.setProgramId(Integer.parseInt("0"));
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(appointmentDate);
+		cal.add(Calendar.MINUTE, 15);
+		cal.add(Calendar.MILLISECOND, -1);
+		appointment.setEndTime(cal.getTime());
+
+		
+		scheduleManager.addAppointment(appointment);
+		
 	    return demoConverter.getAsTransferObject(demographic);
 	}
 

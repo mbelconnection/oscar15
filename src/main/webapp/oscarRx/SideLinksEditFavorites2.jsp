@@ -61,8 +61,8 @@
 
 <p class="PropSheetMenuItemLevel1"><a
         href="javascript:void(0);" onclick="useFav2('<%= favorites[j].getFavoriteId() %>');"
-	title="<%= favorites[j].getFavoriteName() %>"> <%if(favorites[j].getFavoriteName().length()>13){%>
-<%= favorites[j].getFavoriteName().substring(0, 10) + "..." %> <%}else{%>
+	title="<%= favorites[j].getFavoriteName() %>"> <%if(favorites[j].getFavoriteName().length()>22){%>
+<%= favorites[j].getFavoriteName().substring(0, 20) + "..." %> <%}else{%>
 <%= favorites[j].getFavoriteName() %> <%}%> </a></p>
 <%}%>
 </p>

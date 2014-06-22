@@ -51,9 +51,14 @@ oscarApp.controller('SummaryCtrl', function ($scope,$http,$location,$stateParams
     noteService.getAllNotes($stateParams.demographicNo).then(function(data) {
         console.debug('whats the data',data);
         $scope.page.notes = data;
+        if(data.notelist instanceof Array){
+			console.log("ok its in an array");
+        }else{
+			$scope.page.notes.notelist = [data.notelist];
+		}
     },
 	function(errorMessage){
-	       console.log("left"+errorMessage);
+	       console.log("notes:"+errorMessage);
 	       $scope.error=errorMessage;
  	}
     );

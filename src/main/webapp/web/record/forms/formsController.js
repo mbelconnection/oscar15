@@ -40,7 +40,11 @@ oscarApp.controller('FormCtrl', function ($scope,$http,$location,$stateParams,de
 		console.log('What is the item ',item);
 		formService.getAllFormsByHeading($stateParams.demographicNo,item.label).then(function(data) {
 	        console.debug('whats the index'+index,data);
-	        $scope.page.currentFormList[index] = data.list;
+ 	        if (data.list instanceof Array){
+ 	        	$scope.page.currentFormList[index] = data.list;
+ 	        }else{
+ 	        	$scope.page.currentFormList[index] = [data.list];
+ 	        }
 	    });
 	});
 	

@@ -845,4 +845,21 @@
         <ap-output>${type}, ${dataField}, ${comments}, ${dateObserved}, ${dateEntered}</ap-output>
         <ap-json-output>true</ap-json-output>
     </databaseap>
+    <databaseap>
+	<ap-name>demographic_contacts_json</ap-name>
+	<ap-sql>select role,lastName,firstName,address,address2,city,province,country,postal,
+		residencePhone,cellPhone,workPhone,workPhoneExtension,email,fax
+		from DemographicContact dc, Contact ct
+		where dc.contactId=ct.id and demographicNo=${demographic} limit 1;
+	</ap-sql>
+	<ap-output>${role}, ${lastName}, ${firstName}, ${address}, ${address2}, ${city}, ${province}, ${country}, 
+		${postal}, ${residencePhone}, ${cellPhone}, ${workPhone}, ${workPhoneExtension}, ${email}, ${fax}
+	</ap-output>
+	<ap-json-output>true</ap-json-output>
+    </databaseap>
+    <databaseap>
+	<ap-name>date_joined</ap-name>
+	<ap-sql>select date_joined from demographic where demographic_no=${demographic}</ap-sql>
+	<ap-output>${date_joined}</ap-output>
+    </databaseap>
 </eformap-config>

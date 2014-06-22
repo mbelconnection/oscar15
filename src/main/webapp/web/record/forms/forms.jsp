@@ -25,7 +25,7 @@
 --%>
 
 <div class="col-lg-3">		
-	<ul class="nav nav-tabs nav-justified">
+	<ul class="nav nav-pills nav-justified">
 		<li ng-repeat="list in page.formlists" ng-class="getListClass(list.id)" ><a ng-click="changeTo(list.id)">{{list.label}}</a></li>
 	</ul> 	
 	<%--

@@ -64,6 +64,7 @@ public class FormsService extends AbstractServiceImpl {
 		FormListTo1 formListTo1 = new FormListTo1();
 		if(heading.equals("Completed")){
 			List<EFormData> completedEforms = formsManager.findByDemographicId(demographicNo);
+			Collections.sort(completedEforms, Collections.reverseOrder(EFormData.FORM_DATE_COMPARATOR));
 			
 			for(EFormData eformData: completedEforms){	
 				int id = eformData.getId();

@@ -27,12 +27,18 @@
 <html>
 <head>
 <script type="text/javascript" src="<%= request.getContextPath() %>/js/global.js"></script>
+<link href="<%= request.getContextPath() %>/library/bootstrap/3.0.0/css/bootstrap.css" rel="stylesheet">
 </head>
 <body>
-<center>Closing Window, Please Wait....</center>
+<center><h1>Save Successful, Please Continue</h1></center>
+
 <%@page import="oscar.eform.data.*"%>
 <%@taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <script type="text/javascript" language="javascript">
+  
+   
+   window.parent.postMessage('refreshFormList','*');
+   
    
    if (!window.opener.closed) {
         var parentAjaxId = "<%=request.getParameter("parentAjaxId")%>";

@@ -41,13 +41,25 @@ import javax.persistence.TemporalType;
 @Table(name = "eform_data")
 public class EFormData extends AbstractModel<Integer> implements Serializable {
 
+		//I know it's deprecated but i don't need it for very long
+	public static Date combineDateTime(Date date, Date time) {
+	    return new Date(
+	                     date.getYear(), date.getMonth(), date.getDay(), 
+	                     time.getHours(), time.getMinutes(), time.getSeconds()
+	                   );
+	}
+	
 	/**
 	 * This comparator sorts EFormData ascending based on the formDate
 	 */
 	public static final Comparator<EFormData> FORM_DATE_COMPARATOR=new Comparator<EFormData>()
 	{
 		public int compare(EFormData o1, EFormData o2) {
-			return(o1.formDate.compareTo(o2.formDate));
+			Date o1formDate = combineDateTime(o1.formDate,o1.formTime);
+			Date o2formDate = combineDateTime(o2.formDate,o2.formTime);
+			
+			//return(o1.formDate.compareTo(o2.formDate));
+			return(o1formDate.compareTo(o2formDate));
 		}	
 	};
 

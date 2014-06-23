@@ -138,30 +138,18 @@ session.setAttribute("useIframeResizing", "true");  //Temporary Hack
 				</form>
 				
 				<ul class="nav navbar-nav">
-					<li ng-class="{'active': isActive(item.id)}">
+					<li ng-class="{'active': isActive('clinicDashboard')}">
 						<a ui-sref="clinicDashboard"  data-toggle="tab" >Clinic Info</a>
 					</li>
-					<li ng-repeat="item in menuItems"  ng-class="{'active': isActive(item.id)}">
-					
-						<a href="{{item.url}}" ng-click="changeTab(item.id)" data-toggle="tab" >{{item.label}}
-							<span ng-if="item.extra.length>0">({{item.extra}})</span>
-						</a>
+					<li ng-class="{'active': isActive(item.id)}" >
+						<a href="#/inbox" ng-click="changeTab(item.id)" data-toggle="tab" class="ng-binding">Inbox</a>
 					</li>
-					
-					
-					
-					
-					<li class="dropdown"><a href="void()" class="dropdown-toggle"
-						data-toggle="dropdown">More<b class="caret"></b></a>
-						<ul class="dropdown-menu">
-							<li ng-repeat="item in moreMenuItems">
-								<a href="{{item.url}}" ng-class="getMoreTabClass(item.id)" ng-click="changeMoreTab(item.id)">{{item.label}}
-								<span ng-if="item.extra.length>0" class="badge">{{item.extra}}</span></a>
-							</li>
-						</ul>
+					<li ng-class="{'active': isActive(item.id)}" >
+						<a href="#/ticklers" ng-click="changeTab(item.id)" data-toggle="tab" class="ng-binding">Tickler</a>
 					</li>
-						
-						
+					<li  ng-class="{'active': isActive(item.id)}" >
+						<a target="_blank" href="../administration/" onclick="window.open('../administration/')"  >Admin</a>
+					</li>	
 				</ul>
 				
 				

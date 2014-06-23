@@ -95,10 +95,11 @@ oscarApp.controller('NavBarCtrl', function ($scope,$http,$location,$modal,$state
 	};
 	
 	$scope.isActive = function(temp){
-		if($scope.currenttab === undefined || $scope.currenttab === null) {
-			return false;
+		
+		if($state.current.name === temp){
+			return true;
 		}
-		return temp === $scope.currenttab.id;
+		return false;
 	}
 
 	$scope.isMoreActive = function(temp){

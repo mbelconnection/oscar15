@@ -117,12 +117,15 @@ public class RecordUxService extends AbstractServiceImpl {
 		SummaryTo1[] summaryList = new SummaryTo1[8];
 		summaryList[0] = new SummaryTo1("Ongoing Concerns",0,"ongoingconcerns");
 		summaryList[1] = new SummaryTo1("Medical History",1,"medhx"); 
-		summaryList[2] = new SummaryTo1("Social/Family History",2,"socfamhx");
-		summaryList[3] = new SummaryTo1("Reminders",3,"reminders");
-		summaryList[4] = new SummaryTo1("Medications",4,"meds");
-		summaryList[5] = new SummaryTo1("Other Meds",5,"othermeds");
-		summaryList[6] = new SummaryTo1("Assessments",6,"assessments");
-		summaryList[7] = new SummaryTo1("Outgoing",7,"outgoing");
+		//summaryList[2] = new SummaryTo1("Social/Family History",2,"socfamhx");
+		summaryList[2] = new SummaryTo1("Psychiatric History",2,"sochx");
+		summaryList[3] = new SummaryTo1("Family History",3,"famhx");
+
+		summaryList[4] = new SummaryTo1("Reminders",4,"reminders");
+		summaryList[5] = new SummaryTo1("Medications",5,"meds");
+		summaryList[6] = new SummaryTo1("Other Meds",6,"othermeds");
+		summaryList[7] = new SummaryTo1("Assessments",7,"assessments");
+		//summaryList[9] = new SummaryTo1("Outgoing",7,"outgoing");
 		return summaryList;
 	}
 	
@@ -151,20 +154,20 @@ public class RecordUxService extends AbstractServiceImpl {
 			
 			getSummaryListForIssuedNotes(demographicNo,summary.getSummaryItem(),codes);
 		}else if("reminders".equals(summaryCode)){
-			summary = new SummaryTo1("Reminders",3,"reminders");
+			summary = new SummaryTo1("Reminders",4,"reminders");
 			//String[] issueIds = new String[] {"63"}; //|       63 | Reminders  
 			String[] issueIds = new String[] {"Reminders"}; //|       63 | Reminders  
 			getSummaryListForIssuedNotes(demographicNo, summary.getSummaryItem(),  issueIds);
 		}else if("meds".equals(summaryCode)){
-			summary = new SummaryTo1("Medications",4,"meds");
+			summary = new SummaryTo1("Medications",5,"meds");
 			//STILL NEED TO DO THIS
 		}else if("othermeds".equals(summaryCode)){
-			summary = new SummaryTo1("Other Meds",5,"othermeds");
+			summary = new SummaryTo1("Other Meds",6,"othermeds");
 			//String[] issueIds = new String[] {"59"}; //|      
 			String[] issueIds = new String[] {"OMeds"}; //|       
 			getSummaryListForIssuedNotes(demographicNo, summary.getSummaryItem(),  issueIds);
 		}else if("assessments".equals(summaryCode)){
-			summary = new SummaryTo1("Assessments",6,"assessments");
+			summary = new SummaryTo1("Assessments",7,"assessments");
 			
 			List<EFormData> completedEforms = formsManager.findByDemographicId(demographicNo);
 			List<SummaryItemTo1> list =   summary.getSummaryItem();
@@ -186,12 +189,30 @@ public class RecordUxService extends AbstractServiceImpl {
 			
 			
 			//STILL NEED TO DO THIS
-		}else if("outgoing".equals(summaryCode)){
+		}else if("sochx".equals(summaryCode)){
+			summary = new SummaryTo1("Psychiatric History",2,"sochx");
+			//String[] codes = new String[] {"60","64"};
+			String[] codes = new String[] {"SocHistory"};
+			
+			getSummaryListForIssuedNotes(demographicNo,summary.getSummaryItem(),codes);
+		}else if("famhx".equals(summaryCode)){
+			summary = new SummaryTo1("Family History",3,"famhx");
+			//String[] codes = new String[] {"60","64"};
+			String[] codes = new String[] {"FamHistory"};
+			
+			getSummaryListForIssuedNotes(demographicNo,summary.getSummaryItem(),codes);
+		}
+		
+		
+		
+		
+		/* Removing outgoing for the demo
+		else if("outgoing".equals(summaryCode)){
 			summary = new SummaryTo1("Outgoing",7,"outgoing");
 			
 			//STILL NEED TO DO THIS
 		}
-				
+		*/		
 	
 		return summary;
 	}

@@ -375,12 +375,12 @@
 <div>
 	<fieldset >
 		<legend>Alerts</legend>
-		<textarea class="form-control" rows="3" style="color: red;">{{page.alert}}</textarea>
+		<textarea ng-model="page.demo.alert" class="form-control" rows="3" style="color: red;"></textarea>
 	</fieldset>
 
 	<fieldset>
 		<legend>Notes</legend>
-		<textarea class="form-control" rows="3" >{{page.notes}}</textarea>
+		<textarea ng-model="page.notes" class="form-control" rows="3" ></textarea>
 	</fieldset>
 	<br/>
 	

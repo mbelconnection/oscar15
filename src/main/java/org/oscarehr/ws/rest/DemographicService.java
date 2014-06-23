@@ -42,6 +42,7 @@ import org.oscarehr.common.model.Appointment;
 import org.oscarehr.common.model.Contact;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.DemographicContact;
+import org.oscarehr.common.model.DemographicCust;
 import org.oscarehr.common.model.DemographicExt;
 import org.oscarehr.managers.ContactManager;
 import org.oscarehr.managers.DemographicManager;
@@ -155,6 +156,12 @@ public class DemographicService extends AbstractServiceImpl {
 
 		DemographicTo1 result = demoConverter.getAsTransferObject(demo);
 		
+		DemographicCust demoCust = demographicManager.getDemographicCust(id);
+		if (demoCust!=null) {
+			result.setAlert(demoCust.getAlert());
+			result.setNotes(demoCust.getNotes());
+		}
+		
 		List<DemographicContact> demoContacts = demographicManager.getDemographicContacts(id);
 		if (demoContacts!=null) {
 			for (DemographicContact demoContact : demoContacts) {
@@ -240,6 +247,16 @@ public class DemographicService extends AbstractServiceImpl {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public DemographicTo1 updateDemographicData(DemographicTo1 data) {
+		//update demographiccust
+		DemographicCust demoCust = demographicManager.getDemographicCust(data.getDemographicNo());
+		if (demoCust==null) {
+			demoCust = new DemographicCust();
+			demoCust.setId(data.getDemographicNo());
+		}
+		demoCust.setAlert(data.getAlert());
+		demoCust.setNotes(data.getNotes());
+		demographicManager.createUpdateDemographicCust(demoCust);
+		
 	    //create or update Contacts & link with DemographicContacts
 		for (DemographicContactAndContactTo1 demoContactAndContact : data.getDemoContactAndContacts()) {
 			Contact contact = contactConverter.getAsDomainObject(demoContactAndContact.getContact());

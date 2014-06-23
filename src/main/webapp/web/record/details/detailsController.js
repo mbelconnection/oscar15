@@ -69,7 +69,7 @@ oscarApp.controller('DetailsCtrl', function ($scope,$http,$location,$stateParams
 	
 	//upload photo
 	$scope.launchPhoto = function(){
-		var url = "https://localhost:8081/oscar/casemgmt/uploadimage.jsp?demographicNo="+demo.demographicNo;
+		var url = "../casemgmt/uploadimage.jsp?demographicNo="+demo.demographicNo;
 		window.open(url, "uploadWin", "width=500, height=300");
 	}
 	
@@ -86,6 +86,13 @@ oscarApp.controller('DetailsCtrl', function ($scope,$http,$location,$stateParams
 	}
 	if ($scope.page.extras.ethnicity==null) $scope.page.extras.ethnicity = "Kinh"; //default 
 
+	//show notes
+	if (demo.notes!=null) {
+		var pageNotes = demo.notes.substring("<unotes>".length);
+		pageNotes = pageNotes.substring(0, pageNotes.length-("</unotes>".length));
+		$scope.page.notes = pageNotes;
+	}
+	
 	//show contacts in case of only 1 entry
 	if (demo.demoContactAndContacts!=null && demo.demoContactAndContacts.demoContact!=null) {
 		var currentDcc = {};
@@ -116,6 +123,11 @@ oscarApp.controller('DetailsCtrl', function ($scope,$http,$location,$stateParams
 		if (demo.effDate!=null && demo.effDate!="") {
 			var issDate = demo.effDate.split("/");
 			demo.effDate = issDate[2] + "-" + issDate[1] + "-" + issDate[0];
+		}
+		
+		//format notes
+		if ($scope.page.notes!=null) {
+			demo.notes = "<unotes>" + $scope.page.notes + "</unotes>";
 		}
 		
 		//save extras

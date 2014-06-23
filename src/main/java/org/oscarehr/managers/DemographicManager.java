@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.oscarehr.common.Gender;
 import org.oscarehr.common.dao.DemographicArchiveDao;
 import org.oscarehr.common.dao.DemographicContactDao;
+import org.oscarehr.common.dao.DemographicCustDao;
 import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.dao.DemographicExtDao;
 import org.oscarehr.common.dao.DemographicMergedDao;
@@ -38,6 +39,7 @@ import org.oscarehr.common.dao.PHRVerificationDao;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.Demographic.PatientStatus;
 import org.oscarehr.common.model.DemographicContact;
+import org.oscarehr.common.model.DemographicCust;
 import org.oscarehr.common.model.DemographicExt;
 import org.oscarehr.common.model.DemographicMerged;
 import org.oscarehr.common.model.PHRVerification;
@@ -68,6 +70,8 @@ public class DemographicManager {
 	private DemographicDao demographicDao;
 	@Autowired
 	private DemographicExtDao demographicExtDao;
+	@Autowired
+	private DemographicCustDao demographicCustDao;
 	@Autowired
 	private DemographicContactDao demographicContactDao;
 	
@@ -143,6 +147,24 @@ public class DemographicManager {
 		}
 
 		return result;
+	}
+	
+	public DemographicCust getDemographicCust(Integer id) {
+		DemographicCust result = null;
+		result = demographicCustDao.find(id);
+		
+		//--- log action ---
+		if (result != null) {
+			LogAction.addLogSynchronous("DemographicManager.getDemographicCust", "id="+ id.toString());
+		}
+		return result;
+	}
+	
+	public void createUpdateDemographicCust(DemographicCust demoCust) {
+		if (demoCust!=null) demographicCustDao.merge(demoCust);
+		
+		//--- log action ---
+		LogAction.addLogSynchronous("DemographicManager.createUpdateDemographicCust", "id="+ demoCust.getId());
 	}
 	
 	public List<DemographicContact> getDemographicContacts(Integer id) {

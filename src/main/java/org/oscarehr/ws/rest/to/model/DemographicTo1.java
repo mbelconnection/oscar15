@@ -132,6 +132,10 @@ public class DemographicTo1 implements Serializable {
 	private String countryOfOrigin;
 
 	private String newsletter;
+	
+	private String alert;
+	
+	private String notes;
 
 	public Integer getDemographicNo() {
 		return demographicNo;
@@ -523,5 +527,21 @@ public class DemographicTo1 implements Serializable {
 
 	public void setAlternativePhone(String alternativePhone) {
 		this.alternativePhone = alternativePhone;
+	}
+
+	public String getAlert() {
+		return alert;
+	}
+
+	public void setAlert(String alert) {
+		this.alert = alert;
+	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
 	}
 }

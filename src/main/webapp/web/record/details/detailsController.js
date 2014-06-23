@@ -31,24 +31,26 @@ oscarApp.controller('DetailsCtrl', function ($scope,$http,$location,$stateParams
 	$scope.page.contact = {};
 	$scope.page.extras = {};
 
-	//show dob
-	var dob = demo.dateOfBirth.substring(0, demo.dateOfBirth.indexOf("T"));
-	var dobpart = dob.split("-");
-	$scope.page.birthdayYear = dobpart[0];
-	$scope.page.birthdayMonth = dobpart[1];
-	$scope.page.birthdayDay = dobpart[2];
-	
-	//calculate age
-	var birthDate = new Date(dobpart[0], dobpart[1]-1, dobpart[2]);
-	var todayDate = new Date();
-	var diffInMonth = todayDate.getMonth() - birthDate.getMonth();
-	var diffInDay = todayDate.getDate() - birthDate.getDate();
-	
-	var age = todayDate.getFullYear() - birthDate.getFullYear();
-	if (diffInMonth<0 || (diffInMonth==0 && diffInDay<0)) {
-		age -= 1;
+	if (demo.dateOfBirth!=null && demo.dateOfBirth!="") {
+		//show dob
+		var dob = demo.dateOfBirth.substring(0, demo.dateOfBirth.indexOf("T"));
+		var dobpart = dob.split("-");
+		$scope.page.birthdayYear = dobpart[0];
+		$scope.page.birthdayMonth = dobpart[1];
+		$scope.page.birthdayDay = dobpart[2];
+		
+		//calculate age
+		var birthDate = new Date(dobpart[0], dobpart[1]-1, dobpart[2]);
+		var todayDate = new Date();
+		var diffInMonth = todayDate.getMonth() - birthDate.getMonth();
+		var diffInDay = todayDate.getDate() - birthDate.getDate();
+		
+		var age = todayDate.getFullYear() - birthDate.getFullYear();
+		if (diffInMonth<0 || (diffInMonth==0 && diffInDay<0)) {
+			age -= 1;
+		}
+		$scope.page.age = age;
 	}
-	$scope.page.age = age;
 	
 	//show admission date
 	if (demo.dateJoined!=null && demo.dateJoined!="") {
@@ -88,9 +90,11 @@ oscarApp.controller('DetailsCtrl', function ($scope,$http,$location,$stateParams
 
 	//show notes
 	if (demo.notes!=null) {
-		var pageNotes = demo.notes.substring("<unotes>".length);
-		pageNotes = pageNotes.substring(0, pageNotes.length-("</unotes>".length));
-		$scope.page.notes = pageNotes;
+		if (demo.notes.indexOf("<unotes>")>=0 && demo.notes.indexOf("</unotes>")>=0) {
+			var pageNotes = demo.notes.substring("<unotes>".length);
+			pageNotes = pageNotes.substring(0, pageNotes.length-("</unotes>".length));
+			$scope.page.notes = pageNotes;
+		}
 	}
 	
 	//show contacts in case of only 1 entry

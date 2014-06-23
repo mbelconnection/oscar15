@@ -846,7 +846,7 @@
         <ap-json-output>true</ap-json-output>
     </databaseap>
     <databaseap>
-	<ap-name>demographic_contacts_json</ap-name>
+	<ap-name>demo_1st_contacts_json</ap-name>
 	<ap-sql>select role,lastName,firstName,address,address2,city,province,country,postal,
 		residencePhone,cellPhone,workPhone,workPhoneExtension,email,fax
 		from DemographicContact dc, Contact ct
@@ -861,5 +861,10 @@
 	<ap-name>date_joined</ap-name>
 	<ap-sql>select date_joined from demographic where demographic_no=${demographic}</ap-sql>
 	<ap-output>${date_joined}</ap-output>
+    </databaseap>
+    <databaseap>
+	<ap-name>demo_notes</ap-name>
+	<ap-sql>select content from demographiccust where demographic_no=${demographic}</ap-sql>
+	<ap-output>${content}</ap-output>
     </databaseap>
 </eformap-config>

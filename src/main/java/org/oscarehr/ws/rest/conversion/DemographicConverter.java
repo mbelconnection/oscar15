@@ -26,6 +26,7 @@ package org.oscarehr.ws.rest.conversion;
 import org.apache.log4j.Logger;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.DemographicExt;
+import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.ws.rest.to.model.DemographicTo1;
 import oscar.util.ConversionUtils;
 
@@ -98,6 +99,11 @@ public class DemographicConverter extends AbstractConverter<Demographic, Demogra
 		DemographicExt[] exts = new DemographicExt[t.getExtras().size()];
 		for (int i = 0; i < t.getExtras().size(); i++) {
 			exts[i] = demoExtConverter.getAsDomainObject(t.getExtras().get(i));
+			
+			if (exts[i].getDemographicNo()==null) exts[i].setDemographicNo(d.getDemographicNo());
+			if (exts[i].getProviderNo()==null) {
+		    	exts[i].setProviderNo(LoggedInInfo.loggedInInfo.get().loggedInProvider.getProviderNo());
+			}
 		}
 		d.setExtras(exts);
 

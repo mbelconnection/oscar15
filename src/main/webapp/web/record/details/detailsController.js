@@ -29,10 +29,10 @@ oscarApp.controller('DetailsCtrl', function ($scope,$http,$location,$stateParams
 	$scope.page = {};
 	$scope.page.demo = demo;
 	$scope.page.contact = {};
+	$scope.page.extras = {};
 
 	//show dob
-	var dob = demo.dateOfBirth;
-	dob = dob.substring(0, dob.indexOf("T"));
+	var dob = demo.dateOfBirth.substring(0, demo.dateOfBirth.indexOf("T"));
 	var dobpart = dob.split("-");
 	$scope.page.birthdayYear = dobpart[0];
 	$scope.page.birthdayMonth = dobpart[1];
@@ -50,6 +50,20 @@ oscarApp.controller('DetailsCtrl', function ($scope,$http,$location,$stateParams
 	}
 	$scope.page.age = age;
 	
+	//show admission date
+	if (demo.dateJoined!=null && demo.dateJoined!="") {
+		var date = demo.dateJoined.substring(0, demo.dateJoined.indexOf("T"));
+		var datepart = date.split("-");
+		demo.dateJoined = datepart[2] + "/" + datepart[1] + "/" + datepart[0];
+	} 
+	
+	//show ID card issued date
+	if (demo.effDate!=null && demo.effDate!="") {
+		var date = demo.effDate.substring(0, demo.effDate.indexOf("T"));
+		var datepart = date.split("-");
+		demo.effDate = datepart[2] + "/" + datepart[1] + "/" + datepart[0];
+	}
+	
 	//show vietnam province next to photo
 	$scope.page.province = vnprovince[demo.address.province];
 	
@@ -59,7 +73,65 @@ oscarApp.controller('DetailsCtrl', function ($scope,$http,$location,$stateParams
 		window.open(url, "uploadWin", "width=500, height=300");
 	}
 	
+	//show extras
+	if (demo.extras!=null) { //no extras
+		if (demo.extras.key!=null) { //only 1 extras
+			showDemoExtras(demo.extras, $scope.page.extras);
+		}
+		else { //more than 1 extras
+			for (var i in demo.extras) {
+				showDemoExtras(demo.extras[i], $scope.page.extras);
+			}
+		}
+	}
+	if ($scope.page.extras.ethnicity==null) $scope.page.extras.ethnicity = "Kinh"; //default 
+	
 	$scope.save = function(){
+		//format dob
+		var dobYear = $scope.page.birthdayYear;
+		var dobMonth = $scope.page.birthdayMonth;
+		var dobDay = $scope.page.birthdayDay;
+		if (dobYear!=null && dobMonth!=null && dobDay!=null && dobYear!="" && dobMonth!="" && dobDay!="") {
+			demo.dateOfBirth = dobYear + "-" + dobMonth + "-" + dobDay;
+		}
+		
+		//format admission date
+		if (demo.dateJoined!=null && demo.dateJoined!="") {
+			var admDate = demo.dateJoined.split("/");
+			demo.dateJoined = admDate[2] + "-" + admDate[1] + "-" + admDate[0];
+		}
+		
+		//format ID card issued date
+		if (demo.effDate!=null && demo.effDate!="") {
+			var issDate = demo.effDate.split("/");
+			demo.effDate = issDate[2] + "-" + issDate[1] + "-" + issDate[0];
+		}
+		
+		//save extras
+		demo.extras = [];
+		if ($scope.page.extras.issuing_agency!=null) {
+			demo.extras.push({"key":"issuing_agency", "value":$scope.page.extras.issuing_agency});
+		}
+		if ($scope.page.extras.ethnicity!=null) {
+			demo.extras.push({"key":"ethnicity", "value":$scope.page.extras.ethnicity});
+		}
+		if ($scope.page.extras.marital_status!=null) {
+			demo.extras.push({"key":"marital_status", "value":$scope.page.extras.marital_status});
+		}
+		if ($scope.page.extras.children!=null) {
+			demo.extras.push({"key":"children", "value":$scope.page.extras.children});
+		}
+		if ($scope.page.extras.employment!=null) {
+			demo.extras.push({"key":"employment", "value":$scope.page.extras.employment});
+		}
+		if ($scope.page.extras.financial_status!=null) {
+			demo.extras.push({"key":"financial_status", "value":$scope.page.extras.financial_status});
+		}
+		if ($scope.page.extras.education!=null) {
+			demo.extras.push({"key":"education", "value":$scope.page.extras.education});
+		}
+		
+		//save contacts
 		if ($scope.page.contact!=null && $scope.page.contact.role!=null) {
 			var dccList = demo.demoContactAndContacts;
 			var newDcc = {};
@@ -69,7 +141,10 @@ oscarApp.controller('DetailsCtrl', function ($scope,$http,$location,$stateParams
 			newDcc.demoContact = newDemoContact;
 			newDcc.contact = newContact;
 			newDemoContact.role = $scope.page.contact.role;
+			newDemoContact.type = 2; //external: for mmt_demo only
 			newDemoContact.demographicNo = demo.demographicNo;
+			
+			alert(newDemoContact.role);
 
 			newContact.lastName = $scope.page.contact.lastName;
 			newContact.firstName = $scope.page.contact.firstName;
@@ -77,11 +152,26 @@ oscarApp.controller('DetailsCtrl', function ($scope,$http,$location,$stateParams
 			newContact.address = $scope.page.contact.address;
 			newContact.city = $scope.page.contact.city;
 			
+			alert(newContact.firstName);
+			
 			dccList.push(newDcc);
 		}
 		demographicService.updateDemographic(demo);
 	}
 });
+
+function showDemoExtras(demoExtra, pageExtras) {
+	var key = demoExtra.key;
+	var value = demoExtra.value;
+	
+	if (key=="issuing_agency") pageExtras.issuing_agency = value;
+	else if (key=="ethnicity") pageExtras.ethnicity = value;
+	else if (key=="marital_status") pageExtras.marital_status = value;
+	else if (key=="children") pageExtras.children = value;
+	else if (key=="employment") pageExtras.employment = value;
+	else if (key=="financial_status") pageExtras.financial_status = value;
+	else if (key=="education") pageExtras.education = value;
+}
 
 var vnprovince = [];
 vnprovince["VN.AG"] = "An Giang";
@@ -147,4 +237,3 @@ vnprovince["VN.TQ"] = "Tuyên Quang";
 vnprovince["VN.VL"] = "Vĩnh Long";
 vnprovince["VN.VC"] = "Vĩnh Phúc";
 vnprovince["VN.YB"] = "Yên Bái";
-

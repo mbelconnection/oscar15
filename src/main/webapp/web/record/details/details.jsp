@@ -145,13 +145,13 @@
 					<label>Date of Birth, Age: {{page.age}}</label>
 					<div class="row">
 						<div class="col-xs-4">
-							<input id="birthdayYear" type="text"placeholder="YYYY" class="form-control "  ng-model="page.birthdayYear"/>
+							<input type="text"placeholder="YYYY" class="form-control" ng-model="page.birthdayYear"/>
 						</div>
 						<div class="col-xs-3">
-							<input id="birthdayMonth" type="text" placeholder="MM" class="form-control "  ng-model="page.birthdayMonth"/>
+							<input type="text" placeholder="MM" class="form-control" ng-model="page.birthdayMonth"/>
 						</div>
 						<div class="col-xs-3">
-							<input id="birthdayDay" type="text" placeholder="DD" class="form-control"  ng-model="page.birthdayDay"/>
+							<input type="text" placeholder="DD" class="form-control" ng-model="page.birthdayDay"/>
 						</div>
 					</div>
 			</div>
@@ -177,7 +177,6 @@
 					<div class="col-xs-6">
 						<label>Province</label>
 						<select name="province" class="form-control" ng-model="page.demo.address.province">
-							<option value="">--</option>
 							<option value="VN.AG">An Giang</option>
 							<option value="VN.BV">Bà Rịa-Vũng Tàu</option>
 							<option value="VN.BG">Bắc Giang</option>
@@ -281,6 +280,85 @@
 
 	</div>
 	</fieldset>
+	
+	<fieldset>
+		<legend>Other Information</legend>
+		<div class="form-group">
+			<div class="col-xs-6">
+				<label>Admission Date</label>
+				<input type="text" class="form-control" placeholder="DD/MM/YYYY" ng-model="page.demo.dateJoined"/>
+			</div>
+			<div class="col-xs-6">
+				<label>ID Card Number</label>
+				<input type="text" class="form-control" placeholder="ID Card Number" ng-model="page.demo.hin"/>
+			</div>
+			<div class="col-xs-6">
+				<label>Issued Date</label>
+				<input type="text" class="form-control" placeholder="DD/MM/YYYY" ng-model="page.demo.effDate"/>
+			</div>
+			<div class="col-xs-6">
+				<label>Issuing Agency</label>
+				<input type="text" ng-model="page.extras.issuing_agency" class="form-control" placeholder="Issuing Agency"/>
+			</div>
+			<div class="col-xs-6">
+				<label>Marital Status</label>
+				<select ng-model="page.extras.marital_status" class="form-control">
+					<option value="Single">Single</option>
+					<option value="Married">Married</option>
+				</select>
+			</div>
+			<div class="col-xs-6">
+				<label> No. of Children</label>
+				<select ng-model="page.extras.children" class="form-control">
+					<option value="0">0</option>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="3+">3+</option>
+				</select>
+			</div>
+			<div class="col-xs-6">
+				<label>Employment</label>
+				<select ng-model="page.extras.employment" class="form-control">
+					<option value="">--</option>
+					<option value="Employed">Employed</option>
+					<option value="Unemployed">Unemployed</option>
+					<option value="Disabled">Disabled</option>
+					<option value="Student">Student</option>
+				</select>
+			</div>
+			<div class="col-xs-6">
+				<label>Financial Status</label>
+				<input type="text" ng-model="page.extras.financial_status" class="form-control" placeholder="Monthly Income in VND"/>
+			</div>
+			<div class="col-xs-6">
+				<label>Education Level</label>
+				<select ng-model="page.extras.education" class="form-control">
+					<option value="Primary (1-5)">Primary (1-5)</option>
+					<option value="Secondary (6-9)">Secondary (6-9)</option>
+					<option value="High School (10-12)" selected>High School (10-12)</option>
+					<option value="Technical School">Technical School</option>
+					<option value="University">University</option>
+					<option value="Post-Graduate">Post-Graduate</option>
+				</select>
+			</div>
+			<div class="col-xs-6">
+				<label>Ethnicity</label>
+				<select ng-model="page.extras.ethnicity" class="form-control">
+					<option value="Kinh">Kinh</option>
+					<option value="">----------------------</option>
+					<option value="Hmong">Hmong</option>
+					<option value="Hoa">Hoa</option>
+					<option value="Khmer Krom">Khmer Krom</option>
+					<option value="Mường">Mường</option>
+					<option value="Nùng">Nùng</option>
+					<option value="Tay">Tay</option>
+					<option value="">----------------------</option>
+					<option value="Other">Other</option>
+				</select>
+			</div>
+		</div>
+	</fieldset>
 </div>
 
 <div class="col-lg-4">
@@ -364,64 +442,3 @@
  -->
 	</div>
 </div>
-
-<%--
-<div>
-	<label>Employment</label>
-	<select name="employment" class="form-control">
-		<option value="">--</option>
-		<option value="Employed">Employed</option>
-		<option value="Unemployed">Unemployed</option>
-		<option value="Disabled">Disabled</option>
-		<option value="Student">Student</option>
-	</select>
-</div>
-<div>
-	<label>Financial Status</label>
-	<input type="text" name="financial-status" class="form-control number" placeholder="Monthly Income in VND" />
-</div>
-<div>
-	<label>Education Level</label>
-	<select name="education" class="form-control">
-		<option value="Primary (1-5)">Primary (1-5)</option>
-		<option value="Secondary (6-9)">Secondary (6-9)</option>
-		<option value="High School (10-12)" selected>High School (10-12)</option>
-		<option value="Technical School">Technical School</option>
-		<option value="University">University</option>
-		<option value="Post-Graduate">Post-Graduate</option>
-	</select>
-</div>
-
-<div>
-	<label>Marital Status</label>
-	<select name="marital-status" class="form-control">
-		<option value="Single">Single</option>
-		<option value="Married">Married</option>
-	</select>
-</div>
-<div>
-	<label> No. of Children</label>
-	<select name="children" class="form-control">
-		<option value="0">0</option>
-		<option value="1">1</option>
-		<option value="2">2</option>
-		<option value="3">3</option>
-		<option value="3+">3+</option>
-	</select>
-</div>
-<div>
-					<label>Ethnicity</label>
-					<select name="ethincity" class="form-control">
-						<option value="Kinh">Kinh</option>
-						<option value="">----------------------</option>
-						<option value="Hmong">Hmong</option>
-						<option value="Hoa">Hoa</option>
-						<option value="Khmer Krom">Khmer Krom</option>
-						<option value="Mường">Mường</option>
-						<option value="Nùng">Nùng</option>
-						<option value="Tay">Tay</option>
-						<option value="">----------------------</option>
-						<option value="Other">Other</option>
-					</select>
-				</div>
---%>

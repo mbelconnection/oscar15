@@ -48,7 +48,6 @@ import org.oscarehr.managers.DemographicManager;
 import org.oscarehr.managers.ScheduleManager;
 import org.oscarehr.managers.WaitListManager;
 import org.oscarehr.util.MiscUtils;
-import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.ws.rest.conversion.ContactConverter;
 import org.oscarehr.ws.rest.conversion.DemographicContactConverter;
 import org.oscarehr.ws.rest.conversion.DemographicConverter;
@@ -249,9 +248,8 @@ public class DemographicService extends AbstractServiceImpl {
 	    	DemographicContact demoContact = demoContactConverter.getAsDomainObject(demoContactAndContact.getDemoContact());
 	    	demoContact.setContactId(contactId.toString());
 	    	
-	    	LoggedInInfo loggedInInfo = LoggedInInfo.loggedInInfo.get();
-	    	demoContact.setFacilityId(loggedInInfo.currentFacility.getId());
-	    	demoContact.setCreator(loggedInInfo.loggedInProvider.getProviderNo());
+	    	demoContact.setFacilityId(getLoggedInInfo().currentFacility.getId());
+	    	demoContact.setCreator(getLoggedInInfo().loggedInProvider.getProviderNo());
 	    	
 	    	demographicManager.createUpdateDemographicContact(demoContact);
 		}

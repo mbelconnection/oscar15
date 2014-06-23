@@ -2072,6 +2072,17 @@ function updateQty(element){
         $(eleId).value = $(eleId).value +" LU Code: "+luCode;
     }
 
+    
+    function getDetailedDosingInformation(divId,atcCode){
+        var url = "DetailedDosing.jsp";
+        var ran_number=Math.round(Math.random()*1000000);
+        var params = "demographicNo=<%=demoNo%>&atcCode="+atcCode+"&divId="+divId+"&rand="+ran_number;
+        var pymParent2 = new pym.Parent(divId, url+'?'+params, {});
+        console.log('calling detailed dosing');
+        //new Ajax.Updater(divId,url, {method:'get',parameters:params,evalScripts:true,insertion: Insertion.Bottom,asynchronous:true});
+  	}
+    
+    
          function getRenalDosingInformation(divId,atcCode){
                var url = "RenalDosing.jsp";
                var ran_number=Math.round(Math.random()*1000000);

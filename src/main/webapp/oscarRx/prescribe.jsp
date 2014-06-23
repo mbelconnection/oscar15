@@ -32,10 +32,10 @@
 <%@page import="java.util.Calendar" %>
 <%@page import="oscar.oscarRx.data.*" %>
 <%@page import="oscar.oscarRx.util.*" %>
-<%@page import="oscar.OscarProperties"%>
+<%@page import="oscar.OscarProperties,org.oscarehr.common.dao.DrugDao,org.oscarehr.common.model.Drug,org.oscarehr.util.SpringUtils" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
     <%
-
+    DrugDao drugDao = (DrugDao) SpringUtils.getBean("drugDao");
 List<RxPrescriptionData.Prescription> listRxDrugs=(List)request.getAttribute("listRxDrugs");
 oscar.oscarRx.pageUtil.RxSessionBean bean = (oscar.oscarRx.pageUtil.RxSessionBean)request.getSession().getAttribute("RxSessionBean");
 
@@ -275,7 +275,9 @@ if(listRxDrugs!=null){
 					<%=drugForm%>
 				<% } %>
 
+		   
            <div id="renalDosing_<%=rand%>" ></div>
+           <div id="detailedDosing_<%=rand%>" ></div>	
            <div id="luc_<%=rand%>" style="margin-top:2px;"></div>
            <oscar:oscarPropertiesCheck property="RENAL_DOSING_DS" value="yes">
             <script type="text/javascript">getRenalDosingInformation('renalDosing_<%=rand%>','<%=rx.getAtcCode()%>');</script>
@@ -283,6 +285,14 @@ if(listRxDrugs!=null){
            <oscar:oscarPropertiesCheck property="billregion" value="ON" >
                <script type="text/javascript">getLUC('luc_<%=rand%>','<%=rand%>','<%=rx.getRegionalIdentifier()%>');</script>
             </oscar:oscarPropertiesCheck>
+             <script type="text/javascript">
+             	<%
+             	List<Drug> drugs = drugDao.findByDemographicIdSimilarDrugOrderByDate(bean.getDemographicNo(), null, null,null, rx.getAtcCode());
+             	if(drugs.size()>0){
+             	%>
+	              getDetailedDosingInformation('detailedDosing_<%=rand%>','<%=rx.getAtcCode()%>');
+	              <%}%>
+	         </script>
 </fieldset>
 <%}else{%>
 <fieldset style="margin-top:2px;width:620px;" id="set_<%=rand%>">
@@ -291,7 +301,7 @@ if(listRxDrugs!=null){
 
     <label style="float:left;width:80px;" title="<%=ATC%>" >Name:</label>
     <input type="hidden" name="atcCode" value="<%=ATCcode%>" />
-    <input tabindex="-1" type="text" id="drugName_<%=rand%>"  name="drugName_<%=rand%>"  size="30" <%if(gcn==0){%> onkeyup="saveCustomName(this);" value="<%=drugName%>"<%} else{%> value='<%=drugName%>'  onchange="changeDrugName('<%=rand%>','<%=drugName%>');" <%}%> TITLE="<%=drugName%>"/>&nbsp;<span id="inactive_<%=rand%>" style="color:red;"></span><br>
+    <input tabindex="-1" type="text" id="drugName_<%=rand%>"  name="drugName_<%=rand%>"  size="60" <%if(gcn==0){%> onkeyup="saveCustomName(this);" value="<%=drugName%>"<%} else{%> value='<%=drugName%>'  onchange="changeDrugName('<%=rand%>','<%=drugName%>');" <%}%> TITLE="<%=drugName%>"/>&nbsp;<span id="inactive_<%=rand%>" style="color:red;"></span><br>
 
 	<!-- Allergy Alert Table-->
 	<table width="570px" border="1" bordercolor="#CCCCCC" cellspacing="0" cellpadding="0" style="border-collapse: collapse;display: none;" id="alleg_tbl_<%=rand%>">
@@ -437,6 +447,7 @@ if(listRxDrugs!=null){
        </div>
        
            <div id="renalDosing_<%=rand%>" ></div>
+            <div id="detailedDosing_<%=rand%>" ></div>
            <div id="luc_<%=rand%>" style="margin-top:2px;"/>
            <oscar:oscarPropertiesCheck property="RENAL_DOSING_DS" value="yes">
             <script type="text/javascript">getRenalDosingInformation('renalDosing_<%=rand%>','<%=rx.getAtcCode()%>');</script>
@@ -444,6 +455,14 @@ if(listRxDrugs!=null){
            <oscar:oscarPropertiesCheck property="billregion" value="ON" >
                <script type="text/javascript">getLUC('luc_<%=rand%>','<%=rand%>','<%=rx.getRegionalIdentifier()%>');</script>
             </oscar:oscarPropertiesCheck>
+            <script type="text/javascript">
+            <%
+         	List<Drug> drugs = drugDao.findByDemographicIdSimilarDrugOrderByDate(bean.getDemographicNo(), null, null,null, rx.getAtcCode());
+         	if(drugs.size()>0){
+         	%>
+	              getDetailedDosingInformation('detailedDosing_<%=rand%>','<%=rx.getAtcCode()%>');
+             <%}%>
+	         </script>
 
 </fieldset>
 <%}%>

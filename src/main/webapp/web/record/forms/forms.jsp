@@ -43,6 +43,7 @@
 	  	   <ul class="list-group" tabindex="0" ng-keypress="keypress($event)">
    				<li class="list-group-item" ng-repeat="item in page.currentFormList[page.currentlistId] | filter:filterFormsQ" ng-class="getActiveFormClass(item)">
    					<a class="list-group-item-text" ng-click="viewFormState(item)" >  <span  ng-show="item.date" class="pull-right">{{item.date | date : 'd-MMM-y'}}</span>  {{item.name}}</a>
+   					<a ng-cloak ng-show="showPopOut(item)" target="_blank" href="{{getUrl(item)}}"><span class="glyphicon glyphicon-new-window"></span></a>
    				</li>
    			</ul>
 	</div>

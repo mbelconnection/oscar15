@@ -53,6 +53,31 @@ oscarApp.controller('FormCtrl', function ($scope,$http,$location,$stateParams,de
 		console.log('set currentlist to '+listId);
 	}
 	
+	$scope.showPopOut = function(item){
+		if(angular.isUndefined(item)){
+			return false;
+		}
+		
+		if(item.type == 'eform' && angular.isDefined(item.id)){
+			console.log("false");
+			return false;
+		}else if(item.type == 'eform'  && angular.isUndefined(item.id)){
+			console.log("true");
+			return true;
+		}
+	};
+	
+	$scope.getUrl = function(item){
+		var url = '';
+		
+		if(item.type == 'eform' && angular.isDefined(item.id)){
+			url = '../eform/efmshowform_data.jsp?fdid='+item.id;
+		}else if(item.type == 'eform'  && angular.isUndefined(item.id)){
+			url = '../eform/efmformadd_data.jsp?fid='+item.formId+'&demographic_no='+ $stateParams.demographicNo;
+		}
+		return url;
+	};
+	
 	$scope.viewFormState = function(item){
 		
 		while(document.getElementById('formInViewFrame').hasChildNodes()){

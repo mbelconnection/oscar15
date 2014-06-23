@@ -85,6 +85,17 @@ oscarApp.controller('DetailsCtrl', function ($scope,$http,$location,$stateParams
 		}
 	}
 	if ($scope.page.extras.ethnicity==null) $scope.page.extras.ethnicity = "Kinh"; //default 
+
+	//show contacts in case of only 1 entry
+	if (demo.demoContactAndContacts!=null && demo.demoContactAndContacts.demoContact!=null) {
+		var currentDcc = {};
+		var currentDemoContact = demo.demoContactAndContacts.demoContact;
+		var currentContact = demo.demoContactAndContacts.contact;
+		currentDcc.demoContact = currentDemoContact;
+		currentDcc.contact = currentContact;
+		demo.demoContactAndContacts = [];
+		demo.demoContactAndContacts.push(currentDcc);
+	}
 	
 	$scope.save = function(){
 		//format dob
@@ -133,28 +144,27 @@ oscarApp.controller('DetailsCtrl', function ($scope,$http,$location,$stateParams
 		
 		//save contacts
 		if ($scope.page.contact!=null && $scope.page.contact.role!=null) {
-			var dccList = demo.demoContactAndContacts;
 			var newDcc = {};
 			var newDemoContact = {};
 			var newContact = {};
-
 			newDcc.demoContact = newDemoContact;
 			newDcc.contact = newContact;
+			
 			newDemoContact.role = $scope.page.contact.role;
 			newDemoContact.type = 2; //external: for mmt_demo only
 			newDemoContact.demographicNo = demo.demographicNo;
 			
-			alert(newDemoContact.role);
-
 			newContact.lastName = $scope.page.contact.lastName;
 			newContact.firstName = $scope.page.contact.firstName;
 			newContact.residencePhone = $scope.page.contact.residencePhone;
 			newContact.address = $scope.page.contact.address;
 			newContact.city = $scope.page.contact.city;
 			
-			alert(newContact.firstName);
-			
-			dccList.push(newDcc);
+			if (demo.demoContactAndContacts==null) {
+				demo.demoContactAndContacts = [];
+			}
+			demo.demoContactAndContacts.push(newDcc);
+			$scope.page.contact = {}; //clear "add new" after save
 		}
 		demographicService.updateDemographic(demo);
 	}

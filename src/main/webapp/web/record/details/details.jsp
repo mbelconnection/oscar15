@@ -388,7 +388,7 @@
 		<legend>Contacts</legend>
 		<div class="form-group" ng-repeat="dcc in page.demo.demoContactAndContacts">
 			<div>
-				<select ng-model="dcc.demoContact.role" class="form-control" style="width: 100px; display: inline-block;">
+				<select ng-model="dcc.demoContact.role" class="form-control" style="width: 110px; display: inline-block;">
 					<option value="">Relation:</option>
 					<option value="Father">Father</option>
 					<option value="Mother">Mother</option>
@@ -410,8 +410,9 @@
 			</div>
 		</div>
 		<div class="form-group">
+			<label>Add New</label>
 			<div>
-				<select ng-model="page.contact.role" class="form-control" style="width: 100px; display: inline-block;">
+				<select ng-model="page.contact.role" class="form-control" style="width: 110px; display: inline-block;">
 					<option value="">Relation:</option>
 					<option value="Father">Father</option>
 					<option value="Mother">Mother</option>

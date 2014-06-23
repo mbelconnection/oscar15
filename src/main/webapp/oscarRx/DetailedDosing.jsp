@@ -72,7 +72,7 @@ if( drugs == null || drugs.size() == 0){
 	<div class="col-xs-12" style="padding-left:0px;">
 	<h5>Recent Dose History<%=drugs.size() %><small><a href="javascript: function myFunction() {return false; }" onclick="pymChild.sendHeightToParent();console.log(document.getElementsByTagName('body')[0].offsetHeight.toString());">Refresh</a></small></h5>
 	</div>
-	<div class="col-xs-4" style="padding-left:0px;">
+	<div class="col-xs-5" style="padding-left:0px;">
     	<table class="table table-striped table-condensed">
 	        <tr class="heading">
 	            <th>Date</th>
@@ -102,8 +102,8 @@ if( drugs == null || drugs.size() == 0){
 			%>
 	    </table> 
 	</div>
-	<div class="col-xs-8">
-    	<div style="margin-left:20px;width:350px;height:150px;  border:1px solid black" id="chart1"></div>
+	<div class="col-xs-7">
+    	<div style="padding-left:0px;margin-left:0px;width:350px;height:150px;  border:1px solid black" id="chart1"></div>
 	</div>
 </div>
 <br/>
@@ -118,7 +118,7 @@ if( drugs == null || drugs.size() == 0){
     		
     		seriesColors: [ "#4bb2c5" ],
     		seriesDefaults: { lineWidth:2 , showMarker: false, pointLabels: { show: true } },
-    		axes:{xaxis:{renderer:jQuery.jqplot.DateAxisRenderer,tickInterval:'1 month',min:'2014-04-01',max:'2014-08-01',tickOptions:{formatString:'%F'}}}
+    		axes:{xaxis:{renderer:jQuery.jqplot.DateAxisRenderer,tickInterval:'1 month',min:'2014-01-01',max:'2014-08-01',tickOptions:{formatString:'%F'}}}
     		
   			});
   		

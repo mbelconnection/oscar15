@@ -70,7 +70,7 @@ if( drugs == null || drugs.size() == 0){
 <body>
 <div style="padding-left:0px; padding-right:0px; margin-left:0px; margin-right: 0px;" class="container" >
 	<div class="col-xs-12" style="padding-left:0px;">
-	<h5>Recent Dose History<%=drugs.size() %><small><a href="javascript: function myFunction() {return false; }" onclick="pymChild.sendHeightToParent();console.log(document.getElementsByTagName('body')[0].offsetHeight.toString());">Refresh</a></small></h5>
+	<h5>Recent Dose History<small><a href="javascript: function myFunction() {return false; }" onclick="refreshSize();">Refresh</a></small></h5>
 	</div>
 	<div class="col-xs-5" style="padding-left:0px;">
     	<table class="table table-striped table-condensed">
@@ -111,14 +111,14 @@ if( drugs == null || drugs.size() == 0){
 	jQuery(document).ready(function(){
   		<%-- var line1=[['2008-09-30 4:00PM',4], ['2008-10-30 4:00PM',6.5], ['2008-11-30 4:00PM',5.7], ['2008-12-30 4:00PM',9], ['2009-01-30 4:00PM',8.2]]; 
   		var line1=[['2008-09-30',4], ['2008-10-30',6.5], ['2008-11-30',5.7], ['2008-12-30',9], ['2009-01-30',8.2]]; --%>
-  		//var line1=[[['2007-09-30',4], ['2007-10-30',6.5]], [['2008-09-30',4], ['2008-10-30',6.5], ['2008-11-30',5.7]],[['2008-12-30',9], ['2009-01-30',8.2]]];
+  		//var line1=[[['2007-09-30',4], ['2007-10-30',6.5]], [['2008-09-30',4], ['2008-10-30',6.5], ['2008-11-30',5.7]],[['2008-12-30',9], ['2009-01-30',8.2]]]; %F
   		
   		var line1= <%=line1.toString() %>;
   		var plot1 = jQuery.jqplot('chart1', line1, {
     		
     		seriesColors: [ "#4bb2c5" ],
     		seriesDefaults: { lineWidth:2 , showMarker: false, pointLabels: { show: true } },
-    		axes:{xaxis:{renderer:jQuery.jqplot.DateAxisRenderer,tickInterval:'1 month',min:'2014-01-01',max:'2014-08-01',tickOptions:{formatString:'%F'}}}
+    		axes:{xaxis:{renderer:jQuery.jqplot.DateAxisRenderer,tickInterval:'1 month',min:'2014-01-01',max:'2014-08-01',tickOptions:{formatString:'%b %#d'}}}
     		
   			});
   		
@@ -130,6 +130,18 @@ console.log(pymChild);
   		//pymChild.sendHeightToParent(); 
 	});
        
+	
+	function refreshSize(){
+		var height = document.getElementsByTagName('body')[0].offsetHeight.toString();
+		console.log('responsivechild ' + pymChild.id + ' '+ height);
+		console.log(pymChild);
+		        // Send the height to the parent.
+		        window.parent.postMessage('responsivechild ' + pymChild.id + ' '+ height, '*');
+			
+		
+	}
+	
+	
        </script>
 <script src="<%=request.getContextPath() %>/library/pym.js"></script>
 <script>

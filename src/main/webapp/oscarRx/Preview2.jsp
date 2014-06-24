@@ -398,7 +398,7 @@ if(prop!=null && prop.getValue().equalsIgnoreCase("yes")){
                                                             org.oscarehr.casemgmt.model.ClientImage clientImage = clientImageDAO.getClientImage(patient.getDemographicNo());
                                                             if(clientImage != null){
                                                             %>
-                                                            <img src="<%=request.getContextPath() %>/imageRenderingServlet?source=local_client&clientId=<%= patient.getDemographicNo()%>"/>
+                                                            <img src="<%=request.getContextPath() %>/imageRenderingServlet?source=local_client&clientId=<%= patient.getDemographicNo()%>" height="125" />
                                                             <%}%>
                                                             </td>
                                                     </tr>

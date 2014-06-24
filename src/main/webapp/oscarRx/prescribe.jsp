@@ -288,7 +288,7 @@ if(listRxDrugs!=null){
              <script type="text/javascript">
              	<%
              	List<Drug> drugs = drugDao.findByDemographicIdSimilarDrugOrderByDate(bean.getDemographicNo(), null, null,null, rx.getAtcCode());
-             	if(drugs.size()>0){
+             	if(drugs.size()>0 && "N07BC02".equals(rx.getAtcCode())){
              	%>
 	              getDetailedDosingInformation('detailedDosing_<%=rand%>','<%=rx.getAtcCode()%>');
 	              <%}%>
@@ -458,7 +458,7 @@ if(listRxDrugs!=null){
             <script type="text/javascript">
             <%
          	List<Drug> drugs = drugDao.findByDemographicIdSimilarDrugOrderByDate(bean.getDemographicNo(), null, null,null, rx.getAtcCode());
-         	if(drugs.size()>0){
+         	if(drugs.size()>0 && "N07BC02".equals(rx.getAtcCode())){
          	%>
 	              getDetailedDosingInformation('detailedDosing_<%=rand%>','<%=rx.getAtcCode()%>');
              <%}%>

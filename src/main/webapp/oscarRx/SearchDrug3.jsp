@@ -591,7 +591,7 @@ function checkFav(){
         var url= "<c:out value="${ctx}"/>" + "/oscarRx/rePrescribe2.do?method=saveReRxDrugIdToStash";
         new Ajax.Updater('rxText',url, {method:'get',parameters:data,evalScripts:true,insertion: Insertion.Bottom,
             onSuccess:function(transport){
-            }});
+            }, onComplete: function(){ pymChild.sendHeightToParent();  }});
 
     }
 
@@ -1469,7 +1469,7 @@ function changeLt(drugId){
         var randomId=Math.round(Math.random()*1000000);
         var data="favoriteId="+favoriteId+"&randomId="+randomId;
         var url= "<c:out value="${ctx}"/>" + "/oscarRx/useFavorite.do?parameterValue=useFav2";
-        new Ajax.Updater('rxText',url, {method:'get',parameters:data,asynchronous:true,evalScripts:true,insertion: Insertion.Bottom});
+        new Ajax.Updater('rxText',url, {method:'get',parameters:data,asynchronous:true,evalScripts:true,insertion: Insertion.Bottom, onComplete: function(){ pymChild.sendHeightToParent();  }});
     }
     function calculateRxData(randomId){
         var dummie=parseIntr($('instructions_'+randomId));
@@ -1603,7 +1603,7 @@ function changeLt(drugId){
         var url= "<c:out value="${ctx}"/>" + "/oscarRx/rePrescribe2.do?method=repcbAllLongTerm";
         new Ajax.Updater('rxText',url, {method:'get',parameters:data,asynchronous:true,insertion: Insertion.Bottom,onSuccess:function(transport){
                             updateCurrentInteractions();
-            }});
+            }, onComplete: function(){ pymChild.sendHeightToParent();  }});
         return false;
     }
 
@@ -1697,14 +1697,14 @@ function popForm2(scriptId){
          var url = "TreatmentMyD.jsp"
          var ran_number=Math.round(Math.random()*1000000);
          var params = "demographicNo=<%=demoNo%>&cond="+ele.value+"&rand="+ran_number;  //hack to get around ie caching the page
-         new Ajax.Updater(id,url, {method:'get',parameters:params,asynchronous:true});
+         new Ajax.Updater(id,url, {method:'get',parameters:params,asynchronous:true, onComplete: function(){ pymChild.sendHeightToParent();  }});
          $('treatmentsMyD').toggle();
      }
 
      function callAdditionWebService(url,id){
          var ran_number=Math.round(Math.random()*1000000);
          var params = "demographicNo=<%=demoNo%>&rand="+ran_number;  //hack to get around ie caching the page
-         var updater=new Ajax.Updater(id,url, {method:'get',parameters:params,insertion: Insertion.Bottom,evalScripts:true});
+         var updater=new Ajax.Updater(id,url, {method:'get',parameters:params,insertion: Insertion.Bottom,evalScripts:true, onComplete: function(){ pymChild.sendHeightToParent();  }});
      }
 
      function callReplacementWebService(url,id){
@@ -1934,7 +1934,7 @@ function represcribe(element, toArchive){
         new Ajax.Updater('rxText',url, {method:'get',parameters:data,asynchronous:false,evalScripts:true,
             insertion: Insertion.Bottom,onSuccess:function(transport){
                 updateCurrentInteractions();
-            }});
+            }, onComplete: function(){ pymChild.sendHeightToParent();  }});
     }else if(drugId!=null){
         var dataUpdateId="reRxDrugId="+toArchive+"&action=addToReRxDrugIdList&rand="+Math.floor(Math.random()*10001);
         var urlUpdateId= "<c:out value="${ctx}"/>" + "/oscarRx/WriteScript.do?parameterValue=updateReRxDrug";
@@ -1945,7 +1945,7 @@ function represcribe(element, toArchive){
         new Ajax.Updater('rxText',url, {method:'get',parameters:data,evalScripts:true,
             insertion: Insertion.Bottom,onSuccess:function(transport){
                 updateCurrentInteractions();
-            }});
+            }, onComplete: function(){ pymChild.sendHeightToParent();  }});
 
    }
 }
@@ -2087,7 +2087,7 @@ function updateQty(element){
                var url = "RenalDosing.jsp";
                var ran_number=Math.round(Math.random()*1000000);
                var params = "demographicNo=<%=demoNo%>&atcCode="+atcCode+"&divId="+divId+"&rand="+ran_number;
-               new Ajax.Updater(divId,url, {method:'get',parameters:params,insertion: Insertion.Bottom,asynchronous:true});
+               new Ajax.Updater(divId,url, {method:'get',parameters:params,insertion: Insertion.Bottom,asynchronous:true, onComplete: function(){ pymChild.sendHeightToParent();  }});
          }
          function getLUC(divId,randomId,din){
              var url="LimitedUseCode.jsp";

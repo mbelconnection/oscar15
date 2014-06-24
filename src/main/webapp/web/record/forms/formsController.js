@@ -34,19 +34,33 @@ oscarApp.controller('FormCtrl', function ($scope,$http,$location,$stateParams,de
 	console.log("What is the state "+$state.params.type+" : "+angular.isUndefined($state.params.type)+" id "+$state.params.id,$state); // Use this to load the current form if the page is refreshed
 	
 	
+	
+	$scope.refreshListener = function(ev) { 
+		if(ev.data == 'refreshFormList'){
+			$scope.fillFormLists();	
+		}
+	};
+	
+	window.addEventListener("message",$scope.refreshListener,false);
+	
 	$scope.page.formlists = [{id:0,label:'Completed'},{id:1,label:'Library'}];  //Need to get this from the server.
 	
-	$scope.page.formlists.forEach(function (item, index) {
-		console.log('What is the item ',item);
-		formService.getAllFormsByHeading($stateParams.demographicNo,item.label).then(function(data) {
-	        console.debug('whats the index'+index,data);
- 	        if (data.list instanceof Array){
- 	        	$scope.page.currentFormList[index] = data.list;
- 	        }else{
- 	        	$scope.page.currentFormList[index] = [data.list];
- 	        }
-	    });
-	});
+	
+	$scope.fillFormLists = function(){
+		$scope.page.formlists.forEach(function (item, index) {
+			console.log('What is the item ',item);
+			formService.getAllFormsByHeading($stateParams.demographicNo,item.label).then(function(data) {
+		        console.debug('whats the index'+index,data);
+	 	        if (data.list instanceof Array){
+	 	        	$scope.page.currentFormList[index] = data.list;
+	 	        }else{
+	 	        	$scope.page.currentFormList[index] = [data.list];
+	 	        }
+		    });
+		});
+	};
+	
+	$scope.fillFormLists();
 	
 	$scope.changeTo = function(listId){
 		$scope.page.currentlistId = listId;

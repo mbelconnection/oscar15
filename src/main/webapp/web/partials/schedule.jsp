@@ -488,7 +488,7 @@ function getDropDown(divId,dropId,placeText,der){
 				        return $(this).attr('value') == globalProviderId+"_Group";
 				    }).attr('selected', true);
 		 $("#"+dropId).select2().on('select', globalProviderId+"_Group");
-		 console.log(globalProviderId+"<<>>"+countForlabeltext);
+		 //console.log(globalProviderId+"<<>>"+countForlabeltext);
 		 if(countForlabeltext==0){
 		 //$("#labelText_"+dropId).text("");
 			 $("#labelText_"+dropId).text(placeText+" ("+sch.formatText($("#"+dropId+" option[value='"+globalProviderId+"_Group']").text(),10)+")");
@@ -663,6 +663,26 @@ function getDropDown(divId,dropId,placeText,der){
 		      <div class="modal-footer">
 		      	<button type="button" id="sch_info_but_edit1" class="btn btn-primary">Edit</button>
 		        <button type="button" class="btn btn-default" onclick="sch.clearGlobalId('dialog-edit')" data-dismiss="modal">Cancel</button>
+		        
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		
+		<!-- Edit confirmation -->
+		<div class="modal fade bs-example-modal-sm" id="dialog-edit_find" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-sm" style="padding-top:150px;">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		        <h4 class="modal-title" id="myModalLabel">Edit appointment</h4>
+		      </div>
+		      <div class="modal-body">
+		        Are you sure you want to change the appointment?
+		      </div>
+		      <div class="modal-footer">
+		      	<button type="button" id="sch_info_but_edit_find" class="btn btn-primary">Edit</button>
+		        <button type="button" class="btn btn-default" onclick="sch.clearGlobalId('dialog-edit_find')" data-dismiss="modal">Cancel</button>
 		        
 		      </div>
 		    </div>

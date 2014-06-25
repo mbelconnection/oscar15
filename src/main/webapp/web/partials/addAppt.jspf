@@ -1693,14 +1693,17 @@
 						globalApptId = "";	
 						globalEventType = "";
 						add_app_edit_no_of_pats = '';
+						nextAailObject = 0;
 					},
 					open : function() {
+						
+						console.log("coming");
 						$('#add_appt_form').css('overflow', 'initial');
 						$(".ui-dialog-titlebar-close").hide();
 						$(".ui-dialog-titlebar").hide();
 						
-						if (!isEmpty(nextAailObject)) {
-							var date = new Date(nextAailObject.appointmentDate);
+						if (nextAailObject == 1) {
+							/*var date = new Date(nextAailObject.appointmentDate);
 							var newDate = $.datepicker.formatDate('dd-M-yy', date);
 							//console.log(sch.weekForCurrentDay_Offset(nextAailObject.appointmentDate));
 							//nextAailObject.date = newDate;
@@ -1714,25 +1717,7 @@
 							}).prop('selected', true);
 							var m_provider = "";
 							var m_pid = "";
-							/*if (nextAailObject.provider.length > 1) {
-								$.each(nextAailObject.provider, function(key,
-										val) {
-									m_provider += val.docName + ",";
-									m_pid += val.docID + "_"
-											+ nextAailObject.time + ",";
-									//nextAailObject.provider.pid_m +=val.docID+",";
-								});
-								nextAailObject.provider.pid_m = m_pid;
-								$("#add_appt_m_provider").val(m_provider);
-								$("#add_appt_s_provider")
-										.attr("disabled", true);
-								$("#add_appt_m_provider").attr("disabled",
-										false);
-								$('input:radio[name="add_appt_provider"]')
-										.filter('[value="multi"]').attr(
-												'checked', true);
-								//$('input[name=add_appt_provider]').prop("checked","checked");
-							} else {*/
+							
 								m_provider = nextAailObject.name;
 								//nextAailObject.provider.pid_s = "101";
 								$("#add_appt_prov_name0").val(m_provider);
@@ -1744,7 +1729,7 @@
 										.filter('[value="single"]').attr(
 												'checked', true);
 							//}
-							$("#add_appt_date").val(nextAailObject.date);
+							$("#add_appt_date").val(nextAailObject.date);*/
 							//console.log(nextAailObject);
 						} else {
 							var d = globalObj.id.split("_");

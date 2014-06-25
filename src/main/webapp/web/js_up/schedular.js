@@ -294,7 +294,7 @@ function loadBlankFlipData_hide(startDate, endDate){
 }
 
 function getFlipColor(flipCode){
-	console.log(flipColorCodes)
+//	console.log(flipColorCodes)
 	//flipColorCodes;
 	var color="";
 	var row;
@@ -955,13 +955,12 @@ Schedular.prototype.deleteEvent = function(globalApptId, apptObject) {
 		success : function(patientsData) {
 		},
 		error : function(jqxhr) {
-			var msg = JSON
-					.parse(jqxhr.responseText);
+			var msg = JSON.parse(jqxhr.responseText);
 			alert(msg['message']);
 		}
 	});
-	var $back = $('div').find("#" + apptObject);
-	$back.remove();
+	//var $back = $('div').find("#" + apptObject);
+	//$back.remove();
 }
 Schedular.prototype.createPopup = function(tdId,reason,notes, room){
 	reason = reason.replace(/_/g," ");
@@ -984,7 +983,7 @@ Schedular.prototype.clearGlobalId = function(modelID) {
 }
 Schedular.prototype.editAppt = function(apptObject, tdObj) {
 	
-	//console.log(apptObject+"<<>>"+tdObj)
+	console.log(apptObject+"<<>>"+tdObj)
 	//console.log($("#"+apptObject).attr("curapptid"));
 	//globalApptId =  apptObject.split(":")[0];
 	globalApptId = $("#"+apptObject).attr("curapptid");
@@ -1004,7 +1003,13 @@ Schedular.prototype.editAppt = function(apptObject, tdObj) {
 //		modal : true
 //	});
 	//$('#dialog-info').modal();
-	$('#dialog-edit').modal();
+	
+	sch.showDialogs();
+
+}
+
+Schedular.prototype.showDialogs = function(){
+$('#dialog-edit').modal();
 	
 	
 	$(".ui-dialog-titlebar").hide();
@@ -1016,11 +1021,12 @@ Schedular.prototype.editAppt = function(apptObject, tdObj) {
 		$(".ui-dialog-titlebar").show();
 		$(".ui-dialog-titlebar-close").hide();
 		$('#dialog-info').modal('hide');
+		$("#fex_app_form").dialog( "close" );
 	});
 	$("#sch_info_but_edit1").on("click", function() {
 		$('#dialog-edit').modal('hide');
 		$("#add_appt_form").dialog("open");
-		
+		$("#fex_app_form").dialog( "close" );
 	});
 
 	$("#sch_info_but_delete").on("click", function() {
@@ -1031,7 +1037,7 @@ Schedular.prototype.editAppt = function(apptObject, tdObj) {
 
 	$("#sch_del_but_delete").on("click", function() {
 		sch.clearForm("#add_appt_form");
-		sch.deleteEvent(globalApptId, apptObject);
+		sch.deleteEvent(globalApptId, "");
 		dateChange("");
 		$("#add_appt_form").dialog("close");
 		$("#dialog-delete").modal('hide');
@@ -1047,8 +1053,6 @@ Schedular.prototype.editAppt = function(apptObject, tdObj) {
 	$("#sch_del_but_cancel").on("click", function() {
 		$("#dialog-delete").modal('hide');
 	});
-
-
 }
 
 var cnt = 0;
@@ -1078,8 +1082,8 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 		height = 22;
 	var colspan = 4;
 	if (act == "delete") {
-		var $back = $('div').find("#" + hr + '_' + min);
-		$back.remove();
+		//var back = $('div').find("#" + hr + '_' + min);
+		//back.remove();
 	} else {
 
 		if (obj.stauscolor == null)

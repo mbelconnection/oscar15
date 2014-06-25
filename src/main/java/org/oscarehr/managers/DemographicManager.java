@@ -589,7 +589,11 @@ public class DemographicManager {
 		Set<AppointmentTo1> archivedClients = new java.util.LinkedHashSet<AppointmentTo1>();
 		DemographicConverter converter = new DemographicConverter();
 		try {
-			Set<Appointment> archivedClients1 = demographicDao.fetchNextAvali(apptTo.getProvId(),apptTo.getApptDuration(),apptTo.getApptType(),Integer.parseInt(apptTo.getDayOfWeek()),apptTo.getStartTime(),apptTo.getEndTime(),Integer.parseInt(apptTo.getResultCount()));
+			String provId = apptTo.getProvId();
+			if(provId.lastIndexOf(",")>0){
+				provId = provId.substring(0, provId.lastIndexOf(","));
+			}
+			Set<Appointment> archivedClients1 = demographicDao.fetchNextAvali(provId,apptTo.getApptDuration(),apptTo.getApptType(),Integer.parseInt(apptTo.getDayOfWeek()),apptTo.getStartTime(),apptTo.getEndTime(),Integer.parseInt(apptTo.getResultCount()));
 			
 			archivedClients = converter.getAsTransferSetObject(archivedClients1);
 		} catch (Exception e) {

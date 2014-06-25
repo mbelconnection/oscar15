@@ -115,7 +115,7 @@
 							_html += "<td>" + this['appointmentDate'] + "</td>";
 							_html += "<td>" + this['startTime'] + "</td>";
 							_html += "<td>" + this['name'] + "</td>";
-							_html += "<td> <div class='fex_roundbox_edit' style='cursor:pointer;' onclick='fex_fn.gotoAddAppointment("+findObject+")'> Edit</div> </td>";
+							_html += "<td> <div class='fex_roundbox_edit' style='cursor:pointer;' onclick='fex_fn.gotoAddAppointment("+findObject+","+this['id']+")'> Edit</div> </td>";
 						
 							if(i != (len-1))
 								_html += "</tr><tr>";
@@ -125,12 +125,19 @@
 					
 				//});
 				$("#fex_users tbody").append(_html);
+				
 			 },
-			 gotoAddAppointment: function(findObject){
-			 findAvailObject = findObject;
-					console.log(findObject);
-			 //if(myObject.date==$("#inputField").val()){
-			 $( "#dialog-edit" ).dialog({
+			 gotoAddAppointment: function(findObject,apptId){
+				findAvailObject = findObject;
+				console.log(findObject);
+				globalApptId = ""+parseInt(apptId);
+				nextAailObject = 1;
+				$( "#fex_find_input" ).val("");
+				sch.showDialogs();
+				
+				//sch.editAppt("pat_name"+apptId,"")
+				//if(myObject.date==$("#inputField").val()){
+			 /* $( "#dialog-info" ).dialog({
 				resizable: false,
 				height:120,
 				buttons: {
@@ -145,7 +152,8 @@
 						 $( this ).dialog( "close" );
 						}
 					}
-				});
+				}); */
+				//$('#dialog-edit_find').modal();
 			 },
 			 viewApptFullHistory: function(findObject){
 				 findAvailObject = findObject;
@@ -238,9 +246,9 @@
 		
 		$( "#fex_find_input" ).autocomplete({
 			minLength: 0,
-			source: function(request, response) {				
+			source: function(request, response) {
 				var term = request.term;
-				//console.log(term);
+				console.log(term);
 				if(fex_pat_list == null)
 					fex_json_fn.loadPatients();
 				var matches = $.grep(fex_pat_list, function(item, index) {
@@ -253,12 +261,14 @@
 				//$( "#add_appt_pat_name" ).val( ui.item.label );
 				return false;
 			},
-			select : function(event, ui) {
+			select: function(event, ui) {
+				
 				$("#fex_app_form").dialog("open");
 				fex_fn.loadSearchDtls(ui.item.id);
+				ui.item.value="";
 			}
 		})
-		.data( "ui-autocomplete" )._renderItem = function( ul, item ) {			
+		.data( "ui-autocomplete" )._renderItem = function( ul, item ) {
 			return $( "<li>" )
 			.append( "<a><span style='color:#848484;'>Name&nbsp;</span> " + item.label + "<br><span style='color:#848484;'>DOB&nbsp;</span>" + item.dob + "<br><span style='color:#848484;'>HIN&nbsp;</span>" + item.hin + "</a>" )
 			.appendTo( ul );
@@ -580,3 +590,20 @@
 		<b>Add Appointment History Here...</b>
 		</div>
 <!--  Next available appt dailog box end -->
+<script>
+
+$("#sch_info_but_edit_find").click(function (event) {
+
+ $('#dialog-edit_find').modal('hide');
+ $("#add_appt_form").dialog("open");
+});
+/* $(document).on('click','#sch_info_but_edit_find', function(e) {
+//console.log(">>>>>>>>>>>>>>>>>>>>.");
+//$("#fex_find_input").dialog("close");
+e.stopPropagation();
+$('#dialog-edit_find').modal('hide');
+$("#add_appt_form").dialog("open");
+
+}); */
+
+</script>

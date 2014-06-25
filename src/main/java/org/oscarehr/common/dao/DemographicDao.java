@@ -2121,7 +2121,7 @@ public class DemographicDao extends HibernateDaoSupport implements ApplicationEv
 			
 			String sqlQuery = "select a.appointment_no, a.appointment_date,a.start_time,b.first_name,b.last_name from appointment a,provider b where a.provider_no=b.provider_no " ;
 							if(!"".equalsIgnoreCase(provId) && provId!=null){
-								   sqlQuery =sqlQuery+"and a.provider_no='"+provId+"' ";
+								   sqlQuery =sqlQuery+"and a.provider_no in ('"+provId+"') ";
 								}
 							   if(!"".equalsIgnoreCase(duration) && duration!=null){
 								   sqlQuery =sqlQuery+"and timediff(a.end_time,a.start_time) =CAST('"+duration+"' AS TIME)  ";
@@ -2129,7 +2129,7 @@ public class DemographicDao extends HibernateDaoSupport implements ApplicationEv
 					           if(!"".equalsIgnoreCase(apptType) && apptType!=null){
 					        	   sqlQuery = sqlQuery + "and a.type='"+apptType+"' ";
 					           }
-					           if(weekDay!=null){
+					           if(weekDay!=null && !"".equals(weekDay)){
 					        	   sqlQuery = sqlQuery+" and weekday(a.appointment_date) ="+weekDay;
 					           }
 					           if(!"".equalsIgnoreCase(startTime) && startTime!=null && !"".equalsIgnoreCase(endTime) && endTime!=null){

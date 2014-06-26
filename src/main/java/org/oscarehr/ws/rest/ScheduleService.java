@@ -39,6 +39,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.log4j.Logger;
 import org.apache.tools.ant.util.DateUtils;
 import org.oscarehr.common.model.Appointment;
+import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.Provider;
 import org.oscarehr.managers.AppointmentManager;
 import org.oscarehr.managers.DemographicManager;
@@ -97,9 +98,10 @@ public class ScheduleService extends AbstractServiceImpl {
 			}
 			List<Appointment> appts = scheduleManager.getDayAppointments(providerNo, dateObj);
 			for(Appointment appt:appts) {
+				Demographic demographic = demographicManager.getDemographic(appt.getDemographicNo());
 				PatientListApptItemBean item = new PatientListApptItemBean();
 				item.setDemographicNo(appt.getDemographicNo());
-				item.setName(demographicManager.getDemographicFormattedName(appt.getDemographicNo()));
+				item.setName((demographic!=null)?demographic.getFormattedName():"");
 				item.setStartTime(timeFormatter.format(appt.getStartTime()));
 				item.setReason(appt.getReason());
 				item.setStatus(appt.getStatus());

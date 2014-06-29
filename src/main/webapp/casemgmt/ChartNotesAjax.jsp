@@ -309,7 +309,8 @@ int maxId = 0;
 			boolean hideDocumentNotes = OscarProperties.getInstance().isPropertyActive("encounter.hide_document_notes");
 			boolean hideEformNotes = OscarProperties.getInstance().isPropertyActive("encounter.hide_eform_notes");
 			//boolean hideMetaData = OscarProperties.getInstance().isPropertyActive("encounter.hide_metadata");
-
+			boolean hideInvoices = OscarProperties.getInstance().isPropertyActive("encounter.hide_invoices");
+			
 			String noteDisplay = "block";
 			if(note.isCpp() && hideCppNotes) {
 				noteDisplay="none";
@@ -318,6 +319,10 @@ int maxId = 0;
 				noteDisplay="none";
 			}
 			if(note.isEformData() && hideEformNotes) {
+				noteDisplay="none";
+			}
+			
+			if(note.isInvoice() && hideInvoices) {
 				noteDisplay="none";
 			}
 

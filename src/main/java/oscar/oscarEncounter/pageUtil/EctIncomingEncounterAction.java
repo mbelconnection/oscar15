@@ -75,12 +75,11 @@ public class EctIncomingEncounterAction extends Action {
         	}
         	
             if(request.getParameter("appointmentList")!=null){
-
+                    bean = (EctSessionBean) request.getSession().getAttribute("EctSessionBean") ;
                     bean.setUpEncounterPage(request.getParameter("appointmentNo"));
                     bean.template = "";                    
             } else if(request.getParameter("demographicSearch")!=null){
             //Coming in from the demographicSearch page
-            	bean = (EctSessionBean) request.getSession().getAttribute("EctSessionBean") ;
                     bean = (EctSessionBean)request.getSession().getAttribute("EctSessionBean") ;
                     //demographicNo is passed from search screen
                     bean.demographicNo=request.getParameter("demographicNo");
@@ -171,7 +170,6 @@ public class EctIncomingEncounterAction extends Action {
         else{
             return (mapping.findForward("failure"));
         }
-        
         
         ArrayList newDocArr = (ArrayList) request.getSession().getServletContext().getAttribute("newDocArr");
         Boolean useNewEchart = (Boolean) request.getSession().getServletContext().getAttribute("useNewEchart");

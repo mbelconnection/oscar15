@@ -58,16 +58,29 @@ public class EctIncomingEncounterAction extends Action {
 				 HttpServletRequest request,
 				 HttpServletResponse response) throws IOException, ServletException {
 				  
+	  String appointmentNo = null;
         UtilDateUtilities dateConvert = new UtilDateUtilities();
         oscar.oscarSecurity.CookieSecurity cs   = new oscar.oscarSecurity.CookieSecurity();
         EctSessionBean bean = new EctSessionBean();
-        if(cs.FindThisCookie(request.getCookies(),CookieSecurity.providerCookie)){ //pass security???
+        if(cs.FindThisCookie(request.getCookies(),CookieSecurity.providerCookie)){ //pass security???  
+        	
+        	if(request.getSession().getAttribute("cur_appointment_no") != null) {
+       		 appointmentNo = (String)request.getSession().getAttribute("cur_appointment_no");
+        	}
+        	
+        	//when loading the chart with appointmentNo=&... then it should override this bad session variable
+        	if(request.getParameter("appointmentNo") != null &&  request.getParameter("appointmentNo").equals("")) {
+        		appointmentNo = null;
+        		request.getSession().setAttribute("cur_appointment_no","");
+        	}
+        	
             if(request.getParameter("appointmentList")!=null){
-                    bean = (EctSessionBean) request.getSession().getAttribute("EctSessionBean") ;
+
                     bean.setUpEncounterPage(request.getParameter("appointmentNo"));
                     bean.template = "";                    
             } else if(request.getParameter("demographicSearch")!=null){
             //Coming in from the demographicSearch page
+            	bean = (EctSessionBean) request.getSession().getAttribute("EctSessionBean") ;
                     bean = (EctSessionBean)request.getSession().getAttribute("EctSessionBean") ;
                     //demographicNo is passed from search screen
                     bean.demographicNo=request.getParameter("demographicNo");
@@ -102,6 +115,10 @@ public class EctIncomingEncounterAction extends Action {
                 }
                 bean.demographicNo=request.getParameter("demographicNo");
                 bean.appointmentNo=request.getParameter("appointmentNo");
+                //use this one.
+                if(appointmentNo != null) {
+                	bean.appointmentNo = appointmentNo;
+                }
                 bean.curProviderNo=request.getParameter("curProviderNo");
                 bean.reason=request.getParameter("reason");
                 bean.encType=request.getParameter("encType");
@@ -154,6 +171,7 @@ public class EctIncomingEncounterAction extends Action {
         else{
             return (mapping.findForward("failure"));
         }
+        
         
         ArrayList newDocArr = (ArrayList) request.getSession().getServletContext().getAttribute("newDocArr");
         Boolean useNewEchart = (Boolean) request.getSession().getServletContext().getAttribute("useNewEchart");

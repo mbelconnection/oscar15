@@ -32,7 +32,6 @@ import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
-import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -378,6 +377,11 @@ public class ProviderDao extends HibernateDaoSupport {
 			log.warn("Unexpected exception occurred.", e);
 		}
 	}
+	public static void removeProviderFromFacility(String provider_no,
+			int facilityId) {
+		SqlUtils.update("delete from provider_facility where provider_no='"
+				+ provider_no + "' and facility_id=" + facilityId);
+	}
 
 	
 	public static List<Integer> getFacilityIds(String provider_no) {
@@ -386,17 +390,11 @@ public class ProviderDao extends HibernateDaoSupport {
 						+ provider_no + '\''));
 	}
 
-	
-	public List<String> getProviderIds(int facilityId) {
-		Session session = getSession();
-		try {
-			SQLQuery query = session.createSQLQuery("select provider_no from provider_facility where facility_id="+facilityId);
-			List<String> results = query.list();
-			return results;
-		}finally {
-			this.releaseSession(session);
-		}
-	
+
+	public static List<String> getProviderIds(int facilityId) {
+		return (SqlUtils
+				.selectStringList("select provider_no from provider_facility where facility_id="
+						+ facilityId));
 	}
 
     public void updateProvider( Provider provider) {

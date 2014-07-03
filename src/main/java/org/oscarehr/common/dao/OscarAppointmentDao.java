@@ -1017,8 +1017,16 @@ public class OscarAppointmentDao extends AbstractDao<Appointment> {
 				return rs;
 			}
 			//TODO: FIX..this may be wrong now that I added quotes. A List<String> should be the input
-			public List<Provider> getProvidersByAppointments(String providers,Date apptDate) {
-				String sql = "select distinct b from Appointment a,Provider b where a.providerNo = b.ProviderNo and a.providerNo in ('"+providers+"')  and a.appointmentDate=?";
+			public List<Provider> getProvidersByAppointments(List<String> providers,Date apptDate) {
+				String inClause = "";
+				for(int x=0;x<providers.size();x++) {
+					String provider = providers.get(x);
+					if(x>0) {
+						inClause += ",";
+					}
+					inClause += "'" +  provider + "'";
+				}
+				String sql = "select distinct b from Appointment a,Provider b where a.providerNo = b.ProviderNo and a.providerNo in ("+inClause+")  and a.appointmentDate=?";
 				
 				
 				Query query = entityManager.createQuery(sql);

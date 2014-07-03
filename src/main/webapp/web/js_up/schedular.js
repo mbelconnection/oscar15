@@ -144,7 +144,7 @@ function setGlobalDayDate(){
 	var temp = date.split('-');
 	if(temp.length == 3){
 		globalDayViewDate = $("#inputField").val();
-		console.log("date set");
+//		console.log("date set");
 	}
 }
 
@@ -477,8 +477,6 @@ Schedular.prototype.load = function(date) {
 					"doc_dt" : date
 				});
 	}
-
-	
 	document.getElementById("inputField").value = date;
 	setTimeout('sch.init(\''+globalView.view+'\',\'from load\')', 1000);
 }
@@ -492,10 +490,17 @@ Schedular.prototype.dayLoad = function(date,providerNo) {
 				});
 		
 	}else{
-		Schedular.prototype.ajaxMethod("../ws/rs/schedule/" + date +"/"+providerNo+ "/list1",
-				Schedular.prototype.setInitData, {
-					"doc_dt" : date
-				});
+		if(isNaN(providerNo)){
+			Schedular.prototype.ajaxMethod("../ws/rs/providerService/" + date +"/"+providerNo+ "/fetchGroupAppointments",
+					Schedular.prototype.setInitData, {
+						"doc_dt" : date
+					});
+		}else{
+			Schedular.prototype.ajaxMethod("../ws/rs/schedule/" + date +"/"+providerNo+ "/list1",
+					Schedular.prototype.setInitData, {
+						"doc_dt" : date
+					});
+		}
 		
 	}
 	document.getElementById("inputField").value = date;
@@ -535,7 +540,7 @@ Schedular.prototype.callDayWeekMonth = function(view,selVal){
 	
 }
 Schedular.prototype.init = function(view, from) {
-	 //console.log(view+"<<>>"+from);
+//	 console.log(view+"<<>>"+from);
     $(document).ready(function() {
         setTimeout(function(){
 		$(".noline").tooltip({
@@ -572,7 +577,7 @@ Schedular.prototype.init = function(view, from) {
 			+ this.getXHeader() + '</table></div>';
 
 	document.getElementById('head').innerHTML = headData;
-	var scaleData = "<div style='display: inline-block;overflow-y:scroll;height:500px;' class='scrolldiv2'><div id='abc' style='float:left'>"
+	var scaleData = "<div style='display: inline-block;overflow-y:scroll;height:565px;' class='scrolldiv2'><div id='abc' style='float:left'>"
 			+ data
 			+ "</div>"
 			+ "<div id='persondata' style='overflow-x:hidden;float:left;width:"
@@ -889,14 +894,14 @@ Schedular.prototype.editEvent = function() {
 }
 
 Schedular.prototype.saveEvent = function(obj, appObj, saveData) {
-	console.log(obj);
+//	console.log(obj);
 	obj.offHeight = (obj.id != "" && document.getElementById(obj.id).offsetHeight != null) ? document
 			.getElementById(obj.id).offsetHeight
 			: 100;
 	obj.offWidth = (obj.id != "" && document.getElementById(obj.id).offsetWidth != null) ? document
 			.getElementById(obj.id).offsetWidth
 			: 100;
-	console.log( appObj.patientName);
+//	console.log( appObj.patientName);
 	obj.patientName = appObj.patientName.split('^')[0];
 	obj.patientId = appObj.patientId;
 	obj.reason = appObj.apptReasonText;
@@ -983,7 +988,7 @@ Schedular.prototype.clearGlobalId = function(modelID) {
 }
 Schedular.prototype.editAppt = function(apptObject, tdObj) {
 	
-	console.log(apptObject+"<<>>"+tdObj)
+//	console.log(apptObject+"<<>>"+tdObj)
 	//console.log($("#"+apptObject).attr("curapptid"));
 	//globalApptId =  apptObject.split(":")[0];
 	globalApptId = $("#"+apptObject).attr("curapptid");
@@ -1249,13 +1254,13 @@ Schedular.prototype.setMulPatDtls = function(apptId, index) {
 	var _data = sch.getMulPatApptDtls(currentApptId);
 	apptId = apptId.replace(/,/g,'_');
 	$("#pat_name" + apptId).html(this.formatText(_data["patientName"], 10));
-	console.log("#pat_name" + apptId);
+//	console.log("#pat_name" + apptId);
 	//sch.setApptStatus(_data["apptSta"], _data["appointStatus"], "appt_sta_"+ apptId);
 	$("#appt_sta_" + apptId).attr("curapptid", currentApptId);
 	$("#appt_sta_" + apptId).html('<div class="alertbox" style="background:#5E5A80;padding:0px;">' + _data["apptStatus"] + '</div>');
 	//sch.setApptGoto(_data["apptGoto"], "appt_goto_" + apptId);
 	var apptType = ["", "E", "I", "B", "R"];
-	console.log(currentApptId);
+//	console.log(currentApptId);
 	$("#appt_goto_" + apptId).attr("curapptid", currentApptId);
 	$("#pat_name" + apptId).attr("curapptid", currentApptId);
 	if(_data["goTo"] != null){		
@@ -1802,7 +1807,7 @@ Schedular.prototype.showAll = function () {
 	if(globalView.view=="day"){
 	var _data = new Object
 	_data.data = sch.showAllPrvidersData("fetchGroupAppointments");
-	console.log(_data.data);
+//	console.log(_data.data);
 	Schedular.prototype.setInitData(_data);
 	setTimeout('sch.init(\''+globalView.view+'\',\'from Show All\')', 1000);
 	}
@@ -1812,7 +1817,7 @@ Schedular.prototype.showScheduled = function () {
 	if(globalView.view=="day"){
 		var _data = new Object
 		_data.data = sch.showAllPrvidersData("fetchGroupHavingEvents");
-		console.log(_data.data);
+//		console.log(_data.data);
 		Schedular.prototype.setInitData(_data);
 		setTimeout('sch.init(\''+globalView.view+'\',\'from Show selected\')', 1000);
 		}
@@ -1822,7 +1827,7 @@ Schedular.prototype.showAllPrvidersData = function (urlParam) {
 	var dt = $("#inputField").val();
 	var gr = $("#docava").val();
 	var selGroup  = gr.split("_")[0];
-		console.log(selGroup);
+//		console.log(selGroup);
 		var data1 = $.ajax({
 			url : "../ws/rs/providerService/"+dt+"/"+selGroup+"/"+urlParam,
 			type : "get",
@@ -1832,7 +1837,7 @@ Schedular.prototype.showAllPrvidersData = function (urlParam) {
 			},
 			error : function(jqxhr) {
 				var msg = JSON.parse(jqxhr.responseText);
-				alert(msg['message']);
+//				console.log(msg['message']);
 
 			}
 		}).responseText;

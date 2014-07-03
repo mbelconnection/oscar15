@@ -662,7 +662,7 @@ public class ScheduleManager {
 	            	}
             }
 	        
-	        List<Provider> providerList = oscarAppointmentDao.getProvidersByAppointments(provider,org.oscarehr.ws.rest.util.DateUtils.formatDate(appDate));
+	        List<Provider> providerList = oscarAppointmentDao.getProvidersByAppointments(java.util.Arrays.asList(provider.split(",")),org.oscarehr.ws.rest.util.DateUtils.formatDate(appDate));
 	        
 	        for (Iterator i = providerList.iterator(); i.hasNext();) {
 	            Provider provider1 = (Provider) i.next();

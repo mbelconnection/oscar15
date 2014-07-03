@@ -169,19 +169,41 @@ JsDatePick.prototype.closeCalendar = function (targetId) {
 		add_app_fn.setRecText();
 	}
 	
+	
+	
 		//if(this.oConfiguration.target=="appDate" && this.JsDatePickBox.style.display=="none"){
 	//showRecData1('showRecurrence','changeButton','showRecurrenceLbl');
 	//}
 };
+var lastPickedDateObject;
 JsDatePick.prototype.populateFieldWithSelectedDate = function () {
     JsgetElem(this.oConfiguration.target).value = this.getSelectedDayFormatted();
-    if (this.lastPickedDateObject) {
-        delete(this.lastPickedDateObject)
+    if (lastPickedDateObject) {
+        //delete(this.lastPickedDateObject)
     }
-    this.lastPickedDateObject = {};
-    this.lastPickedDateObject.day = this.selectedDayObject.day;
-    this.lastPickedDateObject.month = this.selectedDayObject.month;
-    this.lastPickedDateObject.year = this.selectedDayObject.year;
+    lastPickedDateObject = {};
+    lastPickedDateObject.day = this.selectedDayObject.day;
+    lastPickedDateObject.month = this.selectedDayObject.month;
+    lastPickedDateObject.year = this.selectedDayObject.year;
+    var sel_dt = this.getSelectedDayFormatted();
+    globalDayViewDate = sel_dt;
+    if(globalView.view=="month"){
+		var months = new Array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
+		
+		sel_dt = this.getSelectedDayFormatted();
+		var temp = (sel_dt).split("-");
+		var mon = months[getMonthIndex(sel_dt)];
+		document.getElementById("inputField").value = mon+ " "+temp[2];
+		calendar();
+	}
+	else if(globalView.view == "flip"){
+		setFlipDates("");		
+	}
+	
+	else if(globalView.view == "week"){
+		setWeekDates("");
+		
+	}
     this.closeCalendar(this.oConfiguration.target)
 };
 JsDatePick.prototype.makeCalendar = function () {
@@ -310,11 +332,12 @@ JsDatePick.prototype.makeCalendar = function () {
 JsDatePick.prototype.determineFieldDate = function () {
     var b, c, e, g, l, d, a, h, k, f = false,
         j = false;
-    if (this.lastPickedDateObject) {
+//    console.log(lastPickedDateObject);
+    if (lastPickedDateObject) {
         this.setSelectedDay({
-            year: parseInt(this.lastPickedDateObject.year),
-            month: parseInt(this.lastPickedDateObject.month, 10),
-            day: parseInt(this.lastPickedDateObject.day, 10)
+            year: parseInt(lastPickedDateObject.year),
+            month: parseInt(lastPickedDateObject.month, 10),
+            day: parseInt(lastPickedDateObject.day, 10)
         })
     } else {
         b = JsgetElem(this.oConfiguration.target);
@@ -358,6 +381,12 @@ JsDatePick.prototype.determineFieldDate = function () {
                     }
                 }
                 if (f) {
+                	if(globalView.view == "month"){	
+                		var temp = g[0].split(" ");
+                		g[0] = "1";
+                		g[1] = temp[0].substr(0, 3);
+                		g[2] = temp[1];
+                	}
                     for (d = 0; d < 12; d++) {
                         if (g_l.MONTHS[d].substr(0, 3).toUpperCase() == g[k].toUpperCase()) {
                             k = d + 1;
@@ -392,9 +421,10 @@ JsDatePick.prototype.senseDivider = function (a) {
     return a.replace("%d", "").replace("%j", "").replace("%m", "").replace("%M", "").replace("%n", "").replace("%F", "").replace("%Y", "").replace("%y", "").substr(0, 1)
 };
 JsDatePick.prototype.showCalendar = function () {
-    if (this.JsDatePickBox.style.display == "none") {
-        this.determineFieldDate();
+    if (this.JsDatePickBox.style.display == "none") {        
         this.JsDatePickBox.style.display = "block";
+        //return;
+        this.determineFieldDate();
         this.resizeCalendar();
         this.executePopulationDelegateIfExists();
         this.JsDatePickBox.onmouseover = function () {
@@ -402,7 +432,7 @@ JsDatePick.prototype.showCalendar = function () {
         };
         this.JsDatePickBox.setAttribute("globalCalNumber", this.globalNumber);
         this.JsDatePickBox.onmouseout = function () {
-            document.onclick = new Function("g_arrayOfUsedJsDatePickCals[" + this.getAttribute("globalCalNumber") + "].closeCalendar();")
+            //document.onclick = new Function("g_arrayOfUsedJsDatePickCals[" + this.getAttribute("globalCalNumber") + "].closeCalendar();")
         }
     } else {
         return
@@ -420,6 +450,53 @@ JsDatePick.prototype.isAvailable = function (c, a, b) {
     }
     return true
 };
+JsDatePick.prototype.goToToday = function (){
+	var myday = new Date();
+	var changeDate = day+"-"+months[month]+"-"+year;
+	var day = "";
+	if(myday.getDate()<10)
+	day = "0"+myday.getDate();
+	else
+	day = myday.getDate();
+	/* ends here */
+	var month = myday.getMonth();        
+	var year = myday.getYear();        
+	if(year<=200)        {                
+		year += 1900;        
+	}   
+	months = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'); 
+	var changeDate = day+"-"+months[month]+"-"+year;	
+	document.getElementById("inputField").value = changeDate;
+	globalDayViewDate = changeDate;
+	
+	lastPickedDateObject = {};
+	lastPickedDateObject.day = day;
+	lastPickedDateObject.month = month+1;
+	lastPickedDateObject.year = year;
+	
+	if(globalView.view == "day"){	
+		//console.log(this.lastPickedDateObject);
+		sch.load(document.getElementById("inputField").value);
+	}else if(globalView.view == "month"){		
+		setMonthDates("");
+		
+	}
+	else if(globalView.view == "flip"){
+		setFlipDates("");
+		
+	}
+	
+	else if(globalView.view == "week"){
+		setWeekDates("");
+		
+	}
+		
+	
+	//calObj.populateFieldWithSelectedDate();
+	
+	$('.JsDatePickBox').hide();
+}
+var calObj;
 JsDatePick.prototype.getDOMCalendarStripped = function () {
     var h = document,
         e, i, b, a, f, c, g;
@@ -436,6 +513,11 @@ JsDatePick.prototype.getDOMCalendarStripped = function () {
     f = h.createElement("div");
     c = h.createElement("div");
     g = h.createElement("div");
+    hh = h.createElement("div");
+    hh.innerHTML = "Go to today";
+    hh.setAttribute("style","cursor:pointer")
+    hh.onclick=this.goToToday;
+    calObj = this;
     this.setC(b, "clearfix");
     this.setC(g, "clearfix");
     this.setC(i, "boxMainInner");
@@ -452,6 +534,7 @@ JsDatePick.prototype.getDOMCalendarStripped = function () {
     i.appendChild(c);
     i.appendChild(a);
     i.appendChild(g);
+    i.appendChild(hh);
     this.boxMainCellsContainer = a;
     this.populateMainBox(a);
     return e

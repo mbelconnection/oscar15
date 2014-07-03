@@ -464,7 +464,7 @@
 						$("#result").html('Submitted successfully');
 					},
 					error : function(jqxhr) {
-						console.log(jqxhr);
+						//console.log(jqxhr);
 						var msg = JSON.parse(jqxhr);
 						alert(msg['message']);
 						$("#result").html('There is error while submit');
@@ -1368,10 +1368,23 @@
 						//console.log(term);
 						if(projects == null)
 							add_app_ajax_fn.loadPatients();
-						var matches = $.grep(projects, function(item, index) {
+						/*var matches = $.grep(projects, function(item, index) {
 							var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
-							return matcher.test(item.label);
-						});
+							var namearr = item.label.split(',');
+							//if(namearr.length >1)
+							//	return matcher.test(namearr[0] || namearr[1]);
+							//else 
+								return matcher.test(item.label || item.dob);
+						});*/
+						var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
+						var matches = $.grep(projects, function (item) {
+							var namearr = item.label.split(',');
+							//return matcher.test(item.label) || matcher.test(item.dob);
+							if(namearr.length >1)
+									return matcher.test(namearr[0].trim()) || matcher.test(namearr[1].trim());  
+								else 
+									return matcher.test(item.label);
+				        });
 						response(matches);
 					},
 					focus : function(event, ui) {
@@ -1427,8 +1440,17 @@
 						var term = request.term;
 						var matches = $.grep(add_appt_providers_list, function(item, index) {
 							var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
-							return matcher.test(item.label);
+							var namearr = item.label.split(',');
+							//return matcher.test(item.label) || matcher.test(item.dob);
+							if(namearr.length >1)
+									return matcher.test(namearr[0].trim()) || matcher.test(namearr[1].trim());  
+								else 
+									return matcher.test(item.label);
+							
+							//return matcher.test(item.label);
 						});
+						
+						
 						response(matches);
 					  },
 					focus: function( event, ui ) {
@@ -2107,7 +2129,12 @@
 			var term = request.term;
 			var matches = $.grep(add_appt_providers_list, function(item, index) {
 				var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
-				return matcher.test(item.label);
+				//return matcher.test(item.label);
+				var namearr = item.label.split(',');				
+				if(namearr.length >1)
+						return matcher.test(namearr[0].trim()) || matcher.test(namearr[1].trim());  
+					else 
+						return matcher.test(item.label);
 			});
 			response(matches);
 		  },
@@ -2163,7 +2190,11 @@ source: function( request, response ) {
 	//console.log(term[term.length -1]);
 	var matches = $.grep(add_appt_providers_list, function(item, index) {
 		var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
-		return matcher.test(item.label);
+		var namearr = item.label.split(',');				
+		if(namearr.length >1)
+				return matcher.test(namearr[0].trim()) || matcher.test(namearr[1].trim());  
+			else 
+				return matcher.test(item.label);
 	});
 	response(matches);
 },
@@ -2175,12 +2206,19 @@ select: function( event, ui ) {
 	//console.log(ui.item.id);
 	var terms = split( this.value );
 	// remove the current input
-	terms.pop();
+	//terms.pop();
 	// add the selected item
 	terms.push( ui.item.value );
 	// add placeholder to get the comma-and-space at the end
 	terms.push( "" );
-	this.value = terms.join( "; " );
+	var input = removeLastInput(this.value);
+	
+	
+	//this.value = terms.join( "; " );
+	if(input != "")
+		this.value = input + "; " + ui.item.value +"; ";
+	else
+		this.value = ui.item.value +"; ";
 	$("#add_block_prov_type").val("M")
 	//add_appt_fld_prv_id += ui.item.id+",";
 	var temp = $("#add_block_prov_id").val();
@@ -2196,6 +2234,18 @@ select: function( event, ui ) {
 });
 
 	});
+	
+	function removeLastInput(data){
+		var _arr = data.split(";");
+		var _data = "";
+		for(var i=0;i<_arr.length - 1; i++){
+			if(_data == "")
+				_data = _arr[i];
+			else
+				_data += "; "+ _arr[i];
+		}
+		return _data;
+	}
 </script>
 
 <head>

@@ -253,7 +253,12 @@
 					fex_json_fn.loadPatients();
 				var matches = $.grep(fex_pat_list, function(item, index) {
 					var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
-					return matcher.test(item.label);
+					var namearr = item.label.split(',');
+					//return matcher.test(item.label) || matcher.test(item.dob);
+					if(namearr.length >1)
+							return matcher.test(namearr[0].trim()) || matcher.test(namearr[1].trim());  
+						else 
+							return matcher.test(item.label);
 				});
 				response(matches);
 			},

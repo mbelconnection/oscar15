@@ -11,7 +11,6 @@ function opacity(el,opacity){
 var _cur_mon;
 /* Calendar display start */
 function dateChange(param){
-	console.log('inside date change');
 	if(globalView.view == "month"){		
 		setMonthDates(param);
 		return;
@@ -102,7 +101,7 @@ function setWeekDates(param){
 			currDay = globalDayViewDate;
 			currDayArr = currDay.split("-");
 		}
-		console.log(currDayArr);
+		//console.log(currDayArr);
 		var current = new Date(parseFloat(currDayArr[2]), parseFloat(getMonthIndex(currDay)), parseFloat(currDayArr[0]));
 		/* Modified by Bhaskar for weekview
 		* 
@@ -110,6 +109,10 @@ function setWeekDates(param){
 		var weekend = weekstart + 6;       // end day is the first day + 6 
 		var monday = new Date(current.setDate(weekstart));
 		var sunday = new Date(current.setDate(weekend));
+		
+		if(parseInt(sunday.getDate()) < parseInt(monday.getDate())){
+			sunday.setMonth(sunday.getMonth() + 1);
+		}
 				
 		output =  monday.getDate() +"-"+months[monday.getMonth()] +"-"+ getHalfYear(monday)+" to ";
 		output +=  sunday.getDate() +"-"+months[sunday.getMonth()] +"-"+ getHalfYear(sunday); 
@@ -300,7 +303,7 @@ function calendar(){
 	}
 	
 	var viewDates = getViewStEndDates();
-	console.log(getViewStEndDates());
+	//console.log(getViewStEndDates());
 	getMonthData(viewDates);
 	for(i=1;i<= beg_j ;i++)    {   
 		var temp_date = roundNumber(days_in_month[prev_mon]-beg_j+i)+ "-" + months[prev_mon] + "-" + prev_mon_year;
@@ -348,7 +351,7 @@ function getMonthData(viewDates){
 	}else{
 		tempVal=seperate[0]+"~I";
 	}
-	console.log(tempVal);
+	//console.log(tempVal);
 	var pat_dtls = $.ajax({
 		url : "../ws/rs/appointment/"+ viewDates[0] +"/"+ viewDates[1]+"/"+ tempVal +"/fetchMonthly",
 		type : "get",
@@ -367,7 +370,7 @@ function getMonthData(viewDates){
 	}).responseText;
 	var jObj = JSON.parse(pat_dtls);
 	globalMonthData = jObj;
-	console.log(globalMonthData);
+	//console.log(globalMonthData);
 }
 
 function getViewStEndDates(){

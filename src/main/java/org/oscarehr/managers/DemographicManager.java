@@ -581,8 +581,12 @@ public class DemographicManager {
 			if(provId.lastIndexOf(",")>0){
 				provId = provId.substring(0, provId.lastIndexOf(","));
 			}
-			Set<Appointment> archivedClients1 = demographicDao.fetchNextAvali(provId,apptTo.getApptDuration(),apptTo.getApptType(),Integer.parseInt(apptTo.getDayOfWeek()),apptTo.getStartTime(),apptTo.getEndTime(),Integer.parseInt(apptTo.getResultCount()));
 			
+			int weekDay = -1;
+			if(apptTo.getDayOfWeek()!=null && "".equals(apptTo.getDayOfWeek())){	
+				weekDay = Integer.parseInt(apptTo.getDayOfWeek());
+			}
+			Set<Appointment> archivedClients1 = demographicDao.fetchNextAvali(provId,apptTo.getApptDuration(),apptTo.getApptType(),weekDay,apptTo.getStartTime(),apptTo.getEndTime(),Integer.parseInt(apptTo.getResultCount()));
 			archivedClients = converter.getAsTransferSetObject(archivedClients1);
 		} catch (Exception e) {
 			logger.error("Error in AppointmentManager.nextAvalibleAppt()", e);

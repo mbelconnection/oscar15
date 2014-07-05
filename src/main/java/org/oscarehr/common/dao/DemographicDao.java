@@ -2116,53 +2116,56 @@ public class DemographicDao extends HibernateDaoSupport implements ApplicationEv
 		}
 		
 		
-		public Set<Appointment> fetchNextAvali(String provId,String duration,String apptType,Integer weekDay,String startTime,String endTime,Integer count){
+		public Set<Appointment> fetchNextAvali(String provId,String duration,String apptType,int weekDay,String startTime,String endTime,Integer count){
 			Set<Appointment> archivedClients = new java.util.LinkedHashSet<Appointment>();
-			
-			String sqlQuery = "select a.appointment_no, a.appointment_date,a.start_time,b.first_name,b.last_name from appointment a,provider b where a.provider_no=b.provider_no " ;
-							if(!"".equalsIgnoreCase(provId) && provId!=null){
-								   sqlQuery =sqlQuery+"and a.provider_no in ('"+provId+"') ";
-								}
-							   if(!"".equalsIgnoreCase(duration) && duration!=null){
-								   sqlQuery =sqlQuery+"and timediff(a.end_time,a.start_time) =CAST('"+duration+"' AS TIME)  ";
-								}
-					           if(!"".equalsIgnoreCase(apptType) && apptType!=null){
-					        	   sqlQuery = sqlQuery + "and a.type='"+apptType+"' ";
-					           }
-					           if(weekDay!=null && !"".equals(weekDay)){
-					        	   sqlQuery = sqlQuery+" and weekday(a.appointment_date) ="+weekDay;
-					           }
-					           if(!"".equalsIgnoreCase(startTime) && startTime!=null && !"".equalsIgnoreCase(endTime) && endTime!=null){
-					        	   sqlQuery = sqlQuery+" and  a.start_time between CAST('"+startTime+"' AS TIME) and CAST('"+endTime+"' AS TIME)";
-					           }
-							  sqlQuery = sqlQuery+" ORDER BY a.appointment_date and a.createdatetime DESC LIMIT "+count;
-							  
-							  
-			Session session = this.getSession();
-
-			SQLQuery q = session.createSQLQuery(sqlQuery);
-			q.addScalar("a.appointment_date");
-			q.addScalar("b.first_name");
-			q.addScalar("b.last_name");
-			q.addScalar("a.start_time");
-			q.addScalar("a.appointment_no");
-
-			List results = q.list();
-			Appointment d = null;
-			Iterator iter = results.iterator();
-			while (iter.hasNext()) {
-				Object[] result = (Object[]) iter.next();
-				
-					d = new Appointment();
-					d.setAppointmentDate((Date)result[0]);
-					d.setName((String) result[1]+", "+(String) result[2]);
-					d.setStartTime((Time) result[3]);
-					d.setId((Integer) result[4]);
-					archivedClients.add(d);
+			try {
+				String sqlQuery = "select a.appointment_no, a.appointment_date,a.start_time,b.first_name,b.last_name from appointment a,provider b where a.provider_no=b.provider_no " ;
+								if(!"".equalsIgnoreCase(provId) && provId!=null){
+									   sqlQuery =sqlQuery+"and a.provider_no in ('"+provId+"') ";
+									}
+								   if(!"".equalsIgnoreCase(duration) && duration!=null){
+									   sqlQuery =sqlQuery+"and timediff(a.end_time,a.start_time) =CAST('"+duration+"' AS TIME)  ";
+									}
+						           if(!"".equalsIgnoreCase(apptType) && apptType!=null){
+						        	   sqlQuery = sqlQuery + "and a.type='"+apptType+"' ";
+						           }
+						           if(weekDay>=0 && weekDay<7){
+						        	   sqlQuery = sqlQuery+" and weekday(a.appointment_date) ="+weekDay;
+						           }
+						           if(!"".equalsIgnoreCase(startTime) && startTime!=null && !"".equalsIgnoreCase(endTime) && endTime!=null){
+						        	   sqlQuery = sqlQuery+" and  a.start_time between CAST('"+startTime+"' AS TIME) and CAST('"+endTime+"' AS TIME)";
+						           }
+								  sqlQuery = sqlQuery+" ORDER BY a.appointment_date and a.createdatetime DESC LIMIT "+count;
+								  
+								  
+				Session session = this.getSession();
+	
+				SQLQuery q = session.createSQLQuery(sqlQuery);
+				q.addScalar("a.appointment_date");
+				q.addScalar("b.first_name");
+				q.addScalar("b.last_name");
+				q.addScalar("a.start_time");
+				q.addScalar("a.appointment_no");
+	
+				List results = q.list();
+				Appointment d = null;
+				Iterator iter = results.iterator();
+				while (iter.hasNext()) {
+					Object[] result = (Object[]) iter.next();
+					
+						d = new Appointment();
+						d.setAppointmentDate((Date)result[0]);
+						d.setName((String) result[1]+", "+(String) result[2]);
+						d.setStartTime((Time) result[3]);
+						d.setId((Integer) result[4]);
+						archivedClients.add(d);
+					
+				}
+	
+				this.releaseSession(session);
+			} catch(Exception e) {
 				
 			}
-
-			this.releaseSession(session);
 			return archivedClients;
 
 		}

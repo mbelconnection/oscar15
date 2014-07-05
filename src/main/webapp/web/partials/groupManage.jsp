@@ -124,15 +124,17 @@
 				 $("#groupTitle").html("Manage schedule layout: "+globalGroup);
 				
 				 /*To set the globalGroup value to docava select drop Starts here*/
-					var tempGroup = globalGroup+"_Group";
+					var tempGroup = globalProviderId+"_Individual";
 					
 					$("#docava option").filter(function() {
 					       return $(this).attr('value') == tempGroup;
 					   }).attr('selected', true);
 					
 					$("#docava").select2().on('select', tempGroup);
+					if($("#docava").val().split("_")[1]=="Individual"){
 				 	$("#placeText").show();
-					$("#placeText").html("Group : ");
+					$("#placeText").html("Individual : ");
+					}
 				 //getGroupIndi("docava");
 				 /*ends here */
 				 var _data = grp_mng_json_fn.getData();

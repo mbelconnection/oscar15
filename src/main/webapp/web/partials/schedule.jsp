@@ -277,7 +277,7 @@ function showTabData(id1,id2,id3,id4,selectDropVal){
 	var id_a ="#"+id4;
 	//$(".tabs li a").css('background-color', '#FFF');
 	$(id_a).css('font-weight', 'bold');
-	
+	selectDropVal = globalProviderId; /* Added by Bhaskar for the default value dynamically from the dropdown*/
 	var pAnch = document.getElementById(id4);
 	var pLi = pAnch.parentNode;
 	var allLis = $( "li" );
@@ -330,13 +330,14 @@ function showTabData(id1,id2,id3,id4,selectDropVal){
 		$('#flipdivid').html("Flip Days&nbsp;<b class='caret' onclick='getDropDown(\"flipdivid\",\"flipDropId\",\"Flip Days\")'></b>");
 		$('#weekdivid').html("Week&nbsp;<b class='caret' onclick='getDropDown(\"weekdivid\",\"weekDropId\",\"Week\")'></b>");
 		}
-	}else{
+	}else {
 		//alert('month view');
 		$("#clock_img").show();
 		$("#menuOptions").hide();
-		globalView.view="month";
+		
 		
 		if(id1 != 'flipview'){
+			globalView.view="month";
 			setMonthDates("");
 			calendar();
 		}
@@ -355,10 +356,16 @@ function showTabData(id1,id2,id3,id4,selectDropVal){
 	if(id1 == 'flipview'){
 		globalProviderId="103";
 		globalView.view = "flip";
+		var groupSelBox = $("#docava").val()!=""?$("#docava").val().split("_"):"_";
+		if(groupSelBox[1]=="Individual"){
+			globalProviderId = groupSelBox[0];
+		}else{
+			globalProviderId = selectDropVal;
+		}
 		setFlipDates("");
 		countForlabeltext=0;
 		//showdata(selectDropVal);
-		globalProviderId = selectDropVal;
+		
 		var groupId = $("#docava").val()!=""?$("#docava").val().split("_"):"_";
 		var groupId1 = groupId[1];
 		if(groupId1!=null && groupId1.indexOf("Group")>-1){
@@ -369,9 +376,35 @@ function showTabData(id1,id2,id3,id4,selectDropVal){
 		globalPatName.name = (sz.name ==undefined?der:sz.name);
 		getDropDown("flipdivid","flipDropId","Flip Days",globalPatName.name);
 		$("#s2id_weekDropId").remove();
+		
+		
+		
 		}
 	}
 	
+}
+
+function isGroupSelected(){
+	var groupSelBox = $("#docava").val()!=""?$("#docava").val().split("_"):"_";
+	if(groupSelBox[1] == "Group")
+		return true;
+	else
+		return false;
+}
+
+function getMainGroupSelBoxVal(){
+	var groupSelBox = $("#docava").val()!=""?$("#docava").val().split("_"):"_";
+	return groupSelBox[0];
+}
+
+function getFlipSelBoxVal(){
+	var groupSelBox = $("#flipDropId").val()!=""?$("#flipDropId").val().split("_"):"_";
+	return groupSelBox[0];
+}
+
+function getWeekSelBoxVal(){
+	var groupSelBox = $("#weekDropId").val()!=""?$("#weekDropId").val().split("_"):"_";
+	return groupSelBox[0];
 }
 
 $.widget( "custom.catcomplete", $.ui.autocomplete, {
@@ -399,6 +432,11 @@ $.widget( "custom.catcomplete", $.ui.autocomplete, {
 		async:false,
 		success : function(result) {
 			data = result;
+			/* Added by Bhaskar for the default value dynamically from the dropdown*/
+			if(data.length>0 && data[0].category=="Individual"){
+			globalProviderId = data[0].id;
+			}
+			/*Added by Bhaskar for the default value Ends here*/
 		},
 		error : function(jqxhr) {
 			var msg = JSON.parse(jqxhr.responseText);
@@ -411,12 +449,23 @@ $.widget( "custom.catcomplete", $.ui.autocomplete, {
 	for(var i=0;i<data.length;i++){
 		$('<option>').val(data[i].id+"_"+data[i].category).text(data[i].label).appendTo('#docava');
 		}
+	/* Added by Bhaskar for the default value dynamically from the dropdown*/
+	var tem =[];
+	for(var s in data){		
+		if(data[s].category=="Group"){
+			tem.push(data[s]);
+		}
+		
+	}
+	if(tem.length>0){
+		globalGroup = tem[0].id;
+	}
+	/*Added by Bhaskar for the default value Ends here*/
  $("#docava").select2().on('change', function (e) {
 			getGroupIndi("docava");
 			//console.log(e);
 		});
 
- 
 function getGroupIndi(selId){
 	  var doc_dt = $("#inputField").val();
 	  var val1 =  $("#"+selId).val().split("_");
@@ -483,12 +532,13 @@ function getDropDown(divId,dropId,placeText,der){
 			$("#labelText_"+dropId).text(placeText+" ("+sch.formatText($("#"+dropId+" option[value='"+tempGroup+"']").text(),10)+")");
 		});
 		
-		/*For setting labelText first time Starts here*/
+		/*For setting labelText first time Starts here also refering from groupManage.jsp line no:128*/
 		$("#"+dropId+" option").filter(function() {
 				        return $(this).attr('value') == globalProviderId+"_Group";
 				    }).attr('selected', true);
 		 $("#"+dropId).select2().on('select', globalProviderId+"_Group");
-		 //console.log(globalProviderId+"<<>>"+countForlabeltext);
+		 
+		 console.log(globalProviderId+"<<>>"+countForlabeltext);
 		 if(countForlabeltext==0){
 		 //$("#labelText_"+dropId).text("");
 			 $("#labelText_"+dropId).text(placeText+" ("+sch.formatText($("#"+dropId+" option[value='"+globalProviderId+"_Group']").text(),10)+")");
@@ -518,7 +568,7 @@ function getDropDown(divId,dropId,placeText,der){
 					</div>
 				</td>
 				<td class='tabs_underline' style='vertical-align:bottom;width:530px;'>
-					<ul class='nav nav-tabs' style='width:525px !important;border-bottom-width: 0px;'>
+					<ul class='nav nav-tabs' id='maintab' style='width:525px !important;border-bottom-width: 0px;'>
 						<li class="active" style='margin-left:5px;'><a style='width:60px;padding:5px;font-family: calibri;' id='daydivid' onclick="showTabData('daydiv','flipview','monthdiv','daydivid','103')">Day</a></li>
 						<li><a style='width:190px;padding:5px;font-family: calibri;' id='flipdivid' onclick="showTabData('flipview','daydiv','monthdiv','flipdivid','103')">Flip Days</a></li>
 						<li><a style='width:190px;padding:5px;font-family: calibri;' id='weekdivid' onclick="showTabData('weekdivid','flipview','monthdiv','weekdivid','103')" id='weekdivid'>Week</a></li>
@@ -635,7 +685,7 @@ function getDropDown(divId,dropId,placeText,der){
 		        <h4 class="modal-title" id="myModalLabel">Edit</h4>
 		      </div>
 		      <div class="modal-body">
-		        Sure! you want to?
+		        Are you sure you want to delete this appointment?
 		      </div>
 		      <div class="modal-footer">
 		      	<button type="button" id="sch_info_but_edit" class="btn btn-primary">Edit</button>
@@ -661,8 +711,8 @@ function getDropDown(divId,dropId,placeText,der){
 		        Are you sure you want to change the appointment?
 		      </div>
 		      <div class="modal-footer">
-		      	<button type="button" id="sch_info_but_edit1" class="btn btn-primary">Edit</button>
-		        <button type="button" class="btn btn-default" onclick="sch.clearGlobalId('dialog-edit')" data-dismiss="modal">Cancel</button>
+		      	<button type="button" id="sch_info_but_edit1" class="btn btn-primary">Confirm</button>
+		        <button type="button" class="btn btn-default" onclick="sch.clearGlobalId('dialog-edit')" data-dismiss="modal">No</button>
 		        
 		      </div>
 		    </div>
@@ -698,7 +748,7 @@ function getDropDown(divId,dropId,placeText,der){
 		        <h4 class="modal-title" id="myModalLabel">Delete appointment</h4>
 		      </div>
 		      <div class="modal-body">
-		        Sure! you want to delete?
+		        Are you sure you want to delete this appointment?
 		      </div>
 		      <div class="modal-footer">
 		      	<button type="button" id="sch_del_but_delete" class="btn btn-danger">Delete</button>
@@ -908,7 +958,8 @@ page_init();
 		container:'.eventpop'
     });
     
-	},1000);
+	},1500);
+    setTimeout('sch.callDayWeekMonth(\''+globalView.view+'\',\''+globalProviderId+'\')',1000);
     });
 </script>
 

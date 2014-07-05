@@ -268,10 +268,10 @@ public class AppointmentBO {
 				//events.s;
 				
 				//if(appt.getDemographicNo() == 0){
-				//	LookupListItem l = reasonDao.findNameById(appt.getReasonCode());
+					//LookupListItem l = reasonDao.findNameById(appt.getReasonCode());
 					//events.setReason(l.getValue());
 				///}else{
-				//	events.setReason(getReason(appt.getReasonCode()!=null?appt.getReasonCode().toString():""));
+					events.setReason(getReason(appt.getReasonCode()!=null?appt.getReasonCode().toString():""));
 				//}
 				events.setApptStartDate(DateUtils.convertDateToString(appt.getAppointmentDate()));
 				evnLst.add(events);
@@ -321,12 +321,12 @@ public class AppointmentBO {
 				events.setNotes(appt.getNotes());
 				events.setPatientName(appt.getName());
 				events.setProviderName(proviDao.getProviderNameLastFirst(appt.getProviderNo()));
-				if(appt.getDemographicNo() == 0){
+				//if(appt.getDemographicNo() == 0){
 					LookupListItem l = reasonDao.findNameById(appt.getReasonCode());
 					events.setReason(l.getValue());
-				}else{
-					events.setReason(getReason(appt.getReasonCode()!=null?appt.getReasonCode().toString():""));
-				}
+				//}else{
+					//events.setReason(getReason(appt.getReasonCode()!=null?appt.getReasonCode().toString():""));
+				//}
 				//events.s;
 				
 				//if(appt.getDemographicNo() == 0){

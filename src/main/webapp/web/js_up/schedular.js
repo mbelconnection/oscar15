@@ -148,12 +148,16 @@ function setGlobalDayDate(){
 	}
 }
 
+function openFlipViewHelp(){
+	url = "./partials/FlipViewHelp.jsp";
+	sch.openWindow(url, 1000,600);
+}
 
 function showdata(provId) {
-	//console.log(provId);
+	console.log(provId);
 	var dates = getStartEndDates();
 	//console.log(dates);
-	var finalData = '<table class="xscale" style="border-right:1px solid #cecece !important;font-family:cambria;color:#084B8A;"><tr "><td style="text-align:center;"><img src="js_up/images/icon_help_small.png">&nbsp;'+sch.getViewDropDown()+'</td>';
+	var finalData = '<table class="xscale" style="border-right:1px solid #cecece !important;font-family:cambria;color:#084B8A;"><tr "><td style="text-align:center;"><img style="cursor:pointer;" onclick="openFlipViewHelp()" src="js_up/images/icon_help_small.png">&nbsp;'+sch.getViewDropDown()+'</td>';
 
 	var j = 8;
 	for (var i = 0; i < 10; i++) {
@@ -189,19 +193,21 @@ function showdata(provId) {
 		if(flipWeekendHide)
 			finalData += loadFlipData_hide(_data, dates[0], dates[1]);
 		else
-			finalData += loadFlipData(_data, dates[0], dates[1]);
+			finalData += loadFlipData(provId, _data, dates[0], dates[1]);
 	}
 	flipWeekendHide = false;
 	document.getElementById('flipview').innerHTML = finalData;
 }
-function loadFlipData(_data, startDate, endDate){
+function loadFlipData(provId, _data, startDate, endDate){
+	var months = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
 	var finalData = "";
 	var currDayArr = startDate.split('-');
 	var days = getDiffInDays(startDate, endDate) +1;
 	var myday = new Date(parseFloat(currDayArr[2]),parseFloat(getMonthIndex(startDate)),parseFloat(currDayArr[0]));
 	var index = 32;
 	for (var a = 0; a < days; a++) {
-			finalData += '<tr><td style="text-align:right;">' + getFlipDateFormat(myday) + '</td>';
+		curDate = myday.getDate() +"-"+months[myday.getMonth()] +"-"+ myday.getFullYear();
+			finalData += '<tr><td style="text-align:right;cursor:pointer;" onclick="goToDayView(\''+provId+'\', \''+curDate+'\')">' + getFlipDateFormat(myday) + '</td>';
 			var formattedDate = getDateFormat(myday);
 			var dayData = _data[formattedDate];
 			
@@ -256,6 +262,26 @@ function loadFlipData_hide(_data, startDate, endDate){
 		
 	}
 	return finalData;
+}
+
+function goToDayView(provId, date){
+	//alert(provId);
+	document.getElementById("daydiv").style.display = "block";
+	document.getElementById("flipview").style.display = "none";
+	document.getElementById("monthdiv").style.display = "none";
+	
+	Schedular.prototype.ajaxMethod("../ws/rs/schedule/" + date +"/"+provId+ "/list1",
+			Schedular.prototype.setInitData, {
+				"doc_dt" : date
+			});
+	globalView.view="day";
+	$('#maintab a[id="daydivid"]').tab('show');
+	
+	$('#flipdivid').empty();
+	$('#flipdivid').html("Flip Days");
+	document.getElementById("inputField").value = date;
+	setTimeout('Schedular.prototype.init(\'day\',\'from load\')', 1000);
+	
 }
 
 function loadBlankFlipData(startDate, endDate){
@@ -504,7 +530,7 @@ Schedular.prototype.dayLoad = function(date,providerNo) {
 		
 	}
 	document.getElementById("inputField").value = date;
-	setTimeout('Schedular.prototype.init(\'day\',\'from load\')', 1000);
+	setTimeout('Schedular.prototype.init(\'day\',\'from load\')', 1500);
 }
 Schedular.prototype.weekLoad = function(week,providerNo) {
 	this.getApptStatusHTML();
@@ -532,10 +558,15 @@ Schedular.prototype.callDayWeekMonth = function(view,selVal){
 		globalView.view="week";
 		var sq = sch.weekForCurrentDate(selDate);
 		sch.weekLoad(sq,selVal);	
-	}else{
+	}else if(view =="month"){
 		//alert("for month view");
+		globalView.view="month";
 		setMonthDates("");
 		calendar();
+	}else{
+		globalProviderId = selVal;
+		globalView.view="flip";
+		setFlipDates("");		
 	}
 	
 }
@@ -551,7 +582,7 @@ Schedular.prototype.init = function(view, from) {
 			placement : 'top',
 			container:'.withline'
 		});
-	},1000);
+	},1500);
     });
 	globalView.view = view;
 	this.persons = Schedular.config.providersList;
@@ -712,7 +743,9 @@ Schedular.prototype.getYScale = function() {
 	_YScale += '<table class="xscale" style="float: left;">';
 	// _YScale += '<tr><td><input type="image"
 	// src="images/clock_small.GIF"/></td></tr>';
+	var count = -1;
 	while (_shour < Schedular.config.end_time) {
+		count++;
 		if (_smin >= 60) {
 			_shour++;
 			_smin -= 60;
@@ -722,8 +755,11 @@ Schedular.prototype.getYScale = function() {
 		_YScale += '<tr><td>';
 		time = this.round(_shour) + ":" + this.round(_smin);
 		_smin += Schedular.config.increment;
-
-		_YScale += time;
+		if(count%4){
+			_YScale += "<span style=\"color:#BDBDBD;\" >"+time+"</span>";
+		}else{
+			_YScale += time;
+		}
 		_YScale += '</td></tr>';
 	}
 	_YScale += '</table>';
@@ -789,6 +825,9 @@ Schedular.prototype.getXScale = function() {
 	var _XScale = '';
 	var _shour = Schedular.config.start_time, _smin = 0, temp_min=0;
 	var style = 'withline';
+	if(flipColorCodes == null)
+		flipColorCodes = getFlipColorCodes();
+	
 	while (_shour < Schedular.config.end_time) {
 
 		if (_smin >= 60) {
@@ -803,6 +842,7 @@ Schedular.prototype.getXScale = function() {
 		time = this.round(_shour) + ":" + this.round(_smin);
 		temp_min = _smin;
 		_smin += Schedular.config.increment;
+		
 		for (var i = 0; i < this.persons.length; i++) {
 			_XScale += "<td style=\"height:25px !important;width:300px !important;cursor: default;padding:0px;margin:0px;\"  data-original-title= "+time+" class=\"" 
 					+ style
@@ -824,7 +864,11 @@ Schedular.prototype.getXScale = function() {
 					+ time
 					+ "\">";
 			if(this.persons[i].flipData != null){
-				_XScale += "<div style=\"border: 1px solid grey;font-size:18px;padding-left:2px;border-bottom: 0px;width:20px;height: 100%;\">"+sch.getFlipData( this.persons[i].flipData, _shour, _smin)+"</div>";
+				//console.log(this.persons[i].flipData);
+				//console.log(flipColorCodes);
+				//getFlipColor
+				var code = sch.getFlipData( this.persons[i].flipData, _shour, _smin);
+				_XScale += "<div style=\"border: 1px solid grey;background-color:"+getFlipColor(code)+";font-size:18px;padding-left:2px;border-bottom: 0px;width:20px;height: 100%;\">"+code+"</div>";
 			}
 							
 			 	_XScale += "</td>";
@@ -967,18 +1011,20 @@ Schedular.prototype.deleteEvent = function(globalApptId, apptObject) {
 	//var $back = $('div').find("#" + apptObject);
 	//$back.remove();
 }
-Schedular.prototype.createPopup = function(tdId,reason,notes, room){
+Schedular.prototype.createPopup = function(tdId,reason,notes, room,patName){
+	//console.log(patName);
 	reason = reason.replace(/_/g," ");
 	notes = notes.replace(/_/g," ");
+	patName = patName.replace(/_/g,", ");
 	//console.log(tdId+"<<>>"+reason+"<<>>"+notes);
 	tdId = tdId.replace(/,/g,'_');
 	//$('.eventpop').tooltip({placement: 'top', title: "<div id=\"event_tt\" style=\"text-align:left;white-space:normal;\">Reason:"+reason+"</div><div style=\"text-align:left;white-space:normal;\">Notes: "+notes+"</div>",	html: true});
-	$('.evtpop_td_pat_name').tooltip({placement: 'top', title: "<div id=\"event_tt\" style=\"text-align:left;width:150px;white-space:normal;\">Reason:"+this.formatText(reason, 18)+"</div><div style=\"text-align:left;white-space:normal;\">Notes: "+this.formatText(notes, 25)+"</div>",	html: true});
+	$('.evtpop_td_pat_name').tooltip({placement: 'top', title: "<div id=\"event_tt\" style=\"text-align:left;width:150px;white-space:normal;\">Name:"+this.splitText(patName, 20)+"</div><div style=\"text-align:left;white-space:normal;\">Reason:"+this.formatText(reason, 18)+"</div><div style=\"text-align:left;white-space:normal;\">Notes: "+this.formatText(notes, 25)+"</div>",	html: true});
 	//$('.evtpop_td_ltline').tooltip({placement: 'top', title: "<div style=\"text-align:left;\">Reason: "+reason+"</div><div style=\"text-align:left;\">Notes: "+notes+"</div>",	html: true});
 	//$('#2_10:45').tooltip({placement: 'top', title: "<div style=\"text-align:left;\">Reason: "+reason+"</div><div style=\"text-align:left;\">Notes: "+notes+"</div>",	html: true});
 	$('.evtpop_td_pat_name')
 	//.tooltip('hide')
-	.attr('data-original-title', "<div id=\"event_tt\" style=\"text-align:left;width:150px;white-space:normal;\">Reason:"+this.formatText(reason, 18)+"</div><div style=\"text-align:left;white-space:normal;\">Notes: "+this.formatText(notes, 25)+"</div><div style=\"text-align:left;white-space:normal;\">Room: "+this.formatText(room.replace(/_/g,' '), 25)+"</div></div>")
+	.attr('data-original-title', "<div id=\"event_tt\" style=\"text-align:left;width:150px;white-space:normal;\">Name:"+this.splitText(patName, 20)+"</div><div style=\"text-align:left;white-space:normal;\">Reason:"+this.formatText(reason, 18)+"</div><div style=\"text-align:left;white-space:normal;\">Notes: "+this.formatText(notes, 25)+"</div><div style=\"text-align:left;white-space:normal;\">Room: "+this.formatText(room.replace(/_/g,' '), 25)+"</div></div>")
     //.tooltip('fixTitle')
     //.tooltip('show');
 }
@@ -988,7 +1034,6 @@ Schedular.prototype.clearGlobalId = function(modelID) {
 }
 Schedular.prototype.editAppt = function(apptObject, tdObj) {
 	
-//	console.log(apptObject+"<<>>"+tdObj)
 	//console.log($("#"+apptObject).attr("curapptid"));
 	//globalApptId =  apptObject.split(":")[0];
 	globalApptId = $("#"+apptObject).attr("curapptid");
@@ -1115,7 +1160,9 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 			var rs = obj.reason!=null?(obj.reason).replace(/ /g,"_"):"";
 			var nt = obj.notes!=null?(obj.notes).replace(/ /g,"_"):"";
 			var room = obj.roomId!=null?(obj.roomId).replace(/ /g,"_"):"";
-			overPopup="onmouseover=sch.createPopup(\"pat_name"+obj.apptId+"\",\""+rs+"\",\""+nt+"\",\""+room+"\")";
+			var patName = obj.patientName!=null?(obj.patientName).replace(/ /g,"_"):"";
+			patName = patName.replace(/[,]/g,"");
+			overPopup="onmouseover=sch.createPopup(\"pat_name"+obj.apptId+"\",\""+rs+"\",\""+nt+"\",\""+room+"\",\""+patName+"\")";
 		}else{
 			overPopup ="";
 		}
@@ -1132,7 +1179,7 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 					+ '" style="width:10px !important;text-align:center;"><div class="dropdown btn-group" > <a class="btn dropdown-toggle" data-toggle="dropdown" style="height:20px;padding:0px;padding-left:6px;padding-right:6px;padding-top:0px;padding-bottom:0px;">   <span class="caret" style="padding:0px;"></span>    </a>    <ul class="dropdown-menu">        '
 					+ sch.getApptStatusHTML("appt_sta_" + obj.apptId.replace(/,/g,'_'))
 					+ '    </ul></div></td>';
-			var patNameLength = 25;
+			var patNameLength = 20;
 			var criticalDisplay = "none";
 			if (obj.isCritical == "Y") {
 				patNameLength = 18;
@@ -1151,7 +1198,8 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 				html += '<td class=" evtpop_td_ltline '
 						+ stylecls
 						+ '" style="width:50px !important;text-align:center;padding-top:2px;"><div style="display: inline-block;cursor:pointer;" onclick="sch.repeatMulPat(this);" apptid="'
-						+ obj.apptId
+						+ obj.apptId +'" id="mulpat'
+						+ obj.apptId.replace(/,/g,'_')
 						+ '" index="0" totpat="'
 						+ (obj.noOfPat)
 						+ '"><input type="image" style="" src="js_up/images/multi_p.png"><span style="position: relative; top: -5px;">'
@@ -1179,11 +1227,11 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 					+ '" style="width:15px !important;text-align:center;display:'+goToDisplay+'" curapptid="'+obj.apptId.split(',')[0]+'" id="appt_goto_'
 					+ obj.apptId.replace(/,/g,'_') + '">' + tempToTo + '</td>';
 			colspan++;
-				
+			var _apptObject = JSON.stringify(obj);
 			html += '<td class="evtpop_td_ltline '
 					+ stylecls
 					+ '" style="width:15px !important;text-align:center;"><div class="dropdown btn-group" > <a class="btn dropdown-toggle" data-toggle="dropdown" style="height:20px;padding:0px;padding-left:6px;padding-right:6px;padding-top:0px;padding-bottom:0px;">   <span class="caret" style="padding:0px;"></span>    </a>    <ul class="dropdown-menu">        '
-					+ sch.getApptGotoHTML('appt_goto_' + obj.apptId.replace(/,/g,'_'), obj.providerName, obj.startDate, obj.hr, obj.min)
+					+ sch.getApptGotoHTML('appt_goto_' + obj.apptId.replace(/,/g,'_'), obj.providerName, obj.startDate, obj.hr, obj.min,_apptObject)
 					+ '    </ul></div></td>';
 			html += '</tr>';
 		
@@ -1206,19 +1254,22 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 					+ obj.apptId + "'><span class='gen_font3'>"+ this.formatText(obj.reason, 40) +":</span> "
 					+ obj.providerName + "</td>";*/
 			var j = obj.apptId + ':' + obj.hr + '_' + obj.min;
-			html += "<td class=\"evtpop_td_pat_name evtpop_td_ltline\" style=\"color:#3366FF;cursor:pointer;\" eventType='blocktime' id='pat_name"
+			html += "<td class=\"evtpop_td_pat_name evtpop_td_ltline\" style=\"color:#3366FF;cursor:pointer;\"curapptid='"+obj.apptId+"' eventType='blocktime' id='pat_name"
 				+ obj.apptId
 				+ "' apptid=\""
 				+ obj.apptId
-				+ "\" onclick='sch.editAppt(\"" + j + "\",\""+ obj.id +"\")'"+overPopup+" >"+ this.formatText(obj.reason, 40) +": &nbsp; "
+				+ "\" onclick='sch.editAppt(this.id,\""+ obj.id +"\")'"+overPopup+" >"+ this.formatText(obj.reason, 40) +": &nbsp; "
 				+ obj.providerName + "</td>";
 			
 			html += "</tr>";
 	
 			html += "<tr style='display:" + reasonDis + "'>";
 			html += "<td colspan='" + colspan + "' class='gen_font2' id='appt_note"
-					+ obj.apptId + "'><span class='gen_font3'>Description:</span> "
-					+ this.formatText(obj.notes, 40) + "</td>";
+					+ obj.apptId + "'>";
+			
+			if(obj.notes != "")
+				html += "<span class='gen_font3'>Description:</span> " +  this.formatText(obj.notes, 40);
+			html += "</td>";
 			html += "</tr>";
 		}
 
@@ -1264,7 +1315,10 @@ Schedular.prototype.setMulPatDtls = function(apptId, index) {
 	$("#appt_goto_" + apptId).attr("curapptid", currentApptId);
 	$("#pat_name" + apptId).attr("curapptid", currentApptId);
 	if(_data["goTo"] != null){		
-		$("#appt_goto_" + apptId).html( apptType[_data["goTo"]]);
+		if(isNaN(_data["goTo"]))
+			$("#appt_goto_" + apptId).html( _data["goTo"]);
+		else 
+			$("#appt_goto_" + apptId).html( apptType[_data["goTo"]]);
 		document.getElementById("appt_goto_" + apptId).style.display = "table-cell";
 	}else{
 		document.getElementById("appt_goto_" + apptId).style.display = "none";
@@ -1378,18 +1432,13 @@ Schedular.prototype.printLables = function(provName, date, hour, min) {
 	window.open("./partials/printLabels.jsp", "_blank", 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left, "window")
 	
 }
-Schedular.prototype.getApptGotoHTML = function(divID, provName, date, hour, min) {
-
+Schedular.prototype.getApptGotoHTML = function(divID, provName, date, hour, min, apptObj) {
 	var _html = "";
 	$
 			.each(
 					appt_goto_data,
 					function(a, row) {
-						_html += "<li><a style='text-align:left;width:150px;' onclick='sch.setApptGoto(\""
-								+ row.id
-								+ "\", \""
-								+ divID
-								+ "\")'>"
+						_html += "<li><a style='text-align:left;width:150px;' onclick='sch.setApptGoto(\""+ row.id + "\", \"" + divID	+ "\","+	apptObj+"	)'>"
 								+ row.name + "</a></li>";
 
 					});
@@ -1397,7 +1446,7 @@ Schedular.prototype.getApptGotoHTML = function(divID, provName, date, hour, min)
 	return _html;
 }
 
-Schedular.prototype.setApptGoto = function(code, divID) {
+Schedular.prototype.setApptGoto = function(code, divID, apptObj) {
 	//var apptType = ["", "E", "I", "B", "R"];
 	var apptID = '';
 	var curApptId = $("#" + divID).attr("curapptid");
@@ -1405,8 +1454,45 @@ Schedular.prototype.setApptGoto = function(code, divID) {
 		apptID = divID.split('_')[2];
 	sch.saveApptGoto(curApptId, code);
 	document.getElementById(divID).style.display = "table-cell";
-	//console.log(apptType[code]);
+	console.log(apptObj);
+	//var msg = JSON.parse(apptObj);
+	//console.log(apptObj.docId);
 	$("#" + divID).html( code);
+	sch.openQuickLink(curApptId, code, apptObj,divID);
+}
+Schedular.prototype.openQuickLink = function(curApptId, code, apptObj,divID) {
+	var patId;
+	if (apptObj.noOfPat != null && apptObj.noOfPat > 1) {
+		var index = $("#mulpat" +apptObj.apptId.replace(/,/g,'_')).attr("index");
+		console.log(apptObj.apptId.replace(/,/g,'_'));
+		patId= apptObj.patientId.split(',')[index];
+	}else{
+		patId=apptObj.patientId;
+	}
+	
+	var dateArr = apptObj.apptStartDate.split('-')
+	var date = dateArr[2] + "-"+ (parseInt(getMonthIndex("-"+dateArr[1])) +1) +"-"+ dateArr[0];
+	
+	if(code == 'R'){
+		url = "../oscarRx/choosePatient.do?providerNo="+apptObj.docId+"&demographicNo="+apptObj.docId;
+		sch.openWindow(url, 1000,600);
+	}else if(code == 'B'){
+		var url = "../billing/CA/ON/billingOB.jsp?billRegion=ON&billForm=MFP&hotclick=&appointment_no="+curApptId+"&demographic_name=Lorraine+Kinsy%2CBrooks+Smithfields&status=TD&demographic_no="+patId+"&providerview="+apptObj.docId+"&user_no=999998&apptProvider_no="+apptObj.docId+"&appointment_date="+date+"&start_time="+apptObj.fromTime+":00&bNewForm=1";
+		sch.openWindow(url, 1000,600);
+	}else if(code == 'E'){
+		
+		
+		var url = "../casemgmt/forward.jsp?action=view&demographicNo="+patId+"&providerNo=999998&providerName="+apptObj.providerName+"&appointmentNo="+curApptId+"&reason="+apptObj.reason+"&appointmentDate="+date+"&start_time="+apptObj.fromTime+":00&apptProvider="+apptObj.docId+"&providerview="+apptObj.docId;
+		sch.openWindow(url, 1000,600);
+	}
+}
+
+Schedular.prototype.openWindow = function(url, width, height) {
+	var w = width;
+	var h = height;
+	var left = (screen.width/2)-(w/2);
+	var top = (screen.height/2)-(h/2) - 100;
+	window.open(url, "_blank", 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left, "window")
 }
 
 Schedular.prototype.saveApptGoto = function(apptID, code) {
@@ -1433,6 +1519,31 @@ Schedular.prototype.formatText = function(text, length) {
 		return "";
 	if (text.length > length)
 		return text.substring(0, length) + "...";
+	else
+		return text;
+}
+
+Schedular.prototype.splitText = function(text, length) {
+	var l = text.length, lc = 0, chunks = [], c = 0, chunkSize = length;
+	if (text == null)
+		return "";
+	if (text.length > length){
+		
+		for (; lc < l; c++) {
+			if(c==0){
+				chunks[c] = text.slice(lc, lc += chunkSize);
+			}else{
+				chunks[c] = text.slice(lc, lc += (chunkSize+5));
+			}
+		  
+		}
+		var temp ="";
+		for(var i=0; i < chunks.length; i++){
+			temp=temp+chunks[i]+"<br\>";
+		}
+		return temp;
+	}
+		
 	else
 		return text;
 }
@@ -1485,6 +1596,7 @@ Schedular.prototype.loadDayEvents = function(events) {
 			}
 		}
 	}
+	if(sch.valid_date(document.getElementById("inputField").value))
 	setTimeout('Schedular.prototype.timerTab()', 100);
 	if(globalView.view=="week"){
 		$(".Yscale th").addClass("weekColor");
@@ -1667,6 +1779,13 @@ Schedular.prototype.timerDisable = function() {
 		}
 	}
 }
+
+Schedular.prototype.getDayViewFormat = function(date) {
+	var week = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+	var dateArr = date.split('-');
+	var dateObj = new Date(parseFloat(dateArr[2]), parseFloat(getMonthIndex(dateArr[1])), parseFloat(dateArr[0]));
+	return week[dateObj.getDay()]+", "+dateArr[1]+" "+dateArr[0];
+}
 Schedular.prototype.clearForm = function(formId) {
 
 	$(formId + ' :input').each(function() {
@@ -1710,20 +1829,20 @@ Schedular.prototype.valid_date = function(dt) {
 	total = days_in_month[month];
 	var date_today = day + "-" + months[month] + "-" + year;
 	var dt_arr = dt.split("-");
-	if (dt_arr[2] >= year) {
-		if (months.indexOf(dt_arr[1]) >= month) {
-			if (dt_arr[0] >= day) {
+	if (dt_arr[2] == year) {
+		if (months.indexOf(dt_arr[1]) == month) {
+			if (dt_arr[0] == day) {
 				return true;
 			} else {
-				alert("Date must be greater than or equal to current date!");
+				//alert("Date must be greater than or equal to current date!");
 				return false;
 			}
 		} else {
-			alert("Date must be greater than or equal to current date!");
+			//alert("Date must be greater than or equal to current date!");
 			return false;
 		}
 	} else {
-		alert("Date must be greater than or equal to current date!");
+		//alert("Date must be greater than or equal to current date!");
 		return false;
 	}
 }

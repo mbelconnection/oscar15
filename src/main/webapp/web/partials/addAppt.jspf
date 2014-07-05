@@ -750,6 +750,7 @@
 				
 				var jObj = JSON.parse(data);
 				$("#add_appt_room").empty();
+				$("#add_appt_room").append(new Option("-- Select Room --", ""));
 				$.each(jObj, function(key, val) {
 					console.log(val);
 					$("#add_appt_room").append(new Option(val.name, val.id));
@@ -1288,6 +1289,7 @@
 					formData['apptDuration'] = $("#blk_appt_duration").val();
 					formData['appReason'] = $("#blk_appt_reason").val();
 					formData['apptNotes'] = $("#blk_appt_notes").val();
+					formData['multiApptId'] = $("#add_appt_prog_id").val();
 					formData['patientId'] = "";
 					formData['patientName'] = "";
 					formData['noOfPatient'] = "1";
@@ -1307,12 +1309,13 @@
 						add_appt_data = add_app_ajax_fn.saveFormData(JSON.stringify(formData));
 					}
 					//alert('success');
-					console.log(add_appt_data);
-					formData['apptId'] = add_appt_data.id;
+					//console.log(add_appt_data);
+					dateChange("");
+					/*formData['apptId'] = add_appt_data.id;
 					formData['apptReasonText'] = $("#blk_appt_reason option:selected").text();
 					formData['providerName'] = $("#add_appt_block_s_provider").val();;
 					//console.log(globalObj);
-					sch.saveEvent(globalObj, formData, null);
+					sch.saveEvent(globalObj, formData, null);*/
 					//sch.saveBlockEvent(globalObj, formData);
 				}
 				add_app_fn.clearForm("#add_appt_form");
@@ -1699,6 +1702,10 @@
 				add_app_fn.hideValNote();
 				add_app_edit_no_of_pats = '';
 				
+			},
+			closeForm: function(){
+				add_app_fn.clearForm("#add_appt_form");
+				$("#add_appt_form").dialog("close");
 			}
 		};
 
@@ -1719,7 +1726,6 @@
 					},
 					open : function() {
 						
-						console.log("coming");
 						$('#add_appt_form').css('overflow', 'initial');
 						$(".ui-dialog-titlebar-close").hide();
 						$(".ui-dialog-titlebar").hide();
@@ -1754,6 +1760,7 @@
 							$("#add_appt_date").val(nextAailObject.date);*/
 							//console.log(nextAailObject);
 						} else {
+							console.log(globalObj);
 							var d = globalObj.id.split("_");
 							$("#add_appt_time select").text(d[1]);
 							$("select#add_appt_time option").filter(function() {
@@ -2338,9 +2345,11 @@ select: function( event, ui ) {
 					</tr>
 				</table>
 			</li>
-			
-			
+			<div style="width:100%;text-align:right;cursor:pointer;" onclick="add_app_fn.closeForm()">
+				<img width="20" height="20" src="js_up/images/close_icon.png">
+			</div>
 		</ul>
+		
 			<div class="tab-content">
 					  <div class="tab-pane active" id="temp1" style="border: 1px solid #DDDDDD;border-top:0px;padding:5px;">
 					  		<table width="100%" border="0" style="border-collapse: collapse;">
@@ -2353,7 +2362,7 @@ select: function( event, ui ) {
 										<table>
 											<tr>
 										<td><img src="js_up/img/1.png" style="width:30px;height:30px;"></img></td>
-										<td class="naa_mainheading"><span style="color:#848484;">BASIC DETAILS(required)</span>
+										<td class="naa_mainheading"><span style="color:#848484;">BASIC DETAILS (required)</span>
 											<input type="hidden" id="add_appt_pat_name_sel_id">	
 											<input type="hidden" id="add_appt_prov_name_sel_id">
 											<input type="hidden" id="add_appt_prog_id">
@@ -2602,7 +2611,7 @@ select: function( event, ui ) {
 											<tr>
 												<td><img src="js_up/img/2.png"
 													style="width: 30px; height: 30px;"></img></td>
-												<td class="naa_mainheading"><span style="color:#848484;">MORE DETAILS(optional)</span></td>
+												<td class="naa_mainheading"><span style="color:#848484;">MORE DETAILS (optional)</span></td>
 											</tr>
 										</table>
 									</td>
@@ -2766,7 +2775,7 @@ select: function( event, ui ) {
 											<tr>
 												<td><img src="js_up/img/1.png"
 													style="width: 30px; height: 30px;"></img></td>
-												<td class="naa_mainheading"><span style="color:#848484;">BASIC DETAILS(required)</span>
+												<td class="naa_mainheading"><span style="color:#848484;">BASIC DETAILS (required)</span>
 													<input type="hidden" id="add_block_prov_id"> 
 													<input type="hidden" id="add_block_prov_type" value="S">	
 												</td>
@@ -2882,7 +2891,7 @@ select: function( event, ui ) {
 											<tr>
 												<td><img src="js_up/img/2.png"
 													style="width: 30px; height: 30px;"></img></td>
-												<td class="naa_mainheading"><span style="color:#848484;">MORE DETAILS(optional)</span></td>
+												<td class="naa_mainheading"><span style="color:#848484;">MORE DETAILS (optional)</span></td>
 											</tr>
 										</table>
 									</td>

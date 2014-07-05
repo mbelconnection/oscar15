@@ -95,6 +95,25 @@ public class OscarAppointmentDaoTest extends DaoTestFixtures {
 	}
 
 	@Test
+	public void testGetByProvidersAndDay() throws Exception {
+		Appointment appt = new Appointment();
+		EntityDataGenerator.generateTestDataForModelClass(appt);
+		String [] provList = new String[1];
+		provList[0] = "000001";
+		appt.setProviderNo("000001");
+		appt.setAppointmentDate(new Date());
+		dao.persist(appt);
+
+		Integer apptId = appt.getId();
+		assertNotNull(apptId);
+
+		List<Appointment> appts = dao.getByProvidersAndDay(appt.getAppointmentDate(), provList);
+		assertEquals(appts.size(), 1);
+		assertEquals(appts.get(0).getId(), apptId);
+	}
+
+	
+	@Test
 	public void testFindByProviderDayAndStatus() throws Exception {
 		Appointment appt = new Appointment();
 		EntityDataGenerator.generateTestDataForModelClass(appt);

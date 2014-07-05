@@ -373,14 +373,15 @@ public class ScheduleManager {
 					}
 				}
 			//}
-			events = AppointmentBO.copyEvents(appointments, events);
+			events = AppointmentBO.copyEvents(appointments, events,providerDao,reasonDao);
 		} catch (Exception e) {
 			logger.error("Error in ScheduleService.getProviderAndEvents()", e);
 			throw new ScheduleException(ErrorCodes.SCH_ERROR_002);
 		}
 		try {
 			//Object []provider = ProviderBO.getUniqueProviders(events);
-			providers = providerDao.getProviders();
+			providerNoList[0]=providerNo;
+			providers = providerDao.getProviders(providerNoList);
 			providersTo1 = ProviderBO.copyProviders(providers, providersTo1);
 			if (null == providersTo1 || providersTo1.isEmpty()) {
 				throw new ScheduleException(ErrorCodes.SCH_ERROR_001);
@@ -532,6 +533,7 @@ public class ScheduleManager {
 	public ProviderAndEventSearchResults getSelectedProviderAndEvents(List<ProviderTo1> providerIds,String apptDate) throws ScheduleException {
 		logger.debug("ScheduleService.getProviderAndEvents() starts");
 		List<Provider> providers = null;
+		List<String> provsList = new ArrayList<String>();
 		List<ProvidersTo1> providersTo1 = null;
 		List<EventsTo1> events = null;
 		List<Appointment> appointments = null;
@@ -549,10 +551,13 @@ public class ScheduleManager {
 	            }
 			}
 			
+			
+			
 			for (Iterator<ProviderTo1> j = providerIds.iterator(); j.hasNext();) {
 	            ProviderTo1 prov1 = (ProviderTo1) j.next();
 	            
 	            if(prov1.isEnabled()){
+	            	provsList.add(prov1.getProviderNo());
 	            	if(!"".equals(provider)){
 	            		provider = provider+","+prov1.getProviderNo();
 	            	}else {
@@ -561,8 +566,12 @@ public class ScheduleManager {
 	            }
 	            
             }
+			String [] provsArray = new String[provsList.size()];
+			for(int j =0;j<provsList.size();j++){
+				provsArray[j] = provsList.get(j);
+				}
 			
-			appointments = oscarAppointmentDao.getByProvidersAndDay(org.oscarehr.ws.rest.util.DateUtils.formatDate(apptDate), provider);
+			appointments = oscarAppointmentDao.getByProvidersAndDay(org.oscarehr.ws.rest.util.DateUtils.formatDate(apptDate), provsArray);
 			logger.debug("ScheduleManager.getProviderAndEvents()"+appointments);
 			if (null == appointments || appointments.isEmpty()) {
 				Calendar cal = Calendar.getInstance();
@@ -645,7 +654,7 @@ public class ScheduleManager {
 	
 	public ProviderAndEventSearchResults getTeamProviderHavingEvents(String groupName,String appDate) throws ScheduleException{
 		ProviderAndEventSearchResults rstLst = new ProviderAndEventSearchResults();
-		
+		List<String> provsList = new ArrayList<String>();
 		try {
 	        Map<String,List<ProviderTo1>> totList = demoManager.getGroupProviderDetails(groupName);
 	        List<ProviderTo1> activeList = totList.get("active");
@@ -653,6 +662,8 @@ public class ScheduleManager {
 	        List<ProviderTo1> converterActiveProvider = new ArrayList<ProviderTo1>();
 	        ProviderTo1 providerTo = new ProviderTo1();
 			ProviderConverter converter = new ProviderConverter();
+			String [] provsArray = new String[activeList.size()];
+			int k=0;
 	        for (Iterator<ProviderTo1> j = activeList.iterator(); j.hasNext();) {
 	            ProviderTo1 prov1 = (ProviderTo1) j.next();           
 	            	if(!"".equals(provider)){
@@ -660,9 +671,11 @@ public class ScheduleManager {
 	            	}else {
 	            		provider = prov1.getProviderNo();
 	            	}
+	            	provsArray[k] =  prov1.getProviderNo();
+	            	k++;
             }
 	        
-	        List<Provider> providerList = oscarAppointmentDao.getProvidersByAppointments(java.util.Arrays.asList(provider.split(",")),org.oscarehr.ws.rest.util.DateUtils.formatDate(appDate));
+	        List<Provider> providerList = oscarAppointmentDao.getProvidersByAppointments(provsArray,org.oscarehr.ws.rest.util.DateUtils.formatDate(appDate));
 	        
 	        for (Iterator i = providerList.iterator(); i.hasNext();) {
 	            Provider provider1 = (Provider) i.next();

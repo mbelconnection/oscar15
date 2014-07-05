@@ -196,14 +196,17 @@ public class OscarAppointmentDao extends AbstractDao<Appointment> {
 	}
 
 	public List<Appointment> getByProviderAndDay(Date date, String providerNo) {
+		List<Appointment> rs = new ArrayList<Appointment>();
 		String sql = "SELECT a FROM Appointment a WHERE a.providerNo=? and a.appointmentDate = ? and a.status != 'N' and a.status != 'C' order by a.startTime";
 		Query query = entityManager.createQuery(sql);
 		query.setParameter(1, providerNo);
 		query.setParameter(2, date);
 		
-		List<Appointment> rs = query.getResultList();
-
+		 rs = query.getResultList();
+		if(rs!=null)
 		return rs;
+		else 
+			return new ArrayList<Appointment>();
 	}
 
 	public List<Appointment> findByProviderAndDayandNotStatuses(String providerNo, Date date, String[] notThisStatus) {
@@ -1006,36 +1009,45 @@ public class OscarAppointmentDao extends AbstractDao<Appointment> {
 			}
 			
 			
-			public List<Appointment> getByProvidersAndDay(Date date, String providerNo) {
-				String sql = "SELECT a FROM Appointment a WHERE a.providerNo IN ('"+providerNo+"') and a.appointmentDate = ? order by a.startTime";
-				Query query = entityManager.createQuery(sql);
-				
-				query.setParameter(1, date);
-				
-				List<Appointment> rs = query.getResultList();
+			public List<Appointment> getByProvidersAndDay(Date date, String[] providerNo) {
+				List<Appointment> rs = new java.util.ArrayList<Appointment>();
 
+				
+				try{
+					String sql = "SELECT a FROM Appointment a WHERE a.providerNo IN (?1) and a.appointmentDate=?2 order by a.startTime";
+					Query query = entityManager.createQuery(sql);
+					
+					query.setParameter(1, Arrays.asList(providerNo));
+					query.setParameter(2, date);
+					
+					//rs = query.getResultList();
+					if(query.getResultList() != null){
+						 rs = query.getResultList();
+					}
+						
+					
+				}catch(Exception e){
+				}
+				
 				return rs;
 			}
 			//TODO: FIX..this may be wrong now that I added quotes. A List<String> should be the input
-			public List<Provider> getProvidersByAppointments(List<String> providers,Date apptDate) {
-				String inClause = "";
-				for(int x=0;x<providers.size();x++) {
-					String provider = providers.get(x);
-					if(x>0) {
-						inClause += ",";
-					}
-					inClause += "'" +  provider + "'";
-				}
-				String sql = "select distinct b from Appointment a,Provider b where a.providerNo = b.ProviderNo and a.providerNo in ("+inClause+")  and a.appointmentDate=?";
+			public List<Provider> getProvidersByAppointments(String[] providerNo,Date apptDate) {
+				List<Provider> rs = new java.util.ArrayList<Provider>();
+				String sql = "select distinct b from Appointment a,Provider b where a.providerNo = b.ProviderNo and a.providerNo in (?1)  and a.appointmentDate=?2";
 				
 				
 				Query query = entityManager.createQuery(sql);
 				
-				query.setParameter(1, apptDate);
+				query.setParameter(1, Arrays.asList(providerNo));
+				query.setParameter(2, apptDate);
 				
-				List<Provider> rs = query.getResultList();
+				 rs = query.getResultList();
 
-				return rs;
+				if(rs != null)
+					return rs;
+				else 
+					return new ArrayList<Provider>();
 			}
 			
 			public List<Appointment> getSelectedRecAppointment(Integer recId,Date startDate,Date endDate) {

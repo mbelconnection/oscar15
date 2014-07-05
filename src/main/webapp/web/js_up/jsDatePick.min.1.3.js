@@ -160,6 +160,11 @@ JsDatePick.prototype.closeCalendar = function (targetId) {
 		globalView.view = globalView.view;
 	}
 	//alert('aaa');
+	if(globalView.view == "day"){	
+		//console.log(this.lastPickedDateObject);
+		sch.load(document.getElementById("inputField").value);
+	}
+	
 	if(globalView.view=="day" && targetId =="add_appt_date"){
 		setTimeout('sch.load('+sel_dt+')',100); /* Added by Schedular Team */
 		//globalDayViewDate = $("#inputField").val();
@@ -473,7 +478,6 @@ JsDatePick.prototype.goToToday = function (){
 	lastPickedDateObject.day = day;
 	lastPickedDateObject.month = month+1;
 	lastPickedDateObject.year = year;
-	
 	if(globalView.view == "day"){	
 		//console.log(this.lastPickedDateObject);
 		sch.load(document.getElementById("inputField").value);

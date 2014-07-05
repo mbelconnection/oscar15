@@ -190,17 +190,17 @@ public class AppointmentManager {
 	/**
 	 * Returns appointment for display.
 	 * 
+	
 	 * @param appointmentTo				appointment data
 	 * @return							appointment data
 	 * @throws AppointmentException		in cases of error
 	 */
 	public AppointmentTo saveAppointment(AppointmentTo appointmentTo, String user) throws AppointmentException {
-		log.debug("AppointmentManager.saveApppointment() starts");
+		log.debug("AppointmentManager.saveApppointment() stsaveUpdatedAppointmentarts");
 		AppointmentTo apptTo = null;
 		Appointment appt = null;
 		HashMap<String,Integer> recMap = null;
 		try {
-			
 			int recFrequency=0;
 				AppointmentBO.validate(appointmentTo);
 				Calendar startDateCal = Calendar.getInstance();
@@ -213,9 +213,10 @@ public class AppointmentManager {
 				if(("D".equals(appointmentTo.getFrequency())) || ("W".equals(appointmentTo.getFrequency())) || ("M".equals(appointmentTo.getFrequency())) || ("Y".equals(appointmentTo.getFrequency()))){
 					Date startDate = DateUtils.formatDate(appointmentTo.getStartDate());
 					Date endDate = DateUtils.formatDate(appointmentTo.getEndDate());
-					
+					startDateCal.setTime(DateUtils.formatDate(appointmentTo.getStartDate()));
 					long diffInMilis = endDate.getTime() - startDate.getTime();
-					
+					long monthTime = 2592000000L;
+					long yearTime = 31536000000L;
 					if(appointmentTo.getRecurrenceId()==null || "".equals(appointmentTo.getRecurrenceId())){
 						recMap = new HashMap<String,Integer>();
 						
@@ -237,17 +238,17 @@ public class AppointmentManager {
 					}else if("W".equals(appointmentTo.getFrequency())){
 						recFrequency = (int) (diffInMilis/(7*24 * 60 * 60 * 1000));
 					}else if("M".equals(appointmentTo.getFrequency())){
-						recFrequency =(int) (diffInMilis/(30 * 24 * 60 * 60 * 1000));	
+						recFrequency =(int) (diffInMilis/monthTime);	
 					}else if("Y".equals(appointmentTo.getFrequency())){
-						recFrequency = (int) (diffInMilis/(365 * 24 * 60 * 60 * 1000));
+						recFrequency = (int) (diffInMilis/yearTime);
 					}
 				}else{
-					recFrequency=1;
+					recFrequency=0;
 					appointmentTo.setRecurrenceId("0");
 				}
 				
-				
-				for(int k=0;k<recFrequency;k++){
+				String formMultiPatientId = appointmentTo.getMultiApptId();
+				for(int k=0;k<=recFrequency;k++){
 					if(k>0){
 						if("D".equals(appointmentTo.getFrequency())){
 							startDateCal.add(Calendar.DATE, 1);
@@ -274,7 +275,7 @@ public class AppointmentManager {
 			            	appointmentTo.setProvId(proList[i]);
 			            	appointmentTo.setPatientId(demoList[j]);
 			            	appointmentTo.setPatientName(patientName[j]);
-			            	if(appointmentTo.getMultiApptId() == null ||"".equals(appointmentTo.getMultiApptId())){
+			            	if(formMultiPatientId == null ||"".equals(formMultiPatientId)){
 			            		appointmentTo.setMultiApptId(String.valueOf(multiApptId));
 			            	}
 			            	if(!"0".equals(appointmentTo.getRecurrenceId())){

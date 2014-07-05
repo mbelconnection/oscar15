@@ -88,7 +88,9 @@ var month;
 	var changeDate = day+"-"+months[month]+"-"+year;
 	document.getElementById("inputField").value = changeDate;
 	globalDayViewDate = $("#inputField").val();
-	sch.load(document.getElementById("inputField").value);
+	//sch.load(document.getElementById("inputField").value);
+	 var val1 =  $("#docava").val().split("_");
+	sch.dayLoad(document.getElementById("inputField").value,val1[0]);
 }
 
 function setWeekDates(param){
@@ -103,9 +105,12 @@ function setWeekDates(param){
 		}
 		//console.log(currDayArr);
 		var current = new Date(parseFloat(currDayArr[2]), parseFloat(getMonthIndex(currDay)), parseFloat(currDayArr[0]));
+		
+		if(current.getDay() > 0)
+			current.setDate(current.getDate() - current.getDay());
 		/* Modified by Bhaskar for weekview
 		* 
-		* */var weekstart = current.getUTCDate() - current.getDay() +1;    
+		* */var weekstart = current.getUTCDate();// - current.getDay() +1;    
 		var weekend = weekstart + 6;       // end day is the first day + 6 
 		var monday = new Date(current.setDate(weekstart));
 		var sunday = new Date(current.setDate(weekend));
@@ -124,6 +129,9 @@ function setWeekDates(param){
 		
 		var _date = parseFloat(currDayArr[0]) + parseFloat(1)
 		var current = new Date(parseFloat(currDayArr[2]), parseFloat(getMonthIndex(tempDate)), parseFloat(currDayArr[0]) + 1);
+		if(current.getDay() > 0)
+			current.setDate(current.getDate() - current.getDay() + 8);
+		
 		/* Modified by Bhaskar for weekview
 		* 
 		**/var weekstart = current.getUTCDate();   

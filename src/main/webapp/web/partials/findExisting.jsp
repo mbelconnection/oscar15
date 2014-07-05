@@ -105,7 +105,7 @@
 				//$.each(_data, function(){
 					var me = this;
 					var findObject = JSON.stringify(_data);
-						_html += "<tr border='10'> <td rowspan='5'>" + (_data['demographic']).lastName+" "+_data['demographic'].firstName + "<br>" +  _data['demographic'].dob + "<br>" +  _data['demographic'].hin + "<div class='fex_viewFullHistory_link' style='cursor:pointer;' onclick='fex_fn.viewApptFullHistory("+findObject+")'><u>View Full appt. History</u></div></td>";
+						_html += "<tr border='10'> <td rowspan='5'>" + (_data['demographic']).lastName+" "+_data['demographic'].firstName + "<br>" +  _data['demographic'].dob + "<br>" +  _data['demographic'].hin + "<div class='fex_viewFullHistory_link' style='cursor:pointer;' onclick='fex_fn.viewApptFullHistory("+findObject+")'><u style='color:blue;cursor:pointer;''>View Full appt. History</u></div></td>";
 						
 						var len = _data['appointmentsHistory'].length;
 						var clickFn = function(id){

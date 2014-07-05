@@ -247,6 +247,8 @@
 			 },
 			 gotoAddAppointment: function(myObject){
 			 nextAailObject = myObject;
+			 globalObj.id = myObject.id+"_"+myObject.startTime;
+			 console.log(nextAailObject);
 			 //var validDate = sch.valid_date(myObject.date);
 			 //1490:08_30
 			 var sx = myObject.startTime.split(":");
@@ -355,6 +357,7 @@
 				open:function(){
 					$('#naa_provider_0').prop('checked', true);
 					$('#naa_format_0').prop('checked', true);
+					$('#naa_search').focus();
 				}
                 
             });
@@ -472,12 +475,23 @@
 				//console.log(ui.item.id);
 				var terms = split( this.value );
 				// remove the current input
-				terms.pop();
+				//terms.pop();
 				// add the selected item
+				//terms.push( ui.item.value );
+				// add placeholder to get the comma-and-space at the end
+				//terms.push( "" );
+				//this.value = terms.join( "; " );
+				
 				terms.push( ui.item.value );
 				// add placeholder to get the comma-and-space at the end
 				terms.push( "" );
-				this.value = terms.join( "; " );
+				var input = removeLastInput(this.value);
+				
+				if(input != "")
+					this.value = input + "; " + ui.item.value +"; ";
+				else
+					this.value = ui.item.value +"; ";
+				
 				naa_prov_type = "M";
 				//add_appt_fld_prv_id += ui.item.id+",";
 				naa_prov_id += ui.item.id+",";

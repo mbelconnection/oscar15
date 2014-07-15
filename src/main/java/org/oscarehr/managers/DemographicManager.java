@@ -583,7 +583,7 @@ public class DemographicManager {
 			}
 			
 			int weekDay = -1;
-			if(apptTo.getDayOfWeek()!=null && "".equals(apptTo.getDayOfWeek())){	
+			if(apptTo.getDayOfWeek()!=null && !"".equals(apptTo.getDayOfWeek())){	
 				weekDay = Integer.parseInt(apptTo.getDayOfWeek());
 			}
 			Set<Appointment> archivedClients1 = demographicDao.fetchNextAvali(provId,apptTo.getApptDuration(),apptTo.getApptType(),weekDay,apptTo.getStartTime(),apptTo.getEndTime(),Integer.parseInt(apptTo.getResultCount()));

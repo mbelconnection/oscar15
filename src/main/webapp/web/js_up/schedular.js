@@ -596,12 +596,26 @@ Schedular.prototype.init = function(view, from) {
 	this.setView(view);
 	/* Load calendar in month view */
 	//calendar();
+	
+	
 	var scrollWid = document.getElementById('secNav').offsetWidth - 60;
-	// alert(scrollWid)
+	
+	//var screenWidth = window.screen.width;
+	//var percentage = ( screenWidth - scrollWid+30 ) / screenWidth ;
+	//console.log(percentage*100);
+	//console.log(document.getElementById('secNav').offsetWidth);
+	
+	var deviceXDPI = screen.deviceXDPI;
+    setInterval(function(){
+        if(screen.deviceXDPI != deviceXDPI){
+            deviceXDPI = screen.deviceXDPI;
+           console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<111111111>>>>>>>>>>>>>>>>>>>>>>>>>");
+        }
+    }, 500);
 	var data = this.getYScale();
 	var headData = '<div id="clock" style="float:left"><table class="xscale" style="float: left;cellpadding:0;cellpadding:0;padding-bottom:0px !important;border-bottom: 0px !important;" ><tr><td >'+sch.getViewDropDown()+'</td></tr></table>';
 	headData += '<div id="names" class="scrolldiv" style="width:'
-			+ scrollWid
+			+ (scrollWid-30)
 			+ 'px;float:left;overflow-x:hidden;"><table id="testidd" class="Yscale" width="'
 			+ this.getPersonTabWidth()
 			+ 'px" style="table-layout:fixed;float: left;cellpadding:0;cellpadding:0;padding-bottom:0px !important;border-bottom: 0px !important;" >'
@@ -612,7 +626,7 @@ Schedular.prototype.init = function(view, from) {
 			+ data
 			+ "</div>"
 			+ "<div id='persondata' style='overflow-x:hidden;float:left;width:"
-			+ scrollWid
+			+ (scrollWid-30)
 			+ "px;' class='scrolldiv'>"
 			+ this.getXData()
 			+ "</div></div>";
@@ -620,7 +634,8 @@ Schedular.prototype.init = function(view, from) {
 			+ scrollWid
 			+ "px;height:20px;margin-left:30px;float:left;'><table  style='table-layout:fixed;' id='xdummytab'><tr><td id='xdummytabtd'>ask fhasdl kfhas klh lkhas dflaksdhf asdfkalsdhf asdhfjka hsdfkljshad fjkasdl hfaksdj fhaksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfkl</td></tr></table></div>";
 	document.getElementById('providerdiv').innerHTML = scaleData;
-	document.getElementById('xdummytab').style.width = document.getElementById('testidd').offsetWidth+"px";
+	document.getElementById('xdummytab').style.width = document.getElementById('testidd').offsetWidth+"px"; //  by Bhaskar
+	//document.getElementById('xdummytab').style.width = "97%";
 
 	syncScrollBars();
 	// $( "div.first" ).slideUp( 300 ).delay( 800 ).fadeIn( 400 );
@@ -868,7 +883,7 @@ Schedular.prototype.getXScale = function() {
 				//console.log(flipColorCodes);
 				//getFlipColor
 				var code = sch.getFlipData( this.persons[i].flipData, _shour, _smin);
-				_XScale += "<div style=\"border: 1px solid grey;background-color:"+getFlipColor(code)+";font-size:18px;padding-left:2px;border-bottom: 0px;width:20px;height: 100%;\">"+code+"</div>";
+				_XScale += "<div style=\"border: 1px solid grey;background-color:"+getFlipColor(code)+";font-size:12px;padding-left:2px;border-bottom: 0px;width:15px;height: 100%;\">"+code+"</div>";
 			}
 							
 			 	_XScale += "</td>";

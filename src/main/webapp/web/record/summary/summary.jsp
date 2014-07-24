@@ -34,21 +34,40 @@
     
     <div class="col-lg-6" id="middleSpace">
         	<ul class="nav nav-tabs">
-			  <li class="active"><a href="#">All</a></li>
-			  <li><a ng-click="changeNoteFilter(0)">Just My Notes</a></li>
-			  <li><a >Just Notes</a></li>
-			  <li><a ng-click="changeTracker()">Tracker</a></li>
+			  <li class="active"><a data-target="#all" role="tab" data-toggle="tab">All</a></li>
+			  <li><a data-target="#myNotes" ng-click="changeNoteFilter(0)" role="tab" data-toggle="tab">Just My Notes</a></li>
+			  <li><a data-target="#justNotes" role="tab" data-toggle="tab">Just Notes</a></li>
+			  <li><a data-target="#tracker" role="tab" data-toggle="tab">Tracker</a></li>
 			</ul>
-        	<dl >
-    				<dt ng-style="setColor(note)" ng-repeat-start="note in page.notes.notelist" >{{note.observationDate | date : 'dd-MMM-yyyy'}} {{firstLine(note)}} </dt>
-    				<dd ng-repeat-end><pre class="pre-scrollable" ng-show="showNote(note)">{{note.note}}</pre></dd>
-    								
-    				<%--   dt>30-Jun-2012 document </dt -->
-    				<dt style="background-color:#DFF0D8;">30-Jun-2012 lab RIA/CHEMISTRY/HEMATOLOGY/IMMUNOCHEMISTRY <a ng-click="changeTab(12)" class="pull-right" style="margin-right:5px;">view</a></dt>
-	
-    				<dt>30-Jun-2012 eform filled out</dt>
-    				<dd><pre class="pre-scrollable">CTC form</pre></dd> --%>
-    		</dl>
-    		<%-- img ng-hide="notesList" src="tracker2.png" width="800px"/ --%>
+			
+    		<div class="tab-content">
+			  <div class="tab-pane active" id="all">
+			          	<dl >
+			    				<dt ng-style="setColor(note)" ng-repeat-start="note in page.notes.notelist" >{{note.observationDate | date : 'dd-MMM-yyyy'}} {{firstLine(note)}} </dt>
+			    				<dd ng-repeat-end><pre class="pre-scrollable" ng-show="showNote(note)">{{note.note}}</pre></dd>
+			    								
+			    				<%--   dt>30-Jun-2012 document </dt -->
+			    				<dt style="background-color:#DFF0D8;">30-Jun-2012 lab RIA/CHEMISTRY/HEMATOLOGY/IMMUNOCHEMISTRY <a ng-click="changeTab(12)" class="pull-right" style="margin-right:5px;">view</a></dt>
+				
+			    				<dt>30-Jun-2012 eform filled out</dt>
+			    				<dd><pre class="pre-scrollable">CTC form</pre></dd> --%>
+			    		</dl>
+			    		<%-- img ng-hide="notesList" src="tracker2.png" width="800px"/ --%>
+			  </div>
+			  <div class="tab-pane" id="myNotes">My Notes</div>
+			  <div class="tab-pane" id="justNotes">Just My Notes</div>
+			  <div class="tab-pane" id="tracker">
+			  <iframe 
+			  	id="trackerSlim" 
+			  	scrolling="No" 
+			  	frameborder="0" 
+			  	ng-src="{{getTrackerUrl(demographicNo)}}" 
+			  	width="720px" 
+			  	height="2000px" 
+			  	onload="resizeIframe(this)"
+			  	></iframe>
+			   
+			  </div>
+			</div><!-- tab content -->
     			
 	</div>

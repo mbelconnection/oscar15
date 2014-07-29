@@ -122,8 +122,8 @@ oscarApp.controller('SummaryCtrl', function ($scope,$http,$location,$stateParams
     }
 	 
     $scope.getTrackerUrl = function(demographicNo) {
-    
-    url = 'http://localhost:8080/oscar/oscarEncounter/oscarMeasurements/HealthTrackerSlim.jspf?template=tracker&demographic_no='+ demographicNo;
+    	
+    url = '/oscar/oscarEncounter/oscarMeasurements/HealthTrackerSlim.jspf?template=tracker&demographic_no='+ demographicNo;
   	
     return url;  
     

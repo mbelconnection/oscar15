@@ -273,6 +273,7 @@ body .modal-sm {
 <script>
 
 
+
 function showTabData(id1,id2,id3,id4,selectDropVal){
 	var id_a ="#"+id4;
 	//$(".tabs li a").css('background-color', '#FFF');
@@ -550,7 +551,7 @@ function getDropDown(divId,dropId,placeText,der){
 }
 </script>
 
-		<table  width="100%" class="headertable" id="secNav">
+		<table  width = "100%" class="headertable" id="secNav" style="width:100%;">
 			<tr>
 				<td class='tabs_underline' style="padding:5px;width:210px;">
 					<div class="date_selector" style="width:100%;">
@@ -615,14 +616,14 @@ function getDropDown(divId,dropId,placeText,der){
 			</tr>
 		</table>
 
-		
+		 <iframe id="frame" style="width:100%;height:0px;border: 0px;" ></iframe>
 		
 		<!-- Day and week view-->
-		<div id='daydiv' style='padding-top:5px;display:block'>
+		<div id='daydiv' style='padding-top:5px;display:block;width:100%;height:calc(100%-100px);'>
 			<div id='dayview'>
-				<table style='border-collapse:collapse;padding:0px;float: left;display: inline-block;' cellpadding="0" cellspacing="0" border="0">
-					<tr><td id='head' style="border-bottom: 0px !important;"></td></tr>
-					<tr><td id='providerdiv'></td></tr>
+				<table id="dayviewTable" style='border-collapse:collapse;padding:0px;float: left;display: inline-block;' cellpadding="0" cellspacing="0" border="0">
+					<tr style="width:100%;"><td id='head' style="border-bottom: 0px !important;width:100%;"></td></tr>
+					<tr style="width:100%;"><td id='providerdiv' style="width:100%;"></td></tr>
 				</table>
 			</div>
 		</div>
@@ -960,6 +961,40 @@ page_init();
     
 	},1500);
     setTimeout('sch.callDayWeekMonth(\''+globalView.view+'\',\''+globalProviderId+'\')',1000);
+    });
+    
+    var elFrame = $('#frame')[0];
+    $(elFrame.contentWindow).resize(function() {
+        $(window).trigger('zoom');
+    });
+
+    $(window).on('zoom', function() {
+        //console.log('zoom', window.devicePixelRatio);
+        //console.log($(window).width());
+        //$("#secNav").css("width", $(window).width());
+        //setTimeout('$("#secNav").width($(window).width())',1000);
+       // console.log("secNav>>>>"+$("#secNav").width());
+        //console.log("daydiv>>>>"+$("#daydiv").width());
+        if(window.devicePixelRatio>1){
+        	//console.log("zoommm");
+        	//window.location.reload();
+        }else if(window.devicePixelRatio<0.39){
+        	$("#secNav").width(($(".container-fluid").width()-10));
+        	//console.log("zoommm else"+$("#consult-list").width());
+        	//console.log("zoommm else"+($("#consult-list").width()-100));
+        	$("#dayviewTable").width($("#secNav").width());
+        	//if(window.devicePixelRatio<0.4){
+        		setTimeout('$("#persondata").width(($("#consult-list").width()-150))',1000);
+        	//}else{
+        	//}
+        	setTimeout('$(".scrolldiv2").width($("#secNav").width())',1000);
+        	
+        	
+        }else{
+        	setTimeout('sch.callDayWeekMonth(\''+globalView.view+'\',\''+globalProviderId+'\')',500);
+        	setTimeout('$(".scrolldiv2").width($("#secNav").width())',1000);
+        	
+        }
     });
 </script>
 

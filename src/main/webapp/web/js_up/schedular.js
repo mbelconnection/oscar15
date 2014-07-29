@@ -596,22 +596,9 @@ Schedular.prototype.init = function(view, from) {
 	this.setView(view);
 	/* Load calendar in month view */
 	//calendar();
-	
-	
 	var scrollWid = document.getElementById('secNav').offsetWidth - 60;
-	
-	//var screenWidth = window.screen.width;
-	//var percentage = ( screenWidth - scrollWid+30 ) / screenWidth ;
-	//console.log(percentage*100);
+	//var scrollWid = $("#secNav").width() - 60;
 	//console.log(document.getElementById('secNav').offsetWidth);
-	
-	var deviceXDPI = screen.deviceXDPI;
-    setInterval(function(){
-        if(screen.deviceXDPI != deviceXDPI){
-            deviceXDPI = screen.deviceXDPI;
-           console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<111111111>>>>>>>>>>>>>>>>>>>>>>>>>");
-        }
-    }, 500);
 	var data = this.getYScale();
 	var headData = '<div id="clock" style="float:left"><table class="xscale" style="float: left;cellpadding:0;cellpadding:0;padding-bottom:0px !important;border-bottom: 0px !important;" ><tr><td >'+sch.getViewDropDown()+'</td></tr></table>';
 	headData += '<div id="names" class="scrolldiv" style="width:'
@@ -622,7 +609,7 @@ Schedular.prototype.init = function(view, from) {
 			+ this.getXHeader() + '</table></div>';
 
 	document.getElementById('head').innerHTML = headData;
-	var scaleData = "<div style='display: inline-block;overflow-y:scroll;height:565px;' class='scrolldiv2'><div id='abc' style='float:left'>"
+	var scaleData = "<div style='display: inline-block;overflow-y:scroll;' class='scrolldiv2'><div id='abc' style='float:left'>"
 			+ data
 			+ "</div>"
 			+ "<div id='persondata' style='overflow-x:hidden;float:left;width:"
@@ -632,10 +619,9 @@ Schedular.prototype.init = function(view, from) {
 			+ "</div></div>";
 	scaleData += "<div id='persondatadummy' class='scrolldiv' style='width:"
 			+ scrollWid
-			+ "px;height:20px;margin-left:30px;float:left;'><table  style='table-layout:fixed;' id='xdummytab'><tr><td id='xdummytabtd'>ask fhasdl kfhas klh lkhas dflaksdhf asdfkalsdhf asdhfjka hsdfkljshad fjkasdl hfaksdj fhaksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfkl</td></tr></table></div>";
+			+ "px;height:10px;margin-left:30px;'><table  style='table-layout:fixed;' id='xdummytab'><tr><td id='xdummytabtd'>ask fhasdl kfhas klh lkhas dflaksdhf asdfkalsdhf asdhfjka hsdfkljshad fjkasdl hfaksdj fhaksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfkl</td></tr></table></div>";
 	document.getElementById('providerdiv').innerHTML = scaleData;
-	document.getElementById('xdummytab').style.width = document.getElementById('testidd').offsetWidth+"px"; //  by Bhaskar
-	//document.getElementById('xdummytab').style.width = "97%";
+	document.getElementById('xdummytab').style.width = document.getElementById('testidd').offsetWidth+"px";
 
 	syncScrollBars();
 	// $( "div.first" ).slideUp( 300 ).delay( 800 ).fadeIn( 400 );

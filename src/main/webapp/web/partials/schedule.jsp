@@ -967,7 +967,7 @@ page_init();
     $(elFrame.contentWindow).resize(function() {
         $(window).trigger('zoom');
     });
-
+	
     $(window).on('zoom', function() {
         //console.log('zoom', window.devicePixelRatio);
         //console.log($(window).width());
@@ -988,11 +988,13 @@ page_init();
         	//}else{
         	//}
         	setTimeout('$(".scrolldiv2").width($("#secNav").width())',1000);
+        	setTimeout('$( ".scrolldiv2" ).height(($( window ).height()-250))',1000);
         	
         	
         }else{
         	setTimeout('sch.callDayWeekMonth(\''+globalView.view+'\',\''+globalProviderId+'\')',500);
         	setTimeout('$(".scrolldiv2").width($("#secNav").width())',1000);
+        	//setTimeout('$( ".scrolldiv2" ).height(($( window ).height()-250))',900);
         	
         }
     });

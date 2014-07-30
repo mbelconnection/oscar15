@@ -609,7 +609,7 @@ Schedular.prototype.init = function(view, from) {
 			+ this.getXHeader() + '</table></div>';
 
 	document.getElementById('head').innerHTML = headData;
-	var scaleData = "<div style='display: inline-block;overflow-y:scroll;' class='scrolldiv2'><div id='abc' style='float:left'>"
+	var scaleData = "<div style='display: inline-block;overflow-y:scroll;height:565px;' class='scrolldiv2'><div id='abc' style='float:left'>"
 			+ data
 			+ "</div>"
 			+ "<div id='persondata' style='overflow-x:hidden;float:left;width:"

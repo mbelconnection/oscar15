@@ -975,27 +975,21 @@ page_init();
         //setTimeout('$("#secNav").width($(window).width())',1000);
        // console.log("secNav>>>>"+$("#secNav").width());
         //console.log("daydiv>>>>"+$("#daydiv").width());
-        if(window.devicePixelRatio>1){
+        if(window.devicePixelRatio>=0.91){
         	//console.log("zoommm");
         	//window.location.reload();
-        }else if(window.devicePixelRatio<0.39){
+        }else {
         	$("#secNav").width(($(".container-fluid").width()-10));
         	//console.log("zoommm else"+$("#consult-list").width());
         	//console.log("zoommm else"+($("#consult-list").width()-100));
         	$("#dayviewTable").width($("#secNav").width());
-        	//if(window.devicePixelRatio<0.4){
+        	if(window.devicePixelRatio<0.4){
         		setTimeout('$("#persondata").width(($("#consult-list").width()-150))',1000);
-        	//}else{
-        	//}
-        	setTimeout('$(".scrolldiv2").width($("#secNav").width())',1000);
-        	setTimeout('$( ".scrolldiv2" ).height(($( window ).height()-250))',1000);
-        	
-        	
-        }else{
+        	}else{
+        	}
         	setTimeout('sch.callDayWeekMonth(\''+globalView.view+'\',\''+globalProviderId+'\')',500);
         	setTimeout('$(".scrolldiv2").width($("#secNav").width())',1000);
-        	//setTimeout('$( ".scrolldiv2" ).height(($( window ).height()-250))',900);
-        	
+        	setTimeout('$( ".scrolldiv2" ).height(($( window ).height()-250))',1000);        	
         }
     });
 </script>

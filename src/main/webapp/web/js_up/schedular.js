@@ -1157,7 +1157,7 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 		if (duration > 30)
 			notesDis = "table-row";
 		var overPopup = "";
-		if(obj.duration==15){
+		if(obj.duration==15 || obj.duration==30){
 			var rs = obj.reason!=null?(obj.reason).replace(/ /g,"_"):"";
 			var nt = obj.notes!=null?(obj.notes).replace(/ /g,"_"):"";
 			var room = obj.roomId!=null?(obj.roomId).replace(/ /g,"_"):"";

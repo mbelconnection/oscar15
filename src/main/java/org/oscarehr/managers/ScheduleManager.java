@@ -596,17 +596,17 @@ public class ScheduleManager {
 			for (Iterator k = events.iterator(); k.hasNext();) {
 	            EventsTo1 event = (EventsTo1) k.next();
 	            
-	           if(eventMap.get(event.getProgramId())!=null){
-	        	   EventsTo1 event1 = eventMap.get(event.getProgramId());
+	           if(eventMap.get(event.getMultiApptId())!=null){
+	        	   EventsTo1 event1 = eventMap.get(event.getMultiApptId());
 	        	   String patientId = event1.getPatientId()+","+event.getPatientId();
 	        	   event1.setPatientId(patientId);
 	        	   String appointment = event1.getApptId()+","+event.getApptId();
 	        	   event1.setApptId(appointment);
 	        	   
-	        	   eventMap.put(event.getProgramId(),event1);
+	        	   eventMap.put(event.getMultiApptId(),event1);
 	        	   
 	           }else{
-	            eventMap.put(event.getProgramId(),event);
+	            eventMap.put(event.getMultiApptId(),event);
 	           }
             }
 			

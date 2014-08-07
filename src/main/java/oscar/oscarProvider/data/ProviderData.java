@@ -35,6 +35,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -797,7 +798,7 @@ public class ProviderData {
             }
 
             Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
-            PreparedStatement write_rec = conn.prepareStatement(sql);
+            PreparedStatement write_rec = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 
             Integer i = update ? 1 : 2;
             write_rec.setString(i, last_name);

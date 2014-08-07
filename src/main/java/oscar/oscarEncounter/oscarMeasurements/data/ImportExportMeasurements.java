@@ -29,6 +29,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -94,7 +95,7 @@ public class ImportExportMeasurements {
 				      " VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 	Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
-	PreparedStatement pstmt = conn.prepareStatement(sql);
+	PreparedStatement pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 	pstmt.setString(1, demoNo);
 	pstmt.setString(2, type.toUpperCase());
 	pstmt.setString(3, providerNo);
@@ -124,7 +125,7 @@ public class ImportExportMeasurements {
 	if (meas.getDateEntered()==null) meas.setDateEntered(new Date());
 	if (meas.getType()==null) meas.setType("");
 	Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
-	PreparedStatement pstmt = conn.prepareStatement(sql);
+	PreparedStatement pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 	pstmt.setLong(1, meas.getDemographicNo());
 	pstmt.setString(2, meas.getType());
 	pstmt.setString(3, meas.getProviderNo());
@@ -143,7 +144,7 @@ public class ImportExportMeasurements {
         String sql = "INSERT INTO measurementsExt (measurement_id,keyval,val) VALUES (?,?,?)";
 
 	Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
-	PreparedStatement pstmt = conn.prepareStatement(sql);
+	PreparedStatement pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 	pstmt.setLong(1, mExt.getMeasurementId());
 	pstmt.setString(2, mExt.getKeyVal());
 	pstmt.setString(3, mExt.getVal());

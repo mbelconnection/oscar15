@@ -29,6 +29,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -157,7 +158,7 @@ public class Hl7textResultsData {
 
                     sql = "INSERT INTO measurements (type, demographicNo, providerNo, dataField, measuringInstruction, dateObserved, dateEntered )VALUES (?, ?, '0', ?, ?, ?, ?)";
                     logger.debug(sql);
-                    pstmt = conn.prepareStatement(sql);
+                    pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
                     pstmt.setString(1,measType);
                     pstmt.setString(2,demographic_no);
                     pstmt.setString(3,result);

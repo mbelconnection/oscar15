@@ -29,6 +29,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Date;
 
 import org.oscarehr.util.DbConnectionFilter;
@@ -55,7 +56,7 @@ public class LabResultImport {
 						 " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F',now())";
 	
 	Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
-	PreparedStatement pstmt = conn.prepareStatement(sql);
+	PreparedStatement pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 	pstmt.setString(1, labReportInfo_id);
 	pstmt.setString(2, accession_num);
 	pstmt.setString(3, firstname);
@@ -82,7 +83,7 @@ public class LabResultImport {
 	String sql = "INSERT INTO labReportInformation (location_id, print_date, print_time) VALUES (?,?,?)";
 	
 	Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
-	PreparedStatement pstmt = conn.prepareStatement(sql);
+	PreparedStatement pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 	pstmt.setString(1, location_id);
 	pstmt.setString(2, print_date);
 	pstmt.setString(3, print_time);
@@ -101,7 +102,7 @@ public class LabResultImport {
 					" VALUES (?,?,?, ?,?,?, ?,?,?, ?,?,?)";
 	
 	Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
-	PreparedStatement pstmt = conn.prepareStatement(sql);
+	PreparedStatement pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 	pstmt.setString(1, title);
 	pstmt.setString(2, testName);
 	pstmt.setString(3, abn);
@@ -128,7 +129,7 @@ public class LabResultImport {
 	String sql = "INSERT INTO patientLabRouting (demographic_no, lab_no, lab_type,created) values (?, ?, 'CML',now())";
 	
 	Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
-	PreparedStatement pstmt = conn.prepareStatement(sql);
+	PreparedStatement pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 	pstmt.setString(1, demo_no);
 	pstmt.setString(2, lab_no);
 	pstmt.executeUpdate();
@@ -146,7 +147,7 @@ public class LabResultImport {
 	String sql = "INSERT INTO providerLabRouting (provider_no, lab_no, status, comment, timestamp, lab_type) values (?,?,?,?,?,'CML')";
 	
 	Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
-	PreparedStatement pstmt = conn.prepareStatement(sql);
+	PreparedStatement pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 	pstmt.setString(1, provider_no);
 	pstmt.setString(2, lab_no);
 	pstmt.setString(3, status);

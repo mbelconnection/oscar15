@@ -30,6 +30,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
@@ -267,7 +268,7 @@ public class ABCDParser {
          String insertID = null;
          // Prepare a statement to insert a record
         String sql = "insert into labReportInformation (location_id,print_date,print_time,total_BType,total_CType,total_DType) values (?,?,?,?,?,?)";
-        PreparedStatement pstmt = conn.prepareStatement(sql);
+        PreparedStatement pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1,locationId ); // location_id
             pstmt.setString(2,printDate );  // printDate
             pstmt.setString(3,printTime );  // printTime
@@ -344,7 +345,7 @@ public class ABCDParser {
         + " patient_sex,patient_health_num,patient_dob,lab_status,doc_num,doc_name,doc_addr1,doc_addr2,doc_addr3,doc_postal,doc_route,comment1,comment2,patient_phone,"
         + "doc_phone,collection_date,updateDate) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,now())";
 
-        PreparedStatement pstmt = conn.prepareStatement(sql);
+        PreparedStatement pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1,id); // location_id
             pstmt.setString(2,this.accessionNum);
             pstmt.setString(3,this.physicianAccountNum);
@@ -444,7 +445,7 @@ public class ABCDParser {
          // Prepare a statement to insert a record
         String sql = "insert into labTestResults (labPatientPhysicianInfo_id,title,notUsed1,notUsed2,test_name,abn,minimum,maximum,units,result,location_id,last,line_type) "
          + " values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
-        PreparedStatement pstmt = conn.prepareStatement(sql);
+        PreparedStatement pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1,id ); // location_id
             pstmt.setString(2,this.title);  // printDate
             pstmt.setString(3,this.notUsed1 );  // printTime
@@ -507,7 +508,7 @@ public class ABCDParser {
          // Prepare a statement to insert a record //labComments
         String sql = "insert into labTestResults (labPatientPhysicianInfo_id,title,notUsed1,description,location_id,last,line_type) "
          + " values (?,?,?,?,?,?,?)";
-        PreparedStatement pstmt = conn.prepareStatement(sql);
+        PreparedStatement pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1,id );
             pstmt.setString(2,this.title);
             pstmt.setString(3,this.notUsed1);

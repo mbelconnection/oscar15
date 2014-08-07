@@ -28,6 +28,7 @@ package oscar.oscarBilling.ca.bc.data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -141,7 +142,7 @@ public class BillActivityDAO {
                                                          //1 2 3 4 5 6 7 8 9 0 1 2 3     
            String query = "insert into billactivity (monthCode,batchcount,htmlfilename,ohipfilename,providerohipno,groupno,creator,htmlcontext,ohipcontext,claimrecord,updatedatetime,status,total ) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
         
-           PreparedStatement pstmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(query);
+           PreparedStatement pstmt = DbConnectionFilter.getThreadLocalDbConnection().prepareStatement(query,Statement.RETURN_GENERATED_KEYS);
         
             pstmt.setString(1,monthCode);
             pstmt.setString(2,batchCount);

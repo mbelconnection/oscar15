@@ -33,6 +33,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -782,7 +783,7 @@ public final class EDocUtil extends SqlUtilBaseS {
 		if (doc.getDocumentNo() > 0) {
 			String add_record_string2 = "insert into ctl_document values ('demographic',?,?,'A')";
 			Connection conn = DbConnectionFilter.getThreadLocalDbConnection();
-			PreparedStatement add_record = conn.prepareStatement(add_record_string2);
+			PreparedStatement add_record = conn.prepareStatement(add_record_string2,Statement.RETURN_GENERATED_KEYS);
 
 			add_record.setString(1, demoNo);
 			add_record.setString(2, doc.getDocumentNo().toString());

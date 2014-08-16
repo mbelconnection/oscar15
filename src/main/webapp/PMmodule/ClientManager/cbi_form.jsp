@@ -26,10 +26,12 @@
 <%@page import="org.oscarehr.common.model.OcanStaffForm"%>
 <%@page import="org.oscarehr.PMmodule.model.Admission"%>
 <%@page import="org.oscarehr.common.model.Demographic"%>
+<%@page import="org.oscarehr.common.model.DemographicExt"%>
 <%@page import="org.oscarehr.PMmodule.web.OcanForm"%>
 <%@page import="org.oscarehr.util.LoggedInInfo"%>
 <%@page import="java.util.List"%>
 <%@page import="org.oscarehr.common.dao.DemographicDao"%>
+<%@page import="org.oscarehr.common.dao.DemographicExtDao"%>
 <%@page import="org.oscarehr.PMmodule.dao.AdmissionDao"%>
 <%@page import="org.oscarehr.PMmodule.web.CdsForm4"%>
 <%@page import="org.oscarehr.util.SessionConstants"%>
@@ -52,7 +54,7 @@
 		ocanStaffFormId = Integer.parseInt(request.getParameter("ocanStaffFormId"));
 	}
 	OcanStaffForm ocanStaffForm = null;
-	
+		
 	if(ocanStaffFormId != 0 ) {
 		if(view!=null && "history".equals(view)) { //view from form history page, not populate from demographic, directly pull data from ocanStaffForm table.
 			ocanStaffForm = OcanForm.getOcanStaffForm(Integer.valueOf(request.getParameter("ocanStaffFormId")));
@@ -66,6 +68,22 @@
 		}
 	}
 
+	//No matter if it's a new cbi form or not, always pre-populate phone extension.
+	String phoneExt = "";
+	DemographicExtDao demographicExtDao = (DemographicExtDao) SpringUtils.getBean("demographicExtDao");
+	DemographicExt de = demographicExtDao.getDemographicExt(Integer.valueOf(currentDemographicId), "hPhoneExt");
+	if(de!=null) {
+		if(de.getValue()==null || de.getValue().equals("null"))
+			//ocanStaffForm.setPhoneExt("");
+			phoneExt = "";
+		else
+			//ocanStaffForm.setPhoneExt(de.getValue());
+			phoneExt = de.getValue();
+	} else {
+		//ocanStaffForm.setPhoneExt("");
+		phoneExt = "";
+	}
+	
 	DemographicDao demographicDao = (DemographicDao) SpringUtils.getBean("demographicDao");
 	String hc_type = demographicDao.getDemographicById(currentDemographicId).getHcType();
 	String admissionDate = "0001-01-01";
@@ -226,6 +244,44 @@ function submitCbiForm() {
 	
 	
 	return true;
+}
+
+$('document').ready(function() {
+	
+	var demographicId='<%=currentDemographicId%>';	
+	var ocanStaffFormId = '<%=ocanStaffFormId%>';
+	var programId = '<%=currentProgramId%>';
+	
+	if(document.getElementById("cbi_dates") == null) {
+		$.get('cbi_get_dates.jsp?ocanStaffFormId='+ocanStaffFormId+'&demographicId='+demographicId+'&admissionId=0&programId='+programId, function(data) {
+			$("#center_block_dates").append(data);					 
+			});				
+	}
+});
+</script>
+
+<script>
+
+function changeProgram(selectBox) {
+	
+	var selectBoxId = selectBox.id;	
+	var selectBoxValue = selectBox.options[selectBox.selectedIndex].value;
+	
+	var demographicId='<%=currentDemographicId%>';	
+	var ocanStaffFormId = '<%=ocanStaffFormId%>';
+	
+	if(document.getElementById("admissionDate") == null) {	
+			$.get('cbi_get_dates.jsp?ocanStaffFormId='+ocanStaffFormId+'&demographicId='+demographicId+'&programId=0&admissionId='+selectBoxValue, function(data) {
+				  $("#center_block_dates").append(data);					 
+				});														
+	} 
+	else if(document.getElementById("admissionDate") !=null ) {		
+		$("#cbi_dates").remove();
+		$.get('cbi_get_dates.jsp?ocanStaffFormId='+ocanStaffFormId+'&demographicId='+demographicId+'&programId=0&admissionId='+selectBoxValue, function(data) {
+			  $("#center_block_dates").append(data);					 
+			});	
+	}
+		
 }
 </script>
 
@@ -391,7 +447,7 @@ function submitCbiForm() {
 					String selected="";
 					if(ocanStaffFormId==0)	{	//new form: list all programs IDs not used in cbi form.
 					%>
-						<select name="admissionId" id="admissionId">
+						<select name="admissionId" id="admissionId" onchange="changeProgram(this);" class="{validate: {required:true}}" >
 						<option value=""> </option>
 					<%
 						for (Admission admission : OcanForm.getServiceAndBedProgramAdmissions(Integer.valueOf(currentDemographicId)) )
@@ -402,7 +458,8 @@ function submitCbiForm() {
 								 
 							if (ocanStaffForm.getAdmissionId()!=null && ocanStaffForm.getAdmissionId().intValue()==admission.getId().intValue()) 
 								selected="selected=\"selected\"";
-								
+							else 
+								selected="";
 							%>
 								<option <%=selected%> value="<%=admission.getId()%>"><%=CdsForm4.getEscapedAdmissionSelectionDisplay(admission)%></option>
 							<%						
@@ -424,31 +481,14 @@ function submitCbiForm() {
 				</select>			
 			</td>
 		</tr>
-		<tr>
-			<td class="genericTableHeader">Referral Date</td>
-			<td class="genericTableData">			
-				<input id="referralDate" name="referralDate" onfocus="this.blur()" class="systemData {validate: {required:true}}" type="text" readonly="readonly" value="<%=ocanStaffForm.getReferralDate()==null?"":DateFormatUtils.ISO_DATE_FORMAT.format(ocanStaffForm.getReferralDate())%>">		
-			</td>
-			</td>			
+		<tr><td colspan="2">
+		
+		<div id="center_block_dates">
+		<!-- results from adding cbi form dates will go into this block -->
+		</div>
+		</td>
 		</tr>
-		<tr>
-			<td class="genericTableHeader">Admission Date</td>
-			<td class="genericTableData">
-				<input id="admissionDate" name="admissionDate" onfocus="this.blur()" class="systemData {validate: {required:true}}" type="text" readonly="readonly" value="<%=ocanStaffForm.getAdmissionDate()==null?"":DateFormatUtils.ISO_DATE_FORMAT.format(ocanStaffForm.getAdmissionDate())%>">	
-			</td>			
-		</tr>
-		<tr>
-			<td class="genericTableHeader">Service Initiation Date</td>
-			<td class="genericTableData">
-				<input id="serviceInitDate" name="serviceInitDate" onfocus="this.blur()" class="userInputedData mandatoryData {validate: {required:true}}" type="text" value="<%=ocanStaffForm.getServiceInitDate()==null?"":DateFormatUtils.ISO_DATE_FORMAT.format(ocanStaffForm.getServiceInitDate())%>"> <img title="Calendar" id="cal_serviceInitDate" src="../../images/cal.gif" alt="Calendar" border="0"><script type="text/javascript">Calendar.setup({inputField:'serviceInitDate',ifFormat :'%Y-%m-%d',button :'cal_serviceInitDate',align :'cr',singleClick :true,firstDay :1});</script><img src="../../images/icon_clear.gif" border="0" onclick="clearDate('serviceInitDate');">	
-			</td>		
-		</tr>
-		<tr>
-			<td class="genericTableHeader">Discharge Date</td>
-			<td class="genericTableData">
-				<input id="dischargeDate" name="dischargeDate" onfocus="this.blur()" class="systemData {validate: {required:false}}" type="text" readonly="readonly" value="<%=ocanStaffForm.getDischargeDate()==null?"":DateFormatUtils.ISO_DATE_FORMAT.format(ocanStaffForm.getDischargeDate())%>"> 
-			</td>			
-		</tr>
+		
 		<tr>
 			<td class="genericTableHeader">Last Name at Birth</td>
 			<td class="genericTableData">
@@ -521,7 +561,7 @@ function submitCbiForm() {
 		<tr>
 			<td class="genericTableHeader">Ext: </td>
 			<td class="genericTableData">				
-				<input id="extension", name="extension" type="text" readonly="readonly" value="<%=ocanStaffForm.getPhoneExt()==null?"":ocanStaffForm.getPhoneExt() %>" />
+				<input id="extension", name="extension" type="text" readonly="readonly" value="<%=phoneExt%>" />
 			</td>
 		</tr>
 		<tr>

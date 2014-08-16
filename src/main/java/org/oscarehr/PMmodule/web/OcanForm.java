@@ -46,7 +46,6 @@ import org.oscarehr.common.dao.OcanFormOptionDao;
 import org.oscarehr.common.dao.OcanStaffFormDao;
 import org.oscarehr.common.dao.OcanStaffFormDataDao;
 import org.oscarehr.common.model.Demographic;
-import org.oscarehr.common.model.DemographicExt;
 import org.oscarehr.common.model.OcanClientForm;
 import org.oscarehr.common.model.OcanConnexOption;
 import org.oscarehr.common.model.OcanFormOption;
@@ -189,7 +188,7 @@ public class OcanForm {
 				ocanStaffForm.setDateOfBirth(demographic.getFormattedDob());
 				ocanStaffForm.setClientDateOfBirth(demographic.getFormattedDob()==null?"":demographic.getFormattedDob());
 				ocanStaffForm.setGender(convertGender(demographic.getSex()==null?"":demographic.getSex()));
-				
+				/* Move to jsp
 				DemographicExt de = demographicExtDao.getDemographicExt(demographic.getDemographicNo(), "hPhoneExt");
 				if(de!=null) {
 					if(de.getValue()==null || de.getValue().equals("null"))
@@ -199,7 +198,7 @@ public class OcanForm {
 				} else {
 					ocanStaffForm.setPhoneExt("");
 				}
-				
+				*/
 				Calendar rightNow = Calendar.getInstance();
 				int year = rightNow.get(Calendar.YEAR);
 				int month = rightNow.get(Calendar.MONTH)+1;
@@ -658,7 +657,7 @@ public class OcanForm {
 
 		StringBuilder sb=new StringBuilder();
 
-		sb.append("<textarea name=\""+question+"\" id=\""+question+"\" rows=\"" + rows + "\" cols=\"" + cols + "\">");
+		sb.append("<textarea maxlength=\"512\" name=\""+question+"\" id=\""+question+"\" rows=\"" + rows + "\" cols=\"" + cols + "\">");
 
 		if(!clientForm) {
 			existingAnswers=getStaffAnswers(ocanStaffFormId, question, prepopulationLevel);
@@ -683,7 +682,7 @@ public class OcanForm {
 
 		StringBuilder sb=new StringBuilder();
 
-		sb.append("<textarea name=\""+question+"\" id=\""+question+"\" rows=\"" + rows + "\" cols=\"" + cols + "\" readonly=\"readonly\" onfocus=\"this.blur()\">");
+		sb.append("<textarea maxlength=\"512\" name=\""+question+"\" id=\""+question+"\" rows=\"" + rows + "\" cols=\"" + cols + "\" readonly=\"readonly\" onfocus=\"this.blur()\">");
 		if(existingAnswers.size()>0) {
 			sb.append(existingAnswers.get(0).getAnswer());
 		}

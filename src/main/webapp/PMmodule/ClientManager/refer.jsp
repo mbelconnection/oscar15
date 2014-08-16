@@ -76,7 +76,19 @@
 	    		alert("Please choose referral date");
 	    		return false;
 	    }   
-	    	
+	    var today = new Date();
+
+	    var referralDateString = referralDate.split('-') ;
+	    var referralDateYear = referralDateString[0];
+	    var referralDateMonth = referralDateString[1];
+	    var referralDateDate = referralDateString[2];
+	    var enterDate = new Date(referralDateYear, parseInt(referralDateMonth)-1, referralDateDate);
+	    if (enterDate > today)
+	    {
+	        alert("Please don't enter future date");
+	        return false;
+	    }
+	    
 		var form = document.clientManagerForm;
 		form.method.value='refer';
 		form.submit();

@@ -53,6 +53,18 @@
 	    		return false;
 	    	}    	
 	    	
+	    	var today = new Date();
+	 	    var dischargeDateString = dischargeDate.split('-') ;
+	 	    var dischargeDateYear = dischargeDateString[0];
+	 	    var dischargeDateMonth = dischargeDateString[1];
+	 	    var dischargeDateDate = dischargeDateString[2];
+	 	    var enterDate = new Date(dischargeDateYear, parseInt(dischargeDateMonth)-1, dischargeDateDate);
+	 	    if (enterDate > today)
+	 	    {
+	 	        alert("Please don't enter future date");
+	 	        return false;
+	 	    }	
+		    
 	    	if(!compareDates(dischargeDate,adDate)) {
 	    		alert("The discharge date should be later or equal to the admission Date.");
 	    		return false;

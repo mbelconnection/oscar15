@@ -189,7 +189,7 @@ public class AdmissionDao extends HibernateDaoSupport {
        }
        
        String queryStr = "FROM Admission a WHERE (a.programType='Bed' or a.programType='Service') and a.ClientId=? and a.ProgramId in " +
-          "(select s.id from Program s where s.facilityId=? or s.facilityId is null) ORDER BY a.AdmissionDate DESC";
+          "(select s.id from Program s where s.functionalCentreId is not null and functionalCentreId!='' and (s.facilityId=? or s.facilityId is null) ) ORDER BY a.AdmissionDate DESC";
        @SuppressWarnings("unchecked")
        List<Admission> rs = getHibernateTemplate().find(queryStr, new Object[] { demographicNo, facilityId });
 
@@ -205,7 +205,7 @@ public class AdmissionDao extends HibernateDaoSupport {
            throw new IllegalArgumentException();
        }
 
-       String queryStr = "FROM Admission a WHERE a.ClientId=? and a.ProgramId=? ORDER BY a.AdmissionDate DESC";
+       String queryStr = "FROM Admission a WHERE a.ClientId=? and a.ProgramId=? and a.AdmissionStatus='current' ORDER BY a.AdmissionDate DESC";
        @SuppressWarnings("unchecked")
        List<Admission> rs = getHibernateTemplate().find(queryStr, new Object[] { demographicNo, programId });
 

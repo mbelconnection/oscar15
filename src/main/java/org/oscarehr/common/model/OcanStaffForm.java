@@ -34,7 +34,6 @@ import javax.persistence.Id;
 import javax.persistence.PreRemove;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
 /**
  * This entity represents every time a provider fills out or updates a OCAN form.
@@ -110,10 +109,7 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 	private Date admissionDate;
 	private Date serviceInitDate;
 	private Date dischargeDate;
-	
-	@Transient
-	private String phoneExt;
-	
+		
 	public OcanStaffForm() {
 		province = "ON";
 		setAssessmentStatus("In Progress");
@@ -518,15 +514,6 @@ public class OcanStaffForm extends AbstractModel<Integer> implements Serializabl
 
 	public void setDischargeDate(Date dischargeDate) {
     	this.dischargeDate = dischargeDate;
-    }
-
-	public String getPhoneExt() {
-    	return phoneExt;
-    }
-
-	public void setPhoneExt(String phoneExt) {
-    	this.phoneExt = phoneExt;
     }	
-	
 	
 }

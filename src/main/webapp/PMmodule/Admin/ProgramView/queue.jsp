@@ -53,12 +53,24 @@
     		return false;
     	}    	
     	
+    	var today = new Date();
+ 	    var admissionDateString = admissionDate.split('-') ;
+ 	    var admissionDateYear = admissionDateString[0];
+ 	    var admissionDateMonth = admissionDateString[1];
+ 	    var admissionDateDate = admissionDateString[2];
+ 	    var enterDate = new Date(admissionDateYear, parseInt(admissionDateMonth)-1, admissionDateDate);
+ 	    if (enterDate > today)
+ 	    {
+ 	        alert("Please don't enter future date");
+ 	        return false;
+ 	    }
+ 	    
     	if(!compareDates(admissionDate,reDate)) {
     		alert("The admission date should be later or equal to the referral Date.");
     		return false;
     	} 
     	
-    	var form = document.programManagerViewForm;
+    	    	var form = document.programManagerViewForm;
         form.method.value='admit';
         form.submit();
 

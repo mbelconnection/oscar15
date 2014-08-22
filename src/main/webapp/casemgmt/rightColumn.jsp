@@ -29,11 +29,23 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ include file="/casemgmt/taglibs.jsp"%>
 <%@taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi" %>
+<%@ taglib uri="/WEB-INF/security.tld" prefix="security"%>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@ page import="org.oscarehr.casemgmt.model.*"%>
+<%@ page import="org.oscarehr.casemgmt.service.ClientImageManager"%>
+<%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-bean" prefix="bean"%>
 <%
 String demo=request.getParameter("demographicNo");
+ClientImageManager clientImageMgr = (ClientImageManager)WebApplicationContextUtils.getWebApplicationContext(application).getBean("ClientImageManager");
+ClientImage img = clientImageMgr.getClientImage(Integer.parseInt(demo));
+if (img != null) {
+
+	request.setAttribute("image_exists", "true");
+
+}
+String roleName$ = (String) session.getAttribute("userrole") + "," + (String) session.getAttribute("user");
+
 %>
 <script type="text/javascript">
 
@@ -58,12 +70,12 @@ String demo=request.getParameter("demographicNo");
 </script>
 
 <!--dummmy div to force browser to allocate space -->
-<caisi:isModuleLoad moduleName="caisi">
+<security:oscarSec roleName="<%=roleName$%>" objectName="_newCasemgmt.photo" rights="r">
 <c:choose>
 				<c:when test="${not empty requestScope.image_exists}">
 					<c:set var="clientId" value="${demographicNo}"></c:set>
 					<img style="cursor: pointer;" id="ci" src="<c:out value="${ctx}"/><%=ClientImage.imagePresentPlaceholderUrl%>" alt="id_photo" height="100" title="Click to upload new photo."
-						OnMouseOver="document.getElementById('ci').src='../imageRenderingServlet?source=local_client&clientId=<c:out value="${clientId}" />'"
+						OnMouseOver="document.getElementById('ci').src='../imageRenderingServlet?source=local_client&clientId=<%=demo%>'"
 						OnMouseOut="delay(5000)" window.status='Click to upload new photo' ; return	true;"
 						onClick="popupUploadPage('uploadimage.jsp',<%=demo%>);return false;" />
 				</c:when>
@@ -72,8 +84,8 @@ String demo=request.getParameter("demographicNo");
 						onClick="popupUploadPage('uploadimage.jsp',<%=demo%>);return false;" />
 				</c:otherwise>
 			</c:choose>
-</caisi:isModuleLoad>
 
+</security:oscarSec>
 <div id="rightColLoader" style="width: 100%;">
 <h3 style="width: 100%; background-color: #CCCCFF;">
     <bean:message key="oscarEncounter.LeftNavBar.msgLoading"/></h3>

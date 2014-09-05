@@ -51,7 +51,9 @@
 
     String frmName = "caseManagementEntryForm" + request.getParameter("demographicNo");
 	CaseManagementEntryFormBean cform = (CaseManagementEntryFormBean)session.getAttribute(frmName);
-
+ 
+	String encTimeMandatoryValue = OscarProperties.getInstance().getProperty("ENCOUNTER_TIME_MANDATORY","false");
+	
 %>
 
 <%--<nested:define id="rowOneSize" name="caseManagementViewForm" property="ectWin.rowOneSize"/>
@@ -601,6 +603,8 @@ var Colour = {
         unlockNoteError = "<bean:message key="oscarEncounter.unlockNoteError.msg"/>";
         filterError = "<bean:message key="oscarEncounter.filterError.msg"/>";
         pastObservationDateError = "<bean:message key="oscarEncounter.pastObservationDateError.msg"/>";
+        encTimeMandatoryMsg = "<bean:message key="oscarEncounter.encounterTimeMandatory.msg"/>";
+        encTimeMandatory = <%=encTimeMandatoryValue%>;
         encTimeError = "<bean:message key="oscarEncounter.encounterTimeError.msg"/>";
         encMinError = "<bean:message key="oscarEncounter.encounterMinuteError.msg"/>";
         assignIssueError = "<bean:message key="oscarEncounter.assignIssueError.msg"/>";

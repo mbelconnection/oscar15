@@ -23,7 +23,381 @@
     Ontario, Canada
 
 --%>
-<link rel="stylesheet"  type="text/css" href="css_up/calendar.css" />
+<!-- link rel="stylesheet"  type="text/css" href="css_up/calendar.css" /> -->
+<style>
+body{
+padding:50px 8px 0;
+
+}
+.clear {clear: both;}
+.cal_calendar {
+	border: #cecece 1px solid;
+    padding: 1px;       
+    width:100%;        
+    margin:auto;        
+    height:350px;        
+	border-collapse:collapse;
+	font-family:calibri;
+    color:#362d26;
+}
+
+.cal_calendar th{        
+    border:1px solid black;        
+    width: 100px;
+	height:25px;
+	font-size:12px;
+	font-weight:700;
+	text-align:center !important;
+	background-color: #F5F5DC;	
+	border: #cecece 1px solid;
+}.cal_calendar td {
+    border: 1px solid black;
+    background-color: #ffffff;
+    text - align: center;
+    width: 36px;
+    height: 80px;
+	border: #cecece 1px solid;	
+	font-size:19px;
+}.cal_today {
+	background-color: #fff3a1 !important;
+}.cal_days_bef_aft {
+    color: #bbb; !important;
+	height:20px !important;
+	text-align:right;
+	border:0px !important;
+}
+
+.cal_inner_table{
+	text-align:right;height:20px !important;border:0px !important;
+}
+
+.cal_inner_td1{
+	text-align:right;height:20px !important;border:0px !important;
+}
+
+.cal_inner_td2{
+	border:0px !important;
+	font-size:12px !important;
+}
+
+.sch_header {
+	border: #cecece 1px solid;
+    padding: 1px;       
+    width:100%;        
+    margin:auto;        
+    height:20px;        
+	border-collapse:collapse;
+	font-family:calibri;
+	color:#362d26;
+	margin-bottom:10px !important;
+	border: #FFFFFF 1px solid;
+}
+
+.sch_header th{        
+    border:1px solid black;        
+    width: 100px;
+	height:25px;
+	font-size:12px;
+	font-weight:500;
+	text-align:center !important;
+	background-color: #F5F5DC;	
+	border: #cecece 1px solid;
+}
+
+.sch_left_ctrl {
+	border: #cecece 1px solid;
+    padding: 1px;       
+    margin:auto;   
+	width:160px;
+    height:25px !important;        
+	border-collapse:collapse;
+	font-family:calibri;
+	color:#362d26;
+	margin-bottom:10px !important;
+}
+
+.sch_left_ctrl tr{
+	border: #cecece 1px solid;
+    padding: 1px;       
+    margin:auto;        
+    height:105px !important;        
+}
+
+.sch_left_ctrl td{
+	border: #cecece 1px solid;
+    padding: 1px;       
+    margin:auto;        
+    height:25px !important;
+	width:25px !important;
+}
+
+
+.xscale {
+	
+    padding: 1px;           
+    margin:auto;        
+	border-collapse:collapse;
+	font-family:calibri;
+	font-size:12px;
+	color:#362d26;
+	border-right: 0px !important;
+	border-left: #cecece 1px solid;
+	border-top: #cecece 1px solid;
+	border-bottom: #cecece 1px solid;
+}
+.xscale td {
+    border: 1px solid black;
+    background-color: #ffffff;
+    text - align: center;
+    width: 36px;
+    height: 25px;
+	border: #cecece 1px solid;	
+	border-left:0px #FFFFF;
+	border-right: 0px !important;
+}
+
+.Yscale {
+	border: #cecece 1px solid;
+    padding: 1px;          
+    margin:auto;        
+	border-collapse:collapse;
+	font-family:calibri;
+	font-size:12px;
+	color:#362d26;
+}
+
+.Yscale th {
+    border: 1px solid black;
+    background-color: #FFFFFF;
+    text - align: center;
+    width: 220px !important;
+    height: 25px;
+	border: #cecece 1px solid;	
+	border-left:0px #FFFFF;
+	display: table-cell !important;
+
+}
+
+.noline {
+    /*background-color: #ffffff;*/
+    text-align: center;
+    width: 150Px !important;
+    height: 25px;
+	border-top: #FFFFFF 1px solid;	
+	border-right: #cecece 1px solid;
+	opacity: 0.25 !important;
+}
+
+.withline {
+    border: 1px solid black;
+    background-color: #ffffff;
+    text-align: center;
+    width: 150px !important;
+    height: 25px;
+	border: #cecece 1px solid;	
+	border-left:0px #FFFFF;
+	border-bottom:0px;
+	opacity: 0.25 !important;
+}
+
+
+/*#999998_18:00 {background-color: #BDBDBD !important;}*/
+
+.scrolldiv {
+    overflow:scroll;
+	width:1200px;
+	overflow-y:hidden;
+}
+
+.scrolldiv2{
+    overflow:scroll;
+	height:100%;/* modified by Bhaskar */
+	overflow-x:hidden;
+}
+
+.evtpop{-moz-border-radius:10px;-webkit-border-radius:5px;border-radius:5px;padding:0px;}
+.evtpop_td{
+	font-size:12px;height:19px;width:30px;text-align:center;
+}
+.evtpop_td_ltline{
+	font-size:12px;height:19px;border-left: #cecece 1px solid;padding-left:3px;padding-right:3px;
+}
+
+.evtpop_td_btm_line{
+	border-bottom: #cecece 1px solid;font-family:calibri;font-size:12px;
+}
+
+.eventpop{
+	width:170px;height:19px;background-color:#fff;border:1px solid #cecece;padding:5px 5px 5px 10px;
+	-moz-border-radius:10px;-webkit-border-radius:5px;border-radius:5px;padding:0px;
+	position:relative;font-family:calibri;
+}
+
+.eventtab{	
+	position:static;
+}
+
+
+* {padding:0; margin:0;}
+
+
+
+
+
+.tabs_underline{
+	border-bottom: #cecece 1px solid;
+}
+
+
+.tabs li {
+	list-style:none;
+	display:inline;
+}
+
+.tabs a {
+	padding:5px 2px;				
+	text-align:center;
+	display:inline-block;				
+	text-decoration:none;				
+	vertical-align:bottom;
+	color:#000;
+	font-weight:700;
+	font-family:calibri;
+	font-size:14px;
+}
+
+.tabs a.active {
+	background: #3B9C9C;
+	color: #fff;
+	border: #cecece 1px solid;
+	border-bottom: 0px !important;
+	font-weight:700;
+	font-family:calibri;
+	font-size:14px;
+}
+
+.datetable_td{
+	border: #cecece 1px solid;
+}
+
+.basictable{
+	border:1;
+	border-collapse:collapse;
+	cellPadding:0px;
+	cellSpacing:0px;
+}
+.table_round_corners{
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 6px;
+	border: #cecece 1px solid;
+}
+
+.headertable{
+	border: #cecece 1px solid;
+	border-collapse:collapse;
+	height:40px;
+	width: 100% !important;
+}
+			
+
+
+			
+.date_selector_td{
+	font-size:12px;height:20px;width:30px;text-align:center;
+}
+.date_selector_td_ltline{
+	font-size:12px;height:24px;border-left: #cecece 1px solid;padding-left:0px;padding-right:0px;
+}
+.date_selector_td_left_right{
+	width:18px;
+	text-align:center;
+	padding-top:1px;
+}
+.date_selector_td_mid{
+	width:80px;
+}
+
+.date_selector{
+	width:145px;
+	height:25px;
+	border:1px solid #cecece;
+	padding:0px;
+	-moz-border-radius:10px;
+	-webkit-border-radius:5px;
+	border-radius:5px;	
+	font-family:calibri;
+}
+
+.box_nextavail{
+	width:100px;
+	height:20px;
+	border:1px solid #cecece;
+	padding:0px;
+	text-align:center;
+	-moz-border-radius:4px;
+	-webkit-border-radius:4px;
+	border-radius:4px;
+	font-family:calibri;
+	font-size:13px;
+}
+
+.gen_font{
+	font-family:calibri;
+	font-size:11px;
+}
+
+.gen_font1{
+	font-family:calibri;
+	font-size:12px;
+}
+
+.gen_font2{
+	font-family:calibri;
+	font-size:12px;
+	line-height:98%;
+	letter-spacing:0.02em;
+	padding-top:1px;
+}
+
+.gen_font3{
+	color:#000000;
+	font-weight:bold;
+}
+
+
+.input1{
+	border:0px;
+	font-family:calibri;
+	font-size: 14px;
+	text-align:center;
+	cursor:pointer;
+	margin-bottom: 3px !important;
+}
+
+.alertbox{
+	width:15px;
+	height:14px;
+	border:1px solid #5E5A80;
+	background:#5E5A80;
+	color:#fff;
+	padding:0px;
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	border-radius:3px;	
+	font-family:calibri;
+	font-weight:bold;
+}
+.zoomIn{
+float:right;text-decoration:underline;cursor:pointer;width:18%;text-align:right;
+}
+.nav > li > a{
+	/*font-family: calibri;*/
+	display: block;
+    /*padding: 15px;*/
+    position: relative;
+}
+</style>
  <style>
  .searchIcon {
     background:#FFFFFF url(js_up/images/search-icon.png) no-repeat 4px 4px;
@@ -34,7 +408,7 @@
 		
 <!-- pop up script links -->
 		
-		<link rel="stylesheet" type="text/css" media="all" href="css_up/jsDatePick_ltr.min.css" />
+<link rel="stylesheet" type="text/css" media="all" href="css_up/jsDatePick_ltr.min.css" />
 		
 <link href="css_up/style.css" rel="stylesheet" type="text/css" media="all" />
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.dataTables.js"></script>
@@ -182,7 +556,7 @@ span.ecs_tooltip {
     display: none;
     font-size: 11px;
     height: 16px;
-    opacity: 0.7;
+    opacity: 0.25;
     padding: 4px 3px 2px 5px;
     position: absolute;
     right: -62px;
@@ -550,89 +924,119 @@ function getDropDown(divId,dropId,placeText,der){
 //alert("oyeee");
 }
 </script>
+ <style>
+ .dateseltop {
+    width:14% !important;
+    margin: 6px 15px 0 5px;
+    float: left;
+}
+.dateseltop input[type="image"] {width:15px; padding:7px 3px; float: left;}
+.dateseltop .input1 { float: left; width: 83%;height: 23px;margin-bottom: 0 !important; border: 1px solid #cecece; border-width: 0 1px;}
+.navseltop {
+width:20% !important;
+padding-top: 7px;
+float: left;
+}
+.navseltop .nav-tabs {
+    border-bottom: 1px solid #cecece;
+}
+.navseltop .nav-tabs > li {text-align: center; width: 25%;}
+.navseltop .nav-tabs > li a {cursor: pointer; font-weight: normal !important;}
+.col-md-12 {padding-left:0px !important; padding-right:0px !important;}
+.placetext_individual {float: left; width:17% !important; margin-top:5px;}
+.appointments_top {float: left; width:45% !important; border: 1px solid #cecece; border-width: 0 1px; padding: 7px 10px; margin: 0px 10px;}
+.appointments_top label.label {float:left; width: 17% !important; color: #c7c5c5 !important; font-size: 90% !important; font-weight:normal !important; line-height: 1.5 !important; text-align: left !important; padding: 0.2em 0.6em 0.3em 0 !important; margin-bottom:0px !important;}
+.appointments_top button.btn  {float:left; width: 20% !important;}
+.appointments_top .input-group {float:left; width: 60%; margin-left:17px;}
+.appointments_top .input-group .input-group-addon {padding: 3px 8px !important;}
+.appointments_top .input-group .form-control {height: 25px !important;}
+.navbar-form {width: 350px !important;}
+.twitter-typeahead .tt-hint {width: 100% !important;}
+#placeText {color: #c7c5c5; font-size: 90%; font-weight: normal;line-height: 1.5 ;}
 
-		<table  width = "100%" class="headertable" id="secNav" style="width:100%;">
-			<tr>
-				<td class='tabs_underline' style="padding:5px;width:210px;">
-					<div class="date_selector" style="width:100%;">
-						<table class="eventtab" style="width:100%;border-collapse:collapse;padding:0px;" id="tab"  cellspacing="0" >
-							<tr class=""> 
-								<td class="date_selector_td_left_right" style="width:30px;"><input type="image" src="js_up/images/arrow_left.png" onclick="dateChange('dec')"/></td>
-								<td class="date_selector_td_ltline date_selector_td_mid" style="text-align:center;width:150px;" ><input type="text" size="12" id="inputField" readonly="readonly" class="input1" style="width:145px;"/></</td>
-								<td class="date_selector_td_ltline date_selector_td_left_right" style="width:30px;padding-top:5px;"><input type="image" src="js_up/images/arrow_right.png" onclick="dateChange('inc')"/></td>
-							</tr>
-							<!-- <tr class=""> 
-								 <div class="week-picker"></div><br /><br />
-    							<label>Week :</label> <span id="startDate"></span> - <span id="endDate"></span>
-							</tr>-->
-						</table>
-					</div>
-				</td>
-				<td class='tabs_underline' style='vertical-align:bottom;width:530px;'>
-					<ul class='nav nav-tabs' id='maintab' style='width:525px !important;border-bottom-width: 0px;'>
-						<li class="active" style='margin-left:5px;'><a style='width:60px;padding:5px;font-family: calibri;' id='daydivid' onclick="showTabData('daydiv','flipview','monthdiv','daydivid','103')">Day</a></li>
-						<li><a style='width:190px;padding:5px;font-family: calibri;' id='flipdivid' onclick="showTabData('flipview','daydiv','monthdiv','flipdivid','103')">Flip Days</a></li>
-						<li><a style='width:190px;padding:5px;font-family: calibri;' id='weekdivid' onclick="showTabData('weekdivid','flipview','monthdiv','weekdivid','103')" id='weekdivid'>Week</a></li>
-						<li><a style='width:60px;padding:5px;font-family: calibri;' id='monthdivid' onclick="showTabData('monthdiv','flipview','daydiv','monthdivid','103')" id='mondivid'>Month</a></li>
-					</ul>
-				</td>
-				<td style='border-left:1px solid #cecece;padding-left:5px;'>
-					<table>
-						<tr>
-							<td style='padding-left:5px;width:80px;font-size:14px;color:#C7C5C5;' class='gen_font'>
-								&nbsp;&nbsp;Appointments:&nbsp;&nbsp;&nbsp;&nbsp;
-							</td>
-							<td style='font-size:12px;'>
-								<button type="button" id="create-user" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Search next available appointment" style="height:25px;width:115px;padding:0px;padding-left:5px;color:#C7C5C5;"> &nbsp;+ Next available&nbsp; </button>
-							</td>
-							<td style='width:110px;'>
-								<table>
-									<tr>
-										<td style="padding-left:15px;">
-											
-											<div class="input-group" style='padding:2px;'>
-													<span class="input-group-addon" style="font-size:14px;padding:0 5px 3px 7px;"><span class="glyphicon glyphicon-search"></span></span>
-												  <input id="fex_find_input"  class="form-control na_form_inputtext" style="height:25px;width:220px !important;" placeholder='Find existing' rel='popover' data-placement='bottom' data-original-title='&lt;b&gt;Requests&lt;/b&gt;' data-content='My content goes here' />												  
-												</div>
-										</td>
-										<td>
-											<!-- add appointment dialog box includes here -->
-											<div id="testcode"></div>
-										</td>
-									</tr>
-								</table>
-							</td>
-						</tr>
-					</table>
-				</td>
-				<!--<td style='border-left:1px solid #cecece;padding-left:5px;text-align:center;' class='gen_font'>
-					<button type="button" id="manageGroup" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Search next available appointment" style="height:25px;width:150px;padding:0px;padding-left:5px;color:#C7C5C5;"> &nbsp;Manage group&nbsp; </button>
-				</td> -->
-				<td style='border-left:1px solid #cecece;padding-left:5px;text-align:center;' >
-					<span style="color:#AAAAAA;font-size:14px;display:none;" id="placeText"></span>
-					<select placeholder="Select team/individual" style="width:170px;" id="docava" ></select>
-				</td>
-				
-			</tr>
-		</table>
+@media (min-width: 1018px) and (max-width: 1226px) {
+  .dateseltop .input1 {width: 78%;}
+  .navseltop {width:27% !important;}
+  .appointments_top {width: 36% !important; margin: 0 5px; padding: 7px;}
+  .appointments_top label.label {width:21% !important; font-size: 82% !important;}
+  .appointments_top button.btn {width: 28% !important; line-height: 1.5; font-size: 12px; padding: 0 5px !important;}
+  .appointments_top .input-group {margin-left: 10px; width: 47%;}
+  .placetext_individual {width: 20% !important;}
+  #placeText {font-size: 82%;}
+}
+@media (min-width: 1227px) and (max-width: 1310px) {
+  .dateseltop .input1 {width:82%;}
+  .navseltop {width:23% !important;}
+  .appointments_top {width: 40% !important; margin: 0 5px; padding: 7px;}
+  .appointments_top label.label {width:19% !important; font-size: 85% !important;}
+  .appointments_top button.btn {width: 24% !important; padding: 0 5px !important;}
+  .appointments_top .input-group {margin-left: 10px; width: 54%;}
+  .placetext_individual {width: 19% !important;}
+}
+@media (min-width: 1680px) and (max-width: 1920px) {
+  .dateseltop .input1 {width:87%;}
+}
+@media (min-width: 1921px) and (max-width: 2199px) {
+  .dateseltop .input1 {width:88%;}
+}
+@media (min-width: 2200px) and (max-width: 2553px) {
+  .dateseltop .input1 {width: 91%;}
+}
 
+.Yscale {width: 100%;}
+.Yscale th {width: 14% !important;}
+.Yscale td {width: 14% !important;}
+.cal_calendar td {height: 14% !important;}
+.ui-widget-overlay {z-index: 9999;}
+.ui-widget-content {z-index: 10000;}
+#flipview .xscale {width: 100%;}
+#flipview .xscale td {width: inherit;}
+.eventpop {width: 160px;}
+
+#abc .xscale {float:none !important;margin:inherit !important; width: 100%;}
+#abc .xscale td {width:auto;}
+
+ </style>
+
+<div class="headertable" id="secNav">
+<div class="date_selector dateseltop" id="tab"><input type="image" src="js_up/images/arrow_left.png" onclick="dateChange('dec')"/><input type="text" size="12" id="inputField" readonly="readonly" class="input1"/><input type="image" src="js_up/images/arrow_right.png" onclick="dateChange('inc')"/><div class='clear'></div></div>
+<div class="navseltop">
+	<ul class='nav nav-tabs' id='maintab'>
+		<li class="active"><a style='padding:5px;font-family: calibri;' id='daydivid' onclick="showTabData('daydiv','flipview','monthdiv','daydivid','103')">Day</a></li>
+		<li><a style='padding:5px;font-family: calibri;' id='flipdivid' onclick="showTabData('flipview','daydiv','monthdiv','flipdivid','103')">Flip Days</a></li>
+		<li><a style='padding:5px;font-family: calibri;' id='weekdivid' onclick="showTabData('weekdivid','flipview','monthdiv','weekdivid','103')" id='weekdivid'>Week</a></li>
+		<li><a style='padding:5px;font-family: calibri;' id='monthdivid' onclick="showTabData('monthdiv','flipview','daydiv','monthdivid','103')" id='mondivid'>Month</a></li>
+	</ul>
+</div>
+<div class="appointments_top">
+	<label class="label">Appointments:</label>
+	<button type="button" id="create-user" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Search next available appointment" style="height:25px;width:115px;padding:0px;padding-left:5px;color:#C7C5C5;">+ Next available</button>
+	<div class="input-group">
+		<span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+		<input id="fex_find_input"  class="form-control na_form_inputtext" placeholder='Find existing' rel='popover' data-placement='bottom' data-original-title='&lt;b&gt;Requests&lt;/b&gt;' data-content='My content goes here' />												  
+	</div>
+	<div id="testcode"></div>
+</div>
+<div class="placetext_individual"><span id="placeText"></span><select placeholder="Select team/individual" id="docava" ></select></div>
+<div class='clear'></div>
+</div>
 		 <iframe id="frame" style="width:100%;height:0px;border: 0px;" ></iframe>
 		
 		<!-- Day and week view-->
-		<div id='daydiv' style='padding-top:5px;display:block;width:100%;height:calc(100%-100px);'>
+		<div id='daydiv'>
 			<div id='dayview'>
-				<table id="dayviewTable" style='border-collapse:collapse;padding:0px;float: left;display: inline-block;' cellpadding="0" cellspacing="0" border="0">
+				<table id="dayviewTable" cellpadding="0" cellspacing="0" border="0">
 					<tr style="width:100%;"><td id='head' style="border-bottom: 0px !important;width:100%;"></td></tr>
 					<tr style="width:100%;"><td id='providerdiv' style="width:100%;"></td></tr>
 				</table>
 			</div>
 		</div>
 		<!-- Flip days view-->
-		<div id='tab2' style='padding-top:5px;font-family:calibri;'>
+		<div id='tab2' style='font-family:calibri;'>
 			<div id='flipview' style='display:none;'></div>
 		</div>
 		<!-- Month view-->
-		<div id='monthdiv' style='padding-top:5px;display:none;'>
+		<div id='monthdiv' style='display:none;'>
 			<div id='header'></div>
 			<div id='monthview'></div>
 			
@@ -819,7 +1223,7 @@ $(function() {
 		if(popupStatus == 0) { // if value is 0, show popup
 			closeloading(); // fadeout loading
 			$("#toPopup").fadeIn(0500); // fadein popup div
-			$("#backgroundPopup").css("opacity", "0.7"); // css opacity, supports IE7, IE8
+			$("#backgroundPopup").css("opacity", "0.25"); // css opacity, supports IE7, IE8
 			$("#backgroundPopup").fadeIn(0001);
 			sch.ajaxMethod("js_up/demo_ajax_json.js",loadFieldData,{});
 			popupStatus = 1; // and set value to 1
@@ -829,7 +1233,7 @@ $(function() {
 		if(popupStatus == 0) { // if value is 0, show popup
 			closeloading(); // fadeout loading
 			$("#toPopup").fadeIn(0500); // fadein popup div
-			$("#backgroundPopup").css("opacity", "0.7"); // css opacity, supports IE7, IE8
+			$("#backgroundPopup").css("opacity", "0.25"); // css opacity, supports IE7, IE8
 			$("#backgroundPopup").fadeIn(0001);
 			loadFieldData();
 			popupStatus = 1; // and set value to 1
@@ -970,7 +1374,7 @@ page_init();
 	
     $(window).on('zoom', function() {
         //console.log('zoom', window.devicePixelRatio);
-        //console.log($(window).width());
+        console.log($(window).height());
         //$("#secNav").css("width", $(window).width());
         //setTimeout('$("#secNav").width($(window).width())',1000);
        // console.log("secNav>>>>"+$("#secNav").width());
@@ -984,14 +1388,15 @@ page_init();
         	//console.log("zoommm else"+($("#consult-list").width()-100));
         	$("#dayviewTable").width($("#secNav").width());
         	if(window.devicePixelRatio<0.4){
-        		setTimeout('$("#persondata").width(($("#consult-list").width()-150))',1000);
+        		setTimeout('$("#persondata").width(($("#consult-list").width()-550))',1000);
         	}else{
         	}
         	setTimeout('sch.callDayWeekMonth(\''+globalView.view+'\',\''+globalProviderId+'\')',500);
-        	setTimeout('$(".scrolldiv2").width($("#secNav").width())',1000);
-        	setTimeout('$( ".scrolldiv2" ).height(($( window ).height()-250))',1000);        	
+        	//setTimeout('$(".scrolldiv2").width($("#secNav").width())',1000);
+        	//setTimeout('$( ".scrolldiv2" ).height(($( window ).height()-250))',1000);        	
         }
     });
 </script>
+
 
 </div>

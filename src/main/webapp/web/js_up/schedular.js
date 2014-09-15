@@ -196,14 +196,17 @@ function showdata(provId) {
 			finalData += loadFlipData(provId, _data, dates[0], dates[1]);
 	}
 	flipWeekendHide = false;
+	var flipviewHeight = window.innerHeight - 156;
+	document.getElementById('flipview').style="overflow-y:scroll; height:" + flipviewHeight + "px";
 	document.getElementById('flipview').innerHTML = finalData;
+	
 }
 function loadFlipData(provId, _data, startDate, endDate){
 	var months = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
 	var finalData = "";
 	var currDayArr = startDate.split('-');
 	var days = getDiffInDays(startDate, endDate) +1;
-	var myday = new Date(parseFloat(currDayArr[2]),parseFloat(getMonthIndex(startDate)),parseFloat(currDayArr[0]));
+	var myday = new Date(parseFloat(currDayArr[0]),parseFloat(getMonthIndex(startDate)),parseFloat(currDayArr[0]));
 	var index = 32;
 	for (var a = 0; a < days; a++) {
 		curDate = myday.getDate() +"-"+months[myday.getMonth()] +"-"+ myday.getFullYear();
@@ -224,7 +227,7 @@ function loadFlipData(provId, _data, startDate, endDate){
 				}
 			}
 			finalData += '</tr>';
-		myday.setDate(myday.getDate()+parseFloat(1));
+		myday.setDate(myday.getDate()+parseFloat(0));
 		
 	}
 	return finalData;
@@ -233,7 +236,7 @@ function loadFlipData_hide(_data, startDate, endDate){
 	var finalData = "";
 	var currDayArr = startDate.split('-');
 	var days = getDiffInDays(startDate, endDate) +1;
-	var myday = new Date(parseFloat(currDayArr[2]),parseFloat(getMonthIndex(startDate)),parseFloat(currDayArr[0]));
+	var myday = new Date(parseFloat(currDayArr[0]),parseFloat(getMonthIndex(startDate)),parseFloat(currDayArr[0]));
 	var index = 32;
 	for (var a = 0; a < days; a++) {
 		//console.log((myday.getDay()== 0 || myday.getDay()== 6));
@@ -570,6 +573,33 @@ Schedular.prototype.callDayWeekMonth = function(view,selVal){
 	}
 	
 }
+
+function getScrollBarWidth () {
+	  var inner = document.createElement('p');
+	  inner.style.width = "100%";
+	  inner.style.height = "200px";
+
+	  var outer = document.createElement('div');
+	  outer.style.position = "absolute";
+	  outer.style.top = "0px";
+	  outer.style.left = "0px";
+	  outer.style.visibility = "hidden";
+	  outer.style.width = "200px";
+	  outer.style.height = "150px";
+	  outer.style.overflow = "hidden";
+	  outer.appendChild (inner);
+
+	  document.body.appendChild (outer);
+	  var w1 = inner.offsetWidth;
+	  outer.style.overflow = 'scroll';
+	  var w2 = inner.offsetWidth;
+	  if (w1 == w2) w2 = outer.clientWidth;
+
+	  document.body.removeChild (outer);
+
+	  return (w1 - w2);
+	};
+	
 Schedular.prototype.init = function(view, from) {
 //	 console.log(view+"<<>>"+from);
     $(document).ready(function() {
@@ -596,37 +626,73 @@ Schedular.prototype.init = function(view, from) {
 	this.setView(view);
 	/* Load calendar in month view */
 	//calendar();
-	var scrollWid = document.getElementById('secNav').offsetWidth - 60;
+	
+	var scrollWidth = getScrollBarWidth();
+	var winWidth = document.getElementById('secNav').offsetWidth;
+	var totalWidth = scrollWidth + 36;
+	//alert(winWidth + " :- " + scrollWidth + " :- " + totalWidth);
+	var scrollWid = winWidth - totalWidth;
+	if(document.getElementById('secNav').offsetWidth < 1350)
+	{
+		scrollWid = document.getElementById('secNav').offsetWidth - 54;
+	}
+	
+	var scrollHeight = window.innerHeight - 195;
 	//var scrollWid = $("#secNav").width() - 60;
 	//console.log(document.getElementById('secNav').offsetWidth);
 	var data = this.getYScale();
-	var headData = '<div id="clock" style="float:left"><table class="xscale" style="float: left;cellpadding:0;cellpadding:0;padding-bottom:0px !important;border-bottom: 0px !important;" ><tr><td >'+sch.getViewDropDown()+'</td></tr></table>';
-	headData += '<div id="names" class="scrolldiv" style="width:'
-			+ (scrollWid-30)
+	//var headData = '<div id="clock" style="float:left"><table class="xscale" style="float: left;cellpadding:0;cellpadding:0;padding-bottom:0px !important;border-bottom: 0px !important;" ><tr><td >'+sch.getViewDropDown()+'</td></tr></table>';
+	var headData = '<div id="clock" style="float:left"><table class="xscale" style="float: left; width:3%; cellpadding:0;cellpadding:0;padding-bottom:0px !important;border-bottom: 0px !important;" ><tr><td >'+sch.getViewDropDown()+'</td></tr></table>';
+	
+	/*headData += '<div id="names" class="scrolldiv" style="width:'
+			+ (scrollWid)
 			+ 'px;float:left;overflow-x:hidden;"><table id="testidd" class="Yscale" width="'
 			+ this.getPersonTabWidth()
 			+ 'px" style="table-layout:fixed;float: left;cellpadding:0;cellpadding:0;padding-bottom:0px !important;border-bottom: 0px !important;" >'
-			+ this.getXHeader() + '</table></div>';
+			+ this.getXHeader() + '</table></div>';*/
+	headData += '<div id="names" class="scrolldiv" style="width:'
+		+ 96
+		+ '%;float:left;overflow-x:hidden;"><table id="testidd" class="Yscale" width="'
+		+ this.getPersonTabWidth()
+		+ 'px" style="table-layout:fixed;float: left;cellpadding:0;cellpadding:0;padding-bottom:0px !important;border-bottom: 0px !important;" >'
+		+ this.getXHeader() + '</table></div>';
 
 	document.getElementById('head').innerHTML = headData;
-	var scaleData = "<div style='display: inline-block;overflow-y:scroll;height:565px;' class='scrolldiv2'><div id='abc' style='float:left'>"
+	/*
+	var scaleData = "<div style='display: inline-block;overflow-y:scroll;height:"
+			+ (scrollHeight)
+			+ "px;' class='scrolldiv2'><div id='abc' style='float:left'>"
 			+ data
 			+ "</div>"
 			+ "<div id='persondata' style='overflow-x:hidden;float:left;width:"
-			+ (scrollWid-30)
+			+ (scrollWid)
 			+ "px;' class='scrolldiv'>"
 			+ this.getXData()
 			+ "</div></div>";
+	*/
+	
+	var scaleData = "<div style='display: inline-block;overflow-y:scroll;height:"
+		+ (scrollHeight)
+		+ "px;' class='scrolldiv2'><div id='abc' style='float:left; width:3.1%;'>"
+		+ data
+		+ "</div>"
+		+ "<div id='persondata' style='overflow-x:hidden;float:left;width:"
+		+ 96.9
+		+ "%;' class='scrolldiv'>"
+		+ this.getXData()
+		+ "</div></div>";
+	
 	scaleData += "<div id='persondatadummy' class='scrolldiv' style='width:"
 			+ scrollWid
-			+ "px;height:10px;margin-left:30px;'><table  style='table-layout:fixed;' id='xdummytab'><tr><td id='xdummytabtd'>ask fhasdl kfhas klh lkhas dflaksdhf asdfkalsdhf asdhfjka hsdfkljshad fjkasdl hfaksdj fhaksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfkl</td></tr></table></div>";
+			+ "px;height:10px;margin-left:30px;'><table  style='table-layout:fixed;' id='xdummytab'><tr><td id='xdummytabtd'></td></tr></table></div>";
+	//+ "px;height:10px;margin-left:30px;'><table  style='table-layout:fixed;' id='xdummytab'><tr><td id='xdummytabtd'>ask fhasdl kfhas klh lkhas dflaksdhf asdfkalsdhf asdhfjka hsdfkljshad fjkasdl hfaksdj fhaksldjfh askldj fhasldkfjh asldkjfh askldfh aklsdhfkasdh fkshdfkl</td></tr></table></div>";
 	document.getElementById('providerdiv').innerHTML = scaleData;
 	document.getElementById('xdummytab').style.width = document.getElementById('testidd').offsetWidth+"px";
 
 	syncScrollBars();
 	// $( "div.first" ).slideUp( 300 ).delay( 800 ).fadeIn( 400 );
-	// setTimeout('Schedular.prototype.loadDayEvents(Schedular.config.eventsList)',1000);
-	Schedular.prototype.loadDayEvents(Schedular.config.eventsList);
+	setTimeout('Schedular.prototype.loadDayEvents(Schedular.config.eventsList)',2000);
+	//Schedular.prototype.loadDayEvents(Schedular.config.eventsList);
 }
 
 Schedular.prototype.getViewDropDown = function(){
@@ -795,9 +861,9 @@ Schedular.prototype.getXHeader = function() {
 	else
 		for (var i = 0; i < this.persons.length; i++) {
 			if (this.view == 'day')
-				_XHeader += '<th style="width:300px !important;text-align:center;display: inline-block;" ><div style="float:left;width:64%;text-align:center;" >'+this.persons[i].name+'</div>'+ sch.getZoomLinkView(this.persons[i].id,"ZOOM")+'</th>';// +'<div class="zoomIn" id="'+this.persons[i].id+'" onclick="sch.zoom(this.id)">Zoom</div></th>';
+				_XHeader += '<th style="text-align:center;display: inline-block;" ><div style="float:left;width:64%;text-align:center;" >'+this.persons[i].name+'</div>'+ sch.getZoomLinkView(this.persons[i].id,"ZOOM")+'</th>';// +'<div class="zoomIn" id="'+this.persons[i].id+'" onclick="sch.zoom(this.id)">Zoom</div></th>';
 			else
-				_XHeader += '<th style="width:300px !important;text-align:center;display: inline-block;" ><div style="float:left;width:170px;text-align:center;" >'
+				_XHeader += '<th style="text-align:center;display: inline-block;" ><div style="float:left;width:170px;text-align:center;" >'
 						+ this.persons[i].name + '</div></th>';
 		}
 	_XHeader += '</tr>';
@@ -845,7 +911,7 @@ Schedular.prototype.getXScale = function() {
 		_smin += Schedular.config.increment;
 		
 		for (var i = 0; i < this.persons.length; i++) {
-			_XScale += "<td style=\"height:25px !important;width:300px !important;cursor: default;padding:0px;margin:0px;\"  data-original-title= "+time+" class=\"" 
+			_XScale += "<td style=\"height:25px !important;cursor: default;padding:0px;margin:0px;\"  data-original-title= "+time+" class=\"" 
 					+ style
 					+ "\" position=\""
 					+ i
@@ -1598,7 +1664,7 @@ Schedular.prototype.loadDayEvents = function(events) {
 		}
 	}
 	if(sch.valid_date(document.getElementById("inputField").value))
-	setTimeout('Schedular.prototype.timerTab()', 100);
+		setTimeout('Schedular.prototype.timerTab()', 100);
 	if(globalView.view=="week"){
 		$(".Yscale th").addClass("weekColor");
 	}else{
@@ -1727,7 +1793,9 @@ Schedular.prototype.timerTab = function() {
 	updateTimer = function() {
 		currentTime += incrementTime / 10;
 		Schedular.prototype.timerDisable();
-	}, init1 = function() {
+	}, 
+	init1 = function() {
+		//alert('Test!');
 		Schedular.prototype.timerDisable();
 		timer = $.timer(updateTimer, incrementTime, true);
 	};
@@ -1739,10 +1807,12 @@ Schedular.prototype.timerDisable = function() {
 	var h = today.getHours();
 	var m = today.getMinutes();
 	var sec = today.getSeconds();
+	//alert('Test!');
 	if (h < 10) {
 		h = "0" + h;
 	} else {
 		h = h;
+		
 	}
 	var x = (m / 15);
 	var s = $("td .noline,.withline");

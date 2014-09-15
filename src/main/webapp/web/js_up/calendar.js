@@ -286,9 +286,14 @@ function calendar(){
 	beg_j = beg_j.getDay();        
 	//<tr><th colspan="7">'+date_today+'</th></tr>
 	var calendar = '';
+	var calendarscrollHeight = window.innerHeight - 156;
 	//var header = '<table class="sch_header" style=""><tr><td style="width:150px;">'+getLeftCtrl(date_today)+'</td><td>'+getMidCtrl()+'</td></tr></table>';
 	//document.getElementById('header').innerHTML = header;
-	calendar += '<table class="cal_calendar" onload="opacity(document.getElementById(\'cal_body\'),20);"><tbody id="cal_body">';        
+	calendar += "<table style='overflow:scroll;height:"
+		+ (calendarscrollHeight)
+		+ "px;' class='cal_calendar' onload='opacity"
+		+ (document.getElementById("cal_body"),20)
+		+ ";'><tbody id='cal_body'>";        
 	calendar += '<tr class="cal_d_weeks"><th>Sunday</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th><th>Saturday</th></tr><tr>';        
 	week = 0;  
 	

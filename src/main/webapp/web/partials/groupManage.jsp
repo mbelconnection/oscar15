@@ -547,24 +547,12 @@ function getDraggedVal(){
 <!-- Next available appt dailog box start-->
 <div id="manageGroupForm" title="Manage Group" class="na_form" style="padding:0px;width:100%">
 	
-	<table width="100%" border="0" style="border-collapse:collapse;">
-		<tr>
-				<td colspan="2" style="height:50px;"> 
-					<p style="color:#6E6E6E;font-size:16px;font-weight:bold;" id="groupTitle" >Manage schedule layout: Group A</p>
-				</td>
-				<td colspan="2" style="height:50px;" align="right" valign="top"> 
-					<div class="grp_man_close" onClick='$("#manageGroupForm").dialog("close");'><img src="js_up/images/close_icon.png" height=20 width=20></img></div>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2" style="text-align:right;border-top: 1px solid #AAAAAA; padding-top:10px;"> 
-					
-				</td>
-			</tr>
-			<tr>
-				<td width="50%">
-					<!-- basic details -->
-					<table width="100%">
+	<div class="Hading_group_Title">
+	<p style="color:#6E6E6E;font-size:16px;font-weight:bold;" id="groupTitle" >Manage schedule layout: Group A</p>
+	<div class="grp_man_close" onClick='$("#manageGroupForm").dialog("close");'><img src="js_up/images/close_icon.png" height=20 width=20></img></div>
+	<div class='clear'></div>
+	</div>
+	<div class="tab-pane-left"><table width="100%">
 						<tr>
 							<td colspan="2">
 								<table> 
@@ -587,11 +575,8 @@ function getDraggedVal(){
 									</div>
 							</td>
 						</tr>
-					</table>
-				</td>
-				<td width="50%" style="border-left: 1px solid #AAAAAA;padding-left:5px;display: table-cell; vertical-align: top; " >
-					<!-- more details -->
-					<table width="100%">
+					</table></div>
+	<div class="tab-pane-right"><table width="100%">
 						<tr>
 							<td colspan="2">
 								<table>
@@ -615,29 +600,15 @@ function getDraggedVal(){
 							</td>
 						</tr>
 						
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2" style="font-size:15px;font-weight:bold;padding:5px;background-color:#FFF0F5;display:none;" id="add_appt_valNote">
-						
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2" height="5px;">
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2" style="text-align:right;border-top: 1px solid #AAAAAA; padding-top:10px;padding-right:10px;"> 					
-					<div class="btn-group" style="padding-right:15px;">
+					</table></div>
+	<div class='clear'></div>
+	<div style="font-size:15px;font-weight:bold;padding:5px;background-color:#FFF0F5;display:none;" id="add_appt_valNote"></div>
+	<div class="manage_Group_buttons"><div class="btn-group" style="padding-right:15px;">
 					  	<button type="button" id="grp_mng_but_cancel" class="btn" style="background-color:lightgray;font-size:12px;">Cancel</button>
 				  	</div>	 
 				  				  	
 				  	<div class="btn-group" style="padding-right:15px;">
 					  <button type="button"  id="grp_mng_but_save" class="btn btn-primary" style="font-size:12px;" >Save</button>
-				  	</div>	
-				</td>
-			</tr>
-		</table>
+				  	</div></div>
 </div>
 <!--  Next available appt dailog box end -->

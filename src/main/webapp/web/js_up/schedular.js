@@ -272,7 +272,7 @@ function goToDayView(provId, date){
 	document.getElementById("daydiv").style.display = "block";
 	document.getElementById("flipview").style.display = "none";
 	document.getElementById("monthdiv").style.display = "none";
-	
+	//alert(1);
 	Schedular.prototype.ajaxMethod("../ws/rs/schedule/" + date +"/"+provId+ "/list1",
 			Schedular.prototype.setInitData, {
 				"doc_dt" : date
@@ -458,7 +458,7 @@ Schedular.views = {
 };
 Schedular.config = {
 	start_time : 8,
-	end_time : 20,
+	end_time : 24,
 	increment : 15,
 	top_align : 100,
 	left_align : 50,
@@ -491,6 +491,7 @@ Schedular.prototype.load = function(date) {
 		globalView.view = globalView.view;
 	}
 	if(globalView.view=="day"){
+		//alert(2);
 		Schedular.prototype.ajaxMethod("../ws/rs/schedule/" + date + "/list1",
 				Schedular.prototype.setInitData, {
 					"doc_dt" : date
@@ -501,6 +502,7 @@ Schedular.prototype.load = function(date) {
 		/* Need to modify the 103 to dynamic value */
 		var temp  = $("#weekDropId").val();
 		var temp1 = temp!=null? temp.split("_"):"103_Group".split("_");
+		//alert(3);
 		Schedular.prototype.ajaxMethod("../ws/rs/schedule/"+sq+ "/"+temp1[0]+"/list",
 				Schedular.prototype.setInitData, {
 					"doc_dt" : date
@@ -512,7 +514,8 @@ Schedular.prototype.load = function(date) {
 Schedular.prototype.dayLoad = function(date,providerNo) {
 	// load appointment status
 	this.getApptStatusHTML();
-	if(providerNo.indexOf("group") > -1){
+	if(providerNo.indexOf("group") > - 1){
+		//alert(4);
 		Schedular.prototype.ajaxMethod("../ws/rs/schedule/" + providerNo +"/"+date+ "/list33",
 				Schedular.prototype.setInitData, {
 					"doc_dt" : date
@@ -525,10 +528,18 @@ Schedular.prototype.dayLoad = function(date,providerNo) {
 						"doc_dt" : date
 					});
 		}else{
+			//alert("ProviderNO :- " + providerNo);
 			Schedular.prototype.ajaxMethod("../ws/rs/schedule/" + date +"/"+providerNo+ "/list1",
 					Schedular.prototype.setInitData, {
 						"doc_dt" : date
 					});
+			
+			// As on 2014.09.16
+			/*Schedular.prototype.ajaxMethod("../ws/rs/schedule/" + date +"/list1",
+					Schedular.prototype.setInitData, {
+						"doc_dt" : date
+					});*/
+			
 		}
 		
 	}
@@ -539,11 +550,13 @@ Schedular.prototype.weekLoad = function(week,providerNo) {
 	this.getApptStatusHTML();
 	var date = document.getElementById("inputField").value;
 	if(providerNo.indexOf("group") > -1){
+		//alert(6);
 		Schedular.prototype.ajaxMethod("../ws/rs/schedule/" +providerNo  + "/"+week+"/grpwkevnts",
 				Schedular.prototype.setInitData, {
 					"doc_dt" : date
 				});
 	}else{
+		//alert(7);
 	Schedular.prototype.ajaxMethod("../ws/rs/schedule/" + week + "/"+providerNo+"/list",
 			Schedular.prototype.setInitData, {
 				"doc_dt" : date
@@ -741,6 +754,7 @@ Schedular.prototype.getProvider_z = function(providerID) {
 	for (var i = 0; i < Schedular.config.providersList.length; i++) {
 		if (Schedular.config.providersList[i].id == providerID) {
 			return Schedular.config.providersList[i];
+			//break;
 		}
 	}
 	alert('Provider not found.');
@@ -750,6 +764,7 @@ Schedular.prototype.getEvents_z = function(providerID) {
 	for (var i = 0; i < Schedular.config.eventsList.length; i++) {
 		if (Schedular.config.eventsList[i].docId == providerID) {
 			arrEvents.push(Schedular.config.eventsList[i]);
+			//break;
 		}
 	}
 	return (arrEvents);
@@ -785,6 +800,7 @@ Schedular.prototype.getEvents = function(providerID) {
 		for (var j = 0; j < providerID.length; j++) {
 			if (Schedular.config.eventsList[i].docId == providerID[j].id) {
 				arrEvents.push(Schedular.config.eventsList[i]);
+				//alert("EventList : " + JSON.stringify(Schedular.config.eventsList[i]));
 			}
 		}
 	}
@@ -911,7 +927,7 @@ Schedular.prototype.getXScale = function() {
 		_smin += Schedular.config.increment;
 		
 		for (var i = 0; i < this.persons.length; i++) {
-			_XScale += "<td style=\"height:25px !important;cursor: default;padding:0px;margin:0px;\"  data-original-title= "+time+" class=\"" 
+			_XScale += "<td data-original-title= "+time+" class=\"" 
 					+ style
 					+ "\" position=\""
 					+ i
@@ -1053,6 +1069,7 @@ Schedular.prototype.saveBlockEvent = function(obj, appObj) {
 	obj.min = this._getMin(appObj['time']);
 	obj.pos = document.getElementById(obj.id).getAttribute('position');
 	obj.notes = appObj.appt_notes;
+	obj.room = appObj.appt_room;
 
 	obj.appt_id = appObj.appt_id;
 	document.getElementById("events").innerHTML = this.getBlockEventDiv(obj,"save");
@@ -1091,7 +1108,7 @@ Schedular.prototype.createPopup = function(tdId,reason,notes, room,patName){
 	//$('#2_10:45').tooltip({placement: 'top', title: "<div style=\"text-align:left;\">Reason: "+reason+"</div><div style=\"text-align:left;\">Notes: "+notes+"</div>",	html: true});
 	$('.evtpop_td_pat_name')
 	//.tooltip('hide')
-	.attr('data-original-title', "<div id=\"event_tt\" style=\"text-align:left;width:150px;white-space:normal;\">Name:"+this.splitText(patName, 20)+"</div><div style=\"text-align:left;white-space:normal;\">Reason:"+this.formatText(reason, 18)+"</div><div style=\"text-align:left;white-space:normal;\">Notes: "+this.formatText(notes, 25)+"</div><div style=\"text-align:left;white-space:normal;\">Room: "+this.formatText(room.replace(/_/g,' '), 25)+"</div></div>")
+	.attr('data-original-title', "<div id=\"event_tt\" style=\"text-align:left;width:150px;white-space:normal;\">Name:"+this.splitText(patName, 20)+"</div><div style=\"text-align:left;white-space:normal;\">Reason:"+this.formatText(reason, 18)+"</div><div style=\"text-align:left;white-space:normal;\">Notes: "+this.formatText(notes, 25)+"</div><div style=\"text-align:left;white-space:normal;\">Room: "+this.formatText(room.replace(/_/g,' '), 18)+"</div></div>")
     //.tooltip('fixTitle')
     //.tooltip('show');
 }
@@ -1110,7 +1127,8 @@ Schedular.prototype.editAppt = function(apptObject, tdObj) {
 	globalObj.id = apptObject;
 	var s = $('div').find("#" + apptObject).text();
 	var sObject = JSON.stringify(s);
-	// console.log(sObject);
+	//console.log(sObject);
+	//alert("editAppt : " + apptObject);
 
 //	$("#dialog-info").dialog({
 //		minHeight : 150,
@@ -1174,6 +1192,7 @@ $('#dialog-edit').modal();
 
 var cnt = 0;
 Schedular.prototype.getEventDiv = function(obj, act) {
+	//alert("getEventDiv" + JSON.stringify(obj.room)); //(Undefined at this point)
 	var apptType = ["", "E", "I", "B", "R"];
 	var html = '';
 	var duration = obj.duration;
@@ -1192,11 +1211,11 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 
 	if (duration / 15 > 1)
 		stylecls = 'evtpop_td_btm_line';
-	var left = obj.offWidth * pos + 22;
+	var left = obj.offWidth * pos + 26;
 
-	var height = ((duration / 15) * 20) + ((duration / 15 - 1) * 7)
+	var height = ((duration / 15) * 24) + ((duration / 15 - 1) * 7)
 	if (duration == 15)
-		height = 22;
+		height = 26;
 	var colspan = 4;
 	if (act == "delete") {
 		//var back = $('div').find("#" + hr + '_' + min);
@@ -1223,10 +1242,13 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 		if (duration > 30)
 			notesDis = "table-row";
 		var overPopup = "";
-		if(obj.duration==15 || obj.duration==30){
+		//alert(JSON.stringify(obj));
+		//if(obj.duration==15 || obj.duration==30){
+		if(obj.duration>=15){
 			var rs = obj.reason!=null?(obj.reason).replace(/ /g,"_"):"";
 			var nt = obj.notes!=null?(obj.notes).replace(/ /g,"_"):"";
-			var room = obj.roomId!=null?(obj.roomId).replace(/ /g,"_"):"";
+			var room = obj.roomId!=null?(obj.roomName).replace(/ /g,"_"):"";
+			//alert("Room" + JSON.stringify(obj.roomName));
 			var patName = obj.patientName!=null?(obj.patientName).replace(/ /g,"_"):"";
 			patName = patName.replace(/[,]/g,"");
 			overPopup="onmouseover=sch.createPopup(\"pat_name"+obj.apptId+"\",\""+rs+"\",\""+nt+"\",\""+room+"\",\""+patName+"\")";
@@ -1315,9 +1337,23 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 					+ obj.apptId + "'><span class='gen_font3'>Notes:</span> "
 					+ this.formatText(obj.notes, 40) + "</td>";
 			html += "</tr>";
+			
+			//To Display Room field in appointment on Scheduler screen.
+			var room = obj.roomId!=null?(obj.roomName).replace(/ /g,"_"):"";
+			//alert(obj.roomId);
+			html += "<tr style='display:" + notesDis + "'>";
+			html += "<td colspan='" + colspan + "' class='gen_font2' id='appt_room"
+					+ obj.apptId + "'><span class='gen_font3'>Room:</span> "
+					+ this.formatText(room, 18) + "</td>";
+			html += "</tr>";
+			
+			
+			
+			
 		}else{/* block time*/
 			html += "<tr>";
 			/*html += "<td class='gen_font2' id='appt_rea"
+
 					+ obj.apptId + "'><span class='gen_font3'>"+ this.formatText(obj.reason, 40) +":</span> "
 					+ obj.providerName + "</td>";*/
 			var j = obj.apptId + ':' + obj.hr + '_' + obj.min;
@@ -1626,6 +1662,7 @@ Schedular.prototype.getPosition = function(doc_id) {
 Schedular.prototype.loadDayEvents = function(events) {
 	var obj = [];
 	if (events.length > 0) {
+		//alert(events);
 		for (var i = 0; i < events.length; i++) {
 			obj = [];
 			var event = events[i];
@@ -1643,8 +1680,8 @@ Schedular.prototype.loadDayEvents = function(events) {
 				var objId = docId + "_" + event.hr + ":" + event.min;
 				event.offHeight = document.getElementById(objId)==null?25:document.getElementById(objId).offsetHeight;
 				event.offWidth = document.getElementById(objId)==null?300:document.getElementById(objId).offsetWidth;
-				document.getElementById("events").innerHTML = this.getEventDiv(
-						event, "first");
+				document.getElementById("events").innerHTML = this.getEventDiv(event, "first");
+				//alert("loadDayEvents : " + JSON.stringify(event));
 			}else{		
 				var fromtime = event["fromTime"];
 				var docId = Schedular.config.weekDayList.indexOf(event["apptStartDate"]);
@@ -1658,8 +1695,8 @@ Schedular.prototype.loadDayEvents = function(events) {
 				var objId = docId + "_" + event.hr + ":" + event.min;
 				event.offHeight = document.getElementById(objId)==null?25:document.getElementById(objId).offsetHeight;
 				event.offWidth = document.getElementById(objId)==null?300:document.getElementById(objId).offsetWidth;
-				document.getElementById("events").innerHTML = this.getEventDiv(
-						event, "first");
+				document.getElementById("events").innerHTML = this.getEventDiv(event, "first");
+				//alert("loadDayEvents : " + JSON.stringify(event));
 			}
 		}
 	}
@@ -1727,6 +1764,24 @@ Schedular.prototype.disablePopup1 = function() {
 	}
 }
 Schedular.prototype.setInitData = function(params) {
+	//alert(JSON.stringify(params));
+	
+	var data = $.ajax({
+		url : "../ws/rs/appointment/roomDetails/get",
+		type : "get",
+		dataType : 'application/json',
+		global: false,
+		async:false,
+		success : function(result) {
+		},
+		error : function(jqxhr) {
+
+		}
+	}).responseText;
+	
+	var jObj = JSON.parse(data);
+	
+	
 	var result = params.data['response'];
 	var result_dt = (params.data['response'])['day'];
 	var result_dts = (params.data['response'])['days'];
@@ -1755,6 +1810,7 @@ Schedular.prototype.setInitData = function(params) {
 					var providers = [];
 					var provider = Schedular.prototype.getProvider(params.vars.doc_list);
 					var events = Schedular.prototype.getEvents(params.vars.doc_list);
+					//alert("GetEvents : " + events);
 					Schedular.prototype.setProviders(provider);
 					Schedular.prototype.setEvents(events);
 				}
@@ -1765,6 +1821,21 @@ Schedular.prototype.setInitData = function(params) {
 				Schedular.config.weekDayList = result_dts;
 			}
 	}
+	
+	
+	for (var i = 0; i < Schedular.config.eventsList.length; i++) {
+		var event = Schedular.config.eventsList[i];
+		for (var j = 0; j < jObj.length; j++) 
+		{
+			if(event['roomId'] == jObj[j]['id'])
+			{
+				Schedular.config.eventsList[i]['roomName'] = jObj[j]['name'];
+				break;
+			}
+		}
+		
+	}
+	
 	setTimeout(function() {
 		document.getElementById('xdummytabtd').style.width = document.getElementById('testidd').offsetWidth+ "px";
 	}, 4000);
@@ -2018,7 +2089,7 @@ Schedular.prototype.showAllPrvidersData = function (urlParam) {
 	var gr = $("#docava").val();
 	var selGroup  = gr.split("_")[0];
 //		console.log(selGroup);
-		var data1 = $.ajax({
+	var data1 = $.ajax({
 			url : "../ws/rs/providerService/"+dt+"/"+selGroup+"/"+urlParam,
 			type : "get",
 			async: false,

@@ -1136,7 +1136,14 @@
 					formData['apptStatus'] = $("#add_appt_status").val();
 					formData['apptType'] = $("#add_appt_type").val();
 					formData['apptResources'] = $("#add_appt_resources").val();
+					
+					
 					formData['roomId'] = $("#add_appt_room").val();
+					//formData['roomId'] = $("#add_appt_room option:selected").text();
+					
+					//As on 2014.09.17
+					//formData['roomName'] = $("#add_appt_room option:selected").text();
+					
 					formData['appReason'] = $("#add_appt_reason").val();
 					formData['apptReasonText'] = $(
 							"#add_appt_reason option:selected").text();
@@ -1271,6 +1278,7 @@
 						/*More details*/
 						formData['appt_reason'] = $("#blk_appt_reason").val();
 						formData['appt_notes'] = $("#blk_appt_notes").val();
+						formData['appt_room'] = $("#blk_appt_room").val();
 						/*save data into database*/
 						var add_appt_appt_id = add_app_ajax_fn
 								.saveFormData(formData);
@@ -1596,7 +1604,7 @@
 					
 				
 				$("#add_appt_pat_tab tbody").append("<tr childid='add_appt_pat_name"+ add_appt_pat_cnt +"'>" +
-						"<td> <div class='input-group' style='padding:2px;'> <input id='add_appt_pat_name"+ add_appt_pat_cnt +"' class='form-control na_form_inputtext' style='height:25px;width:220px !important;' placeholder='Type patient name...'  /><span class='input-group-addon' style='font-size:14px;padding:0 5px 3px 7px;'><span class='glyphicon glyphicon-search'></span></span></div> </td>" +							
+						"<td> <div class='input-group' style='padding:2px;'> <input id='add_appt_pat_name"+ add_appt_pat_cnt +"' class='form-control na_form_inputtext' style='height:25px;' placeholder='Type patient name...'  /><span class='input-group-addon' style='font-size:14px;padding:0 5px 3px 7px;'><span class='glyphicon glyphicon-search'></span></span></div> </td>" +							
 						"<td style='padding-left:5px;'><div ip_id='add_appt_pat_name"+ add_appt_pat_cnt +"' onclick='add_app_fn.removePatFld(this)'><img src='js_up/img/close-x-cir.gif' style='cursor:pointer'></img></div></td>"+
 						"</tr>");
 				add_app_fn.bindAutoComp("add_appt_pat_name"+ add_appt_pat_cnt++);
@@ -1658,7 +1666,7 @@
 					}					
 				
 				$("#add_appt_prov_tab tbody").append("<tr childid='add_appt_prov_name"+ add_appt_pat_cnt +"'>" +
-						"<td> <div class='input-group' style='padding:2px;'> <input id='add_appt_prov_name"+ add_appt_prov_cnt +"' class='form-control na_form_inputtext' style='height:25px;width:220px !important;' placeholder='Type provider name...'  /><span class='input-group-addon' style='font-size:14px;padding:0 5px 3px 7px;'><span class='glyphicon glyphicon-search'></span></span></div> </td>" +
+						"<td> <div class='input-group' style='padding:2px;'> <input id='add_appt_prov_name"+ add_appt_prov_cnt +"' class='form-control na_form_inputtext' style='height:25px;' placeholder='Type provider name...'  /><span class='input-group-addon' style='font-size:14px;padding:0 5px 3px 7px;'><span class='glyphicon glyphicon-search'></span></span></div> </td>" +
 						"<td style='padding-left:5px;'><div ip_id='add_appt_prov_name"+ add_appt_prov_cnt +"' onclick='add_app_fn.removeProvFld(this)'><img src='js_up/img/close-x-cir.gif' style='cursor:pointer'></img></div></td>"+
 						"</tr>");
 				add_app_fn.provBindAutoComp("add_appt_prov_name"+ add_appt_prov_cnt++);
@@ -2352,11 +2360,8 @@ select: function( event, ui ) {
 		
 			<div class="tab-content">
 					  <div class="tab-pane active" id="temp1" style="border: 1px solid #DDDDDD;border-top:0px;padding:5px;">
-					  		<table width="100%" border="0" style="border-collapse: collapse;">
-					<tr>
-						<td width="55%">
-							<!-- basic details -->
-							<table width="100%">
+					  
+					  	<div class="tab-pane-left"><table width="100%">
 								<tr>
 									<td colspan="2">
 										<table>
@@ -2382,7 +2387,7 @@ select: function( event, ui ) {
 														<tr>
 															<td>
 																<div class="input-group" style='padding:2px;'>
-																  <input id="add_appt_pat_name0" class="form-control na_form_inputtext" style="height:25px;width:220px !important;" placeholder='Type patient name...' rel='popover' data-placement='bottom' data-original-title='&lt;b&gt;Requests&lt;/b&gt;' data-content='My content goes here' />
+																  <input id="add_appt_pat_name0" class="form-control na_form_inputtext" style="height:25px;" placeholder='Type patient name...' rel='popover' data-placement='bottom' data-original-title='&lt;b&gt;Requests&lt;/b&gt;' data-content='My content goes here' />
 																  <span class="input-group-addon" style="font-size:14px;padding:0 5px 3px 7px;"><span class="glyphicon glyphicon-search"></span></span>
 																</div>
 																
@@ -2416,7 +2421,7 @@ select: function( event, ui ) {
 									<tr>
 										<td>
 												<div class="input-group" style='padding:2px;'>
-												  <input id="add_appt_prov_name0" class="form-control na_form_inputtext" style="height:25px;width:220px !important;" placeholder='Type provider name...' rel='popover' data-placement='bottom' data-original-title='&lt;b&gt;Requests&lt;/b&gt;' data-content='My content goes here' />
+												  <input id="add_appt_prov_name0" class="form-control na_form_inputtext" style="height:25px;" placeholder='Type provider name...' rel='popover' data-placement='bottom' data-original-title='&lt;b&gt;Requests&lt;/b&gt;' data-content='My content goes here' />
 												  <span class="input-group-addon" style="font-size:14px;padding:0 5px 3px 7px;"><span class="glyphicon glyphicon-search"></span></span>
 												</div>
 										</td>									
@@ -2600,11 +2605,8 @@ select: function( event, ui ) {
 									<td colspan="2" height="10px;"></td>
 								</tr>
 							</table>
-						</td>
-						<td width="45%"
-							style="border-left: 1px solid #AAAAAA; padding-left: 5px; display: table-cell; vertical-align: top;">
-							<!-- more details -->
-							<table style="width: 100%">
+							</div>
+					  	<div class="tab-pane-right"><table style="width: 100%">
 								<tr>
 									<td colspan="2">
 										<table>
@@ -2660,8 +2662,8 @@ select: function( event, ui ) {
 									<td style="height: 35px;">Room</td>
 									<td><select class="form-control na_form_select"
 										id="add_appt_room" style="padding: 0px;">
-											<option value="17" selected>Others</option>
-											<option value="17" selected>abc</option>
+											<!-- <option value="17" selected>Others</option>
+											<option value="17" selected>abc</option> -->
 									</select></td>
 								</tr>
 								<tr>
@@ -2684,18 +2686,10 @@ select: function( event, ui ) {
 								<tr>
 									<td height="45px;"></td>
 								</tr>
-							</table>
-						</td>
-					</tr>
-					<tr>
-						<td colspan="2"	><div class="alert alert-danger" id="add_appt_valNote_id" style="display:none">hi this is new msg</div></td>
-					</tr>
-					<tr>
-						<td colspan="2" height="5px;"></td>
-					</tr>
-					<tr >
-						<td  colspan="2" style="text-align:right;border-top: 1px solid #AAAAAA; "> 
-							<div id="add_appt_add_buttons" style="padding-top:10px;padding-bottom:60px;padding-right:60px;">
+							</table></div>
+					  	<div class='clear'></div>
+					  	<div class="alert alert-danger" id="add_appt_valNote_id" style="display:none">hi this is new msg</div>
+					  	<div id="add_appt_add_buttons">
 								<div class="btn-group" style="padding-right:15px;">
 								  <button type="button" id="appt_but_paste" class="btn" style="background-color:lightgray;font-size:12px;">Paste</button>
 							  	</div>
@@ -2714,12 +2708,7 @@ select: function( event, ui ) {
 								  </ul>
 								</div>
 							</div>
-						</td>
-					</tr>
-					
-					<tr >
-					<td colspan="2" > 
-						<div id="add_appt_edit_buttons">
+							<div id="add_appt_edit_buttons">
 						<table style="width:100%;">
 							<tr>
 								<td style="text-align:left;border-top: 1px solid #AAAAAA; padding-top:10px;padding-bottom:60px;width:50%">
@@ -2733,10 +2722,10 @@ select: function( event, ui ) {
 									    <li><a href="javascript:add_app_fn.deleteAppt()" >Delete appt.</a></li>
 									  </ul>
 									</div>
-									<div class="btn-group" style="padding-right:15px;padding-left:16px;">
+									<div class="btn-group btn_group_edit_buttons" style="padding-right:15px;padding-left:16px;">
 									  <button type="button" id="" class="btn" style="background-color:lightgray;font-size:12px;" onclick="javascript:add_app_fn.cutPatDtls()">Cut appt.</button>
 								  	</div>
-								  	<div class="btn-group" style="padding-right:15px;">
+								  	<div class="btn-group btn_group_edit_buttons" style="padding-right:15px;">
 									  <button type="button" id="" class="btn" style="background-color:lightgray;font-size:12px;" onclick="javascript:add_app_fn.copyPatDtls()">Copy appt.</button>
 								  	</div>
 									
@@ -2754,9 +2743,8 @@ select: function( event, ui ) {
 							</tr>
 						</table>
 						</div>
-					</td>
-					</tr>
-				</table>
+					  
+
 					  </div>
 					  
 					  
@@ -2764,11 +2752,9 @@ select: function( event, ui ) {
 					  
 					  
 					   <div class="tab-pane" id="temp2" style="border: 1px solid #DDDDDD;border-top:0px;padding:5px;">
-				   				<table width="100%" border="0" style="border-collapse: collapse;">
-					<tr>
-						<td width="55%">
-							<!-- basic details -->
-							<table>
+				   				
+				   				
+				   				<div class="tab-pane-left"><table>
 								<tr>
 									<td colspan="2">
 										<table>
@@ -2879,12 +2865,8 @@ select: function( event, ui ) {
 								<tr>
 									<td colspan="2" height="120px;"></td>
 								</tr>
-							</table>
-						</td>
-						<td width="45%"
-							style="border-left: 1px solid #AAAAAA; padding-left: 5px;">
-							<!-- more details -->
-							<table>
+							</table></div>
+				   				<div class="tab-pane-right"><table>
 								<tr>
 									<td colspan="2">
 										<table>
@@ -2913,12 +2895,8 @@ select: function( event, ui ) {
 								<tr>
 									<td height="177px"></td>
 								</tr>
-							</table>
-						</td>
-					</tr>
-					<tr>
-						<td colspan="2"	style="text-align: right; border-top: 1px solid #AAAAAA; padding-top: 10px;">
-							<div id="block_add_buttons" style="padding-top:10px;padding-bottom:60px;padding-right:60px;">
+							</table></div>
+				   				<div id="block_add_buttons" style="padding-top:10px;padding-bottom:60px;padding-right:60px;">
 								<div class="btn-group" style="padding-right:15px;">
 								  <button type="button" id="appt_block_but_cancel" class="btn" style="background-color:lightgray;font-size:12px;">Cancel</button>
 							  	</div>							  
@@ -2933,7 +2911,8 @@ select: function( event, ui ) {
 								  </ul>
 								</div>
 							</div>
-							<div id="block_edit_buttons">
+				   				
+				   				<div id="block_edit_buttons">
 								<table style="width:100%; ">
 									<tr>
 										<td style="text-align:left;padding-top:10px;padding-bottom:60px;width:50%">									
@@ -2956,9 +2935,9 @@ select: function( event, ui ) {
 									</tr>
 								</table>
 						</div>
-						</td>
-					</tr>
-				</table>
+				   				
+				   				
+				   				
 					  </div>
 			</div>
 		

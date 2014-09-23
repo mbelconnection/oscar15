@@ -27,7 +27,6 @@
 <style>
 body{
 padding:50px 8px 0;
-
 }
 .clear {clear: both;}
 .cal_calendar {
@@ -953,6 +952,7 @@ float: left;
 .navbar-form {width: 350px !important;}
 .twitter-typeahead .tt-hint {width: 100% !important;}
 #placeText {color: #c7c5c5; font-size: 90%; font-weight: normal;line-height: 1.5 ;}
+.select2-container {width:70%;}
 
 @media (min-width: 1018px) and (max-width: 1226px) {
   .dateseltop .input1 {width: 78%;}
@@ -995,11 +995,114 @@ float: left;
 
 #abc .xscale {float:none !important;margin:inherit !important; width: 100%;}
 #abc .xscale td {width:auto;}
-
+#abc .xscale td {height: 30px;}
+#persondata .Yscale td {height: 30px;}
+.eventpop .eventtab .evtpop_td_btm_line {height: 24px;}
+.eventpop .eventtab .evtpop_td_ltline {height: 24px;}
+.eventpop .eventtab .gen_font {height: 24px;}
+/*@media (min-width: 320px) and (max-width: 1300px) {
+#abc .xscale td {height: 25px;}
+#persondata .Yscale td {height: 25px;}
+.eventpop .eventtab .evtpop_td_btm_line {height: 25px;}
+}*/
+.headertable .collapse {display: block;}
+@media (min-width: 320px) and (max-width: 1023px) {
+.headertable .navbar-toggle {background-color:transparent; border: 1px solid transparent; border-radius: 4px; float: right; margin-bottom: 2px; margin-right: 8px; margin-top: 2px; padding: 9px 10px; position: relative; display: block;}
+.headertable .navbar-toggle .icon-bar {border-radius: 1px; display: block; height: 2px; width: 22px;}
+.headertable .navbar-toggle .icon-bar + .icon-bar {margin-top: 4px;}
+.headertable .navbar-toggle {border-color: #dddddd;}
+.headertable .navbar-toggle:hover, .headertable .navbar-toggle:focus {background-color: #dddddd;}
+.headertable .navbar-toggle .icon-bar {background-color: #cccccc;}
+.headertable .navbar-collapse, .headertable .navbar-form {border-color: #e6e6e6;}
+.headertable .collapse {display: none;}
+.navbar-default .navbar-toggle {background-color: transparent; border: 1px solid transparent; border-radius: 4px; float: right; margin-bottom: 8px; margin-right: 15px; margin-top: 8px; padding: 9px 10px; position: relative; display: block;}
+.navbar-default .navbar-toggle .icon-bar {border-radius: 1px; display: block; height: 2px; width: 22px;}
+.navbar-default .navbar-toggle .icon-bar + .icon-bar {margin-top: 4px;}
+.navbar-default .navbar-toggle {border-color: #dddddd;}
+.navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus {background-color: #dddddd;}
+.navbar-default .navbar-toggle .icon-bar {background-color: #cccccc;}
+.navbar-default .navbar-collapse, .navbar-default .navbar-form {border-color: #e6e6e6;}
+.navbar-default .collapse {display: none !important;}
+.navbar-header {float:none;}
+.dateseltop {float: none; width: 98% !important;}
+.navseltop {float: none; width: 98% !important;}
+.appointments_top {float: none; margin: 0; width: 100% !important; border: 0px none;}
+.appointments_top label.label {width: 20% !important;}
+.appointments_top button.btn {width: 25% !important;}
+.appointments_top .input-group {width: 50%;}
+.placetext_individual {float: none; width: 100% !important;}
+.navbar-collaps {background: #fff; border: 1px solid #cecece; margin: -1px; padding: 10px 10px 20px; position: absolute; top: 39px; width: 100.5%; z-index: 10;}
+.headertable {position: relative;}
+.navseltop .nav-tabs {border-bottom: 0px none;}
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {background:#eeeeee; border: 0px;}
+#clock .xscale {width: 7% !important;}
+.scrolldiv {width: 93% !important;}
+.scrolldiv2 #abc {width: 7% !important;}
+.dateseltop {position: relative;}
+.dateseltop span {position: initial !important;}
+.dateseltop .input1 {width: 90%;}
+.ui-widget-content {width: 430px !important;}
+div#naa_users-contain {width: 385px !important;}
+#next_app_form {width: 424px !important;}
+#fex_app_form {width: 424px !important;}
+#add_appt_form {width: 424px !important;}
+#manageGroupForm {width: 424px !important;}
+#fex_app_form .ui-widget-content {width: 424px !important;}
+#yourtabs li a {padding: 10px 0 !important;}
+#temp1 .tab-pane-left {float:none !important; width:100% !important;}
+#temp1 .tab-pane-right {border-left: 0px none !important; padding-left:0px !important; float:none !important; width:100% !important; border-top: 1px solid #AAAAAA !important; padding-top:10px;}
+#temp1 #add_appt_add_buttons {padding-right: 30px !important;}
+#temp1 #add_appt_pat_name0 {width:175px !important;}
+#temp1 #add_appt_prov_name0 {width:175px !important;}
+#temp2 .tab-pane-left {float:none !important; width:100% !important;}
+#temp2 .tab-pane-right {border-left: 0px none !important; padding-left:0px !important; float:none !important; width:100% !important; border-top: 1px solid #AAAAAA !important; padding-top:10px;}
+#temp2 #block_add_buttons {padding-right: 30px !important;}
+#add_appt_but_recur {padding: 4px 0 !important;}
+#add_appt_but_recur span {padding: 0 0 0 4px !important;}
+#blk_appt_but_recur {padding: 4px 0 !important;}
+#blk_appt_but_recur span {padding: 0 0 0 4px !important;}
+#temp1 #add_appt_edit_buttons .btn_group_edit_buttons {padding: 0px !important; margin-top:10px;}
+#temp1 #add_appt_edit_buttons .btn_group_edit_buttons .btn {width: 130px !important;}
+#manageGroupForm .tab-pane-left {float:none !important; width:100% !important;}
+#manageGroupForm .tab-pane-right {border-left: 0px none !important; padding-left:0px !important; float:none !important; width:100% !important; border-top: 1px solid #AAAAAA !important; padding-top:10px;}
+}
+@media (min-width: 320px) and (max-width:480px) {
+#clock .xscale {width: 13% !important;}
+.scrolldiv {width: 87% !important;}
+.scrolldiv2 #abc {width: 13% !important;}
+.appointments_top button.btn {width: 50% !important;}
+.appointments_top label.label {width: 50% !important;}
+.appointments_top .input-group {clear: both;
+    margin-left: 0 !important;
+    padding-top: 7px;
+    width: 100%;float: none;}
+.dateseltop .input1 {width: 88%;}
+}
+#temp1 .tab-pane-left {float:left; width:55%;}
+#temp1 .tab-pane-right {border-left: 1px solid #AAAAAA; padding-left: 5px; float:left; width:45%;}
+#temp1 #add_appt_add_buttons {padding-top: 10px; padding-bottom: 60px; padding-right: 60px; text-align: right; border-top: 1px solid #AAAAAA;}
+#temp1 #add_appt_edit_buttons {}
+#temp1 #add_appt_pat_name0 {width:220px;}
+#temp1 #add_appt_prov_name0 {width:220px;}
+#temp2 .tab-pane-left {float:left; width:55%;}
+#temp2 .tab-pane-right {border-left: 1px solid #AAAAAA; padding-left: 5px; float:left; width:45%;}
+#temp2 #block_add_buttons {padding-top: 10px; padding-bottom: 60px; padding-right: 60px; text-align: right; border-top: 1px solid #AAAAAA;}
+.Hading_group_Title {color: #000;border-bottom: 1px solid #aaaaaa;}
+.Hading_group_Title #groupTitle {float: left;}
+.Hading_group_Title .grp_man_close {float: right;}
+#manageGroupForm .tab-pane-left {float:left; width:50%;}
+#manageGroupForm .tab-pane-right {border-left: 1px solid #AAAAAA; padding-left: 5px; float:left; width:50%;}
+#manageGroupForm .manage_Group_buttons {padding-top: 22px; padding-bottom: 25px; text-align: right; border-top: 1px solid #AAAAAA;}
  </style>
 
 <div class="headertable" id="secNav">
-<div class="date_selector dateseltop" id="tab"><input type="image" src="js_up/images/arrow_left.png" onclick="dateChange('dec')"/><input type="text" size="12" id="inputField" readonly="readonly" class="input1"/><input type="image" src="js_up/images/arrow_right.png" onclick="dateChange('inc')"/><div class='clear'></div></div>
+<button type="button" class="navbar-toggle" data-toggle="collapse"
+					data-target=".navbar-collaps">
+					<span class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+<div class="navbar-collaps collapse">
+<div class="date_selector dateseltop" id="tab"><input type="image" src="js_up/images/arrow_left.png" onclick="dateChange('dec')"/><input type="text" size="24" id="inputField" readonly="readonly" class="input1"/><input type="image" src="js_up/images/arrow_right.png" onclick="dateChange('inc')"/><div class='clear'></div></div>
 <div class="navseltop">
 	<ul class='nav nav-tabs' id='maintab'>
 		<li class="active"><a style='padding:5px;font-family: calibri;' id='daydivid' onclick="showTabData('daydiv','flipview','monthdiv','daydivid','103')">Day</a></li>
@@ -1015,9 +1118,11 @@ float: left;
 		<span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
 		<input id="fex_find_input"  class="form-control na_form_inputtext" placeholder='Find existing' rel='popover' data-placement='bottom' data-original-title='&lt;b&gt;Requests&lt;/b&gt;' data-content='My content goes here' />												  
 	</div>
+	<div class='clear'></div>
 	<div id="testcode"></div>
 </div>
 <div class="placetext_individual"><span id="placeText"></span><select placeholder="Select team/individual" id="docava" ></select></div>
+</div>
 <div class='clear'></div>
 </div>
 		 <iframe id="frame" style="width:100%;height:0px;border: 0px;" ></iframe>

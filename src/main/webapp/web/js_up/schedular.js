@@ -1103,7 +1103,7 @@ Schedular.prototype.createPopup = function(tdId,reason,notes, room,patName){
 	//console.log(tdId+"<<>>"+reason+"<<>>"+notes);
 	tdId = tdId.replace(/,/g,'_');
 	//$('.eventpop').tooltip({placement: 'top', title: "<div id=\"event_tt\" style=\"text-align:left;white-space:normal;\">Reason:"+reason+"</div><div style=\"text-align:left;white-space:normal;\">Notes: "+notes+"</div>",	html: true});
-	$('.evtpop_td_pat_name').tooltip({placement: 'top', title: "<div id=\"event_tt\" style=\"text-align:left;width:150px;white-space:normal;\">Name:"+this.splitText(patName, 20)+"</div><div style=\"text-align:left;white-space:normal;\">Reason:"+this.formatText(reason, 18)+"</div><div style=\"text-align:left;white-space:normal;\">Notes: "+this.formatText(notes, 25)+"</div>",	html: true});
+	$('.evtpop_td_pat_name').tooltip({placement: 'top', title: "<div id=\"event_tt\" style=\"text-align:left;width:150px;white-space:normal;\">Name:"+this.splitText(patName, 20)+"</div><div style=\"text-align:left;white-space:normal;\">Reason:"+this.formatText(reason, 18)+"</div><div style=\"text-align:left;white-space:normal;\">Notes: "+this.formatText(notes, 25)+"</div>",html: true});
 	//$('.evtpop_td_ltline').tooltip({placement: 'top', title: "<div style=\"text-align:left;\">Reason: "+reason+"</div><div style=\"text-align:left;\">Notes: "+notes+"</div>",	html: true});
 	//$('#2_10:45').tooltip({placement: 'top', title: "<div style=\"text-align:left;\">Reason: "+reason+"</div><div style=\"text-align:left;\">Notes: "+notes+"</div>",	html: true});
 	$('.evtpop_td_pat_name')
@@ -1247,8 +1247,17 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 		if(obj.duration>=15){
 			var rs = obj.reason!=null?(obj.reason).replace(/ /g,"_"):"";
 			var nt = obj.notes!=null?(obj.notes).replace(/ /g,"_"):"";
-			var room = obj.roomId!=null?(obj.roomName).replace(/ /g,"_"):"";
-			//alert("Room" + JSON.stringify(obj.roomName));
+			
+			//var room = obj.roomId!=null?(obj.roomId).replace(/ /g,"_"):"";
+			var room;
+			if(obj.roomName != null && obj.roomName != undefined){
+				room = (obj.roomName).replace(/ /g,"_") + "";
+			} else {
+				room = (obj.roomId).replace(/ /g,"_") + "";
+			}
+			
+			
+			//alert("Room" + JSON.stringify(obj.roomId));
 			var patName = obj.patientName!=null?(obj.patientName).replace(/ /g,"_"):"";
 			patName = patName.replace(/[,]/g,"");
 			overPopup="onmouseover=sch.createPopup(\"pat_name"+obj.apptId+"\",\""+rs+"\",\""+nt+"\",\""+room+"\",\""+patName+"\")";
@@ -1339,8 +1348,18 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 			html += "</tr>";
 			
 			//To Display Room field in appointment on Scheduler screen.
-			var room = obj.roomId!=null?(obj.roomName).replace(/ /g,"_"):"";
-			//alert(obj.roomId);
+			
+//			var room = obj.roomId!=null?(obj.roomName).replace(/ /g,"_"):"";
+			
+			var room;
+			if(obj.roomName != null && obj.roomName != undefined){
+				room = (obj.roomName).replace(/ /g,"_") + "";
+			} else {
+				room = (obj.roomId).replace(/ /g,"_") + "";
+			}
+			
+			//var room = obj.roomId!=null?(obj.roomId).replace(/ /g,"_"):"";
+			
 			html += "<tr style='display:" + notesDis + "'>";
 			html += "<td colspan='" + colspan + "' class='gen_font2' id='appt_room"
 					+ obj.apptId + "'><span class='gen_font3'>Room:</span> "
@@ -1781,6 +1800,8 @@ Schedular.prototype.setInitData = function(params) {
 	
 	var jObj = JSON.parse(data);
 	
+	//alert(JSON.stringify(jObj));
+	
 	
 	var result = params.data['response'];
 	var result_dt = (params.data['response'])['day'];
@@ -1822,7 +1843,9 @@ Schedular.prototype.setInitData = function(params) {
 			}
 	}
 	
+	//alert("setInitData : " + JSON.stringify(Schedular.config.eventsList));
 	
+	//To get Room Field working in added appointment as well as popup
 	for (var i = 0; i < Schedular.config.eventsList.length; i++) {
 		var event = Schedular.config.eventsList[i];
 		for (var j = 0; j < jObj.length; j++) 

@@ -160,6 +160,7 @@ public class AppointmentBO {
 		appointmentTo.setPatientId(appointment.getProviderNo());
 		appointmentTo.setLocation(appointment.getLocation());
 		appointmentTo.setNoOfPatient("");
+		appointmentTo.setRoomId(appointment.getRoomId());
 		log.debug("AppointmentBo.setAppointmentData() ends");
 		return appointmentTo;
 	}
@@ -335,6 +336,10 @@ public class AppointmentBO {
 				///}else{
 				//	events.setReason(getReason(appt.getReasonCode()!=null?appt.getReasonCode().toString():""));
 				//}
+					
+				//As on 2014.09.30
+				events.setRoomId(appt.getRoomId());
+				
 				events.setApptStartDate(DateUtils.convertDateToString(appt.getAppointmentDate()));
 				evnLst.add(events);
 			}

@@ -25,7 +25,7 @@
 --%>
 <!-- link rel="stylesheet"  type="text/css" href="css_up/calendar.css" /> -->
 <style>
-body{
+body{ 
 padding:50px 8px 0;
 }
 .clear {clear: both;}
@@ -701,8 +701,8 @@ function showTabData(id1,id2,id3,id4,selectDropVal){
 		if(groupId1!=null && groupId1.indexOf("Group")>-1){
 		$("#s2id_weekDropId").remove();
 		$("#s2id_flipDropId").remove();
-		$('#flipdivid').html("Flip Days&nbsp;<b class='caret' onclick='getDropDown(\"flipdivid\",\"flipDropId\",\"Flip Days\")'></b>");
-		$('#weekdivid').html("Week&nbsp;<b class='caret' onclick='getDropDown(\"weekdivid\",\"weekDropId\",\"Week\")'></b>");
+		//$('#flipdivid').html("Flip Days&nbsp;<b class='caret' onclick='getDropDown(\"flipdivid\",\"flipDropId\",\"Flip Days\")'></b>");
+		//$('#weekdivid').html("Week&nbsp;<b class='caret' onclick='getDropDown(\"weekdivid\",\"weekDropId\",\"Week\")'></b>");
 		}
 	}else {
 		//alert('month view');
@@ -723,8 +723,8 @@ function showTabData(id1,id2,id3,id4,selectDropVal){
 		if(groupId1!=null && groupId1.indexOf("Group")>-1){
 		$("#s2id_weekDropId").remove();
 		$("#s2id_flipDropId").remove();
-		$('#flipdivid').html("Flip Days&nbsp;<b class='caret' onclick='getDropDown(\"flipdivid\",\"flipDropId\",\"Flip Days\")'></b>");
-		$('#weekdivid').html("Week&nbsp;<b class='caret' onclick='getDropDown(\"weekdivid\",\"weekDropId\",\"Week\")'></b>");
+		//$('#flipdivid').html("Flip Days&nbsp;<b class='caret' onclick='getDropDown(\"flipdivid\",\"flipDropId\",\"Flip Days\")'></b>");
+		//$('#weekdivid').html("Week&nbsp;<b class='caret' onclick='getDropDown(\"weekdivid\",\"weekDropId\",\"Week\")'></b>");
 		}
 	}
 	if(id1 == 'flipview'){
@@ -855,8 +855,8 @@ function getGroupIndi(selId){
 		//count_schJsp= 0;
 		setTimeout('sch.callDayWeekMonth(\''+globalView.view+'\',\''+val1[0]+'\')',1000);
 		if(val.indexOf("Group")>-1){
-		$('#flipdivid').html("Flip Days&nbsp;<b class='caret' onclick='getDropDown(\"flipdivid\",\"flipDropId\",\"Flip Days\",\"\")'></b>");
-		$('#weekdivid').html("Week&nbsp;<b class='caret' onclick='getDropDown(\"weekdivid\",\"weekDropId\",\"Week\",\"\")'></b>");
+		//$('#flipdivid').html("Flip Days&nbsp;<b class='caret' onclick='getDropDown(\"flipdivid\",\"flipDropId\",\"Flip Days\",\"\")'></b>");
+		//$('#weekdivid').html("Week&nbsp;<b class='caret' onclick='getDropDown(\"weekdivid\",\"weekDropId\",\"Week\",\"\")'></b>");
 		$("#placeText").show();
 		$("#placeText").html("Group : ");
 		/*To load the providers in Manage group layout */
@@ -995,8 +995,8 @@ float: left;
 
 #abc .xscale {float:none !important;margin:inherit !important; width: 100%;}
 #abc .xscale td {width:auto;}
-#abc .xscale td {height: 30px;}
-#persondata .Yscale td {height: 30px;}
+/*#abc .xscale td {height: 40px;}
+#persondata .Yscale td {height: 40px;}*/
 .eventpop .eventtab .evtpop_td_btm_line {height: 24px;}
 .eventpop .eventtab .evtpop_td_ltline {height: 24px;}
 .eventpop .eventtab .gen_font {height: 24px;}
@@ -1484,10 +1484,8 @@ page_init();
         //setTimeout('$("#secNav").width($(window).width())',1000);
        // console.log("secNav>>>>"+$("#secNav").width());
         //console.log("daydiv>>>>"+$("#daydiv").width());
-        if(window.devicePixelRatio>=0.91){
-        	//console.log("zoommm");
-        	//window.location.reload();
-        }else {
+        
+        	//alert("Else : " + window.devicePixelRatio);
         	$("#secNav").width(($(".container-fluid").width()-10));
         	//console.log("zoommm else"+$("#consult-list").width());
         	//console.log("zoommm else"+($("#consult-list").width()-100));
@@ -1496,12 +1494,15 @@ page_init();
         		setTimeout('$("#persondata").width(($("#consult-list").width()-550))',1000);
         	}else{
         	}
-        	setTimeout('sch.callDayWeekMonth(\''+globalView.view+'\',\''+globalProviderId+'\')',500);
+        	
+        	setTimeout('sch.callDayWeekMonth(\''+globalView.view+'\',\''+getMainGroupSelBoxVal()+'\')',500);
+        	
+        	//Earlier before : 2014.09.23
+        	//setTimeout('sch.callDayWeekMonth(\''+globalView.view+'\',\''+globalProviderId+'\')',500);
+        	
         	//setTimeout('$(".scrolldiv2").width($("#secNav").width())',1000);
         	//setTimeout('$( ".scrolldiv2" ).height(($( window ).height()-250))',1000);        	
-        }
+       
     });
 </script>
-
-
 </div>

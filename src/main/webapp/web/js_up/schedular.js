@@ -54,7 +54,7 @@ var weekDB_hideWeekEnds = [ {
 	id : "5"
 } ];
 
-var appt_goto_data = $.ajax({
+var appt_goto_data = $.ajax({ 
 	url : "../ws/rs/patient/type/list/1",
 	type : "get",
 	contentType : 'application/json',
@@ -823,6 +823,7 @@ Schedular.prototype.getYScale = function() {
 	var _shour = Schedular.config.start_time, _smin = 0;
 
 	var time = '';
+	var timeHeight = (window.innerHeight / 64) + 20;
 	_YScale += '<table class="xscale" style="float: left;">';
 	// _YScale += '<tr><td><input type="image"
 	// src="images/clock_small.GIF"/></td></tr>';
@@ -835,7 +836,9 @@ Schedular.prototype.getYScale = function() {
 			if (_shour == Schedular.config.end_time)
 				break;
 		}
-		_YScale += '<tr><td>';
+		_YScale += "<tr><td style='height:"
+			+ (timeHeight)
+			+ "px;'>";
 		time = this.round(_shour) + ":" + this.round(_smin);
 		_smin += Schedular.config.increment;
 		if(count%4){
@@ -908,6 +911,8 @@ Schedular.prototype.getXScale = function() {
 	var _XScale = '';
 	var _shour = Schedular.config.start_time, _smin = 0, temp_min=0;
 	var style = 'withline';
+	var withlineHeight = (window.innerHeight / 64) + 20;
+	
 	if(flipColorCodes == null)
 		flipColorCodes = getFlipColorCodes();
 	
@@ -927,7 +932,9 @@ Schedular.prototype.getXScale = function() {
 		_smin += Schedular.config.increment;
 		
 		for (var i = 0; i < this.persons.length; i++) {
-			_XScale += "<td data-original-title= "+time+" class=\"" 
+			_XScale += "<td data-original-title= "+time+" style='height:"
+					+ (withlineHeight)
+					+ "px;' class=\"" 
 					+ style
 					+ "\" position=\""
 					+ i
@@ -1211,12 +1218,23 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 
 	if (duration / 15 > 1)
 		stylecls = 'evtpop_td_btm_line';
-	var left = obj.offWidth * pos + 26;
+	var left = obj.offWidth * pos + 20;
 
-	var height = ((duration / 15) * 24) + ((duration / 15 - 1) * 7)
+	/*var height = ((duration / 15) * 34) + ((duration / 15 - 1) * 7)
 	if (duration == 15)
-		height = 26;
+		height = 36;
+	var colspan = 4;*/
+	
+	var durationHeight = (window.innerHeight / 64) + 14;
+	var durationHeight2 = (window.innerHeight / 64) + 16;
+	
+	var height = ((duration / 15) * durationHeight) + ((duration / 15 - 1) * 7)
+	if (duration == 15)
+		height = durationHeight2;
 	var colspan = 4;
+	
+	
+	
 	if (act == "delete") {
 		//var back = $('div').find("#" + hr + '_' + min);
 		//back.remove();
@@ -1252,8 +1270,13 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 			var room;
 			if(obj.roomName != null && obj.roomName != undefined){
 				room = (obj.roomName).replace(/ /g,"_") + "";
-			} else {
+			} 
+			else if(obj.roomId != null && obj.roomId != undefined) 
+			{
 				room = (obj.roomId).replace(/ /g,"_") + "";
+			}
+			else{
+				room = "";
 			}
 			
 			

@@ -20,7 +20,7 @@ function dateChange(param){
 		return;
 	}
 	
-	if(globalView.view == "week"){
+	if(globalView.view == "week"){ 
 		setWeekDates(param);
 		return;
 	}

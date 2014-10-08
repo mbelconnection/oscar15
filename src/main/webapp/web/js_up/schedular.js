@@ -491,11 +491,20 @@ Schedular.prototype.load = function(date) {
 		globalView.view = globalView.view;
 	}
 	if(globalView.view=="day"){
-		//alert(2);
-		Schedular.prototype.ajaxMethod("../ws/rs/schedule/" + date + "/list1",
-				Schedular.prototype.setInitData, {
-					"doc_dt" : date
-				});
+		if(globalProviderId != null && globalProviderId != '' && globalProviderId != '_')
+		{
+			Schedular.prototype.ajaxMethod("../ws/rs/schedule/" + date + "/" + globalProviderId + "/list1",
+					Schedular.prototype.setInitData, {
+						"doc_dt" : date
+					});
+		}
+		else
+		{
+			Schedular.prototype.ajaxMethod("../ws/rs/schedule/" + date + "/list1",
+					Schedular.prototype.setInitData, {
+						"doc_dt" : date
+					});
+		}		
 		
 	}else {
 		var sq = sch.weekForCurrentDate(date);
@@ -511,8 +520,9 @@ Schedular.prototype.load = function(date) {
 	document.getElementById("inputField").value = date;
 	setTimeout('sch.init(\''+globalView.view+'\',\'from load\')', 1000);
 }
-Schedular.prototype.dayLoad = function(date,providerNo) {
+Schedular.prototype.dayLoad = function(date,providerNo,isgroup) {
 	// load appointment status
+	
 	this.getApptStatusHTML();
 	if(providerNo.indexOf("group") > - 1){
 		//alert(4);
@@ -520,36 +530,35 @@ Schedular.prototype.dayLoad = function(date,providerNo) {
 				Schedular.prototype.setInitData, {
 					"doc_dt" : date
 				});
-		
+
 	}else{
-		if(isNaN(providerNo)){
-			Schedular.prototype.ajaxMethod("../ws/rs/providerService/" + date +"/"+providerNo+ "/fetchGroupAppointments",
-					Schedular.prototype.setInitData, {
-						"doc_dt" : date
-					});
+	
+		if(isgroup == true){
+			if(providerNo != "_")
+			{
+				Schedular.prototype.ajaxMethod("../ws/rs/providerService/" + date +"/"+providerNo+ "/fetchGroupAppointments",
+						Schedular.prototype.setInitData, {
+							"doc_dt" : date
+						});
+			}			
 		}else{
-			//alert("ProviderNO :- " + providerNo);
-			Schedular.prototype.ajaxMethod("../ws/rs/schedule/" + date +"/"+providerNo+ "/list1",
-					Schedular.prototype.setInitData, {
-						"doc_dt" : date
-					});
-			
-			// As on 2014.09.16
-			/*Schedular.prototype.ajaxMethod("../ws/rs/schedule/" + date +"/list1",
-					Schedular.prototype.setInitData, {
-						"doc_dt" : date
-					});*/
-			
+			if(providerNo.length > 0)
+			{
+				Schedular.prototype.ajaxMethod("../ws/rs/schedule/" + date +"/"+providerNo+ "/list1",
+						Schedular.prototype.setInitData, {
+							"doc_dt" : date
+						});				
+			}			
 		}
-		
 	}
 	document.getElementById("inputField").value = date;
 	setTimeout('Schedular.prototype.init(\'day\',\'from load\')', 1500);
 }
-Schedular.prototype.weekLoad = function(week,providerNo) {
+Schedular.prototype.weekLoad = function(week,providerNo,isgroup) {
 	this.getApptStatusHTML();
 	var date = document.getElementById("inputField").value;
-	if(providerNo.indexOf("group") > -1){
+	//if(providerNo.indexOf("group") > -1){
+	if(isgroup==true){
 		//alert(6);
 		Schedular.prototype.ajaxMethod("../ws/rs/schedule/" +providerNo  + "/"+week+"/grpwkevnts",
 				Schedular.prototype.setInitData, {
@@ -566,21 +575,49 @@ Schedular.prototype.weekLoad = function(week,providerNo) {
 	setTimeout('Schedular.prototype.init(\'week\',\'from load\')', 1000);
 }
 Schedular.prototype.callDayWeekMonth = function(view,selVal){
+
 	var selDate = document.getElementById("inputField").value;
+
+	var isgroup = false;
+	if(selVal.length > 0)
+	{
+		if(selVal.toLowerCase().indexOf("group") > -1)
+		{
+			isgroup = true;
+		}	
+		
+		var locselVal = getMainGroupSelBoxVal1(selVal);
+		globalProviderId = locselVal;
+	}
+	
 	if(view =="day"){
 		globalView.view="day";
-		sch.dayLoad(selDate,selVal);
+		if(isgroup == true)
+		{
+			sch.dayLoad(selDate,locselVal,isgroup);
+		}
+		else
+		{
+			sch.dayLoad(selDate,globalProviderId,isgroup);
+		}		
 	}else if(view =="week"){
 		globalView.view="week";
-		var sq = sch.weekForCurrentDate(selDate);
-		sch.weekLoad(sq,selVal);	
+		var sq = sch.weekForCurrentDate(selDate);		
+		if(isgroup == true)
+		{
+			sch.weekLoad(sq,locselVal,isgroup);
+		}
+		else
+		{
+			sch.weekLoad(sq,globalProviderId,isgroup);
+		}
 	}else if(view =="month"){
 		//alert("for month view");
 		globalView.view="month";
 		setMonthDates("");
 		calendar();
 	}else{
-		globalProviderId = selVal;
+		
 		globalView.view="flip";
 		setFlipDates("");		
 	}
@@ -655,7 +692,7 @@ Schedular.prototype.init = function(view, from) {
 	//console.log(document.getElementById('secNav').offsetWidth);
 	var data = this.getYScale();
 	//var headData = '<div id="clock" style="float:left"><table class="xscale" style="float: left;cellpadding:0;cellpadding:0;padding-bottom:0px !important;border-bottom: 0px !important;" ><tr><td >'+sch.getViewDropDown()+'</td></tr></table>';
-	var headData = '<div id="clock" style="float:left"><table class="xscale" style="float: left; width:3%; cellpadding:0;cellpadding:0;padding-bottom:0px !important;border-bottom: 0px !important;" ><tr><td >'+sch.getViewDropDown()+'</td></tr></table>';
+	var headData = '<div id="clock" style="float:left"><table class="xscale" style="float: left; width:3%; cellpadding:0;cellpadding:0;padding-bottom:0px !important;"><tr><td>'+sch.getViewDropDown()+'</td></tr></table>';
 	
 	/*headData += '<div id="names" class="scrolldiv" style="width:'
 			+ (scrollWid)
@@ -667,7 +704,7 @@ Schedular.prototype.init = function(view, from) {
 		+ 96
 		+ '%;float:left;overflow-x:hidden;"><table id="testidd" class="Yscale" width="'
 		+ this.getPersonTabWidth()
-		+ 'px" style="table-layout:fixed;float: left;cellpadding:0;cellpadding:0;padding-bottom:0px !important;border-bottom: 0px !important;" >'
+		+ 'px" style="table-layout:fixed;float: left;cellpadding:0;cellpadding:0;padding-bottom:0px !important;" >'
 		+ this.getXHeader() + '</table></div>';
 
 	document.getElementById('head').innerHTML = headData;
@@ -836,7 +873,7 @@ Schedular.prototype.getYScale = function() {
 			if (_shour == Schedular.config.end_time)
 				break;
 		}
-		_YScale += "<tr><td style='height:"
+		_YScale += "<tr><td><div style='border-top: 1px solid #cecece; border-left: 1px solid #cecece; height:"
 			+ (timeHeight)
 			+ "px;'>";
 		time = this.round(_shour) + ":" + this.round(_smin);
@@ -846,7 +883,7 @@ Schedular.prototype.getYScale = function() {
 		}else{
 			_YScale += time;
 		}
-		_YScale += '</td></tr>';
+		_YScale += '</div></td></tr>';
 	}
 	_YScale += '</table>';
 	return _YScale;
@@ -932,7 +969,7 @@ Schedular.prototype.getXScale = function() {
 		_smin += Schedular.config.increment;
 		
 		for (var i = 0; i < this.persons.length; i++) {
-			_XScale += "<td data-original-title= "+time+" style='height:"
+			_XScale += "<td><div data-original-title= "+time+" style='height:"
 					+ (withlineHeight)
 					+ "px;' class=\"" 
 					+ style
@@ -961,7 +998,7 @@ Schedular.prototype.getXScale = function() {
 				_XScale += "<div style=\"border: 1px solid grey;background-color:"+getFlipColor(code)+";font-size:12px;padding-left:2px;border-bottom: 0px;width:15px;height: 100%;\">"+code+"</div>";
 			}
 							
-			 	_XScale += "</td>";
+			 	_XScale += "</div></td>";
 		}
 
 		_XScale += '</tr>';
@@ -992,16 +1029,24 @@ Schedular.prototype.zoom = function(id) {
 	var providers = [];
 	if (!isEmpty(id)) {
 		var provider = this.getProvider_z(id);
-		var events_z = this.getEvents_z(id)
+		var events_z = this.getEvents_z(id);
 		providers.push(provider);
 		this.setProviders(providers);
 		this.setEvents(events_z);
 		this.init('day', "from zoom");
-	$(".Yscale").css("width","100%");
+		$(".Yscale").css("width","100%");
+		globalProviderId = id;
+		this.load(document.getElementById("inputField").value);
 	} else {
+		globalProviderId = '';
 		this.load(document.getElementById("inputField").value);
 	}
+	
+}
 
+function getMainGroupSelBoxVal1(groupvalue){
+	var groupSelBox = groupvalue!=""?groupvalue.split("_"):"_";
+	return groupSelBox[0];
 }
 
 Schedular.prototype.addEvent = function(obj) {

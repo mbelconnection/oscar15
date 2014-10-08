@@ -180,23 +180,32 @@ padding:50px 8px 0;
 .noline {
     /*background-color: #ffffff;*/
     text-align: center;
-    width: 150Px !important;
+    /*width: 150Px !important;
     height: 25px;
 	border-top: #FFFFFF 1px solid;	
-	border-right: #cecece 1px solid;
+	border-right: #cecece 1px solid;*/
 	opacity: 0.25 !important;
+	border-right-width:1px !important;
+	border-right-style:solid !important;
+	border-right-color:#000 !important;
 }
 
 .withline {
-    border: 1px solid black;
     background-color: #ffffff;
     text-align: center;
-    width: 150px !important;
+    /*width: 150px !important;
     height: 25px;
-	border: #cecece 1px solid;	
-	border-left:0px #FFFFF;
-	border-bottom:0px;
+	border: #cecece 1px solid;
+	border-width:1px 1px 0 0;
+	border-left:0px;
+	border-bottom:0px;*/
 	opacity: 0.25 !important;
+	border-top-width:1px !important;
+	border-top-style:solid !important;
+	border-top-color:#000 !important;
+	border-right-width:1px !important;
+	border-right-style:solid !important;
+	border-right-color:#000 !important;
 }
 
 
@@ -641,7 +650,7 @@ body .modal-sm {
     /* new custom width */
     width: 400px;
     /* must be half of the width, minus scrollbar on the left (30px) */
-}​
+}â
 </style>
 <script>
 
@@ -767,8 +776,9 @@ function isGroupSelected(){
 }
 
 function getMainGroupSelBoxVal(){
-	var groupSelBox = $("#docava").val()!=""?$("#docava").val().split("_"):"_";
-	return groupSelBox[0];
+	//var groupSelBox = $("#docava").val()!=""?$("#docava").val().split("_"):"_";
+	//return groupSelBox[0];
+	return $("#docava").val();
 }
 
 function getFlipSelBoxVal(){
@@ -896,6 +906,7 @@ function getDropDown(divId,dropId,placeText,der){
 				showTabData('flipview','daydiv','monthdiv','flipdivid',selectDropVal[0]);
 			//$('#flipdivid').html("Flip Days&nbsp; ("+e.added.text+")<b class='caret' onclick='getDropDown(\"flipdivid\",\"flipDropId\",\"Flip Days\",\""+der+"\")'></b>");
 			}
+
 			globalProviderId = e.val.split("_")[0];
 			var tempGroup = globalProviderId+"_Group";
 				 $("#"+dropId+" option").filter(function() {
@@ -993,10 +1004,23 @@ float: left;
 #flipview .xscale td {width: inherit;}
 .eventpop {width: 160px;}
 
-#abc .xscale {float:none !important;margin:inherit !important; width: 100%;}
+#abc .xscale {float:none !important;margin:inherit !important; width: 100%; border: 0px none;}
 #abc .xscale td {width:auto;}
+#abc .xscale td, #persondata .Yscale {
+	border: 0px none;
+}
+#clock .xscale {border: 0px none; border-top:1px solid #cecece; border-bottom:1px solid #cecece; padding-top: 1px;}
+#clock .xscale td {border: 0px none; height: 26px;}
+
+#names {border:1px solid #cecece;}
+#names .Yscale {border: 0px none;}
+#names .Yscale th {border: 0px none;}
+
 /*#abc .xscale td {height: 40px;}
 #persondata .Yscale td {height: 40px;}*/
+#persondata {border:1px solid #cecece; border-width: 0px 0px 1px 1px;}
+#abc {border:1px solid #cecece; border-width: 0px 0px 1px 0px;}
+#clock {border:1px solid #cecece; border-width: 0px 0px 0px 1px;}
 .eventpop .eventtab .evtpop_td_btm_line {height: 24px;}
 .eventpop .eventtab .evtpop_td_ltline {height: 24px;}
 .eventpop .eventtab .gen_font {height: 24px;}
@@ -1469,7 +1493,8 @@ page_init();
     });
     
 	},1500);
-    setTimeout('sch.callDayWeekMonth(\''+globalView.view+'\',\''+globalProviderId+'\')',1000);
+        //$(window).trigger('zoom');
+    	setTimeout('sch.callDayWeekMonth(\''+globalView.view+'\',\''+getMainGroupSelBoxVal()+'\')',1000);
     });
     
     var elFrame = $('#frame')[0];
@@ -1494,8 +1519,8 @@ page_init();
         		setTimeout('$("#persondata").width(($("#consult-list").width()-550))',1000);
         	}else{
         	}
-        	
-        	setTimeout('sch.callDayWeekMonth(\''+globalView.view+'\',\''+getMainGroupSelBoxVal()+'\')',500);
+        	//setTimeout('sch.callDayWeekMonth(\''+globalView.view+'\',\''+getMainGroupSelBoxVal()+'\')',500);
+        	setTimeout('sch.callDayWeekMonth(\''+globalView.view+'\',\'\')',500);
         	
         	//Earlier before : 2014.09.23
         	//setTimeout('sch.callDayWeekMonth(\''+globalView.view+'\',\''+globalProviderId+'\')',500);

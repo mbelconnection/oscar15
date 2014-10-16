@@ -145,7 +145,6 @@ padding:50px 8px 0;
 	border-bottom: #cecece 1px solid;
 }
 .xscale td {
-    border: 1px solid black;
     background-color: #ffffff;
     text - align: center;
     width: 36px;
@@ -687,7 +686,7 @@ function showTabData(id1,id2,id3,id4,selectDropVal){
 		globalPatName = new Object();
 		globalPatName.id = (sz.id ==undefined?selectDropVal+"_Group":sz.id);
 		globalPatName.name = (sz.name ==undefined?der:sz.name);
-		getDropDown("weekdivid","weekDropId","Week",globalPatName.name);
+		//getDropDown("weekdivid","weekDropId","Week",globalPatName.name);
 		$("#s2id_flipDropId").remove();
 		}
 	}else if(id1 == 'daydiv'){
@@ -757,7 +756,7 @@ function showTabData(id1,id2,id3,id4,selectDropVal){
 		globalPatName = new Object();
 		globalPatName.id = (sz.id ==undefined?selectDropVal+"_Group":sz.id);
 		globalPatName.name = (sz.name ==undefined?der:sz.name);
-		getDropDown("flipdivid","flipDropId","Flip Days",globalPatName.name);
+		//getDropDown("flipdivid","flipDropId","Flip Days",globalPatName.name);
 		$("#s2id_weekDropId").remove();
 		
 		
@@ -948,7 +947,7 @@ padding-top: 7px;
 float: left;
 }
 .navseltop .nav-tabs {
-    border-bottom: 1px solid #cecece;
+    border-bottom: 0px solid #cecece;
 }
 .navseltop .nav-tabs > li {text-align: center; width: 25%;}
 .navseltop .nav-tabs > li a {cursor: pointer; font-weight: normal !important;}
@@ -1117,6 +1116,51 @@ div#naa_users-contain {width: 385px !important;}
 #manageGroupForm .tab-pane-left {float:left; width:50%;}
 #manageGroupForm .tab-pane-right {border-left: 1px solid #AAAAAA; padding-left: 5px; float:left; width:50%;}
 #manageGroupForm .manage_Group_buttons {padding-top: 22px; padding-bottom: 25px; text-align: right; border-top: 1px solid #AAAAAA;}
+#flipview .xscale {
+	font-family:cambria;
+	color:#084B8A;
+	border: #cecece 1px solid !;
+	border-width: 0px 0px 1px 0px !important;
+}
+#flipview .xscale td {
+    background-color: #ffffff;
+    text-align: center;
+    width: 36px;
+    height: 25px;
+	border: #cecece 0px solid;
+}
+#flipview .xscale td .borderDiv {
+    background-color: #ffffff;
+    text-align: center;
+	border: #cecece 1px solid;
+	border-width: 1px 1px 0px 0px;
+	color:#BDBDBD;
+	line-height: 25px;
+	/*padding: 0 5px;*/
+}
+#flipview .xscale td .borderDivtitle {
+    background-color: #ffffff;
+    text-align: center;
+    border: #cecece 1px solid;
+	border-width: 1px 1px 0px 0px;
+	color:#424242;
+	line-height: 25px;
+	/*padding: 0 5px;*/
+}
+#flipview {
+	border: #cecece 1px solid;
+	border-width: 0px 0px 0px 1px;
+}
+#flipview .xscale td .borderDivcursor {
+    background-color: #ffffff;
+    text-align: center;
+    border: #cecece 1px solid;
+	border-width: 1px 1px 0px 0px;
+	color:#6495ed;
+	font-size:11px;
+	padding-left:5px;
+	line-height: 25px;
+}
  </style>
 
 <div class="headertable" id="secNav">

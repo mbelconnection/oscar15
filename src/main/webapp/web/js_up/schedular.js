@@ -156,17 +156,27 @@ function openFlipViewHelp(){
 function showdata(provId) {
 	console.log(provId);
 	var dates = getStartEndDates();
+	var flipviewHeight = window.innerHeight - 146;
+	var flipdayHeight = (flipviewHeight / 32) + 15;
+	
 	//console.log(dates);
-	var finalData = '<table class="xscale" style="border-right:1px solid #cecece !important;font-family:cambria;color:#084B8A;"><tr "><td style="text-align:center;"><img style="cursor:pointer;" onclick="openFlipViewHelp()" src="js_up/images/icon_help_small.png">&nbsp;'+sch.getViewDropDown()+'</td>';
+	var finalData = '<table class="xscale"><tr><td><div class="borderDiv" style="height:'+ flipdayHeight +'px"><img style="cursor:pointer;" onclick="openFlipViewHelp()" src="js_up/images/icon_help_small.png">&nbsp;'+sch.getViewDropDown()+'</div></td>';
 
 	var j = 8;
 	for (var i = 0; i < 10; i++) {
-		finalData += '<td style="text-align:center;color:#424242;">' + parseFloat(j + i)
-				+ '.00</td>' + '<td style="text-align:center;color:#BDBDBD;">'
-				+ parseFloat(j + i) + '.15</td>'
-				+ '<td style="text-align:center;color:#BDBDBD;">' + parseFloat(j + i)
-				+ '.30</td>' + '<td style="text-align:center;color:#BDBDBD;">'
-				+ parseFloat(j + i) + '.45</td>';
+		finalData += '<td><div class="borderDivtitle" style="height:'
+				+ flipdayHeight 
+				+ 'px">' + parseFloat(j + i)
+				+ '.00</div></td>' + '<td><div class="borderDiv" style="height:'
+				+ flipdayHeight 
+				+ 'px">' + parseFloat(j + i) 
+				+ '.15</div></td>' + '<td><div class="borderDiv" style="height:'
+				+ flipdayHeight 
+				+ 'px">' + parseFloat(j + i)
+				+ '.30</div></td>' + '<td><div class="borderDiv" style="height:'
+				+ flipdayHeight 
+				+ 'px">' + parseFloat(j + i) 
+				+ '.45</div></td>';
 	}
 	finalData = finalData + '</tr>';
 
@@ -181,7 +191,6 @@ function showdata(provId) {
 	}*/
 	if(flipColorCodes == null)
 		flipColorCodes = getFlipColorCodes();
-	
 	getFlipColor('');
 	if(provId == 0){
 		if(flipWeekendHide)
@@ -196,21 +205,22 @@ function showdata(provId) {
 			finalData += loadFlipData(provId, _data, dates[0], dates[1]);
 	}
 	flipWeekendHide = false;
-	var flipviewHeight = window.innerHeight - 156;
+	
 	document.getElementById('flipview').style="overflow-y:scroll; height:" + flipviewHeight + "px";
 	document.getElementById('flipview').innerHTML = finalData;
-	
 }
 function loadFlipData(provId, _data, startDate, endDate){
 	var months = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
 	var finalData = "";
 	var currDayArr = startDate.split('-');
 	var days = getDiffInDays(startDate, endDate) +1;
-	var myday = new Date(parseFloat(currDayArr[0]),parseFloat(getMonthIndex(startDate)),parseFloat(currDayArr[0]));
+	var myday = new Date(parseFloat(currDayArr[2]),parseFloat(getMonthIndex(startDate)),parseFloat(currDayArr[0]));
 	var index = 32;
+	var flipviewHeight = window.innerHeight - 146;
+	var flipdayHeight = (flipviewHeight / 32) + 15;
 	for (var a = 0; a < days; a++) {
 		curDate = myday.getDate() +"-"+months[myday.getMonth()] +"-"+ myday.getFullYear();
-			finalData += '<tr><td style="text-align:right;cursor:pointer;" onclick="goToDayView(\''+provId+'\', \''+curDate+'\')">' + getFlipDateFormat(myday) + '</td>';
+			finalData += '<tr><td><div class="borderDivcursor" style="text-align:right;cursor:pointer;height:'+ flipdayHeight +'px;" onclick="goToDayView(\''+provId+'\', \''+curDate+'\')">' + getFlipDateFormat(myday) + '</div></td>';
 			var formattedDate = getDateFormat(myday);
 			var dayData = _data[formattedDate];
 			
@@ -219,15 +229,15 @@ function loadFlipData(provId, _data, startDate, endDate){
 			if(dayData != null){
 				var dayFlipData = dayData.split('');
 				for (var b = 0; b < 40; b++) {
-					finalData += '<td style="text-align:center;background-color:'+ getFlipColor(dayFlipData[index + b]) +';">' + dayFlipData[index + b]  + '</td>'
+					finalData += '<td><div class="borderDiv" style="text-align:center;height:'+ flipdayHeight +'px;background-color:'+ getFlipColor(dayFlipData[index + b]) +';">' + dayFlipData[index + b]  + '</div></td>'
 				}
 			}else{
 				for (var b = 0; b < 40; b++) {
-					finalData += '<td style="text-align:center;">&nbsp;</td>'
+					finalData += '<td><div class="borderDiv" style="height:'+ flipdayHeight +'px">&nbsp;</div></td>'
 				}
 			}
 			finalData += '</tr>';
-		myday.setDate(myday.getDate()+parseFloat(0));
+		myday.setDate(myday.getDate()+parseFloat(1));
 		
 	}
 	return finalData;

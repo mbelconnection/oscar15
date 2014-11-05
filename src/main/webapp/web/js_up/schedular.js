@@ -13,6 +13,7 @@ var hideWeekEnds = false;
 var flipWeekendHide = false;
 
 var globalDayViewDate;
+var fromZoomView = false;
 
 var flipColorCodes;
 var weekDB = [ {
@@ -160,25 +161,25 @@ function showdata(provId) {
 	var flipdayHeight = (flipviewHeight / 32) + 15;
 	
 	//console.log(dates);
-	var finalData = '<table class="xscale"><tr><td><div class="borderDiv" style="height:'+ flipdayHeight +'px"><img style="cursor:pointer;" onclick="openFlipViewHelp()" src="js_up/images/icon_help_small.png">&nbsp;'+sch.getViewDropDown()+'</div></td>';
+	var finalData = '<div class="xscale"><div class="borderDiv" style="height:'+ flipdayHeight +'px"><img style="cursor:pointer;" onclick="openFlipViewHelp()" src="js_up/images/icon_help_small.png">&nbsp;'+sch.getViewDropDown()+'</div>';
 
 	var j = 8;
 	for (var i = 0; i < 10; i++) {
-		finalData += '<td><div class="borderDivtitle" style="height:'
+		finalData += '<div class="borderDivtitle" style="height:'
 				+ flipdayHeight 
 				+ 'px">' + parseFloat(j + i)
-				+ '.00</div></td>' + '<td><div class="borderDiv" style="height:'
+				+ '.00</div>' + '<div class="borderDiv" style="height:'
 				+ flipdayHeight 
 				+ 'px">' + parseFloat(j + i) 
-				+ '.15</div></td>' + '<td><div class="borderDiv" style="height:'
+				+ '.15</div>' + '<div class="borderDiv" style="height:'
 				+ flipdayHeight 
 				+ 'px">' + parseFloat(j + i)
-				+ '.30</div></td>' + '<td><div class="borderDiv" style="height:'
+				+ '.30</div>' + '<div class="borderDiv" style="height:'
 				+ flipdayHeight 
 				+ 'px">' + parseFloat(j + i) 
-				+ '.45</div></td>';
+				+ '.45</div>';
 	}
-	finalData = finalData + '</tr>';
+	finalData = finalData + '</div>';
 
 	/*for (var a = 0; a < this.flipdays.length; a++) {
 		finalData += '<tr><td >' + this.flipdays[a].date + '</td>';
@@ -702,7 +703,7 @@ Schedular.prototype.init = function(view, from) {
 	//console.log(document.getElementById('secNav').offsetWidth);
 	var data = this.getYScale();
 	//var headData = '<div id="clock" style="float:left"><table class="xscale" style="float: left;cellpadding:0;cellpadding:0;padding-bottom:0px !important;border-bottom: 0px !important;" ><tr><td >'+sch.getViewDropDown()+'</td></tr></table>';
-	var headData = '<div id="clock" style="float:left"><table class="xscale" style="float: left; width:3%; cellpadding:0;cellpadding:0;padding-bottom:0px !important;"><tr><td>'+sch.getViewDropDown()+'</td></tr></table>';
+	var headData = '<div id="clock" style="float:left"><div class="xscale" style="float: left; width:3%; padding-bottom:4px !important;">'+sch.getViewDropDown()+'</div>';
 	
 	/*headData += '<div id="names" class="scrolldiv" style="width:'
 			+ (scrollWid)
@@ -922,15 +923,22 @@ Schedular.prototype.getPersonTabWidth = function() {
 Schedular.prototype.getXHeader = function() {
 	var _XHeader = '';
 	_XHeader += '<tr>';
-	if(this.persons.length == 1)
-		_XHeader += '<th style="width:100% !important;text-align:center;display: inline-block;" ><div style="float:left;width:80%;text-align:center;" id="'+this.persons[0].id+'">'+this.persons[0].name+'</div>'+ sch.getZoomLinkView("","zoom out")+'</th>';
+	if(this.persons.length == 1){
+		if(fromZoomView == true){
+		_XHeader += '<th style="width:100% !important;text-align:center;display: inline-block;" ><div style="float:left;width:80%;text-align:center;overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" id="'+this.persons[0].id+'">'+this.persons[0].name+'</div>'+ sch.getZoomLinkView1("","Zoom Out")+'</th>';
+		}
+		else {
+			_XHeader += '<th style="width:100% !important;text-align:center;display: inline-block;" ><div style="float:left;width:80%;text-align:center;" id="'+this.persons[0].id+'">'+this.persons[0].name+'</div></th>';	
+		}
+		
+	}
+		
 	else
 		for (var i = 0; i < this.persons.length; i++) {
 			if (this.view == 'day')
-				_XHeader += '<th style="text-align:center;display: inline-block;" ><div style="float:left;width:64%;text-align:center;" >'+this.persons[i].name+'</div>'+ sch.getZoomLinkView(this.persons[i].id,"ZOOM")+'</th>';// +'<div class="zoomIn" id="'+this.persons[i].id+'" onclick="sch.zoom(this.id)">Zoom</div></th>';
+				_XHeader += '<th style="text-align:center;display: inline-block;" ><div style="float:left;width:64%;text-align:center;overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" >'+this.persons[i].name+'</div>'+ sch.getZoomLinkView(this.persons[i].id,"ZOOM")+'</th>';// +'<div class="zoomIn" id="'+this.persons[i].id+'" onclick="sch.zoom(this.id)">Zoom</div></th>';
 			else
-				_XHeader += '<th style="text-align:center;display: inline-block;" ><div style="float:left;width:170px;text-align:center;" >'
-						+ this.persons[i].name + '</div></th>';
+				_XHeader += '<th style="text-align:center;display: inline-block;" ><div style="float:left;width:170px;text-align:center;" >'+ this.persons[i].name + '</div></th>';
 		}
 	_XHeader += '</tr>';
 	return _XHeader;
@@ -945,6 +953,43 @@ Schedular.prototype.getLinkView = function(provId){
 	_html += '</div>';
 	return _html;
 }
+
+Schedular.prototype.getZoomLinkView1 = function(provId,zText){
+	var _html = "";
+	_html += '<div class="btn-group btn-group-lg" style="width:19%;float:right;margin-right: 2px;">';
+	_html += '<button type="button" data-toggle="tooltip" title="Zoom view" onclick="sch.getNewZoomOutView()" id="grp_mng_but_save1" class="btn btn-default" style="height:22px;font-size:14px;padding-top:1px;padding-left:7px;padding-right:7px;float:right;">'+zText+'</button>';
+	_html += '</div>';
+	return _html;
+}
+
+/*$("#grp_mng_but_save1").button().click(*/Schedular.prototype.getNewZoomOutView = function () {
+	//alert("Hello");
+	$("#grp_mng_but_save").trigger("click");
+	fromZoomView = false;
+	/*var providerNoArr = new Array();
+	$('#grp_man_leftPane li').each(function(){
+	   var temp = new Object();
+	   temp.providerNo = $(this).attr('val');
+	   temp.enabled = true;
+	   providerNoArr.push(temp);
+	});
+	var providerNoArr1 = new Array();
+	$('#grp_man_rightPane li').each(function(){
+		   var temp = new Object();
+		   temp.providerNo = $(this).attr('val');
+		   temp.enabled = false;
+		   providerNoArr.push(temp);
+		});
+	if($('#grp_man_leftPane li').length>0){
+		grp_mng_fn.loadProviders(providerNoArr);
+		$("#manageGroupForm").dialog("close");
+	}else{
+		alert("At least one provider to be in Day view");
+	}
+	
+    return false;*/
+ }
+
 
 Schedular.prototype.getZoomLinkView = function(provId,zText){
 	var _html = "";
@@ -1047,9 +1092,11 @@ Schedular.prototype.zoom = function(id) {
 		$(".Yscale").css("width","100%");
 		globalProviderId = id;
 		this.load(document.getElementById("inputField").value);
+		fromZoomView = true;
 	} else {
 		globalProviderId = '';
 		this.load(document.getElementById("inputField").value);
+		fromZoomView = false;
 	}
 	
 }
@@ -1273,7 +1320,7 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 
 	if (duration / 15 > 1)
 		stylecls = 'evtpop_td_btm_line';
-	var left = obj.offWidth * pos + 20;
+	var left = obj.offWidth * pos + 1;
 
 	/*var height = ((duration / 15) * 34) + ((duration / 15 - 1) * 7)
 	if (duration == 15)
@@ -1288,7 +1335,7 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 		height = durationHeight2;
 	var colspan = 4;
 	
-	
+	//alert(top);
 	
 	if (act == "delete") {
 		//var back = $('div').find("#" + hr + '_' + min);
@@ -1298,15 +1345,19 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 		if (obj.stauscolor == null)
 			obj.stauscolor = "#5E5A80";
 		var zoomWidth = "";
-		if( Schedular.config.providersLis !=null && Schedular.config.providersList.length==1 && globalView.view=="day")
-			zoomWidth ="1300px ! important;"
-			else
-				zoomWidth = "250px;";
+		if(Schedular.config.providersList !=null && Schedular.config.providersList.length==1 && globalView.view=="day")
+			zoomWidth ="250px;"
+		else if(Schedular.config.providersList !=null && Schedular.config.providersList.length>6 && globalView.view=="day")
+			zoomWidth ="180px ! important;"
+		else if(Schedular.config.providersList !=null && Schedular.config.providersList.length>5 && globalView.view=="day")
+			zoomWidth ="200px ! important;"
+		else
+			zoomWidth = "220px;";
 		html += '<div class="eventpop" style="height:' + height
 				+ 'px;position: absolute;top:' + top + 'px;left:' + left
 				//+ 'px;width:250px;" id=' + obj.hr + '_' + obj.min + '>';
 				+ 'px;width:'+zoomWidth+'" id=appt_' + obj.apptId + '>';
-		html += '<table class="eventtab" style="width:100%;border-collapse:collapse;padding:0px;" id="tab"  cellspacing="0" >';
+		html += '<table class="eventtab" style="width:100%; height: 100%; border-collapse:collapse;padding:0px;" id="tab"  cellspacing="0" >';
 		
 		var reasonDis = "none";
 		var notesDis = "none";
@@ -1347,12 +1398,12 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 		if(obj.patientName != null && obj.patientName.length > 0){
 			html += '<tr class=""> <td class="gen_font '
 					+ stylecls
-					+ '" style="padding-left:5px;width:20px !important;" id="appt_sta_'
+					+ '" style="padding-left:3px;width:20px !important;" id="appt_sta_'
 					+ obj.apptId.replace(/,/g,'_') + '" curapptid="'+obj.apptId.split(',')[0]+'"><div class="alertbox" style="background:'
 					+ obj.stauscolor + ';">' + obj.appointStatus + '</div></td>';
 			html += '<td class=" evtpop_td_ltline '
 					+ stylecls
-					+ '" style="width:10px !important;text-align:center;"><div class="dropdown btn-group" > <a class="btn dropdown-toggle" data-toggle="dropdown" style="height:20px;padding:0px;padding-left:6px;padding-right:6px;padding-top:0px;padding-bottom:0px;">   <span class="caret" style="padding:0px;"></span>    </a>    <ul class="dropdown-menu">        '
+					+ '" style="width:10px !important;text-align:center;padding: 0 2px;"><div class="dropdown btn-group" > <a class="btn dropdown-toggle" data-toggle="dropdown" style="height:20px;padding:0px;">   <span class="caret" style="padding:0px;"></span>    </a>    <ul class="dropdown-menu">        '
 					+ sch.getApptStatusHTML("appt_sta_" + obj.apptId.replace(/,/g,'_'))
 					+ '    </ul></div></td>';
 			var patNameLength = 20;
@@ -1371,7 +1422,7 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 				patNameLength = 10;
 				
 			if (obj.noOfPat != null && obj.noOfPat > 1) {
-				html += '<td class=" evtpop_td_ltline '
+				/*html += '<td class=" evtpop_td_ltline '
 						+ stylecls
 						+ '" style="width:50px !important;text-align:center;padding-top:2px;"><div style="display: inline-block;cursor:pointer;" onclick="sch.repeatMulPat(this);" apptid="'
 						+ obj.apptId +'" id="mulpat'
@@ -1380,11 +1431,25 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 						+ (obj.noOfPat)
 						+ '"><input type="image" style="" src="js_up/images/multi_p.png"><span style="position: relative; top: -5px;">'
 						+ (obj.noOfPat)
-						+ '</span> <input type="image" style="width:12px;height:12px;" src="js_up/images/round_arrow.png"></div></td>';
-			}
+						+ '</span> <input type="image" style="width:12px;height:12px;" src="js_up/images/round_arrow.png"></div></td>';*/
+			}	html += '<td class=" evtpop_td_ltline '
+					+ stylecls
+					+ '" style="overflow: hidden;padding-left: 2px; padding-right: 2px; text-overflow: ellipsis; white-space: nowrap; width:26px !important;text-align:center;padding-top:2px;"><div style="display: inline-block;cursor:pointer;" onclick="sch.repeatMulPat(this);" apptid="'
+					+ obj.apptId +'" id="mulpat'
+					+ obj.apptId.replace(/,/g,'_')
+					+ '" index="0" totpat="'
+					+ (obj.noOfPat)
+					+ '"><input type="image" style="" src="js_up/images/multi_p.png"><span style="position: relative; top: -5px;">'
+					+ (obj.noOfPat)
+					+ '</span></div></td>';
+			
+			
+			
+			
+			
 			var j = obj.apptId + ':' + obj.hr + '_' + obj.min;
 
-			html += "<td class=\"evtpop_td_pat_name evtpop_td_ltline\" style=\"color:#3366FF;cursor:pointer;\" eventType='appointment' curapptid='"+obj.apptId.split(',')[0]+"' id='pat_name"
+			html += "<td class=\"evtpop_td_pat_name evtpop_td_ltline\" style=\"color:#3366FF;cursor:pointer;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;\" eventType='appointment' curapptid='"+obj.apptId.split(',')[0]+"' id='pat_name"
 					+ obj.apptId.replace(/,/g,'_')
 					+ "' apptid=\""
 					+ obj.apptId
@@ -1406,7 +1471,7 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 			var _apptObject = JSON.stringify(obj);
 			html += '<td class="evtpop_td_ltline '
 					+ stylecls
-					+ '" style="width:15px !important;text-align:center;"><div class="dropdown btn-group" > <a class="btn dropdown-toggle" data-toggle="dropdown" style="height:20px;padding:0px;padding-left:6px;padding-right:6px;padding-top:0px;padding-bottom:0px;">   <span class="caret" style="padding:0px;"></span>    </a>    <ul class="dropdown-menu">        '
+					+ '" style="width:15px !important;text-align:center;padding: 0 2px;"><div class="dropdown btn-group" > <a class="btn dropdown-toggle" data-toggle="dropdown" style="height:20px;padding:0px;padding-left:3px;padding-right:3px;padding-top:0px;padding-bottom:0px;">   <span class="caret" style="padding:0px;"></span>    </a>    <ul class="dropdown-menu">        '
 					+ sch.getApptGotoHTML('appt_goto_' + obj.apptId.replace(/,/g,'_'), obj.providerName, obj.startDate, obj.hr, obj.min,_apptObject)
 					+ '    </ul></div></td>';
 			html += '</tr>';

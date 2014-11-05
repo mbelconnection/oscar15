@@ -867,13 +867,16 @@ function getGroupIndi(selId){
 		//$('#flipdivid').html("Flip Days&nbsp;<b class='caret' onclick='getDropDown(\"flipdivid\",\"flipDropId\",\"Flip Days\",\"\")'></b>");
 		//$('#weekdivid').html("Week&nbsp;<b class='caret' onclick='getDropDown(\"weekdivid\",\"weekDropId\",\"Week\",\"\")'></b>");
 		$("#placeText").show();
+		fromZoomView = true;
 		$("#placeText").html("Group : ");
 		/*To load the providers in Manage group layout */
 		//grp_mng_json_fn.getData();
 		grp_mng_fn.loadPage();
-		}else{
+		}
+		else{
 		//alert("in individual");
 		$("#placeText").show();
+		fromZoomView = false;
 		$("#placeText").html("Individual : ");
 		$('#flipdivid').empty();
 		$('#flipdivid').html("Flip Days");
@@ -1004,7 +1007,7 @@ float: left;
 .eventpop {width: 160px;}
 
 #abc .xscale {float:none !important;margin:inherit !important; width: 100%; border: 0px none;}
-#abc .xscale td {width:auto;}
+#abc .xscale td {width:auto; height:inherit !important;}
 #abc .xscale td, #persondata .Yscale {
 	border: 0px none;
 }
@@ -1020,9 +1023,9 @@ float: left;
 #persondata {border:1px solid #cecece; border-width: 0px 0px 1px 1px;}
 #abc {border:1px solid #cecece; border-width: 0px 0px 1px 0px;}
 #clock {border:1px solid #cecece; border-width: 0px 0px 0px 1px;}
-.eventpop .eventtab .evtpop_td_btm_line {height: 24px;}
+/*.eventpop .eventtab .evtpop_td_btm_line {height: 24px;}
 .eventpop .eventtab .evtpop_td_ltline {height: 24px;}
-.eventpop .eventtab .gen_font {height: 24px;}
+.eventpop .eventtab .gen_font {height: 24px;}*/
 /*@media (min-width: 320px) and (max-width: 1300px) {
 #abc .xscale td {height: 25px;}
 #persondata .Yscale td {height: 25px;}

@@ -10,6 +10,7 @@
 package com.indivica.olis;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -165,7 +166,10 @@ public class Driver {
 			DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 
-			Source schemaFile = new StreamSource(new File(OscarProperties.getInstance().getProperty("olis_response_schema")));
+			//Source schemaFile = new StreamSource(new File(OscarProperties.getInstance().getProperty("olis_response_schema")));
+			InputStream is = Driver.class.getResourceAsStream("/org/oscarehr/olis/response.xsd");
+			
+			Source schemaFile = new StreamSource(is);
 			factory.newSchema(schemaFile);
 
 			JAXBContext jc = JAXBContext.newInstance("ca.ssha._2005.hial");
@@ -184,12 +188,14 @@ public class Driver {
 					String errorString = "";
 					errorString += "ERROR " + error.getNumber() + " (" + error.getSeverity() + ") : " + error.getMessage();
 					MiscUtils.getLogger().debug(errorString);
-
-					ArrayOfString details = error.getDetails();
-					List<String> detailList = details.getString();
-					for (String detail : detailList) {
-						errorString += "\n" + detail;
-					}
+                                        
+                                        ArrayOfString details = error.getDetails();
+                                        if (details != null) {
+                                            List<String> detailList = details.getString();
+                                            for (String detail : detailList) {
+                                                    errorString += "\n" + detail;
+                                            }
+                                        }
 
 					errorStringList.add(errorString);
 				}
@@ -242,7 +248,7 @@ public class Driver {
 		X509Certificate cert = null;
 		PrivateKey priv = null;
 		KeyStore keystore = null;
-		String pwd = "changeit";
+		String pwd = OscarProperties.getInstance().getProperty("olis_ssl_keystore_password","changeit");
 		String result = null;
 		try {
 			Security.addProvider(new BouncyCastleProvider());

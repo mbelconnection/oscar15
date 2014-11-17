@@ -890,9 +890,8 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
                                             </td>
                                         </tr>
                                         <% } %>
-                                        <% if (handler.getMsgType().equals("ALPHA")) { 
-                                        	AlphaHandler alpha=(AlphaHandler)handler;
-                                        	if (alpha.getVersion().equals("2.3")) {%>
+                                        <% String comment =handler.getNteForPID();
+                                        if (comment != null && !comment.equals("")) { %>
                                         <tr>
                                         	<td>
                                                 <div class="FieldData">
@@ -901,12 +900,11 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
                                             </td>
                                             <td>
                                                 <div class="FieldData" nowrap="nowrap">
-                                                   <%= alpha.getPIDComment() %>
+                                                   <%= comment %>
                                                 </div>
                                             </td>
                                         </tr>
-                                        <% }
-                                        	}%>
+                                        <%}%>
                                     </table>
                                 </td>
                             </tr>
@@ -1139,7 +1137,7 @@ div.Title4   { font-weight: 600; font-size: 8pt; color: white; font-family:
                                    if (handler.getMsgType().equals("EPSILON")) {
                                    	b2=true;
                                    	b3=true; //Because Observation header can never be the same as the header. Observation header = OBX-4.2 and header= OBX-4.1
-                                   } else if(handler.getMsgType().equals("PFHT") || handler.getMsgType().equals("CML")) {
+                                   } else if(handler.getMsgType().equals("PFHT") || handler.getMsgType().equals("CML") || handler.getMsgType().equals("HHSEMR")) {
                                    	b2=true;
                                    }
 

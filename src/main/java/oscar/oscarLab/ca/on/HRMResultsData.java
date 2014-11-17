@@ -42,7 +42,7 @@ public class HRMResultsData {
 	}
 
 	public Collection<LabResultData> populateHRMdocumentsResultsData(String providerNo, String status, Date newestDate, Date oldestDate) {
-		if (providerNo == null || "".equals(providerNo)) {
+		if (providerNo == null || "".equals(providerNo) || providerNo.equals("-1")) { //when searching all, the search provider is set to -1
 			providerNo = "%";
 		} else if (providerNo.equalsIgnoreCase("0")) {
 			providerNo = "-1";
@@ -51,13 +51,14 @@ public class HRMResultsData {
 		Integer viewed = 1;
 		Integer signedOff = 0;
 		if (status == null || status.equalsIgnoreCase("N")) {
-			viewed = 0;
+			viewed = 2;
 		} else if (status != null && (status.equalsIgnoreCase("A") || status.equalsIgnoreCase("F"))) {
 			signedOff = 1;
 		}
 
 		if (status != null && status.equalsIgnoreCase("")) {
 			viewed = 2;
+			signedOff = 2;
 		}
 
 		List<HRMDocumentToProvider> hrmDocResultsProvider = hrmDocumentToProviderDao.findByProviderNoLimit(providerNo, newestDate, oldestDate, viewed, signedOff);

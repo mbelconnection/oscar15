@@ -118,6 +118,58 @@ public class AdmissionDao extends HibernateDaoSupport {
         return admission;
     }
 
+    public Admission getLatestDischarge(Integer programId, Integer demographicNo) {
+        Admission admission = null;
+
+        if (programId == null || programId <= 0) {
+            throw new IllegalArgumentException();
+        }
+
+        if (demographicNo == null || demographicNo <= 0) {
+            throw new IllegalArgumentException();
+        }
+
+        String queryStr = "FROM Admission a WHERE a.ProgramId=? AND a.ClientId=? AND a.AdmissionStatus='discharged' ORDER BY a.DischargeDate DESC";
+        @SuppressWarnings("unchecked")
+        List<Admission> rs = getHibernateTemplate().find(queryStr, new Object[] { programId, demographicNo });
+
+        if (!rs.isEmpty()) {
+            admission =  rs.get(0);
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug((admission != null) ? "getLatestDischarge:" + admission.getId() : "getLatestDischarge: not found");
+        }
+
+        return admission;
+    }
+    
+    public Admission getOldestAdmissionToOneFunctionalCentre(String functioanlCentreId, Integer demographicNo) {
+        Admission admission = null;
+
+        if (functioanlCentreId == null ) {
+            throw new IllegalArgumentException();
+        }
+
+        if (demographicNo == null || demographicNo <= 0) {
+            throw new IllegalArgumentException();
+        }
+        
+        String queryStr = "FROM Admission a , Program p WHERE a.ProgramId=p.id AND a.ClientId=? ORDER BY a.AdmissionDate ASC";
+        @SuppressWarnings("unchecked")
+        List<Admission> rs = getHibernateTemplate().find(queryStr, new Object[] { functioanlCentreId, demographicNo });
+
+        if (!rs.isEmpty()) {
+            admission =  rs.get(0);
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug((admission != null) ? "getOldestAdmissionToOneFunctionalCentre:" + admission.getId() : "getOldestAdmissionToOneFunctionalCentre: not found");
+        }
+
+        return admission;
+    }
+    
     public List<Admission> getAdmissions() {
         String queryStr = "FROM Admission a ORDER BY a.AdmissionDate DESC";
         @SuppressWarnings("unchecked")
@@ -204,11 +256,13 @@ public class AdmissionDao extends HibernateDaoSupport {
        if (demographicNo == null || demographicNo <= 0) {
            throw new IllegalArgumentException();
        }
-
-       String queryStr = "FROM Admission a WHERE a.ClientId=? and a.ProgramId=? and a.AdmissionStatus='current' ORDER BY a.AdmissionDate DESC";
+ 
+       Admission admission = null;
+       
+       String queryStr = "FROM Admission a WHERE a.ClientId=? and a.ProgramId=? ORDER BY a.AdmissionDate DESC";
        @SuppressWarnings("unchecked")
        List<Admission> rs = getHibernateTemplate().find(queryStr, new Object[] { demographicNo, programId });
-
+       
        if (log.isDebugEnabled()) {
            log.debug("getCurrentAdmissionsByProgramAndClient for clientId " + demographicNo + " programId " + programId + ", # of admissions: " + rs.size());
        }

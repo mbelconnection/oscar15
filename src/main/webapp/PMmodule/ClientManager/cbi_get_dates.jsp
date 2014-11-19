@@ -23,18 +23,24 @@
 
 --%>
 <%@page import="org.oscarehr.common.model.OcanStaffForm"%>
-<%@page import="org.oscarehr.PMmodule.model.Admission"%>
 <%@page import="org.oscarehr.common.model.Demographic"%>
+<%@page import="org.oscarehr.PMmodule.model.Program"%>
 <%@page import="org.oscarehr.PMmodule.web.OcanForm"%>
 <%@page import="org.oscarehr.util.LoggedInInfo"%>
 <%@page import="org.oscarehr.util.SpringUtils"%>
-<%@page import="org.oscarehr.PMmodule.dao.AdmissionDao"%>
+<%@page import="org.oscarehr.PMmodule.dao.ProgramDao"%>
 <%@page import="org.oscarehr.PMmodule.model.ClientReferral"%>
 <%@page import="org.oscarehr.PMmodule.dao.ClientReferralDAO"%>
 <%@page import="java.util.List"%>
 <%@page import="org.apache.commons.lang.time.DateFormatUtils" %>
+<%@page import="org.oscarehr.common.model.FunctionalCentreAdmission" %>
+<%@page import="org.oscarehr.common.dao.FunctionalCentreAdmissionDao" %>
+<%@page import="org.oscarehr.common.model.FunctionalCentre" %>
+<%@page import="org.oscarehr.common.dao.FunctionalCentreDao" %>
 
-<% AdmissionDao admissionDao = (AdmissionDao) SpringUtils.getBean("admissionDao");
+
+<% FunctionalCentreAdmissionDao admissionDao = (FunctionalCentreAdmissionDao) SpringUtils.getBean("functionalCentreAdmissionDao");
+   ProgramDao ProgramDao = (ProgramDao) SpringUtils.getBean("programDao");
    String currentDemographicId= (String)request.getParameter("demographicId");
    String currentAdmissionId=(String)request.getParameter("admissionId");
    String programId = (String)request.getParameter("programId");
@@ -42,7 +48,7 @@
    String view =(String) request.getParameter("view");
    
    OcanStaffForm ocanStaffForm = new OcanStaffForm();
-   Admission ad = new Admission();
+   FunctionalCentreAdmission ad = new FunctionalCentreAdmission();
    
    if(view!=null && "history".equals(view)) {
 	   OcanStaffForm ocanStaffForm2 = OcanForm.getOcanStaffForm(Integer.valueOf(ocanStaffFormId));
@@ -61,38 +67,20 @@
 		   ocanStaffForm.setReferralDate(ocanStaffForm2.getReferralDate());	 
 		   
 		   // The admission may have new discharge date as the client may be discharged from the program.
-		   ad = admissionDao.getAdmission(Long.valueOf(ocanStaffForm2.getAdmissionId()));
+		   ad = admissionDao.find(ocanStaffForm2.getAdmissionId());
 		   if(ad!=null) {			    
 		   		ocanStaffForm.setDischargeDate(ad.getDischargeDate());
 		   }
 		   
 	   } else {
 		   if(currentAdmissionId!=null && !currentAdmissionId.equals("") && Integer.valueOf(currentAdmissionId).intValue()>0) {	   
-		   		ad = admissionDao.getAdmission(Long.valueOf(currentAdmissionId));
+		   		ad = admissionDao.find(Integer.valueOf(currentAdmissionId));
+		   		ocanStaffForm.setReferralDate(ad.getReferralDate());
 		   		ocanStaffForm.setAdmissionId(ad.getId().intValue());
-				ocanStaffForm.setServiceInitDate(ad.getAdmissionDate());
+				ocanStaffForm.setServiceInitDate(ad.getServiceInitiationDate());
 				ocanStaffForm.setAdmissionDate(ad.getAdmissionDate());
-				ocanStaffForm.setDischargeDate(ad.getDischargeDate());
-	   		} else if( programId!=null && !programId.equals("") && Integer.valueOf(programId).intValue()>0) {
-			   	ad = admissionDao.getCurrentAdmission(Integer.valueOf(programId), Integer.valueOf(currentDemographicId));
-			   	ocanStaffForm.setAdmissionId(ad.getId().intValue());
-				ocanStaffForm.setServiceInitDate(ad.getAdmissionDate());
-				ocanStaffForm.setAdmissionDate(ad.getAdmissionDate());
-				ocanStaffForm.setDischargeDate(ad.getDischargeDate());	   
-	   		}
-   
-		    //Find referral date
-			ClientReferralDAO clientReferralDao = (ClientReferralDAO) SpringUtils.getBean("clientReferralDAO");
-			List<ClientReferral> referrals = clientReferralDao.getActiveReferralsByClientAndProgram(Long.valueOf(currentDemographicId), Long.valueOf(ad.getProgramId()));
-			if(referrals.size() > 0 ) {
-				ClientReferral ref = referrals.get(0);
-				if(ref.getReferralDate()!=null)
-					ocanStaffForm.setReferralDate(ref.getReferralDate());
-				else
-					ocanStaffForm.setReferralDate(ad.getAdmissionDate());
-			} else {
-				ocanStaffForm.setReferralDate(ad.getAdmissionDate());
-			} 	
+				ocanStaffForm.setDischargeDate(ad.getDischargeDate());	   		
+	   		}   
 	   }
    }
 %>

@@ -44,6 +44,7 @@ import org.apache.struts.action.ActionMessages;
 import org.oscarehr.PMmodule.caisi_integrator.CaisiIntegratorManager;
 import org.oscarehr.PMmodule.exception.AdmissionException;
 import org.oscarehr.PMmodule.exception.BedReservedException;
+import org.oscarehr.PMmodule.exception.FunctionalCentreDischargeException;
 import org.oscarehr.PMmodule.exception.ProgramFullException;
 import org.oscarehr.PMmodule.exception.ServiceRestrictionException;
 import org.oscarehr.PMmodule.model.Admission;
@@ -340,7 +341,7 @@ public class ProgramManagerViewAction extends BaseAction {
 		return mapping.findForward("viewBedCheckReport");
 	}
 
-	public ActionForward admit(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+	public ActionForward admit(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws NumberFormatException, FunctionalCentreDischargeException {
 		String programId = request.getParameter("id");
 		String clientId = request.getParameter("clientId");
 		String queueId = request.getParameter("queueId");
@@ -394,7 +395,7 @@ public class ProgramManagerViewAction extends BaseAction {
 		return view(mapping, form, request, response);
 	}
 
-	public ActionForward override_restriction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+	public ActionForward override_restriction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws NumberFormatException, FunctionalCentreDischargeException {
 		String programId = (String) request.getSession().getAttribute("programId");
 		String clientId = request.getParameter("clientId");
 		String queueId = request.getParameter("queueId");
@@ -627,7 +628,7 @@ public class ProgramManagerViewAction extends BaseAction {
 		return view(mapping, form, request, response);
 	}
 
-	public ActionForward saveReservedBeds(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+	public ActionForward saveReservedBeds(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws FunctionalCentreDischargeException {
 
 		ProgramManagerViewFormBean programManagerViewFormBean = (ProgramManagerViewFormBean) form;
 
@@ -690,7 +691,7 @@ public class ProgramManagerViewAction extends BaseAction {
 								if (communityProgramId > 0) {
 									try {
 										// discharge to community program
-										admissionManager.processDischargeToCommunity(communityProgramId, bedDemographic.getId().getDemographicNo(), getProviderNo(request), "bed reservation ended - manually discharged", "0", null);
+										admissionManager.processDischargeToCommunity(communityProgramId, bedDemographic.getId().getDemographicNo(), getProviderNo(request), "bed reservation ended - manually discharged", "0", null, false);
 									} catch (AdmissionException e) {
 
 										messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.failure", e.getMessage()));
@@ -710,7 +711,7 @@ public class ProgramManagerViewAction extends BaseAction {
 							if (communityProgramId > 0) {
 								try {
 									// discharge to community program
-									admissionManager.processDischargeToCommunity(communityProgramId, bedDemographic.getId().getDemographicNo(), getProviderNo(request), "bed reservation ended - manually discharged", "0", null);
+									admissionManager.processDischargeToCommunity(communityProgramId, bedDemographic.getId().getDemographicNo(), getProviderNo(request), "bed reservation ended - manually discharged", "0", null, false);
 								} catch (AdmissionException e) {
 
 									messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.failure", e.getMessage()));

@@ -232,6 +232,10 @@ public class ProgramManagerAction extends BaseAction {
 	public ActionForward add(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
 		DynaActionForm programForm = (DynaActionForm) form;
 		programForm.set("program", new Program());
+		
+		List<FunctionalCentre> functionalCentres = functionalCentreDao.findAll();
+		Collections.sort(functionalCentres, FunctionalCentre.ACCOUNT_ID_COMPARATOR);
+		request.setAttribute("functionalCentres", functionalCentres);
 
 		setEditAttributes(request, null);
 

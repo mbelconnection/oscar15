@@ -34,12 +34,11 @@ import java.util.TreeMap;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.oscarehr.PMmodule.dao.AdmissionDao;
-import org.oscarehr.PMmodule.dao.ClientReferralDAO;
 import org.oscarehr.PMmodule.dao.ProgramDao;
 import org.oscarehr.PMmodule.model.Admission;
-import org.oscarehr.PMmodule.model.ClientReferral;
 import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.dao.DemographicExtDao;
+import org.oscarehr.common.dao.FunctionalCentreAdmissionDao;
 import org.oscarehr.common.dao.OcanClientFormDao;
 import org.oscarehr.common.dao.OcanConnexOptionDao;
 import org.oscarehr.common.dao.OcanFormOptionDao;
@@ -70,7 +69,7 @@ public class OcanForm {
 	private static OcanClientFormDao ocanClientFormDao = (OcanClientFormDao) SpringUtils.getBean("ocanClientFormDao");	
 	private static OcanConnexOptionDao ocanConnexOptionDao = (OcanConnexOptionDao) SpringUtils.getBean("ocanConnexOptionDao");
 	private static ProgramDao programDao = (ProgramDao) SpringUtils.getBean("programDao");
-
+    private static FunctionalCentreAdmissionDao functionalCentreAdmissionDao = (FunctionalCentreAdmissionDao) SpringUtils.getBean("functionalCentreAdmissionDao");
 	
 	public static Demographic getDemographic(String demographicId)
 	{
@@ -174,7 +173,7 @@ public class OcanForm {
 		ocanStaffForm.setAddressLine2("");
 		ocanStaffForm.setOcanType(ocanType);
 		ocanStaffForm.setAssessmentId(ocanStaffForm.getId());
-		
+		/*
 		//get admission info
 		List<Admission> admissions = admissionDao.getAdmissionsByProgramAndClient(clientId, programId);
 		if(admissions.size()>0) {
@@ -198,6 +197,17 @@ public class OcanForm {
 			}
 			
 		}
+		*/
+		/*
+		//get admission info
+		Program program = programDao.getProgram(programId);
+		FunctionalCentreAdmission functionalCentreAdmission = functionalCentreAdmissionDao.getLatestAdmissionByDemographicNoAndFunctionalCentreId(clientId, program.getFunctionalCentreId());
+		ocanStaffForm.setAdmissionId(functionalCentreAdmission.getId());
+		ocanStaffForm.setReferralDate(functionalCentreAdmission.getReferralDate());
+		ocanStaffForm.setAdmissionDate(functionalCentreAdmission.getAdmissionDate());
+		ocanStaffForm.setServiceInitDate(functionalCentreAdmission.getServiceInitiationDate());
+		ocanStaffForm.setDischargeDate(functionalCentreAdmission.getDischargeDate());
+		*/
 		
 		if(prepopulationLevel == OcanForm.PRE_POPULATION_LEVEL_DEMOGRAPHIC) {				
 				Demographic demographic=demographicDao.getDemographicById(clientId);		

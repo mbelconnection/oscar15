@@ -51,6 +51,7 @@ import org.apache.struts.action.ActionMessages;
 import org.apache.struts.action.RedirectingActionForward;
 import org.oscarehr.PMmodule.caisi_integrator.CaisiIntegratorManager;
 import org.oscarehr.PMmodule.exception.AdmissionException;
+import org.oscarehr.PMmodule.exception.FunctionalCentreDischargeException;
 import org.oscarehr.PMmodule.exception.ProgramFullException;
 import org.oscarehr.PMmodule.exception.ServiceRestrictionException;
 import org.oscarehr.PMmodule.model.Admission;
@@ -380,7 +381,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		return mapping.findForward(PRINT);
 	}
 
-	public ActionForward save_all(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response, String saveWhich) {
+	public ActionForward save_all(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response, String saveWhich) throws FunctionalCentreDischargeException {
 		GenericIntakeEditFormBean formBean = (GenericIntakeEditFormBean) form;
 		LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
 		
@@ -669,7 +670,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		return admissionText;
 	}
 
-	public ActionForward save(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+	public ActionForward save(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws FunctionalCentreDischargeException {
 		
 		String fromAppt = request.getParameter("fromAppt");
 		
@@ -690,20 +691,20 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		}
 	}
 	
-	public ActionForward save_draft(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+	public ActionForward save_draft(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws FunctionalCentreDischargeException {
 		return save_all(mapping, form, request, response, "draft");
 	}
 
-	public ActionForward save_temp(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+	public ActionForward save_temp(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws FunctionalCentreDischargeException {
 
 		return save_all(mapping, form, request, response, "RFQ_temp");
 	}
 
-	public ActionForward save_admit(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+	public ActionForward save_admit(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws FunctionalCentreDischargeException {
 		return save_all(mapping, form, request, response, "RFQ_admit");
 	}
 
-	public ActionForward save_notAdmit(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+	public ActionForward save_notAdmit(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws FunctionalCentreDischargeException {
 		return save_all(mapping, form, request, response, "RFQ_notAdmit");
 	}
 
@@ -882,7 +883,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		clientManager.saveClient(client);
 	}
 
-	private void admitExternalProgram(Integer clientId, String providerNo, Integer externalProgramId) throws ProgramFullException, AdmissionException, ServiceRestrictionException {
+	private void admitExternalProgram(Integer clientId, String providerNo, Integer externalProgramId) throws ProgramFullException, AdmissionException, ServiceRestrictionException, FunctionalCentreDischargeException {
 		Program externalProgram = null;
 		Integer currentExternalProgramId = getCurrentExternalProgramId(clientId);
 
@@ -906,7 +907,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 	}
 
 	private void admitBedCommunityProgram(Integer clientId, String providerNo, Integer bedCommunityProgramId, String saveWhich, String admissionText, Date admissionDate) throws ProgramFullException,
-			AdmissionException, ServiceRestrictionException {
+			AdmissionException, ServiceRestrictionException, FunctionalCentreDischargeException {
 		Program bedCommunityProgram = null;
 		Integer currentBedCommunityProgramId = getCurrentBedCommunityProgramId(clientId);
 
@@ -967,12 +968,12 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 								admissionManager.processAdmission(familyId, providerNo, bedCommunityProgram, "intake discharge", admissionText, admissionDate);
 							}
 							else {
-								admissionManager.processDischargeToCommunity(bedCommunityProgramId, familyId, providerNo, "intake discharge", "0", admissionDate);
+								admissionManager.processDischargeToCommunity(bedCommunityProgramId, familyId, providerNo, "intake discharge", "0", admissionDate, false);
 							}
 						}
 						else {
 							if (bedCommunityProgram.isCommunity()) {
-								admissionManager.processDischargeToCommunity(bedCommunityProgramId, familyId, providerNo, "intake discharge", "0", admissionDate);
+								admissionManager.processDischargeToCommunity(bedCommunityProgramId, familyId, providerNo, "intake discharge", "0", admissionDate, false);
 							}
 							else {
 								admissionManager.processDischarge(currentBedCommunityProgramId, familyId, "intake discharge", "0", admissionDate);
@@ -1000,12 +1001,12 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 							admissionManager.processAdmission(clientId, providerNo, bedCommunityProgram, "intake discharge", admissionText, admissionDate);
 						}
 						else {
-							admissionManager.processDischargeToCommunity(bedCommunityProgramId, clientId, providerNo, "intake discharge", "0", admissionDate);
+							admissionManager.processDischargeToCommunity(bedCommunityProgramId, clientId, providerNo, "intake discharge", "0", admissionDate, false);
 						}
 					}
 					else {
 						if (bedCommunityProgram.isCommunity()) {
-							admissionManager.processDischargeToCommunity(bedCommunityProgramId, clientId, providerNo, "intake discharge", "0", admissionDate);
+							admissionManager.processDischargeToCommunity(bedCommunityProgramId, clientId, providerNo, "intake discharge", "0", admissionDate, false);
 						}
 						else {
 							admissionManager.processDischarge(currentBedCommunityProgramId, clientId, "intake discharge", "0", admissionDate);
@@ -1018,15 +1019,20 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 	}
 
 	private void admitServicePrograms(Integer clientId, String providerNo, Set<Integer> serviceProgramIds, String admissionText, Date admissionDate) throws ProgramFullException, AdmissionException,
-			ServiceRestrictionException {
+			ServiceRestrictionException, FunctionalCentreDischargeException {
 		SortedSet<Integer> currentServicePrograms = getCurrentServiceProgramIds(clientId);
 
 		if (admissionText == null) admissionText = "intake admit";
 		
-		if( serviceProgramIds.isEmpty()) {
-			for(Object programId : currentServicePrograms) {
-				admissionManager.processDischarge((Integer) programId, clientId, "intake discharge", "0", admissionDate);
-			}
+		if( serviceProgramIds.isEmpty()) {			
+			for(Object programId : currentServicePrograms) 	{			
+				try {
+	                admissionManager.processDischarge((Integer) programId, clientId, "intake discharge", "0", admissionDate);
+                } catch (Exception e) {	                    
+                	LOG.error("Unexpected error", e);
+                }
+				
+			}			
 			return;
 		}
 		

@@ -314,6 +314,12 @@ Community Program:&nbsp;
 			</td>			
 		</tr>
 		
+		<tr>
+			<td width="20%">Discharge From Functional Centre</td>
+			<td><input type="checkbox" id="dischargedFromFunctionalCentre" name="dischargedFromFunctionalCentre"  value="true" />			
+			</td>			
+		</tr>
+		
 		<tr class="b">
 			<td colspan="2"><input type="button" value="Process Discharge"
 				onclick="return do_discharge();" /> <input type="button" value="Cancel"

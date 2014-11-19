@@ -37,6 +37,11 @@
 <%@page import="org.oscarehr.util.SessionConstants"%>
 <%@page import="org.oscarehr.util.SpringUtils"%>
 <%@page import="org.apache.commons.lang.time.DateFormatUtils" %>
+<%@page import="org.oscarehr.common.model.FunctionalCentreAdmission" %>
+<%@page import="org.oscarehr.common.dao.FunctionalCentreAdmissionDao" %>
+<%@page import="org.oscarehr.common.model.FunctionalCentre" %>
+<%@page import="org.oscarehr.common.dao.FunctionalCentreDao" %>
+
 <%@include file="/layouts/caisi_html_top-jquery.jspf"%>
 
 
@@ -85,19 +90,7 @@
 	}
 	
 	DemographicDao demographicDao = (DemographicDao) SpringUtils.getBean("demographicDao");
-	String hc_type = demographicDao.getDemographicById(currentDemographicId).getHcType();
-	String admissionDate = "0001-01-01";
-	AdmissionDao admissionDao = (AdmissionDao) SpringUtils.getBean("admissionDao");	
-	List<Admission> admissions = admissionDao.getAdmissionsASC(currentDemographicId);
-	for(Admission ad : admissions) {
-		if(!"community".equalsIgnoreCase(ad.getProgramType())) {
-			admissionDate = DateFormatUtils.ISO_DATE_FORMAT.format(ad.getAdmissionDate());
-			break;			
-		}
-	}
-	String admission_year = admissionDate.substring(0,4);
-	String admission_month = admissionDate.substring(5,7);
-	
+	String hc_type = demographicDao.getDemographicById(currentDemographicId).getHcType();	
 	
 %>
 
@@ -263,13 +256,14 @@ $('document').ready(function() {
 
 <script>
 
-function changeProgram(selectBox) {
+function changeFunctionalCentre(selectBox) {
 	
 	var selectBoxId = selectBox.id;	
 	var selectBoxValue = selectBox.options[selectBox.selectedIndex].value;
 	
 	var demographicId='<%=currentDemographicId%>';	
 	var ocanStaffFormId = '<%=ocanStaffFormId%>';
+	var view = '<%=view%>';
 	
 	if(document.getElementById("admissionDate") == null) {	
 			$.get('cbi_get_dates.jsp?view='+view+'&ocanStaffFormId='+ocanStaffFormId+'&demographicId='+demographicId+'&programId=0&admissionId='+selectBoxValue, function(data) {
@@ -284,6 +278,7 @@ function changeProgram(selectBox) {
 	}
 		
 }
+
 </script>
 
 
@@ -445,36 +440,36 @@ function changeProgram(selectBox) {
 			<td class="genericTableData">			
 					
 					<%	
+					FunctionalCentreAdmissionDao admissionDao = (FunctionalCentreAdmissionDao) SpringUtils.getBean("functionalCentreAdmissionDao");	
+					FunctionalCentreDao functionalCentreDao = (FunctionalCentreDao) SpringUtils.getBean("functionalCentreDao");	
 					String selected="";
 					if(ocanStaffFormId==0)	{	//new form: list all programs IDs not used in cbi form.
 					%>
-						<select name="admissionId" id="admissionId" onchange="changeProgram(this);" class="{validate: {required:true}}" >
+						<select name="admissionId" id="admissionId" onchange="changeFunctionalCentre(this);" class="{validate: {required:true}}" >
 						<option value=""> </option>
 					<%
-						for (Admission admission : OcanForm.getServiceAndBedProgramAdmissions(Integer.valueOf(currentDemographicId)) )
+						for (FunctionalCentreAdmission admission : admissionDao.getDistinctAdmissionsByDemographicNo(Integer.valueOf(currentDemographicId)) )
 						{	
-							OcanStaffForm existingCbiForm = OcanForm.findLatestCbiFormsByFacilityAdmissionId(Integer.valueOf(admission.getId().intValue()), null);
-							if(existingCbiForm!=null)
-								continue;						
-								 
-							if (ocanStaffForm.getAdmissionId()!=null && ocanStaffForm.getAdmissionId().intValue()==admission.getId().intValue()) 
-								selected="selected=\"selected\"";
-							else 
-								selected="";
+							FunctionalCentre functionalCentre = functionalCentreDao.find(admission.getFunctionalCentreId());
+							OcanStaffForm existingCbiForm = OcanForm.findLatestCbiFormsByFacilityAdmissionId(Integer.valueOf(admission.getId()), null);
+							if(existingCbiForm!=null) 
+								continue;                                       
+									                                                   
 							%>
-								<option <%=selected%> value="<%=admission.getId()%>"><%=CdsForm4.getEscapedAdmissionSelectionDisplay(admission)%></option>
+								<option <%=selected%> value="<%=admission.getId()%>"><%=functionalCentre.getDescription() %> - <%=DateFormatUtils.ISO_DATE_FORMAT.format(admission.getAdmissionDate()) %></option>
 							<%						
 						}
 					  } else { //open existing form 
 						  selected="selected";
-					  	  Admission ad = admissionDao.getAdmission(ocanStaffForm.getAdmissionId());
+						  FunctionalCentreAdmission ad = admissionDao.find(ocanStaffForm.getAdmissionId());
+						  FunctionalCentre functionalCentre = functionalCentreDao.find(ad.getFunctionalCentreId());
 					 %>
 					 	<input type="hidden" name="admissionId" id="admissionId" value="<%=ocanStaffForm.getAdmissionId()%>" />
 					 
 					 	  <select name="admissionId_tmp" disabled>
 						  <option value=""> </option>
 					
-						  <option <%=selected%> value="<%=ocanStaffForm.getAdmissionId()%>"><%=CdsForm4.getEscapedAdmissionSelectionDisplay(ad)%></option>
+						  <option <%=selected%> value="<%=ocanStaffForm.getAdmissionId()%>"><%=functionalCentre.getDescription() %> - <%=DateFormatUtils.ISO_DATE_FORMAT.format(ad.getAdmissionDate()) %>%></option>
 					 <%
 					  }
 					

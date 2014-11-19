@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.oscarehr.PMmodule.dao.AdmissionDao;
 import org.oscarehr.PMmodule.dao.ClientReferralDAO;
 import org.oscarehr.PMmodule.dao.ProgramClientStatusDAO;
@@ -34,6 +35,7 @@ import org.oscarehr.PMmodule.dao.ProgramDao;
 import org.oscarehr.PMmodule.dao.ProgramQueueDao;
 import org.oscarehr.PMmodule.exception.AdmissionException;
 import org.oscarehr.PMmodule.exception.AlreadyAdmittedException;
+import org.oscarehr.PMmodule.exception.FunctionalCentreDischargeException;
 import org.oscarehr.PMmodule.exception.ProgramFullException;
 import org.oscarehr.PMmodule.exception.ServiceRestrictionException;
 import org.oscarehr.PMmodule.model.Admission;
@@ -45,6 +47,8 @@ import org.oscarehr.PMmodule.model.Program;
 import org.oscarehr.PMmodule.model.ProgramClientRestriction;
 import org.oscarehr.PMmodule.model.ProgramQueue;
 import org.oscarehr.PMmodule.model.RoomDemographic;
+import org.oscarehr.common.dao.FunctionalCentreAdmissionDao;
+import org.oscarehr.common.model.FunctionalCentreAdmission;
 import org.oscarehr.util.LoggedInInfo;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,7 +66,8 @@ public class AdmissionManager {
 	private RoomManager roomManager;
 	private BedManager bedManager;
 	private RoomDemographicManager roomDemographicManager;
-
+	private FunctionalCentreAdmissionDao functionalCentreAdmissionDao;
+    
     public List<Admission> getAdmissions_archiveView(String programId, Integer demographicNo) {
 		return dao.getAdmissions_archiveView(Integer.valueOf(programId), demographicNo);
 	}
@@ -127,31 +132,31 @@ public class AdmissionManager {
 		processAdmission(demographicNo, providerNo, program, dischargeNotes, admissionNotes, false, null, false);
 	}
 	*/
-	public void processAdmission(Integer demographicNo, String providerNo, Program program, String dischargeNotes, String admissionNotes) throws ProgramFullException, AdmissionException, ServiceRestrictionException {
+	public void processAdmission(Integer demographicNo, String providerNo, Program program, String dischargeNotes, String admissionNotes) throws ProgramFullException, AdmissionException, ServiceRestrictionException, FunctionalCentreDischargeException {
 		processAdmission(demographicNo, providerNo, program, dischargeNotes, admissionNotes, false, null, false,null);
 	}
 
-	public void processAdmission(Integer demographicNo, String providerNo, Program program, String dischargeNotes, String admissionNotes, boolean tempAdmission) throws ProgramFullException, AdmissionException, ServiceRestrictionException {
+	public void processAdmission(Integer demographicNo, String providerNo, Program program, String dischargeNotes, String admissionNotes, boolean tempAdmission) throws ProgramFullException, AdmissionException, ServiceRestrictionException, FunctionalCentreDischargeException {
 		processAdmission(demographicNo, providerNo, program, dischargeNotes, admissionNotes, tempAdmission, null, false,null);
 	}
 
-        public void processAdmission(Integer demographicNo, String providerNo, Program program, String dischargeNotes, String admissionNotes, boolean tempAdmission,List<Long> dependents) throws ProgramFullException, AdmissionException, ServiceRestrictionException {
+        public void processAdmission(Integer demographicNo, String providerNo, Program program, String dischargeNotes, String admissionNotes, boolean tempAdmission,List<Long> dependents) throws ProgramFullException, AdmissionException, ServiceRestrictionException, FunctionalCentreDischargeException {
 		processAdmission(demographicNo, providerNo, program, dischargeNotes, admissionNotes, tempAdmission, null, false,dependents);
 	}
         
-	public void processAdmission(Integer demographicNo, String providerNo, Program program, String dischargeNotes, String admissionNotes, boolean tempAdmission, boolean overrideRestriction) throws ProgramFullException, AdmissionException, ServiceRestrictionException {
+	public void processAdmission(Integer demographicNo, String providerNo, Program program, String dischargeNotes, String admissionNotes, boolean tempAdmission, boolean overrideRestriction) throws ProgramFullException, AdmissionException, ServiceRestrictionException, FunctionalCentreDischargeException {
 		processAdmission(demographicNo, providerNo, program, dischargeNotes, admissionNotes, tempAdmission, null, overrideRestriction,null);
 	}
         
-        public void processAdmission(Integer demographicNo, String providerNo, Program program, String dischargeNotes, String admissionNotes, Date admissionDate) throws ProgramFullException, AdmissionException, ServiceRestrictionException {
+        public void processAdmission(Integer demographicNo, String providerNo, Program program, String dischargeNotes, String admissionNotes, Date admissionDate) throws ProgramFullException, AdmissionException, ServiceRestrictionException, FunctionalCentreDischargeException {
 		processAdmission(demographicNo, providerNo, program, dischargeNotes, admissionNotes, false, admissionDate, false,null);
 	}
         
-        public void processAdmission(Integer demographicNo, String providerNo, Program program, String dischargeNotes, String admissionNotes, boolean tempAdmission,List<Long> dependents, Date admissionDate) throws ProgramFullException, AdmissionException, ServiceRestrictionException {
+        public void processAdmission(Integer demographicNo, String providerNo, Program program, String dischargeNotes, String admissionNotes, boolean tempAdmission,List<Long> dependents, Date admissionDate) throws ProgramFullException, AdmissionException, ServiceRestrictionException, FunctionalCentreDischargeException {
     		processAdmission(demographicNo, providerNo, program, dischargeNotes, admissionNotes, tempAdmission, admissionDate, false,dependents);
     	}    
 
-	public void processAdmission(Integer demographicNo, String providerNo, Program program, String dischargeNotes, String admissionNotes, boolean tempAdmission, Date admissionDate, boolean overrideRestriction, List<Long> dependents) throws ProgramFullException, AdmissionException, ServiceRestrictionException {
+	public void processAdmission(Integer demographicNo, String providerNo, Program program, String dischargeNotes, String admissionNotes, boolean tempAdmission, Date admissionDate, boolean overrideRestriction, List<Long> dependents) throws ProgramFullException, AdmissionException, ServiceRestrictionException, FunctionalCentreDischargeException {
 		// see if there's room first
 		if (program.getNumOfMembers().intValue() >= program.getMaxAllowed().intValue()) {
 			throw new ProgramFullException();
@@ -184,7 +189,7 @@ public class AdmissionManager {
 			    	automaticDischarge = true;
 			    
 			    //processDischarge(new Integer(fullAdmission.getProgramId().intValue()), new Integer(demographicNo), dischargeNotes, "", null, fromTransfer);
-			    processDischarge(new Integer(fullAdmission.getProgramId().intValue()), new Integer(demographicNo), dischargeNotes, "", null, null,fromTransfer,automaticDischarge);
+			    processDischarge(new Integer(fullAdmission.getProgramId().intValue()), new Integer(demographicNo), dischargeNotes, "", null, null,fromTransfer,automaticDischarge, false);
 			} else { 
 				
 				
@@ -229,6 +234,7 @@ public class AdmissionManager {
 		saveAdmission(newAdmission);
 
 		// Clear them from the queue, Update their referral
+		Date clientReferralDate = null;
 		ProgramQueue pq = programQueueDao.getActiveProgramQueue(program.getId().longValue(), (long) demographicNo);
 		if (pq != null) {
 			pq.setStatus(ProgramQueue.STATUS_ADMITTED);
@@ -241,9 +247,39 @@ public class AdmissionManager {
 				referral.setCompletionDate(new Date());
 				referral.setCompletionNotes(admissionNotes);
 				clientReferralDAO.saveClientReferral(referral);
+				clientReferralDate = referral.getReferralDate();
 			}
 		}
 		
+		// Admit to linked functional centre.
+		// First get functional centre id
+		String functionalCentreId = program.getFunctionalCentreId();
+		if(functionalCentreId != null && !functionalCentreId.equals("")) {		
+			FunctionalCentreAdmission fca = functionalCentreAdmissionDao.getCurrentAdmissionByDemographicNoAndFunctionalCentreId(demographicNo, functionalCentreId);
+			if(fca != null) {
+				// compare dates, update all dates with older dates.
+				if(fca.getReferralDate().after(clientReferralDate) ) 
+					fca.setReferralDate(clientReferralDate);
+				if(fca.getAdmissionDate().after(admissionDate)) {
+					fca.setAdmissionDate(admissionDate);
+					fca.setServiceInitiationDate(admissionDate);
+				}
+				fca.setUpdateDate(new Date());
+				functionalCentreAdmissionDao.merge(fca);
+			} else {
+				// insert a new admission record
+				fca = new FunctionalCentreAdmission();
+				fca.setDemographicNo(demographicNo);
+				fca.setFunctionalCentreId(functionalCentreId);				
+				fca.setReferralDate(clientReferralDate);
+				fca.setAdmissionDate(admissionDate);
+				fca.setServiceInitiationDate(admissionDate);
+				fca.setDischarged(false);
+				fca.setProviderNo(providerNo);
+				fca.setUpdateDate(new Date());
+				functionalCentreAdmissionDao.persist(fca);
+			}
+		}
 		
 		//if they are in a service program linked to this bed program, discharge them from that service program
 		//TODO:
@@ -353,15 +389,19 @@ public class AdmissionManager {
 		return dao.search(searchBean);
 	}
 
-    public void processDischarge(Integer programId, Integer demographicNo, String dischargeNotes, String radioDischargeReason) throws AdmissionException {
-        processDischarge(programId, demographicNo, dischargeNotes, radioDischargeReason, null, null, false, false);
+    public void processDischarge(Integer programId, Integer demographicNo, String dischargeNotes, String radioDischargeReason) throws AdmissionException, FunctionalCentreDischargeException {
+        processDischarge(programId, demographicNo, dischargeNotes, radioDischargeReason, null, null, false, false, false);
     }    
-    public void processDischarge(Integer programId, Integer demographicNo, String dischargeNotes, String radioDischargeReason, Date dischargeDate) throws AdmissionException {
-        processDischarge(programId, demographicNo, dischargeNotes, radioDischargeReason, dischargeDate, null, false, false);
+    public void processDischarge(Integer programId, Integer demographicNo, String dischargeNotes, String radioDischargeReason, Date dischargeDate) throws AdmissionException, FunctionalCentreDischargeException {
+        processDischarge(programId, demographicNo, dischargeNotes, radioDischargeReason, dischargeDate, null, false, false, false);
     }  
     
-    public void processDischarge(Integer programId, Integer demographicNo, String dischargeNotes, String radioDischargeReason, Date dischargeDate, List<Long> dependents, boolean fromTransfer, boolean automaticDischarge) throws AdmissionException {
-	
+    public void processDischarge(Integer programId, Integer demographicNo, String dischargeNotes, String radioDischargeReason, Date dischargeDate, boolean dischargedFromFunctionalCentre) throws AdmissionException, FunctionalCentreDischargeException {
+        processDischarge(programId, demographicNo, dischargeNotes, radioDischargeReason, dischargeDate, null, false, false, dischargedFromFunctionalCentre);
+    } 
+    
+    public void processDischarge(Integer programId, Integer demographicNo, String dischargeNotes, String radioDischargeReason, Date dischargeDate, List<Long> dependents, boolean fromTransfer, boolean automaticDischarge, boolean dischargedFromFunctionalCentre) throws AdmissionException, FunctionalCentreDischargeException {
+    	    	
 		Admission fullAdmission = getCurrentAdmission(String.valueOf(programId), demographicNo);
 	
 		Program program=programDao.getProgram(programId);
@@ -372,6 +412,28 @@ public class AdmissionManager {
 			throw new AdmissionException("Admission Record not found");
 		}
 	
+		// see if there's another program in same functional center first
+    	int functionalCentreNum=0;
+    	String currentFunctionalCentre = program.getFunctionalCentreId();    	
+    	if(dischargedFromFunctionalCentre) {
+    		if(!StringUtils.isBlank(currentFunctionalCentre)) {   
+    			List<Admission> ads = dao.getCurrentAdmissions(demographicNo);
+    			for(Admission a : ads) {
+    				Program p = programDao.getProgram(a.getProgramId());
+    				if(p!=null && p.getId().intValue() != programId.intValue()) {
+	    				String fid = p.getFunctionalCentreId();
+	    				if(!StringUtils.isBlank(fid) && fid.equals(currentFunctionalCentre)) {
+	    					functionalCentreNum ++;
+	    				}   
+    				}
+    			}
+    			if (functionalCentreNum > 0) {
+    				throw new FunctionalCentreDischargeException("This client is still in another program linked to same functaional centre, you can not discharge from the functional centre.");
+    			}
+    		}
+    	}
+		
+		
 		if(dischargeDate == null)
 			fullAdmission.setDischargeDate(new Date());
 		else
@@ -405,16 +467,30 @@ public class AdmissionManager {
 		
         if (dependents != null){
             for(Long l:dependents){
-                processDischarge(programId,new Integer(l.intValue()),dischargeNotes,radioDischargeReason, dischargeDate, null, fromTransfer, automaticDischarge);
+                processDischarge(programId,new Integer(l.intValue()),dischargeNotes,radioDischargeReason, dischargeDate, null, fromTransfer, automaticDischarge, dischargedFromFunctionalCentre);
             }
+        }
+        
+        if(dischargedFromFunctionalCentre) {
+        	//process discharge from functional centre      
+     		String functionalCentreId = program.getFunctionalCentreId();
+     		if(functionalCentreId != null && !functionalCentreId.equals("")) {		
+     			FunctionalCentreAdmission fca = functionalCentreAdmissionDao.getCurrentAdmissionByDemographicNoAndFunctionalCentreId(demographicNo, functionalCentreId);
+     			if(fca != null) {
+     				fca.setDischargeDate(dischargeDate);
+     				fca.setDischarged(true);     				
+     				fca.setUpdateDate(new Date());
+     				functionalCentreAdmissionDao.merge(fca);
+     			} 
+     		}
         }
     }
 
-    public void processDischargeToCommunity(Integer communityProgramId, Integer demographicNo, String providerNo, String notes, String radioDischargeReason, Date dischargeDate) throws AdmissionException {
-            processDischargeToCommunity(communityProgramId,demographicNo,providerNo,notes,radioDischargeReason,null,dischargeDate);
+    public void processDischargeToCommunity(Integer communityProgramId, Integer demographicNo, String providerNo, String notes, String radioDischargeReason, Date dischargeDate, boolean dischargedFromFunctionalCentre) throws AdmissionException, FunctionalCentreDischargeException {
+            processDischargeToCommunity(communityProgramId,demographicNo,providerNo,notes,radioDischargeReason,null,dischargeDate, dischargedFromFunctionalCentre);
     }
         
-	public void processDischargeToCommunity(Integer communityProgramId, Integer demographicNo, String providerNo, String notes, String radioDischargeReason,List<Long> dependents, Date dischargeDate) throws AdmissionException {
+	public void processDischargeToCommunity(Integer communityProgramId, Integer demographicNo, String providerNo, String notes, String radioDischargeReason,List<Long> dependents, Date dischargeDate, boolean dischargedFromFunctionalCentre) throws AdmissionException, FunctionalCentreDischargeException {
 		Admission currentBedAdmission = getCurrentBedProgramAdmission(demographicNo);
 
         Program program=programDao.getProgram(communityProgramId);
@@ -422,7 +498,7 @@ public class AdmissionManager {
         if (program!=null) facilityId=(int)program.getFacilityId();
         
 		if (currentBedAdmission != null) {
-			processDischarge(currentBedAdmission.getProgramId(), demographicNo, notes, radioDischargeReason);
+			processDischarge(currentBedAdmission.getProgramId(), demographicNo, notes, radioDischargeReason, dischargeDate, dischargedFromFunctionalCentre);
 			
 			BedDemographic bedDemographic = bedDemographicManager.getBedDemographicByDemographic(demographicNo, facilityId);
 			
@@ -434,7 +510,7 @@ public class AdmissionManager {
 		Admission currentCommunityAdmission = getCurrentCommunityProgramAdmission(demographicNo);
 
 		if (currentCommunityAdmission != null) {
-			processDischarge(currentCommunityAdmission.getProgramId(), demographicNo, notes, radioDischargeReason);
+			processDischarge(currentCommunityAdmission.getProgramId(), demographicNo, notes, radioDischargeReason, dischargeDate, dischargedFromFunctionalCentre);
 		}
 
 		// Create and save admission object
@@ -451,11 +527,26 @@ public class AdmissionManager {
 		admission.setClientStatusId(0);
 		saveAdmission(admission);
                 
-                if (dependents != null){
+           		if (dependents != null){
                     for(Long l:dependents){
-                        processDischargeToCommunity(communityProgramId,new Integer(l.intValue()),providerNo, notes, radioDischargeReason,null);
+                        processDischargeToCommunity(communityProgramId,new Integer(l.intValue()),providerNo, notes, radioDischargeReason,null, dischargeDate, dischargedFromFunctionalCentre);
                     }
                 }
+                
+           		if(dischargedFromFunctionalCentre) {
+                	//process discharge from functional centre      
+             		String functionalCentreId = program.getFunctionalCentreId();
+             		if(functionalCentreId != null && !functionalCentreId.equals("")) {		
+             			FunctionalCentreAdmission fca = functionalCentreAdmissionDao.getCurrentAdmissionByDemographicNoAndFunctionalCentreId(demographicNo, functionalCentreId);
+             			if(fca != null) {
+             				fca.setDischargeDate(dischargeDate);
+             				fca.setDischarged(true);     				
+             				fca.setUpdateDate(new Date());
+             				functionalCentreAdmissionDao.merge(fca);
+             			} 
+             		}
+                }
+        
 	}
 
     @Required
@@ -478,7 +569,12 @@ public class AdmissionManager {
 		this.clientReferralDAO = dao;
 	}
 
-    @Required
+    
+    public void setFunctionalCentreAdmissionDao(FunctionalCentreAdmissionDao functionalCentreAdmissionDao) {
+    	this.functionalCentreAdmissionDao = functionalCentreAdmissionDao;
+    }
+
+	@Required
     public void setBedDemographicManager(BedDemographicManager bedDemographicManager) {
 	    this.bedDemographicManager = bedDemographicManager;
     }

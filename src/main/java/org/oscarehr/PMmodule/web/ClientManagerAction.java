@@ -62,6 +62,7 @@ import org.oscarehr.PMmodule.exception.AdmissionException;
 import org.oscarehr.PMmodule.exception.AlreadyAdmittedException;
 import org.oscarehr.PMmodule.exception.AlreadyQueuedException;
 import org.oscarehr.PMmodule.exception.ClientAlreadyRestrictedException;
+import org.oscarehr.PMmodule.exception.FunctionalCentreDischargeException;
 import org.oscarehr.PMmodule.exception.ProgramFullException;
 import org.oscarehr.PMmodule.exception.ServiceRestrictionException;
 import org.oscarehr.PMmodule.model.Admission;
@@ -103,12 +104,16 @@ import org.oscarehr.caisi_integrator.ws.Referral;
 import org.oscarehr.caisi_integrator.ws.ReferralWs;
 import org.oscarehr.casemgmt.service.CaseManagementManager;
 import org.oscarehr.common.dao.CdsClientFormDao;
+import org.oscarehr.common.dao.FunctionalCentreAdmissionDao;
+import org.oscarehr.common.dao.FunctionalCentreDao;
 import org.oscarehr.common.dao.IntegratorConsentDao;
 import org.oscarehr.common.dao.OcanStaffFormDao;
 import org.oscarehr.common.dao.RemoteReferralDao;
 import org.oscarehr.common.model.CdsClientForm;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.Facility;
+import org.oscarehr.common.model.FunctionalCentre;
+import org.oscarehr.common.model.FunctionalCentreAdmission;
 import org.oscarehr.common.model.IntegratorConsent;
 import org.oscarehr.common.model.OcanStaffForm;
 import org.oscarehr.common.model.Provider;
@@ -153,6 +158,9 @@ public class ClientManagerAction extends BaseAction {
 	// private OcanClientFormDao ocanClientFormDao = (OcanClientFormDao)SpringUtils.getBean("ocanClientFormDao");
 	private RemoteReferralDao remoteReferralDao = (RemoteReferralDao) SpringUtils.getBean("remoteReferralDao");
 
+	private static FunctionalCentreAdmissionDao functionalCentreAdmissionDao = (FunctionalCentreAdmissionDao) SpringUtils.getBean("functionalCentreAdmissionDao");
+	private static FunctionalCentreDao functionalCentreDao = (FunctionalCentreDao) SpringUtils.getBean("functionalCentreDao");
+	
 	public void setIntegratorConsentDao(IntegratorConsentDao integratorConsentDao) {
 		this.integratorConsentDao = integratorConsentDao;
 	}
@@ -172,7 +180,7 @@ public class ClientManagerAction extends BaseAction {
 		return edit(mapping, form, request, response);
 	}
 
-	public ActionForward admit(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+	public ActionForward admit(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws NumberFormatException {
 		DynaActionForm clientForm = (DynaActionForm) form;
 
 		Admission admission = (Admission) clientForm.get("admission");
@@ -195,7 +203,11 @@ public class ClientManagerAction extends BaseAction {
 			ActionMessages messages = new ActionMessages();
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("admit.service_restricted", e.getRestriction().getComments(), e.getRestriction().getProvider().getFormattedName()));
 			saveMessages(request, messages);
-		}
+		} catch (FunctionalCentreDischargeException e) {
+			ActionMessages messages = new ActionMessages();
+			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.failure", e.getMessage()));
+			saveMessages(request, messages);
+		} 
 
 		logManager.log("write", "admit", demographicNo, request);
 
@@ -246,18 +258,28 @@ public class ClientManagerAction extends BaseAction {
 		List<Long> dependents = clientManager.getDependentsList(new Long(id));
 		String formattedDischargeDate = request.getParameter("dischargeDate");
 		Date  dischargeDate = oscar.util.DateUtils.toDate(formattedDischargeDate);
+		String dischargedFromFunctionalCentre_str = request.getParameter("dischargedFromFunctionalCentre");
+		boolean dischargedFromFunctionalCentre = false;
+		if(dischargedFromFunctionalCentre_str != null && dischargedFromFunctionalCentre_str.equals("true"))
+			dischargedFromFunctionalCentre = true;
+		
 		boolean success = true;
-
+		
 		try {
-			admissionManager.processDischarge(p.getId(), new Integer(id), admission.getDischargeNotes(), admission.getRadioDischargeReason(), dischargeDate, dependents, false, false);
+			admissionManager.processDischarge(p.getId(), new Integer(id), admission.getDischargeNotes(), admission.getRadioDischargeReason(), dischargeDate, dependents, false, false, dischargedFromFunctionalCentre);
 		} catch (AdmissionException e) {
+			ActionMessages messages = new ActionMessages();
+			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.failure", e.getMessage()));
+			saveMessages(request, messages);
+			success = false;
+		}catch (FunctionalCentreDischargeException e) {
 			ActionMessages messages = new ActionMessages();
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.failure", e.getMessage()));
 			saveMessages(request, messages);
 			success = false;
 		}
 
-		if (success) {
+		if (success) {	
 			ActionMessages messages = new ActionMessages();
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.success"));
 			saveMessages(request, messages);
@@ -276,16 +298,19 @@ public class ClientManagerAction extends BaseAction {
 
 		Admission admission = (Admission) clientForm.get("admission");
 		Program program = (Program) clientForm.get("program");
-		String clientId = request.getParameter("id");
+		String clientId = request.getParameter("id");		
 		List<Long> dependents = clientManager.getDependentsList(new Long(clientId));
 		
 		String formattedDischargeDate = request.getParameter("dischargeDate");
 		Date  dischargeDate = oscar.util.DateUtils.toDate(formattedDischargeDate);
-		
+		String dischargedFromFunctionalCentre_str = request.getParameter("dischargedFromFunctionalCentre");
+		boolean dischargedFromFunctionalCentre = false;
+		if(dischargedFromFunctionalCentre_str != null && dischargedFromFunctionalCentre_str.equals("true"))
+			dischargedFromFunctionalCentre = true;
 		ActionMessages messages = new ActionMessages();
 
 		try {							
-			admissionManager.processDischargeToCommunity(program.getId(), new Integer(clientId), getProviderNo(request), admission.getDischargeNotes(), admission.getRadioDischargeReason(), dependents, dischargeDate);
+			admissionManager.processDischargeToCommunity(program.getId(), new Integer(clientId), getProviderNo(request), admission.getDischargeNotes(), admission.getRadioDischargeReason(), dependents, dischargeDate, dischargedFromFunctionalCentre);
 			logManager.log("write", "discharge", clientId, request);
 	
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.success"));
@@ -295,6 +320,9 @@ public class ClientManagerAction extends BaseAction {
 		} catch (AdmissionException e) {
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.failure", e.getMessage()));
 			saveMessages(request, messages);
+		} catch (FunctionalCentreDischargeException e) {			
+			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.failure", e.getMessage()));
+			saveMessages(request, messages);			
 		}
 		
 		setEditAttributes(form, request, clientId);
@@ -1801,16 +1829,17 @@ public class ClientManagerAction extends BaseAction {
     }
 
 	private void populateCbiData(HttpServletRequest request, Integer demographicNo, Integer facilityId) {
-		List<Admission> admissions=admissionDao.getAdmissions(demographicNo);
+		List<FunctionalCentreAdmission> admissions=functionalCentreAdmissionDao.getAllAdmissionsByDemographicNo(demographicNo);
 		
 		ArrayList<OcanStaffForm> allLatestCbiForms=new ArrayList<OcanStaffForm>();
 		
-		for (Admission admission : admissions)
+		for (FunctionalCentreAdmission admission : admissions)
 		{
 			OcanStaffForm cbiForm=ocanStaffFormDao.findLatestCbiFormsByFacilityAdmissionId(facilityId, admission.getId().intValue(), null);
 			if (cbiForm!=null) allLatestCbiForms.add(cbiForm);
 		}
 	
+		
 	    request.setAttribute("allLatestCbiForms", allLatestCbiForms);
     }
 	
@@ -1996,10 +2025,10 @@ public class ClientManagerAction extends BaseAction {
 	
 	public static String getCbiProgramDisplayString(OcanStaffForm ocanStaffForm)
 	{
-		Admission admission=admissionDao.getAdmission(ocanStaffForm.getAdmissionId());
-		Program program=programDao.getProgram(admission.getProgramId());
+		FunctionalCentreAdmission admission=functionalCentreAdmissionDao.find(ocanStaffForm.getAdmissionId());
+		FunctionalCentre fc = functionalCentreDao.find(admission.getFunctionalCentreId());
 		
-		String displayString=program.getName()+" : "+DateFormatUtils.ISO_DATE_FORMAT.format(admission.getAdmissionDate());
+		String displayString=fc.getDescription()+" : "+DateFormatUtils.ISO_DATE_FORMAT.format(admission.getAdmissionDate());
 		return(StringEscapeUtils.escapeHtml(displayString));
 	}
 }

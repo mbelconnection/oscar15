@@ -1345,12 +1345,30 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 		if (obj.stauscolor == null)
 			obj.stauscolor = "#5E5A80";
 		var zoomWidth = "";
-		if(Schedular.config.providersList !=null && Schedular.config.providersList.length==1 && globalView.view=="day")
-			zoomWidth ="250px;"
-		else if(Schedular.config.providersList !=null && Schedular.config.providersList.length>6 && globalView.view=="day")
-			zoomWidth ="180px ! important;"
-		else if(Schedular.config.providersList !=null && Schedular.config.providersList.length>5 && globalView.view=="day")
-			zoomWidth ="200px ! important;"
+		if(Schedular.config.providersList !=null && Schedular.config.providersList.length==2 && globalView.view=="day"){
+			var scrollzoomWidth = (document.getElementById('persondata').offsetWidth / 2) -5;
+			zoomWidth = scrollzoomWidth + "px ! important;";
+			}
+		else if(Schedular.config.providersList !=null && Schedular.config.providersList.length==3 && globalView.view=="day"){
+			var scrollzoomWidth = (document.getElementById('persondata').offsetWidth / 3) -5;
+			zoomWidth = scrollzoomWidth + "px ! important;";
+			}
+		else if(Schedular.config.providersList !=null && Schedular.config.providersList.length==4 && globalView.view=="day"){
+			var scrollzoomWidth = (document.getElementById('persondata').offsetWidth / 4) -5;
+			zoomWidth = scrollzoomWidth + "px ! important;";
+			}
+		else if(Schedular.config.providersList !=null && Schedular.config.providersList.length==5 && globalView.view=="day"){
+			var scrollzoomWidth = (document.getElementById('persondata').offsetWidth / 5) -5;
+			zoomWidth = scrollzoomWidth + "px ! important;";
+			}
+		else if(Schedular.config.providersList !=null && Schedular.config.providersList.length==6 && globalView.view=="day"){
+			var scrollzoomWidth = (document.getElementById('persondata').offsetWidth / 6) -5;
+			zoomWidth = scrollzoomWidth + "px ! important;";
+			}
+		else if(Schedular.config.providersList !=null && Schedular.config.providersList.length==7 && globalView.view=="day"){
+			var scrollzoomWidth = (document.getElementById('persondata').offsetWidth / 7) -5;
+			zoomWidth = scrollzoomWidth + "px ! important;";
+			}
 		else
 			zoomWidth = "220px;";
 		html += '<div class="eventpop" style="height:' + height
@@ -1432,7 +1450,7 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 						+ '"><input type="image" style="" src="js_up/images/multi_p.png"><span style="position: relative; top: -5px;">'
 						+ (obj.noOfPat)
 						+ '</span> <input type="image" style="width:12px;height:12px;" src="js_up/images/round_arrow.png"></div></td>';*/
-			}	html += '<td class=" evtpop_td_ltline '
+			html += '<td class=" evtpop_td_ltline '
 					+ stylecls
 					+ '" style="overflow: hidden;padding-left: 2px; padding-right: 2px; text-overflow: ellipsis; white-space: nowrap; width:26px !important;text-align:center;padding-top:2px;"><div style="display: inline-block;cursor:pointer;" onclick="sch.repeatMulPat(this);" apptid="'
 					+ obj.apptId +'" id="mulpat'
@@ -1443,7 +1461,7 @@ Schedular.prototype.getEventDiv = function(obj, act) {
 					+ (obj.noOfPat)
 					+ '</span></div></td>';
 			
-			
+			}	
 			
 			
 			

@@ -533,7 +533,7 @@ Schedular.prototype.load = function(date) {
 }
 Schedular.prototype.dayLoad = function(date,providerNo,isgroup) {
 	// load appointment status
-	
+	console.log("in day load @536"+providerNo+"isgroup>>>"+isgroup);
 	this.getApptStatusHTML();
 	if(providerNo.indexOf("group") > - 1){
 		//alert(4);
@@ -588,11 +588,12 @@ Schedular.prototype.weekLoad = function(week,providerNo,isgroup) {
 Schedular.prototype.callDayWeekMonth = function(view,selVal){
 
 	var selDate = document.getElementById("inputField").value;
-
+	var dropVal = $("#docava").val().split("_");
+	console.log("in sch JS @ 591>>>>"+$("#docava").val().split("_")+">>>>>>selVal"+selVal);
 	var isgroup = false;
-	if(selVal.length > 0)
+	if(dropVal[1].length > 0 && selVal.length > 0)
 	{
-		if(selVal.toLowerCase().indexOf("group") > -1)
+		if(dropVal[1].indexOf("Group") > -1)
 		{
 			isgroup = true;
 		}	
@@ -610,7 +611,7 @@ Schedular.prototype.callDayWeekMonth = function(view,selVal){
 		else
 		{
 			sch.dayLoad(selDate,globalProviderId,isgroup);
-		}		
+		}
 	}else if(view =="week"){
 		globalView.view="week";
 		var sq = sch.weekForCurrentDate(selDate);		

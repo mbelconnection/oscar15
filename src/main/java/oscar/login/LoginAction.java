@@ -180,14 +180,18 @@ public final class LoginAction extends DispatchAction {
             // initiate security manager
             String default_pmm = null;
             
-            
-            
+
+
             // get preferences from preference table
         	ProviderPreference providerPreference=providerPreferenceDao.find(providerNo);
-        	
+
             if (viewType.equalsIgnoreCase("receptionist") || viewType.equalsIgnoreCase("doctor")) {
                 
-            	if (providerPreference==null) providerPreference=new ProviderPreference();
+                if (providerPreference == null) {
+                    providerPreference=new ProviderPreference();
+                    providerPreference.setProviderNo(providerNo);
+                    providerPreferenceDao.persist(providerPreference);
+                }
              	
             	session.setAttribute(SessionConstants.LOGGED_IN_PROVIDER_PREFERENCE, providerPreference);
             	

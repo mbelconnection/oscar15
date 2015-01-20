@@ -82,7 +82,7 @@ public class Driver {
 
 			System.setProperty("javax.net.ssl.trustStore", OscarProperties.getInstance().getProperty("olis_truststore").trim());
 			System.setProperty("javax.net.ssl.trustStorePassword", OscarProperties.getInstance().getProperty("olis_truststore_password").trim());
-			
+
 			OLISRequest olisRequest = new OLISRequest();
 			olisRequest.setHIALRequest(new HIALRequest());
 			String olisRequestURL = OscarProperties.getInstance().getProperty("olis_request_url", "https://olis.ssha.ca/ssha.olis.webservices.ER7/OLIS.asmx");
@@ -185,11 +185,13 @@ public class Driver {
 					errorString += "ERROR " + error.getNumber() + " (" + error.getSeverity() + ") : " + error.getMessage();
 					MiscUtils.getLogger().debug(errorString);
 
-					ArrayOfString details = error.getDetails();
-					List<String> detailList = details.getString();
-					for (String detail : detailList) {
-						errorString += "\n" + detail;
-					}
+					ArrayOfString details = error.getDetails();                                        
+                                        if (details != null) {
+                                            List<String> detailList = details.getString();
+                                            for (String detail : detailList) {
+                                                    errorString += "\n" + detail;
+                                            }
+                                        }
 
 					errorStringList.add(errorString);
 				}
@@ -242,7 +244,7 @@ public class Driver {
 		X509Certificate cert = null;
 		PrivateKey priv = null;
 		KeyStore keystore = null;
-		String pwd = "changeit";
+		String pwd = OscarProperties.getInstance().getProperty("olis_ssl_keystore_password","changeit");
 		String result = null;
 		try {
 			Security.addProvider(new BouncyCastleProvider());

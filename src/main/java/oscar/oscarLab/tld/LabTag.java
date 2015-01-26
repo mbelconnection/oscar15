@@ -50,8 +50,12 @@ public class LabTag extends TagSupport {
    public int doStartTag() throws JspException    {
         try {
             
-            String sql = new String("select count(*) from providerLabRouting where provider_no = '"+ providerNo +"' and status = 'N'");            
-            ResultSet rs = DBHandler.GetSQL(sql);
+        	String sql = new String("select count(*) FROM ("+
+        			"select plr.* from providerLabRouting plr LEFT JOIN hl7TextInfo hl7 ON hl7.lab_no = plr.lab_no where plr.provider_no = '"+ providerNo +"' and plr.status = 'N' AND plr.lab_type = 'HL7' GROUP BY hl7.accessionNum " +
+        			"UNION "+
+        			"select plr.* from providerLabRouting plr LEFT JOIN  document d ON d.document_no = plr.lab_no where plr.provider_no = '"+ providerNo +"' and plr.status = 'N' AND plr.lab_type = 'DOC' AND (d.status <> 'D' OR d.status IS NULL) "+
+        			") as count_labs");
+        	ResultSet rs = DBHandler.GetSQL(sql);
             while (rs.next()) {
                numNewLabs = (rs.getInt(1));
             }

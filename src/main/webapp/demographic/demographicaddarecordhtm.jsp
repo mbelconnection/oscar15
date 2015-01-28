@@ -497,19 +497,19 @@ function autoFillHin(){
    String firstNameVal = "";
    String chartNoVal = "";
 
-   if (searchMode != null) {
+   if (searchMode != null) {      
       if (searchMode.equals("search_name")) {
-        int commaIdx = keyWord.indexOf(",");
+        int commaIdx = searchText.indexOf(",");
         if (commaIdx == -1) 
-	   lastNameVal = keyWord.trim();
-        else if (commaIdx == (keyWord.length()-1))
-           lastNameVal = keyWord.substring(0,keyWord.length()-1).trim();
+	   lastNameVal = searchText.trim();
+        else if (commaIdx == (searchText.length()-1))
+           lastNameVal = searchText.substring(0,searchText.length()-1).trim();
         else {
-           lastNameVal = keyWord.substring(0,commaIdx).trim();
-  	   firstNameVal = keyWord.substring(commaIdx+1).trim();
+           lastNameVal = searchText.substring(0,commaIdx).trim();
+  	   firstNameVal = searchText.substring(commaIdx+1).trim();
         }
    } else if (searchMode.equals("search_chart_no")) {
-	chartNoVal = keyWord;
+	chartNoVal = searchText;
    }
   }
 %>

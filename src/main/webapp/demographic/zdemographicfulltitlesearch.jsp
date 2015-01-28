@@ -34,54 +34,45 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/security.tld" prefix="security" %>
-<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi" %>
 
 <script language="JavaScript">
-function encodeInput() {
-	document.titlesearch.keyword.value = document.titlesearch.keyword.value.replace(/\"/g, "");
-	document.titlesearch.keyword.value = encodeURI(document.titlesearch.keyword.value);
-}
-
-function search() {
-	encodeInput();
-	if (checkTypeIn()) document.titlesearch.submit();
-}
 function searchInactive() {
-	encodeInput();
     document.titlesearch.ptstatus.value="inactive";
     if (checkTypeIn()) document.titlesearch.submit();
 }
 
 function searchAll() {
-	encodeInput();
     document.titlesearch.ptstatus.value="";
     if (checkTypeIn()) document.titlesearch.submit();
 }
 
 function searchOutOfDomain() {
-	document.titlesearch.keyword.value = encodeURI(document.titlesearch.keyword.value);
     document.titlesearch.outofdomain.value="true";
     if (checkTypeIn()) document.titlesearch.submit();
 }
 
 </script>
 
-<form method="get" name="titlesearch" action="demographiccontrol.jsp"
-	onsubmit="search()">
+<form method="get" name="titlesearch" action="<%=request.getContextPath()%>/demographic/demographiccontrol.jsp"
+	onsubmit="return checkTypeIn()">
 <div class="searchBox">
 <div class="RowTop header">
-    <div class="title">
-        <bean:message key="demographic.zdemographicfulltitlesearch.msgSearch" />
-    </div>
-</div>
+	<div class="title">
+		<bean:message key="demographic.search.msgSearchPatient" />
+	</div>
+	<div class="createNew">
+		<span class="HelpAboutLogout" style="font-size:12px; font-style:normal;">
+			<oscar:help keywords="&Title=Patient+Search&portal_type%3Alist=Document" key="app.top1" style="color:black; font-size:10px;font-style:normal;"/> |
+        		<a style="color:black; font-size:10px;font-style:normal;" href="<%=request.getContextPath()%>/oscarEncounter/About.jsp" target="_new"><bean:message key="global.about" /></a>
+		</span> 
+	</div>
+</div> 
 <ul>
     <li>
-        <div class="label"><bean:message
-            key="demographic.zdemographicfulltitlesearch.msgBy" />:
+        <div class="label">
         </div>
-	<% String searchMode = request.getParameter("search_mode");
-		String displayMode = request.getParameter("displaymode");
-		String keyWord = null;
+	<% String searchMode = request.getParameter("search_mode");         
          if (searchMode == null || searchMode.equals("")) {
              searchMode = OscarProperties.getInstance().getProperty("default_search_mode","search_name");             
          }  
@@ -108,19 +99,17 @@ function searchOutOfDomain() {
          </select>
     </li>
     <li>
-        <div class="label"><bean:message
-            key="demographic.zdemographicfulltitlesearch.msgInput" />:
+        <div class="label">
         </div>
-        <%
-        if (displayMode != null && displayMode.equals("Search")) {
-			keyWord = request.getParameter("keyword");
-			keyWord = (keyWord == null)?"":java.net.URLDecoder.decode(keyWord, "UTF-8");
-		%>
-			<input class="wideInput" type="text" NAME="keyword" VALUE="<%=keyWord%>" SIZE="17" MAXLENGTH="100">
-		<%}
-		else {%>
-			<input class="wideInput" type="text" NAME="keyword" value="${fn:escapeXml(param.keyword)}" SIZE="17" MAXLENGTH="100">
-		<%}%>
+<%
+        String searchText = request.getParameter("keyword");        
+        if (searchText == null) {
+            searchText = "";
+        } else {
+            searchText = org.apache.commons.lang.StringEscapeUtils.escapeHtml(searchText);
+        }
+%>
+        <input class="wideInput" type="text" NAME="keyword" VALUE="<%=searchText%>" SIZE="17" MAXLENGTH="100">
     </li>
     <li>
 				<INPUT TYPE="hidden" NAME="orderby" VALUE="last_name, first_name">
@@ -143,7 +132,7 @@ function searchOutOfDomain() {
 				<INPUT TYPE="button" onclick="searchOutOfDomain();"
 					TITLE="<bean:message key="demographic.zdemographicfulltitlesearch.tooltips.searchOutOfDomain"/>"
 					VALUE="<bean:message key="demographic.search.OutOfDomain"/>">
-					</security:oscarSec>
+					</security:oscarSec>	
     </li>
 </ul>
 </div>

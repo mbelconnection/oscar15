@@ -663,7 +663,7 @@ function popup(location) {
     }
 }
 
-function popup( height, width, url, windowName){
+function popupPatient( height, width, url, windowName){
   var page = url;
   windowprops = "height="+height+",width="+width+",location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=yes,screenX=0,screenY=0,top=0,left=0";
   var popup=window.open(url, windowName, windowprops);
@@ -1516,7 +1516,7 @@ function updateFaxButton() {
 							<td class="tite4"><bean:message
 								key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.msgPatient" />:
 							</td>
-                                                        <td class="tite1"><a href="javascript:void();" onClick="popup(600,900,'<%=request.getContextPath()%>/demographic/demographiccontrol.jsp?demographic_no=<%=demo%>&displaymode=edit&dboperation=search_detail')"><%=thisForm.getPatientName()%></a></td>
+                            <td class="tite1"><a href="javascript:void();" onClick="popupPatient(600,900,'<%=request.getContextPath()%>/demographic/demographiccontrol.jsp?demographic_no=<%=demo%>&displaymode=edit&dboperation=search_detail')"><%=thisForm.getPatientName()%></a></td>
 						</tr>
 						<tr>
 							<td class="tite4"><bean:message

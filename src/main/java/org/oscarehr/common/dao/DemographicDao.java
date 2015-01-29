@@ -367,8 +367,372 @@ public static List<Integer> getDemographicIdsAlteredSinceTime(Date value) {
     		 SqlUtils.closeResources(c, null, null);
     	 }
      }
+     
+        private static final String PROGRAM_DOMAIN_RESTRICTION = "select distinct a.clientId from ProgramProvider pp,Admission a WHERE pp.ProgramId=a.programId AND pp.ProviderNo=:providerNo";
 
-     @SuppressWarnings("unchecked")
+        public List<Demographic> searchDemographicByName(String searchStr, int limit, int offset, String providerNo, boolean outOfDomain) {
+            return searchDemographicByNameAndStatus(searchStr,null,limit,offset,providerNo,outOfDomain,false);
+        }
+        
+        public List<Demographic> searchDemographicByNameAndNotStatus(String searchStr, List<String> statuses, int limit, int offset, String providerNo, boolean outOfDomain) {
+		return searchDemographicByNameAndStatus(searchStr,statuses,limit,offset,providerNo,outOfDomain,true);
+	}
+	public List<Demographic> searchDemographicByNameAndStatus(String searchStr, List<String> statuses, int limit, int offset, String providerNo, boolean outOfDomain) {
+		return searchDemographicByNameAndStatus(searchStr,statuses,limit,offset,providerNo,outOfDomain,false);
+	}
+        
+        public List<Demographic> searchDemographicByPhone(String phoneStr, int limit, int offset, String providerNo, boolean outOfDomain) {
+		return searchDemographicByPhoneAndStatus(phoneStr,null,limit,offset,providerNo,outOfDomain,false);
+	}
+        
+        
+        public List<Demographic> searchDemographicByDOB(String dobStr, int limit, int offset, String providerNo, boolean outOfDomain) {
+		return searchDemographicByDOBAndStatus(dobStr,null,limit,offset,providerNo,outOfDomain,false);
+	}
+        
+        public List<Demographic> searchDemographicByDOBAndNotStatus(String dobStr, List<String> statuses, int limit, int offset,String providerNo, boolean outOfDomain) {
+		return searchDemographicByDOBAndStatus(dobStr,statuses,limit,offset,providerNo,outOfDomain,true);
+	}
+	
+	public List<Demographic> searchDemographicByDOBAndStatus(String dobStr, List<String> statuses, int limit, int offset,String providerNo, boolean outOfDomain) {
+		return searchDemographicByDOBAndStatus(dobStr,statuses,limit,offset,providerNo,outOfDomain,false);
+	}
+        
+        public List<Demographic> searchDemographicByAddress(String addressStr, int limit, int offset, String providerNo, boolean outOfDomain) {
+		return searchDemographicByAddressAndStatus(addressStr,null,limit,offset,providerNo,outOfDomain,false);
+	}
+        
+        public List<Demographic> searchDemographicByAddressAndStatus(String addressStr, List<String> statuses, int limit, int offset, String providerNo, boolean outOfDomain) {
+		return searchDemographicByAddressAndStatus(addressStr,statuses,limit,offset,providerNo,outOfDomain,false);
+	}
+
+	public List<Demographic> searchDemographicByAddressAndNotStatus(String addressStr, List<String> statuses, int limit, int offset, String providerNo, boolean outOfDomain) {
+		return searchDemographicByAddressAndStatus(addressStr,statuses,limit,offset,providerNo,outOfDomain,true);
+	}
+        
+        public List<Demographic> searchDemographicByHIN(String hinStr, int limit, int offset, String providerNo, boolean outOfDomain) {
+		return searchDemographicByHINAndStatus(hinStr,null,limit,offset,providerNo,outOfDomain,false);
+	}
+
+	public List<Demographic> searchDemographicByHINAndNotStatus(String hinStr, List<String> statuses, int limit, int offset, String providerNo, boolean outOfDomain ) {
+		return searchDemographicByHINAndStatus(hinStr,statuses,limit,offset,providerNo,outOfDomain,true);	
+	}
+	
+	public List<Demographic> searchDemographicByHINAndStatus(String hinStr, List<String> statuses, int limit, int offset, String providerNo, boolean outOfDomain ) {
+		return searchDemographicByHINAndStatus(hinStr,statuses,limit,offset,providerNo,outOfDomain,false);	
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Demographic> searchDemographicByHINAndStatus(String hinStr, List<String> statuses, int limit, int offset, String providerNo, boolean outOfDomain,boolean ignoreStatuses) {
+		List<Demographic> list = new ArrayList<Demographic>();
+
+		String queryString = "From Demographic d where d.Hin like :hin ";
+
+		if(statuses != null) {
+			queryString += " and d.PatientStatus " + ((ignoreStatuses)?"not":"") + "  in (:statuses)";
+		}
+		 
+		if(providerNo != null && !outOfDomain) {
+			queryString += " AND d.id IN ("+ PROGRAM_DOMAIN_RESTRICTION+") ";
+		}
+		
+		Session session = this.getSession();
+		try {
+			Query q = session.createQuery(queryString);
+			q.setFirstResult(offset);
+			q.setMaxResults(limit);
+
+			q.setParameter("hin", hinStr.trim() + "%");
+			
+			if(statuses != null) {
+				q.setParameterList("statuses", statuses);
+			}
+
+			if(providerNo != null && !outOfDomain) {
+				q.setParameter("providerNo", providerNo);
+			}
+			
+			list = q.list();
+		} finally {
+			this.releaseSession(session);
+		}
+		return list;
+	}
+        
+        public List<Demographic> findDemographicByChartNo(String chartNoStr, int limit, int offset, String providerNo, boolean outOfDomain) {
+		return findDemographicByChartNoAndStatus(chartNoStr,null,limit,offset,providerNo,outOfDomain,false);
+	}
+
+	public List<Demographic> findDemographicByChartNoAndStatus(String chartNoStr, List<String> statuses, int limit, int offset, String providerNo, boolean outOfDomain) {
+		return findDemographicByChartNoAndStatus(chartNoStr,statuses,limit,offset,providerNo,outOfDomain,false);
+	}
+	
+	public List<Demographic> findDemographicByChartNoAndNotStatus(String chartNoStr, List<String> statuses, int limit, int offset, String providerNo, boolean outOfDomain) {
+		return findDemographicByChartNoAndStatus(chartNoStr,statuses,limit,offset,providerNo,outOfDomain,true);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Demographic> findDemographicByChartNoAndStatus(String chartNoStr, List<String> statuses, int limit, int offset, String providerNo, boolean outOfDomain, boolean ignoreStatuses) {
+
+		String queryString = "From Demographic d where d.ChartNo like :chartNo ";
+
+		if(statuses != null) {
+			queryString += " and d.PatientStatus " + ((ignoreStatuses)?"not":"") + "  in (:statuses)";
+		}
+		 
+		
+		if(providerNo != null && !outOfDomain) {
+			queryString += " AND d.id IN ("+ PROGRAM_DOMAIN_RESTRICTION+") ";
+		}
+		
+		
+		Query q = this.getSession().createQuery(queryString);
+		q.setFirstResult(offset);
+		q.setMaxResults(limit);
+
+		q.setParameter("chartNo", chartNoStr.trim() + "%");
+		
+		if(statuses != null) {
+			q.setParameterList("statuses", statuses);
+		}
+
+		if(providerNo != null && !outOfDomain) {
+			q.setParameter("providerNo", providerNo);
+		}
+		List<Demographic> list = q.list();
+		return list;
+	}
+	public List<Demographic> findDemographicByDemographicNo(String demographicNoStr, int limit, int offset, String providerNo, boolean outOfDomain) {
+		return findDemographicByDemographicNoAndStatus(demographicNoStr,null,limit,offset,providerNo,outOfDomain,false);
+	}
+
+	public List<Demographic> findDemographicByDemographicNoAndStatus(String demographicNoStr, List<String> statuses, int limit, int offset, String providerNo, boolean outOfDomain) {
+		return findDemographicByDemographicNoAndStatus(demographicNoStr,statuses,limit,offset,providerNo,outOfDomain,false);
+	}
+	
+	public List<Demographic> findDemographicByDemographicNoAndNotStatus(String demographicNoStr, List<String> statuses, int limit, int offset, String providerNo, boolean outOfDomain) {
+		return findDemographicByDemographicNoAndStatus(demographicNoStr,statuses,limit,offset,providerNo,outOfDomain,true);
+	}
+
+        public List<Demographic> searchDemographicByPhoneAndStatus(String phoneStr, List<String> statuses, int limit, int offset, String providerNo, boolean outOfDomain) {
+		return searchDemographicByPhoneAndStatus(phoneStr,statuses,limit,offset,providerNo,outOfDomain,false);
+	}
+
+        public List<Demographic> searchDemographicByPhoneAndNotStatus(String phoneStr, List<String> statuses, int limit, int offset, String providerNo, boolean outOfDomain) {
+		return searchDemographicByPhoneAndStatus(phoneStr,statuses,limit,offset,providerNo,outOfDomain,true);
+	}
+        
+	@SuppressWarnings("unchecked")
+	public List<Demographic> searchDemographicByPhoneAndStatus(String phoneStr, List<String> statuses, int limit, int offset, String providerNo, boolean outOfDomain,boolean ignoreStatuses) {
+		List<Demographic> list = new ArrayList<Demographic>();
+		String queryString = "From Demographic d where d.Phone like :phone ";
+
+		if(statuses != null) {
+			queryString += " and d.PatientStatus " + ((ignoreStatuses)?"not":"") + "  in (:statuses)";
+		}
+		 
+		
+		if(providerNo != null && !outOfDomain) {
+			queryString += " AND d.id IN ("+ PROGRAM_DOMAIN_RESTRICTION+") ";
+		}
+		
+		Session session = this.getSession();
+		try {
+			Query q = session.createQuery(queryString);
+			q.setFirstResult(offset);
+			q.setMaxResults(limit);
+
+			q.setParameter("phone", phoneStr.trim() + "%");
+			
+			if(statuses != null) {
+				q.setParameterList("statuses", statuses);
+			}
+
+			if(providerNo != null && !outOfDomain) {
+				q.setParameter("providerNo", providerNo);
+			}
+			
+			list = q.list();
+		} finally {
+			this.releaseSession(session);
+		}
+		return list;
+	}
+        
+	@SuppressWarnings("unchecked")
+	public List<Demographic> findDemographicByDemographicNoAndStatus(String demographicNoStr, List<String> statuses, int limit, int offset, String providerNo, boolean outOfDomain, boolean ignoreStatuses) {
+
+		String queryString = "From Demographic d where d.DemographicNo = :demographicNo ";
+
+		if(statuses != null) {
+			queryString += " and d.PatientStatus " + ((ignoreStatuses)?"not":"") + "  in (:statuses)";
+		}
+		 
+		
+		if(providerNo != null && !outOfDomain) {
+			queryString += " AND d.id IN ("+ PROGRAM_DOMAIN_RESTRICTION+") ";
+		}
+		
+		
+		Query q = this.getSession().createQuery(queryString);
+		q.setFirstResult(offset);
+		q.setMaxResults(limit);
+
+		Integer val = null;
+		try {
+			val = Integer.valueOf(demographicNoStr.trim());
+		}catch(NumberFormatException e) {
+			//ignore
+		}
+		
+		if(val == null) {
+			return new ArrayList<Demographic>();
+			
+		}
+		q.setParameter("demographicNo", val);
+		
+		if(statuses != null) {
+			q.setParameterList("statuses", statuses);
+		}
+
+		if(providerNo != null && !outOfDomain) {
+			q.setParameter("providerNo", providerNo);
+		}
+		List<Demographic> list = q.list();
+		return list;
+	}
+        @SuppressWarnings("unchecked")
+	public List<Demographic> searchDemographicByAddressAndStatus(String addressStr, List<String> statuses, int limit, int offset, String providerNo, boolean outOfDomain,boolean ignoreStatuses) {
+		List<Demographic> list = new ArrayList<Demographic>();
+
+		String queryString = "From Demographic d where d.Address like :address ";
+
+		if(statuses != null) {
+			queryString += " and d.PatientStatus " + ((ignoreStatuses)?"not":"") + "  in (:statuses)";
+		}
+		 
+		
+		if(providerNo != null && !outOfDomain) {
+			queryString += " AND d.id IN ("+ PROGRAM_DOMAIN_RESTRICTION+") ";
+		}
+		
+		
+		Session session = this.getSession();
+		try {
+			Query q = session.createQuery(queryString);
+			q.setFirstResult(offset);
+			q.setMaxResults(limit);
+
+			q.setParameter("address", addressStr.trim() + "%");
+			
+			if(statuses != null) {
+				q.setParameterList("statuses", statuses);
+			}
+
+			if(providerNo != null && !outOfDomain) {
+				q.setParameter("providerNo", providerNo);
+			}
+			list = q.list();
+		} finally {
+			this.releaseSession(session);
+		}
+		return list;
+	}
+        
+        @SuppressWarnings("unchecked")
+	public List<Demographic> searchDemographicByDOBAndStatus(String dobStr, List<String> statuses, int limit, int offset, String providerNo, boolean outOfDomain,boolean ignoreStatuses) {
+		List<Demographic> list = new ArrayList<Demographic>();
+		String queryString = "From Demographic d where d.YearOfBirth like :yearOfBirth AND d.MonthOfBirth like :monthOfBirth AND d.DateOfBirth like :dateOfBirth ";
+
+		//format must be yyyy-mm-dd
+		String[] params = dobStr.split("-");
+		if (params.length != 3) {
+			return null;
+		}
+
+		if (params.length != 3) return new ArrayList<Demographic>();
+		
+		if(statuses != null) {
+			queryString += " and d.PatientStatus " + ((ignoreStatuses)?"not":"") + "  in (:statuses)";
+		}
+		 
+		
+		if(providerNo != null && !outOfDomain) {
+			queryString += " AND d.id IN ("+ PROGRAM_DOMAIN_RESTRICTION+") ";
+		}
+		
+		
+		Session session = this.getSession();
+		try {
+			Query q = session.createQuery(queryString);
+			q.setFirstResult(offset);
+			q.setMaxResults(limit);
+
+			q.setParameter("yearOfBirth", params[0].trim() + "%");
+			q.setParameter("monthOfBirth", params[1].trim() + "%");
+			q.setParameter("dateOfBirth", params[2].trim() + "%");
+			
+			if(statuses != null) {
+				q.setParameterList("statuses", statuses);
+			}
+
+			if(providerNo != null && !outOfDomain) {
+				q.setParameter("providerNo", providerNo);
+			}
+			
+			list = q.list();
+		} finally {
+			this.releaseSession(session);
+		}
+		return list;
+	}
+     
+        @SuppressWarnings("unchecked")
+	public List<Demographic> searchDemographicByNameAndStatus(String searchStr, List<String> statuses, int limit, int offset, String providerNo, boolean outOfDomain,boolean ignoreStatuses) {
+		List<Demographic> list = new ArrayList<Demographic>();
+		String queryString = "From Demographic d where d.LastName like :lastName ";
+
+		String[] name = searchStr.split(",");
+		if (name.length == 2) {
+			queryString += " and first_name like :firstName ";
+		}
+		
+		if(statuses != null) {
+			queryString += " and d.PatientStatus " + ((ignoreStatuses)?"not":"") + "  in (:statuses)";
+		}
+		 
+		
+		if(providerNo != null && !outOfDomain) {
+			queryString += " AND d.id IN ("+ PROGRAM_DOMAIN_RESTRICTION+") ";
+		}
+		
+		Session session = this.getSession();
+		try {
+			Query q = session.createQuery(queryString);
+			q.setFirstResult(offset);
+			q.setMaxResults(limit);
+
+			q.setParameter("lastName", name[0].trim() + "%");
+			if (name.length == 2) {
+				q.setParameter("firstName", name[1].trim() + "%");
+			}
+
+			if(statuses != null) {
+				q.setParameterList("statuses", statuses);
+			}
+
+			if(providerNo != null && !outOfDomain) {
+				q.setParameter("providerNo", providerNo);
+			}
+			
+			list = q.list();
+		} finally {
+			this.releaseSession(session);
+		}
+		return list;
+	}
+
+        @SuppressWarnings("unchecked")
      public List<String> getRosterStatuses() {
     	 List<String> results = getHibernateTemplate().find("SELECT DISTINCT d.RosterStatus FROM Demographic d where d.RosterStatus != '' and d.RosterStatus != 'RO' and d.RosterStatus != 'NR' and d.RosterStatus != 'TE' and d.RosterStatus != 'FS'");
     	 return results;

@@ -31,15 +31,20 @@
 <%@page import="java.text.DateFormatSymbols"%>
 <%@page import="org.oscarehr.PMmodule.dao.ProgramDao"%>
 <%@page import="org.oscarehr.PMmodule.model.Program"%>
+<%@page import="org.oscarehr.PMmodule.dao.ProviderDao"%>
+<%@page import="org.oscarehr.common.model.Provider" %>
 <%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 
 <%
 	FunctionalCentreDao functionalCentreDao = (FunctionalCentreDao) SpringUtils.getBean("functionalCentreDao");
 	ProgramDao programDao = (ProgramDao) SpringUtils.getBean("programDao");
+    ProviderDao providerDao = (ProviderDao) SpringUtils.getBean("providerDao");
+    
 	LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
 	
 	List<FunctionalCentre> functionalCentres=functionalCentreDao.findInUseByFacility(loggedInInfo.currentFacility.getId());
-	List<Program> programs=programDao.getProgramsByFacilityId(loggedInInfo.currentFacility.getId());
+	List<Program> programs=programDao.getProgramsByFacilityId(loggedInInfo.currentFacility.getId());	
+	List<Provider> providers = providerDao.getActiveProviders();
 %>
 
 <%@include file="/layouts/caisi_html_top.jspf"%>
@@ -73,6 +78,13 @@
 				return(false);
 			}
 		}
+		else if (reportBy=="provider")	{
+			if (fields.providerId.value==null||fields.providerId.value=="")
+			{
+				alert('Please select one provider.');
+				return(false);
+			}
+		}
 		else
 		{
 			alert("error, missed an option : "+reportBy);
@@ -90,13 +102,23 @@
 					{
 						document.getElementById("functionalCentreSelectionBlock").style.display="block";
 						document.getElementById("programsSelectionBlock").style.display="none";
+						document.getElementById("providerSelectionBlock").style.display="none";
 					}
 
 					function showProgramsSelectionBlock()
 					{
 						document.getElementById("functionalCentreSelectionBlock").style.display="none";
 						document.getElementById("programsSelectionBlock").style.display="block";
+						document.getElementById("providerSelectionBlock").style.display="none";
 					}
+					
+					function showProviderSelectionBlock()
+					{
+						document.getElementById("functionalCentreSelectionBlock").style.display="none";
+						document.getElementById("programsSelectionBlock").style.display="none";
+						document.getElementById("providerSelectionBlock").style.display="block";
+					}
+					
 				</script>
 			
 				Report By
@@ -108,6 +130,10 @@
 					<tr>
 						<td style="border:none"><input type="radio" name="reportBy" value="programs" onclick="showProgramsSelectionBlock()" /></td>
 						<td style="border:none">Programs</td>
+					</tr>
+					<tr>
+						<td style="border:none"><input type="radio" name="reportBy" value="provider" onclick="showProviderSelectionBlock()" /></td>
+						<td style="border:none">Provider</td>
 					</tr>
 				</table>
 			</td>
@@ -129,7 +155,7 @@
 						<%
 							for (Program program : programs)
 							{
-								if (program.isBed() || program.isService())
+								if ((program.isBed() || program.isService()) && program.getFunctionalCentreId()!=null && program.getFunctionalCentreId().length()>1)
 								{
 									%>
 										<option value="<%=program.getId()%>"><%=StringEscapeUtils.escapeHtml(program.getName() + " ("+program.getType()+')')%></option>
@@ -140,6 +166,18 @@
 					</select>
 					<br />
 					<input type="checkbox" name="reportProgramsIndividually" /> Report Programs Separately
+				</div>
+				<div id="providerSelectionBlock">
+					<select name="providerId">
+						<%
+							for (Provider provider : providers)
+							{
+								%>
+									<option value="<%=provider.getProviderNo()%>"><%=StringEscapeUtils.escapeHtml(provider.getFormattedName())%></option>
+								<%
+							}
+						%>
+					</select>
 				</div>
 			</td>
 		</tr>

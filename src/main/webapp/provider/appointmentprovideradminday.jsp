@@ -694,6 +694,7 @@ function load() {
 	var ocan = "<%=ocanWarningWindow%>";
 	if(ocan!="null" && cbi!="") {
 		alert(ocan);
+		<%request.getSession().setAttribute("ocanWarningWindow", "null");%>
 	}
 	var cbi = "<%=cbiReminderWindow%>";
 	if(cbi!="null" && cbi!="") {

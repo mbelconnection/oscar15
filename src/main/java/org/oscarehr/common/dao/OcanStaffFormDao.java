@@ -53,7 +53,7 @@ public class OcanStaffFormDao extends AbstractDao<OcanStaffForm> {
 	
 	public Object[] findLatestCompletedInitialOcan_startDates(Integer facilityId, Integer clientId) {
 
-		String sqlCommand = "select startDate,clientStartDate from OcanStaffForm where facilityId=?1 and clientId=?2 and assessmentStatus=?3 and reasonForAssessment=?4 order by created desc";
+		String sqlCommand = "select startDate,clientStartDate from OcanStaffForm where ocanType!='CBI' and facilityId=?1 and clientId=?2 and assessmentStatus=?3 and reasonForAssessment=?4 order by created desc";
 
 		Query query = entityManager.createQuery(sqlCommand);
 		query.setParameter(1, facilityId);
@@ -85,7 +85,7 @@ public class OcanStaffFormDao extends AbstractDao<OcanStaffForm> {
 	
 	public Object[] findLatestCompletedReassessment_startDates(Integer facilityId, Integer clientId) {
 
-		String sqlCommand = "select startDate,clientStartDate from OcanStaffForm where facilityId=?1 and clientId=?2 and assessmentStatus=?3 and reasonForAssessment=?4 order by created desc";
+		String sqlCommand = "select startDate,clientStartDate from OcanStaffForm where ocanType!='CBI' and facilityId=?1 and clientId=?2 and assessmentStatus=?3 and reasonForAssessment=?4 order by created desc";
 
 		Query query = entityManager.createQuery(sqlCommand);
 		query.setParameter(1, facilityId);
@@ -168,10 +168,10 @@ public class OcanStaffFormDao extends AbstractDao<OcanStaffForm> {
 	
 	public List<Integer> findClientsWithOcan(Integer facilityId) {
 
-		String sqlCommand = "select distinct o.clientId from OcanStaffForm o where o.facilityId=?1";
+		String sqlCommand = "select distinct o.clientId from OcanStaffForm o where o.ocanType!='CBI' and o.facilityId=?1";
 
 		Query query = entityManager.createQuery(sqlCommand);
-		query.setParameter(1, facilityId);
+		query.setParameter(1, facilityId);		
 		
 		@SuppressWarnings("unchecked")
 		List<Integer> results = query.getResultList();

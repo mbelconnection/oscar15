@@ -35,10 +35,10 @@
 	int endYear = Integer.parseInt(request.getParameter("endYear"));
 	int endMonth = Integer.parseInt(request.getParameter("endMonth"));
 
-	GregorianCalendar startDate=new GregorianCalendar(startYear, startMonth, 1);
+	GregorianCalendar startDate=new GregorianCalendar(startYear, startMonth-1, 1); //Jan is 0.
 	GregorianCalendar endDate=new GregorianCalendar(endYear, endMonth, 1);
 	GregorianCalendar actualEndDate=(GregorianCalendar)endDate.clone();
-	actualEndDate.add(GregorianCalendar.MONTH, 1); // this is to set it inclusive of the 30/31 days of the month
+	//actualEndDate.add(GregorianCalendar.MONTH, 1); // this is to set it inclusive of the 30/31 days of the month
 
 	MisReportUIBean misReportUIBean=null;	
 	
@@ -61,6 +61,10 @@
 		{
 			misReportUIBean=MisReportUIBean.getSplitProgramReports(programIds, startDate, actualEndDate);
 		}
+	}
+	else if("provider".equals(reportBy)) {
+		String providerId = request.getParameter("providerId");
+		misReportUIBean=new MisReportUIBean(providerId, "Service", startDate, actualEndDate);
 	}
 	else
 	{
@@ -86,7 +90,7 @@
 <table class="genericTable borderedTableAndCells" style="font-size:12px">
 	<tr class="genericTableHeader">
 		<%
-			for (String header : misReportUIBean.getHeaderRow())
+			for (String header : misReportUIBean.getHeaderSPIRow())
 			{
 				%>
 					<td><%=header%></td>
@@ -96,21 +100,22 @@
 	</tr>
 
 	<%
-		int rowCounter=0;
-
-		for (MisReportUIBean.DataRow dataRow : misReportUIBean.getDataRows())
+		int rowCounter_SPI=0;
+		
+		for (MisReportUIBean.DataSPIRow dataSPIRow : misReportUIBean.getDataSPIRows())
 		{
-			rowCounter++;
+			rowCounter_SPI++;
 			String backgroundColour;
-			if (rowCounter%2==0) backgroundColour="#eeeeee";
+			if (rowCounter_SPI%2==0) backgroundColour="#eeeeee";
 			else backgroundColour="#dddddd";
 				
 			%>
 				<tr class="genericTableRow" style="background-color:<%=backgroundColour%>">
-					<td style="font-weight:bold"><%=dataRow.dataReportId%></td>
-					<td style="font-weight:bold"><%=dataRow.dataReportDescription%></td>
+					<td style="font-weight:bold"><%=dataSPIRow.dataSPIString%></td>
+					<td style="font-weight:bold"><%=dataSPIRow.dataSPIProgramName%></td>
+					<td style="font-weight:bold"><%=dataSPIRow.dataSPIEncounterType%></td>
 					<%
-						for (Integer tempResult : dataRow.dataReportResult)
+						for (String tempResult : dataSPIRow.dataSPIReportResult)
 						{
 							%>
 								<td><%=tempResult==null?"-":tempResult%></td>
@@ -122,5 +127,47 @@
 		}
 	%>
 </table>
+<br /><br />
+<span style="font-weight:bold">SRI Report</span>
+<table class="genericTable borderedTableAndCells" style="font-size:12px">
+	<tr class="genericTableHeader">
+		<%
+			for (String headerSRI : misReportUIBean.getHeaderSRIRow())
+			{
+				%>
+					<td><%=headerSRI%></td>
+				<%
+			}
+		%>
+	</tr>
+
+	<%
+		int rowCounter_SRI=0;
+
+		for (MisReportUIBean.DataSRIRow dataSRIRow : misReportUIBean.getDataSRIRows())
+		{
+			rowCounter_SRI++;
+			String backgroundColour;
+			if (rowCounter_SRI%2==0) backgroundColour="#eeeeee";
+			else backgroundColour="#dddddd";
+				
+			%>
+				<tr class="genericTableRow" style="background-color:<%=backgroundColour%>">
+					<td style="font-weight:bold"><%=dataSRIRow.dataSRIProgram%></td>
+				
+					<%
+						for (String tempResult : dataSRIRow.dataSRIReportResult)
+						{
+							%>
+								<td><%=tempResult==null?"-":tempResult%></td>
+							<%
+						}
+					%>
+				</tr>
+			<%
+		}
+	%>
+</table>
+
 
 <%@include file="/layouts/caisi_html_bottom.jspf"%>

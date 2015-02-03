@@ -1009,8 +1009,8 @@ function changeSite(sel) {
                     <span id="thirdParty" style="float:right; <%=thirdParty ? "" : "display:none"%>">
                         <a href="#" onclick="search3rdParty('billTo');return false;"><bean:message key="billing.billingCorrection.msgPayer"/></a><br>
                         <textarea id="billTo" name="billTo" cols="32" rows=4><%=payer%></textarea>
-                    <% String useDemoClinicInfoOnInvoice = oscar.OscarProperties.getInstance().getProperty("useDemoClinicInfoOnInvoice","");
-                       if (!useDemoClinicInfoOnInvoice.isEmpty() && useDemoClinicInfoOnInvoice.equals("true")) {
+                    <% String useDemoClinicInfoOnInvoice = oscar.OscarProperties.getInstance().getProperty("useDemoClinicInfoOnInvoice","");                       
+                       if (bCh1 != null && !useDemoClinicInfoOnInvoice.isEmpty() && useDemoClinicInfoOnInvoice.equals("true")) {
                            
                                 BillingONExt bExtUseBillTo = bExtDao.getUseBillTo(bCh1);
                                 String selectUseBillTo=""; 

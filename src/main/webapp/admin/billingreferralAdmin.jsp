@@ -67,6 +67,10 @@ function openAddSpecialist() {
 	popupOscarRx(625,1024,'../oscarEncounter/oscarConsultationRequest/config/AddSpecialist.jsp');
 }
 
+function openEditSpecialist(specId) {
+	popupOscarRx(625,1024,'../oscarEncounter/EditSpecialists.do?specId='+specId);
+}
+
 </script>
 <link href="<html:rewrite page='/css/displaytag.css'/>" rel="stylesheet" ></link>
 </head>
@@ -108,7 +112,7 @@ function openAddSpecialist() {
 </nested:form>
 
 <display:table name="referrals" id="referral" class="its" pagesize="15" style="border:1px solid #666666; width:99%;margin-top:2px;" requestURI="ManageBillingReferral.do?method=list">
-    <display:column property="referralNo" title="Referral No" href="../oscarEncounter/EditSpecialists.do" paramId="specId" paramProperty="id"/>
+    <display:column><a href="javascript:void(0)" onclick="openEditSpecialist('${referral.id}')">${referral.referralNo}</a></display:column>
     <display:column property="firstName" title="First Name" />
     <display:column property="lastName" title="Last Name" />
     <display:column property="specialtyType" title="Specialty" />

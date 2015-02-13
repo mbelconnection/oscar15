@@ -50,6 +50,10 @@ public final class EctConAddSpecialistForm extends ActionForm {
 	String eDataServiceKey;
 	String eDataServiceName;
 	String annotation;
+	String privatePhoneNumber;
+	String cellPhoneNumber;
+	String pagerNumber;
+	String salutation;
 
 	private String referralNo;
 
@@ -193,7 +197,10 @@ public final class EctConAddSpecialistForm extends ActionForm {
 		eDataServiceKey = null;
 		annotation = null;
 		referralNo = null;
-
+		privatePhoneNumber = null;
+		cellPhoneNumber = null;
+		pagerNumber = null;
+		salutation = null;
 		whichType = 0;
 	}
 
@@ -262,4 +269,38 @@ public final class EctConAddSpecialistForm extends ActionForm {
 	public String getReferralNo() {
 		return referralNo;
 	}
+
+	public String getPrivatePhoneNumber() {
+		return privatePhoneNumber;
+	}
+
+	public void setPrivatePhoneNumber(String privatePhoneNumber) {
+		this.privatePhoneNumber = privatePhoneNumber;
+	}
+
+	public String getCellPhoneNumber() {
+		return cellPhoneNumber;
+	}
+
+	public void setCellPhoneNumber(String cellPhoneNumber) {
+		this.cellPhoneNumber = cellPhoneNumber;
+	}
+
+	public String getPagerNumber() {
+		return pagerNumber;
+	}
+
+	public void setPagerNumber(String pagerNumber) {
+		this.pagerNumber = pagerNumber;
+	}
+
+	public String getSalutation() {
+		return salutation;
+	}
+
+	public void setSalutation(String salutation) {
+		this.salutation = salutation;
+	}
+	
+	
 }

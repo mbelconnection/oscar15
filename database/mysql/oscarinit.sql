@@ -6732,7 +6732,11 @@ CREATE TABLE professionalSpecialists (
   eDataServiceName varchar(255),
   lastUpdated datetime not null,
   annotation text,
-  referralNo varchar(6)
+  referralNo varchar(6),
+  privatePhoneNumber varchar(30),
+  cellPhoneNumber varchar(30),
+  pagerNumber varchar(30),
+  salutation varchar(10) 
 );
 
 --

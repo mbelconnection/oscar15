@@ -153,5 +153,9 @@ public class EctConAddSpecialistAction extends Action {
 		professionalSpecialist.seteDataServiceName(addSpecailistForm.geteDataServiceName());
 		professionalSpecialist.setAnnotation(addSpecailistForm.getAnnotation());
 		professionalSpecialist.setReferralNo(addSpecailistForm.getReferralNo());
+		professionalSpecialist.setPrivatePhoneNumber(addSpecailistForm.getPrivatePhoneNumber());
+		professionalSpecialist.setCellPhoneNumber(addSpecailistForm.getCellPhoneNumber());
+		professionalSpecialist.setPagerNumber(addSpecailistForm.getPagerNumber());
+		professionalSpecialist.setSalutation(addSpecailistForm.getSalutation());
 	}
 }

@@ -117,6 +117,11 @@ function BackToOscar() {
                            thisForm.seteDataServiceName( (String) request.getAttribute("eDataServiceName"));
                            thisForm.setAnnotation((String)request.getAttribute("annotation"));
                            thisForm.setReferralNo((String)request.getAttribute("referralNo"));
+                           thisForm.setPrivatePhoneNumber((String)request.getAttribute("privatePhoneNumber"));
+                           thisForm.setCellPhoneNumber((String)request.getAttribute("cellPhoneNumber"));
+                           thisForm.setPagerNumber((String)request.getAttribute("pagerNumber"));
+                           thisForm.setSalutation((String)request.getAttribute("salutation"));
+                      
                            }
                         %>
 						<html:hidden name="EctConAddSpecialistForm" property="specId" />
@@ -147,6 +152,29 @@ function BackToOscar() {
 							</td>
 							<td colspan="4"><html:text name="EctConAddSpecialistForm" property="fax" /></td>
 						</tr>
+						<tr>
+							<td><bean:message key="oscarEncounter.oscarConsultationRequest.config.AddSpecialist.privatePhoneNumber" /></td>
+							<td><html:text name="EctConAddSpecialistForm" property="privatePhoneNumber" /></td>
+							<td><bean:message key="oscarEncounter.oscarConsultationRequest.config.AddSpecialist.cellPhoneNumber" /></td>
+							<td colspan="4"><html:text name="EctConAddSpecialistForm" property="cellPhoneNumber" /></td>
+						</tr>
+						
+						<tr>
+							<td><bean:message key="oscarEncounter.oscarConsultationRequest.config.AddSpecialist.pagerNumber" /></td>
+							<td><html:text name="EctConAddSpecialistForm" property="pagerNumber" /></td>
+							<td><bean:message key="oscarEncounter.oscarConsultationRequest.config.AddSpecialist.salutation" /></td>
+							<td colspan="4">
+								<html:select name="EctConAddSpecialistForm" property="salutation">
+									<html:option value=""><bean:message key="demographic.demographiceditdemographic.msgNotSet"/></html:option>
+									<html:option value="DR"><bean:message key="demographic.demographiceditdemographic.msgDr"/></html:option>
+									<html:option value="MR"><bean:message key="demographic.demographiceditdemographic.msgMr"/></html:option>
+									<html:option value="MRS"><bean:message key="demographic.demographiceditdemographic.msgMrs"/></html:option>
+									<html:option value="MISS"><bean:message key="demographic.demographiceditdemographic.msgMiss"/></html:option>
+									<html:option value="MS"><bean:message key="demographic.demographiceditdemographic.msgMs"/></html:option>
+								</html:select>
+							</td>
+						</tr>
+						
 						<tr>
 							<td><bean:message key="oscarEncounter.oscarConsultationRequest.config.AddSpecialist.website" /></td>
 							<td><html:text name="EctConAddSpecialistForm" property="website" /></td>

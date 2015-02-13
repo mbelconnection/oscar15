@@ -107,14 +107,15 @@ function openAddSpecialist() {
     <nested:submit style="border:1px solid #666666;" onclick="openAddSpecialist()">Add</nested:submit>
 </nested:form>
 
-<display:table name="referrals" id="referral" class="its" pagesize="15" style="border:1px solid #666666; width:99%;margin-top:2px;">
-    <display:column property="referralNo" title="Referral No" href="ManageBillingReferral.do?method=edit" paramId="referralNo"/>
+<display:table name="referrals" id="referral" class="its" pagesize="15" style="border:1px solid #666666; width:99%;margin-top:2px;" requestURI="ManageBillingReferral.do?method=list">
+    <display:column property="referralNo" title="Referral No" href="../oscarEncounter/EditSpecialists.do" paramId="specId" paramProperty="id"/>
     <display:column property="firstName" title="First Name" />
     <display:column property="lastName" title="Last Name" />
     <display:column property="specialtyType" title="Specialty" />
     <display:column property="streetAddress" title="Address" />
     <display:column property="phoneNumber" title="Phone" />
     <display:column property="faxNumber" title="Fax" />
+    <display:column title="Label" url="/printReferralLabelAction.do" paramId="billingreferralNo" paramProperty="id">label</display:column>
 </display:table>
 		</td>
 	</tr>

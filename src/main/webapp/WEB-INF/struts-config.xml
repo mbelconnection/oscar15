@@ -2550,6 +2550,9 @@
 			<forward name="info" path="/mcedt/info.jsp" />
 		</action>
 		
+		<action path="/printReferralLabelAction" type="org.oscarehr.common.web.PrintReferralLabelAction" />
+		
+		
 	</action-mappings>
 	<controller processorClass="org.apache.struts.tiles.TilesRequestProcessor" maxFileSize="25M" />
 	<message-resources parameter="oscarResources" null="false" />

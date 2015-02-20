@@ -832,7 +832,11 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 	}
 
 	private void saveClient(Demographic client, String providerNo) {
-		client.setProviderNo(providerNo);
+		
+		String strSaveMrp = OscarProperties.getInstance().getProperty("caisi.registration_intake.updateMRPOnSave", "true");
+		if("true".equals(strSaveMrp)) {
+			client.setProviderNo(providerNo);
+		}
 
 		clientManager.saveClient(client);
 	}

@@ -113,23 +113,26 @@ public class AppointmentDao extends OscarSuperDao {
 			DemographicData demoData = new DemographicData();
 			Demographic demo = demoData.getDemographic(params[16].toString());
 			
-			// get clinic name/id
-			ClinicData clinicData = new ClinicData();
-			
-			//Program program = null;
-			DemographicDao demographicDao = (DemographicDao)SpringUtils.getBean("demographicDao");
-			List programs = demographicDao.getDemoProgramCurrent( demo.getDemographicNo() );
-			/*
-			if ( apptInfo.get(0).get("adm_program_id").toString() != null ) {
-				Integer programId = new Integer( apptInfo.get(0).get("adm_program_id").toString() );
-				ProgramDao programDao = (ProgramDao)SpringUtils.getBean("programDao");
-				program = programDao.getProgram( programId );
+			if(demo != null) {
+				// get clinic name/id
+				ClinicData clinicData = new ClinicData();
+				
+				//Program program = null;
+				DemographicDao demographicDao = (DemographicDao)SpringUtils.getBean("demographicDao");
+				
+				List programs = demographicDao.getDemoProgramCurrent( demo.getDemographicNo() );
+				/*
+				if ( apptInfo.get(0).get("adm_program_id").toString() != null ) {
+					Integer programId = new Integer( apptInfo.get(0).get("adm_program_id").toString() );
+					ProgramDao programDao = (ProgramDao)SpringUtils.getBean("programDao");
+					program = programDao.getProgram( programId );
+				}
+				*/
+				
+				// generate A04 HL7
+				HL7A04Data A04Obj = new HL7A04Data(demo, appData, clinicData, programs);
+				A04Obj.save();
 			}
-			*/
-			
-			// generate A04 HL7
-			HL7A04Data A04Obj = new HL7A04Data(demo, appData, clinicData, programs);
-			A04Obj.save();
 		} catch (Exception e) {
 			logger.error("Unable to generate HL7 A04 file.", e);
 		}

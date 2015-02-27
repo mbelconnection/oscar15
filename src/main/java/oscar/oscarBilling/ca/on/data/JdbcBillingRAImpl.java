@@ -266,7 +266,7 @@ public class JdbcBillingRAImpl {
 						// param4[8] = servicedate;
 						// param4[9] = explain;
 						// param4[10] = billtype;
-						sql = "insert into radetail values('\\N'," + raNo + ",'" + providerno + "'," + account + ",'"
+						sql = "insert into radetail (radetail_no,raheader_no,providerohip_no,billing_no,service_code,service_count,hin,amountclaim,amountpay,service_date,error_code,billtype,claim_no) values('\\N'," + raNo + ",'" + providerno + "'," + account + ",'"
 								+ servicecode + "','" + serviceno + "','" + newhin + "','" + amountsubmit + "','"
 								+ amountpaysign + amountpay + "','" + servicedate + "','" + explain + "','" + billtype + "','" + claimno
 								+ "')";

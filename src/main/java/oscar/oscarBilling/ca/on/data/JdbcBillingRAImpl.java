@@ -38,7 +38,8 @@ public class JdbcBillingRAImpl {
 
 	public int addOneRADtRecord(BillingRAData val) {
 		int retval = 0;
-		String sql = "insert into radetail values(\\N, " + " " + val.raheader_no + " ," + "'" + val.providerohip_no
+		String sql = "insert into radetail (radetail_no,raheader_no,providerohip_no,billing_no,service_code,service_count,hin,amountclaim,amountpay,service_date"+
+		",error_code,billtype,claim_no) values(\\N, " + " " + val.raheader_no + " ," + "'" + val.providerohip_no
 				+ "'," + "'" + val.billing_no + "'," + "'" + val.service_code + "'," + "'" + val.service_count + "',"
 				+ "'" + val.hin + "'," + "'" + val.amountclaim + "'," + "'" + val.amountpay + "'," + "'"
 				+ val.service_date + "'," + "'" + val.error_code + "'," + "'" + val.billtype + "','" + val.claim_no + "')";

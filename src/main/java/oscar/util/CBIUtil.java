@@ -497,7 +497,7 @@ public class CBIUtil
 			boolean appendFailureMessage = true;						
 			for(OcanSubmissionLog submissionLog : failedSubmissionList) {
 				OcanStaffForm cbiForm = ocanStaffFormDao.findByProviderAndSubmissionId(providerNo, submissionLog.getId(),"CBI");
-				if(cbiForm!=null) {
+				if(cbiForm!=null) {					
 					if(appendFailureMessage) {
 						messages.append("Failed to upload CBI forms: ");
 						appendFailureMessage = false;

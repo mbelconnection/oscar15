@@ -634,6 +634,7 @@ public final class MisReportUIBean {
 		int hr2To5 = 0;
 		int moreThan5hrs = 0;
 		int total = 0;
+		int total_mis_report = 0;
 		
 		List<CaseManagementNote> notes=caseManagementNoteDAO.getCaseManagementNoteByProgramIdAndObservationDate(program.getId(), startDate.getTime(), endDate.getTime());
 			
@@ -649,42 +650,65 @@ public final class MisReportUIBean {
 						if(encounterType!=null && (EncounterUtil.EncounterType.FACE_TO_FACE_WITH_CLIENT.getOldDbValue().equals(encounterType) || 
 													EncounterUtil.EncounterType.TELEPHONE_WITH_CLIENT.getOldDbValue().equals(encounterType) ) ) {
 							total ++;
-							total_SPI_total ++;
-							total_SPI_Reporting_total ++;
+							total_SPI_total ++;							
 						}
 					} else if(note.getMinuteOfEncounterTime()<=30) {
 						min5To30 ++;
 						total ++;
 						min5To30_SPI_total ++;
 						total_SPI_total ++;
-						total_SPI_Reporting_total ++;
+						
+						if(encounterType!=null && (EncounterUtil.EncounterType.FACE_TO_FACE_WITH_CLIENT.getOldDbValue().equals(encounterType) || 
+								EncounterUtil.EncounterType.TELEPHONE_WITH_CLIENT.getOldDbValue().equals(encounterType) ) ) {
+							total_mis_report ++;						
+							total_SPI_Reporting_total ++;
+						}
 					} else {
 						min31To1Hr ++;
 						total ++;
 						min31To1Hr_SPI_total ++;
 						total_SPI_total ++;
-						total_SPI_Reporting_total ++;
+						
+						if(encounterType!=null && (EncounterUtil.EncounterType.FACE_TO_FACE_WITH_CLIENT.getOldDbValue().equals(encounterType) || 
+								EncounterUtil.EncounterType.TELEPHONE_WITH_CLIENT.getOldDbValue().equals(encounterType) ) ) {
+							total_mis_report ++;
+							total_SPI_Reporting_total ++;
+						}
 					}
 				} else if(note.getHourOfEncounterTime()<=2) {
 					hr1To2 ++;
 					total ++;
 					hr1To2_SPI_total ++;
 					total_SPI_total ++;
-					total_SPI_Reporting_total ++;
+					
+					if(encounterType!=null && (EncounterUtil.EncounterType.FACE_TO_FACE_WITH_CLIENT.getOldDbValue().equals(encounterType) || 
+							EncounterUtil.EncounterType.TELEPHONE_WITH_CLIENT.getOldDbValue().equals(encounterType) ) ) {
+						total_mis_report ++;
+						total_SPI_Reporting_total ++;
+					}
 					
 				} else if(note.getHourOfEncounterTime()<=5) {
 					hr2To5 ++;
 					total ++;
 					hr2To5_SPI_total ++;
 					total_SPI_total ++;
-					total_SPI_Reporting_total ++;
 					
+					if(encounterType!=null && (EncounterUtil.EncounterType.FACE_TO_FACE_WITH_CLIENT.getOldDbValue().equals(encounterType) || 
+							EncounterUtil.EncounterType.TELEPHONE_WITH_CLIENT.getOldDbValue().equals(encounterType) ) ) {
+						total_mis_report ++;
+						total_SPI_Reporting_total ++;
+					}
 				} else {
 					moreThan5hrs ++;
 					moreThan5hrs_SPI_total ++;
 					total ++;
 					total_SPI_total ++;
-					total_SPI_Reporting_total ++;
+					
+					if(encounterType!=null && (EncounterUtil.EncounterType.FACE_TO_FACE_WITH_CLIENT.getOldDbValue().equals(encounterType) || 
+							EncounterUtil.EncounterType.TELEPHONE_WITH_CLIENT.getOldDbValue().equals(encounterType) ) ) {
+						total_mis_report ++;
+						total_SPI_Reporting_total ++;
+					}
 				}
 					
 			}			
@@ -697,7 +721,7 @@ public final class MisReportUIBean {
 					String.valueOf(hr1To2), String.valueOf(hr2To5), String.valueOf(moreThan5hrs), String.valueOf(total), "Not Reported") );				
 		} else {
 			results.add(new DataSPIRow("SPI", program.getName(),encounterType, String.valueOf(lessThan5mins), String.valueOf(min5To30), String.valueOf(min31To1Hr), 
-					String.valueOf(hr1To2), String.valueOf(hr2To5), String.valueOf(moreThan5hrs), String.valueOf(total), String.valueOf(total)) );		
+					String.valueOf(hr1To2), String.valueOf(hr2To5), String.valueOf(moreThan5hrs), String.valueOf(total), String.valueOf(total_mis_report)) );		
 		}
 	}	
 	
@@ -721,7 +745,8 @@ public final class MisReportUIBean {
 		int hr2To5 = 0;
 		int moreThan5hrs = 0;
 		int total = 0;
-			
+		int total_mis_report = 0;
+		
 		List<CaseManagementNote> notes=caseManagementNoteDAO.getCaseManagementNoteByProgramIdAndObservationDate(program.getId(), startDate.getTime(), endDate.getTime());
 			
 		for(CaseManagementNote note : notes) {
@@ -734,38 +759,49 @@ public final class MisReportUIBean {
 				if(note.getHourOfEncounterTime()==null || note.getHourOfEncounterTime()==0) {
 					if(note.getMinuteOfEncounterTime()==null || note.getMinuteOfEncounterTime()<5) {						
 						lessThan5mins = lessThan5mins + groupNotesCount;	
-						lessThan5mins_SPGI_total = lessThan5mins_SPGI_total +  groupNotesCount;	
+						lessThan5mins_SPGI_total = lessThan5mins_SPGI_total +  groupNotesCount;						
 						
 					} else if(note.getMinuteOfEncounterTime()<=30) {											
 						min5To30 = min5To30 + groupNotesCount;						
-						min5To30_SPGI_total = min5To30_SPGI_total + groupNotesCount;					
+						min5To30_SPGI_total = min5To30_SPGI_total + groupNotesCount;	
+						total_mis_report = total_mis_report + groupNotesCount;
+						total_SPGI_Reporting_total = total_SPGI_Reporting_total + groupNotesCount;
 						
 					} else {
 						min31To1Hr = min31To1Hr + groupNotesCount ;						
 						min31To1Hr_SPGI_total = min31To1Hr_SPGI_total + groupNotesCount;
+						total_mis_report = total_mis_report + groupNotesCount;
+						total_SPGI_Reporting_total = total_SPGI_Reporting_total + groupNotesCount;
 										
 					}
 				} else if(note.getHourOfEncounterTime()<=2) {					
 					hr1To2 = hr1To2 + groupNotesCount;					
-					hr1To2_SPGI_total = hr1To2_SPGI_total + groupNotesCount;					
+					hr1To2_SPGI_total = hr1To2_SPGI_total + groupNotesCount;	
+					total_mis_report = total_mis_report + groupNotesCount;
+					total_SPGI_Reporting_total = total_SPGI_Reporting_total + groupNotesCount;
+					
 					
 				} else if(note.getHourOfEncounterTime()<=5) {					
 					hr2To5 = hr2To5 + groupNotesCount;					
-					hr2To5_SPGI_total = hr2To5_SPGI_total + groupNotesCount;					
+					hr2To5_SPGI_total = hr2To5_SPGI_total + groupNotesCount;	
+					total_mis_report = total_mis_report + groupNotesCount;
+					total_SPGI_Reporting_total = total_SPGI_Reporting_total + groupNotesCount;
 					
 				} else {					
 					moreThan5hrs = moreThan5hrs + groupNotesCount;
-					moreThan5hrs_SPGI_total = moreThan5hrs_SPGI_total + groupNotesCount;					
+					moreThan5hrs_SPGI_total = moreThan5hrs_SPGI_total + groupNotesCount;	
+					total_mis_report = total_mis_report + groupNotesCount;
+					total_SPGI_Reporting_total = total_SPGI_Reporting_total + groupNotesCount;
 				}
 					
-				total = total + groupNotesCount;
+				total = total + groupNotesCount;				
 				total_SPGI_total = total_SPGI_total + groupNotesCount;
-				total_SPGI_Reporting_total = total_SPGI_Reporting_total + groupNotesCount;				
+								
 			}	
 		}
 		
 		results.add(new DataSPIRow("SPGI", program.getName(),encounterType, String.valueOf(lessThan5mins), String.valueOf(min5To30), String.valueOf(min31To1Hr), 
-					String.valueOf(hr1To2), String.valueOf(hr2To5), String.valueOf(moreThan5hrs), String.valueOf(total), String.valueOf(total)) );		
+					String.valueOf(hr1To2), String.valueOf(hr2To5), String.valueOf(moreThan5hrs), String.valueOf(total), String.valueOf(total_mis_report)) );		
 		
 	}	
 	

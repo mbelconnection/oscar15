@@ -1133,16 +1133,17 @@ public class OcanForm {
 
 	 
 	public static String getOcanWarningMessage(Integer facilityId) {
-				
-		StringBuilder messages = new StringBuilder();
-		messages.append("You need to do OCAN reassessment for the clients whose IDs are: ");
-		
+		boolean appendFailureMessage = true;	
+		StringBuilder messages = new StringBuilder();		
 		int doReassessment = 0;
 		
-	
 		List<Integer> demographicList = ocanStaffFormDao.findClientsWithOcan(facilityId);
 		for(Integer clientId: demographicList) {
 			if(isItTimeToDoReassessment(facilityId, clientId)){
+				if(appendFailureMessage) {
+					messages.append("You need to do OCAN reassessment for the clients whose IDs are: ");
+					appendFailureMessage = false;
+				}
 				messages.append(clientId+" , ");
 				doReassessment ++;
 			}		
@@ -1159,14 +1160,35 @@ public class OcanForm {
 		
 		boolean result = false;
 		
+		Object[] ocanStaffForm = ocanStaffFormDao.findLatestCompletedReassessment_startDates(facilityId,clientId);
 		Object[] ocanStaffForm1 = ocanStaffFormDao.findLatestCompletedInitialOcan_startDates(facilityId,clientId);	
+		Object[] ocanStaffForm2 = ocanStaffFormDao.findLatestCompletedFormStartDates(facilityId, clientId);
 		
-		Object[] ocanStaffForm = ocanStaffFormDao.findLatestCompletedReassessment_startDates(facilityId,clientId);	
-				
+		OcanStaffFormData formData;	
+		
+		if(ocanStaffForm2!=null){
+			//If exit date exists, it means the client was discharged from the functional centre. Don't have to do OCAN again.
+			formData = ocanStaffFormDataDao.findLatestByQuestion((Integer)ocanStaffForm2[2], "serviceUseRecord_exitDate1");
+			if(formData!=null) {
+				if(formData.getAnswer()!=null)
+					return false;
+			}	
+		}		
+		
 		Date startDate = null;
 		if(ocanStaffForm!=null) {
+			formData = ocanStaffFormDataDao.findLatestByQuestion((Integer)ocanStaffForm[2], "serviceUseRecord_exitDate1");
+			if(formData!=null) {
+				if(formData.getAnswer()!=null)
+					return false;
+			}
 			startDate = OcanForm.getAssessmentStartDate((Date)ocanStaffForm[0],(Date)ocanStaffForm[1]);
-		} else if(ocanStaffForm1!=null) {			
+		} else if(ocanStaffForm1!=null) {	
+			formData = ocanStaffFormDataDao.findLatestByQuestion((Integer)ocanStaffForm1[2], "serviceUseRecord_exitDate1");
+			if(formData!=null) {
+				if(formData.getAnswer()!=null)
+					return false;
+			}
 			startDate = OcanForm.getAssessmentStartDate((Date)ocanStaffForm1[0],(Date)ocanStaffForm1[1]);			
 		} else {
 			return result;

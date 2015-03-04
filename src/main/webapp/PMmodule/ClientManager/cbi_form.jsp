@@ -469,7 +469,7 @@ function changeFunctionalCentre(selectBox) {
 					 	  <select name="admissionId_tmp" disabled>
 						  <option value=""> </option>
 					
-						  <option <%=selected%> value="<%=ocanStaffForm.getAdmissionId()%>"><%=functionalCentre.getDescription() %> - <%=DateFormatUtils.ISO_DATE_FORMAT.format(ad.getAdmissionDate()) %>%></option>
+						  <option <%=selected%> value="<%=ocanStaffForm.getAdmissionId()%>"><%=functionalCentre.getDescription() %> - <%=DateFormatUtils.ISO_DATE_FORMAT.format(ad.getAdmissionDate()) %></option>
 					 <%
 					  }
 					

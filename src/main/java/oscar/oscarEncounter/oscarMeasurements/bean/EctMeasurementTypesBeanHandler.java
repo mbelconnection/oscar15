@@ -32,6 +32,7 @@ import java.util.Vector;
 
 import org.oscarehr.util.MiscUtils;
 
+import oscar.OscarProperties;
 import oscar.oscarDB.DBHandler;
 
 public class EctMeasurementTypesBeanHandler {
@@ -88,7 +89,10 @@ public class EctMeasurementTypesBeanHandler {
         boolean verdict = true;
         try {
             
-            String sqlMGr = "SELECT typeDisplayName FROM measurementGroup WHERE name='" + groupName + "'ORDER BY typeDisplayName";            
+        	boolean orderById = "true".equals(OscarProperties.getInstance().getProperty("oscarMeasurements.orderGroupById","false"));
+        	
+        	
+            String sqlMGr = "SELECT typeDisplayName FROM measurementGroup WHERE name='" + groupName + "'ORDER BY " + ((orderById)?"id":"typeDisplayName");            
             ResultSet rsMGr;
  
             for(rsMGr = DBHandler.GetSQL(sqlMGr); rsMGr.next();){

@@ -277,6 +277,9 @@
             <form-property name="quickChartSize" type="org.oscarehr.common.model.UserProperty"/>
             <form-property name="patientNameLength" type="org.oscarehr.common.model.UserProperty"/>
 			<form-property name="labAckCommentProperty" type="org.oscarehr.common.model.UserProperty" />
+			<form-property name="appointmentCardName" type="org.oscarehr.common.model.UserProperty" />
+			<form-property name="appointmentCardPhone" type="org.oscarehr.common.model.UserProperty" />
+			<form-property name="appointmentCardFax" type="org.oscarehr.common.model.UserProperty" />
 		</form-bean>
 		<form-bean name="setMyOscarIdForm" type="org.apache.struts.action.DynaActionForm">
 			<form-property name="myOscarLoginId" type="java.lang.String" />
@@ -1431,6 +1434,7 @@
             <forward name="genEDocBrowserInDocumentReport"     path="/provider/setEDocBrowserInDocumentReport.jsp"/>
             <forward name="genEDocBrowserInMasterFile"     path="/provider/setEDocBrowserInMasterFile.jsp"/>
             <forward name="genPatientNameLength"     path="/provider/setPatientNameLength.jsp"/>
+             <forward name="genAppointmentCardPrefs"     path="/provider/setAppointmentCardPrefs.jsp"/>
                  </action>
 		<action input="/provider/providerIndivoIdSetter.jsp" name="setMyOscarIdForm" path="/setMyOscarId" scope="request" type="oscar.oscarProvider.pageUtil.ProEditMyOscarIdAction">
 			<forward name="success" path="/provider/providerIndivoIdSetter.jsp" />
@@ -2551,7 +2555,6 @@
 		</action>
 		
 		<action path="/printReferralLabelAction" type="org.oscarehr.common.web.PrintReferralLabelAction" />
-		
 		
 	</action-mappings>
 	<controller processorClass="org.apache.struts.tiles.TilesRequestProcessor" maxFileSize="25M" />

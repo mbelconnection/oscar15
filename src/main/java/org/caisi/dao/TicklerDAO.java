@@ -24,6 +24,7 @@
 package org.caisi.dao;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -43,7 +44,16 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
  * Updated by Eugene Petruhin on 12/18/2008: don't save empty comment and skip updating status & assignee if they are the same 
  */
 public class TicklerDAO extends HibernateDaoSupport {
-
+    
+    public static String DEMOGRAPHIC_NAME = "demographic_name";
+    public static String CREATOR = "creator";
+    public static String SERVICE_DATE = "service_date";
+    public static String CREATION_DATE = "creation_date";
+    public static String PRIORITY = "priority";
+    public static String TASK_ASSIGNED_TO = "task_assigned_to";
+    public static String SORT_ASC = "asc";
+    public static String SORT_DESC = "desc";
+    
     public void saveTickler(Tickler tickler) {
         getHibernateTemplate().saveOrUpdate(tickler);
     }
@@ -249,6 +259,41 @@ public class TicklerDAO extends HibernateDaoSupport {
     @SuppressWarnings("unchecked")
     public List<Tickler> search_tickler_bydemo(String demographic_no, String status, Date beginDate, Date endDate) {
 	return this.getHibernateTemplate().find("SELECT t FROM Tickler t WHERE t.demographic_no like ? and t.status = ? and t.service_date >= ? and t.service_date <= ? order by t.service_date desc", new Object[]{demographic_no,status,beginDate, endDate});
+    }
+    
+    public List<Tickler> sortTicklerList(Boolean isSortAscending, String sortColumn, List<Tickler> ticklers) {
+                
+            if (isSortAscending) {
+                if (sortColumn.equals(TicklerDAO.DEMOGRAPHIC_NAME)) {
+                    Collections.sort(ticklers, Tickler.DemographicNameAscComparator);
+                } else if (sortColumn.equals(TicklerDAO.CREATOR)) {
+                    Collections.sort(ticklers, Tickler.CreatorAscComparator);
+                } else if (sortColumn.equals(TicklerDAO.SERVICE_DATE)) {
+                    Collections.sort(ticklers, Tickler.ServiceDateAscComparator);
+                } else if (sortColumn.equals(TicklerDAO.CREATION_DATE)) {
+                    Collections.sort(ticklers,Tickler.CreationDateAscComparator);
+                } else if (sortColumn.equals(TicklerDAO.PRIORITY)) {
+                    Collections.sort(ticklers,Tickler.PriorityAscComparator);
+                } else if (sortColumn.equals(TicklerDAO.TASK_ASSIGNED_TO)) {
+                    Collections.sort(ticklers, Tickler.TaskAssignedToAscComparator);
+                }
+            } else {
+                if (sortColumn.equals(TicklerDAO.DEMOGRAPHIC_NAME)) {
+                    Collections.sort(ticklers, Tickler.DemographicNameDescComparator);
+                } else if (sortColumn.equals(TicklerDAO.CREATOR)) {
+                    Collections.sort(ticklers, Tickler.CreatorDescComparator);
+                } else if (sortColumn.equals(TicklerDAO.SERVICE_DATE)) {
+                    Collections.sort(ticklers, Tickler.ServiceDateDescComparator);
+                } else if (sortColumn.equals(TicklerDAO.CREATION_DATE)) {
+                    Collections.sort(ticklers,Tickler.CreationDateDescComparator);
+                } else if (sortColumn.equals(TicklerDAO.PRIORITY)) {
+                    Collections.sort(ticklers,Tickler.PriorityDescComparator);
+                } else if (sortColumn.equals(TicklerDAO.TASK_ASSIGNED_TO)) {
+                    Collections.sort(ticklers, Tickler.TaskAssignedToDescComparator);
+                }
+            }
+               
+        return ticklers;
     }
 
 }

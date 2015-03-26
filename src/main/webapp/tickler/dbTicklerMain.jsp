@@ -32,14 +32,24 @@
 <%@ page import="org.caisi.dao.TicklerDAO" %>
 <%
 	TicklerDAO ticklerDao = (TicklerDAO)SpringUtils.getBean("ticklerDAOT");
-%>
-<%
+        
 String[] param = new String[2];
 String[] temp = request.getParameterValues("checkbox");
+
 if (temp == null){
-%>
-<% response.sendRedirect("ticklerMain.jsp"); %>
-<%}else{
+    String sortColumn = request.getParameter("sort_column");
+    String sortOrder = request.getParameter("sort_order");
+    
+    if (sortColumn == null) {
+        sortColumn = TicklerDAO.SERVICE_DATE;
+    }
+    
+    if (sortOrder == null) {
+        sortOrder = TicklerDAO.SORT_ASC;
+    }
+    
+    response.sendRedirect("ticklerMain.jsp?sort_column="+sortColumn+"&sort_order="+sortOrder); 
+}else{
 		//temp=e.nextElement().toString();
     for (int i=0; i<temp.length; i++){
         param[0] = request.getParameter("submit_form").substring(0,1);

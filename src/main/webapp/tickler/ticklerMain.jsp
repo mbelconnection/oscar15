@@ -35,10 +35,8 @@
 </security:oscarSec>
 
 <%@ page import="java.util.*,java.text.*, java.sql.*, oscar.*, java.net.*, org.oscarehr.common.dao.*, org.caisi.model.Tickler, org.caisi.model.TicklerComment,org.caisi.dao.TicklerDAO,org.caisi.model.CustomFilter,org.oscarehr.util.SpringUtils, org.oscarehr.PMmodule.dao.ProviderDao" %>
-<%@ page import="java.util.*,java.text.*, java.sql.*, oscar.*, java.net.*, org.oscarehr.common.dao.ViewDao, org.oscarehr.common.model.View, org.springframework.web.context.WebApplicationContext, org.springframework.web.context.support.WebApplicationContextUtils,org.oscarehr.util.LocaleUtils" %>
+<%@ page import="org.oscarehr.util.LocaleUtils" %>
 
-<jsp:useBean id="apptMainBean" class="oscar.AppointmentMainBean" scope="session" />
-<jsp:useBean id="SxmlMisc" class="oscar.SxmlMisc" scope="session" />
 <head>
     <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.js"></script>
     <script>
@@ -52,20 +50,10 @@
     response.sendRedirect("../logout.jsp");
   String user_no;
   user_no = (String) session.getAttribute("user");
-  int  nItems=0;
-  String strLimit1="0";
-  String strLimit2="5";
-  if(request.getParameter("limit1")!=null) strLimit1 = request.getParameter("limit1");
-  if(request.getParameter("limit2")!=null) strLimit2 = request.getParameter("limit2");
-
 
   WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-  ViewDao viewDao =  (ViewDao) ctx.getBean("viewDao");
   TicklerLinkDao ticklerLinkDao = (TicklerLinkDao) ctx.getBean("ticklerLinkDao");
 
-  String role = (String)request.getSession().getAttribute("userrole");
-  Map<String,View> viewMap = viewDao.getView(View.TICKLER_VIEW,role);
-  View v;
   String providerview;
   String assignedTo;
   String mrpview;
@@ -90,10 +78,6 @@
 	  mrpview = request.getParameter("mrpview");
   }
 
-%>
-
-<%@ include file="dbTicker.jspf" %>
-<%
 GregorianCalendar now=new GregorianCalendar();
   int curYear = now.get(Calendar.YEAR);
   int curMonth = (now.get(Calendar.MONTH)+1);
@@ -124,13 +108,6 @@ GregorianCalendar now=new GregorianCalendar();
   else {
       xml_appointment_date = request.getParameter("xml_appointment_date");
   }
-
-
-  java.util.Locale vLocale =(java.util.Locale)session.getAttribute(org.apache.struts.Globals.LOCALE_KEY);
-
-  String stActive = LocaleUtils.getMessage(request.getLocale(), "tickler.ticklerMain.stActive");
-  String stComplete = LocaleUtils.getMessage(request.getLocale(), "tickler.ticklerMain.stComplete");
-  String stDeleted = LocaleUtils.getMessage(request.getLocale(), "tickler.ticklerMain.stDeleted");
 %>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
@@ -139,14 +116,9 @@ GregorianCalendar now=new GregorianCalendar();
 
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="request" />
 
-<%@page import="org.oscarehr.util.DbConnectionFilter"%>
-<%@page import="oscar.oscarDB.DBHandler"%><html:html locale="true">
+<html:html locale="true">
 <head>
 <title><bean:message key="tickler.ticklerMain.title"/></title>
-<!--Table Sorting Code -->
-<script type='text/javascript' src='<c:out value="${ctx}"/>/commons/scripts/sort_table/common.js'></script>
-<script type='text/javascript' src='<c:out value="${ctx}"/>/commons/scripts/sort_table/css.js'></script>
-<script type='text/javascript' src='<c:out value="${ctx}"/>/commons/scripts/sort_table/standardista-table-sorting.js'></script>
 
 <!-- Prototype and scriptaculous -->
 <script src="<c:out value="${ctx}"/>/share/javascript/prototype.js" type="text/javascript"></script>
@@ -387,6 +359,7 @@ var beginD = "1900-01-01"
 </script>
 <style type="text/css">
 	<!--
+        th {text-align: left; border-bottom: 1px solid black; padding-top:5px; padding-bottom:5px; }
 	A, BODY, INPUT, OPTION ,SELECT , TABLE, TEXTAREA, TD, TR {font-family:tahoma,sans-serif; font-size:11px;}
 
 	TD.black              {font-weight: bold  ; font-size: 8pt ; font-family: verdana,arial,helvetica; color: #FFFFFF; background-color: #666699   ;}
@@ -582,25 +555,94 @@ function changeSite(sel) {
 </form>
         
 <form name="ticklerform" method="post" action="dbTicklerMain.jsp">
+
+    <% 
+        Locale locale = request.getLocale();
+        String sortImage = "uparrow_inv.gif";
+        String sortDirection = LocaleUtils.getMessage(locale, "tickler.ticklerMain.sortUp");
+        String sortOrderStr = request.getParameter("sort_order");
+        boolean isSortAscending = true;
+        
+        if (sortOrderStr == null || sortOrderStr.equals(TicklerDAO.SORT_ASC)) {                    
+            isSortAscending = false;
+            sortOrderStr = TicklerDAO.SORT_DESC;
+            sortImage = "downarrow_inv.gif";
+            sortDirection = LocaleUtils.getMessage(locale, "tickler.ticklerMain.sortDown");
+        } else {
+            sortOrderStr = TicklerDAO.SORT_ASC;
+        }   
+        
+        String sortColumn = request.getParameter("sort_column");        
+        if (sortColumn == null) {
+            sortColumn = TicklerDAO.SERVICE_DATE;
+        }
+    %>
+<input type="hidden" name="sort_order" id="sort_order" value="<%=sortOrderStr%>"/>
+<input type="hidden" name="sort_column" id="sort_column" value=""/>
+
+<c:set var="imgTag" scope="request"><img src="<c:out value="${ctx}"/>/images/<%=sortImage%>" alt="Sort Arrow <%=sortDirection%>"/></c:set>
+<c:set var="sortColumn" scope="request"><%=sortColumn%></c:set>
+<c:set var="sortByDemoName" scope="request"><%=TicklerDAO.DEMOGRAPHIC_NAME%></c:set>  
+<c:set var="sortByCreator" scope="request"><%=TicklerDAO.CREATOR%></c:set>  
+<c:set var="sortByServiceDate" scope="request"><%=TicklerDAO.SERVICE_DATE%></c:set>  
+<c:set var="sortByCreationDate" scope="request"><%=TicklerDAO.CREATION_DATE%></c:set>
+<c:set var="sortByPriority" scope="request"><%=TicklerDAO.PRIORITY%></c:set> 
+<c:set var="sortByTAT" scope="request"><%=TicklerDAO.TASK_ASSIGNED_TO%></c:set>
+
 <table bgcolor=#666699 border=0 cellspacing=0 width=100%>
 <tr><td>
 
 
-<table class="sortable" border="0" cellpadding="0" cellspacing="0" width="100%">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
     <thead>
         <TR bgcolor=#EEEEFF>
-            <th style="color:#000000; font-size:xsmall; font-family:verdana,arial,helvetica;" width="3%"></th>
-            <% 
+            <th style="color:#000000; font-size:xsmall; font-family:verdana,arial,helvetica;" width="3%">&nbsp;</th>
+<% 
             boolean ticklerEditEnabled = Boolean.parseBoolean(OscarProperties.getInstance().getProperty("tickler_edit_enabled")); 
-            if (ticklerEditEnabled) { %>
-            <th style="color:#000000; font-size:xsmall; font-family:verdana,arial,helvetica;" width="3%"></th>
-            <% }%>
-            <th style="color:#000000; font-size:xsmall; font-family:verdana,arial,helvetica;" width="17%"><bean:message key="tickler.ticklerMain.msgDemographicName"/></th>
-            <th style="color:#000000; font-size:xsmall; font-family:verdana,arial,helvetica;" width="8%"><bean:message key="tickler.ticklerMain.msgCreator"/></th>
-            <th style="color:#000000; font-size:xsmall; font-family:verdana,arial,helvetica;" width="9%"><bean:message key="tickler.ticklerMain.msgDate"/></th>
-            <th style="color:#000000; font-size:xsmall; font-family:verdana,arial,helvetica;" width="9%"><bean:message key="tickler.ticklerMain.msgCreationDate"/></th>
-            <th style="color:#000000; font-size:xsmall; font-family:verdana,arial,helvetica;" width="6%"><bean:message key="tickler.ticklerMain.Priority"/></th>
-            <th style="color:#000000; font-size:xsmall; font-family:verdana,arial,helvetica;" width="12%"><bean:message key="tickler.ticklerMain.taskAssignedTo"/></th>
+            if (ticklerEditEnabled) { 
+%>
+            <th style="color:#000000; font-size:xsmall; font-family:verdana,arial,helvetica;" width="3%">&nbsp;</th>
+<%          
+            }
+%>            
+            <th style="color:#000000; font-size:xsmall; font-family:verdana,arial,helvetica;" width="15%">               
+                <a href="#" onClick="document.forms['ticklerform'].sort_order.value='<%=sortOrderStr%>';document.forms['ticklerform'].sort_column.value='<c:out value="${sortByDemoName}"/>'; document.forms['ticklerform'].submit();"><bean:message key="tickler.ticklerMain.msgDemographicName"/></a>
+                <c:if test="${sortColumn == sortByDemoName}">
+                    <c:out value="${imgTag}" escapeXml="false"/>      
+                </c:if>
+            </th>
+            <th style="color:#000000; font-size:xsmall; font-family:verdana,arial,helvetica;" width="8%">                
+                <a href="#" onClick="document.forms['ticklerform'].sort_order.value='<%=sortOrderStr%>';document.forms['ticklerform'].sort_column.value='<c:out value="${sortByCreator}"/>'; document.forms['ticklerform'].submit();"><bean:message key="tickler.ticklerMain.msgCreator"/></a>
+                <c:if test="${sortColumn == sortByCreator}">
+                    <c:out value="${imgTag}" escapeXml="false"/>      
+                </c:if>
+            </th>           
+            <th style="color:#000000; font-size:xsmall; font-family:verdana,arial,helvetica;" width="9%">
+                <a href="#" onClick="document.forms['ticklerform'].sort_order.value='<%=sortOrderStr%>';document.forms['ticklerform'].sort_column.value='<c:out value="${sortByServiceDate}"/>'; document.forms['ticklerform'].submit();"><bean:message key="tickler.ticklerMain.msgDate"/></a>
+                <c:if test="${sortColumn == sortByServiceDate}">
+                    <c:out value="${imgTag}" escapeXml="false"/>      
+                </c:if>
+            </th>
+            <th style="color:#000000; font-size:xsmall; font-family:verdana,arial,helvetica;" width="11%">                             
+                <a href="#" onClick="document.forms['ticklerform'].sort_order.value='<%=sortOrderStr%>';document.forms['ticklerform'].sort_column.value='<c:out value="${sortByCreationDate}"/>'; document.forms['ticklerform'].submit();"><bean:message key="tickler.ticklerMain.msgCreationDate"/></a>
+                <c:if test="${sortColumn == sortByCreationDate}">
+                    <c:out value="${imgTag}" escapeXml="false"/>      
+                </c:if>  
+            </th>
+
+            <th style="color:#000000; font-size:xsmall; font-family:verdana,arial,helvetica;" width="10%">                           
+                <a href="#" onClick="document.forms['ticklerform'].sort_order.value='<%=sortOrderStr%>';document.forms['ticklerform'].sort_column.value='<c:out value="${sortByPriority}"/>'; document.forms['ticklerform'].submit();"><bean:message key="tickler.ticklerMain.Priority"/></a>
+                 <c:if test="${sortColumn == sortByPriority}">
+                    <c:out value="${imgTag}" escapeXml="false"/>      
+                </c:if>  
+            </th>
+
+            <th style="color:#000000; font-size:xsmall; font-family:verdana,arial,helvetica;" width="12%">                                      
+                <a href="#" onClick="document.forms['ticklerform'].sort_order.value='<%=sortOrderStr%>';document.forms['ticklerform'].sort_column.value='<c:out value="${sortByTAT}"/>'; document.forms['ticklerform'].submit();"><bean:message key="tickler.ticklerMain.taskAssignedTo"/></a>
+                <c:if test="${sortColumn == sortByTAT}">
+                    <c:out value="${imgTag}" escapeXml="false"/>      
+                </c:if>
+            </th>
 
             <th style="color:#000000; font-size:xsmall; font-family:verdana,arial,helvetica;" width="6%"><bean:message key="tickler.ticklerMain.msgStatus"/></th>
             <th style="color:#000000; font-size:xsmall; font-family:verdana,arial,helvetica;" width="39%"><bean:message key="tickler.ticklerMain.msgMessage"/></th>
@@ -608,7 +650,7 @@ function changeSite(sel) {
     </thead>
     <tfoot>
                                 <tr bgcolor=#666699><td colspan="8" class="white"><a id="checkAllLink" name="checkAllLink" href="javascript:CheckAll();"><bean:message key="tickler.ticklerMain.btnCheckAll"/></a> - <a href="javascript:ClearAll();"><bean:message key="tickler.ticklerMain.btnClearAll"/></a> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                                    <input type="button" name="button" value="<bean:message key="tickler.ticklerMain.btnAddTickler"/>" onClick="popupPage('400','600', 'ticklerAdd.jsp')" class="sbttn">
+                                    <input type="button" name="button" value="<bean:message key="tickler.ticklerMain.btnAddTickler"/>" onClick="popupPage('400','600', 'ticklerAdd.jsp')" class="sbttn">                                   
                                     <input type="hidden" name="submit_form" value="">
                                     <% if (ticklerview.compareTo("D") == 0){%>
                                     <input type="button" value="<bean:message key="tickler.ticklerMain.btnEraseCompletely"/>" class="sbttn" onclick="document.forms['ticklerform'].submit_form.value='Erase Completely'; document.forms['ticklerform'].submit();">
@@ -625,7 +667,7 @@ function changeSite(sel) {
                             String dateEnd = xml_appointment_date;
                             
                             String vGrantdate = "1980-01-07 00:00:00.0";
-                            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:ss:mm.SSS", request.getLocale());
+                            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:ss:mm.SSS", locale);
 
                             if (dateEnd.compareTo("") == 0) dateEnd = MyDateFormat.getMysqlStandardDate(curYear, curMonth, curDay);
                             if (dateBegin.compareTo("") == 0) dateBegin="1950-01-01"; // any early start date should suffice for selecting since the beginning
@@ -647,28 +689,16 @@ function changeSite(sel) {
                             if (!assignedTo.isEmpty() && !assignedTo.equals("all")) {
                                 filter.setAssignee(assignedTo);
                             }
-
-                            String colNames[] = new String[] {"last_name", "provider_last", "service_date", "update_date", "priority", "assignedLast", "status", "message"};
-                            v = null;
-                            String order = "service_date desc";
-                            int col;
-                            if( viewMap != null ) {
-                                v = viewMap.get("columnId");
-                                if( v != null ) {
-                                   col = Integer.parseInt(v.getValue()) - 1;
-                                   order = colNames[col] + " ";
-                                   v = viewMap.get("sortOrder");
-                                   if( v!= null ) {
-                                       order += v.getValue();
-                                   }
-                                }
-                            }
                             filter.setSort_order("desc");
                                                                                   
                             TicklerDAO ticklerDao = (TicklerDAO)SpringUtils.getBean("ticklerDAOT");
                             List<Tickler> ticklers = ticklerDao.getTicklers(filter);
                             
-                            String rowColour = "lilac";
+                            if (sortColumn != null) {
+                                ticklers = ticklerDao.sortTicklerList(isSortAscending,sortColumn, ticklers);
+                            }
+                                                          
+                            String rowColour = "lilac";                                                                                        
 
                             for (Tickler t : ticklers) {
                                 Demographic demo = t.getDemographic(); 
@@ -712,7 +742,7 @@ function changeSite(sel) {
                                     <TD ROWSPAN="1" class="<%=cellColour%>"><%=t.getUpdateDate()%></TD>
                                     <TD ROWSPAN="1" class="<%=cellColour%>"><%=t.getPriority()%></TD>
                                     <TD ROWSPAN="1" class="<%=cellColour%>"><%=t.getAssignee() != null ? t.getAssignee().getLastName() + ", " + t.getAssignee().getFirstName() : "N/A"%></TD>
-                                    <TD ROWSPAN="1" class="<%=cellColour%>"><%=t.getStatusDesc(request.getLocale())%></TD>
+                                    <TD ROWSPAN="1" class="<%=cellColour%>"><%=t.getStatusDesc(locale)%></TD>
                                     <TD ROWSPAN="1" class="<%=cellColour%>"><%=t.getMessage()%>
                                         
                                         <%
@@ -751,9 +781,9 @@ function changeSite(sel) {
                                         <td ROWSPAN="1" class="<%=cellColour%>"><%=tc.getProvider().getLastName()%>,<%=tc.getProvider().getFirstName()%></td>
                                         <td ROWSPAN="1" class="<%=cellColour%>"></td>
                                         <% if (tc.isUpdateDateToday()) { %>
-                                        <td ROWSPAN="1" class="<%=cellColour%>"><%=tc.getUpdateTime(request.getLocale())%></td>
+                                        <td ROWSPAN="1" class="<%=cellColour%>"><%=tc.getUpdateTime(locale)%></td>
                                         <% } else { %>
-                                        <td ROWSPAN="1" class="<%=cellColour%>"><%=tc.getUpdateDate(request.getLocale())%></td>
+                                        <td ROWSPAN="1" class="<%=cellColour%>"><%=tc.getUpdateDate(locale)%></td>
                                         <% } %>
                                         <td ROWSPAN="1" class="<%=cellColour%>"></td>
                                         <td ROWSPAN="1" class="<%=cellColour%>"></td>

@@ -43,6 +43,16 @@
 	
 	function do_discharge() {
 		var dischargeDate = document.getElementById('dischargeDate').value; 
+		var dischargedFromFunctionalCentreRadioBox = document.clientManagerForm.elements['dischargedFromFunctionalCentre'];
+		var fcDischarged = false;
+		for(var i = 0; i < dischargedFromFunctionalCentreRadioBox.length; i++)
+		   {
+		      if(dischargedFromFunctionalCentreRadioBox[i].checked)
+		      {
+		         fcDischarged = true;
+		      }
+		   }
+				
 	      <%
 	      	String admissionDateString=(String)request.getAttribute("admissionDate");
 	      %>
@@ -52,7 +62,10 @@
 	    		alert("Please choose discharge date");
 	    		return false;
 	    	}    	
-	    	
+	    	if(!fcDischarged) {
+	    		alert("Please choose being discharged from functional centre or not.");
+	    		return false;
+	    	}
 	    	var today = new Date();
 	 	    var dischargeDateString = dischargeDate.split('-') ;
 	 	    var dischargeDateYear = dischargeDateString[0];
@@ -154,7 +167,24 @@
 		}
 		return true;
 	}
-
+	function radioEvent(form) 
+	{
+		var radioValue ;
+	 	for (var i = 0; i < form.dischargedFromFunctionalCentre.length; i++) 
+		{
+	    	if (form.dischargedFromFunctionalCentre[i].checked) 
+	    	{   
+	    		radioValue = form.dischargedFromFunctionalCentre[i].value;
+	    	}
+		}
+	 	if(radioValue == "true")
+	 	{
+	        alert("Please complete CDS and CBI.");
+	    } else {
+	    	alert("Please complete CDS and CBI if client address or other CBI data has changed.");
+	    }
+	
+	 }
 	
 </script>
 
@@ -316,7 +346,8 @@ Community Program:&nbsp;
 		
 		<tr>
 			<td width="20%">Discharge From Functional Centre</td>
-			<td><input type="checkbox" id="dischargedFromFunctionalCentre" name="dischargedFromFunctionalCentre"  value="true" />			
+			<td><input type="radio" id="dischargedFromFunctionalCentre1" name="dischargedFromFunctionalCentre"  value="true" onclick="radioEvent(this.form);"/>Yes	
+				<input type="radio" id="dischargedFromFunctionalCentre2" name="dischargedFromFunctionalCentre"  value="false" onclick="radioEvent(this.form);"/>	No	
 			</td>			
 		</tr>
 		

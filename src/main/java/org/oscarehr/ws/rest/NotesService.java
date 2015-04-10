@@ -710,6 +710,7 @@ public class NotesService extends AbstractServiceImpl {
 		}
 		Set<CaseManagementIssue> issueSet = new HashSet<CaseManagementIssue>();
 		Set<CaseManagementNote> noteSet = new HashSet<CaseManagementNote>();
+		int programNo = Integer.parseInt(programId);
 
 		if( cIssue2 == null ) {
 			Issue issue2;
@@ -731,7 +732,7 @@ public class NotesService extends AbstractServiceImpl {
 				//do I need to cIssue2 set note???
 				
 				cIssue2.setMajor(false);
-				cIssue2.setProgram_id(10034);
+				cIssue2.setProgram_id(programNo);
 				cIssue2.setResolved(false);
 				cIssue2.setType(issues.getRole()); 
 				cIssue2.setUpdate_date(creationDate);
@@ -827,7 +828,7 @@ public class NotesService extends AbstractServiceImpl {
 				cmi.setDemographic_no(String.valueOf(demographicNo));
 				cmi.setIssue_id(issues.getId());
 				cmi.setMajor(false);
-				cmi.setProgram_id(10034);
+				cmi.setProgram_id(programNo);
 				cmi.setResolved(false);
 				cmi.setType(issues.getRole()); 
 				cmi.setUpdate_date(creationDate);

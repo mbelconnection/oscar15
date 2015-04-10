@@ -33,11 +33,12 @@
 <h3>Would you like a cover page?</h3>
 <form action="<%=request.getContextPath() + "/oscarEncounter/oscarConsultationRequest/ConsultationFormFax.do"%>" method="post">
 
-<input type="hidden" name="reqId" value="<%=request.getAttribute("reqId") %>"/>
+<input type="hidden" name="reqId" value="<%=request.getAttribute("reqId")==null ? request.getParameter("reqId") : request.getAttribute("reqId") %>"/>
 <input type="hidden" name="transType" value="<%=request.getAttribute("transType") %>"/>
 <input type="hidden" name="demographicNo" value="<%=request.getParameter("demographicNo")%>"/>
 <input type="hidden" name="letterheadFax" value="<%=request.getParameter("letterheadFax")%>"/>
 <input type="hidden" name="fax" value="<%=request.getParameter("fax")%>"/>
+<input type="hidden" name="consultResponsePage" value="<%=request.getParameter("consultResponsePage")%>"/>
 
 <%
 	String[] faxRecipients = request.getParameterValues("faxRecipients");

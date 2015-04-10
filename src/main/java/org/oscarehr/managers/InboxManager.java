@@ -132,8 +132,7 @@ public class InboxManager {
 			}
 		}
 		roleName += "," + searchProviderNo;
-		// mDSData.populateMDSResultsData2(searchProviderNo, demographicNo, request.getParameter("fname"), request.getParameter("lname"), request.getParameter("hnum"), ackStatus);
-		// HashMap<String,String> docQueue=comLab.getDocumentQueueLinks();
+
 		List<QueueDocumentLink> qd = queueDocumentLinkDAO.getQueueDocLinks();
 		HashMap<String, String> docQueue = new HashMap<String, String>();
 		for (QueueDocumentLink qdl : qd) {
@@ -154,7 +153,7 @@ public class InboxManager {
 					patientLastName, patientHealthNumber, ackStatus, true, page, pageSize, mixLabsAndDocs, isAbnormal);
 		}
 		if (!DOCUMENTS.equals(view)) {
-			labdocs.addAll(comLab.populateLabResultsData(searchProviderNo, demographicNo, patientFirstName,
+			labdocs.addAll(comLab.populateLabResultsData(loggedInInfo, searchProviderNo, demographicNo, patientFirstName,
 					patientLastName, patientHealthNumber, ackStatus, scannedDocStatus, true, page, pageSize,
 					mixLabsAndDocs, isAbnormal));
 		}

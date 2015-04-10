@@ -37,6 +37,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.model.Demographic;
+import org.oscarehr.managers.DemographicManager;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
 
@@ -61,8 +62,8 @@ public class MeasurementInfo {
     ArrayList itemList = new ArrayList();
     String demographicNo = "";
     
-    DemographicDao demographicDao = (DemographicDao)SpringUtils.getBean("demographicDao");
-    
+    DemographicManager demographicManager = SpringUtils.getBean(DemographicManager.class);
+     
     /** Creates a new instance of MeasurementInfo */
     public MeasurementInfo(String demographic) {
         demographicNo = demographic;
@@ -267,20 +268,27 @@ public class MeasurementInfo {
         return v;
     }
     
+    /*
+     * Called by Drools - not sure how to pass in LoggedInInfo
+     */
     public boolean getGender(String sex){
     	if (sex==null) return false;
-    	
+    	DemographicDao demographicDao = SpringUtils.getBean(DemographicDao.class);
     	Demographic d = demographicDao.getDemographic(demographicNo);
     	return (sex.trim().equals(d.getSex()));
     }
     
+    /*
+     *Called by Drools - not sure how to pass in LoggedInInfo
+     */
     public int getAge(){
+    	DemographicDao demographicDao = SpringUtils.getBean(DemographicDao.class);
     	Demographic d = demographicDao.getDemographic(demographicNo);
     	return d.getAgeInYears();
     }
     
 
-
+ 
     private int getNumMonths(Date dStart, Date dEnd) {
         int i = 0;
         log.debug("Getting the number of months between "+dStart.toString()+ " and "+dEnd.toString() );

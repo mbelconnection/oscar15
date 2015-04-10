@@ -70,14 +70,14 @@ public class EctConsultationFormRequestPrintAction2 extends Action {
 		CommonLabResultData consultLabs = new CommonLabResultData();
 		ArrayList<InputStream> streams = new ArrayList<InputStream>();
 
-		ArrayList<LabResultData> labs = consultLabs.populateLabResultsData(demoNo, reqId, CommonLabResultData.ATTACHED);
+		ArrayList<LabResultData> labs = consultLabs.populateLabResultsData(loggedInInfo, demoNo, reqId, CommonLabResultData.ATTACHED);
 		String error = "";
 		Exception exception = null;
 		try {
 
 			bos = new ByteOutputStream();
 			ConsultationPDFCreator cpdfc = new ConsultationPDFCreator(request,bos);
-			cpdfc.printPdf();
+			cpdfc.printPdf(loggedInInfo);
 			
 			buffer = bos.getBytes();
 			bis = new ByteInputStream(buffer, bos.getCount());

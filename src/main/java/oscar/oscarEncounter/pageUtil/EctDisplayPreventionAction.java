@@ -75,7 +75,7 @@ public class EctDisplayPreventionAction extends EctDisplayAction {
         Dao.setRightHeadingID(cmd);  //no menu so set div id to unique id for this action
 
         //list warnings first as module items
-        Prevention p = PreventionData.getPrevention(Integer.valueOf(bean.demographicNo));
+        Prevention p = PreventionData.getPrevention(loggedInInfo, Integer.valueOf(bean.demographicNo));
         PreventionDS pf = PreventionDS.getInstance();
 
         try{
@@ -104,10 +104,10 @@ public class EctDisplayPreventionAction extends EctDisplayAction {
             NavBarDisplayDAO.Item item = NavBarDisplayDAO.Item();
             HashMap<String,String> h = prevList.get(i);
             String prevName = h.get("name");
-            ArrayList<Map<String,Object>> alist = PreventionData.getPreventionData(prevName, Integer.valueOf(bean.demographicNo));
-            Date demographicDateOfBirth=PreventionData.getDemographicDateOfBirth(Integer.valueOf(bean.demographicNo));
+            ArrayList<Map<String,Object>> alist = PreventionData.getPreventionData(loggedInInfo, prevName, Integer.valueOf(bean.demographicNo));
+            Date demographicDateOfBirth=PreventionData.getDemographicDateOfBirth(loggedInInfo, Integer.valueOf(bean.demographicNo));
             PreventionData.addRemotePreventions(loggedInInfo, alist, Integer.valueOf(bean.demographicNo),prevName,demographicDateOfBirth);
-            boolean show = pdc.display(h, bean.demographicNo,alist.size());
+            boolean show = pdc.display(loggedInInfo, h, bean.demographicNo,alist.size());
             if( show ) {
                 if( alist.size() > 0 ) {
                     Map<String,Object> hdata = alist.get(alist.size()-1);

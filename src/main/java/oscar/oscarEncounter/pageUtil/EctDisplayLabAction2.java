@@ -74,7 +74,7 @@ public class EctDisplayLabAction2 extends EctDisplayAction {
 		} else {
 
 			CommonLabResultData comLab = new CommonLabResultData();
-			ArrayList<LabResultData> labs = comLab.populateLabResultsData("", bean.demographicNo, "", "", "", "U");
+			ArrayList<LabResultData> labs = comLab.populateLabResultsData(loggedInInfo, "", bean.demographicNo, "", "", "", "U");
 			logger.debug("local labs found : "+labs.size());
 
 			if (loggedInInfo.getCurrentFacility().isIntegratorEnabled()) {
@@ -137,7 +137,7 @@ public class EctDisplayLabAction2 extends EctDisplayAction {
 				}
 			}
 			labs = new ArrayList<LabResultData>(accessionMap.values());
-			logger.info("number of labs: " + labs.size());
+			
 			for (int j = 0; j < labs.size(); j++) {
 				result = labs.get(j);
                 Date date = getServiceDate(loggedInInfo,result);
@@ -181,7 +181,7 @@ public class EctDisplayLabAction2 extends EctDisplayAction {
                 }
 
 				NavBarDisplayDAO.Item item = NavBarDisplayDAO.Item();
-				logger.info("Adding link: " + labDisplayName + " : " + formattedDate);
+				
 				item.setLinkTitle(labDisplayName + " " + formattedDate);
 				labDisplayName = StringUtils.maxLenString(labDisplayName, MAX_LEN_TITLE, CROP_LEN_TITLE, ELLIPSES); // +" "+formattedDate;
                 if (labDisplayName == null) {

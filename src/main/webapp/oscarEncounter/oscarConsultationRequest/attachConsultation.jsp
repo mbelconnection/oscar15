@@ -55,7 +55,7 @@
 
 	}
 
-	String patientName = EDocUtil.getDemographicName(demoNo);
+	String patientName = EDocUtil.getDemographicName(loggedInInfo, demoNo);
 	String[] docType = {"D", "L"};
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -265,7 +265,7 @@
 							}
 							CommonLabResultData labData = new CommonLabResultData();
 
-							ArrayList labs = labData.populateLabResultsData(demoNo, requestId, CommonLabResultData.UNATTACHED);
+							ArrayList labs = labData.populateLabResultsData(loggedInInfo, demoNo, requestId, CommonLabResultData.UNATTACHED);
 							LabResultData resData;
 							
 							for (int idx = 0; idx < labs.size(); ++idx) {
@@ -305,7 +305,7 @@
 							}
 
 							CommonLabResultData labData = new CommonLabResultData();
-							ArrayList labs = labData.populateLabResultsData(demoNo, requestId, CommonLabResultData.ATTACHED);
+							ArrayList labs = labData.populateLabResultsData(loggedInInfo, demoNo, requestId, CommonLabResultData.ATTACHED);
 							LabResultData resData;
 							for (int idx = 0; idx < labs.size(); ++idx) {
 								resData = (LabResultData) labs.get(idx);

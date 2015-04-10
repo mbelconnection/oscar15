@@ -42,10 +42,10 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.dao.EFormDataDao;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.EFormData;
+import org.oscarehr.managers.DemographicManager;
 import org.oscarehr.match.IMatchManager;
 import org.oscarehr.match.MatchManager;
 import org.oscarehr.match.MatchManagerException;
@@ -65,10 +65,7 @@ public class AddEFormAction extends Action {
 
 	private static final Logger logger=MiscUtils.getLogger();
 
-	//private DemographicArchiveDao demographicArchiveDao = (DemographicArchiveDao)SpringUtils.getBean("demographicArchiveDao");
-	//private DemographicDao demographicDao = (DemographicDao)SpringUtils.getBean("demographicDao");
-
-
+	
 	public ActionForward execute(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response) {
 		logger.debug("==================SAVING ==============");
@@ -138,7 +135,7 @@ public class AddEFormAction extends Action {
 						inSQL = DatabaseAP.parserReplace("value", request.getParameter(field), inSQL);
 
 						//if(currentAP.getArchive() != null && currentAP.getArchive().equals("demographic")) {
-						//	demographicArchiveDao.archiveRecord(demographicDao.getDemographic(demographic_no));
+						//	demographicArchiveDao.archiveRecord(demographicManager.getDemographic(loggedInInfo,demographic_no));
 						//}
 
 						// Run the SQL query against the database
@@ -251,8 +248,8 @@ public class AddEFormAction extends Action {
 		
 		if (demographic_no != null) {
 			IMatchManager matchManager = new MatchManager();
-			DemographicDao demographicDao = (DemographicDao) SpringUtils.getBean("demographicDao");
-			Demographic client = demographicDao.getDemographic(demographic_no);
+			DemographicManager demographicManager = SpringUtils.getBean(DemographicManager.class);
+			Demographic client = demographicManager.getDemographic(loggedInInfo,demographic_no);
 			try {
 	            matchManager.<Demographic>processEvent(client, IMatchManager.Event.CLIENT_CREATED);
             } catch (MatchManagerException e) {

@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.oscarehr.common.dao.ConsultDocsDao;
 import org.oscarehr.common.model.ConsultDocs;
+import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.util.SpringUtils;
 
 import oscar.OscarProperties;
@@ -75,11 +76,11 @@ public class ConsultationAttachLabs {
         }
     }
 
-    public void attach() {
+    public void attach(LoggedInInfo loggedInInfo) {
 
         //first we get a list of currently attached labs
         CommonLabResultData labResData = new CommonLabResultData();
-        ArrayList<LabResultData> oldlist = labResData.populateLabResultsData(demoNo,reqId,CommonLabResultData.ATTACHED);
+        ArrayList<LabResultData> oldlist = labResData.populateLabResultsData(loggedInInfo, demoNo,reqId,CommonLabResultData.ATTACHED);
         ArrayList<String> newlist = new ArrayList<String>();
         ArrayList<LabResultData> keeplist = new ArrayList<LabResultData>();
         boolean alreadyAttached;
@@ -111,7 +112,7 @@ public class ConsultationAttachLabs {
     }
 
     public static void detachLabConsult(String LabNo, String consultId) {
-    	List<ConsultDocs> consultDocs = consultDocsDao.findByRequestIdDocumentNoAndDocumentType(Integer.parseInt(consultId), Integer.parseInt(LabNo), "L");
+    	List<ConsultDocs> consultDocs = consultDocsDao.findByRequestIdDocNoDocType(Integer.parseInt(consultId), Integer.parseInt(LabNo), ConsultDocs.DOCTYPE_LAB);
     	for(ConsultDocs consultDoc:consultDocs) {
     		consultDoc.setDeleted("Y");
     		consultDocsDao.merge(consultDoc);
@@ -122,7 +123,7 @@ public class ConsultationAttachLabs {
     	ConsultDocs consultDoc = new ConsultDocs();
     	consultDoc.setRequestId(Integer.parseInt(consultId));
     	consultDoc.setDocumentNo(Integer.parseInt(LabNo));
-    	consultDoc.setDocType("L");
+    	consultDoc.setDocType(ConsultDocs.DOCTYPE_LAB);
     	consultDoc.setAttachDate(new Date());
     	consultDoc.setProviderNo(providerNo);
     	consultDocsDao.persist(consultDoc);

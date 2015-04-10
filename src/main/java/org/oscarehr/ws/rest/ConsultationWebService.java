@@ -46,31 +46,45 @@ import org.oscarehr.common.dao.ClinicDAO;
 import org.oscarehr.common.dao.FaxConfigDao;
 import org.oscarehr.common.dao.UserPropertyDAO;
 import org.oscarehr.common.model.Clinic;
+import org.oscarehr.common.model.ConsultDocs;
+import org.oscarehr.common.model.ConsultResponseDoc;
 import org.oscarehr.common.model.ConsultationRequest;
+import org.oscarehr.common.model.ConsultationResponse;
+import org.oscarehr.common.model.Demographic;
+import org.oscarehr.common.model.EFormData;
 import org.oscarehr.common.model.FaxConfig;
+import org.oscarehr.common.model.ProfessionalSpecialist;
 import org.oscarehr.common.model.Provider;
 import org.oscarehr.common.model.UserProperty;
-import org.oscarehr.consultations.ConsultationSearchFilter;
-import org.oscarehr.consultations.ConsultationSearchFilter.SORTDIR;
-import org.oscarehr.consultations.ConsultationSearchFilter.SORTMODE;
+import org.oscarehr.consultations.ConsultationRequestSearchFilter;
+import org.oscarehr.consultations.ConsultationResponseSearchFilter;
 import org.oscarehr.managers.ConsultationManager;
-import org.oscarehr.managers.SecurityInfoManager;
+import org.oscarehr.managers.DemographicManager;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.ws.rest.conversion.ConsultationRequestConverter;
+import org.oscarehr.ws.rest.conversion.ConsultationResponseConverter;
 import org.oscarehr.ws.rest.conversion.ConsultationServiceConverter;
+import org.oscarehr.ws.rest.conversion.DemographicConverter;
+import org.oscarehr.ws.rest.conversion.ProfessionalSpecialistConverter;
 import org.oscarehr.ws.rest.to.AbstractSearchResponse;
-import org.oscarehr.ws.rest.to.model.ConsultationRequestTo1;
+import org.oscarehr.ws.rest.to.model.ConsultationAttachmentTo1;
 import org.oscarehr.ws.rest.to.model.ConsultationRequestSearchResult;
+import org.oscarehr.ws.rest.to.model.ConsultationRequestTo1;
+import org.oscarehr.ws.rest.to.model.ConsultationResponseSearchResult;
+import org.oscarehr.ws.rest.to.model.ConsultationResponseTo1;
 import org.oscarehr.ws.rest.to.model.FaxConfigTo1;
 import org.oscarehr.ws.rest.to.model.LetterheadTo1;
+import org.oscarehr.ws.rest.to.model.ProfessionalSpecialistTo1;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import oscar.dms.EDoc;
 import oscar.dms.EDocUtil;
+import oscar.eform.EFormUtil;
 import oscar.oscarDemographic.data.RxInformation;
 import oscar.oscarLab.ca.on.CommonLabResultData;
 import oscar.oscarLab.ca.on.LabResultData;
+import oscar.util.ConversionUtils;
 
 @Path("/consults")
 @Component("consultationWebService")
@@ -82,10 +96,10 @@ public class ConsultationWebService extends AbstractServiceImpl {
 	ConsultationManager consultationManager;
 	
 	@Autowired
-	SecurityInfoManager securityInfoManager;
+	CaseManagementManager caseManagementManager;
 	
 	@Autowired
-	CaseManagementManager caseManagementManager;
+	DemographicManager demographicManager;
 	
 	@Autowired
 	ProviderDao providerDao;
@@ -99,27 +113,28 @@ public class ConsultationWebService extends AbstractServiceImpl {
 	@Autowired
 	UserPropertyDAO userPropertyDAO;
 	
-	private ConsultationRequestConverter consultationRequestConverter = new ConsultationRequestConverter();
+	private ConsultationRequestConverter requestConverter = new ConsultationRequestConverter();
+	private ConsultationResponseConverter responseConverter = new ConsultationResponseConverter();
+	private ConsultationServiceConverter serviceConverter = new ConsultationServiceConverter();
+	private ProfessionalSpecialistConverter specialistConverter = new ProfessionalSpecialistConverter();
+	private DemographicConverter demographicConverter = new DemographicConverter();
 	
+	
+	/********************************
+	 * Consultation Request methods *
+	 ********************************/
 	@POST
 	@Path("/searchRequests")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public AbstractSearchResponse<ConsultationRequestSearchResult> searchRequests(JSONObject json) {
 		AbstractSearchResponse<ConsultationRequestSearchResult> response = new AbstractSearchResponse<ConsultationRequestSearchResult>();
-
-		if(!securityInfoManager.hasPrivilege(getLoggedInInfo(), "_con", "r", null)) {
-			throw new RuntimeException("Access Denied");
-		}
-		
-		//List<ConsultationSearchResult> results = new ArrayList<ConsultationSearchResult>();
-		
 				
-		int count = consultationManager.getConsultationCount(convertJSON(json));
+		int count = consultationManager.getConsultationCount(convertRequestJSON(json));
 
 		if(count>0) {
-			List<ConsultationRequestSearchResult> items =  consultationManager.search(getLoggedInInfo(), convertJSON(json));
-			//convert items to a ConsultationSearchResult object
+			List<ConsultationRequestSearchResult> items =  consultationManager.search(getLoggedInInfo(), convertRequestJSON(json));
+			//convert items to a ConsultationRequestSearchResult object
 			response.setContent(items);
 			response.setTotal(count);
 		}
@@ -134,12 +149,13 @@ public class ConsultationWebService extends AbstractServiceImpl {
 		ConsultationRequestTo1 request = new ConsultationRequestTo1();
 		
 		if (requestId>0) {
-			request = consultationRequestConverter.getAsTransferObject(getLoggedInInfo(), consultationManager.getRequest(getLoggedInInfo(), requestId));
+			request = requestConverter.getAsTransferObject(getLoggedInInfo(), consultationManager.getRequest(getLoggedInInfo(), requestId));
+			request.setAttachments(getRequestAttachments(requestId, request.getDemographicId(), ConsultationAttachmentTo1.ATTACHED));
 		} else {
 			request.setDemographicId(demographicId);
 			
 			RxInformation rx = new RxInformation();
-			String info = rx.getAllergies(demographicId.toString());
+			String info = rx.getAllergies(getLoggedInInfo(), demographicId.toString());
 			if (StringUtils.isNotBlank(info)) request.setAllergies(info);
 			info = rx.getCurrentMedication(demographicId.toString());
 			if (StringUtils.isNotBlank(info)) request.setCurrentMeds(info);
@@ -147,7 +163,7 @@ public class ConsultationWebService extends AbstractServiceImpl {
 
 		request.setLetterheadList(getLetterheadList());
 		request.setFaxList(getFaxList());
-		request.setServiceList((new ConsultationServiceConverter()).getAllAsTransferObjects(getLoggedInInfo(), consultationManager.getConsultationServices()));
+		request.setServiceList(serviceConverter.getAllAsTransferObjects(getLoggedInInfo(), consultationManager.getConsultationServices()));
 		request.setSendToList(providerDao.getActiveTeams());
 		request.setProviderNo(getLoggedInInfo().getLoggedInProviderNo());
 		
@@ -155,23 +171,22 @@ public class ConsultationWebService extends AbstractServiceImpl {
 	}
 	
 	@GET
-	@Path("/getAttachments")
+	@Path("/getRequestAttachments")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<String> getAttachments(@QueryParam("requestId")Integer requestIdInt, @QueryParam("demographicId")String demographicId) {
-		List<String> attachmentNames = new ArrayList<String>();
-		if (requestIdInt>0) {
-			String requestId = requestIdInt.toString();
-			List<EDoc> edocList = EDocUtil.listDocs(getLoggedInInfo(), demographicId, requestId, EDocUtil.ATTACHED);
-			for (EDoc edoc : edocList) {
-				attachmentNames.add(oscar.util.StringUtils.maxLenString(edoc.getDescription(),19,16,"..."));
-			}
-			
-			List<LabResultData> labs = new CommonLabResultData().populateLabResultsData(demographicId, requestId, CommonLabResultData.ATTACHED);
-			for (LabResultData lab : labs) {
-				attachmentNames.add(lab.getDiscipline()+" "+lab.getDateTime());
-			}
-		}
-		return attachmentNames;
+	public List<ConsultationAttachmentTo1> getRequestAttachments(@QueryParam("requestId")Integer requestId, @QueryParam("demographicId")Integer demographicIdInt, @QueryParam("attached")boolean attached) {
+		List<ConsultationAttachmentTo1> attachments = new ArrayList<ConsultationAttachmentTo1>();
+		String demographicId = demographicIdInt.toString();
+		
+		List<EDoc> edocs = EDocUtil.listDocs(getLoggedInInfo(), demographicId, requestId.toString(), attached);
+		getDocuments(edocs, attached, attachments);
+		
+		List<EFormData> eforms = EFormUtil.listPatientEFormsShowLatestOnly(demographicId);
+		getEformsForRequest(eforms, attached, attachments, requestId);
+		
+		List<LabResultData> labs = new CommonLabResultData().populateLabResultsData(getLoggedInInfo(), demographicId, requestId.toString(), attached);
+		getLabs(labs, demographicId, attached, attachments);
+		
+		return attachments;
 	}
 
 	@POST
@@ -182,21 +197,123 @@ public class ConsultationWebService extends AbstractServiceImpl {
 		ConsultationRequest request = null;
 		
 		if (data.getId()==null) { //new consultation request
-			request = consultationRequestConverter.getAsDomainObject(getLoggedInInfo(), data);
+			request = requestConverter.getAsDomainObject(getLoggedInInfo(), data);
 			request.setProfessionalSpecialist(consultationManager.getProfessionalSpecialist(data.getProfessionalSpecialist().getId()));
 		} else {
-			request = consultationRequestConverter.getAsDomainObject(getLoggedInInfo(), data, consultationManager.getRequest(getLoggedInInfo(), data.getId()));
+			request = requestConverter.getAsDomainObject(getLoggedInInfo(), data, consultationManager.getRequest(getLoggedInInfo(), data.getId()));
 		}
 		consultationManager.saveConsultationRequest(getLoggedInInfo(), request);
-		
 	    if (data.getId()==null) data.setId(request.getId());
+	    
+		//save attachments
+		saveRequestAttachments(data);
+		
+		return data;
+	}
+	
+	
+	/********************************
+	 * Consultation Response methods *
+	 ********************************/
+	@POST
+	@Path("/searchResponses")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public AbstractSearchResponse<ConsultationResponseSearchResult> searchResponses(JSONObject json) {
+		AbstractSearchResponse<ConsultationResponseSearchResult> response = new AbstractSearchResponse<ConsultationResponseSearchResult>();
+				
+		int count = consultationManager.getConsultationCount(convertResponseJSON(json));
+
+		if(count>0) {
+			List<ConsultationResponseSearchResult> items =  consultationManager.search(getLoggedInInfo(), convertResponseJSON(json));
+			//convert items to a ConsultationResponseSearchResult object
+			response.setContent(items);
+			response.setTotal(count);
+		}
+		return response;
+	}
+	
+	@GET
+	@Path("/getResponse")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ConsultationResponseTo1 getResponse(@QueryParam("responseId")Integer responseId, @QueryParam("demographicNo")Integer demographicNo) {
+		ConsultationResponseTo1 response = new ConsultationResponseTo1();
+		
+		if (responseId>0) {
+			ConsultationResponse responseD = consultationManager.getResponse(getLoggedInInfo(), responseId);
+			response = responseConverter.getAsTransferObject(getLoggedInInfo(), responseD);
+			
+			demographicNo = responseD.getDemographicNo();
+			
+			ProfessionalSpecialist referringDoctorD = consultationManager.getProfessionalSpecialist(responseD.getReferringDocId());
+			response.setReferringDoctor(specialistConverter.getAsTransferObject(getLoggedInInfo(), referringDoctorD));
+			
+			response.setAttachments(getResponseAttachments(responseId, demographicNo, ConsultationAttachmentTo1.ATTACHED));
+		} else {
+			response.setProviderNo(getLoggedInInfo().getLoggedInProviderNo());
+			RxInformation rx = new RxInformation();
+			String info = rx.getAllergies(getLoggedInInfo(), demographicNo.toString());
+			if (StringUtils.isNotBlank(info)) response.setAllergies(info);
+			info = rx.getCurrentMedication(demographicNo.toString());
+			if (StringUtils.isNotBlank(info)) response.setCurrentMeds(info);
+		}
+
+		Demographic demographicD = demographicManager.getDemographicWithExt(getLoggedInInfo(), demographicNo);
+		response.setDemographic(demographicConverter.getAsTransferObject(getLoggedInInfo(), demographicD));
+		
+		response.setLetterheadList(getLetterheadList());
+		response.setReferringDoctorList(getReferringDoctorList());
+		response.setFaxList(getFaxList());
+		response.setSendToList(providerDao.getActiveTeams());
+		
+		return response;
+	}
+	
+	@GET
+	@Path("/getResponseAttachments")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<ConsultationAttachmentTo1> getResponseAttachments(@QueryParam("responseId")Integer responseId, @QueryParam("demographicNo")Integer demographicNoInt, @QueryParam("attached")boolean attached) {
+		List<ConsultationAttachmentTo1> attachments = new ArrayList<ConsultationAttachmentTo1>();
+		String demographicNo = demographicNoInt.toString();
+		
+		List<EDoc> edocList = EDocUtil.listResponseDocs(getLoggedInInfo(), demographicNo, responseId.toString(), attached);
+		getDocuments(edocList, attached, attachments);
+		
+		List<EFormData> eformList = EFormUtil.listPatientEFormsShowLatestOnly(demographicNo);
+		getEformsForResponse(eformList, attached, attachments, responseId);
+		
+		List<LabResultData> labs = new CommonLabResultData().populateLabResultsDataConsultResponse(getLoggedInInfo(), demographicNo, responseId.toString(), attached);
+		getLabs(labs, demographicNo, attached, attachments);
+		
+		return attachments;
+	}
+
+	@POST
+	@Path("/saveResponse")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ConsultationResponseTo1 saveResponse(ConsultationResponseTo1 data) {
+		ConsultationResponse response = null;
+		
+		if (data.getId()==null) { //new consultation response
+			response = responseConverter.getAsDomainObject(getLoggedInInfo(), data);
+		} else {
+			response = responseConverter.getAsDomainObject(getLoggedInInfo(), data, consultationManager.getResponse(getLoggedInInfo(), data.getId()));
+		}
+		consultationManager.saveConsultationResponse(getLoggedInInfo(), response);
+	    if (data.getId()==null) data.setId(response.getId());
+	    
+		//save attachments
+		saveResponseAttachments(data);
+		
 		return data;
 	}
 	
 	
 	
-	//private methods
-	
+	/*******************
+	 * private methods *
+	 *******************/
 	private Date convertJSONDate(String val) {
 		try {
 			return javax.xml.bind.DatatypeConverter.parseDateTime(val).getTime();
@@ -206,8 +323,8 @@ public class ConsultationWebService extends AbstractServiceImpl {
 		return null;
 	}
 	
-	private ConsultationSearchFilter convertJSON(JSONObject json) {
-		ConsultationSearchFilter filter = new ConsultationSearchFilter();
+	private ConsultationRequestSearchFilter convertRequestJSON(JSONObject json) {
+		ConsultationRequestSearchFilter filter = new ConsultationRequestSearchFilter();
 		
 		filter.setAppointmentEndDate(convertJSONDate((String)json.get("appointmentEndDate")));
 		filter.setAppointmentStartDate(convertJSONDate((String)json.get("appointmentStartDate")));
@@ -216,7 +333,7 @@ public class ConsultationWebService extends AbstractServiceImpl {
 		filter.setReferralEndDate(convertJSONDate((String)json.get("referralEndDate")));
 		filter.setReferralStartDate(convertJSONDate((String)json.get("referralStartDate")));
 		filter.setStartIndex((Integer)json.get("startIndex"));
-		filter.setStatus((String)json.get("status"));
+		filter.setStatus((Integer)json.get("status"));
 		filter.setTeam((String)json.get("team"));
 		
 		JSONObject params = json.getJSONObject("params");
@@ -225,8 +342,37 @@ public class ConsultationWebService extends AbstractServiceImpl {
 				Matcher nameMtchr = namePtrn.matcher((String)key);
 				if (nameMtchr.find()) {
 				   String var = nameMtchr.group(1);
-				   filter.setSortMode(SORTMODE.valueOf(var));
-				   filter.setSortDir(SORTDIR.valueOf(params.getString((String)key)));
+				   filter.setSortMode(ConsultationRequestSearchFilter.SORTMODE.valueOf(var));
+				   filter.setSortDir(ConsultationRequestSearchFilter.SORTDIR.valueOf(params.getString((String)key)));
+				}
+			}
+		}
+		return filter;
+	}
+	
+	private ConsultationResponseSearchFilter convertResponseJSON(JSONObject json) {
+		ConsultationResponseSearchFilter filter = new ConsultationResponseSearchFilter();
+		
+		filter.setAppointmentEndDate(convertJSONDate((String)json.get("appointmentEndDate")));
+		filter.setAppointmentStartDate(convertJSONDate((String)json.get("appointmentStartDate")));
+		filter.setDemographicNo((Integer)json.get("demographicNo"));
+		filter.setNumToReturn((Integer)json.get("numToReturn"));
+		filter.setReferralEndDate(convertJSONDate((String)json.get("referralEndDate")));
+		filter.setReferralStartDate(convertJSONDate((String)json.get("referralStartDate")));
+		filter.setResponseEndDate(convertJSONDate((String)json.get("responseEndDate")));
+		filter.setResponseStartDate(convertJSONDate((String)json.get("responseStartDate")));
+		filter.setStartIndex((Integer)json.get("startIndex"));
+		filter.setStatus((Integer)json.get("status"));
+		filter.setTeam((String)json.get("team"));
+		
+		JSONObject params = json.getJSONObject("params");
+		if(params != null) {
+			for(Object key:params.keySet()) {
+				Matcher nameMtchr = namePtrn.matcher((String)key);
+				if (nameMtchr.find()) {
+				   String var = nameMtchr.group(1);
+				   filter.setSortMode(ConsultationResponseSearchFilter.SORTMODE.valueOf(var));
+				   filter.setSortDir(ConsultationResponseSearchFilter.SORTDIR.valueOf(params.getString((String)key)));
 				}
 			}
 		}
@@ -300,6 +446,18 @@ public class ConsultationWebService extends AbstractServiceImpl {
 		return faxList;
 	}
 	
+	private List<ProfessionalSpecialistTo1> getReferringDoctorList() {
+		List<ProfessionalSpecialistTo1> refDocList = new ArrayList<ProfessionalSpecialistTo1>();
+		
+		List<ProfessionalSpecialist> list = consultationManager.getReferringDoctorList();
+		if (list!=null) {
+			for (ProfessionalSpecialist specialist : list) {
+				refDocList.add(specialistConverter.getAsTransferObject(getLoggedInInfo(), specialist));
+			}
+		}
+		return refDocList;
+	}
+	
 	private String buildAddress(String address, String city, String province, String postal) {
 		address = StringUtils.trimToEmpty(address) + " " + StringUtils.trimToEmpty(city);
 		address = StringUtils.trimToEmpty(address) + " " + StringUtils.trimToEmpty(province);
@@ -311,5 +469,126 @@ public class ConsultationWebService extends AbstractServiceImpl {
 		UserProperty prop = userPropertyDAO.getProp(providerNo, key);
 		if (prop!=null) return StringUtils.trimToNull(prop.getValue());
 		else return null;
+	}
+	
+	private void getDocuments(List<EDoc> edocs, boolean attached, List<ConsultationAttachmentTo1> attachments) {
+		for (EDoc edoc : edocs) {
+			String url = "dms/ManageDocument.do?method=display&doc_no="+edoc.getDocId();
+			attachments.add(new ConsultationAttachmentTo1(ConversionUtils.fromIntString(edoc.getDocId()), ConsultationAttachmentTo1.TYPE_DOC, attached, edoc.getDescription(), url));
+		}
+	}
+	
+	private void getLabs(List<LabResultData> labs, String demographicNo, boolean attached, List<ConsultationAttachmentTo1> attachments) {
+		for (LabResultData lab : labs) {
+			String displayName = lab.getDiscipline()+" "+lab.getDateTime();
+			
+			String url = null;
+			if (lab.isMDS()) url = "oscarMDS/SegmentDisplay.jsp?demographicId="+demographicNo+"&segmentID="+lab.getSegmentID();
+			else if (lab.isCML()) url = "lab/CA/ON/CMLDisplay.jsp?demographicId="+demographicNo+"&segmentID="+lab.getSegmentID();
+			else if (lab.isHL7TEXT()) url = "lab/CA/ALL/labDisplay.jsp?demographicId="+demographicNo+"&segmentID="+lab.getSegmentID();
+			else url = "lab/CA/BC/labDisplay.jsp?demographicId="+demographicNo+"&segmentID="+lab.getSegmentID();
+			
+			attachments.add(new ConsultationAttachmentTo1(ConversionUtils.fromIntString(lab.getLabPatientId()), ConsultationAttachmentTo1.TYPE_LAB, attached, displayName, url));
+		}
+	}
+	
+	private void getEformsForRequest(List<EFormData> eforms, boolean attached, List<ConsultationAttachmentTo1> attachments, Integer consultId) {
+		List<ConsultDocs> docs = consultationManager.getConsultRequestDocs(getLoggedInInfo(), consultId);
+		List<Integer> docNos = new ArrayList<Integer>();
+		if (docs!=null) {
+			for (ConsultDocs doc : docs) {
+				if (doc.getDocType().equals(ConsultDocs.DOCTYPE_EFORM)) docNos.add(doc.getDocumentNo());
+			}
+		}
+		getEforms(eforms, attached, attachments, docNos);
+	}
+	
+	private void getEformsForResponse(List<EFormData> eforms, boolean attached, List<ConsultationAttachmentTo1> attachments, Integer consultId) {
+		List<ConsultResponseDoc> docs = consultationManager.getConsultResponseDocs(getLoggedInInfo(), consultId);
+		List<Integer> docNos = new ArrayList<Integer>();
+		if (docs!=null) {
+			for (ConsultResponseDoc doc : docs) {
+				if (doc.getDocType().equals(ConsultResponseDoc.DOCTYPE_EFORM)) docNos.add(doc.getDocumentNo());
+			}
+		}
+		getEforms(eforms, attached, attachments, docNos);
+	}
+	
+	private void getEforms(List<EFormData> eforms, boolean attached, List<ConsultationAttachmentTo1> attachments, List<Integer> docNos) {
+		for (EFormData eform : eforms) {
+			boolean found = false;
+			for (Integer docNo : docNos) {
+				if (eform.getId().equals(docNo)) {
+					found = true; break;
+				}
+			}
+			if (attached==found) {
+				//if attached is wanted and attached found		OR
+				//if detached is wanted and attached not found
+				String url = "eform/efmshowform_data.jsp?fdid="+eform.getId();
+				String displayName = eform.getFormName()+" "+eform.getFormDate();
+				attachments.add(new ConsultationAttachmentTo1(ConversionUtils.fromIntString(eform.getId()), ConsultationAttachmentTo1.TYPE_EFORM, attached, displayName, url));
+			}
+		}
+	}
+	
+	private void saveRequestAttachments(ConsultationRequestTo1 request) {
+		List<ConsultationAttachmentTo1> newAttachments = request.getAttachments();
+		List<ConsultDocs> currentDocs = consultationManager.getConsultRequestDocs(getLoggedInInfo(), request.getId());
+		
+		//first assume all current docs detached (set delete)
+		for (ConsultDocs doc : currentDocs) {
+			doc.setDeleted(ConsultDocs.DELETED);
+		}
+		
+		//compare current & new, remove from current list the unchanged ones - no need to update them
+		for (ConsultationAttachmentTo1 newAtth : newAttachments) {
+			boolean isNew = true;
+			for (ConsultDocs doc : currentDocs) {
+				if (doc.getDocType().equals(newAtth.getDocumentType()) && doc.getDocumentNo()==newAtth.getDocumentNo()) {
+					currentDocs.remove(doc);
+					isNew = false;
+					break;
+				}
+			}
+			if (isNew) { //save the new attachment
+				consultationManager.saveConsultRequestDoc(getLoggedInInfo(), new ConsultDocs(request.getId(), newAtth.getDocumentNo(), newAtth.getDocumentType(), getLoggedInInfo().getLoggedInProviderNo()));
+			}
+		}
+		
+		//update what remains in current docs, they are detached (set delete)
+		for (ConsultDocs doc : currentDocs) {
+			consultationManager.saveConsultRequestDoc(getLoggedInInfo(), doc);
+		}
+	}
+	
+	private void saveResponseAttachments(ConsultationResponseTo1 response) {
+		List<ConsultationAttachmentTo1> newAttachments = response.getAttachments();
+		List<ConsultResponseDoc> currentDocs = consultationManager.getConsultResponseDocs(getLoggedInInfo(), response.getId());
+		
+		//first assume all current docs detached (set delete)
+		for (ConsultResponseDoc doc : currentDocs) {
+			doc.setDeleted(ConsultResponseDoc.DELETED);
+		}
+		
+		//compare current & new, remove from current list the unchanged ones - no need to update them
+		for (ConsultationAttachmentTo1 newAtth : newAttachments) {
+			boolean isNew = true;
+			for (ConsultResponseDoc doc : currentDocs) {
+				if (doc.getDocType().equals(newAtth.getDocumentType()) && doc.getDocumentNo()==newAtth.getDocumentNo()) {
+					currentDocs.remove(doc);
+					isNew = false;
+					break;
+				}
+			}
+			if (isNew) { //save the new attachment
+				consultationManager.saveConsultResponseDoc(getLoggedInInfo(), new ConsultResponseDoc(response.getId(), newAtth.getDocumentNo(), newAtth.getDocumentType(), getLoggedInInfo().getLoggedInProviderNo()));
+			}
+		}
+		
+		//update what remains in current docs, they are detached (set delete)
+		for (ConsultResponseDoc doc : currentDocs) {
+			consultationManager.saveConsultResponseDoc(getLoggedInInfo(), doc);
+		}
 	}
 }

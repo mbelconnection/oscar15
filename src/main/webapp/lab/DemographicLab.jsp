@@ -46,9 +46,8 @@
     if ( ackStatus == null ) { ackStatus = "N"; } // default to only new lab reports
     if ( providerNo == null ) { providerNo = ""; }
     if ( searchProviderNo == null ) { searchProviderNo = providerNo; }
-    //mDSData.populateMDSResultsData2(searchProviderNo, demographicNo, request.getParameter("fname"), request.getParameter("lname"), request.getParameter("hnum"), ackStatus);
     
-    ArrayList<LabResultData> labs = comLab.populateLabResultsData("",demographicNo, "", "","","U");
+    ArrayList<LabResultData> labs = comLab.populateLabResultsData(LoggedInInfo.getLoggedInInfoFromSession(request), "",demographicNo, "", "","","U");
     
     LoggedInInfo loggedInInfo=LoggedInInfo.getLoggedInInfoFromSession(request);
     if (loggedInInfo.getCurrentFacility().isIntegratorEnabled())

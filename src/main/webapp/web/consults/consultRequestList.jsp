@@ -60,14 +60,8 @@
 					placeholder="<bean:message key="consult.list.referralEndDate" bundle="ui"/>">
 			</div>
 			<div class="col-xs-2">
-				<select ng-model="search.status" name="status" id="status"
-					class="form-control">
+				<select class="form-control" ng-model="search.status" name="status" id="status" ng-options="status.value as status.name for status in statuses">
 					<option value=""><bean:message key="consult.list.status.all" bundle="ui"/></option>
-					<option value="1"><bean:message key="consult.list.status.nothing" bundle="ui"/></option>
-					<option value="2"><bean:message key="consult.list.status.pendingSpecialistCallback" bundle="ui"/></option>
-					<option value="3"><bean:message key="consult.list.status.pendingPatientCallback" bundle="ui"/></option>
-					<option value="6"><bean:message key="consult.list.status.preliminary" bundle="ui"/></option>
-					<option value="4"><bean:message key="consult.list.status.completed" bundle="ui"/></option>
 				</select>
 			</div>
 			<div class="col-xs-2">
@@ -140,7 +134,7 @@
 				<td data-title="'<bean:message key="consult.list.header.consultant" bundle="ui"/>'" class="text-center" sortable="'Consultant'">{{consult.consultant.formattedName}}</td>
 				<td data-title="'<bean:message key="consult.list.header.team" bundle="ui"/>'" class="text-center" sortable="'Team'">{{consult.teamName}}</td>
 				<td data-title="'<bean:message key="consult.list.header.status" bundle="ui"/>'" class="text-center" sortable="'Status'">{{consult.statusDescription}}</td>
-				<td data-title="'<bean:message key="consult.list.header.priority" bundle="ui"/>'" class="text-center" sortable="'Urgency'">{{consult.urgencyDescription}}</td>
+				<td data-title="'<bean:message key="consult.list.header.priority" bundle="ui"/>'" class="text-center {{consult.urgencyColor}}" sortable="'Urgency'">{{consult.urgencyDescription}}</td>
 				<td data-title="'<bean:message key="consult.list.header.mrp" bundle="ui"/>'" class="text-center" sortable="'MRP'">{{consult.mrp.formattedName}}</td>
 
 				<td data-title="'<bean:message key="consult.list.header.appointmentDate" bundle="ui"/>'" class="text-center" sortable="'AppointmentDate'">

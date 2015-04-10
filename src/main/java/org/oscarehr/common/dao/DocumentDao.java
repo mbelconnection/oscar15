@@ -35,6 +35,7 @@ import java.util.Map;
 
 import javax.persistence.Query;
 
+import org.oscarehr.common.model.ConsultDocs;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.Document;
 import org.springframework.stereotype.Repository;
@@ -114,7 +115,7 @@ public class DocumentDao extends AbstractDao<Document> {
 		return query.getResultList();
     }
     
-    public List<Object[]> findDocsAndConsultDocsByConsultIdAndDocType(Integer consultationId, String doctype) {
+    public List<Object[]> findDocsAndConsultDocsByConsultId(Integer consultationId) {
     	String sql = "FROM Document d, ConsultDocs cd " +
     			"WHERE d.documentNo = cd.documentNo " +
     			"AND cd.requestId = :consultationId " +
@@ -122,7 +123,18 @@ public class DocumentDao extends AbstractDao<Document> {
     			"AND cd.deleted IS NULL";
 		Query query = entityManager.createQuery(sql);
 		query.setParameter("consultationId", consultationId);
-		query.setParameter("doctype", doctype);
+		query.setParameter("doctype", ConsultDocs.DOCTYPE_DOC);
+		return query.getResultList();
+    }
+    
+    public List<Object[]> findDocsAndConsultResponseDocsByConsultId(Integer consultationId) {
+    	String sql = "FROM Document d, ConsultResponseDoc crd " +
+    			"WHERE d.documentNo = crd.documentNo " +
+    			"AND crd.responseId = :consultationId " +
+    			"AND crd.docType = 'D' " +
+    			"AND crd.deleted IS NULL";
+		Query query = entityManager.createQuery(sql);
+		query.setParameter("consultationId", consultationId);
 		return query.getResultList();
     }
 

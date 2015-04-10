@@ -47,7 +47,7 @@ String module = "demographic";
 String demoNo= request.getParameter("demographicNo");
 String reqId = request.getParameter("reqId");
 String provNo = request.getParameter("providerNo");
-String demoName = EDocUtil.getDemographicName(demoNo);
+String demoName = EDocUtil.getDemographicName(loggedInInfo, demoNo);
 
 ArrayList doctypes = EDocUtil.getDoctypes(module);
 
@@ -209,7 +209,7 @@ function popup1(height, width, url, windowName){
 
 				<%}
                 CommonLabResultData consultLabs = new CommonLabResultData();
-                ArrayList attachedLabs = consultLabs.populateLabResultsData(demoNo, reqId, CommonLabResultData.ATTACHED);
+                ArrayList attachedLabs = consultLabs.populateLabResultsData(loggedInInfo, demoNo, reqId, CommonLabResultData.ATTACHED);
 
                 LabResultData result;
                 String labURL;

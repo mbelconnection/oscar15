@@ -24,7 +24,6 @@
 package org.oscarehr.common.dao;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -708,7 +707,7 @@ public class MeasurementDao extends AbstractDao<Measurement> {
 		return results;
 	}
 
-	public List<Measurement> findByProviderDemographicLastUpdateDate(String providerNo, Integer demographicId, Calendar updatedAfterThisDateExclusive, int itemsToReturn) {
+	public List<Measurement> findByProviderDemographicLastUpdateDate(String providerNo, Integer demographicId, Date updatedAfterThisDateExclusive, int itemsToReturn) {
 		String sql = "select x from "+modelClass.getSimpleName()+" x where x.providerNo=:providerNo and x.demographicId=:demographicId and x.createDate>=:updatedAfterThisDateExclusive order by x.createDate";
 
 		Query query = entityManager.createQuery(sql);
@@ -722,4 +721,15 @@ public class MeasurementDao extends AbstractDao<Measurement> {
 		List<Measurement> results = query.getResultList();
 		return results;
 	}
+	
+	@NativeSql("measurements")
+	public List<Integer> findNewMeasurementsSinceDemoKey(String keyName) {
+		
+		String sql = "select distinct m.demographicNo from measurements m,demographic d,demographicExt e where m.demographicNo = d.demographic_no and d.demographic_no = e.demographic_no and e.key_val=? and m.type in ('HT','WT') and m.dateEntered > e.value";
+		Query query = entityManager.createNativeQuery(sql);
+		query.setParameter(1, keyName);
+		
+		return query.getResultList();
+	}
+
 }

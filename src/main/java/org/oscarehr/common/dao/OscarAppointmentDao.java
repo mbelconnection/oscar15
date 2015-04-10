@@ -725,4 +725,27 @@ public class OscarAppointmentDao extends AbstractDao<Appointment> {
 		return rs;
 	}
 
+	public List<Appointment> findDemoAppointmentsToday(Integer demographicNo) {
+		String sql = "SELECT a FROM Appointment a WHERE a.demographicNo = ? AND a.appointmentDate=DATE(NOW()) ORDER BY a.appointmentDate, a.startTime";
+		Query query = entityManager.createQuery(sql);
+		query.setParameter(1, demographicNo);
+
+		@SuppressWarnings("unchecked")
+		List<Appointment> results =  query.getResultList();
+
+		return results;
+	}
+	
+	public List<Appointment> findDemoAppointmentsOnDate(Integer demographicNo,Date date) {
+		String sql = "SELECT a FROM Appointment a WHERE a.demographicNo = ? AND a.appointmentDate=? ORDER BY a.appointmentDate, a.startTime";
+		Query query = entityManager.createQuery(sql);
+		query.setParameter(1, demographicNo);
+		query.setParameter(2, date);
+
+		@SuppressWarnings("unchecked")
+		List<Appointment> results =  query.getResultList();
+
+		return results;
+	}
+	
 }

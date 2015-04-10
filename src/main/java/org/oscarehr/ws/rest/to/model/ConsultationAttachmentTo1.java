@@ -27,18 +27,21 @@ import java.io.Serializable;
 
 public class ConsultationAttachmentTo1 implements Serializable {
 	public static final String TYPE_DOC = "D";
+	public static final String TYPE_EFORM = "E";
 	public static final String TYPE_LAB = "L";
 	public static final boolean ATTACHED = true;
-	public static final boolean DETACHED = false;
 
 	private static final long serialVersionUID = 1L;
 	
 	private int documentNo;
 	private String documentType;
+	private String documentTypeDisplay;
 	private boolean attached;
 	private String displayName;
+	private String shortName;
 	private String url;
-
+	
+	
 	public ConsultationAttachmentTo1() {}
 	
 	public ConsultationAttachmentTo1(int documentNo, String documentType, boolean attached, String displayName, String url) {
@@ -63,6 +66,18 @@ public class ConsultationAttachmentTo1 implements Serializable {
 
 	public void setDocumentType(String documentType) {
 		this.documentType = documentType;
+		
+		if (TYPE_DOC.equals(documentType)) documentTypeDisplay = "Document";
+		else if (TYPE_EFORM.equals(documentType)) documentTypeDisplay = "EForm";
+		else if (TYPE_LAB.equals(documentType)) documentTypeDisplay = "Lab Result";
+	}
+
+	public String getDocumentTypeDisplay() {
+		return documentTypeDisplay;
+	}
+	
+	public void setDocumentTypeDisplay(String documentTypeDisplay) {
+		this.documentTypeDisplay = documentTypeDisplay;
 	}
 
 	public boolean isAttached() {
@@ -79,6 +94,15 @@ public class ConsultationAttachmentTo1 implements Serializable {
 
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
+		shortName = (displayName!=null && displayName.length()>20) ? displayName.substring(0, 17)+"..." : displayName;
+	}
+	
+	public String getShortName() {
+		return shortName;
+	}
+	
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
 	}
 
 	public String getUrl() {

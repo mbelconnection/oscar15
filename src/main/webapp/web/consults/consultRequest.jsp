@@ -47,6 +47,10 @@
 		opacity:1;
 		filter:alpha(opacity=100); /* For IE8 and earlier */
 	}
+	.attachment-modal-window .modal-dialog {
+		width: 60%;
+		min-width: 600px;
+	}
 </style>
 
 <div class="col-md-12">
@@ -59,20 +63,20 @@
 <div id="left_pane" class="col-md-2">
 	<label class="control-label">Patient Details:</label>
 	<div class="demographic">
-		<p>{{demo.lastName}}, {{demo.firstName}} ({{demo.title}})</p>
-		<p>DOB: {{demo.dateOfBirth | date:'yyyy-MM-dd'}} ({{demo.age.years}})</p> 		
-		<p>Sex: {{demo.sexDesc}}</p> 
-		<p>HIN: {{demo.hin}} - {{demo.ver}}</p> 
+		<p>{{consult.demographic.lastName}}, {{consult.demographic.firstName}} ({{consult.demographic.title}})</p>
+		<p>DOB: {{consult.demographic.dateOfBirth | date:'yyyy-MM-dd'}} ({{consult.demographic.age.years}})</p> 		
+		<p>Sex: {{consult.demographic.sexDesc}}</p> 
+		<p>HIN: {{consult.demographic.hin}} - {{consult.demographic.ver}}</p> 
 		<p>Address:</p> 
 		<address>
-		{{demo.address.address}}<br/>
-		{{demo.address.city}}, {{demo.address.province}}, {{demo.address.postal}}<br>
+		{{consult.demographic.address.address}}<br/>
+		{{consult.demographic.address.city}}, {{consult.demographic.address.province}}, {{consult.demographic.address.postal}}<br>
 		</address>
-		<p>Phone (H): {{demo.phone}}</p>
-		<p>Phone (W): {{demo.alternativePhone}}</p>
-		<p>Phone (C): {{demo.cellPhone}}</p>
-		<p>Email: {{demo.email}}</p>
-		<p>MRP: {{demo.provider.firstName}}, {{demo.provider.lastName}}</p>
+		<p>Phone (H): {{consult.demographic.phone}}</p>
+		<p>Phone (W): {{consult.demographic.alternativePhone}}</p>
+		<p>Phone (C): {{consult.demographic.cellPhone}}</p>
+		<p>Email: {{consult.demographic.email}}</p>
+		<p>MRP: {{consult.demographic.provider.firstName}}, {{consult.demographic.provider.lastName}}</p>
 	</div>
 	<br/>
 	<div id="consult_status">
@@ -83,7 +87,11 @@
 	</div>
 	<br/>
 	<button type="button" class="btn btn-small btn-primary" ng-click="attachFiles()">Attachments</button>
-	<ol><li ng-repeat="attachment in attachments">{{attachment}}</li></ol>
+	<ol style="padding-left:20px;">
+		<li ng-repeat="attachment in consult.attachments">
+			<a ng-click="openAttach(attachment)" title="{{attachment.displayName}}">{{attachment.shortName}}</a>
+		</li>
+	</ol>
 	<br/>
 	<button type="button" class="btn btn-small btn-default form-control" ng-click="toPatientSummary()">Patient Summary</button>
 	<br/>
@@ -148,7 +156,7 @@
 			<div class="col-md-6">
 				<div class="form-group">
 					<label class="control-label">Referral Date:</label>
-					<input id="dp-referralDate" type="text" class="form-control inline" style="width:60%" ng-model="consult.referralDate" placeholder="Referral Date" datepicker-popup="yyyy-MM-dd" datepicker-append-to-body="true" is-open="page.refDatePicker" ng-click="page.refDatePicker=true" ng-change="test()"/>
+					<input id="dp-referralDate" type="text" class="form-control inline" style="width:60%" ng-model="consult.referralDate" placeholder="Referral Date" datepicker-popup="yyyy-MM-dd" datepicker-append-to-body="true" is-open="page.refDatePicker" ng-click="page.refDatePicker=true"/>
 				</div>
 				<div class="form-group">
 					<label class="control-label">Urgency:</label>
@@ -156,7 +164,7 @@
 				</div>
 				<div class="form-group">
 					<label class="control-label">Send To:</label>
-					<select id="urgency" class="form-control inline" style="width:70%" ng-model="consult.sendTo" ng-required="true" ng-options="sendTo for sendTo in consult.sendToList"/>
+					<select id="sendTo" class="form-control inline" style="width:70%" ng-model="consult.sendTo" ng-required="true" ng-options="sendTo for sendTo in consult.sendToList"/>
 				</div>
 			</div>
 			<div class="col-md-6">
@@ -174,7 +182,7 @@
 			<div class="col-md-6">
 				<div class="form-group">
 					<label class="control-label">Appointment Date:</label>
-					<input id="dp-appointmentDate" type="text" class="form-control inline" style="width:50%" ng-model="consult.appointmentDate" placeholder="Appointment Date"  datepicker-popup="yyyy-MM-dd" datepicker-append-to-body="true" is-open="page.aptDatePicker" ng-click="page.aptDatePicker=true"/>
+					<input id="dp-appointmentDate" type="text" class="form-control inline" style="width:50%" ng-model="consult.appointmentDate" placeholder="Appointment Date"  datepicker-popup="yyyy-MM-dd" datepicker-append-to-body="true" is-open="page.aptDatePicker" ng-click="page.aptDatePicker=true" ng-disabled="consult.patientWillBook"/>
 				</div>
 				<div class="form-group">
 					<label class="control-label">Appointment Time:</label>
@@ -182,12 +190,12 @@
 						<select class="form-control inline" style="width:20%;" 
 								ng-model="consult.appointmentHour"
 								ng-options="hour for hour in hours"
-								ng-change="changeAppointmentTime()">
+								ng-change="changeAppointmentTime()" ng-disabled="consult.patientWillBook">
 						</select> :
 						<select class="form-control inline" style="width:20%;" 
 								ng-model="consult.appointmentMinute"
 								ng-options="minute for minute in minutes"
-								ng-change="changeAppointmentTime()">
+								ng-change="changeAppointmentTime()" ng-disabled="consult.patientWillBook">
 						</select>
 					</span>
 				</div>
@@ -277,7 +285,7 @@
 </div><!-- Right pane End -->
 
 <div class="wrapper-action"><!-- Action Buttons -->
-	<button type="button" class="btn btn-large btn-warning action" ng-click="printPreview()" ng-show="consult.id!=null">Print Preview</button>&nbsp;
+	<button type="button" class="btn btn-large btn-warning action" ng-click="printPreview()" ng-show="consult.id!=null && consultChanged<=0">Print Preview</button>&nbsp;
+	<button type="button" class="btn btn-large btn-warning action" ng-click="sendFax()" ng-show="consult.id!=null && consultChanged<=0">Send Fax</button>&nbsp;
 	<button type="button" class="btn btn-large btn-primary action" ng-click="save()" ng-disabled="consultChanged<=0">Save</button>&nbsp;
 </div>
-	

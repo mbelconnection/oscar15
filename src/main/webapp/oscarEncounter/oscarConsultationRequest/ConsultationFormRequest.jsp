@@ -113,7 +113,7 @@
 		
 		EctConsultationFormRequestUtil consultUtil = new EctConsultationFormRequestUtil();
 		
-		if (requestId != null) consultUtil.estRequestFromId(requestId);
+		if (requestId != null) consultUtil.estRequestFromId(loggedInInfo, requestId);
 		if (demo == null) demo = consultUtil.demoNo;
 
 		ArrayList<String> users = (ArrayList<String>)session.getServletContext().getAttribute("CaseMgmtUsers");
@@ -133,14 +133,14 @@
 		if (demo != null)
 		{
 			demoData = new oscar.oscarDemographic.data.DemographicData();
-			demographic = demoData.getDemographic(demo);
+			demographic = demoData.getDemographic(loggedInInfo, demo);
 		}
 		else if (requestId == null && segmentId == null)
 		{
 			MiscUtils.getLogger().error("Missing both requestId and segmentId.");
 		}
 
-		if (demo != null) consultUtil.estPatient(demo);
+		if (demo != null) consultUtil.estPatient(loggedInInfo, demo);
 		consultUtil.estActiveTeams();
 
 		if (request.getParameter("error") != null)
@@ -767,7 +767,7 @@ function importFromEnct(reqInfo,txtArea)
 					}
 					else
 					{
-						oscar.oscarDemographic.data.EctInformation EctInfo = new oscar.oscarDemographic.data.EctInformation(demo);
+						oscar.oscarDemographic.data.EctInformation EctInfo = new oscar.oscarDemographic.data.EctInformation(LoggedInInfo.getLoggedInInfoFromSession(request), demo);
 						value = EctInfo.getMedicalHistory();
 					}
 					if (pasteFmt == null || pasteFmt.equalsIgnoreCase("single"))
@@ -787,7 +787,7 @@ function importFromEnct(reqInfo,txtArea)
 					}
 					else
 					{
-						oscar.oscarDemographic.data.EctInformation EctInfo = new oscar.oscarDemographic.data.EctInformation(demo);
+						oscar.oscarDemographic.data.EctInformation EctInfo = new oscar.oscarDemographic.data.EctInformation(LoggedInInfo.getLoggedInInfoFromSession(request),demo);
 						value = EctInfo.getOngoingConcerns();
 					}
 					if (pasteFmt == null || pasteFmt.equalsIgnoreCase("single"))
@@ -803,7 +803,7 @@ function importFromEnct(reqInfo,txtArea)
 				{
 					if (OscarProperties.getInstance().getBooleanProperty("caisi", "on"))
 					{
-						oscar.oscarDemographic.data.EctInformation EctInfo = new oscar.oscarDemographic.data.EctInformation(demo);
+						oscar.oscarDemographic.data.EctInformation EctInfo = new oscar.oscarDemographic.data.EctInformation(LoggedInInfo.getLoggedInInfoFromSession(request),demo);
 						value = EctInfo.getFamilyHistory();
 					}
 					else
@@ -814,7 +814,7 @@ function importFromEnct(reqInfo,txtArea)
 						}
 						else
 						{
-							oscar.oscarDemographic.data.EctInformation EctInfo = new oscar.oscarDemographic.data.EctInformation(demo);
+							oscar.oscarDemographic.data.EctInformation EctInfo = new oscar.oscarDemographic.data.EctInformation(LoggedInInfo.getLoggedInInfoFromSession(request),demo);
 							value = EctInfo.getFamilyHistory();
 						}
 					}
@@ -842,7 +842,7 @@ function importFromEnct(reqInfo,txtArea)
 						else
 						{
 							//family history was used as bucket for Other Meds in old encounter
-							oscar.oscarDemographic.data.EctInformation EctInfo = new oscar.oscarDemographic.data.EctInformation(demo);
+							oscar.oscarDemographic.data.EctInformation EctInfo = new oscar.oscarDemographic.data.EctInformation(LoggedInInfo.getLoggedInInfoFromSession(request),demo);
 							value = EctInfo.getFamilyHistory();
 						}
 					}
@@ -864,7 +864,7 @@ function importFromEnct(reqInfo,txtArea)
 					}
 					else
 					{
-						oscar.oscarDemographic.data.EctInformation EctInfo = new oscar.oscarDemographic.data.EctInformation(demo);
+						oscar.oscarDemographic.data.EctInformation EctInfo = new oscar.oscarDemographic.data.EctInformation(LoggedInInfo.getLoggedInInfoFromSession(request),demo);
 						value = EctInfo.getReminders();
 					}
 					//if( !value.equals("") ) {
@@ -1134,7 +1134,7 @@ function updateFaxButton() {
 
 		if (requestId != null)
 		{
-			EctViewRequestAction.fillFormValues(thisForm, new Integer(requestId));
+			EctViewRequestAction.fillFormValues(LoggedInInfo.getLoggedInInfoFromSession(request), thisForm, new Integer(requestId));
                 thisForm.setSiteName(consultUtil.siteName);
                 defaultSiteName = consultUtil.siteName ;
 
@@ -1152,11 +1152,11 @@ function updateFaxButton() {
 			{
 				oscar.oscarDemographic.data.RxInformation RxInfo = new oscar.oscarDemographic.data.RxInformation();
                 EctViewRequestAction.fillFormValues(thisForm,consultUtil);
-				thisForm.setAllergies(RxInfo.getAllergies(demo));
+				thisForm.setAllergies(RxInfo.getAllergies(loggedInInfo, demo));
 
 				if (props.getProperty("currentMedications", "").equalsIgnoreCase("otherMedications"))
 				{
-					oscar.oscarDemographic.data.EctInformation EctInfo = new oscar.oscarDemographic.data.EctInformation(demo);
+					oscar.oscarDemographic.data.EctInformation EctInfo = new oscar.oscarDemographic.data.EctInformation(LoggedInInfo.getLoggedInInfoFromSession(request),demo);
 					thisForm.setCurrentMedications(EctInfo.getFamilyHistory());
 				}
 				else
@@ -1336,7 +1336,7 @@ function updateFaxButton() {
 				<!----Start new rows here-->
 				<tr>
 					<td class="tite4" colspan=2>
-					<% boolean faxEnabled = props.getProperty("faxEnable", "").equalsIgnoreCase("yes"); %>
+					<% boolean faxEnabled = props.getBooleanProperty("faxEnable", "yes"); %>
 					<% if (request.getAttribute("id") != null) { %>
 						<input name="update" type="button" value="<bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.btnUpdate"/>" onclick="return checkForm('Update Consultation Request','EctConsultationFormRequestForm');" />
 						<input name="updateAndPrint" type="button" value="<bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.btnUpdateAndPrint"/>" onclick="return checkForm('Update Consultation Request And Print Preview','EctConsultationFormRequestForm');" />
@@ -1991,7 +1991,7 @@ if (defaultSiteId!=0) aburl2+="&site="+defaultSiteId;
 						<input name="updateAndPrint" type="button" value="<bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.btnUpdateAndPrint"/>" onclick="return checkForm('Update Consultation Request And Print Preview','EctConsultationFormRequestForm');" />
 						<input name="updateAndSendElectronically" type="button" value="<bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.btnUpdateAndSendElectronicReferral"/>" onclick="return checkForm('Update_esend','EctConsultationFormRequestForm');" />
 						<%
-							if (props.getProperty("faxEnable", "").equalsIgnoreCase("yes"))
+							if (props.getBooleanProperty("faxEnable", "yes"))
 										{
 						%>
 						<input id="fax_button2" name="updateAndFax" type="button" value="<bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.btnUpdateAndFax"/>" onclick="return checkForm('Update And Fax','EctConsultationFormRequestForm');" />
@@ -2007,7 +2007,7 @@ if (defaultSiteId!=0) aburl2+="&site="+defaultSiteId;
 						<input name="submitAndPrint" type="button" value="<bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.btnSubmitAndPrint"/>" onclick="return checkForm('Submit Consultation Request And Print Preview','EctConsultationFormRequestForm'); " />
 						<input name="submitAndSendElectronically" type="button" value="<bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.btnSubmitAndSendElectronicReferral"/>" onclick="return checkForm('Submit_esend','EctConsultationFormRequestForm');" />
 						<%
-							if (props.getProperty("faxEnable", "").equalsIgnoreCase("yes"))
+							if (props.getBooleanProperty("faxEnable", "yes"))
 										{
 						%>
 						<input id="fax_button2" name="submitAndFax" type="button" value="<bean:message key="oscarEncounter.oscarConsultationRequest.ConsultationFormRequest.btnSubmitAndFax"/>" onclick="return checkForm('Submit And Fax','EctConsultationFormRequestForm');" />

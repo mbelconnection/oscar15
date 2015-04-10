@@ -28,6 +28,7 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
+<%@page import="org.oscarehr.util.LoggedInInfo"%>
 
 <%
 String formClass = "BCHP";
@@ -37,7 +38,7 @@ int demoNo = Integer.parseInt(request.getParameter("demographic_no"));
 int formId = Integer.parseInt(request.getParameter("formId"));
 int provNo = Integer.parseInt((String) session.getAttribute("user"));
 FrmRecord rec = (new FrmRecordFactory()).factory(formClass);
-java.util.Properties props = rec.getFormRecord(demoNo, formId);
+java.util.Properties props = rec.getFormRecord(LoggedInInfo.getLoggedInInfoFromSession(request),demoNo, formId);
 
 props.setProperty("c_lastVisited", "pg2");
 
@@ -73,7 +74,7 @@ if (props == null || (props.getProperty("pg2_medName1", "").equals("") && props.
     }
     
     // fill the preventions
-    ArrayList<Map<String,Object>> vaccines = PreventionData.getPreventionData(demoNo);
+    ArrayList<Map<String,Object>> vaccines = PreventionData.getPreventionData(LoggedInInfo.getLoggedInInfoFromSession(request), demoNo);
     int count1 = 0;
     int count2 = 0;
     int count3 = 0;

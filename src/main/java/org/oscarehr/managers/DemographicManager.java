@@ -113,6 +113,30 @@ public class DemographicManager {
 
 		return (result);
 	}
+	
+	public Demographic getDemographic(LoggedInInfo loggedInInfo, String demographicNo) {
+		Integer demographicId = null;
+		try {
+			demographicId = Integer.parseInt(demographicNo);
+		} catch(NumberFormatException e) {
+			return null;
+		}
+		return getDemographic(loggedInInfo,demographicId);
+		
+	}
+	
+	
+	public Demographic getDemographicWithExt(LoggedInInfo loggedInInfo, Integer demographicId) {
+		Demographic result = getDemographic(loggedInInfo, demographicId);
+		if (result!=null) {
+			List<DemographicExt> demoExts = getDemographicExts(loggedInInfo,demographicId);
+			if (demoExts!=null && !demoExts.isEmpty()) {
+				DemographicExt[] demoExtArray = demoExts.toArray(new DemographicExt[demoExts.size()]);
+				result.setExtras(demoExtArray);
+			}
+		}
+		return result;
+	}
 
 	public String getDemographicFormattedName(LoggedInInfo loggedInInfo, Integer demographicId) {
 		Demographic result = getDemographic(loggedInInfo, demographicId);
@@ -289,6 +313,29 @@ public class DemographicManager {
 		LogAction.addLogSynchronous(loggedInInfo, "DemographicManager.updateDemographic", "demographicNo=" + demographic.getDemographicNo());
 
 	}
+	
+	public void addDemographic(LoggedInInfo loggedInInfo, Demographic demographic) {
+		try {
+			demographic.getBirthDay();
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Birth date was specified for " + demographic.getFullName() + ": " + demographic.getBirthDayAsString());
+		}
+
+		//save current demo
+		demographicDao.save(demographic);
+
+		if (demographic.getExtras() != null) {
+			for (DemographicExt ext : demographic.getExtras()) {
+				LogAction.addLogSynchronous(loggedInInfo, "DemographicManager.addDemographic ext", "id=" + ext.getId() + "(" + ext.toString() + ")");
+				updateExtension(loggedInInfo, ext);
+			}
+		}
+
+		//--- log action ---
+		LogAction.addLogSynchronous(loggedInInfo, "DemographicManager.addDemographic", "demographicNo=" + demographic.getDemographicNo());
+
+	}
+	
 
 	public void createExtension(LoggedInInfo loggedInInfo, DemographicExt ext) {
 		demographicExtDao.saveEntity(ext);
@@ -554,4 +601,82 @@ public class DemographicManager {
 
 		return (demographics);
 	}
+	
+	public List<Demographic> searchDemographic(LoggedInInfo loggedInInfo, String searchStr) {
+		if (loggedInInfo == null) throw (new SecurityException("user not logged in?"));
+
+		List<Demographic> demographics = demographicDao.searchDemographic(searchStr);
+
+		LogAction.addLogSynchronous(loggedInInfo, "DemographicManager.searchDemographic", "searchStr=" + searchStr);
+
+		return (demographics);
+	}
+	
+	public List<Demographic> getActiveDemosByHealthCardNo(LoggedInInfo loggedInInfo, String hcn, String hcnType) {
+		if (loggedInInfo == null) throw (new SecurityException("user not logged in?"));
+		
+		List<Demographic> demographics = demographicDao.getActiveDemosByHealthCardNo(hcn, hcnType);
+		
+		LogAction.addLogSynchronous(loggedInInfo, "DemographicManager.getActiveDemosByHealthCardNo", "hcn=" + hcn + ",hcnType=" + hcnType);
+
+		return (demographics);
+	}
+	
+	       
+	   public List<Integer> getMergedDemographicIds(LoggedInInfo loggedInInfo, Integer demographicNo) {    
+		   if (loggedInInfo == null) throw (new SecurityException("user not logged in?"));
+	       
+	       List<Integer> ids = demographicDao.getMergedDemographics(demographicNo);
+	       
+	       LogAction.addLogSynchronous(loggedInInfo, "DemographicManager.getMergedDemographics", "demographicNo=" + demographicNo);
+	           
+	       return ids;
+	   }
+	       
+		public List<Demographic> getDemosByChartNo(LoggedInInfo loggedInInfo, String chartNo) {
+			if (loggedInInfo == null) throw (new SecurityException("user not logged in?"));
+			
+			List<Demographic> demographics = demographicDao.getClientsByChartNo(chartNo);
+			
+			LogAction.addLogSynchronous(loggedInInfo, "DemographicManager.getActiveDemosByChartNo", "chartNo=" + chartNo);
+
+			return (demographics);
+		}
+		
+		
+		public List<Demographic> searchByHealthCard(LoggedInInfo loggedInInfo, String hin) {
+			if (loggedInInfo == null) throw (new SecurityException("user not logged in?"));
+			
+			List<Demographic> demographics = demographicDao.searchByHealthCard(hin);
+			
+			LogAction.addLogSynchronous(loggedInInfo, "DemographicManager.searchByHealthCard", "hin=" + hin);
+
+			return (demographics);
+		}
+		
+		
+		public Demographic getDemographicByNamePhoneEmail(LoggedInInfo loggedInInfo, String firstName, String lastName, String hPhone, String wPhone, String email) {
+			if (loggedInInfo == null) throw (new SecurityException("user not logged in?"));
+			
+			Demographic demographic =  demographicDao.getDemographicByNamePhoneEmail(firstName, lastName, hPhone, wPhone, email);
+			
+			if(demographic != null) {
+				LogAction.addLogSynchronous(loggedInInfo, "DemographicManager.getDemographicByNamePhoneEmail", "id found=" + demographic.getDemographicNo());
+			}
+
+			return (demographic);
+		}
+		
+		public List<Demographic> getDemographicWithLastFirstDOB(LoggedInInfo loggedInInfo, String lastname, String firstname, String year_of_birth, String month_of_birth, String date_of_birth) {
+			if (loggedInInfo == null) throw (new SecurityException("user not logged in?"));
+			
+			List<Demographic> results = demographicDao.getDemographicWithLastFirstDOB(lastname, firstname, year_of_birth, month_of_birth, date_of_birth);
+			
+			LogAction.addLogSynchronous(loggedInInfo, "DemographicManager.getDemographicWithLastFirstDOB", "");
+			
+
+			return (results);
+		}
+		
+	
 }

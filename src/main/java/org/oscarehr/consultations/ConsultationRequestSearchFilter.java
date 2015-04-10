@@ -25,7 +25,7 @@ package org.oscarehr.consultations;
 
 import java.util.Date;
 
-public class ConsultationSearchFilter {
+public class ConsultationRequestSearchFilter {
 
 	public static enum SORTMODE {
         Demographic, Service, Consultant, Team, Status, MRP, AppointmentDate, FollowUpDate ,ReferralDate, Urgency
@@ -42,7 +42,7 @@ public class ConsultationSearchFilter {
 	
 	private Date referralEndDate;
 	
-	private String status;
+	private Integer status;
 	
 	private String team;
 	
@@ -81,10 +81,10 @@ public class ConsultationSearchFilter {
 	public void setReferralEndDate(Date referralEndDate) {
 		this.referralEndDate = referralEndDate;
 	}
-	public String getStatus() {
+	public Integer getStatus() {
 		return status;
 	}
-	public void setStatus(String status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 	public String getTeam() {

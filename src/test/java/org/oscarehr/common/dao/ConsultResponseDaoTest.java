@@ -83,7 +83,7 @@ public class ConsultResponseDaoTest extends DaoTestFixtures {
 		Date date1 = DateUtils.parseDate("2015-03-05", format);
 		Date date2 = DateUtils.parseDate("2015-03-26", format);
 		
-		String status1="s1", status2="s2";
+		String status1="1", status2="2";
 		String team1="tttt1", team2="tttt2";
 		String urgency1="u1", urgency2="u2";
 		
@@ -162,29 +162,33 @@ public class ConsultResponseDaoTest extends DaoTestFixtures {
 		
 		ConsultationResponseSearchFilter filter = new ConsultationResponseSearchFilter();
 		filter.setDemographicNo(demoNo1);
-		filter.setStatus(status1);
+		filter.setStatus(Integer.valueOf(status1));
 		filter.setTeam(team1);
 		filter.setUrgency(urgency1);
 		
-		assertEquals(2, consultDao.getConsultationCount(filter));
+		ConsultationResponse[] expectedCR = new ConsultationResponse[]{cr1, cr3};
+		assertEquals(expectedCR.length, consultDao.getConsultationCount(filter));
 		
 		filter = new ConsultationResponseSearchFilter();
 		filter.setAppointmentStartDate(DateUtils.setDays(date2, 20));
 		filter.setAppointmentEndDate(DateUtils.setDays(date2, 27));
 		
-		assertEquals(3, consultDao.getConsultationCount(filter));
+		expectedCR = new ConsultationResponse[]{cr2, cr3, cr6};
+		assertEquals(expectedCR.length, consultDao.getConsultationCount(filter));
 		
 		filter = new ConsultationResponseSearchFilter();
 		filter.setReferralStartDate(DateUtils.setDays(date1, 1));
 		filter.setReferralEndDate(DateUtils.setDays(date1, 10));
 		
-		assertEquals(4, consultDao.getConsultationCount(filter));
+		expectedCR = new ConsultationResponse[]{cr1, cr3, cr5, cr6};
+		assertEquals(expectedCR.length, consultDao.getConsultationCount(filter));
 		
 		filter = new ConsultationResponseSearchFilter();
 		filter.setResponseStartDate(date1);
-		filter.setResponseEndDate(DateUtils.setDays(date2, 25));
+		filter.setResponseEndDate(DateUtils.setDays(date1, 25));
 		
-		assertEquals(5, consultDao.getConsultationCount(filter));
+		expectedCR = new ConsultationResponse[]{cr1, cr3, cr4, cr5, cr6};
+		assertEquals(expectedCR.length, consultDao.getConsultationCount(filter));
 	}
 	
 	@Test
@@ -212,7 +216,7 @@ public class ConsultResponseDaoTest extends DaoTestFixtures {
 		Date date1 = DateUtils.parseDate("2015-03-05", format);
 		Date date2 = DateUtils.parseDate("2015-03-26", format);
 		
-		String status1="s1", status2="s2";
+		String status1="1", status2="2";
 		String team1="tttt1", team2="tttt2";
 		String urgency1="u1", urgency2="u2";
 		
@@ -280,7 +284,7 @@ public class ConsultResponseDaoTest extends DaoTestFixtures {
 		ConsultationResponseSearchFilter filter = new ConsultationResponseSearchFilter();
 		filter.setNumToReturn(99);
 		filter.setDemographicNo(demoNo1);
-		filter.setStatus(status1);
+		filter.setStatus(Integer.valueOf(status1));
 		filter.setTeam(team1);
 		filter.setUrgency(urgency1);
 		

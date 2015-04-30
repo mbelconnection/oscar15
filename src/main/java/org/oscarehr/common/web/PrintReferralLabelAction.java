@@ -23,15 +23,19 @@
  */
 package org.oscarehr.common.web;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -41,6 +45,7 @@ import org.oscarehr.util.MiscUtils;
 
 import oscar.OscarAction;
 import oscar.OscarDocumentCreator;
+import oscar.util.ConcatPDF;
 
 /**
 * Originally developed by Prylynx for SJHCG
@@ -52,10 +57,23 @@ public class PrintReferralLabelAction extends OscarAction {
 	public PrintReferralLabelAction() {
 	}
 
+	@SuppressWarnings("resource")
+    private InputStream getInputStream()  {
+		InputStream ins = null;
+		try {
+			ins = new FileInputStream(System.getProperty("user.home") + "/reflabel.xml");
+		} catch (IOException e) {
+			MiscUtils.getLogger().warn("no reflabel.xml found in user's home directory, going to backup");
+		} 
+		if (ins == null) {
+			ins = getClass().getResourceAsStream("/org/oscarehr/common/web/reflabel.xml");
+		}
+		return ins;
+	}
+	
 	public ActionForward execute(ActionMapping actionMapping, ActionForm actionForm, HttpServletRequest request, HttpServletResponse response) {
 		//patient
 		String classpath = (String) request.getSession().getServletContext().getAttribute("org.apache.catalina.jsp_classpath");
-
 		System.setProperty("jasper.reports.compile.class.path", classpath);
 
 		HashMap<String, String> parameters = new HashMap<String, String>();
@@ -63,26 +81,40 @@ public class PrintReferralLabelAction extends OscarAction {
 		ServletOutputStream sos = null;
 		InputStream ins = null;
 
-		logger.debug("user home: " + System.getProperty("user.home"));
-
 		try {
-			try {
-				ins = new FileInputStream(System.getProperty("user.home") + "/reflabel.xml");
-			} catch (Exception e) {
-				MiscUtils.getLogger().warn("no reflabel.xml found in user's home directory, going to backup");
-			}
-
-			if (ins == null) {
-				ins = getClass().getResourceAsStream("/org/oscarehr/common/web/reflabel.xml");
-				logger.debug("loading from : /org/oscarehr/common/web/reflabel.xml " + ins);
-			}
-
 			sos = response.getOutputStream();
 
 			response.setHeader("Content-disposition", getHeader(response).toString());
 
-			OscarDocumentCreator osc = new OscarDocumentCreator();
-			osc.fillDocumentStream(parameters, sos, "pdf", ins, DbConnectionFilter.getThreadLocalDbConnection());
+			if (!StringUtils.isEmpty(request.getParameter("ids"))) {
+				String[] ids = request.getParameter("ids").split(",");
+				ArrayList<Object> printList = new ArrayList<Object>();
+				OscarDocumentCreator osc = new OscarDocumentCreator();
+				
+				for (int x = 0; x < ids.length; x++) {
+					FileOutputStream fos = null;
+					try {
+						File f = File.createTempFile("physlabel", ".pdf");
+						fos = new FileOutputStream(f);
+						ins = getInputStream();
+						parameters.put("billingreferral_no", ids[x]);
+						osc.fillDocumentStream(parameters, fos, "pdf", ins, DbConnectionFilter.getThreadLocalDbConnection());
+						printList.add(f.getAbsolutePath());
+					}finally {
+						if(fos != null) {
+							fos.close();
+						}
+						if(ins != null) {
+							ins.close();
+						}
+					}
+				}
+				ConcatPDF.concat(printList, sos);
+			} else {
+				ins = getInputStream();
+				OscarDocumentCreator osc = new OscarDocumentCreator();
+				osc.fillDocumentStream(parameters, sos, "pdf", ins, DbConnectionFilter.getThreadLocalDbConnection());
+			}
 
 		} catch (Exception e) {
 			MiscUtils.getLogger().error("Error", e);

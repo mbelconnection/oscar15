@@ -58,7 +58,7 @@ public class PrintReferralLabelAction extends OscarAction {
 	}
 
 	@SuppressWarnings("resource")
-    private InputStream getInputStream()  {
+	private InputStream getInputStream()  {
 		InputStream ins = null;
 		try {
 			ins = new FileInputStream(System.getProperty("user.home") + "/reflabel.xml");

@@ -112,7 +112,7 @@ public class MeasurementDao extends AbstractDao<Measurement> {
         }
 
         public List<Measurement> findByDemographicId( Integer demographicId) {
-                String sqlCommand =  "select x from Measurement x where x.demographicId=? and x.type!='' order by x.dateObserved desc";
+                String sqlCommand =  "select x from Measurement x where x.demographicId=? and x.type!='' order by x.dateObserved desc, x.createDate desc";
                 Query query = entityManager.createQuery(sqlCommand);
                 query.setParameter(1, demographicId);
 

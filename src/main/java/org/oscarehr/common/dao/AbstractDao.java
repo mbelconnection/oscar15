@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public abstract class AbstractDao<T extends AbstractModel<?>> {
 	protected Class<T> modelClass;
+	public static final int MAX_LIST_RETURN_SIZE = 5000;
 
 	@PersistenceContext
 	protected EntityManager entityManager = null;
@@ -107,4 +108,17 @@ public abstract class AbstractDao<T extends AbstractModel<?>> {
 		Query query = entityManager.createNativeQuery(sqlCommand);
 		return (((Number) query.getSingleResult()).intValue());
 	}
+	
+	protected int getMaxSelectSize() {
+	    return MAX_LIST_RETURN_SIZE;
+    }
+	
+	protected final void setLimit(Query query, int itemsToReturn)
+	{
+		if (itemsToReturn > getMaxSelectSize()) throw(new IllegalArgumentException("Requested too large of a result list size : " + itemsToReturn));
+
+		query.setMaxResults(itemsToReturn);
+	}
+	
+	
 }

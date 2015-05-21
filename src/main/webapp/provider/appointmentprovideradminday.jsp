@@ -198,7 +198,9 @@ public boolean patientHasOutstandingPrivateBills(String demographicNo){
     }
     String caisiView = null;
     caisiView = request.getParameter("GoToCaisiViewFromOscarView");
-    if(caisiView!=null && "true".equals(caisiView)) {
+    boolean notOscarView = "false".equals(session.getAttribute("infirmaryView_isOscar"));
+    
+    if((caisiView!=null && "true".equals(caisiView)) || notOscarView) {
     	mygroupno = ".default";
     }
     String userfirstname = (String) session.getAttribute("userfirstname");

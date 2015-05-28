@@ -203,6 +203,7 @@
 		<form-bean name="LabUploadForm" type="oscar.oscarLab.ca.bc.PathNet.pageUtil.LabUploadForm" />
 		<form-bean name="CMLLabUploadForm" type="oscar.oscarLab.ca.on.CML.Upload.LabUploadForm" />
 		<form-bean name="DemographicExportForm" type="oscar.oscarDemographic.pageUtil.DemographicExportForm" />
+		<form-bean name="DemographicExportPdfForm" type="oscar.oscarDemographic.pageUtil.DemographicExportPdfForm" />
 		<form-bean name="DiabetesExportForm" type="oscar.oscarDemographic.pageUtil.DiabetesExportForm" />
 		<form-bean name="DemographicSetEditForm" type="oscar.oscarReport.pageUtil.DemographicSetEditForm" />
 		<form-bean name="eFormHtmlUpload" type="oscar.eform.upload.HtmlUploadForm" />
@@ -1655,6 +1656,9 @@
 		</action>
 		<action input="/demographic/demographicExport.jsp" name="DemographicExportForm" path="/demographic/DemographicExport" scope="request" type="oscar.oscarDemographic.pageUtil.DemographicExportAction4">
 			<forward name="fail" path="/demographic/demographicExport.jsp" />
+		</action>
+		<action input="/demographic/demographicPDF.jsp" name="DemographicExportPdfForm" path="/demographic/DemographicPdfExport" scope="request" type="org.oscarehr.demographic.export.DemographicExportPdfAction">
+			<forward name="fail" path="/demographic/demographicPDF.jsp" />
 		</action>
 		<action input="/demographic/diabetesExport.jsp" name="DiabetesExportForm" path="/demographic/DiabetesExport" scope="request" type="oscar.oscarDemographic.pageUtil.DiabetesExportAction">
 		</action>

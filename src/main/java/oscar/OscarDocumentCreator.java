@@ -1,4 +1,3 @@
-
 package oscar;
 
 import java.io.InputStream;
@@ -23,106 +22,133 @@ import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
 
 import org.oscarehr.util.MiscUtils;
+
 public class OscarDocumentCreator {
-  public static final String PDF = "pdf";
-  public static final String CSV = "csv";
-  public static final String EXCEL = "excel";
+	public static final String PDF = "pdf";
+	public static final String CSV = "csv";
+	public static final String EXCEL = "excel";
 
-  public OscarDocumentCreator() {
+	public OscarDocumentCreator() {
 
-  }
+	}
 
-  public InputStream getDocumentStream(String path) {
-    InputStream reportInstream = null;
-    reportInstream = getClass().getClassLoader().getResourceAsStream(path);
-    return reportInstream;
-  }
+	public InputStream getDocumentStream(String path) {
+		InputStream reportInstream = null;
+		reportInstream = getClass().getClassLoader().getResourceAsStream(path);
+		return reportInstream;
+	}
 
-  public void fillDocumentStream(HashMap parameters, OutputStream sos,
-                                 String docType, InputStream xmlDesign,
-                                 Object dataSrc) {
-    try {
-      JasperReport jasperReport = null;
-      JasperPrint print = null;
-      jasperReport = getJasperReport(xmlDesign);
-      if (dataSrc instanceof List) {
-        JRDataSource ds = new JRBeanCollectionDataSource( (List) dataSrc);
-        print = JasperFillManager.fillReport(jasperReport, parameters,
-                                             ds);
-      }
-      else if (dataSrc instanceof java.sql.Connection) {
-        print = JasperFillManager.fillReport(jasperReport, parameters,
-                                             (Connection) dataSrc);
-      }
-      else if (dataSrc instanceof ResultSet) {
-        JRDataSource ds = new JRResultSetDataSource( (ResultSet) dataSrc);
-        print = JasperFillManager.fillReport(jasperReport, parameters,
-                                             ds);
-      }
-      else
-      {
-          JRDataSource ds = (JRDataSource)dataSrc;
-          print = JasperFillManager.fillReport(jasperReport, parameters,ds);
-      }
-      if (docType.equals(OscarDocumentCreator.PDF)) {
-        JasperExportManager.exportReportToPdfStream(print, sos);
-      }
-      else if (docType.equals(OscarDocumentCreator.CSV)) {
-        this.exportReportToCSVStream(print, sos);
+	public void fillDocumentStream(HashMap parameters, OutputStream sos, String docType, InputStream xmlDesign, Object dataSrc) {
+		try {
+			JasperPrint print = null;
+			JasperReport jasperReport = null;
+			jasperReport = getJasperReport(xmlDesign);
+			if (dataSrc instanceof List) {
+				JRDataSource ds = new JRBeanCollectionDataSource((List) dataSrc);
+				print = JasperFillManager.fillReport(jasperReport, parameters, ds);
+			} else if (dataSrc instanceof java.sql.Connection) {
+				print = JasperFillManager.fillReport(jasperReport, parameters, (Connection) dataSrc);
+			} else if (dataSrc instanceof ResultSet) {
+				JRDataSource ds = new JRResultSetDataSource((ResultSet) dataSrc);
+				print = JasperFillManager.fillReport(jasperReport, parameters, ds);
+			} else {
+				JRDataSource ds = (JRDataSource) dataSrc;
+				print = JasperFillManager.fillReport(jasperReport, parameters, ds);
+			}
+			if (docType.equals(OscarDocumentCreator.PDF)) {
+				JasperExportManager.exportReportToPdfStream(print, sos);
+			} else if (docType.equals(OscarDocumentCreator.CSV)) {
+				this.exportReportToCSVStream(print, sos);
 
-      } else if (docType.equals(OscarDocumentCreator.EXCEL)) {
-    	this.exportReportToExcelStream(print,sos);
-      }
+			} else if (docType.equals(OscarDocumentCreator.EXCEL)) {
+				this.exportReportToExcelStream(print, sos);
+			}
 
-    }
-    catch (JRException ex) {MiscUtils.getLogger().error("Error", ex);
-    }
-  }
+		} catch (JRException ex) {
+			MiscUtils.getLogger().error("Error", ex);
+		}
+	}
 
-  /**
-   * Returns a JasperReport instance reprepesenting the supplied InputStream
-   * @param xmlDesign InputStream
-   * @return JasperReport
-   */
-  public JasperReport getJasperReport(InputStream xmlDesign) {
-    JasperReport jasperReport = null;
-    try {
-      jasperReport = JasperCompileManager.compileReport(
-          xmlDesign);
-    }
-    catch (JRException ex) {MiscUtils.getLogger().error("Error", ex);
-    }
-    return jasperReport;
-  }
+	/**
+	 * Returns a JasperReport instance reprepesenting the supplied InputStream
+	 * @param xmlDesign InputStream
+	 * @return JasperReport
+	 */
+	public JasperReport getJasperReport(InputStream xmlDesign) {
+		JasperReport jasperReport = null;
+		try {
+			jasperReport = JasperCompileManager.compileReport(xmlDesign);
+		} catch (JRException ex) {
+			MiscUtils.getLogger().error("Error", ex);
+		}
+		return jasperReport;
+	}
 
-  /**
-   * Fills a servletoutout stream with data from a JasperReport
-   * @param jasperPrint JasperPrint
-   * @param sos ServletOutputStream
-   * @throws JRException
-   */
-  private void exportReportToCSVStream(JasperPrint jasperPrint,
-                                       OutputStream sos) throws
-      JRException {
-    JRCsvExporter exp = new JRCsvExporter();
-    exp.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
-    exp.setParameter(JRExporterParameter.OUTPUT_STREAM, sos);
-    exp.exportReport();
-  }
+	public JasperReport getJasperReport(String filename) {
+		JasperReport jasperReport = null;
+		try {
+			jasperReport = JasperCompileManager.compileReport(filename);
+		} catch (JRException ex) {
+			MiscUtils.getLogger().error("Error", ex);
+		}
+		return jasperReport;
+	}
 
-  private void exportReportToExcelStream(JasperPrint jasperPrint, OutputStream os)
-  			throws JRException{
-  	JRXlsExporter exp = new JRXlsExporter();
-  	exp.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
-	exp.setParameter(JRExporterParameter.OUTPUT_STREAM, os);
-	exp.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
-	exp.setParameter(JRXlsExporterParameter.OFFSET_X, 0);
-	exp.setParameter(JRXlsExporterParameter.IS_IGNORE_CELL_BORDER, Boolean.FALSE);
-	exp.setParameter(JRXlsExporterParameter.IS_DETECT_CELL_TYPE, true);
-	exp.setParameter(JRXlsExporterParameter.IS_WHITE_PAGE_BACKGROUND, false);
-      	exp.setParameter(JRXlsExporterParameter.IS_ONE_PAGE_PER_SHEET, false);
-      	exp.setParameter(JRXlsExporterParameter.MAXIMUM_ROWS_PER_SHEET,Integer.decode("65000"));
-  	exp.exportReport();
-  }
+	/**
+	 * Fills a servletoutout stream with data from a JasperReport
+	 * @param jasperPrint JasperPrint
+	 * @param sos ServletOutputStream
+	 * @throws JRException
+	 */
+	private void exportReportToCSVStream(JasperPrint jasperPrint, OutputStream sos) throws JRException {
+		JRCsvExporter exp = new JRCsvExporter();
+		exp.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+		exp.setParameter(JRExporterParameter.OUTPUT_STREAM, sos);
+		exp.exportReport();
+	}
 
+	private void exportReportToExcelStream(JasperPrint jasperPrint, OutputStream os) throws JRException {
+		JRXlsExporter exp = new JRXlsExporter();
+		exp.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+		exp.setParameter(JRExporterParameter.OUTPUT_STREAM, os);
+		exp.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
+		exp.setParameter(JRXlsExporterParameter.OFFSET_X, 0);
+		exp.setParameter(JRXlsExporterParameter.IS_IGNORE_CELL_BORDER, Boolean.FALSE);
+		exp.setParameter(JRXlsExporterParameter.IS_DETECT_CELL_TYPE, true);
+		exp.setParameter(JRXlsExporterParameter.IS_WHITE_PAGE_BACKGROUND, false);
+		exp.setParameter(JRXlsExporterParameter.IS_ONE_PAGE_PER_SHEET, false);
+		exp.setParameter(JRXlsExporterParameter.MAXIMUM_ROWS_PER_SHEET, Integer.decode("65000"));
+		exp.exportReport();
+	}
+
+	public void fillDocumentStream(HashMap parameters, OutputStream sos, String docType, String xmlDesign, Object dataSrc) {
+		try {
+			JasperPrint print = null;
+			JasperReport jasperReport = null;
+			jasperReport = getJasperReport(xmlDesign);
+			if (dataSrc instanceof List) {
+				JRDataSource ds = new JRBeanCollectionDataSource((List) dataSrc);
+				print = JasperFillManager.fillReport(jasperReport, parameters, ds);
+			} else if (dataSrc instanceof java.sql.Connection) {
+				print = JasperFillManager.fillReport(jasperReport, parameters, (Connection) dataSrc);
+			} else if (dataSrc instanceof ResultSet) {
+				JRDataSource ds = new JRResultSetDataSource((ResultSet) dataSrc);
+				print = JasperFillManager.fillReport(jasperReport, parameters, ds);
+			} else {
+				JRDataSource ds = (JRDataSource) dataSrc;
+				print = JasperFillManager.fillReport(jasperReport, parameters, ds);
+			}
+			if (docType.equals(OscarDocumentCreator.PDF)) {
+				JasperExportManager.exportReportToPdfStream(print, sos);
+			} else if (docType.equals(OscarDocumentCreator.CSV)) {
+				this.exportReportToCSVStream(print, sos);
+
+			} else if (docType.equals(OscarDocumentCreator.EXCEL)) {
+				this.exportReportToExcelStream(print, sos);
+			}
+
+		} catch (JRException ex) {
+			MiscUtils.getLogger().error("Error", ex);
+		}
+	}
 }

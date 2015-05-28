@@ -1351,6 +1351,9 @@ if (iviewTag!=null && !"".equalsIgnoreCase(iviewTag.trim())){
                                   <%}%>
                                 <br><input type="button" value="<bean:message key="demographic.demographiceditdemographic.msgExport"/>"
                                     onclick="window.open('demographicExport.jsp?demographicNo=<%=apptMainBean.getString(rs,"demographic_no")%>');">
+                                    &nbsp;
+                                    <input type="button" value="<bean:message key="demographic.demographiceditdemographic.msgPDF"/>"
+                                    onclick="window.open('demographicPDF.jsp?demographicNo=<%=apptMainBean.getString(rs,"demographic_no")%>');">
                                 </td>
                                 <td width="30%" align='center' valign="top">
                                 <% if (OscarProperties.getInstance().getBooleanProperty("workflow_enhance", "true")) { %>
@@ -3054,6 +3057,9 @@ if(oscarVariables.getProperty("demographicExtJScript") != null) { out.println(os
 									onclick=self.close();>
 								<br><input type="button" value="<bean:message key="demographic.demographiceditdemographic.msgExport"/>"
 									onclick="window.open('demographicExport.jsp?demographicNo=<%=demographic.getDemographicNo()%>');">
+									&nbsp;
+                                    <input type="button" value="<bean:message key="demographic.demographiceditdemographic.msgPDF"/>"
+                                    onclick="window.open('demographicPDF.jsp?demographicNo=<%=demographic.getDemographicNo()%>');">
 								</td>
 								<td width="30%" align='center' valign="top"><input
 									type="hidden" name="displaymode" value="Update Record">

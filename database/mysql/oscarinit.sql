@@ -6736,7 +6736,8 @@ CREATE TABLE professionalSpecialists (
   privatePhoneNumber varchar(30),
   cellPhoneNumber varchar(30),
   pagerNumber varchar(30),
-  salutation varchar(10) 
+  salutation varchar(10),
+  hideFromView tinyint(1)
 );
 
 --

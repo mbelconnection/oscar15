@@ -54,6 +54,7 @@ public final class EctConAddSpecialistForm extends ActionForm {
 	String cellPhoneNumber;
 	String pagerNumber;
 	String salutation;
+	Boolean hideFromView;
 
 	private String referralNo;
 
@@ -300,6 +301,14 @@ public final class EctConAddSpecialistForm extends ActionForm {
 
 	public void setSalutation(String salutation) {
 		this.salutation = salutation;
+	}
+
+	public Boolean getHideFromView() {
+		return hideFromView;
+	}
+
+	public void setHideFromView(Boolean hideFromView) {
+		this.hideFromView = hideFromView;
 	}
 	
 	

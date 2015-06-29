@@ -86,6 +86,8 @@ public class ProfessionalSpecialist extends AbstractModel<Integer> implements Se
     private String cellPhoneNumber;
     private String pagerNumber;
     private String salutation;
+
+    private Boolean hideFromView=false;
     
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastUpdated=new Date();
@@ -290,6 +292,14 @@ public class ProfessionalSpecialist extends AbstractModel<Integer> implements Se
 	    } else if (!id.equals(other.id)) return false;
 	    return true;
     }
+
+	public Boolean getHideFromView() {
+		return hideFromView;
+	}
+
+	public void setHideFromView(Boolean hideFromView) {
+		this.hideFromView = hideFromView;
+	}
 
 	
 

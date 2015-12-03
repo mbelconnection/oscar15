@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.oscarehr.PMmodule.dao.AdmissionDao;
 import org.oscarehr.PMmodule.dao.ClientReferralDAO;
 import org.oscarehr.PMmodule.dao.ProgramClientStatusDAO;
@@ -47,11 +48,21 @@ import org.oscarehr.PMmodule.model.Program;
 import org.oscarehr.PMmodule.model.ProgramClientRestriction;
 import org.oscarehr.PMmodule.model.ProgramQueue;
 import org.oscarehr.PMmodule.model.RoomDemographic;
+import org.oscarehr.PMmodule.web.OcanForm;
+import org.oscarehr.PMmodule.web.OcanFormAction;
+import org.oscarehr.common.dao.CdsClientFormDao;
+import org.oscarehr.common.dao.CdsClientFormDataDao;
 import org.oscarehr.common.dao.FunctionalCentreAdmissionDao;
+import org.oscarehr.common.model.CdsClientForm;
+import org.oscarehr.common.model.CdsClientFormData;
 import org.oscarehr.common.model.FunctionalCentreAdmission;
+import org.oscarehr.common.model.OcanStaffForm;
 import org.oscarehr.util.LoggedInInfo;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+
+import oscar.util.CBIFormDataSubmissionJob;
+import oscar.util.CBIUtil;
 
 @Transactional
 public class AdmissionManager {
@@ -67,6 +78,10 @@ public class AdmissionManager {
 	private BedManager bedManager;
 	private RoomDemographicManager roomDemographicManager;
 	private FunctionalCentreAdmissionDao functionalCentreAdmissionDao;
+	private CdsClientFormDao cdsClientFormDao;
+	private CdsClientFormDataDao cdsClientFormDataDao;
+	
+	private static Logger logger = Logger.getLogger(CBIFormDataSubmissionJob.class);
     
     public List<Admission> getAdmissions_archiveView(String programId, Integer demographicNo) {
 		return dao.getAdmissions_archiveView(Integer.valueOf(programId), demographicNo);
@@ -253,6 +268,7 @@ public class AdmissionManager {
 		
 		// Admit to linked functional centre.
 		// First get functional centre id
+		Integer functionalCentreAdmissionId ;
 		String functionalCentreId = program.getFunctionalCentreId();
 		if(functionalCentreId != null && !functionalCentreId.equals("")) {		
 			FunctionalCentreAdmission fca = functionalCentreAdmissionDao.getCurrentAdmissionByDemographicNoAndFunctionalCentreId(demographicNo, functionalCentreId);
@@ -278,6 +294,36 @@ public class AdmissionManager {
 				fca.setProviderNo(providerNo);
 				fca.setUpdateDate(new Date());
 				functionalCentreAdmissionDao.persist(fca);
+				
+			}
+			functionalCentreAdmissionId = fca.getId();
+			
+			//Automatically create CBI form when admit a client into a program associated with a functional centre.
+			OcanStaffForm cbiForm = OcanForm.getCbiInitForm(demographicNo,OcanForm.PRE_POPULATION_LEVEL_DEMOGRAPHIC,"CBI", program.getId());		
+			//OcanStaffForm cbiForm=OcanFormAction.createOcanStaffForm(cbiFormInit.getId(), demographicNo, false);
+			
+			cbiForm.setAssessmentId(cbiForm.getId());
+			cbiForm.setOcanFormVersion("1.2");		
+			cbiForm.setClientId(demographicNo);
+			cbiForm.setProviderNo(providerNo);
+			LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
+			cbiForm.setFacilityId(loggedInInfo.currentFacility.getId());			
+			cbiForm.setSigned(false);
+			
+			cbiForm.setReferralDate(clientReferralDate);
+			cbiForm.setAdmissionDate(admissionDate);
+			cbiForm.setServiceInitDate(admissionDate);			
+			cbiForm.setAdmissionId(functionalCentreAdmissionId);
+			
+			OcanFormAction.saveOcanStaffForm(cbiForm);
+			
+			CBIUtil cbiUtil = new CBIUtil();
+			try {
+				cbiUtil.submitCBIData(cbiForm);
+				logger.info("cbi form data submitted successfully. The cbi form id is : <"+(cbiForm!=null?cbiForm.getId():"null")+">");
+				
+			}catch (Exception e) {
+				logger.error("Error in submission thread. The ocan staff form id is : <"+(cbiForm!=null?cbiForm.getId():"null")+">", e);
 			}
 		}
 		
@@ -481,6 +527,40 @@ public class AdmissionManager {
      				fca.setDischarged(true);     				
      				fca.setUpdateDate(new Date());
      				functionalCentreAdmissionDao.merge(fca);
+     				
+     				//save discharge reason to cds form's exit disposition
+     				CdsClientForm cdsForm = cdsClientFormDao.findLatestByClientIdAndAdmisionId(demographicNo, fca.getId());
+     				List<CdsClientFormData> cdsData = cdsClientFormDataDao.findByQuestion(cdsForm.getId(), "exitDisposition");
+     				if(cdsData.size()>0) {
+     					CdsClientFormData cds = cdsData.get(0); 
+     					//exitDisposition answers: 019-01, 019-02, 019-03, 019-04, 019-05, 019-06
+     					/*   
+						+-----+----------------+-----------------+-----------------------------+----------------
+						| id  | cdsFormVersion | cdsDataCategory | cdsDataCategoryName         |dischargeReason
+						+-----+----------------+-----------------+-----------------------------+----------------
+						| 222 | 4              | 019-01          | Completion without referral |16
+						| 223 | 4              | 019-02          | Completion with referral    |17
+						| 224 | 4              | 019-03          | Suicides                    |21
+						| 225 | 4              | 019-04          | Death                       |18
+						| 226 | 4              | 019-05          | Relocation                  |19
+						| 227 | 4              | 019-06          | Withdrawal                  |22
+						+-----+----------------+-----------------+-----------------------------+----------------
+     					*/
+     					if(radioDischargeReason!=null && radioDischargeReason.endsWith("16"))
+     						cds.setAnswer("019-01");
+     					else if(radioDischargeReason!=null && radioDischargeReason.endsWith("17"))
+     						cds.setAnswer("019-02");
+     					else if(radioDischargeReason!=null && radioDischargeReason.endsWith("21"))
+     						cds.setAnswer("019-03");
+     					else if(radioDischargeReason!=null && radioDischargeReason.endsWith("18"))
+     						cds.setAnswer("019-04");
+     					else if(radioDischargeReason!=null && radioDischargeReason.endsWith("19"))
+     						cds.setAnswer("019-05");
+     					else if(radioDischargeReason!=null && radioDischargeReason.endsWith("22"))
+     						cds.setAnswer("019-06");
+     					
+     					cdsClientFormDataDao.merge(cds);
+     				}
      			} 
      		}
         }
@@ -604,7 +684,15 @@ public class AdmissionManager {
         this.roomDemographicManager = roomDemographicManager;
     }
 
-    public boolean isActiveInCurrentFacility(int demographicId)
+    public void setCdsClientFormDao(CdsClientFormDao cdsClientFormDao) {
+    	this.cdsClientFormDao = cdsClientFormDao;
+    }
+    
+    public void setCdsClientFormDataDao(CdsClientFormDataDao cdsClientFormDataDao) {
+    	this.cdsClientFormDataDao = cdsClientFormDataDao;
+    }
+    
+	public boolean isActiveInCurrentFacility(int demographicId)
     {
         LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
         

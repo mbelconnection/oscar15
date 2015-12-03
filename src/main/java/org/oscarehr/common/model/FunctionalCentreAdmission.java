@@ -24,13 +24,18 @@
 package org.oscarehr.common.model;
 
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.oscarehr.util.MiscUtils;
 
 @Table(name = "functionalCentreAdmission")
 @Entity
@@ -49,7 +54,8 @@ public class FunctionalCentreAdmission extends AbstractModel<Integer> implements
 	private boolean discharged = false;
 	private String providerNo;
 	private Date updateDate;
-			
+	private String dischargeReason;
+	
 	public FunctionalCentreAdmission() {
 		updateDate = new Date();
 		discharged = false;		
@@ -97,12 +103,22 @@ public class FunctionalCentreAdmission extends AbstractModel<Integer> implements
 
 	public Date getServiceInitiationDate() {
     	return serviceInitiationDate;
-    }
-
+    }	
+	
 	public void setServiceInitiationDate(Date serviceInitiationDate) {
     	this.serviceInitiationDate = serviceInitiationDate;
     }
 
+	public void setServiceInitiationDate(String serviceInitiationDate) {
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			if(serviceInitiationDate!=null && serviceInitiationDate.length()>=10)
+				this.serviceInitiationDate = formatter.parse(serviceInitiationDate.substring(0, 10));
+		} catch (ParseException ex) {
+			MiscUtils.getLogger().error("Error", ex);
+		}
+    }
+	
 	public Date getDischargeDate() {
     	return dischargeDate;
     }
@@ -111,6 +127,22 @@ public class FunctionalCentreAdmission extends AbstractModel<Integer> implements
     	this.dischargeDate = dischargeDate;
     }
 
+	public GregorianCalendar getAdmissionCalendar()
+	{
+		GregorianCalendar cal=new GregorianCalendar();
+		cal.setTime(admissionDate);
+		return(cal);
+	}
+	
+	public GregorianCalendar getDischargeCalendar()
+	{
+		if (dischargeDate==null) return(null);
+		
+		GregorianCalendar cal=new GregorianCalendar();
+		cal.setTime(dischargeDate);
+		return(cal);
+	}
+	
 	public boolean isDischarged() {
     	return discharged;
     }
@@ -133,6 +165,14 @@ public class FunctionalCentreAdmission extends AbstractModel<Integer> implements
 
 	public void setUpdateDate(Date updateDate) {
     	this.updateDate = updateDate;
+    }
+
+	public String getDischargeReason() {
+    	return dischargeReason;
+    }
+
+	public void setDischargeReason(String dischargeReason) {
+    	this.dischargeReason = dischargeReason;
     }
 	
 	

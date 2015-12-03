@@ -2516,7 +2516,8 @@ create table CdsClientForm
 	admissionId int,
 	index(admissionId),
 	initialContactDate date,
-	assessmentDate date
+	assessmentDate date,
+	serviceInitiationDate date
 );
 
 create table CdsClientFormData
@@ -2705,6 +2706,7 @@ create table functionalCentreAdmission
         discharged tinyint(1) NOT NULL,
         providerNo varchar(6) NOT NULL,
         updateDate datetime NOT NULL,
+	dischargeReason varchar(200),
         PRIMARY KEY  (id)
 );
 

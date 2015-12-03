@@ -37,13 +37,13 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.oscarehr.PMmodule.dao.AdmissionDao;
 import org.oscarehr.PMmodule.dao.ProgramDao;
-import org.oscarehr.PMmodule.model.Admission;
 import org.oscarehr.PMmodule.model.Program;
 import org.oscarehr.common.dao.CdsClientFormDao;
 import org.oscarehr.common.dao.CdsClientFormDataDao;
 import org.oscarehr.common.dao.CdsFormOptionDao;
 import org.oscarehr.common.dao.CdsHospitalisationDaysDao;
 import org.oscarehr.common.dao.DemographicDao;
+import org.oscarehr.common.dao.FunctionalCentreAdmissionDao;
 import org.oscarehr.common.dao.FunctionalCentreDao;
 import org.oscarehr.common.model.CdsClientForm;
 import org.oscarehr.common.model.CdsClientFormData;
@@ -51,6 +51,7 @@ import org.oscarehr.common.model.CdsFormOption;
 import org.oscarehr.common.model.CdsHospitalisationDays;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.FunctionalCentre;
+import org.oscarehr.common.model.FunctionalCentreAdmission;
 import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SpringUtils;
@@ -70,7 +71,8 @@ public final class Cds4ReportUIBean {
 	private static ProgramDao programDao = (ProgramDao) SpringUtils.getBean("programDao");
 	private static CdsHospitalisationDaysDao cdsHospitalisationDaysDao = (CdsHospitalisationDaysDao) SpringUtils.getBean("cdsHospitalisationDaysDao");
 	private static DemographicDao demographicDao = (DemographicDao) SpringUtils.getBean("demographicDao");
-
+	private static FunctionalCentreAdmissionDao functionalCentreAdmissionDao = (FunctionalCentreAdmissionDao) SpringUtils.getBean("functionalCentreAdmissionDao");
+	
 	public static final int NUMBER_OF_COHORT_BUCKETS = 11;
 	private static final int NUMBER_OF_DATA_ROW_COLUMNS=NUMBER_OF_COHORT_BUCKETS+1;
 
@@ -112,7 +114,7 @@ public final class Cds4ReportUIBean {
 	}
 
 	/** key=admissionId, value=admission */
-	private HashMap<Integer, Admission> admissionMap = null;
+	private HashMap<Integer, FunctionalCentreAdmission> admissionMap = null;
 	private SingleMultiAdmissions singleMultiAdmissions=null;
 	private FunctionalCentre functionalCentre=null;
 	private GregorianCalendar startDate=new GregorianCalendar();
@@ -178,7 +180,7 @@ public final class Cds4ReportUIBean {
 			logger.debug("valid cds form, id="+form.getId());
 			
 			// make sure form is for an admission for which we're interested, i.e. admissions are filtered by program and admission time already
-			Admission admission = admissionMap.get(form.getAdmissionId());
+			FunctionalCentreAdmission admission = admissionMap.get(form.getAdmissionId());
 			if (admission == null) {
 				logger.debug("cds form missing admission / or not in admission we're interested in dueto program or time restriction. formId="+form.getId()+", admissionId="+form.getAdmissionId());
 				continue;
@@ -239,7 +241,7 @@ public final class Cds4ReportUIBean {
 
 		// sort single admissions into cohort buckets
 		for (CdsClientForm form : singleMultiAdmissions.singleAdmissions.values()) {
-			Admission admission = admissionMap.get(form.getAdmissionId());
+			FunctionalCentreAdmission admission = admissionMap.get(form.getAdmissionId());
 			int bucket = getCohortBucket(admission);
 			singleMultiAdmissions.singleAdmissionCohortBuckets.put(bucket, form);
 			
@@ -248,7 +250,7 @@ public final class Cds4ReportUIBean {
 
 		// sort multiple admissions into cohort buckets
 		for (CdsClientForm form : singleMultiAdmissions.multipleAdmissionsAllForms) {
-			Admission admission = admissionMap.get(form.getAdmissionId());
+			FunctionalCentreAdmission admission = admissionMap.get(form.getAdmissionId());
 			int bucket = getCohortBucket(admission);
 			singleMultiAdmissions.multipleAdmissionCohortBuckets.put(bucket, form);
 			
@@ -258,10 +260,10 @@ public final class Cds4ReportUIBean {
 		return(singleMultiAdmissions);
 	}
 
-	private HashMap<Integer, Admission> getAdmissionMap() {
+	private HashMap<Integer, FunctionalCentreAdmission> getAdmissionMap() {
 
 		// put admissions into map so it's easier to retrieve by id.
-		HashMap<Integer, Admission> admissionMap = new HashMap<Integer, Admission>();
+		HashMap<Integer, FunctionalCentreAdmission> admissionMap = new HashMap<Integer, FunctionalCentreAdmission>();
 
 		LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
 		List<Program> programs=programDao.getProgramsByFacilityIdAndFunctionalCentreId(loggedInInfo.currentFacility.getId(), functionalCentre.getId());
@@ -269,11 +271,12 @@ public final class Cds4ReportUIBean {
 		for (Program program : programs) {
 			if (programIdsToReportOn!=null && !programIdsToReportOn.contains(program.getId())) continue;
 			
-			List<Admission> admissions = admissionDao.getAdmissionsByProgramAndDate(program.getId(), startDate.getTime(), endDateExclusive.getTime());
-
-			logger.debug("corresponding cds admissions count (before provider filter) :"+admissions.size());
+			//List<Admission> admissions = admissionDao.getAdmissionsByProgramAndDate(program.getId(), startDate.getTime(), endDateExclusive.getTime());
+			//Instead use functaionalCentreAdmission
+			List<FunctionalCentreAdmission> fcAdmissions = functionalCentreAdmissionDao.getAllAdmissionsByFunctionalCentreIdAndDates(program.getFunctionalCentreId(), startDate.getTime(), endDateExclusive.getTime());
+			logger.debug("corresponding cds admissions count (before provider filter) :"+fcAdmissions.size());
 			
-			for (Admission admission : admissions) {
+			for (FunctionalCentreAdmission admission : fcAdmissions) {
 				admissionMap.put(admission.getId().intValue(), admission);
 			}
 		}
@@ -281,7 +284,7 @@ public final class Cds4ReportUIBean {
 		return admissionMap;
 	}
 
-	private static int getCohortBucket(Admission admission) {
+	private static int getCohortBucket(FunctionalCentreAdmission admission) {
 		if (admission==null) return(0);
 		
 		Date dischargeDate = new Date(); // default duration calculation to today if not discharged.
@@ -315,7 +318,8 @@ public final class Cds4ReportUIBean {
 		else if (cdsFormOption.getCdsDataCategory().startsWith("016-")) return(getGenericLatestAnswerDataLine(cdsFormOption));
 		else if (cdsFormOption.getCdsDataCategory().startsWith("16a-")) return(getGenericAllAnswersDataLine(cdsFormOption));
 		else if (cdsFormOption.getCdsDataCategory().startsWith("017-")) return(getGenericAllAnswersDataLine(cdsFormOption));
-		else if (cdsFormOption.getCdsDataCategory().startsWith("018-")) return(getGenericAllAnswersDataLineForNewAdmissionsDuringReportingPerdiod(cdsFormOption));
+		//else if (cdsFormOption.getCdsDataCategory().startsWith("018-")) return(getGenericAllAnswersDataLineForNewAdmissionsDuringReportingPerdiod(cdsFormOption));
+		else if (cdsFormOption.getCdsDataCategory().startsWith("018-")) return(getGenericLatestAnswerDataLine(cdsFormOption));
 		else if (cdsFormOption.getCdsDataCategory().startsWith("019-")) return(getGenericAllAnswersDataLine(cdsFormOption));
 		else if (cdsFormOption.getCdsDataCategory().startsWith("020-")) return(get020DataLine(cdsFormOption));
 		else if (cdsFormOption.getCdsDataCategory().startsWith("021-")) return(get021DataLine(cdsFormOption));
@@ -508,8 +512,9 @@ public final class Cds4ReportUIBean {
     }
 
 	private int countWaitingForService(Collection<CdsClientForm> bucket) {
+	//days wated for service inititaion = service initiation date - assessment date
 		int count=0;
-
+   
 		if (bucket!=null)
 		{
 			for (CdsClientForm form : bucket)
@@ -517,9 +522,11 @@ public final class Cds4ReportUIBean {
 				Date assessmentDate=form.getAssessmentDate();
 				if (assessmentDate!=null && assessmentDate.before(endDateExclusive.getTime()))
 				{
-					Admission admission=admissionMap.get(form.getAdmissionId());
+					//Admission admission=admissionMap.get(form.getAdmissionId());					
+					//if (admission==null || admission.getAdmissionDate().after(endDateExclusive.getTime())) count++;
 					
-					if (admission==null || admission.getAdmissionDate().after(endDateExclusive.getTime())) count++;
+					Date serviceInitiationDate = form.getServiceInitiationDate();
+					if(serviceInitiationDate == null || serviceInitiationDate.after(endDateExclusive.getTime())) count ++;
 				}
 			}
 		}
@@ -536,14 +543,22 @@ public final class Cds4ReportUIBean {
 			{
 				Date assessmentDate=form.getAssessmentDate();
 				if (assessmentDate!=null && assessmentDate.before(endDateExclusive.getTime()))
-				{
-					Admission admission=admissionMap.get(form.getAdmissionId());					
+				{	
+					//Admission admission=admissionMap.get(form.getAdmissionId());	
+					Date serviceInitiationDate = form.getServiceInitiationDate();
 					Date endCountDate=null;
-					
+					/*
 					if (admission==null) endCountDate=endDateExclusive.getTime();
 					else if (admission.getAdmissionDate().after(endDateExclusive.getTime())) endCountDate=endDateExclusive.getTime();
 					else endCountDate=admission.getAdmissionDate();
-
+					*/
+					if(serviceInitiationDate == null)
+						endCountDate = endDateExclusive.getTime();
+					else if(serviceInitiationDate.after(endDateExclusive.getTime())) 
+						endCountDate = endDateExclusive.getTime();
+					else
+						endCountDate = serviceInitiationDate;
+					
 					count=count+(int)(DateUtils.getNumberOfDaysBetweenTwoDates(assessmentDate, endCountDate));
 				}
 			}
@@ -782,7 +797,7 @@ public final class Cds4ReportUIBean {
 		
 		for (CdsClientForm form : forms)
 		{
-			Admission admission=admissionMap.get(form.getAdmissionId());
+			FunctionalCentreAdmission admission=admissionMap.get(form.getAdmissionId());
 			
 			if (admission==null) continue;
 			
@@ -873,9 +888,11 @@ public final class Cds4ReportUIBean {
 	
 	private List<CdsHospitalisationDays> getHopitalisationDays2YearsBeforeAdmission(CdsClientForm form)
 	{
-		Admission admission=admissionMap.get(form.getAdmissionId());
+		FunctionalCentreAdmission admission=admissionMap.get(form.getAdmissionId());
 		
-		GregorianCalendar startBound=(GregorianCalendar) admission.getAdmissionCalendar().clone();
+		//GregorianCalendar startBound=(GregorianCalendar) admission.getAdmissionCalendar().clone();						
+		GregorianCalendar startBound=(GregorianCalendar) admission.getAdmissionCalendar().clone(); 
+
 		startBound.add(GregorianCalendar.YEAR, -2); // 2 years prior to admission
 		// materialise results
 		startBound.getTimeInMillis(); 
@@ -1035,7 +1052,8 @@ public final class Cds4ReportUIBean {
 
 	private List<CdsHospitalisationDays> getHopitalisationDaysDuringAdmission(CdsClientForm form)
 	{
-		Admission admission=admissionMap.get(form.getAdmissionId());
+		FunctionalCentreAdmission admission=admissionMap.get(form.getAdmissionId());
+	
 		return(getHopitalisationDaysDuringPeriod(form, admission.getAdmissionCalendar(), admission.getDischargeCalendar()));
 	}
 	
@@ -1093,7 +1111,7 @@ public final class Cds4ReportUIBean {
 			for (CdsClientForm form : forms)
 			{
 				List<CdsHospitalisationDays> hospitalisationDays=getHopitalisationDaysDuringAdmission(form);
-				Admission admission=admissionMap.get(form.getAdmissionId());
+				FunctionalCentreAdmission admission=admissionMap.get(form.getAdmissionId());
 				
 				GregorianCalendar endBound=admission.getDischargeCalendar();
 				if (endBound==null) endBound=endDateExclusive;
@@ -1114,7 +1132,7 @@ public final class Cds4ReportUIBean {
 			for (CdsClientForm form : forms)
 			{
 				List<CdsHospitalisationDays> hospitalisationDays=getHopitalisationDays2YearsBeforeAdmission(form);
-				Admission admission=admissionMap.get(form.getAdmissionId());
+				FunctionalCentreAdmission admission=admissionMap.get(form.getAdmissionId());
 				
 				GregorianCalendar startBound=(GregorianCalendar) admission.getAdmissionCalendar().clone();
 				startBound.add(GregorianCalendar.YEAR, -2); // 2 years prior to admission
@@ -1171,7 +1189,7 @@ public final class Cds4ReportUIBean {
 			{
 				List<CdsHospitalisationDays> allFormHospitalisationDays=getHopitalisationDaysDuringAdmission(form);
 	
-				Admission admission=admissionMap.get(form.getAdmissionId());
+				FunctionalCentreAdmission admission=admissionMap.get(form.getAdmissionId());
 				if (admission!=null)
 				{
 					Calendar startBoundingDate=getStartBound(admission, admissionPeriod);
@@ -1188,7 +1206,7 @@ public final class Cds4ReportUIBean {
 		return(totalDays);
 	}
 
-	private Calendar getEndBound(Admission admission, int admissionPeriod) {
+	private Calendar getEndBound(FunctionalCentreAdmission admission, int admissionPeriod) {
 
 		Calendar endBound=getStartBound(admission, admissionPeriod);
 		endBound.add(Calendar.YEAR, 1);
@@ -1196,7 +1214,7 @@ public final class Cds4ReportUIBean {
 		return(endBound);
     }
 
-	private Calendar getStartBound(Admission admission, int admissionPeriod) {
+	private Calendar getStartBound(FunctionalCentreAdmission admission, int admissionPeriod) {
 
 		Calendar startBound=new GregorianCalendar();
 		startBound.setTime(admission.getAdmissionDate()); 

@@ -38,6 +38,7 @@
 <%@ taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi"%>
 
 <%@page import="org.oscarehr.PMmodule.web.AdmissionForDisplay"%>
+<%@page import="org.oscarehr.common.model.FunctionalCentreAdmission"%>
 <%@page import="org.oscarehr.util.MiscUtils"%><script type="text/javascript">
     function popupAdmissionInfo(admissionId) {
         url = '<html:rewrite page="/PMmodule/ClientManager.do?method=view_admission&admissionId="/>';
@@ -47,6 +48,11 @@
     function popupReferralInfo(referralId) {
         url = '<html:rewrite page="/PMmodule/ClientManager.do?method=view_referral&referralId="/>';
         window.open(url + referralId, 'referral', 'width=500,height=600');
+    }
+    
+    function popupFcAdmissionInfo(fcId) {
+        url = '<html:rewrite page="/PMmodule/ClientManager.do?method=view_fcAdmission&fcAdmissionId="/>';
+        window.open(url + fcId, 'fcAdmission', 'width=500,height=400');
     }
 </script>
 <%
@@ -164,6 +170,35 @@
 	<display:column property="completionDate" sortable="true" title="Completion Date" />
 	<display:column property="sourceProgramName" sortable="false" title="Referring program/agency" />
 	<display:column property="external" sortable="false" title="External" />
+</display:table>
+<br />
+<br />
+<div class="tabs">
+	<table cellpadding="3" cellspacing="0" border="0">
+		<tr>
+			<th title="Programs">Functional Centre Admission History</th>
+		</tr>
+	</table>
+</div>
+<display:table class="simple" cellspacing="2" cellpadding="3" id="fcAdmission" name="fcAdmissionsHistory" requestURI="/PMmodule/ClientManager.do">
+	<display:setProperty name="paging.banner.placement" value="bottom" />
+     <display:column sortable="false">
+    <%  FunctionalCentreAdmission temp = (FunctionalCentreAdmission) pageContext.getAttribute("fcAdmission");
+        if(temp.getDischargeDate()==null)
+    	{
+    		%>
+		        <a href="javascript:void(0)" onclick="popupFcAdmissionInfo('<%=temp.getId()%>')">
+		            <img alt="View details" src="<c:out value="${ctx}" />/images/details.gif" border="0"/>
+		        </a>
+    		<%
+    	}
+    %>
+    </display:column>
+	<display:column property="functionalCentreId" sortable="true" title="Functional Centre" />
+	<display:column property="referralDate" sortable="true" title="Referral Date" />
+	<display:column property="admissionDate" sortable="true" title="Admission Date" />
+	<display:column property="serviceInitiationDate" sortable="true" title="Service Initiation Date" />
+	<display:column property="dischargeDate" sortable="false" title="Discharge Date" />
 </display:table>
 <%
 	}

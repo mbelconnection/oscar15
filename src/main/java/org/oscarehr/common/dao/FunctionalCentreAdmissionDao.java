@@ -22,6 +22,7 @@
  */
 package org.oscarehr.common.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -86,4 +87,34 @@ public class FunctionalCentreAdmissionDao extends AbstractDao<FunctionalCentreAd
 		return (results);
 	}
 	
+    /**
+     * Get anyone who was in the functional centre admission during this time period.
+     */
+    public List<FunctionalCentreAdmission> getAllAdmissionsByFunctionalCentreIdAndDates(String functionalCentreId, Date startDate, Date endDate) {
+    	// the following is a chart where A/D is admission discharge date.
+    	// S/E is start or end date for the time period.
+    	// the y/n is yes or no for valid with in the time period.
+    	// as you can see we only need to exclude where endDate>admissionDate || startDate<dischargeDate
+    	//======================
+    	// time T(0)---------->T(n)
+    	//          A------>D
+		//	n-   SE
+		//	n-                SE
+		//	y-   S----->E
+		//	y-         SE
+		//	y-         S------>E
+		//	y-   S------------>E
+
+		String sqlCommand = "select a FROM FunctionalCentreAdmission a WHERE a.functionalCentreId=? and a.admissionDate<? and (a.dischargeDate>=? or a.dischargeDate is null) order by a.demographicNo DESC";    	
+		
+		Query query = entityManager.createQuery(sqlCommand);
+		query.setParameter(1, functionalCentreId);	
+		query.setParameter(2, endDate);
+		query.setParameter(3, startDate);
+		
+		@SuppressWarnings("unchecked")
+        List<FunctionalCentreAdmission> results = query.getResultList();
+		        
+		return (results);
+    }
 }

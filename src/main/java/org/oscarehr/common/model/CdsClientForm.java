@@ -68,6 +68,9 @@ public class CdsClientForm extends AbstractModel<Integer> implements Serializabl
 	@Temporal(TemporalType.DATE)
 	private Date assessmentDate;
 
+	@Temporal(TemporalType.DATE)
+	private Date serviceInitiationDate;
+	
 	@Override
     public Integer getId() {
 		return id;
@@ -139,6 +142,15 @@ public class CdsClientForm extends AbstractModel<Integer> implements Serializabl
 
 	public void setAssessmentDate(Date assessmentDate) {
     	this.assessmentDate = assessmentDate;
+    }
+	
+	
+	public Date getServiceInitiationDate() {
+    	return serviceInitiationDate;
+    }
+
+	public void setServiceInitiationDate(Date serviceInitiationDate) {
+    	this.serviceInitiationDate = serviceInitiationDate;
     }
 
 	@Override

@@ -40,8 +40,10 @@ import org.oscarehr.PMmodule.model.ProgramQueue;
 import org.oscarehr.PMmodule.web.formbean.ClientSearchFormBean;
 import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.dao.DemographicExtDao;
+import org.oscarehr.common.dao.FunctionalCentreAdmissionDao;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.DemographicExt;
+import org.oscarehr.common.model.FunctionalCentreAdmission;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,7 +57,8 @@ public class ClientManager {
     private ProgramQueueManager queueManager;
     private AdmissionManager admissionManager;
     private ClientRestrictionManager clientRestrictionManager;
-
+    private FunctionalCentreAdmissionDao fcAdmissionDao;
+    
     private boolean outsideOfDomainEnabled;
 
     public boolean isOutsideOfDomainEnabled() {
@@ -101,7 +104,10 @@ public class ClientManager {
     public ClientReferral getClientReferral(String id) {
         return referralDAO.getClientReferral(Long.valueOf(id));
     }
-
+    
+    public List<FunctionalCentreAdmission> getFcAdmissionsByClientId(Integer clientId) {
+        return fcAdmissionDao.getAllAdmissionsByDemographicNo(clientId);
+    }
     /*
      * This should always be a new one. add the queue to the program.
      */
@@ -280,7 +286,12 @@ public class ClientManager {
     public void setClientReferralDAO(ClientReferralDAO dao) {
         this.referralDAO = dao;
     }
-
+    
+    @Required
+    public void setFcAdmissionDao(FunctionalCentreAdmissionDao dao) {
+        this.fcAdmissionDao = dao;
+    }
+    
     @Required
     public void setProgramQueueManager(ProgramQueueManager mgr) {
         this.queueManager = mgr;

@@ -363,6 +363,7 @@
 			<form-property name="programWithIntakeId" type="java.lang.String" />
 			<form-property name="serviceRestriction" type="org.oscarehr.PMmodule.model.ProgramClientRestriction" />
 			<form-property name="serviceRestrictionLength" type="java.lang.Integer" />
+			<form-property name="fcAdmission" type="org.oscarehr.common.model.FunctionalCentreAdmission" />			
 		</form-bean>
 		<form-bean name="staffManagerForm" type="org.apache.struts.validator.DynaValidatorForm">
 			<form-property name="provider" type="org.oscarehr.common.model.Provider" />
@@ -1962,6 +1963,7 @@
 			<forward name="links" path="/PMmodule/ClientManager/links.jsp" />
 			<forward name="view_referral" path="/PMmodule/ClientManager/view_referral.jsp" />
 			<forward name="view_admission" path="/PMmodule/ClientManager/view_admission.jsp" />
+			<forward name="view_fcAdmission" path="/PMmodule/ClientManager/view_fcAdmission.jsp" />
 			<forward name="service_restriction_error" path="page.pmm.client.service_restriction_error" />
 			<forward name="generalFormsReport" path="/PMmodule/GeneralFormsReport.jsp" />
 			<forward name="intake-search" path="/PMmodule/GenericIntake/Search" redirect="true" />

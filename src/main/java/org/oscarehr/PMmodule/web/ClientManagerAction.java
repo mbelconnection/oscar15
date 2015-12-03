@@ -752,6 +752,16 @@ public class ClientManagerAction extends BaseAction {
 		return edit(mapping, form, request, response);
 	}
 
+	public ActionForward saveFcAdmission(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+		DynaActionForm clientManagerForm = (DynaActionForm) form;
+
+		FunctionalCentreAdmission fcAdmission = (FunctionalCentreAdmission) clientManagerForm.get("fcAdmission");
+		Demographic client = (Demographic) clientManagerForm.get("client");
+		functionalCentreAdmissionDao.merge(fcAdmission);		
+		setEditAttributes(form, request, String.valueOf(client.getDemographicNo()));
+		return edit(mapping, form, request, response);
+	}
+	
 	public ActionForward saveBedReservation(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
 		// When room has beds assigned to it --> should not let client select room only.
 		// When room has no beds assigned to it --> allow clients to select room only.
@@ -1383,7 +1393,24 @@ public class ClientManagerAction extends BaseAction {
 
 		return mapping.findForward("view_admission");
 	}
+	
+	public ActionForward view_fcAdmission(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+		String admissionId = request.getParameter("fcAdmissionId");
+		FunctionalCentreAdmission fcAdmission= functionalCentreAdmissionDao.find(Integer.valueOf(admissionId));	
+		request.setAttribute("fcAdmission", fcAdmission);
+		/*
+		Demographic client = clientManager.getClientByDemographicNo("" + fcAdmission.getDemographicNo());
+		String providerNo = fcAdmission.getProviderNo();
+		Provider provider = providerManager.getProvider(providerNo);
 
+		DynaActionForm clientForm = (DynaActionForm) form;
+		clientForm.set("fcAdmission", fcAdmission);
+		clientForm.set("client", client);
+		clientForm.set("provider", provider);
+*/
+		return mapping.findForward("view_fcAdmission");
+	}
+	
 	private boolean isInDomain(long programId, List<?> programDomain) {
 		for (int x = 0; x < programDomain.size(); x++) {
 			ProgramProvider p = (ProgramProvider) programDomain.get(x);
@@ -1516,6 +1543,7 @@ public class ClientManagerAction extends BaseAction {
 
 			request.setAttribute("admissionHistory", allResults);
 			request.setAttribute("referralHistory", getReferralsForHistory(demographicId, facilityId));
+			request.setAttribute("fcAdmissionsHistory", getFcAdmissionsHistory(demographicId));
 		}
 
 		List<?> currentAdmissions = admissionManager.getCurrentAdmissions(Integer.valueOf(demographicNo));
@@ -1815,6 +1843,7 @@ public class ClientManagerAction extends BaseAction {
 	}
 
 	private void populateCdsData(HttpServletRequest request, Integer demographicNo, Integer facilityId) {
+		/* Replace admission with functionalCentreAdmission
 		List<Admission> admissions=admissionDao.getAdmissions(demographicNo);
 		
 		ArrayList<CdsClientForm> allLatestCdsForms=new ArrayList<CdsClientForm>();
@@ -1824,7 +1853,16 @@ public class ClientManagerAction extends BaseAction {
 			CdsClientForm cdsClientForm=cdsClientFormDao.findLatestByFacilityAdmissionId(facilityId, admission.getId().intValue(), null);
 			if (cdsClientForm!=null) allLatestCdsForms.add(cdsClientForm);
 		}
-			
+		*/	
+		List<FunctionalCentreAdmission> admissions=functionalCentreAdmissionDao.getAllAdmissionsByDemographicNo(demographicNo);
+		
+		ArrayList<CdsClientForm> allLatestCdsForms=new ArrayList<CdsClientForm>();
+		
+		for (FunctionalCentreAdmission admission : admissions)
+		{
+			CdsClientForm cdsForm=cdsClientFormDao.findLatestByFacilityAdmissionId(facilityId, admission.getId().intValue(), null);
+			if (cdsForm!=null) allLatestCdsForms.add(cdsForm);
+		}
 	    request.setAttribute("allLatestCdsForms", allLatestCdsForms);
     }
 
@@ -1925,6 +1963,12 @@ public class ClientManagerAction extends BaseAction {
 		return (allResults);
 	}
 
+	private List<FunctionalCentreAdmission> getFcAdmissionsHistory(Integer demographicNo) {
+		
+		return clientManager.getFcAdmissionsByClientId(demographicNo);
+		
+	}
+	
 	public static String getEscapedAdmissionSelectionDisplay(int admissionId) {
 		Admission admission = admissionDao.getAdmission((long) admissionId);
 
@@ -2015,11 +2059,18 @@ public class ClientManagerAction extends BaseAction {
 	}
 	
 	public static String getCdsProgramDisplayString(CdsClientForm cdsClientForm)
-	{
+	{/* Replace admission with functionalCentreAdmission
 		Admission admission=admissionDao.getAdmission(cdsClientForm.getAdmissionId());
 		Program program=programDao.getProgram(admission.getProgramId());
 		
 		String displayString=program.getName()+" : "+DateFormatUtils.ISO_DATE_FORMAT.format(admission.getAdmissionDate());
+		return(StringEscapeUtils.escapeHtml(displayString));
+		*/
+		
+		FunctionalCentreAdmission admission = functionalCentreAdmissionDao.find(cdsClientForm.getAdmissionId());
+		FunctionalCentre fc = functionalCentreDao.find(admission.getFunctionalCentreId());
+		
+		String displayString=fc.getDescription()+" : "+DateFormatUtils.ISO_DATE_FORMAT.format(admission.getAdmissionDate());
 		return(StringEscapeUtils.escapeHtml(displayString));
 	}
 	

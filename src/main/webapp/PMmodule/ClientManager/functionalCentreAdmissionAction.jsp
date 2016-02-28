@@ -34,6 +34,8 @@
 <%@page import="org.oscarehr.util.MiscUtils"%>
 <%@page import="org.oscarehr.common.model.FunctionalCentreAdmission" %>
 <%@page import="org.oscarehr.common.dao.FunctionalCentreAdmissionDao" %>
+<%@page import="org.oscarehr.common.model.CdsClientForm" %>
+<%@page import="org.oscarehr.common.dao.CdsClientFormDao" %>
 <%@page import="org.oscarehr.util.SpringUtils"%>
 
 <%
@@ -71,9 +73,30 @@
 	
 	functionalCentreAdmissionDao.merge(fca);
 	
-
-	//response.sendRedirect(request.getContextPath()+"/PMmodule/ClientManager.do?id="+clientId);
+	// the dates should also be updated in cds forms.
+	CdsClientFormDao cdsClientFormDao = (CdsClientFormDao) SpringUtils.getBean("cdsClientFormDao");
+	List<CdsClientForm> cdsClientForms = cdsClientFormDao.findCdsFormsByAdmissionId(fca.getId());
+	for(CdsClientForm cdsForm : cdsClientForms)	{		
+		cdsForm.setAssessmentDate(fca.getAdmissionDate()); //admission date
+	   	cdsForm.setInitialContactDate(fca.getReferralDate()); //referral date
+	   	cdsForm.setServiceInitiationDate(fca.getServiceInitiationDate());
+	   	cdsClientFormDao.merge(cdsForm);
+	}
+	
+	
+	response.sendRedirect(request.getContextPath()+"/PMmodule/ClientManager.do?id="+clientId);
 %>
+<!--  
 <html>
-<body load="window.parent.close();"></body>
-</html>
+<head>
+<script type="text/javascript">
+function RefreshParent() {
+            if (window.opener != null && !window.opener.closed) {
+                window.opener.location.reload();
+            }
+}
+</script>
+</head>
+<body load="RefreshParent(); ></body>
+</html> 
+-->

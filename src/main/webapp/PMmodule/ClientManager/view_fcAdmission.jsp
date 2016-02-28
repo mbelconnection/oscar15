@@ -1,7 +1,8 @@
 <%@ page import="org.apache.struts.validator.DynaValidatorForm"%>
 <%@ page import="org.oscarehr.PMmodule.model.Admission"%>
 <%@ page import="org.oscarehr.PMmodule.model.DischargeReason"%>
-
+<%@ page import="java.text.SimpleDateFormat"%>
+<%@ page import="java.util.Date"%>
 <%--
 
 
@@ -36,9 +37,30 @@ function save() {
 		document.clientManagerForm.method.value='saveFcAdmission';
 		document.clientManagerForm.submit()
 	}
+	
+function RefreshParent() {
+    if (window.opener != null && !window.opener.closed) {    
+       window.opener.location.reload(); 
+       //window.opener.location.href = window.opener.location.href;
+    }
+}
 </script>
 <%
 FunctionalCentreAdmission fcAdmission = (FunctionalCentreAdmission)request.getAttribute("fcAdmission");
+SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+Date dischargeDate = fcAdmission.getDischargeDate();
+String str_dischargeDate = dischargeDate==null?"":formatter.format(dischargeDate);
+
+Date serviceInitiationDate = fcAdmission.getServiceInitiationDate();
+String str_serviceInitiationDate = serviceInitiationDate==null?"":formatter.format(serviceInitiationDate);
+
+Date admissionDate = fcAdmission.getAdmissionDate();
+String str_admissionDate = admissionDate==null?"":formatter.format(admissionDate);
+
+Date referralDate = fcAdmission.getReferralDate();
+String str_referralDate = referralDate==null?"":formatter.format(referralDate);
+
 %>
 <html>
 <head></head>
@@ -47,7 +69,7 @@ FunctionalCentreAdmission fcAdmission = (FunctionalCentreAdmission)request.getAt
 
 <link rel="stylesheet" type="text/css" media="all" href="../share/css/extractedFromPages.css"  />
 <body>
-<form id="fcAdmissionForm" name="fcAdmissionForm" action="ClientManager/functionalCentreAdmissionAction.jsp" method="post" >	
+<form id="fcAdmissionForm" name="fcAdmissionForm" action="ClientManager/functionalCentreAdmissionAction.jsp" method="GET" >	
 
 <table width="100%" border="0" cellspacing="1" cellpadding="1">
 
@@ -57,27 +79,27 @@ FunctionalCentreAdmission fcAdmission = (FunctionalCentreAdmission)request.getAt
 
 <tr class="b">
 	<td width="70%">Referral Date (YYYY-MM-DD):</td>
-	<td><input type="text" name="referralDate" id="referralDate" value=<%=fcAdmission.getReferralDate() %> size="10" maxlength="10"></td>
+	<td><input type="text" name="referralDate" id="referralDate" value="<%=str_referralDate %>" size="10" maxlength="10"></td>
 </tr>
 
 <tr class="b">
 	<td width="70%">Admission Date (YYYY-MM-DD):</td>
-	<td><input type="text" name="admissionDate" id="admissionDate" value=<%=fcAdmission.getAdmissionDate() %> size="10" maxlength="10"></td>
+	<td><input type="text" name="admissionDate" id="admissionDate" value="<%=str_admissionDate %>" size="10" maxlength="10"></td>
 </tr>
 
 <tr class="b">
 	<td width="70%">Service Initiation Date (YYYY-MM-DD):</td>
-	<td><input type="text" name="serviceInitiationDate" id="serviceInitiationDate" value=<%=fcAdmission.getServiceInitiationDate() %> size="10" maxlength="10"></td>
+	<td><input type="text" name="serviceInitiationDate" id="serviceInitiationDate" value="<%=str_serviceInitiationDate %>" size="10" maxlength="10"></td>
 </tr>
 
 <tr class="b">
 	<td width="70%">Discharge Date (YYYY-MM-DD):</td>
-	<td><input type="text" name="dischargeDate" id="dischargeDate" value=<%=fcAdmission.getDischargeDate() %> size="10" maxlength="10"></td>
+	<td><input type="text" name="dischargeDate" id="dischargeDate" value="<%=str_dischargeDate %>" size="10" maxlength="10"></td>
 </tr>
 
 <tr>
 	<td colspan="2">
-		<input type="submit" value="Save" onclick="window.close();"/>
+		<input type="submit" value="Save" onclick="RefreshParent(); window.close();"/>  		
 		<input type="button" name="cancel" value="Cancel" onclick="window.close()" />
 	</td>
 </tr>

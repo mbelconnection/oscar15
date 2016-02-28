@@ -24,6 +24,7 @@
 package org.oscarehr.PMmodule.web;
 
 import java.net.MalformedURLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -1963,11 +1964,32 @@ public class ClientManagerAction extends BaseAction {
 		return (allResults);
 	}
 
-	private List<FunctionalCentreAdmission> getFcAdmissionsHistory(Integer demographicNo) {
+	private List<FunctionalCentreAdmissionDisplay> getFcAdmissionsHistory(Integer demographicNo) {
 		
-		return clientManager.getFcAdmissionsByClientId(demographicNo);
-		
+		List<FunctionalCentreAdmission> fcAdmissions = clientManager.getFcAdmissionsByClientId(demographicNo);
+		List<FunctionalCentreAdmissionDisplay> displays = new ArrayList<FunctionalCentreAdmissionDisplay>();
+		for(FunctionalCentreAdmission fc : fcAdmissions) {
+			FunctionalCentreAdmissionDisplay d = new FunctionalCentreAdmissionDisplay();
+			d.setId(fc.getId());
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			d.setAdmissionDate(fc.getAdmissionDate()==null?"":formatter.format(fc.getAdmissionDate()));
+			d.setDemographicNo(fc.getDemographicNo());
+			d.setDischargeDate(fc.getDischargeDate()==null?"":formatter.format(fc.getDischargeDate()));
+			d.setReferralDate(formatter.format(fc.getReferralDate()));
+			d.setServiceInitiationDate(fc.getServiceInitiationDate()==null?"":formatter.format(fc.getServiceInitiationDate()));
+			d.setFunctionalCentreId(fc.getFunctionalCentreId());
+			d.setReferralDate(fc.getReferralDate()==null?"":formatter.format(fc.getReferralDate()));
+			
+			if(fc.getFunctionalCentreId()!=null) {
+				FunctionalCentre f = functionalCentreDao.find(fc.getFunctionalCentreId());
+				d.setFunctionalCentreDescription(f.getDescription()==null? "" : f.getDescription());
+				d.setFunctionalCentre(f.getDescription().concat(" (").concat(f.getId()).concat(")") );
+			}
+			displays.add(d);
+		}
+		return displays;
 	}
+	
 	
 	public static String getEscapedAdmissionSelectionDisplay(int admissionId) {
 		Admission admission = admissionDao.getAdmission((long) admissionId);

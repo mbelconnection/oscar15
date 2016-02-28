@@ -31,7 +31,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PreRemove;
-import javax.persistence.PreUpdate;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -164,10 +163,11 @@ public class CdsClientForm extends AbstractModel<Integer> implements Serializabl
 		throw(new UnsupportedOperationException("Remove is not allowed for this type of item."));
 	}
 
+	/* allow update cds form with correct admission date, referral date, service initialization date.
 	@PreUpdate
 	protected void jpaPreventUpdate()
 	{
 		throw(new UnsupportedOperationException("Update is not allowed for this type of item."));
 	}
-
+	*/
 }

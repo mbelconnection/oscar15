@@ -191,6 +191,7 @@ if(currentFacility.isEnableEncounterTransportationTime() || (currentProgram != n
 		<html:option value="telephone encounter with client"><bean:message key="oscarEncounter.telephoneEnc.title"/></html:option>
 		<html:option value="email encounter with client"><bean:message key="oscarEncounter.emailEnc.title"/></html:option>
 		<html:option value="encounter without client"><bean:message key="oscarEncounter.noClientEnc.title"/></html:option>
+		<html:option value="telephone encounter without client"><bean:message key="oscarEncounter.telephoneEncWithoutClient.title"/></html:option>
 		
 		<%
 			if(org.oscarehr.util.LoggedInInfo.loggedInInfo.get().currentFacility.isEnableGroupNotes()) {

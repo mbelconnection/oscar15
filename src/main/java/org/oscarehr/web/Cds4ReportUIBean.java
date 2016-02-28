@@ -290,9 +290,13 @@ public final class Cds4ReportUIBean {
 		Date dischargeDate = new Date(); // default duration calculation to today if not discharged.
 		if (admission.getDischargeDate() != null) dischargeDate = admission.getDischargeDate();
 
-		int years = DateUtils.yearDifference(admission.getAdmissionDate(), dischargeDate);
+		//The cohort dates should be based on service initiation date
+		int years = DateUtils.yearDifference(admission.getServiceInitiationDate(), dischargeDate);
 		if (years > 10) years = 10; // limit everything above 10 years to the 10 year bucket.
-
+		
+		
+		
+		
 		return(years);
 	}
 

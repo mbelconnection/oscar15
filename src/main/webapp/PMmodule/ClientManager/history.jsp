@@ -38,7 +38,7 @@
 <%@ taglib uri="/WEB-INF/caisi-tag.tld" prefix="caisi"%>
 
 <%@page import="org.oscarehr.PMmodule.web.AdmissionForDisplay"%>
-<%@page import="org.oscarehr.common.model.FunctionalCentreAdmission"%>
+<%@page import="org.oscarehr.PMmodule.web.FunctionalCentreAdmissionDisplay"%>
 <%@page import="org.oscarehr.util.MiscUtils"%><script type="text/javascript">
     function popupAdmissionInfo(admissionId) {
         url = '<html:rewrite page="/PMmodule/ClientManager.do?method=view_admission&admissionId="/>';
@@ -183,22 +183,23 @@
 <display:table class="simple" cellspacing="2" cellpadding="3" id="fcAdmission" name="fcAdmissionsHistory" requestURI="/PMmodule/ClientManager.do">
 	<display:setProperty name="paging.banner.placement" value="bottom" />
      <display:column sortable="false">
-    <%  FunctionalCentreAdmission temp = (FunctionalCentreAdmission) pageContext.getAttribute("fcAdmission");
-        if(temp.getDischargeDate()==null)
-    	{
+    <%  FunctionalCentreAdmissionDisplay temp = (FunctionalCentreAdmissionDisplay) pageContext.getAttribute("fcAdmission");
+        //if(temp.getDischargeDate().equals(""))
+    	//{
     		%>
 		        <a href="javascript:void(0)" onclick="popupFcAdmissionInfo('<%=temp.getId()%>')">
 		            <img alt="View details" src="<c:out value="${ctx}" />/images/details.gif" border="0"/>
 		        </a>
     		<%
-    	}
+    	//}
     %>
     </display:column>
-	<display:column property="functionalCentreId" sortable="true" title="Functional Centre" />
+    <display:column property="functionalCentre" sortable="true" title="Functional Centre" />
 	<display:column property="referralDate" sortable="true" title="Referral Date" />
 	<display:column property="admissionDate" sortable="true" title="Admission Date" />
 	<display:column property="serviceInitiationDate" sortable="true" title="Service Initiation Date" />
 	<display:column property="dischargeDate" sortable="false" title="Discharge Date" />
+	
 </display:table>
 <%
 	}

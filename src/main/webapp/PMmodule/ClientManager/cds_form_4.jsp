@@ -135,6 +135,11 @@ function changeFunctionalCentre(selectBox) {
 
 <script type="text/javascript">
 function submitCdsForm() {
+	var admissionId = document.getElementById('admissionId').value;
+	if(! admissionId || typeof admissionId == 'undefined') {
+			return false;
+	}
+	
 	var status = document.getElementById('signed').checked;
 	if(!status) {
 		$j('#cds_form').unbind('submit').submit();		
@@ -146,8 +151,7 @@ function submitCdsForm() {
 		return false;
 	} 
 	
-	
-	return true;		
+	return confirm("CDS Baseline data cannot be changed once the initial CDS form is signed and saved. Are you sure you want to sign it?");
 }
 </script>
 <style>

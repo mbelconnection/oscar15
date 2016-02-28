@@ -363,7 +363,7 @@
 			<form-property name="programWithIntakeId" type="java.lang.String" />
 			<form-property name="serviceRestriction" type="org.oscarehr.PMmodule.model.ProgramClientRestriction" />
 			<form-property name="serviceRestrictionLength" type="java.lang.Integer" />
-			<form-property name="fcAdmission" type="org.oscarehr.common.model.FunctionalCentreAdmission" />			
+			<form-property name="fcAdmission" type="org.oscarehr.PMmodule.web.FunctionalCentreAdmissionDisplay" />			
 		</form-bean>
 		<form-bean name="staffManagerForm" type="org.apache.struts.validator.DynaValidatorForm">
 			<form-property name="provider" type="org.oscarehr.common.model.Provider" />

@@ -62,7 +62,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import oscar.util.CBIFormDataSubmissionJob;
-import oscar.util.CBIUtil;
 
 @Transactional
 public class AdmissionManager {
@@ -316,7 +315,7 @@ public class AdmissionManager {
 			cbiForm.setAdmissionId(functionalCentreAdmissionId);
 			
 			OcanFormAction.saveOcanStaffForm(cbiForm);
-			
+	/* Temporarily remove cbi submission here as it should have some mandatory fields to be filled and the form should be signed begfore it is submitted.		
 			CBIUtil cbiUtil = new CBIUtil();
 			try {
 				cbiUtil.submitCBIData(cbiForm);
@@ -325,8 +324,9 @@ public class AdmissionManager {
 			}catch (Exception e) {
 				logger.error("Error in submission thread. The ocan staff form id is : <"+(cbiForm!=null?cbiForm.getId():"null")+">", e);
 			}
+		*/
 		}
-		
+	
 		//if they are in a service program linked to this bed program, discharge them from that service program
 		//TODO:
 		if(program.getType().equalsIgnoreCase("Bed")) {

@@ -116,4 +116,18 @@ public class CdsClientFormDao extends AbstractDao<CdsClientForm> {
   			return null;
   	}
     
+ 
+    public List<CdsClientForm> findCdsFormsByAdmissionId(Integer admissionId) {
+		
+		String sqlCommand="select x from CdsClientForm x where x.admissionId=?1";
+
+		Query query = entityManager.createQuery(sqlCommand);
+		query.setParameter(1, admissionId);
+				
+		@SuppressWarnings("unchecked")
+		List<CdsClientForm> results=query.getResultList();
+		
+		return(results);
+    }
+    
 }

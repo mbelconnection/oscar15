@@ -495,4 +495,18 @@ public List<OcanStaffForm> findUnsubmittedOcanFormsByOcanType(Integer facilityId
 		return list;
 
     }
+    
+    public OcanStaffForm findCbiFormByAdmissionId(Integer clientId, Integer admissionId, String ocanType) {
+
+		String sqlCommand = "select x from OcanStaffForm x where  x.admissionId=?1 and x.ocanType=?2 and x.clientId=?3 order by x.id desc";
+
+		Query query = entityManager.createQuery(sqlCommand);
+	
+		query.setParameter(1, admissionId);	
+		query.setParameter(2, ocanType);
+		query.setParameter(3, clientId);		
+		
+		return getSingleResultOrNull(query);
+	}	
+    
 }

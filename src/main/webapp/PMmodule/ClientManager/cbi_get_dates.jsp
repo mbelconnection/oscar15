@@ -102,7 +102,7 @@
 		<tr>
 			<td class="genericTableHeader" width="36%">Service Initiation Date</td>
 			<td class="genericTableData" width="64%">
-				<input id="serviceInitDate" name="serviceInitDate" onfocus="this.blur()" class="userInputedData mandatoryData {validate: {required:true}}" type="text" value="<%=ocanStaffForm.getServiceInitDate()==null?"":DateFormatUtils.ISO_DATE_FORMAT.format(ocanStaffForm.getServiceInitDate())%>"> <img title="Calendar" id="cal_serviceInitDate" src="../../images/cal.gif" alt="Calendar" border="0"><script type="text/javascript">Calendar.setup({inputField:'serviceInitDate',ifFormat :'%Y-%m-%d',button :'cal_serviceInitDate',align :'cr',singleClick :true,firstDay :1});</script><img src="../../images/icon_clear.gif" border="0" onclick="clearDate('serviceInitDate');">	
+				<input id="serviceInitDate" name="serviceInitDate" onfocus="this.blur()" class="systemData mandatoryData {validate: {required:true}}" type="text" readonly="readonly" value="<%=ocanStaffForm.getServiceInitDate()==null?"":DateFormatUtils.ISO_DATE_FORMAT.format(ocanStaffForm.getServiceInitDate())%>"> 	
 			</td>		
 		</tr>
 		<tr>

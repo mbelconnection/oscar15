@@ -1975,7 +1975,6 @@ public class ClientManagerAction extends BaseAction {
 			d.setAdmissionDate(fc.getAdmissionDate()==null?"":formatter.format(fc.getAdmissionDate()));
 			d.setDemographicNo(fc.getDemographicNo());
 			d.setDischargeDate(fc.getDischargeDate()==null?"":formatter.format(fc.getDischargeDate()));
-			d.setReferralDate(formatter.format(fc.getReferralDate()));
 			d.setServiceInitiationDate(fc.getServiceInitiationDate()==null?"":formatter.format(fc.getServiceInitiationDate()));
 			d.setFunctionalCentreId(fc.getFunctionalCentreId());
 			d.setReferralDate(fc.getReferralDate()==null?"":formatter.format(fc.getReferralDate()));
@@ -1992,16 +1991,17 @@ public class ClientManagerAction extends BaseAction {
 	
 	
 	public static String getEscapedAdmissionSelectionDisplay(int admissionId) {
-		Admission admission = admissionDao.getAdmission((long) admissionId);
+		FunctionalCentreAdmission fcAdmission = functionalCentreAdmissionDao.find(Integer.valueOf(admissionId));
 
 		StringBuilder sb = new StringBuilder();
-        if(admission!=null) {
-			sb.append(admission.getProgramName());
+        if(fcAdmission!=null) {
+        	FunctionalCentre fc = functionalCentreDao.find(fcAdmission.getFunctionalCentreId());
+			sb.append(fc!=null?fc.getDescription():"");
 			sb.append(" ( ");
-			sb.append(DateFormatUtils.ISO_DATE_FORMAT.format(admission.getAdmissionDate()));
+			sb.append(DateFormatUtils.ISO_DATE_FORMAT.format(fcAdmission.getAdmissionDate()));
 			sb.append(" - ");
-			if (admission.getDischargeDate() == null) sb.append("current");
-			else sb.append(DateFormatUtils.ISO_DATE_FORMAT.format(admission.getDischargeDate()));
+			if (fcAdmission.getDischargeDate() == null) sb.append("current");
+			else sb.append(DateFormatUtils.ISO_DATE_FORMAT.format(fcAdmission.getDischargeDate()));
 			sb.append(" )");
         }
 		return (StringEscapeUtils.escapeHtml(sb.toString()));

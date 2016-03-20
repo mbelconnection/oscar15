@@ -24,8 +24,6 @@
 package org.oscarehr.common.model;
 
 import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -34,8 +32,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import org.oscarehr.util.MiscUtils;
 
 @Table(name = "functionalCentreAdmission")
 @Entity
@@ -108,7 +104,7 @@ public class FunctionalCentreAdmission extends AbstractModel<Integer> implements
 	public void setServiceInitiationDate(Date serviceInitiationDate) {
     	this.serviceInitiationDate = serviceInitiationDate;
     }
-
+/*
 	public void setServiceInitiationDate(String serviceInitiationDate) {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		try {
@@ -118,7 +114,7 @@ public class FunctionalCentreAdmission extends AbstractModel<Integer> implements
 			MiscUtils.getLogger().error("Error", ex);
 		}
     }
-	
+	*/
 	public Date getDischargeDate() {
     	return dischargeDate;
     }

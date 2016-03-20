@@ -36,6 +36,9 @@
 <%@page import="org.oscarehr.common.dao.FunctionalCentreAdmissionDao" %>
 <%@page import="org.oscarehr.common.model.CdsClientForm" %>
 <%@page import="org.oscarehr.common.dao.CdsClientFormDao" %>
+<%@page import="org.oscarehr.common.model.OcanStaffForm" %>
+<%@page import="org.oscarehr.common.dao.OcanStaffFormDao" %>
+
 <%@page import="org.oscarehr.util.SpringUtils"%>
 
 <%
@@ -60,33 +63,54 @@
 		
 	if(referralDate!=null && referralDate.length()>=10) {
 		fca.setReferralDate(formatter.parse(referralDate.substring(0,10)));		
+	} else {
+		fca.setReferralDate(null);
 	}
+	
 	if(admissionDate!=null && admissionDate.length()>=10) {
 		fca.setAdmissionDate(formatter.parse(admissionDate.substring(0,10)));		
+	} else {
+		fca.setAdmissionDate(null);
 	}
+	
 	if(serviceInitiationDate!=null && serviceInitiationDate.length()>=10) {
 		fca.setServiceInitiationDate(formatter.parse(serviceInitiationDate.substring(0,10)));		
+	} else {
+		fca.setServiceInitiationDate(null);
 	}
+	
 	if(dischargeDate!=null && dischargeDate.length()>=10) {
 		fca.setDischargeDate(formatter.parse(dischargeDate.substring(0,10)));		
+	} else {
+		fca.setDischargeDate(null);
 	}
 	
 	functionalCentreAdmissionDao.merge(fca);
 	
-	// the dates should also be updated in cds forms.
+	// The dates should also be updated in cds form.
 	CdsClientFormDao cdsClientFormDao = (CdsClientFormDao) SpringUtils.getBean("cdsClientFormDao");
-	List<CdsClientForm> cdsClientForms = cdsClientFormDao.findCdsFormsByAdmissionId(fca.getId());
-	for(CdsClientForm cdsForm : cdsClientForms)	{		
+	CdsClientForm cdsForm = cdsClientFormDao.findCdsFormsByAdmissionId(clientId, fca.getId());
+	if(cdsForm != null)	{
 		cdsForm.setAssessmentDate(fca.getAdmissionDate()); //admission date
-	   	cdsForm.setInitialContactDate(fca.getReferralDate()); //referral date
-	   	cdsForm.setServiceInitiationDate(fca.getServiceInitiationDate());
-	   	cdsClientFormDao.merge(cdsForm);
+		cdsForm.setInitialContactDate(fca.getReferralDate()); //referral date
+		cdsForm.setServiceInitiationDate(fca.getServiceInitiationDate());
+		cdsClientFormDao.merge(cdsForm);
 	}
 	
-	
+	// The dates should aslo be updated in cbi form.
+	OcanStaffFormDao ocanStaffFormDao = (OcanStaffFormDao) SpringUtils.getBean("ocanStaffFormDao");
+	OcanStaffForm cbiForm = ocanStaffFormDao.findCbiFormByAdmissionId(clientId, fca.getId(), "CBI");
+	if(cbiForm != null) {
+		cbiForm.setAdmissionDate(fca.getAdmissionDate());
+		cbiForm.setReferralDate(fca.getReferralDate());
+		cbiForm.setServiceInitDate(fca.getServiceInitiationDate());
+		cbiForm.setDischargeDate(fca.getDischargeDate());
+		
+		ocanStaffFormDao.merge(cbiForm);	
+	}
 	response.sendRedirect(request.getContextPath()+"/PMmodule/ClientManager.do?id="+clientId);
 %>
-<!--  
+
 <html>
 <head>
 <script type="text/javascript">
@@ -97,6 +121,5 @@ function RefreshParent() {
 }
 </script>
 </head>
-<body load="RefreshParent(); ></body>
-</html> 
--->
+<body load="return window.close();"></body>
+</html>  

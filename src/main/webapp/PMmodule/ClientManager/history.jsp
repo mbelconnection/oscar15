@@ -52,7 +52,7 @@
     
     function popupFcAdmissionInfo(fcId) {
         url = '<html:rewrite page="/PMmodule/ClientManager.do?method=view_fcAdmission&fcAdmissionId="/>';
-        window.open(url + fcId, 'fcAdmission', 'width=500,height=400');
+        window.open(url + fcId, 'fcAdmission', 'width=650,height=400');
     }
 </script>
 <%

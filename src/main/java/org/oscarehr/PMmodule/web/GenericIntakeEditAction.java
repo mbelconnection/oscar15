@@ -62,6 +62,7 @@ import org.oscarehr.PMmodule.model.IntakeNodeJavascript;
 import org.oscarehr.PMmodule.model.JointAdmission;
 import org.oscarehr.PMmodule.model.Program;
 import org.oscarehr.PMmodule.service.SurveyManager;
+import org.oscarehr.PMmodule.web.formbean.DemographicExtra;
 import org.oscarehr.PMmodule.web.formbean.GenericIntakeEditFormBean;
 import org.oscarehr.caisi_integrator.ws.CachedFacility;
 import org.oscarehr.caisi_integrator.ws.CachedProvider;
@@ -133,7 +134,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 			defaultCommunityProgramId = getOscarClinicDefaultCommunityProgramId(oscar.OscarProperties.getInstance().getProperty("oscarClinicDefaultProgram"));
 		}
 						
-		setBeanProperties(formBean, intake, getClient(request), providerNo, Agency.getLocalAgency().areHousingProgramsVisible(intakeType), Agency.getLocalAgency()
+		setBeanProperties(formBean, intake, getClientExtra(request), getClient(request), providerNo, Agency.getLocalAgency().areHousingProgramsVisible(intakeType), Agency.getLocalAgency()
 				.areServiceProgramsVisible(intakeType), Agency.getLocalAgency().areExternalProgramsVisible(intakeType), defaultCommunityProgramId, null, null, loggedInInfo.currentFacility.getId(), null,jsLocation, Agency.getLocalAgency().areCommunityProgramsVisible(intakeType), null);
 
 		request.getSession().setAttribute(SessionConstants.INTAKE_CLIENT_IS_DEPENDENT_OF_FAMILY, false);
@@ -231,9 +232,9 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		List<IntakeNodeJavascript> jsLocation = genericIntakeManager.getIntakeNodeJavascriptLocation(intake.getNode().getQuestionId());
 
 		Demographic client = new Demographic();
-		
+		DemographicExtra clientExtra = new DemographicExtra();
 
-		setBeanProperties(formBean, intake, client, providerNo, Agency.getLocalAgency().areHousingProgramsVisible(intakeType), Agency.getLocalAgency()
+		setBeanProperties(formBean, intake, clientExtra, client, providerNo, Agency.getLocalAgency().areHousingProgramsVisible(intakeType), Agency.getLocalAgency()
 				.areServiceProgramsVisible(intakeType), Agency.getLocalAgency().areExternalProgramsVisible(intakeType), null,
 				null,null, facilityId, nodeId, jsLocation, Agency.getLocalAgency().areCommunityProgramsVisible(intakeType), null);
 
@@ -317,7 +318,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		
 		
 
-		setBeanProperties(formBean, intake, getClient(clientId), providerNo, Agency.getLocalAgency().areHousingProgramsVisible(intakeType), Agency.getLocalAgency()
+		setBeanProperties(formBean, intake, getClientExtra(clientId), getClient(clientId), providerNo, Agency.getLocalAgency().areHousingProgramsVisible(intakeType), Agency.getLocalAgency()
 				.areServiceProgramsVisible(intakeType), Agency.getLocalAgency().areExternalProgramsVisible(intakeType), getCurrentBedProgramId(clientId),
 				getCurrentServiceProgramIds(clientId), getCurrentExternalProgramId(clientId), facilityId, nodeId, jsLocation, Agency.getLocalAgency().areCommunityProgramsVisible(intakeType), getCurrentCommunityProgramId(clientId));
 
@@ -376,7 +377,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		
 		
 		
-		setBeanProperties(formBean, intake, getClient(clientId), providerNo, false, false, false, null, null, null, facilityId,null,jsLocation, false, null);
+		setBeanProperties(formBean, intake, getClientExtra(clientId), getClient(clientId), providerNo, false, false, false, null, null, null, facilityId,null,jsLocation, false, null);
 
 		return mapping.findForward(PRINT);
 	}
@@ -388,6 +389,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		Intake intake = formBean.getIntake();
 		String intakeType = intake.getType();
 		Demographic client = formBean.getClient();
+		DemographicExtra clientExtra = formBean.getClientExtra();
 		String providerNo = getProviderNo(request);
 		Integer nodeId = formBean.getNodeId();
 		Integer oldId = null;
@@ -438,7 +440,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 				client.setPatientStatus(PatientStatus.AC.name());
 			}
 			saveClient(client, providerNo);
-
+			saveClientExtra(clientExtra, client.getDemographicNo());
 			
 					// for RFQ:
 					if (OscarProperties.getInstance().isTorontoRFQ()) {
@@ -551,7 +553,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 				List<IntakeNodeJavascript> jsLocation = genericIntakeManager.getIntakeNodeJavascriptLocation(intake.getNode().getQuestionId());
 				
 				
-				setBeanProperties(formBean, intake, client, providerNo, Agency.getLocalAgency().areHousingProgramsVisible(intakeType), Agency.getLocalAgency().areServiceProgramsVisible(
+				setBeanProperties(formBean, intake, clientExtra, client, providerNo, Agency.getLocalAgency().areHousingProgramsVisible(intakeType), Agency.getLocalAgency().areServiceProgramsVisible(
 						intakeType), Agency.getLocalAgency().areExternalProgramsVisible(intakeType), getCurrentBedProgramId(client.getDemographicNo()),
 						getCurrentServiceProgramIds(client.getDemographicNo()), getCurrentExternalProgramId(client.getDemographicNo()), loggedInInfo.currentFacility.getId(), nodeId, jsLocation, Agency.getLocalAgency().areCommunityProgramsVisible(intakeType), getCurrentCommunityProgramId(client.getDemographicNo()));
 
@@ -724,7 +726,11 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 	private Demographic getClient(Integer clientId) {
 		return clientManager.getClientByDemographicNo(clientId.toString());
 	}
-
+	
+	private DemographicExtra getClientExtra(Integer clientId) {
+		return clientManager.getClientExtraByDemographicNo(clientId.toString());
+	}
+	
 	private Set<Program> getActiveProviderPrograms(String providerNo) {
 		Set<Program> activeProviderPrograms = new HashSet<Program>();
 
@@ -883,6 +889,18 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		clientManager.saveClient(client);
 	}
 
+	private void saveClientExtra(DemographicExtra clientExtra, Integer demographicNo) {
+		
+		clientManager.saveDemographicExt(demographicNo.intValue(), "middleName", clientExtra.getMiddleName()==null?"":clientExtra.getMiddleName());
+		clientManager.saveDemographicExt(demographicNo.intValue(), "preferredName",clientExtra.getPreferredName()==null?"":clientExtra.getPreferredName());
+		clientManager.saveDemographicExt(demographicNo.intValue(), "lastNameAtBirth",clientExtra.getLastNameAtBirth()==null?"":clientExtra.getLastNameAtBirth());
+		clientManager.saveDemographicExt(demographicNo.intValue(), "maritalStatus",clientExtra.getMaritalStatus()==null?"":clientExtra.getMaritalStatus());
+		clientManager.saveDemographicExt(demographicNo.intValue(), "recipientLocation",clientExtra.getRecipientLocation()==null?"":clientExtra.getRecipientLocation());
+		clientManager.saveDemographicExt(demographicNo.intValue(), "lhinConsumerResides",clientExtra.getLhinConsumerResides()==null?"":clientExtra.getLhinConsumerResides());
+		clientManager.saveDemographicExt(demographicNo.intValue(), "lhinConsumerResides",clientExtra.getLhinConsumerResides()==null?"":clientExtra.getLhinConsumerResides());
+		clientManager.saveDemographicExt(demographicNo.intValue(), "address2",clientExtra.getAddress2()==null?"":clientExtra.getAddress2());
+	}
+	
 	private void admitExternalProgram(Integer clientId, String providerNo, Integer externalProgramId) throws ProgramFullException, AdmissionException, ServiceRestrictionException, FunctionalCentreDischargeException {
 		Program externalProgram = null;
 		Integer currentExternalProgramId = getCurrentExternalProgramId(clientId);
@@ -1077,11 +1095,12 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 
 	// Bean
 
-	private void setBeanProperties(GenericIntakeEditFormBean formBean, Intake intake, Demographic client, String providerNo, boolean bedProgramsVisible,
+	private void setBeanProperties(GenericIntakeEditFormBean formBean, Intake intake, DemographicExtra clientExtra, Demographic client, String providerNo, boolean bedProgramsVisible,
 			boolean serviceProgramsVisible, boolean externalProgramsVisible, Integer currentBedProgramId, SortedSet<Integer> currentServiceProgramIds,
 			Integer currentExternalProgramId, Integer facilityId, Integer nodeId, List<IntakeNodeJavascript> javascriptLocation, boolean communityProgramsVisible, Integer currentCommunityProgramId) {
 		formBean.setIntake(intake);
 		formBean.setClient(client);
+		formBean.setClientExtra(clientExtra);
 		formBean.setNodeId(nodeId);
 		formBean.setJsLocation(javascriptLocation);
 		

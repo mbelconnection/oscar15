@@ -38,6 +38,7 @@ import org.oscarehr.PMmodule.model.JointAdmission;
 import org.oscarehr.PMmodule.model.ProgramClientRestriction;
 import org.oscarehr.PMmodule.model.ProgramQueue;
 import org.oscarehr.PMmodule.web.formbean.ClientSearchFormBean;
+import org.oscarehr.PMmodule.web.formbean.DemographicExtra;
 import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.dao.DemographicExtDao;
 import org.oscarehr.common.dao.FunctionalCentreAdmissionDao;
@@ -64,7 +65,67 @@ public class ClientManager {
     public boolean isOutsideOfDomainEnabled() {
         return outsideOfDomainEnabled;
     }
-
+    
+    public DemographicExtra getClientExtraByDemographicNo(String demographicNo) {
+        if (demographicNo == null || demographicNo.length() == 0) {
+            return null;
+        }
+    	
+        String middleName = "";
+        String preferredName = "";
+        String lastNameAtBirth="";
+    	String maritalStatus="";
+    	String recipientLocation="";
+    	String lhinConsumerResides="";
+    	String address2="";
+    	
+        DemographicExt mn = demographicExtDao.getLatestDemographicExt(Integer.valueOf(demographicNo), "middleName");
+    	if(mn != null) {
+    		middleName = mn.getValue();
+    	}    	
+    	
+    	DemographicExt pn = demographicExtDao.getLatestDemographicExt(Integer.valueOf(demographicNo), "preferredName");
+    	if(pn != null) {
+    		preferredName = pn.getValue();
+    	}
+    	
+    	DemographicExt lnab = demographicExtDao.getLatestDemographicExt(Integer.valueOf(demographicNo), "lastNameAtBirth");
+    	if(lnab != null) {
+    		lastNameAtBirth = lnab.getValue();
+    	}
+    	
+    	DemographicExt ms = demographicExtDao.getLatestDemographicExt(Integer.valueOf(demographicNo), "maritalStatus");
+        if(ms != null) {
+        	maritalStatus = ms.getValue();
+        }
+        
+        DemographicExt rl = demographicExtDao.getLatestDemographicExt(Integer.valueOf(demographicNo), "recipientLocation");
+        if(rl != null) {
+        	recipientLocation = rl.getValue();
+        }
+        
+        DemographicExt lcr = demographicExtDao.getLatestDemographicExt(Integer.valueOf(demographicNo), "lhinConsumerResides");
+        if(lcr != null) {
+        	lhinConsumerResides = lcr.getValue();
+        }
+        
+        DemographicExt addr2 = demographicExtDao.getLatestDemographicExt(Integer.valueOf(demographicNo), "address2");
+        if(addr2 != null) {
+        	address2 = addr2.getValue();
+        }
+        
+        DemographicExtra demoExtra = new DemographicExtra();
+        demoExtra.setMiddleName(middleName);
+        demoExtra.setPreferredName(preferredName);
+        demoExtra.setLastNameAtBirth(lastNameAtBirth);
+        demoExtra.setMaritalStatus(maritalStatus);
+        demoExtra.setRecipientLocation(recipientLocation);
+        demoExtra.setLhinConsumerResides(lhinConsumerResides);
+        demoExtra.setAddress2(address2);
+        
+        return demoExtra;
+    }
+    
     public Demographic getClientByDemographicNo(String demographicNo) {
         if (demographicNo == null || demographicNo.length() == 0) {
             return null;
@@ -235,7 +296,7 @@ public class ClientManager {
     public void saveClient(Demographic client) {
         dao.saveClient(client);
     }
-
+    
     public DemographicExt getDemographicExt(String id) {
         return demographicExtDao.getDemographicExt(Integer.valueOf(id));
     }

@@ -46,6 +46,7 @@ import org.oscarehr.PMmodule.service.RoleManager;
 import org.oscarehr.PMmodule.service.RoomDemographicManager;
 import org.oscarehr.PMmodule.service.RoomManager;
 import org.oscarehr.PMmodule.utility.DateTimeFormatUtils;
+import org.oscarehr.PMmodule.web.formbean.DemographicExtra;
 import org.oscarehr.casemgmt.service.CaseManagementManager;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.util.MiscUtils;
@@ -74,7 +75,8 @@ abstract class BaseGenericIntakeAction extends BaseAction {
 	
 	// Session Attributes
 	protected static final String CLIENT = "client";
-
+	protected static final String CLIENT_EXTRA = "clientExtra";
+	
     protected LookupManager lookupManager;
 
     protected CaseManagementManager caseManagementManager;
@@ -171,7 +173,12 @@ abstract class BaseGenericIntakeAction extends BaseAction {
 		Demographic client = (Demographic) getSessionAttribute(request, CLIENT);
 		return (client != null) ? client : new Demographic();
 	}
-
+	
+	protected DemographicExtra getClientExtra(HttpServletRequest request) {
+		DemographicExtra client = (DemographicExtra) getSessionAttribute(request, CLIENT_EXTRA);
+		return (client != null) ? client : new DemographicExtra();
+	}
+	
     public void setLookupManager(LookupManager lookupManager) {
     	this.lookupManager = lookupManager;
     }

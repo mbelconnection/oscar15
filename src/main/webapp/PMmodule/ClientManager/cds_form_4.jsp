@@ -140,6 +140,12 @@ function submitCdsForm() {
 			return false;
 	}
 	
+	var serviceInitDate = document.cds_form.serviceInitiationDate.value;
+	if(!serviceInitDate || typeof serviceInitDate == 'undefined') {
+		alert("Please give the service initiation date on history page.");
+		return false;
+	}
+	
 	var status = document.getElementById('signed').checked;
 	if(!status) {
 		$j('#cds_form').unbind('submit').submit();		

@@ -41,6 +41,7 @@
 <%@page import="org.oscarehr.common.dao.FunctionalCentreAdmissionDao" %>
 <%@page import="org.oscarehr.common.model.FunctionalCentre" %>
 <%@page import="org.oscarehr.common.dao.FunctionalCentreDao" %>
+<%@page import="org.oscarehr.PMmodule.web.formbean.DemographicExtra"%>
 
 <%@include file="/layouts/caisi_html_top-jquery.jspf"%>
 
@@ -59,7 +60,7 @@
 		ocanStaffFormId = Integer.parseInt(request.getParameter("ocanStaffFormId"));
 	}
 	OcanStaffForm ocanStaffForm = null;
-		
+	DemographicExtra demoExtra = null;	
 	if(ocanStaffFormId != 0 ) {
 		if(view!=null && "history".equals(view)) { //view from form history page, not populate from demographic, directly pull data from ocanStaffForm table.
 			ocanStaffForm = OcanForm.getOcanStaffForm(Integer.valueOf(request.getParameter("ocanStaffFormId")));
@@ -70,13 +71,13 @@
 		ocanStaffForm = OcanForm.getCbiInitForm(currentDemographicId,OcanForm.PRE_POPULATION_LEVEL_DEMOGRAPHIC,ocanType, Integer.valueOf(currentProgramId));		
 		if(ocanStaffForm!=null) {
 			ocanStaffFormId = ocanStaffForm.getId()==null?0:ocanStaffForm.getId().intValue();
-		}
+		}		
 	}
 
 	//No matter if it's a new cbi form or not, always pre-populate phone extension.
 	String phoneExt = "";
 	DemographicExtDao demographicExtDao = (DemographicExtDao) SpringUtils.getBean("demographicExtDao");
-	DemographicExt de = demographicExtDao.getDemographicExt(Integer.valueOf(currentDemographicId), "hPhoneExt");
+	DemographicExt de = demographicExtDao.getLatestDemographicExt(Integer.valueOf(currentDemographicId), "hPhoneExt");
 	if(de!=null) {
 		if(de.getValue()==null || de.getValue().equals("null"))
 			//ocanStaffForm.setPhoneExt("");
@@ -91,6 +92,48 @@
 	
 	DemographicDao demographicDao = (DemographicDao) SpringUtils.getBean("demographicDao");
 	String hc_type = demographicDao.getDemographicById(currentDemographicId).getHcType();	
+	
+	String middleName="";
+	String preferredName="";
+	String lastNameAtBirth="";
+	String maritalStatus="";
+	String recipientLocation="";
+	String lhinConsumerResides="";
+	String address2="";
+	
+	DemographicExt de_middleName = demographicExtDao.getLatestDemographicExt(currentDemographicId, "middleName");	
+	if(de_middleName != null) {
+		middleName = de_middleName.getValue();
+	}
+	
+	DemographicExt de_preferredName = demographicExtDao.getLatestDemographicExt(currentDemographicId, "preferredName");	
+	if(de_preferredName != null) {
+		preferredName = de_preferredName.getValue();
+	}
+	
+	DemographicExt de_lastNameAtBirth = demographicExtDao.getLatestDemographicExt(currentDemographicId, "lastNameAtBirth");	
+	if(de_lastNameAtBirth != null) {
+		lastNameAtBirth = de_lastNameAtBirth.getValue();
+	}
+	
+	DemographicExt de_maritalStatus = demographicExtDao.getLatestDemographicExt(currentDemographicId, "maritalStatus");	
+	if(de_maritalStatus != null) {
+		maritalStatus = de_maritalStatus.getValue();
+	}
+	
+	DemographicExt de_recipientLocation = demographicExtDao.getLatestDemographicExt(currentDemographicId, "recipientLocation");	
+	if(de_recipientLocation != null) {
+		recipientLocation = de_recipientLocation.getValue();
+	}
+	
+	DemographicExt de_lhinConsumerResides = demographicExtDao.getLatestDemographicExt(currentDemographicId, "lhinConsumerResides");	
+	if(de_lhinConsumerResides != null) {
+		lhinConsumerResides = de_lhinConsumerResides.getValue();
+	}
+	DemographicExt de_address2 = demographicExtDao.getLatestDemographicExt(currentDemographicId, "address2");	
+	if(de_address2 != null) {
+		address2 = de_address2.getValue();
+	}
 	
 %>
 
@@ -137,7 +180,8 @@ function checkDates() {
 	var admissionDate = document.getElementById("admissionDate").value;	
 	var dischargeDate = document.getElementById("dischargeDate").value;	
 	if(!serviceInitDate || typeof serviceInitDate == 'undefined') {
-		serviceInitDate = "";
+		alert("Please give the service initiation date on history page.");
+		return false;		
 	}
 	if(!dischargeDate || typeof dischargeDate == 'undefined') {
 		dischargeDate = "";
@@ -488,7 +532,7 @@ function changeFunctionalCentre(selectBox) {
 		<tr>
 			<td class="genericTableHeader">Last Name at Birth</td>
 			<td class="genericTableData">
-				<input type="text" class="userInputedData" name="lastNameAtBirth" id="lastNameAtBirth" value="<%=ocanStaffForm.getLastNameAtBirth()%>" size="32" maxlength="32"/>
+				<%=OcanForm.renderAsTextFieldReadOnly(ocanStaffForm.getId(), "lastNameAtBirth", 32,  prepopulationLevel, true, lastNameAtBirth ) %>
 			</td>			
 		</tr>
 		<tr>
@@ -499,8 +543,8 @@ function changeFunctionalCentre(selectBox) {
 		</tr>
 		<tr>
 			<td class="genericTableHeader">Middle Name</td>
-			<td class="genericTableData">
-				<%=OcanForm.renderAsTextField(ocanStaffForm.getId(),"middle",32, prepopulationLevel, "userInputedData")%>
+			<td class="genericTableData">					
+				<%=OcanForm.renderAsTextFieldReadOnly(ocanStaffForm.getId(), "middle", 32,  prepopulationLevel, true, middleName ) %>
 			</td>			
 		</tr>
 		<tr>
@@ -511,8 +555,8 @@ function changeFunctionalCentre(selectBox) {
 		</tr>	
 		<tr>
 			<td class="genericTableHeader">Preferred Name</td>
-			<td class="genericTableData">
-				<%=OcanForm.renderAsTextField(ocanStaffForm.getId(),"preferred",32, prepopulationLevel, "userInputedData")%>
+			<td class="genericTableData">				
+				<%=OcanForm.renderAsTextFieldReadOnly(ocanStaffForm.getId(), "preferred", 32,  prepopulationLevel, true, preferredName ) %>
 			</td>
 		</tr>			
 		<tr>
@@ -523,8 +567,8 @@ function changeFunctionalCentre(selectBox) {
 		</tr>
 		<tr>
 			<td class="genericTableHeader">Address Line 2</td>
-			<td class="genericTableData">
-				<input type="text" name="addressLine2" class="userInputedData" id="addressLine2" value="<%=ocanStaffForm.getAddressLine2()%>" size="64" maxlength="64"/>
+			<td class="genericTableData">				
+				<input type="text" name="addressLine2" id="addressLine2" readonly="readonly" value="<%=ocanStaffForm.getAddressLine2()%>" size="64" maxlength="64"/>
 			</td>
 		</tr>						
 		<tr>
@@ -599,7 +643,7 @@ function changeFunctionalCentre(selectBox) {
 			<td class="genericTableHeader">Service Recipient Location</td>
 			<td class="genericTableData">
 				<select name="service_recipient_location" class="userInputedData mandatoryData {validate: {required:true}}">
-					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "service_recipient_location", OcanForm.getOcanFormOptions("Recipient Location"),prepopulationLevel)%>
+					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "service_recipient_location", OcanForm.getOcanFormOptions("Recipient Location"), recipientLocation, prepopulationLevel)%>
 				</select>					
 			</td>
 		</tr>		
@@ -607,7 +651,7 @@ function changeFunctionalCentre(selectBox) {
 			<td class="genericTableHeader">LHIN Consumer Resides in</td>
 			<td class="genericTableData">
 				<select name="service_recipient_lhin" class="userInputedData mandatoryData {validate: {required:true}}">
-					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "service_recipient_lhin", OcanForm.getOcanFormOptions("LHIN code"),prepopulationLevel)%>
+					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "service_recipient_lhin", OcanForm.getOcanFormOptions("LHIN code"), lhinConsumerResides, prepopulationLevel)%>
 				</select>					
 			</td>
 		</tr>
@@ -623,7 +667,7 @@ function changeFunctionalCentre(selectBox) {
 			<td class="genericTableHeader">Marital Status</td>
 			<td class="genericTableData">
 				<select name="marital_status" class="userInputedData">
-					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "marital_status", OcanForm.getOcanFormOptions("Marital Status"),prepopulationLevel)%>
+					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "marital_status", OcanForm.getOcanFormOptions("Marital Status"), maritalStatus, prepopulationLevel)%>
 				</select>					
 			</td>
 		</tr>

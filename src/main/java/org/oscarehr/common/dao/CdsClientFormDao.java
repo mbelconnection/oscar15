@@ -117,17 +117,15 @@ public class CdsClientFormDao extends AbstractDao<CdsClientForm> {
   	}
     
  
-    public List<CdsClientForm> findCdsFormsByAdmissionId(Integer admissionId) {
+    public CdsClientForm findCdsFormsByAdmissionId(Integer clientId, Integer admissionId) {
 		
-		String sqlCommand="select x from CdsClientForm x where x.admissionId=?1";
+		String sqlCommand="select x from CdsClientForm x where x.admissionId=?1 and x.clientId=?2 order by x.id desc";
 
 		Query query = entityManager.createQuery(sqlCommand);
 		query.setParameter(1, admissionId);
-				
-		@SuppressWarnings("unchecked")
-		List<CdsClientForm> results=query.getResultList();
+		query.setParameter(2, clientId);
 		
-		return(results);
+		return getSingleResultOrNull(query);				
     }
     
 }

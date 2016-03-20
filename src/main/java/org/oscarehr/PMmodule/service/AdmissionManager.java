@@ -52,9 +52,12 @@ import org.oscarehr.PMmodule.web.OcanForm;
 import org.oscarehr.PMmodule.web.OcanFormAction;
 import org.oscarehr.common.dao.CdsClientFormDao;
 import org.oscarehr.common.dao.CdsClientFormDataDao;
+import org.oscarehr.common.dao.DemographicExtDao;
 import org.oscarehr.common.dao.FunctionalCentreAdmissionDao;
+import org.oscarehr.common.dao.OcanStaffFormDao;
 import org.oscarehr.common.model.CdsClientForm;
 import org.oscarehr.common.model.CdsClientFormData;
+import org.oscarehr.common.model.DemographicExt;
 import org.oscarehr.common.model.FunctionalCentreAdmission;
 import org.oscarehr.common.model.OcanStaffForm;
 import org.oscarehr.util.LoggedInInfo;
@@ -62,6 +65,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import oscar.util.CBIFormDataSubmissionJob;
+import oscar.util.CBIUtil;
 
 @Transactional
 public class AdmissionManager {
@@ -79,6 +83,8 @@ public class AdmissionManager {
 	private FunctionalCentreAdmissionDao functionalCentreAdmissionDao;
 	private CdsClientFormDao cdsClientFormDao;
 	private CdsClientFormDataDao cdsClientFormDataDao;
+	private OcanStaffFormDao ocanStaffFormDao;
+	private DemographicExtDao demographicExtDao;
 	
 	private static Logger logger = Logger.getLogger(CBIFormDataSubmissionJob.class);
     
@@ -283,48 +289,85 @@ public class AdmissionManager {
 				functionalCentreAdmissionDao.merge(fca);
 			} else {
 				// insert a new admission record
+				//Automatically create CBI form when admit a client into a new program associated with a new functional centre.									
 				fca = new FunctionalCentreAdmission();
 				fca.setDemographicNo(demographicNo);
 				fca.setFunctionalCentreId(functionalCentreId);				
 				fca.setReferralDate(clientReferralDate);
-				fca.setAdmissionDate(admissionDate);
-				fca.setServiceInitiationDate(admissionDate);
+				fca.setAdmissionDate(admissionDate);		
+				//serviceInitationDate should be added/updated later in history page.
+				//fca.setServiceInitiationDate(admissionDate);
 				fca.setDischarged(false);
 				fca.setProviderNo(providerNo);
 				fca.setUpdateDate(new Date());
-				functionalCentreAdmissionDao.persist(fca);
+				functionalCentreAdmissionDao.persist(fca);				
+			
+				functionalCentreAdmissionId = fca.getId();
+			
+				OcanStaffForm cbiForm = OcanForm.getCbiInitForm(demographicNo,OcanForm.PRE_POPULATION_LEVEL_DEMOGRAPHIC,"CBI", program.getId());				
+			
+				cbiForm.setAssessmentId(cbiForm.getId());
+				cbiForm.setOcanFormVersion("1.2");		
+				cbiForm.setClientId(demographicNo);
+				cbiForm.setProviderNo(providerNo);
+				LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
+				cbiForm.setFacilityId(loggedInInfo.currentFacility.getId());			
+				cbiForm.setSigned(false);
 				
-			}
-			functionalCentreAdmissionId = fca.getId();
-			
-			//Automatically create CBI form when admit a client into a program associated with a functional centre.
-			OcanStaffForm cbiForm = OcanForm.getCbiInitForm(demographicNo,OcanForm.PRE_POPULATION_LEVEL_DEMOGRAPHIC,"CBI", program.getId());		
-			//OcanStaffForm cbiForm=OcanFormAction.createOcanStaffForm(cbiFormInit.getId(), demographicNo, false);
-			
-			cbiForm.setAssessmentId(cbiForm.getId());
-			cbiForm.setOcanFormVersion("1.2");		
-			cbiForm.setClientId(demographicNo);
-			cbiForm.setProviderNo(providerNo);
-			LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
-			cbiForm.setFacilityId(loggedInInfo.currentFacility.getId());			
-			cbiForm.setSigned(false);
-			
-			cbiForm.setReferralDate(clientReferralDate);
-			cbiForm.setAdmissionDate(admissionDate);
-			cbiForm.setServiceInitDate(admissionDate);			
-			cbiForm.setAdmissionId(functionalCentreAdmissionId);
-			
-			OcanFormAction.saveOcanStaffForm(cbiForm);
-	/* Temporarily remove cbi submission here as it should have some mandatory fields to be filled and the form should be signed begfore it is submitted.		
-			CBIUtil cbiUtil = new CBIUtil();
-			try {
-				cbiUtil.submitCBIData(cbiForm);
-				logger.info("cbi form data submitted successfully. The cbi form id is : <"+(cbiForm!=null?cbiForm.getId():"null")+">");
+				cbiForm.setReferralDate(clientReferralDate);
+				cbiForm.setAdmissionDate(admissionDate);
 				
-			}catch (Exception e) {
-				logger.error("Error in submission thread. The ocan staff form id is : <"+(cbiForm!=null?cbiForm.getId():"null")+">", e);
+				//serviceInitationDate should be added/updated later in client history page.
+				//cbiForm.setServiceInitDate(admissionDate);	
+				
+				cbiForm.setAdmissionId(functionalCentreAdmissionId);
+			
+				DemographicExt demographicExt0 = demographicExtDao.getLatestDemographicExt(demographicNo, "address2");
+				if(demographicExt0 != null) {			
+					cbiForm.setAddressLine2(demographicExt0.getValue());
+				}
+				
+				OcanFormAction.saveOcanStaffForm(cbiForm);
+								
+				DemographicExt demographicExt1 = demographicExtDao.getLatestDemographicExt(demographicNo, "middleName");
+				if(demographicExt1 != null) {
+					OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "middle" , demographicExt1.getValue());
+				}
+						
+				DemographicExt demographicExt2 = demographicExtDao.getLatestDemographicExt(demographicNo, "preferredName");
+				if(demographicExt2 != null) {
+					OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "preferred" , demographicExt2.getValue());
+				}
+				
+				DemographicExt demographicExt3 = demographicExtDao.getLatestDemographicExt(demographicNo, "lastNameAtBirth");
+				if(demographicExt3 != null) {
+					OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "lastNameAtBirth" , demographicExt3.getValue());
+				}
+				
+				DemographicExt demographicExt4 = demographicExtDao.getLatestDemographicExt(demographicNo, "maritalStatus");
+				if(demographicExt4 != null) {
+					OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "marital_status" , demographicExt4.getValue());
+				}
+				
+				DemographicExt demographicExt5 = demographicExtDao.getLatestDemographicExt(demographicNo, "recipientLocation");
+				if(demographicExt5 != null) {
+					OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "service_recipient_location" , demographicExt5.getValue());
+				}
+				
+				DemographicExt demographicExt6 = demographicExtDao.getLatestDemographicExt(demographicNo, "lhinConsumerResides");
+				if(demographicExt6 != null) {
+					OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "service_recipient_lhin" , demographicExt6.getValue());
+				}			
+				
+				CBIUtil cbiUtil = new CBIUtil();
+				try {
+					cbiUtil.submitCBIData(cbiForm);
+					logger.info("cbi form data submitted successfully. The cbi form id is : <"+(cbiForm!=null?cbiForm.getId():"null")+">");
+					
+				}catch (Exception e) {
+					logger.error("Error in submission thread. The ocan staff form id is : <"+(cbiForm!=null?cbiForm.getId():"null")+">", e);
+				}
 			}
-		*/
 		}
 	
 		//if they are in a service program linked to this bed program, discharge them from that service program
@@ -447,7 +490,8 @@ public class AdmissionManager {
     } 
     
     public void processDischarge(Integer programId, Integer demographicNo, String dischargeNotes, String radioDischargeReason, Date dischargeDate, List<Long> dependents, boolean fromTransfer, boolean automaticDischarge, boolean dischargedFromFunctionalCentre) throws AdmissionException, FunctionalCentreDischargeException {
-    	    	
+    	LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
+		
 		Admission fullAdmission = getCurrentAdmission(String.valueOf(programId), demographicNo);
 	
 		Program program=programDao.getProgram(programId);
@@ -530,37 +574,57 @@ public class AdmissionManager {
      				
      				//save discharge reason to cds form's exit disposition
      				CdsClientForm cdsForm = cdsClientFormDao.findLatestByClientIdAndAdmisionId(demographicNo, fca.getId());
-     				List<CdsClientFormData> cdsData = cdsClientFormDataDao.findByQuestion(cdsForm.getId(), "exitDisposition");
-     				if(cdsData.size()>0) {
-     					CdsClientFormData cds = cdsData.get(0); 
-     					//exitDisposition answers: 019-01, 019-02, 019-03, 019-04, 019-05, 019-06
-     					/*   
-						+-----+----------------+-----------------+-----------------------------+----------------
-						| id  | cdsFormVersion | cdsDataCategory | cdsDataCategoryName         |dischargeReason
-						+-----+----------------+-----------------+-----------------------------+----------------
-						| 222 | 4              | 019-01          | Completion without referral |16
-						| 223 | 4              | 019-02          | Completion with referral    |17
-						| 224 | 4              | 019-03          | Suicides                    |21
-						| 225 | 4              | 019-04          | Death                       |18
-						| 226 | 4              | 019-05          | Relocation                  |19
-						| 227 | 4              | 019-06          | Withdrawal                  |22
-						+-----+----------------+-----------------+-----------------------------+----------------
-     					*/
-     					if(radioDischargeReason!=null && radioDischargeReason.endsWith("16"))
-     						cds.setAnswer("019-01");
-     					else if(radioDischargeReason!=null && radioDischargeReason.endsWith("17"))
-     						cds.setAnswer("019-02");
-     					else if(radioDischargeReason!=null && radioDischargeReason.endsWith("21"))
-     						cds.setAnswer("019-03");
-     					else if(radioDischargeReason!=null && radioDischargeReason.endsWith("18"))
-     						cds.setAnswer("019-04");
-     					else if(radioDischargeReason!=null && radioDischargeReason.endsWith("19"))
-     						cds.setAnswer("019-05");
-     					else if(radioDischargeReason!=null && radioDischargeReason.endsWith("22"))
-     						cds.setAnswer("019-06");
-     					
-     					cdsClientFormDataDao.merge(cds);
+     				if(cdsForm != null ) {
+     					List<CdsClientFormData> cdsData = cdsClientFormDataDao.findByQuestion(cdsForm.getId(), "exitDisposition");
+     					if(cdsData.size()>0) {
+     						CdsClientFormData cds = cdsData.get(0); 
+	     					//exitDisposition answers: 019-01, 019-02, 019-03, 019-04, 019-05, 019-06
+	     					/*   
+							+-----+----------------+-----------------+-----------------------------+----------------
+							| id  | cdsFormVersion | cdsDataCategory | cdsDataCategoryName         |dischargeReason
+							+-----+----------------+-----------------+-----------------------------+----------------
+							| 222 | 4              | 019-01          | Completion without referral |16
+							| 223 | 4              | 019-02          | Completion with referral    |17
+							| 224 | 4              | 019-03          | Suicides                    |21
+							| 225 | 4              | 019-04          | Death                       |18
+							| 226 | 4              | 019-05          | Relocation                  |19
+							| 227 | 4              | 019-06          | Withdrawal                  |22
+							+-----+----------------+-----------------+-----------------------------+----------------
+	     					*/
+	     					if(radioDischargeReason!=null && radioDischargeReason.endsWith("16"))
+	     						cds.setAnswer("019-01");
+	     					else if(radioDischargeReason!=null && radioDischargeReason.endsWith("17"))
+	     						cds.setAnswer("019-02");
+	     					else if(radioDischargeReason!=null && radioDischargeReason.endsWith("21"))
+	     						cds.setAnswer("019-03");
+	     					else if(radioDischargeReason!=null && radioDischargeReason.endsWith("18"))
+	     						cds.setAnswer("019-04");
+	     					else if(radioDischargeReason!=null && radioDischargeReason.endsWith("19"))
+	     						cds.setAnswer("019-05");
+	     					else if(radioDischargeReason!=null && radioDischargeReason.endsWith("22"))
+	     						cds.setAnswer("019-06");
+	     					
+	     					cdsClientFormDataDao.merge(cds);
+     					}
      				}
+     				//Save discharge date to cbi form and upload signed cbi form
+     				//Automatically create CBI form when admit a client into a program associated with a functional centre.
+     					
+     				OcanStaffForm cbiForm = ocanStaffFormDao.findLatestCbiFormsByFacilityAdmissionId(loggedInInfo.currentFacility.getId(), fca.getId(), null);
+     				if(cbiForm != null) {
+     					cbiForm.setDischargeDate(dischargeDate);
+     					cbiForm.setSigned(true);
+     					ocanStaffFormDao.merge(cbiForm);
+     					
+     					CBIUtil cbiUtil = new CBIUtil();
+     					try {
+         					cbiUtil.submitCBIData(cbiForm);
+         					logger.info("cbi form data submitted successfully. The cbi form id is : <"+(cbiForm!=null?cbiForm.getId():"null")+">");
+         					
+         				}catch (Exception e) {
+         					logger.info("Error in submission thread. The ocan staff form id is : <"+(cbiForm!=null?cbiForm.getId():"null")+">", e);
+         				}
+     				} 	
      			} 
      		}
         }
@@ -690,6 +754,14 @@ public class AdmissionManager {
     
     public void setCdsClientFormDataDao(CdsClientFormDataDao cdsClientFormDataDao) {
     	this.cdsClientFormDataDao = cdsClientFormDataDao;
+    }
+    
+    public void setOcanStaffFormDao(OcanStaffFormDao ocanStaffFormDao) {
+    	this.ocanStaffFormDao = ocanStaffFormDao;
+    }
+    
+    public void setDemographicExtDao(DemographicExtDao demographicExtDao) {
+    	this.demographicExtDao = demographicExtDao;
     }
     
 	public boolean isActiveInCurrentFacility(int demographicId)

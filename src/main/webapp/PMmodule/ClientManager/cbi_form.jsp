@@ -642,7 +642,7 @@ function changeFunctionalCentre(selectBox) {
 		<tr>
 			<td class="genericTableHeader">Service Recipient Location</td>
 			<td class="genericTableData">
-				<select name="service_recipient_location" class="userInputedData mandatoryData {validate: {required:true}}">
+				<select name="service_recipient_location">
 					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "service_recipient_location", OcanForm.getOcanFormOptions("Recipient Location"), recipientLocation, prepopulationLevel)%>
 				</select>					
 			</td>
@@ -650,7 +650,7 @@ function changeFunctionalCentre(selectBox) {
 		<tr>
 			<td class="genericTableHeader">LHIN Consumer Resides in</td>
 			<td class="genericTableData">
-				<select name="service_recipient_lhin" class="userInputedData mandatoryData {validate: {required:true}}">
+				<select name="service_recipient_lhin">
 					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "service_recipient_lhin", OcanForm.getOcanFormOptions("LHIN code"), lhinConsumerResides, prepopulationLevel)%>
 				</select>					
 			</td>
@@ -666,7 +666,7 @@ function changeFunctionalCentre(selectBox) {
 		<tr>
 			<td class="genericTableHeader">Marital Status</td>
 			<td class="genericTableData">
-				<select name="marital_status" class="userInputedData">
+				<select name="marital_status">
 					<%=OcanForm.renderAsSelectOptions(ocanStaffForm.getId(), "marital_status", OcanForm.getOcanFormOptions("Marital Status"), maritalStatus, prepopulationLevel)%>
 				</select>					
 			</td>

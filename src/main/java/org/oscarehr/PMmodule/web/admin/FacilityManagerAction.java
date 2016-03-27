@@ -38,13 +38,13 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.oscarehr.PMmodule.dao.AdmissionDao;
-import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.PMmodule.model.Admission;
 import org.oscarehr.PMmodule.model.Program;
 import org.oscarehr.PMmodule.service.LogManager;
 import org.oscarehr.PMmodule.service.ProgramManager;
 import org.oscarehr.PMmodule.web.BaseAction;
 import org.oscarehr.PMmodule.web.FacilityDischargedClients;
+import org.oscarehr.common.dao.DemographicDao;
 import org.oscarehr.common.dao.FacilityDao;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.Facility;
@@ -227,6 +227,7 @@ public class FacilityManagerAction extends BaseAction {
 			facility.setEnableOcanForms(WebUtils.isChecked(request, "facility.enableOcanForms"));
 			facility.setEnableEncounterTime(WebUtils.isChecked(request, "facility.enableEncounterTime"));
 			facility.setEnableEncounterTransportationTime(WebUtils.isChecked(request, "facility.enableEncounterTransportationTime"));
+			facility.setEnableCbiForm(WebUtils.isChecked(request, "facility.enableCbiForm"));
 			
 			if (facility.getId() == null || facility.getId() == 0) facilityDao.persist(facility);
 			else facilityDao.merge(facility);

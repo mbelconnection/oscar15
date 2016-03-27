@@ -2633,7 +2633,8 @@ create table CdsHospitalisationDays
 create table FunctionalCentre
 (
 	accountId varchar(64) primary key,
-	description varchar(255) not null
+	description varchar(255) not null,
+	enableCbiForm tinyint(1)
 );
 
 #create table group_note_link (

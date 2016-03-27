@@ -73,8 +73,10 @@ import org.oscarehr.caisi_integrator.ws.Referral;
 import org.oscarehr.caisi_integrator.ws.ReferralWs;
 import org.oscarehr.casemgmt.dao.ClientImageDAO;
 import org.oscarehr.casemgmt.model.ClientImage;
+import org.oscarehr.common.dao.OcanStaffFormDao;
 import org.oscarehr.common.model.Demographic;
 import org.oscarehr.common.model.Demographic.PatientStatus;
+import org.oscarehr.common.model.OcanStaffForm;
 import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SessionConstants;
@@ -92,7 +94,8 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 	
 	private ClientImageDAO clientImageDAO = null;
 	private SurveyManager surveyManager;
-
+	private OcanStaffFormDao ocanStaffFormDao;
+	
 	public void setOscarSurveyManager(SurveyManager mgr) {
 		this.surveyManager = mgr;
 	}
@@ -100,6 +103,10 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 	public void setClientImageDAO(ClientImageDAO clientImageDAO) {
 		this.clientImageDAO = clientImageDAO;
 	}
+	
+	public void setOcanStaffFormDao(OcanStaffFormDao ocanStaffFormDao) {
+    	this.ocanStaffFormDao = ocanStaffFormDao;
+    }
 
 	public ActionForward create(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
 		GenericIntakeEditFormBean formBean = (GenericIntakeEditFormBean) form;
@@ -440,7 +447,8 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 				client.setPatientStatus(PatientStatus.AC.name());
 			}
 			saveClient(client, providerNo);
-			saveClientExtra(clientExtra, client.getDemographicNo());
+			saveClientExtra(clientExtra, client.getDemographicNo());		
+			saveCbiForm(client, clientExtra);
 			
 					// for RFQ:
 					if (OscarProperties.getInstance().isTorontoRFQ()) {
@@ -897,9 +905,47 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		clientManager.saveDemographicExt(demographicNo.intValue(), "maritalStatus",clientExtra.getMaritalStatus()==null?"":clientExtra.getMaritalStatus());
 		clientManager.saveDemographicExt(demographicNo.intValue(), "recipientLocation",clientExtra.getRecipientLocation()==null?"":clientExtra.getRecipientLocation());
 		clientManager.saveDemographicExt(demographicNo.intValue(), "lhinConsumerResides",clientExtra.getLhinConsumerResides()==null?"":clientExtra.getLhinConsumerResides());
-		clientManager.saveDemographicExt(demographicNo.intValue(), "lhinConsumerResides",clientExtra.getLhinConsumerResides()==null?"":clientExtra.getLhinConsumerResides());
 		clientManager.saveDemographicExt(demographicNo.intValue(), "address2",clientExtra.getAddress2()==null?"":clientExtra.getAddress2());
+				
 	}
+	
+	private void saveCbiForm(Demographic client, DemographicExtra clientExtra) {
+		
+		LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
+		Integer facilityId = loggedInInfo.currentFacility.getId();
+		
+		//When update registration intake, update demographic info in existing cbi form.
+		OcanStaffForm cbiForm = ocanStaffFormDao.findLatestByFacilityClient(facilityId, client.getDemographicNo(), "CBI");
+		if(cbiForm == null) {
+			return;
+		}
+		cbiForm.setAddressLine1(client.getAddress()==null?"":client.getAddress());
+		cbiForm.setAddressLine2(clientExtra.getAddress2()==null?"":clientExtra.getAddress2());
+		cbiForm.setCity(client.getCity()==null?"":client.getCity());
+		cbiForm.setClientDateOfBirth(client.getDateOfBirth());
+		cbiForm.setEmail(client.getEmail()==null?"":client.getEmail());
+		cbiForm.setFirstName(client.getFirstName());
+		cbiForm.setGender(client.getSex());
+		cbiForm.setHcNumber(client.getHin()==null?"":client.getHin());
+		cbiForm.setHcVersion(client.getVer()==null?"":client.getVer());
+		cbiForm.setLastName(client.getLastName());		
+		cbiForm.setLastNameAtBirth(clientExtra.getLastNameAtBirth()==null?"":clientExtra.getLastNameAtBirth());
+		cbiForm.setPhoneNumber(client.getPhone()==null?"":client.getPhone());
+		cbiForm.setPostalCode(client.getPostal()==null?"":client.getPostal());
+		cbiForm.setProvince(client.getProvince()==null?"":client.getProvince());
+		cbiForm.setEstimatedAge(client.getAge()==null?"":client.getAge());
+		ocanStaffFormDao.merge(cbiForm);
+		
+		OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "middle" , clientExtra.getMiddleName()==null?"":clientExtra.getMiddleName());
+		OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "preferred" , clientExtra.getPreferredName()==null?"":clientExtra.getPreferredName());
+		OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "lastNameAtBirth" , clientExtra.getLastNameAtBirth()==null?"":clientExtra.getLastNameAtBirth());
+		OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "marital_status" , clientExtra.getMaritalStatus()==null?"":clientExtra.getMaritalStatus());
+		OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "service_recipient_location" , clientExtra.getRecipientLocation()==null?"":clientExtra.getRecipientLocation());
+		OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "service_recipient_lhin" , clientExtra.getLhinConsumerResides()==null?"":clientExtra.getLhinConsumerResides());
+		
+	}
+	
+	
 	
 	private void admitExternalProgram(Integer clientId, String providerNo, Integer externalProgramId) throws ProgramFullException, AdmissionException, ServiceRestrictionException, FunctionalCentreDischargeException {
 		Program externalProgram = null;

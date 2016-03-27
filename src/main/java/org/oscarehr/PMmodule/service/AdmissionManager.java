@@ -54,10 +54,12 @@ import org.oscarehr.common.dao.CdsClientFormDao;
 import org.oscarehr.common.dao.CdsClientFormDataDao;
 import org.oscarehr.common.dao.DemographicExtDao;
 import org.oscarehr.common.dao.FunctionalCentreAdmissionDao;
+import org.oscarehr.common.dao.FunctionalCentreDao;
 import org.oscarehr.common.dao.OcanStaffFormDao;
 import org.oscarehr.common.model.CdsClientForm;
 import org.oscarehr.common.model.CdsClientFormData;
 import org.oscarehr.common.model.DemographicExt;
+import org.oscarehr.common.model.FunctionalCentre;
 import org.oscarehr.common.model.FunctionalCentreAdmission;
 import org.oscarehr.common.model.OcanStaffForm;
 import org.oscarehr.util.LoggedInInfo;
@@ -81,6 +83,7 @@ public class AdmissionManager {
 	private BedManager bedManager;
 	private RoomDemographicManager roomDemographicManager;
 	private FunctionalCentreAdmissionDao functionalCentreAdmissionDao;
+	private FunctionalCentreDao functionalCentreDao;
 	private CdsClientFormDao cdsClientFormDao;
 	private CdsClientFormDataDao cdsClientFormDataDao;
 	private OcanStaffFormDao ocanStaffFormDao;
@@ -277,7 +280,7 @@ public class AdmissionManager {
 		String functionalCentreId = program.getFunctionalCentreId();
 		if(functionalCentreId != null && !functionalCentreId.equals("")) {		
 			FunctionalCentreAdmission fca = functionalCentreAdmissionDao.getCurrentAdmissionByDemographicNoAndFunctionalCentreId(demographicNo, functionalCentreId);
-			if(fca != null) {
+			if(fca != null) {				
 				// compare dates, update all dates with older dates.
 				if(fca.getReferralDate().after(clientReferralDate) ) 
 					fca.setReferralDate(clientReferralDate);
@@ -288,84 +291,88 @@ public class AdmissionManager {
 				fca.setUpdateDate(new Date());
 				functionalCentreAdmissionDao.merge(fca);
 			} else {
-				// insert a new admission record
-				//Automatically create CBI form when admit a client into a new program associated with a new functional centre.									
-				fca = new FunctionalCentreAdmission();
-				fca.setDemographicNo(demographicNo);
-				fca.setFunctionalCentreId(functionalCentreId);				
-				fca.setReferralDate(clientReferralDate);
-				fca.setAdmissionDate(admissionDate);		
-				//serviceInitationDate should be added/updated later in history page.
-				//fca.setServiceInitiationDate(admissionDate);
-				fca.setDischarged(false);
-				fca.setProviderNo(providerNo);
-				fca.setUpdateDate(new Date());
-				functionalCentreAdmissionDao.persist(fca);				
-			
-				functionalCentreAdmissionId = fca.getId();
-			
-				OcanStaffForm cbiForm = OcanForm.getCbiInitForm(demographicNo,OcanForm.PRE_POPULATION_LEVEL_DEMOGRAPHIC,"CBI", program.getId());				
-			
-				cbiForm.setAssessmentId(cbiForm.getId());
-				cbiForm.setOcanFormVersion("1.2");		
-				cbiForm.setClientId(demographicNo);
-				cbiForm.setProviderNo(providerNo);
-				LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
-				cbiForm.setFacilityId(loggedInInfo.currentFacility.getId());			
-				cbiForm.setSigned(false);
+				//Some functional centres do not need cbi form. Check before create a new cbi form.
+				FunctionalCentre fc = functionalCentreDao.find(functionalCentreId);
+				if(fc !=null && fc.isEnableCbiForm()) {
+					// insert a new admission record
+					//Automatically create CBI form when admit a client into a new program associated with a new functional centre.									
+					fca = new FunctionalCentreAdmission();
+					fca.setDemographicNo(demographicNo);
+					fca.setFunctionalCentreId(functionalCentreId);				
+					fca.setReferralDate(clientReferralDate);
+					fca.setAdmissionDate(admissionDate);		
+					//serviceInitationDate should be added/updated later in history page.
+					//fca.setServiceInitiationDate(admissionDate);
+					fca.setDischarged(false);
+					fca.setProviderNo(providerNo);
+					fca.setUpdateDate(new Date());
+					functionalCentreAdmissionDao.persist(fca);				
 				
-				cbiForm.setReferralDate(clientReferralDate);
-				cbiForm.setAdmissionDate(admissionDate);
+					functionalCentreAdmissionId = fca.getId();
 				
-				//serviceInitationDate should be added/updated later in client history page.
-				//cbiForm.setServiceInitDate(admissionDate);	
+					OcanStaffForm cbiForm = OcanForm.getCbiInitForm(demographicNo,OcanForm.PRE_POPULATION_LEVEL_DEMOGRAPHIC,"CBI", program.getId());				
 				
-				cbiForm.setAdmissionId(functionalCentreAdmissionId);
-			
-				DemographicExt demographicExt0 = demographicExtDao.getLatestDemographicExt(demographicNo, "address2");
-				if(demographicExt0 != null) {			
-					cbiForm.setAddressLine2(demographicExt0.getValue());
-				}
-				
-				OcanFormAction.saveOcanStaffForm(cbiForm);
-								
-				DemographicExt demographicExt1 = demographicExtDao.getLatestDemographicExt(demographicNo, "middleName");
-				if(demographicExt1 != null) {
-					OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "middle" , demographicExt1.getValue());
-				}
-						
-				DemographicExt demographicExt2 = demographicExtDao.getLatestDemographicExt(demographicNo, "preferredName");
-				if(demographicExt2 != null) {
-					OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "preferred" , demographicExt2.getValue());
-				}
-				
-				DemographicExt demographicExt3 = demographicExtDao.getLatestDemographicExt(demographicNo, "lastNameAtBirth");
-				if(demographicExt3 != null) {
-					OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "lastNameAtBirth" , demographicExt3.getValue());
-				}
-				
-				DemographicExt demographicExt4 = demographicExtDao.getLatestDemographicExt(demographicNo, "maritalStatus");
-				if(demographicExt4 != null) {
-					OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "marital_status" , demographicExt4.getValue());
-				}
-				
-				DemographicExt demographicExt5 = demographicExtDao.getLatestDemographicExt(demographicNo, "recipientLocation");
-				if(demographicExt5 != null) {
-					OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "service_recipient_location" , demographicExt5.getValue());
-				}
-				
-				DemographicExt demographicExt6 = demographicExtDao.getLatestDemographicExt(demographicNo, "lhinConsumerResides");
-				if(demographicExt6 != null) {
-					OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "service_recipient_lhin" , demographicExt6.getValue());
-				}			
-				
-				CBIUtil cbiUtil = new CBIUtil();
-				try {
-					cbiUtil.submitCBIData(cbiForm);
-					logger.info("cbi form data submitted successfully. The cbi form id is : <"+(cbiForm!=null?cbiForm.getId():"null")+">");
+					cbiForm.setAssessmentId(cbiForm.getId());
+					cbiForm.setOcanFormVersion("1.2");		
+					cbiForm.setClientId(demographicNo);
+					cbiForm.setProviderNo(providerNo);
+					LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();
+					cbiForm.setFacilityId(loggedInInfo.currentFacility.getId());			
+					cbiForm.setSigned(false);
 					
-				}catch (Exception e) {
-					logger.error("Error in submission thread. The ocan staff form id is : <"+(cbiForm!=null?cbiForm.getId():"null")+">", e);
+					cbiForm.setReferralDate(clientReferralDate);
+					cbiForm.setAdmissionDate(admissionDate);
+					
+					//serviceInitationDate should be added/updated later in client history page.
+					//cbiForm.setServiceInitDate(admissionDate);	
+					
+					cbiForm.setAdmissionId(functionalCentreAdmissionId);
+					
+					DemographicExt demographicExt0 = demographicExtDao.getLatestDemographicExt(demographicNo, "address2");
+					if(demographicExt0 != null) {			
+						cbiForm.setAddressLine2(demographicExt0.getValue());
+					}				
+					
+					OcanFormAction.saveOcanStaffForm(cbiForm);
+									
+					DemographicExt demographicExt1 = demographicExtDao.getLatestDemographicExt(demographicNo, "middleName");
+					if(demographicExt1 != null) {
+						OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "middle" , demographicExt1.getValue());
+					}
+							
+					DemographicExt demographicExt2 = demographicExtDao.getLatestDemographicExt(demographicNo, "preferredName");
+					if(demographicExt2 != null) {
+						OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "preferred" , demographicExt2.getValue());
+					}
+					
+					DemographicExt demographicExt3 = demographicExtDao.getLatestDemographicExt(demographicNo, "lastNameAtBirth");
+					if(demographicExt3 != null) {
+						OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "lastNameAtBirth" , demographicExt3.getValue());
+					}
+					
+					DemographicExt demographicExt4 = demographicExtDao.getLatestDemographicExt(demographicNo, "maritalStatus");
+					if(demographicExt4 != null) {
+						OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "marital_status" , demographicExt4.getValue());
+					}
+					
+					DemographicExt demographicExt5 = demographicExtDao.getLatestDemographicExt(demographicNo, "recipientLocation");
+					if(demographicExt5 != null) {
+						OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "service_recipient_location" , demographicExt5.getValue());
+					}
+					
+					DemographicExt demographicExt6 = demographicExtDao.getLatestDemographicExt(demographicNo, "lhinConsumerResides");
+					if(demographicExt6 != null) {
+						OcanFormAction.addOcanStaffFormData(cbiForm.getId(), "service_recipient_lhin" , demographicExt6.getValue());
+					}			
+					
+					CBIUtil cbiUtil = new CBIUtil();
+					try {
+						cbiUtil.submitCBIData(cbiForm);
+						logger.info("cbi form data submitted successfully. The cbi form id is : <"+(cbiForm!=null?cbiForm.getId():"null")+">");
+						
+					}catch (Exception e) {
+						logger.error("Error in submission thread. The ocan staff form id is : <"+(cbiForm!=null?cbiForm.getId():"null")+">", e);
+					}
 				}
 			}
 		}
@@ -717,7 +724,11 @@ public class AdmissionManager {
     public void setFunctionalCentreAdmissionDao(FunctionalCentreAdmissionDao functionalCentreAdmissionDao) {
     	this.functionalCentreAdmissionDao = functionalCentreAdmissionDao;
     }
-
+    
+    public void setFunctionalCentreDao(FunctionalCentreDao functionalCentreDao) {
+    	this.functionalCentreDao = functionalCentreDao;
+    }
+    
 	@Required
     public void setBedDemographicManager(BedDemographicManager bedDemographicManager) {
 	    this.bedDemographicManager = bedDemographicManager;
@@ -762,8 +773,8 @@ public class AdmissionManager {
     
     public void setDemographicExtDao(DemographicExtDao demographicExtDao) {
     	this.demographicExtDao = demographicExtDao;
-    }
-    
+    }    
+  
 	public boolean isActiveInCurrentFacility(int demographicId)
     {
         LoggedInInfo loggedInInfo=LoggedInInfo.loggedInInfo.get();

@@ -75,6 +75,9 @@ import org.oscarehr.util.LoggedInInfo;
 import org.oscarehr.util.MiscUtils;
 import org.springframework.beans.factory.annotation.Required;
 
+import oscar.log.LogAction;
+import oscar.log.LogConst;
+
 public class ProgramManagerViewAction extends BaseAction {
 
 	private static Logger logger = MiscUtils.getLogger();
@@ -359,6 +362,8 @@ public class ProgramManagerViewAction extends BaseAction {
 			ActionMessages messages = new ActionMessages();
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("admit.success"));
 			saveMessages(request, messages);
+			LogAction.addLog((String)request.getSession().getAttribute("user"), LogConst.ADD, LogConst.CON_CAISI_CLIENT_ADMIT, queueId, request.getRemoteAddr(), clientId, "caisi client admission success");
+
 		} catch (ProgramFullException e) {
 			logger.error("Error", e);
 			ActionMessages messages = new ActionMessages();

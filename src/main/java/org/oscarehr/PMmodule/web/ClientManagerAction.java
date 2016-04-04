@@ -126,6 +126,8 @@ import org.oscarehr.util.SpringUtils;
 import org.oscarehr.util.WebUtils;
 import org.springframework.beans.factory.annotation.Required;
 
+import oscar.log.LogAction;
+import oscar.log.LogConst;
 import oscar.oscarDemographic.data.DemographicRelationship;
 
 import com.quatro.service.LookupManager;
@@ -268,6 +270,8 @@ public class ClientManagerAction extends BaseAction {
 		
 		try {
 			admissionManager.processDischarge(p.getId(), new Integer(id), admission.getDischargeNotes(), admission.getRadioDischargeReason(), dischargeDate, dependents, false, false, dischargedFromFunctionalCentre);
+			LogAction.addLog((String)request.getSession().getAttribute("user"), LogConst.ADD, LogConst.CON_CAISI_CLIENT_DISCHARGE, p.getName(), request.getRemoteAddr(), id, "caisi client discharge success");
+
 		} catch (AdmissionException e) {
 			ActionMessages messages = new ActionMessages();
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.failure", e.getMessage()));
@@ -316,7 +320,7 @@ public class ClientManagerAction extends BaseAction {
 	
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.success"));
 			saveMessages(request, messages);
-				
+			LogAction.addLog((String)request.getSession().getAttribute("user"), LogConst.ADD, LogConst.CON_CAISI_CLIENT_DISCHARGE, program.getName(), request.getRemoteAddr(), clientId, "caisi client discharge success");
 			
 		} catch (AdmissionException e) {
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("discharge.failure", e.getMessage()));
@@ -560,6 +564,8 @@ public class ClientManagerAction extends BaseAction {
 			ActionMessages messages = new ActionMessages();
 			messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("refer.success"));
 			saveMessages(request, messages);
+			LogAction.addLog((String)request.getSession().getAttribute("user"), LogConst.ADD, LogConst.CON_CAISI_CLIENT_REFERRAL, program.getName(), request.getRemoteAddr(), String.valueOf(referral.getClientId()), referral.getNotes());
+
 		}
 
 		logManager.log("write", "referral", String.valueOf(referral.getClientId()), request);

@@ -82,6 +82,8 @@ import org.oscarehr.util.MiscUtils;
 import org.oscarehr.util.SessionConstants;
 
 import oscar.OscarProperties;
+import oscar.log.LogAction;
+import oscar.log.LogConst;
 
 public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 
@@ -327,7 +329,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 
 		setBeanProperties(formBean, intake, getClientExtra(clientId), getClient(clientId), providerNo, Agency.getLocalAgency().areHousingProgramsVisible(intakeType), Agency.getLocalAgency()
 				.areServiceProgramsVisible(intakeType), Agency.getLocalAgency().areExternalProgramsVisible(intakeType), getCurrentBedProgramId(clientId),
-				getCurrentServiceProgramIds(clientId), getCurrentExternalProgramId(clientId), facilityId, nodeId, jsLocation, Agency.getLocalAgency().areCommunityProgramsVisible(intakeType), getCurrentCommunityProgramId(clientId));
+				getCurrentServiceProgramIds(clientId, providerNo, facilityId), getCurrentExternalProgramId(clientId), facilityId, nodeId, jsLocation, Agency.getLocalAgency().areCommunityProgramsVisible(intakeType), getCurrentCommunityProgramId(clientId));
 
 		// UCF -- intake accessment : please don't remove the following lines
 		List allForms = surveyManager.getAllFormsForCurrentProviderAndCurrentFacility();
@@ -400,6 +402,8 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		String providerNo = getProviderNo(request);
 		Integer nodeId = formBean.getNodeId();
 		Integer oldId = null;
+		LogAction.addLog((String)request.getSession().getAttribute("user"), LogConst.UPDATE, LogConst.CON_CAISI_INTAKE, String.valueOf(intake.getId()), request.getRemoteAddr(), String.valueOf(client.getDemographicNo()), "");
+			
 		String formattedAdmissionDate = request.getParameter("admissionDate");
 		Date admissionDate;
 		if(StringUtils.isBlank(formattedAdmissionDate)) {
@@ -507,7 +511,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 
 					// if (!formBean.getSelectedServiceProgramIds().isEmpty() && "RFQ_admit".endsWith(saveWhich)) {
 					//if (!formBean.getSelectedServiceProgramIds().isEmpty()) { //should be able to discharge from all service programs.
-						admitServicePrograms(client.getDemographicNo(), providerNo, formBean.getSelectedServiceProgramIds(), null, admissionDate);
+						admitServicePrograms(client.getDemographicNo(), providerNo, formBean.getSelectedServiceProgramIds(), null, admissionDate, loggedInInfo.currentFacility.getId());
 					//}
 
 					if ("normal".equals(saveWhich) || "appointment".equals(saveWhich)) {
@@ -563,7 +567,7 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 				
 				setBeanProperties(formBean, intake, clientExtra, client, providerNo, Agency.getLocalAgency().areHousingProgramsVisible(intakeType), Agency.getLocalAgency().areServiceProgramsVisible(
 						intakeType), Agency.getLocalAgency().areExternalProgramsVisible(intakeType), getCurrentBedProgramId(client.getDemographicNo()),
-						getCurrentServiceProgramIds(client.getDemographicNo()), getCurrentExternalProgramId(client.getDemographicNo()), loggedInInfo.currentFacility.getId(), nodeId, jsLocation, Agency.getLocalAgency().areCommunityProgramsVisible(intakeType), getCurrentCommunityProgramId(client.getDemographicNo()));
+						getCurrentServiceProgramIds(client.getDemographicNo(), providerNo, loggedInInfo.currentFacility.getId()), getCurrentExternalProgramId(client.getDemographicNo()), loggedInInfo.currentFacility.getId(), nodeId, jsLocation, Agency.getLocalAgency().areCommunityProgramsVisible(intakeType), getCurrentCommunityProgramId(client.getDemographicNo()));
 
 				String oldBedProgramId = String.valueOf(getCurrentBedProgramId(client.getDemographicNo()));
 				request.getSession().setAttribute("intakeCurrentBedId", oldBedProgramId);
@@ -877,14 +881,18 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		return currentProgramId;
 	}
 
-	private SortedSet<Integer> getCurrentServiceProgramIds(Integer clientId) {
+	private SortedSet<Integer> getCurrentServiceProgramIds(Integer clientId, String providerNo, Integer facilityId) {
 		SortedSet<Integer> currentProgramIds = new TreeSet<Integer>();
-
+		Set<Program> providerPrograms = getActiveProviderProgramsInFacility(providerNo, facilityId);
+		List<Program> programsInDomain = getServicePrograms(providerPrograms, providerNo);
 		List<?> admissions = admissionManager.getCurrentServiceProgramAdmission(clientId);
 		if (admissions != null) {
 			for (Object o : admissions) {
 				Admission serviceProgramAdmission = (Admission) o;
-				currentProgramIds.add(serviceProgramAdmission.getProgramId());
+				for(Program p : programsInDomain) {
+					if(p.getId().intValue() == serviceProgramAdmission.getProgramId().intValue())				
+						currentProgramIds.add(serviceProgramAdmission.getProgramId());
+				}
 			}
 		}
 
@@ -1082,9 +1090,9 @@ public class GenericIntakeEditAction extends BaseGenericIntakeAction {
 		}
 	}
 
-	private void admitServicePrograms(Integer clientId, String providerNo, Set<Integer> serviceProgramIds, String admissionText, Date admissionDate) throws ProgramFullException, AdmissionException,
+	private void admitServicePrograms(Integer clientId, String providerNo, Set<Integer> serviceProgramIds, String admissionText, Date admissionDate, Integer facilityId) throws ProgramFullException, AdmissionException,
 			ServiceRestrictionException, FunctionalCentreDischargeException {
-		SortedSet<Integer> currentServicePrograms = getCurrentServiceProgramIds(clientId);
+		SortedSet<Integer> currentServicePrograms = getCurrentServiceProgramIds(clientId, providerNo, facilityId);
 
 		if (admissionText == null) admissionText = "intake admit";
 		

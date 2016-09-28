@@ -84,14 +84,16 @@ public class CdsClientFormDao extends AbstractDao<CdsClientForm> {
 
     public List<CdsClientForm> findSignedCdsForms(Integer facilityId, String formVersion, Date startDate, Date endDate) {
 		
-		String sqlCommand="select x from CdsClientForm x where x.facilityId=?1 and x.signed=?2 and x.cdsFormVersion=?3 and x.created>=?4 and x.created<?5";
-
+		//String sqlCommand="select x from CdsClientForm x where x.facilityId=?1 and x.signed=?2 and x.cdsFormVersion=?3 and x.created>=?4 and x.created<?5";
+    	//do not need to use date range here as it will be considered in admissionMap in Cds4ReportUIBean.java
+		String sqlCommand="select x from CdsClientForm x where x.facilityId=?1 and x.signed=?2 and x.cdsFormVersion=?3 ";
+		
 		Query query = entityManager.createQuery(sqlCommand);
 		query.setParameter(1, facilityId);
 		query.setParameter(2, true);
 		query.setParameter(3, formVersion);
-		query.setParameter(4, startDate);
-		query.setParameter(5, endDate);
+		//query.setParameter(4, startDate);
+		//query.setParameter(5, endDate);
 		
 		@SuppressWarnings("unchecked")
 		List<CdsClientForm> results=query.getResultList();

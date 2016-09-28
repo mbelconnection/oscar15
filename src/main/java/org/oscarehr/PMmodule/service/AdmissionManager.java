@@ -293,9 +293,9 @@ public class AdmissionManager {
 			} else {
 				//Some functional centres do not need cbi form. Check before create a new cbi form.
 				FunctionalCentre fc = functionalCentreDao.find(functionalCentreId);
-				if(fc !=null && fc.isEnableCbiForm()) {
+				
 					// insert a new admission record
-					//Automatically create CBI form when admit a client into a new program associated with a new functional centre.									
+													
 					fca = new FunctionalCentreAdmission();
 					fca.setDemographicNo(demographicNo);
 					fca.setFunctionalCentreId(functionalCentreId);				
@@ -309,7 +309,10 @@ public class AdmissionManager {
 					functionalCentreAdmissionDao.persist(fca);				
 				
 					functionalCentreAdmissionId = fca.getId();
-				
+					
+				//Automatically create CBI form when admit a client into a new program associated with a new functional centre.	
+				if(fc !=null && fc.isEnableCbiForm()) {
+					
 					OcanStaffForm cbiForm = OcanForm.getCbiInitForm(demographicNo,OcanForm.PRE_POPULATION_LEVEL_DEMOGRAPHIC,"CBI", program.getId());				
 				
 					cbiForm.setAssessmentId(cbiForm.getId());

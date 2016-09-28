@@ -2180,11 +2180,11 @@ function ajaxSaveNote(div,noteId,noteTxt) {
 			parseInt(document.getElementById("minuteOfEncTransportationTime").value) > 59) {
 				alert(encMinError);
 				return false;
-			}	
-						
+			}			
+					
 		} 
 		
-		if(document.getElementById("hourOfEncounterTime") != null) {
+		if(document.getElementById("hourOfEncounterTime") != null) { 
 			if(isNaN(document.getElementById("hourOfEncounterTime").value) ||
 			isNaN(document.getElementById("minuteOfEncounterTime").value) ) {
 				alert(encTimeError);
@@ -2205,6 +2205,15 @@ function ajaxSaveNote(div,noteId,noteTxt) {
 		    		return false;
 		   		}
 			}
+		} 
+		if (document.getElementById("hourOfEncounterTime") == null || 
+			document.getElementById("minuteOfEncounterTime") == null ||
+			document.getElementById("hourOfEncounterTime").value == "" ||
+			document.getElementById("minuteOfEncounterTime").value == "") {
+				if(encTimeMandatory) {
+			    	alert(encTimeMandatoryMsg);
+			    	return false;
+			   	}
 		}
     }
 
@@ -2311,6 +2320,15 @@ function saveNoteAjax(method, chain) {
 		    		return false;
 		   		}
 			}
+		}
+		if (document.getElementById("hourOfEncounterTime") == null || 
+			document.getElementById("minuteOfEncounterTime") == null ||
+			document.getElementById("EncounterTime").value == "" ||
+			document.getElementById("minuteOfEncounterTime").value == "") {
+				if(encTimeMandatory) {
+			    	alert(encTimeMandatoryMsg);
+			    	return false;
+			   	}
 		}
     }
     document.forms["caseManagementEntryForm"].method.value = method;
@@ -2438,7 +2456,16 @@ function savePage(method, chain) {
 		    		return false;
 		   		}
 			}
-		}       
+		}  
+		if (document.getElementById("hourOfEncounterTime") == null || 
+			document.getElementById("minuteOfEncounterTime") == null ||
+			document.getElementById("hourOfEncounterTime").value == "" ||
+			document.getElementById("minuteOfEncounterTime").value == "") {
+				if(encTimeMandatory) {
+			    	alert(encTimeMandatoryMsg);
+			    	return false;
+			   	}
+		}     
  		
     }
     document.forms["caseManagementEntryForm"].method.value = method;
